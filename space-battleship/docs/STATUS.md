@@ -26,7 +26,7 @@ In Progress:
 - 无，本次修改与验证已完成。
 
 Blocked:
-- Git 首次远程推送被自动审批拦截，待用户确认上传源码、文档、美术与 Excel 至指定 GitHub 仓库。
+- 2026-09-14：Git 首次推送已完成，main 跟踪 origin/main，同步无阻塞。
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:

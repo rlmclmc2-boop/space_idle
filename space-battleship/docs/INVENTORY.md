@@ -1,6 +1,6 @@
 # 文件地图与交接包
 
-范围：工作区 `G:/放置`，游戏根 `space-battleship/`。初始无 AGENTS/其他 AI 规则、docs、src、assets、导出预设或 CI；现有结构保留。2026-09-14 已在工作区根建立 Git 仓库，SourceTree 本地条目为“放置”，origin 为 `https://github.com/rlmclmc2-boop/space_idle.git`；远程推送待完成。根 `.gitignore` 纳入入口、原始总表与游戏项目，排除引擎和验证副本；缓存与玩家存档沿用项目忽略规则。路径下文相对游戏根。
+范围：工作区 `G:/放置`，游戏根 `space-battleship/`。初始无 AGENTS/其他 AI 规则、docs、src、assets、导出预设或 CI；现有结构保留。2026-09-14 已在工作区根建立 Git 仓库，SourceTree 本地条目为“放置”，origin 为 `https://github.com/rlmclmc2-boop/space_idle.git`；main 已推送并跟踪 origin/main。根 `.gitignore` 纳入入口、原始总表与游戏项目，排除引擎和验证副本；缓存与玩家存档沿用项目忽略规则。路径下文相对游戏根。
 
 | 路径 | 类型/用途 | 默认读取 |
 |---|---|---|
