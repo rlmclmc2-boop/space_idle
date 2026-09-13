@@ -1,0 +1,4 @@
+{
+  "exit_code": 0,
+  "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 610.82 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3090\r\n\r\nShared game instance: PASS\r\nSelected Excel import: PASS\r\nDirect pause: PASS\r\nDirect x5: PASS\r\nDirect resume: PASS\r\nReload scene without new process: PASS\r\nQA survives scene reload: PASS\r\nProgress and speed preserved: PASS\r\nClose QA only hides panel: PASS\r\nReopen same QA panel: PASS\r\nExcel selection and status persisted: PASS\r\nINTEGRATED QA: 0 failures\r\nERROR: Failed to read the root certificate store.\r\n   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)\r\n"
+}

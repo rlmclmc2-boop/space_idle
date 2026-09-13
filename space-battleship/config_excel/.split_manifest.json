@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "source": "G:\\放置\\太空战舰.xlsx",
+  "sheets": {
+    "level": "level.xlsx",
+    "equipment": "equipment.xlsx",
+    "mon": "mon.xlsx",
+    "monGroup": "monGroup.xlsx",
+    "res": "res.xlsx",
+    "config": "config.xlsx"
+  }
+}

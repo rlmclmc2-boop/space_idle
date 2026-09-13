@@ -1,0 +1,6 @@
+.godot/
+.runtime/
+.userdata/
+*.tmp
+preview*.png
+data/.import_state.json

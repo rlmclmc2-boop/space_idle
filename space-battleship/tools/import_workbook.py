@@ -1,0 +1,150 @@
+"""Excel projection and validation shared by full and incremental imports."""
+import argparse
+import copy
+import json
+import math
+import os
+import pathlib
+import sys
+import openpyxl
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config"}
+DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
+FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row at the requested level.","enemyCannonMissingDamageAndCooldown":"Use player cannon row at the requested level."}
+
+def clean(value):
+    return str(value).translate(str.maketrans({"｛":"{","｝":"}","，":",","；":";"})).strip("{} ")
+
+def read_rows(sheet):
+    values=sheet.iter_rows(values_only=True)
+    header=next(values)
+    next(values,None)
+    next(values,None)
+    return [dict(zip(header,row)) for row in values if row[0] is not None]
+
+def convert_sheet(name, rows):
+    if name=="equipment":
+        result={}
+        for row in rows:
+            result.setdefault(row["name"],[]).append(row)
+        for items in result.values():
+            if any(not isinstance(r.get("level"),(int,float)) for r in items):
+                raise ValueError("equipment：等级为空或不是数字，请在 Excel 中重新计算并保存")
+            items.sort(key=lambda r:r["level"])
+        return result
+    if name=="mon":
+        result={}
+        for row in rows:
+            row["equipment"]=[{"name":p.split("|")[0],"level":int(p.split("|")[1])} for p in clean(row["equipment"]).split(",")]
+            drop=clean(row["res"]).split(",")
+            if len(drop)==4:
+                drop=[drop[0],drop[1],drop[2]+"."+drop[3]]
+            row["drops"]=[{"resourceId":int(drop[0]),"amount":float(drop[1]),"chance":float(drop[2])}]
+            result[str(row["id"])]=row
+        return result
+    if name=="monGroup":
+        return {str(r["id"]):{"description":r["des"],"slots":[None if v.strip()=="null" else int(v) for v in clean(r["mon"]).split(",")]} for r in rows}
+    if name=="level":
+        for row in rows:
+            row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
+        return rows
+    if name=="res":
+        return {str(r["id"]):r["name"] for r in rows}
+    if name=="config":
+        return {r["name"]:r["para_1"] for r in rows}
+    raise ValueError("未知配置表："+name)
+
+def projection_base(previous, source):
+    data=copy.deepcopy(previous or {})
+    data["source"]=source
+    data["defaults"]={**DEFAULTS,**data.get("defaults",{})}
+    data.setdefault("fallbacks",dict(FALLBACKS))
+    return data
+
+def positive(value, label, allow_zero=False):
+    if not isinstance(value, (int,float)) or not math.isfinite(value) or value < 0 or (value == 0 and not allow_zero):
+        raise ValueError(f'{label}: expected {"nonnegative" if allow_zero else "positive"} number, got {value!r}')
+
+
+def validate_projection(data):
+    equipment=data["equipment"]
+    levels=data["levels"]
+    groups=data["groups"]
+    enemies=data["enemies"]
+    config=data["config"]
+    for key in ('armour','shield','laser','missile','cannon'):
+        items=equipment.get(key,[])
+        if not items or [r['level'] for r in items] != list(range(1,len(items)+1)):
+            raise ValueError(f'equipment 表 {key}：等级必须从 1 连续递增，不能重复或缺级；当前共 {len(items)} 行')
+        for r in items:
+            positive(r['para1'] if key in ('armour','shield') else r['dmg'],f'{key} Lv.{r["level"]} value')
+            if key not in ('armour','shield'):
+                positive(r['cd'], f'{key} cooldown')
+                positive(r['para2'] if key=='missile' else r['para1'],f'{key} projectile speed')
+            for field in ('cost_1','cost_2'):
+                if r[field] is not None: positive(r[field],f'{key} {field}',True)
+    if [r['id'] for r in levels] != list(range(1,len(levels)+1)) or not levels:
+        raise ValueError('Level IDs must be consecutive from 1')
+    for level in levels:
+        for key in ('length','atkRatio','lifeRatio','resRatio'): positive(level[key],f'level {level["id"]} {key}')
+        positions=[g['position'] for g in level['groups']]
+        if not positions or positions!=sorted(set(positions)) or not all(0<=p<=1 for p in positions):
+            raise ValueError(f'level {level["id"]}: invalid encounter positions')
+        for g in level['groups']:
+            if str(g['id']) not in groups: raise ValueError(f'Unknown group {g["id"]}')
+    for gid,g in groups.items():
+        if len(g['slots'])!=10: raise ValueError(f'group {gid}: expected 10 slots')
+        for enemy_id in g['slots']:
+            if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(f'Unknown enemy {enemy_id}')
+    for enemy in enemies.values():
+        positive(enemy['health'],f'enemy {enemy["id"]} health')
+        positive(enemy['dmgMultiple'],f'enemy {enemy["id"]} damage multiplier',True)
+        for drop in enemy['drops']:
+            positive(drop['amount'],'drop amount',True)
+            if not 0<=drop['chance']<=1: raise ValueError('Drop chance must be between 0 and 1')
+    for key in ('dmgReduce','autoCollectReduce'):
+        if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(f'{key} must be between 0 (inclusive) and 1 (exclusive)')
+    positive(config['movement'],'movement')
+    positive(config['backRange'],'backRange',True)
+
+    data["defaults"]["maxEquipmentLevel"]=max(len(equipment[key]) for key in ("armour","shield","laser","missile","cannon"))
+
+def encode(data):
+    return json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False).encode("utf-8")
+
+def full_import(source, target):
+    previous=json.loads(target.read_text(encoding="utf-8")) if target.exists() else {}
+    data=projection_base(previous,source.name)
+
+    book=openpyxl.load_workbook(source,data_only=True,read_only=True)
+    try:
+        for name,section in SECTIONS.items():
+            if name not in book.sheetnames:
+                raise ValueError("缺少配置表："+name)
+            data[section]=convert_sheet(name,read_rows(book[name]))
+    finally:
+        book.close()
+    validate_projection(data)
+    target.parent.mkdir(parents=True,exist_ok=True)
+    temporary=target.with_suffix(".json.tmp")
+    try:
+        temporary.write_bytes(encode(data))
+        os.replace(temporary,target)
+    finally:
+        if temporary.exists(): temporary.unlink()
+    return data
+
+def main():
+    if hasattr(sys.stdout,"reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    parser=argparse.ArgumentParser()
+    parser.add_argument("source",nargs="?",type=pathlib.Path,default=ROOT.parent/"太空战舰.xlsx")
+    parser.add_argument("target",nargs="?",type=pathlib.Path,default=ROOT/"data"/"game_data.json")
+    args=parser.parse_args()
+    data=full_import(args.source,args.target)
+    print(f'Imported {len(data["levels"])} levels, {len(data["enemies"])} enemies, {len(data["groups"])} groups, {sum(map(len,data["equipment"].values()))} equipment rows.')
+
+if __name__=="__main__":
+    main()

@@ -1,0 +1,14 @@
+# Keep the project and original design workbook together.
+/*
+!/.gitignore
+!/AGENTS.md
+!/太空战舰.xlsx
+!/space-battleship/
+
+**/__pycache__/
+*.py[cod]
+~$*
+.env
+.env.*
+*.pem
+*.key
