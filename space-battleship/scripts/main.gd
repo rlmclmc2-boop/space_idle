@@ -15,6 +15,7 @@ const PROJECTILE_TEXTURES := {
 	"missile":preload("res://assets/weapons/guided-missile.png")
 }
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
+const PROJECTILE_SCALE := 0.65
 var db: ShipDatabase
 var game: BattleGame
 var font: SystemFont
@@ -392,7 +393,7 @@ func draw_battle() -> void:
 		var pos := Vector2(p.x,p.y)+offset
 		var direction: Vector2 = p.direction
 		var key := str(p.key).replace("_mon", "").replace("-mon", "")
-		var size: Vector2 = PROJECTILE_SIZES[key]
+		var size: Vector2 = PROJECTILE_SIZES[key] * PROJECTILE_SCALE
 		draw_set_transform(pos, direction.angle())
 		draw_texture_rect(PROJECTILE_TEXTURES[key],Rect2(-size/2,size),false)
 		draw_set_transform(Vector2.ZERO)

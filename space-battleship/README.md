@@ -6,7 +6,7 @@ Godot 原生 GDScript 横版自动战斗游戏。AI 接手从 [AGENTS.md](AGENTS
 
 ## 启动与配置
 
-Windows 双击 `启动游戏.cmd`；`打开编辑器.cmd` 打开项目。引擎需位于上一级目录，名称与启动脚本一致；迁移清单见 [INVENTORY](docs/INVENTORY.md)。游戏运行只需引擎与现有 JSON。
+Windows 双击 `../启动.cmd`；`打开编辑器.cmd` 打开项目。引擎位于项目 engine/ 目录，名称与启动脚本一致；迁移清单见 [INVENTORY](docs/INVENTORY.md)。游戏运行只需引擎与现有 JSON。
 
 游戏内自动显示附属 QA 窗口，关闭面板仅隐藏，F1 可重显。QA 与游戏共用一个进程；暂停、倍速、读取配置和场景重载说明见 [UI / QA](docs/modules/ui.md)。
 

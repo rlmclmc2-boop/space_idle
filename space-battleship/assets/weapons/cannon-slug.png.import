@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1l5skojgx6mi"
-path="res://.godot/imported/preview-combat.png-15979693cb4d5fd03bc99ece13adde4b.ctex"
+uid="uid://dsuirj1jblfvs"
+path="res://.godot/imported/cannon-slug.png-40b6e78ca81f6914c8550832fe65a039.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://preview-combat.png"
-dest_files=["res://.godot/imported/preview-combat.png-15979693cb4d5fd03bc99ece13adde4b.ctex"]
+source_file="res://assets/weapons/cannon-slug.png"
+dest_files=["res://.godot/imported/cannon-slug.png-40b6e78ca81f6914c8550832fe65a039.ctex"]
 
 [params]
 

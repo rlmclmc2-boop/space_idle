@@ -43,8 +43,9 @@ def differences(a, b, path=''):
 def audit(source):
     paths = [source, ROOT/'data/game_data.json', ROOT/'project.godot', ROOT/'main.tscn']
     paths += sorted(ROOT.glob('*.cmd'))
+    paths += [ROOT.parent/'启动.cmd']
     paths += sorted((ROOT/'scripts').glob('*.gd'))
-    paths += sorted((ROOT/'tests').glob('test_*'))
+    paths += sorted((ROOT.parent/'test').glob('test_*'))
     paths += [ROOT/'tools/import_workbook.py', Path(__file__).resolve()]
     paths = [p for p in paths if p.suffix != '.uid']
     before = {p: digest(p) for p in paths}
@@ -109,7 +110,9 @@ def audit(source):
         sheets.append({'name': sheet.title, 'range': sheet.calculate_dimension(), 'formulas': count})
     formulas.close()
     cached.close()
-    with tempfile.TemporaryDirectory(prefix='knowledge-audit-') as folder:
+    area = ROOT.parent / 'test/work'
+    area.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='knowledge-audit-', dir=area) as folder:
         target = Path(folder)/'game_data.json'
         target.write_bytes((ROOT/'data/game_data.json').read_bytes())
         result = subprocess.run([sys.executable, str(ROOT/'tools/import_workbook.py'), str(source), str(target)], capture_output=True)

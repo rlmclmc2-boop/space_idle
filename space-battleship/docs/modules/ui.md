@@ -6,6 +6,12 @@
 
 ## CURRENT
 
+- 2026-09-14 用户要求：QA“删除存档”直接删除 user://progress.json 并重载当前场景，从配置初始资源、装备与第一关重新开始；保留 qa_settings.cfg 和配置文件。旧场景停用处理/保存，防止旧进度回写；文件删除失败则提示并保留当前会话。导入或场景重载期间禁止重复操作。
+
+- 弹体尺寸使用 PROJECTILE_SIZES 基准值乘统一 PROJECTILE_SCALE；2026-09-14 用户要求缩小，当前比例0.65。后续新增素材可沿用该缩放，原始PNG不缩减。
+
+- ../启动.cmd 先等待 Godot 无界面编辑器完成资源导入，再启动游戏，支持首次运行/新增图片后直接启动；导入日志为 .runtime/startup-import.log，非零退出会停止并提示。该资源扫描不执行 Excel 配置导入。
+
 - 2026-09-14 用户要求敌人生命显示保留前两位有效数字，其余向下截断（123→120），达到千/百万/十亿/万亿用 K/M/B/T（1230→1.2K）。main.enemy_health 复用 number 输出；普通敌舰右侧和BOSS面板的当前/最大生命统一使用。实际生命及血条比例不变。
 
 - 2026-09-14 用户要求资源显示切换：顶部“资源：总量 / 资源：每秒”按钮默认总量，再次点击切回。收益按最近60秒实际 collect 入账之和÷60，铁/钛独立，以两位小数和“/秒”显示；统计使用现实单调时间，暂停仍会过期、倍速不缩短窗口，启动不足一分钟也除以60。只统计本次场景会话收入，手动及自动拾取均计入，扣费/初始余额不计入；切换、换关及 UI 重建不清空，重启场景重置。此统计口径为本次实现选择。
@@ -20,4 +26,4 @@
 - config_panel.game_scene 获取 current_scene，send_control 直接修改其 game.paused/speed；restart_game 先结算保存，reload_game 调用 reload_current_scene，QA 实例保留。关闭 QA 只隐藏，关闭游戏结束整个进程。无现行进程间通信；旧 IPC 文件若留在缓存不代表仍在使用。保存失败边界见 U-008。
 - 舰船/UI及音效仍为程序生成，main._draw/draw_ship/beep 为入口；2026-09-14 按用户要求新增 assets/weapons 三种透明弹体素材（光束/金属弹丸/带尾翼导弹），PROJECTILE_TEXTURES 按归一化武器键匹配敌我弹体并按 direction 旋转；不改变伤害或索敌。素材及生成提示词见 assets/weapons/README.md。preview 图片仅供历史对照。
 
-验证路由：游戏按钮用 `tests/test_game.gd`；QA 导入/同进程场景重载为 `tests/test_config_panel.gd`。后者会临时改运行 JSON 并显示窗口，必须复制项目及隔离目录后运行，见 VALIDATION；本次11项集成检查通过，视觉布局没有另做验收。
+验证路由：游戏按钮用 `../test/test_game.gd`；QA 导入/同进程场景重载为 `../test/test_config_panel.gd`。后者会临时改运行 JSON 并显示窗口，必须复制项目及隔离目录后运行，见 VALIDATION；本次11项集成检查通过，视觉布局没有另做验收。

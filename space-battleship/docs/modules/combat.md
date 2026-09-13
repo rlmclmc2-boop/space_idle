@@ -14,4 +14,4 @@
 - main._process 把帧间隔限到 0.1 秒，按 game.speed 缩放，再拆为不大于 1/60 秒步长。paused 阻止模拟及拾取推进；解锁弹窗阻止下一关计时，但掉落计时仍执行。
 
 归属：锁定/导弹分发见 [weapons](weapons.md)，通关/重刷见 [map](map.md)，掉落见 [economy](economy.md)。
-追踪：`scripts/game.gd` hit_player/hit_enemy/reduced_damage/begin_retreat/tick → `tests/test_game.gd` Resistance、overflow、Retreat、Pause。实测状态见 [VALIDATION](../VALIDATION.md)。
+追踪：`scripts/game.gd` hit_player/hit_enemy/reduced_damage/begin_retreat/tick → `../test/test_game.gd` Resistance、overflow、Retreat、Pause。实测状态见 [VALIDATION](../VALIDATION.md)。

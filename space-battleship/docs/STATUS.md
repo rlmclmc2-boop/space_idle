@@ -1,9 +1,13 @@
 # Current Status
 
 Goal:
-增加 QA 总表拆分/同步按钮与独立分表增量导入；保留已有玩法、美术和存档修改。
+整理主目录、集中测试文件并迁移游戏启动入口；保留同期玩法和 QA 修改。
 
 Done:
+- 2026-09-14：主目录可见文件仅保留太空战舰.xlsx与启动.cmd；引擎迁至项目engine，旧测试源码迁至test，产物统一test/work。清理13个旧验证副本、历史截图、审计JSON及旧测试缓存，保留独立探针与正式存档。分表8项、导入检查、QA14项及无缓存根入口启动通过，见VALIDATION目录整理验证。
+- 2026-09-14：QA 新增“删除存档”，删除 progress.json 后禁止旧场景回写并重载，恢复配置初始进度；QA 设置保留，删除失败显示错误且不重载。隔离图形专项7项通过并检查按钮布局，未删除正式存档。
+- 2026-09-14：弹体显示统一缩至原宽高65%，通过 PROJECTILE_SCALE 集中控制并保留各武器基准尺寸及原始素材。复用隔离有图形绘制检查退出0，已检查缩小后截图，无脚本错误。
+- 2026-09-14：修复新武器 PNG 未导入导致 main.gd 预加载失败的黑屏；../启动.cmd 自动等待无界面资源导入后启动。无缓存隔离副本通过真实 CMD 启动并截取正常战斗画面；正式项目资源缓存已补齐，未改运行配置或玩家存档。
 - 2026-09-14：工作区根接入 Git 与 SourceTree（本地条目“放置”），配置 GitHub origin；原始总表和游戏项目共同版本管理，忽略引擎、验证副本、缓存和玩家存档。
 - 2026-09-14：完成所选总表（除总览）到 config_excel 的独立 XLSX 同步，新增同名更新/目录入口；保留单元格公式、缓存与格式。读取改为 SHA-256 变更检测，只解析变化分表、合并验证并原子提交 JSON/缓存；无变化不读取工作表/不改写 JSON，失败不标记已读。指定总表六份分表已生成；运行 JSON 与玩家存档未因本次测试改写。8项 Python 用例、14项隔离图形QA断言、全表CLI兼容测试通过，见 VALIDATION 分表增量配置。
 - 2026-09-14：新增三张透明武器PNG，激光为青色光束、火炮为铜箍金属弹丸、导弹为白身红头尾翼与蓝紫推进焰；按武器键匹配敌我弹体并按保存方向旋转。隔离编辑器扫描及有图形专项绘制退出0，已检查三种武器双向/失锁截图；见 VALIDATION 武器美术。
@@ -30,17 +34,21 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
-1. 日常改独立分表后直接读取配置；改总表后先显式同步。首次读取会建立缓存，后续只解析修改过的文件。
-2. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
+1. 从工作区启动.cmd启动；后续测试只使用test/run.py及test/work，不在根目录生成验证副本。
+2. 日常改独立分表后直接读取配置；改总表后先显式同步。首次读取会建立缓存，后续只解析修改过的文件。
+3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- ../启动.cmd；../test/；AGENTS.md；打开编辑器.cmd；docs/INVENTORY.md；docs/VALIDATION.md；tools/inspect_knowledge.py
+- scripts/config_panel.gd；../test/test_delete_save.gd；docs/modules/ui.md；docs/VALIDATION.md
+- ../启动.cmd；docs/modules/ui.md；docs/VALIDATION.md
 - ../.gitignore；docs/INVENTORY.md；docs/STATUS.md
-- scripts/config_panel.gd；tools/config_workbooks.py；tools/import_workbook.py；config_excel/；tests/test_config_workbooks.py；tests/test_config_panel.gd；tests/test_import.py；docs/DATA.md；docs/modules/ui.md
+- scripts/config_panel.gd；tools/config_workbooks.py；tools/import_workbook.py；config_excel/；../test/test_config_workbooks.py；../test/test_config_panel.gd；../test/test_import.py；docs/DATA.md；docs/modules/ui.md
 - assets/weapons/；scripts/main.gd；docs/modules/ui.md；docs/VALIDATION.md
-- scripts/main.gd；tests/test_resource_display.gd；docs/modules/ui.md；docs/VALIDATION.md；docs/STATUS.md
-- scripts/game.gd；scripts/main.gd；tests/test_boss_info.gd；docs/modules/ui.md；docs/VALIDATION.md；docs/STATUS.md
-- tests/test_game.gd；docs/modules/ships.md；docs/TODO.md；docs/VALIDATION.md；docs/STATUS.md
-- tests/test_loop_retreat.gd；scripts/game.gd；scripts/main.gd；docs/modules/map.md；docs/modules/ui.md；docs/TODO.md；docs/VALIDATION.md
+- scripts/main.gd；../test/test_resource_display.gd；docs/modules/ui.md；docs/VALIDATION.md；docs/STATUS.md
+- scripts/game.gd；scripts/main.gd；../test/test_boss_info.gd；docs/modules/ui.md；docs/VALIDATION.md；docs/STATUS.md
+- ../test/test_game.gd；docs/modules/ships.md；docs/TODO.md；docs/VALIDATION.md；docs/STATUS.md
+- ../test/test_loop_retreat.gd；scripts/game.gd；scripts/main.gd；docs/modules/map.md；docs/modules/ui.md；docs/TODO.md；docs/VALIDATION.md
 - scripts/main.gd；docs/modules/weapons.md；docs/modules/combat.md
 - docs/modules/economy.md；docs/modules/progression.md
-- scripts/game.gd；tools/import_workbook.py；data/game_data.json；tests/test_game.gd；docs/DATA.md；docs/modules/map.md；docs/TODO.md；docs/VALIDATION.md
+- scripts/game.gd；tools/import_workbook.py；data/game_data.json；../test/test_game.gd；docs/DATA.md；docs/modules/map.md；docs/TODO.md；docs/VALIDATION.md

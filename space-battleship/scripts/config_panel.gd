@@ -6,6 +6,8 @@ var worker: Thread
 var output: Array = []
 var python_path := ""
 var restart_button: Button
+var delete_save_button: Button
+var deleting_save := false
 var restarting := false
 var source_path := ""
 var import_source := ""
@@ -112,6 +114,12 @@ func _ready() -> void:
 	restart_button.custom_minimum_size.y = 46
 	restart_button.pressed.connect(restart_game)
 	buttons.add_child(restart_button)
+	delete_save_button = Button.new()
+	delete_save_button.text = "删除存档"
+	delete_save_button.tooltip_text = "清除游戏进度并从头开始，保留 QA 配置设置。"
+	delete_save_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	delete_save_button.pressed.connect(delete_save)
+	buttons.add_child(delete_save_button)
 	var controls := HBoxContainer.new()
 	controls.add_theme_constant_override("separation",12)
 	column.add_child(controls)
@@ -183,6 +191,7 @@ func execute_import() -> int:
 	return OS.execute(python_path,PackedStringArray([ProjectSettings.globalize_path("res://tools/config_workbooks.py"),operation,"--source",import_source,"--directory",config_directory]),output,true,false)
 
 func _process(_delta: float) -> void:
+	delete_save_button.disabled = worker != null or restarting or game_scene() == null
 	control_poll += _delta
 	if control_poll >= 0.2:
 		control_poll = 0
@@ -246,22 +255,37 @@ func send_control(values: Dictionary) -> void:
 	if int(values.get("speed",0)) in [1,2,5]:
 		scene.game.speed = int(values.speed)
 
-func restart_game() -> void:
+func delete_save() -> void:
+	restart_game(true)
+
+func restart_game(clear_save: bool = false) -> void:
 	if worker != null or restarting:
 		return
 	var scene := game_scene()
 	if scene == null:
 		status_label.text = "游戏场景尚未就绪。"
 		return
-	scene.game.settle_drops()
-	scene.game.save_progress()
+	if clear_save:
+		if FileAccess.file_exists(BattleGame.SAVE_PATH):
+			var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(BattleGame.SAVE_PATH))
+			if error != OK:
+				status_label.text = "删除存档失败，未重新开始：" + error_string(error)
+				return
+		# Prevent the outgoing scene from writing its old progress back.
+		scene.game.save_enabled = false
+		scene.set_process(false)
+	else:
+		scene.game.settle_drops()
+		scene.game.save_progress()
+	deleting_save = clear_save
 	restarting = true
 	import_button.disabled = true
 	split_button.disabled = true
 	restart_button.disabled = true
+	delete_save_button.disabled = true
 	pause_button.disabled = true
 	speed_select.disabled = true
-	status_label.text = "正在重载游戏场景，读取最新 JSON……"
+	status_label.text = "正在清除存档并重新开始……" if clear_save else "正在重载游戏场景，读取最新 JSON……"
 	call_deferred("reload_game")
 
 func reload_game() -> void:
@@ -273,6 +297,9 @@ func reload_game() -> void:
 	split_button.disabled = false
 	restart_button.disabled = false
 	status_label.text = "游戏场景已重载，最新配置已生效。\nQA 工具与游戏共用同一个进程。" if result == OK else "场景重载失败：" + error_string(result)
+	if deleting_save and result == OK:
+		status_label.text = "存档已清除，已从头开始。"
+	deleting_save = false
 
 func close_panel() -> void:
 	hide()

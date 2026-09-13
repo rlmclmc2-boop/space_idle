@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b17nth7rxoa3y"
-path="res://.godot/imported/preview-upgrade.png-a9d42f78c2eec4d1088978e49f0e8541.ctex"
+uid="uid://b35nphlbtikag"
+path="res://.godot/imported/laser-pulse.png-15f43e57040caa9519ea6b9c5376d1c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://preview-upgrade.png"
-dest_files=["res://.godot/imported/preview-upgrade.png-a9d42f78c2eec4d1088978e49f0e8541.ctex"]
+source_file="res://assets/weapons/laser-pulse.png"
+dest_files=["res://.godot/imported/laser-pulse.png-15f43e57040caa9519ea6b9c5376d1c5.ctex"]
 
 [params]
 

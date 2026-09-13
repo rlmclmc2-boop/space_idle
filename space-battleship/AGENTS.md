@@ -19,6 +19,7 @@ Search → Minimum Read → Execute → Verify → Update State。
 - One fact → One source：数值归源表，运行投影归 JSON，细则只在所属模块解释；不复制数值表，不静默解决冲突。
 - Preserve → Reuse → Modify → Create → Rewrite。先找现有实现；不擅自新增玩法、换栈、重构、移动或删除资料。保持用户正在进行的修改。
 - 验证命令与隔离要求见 [VALIDATION](docs/VALIDATION.md)。仅运行改动及直接影响范围的必要测试；无关测试默认不跑，只有相关测试失败或存在明确风险时才扩大验证，已通过的检查无新改动不重复跑。纯文档修改仅检查相关内容和链接，不跑游戏测试。Excel 核对用临时目标，不能因整理而覆盖运行 JSON/玩家存档。
+- 测试源码统一维护在工作区 `test/`（相对项目 `../test/`）；所有测试副本、截图、日志、测试存档与审计产物只放 `test/work/`，不得再在主目录新建验证文件夹。按 [测试入口](../test/README.md) 运行所需测试。
 - 完成任务更新 STATUS 的 Done/In Progress/Blocked/Next/Relevant Files；规则改所属模块，问题改 TODO，长期决策才改 DECISIONS。检查引用及事实来源是否仍有效。
 - 交接只留 Goal / Completed / Changed / Issue / Next / Relevant Files，压缩到 STATUS 对应字段；不保存聊天、思考过程或平台私有记忆。
 - 默认汇报 Done / Changed / Validation / Next。跨平台先显式读取本文件，适配文件只能链接此入口；交接文件清单见 [INVENTORY](docs/INVENTORY.md)。

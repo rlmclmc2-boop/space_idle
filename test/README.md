@@ -1,0 +1,9 @@
+# 测试目录
+
+测试源码统一在本目录，工作副本、日志、截图、测试存档和审计结果统一放入 `work/`（不提交 Git）。禁止在工作区根新建验证目录；完整规则见 [AGENTS](../space-battleship/AGENTS.md) 和 [VALIDATION](../space-battleship/docs/VALIDATION.md)。
+
+在工作区根执行 `python test/run.py test_import.py`、`python test/run.py test_config_workbooks.py` 或 `python test/run.py test_config_panel.gd`。Python 需安装 openpyxl/lxml；引擎默认使用项目 `engine/` 中的 Godot，也可通过 `--godot` 指定。每次仅运行指定测试。
+
+运行器复制必要项目文件和总表到独立目录，隔离玩家存档，Godot 测试默认有图形。成功后保留产物供检查，使用完可删除 `work/` 内对应目录。
+
+`legacy/` 保留旧专项探针源码，仅供复用参考；不能直接视为当前规则的验收标准。旧验证副本与历史截图、JSON 审计产物已按用户要求清理，历史测试结论仍记录于 VALIDATION。

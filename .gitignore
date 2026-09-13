@@ -4,6 +4,8 @@
 !/AGENTS.md
 !/太空战舰.xlsx
 !/space-battleship/
+!/启动.cmd
+!/test/
 
 **/__pycache__/
 *.py[cod]

@@ -1,6 +1,7 @@
 .godot/
 .runtime/
 .userdata/
+engine/
 *.tmp
 preview*.png
 data/.import_state.json

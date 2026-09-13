@@ -6,12 +6,14 @@ import json
 import sys
 import openpyxl
 
-root=Path(__file__).resolve().parents[1]
+root=Path(__file__).resolve().parents[1]/'space-battleship'
+area=Path(__file__).resolve().parent/'work'
+area.mkdir(exist_ok=True)
 book=openpyxl.load_workbook(root.parent/'太空战舰.xlsx',data_only=True,read_only=True)
 expected_levels=sum(1 for r in list(book['level'].values)[3:] if r[0] is not None)
 expected_laser=sum(1 for r in list(book['equipment'].values)[3:] if r[0]=='laser')
 book.close()
-with tempfile.TemporaryDirectory(dir=root/'.runtime') as folder:
+with tempfile.TemporaryDirectory(dir=area) as folder:
     folder=Path(folder)
     target=folder/'game_data.json'
     script=root/'tools/import_workbook.py'

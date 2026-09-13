@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1] / "space-battleship"
 sys.path.insert(0, str(ROOT / "tools"))
 import config_workbooks as cw
 import import_workbook as full
@@ -39,7 +39,7 @@ def edit_cell(path, sheet_name, coordinate, value=None, remove_cache=False):
 
 class IncrementalTests(unittest.TestCase):
     def setUp(self):
-        area = ROOT.parent / "config-incremental-verification"
+        area = Path(__file__).resolve().parent / "work"
         area.mkdir(exist_ok=True)
         self.temp = tempfile.TemporaryDirectory(dir=area)
         self.addCleanup(self.temp.cleanup)

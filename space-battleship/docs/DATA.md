@@ -6,7 +6,7 @@
 - **CONFIRMED（代码）**：现有脚本、运行 JSON 及默认值是“当前行为”证据，不自动成为用户批准的原策划。代码与表冲突保持两者，登记 TODO。
 - **DERIVED**：必须列前提/来源与推导。**UNKNOWN**：仅在 TODO 集中记录，其他文件用问题 ID。
 - `data/game_data.json` 是构建投影，不作为第二套手工平衡表；`defaults` 为原表以外参数的现有运行来源，导入器提供初始值并保留目标旧 defaults。`fallbacks` 为说明文字，真实补全算法在 database.gd。
-- 指定总表、QA 选择的实验总表和编辑后的分表可能不同，不能推断自动一致。`audit/source-check.json` 为历史核对记录；当前来源追踪边界见 TODO U-001。
+- 指定总表、QA 选择的实验总表和编辑后的分表可能不同，不能推断自动一致。原 `docs/audit/source-check.json` 为历史核对记录（已清理，需验证时重新生成到 test/work）；当前来源追踪边界见 TODO U-001。
 
 ## 原表索引与 JSON 映射
 
@@ -51,7 +51,7 @@ para 含义：armour.para1=生命；shield.para1=容量、para2=每秒最大容�
 ```sh
 python tools/inspect_knowledge.py --sheet equipment --range A44:N45
 python tools/inspect_knowledge.py --sheet 总览 --range A3:D10
-python tools/inspect_knowledge.py --output docs/audit/source-check.json
+python tools/inspect_knowledge.py --output ../test/work/audit/source-check.json
 ```
 
 审计在临时目录运行原导入器，将源表投影与当前 JSON 深比较；核对公式缓存并记录 SHA-256。仅支持本表出现的直接引用、ROUND 和四则运算，未支持公式会明确报 unsupported；不是通用 Excel 引擎。发现差异/来源变动返回 1。审计报告是生成证据，不手工编辑；不在普通任务中整份加载。

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://5evt1ka6qk05"
-path="res://.godot/imported/preview-unlock.png-76aeb355d33c99d217a5a4a342a01a8e.ctex"
+uid="uid://dtaaqf3lnvkd2"
+path="res://.godot/imported/guided-missile.png-e1c1a76bece3d4b6c41de3e7456ce881.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://preview-unlock.png"
-dest_files=["res://.godot/imported/preview-unlock.png-76aeb355d33c99d217a5a4a342a01a8e.ctex"]
+source_file="res://assets/weapons/guided-missile.png"
+dest_files=["res://.godot/imported/guided-missile.png-e1c1a76bece3d4b6c41de3e7456ce881.ctex"]
 
 [params]
 

@@ -8,6 +8,8 @@
 
 ## 最终生成提示词
 
+显示尺寸由 main.gd 的 PROJECTILE_SIZES（各武器基准尺寸）与 PROJECTILE_SCALE（统一缩放，当前0.65）共同控制。新增武器素材时补充对应纹理和基准尺寸，即可沿用统一缩放；原始PNG保留，便于后续调整。
+
 ### laser
 
 Use case: stylized-concept. Asset type: transparent 2D side-scrolling sci-fi game projectile sprite. Single cyan pulse laser bolt pointing exactly right, centered horizontally. Long extremely slender white-hot cyan beam core, sharply tapered right tip, clean turquoise outer glow and faint linear energy streak tail to left. No solid metal, no fins, no rocket. Crisp graphic game art readable at 80x18 pixels against near-black navy space. Occupy 85% width and 25% height of a wide landscape canvas, fully transparent background with real alpha, no checkerboard, no text, no border, no other objects.
@@ -19,4 +21,3 @@ Use case: stylized-concept. Asset type: single transparent 2D sci-fi side scroll
 ### missile
 
 Use case: stylized-concept. Asset type: transparent 2D side-scrolling sci-fi game projectile sprite. Single guided missile flying exactly RIGHT, strict flat side view. Ivory white long slim armored fuselage, red pointed nose cone on right, two prominent triangular swept tail fins at left rear, dark small guidance panels, bright violet blue rocket exhaust trailing LEFT. Readable rocket silhouette, clearly different from a thick brass cannon bullet or cyan laser beam. Crisp graphic game illustration simplified for display at 64x24 pixels. Wide landscape canvas, centered, occupies 85% width and 35% height. Real transparent alpha background, no black backdrop, no checkerboard, no typography, no border, no other objects.
-
