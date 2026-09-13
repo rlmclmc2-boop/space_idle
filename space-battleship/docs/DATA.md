@@ -10,13 +10,15 @@
 
 ## 原表索引与 JSON 映射
 
+- 2026-09-14 离线上限：config!A10:C10 的 offlineMax（单位小时）投影到 config.offlineMax；总表与分表已核对。导入复用 config 通用转换，并校验非负有限数字；规则归 modules/economy.md。
+
 ### 2026-09-14 · 分表与增量配置（用户确认）
 
 - 来源：用户要求新增拆分按钮，将所选总表中“总览”以外的表输出为独立 Excel；同名文件存在则更新；之后读取配置只处理修改过的配置。
-- `config_excel/<工作表名>.xlsx` 为拆分后的可编辑配置来源，`.split_manifest.json` 保存对应关系和总表路径。首次已从指定总表生成 level/equipment/mon/monGroup/res/config 六份文件；总览不导出，未知附加工作表也会拆分，但目前只有这六种配置参与游戏投影。
+- `config_excel/<工作表名>.xlsx` 为拆分后的可编辑配置来源，`.split_manifest.json` 保存对应关系和总表路径。首次已从指定总表生成 level/equipment/mon/monGroup/res/config 六份文件，2026-09-14 新增 hightech 投影，共七种配置；总览不导出，未知附加工作表也会拆分。
 - 修改总表：计算保存 → QA「拆分／同步 Excel」→「读取配置」→「重启游戏」。直接修改独立分表：计算保存 →「读取配置」→「重启游戏」。读取按钮不再读取总表；同步是显式用总表更新同名分表，不会合并两处编辑，也不删除无关文件。
 - `tools/config_workbooks.py` 按 OOXML 包拆分，保留选中工作表单元格 XML（含公式和缓存）、格式及相关资源；清除其他工作表引用及计算链。跨表公式不静默改写，会定位单元格并拒绝拆分。导入不负责 Excel 重算，缺缓存时报告文件/单元格并保留旧投影。
-- 首次/缓存失效时读取六张配置建立基线；之后用文件 SHA-256 检测修改，只对变化文件调用 openpyxl。未修改配置沿用现有 JSON，对合并结果进行跨表校验；无变化不解析工作表、不重写 JSON。读取过程中再次修改文件会中止并要求重试。
+- 首次/缓存失效时读取七张配置建立基线；之后用文件 SHA-256 检测修改，只对变化文件调用 openpyxl。未修改配置沿用现有 JSON，对合并结果进行跨表校验；无变化不解析工作表、不重写 JSON。读取过程中再次修改文件会中止并要求重试。
 - `data/.import_state.json` 保存成功导入的文件指纹和目标 JSON 指纹，可重建；`game_data.json.source_files` 记录参与投影的分表绝对路径。JSON 和缓存一起提交，提交失败恢复已替换文件，失败数据不标记为已读。
 - 原 `tools/import_workbook.py` 保留显式全表 CLI，供兼容审计使用；行转换/校验函数由增量导入复用，不再维护第二套数值规则。下面的历史范围按稳定字段定位，当前文件增删行后不能依赖旧坐标。
 
@@ -35,6 +37,8 @@
 | mon!A4:H9 | 6 敌机，武器引用、生命、抗性、掉落、占格 | enemies[字符串id]；equipment[]、drops[] 被解析 |
 | monGroup!A4:C10 | 7 种十槽编队，null 为空 | groups[字符串id].slots[] |
 | res!A4:B5 | 资源 ID/名称 | resources[字符串id] |
+| hightech!A4:H6 | 三项高科技名称、des 效果规则、description 界面模板、研发耗时/成长、解锁与效果参数 | hightech[name]；规则见 modules/progression.md，模板见 modules/ui.md |
+| config!A9:C10 | hightechLimit 同时研发数、offlineMax 离线上限（小时） | config.hightechLimit / config.offlineMax |
 | config!A4:C8 | 起始装备、减伤、移动、自动拾取损耗、死亡后退距离 backRange | config[name]=para_1 |
 
 装备通用字段：name+level 联合定位；dmg/CD 为单发伤害/冷却；dmgtype 见 combat；unlock 为通关条件（不把空白含义擅自补齐，见 U-004）；res_x 与 cost_x 配对表示**升到该行等级**的资源及数量。

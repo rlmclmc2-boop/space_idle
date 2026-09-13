@@ -6,6 +6,11 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon"]
 const SAVE_PATH := "user://progress.json"
+const FURNACE := "超时空炼铁炉"
+const ENERGY_FOCUS := "正电子聚焦装置"
+const DENSE_ARMOUR := "简并态装甲"
+const HIGHTECH_SLOTS_PER_PAGE := 3
+const HIGHTECH_MIN_SLOTS := 6
 var db: ShipDatabase
 var profile: Dictionary
 var state: State = State.MAIN_MENU
@@ -31,6 +36,9 @@ var retreat_target := 0.0
 var retreat_elapsed := 0.0
 var retreat_boss_pending := false
 var rng := RandomNumberGenerator.new()
+var hightech_save_elapsed := 0.0
+var resource_samples: Array[Dictionary] = []
+var offline_rewards: Dictionary = {}
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
@@ -39,10 +47,12 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	profile = fresh_profile()
 	if persist:
 		load_progress()
+		advance_hightech(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
+		save_progress()
 	reset_player()
 
 func fresh_profile() -> Dictionary:
-	return {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "levels":{"armour":1,"shield":1,"laser":1,"missile":1,"cannon":1}, "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false}
+	return {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "levels":{"armour":1,"shield":1,"laser":1,"missile":1,"cannon":1}, "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "hightechLevels":{}, "hightechResearch":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0}
 
 func load_progress() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
@@ -72,6 +82,54 @@ func load_progress() -> void:
 	var selected = raw.get("loopLevel", 0)
 	profile.loopLevel = int(selected) if (selected is int or selected is float) and profile.cleared.has(int(selected)) else 0
 	profile.loop = profile.loop and int(profile.loopLevel) > 0
+	load_hightech(raw)
+	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
+
+func settle_offline_resources(raw: Dictionary, now: float) -> void:
+	offline_rewards.clear()
+	if not nonnegative_number(raw.get("offlineSavedAt")) or not raw.get("offlineRates") is Dictionary:
+		return
+	var seconds := clampf(floorf(now) - float(raw.offlineSavedAt), 0, float(db.config.get("offlineMax", 0)) * 3600.0)
+	for id in profile.resources:
+		var rate = raw.offlineRates.get(id, 0)
+		if not nonnegative_number(rate):
+			continue
+		var amount := ceilf(float(rate) * seconds)
+		if is_finite(amount) and amount > 0:
+			profile.resources[id] += amount
+			offline_rewards[id] = amount
+
+func nonnegative_number(value) -> bool:
+	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
+
+func load_hightech(raw: Dictionary) -> void:
+	if raw.get("hightechOrder") is Array:
+		profile.hightechOrder = raw.hightechOrder.filter(func(key):return key is String)
+	for field in ["hightechSavedAt", "furnaceElapsed"]:
+		if nonnegative_number(raw.get(field)):
+			profile[field] = float(raw[field])
+	if raw.get("hightechLevels") is Dictionary:
+		for key in db.data.get("hightech", {}):
+			var value = raw.hightechLevels.get(key, 0)
+			if nonnegative_number(value) and float(value) == floorf(float(value)):
+				profile.hightechLevels[key] = int(value)
+	if raw.get("hightechResearch") is Dictionary:
+		# Preserve already-started work if the configured concurrency is later reduced.
+		for key in raw.hightechResearch:
+			var job = raw.hightechResearch[key]
+			if db.data.get("hightech", {}).has(key) and job is Dictionary and nonnegative_number(job.get("remaining")) and nonnegative_number(job.get("duration")) and float(job.remaining) <= float(job.duration):
+				profile.hightechResearch[key] = {"remaining":float(job.remaining), "duration":float(job.duration), "active":job.get("active", true) == true}
+	if raw.get("resourceSamples") is Array:
+		for sample in raw.resourceSamples:
+			if sample is Dictionary and nonnegative_number(sample.get("time")) and nonnegative_number(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
+				# Legacy samples have no reliable source; keep totals but exclude them
+				# from furnace input until this short rolling window expires.
+				resource_samples.append({"time":float(sample.time), "amount":float(sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
+	if raw.get("hightechDrops") is Array:
+		for drop in raw.hightechDrops:
+			if drop is Dictionary and nonnegative_number(drop.get("age")) and float(drop.age) < 10 and nonnegative_number(drop.get("amount")) and nonnegative_number(drop.get("x")) and nonnegative_number(drop.get("y")):
+				uid += 1
+				drops.append({"uid":uid,"x":clampf(float(drop.x),80,1300),"y":clampf(float(drop.y),285,520),"age":float(drop.age),"id":"1","amount":ceilf(float(drop.amount)),"hightech":true})
 
 func rebuild_unlocks() -> void:
 	profile.highestLevel = 1
@@ -85,6 +143,14 @@ func rebuild_unlocks() -> void:
 func save_progress() -> void:
 	if not save_enabled:
 		return
+	profile.hightechSavedAt = Time.get_unix_time_from_system()
+	prune_resource_samples(float(profile.hightechSavedAt))
+	profile.resourceSamples = resource_samples
+	profile.offlineSavedAt = floorf(float(profile.hightechSavedAt))
+	profile.offlineRates = {}
+	for id in profile.resources:
+		profile.offlineRates[id] = resource_minute_total(id, float(profile.hightechSavedAt)) / 60.0
+	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
 	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
 	if file == null:
 		event.emit("save_error", {})
@@ -96,8 +162,185 @@ func save_progress() -> void:
 		event.emit("save_error", {})
 
 func stat(key: String) -> float:
-	var row := db.equip(key, int(profile.levels[key]))
-	return float(row.para1 if key in ["armour", "shield"] else row.dmg)
+	return equipment_stat(key, int(profile.levels[key]))
+
+func equipment_stat(key: String, level: int) -> float:
+	var row := db.equip(key, level)
+	var value := float(row.para1 if key in ["armour", "shield"] else row.dmg)
+	var tech := DENSE_ARMOUR if key == "armour" else ENERGY_FOCUS if key != "shield" and int(row.dmgtype) == 1 else ""
+	if hightech_level(tech) > 0:
+		value = ceilf(value * (1.0 + float(db.data.hightech[tech].para1) * hightech_level(tech)))
+	return value
+
+func hightech_level(key: String) -> int:
+	return int(profile.get("hightechLevels", {}).get(key, 0))
+
+func hightech_unlocked(key: String) -> bool:
+	if not db.data.get("hightech", {}).has(key):
+		return false
+	var gate := int(db.data.hightech[key].unlock)
+	return gate == 0 or profile.cleared.has(gate)
+
+func hightech_slots() -> Array:
+	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
+	# Keep an empty slot available and grow by complete visible pages.
+	var count := maxi(HIGHTECH_MIN_SLOTS, int(ceilf(float(unlocked.size()+1)/HIGHTECH_SLOTS_PER_PAGE))*HIGHTECH_SLOTS_PER_PAGE)
+	var slots: Array = []
+	slots.resize(count)
+	slots.fill("")
+	var stored: Array = profile.get("hightechOrder", [])
+	for i in range(mini(stored.size(),count)):
+		if unlocked.has(stored[i]) and not slots.has(stored[i]):
+			slots[i] = stored[i]
+	# New unlocks fill vacancies without shifting the player's existing cards.
+	for key in unlocked:
+		if not slots.has(key):
+			slots[slots.find("")] = key
+	profile.hightechOrder = slots
+	return slots
+
+func swap_hightech_slots(source: int, target: int) -> bool:
+	var slots := hightech_slots()
+	if source < 0 or target < 0 or source >= slots.size() or target >= slots.size() or source == target or slots[source] == "":
+		return false
+	var key = slots[source]
+	slots[source] = slots[target]
+	slots[target] = key
+	save_progress()
+	return true
+
+func hightech_duration(key: String) -> float:
+	var row: Dictionary = db.data.hightech[key]
+	# D2 gives a linear series: 10, 12, 14, ...; target level is current + 1.
+	return roundf(float(row.timeCostBase) * (1.0 + float(row.timeCostMutiple) * hightech_level(key)))
+
+func description_number(value: float) -> String:
+	return ("%.8f" % value).rstrip("0").trim_suffix(".") if value != roundf(value) else str(int(value))
+
+func hightech_description(key: String, now := -1.0) -> String:
+	var row: Dictionary = db.data.hightech[key]
+	var result := str(row.get("description", ""))
+	var tokens := RegEx.new()
+	tokens.compile("para[0-9]+")
+	var matches := tokens.search_all(result)
+	matches.reverse()
+	for token in matches:
+		var value = row.get(token.get_string())
+		var replacement := description_number(float(value)) if nonnegative_number(value) else "？"
+		result = result.substr(0,token.get_start()) + replacement + result.substr(token.get_end())
+	var braces := RegEx.new()
+	braces.compile("\\{([^{}]+)\\}")
+	matches = braces.search_all(result)
+	matches.reverse()
+	var allowed := RegEx.new()
+	allowed.compile("^[0-9. +*/()\\-]+$")
+	var numbers := RegEx.new()
+	numbers.compile("[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+")
+	for block in matches:
+		var parts := block.get_string(1).replace("，",",").split(",")
+		var options: Array = Array(parts).slice(1).map(func(option):return str(option).strip_edges())
+		var formula := str(parts[0]).replace("过去一分钟的铁生成量",description_number(resource_minute_total("1",now,key==FURNACE or options.has("不含自身")))).replace("等级",str(hightech_level(key))).replace("（","(").replace("）",")")
+		var replacement := "？"
+		var expression := Expression.new()
+		# Expression otherwise uses integer division for literals such as 1/2.
+		var literals := numbers.search_all(formula)
+		literals.reverse()
+		for literal in literals:
+			if not literal.get_string().contains("."):
+				formula = formula.substr(0,literal.get_end()) + ".0" + formula.substr(literal.get_end())
+		if allowed.search(formula) != null and options.all(func(option):return option in ["向上取整","不含自身"]) and expression.parse(formula) == OK:
+			var value = expression.execute([],null,false,true)
+			if not expression.has_execute_failed() and (value is int or value is float) and is_finite(float(value)):
+				replacement = description_number(ceilf(float(value)) if options.has("向上取整") else float(value))
+		result = result.substr(0,block.get_start()) + replacement + result.substr(block.get_end())
+	return result
+
+func can_research(key: String) -> bool:
+	return hightech_unlocked(key) and not active_research().has(key) and int(db.config.get("hightechLimit", 0)) > 0
+
+func active_research() -> Array:
+	return profile.hightechResearch.keys().filter(func(key):return profile.hightechResearch[key].get("active", true))
+
+func research(key: String, replace_key := "") -> bool:
+	if not can_research(key):
+		return false
+	var active := active_research()
+	if active.size() >= int(db.config.hightechLimit):
+		if replace_key.is_empty() and active.size() == 1:
+			replace_key = str(active[0])
+		if not active.has(replace_key):
+			return false
+		profile.hightechResearch[replace_key].active = false
+	if not profile.hightechResearch.has(key):
+		var duration := hightech_duration(key)
+		profile.hightechResearch[key] = {"remaining":duration,"duration":duration}
+	profile.hightechResearch[key].active = true
+	save_progress()
+	event.emit("research", {"key":key})
+	return true
+
+func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
+	if real_dt < 0:
+		real_dt = dt
+	if end_time < 0:
+		end_time = Time.get_unix_time_from_system()
+	var wall_per_step := real_dt / dt if dt > 0 else 1.0
+	# Split at completion boundaries, so a newly completed furnace only runs afterward.
+	var remaining := dt
+	while true:
+		var step := remaining
+		for key in active_research():
+			var job: Dictionary = profile.hightechResearch[key]
+			step = minf(step, float(job.remaining))
+		advance_furnace(step, end_time - (remaining - step) * wall_per_step, wall_per_step)
+		remaining -= step
+		for key in active_research():
+			var job: Dictionary = profile.hightechResearch[key]
+			job.remaining = maxf(0, float(job.remaining) - step)
+			if job.remaining <= 0:
+				profile.hightechLevels[key] = hightech_level(key) + 1
+				job.duration = hightech_duration(key)
+				job.remaining = job.duration
+				# Armour research changes the maximum only; do not heal current armour.
+				event.emit("hightech_complete", {"key":key})
+		if remaining <= 0:
+			break
+
+func prune_resource_samples(now: float) -> void:
+	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
+
+func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> float:
+	if now < 0:
+		now = Time.get_unix_time_from_system()
+	var total := 0.0
+	for sample in resource_samples:
+		if exclude_furnace and sample.get("origin", "drop") != "drop":
+			continue
+		if sample.id == id and float(sample.time) > now - 60.0 and float(sample.time) <= now:
+			total += float(sample.amount)
+	return total
+
+func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
+	for drop in drops.duplicate():
+		if drop.get("hightech", false):
+			drop.age += dt
+			if float(drop.age) >= 10.0:
+				drops.erase(drop)
+	if hightech_level(FURNACE) > 0 and db.data.get("hightech", {}).has(FURNACE):
+		var row: Dictionary = db.data.hightech[FURNACE]
+		var interval := float(row.para1)
+		var elapsed := float(profile.furnaceElapsed) + dt
+		var count := floorf(elapsed / interval)
+		profile.furnaceElapsed = fposmod(elapsed, interval)
+		# Skip expired offline blocks, with work bounded by the 10-second visible window.
+		var visible := mini(int(count), int(ceilf(10.0 / interval)))
+		for i in range(visible):
+			var age := float(profile.furnaceElapsed) + i * interval
+			if age >= 10.0:
+				break
+			uid += 1
+			var amount := ceilf(resource_minute_total("1", end_time - age * wall_per_step, true) * float(row.para2) * hightech_level(FURNACE))
+			drops.append({"uid":uid,"x":rng.randf_range(440,1220),"y":rng.randf_range(300,505),"age":age,"id":"1","amount":amount,"hightech":true})
 
 func max_shield() -> float:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
@@ -107,6 +350,12 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if next == State.TRAVEL:
+		cooldowns.clear()
+		for key in profile.unlocked:
+			var cd := float(db.equip(key,int(profile.levels[key])).cd)
+			if cd > 0:
+				cooldowns[key] = cd
 	state = next
 	event.emit("state", {"state":state})
 
@@ -215,9 +464,24 @@ func targets() -> Array[Dictionary]:
 func reduced_damage(raw: float, type: int, resistance: int) -> float:
 	return maxf(1, ceilf(raw * (1.0 - float(db.config.dmgReduce) if type == resistance else 1.0)))
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String) -> void:
+func enemy_weapon_offset(enemy: Dictionary, equipment_index: int) -> Vector2:
+	var key: String = enemy.equipment[equipment_index].name
+	var count := 0
+	var ordinal := 0
+	for i in range(enemy.equipment.size()):
+		if enemy.equipment[i].name == key:
+			if i < equipment_index:
+				ordinal += 1
+			count += 1
+	if count <= 1:
+		return Vector2.ZERO
+	# Spread identical mounts across the visible hull, including its wings.
+	var half_span := 39.0 * (1.4 if enemy.boss else 0.53)
+	return Vector2(0, lerpf(-half_span, half_span, float(ordinal) / float(count - 1)))
+
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
-	projectiles.append({"x":float(source.x) + (-45 if hostile else 70),"y":float(source.y), "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
+	projectiles.append({"x":float(source.x) + (-45 if hostile else 70) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
 	shot.direction = Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	event.emit("fire", {"x":source.x,"y":source.y,"type":int(weapon.dmgtype)})
@@ -280,6 +544,8 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int) -> void:
 	enemy.hp = maxf(0, enemy.hp - amount)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type})
 	if enemy.hp <= 0:
+		if enemy.boss:
+			projectiles.clear()
 		event.emit("explode", enemy)
 		for drop in enemy.drops:
 			if rng.randf() < float(drop.chance):
@@ -289,10 +555,13 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int) -> void:
 func collect(drop: Dictionary, manual: bool) -> void:
 	if not drops.has(drop):
 		return
+	if drop.get("hightech", false) and not manual:
+		return
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount := ceilf(float(drop.amount) * (1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	profile.resources[drop.id] += amount
+	resource_samples.append({"time":Time.get_unix_time_from_system(),"id":str(drop.id),"amount":amount,"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	run_resources[drop.id] += amount
 	var info := drop.duplicate()
 	info.amount = amount
@@ -304,10 +573,12 @@ func settle_drops() -> void:
 	for drop in drops.duplicate():
 		collect(drop, false)
 
-func collect_near(pos: Vector2) -> void:
+func collect_near(pos: Vector2, clicked := false) -> void:
 	if paused:
 		return
 	for drop in drops.duplicate():
+		if drop.get("hightech", false) and not clicked:
+			continue
 		if Vector2(drop.x, drop.y).distance_to(pos) < 55:
 			collect(drop, true)
 
@@ -371,7 +642,14 @@ func leave(next: State) -> void:
 func tick(dt: float) -> void:
 	if paused:
 		return
+	advance_hightech(dt, dt / maxf(speed, 0.001))
+	hightech_save_elapsed += dt / maxf(speed, 0.001)
+	if hightech_save_elapsed >= 5.0:
+		hightech_save_elapsed = 0
+		save_progress()
 	for drop in drops.duplicate():
+		if drop.get("hightech", false):
+			continue
 		drop.age += dt
 		if drop.age >= float(db.defaults.autoCollectDelay):
 			collect(drop, false)
@@ -435,7 +713,7 @@ func tick(dt: float) -> void:
 				var entry: Dictionary = enemy.equipment[i]
 				var weapon := db.enemy_weapon(entry.name, int(entry.level))
 				var raw := ceilf(float(weapon.dmg) * float(enemy.dmgMultiple) * ratio("atkRatio"))
-				fire(enemy, player, weapon, raw, true, entry.name)
+				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
 				enemy.cooldowns[i] = float(weapon.cd)
 	tick_projectiles(dt)
 	if state == State.COMBAT and targets().is_empty():
@@ -463,6 +741,9 @@ func tick_projectiles(dt: float) -> void:
 					hit_player(shot.damage, shot.type)
 				else:
 					hit_enemy(shot.target, shot.damage, shot.type)
+					# Boss death clears the live array; do not process its stale snapshot.
+					if projectiles.is_empty():
+						return
 				continue
 		var move: Vector2 = shot.direction * float(shot.speed) * dt
 		shot.x += move.x

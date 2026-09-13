@@ -1,5 +1,59 @@
 # 验证与证据
 
+## 2026-09-14 炼铁炉排除自身收益与描述同步
+
+- `test/run.py test_furnace_income.gd` 在 `../../test/work/test_furnace_income-vyqeqkhx/` 12项通过：普通手动/自动损耗后收入、炉子来源标记、总收入与炉子基数分离、连续三轮领取不放大、最新“不含自身”描述结果、存档来源保留、60秒边界及其他资源排除、旧档未知来源样本处理。
+- 直接影响回归：`test_hightech.gd` 在 `../../test/work/test_hightech-hhpifwm4/` 40项通过；`test_hightech_continuous.gd` 在 `../../test/work/test_hightech_continuous-0ict183b/` 18项通过；`test_config_workbooks.py` 在 `../../test/work/test_config_workbooks-121p_ka2/` 14项通过。机制夹具明确固定 para2，避免把同期数值编辑混入机制期望。Godot 编辑器/有图形执行及Python测试均退出0，日志仅既有根证书提示。
+- 核对总表和已更新分表：description 新增 `不含自身`，para2 同期改为0.25；使用现有转换/校验同步运行 hightech 段，未覆盖其他运行段或正式存档。具体口径及旧档窗口兼容见 modules/progression.md。
+
+## 2026-09-14 高科技动态描述与连续研发
+
+- `test/run.py test_hightech_continuous.gd` 最终隔离目录 `../../test/work/test_hightech_continuous-hawinqe6/`：18项通过，编辑器导入/图形执行退出0。覆盖切换冻结/切回续研、多等级连续推进、暂停、离线跨级和暂停项不推进、存档恢复、多名额显式替换、description 参数/实时收入/等级/取整/括号与小数、非法表达式、真实UI切换与无重建动态刷新。补测发现表达式整数字面量除法问题，转为浮点字面量后 `{1/2}` 正确显示0.5。
+- 已查看 `hightech-continuous.png`：三项 description 为计算后的文本，无 para/花括号原文；“切换研发 / 继续研发 / 连续研发中”状态及剩余秒数清楚，卡片/滚动区布局正常。
+- `test/run.py test_config_workbooks.py` 在 `../../test/work/test_config_workbooks-ha_cakkv/` 14项通过；覆盖新的 description 引用/语法校验、错误时保留旧JSON与缓存，原增量/全表一致与回滚测试通过。测试坐标随源表新增C列调整，运行转换继续按字段名读取。
+- 直接影响回归：`test_hightech.gd` 在 `../../test/work/test_hightech-nngb3146/` 40项通过；`test_hightech_slots.gd` 在 `../../test/work/test_hightech_slots-zktya57y/` 29项通过。旧“完成释放名额/不能切换/des显示”断言按用户新规则更新；所有图形/导入退出0，无脚本错误，仅既有根证书提示。
+- 仅从总表同步 hightech 分表及运行 hightech 投影，其他运行段保持原值；测试在 test/work 隔离副本及独立存档运行，未访问正式玩家存档。
+
+## 2026-09-14 高科技卡槽换位
+
+- `test/run.py test_hightech_slots.gd`：最终隔离目录 `../../test/work/test_hightech_slots-jea5ulqk/`，编辑器导入及有图形执行退出0，29项全部通过。覆盖未解锁隐藏/单项解锁、6个匿名空槽、后续10项扩展至12槽、真实按下/移动/松开事件驱动原生拖拽、预览/目标高亮、双向交换、按钮落点不研发、区域外取消、边缘自动滚动、移入空槽、保留页签与滚动、拖拽期间延后重建、实际隔离存档往返、非法索引/重复/失效配置处理及研发归属不变。
+- 输入测试使用独立 SubViewport 接收鼠标事件并走原生拖放回调；早期直接向桌面 Window 注入事件时，测试环境系统指针不在窗口内，导致命中验证失败，已改为隔离视口坐标。没有把直接调用换位函数当作拖拽验收。
+- 已检查 `hightech-one-unlocked.png`、`hightech-drag-preview.png`、`hightech-empty-slot-drop.png`：隐藏项不泄漏名称；卡槽/描述/按钮无纵向重叠；拖拽预览与青色目标框清晰；松手后卡片固定在扩展槽内，滚动位置保留。
+- 直接影响回归 `test/run.py test_hightech.gd` 在 `../../test/work/test_hightech-9a3jquci/` 40项全部通过、编辑器及图形退出0。两组日志只有既有根证书提示，无脚本错误；本次未修改Excel/运行JSON/正式玩家存档，未运行无关战斗测试。
+
+## 2026-09-14 高科技
+
+- 捆绑 Python 执行 `test/run.py test_hightech.gd`，最终隔离目录 `../../test/work/test_hightech-wo0g5lzm/`；编辑器导入和有图形专项退出0，40项通过。覆盖0级/解锁、配置并发限制及改为2、线性耗时、无装备等级上限、暂停与模拟增量、能量类型判定/向上取整、装甲仅增上限、同源一分钟铁入账、点击/禁止悬停及自动结算、10秒过期、长离线跳过过期生成、真实存档往返、旧档兼容、离线1倍及 offlineMax 非默认/零/四小时上限、真实页签/按钮/描述精度与布局。
+- 已查看最终 `space-battleship/hightech.png`：三项卡片完整、炼铁炉长描述正确换行、研发倒计时/占满状态清楚，橙色铁块、数量和“点击领取”提示可见。首轮发现描述越界，调整换行设置顺序后重跑本专项并验图。
+- `test/run.py test_config_workbooks.py`：`../../test/work/test_config_workbooks-sqwzcldm/`，12项通过；包括 hightech 全表/分表投影一致、仅更新高科技时其余段不变、重复名称/无效周期/并发数/离线时长拒绝且保留旧JSON与缓存，原增量/回滚测试均通过。
+- 直接影响回归：`test_resource_display.gd` 在 `../../test/work/test_resource_display-psnbrch0/` 9项通过；`test_equipment_tabs.gd` 在 `../../test/work/test_equipment_tabs-u24v3xpi/` 8项通过，均编辑器扫描及图形执行退出0。日志只有既有根证书提示，无脚本错误。未扩大到无关完整战斗模拟。
+- 正式运行 JSON 仅按现有转换函数接入 hightech 与相关 config 键，源表/分表已只读核对；没有用测试结果覆盖其他运行数据，未访问正式玩家存档。规则来源与用户澄清见 modules/progression.md。
+
+## 2026-09-14 BOSS死亡清弹
+
+- 捆绑 Python 执行 `test/run.py test_boss_projectile_clear.gd`，隔离目录 `../../test/work/test_boss_projectile_clear-vf9czs4_/`；编辑器导入及图形专项退出0，8项检查全部通过。
+- 覆盖弹体击杀BOSS、三种武器敌我弹体全部清空、同帧后续致命敌弹不再结算、通关记录/状态、重复伤害不重复掉落、等待后正常进入下一关、普通敌舰死亡保留弹体及直接伤害击杀BOSS立即清弹。旧 test_game 仅移除被新指令替代的BOSS残弹保留分支，普通波次分支保留；未运行无关完整模拟。
+- 已查看 `space-battleship/boss-before.png` 与 `boss-after.png`：死亡前舰船及弹体可见，死亡后BOSS和弹体消失、玩家保持1生命并显示解锁弹窗。日志 import.log/test.log 无脚本错误，仅既有 Windows 根证书提示。未修改正式配置与玩家存档。
+
+## 2026-09-14 前进重置冷却
+
+- 用户纠正后更新实现及断言；隔离副本 `../test/work/travel-cooldowns/` 与独立 APPDATA/LOCALAPPDATA 运行 `../test/test_travel_cooldowns.gd`，22项断言通过、退出0：暂停保留、波次结束恢复完整CD、三种武器下次遭遇不会立即发射、前进不倒计时、完整间隔前不发射/到时发射、后退完成及开局恢复完整CD。
+- 日志 test.log/test.err 仅既有根证书提示，无测试脚本错误；未运行无关完整模拟/图形QA，未使用玩家存档。
+
+## 2026-09-14 重复武器发射位置
+
+- 使用捆绑 Python 执行 `test/run.py test_enemy_weapon_positions.gd`，隔离目录 `../../test/work/test_enemy_weapon_positions-qg9karbi/`；编辑器导入与有图形专项退出0，185项断言全部通过。
+- 覆盖普通舰/BOSS、1/2/3/6个同名武器及激光/火炮交错配置：实际 tick 发射数量、对称等距位置、单个居中、实际起点瞄准、冷却/伤害保持及玩家起点不变。未运行无关测试。
+- 补充视觉验收：`test/run.py capture_enemy_weapon_positions.gd` 在 `../../test/work/capture_enemy_weapon_positions-z1neryii/` 隔离运行，导入与截图退出0。逐张查看 `space-battleship/mounts-{laser,cannon,missile}_mon-{origin,flight}.png` 六张真实渲染图：左列普通舰、右列BOSS，从上到下2/3/6个同名武器；起点上下均匀展开，飞行0.08秒后仍可辨识分离，三种弹体朝向正确。普通舰六枚导弹间距较紧但仍分离，外侧起点偏出舰缘，符合用户允许偏移。无需修改游戏实现。
+- 截图夹具首轮缺少 targets 排序所需 size 字段，补齐后重跑；以上最终目录日志无脚本错误，仅既有根证书提示。未重复已通过的185项数值测试。
+- 日志 import.log、test.log 仅既有 Windows 根证书提示，无脚本错误；未改写正式 Excel、运行 JSON 或玩家存档。
+
+## 2026-09-14 装备页签
+
+- 必要脚本/data/assets/场景复制至 `../test/work/equipment-tabs/`，APPDATA/LOCALAPPDATA 隔离；编辑器资源扫描退出0。
+- `../test/test_equipment_tabs.gd` 图形专项8项全部通过：首个武器页、起始装备保留、防御隐藏/切换显示、升级实际生效、升级后保持所选页、全部装备跨页保留及页签不越过页脚。
+- 已检查 tabs-weapons.png / tabs-defence.png；修正冷却条高度遮挡后最终武器页图标、费用、升级按钮清晰。日志 scan.log/scan.err、test.log/test.err 仅既有根证书提示，无脚本错误；未运行无关战斗或配置测试。
+
 ## 2026-09-14 QA 删除存档
 
 - 在 ../startup-verification/game 项目副本及 delete-save-user 隔离用户目录运行 ../test/test_delete_save.gd，7项全部通过、退出0：完整初始进度、第一关、QA实例保留、QA设置保留、旧存档不回写、新进度可保存且普通重启保留、无存档也可重开。正式玩家存档未删除。
@@ -36,6 +90,23 @@
 测试解释：test_game 在内存覆盖部分武器伤害/CD/成本作为机制基准，数据文件保持不变；其“uses Excel”断言名不代表检查真实源表值。10关通关使用强化装备，尚未验证真实初始数值平衡，见 U-013。更早失败已由外部测试更新解决，不作为当前阻塞。
 
 ## 后续任务命令
+
+### 2026-09-14 离线资源收益
+
+- 总表及分表 config!A10:C10 核对 offlineMax 单位为小时；运行投影接入该字段。test_offline_config.py：7项通过，覆盖表/JSON字段一致、零/小数小时、拒绝负数/文本/无限值。产物：test/work/test_offline_config-_du3trig。
+- test_offline_resources.gd：11项通过，覆盖分资源速率、最终取整、4小时及非默认上限、零上限、时钟倒退、旧档、异常速率、存档速率与重复加载不重复领取。最新产物：test/work/test_offline_resources-amd12rrr。
+- 同期统计/UI代码更新后运行 test_resource_display.gd：9项通过，无脚本错误；产物：test/work/test_resource_display-joap7lkg。初次UI运行遇到同期高科技描述格式错误，最新源码已修正后复验通过；不更改其玩法。
+- 均由 test/run.py 隔离副本与用户目录执行，Godot 4.7.2 编辑器导入、测试退出0；存在既有根证书提示。未读写正式玩家存档，未修改Excel源文件，未跑无关完整模拟。离线提示复用现有 toast，未额外进行该提示截图验收。
+
+### 2026-09-14 测试产物权限修复
+
+- 用户授权后，仅为 test/work/test_resource_display-kba6xqg5 及子项启用权限继承：125项成功、0失败。view_image 已成功读取原 resource-rate.png，补完顶部“铝”的视觉核查。
+- test/run.py 在 Windows 的 mkdtemp 后执行带失败检查的 icacls /inheritance:e，再创建子项。Python AST检查通过；test/work/acl-check-_1hkn_cr 使用相同创建/继承流程，子文件继承访问权限。未运行无关游戏测试或修改正式存档权限。
+
+### 2026-09-14 资源名称同步
+
+- 复用 `test/run.py test_resource_display.gd` 隔离运行，编辑器导入与图形测试退出0，9项通过；当前运行 JSON resources 为铁/铝。静态确认顶部直接复用同一资源名映射，掉落/拾取/升级原已使用该映射。
+- 产物：`../../test/work/test_resource_display-kba6xqg5/` 下 import.log、test.log；截图读取被文件权限拒绝，未完成截图视觉核查。未修改 Excel、运行 JSON 或玩家存档；仍有既有Windows根证书提示。
 
 ### 2026-09-14 弹体缩小
 

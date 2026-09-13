@@ -1,15 +1,17 @@
 """Excel projection and validation shared by full and incremental imports."""
 import argparse
+import ast
 import copy
 import json
 import math
 import os
 import pathlib
+import re
 import sys
 import openpyxl
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "hightech":"hightech"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row at the requested level.","enemyCannonMissingDamageAndCooldown":"Use player cannon row at the requested level."}
 
@@ -24,6 +26,14 @@ def read_rows(sheet):
     return [dict(zip(header,row)) for row in values if row[0] is not None]
 
 def convert_sheet(name, rows):
+    if name=="hightech":
+        result={}
+        for row in rows:
+            key=row.get("name")
+            if not isinstance(key,str) or not key.strip() or key in result:
+                raise ValueError("hightech：名称必须非空且不能重复")
+            result[key]=row
+        return result
     if name=="equipment":
         result={}
         for row in rows:
@@ -66,6 +76,31 @@ def positive(value, label, allow_zero=False):
     if not isinstance(value, (int,float)) or not math.isfinite(value) or value < 0 or (value == 0 and not allow_zero):
         raise ValueError(f'{label}: expected {"nonnegative" if allow_zero else "positive"} number, got {value!r}')
 
+def validate_description(row):
+    description=row.get('description')
+    label=f'hightech {row["name"]} description'
+    if not isinstance(description,str) or not description.strip():
+        raise ValueError(f'{label}: must not be empty')
+    for token in re.findall(r'para\d+', description):
+        positive(row.get(token),f'{label} {token}',True)
+    blocks=re.findall(r'\{([^{}]+)\}',description)
+    if '{' in re.sub(r'\{[^{}]+\}','',description) or '}' in re.sub(r'\{[^{}]+\}','',description):
+        raise ValueError(f'{label}: invalid braces')
+    for block in blocks:
+        parts=block.replace('，',',').split(',')
+        if any(option.strip() not in ('向上取整','不含自身') for option in parts[1:]):
+            raise ValueError(f'{label}: unknown rounding instruction')
+        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('（','(').replace('）',')')
+        if not re.fullmatch(r'[0-9. +*/()\-]+',formula):
+            raise ValueError(f'{label}: only numeric arithmetic is supported')
+        try:
+            tree=ast.parse(formula.strip(),mode='eval')
+        except SyntaxError as error:
+            raise ValueError(f'{label}: invalid expression') from error
+        for node in ast.walk(tree):
+            if not isinstance(node,(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.UAdd,ast.USub,ast.Constant)) or (isinstance(node,ast.Constant) and (type(node.value) not in (int,float) or not math.isfinite(node.value))):
+                raise ValueError(f'{label}: only numeric arithmetic is supported')
+
 
 def validate_projection(data):
     equipment=data["equipment"]
@@ -107,6 +142,29 @@ def validate_projection(data):
         if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(f'{key} must be between 0 (inclusive) and 1 (exclusive)')
     positive(config['movement'],'movement')
     positive(config['backRange'],'backRange',True)
+    positive(config.get('offlineMax'),'offlineMax (hours)',True)
+    limit=config.get('hightechLimit')
+    positive(limit,'hightechLimit')
+    if isinstance(limit,bool) or limit != int(limit):
+        raise ValueError('hightechLimit: expected positive integer')
+    for key,row in data['hightech'].items():
+        validate_description(row)
+        if not isinstance(row.get('des'),str) or not row['des'].strip():
+            raise ValueError(f'hightech {key}: des must not be empty')
+        positive(row.get('timeCostBase'),f'hightech {key} timeCostBase')
+        if math.floor(row['timeCostBase']+0.5)<1:
+            raise ValueError(f'hightech {key}: rounded research duration must be positive')
+        positive(row.get('timeCostMutiple'),f'hightech {key} timeCostMutiple',True)
+        unlock=row.get('unlock')
+        positive(unlock,f'hightech {key} unlock',True)
+        if unlock != int(unlock) or unlock > len(levels):
+            raise ValueError(f'hightech {key}: unlock must reference a level or be zero')
+        positive(row.get('para1'),f'hightech {key} para1',True)
+        if row.get('para2') is not None:
+            positive(row['para2'],f'hightech {key} para2',True)
+        if key == '超时空炼铁炉':
+            positive(row.get('para1'),f'hightech {key} interval')
+            positive(row.get('para2'),f'hightech {key} para2',True)
 
     data["defaults"]["maxEquipmentLevel"]=max(len(equipment[key]) for key in ("armour","shield","laser","missile","cannon"))
 

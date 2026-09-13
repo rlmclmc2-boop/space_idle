@@ -1,9 +1,21 @@
 # Current Status
 
 Goal:
-整理主目录、集中测试文件并迁移游戏启动入口；保留同期玩法和 QA 修改。
+完成炼铁炉60秒基数排除自身收益，并同步最新 description；保留顶部总收入与既有研发行为。
 
 Done:
+- 2026-09-14：炼铁炉生成与预计产量均排除自身入账，来源随样本保存；顶部每秒/总收入仍包含全部实际拾取。接入 description 的“不含自身”修饰并同步最新高科技表（含 para2=0.25）。专项12项、高科技40项、连续研发18项、配置14项全部通过；见 VALIDATION 炼铁炉排除自身收益与描述同步。
+- 2026-09-14：高科技界面改读 description，paraN 与花括号四则表达式动态替换，支持当前等级/一分钟铁量及向上取整。完成后自动研发下一级，切换保留暂停项进度，在线/离线仅推进活动项；已兼容原存档及并发配置。连续专项18项、配置14项、高科技40项、卡槽29项通过，已检查截图；见 VALIDATION 高科技动态描述与连续研发。
+- 2026-09-14：高科技隐藏未解锁项，预留6个固定槽并按整页扩展；拖标题到卡片交换、拖到空槽移入、区域外取消，支持预览/高亮和边缘滚动。顺序及空位自动保存，新解锁填空位；重建保留页签/滚动且不打断拖拽。卡槽29项与原高科技40项全部通过，已检查三张截图；见 VALIDATION 高科技卡槽换位。
+- 2026-09-14：新增“高科技”页签，描述来自 hightech.des；接入三项效果、0级无上限研发、hightechLimit 并发限制、暂停/倍速及按 offlineMax（小时）限制的离线1倍推进。炼铁炉复用每秒统计原始值×60、点击领取/10秒消失；简并态装甲只增上限不补当前装甲。高科技40项、配置12项、资源显示9项、装备页签8项均通过，已验图并更新规则；见 VALIDATION 高科技。
+- 2026-09-14：离线收益自动入账并保存，复用一分钟实际收入统计及现有原子存档；上限读取表中 offlineMax（小时），旧档无记录不补发。离线11项、配置7项、资源显示9项全部通过，编辑器扫描通过；见 VALIDATION 离线资源收益。
+- 2026-09-14：BOSS死亡立即清空敌我在途弹体并停止当轮旧快照结算，普通敌舰死亡保持原行为。隔离专项8项通过，已检查死亡前后截图，确认弹体消失、通关解锁正常；下一关推进验证通过，见 VALIDATION BOSS死亡清弹。
+- 2026-09-14：补完重复武器视觉验收，逐张检查三种武器起点/飞行共六张真实截图，覆盖普通舰与BOSS的2/3/6个同名武器；上下展开可辨，舰缘偏移符合用户要求，无需追加游戏代码修改。截图脚本与证据见 VALIDATION 重复武器发射位置。
+- 2026-09-14：按用户纠正，change_state(TRAVEL) 将剩余冷却设为当前武器完整CD（发射进度归零），前进不倒计时，下次遭遇等待完整间隔。替代先前立即开火实现；专项22项通过，见 VALIDATION 前进重置冷却。
+- 2026-09-14：同船同名武器按 equipment 顺序沿舰体上下对称等距发射，普通舰/BOSS按显示尺寸展开，单个武器保持原位；复用 fire，不改数量、冷却和伤害。隔离专项185项通过，编辑器导入退出0，见 VALIDATION 重复武器发射位置。
+- 2026-09-14：下方新增“武器 / 防御”页签，首屏为武器；三种攻击装备使用34×20图标及216×112卡片，装甲/护盾保留在防御页。分类集中于 EQUIPMENT_PAGES，横向滚动支持后续扩展；升级/界面重建保留所选页签。隔离图形专项8项通过，已检查两页截图，见 VALIDATION 装备页签。
+- 2026-09-14：修复资源显示测试副本的权限继承（125项成功、0失败）；运行器新建Windows副本后自动启用继承。截图工具已能读取原截图并确认顶部“铝”；新目录继承探针与Python语法检查通过。
+- 2026-09-14：顶部两种资源名称改读 db.data.resources，去掉固定中英文名；当前运行配置为铁/铝。隔离资源显示9项通过，扫描退出0；见 VALIDATION 资源名称同步。
 - 2026-09-14：主目录可见文件仅保留太空战舰.xlsx与启动.cmd；引擎迁至项目engine，旧测试源码迁至test，产物统一test/work。清理13个旧验证副本、历史截图、审计JSON及旧测试缓存，保留独立探针与正式存档。分表8项、导入检查、QA14项及无缓存根入口启动通过，见VALIDATION目录整理验证。
 - 2026-09-14：QA 新增“删除存档”，删除 progress.json 后禁止旧场景回写并重载，恢复配置初始进度；QA 设置保留，删除失败显示错误且不重载。隔离图形专项7项通过并检查按钮布局，未删除正式存档。
 - 2026-09-14：弹体显示统一缩至原宽高65%，通过 PROJECTILE_SCALE 集中控制并保留各武器基准尺寸及原始素材。复用隔离有图形绘制检查退出0，已检查缩小后截图，无脚本错误。
@@ -34,11 +46,22 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
+0. 重启后使用最新 description 及排除自身的炼铁基数；旧档来源不明样本保留总收入显示，但不参与炉子计算，最多60秒自然过期。本次无待确认规则。
 1. 从工作区启动.cmd启动；后续测试只使用test/run.py及test/work，不在根目录生成验证副本。
 2. 日常改独立分表后直接读取配置；改总表后先显式同步。首次读取会建立缓存，后续只解析修改过的文件。
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- scripts/game.gd；tools/import_workbook.py；data/game_data.json；../test/test_furnace_income.gd；../test/test_hightech.gd；../test/test_hightech_continuous.gd；docs/modules/progression.md；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；config_excel/hightech.xlsx；data/game_data.json；../test/test_hightech_continuous.gd；../test/test_hightech.gd；../test/test_config_workbooks.py；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
+- scripts/hightech_slot.gd；scripts/main.gd；scripts/game.gd；../test/test_hightech_slots.gd；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；../test/test_hightech.gd；../test/test_config_workbooks.py；../test/test_resource_display.gd；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；data/game_data.json；tools/import_workbook.py；../test/test_offline_resources.gd；../test/test_offline_config.py；docs/modules/economy.md；docs/DATA.md
+- scripts/game.gd；../test/test_boss_projectile_clear.gd；../test/test_game.gd；docs/modules/weapons.md；docs/VALIDATION.md
+- ../test/capture_enemy_weapon_positions.gd；docs/VALIDATION.md（重复武器发射位置视觉证据）
+- scripts/game.gd；../test/test_travel_cooldowns.gd；docs/modules/weapons.md；docs/VALIDATION.md
+- scripts/game.gd；../test/test_enemy_weapon_positions.gd；docs/modules/weapons.md；docs/VALIDATION.md
+- scripts/main.gd；../test/test_equipment_tabs.gd；docs/modules/ui.md；docs/VALIDATION.md
 - ../启动.cmd；../test/；AGENTS.md；打开编辑器.cmd；docs/INVENTORY.md；docs/VALIDATION.md；tools/inspect_knowledge.py
 - scripts/config_panel.gd；../test/test_delete_save.gd；docs/modules/ui.md；docs/VALIDATION.md
 - ../启动.cmd；docs/modules/ui.md；docs/VALIDATION.md

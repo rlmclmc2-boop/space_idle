@@ -35,9 +35,22 @@ var last_sound := -1.0
 var loop_button: Button
 var loop_select: OptionButton
 var resource_rate_mode := false
-var resource_samples: Array[Dictionary] = []
+var resource_samples: Array[Dictionary]:
+	get:
+		return game.resource_samples
 var resource_mode_button: Button
 var upgrade_buttons: Dictionary = {}
+const EQUIPMENT_PAGES := [{"title":"武器","keys":["laser","cannon","missile"]},{"title":"防御","keys":["armour","shield"]}]
+var equipment_page := 0
+var equipment_tabs: TabContainer
+var equipment_cooldowns: Dictionary = {}
+var hightech_buttons: Dictionary = {}
+var hightech_descriptions: Dictionary = {}
+const HIGHTECH_SLOT_SCRIPT := preload("res://scripts/hightech_slot.gd")
+const HIGHTECH_CARD_SIZE := Vector2(443,112)
+var hightech_scroll: ScrollContainer
+var hightech_scroll_offset := 0
+var ui_rebuild_pending := false
 var automation_args := OS.get_cmdline_user_args()
 var capture_frame := 0
 
@@ -58,6 +71,12 @@ func _ready() -> void:
 	add_child(audio)
 	game.start(int(game.profile.loopLevel) if game.profile.loop else int(game.profile.highestLevel), bool(game.profile.loop))
 	build_ui()
+	if not game.offline_rewards.is_empty():
+		var rewards: PackedStringArray = []
+		for id in game.offline_rewards:
+			rewards.append("%s +%s" % [db.data.resources[id], number(game.offline_rewards[id])])
+		toast("离线收益：" + "  ".join(rewards))
+		message_time = 10.0
 	if automation_args.has("--capture"):
 		game.start(1, false)
 		game.distance = 99.8
@@ -96,9 +115,12 @@ func _notification(what: int) -> void:
 		game.save_progress()
 
 func _process(delta: float) -> void:
+	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
+		ui_rebuild_pending = false
+		build_ui()
 	var dt := minf(delta,0.1)
 	clock += dt
-	prune_resource_samples(Time.get_ticks_msec() / 1000.0)
+	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:
 		var remaining := dt*game.speed
 		while remaining > 0:
@@ -123,6 +145,23 @@ func _process(delta: float) -> void:
 		var b: Button = upgrade_buttons[key]
 		if is_instance_valid(b):
 			b.disabled = not game.can_upgrade(key)
+	for key in equipment_cooldowns:
+		var cd := float(db.equip(key,int(game.profile.levels[key])).cd)
+		equipment_cooldowns[key].size.x = 196*clampf(1.0-float(game.cooldowns.get(key,0))/maxf(cd,0.001),0,1)
+	for key in hightech_buttons:
+		var b: Button = hightech_buttons[key]
+		b.disabled = not game.can_research(key)
+		b.text = hightech_button_text(key)
+	for key in hightech_descriptions:
+		hightech_descriptions[key].text = game.hightech_description(key)
+		hightech_descriptions[key].tooltip_text = hightech_descriptions[key].text
+	if is_instance_valid(hightech_scroll) and hightech_scroll.is_visible_in_tree() and get_viewport().gui_is_dragging():
+		var mouse := hightech_scroll.get_local_mouse_position()
+		if mouse.y >= 0 and mouse.y <= hightech_scroll.size.y:
+			if mouse.x >= hightech_scroll.size.x-36 and mouse.x <= hightech_scroll.size.x:
+				hightech_scroll.scroll_horizontal += int(600*delta)+1
+			elif mouse.x >= 0 and mouse.x < 36:
+				hightech_scroll.scroll_horizontal -= int(600*delta)+1
 	queue_redraw()
 	if automation_args.has("--capture"):
 		capture_frame += 1
@@ -135,7 +174,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		game.collect_near(get_global_mouse_position())
 	if event is InputEventMouseButton and event.pressed:
-		game.collect_near(get_global_mouse_position())
+		game.collect_near(get_global_mouse_position(), event.button_index == MOUSE_BUTTON_LEFT)
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F1:
 			show_qa_tools()
@@ -166,7 +205,6 @@ func on_event(kind: String, info: Dictionary) -> void:
 			burst(Vector2(info.x,info.y),CYAN if info.type == 1 else ORANGE,4,40)
 			beep(620 if info.type == 1 else 200)
 		"collect":
-			resource_samples.append({"time":Time.get_ticks_msec() / 1000.0,"id":str(info.id),"amount":float(info.amount)})
 			var color := INK if info.id == "1" else PURPLE
 			var label := "+%s %s%s" % [number(info.amount),db.data.resources[info.id],"" if info.manual else " · 自动"]
 			floats.append({"pos":Vector2(info.x,info.y-12),"text":label,"color":color,"life":1.5})
@@ -180,6 +218,9 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"upgrade":
 			toast(NAMES[info.key] + "升级完成")
 			build_ui()
+		"research", "hightech_complete":
+			toast(str(info.key) + ("研发完成" if kind == "hightech_complete" else "开始研发"))
+			call_deferred("build_ui")
 		"unlock":
 			help_open = false
 			call_deferred("build_ui")
@@ -206,20 +247,15 @@ func enemy_health(value: float) -> String:
 	return number(truncated / divisor) + suffixes[unit]
 
 func prune_resource_samples(now: float) -> void:
-	while not resource_samples.is_empty() and float(resource_samples[0].time) <= now - 60.0:
-		resource_samples.pop_front()
+	game.prune_resource_samples(now)
 
 func resource_display(id: String, now := -1.0) -> String:
 	if not resource_rate_mode:
 		return str(int(game.profile.resources[id]))
 	if now < 0:
-		now = Time.get_ticks_msec() / 1000.0
+		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)
-	var gained := 0.0
-	for sample in resource_samples:
-		if sample.id == id:
-			gained += float(sample.amount)
-	return "%.2f/秒" % (gained / 60.0)
+	return "%.2f/秒" % (game.resource_minute_total(id, now) / 60.0)
 
 func toggle_resource_display() -> void:
 	resource_rate_mode = not resource_rate_mode
@@ -278,11 +314,21 @@ func button(label: String, rect: Rect2, action: Callable, primary := false, disa
 	return b
 
 func build_ui() -> void:
+	# Combat and research events must not remove a card while it is being dragged.
+	if get_viewport().gui_is_dragging():
+		ui_rebuild_pending = true
+		return
+	if is_instance_valid(hightech_scroll):
+		hightech_scroll_offset = hightech_scroll.scroll_horizontal
+	hightech_scroll = null
 	for child in ui.get_children():
 		ui.remove_child(child)
 		child.queue_free()
 	loop_button = null
 	upgrade_buttons.clear()
+	equipment_cooldowns.clear()
+	hightech_buttons.clear()
+	hightech_descriptions.clear()
 	if not game.pending_unlocks.is_empty():
 		button("继续", Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
 		return
@@ -305,13 +351,7 @@ func build_ui() -> void:
 	loop_select.item_selected.connect(func(index):game.select_loop_level(loop_select.get_item_id(index));build_ui())
 	ui.add_child(loop_select)
 	loop_button = button("⟳  循环：" + ("开启" if game.profile.loop else "关闭"),Rect2(1210,92,192,38),func():game.toggle_loop();build_ui(),false,int(game.profile.get("loopLevel", 0))==0)
-	var i := 0
-	for key in BattleGame.EQUIPMENT:
-		if not game.profile.unlocked.has(key):
-			continue
-		var maxed := int(game.profile.levels[key]) >= db.max_equipment_level(key)
-		upgrade_buttons[key] = button("已满级" if maxed else "升级 ↑",Rect2(54+i*274,737,230,34),func():game.upgrade(key),true,not game.can_upgrade(key))
-		i += 1
+	build_equipment_tabs()
 	button("音效：" + ("开" if sound_on else "关"),Rect2(1262,778,140,26),func():sound_on=not sound_on;build_ui())
 
 func text_at(value: String, pos: Vector2, size := 16, color := INK) -> void:
@@ -342,9 +382,9 @@ func _draw() -> void:
 	text_at("◈",Vector2(39,52),30,CYAN)
 	text_at("太空战舰",Vector2(83,49),22)
 	text_at("DEEP SPACE / EXPEDITION",Vector2(210,47),12,MUTED)
-	text_at("铁  /  IRON",Vector2(850,34),11,MUTED)
+	text_at(str(db.data.resources["1"]),Vector2(850,34),11,MUTED)
 	text_at(resource_display("1"),Vector2(850,58),22,INK)
-	text_at("钛  /  TITANIUM",Vector2(1040,34),11,MUTED)
+	text_at(str(db.data.resources["2"]),Vector2(1040,34),11,MUTED)
 	text_at(resource_display("2"),Vector2(1040,58),22,PURPLE)
 	draw_battle()
 	if message_time > 0 and not help_open and game.pending_unlocks.is_empty():
@@ -401,7 +441,12 @@ func draw_battle() -> void:
 		var pos := Vector2(drop.x,drop.y)
 		var color := INK if drop.id=="1" else PURPLE
 		var bob := sin(clock*3+float(drop.uid))*3
-		draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/float(db.defaults.autoCollectDelay),0,1),24,Color(color,0.35),2)
+		var furnace: bool = drop.get("hightech", false)
+		if furnace:
+			color = ORANGE
+			box(Rect2(pos-Vector2(18,18),Vector2(36,36)),PANEL,ORANGE)
+			text_at("点击领取",pos+Vector2(-25,-31),12,ORANGE)
+		draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/(10.0 if furnace else float(db.defaults.autoCollectDelay)),0,1),24,Color(color,0.35),2)
 		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),26,color)
 		text_at("%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,41),12,color)
 	for p in particles:
@@ -416,7 +461,6 @@ func draw_battle() -> void:
 		text_at("护盾 %d / %d" % [int(game.player.shield),int(game.max_shield())],Vector2(343,587),15,CYAN)
 		bar(Rect2(343,598,273,5),float(game.player.shield)/maxf(1,game.max_shield()),CYAN)
 	text_at("悬停拾取 100%%  /  %.0f 秒后自动拾取 %.0f%%" % [float(db.defaults.autoCollectDelay),(1.0-float(db.config.autoCollectReduce))*100],Vector2(1010,596),12,MUTED)
-	draw_equipment()
 	if game.state == BattleGame.State.LEVEL_CLEAR and game.pending_unlocks.is_empty():
 		box(Rect2(430,280,580,95),Color("101c2b"),CYAN)
 		text_at("第 %d 关通关" % game.stage,Vector2(458,318),26,CYAN)
@@ -456,28 +500,163 @@ func draw_help() -> void:
 	for i in range(lines.size()):
 		text_at(lines[i],Vector2(360,250+i*39),16,MUTED if i>5 else INK)
 
-func draw_equipment() -> void:
-	var i := 0
-	for key in BattleGame.EQUIPMENT:
-		if not game.profile.unlocked.has(key):
+func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 13, color := INK) -> void:
+	var label := Label.new()
+	label.text = value
+	label.position = pos
+	label.add_theme_font_override("font",font)
+	label.add_theme_font_size_override("font_size",font_size)
+	label.add_theme_color_override("font_color",color)
+	parent.add_child(label)
+
+func build_equipment_tabs() -> void:
+	equipment_tabs = TabContainer.new()
+	equipment_tabs.position = Vector2(38,620)
+	equipment_tabs.size = Vector2(1364,156)
+	equipment_tabs.add_theme_font_override("font",font)
+	equipment_tabs.add_theme_font_size_override("font_size",16)
+	equipment_tabs.add_theme_stylebox_override("panel",style(Color("0c1522"),LINE))
+	equipment_tabs.add_theme_stylebox_override("tab_selected",style(PANEL,CYAN))
+	equipment_tabs.add_theme_stylebox_override("tab_unselected",style(BG,LINE))
+	for state in ["tab_selected","tab_unselected"]:
+		var tab_style := equipment_tabs.get_theme_stylebox(state).duplicate() as StyleBoxFlat
+		tab_style.content_margin_left = 18
+		tab_style.content_margin_right = 18
+		tab_style.content_margin_top = 4
+		tab_style.content_margin_bottom = 4
+		equipment_tabs.add_theme_stylebox_override(state,tab_style)
+	ui.add_child(equipment_tabs)
+	for page in EQUIPMENT_PAGES:
+		var scroll := ScrollContainer.new()
+		scroll.name = page.title
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+		equipment_tabs.add_child(scroll)
+		var cards := HBoxContainer.new()
+		cards.add_theme_constant_override("separation",8)
+		scroll.add_child(cards)
+		for key in page.keys:
+			if not game.profile.unlocked.has(key):
+				continue
+			var lv := int(game.profile.levels[key])
+			var maxed := lv >= db.max_equipment_level(key)
+			var next := db.equip(key,mini(lv+1,db.max_equipment_level(key)))
+			var defence: bool = key in ["armour","shield"]
+			var card := Panel.new()
+			card.custom_minimum_size = Vector2(216,112)
+			card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+			cards.add_child(card)
+			if PROJECTILE_TEXTURES.has(key):
+				var icon := TextureRect.new()
+				icon.texture = PROJECTILE_TEXTURES[key]
+				icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon.position = Vector2(8,7)
+				icon.size = Vector2(34,20)
+				card.add_child(icon)
+			equipment_label(card,"%s Lv.%d" % [NAMES[key],lv],Vector2(8 if defence else 46,6),14)
+			equipment_label(card,("容量" if defence else "伤害")+" %d → %d" % [int(game.stat(key)),int(game.equipment_stat(key,int(next.level)))],Vector2(10,31),13,MUTED)
+			var cost_text := ""
+			for id in game.upgrade_cost(key):
+				cost_text += "%d %s  " % [int(game.upgrade_cost(key)[id]),db.data.resources[id]]
+			equipment_label(card,"已达最高等级" if maxed else cost_text,Vector2(10,52),12)
+			var upgrade := button("已满级" if maxed else "升级 ↑",Rect2(10,79,196,27),func():game.upgrade(key),true,not game.can_upgrade(key))
+			upgrade.reparent(card,false)
+			upgrade.add_theme_font_size_override("font_size",14)
+			upgrade_buttons[key] = upgrade
+			if not defence:
+				var cooldown := ColorRect.new()
+				cooldown.position = Vector2(10,73)
+				cooldown.size = Vector2(196,3)
+				cooldown.color = LINE
+				cooldown.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(cooldown)
+				var fill := ColorRect.new()
+				fill.size = Vector2(196,3)
+				fill.color = CYAN
+				fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				cooldown.add_child(fill)
+				equipment_cooldowns[key] = fill
+		if cards.get_child_count() == 0:
+			equipment_label(cards,"暂无已解锁装备",Vector2(12,12),14,MUTED)
+	build_hightech_tab()
+	equipment_tabs.current_tab = mini(equipment_page,equipment_tabs.get_tab_count()-1)
+	equipment_tabs.tab_changed.connect(func(index):equipment_page=index)
+
+func hightech_button_text(key: String) -> String:
+	if game.profile.hightechResearch.has(key):
+		return ("连续研发中" if game.active_research().has(key) else "继续研发") + " · %d秒" % int(ceilf(float(game.profile.hightechResearch[key].remaining)))
+	if not game.hightech_unlocked(key):
+		return "通关第%d关解锁" % int(db.data.hightech[key].unlock)
+	if not game.can_research(key):
+		return "研发名额已满"
+	return ("切换研发" if not game.active_research().is_empty() else "研发") + " Lv.%d · %d秒" % [game.hightech_level(key)+1, int(game.hightech_duration(key))]
+
+func select_research(key: String) -> void:
+	var active := game.active_research()
+	if active.size() <= 1 or active.size() < int(db.config.hightechLimit):
+		game.research(key)
+		return
+	var menu := PopupMenu.new()
+	ui.add_child(menu)
+	for current in active:
+		menu.add_item("暂停 " + str(current) + "，改研 " + key)
+	menu.id_pressed.connect(func(index):game.research(key,str(active[index])))
+	menu.popup_hide.connect(func():menu.queue_free())
+	menu.position = Vector2i(get_global_mouse_position())
+	menu.popup()
+
+func build_hightech_tab() -> void:
+	var scroll := ScrollContainer.new()
+	hightech_scroll = scroll
+	scroll.name = "高科技"
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	equipment_tabs.add_child(scroll)
+	var cards := HBoxContainer.new()
+	cards.add_theme_constant_override("separation",8)
+	scroll.add_child(cards)
+	var slots := game.hightech_slots()
+	for index in range(slots.size()):
+		var key: String = slots[index]
+		var card := Panel.new()
+		card.set_script(HIGHTECH_SLOT_SCRIPT)
+		card.slot_index = index
+		card.tech_key = key
+		card.swap_requested.connect(func(source,target):
+			if game.swap_hightech_slots(source,target):
+				call_deferred("build_ui"))
+		card.custom_minimum_size = HIGHTECH_CARD_SIZE
+		card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+		card.add_theme_font_override("font",font)
+		cards.add_child(card)
+		if key.is_empty():
+			card.add_theme_stylebox_override("panel",style(BG,LINE))
+			equipment_label(card,"空卡槽 %02d" % (index+1),Vector2(16,30),14,MUTED)
+			equipment_label(card,"可将高科技卡片拖到这里",Vector2(16,57),12,MUTED)
 			continue
-		var x := 40+i*274
-		i += 1
-		var lv := int(game.profile.levels[key])
-		var row := db.equip(key,lv)
-		var next := db.equip(key,mini(lv+1,db.max_equipment_level(key)))
-		var defence: bool = key in ["armour","shield"]
-		var next_value := float(next.para1 if defence else next.dmg)
-		var color := CYAN if key in ["shield","laser"] else ORANGE
-		box(Rect2(x,630,260,145))
-		text_at("%s  Lv.%d" % [NAMES[key],lv],Vector2(x+14,657),19,INK)
-		text_at(("容量" if defence else "伤害") + "  %d → %d" % [int(game.stat(key)),int(next_value)],Vector2(x+14,683),15,MUTED)
-		var cost_text := ""
-		for id in game.upgrade_cost(key):
-			cost_text += "%d %s  " % [int(game.upgrade_cost(key)[id]),db.data.resources[id]]
-		text_at(cost_text if lv<db.max_equipment_level(key) else "已达最高等级",Vector2(x+14,709),14,INK)
-		if not defence:
-			bar(Rect2(x+14,722,232,3),1.0-float(game.cooldowns.get(key,0))/float(row.cd),color)
+		var row: Dictionary = db.data.hightech[key]
+		card.tooltip_text = "拖动标题到其他卡槽，松手交换位置并保存"
+		equipment_label(card,"%s Lv.%d" % [key,game.hightech_level(key)],Vector2(10,5),14,CYAN)
+		var description := Label.new()
+		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		description.text = game.hightech_description(key)
+		description.tooltip_text = description.text
+		description.mouse_filter = Control.MOUSE_FILTER_PASS
+		description.position = Vector2(10,29)
+		description.size = Vector2(423,44)
+		description.add_theme_font_override("font",font)
+		description.add_theme_font_size_override("font_size",12)
+		description.add_theme_color_override("font_color",MUTED)
+		card.add_child(description)
+		hightech_descriptions[key] = description
+		var b := button(hightech_button_text(key),Rect2(10,79,423,27),func():select_research(key),true,not game.can_research(key))
+		b.reparent(card,false)
+		b.add_theme_font_size_override("font_size",14)
+		b.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
+		hightech_buttons[key] = b
+		equipment_label(card,"⠿ 拖动换位",Vector2(350,5),12,MUTED)
+	scroll.set_deferred("scroll_horizontal",hightech_scroll_offset)
 
 func draw_unlock() -> void:
 	draw_rect(Rect2(0,78,1440,732),Color(0.02,0.04,0.08,0.93))

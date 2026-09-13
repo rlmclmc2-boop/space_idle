@@ -7,6 +7,7 @@
     "mon": "mon.xlsx",
     "monGroup": "monGroup.xlsx",
     "res": "res.xlsx",
-    "config": "config.xlsx"
+    "config": "config.xlsx",
+    "hightech": "hightech.xlsx"
   }
 }

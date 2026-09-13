@@ -19,6 +19,11 @@ def main():
     work = tests / "work"
     work.mkdir(exist_ok=True)
     area = Path(tempfile.mkdtemp(prefix=Path(args.test).stem + "-", dir=work))
+    if os.name == "nt":
+        # mkdtemp restricts Windows ACLs to its creator; artifact viewers also
+        # need the workspace's inherited access. Apply before creating children.
+        subprocess.run(["icacls", str(area), "/inheritance:e"], check=True,
+                       stdout=subprocess.DEVNULL)
     game = area / "space-battleship"
     game.mkdir()
     source = workspace / "space-battleship"

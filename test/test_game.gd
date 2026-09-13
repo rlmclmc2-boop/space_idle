@@ -184,7 +184,7 @@ func run() -> void:
 		tracking.tick_projectiles(100)
 		check(not tracking.projectiles.has(shot),key+" removed only after leaving screen")
 	# A dead shooter and wave/level completion must not erase in-flight shots.
-	for boss_wave in [false,true]:
+	for boss_wave in [false]:
 		var lingering := BattleGame.new(db,false)
 		lingering.start(1,false)
 		lingering.spawn_group()

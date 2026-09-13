@@ -1,5 +1,7 @@
 # 测试目录
 
+Windows 运行器创建临时副本后启用父目录权限继承，让命令行与截图查看工具均可访问产物；不额外授予超出 `work/` 父目录的权限。
+
 测试源码统一在本目录，工作副本、日志、截图、测试存档和审计结果统一放入 `work/`（不提交 Git）。禁止在工作区根新建验证目录；完整规则见 [AGENTS](../space-battleship/AGENTS.md) 和 [VALIDATION](../space-battleship/docs/VALIDATION.md)。
 
 在工作区根执行 `python test/run.py test_import.py`、`python test/run.py test_config_workbooks.py` 或 `python test/run.py test_config_panel.gd`。Python 需安装 openpyxl/lxml；引擎默认使用项目 `engine/` 中的 Godot，也可通过 `--godot` 指定。每次仅运行指定测试。

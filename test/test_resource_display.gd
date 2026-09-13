@@ -36,7 +36,7 @@ func run() -> void:
 	check(not scene.resource_rate_mode and scene.resource_display("1")=="83", "Second click restores current total")
 	if DisplayServer.get_name() != "headless":
 		scene.resource_mode_button.pressed.emit()
-		scene.resource_samples.assign([{"time":Time.get_ticks_msec()/1000.0,"id":"1","amount":75.0}])
+		scene.resource_samples.assign([{"time":Time.get_unix_time_from_system(),"id":"1","amount":75.0}])
 		scene.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw

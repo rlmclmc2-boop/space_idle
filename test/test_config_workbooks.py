@@ -140,6 +140,69 @@ class IncrementalTests(unittest.TestCase):
         self.assertEqual(["config"], cw.sync_workbooks(self.source, self.folder)["updated"])
         self.assertTrue((self.folder / "notes.txt").exists())
 
+    def test_hightech_only_change_preserves_other_sections(self):
+        self.first_import()
+        before = json.loads(self.target.read_text(encoding="utf-8"))
+        edit_cell(self.folder / "hightech.xlsx", "hightech", "D4", 90)
+        with patch.object(cw, "read_changed_file", wraps=cw.read_changed_file) as parse:
+            result = self.first_import()
+        self.assertEqual(["hightech"], result["parsed"])
+        self.assertEqual(1, parse.call_count)
+        after = json.loads(self.target.read_text(encoding="utf-8"))
+        self.assertEqual(90, after["hightech"]["超时空炼铁炉"]["timeCostBase"])
+        self.assertEqual(before["hightech"]["超时空炼铁炉"]["des"], after["hightech"]["超时空炼铁炉"]["des"])
+        for section in full.SECTIONS.values():
+            if section != "hightech": self.assertEqual(before[section], after[section])
+
+    def test_hightech_invalid_interval_preserves_projection(self):
+        self.first_import()
+        before = self.target.read_bytes()
+        state = self.target.with_name(".import_state.json").read_bytes()
+        edit_cell(self.folder / "hightech.xlsx", "hightech", "G4", 0)
+        with self.assertRaisesRegex(ValueError, "interval"):
+            self.first_import()
+        self.assertEqual(before, self.target.read_bytes())
+        self.assertEqual(state, self.target.with_name(".import_state.json").read_bytes())
+
+    def test_hightech_limit_and_offline_max_validation(self):
+        self.first_import()
+        before = self.target.read_bytes()
+        for coordinate, value in [("C9", 0), ("C9", 1.5), ("C10", -1)]:
+            cw.sync_workbooks(self.source, self.folder)
+            edit_cell(self.folder / "config.xlsx", "config", coordinate, value)
+            with self.assertRaises(ValueError): self.first_import()
+            self.assertEqual(before, self.target.read_bytes())
+        cw.sync_workbooks(self.source, self.folder)
+        edit_cell(self.folder / "config.xlsx", "config", "C10", 0)
+        self.first_import()
+        self.assertEqual(0, json.loads(self.target.read_text(encoding="utf-8"))["config"]["offlineMax"])
+
+    def test_hightech_duplicate_name_rejected(self):
+        row = {"name":"same"}
+        with self.assertRaises(ValueError): full.convert_sheet("hightech", [row, row])
+
+    def test_description_expression_validation(self):
+        row={"name":"test","para1":0.08,"description":"每para1秒 {过去一分钟的铁生成量*para1*等级,向上取整}"}
+        full.validate_description(row)
+        for invalid in [None,"","{para1*等级","{unknown*2}","{load(1)}","{1,未知规则}","para9"]:
+            with self.subTest(description=invalid):
+                with self.assertRaises(ValueError): full.validate_description({**row,"description":invalid})
+
+    def test_invalid_description_keeps_existing_projection(self):
+        self.first_import()
+        before=self.target.read_bytes()
+        state=self.target.with_name(".import_state.json").read_bytes()
+        edit_cell(self.folder / "hightech.xlsx", "hightech", "D4", 90)
+        reader=cw.read_changed_file
+        def invalid_description(path,name,raw):
+            result=reader(path,name,raw)
+            if name=="hightech": result["超时空炼铁炉"]["description"]="{unrecognized(1)}"
+            return result
+        with patch.object(cw,"read_changed_file",side_effect=invalid_description):
+            with self.assertRaises(ValueError): self.first_import()
+        self.assertEqual(before,self.target.read_bytes())
+        self.assertEqual(state,self.target.with_name(".import_state.json").read_bytes())
+
     def test_atomic_commit_rolls_back_on_replace_failure(self):
         first, second = self.root / "one.json", self.root / "two.json"
         first.write_bytes(b"old-one")
