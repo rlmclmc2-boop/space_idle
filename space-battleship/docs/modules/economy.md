@@ -23,4 +23,6 @@ res!A4:B5 定义铁、钛，JSON resources 为资源 ID → 名称。mon!G4:G9 �
 `config.autoGenRes` 为“生成间隔秒,资源ID,数量,移动速度”。在线活动时从屏幕右侧随机高度生成资源，数量先乘当前关卡 `resRatio` 后向上取整；资源向左飞行，鼠标划过时全额拾取，飞过玩家位置时按自动拾取损耗结算。该类资源不使用普通掉落的超时自动拾取，也不写入存档。
 升级消耗归 [progression](progression.md)，原表值不在本文重复。
 
+2026-09-15 新增 charge 持续消耗：用户确认余额保持整数，同种资源不足先均分整数、余数按启动先后分配；已扣资源的剩余充能时间独立保存，避免按帧重复向上取整。熔炼器充能只乘击杀掉落铁的生成数量，不改变自动生成、炼铁炉和拾取损耗；具体公式与离线顺序归 [progression](progression.md)。
+
 追踪：mon/res/config → JSON enemies.drops/resources/config → game.hit_enemy/collect/settle_drops/collect_near → test_game Hover collects、Timed pickup、Exit settles。新资源兼容性见 U-007。

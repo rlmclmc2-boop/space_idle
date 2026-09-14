@@ -15,11 +15,29 @@ func check(ok: bool, label: String) -> void:
 func _initialize() -> void:
 	call_deferred("run")
 
+func configure_fixture(db: ShipDatabase) -> void:
+	# Fixed mechanism inputs, not assertions about the current balance sheet.
+	db.config.hightechLimit = 1
+	db.config.offlineMax = 1
+	for key in [F,E,A]:
+		db.data.hightech[key].timeCostBase = 60
+		db.data.hightech[key].timeCostMutiple = 0.2
+	db.data.hightech[F].merge({"para1":30,"para2":0.5,"description":"每para1秒在屏幕中生成一个含有{过去一分钟的铁生成量*para2*等级,向上取整,不含自身}的铁块"},true)
+	db.data.hightech[E].merge({"para1":0.1,"description":"所有武器伤害提高{(1+para1)^等级,百分比显示,保留两位小数,即100.3%展示为100%}"},true)
+	db.data.hightech[A].merge({"para1":0.08,"description":"生命增加{（1+para1）^等级,百分比显示,保留两位小数,即100.3%展示为100%}"},true)
+
+func unlock_fixture(g: BattleGame) -> void:
+	g.profile.cleared = []
+	for key in [F,E,A]:
+		var gate := int(g.db.data.hightech[key].unlock)
+		if gate > 0 and not g.profile.cleared.has(gate):
+			g.profile.cleared.append(gate)
+
 func run() -> void:
 	var db := ShipDatabase.new()
-	db.data.hightech[F].para2 = 0.5 # Fixed mechanism fixture, independent of balance edits.
+	configure_fixture(db)
 	var g := BattleGame.new(db,false)
-	g.profile.cleared = [5,8]
+	unlock_fixture(g)
 	g.research(E)
 	g.advance_hightech(20)
 	g.research(A)
@@ -36,7 +54,7 @@ func run() -> void:
 	g.paused = false
 	var now := Time.get_unix_time_from_system()
 	g.profile.hightechLevels[F]=2
-	g.resource_samples.assign([{"time":now-1,"id":"1","amount":123.0}])
+	g.resource_samples.assign([{"time":now-1,"id":"1","amount":123.0,"origin":"drop"}])
 	check(g.hightech_description(F,now)=="每30秒在屏幕中生成一个含有120的铁块", "Parameter and live minute-income use KMBT formatting")
 	check(g.hightech_description(E)=="所有武器伤害提高130%", "Current level expression uses KMBT formatting")
 	g.profile.hightechLevels[A]=3
@@ -62,7 +80,9 @@ func run() -> void:
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify(raw))
 	file.close()
-	var loaded := BattleGame.new(ShipDatabase.new())
+	var reload_db := ShipDatabase.new()
+	configure_fixture(reload_db)
+	var loaded := BattleGame.new(reload_db)
 	check(loaded.hightech_level(E)==2 and absf(float(loaded.profile.hightechResearch[E].remaining)-16)<1, "Offline auto research crosses multiple levels")
 	check(loaded.profile.hightechResearch[A].remaining==35 and not loaded.profile.hightechResearch[A].active, "Offline leaves suspended progress untouched")
 	loaded.save_enabled=false
@@ -76,11 +96,11 @@ func run() -> void:
 	root.add_child(scene)
 	scene.set_process(false)
 	scene.game.save_enabled=false
-	scene.db.data.hightech[F].para2=0.5
-	scene.game.profile.cleared=[5,8]
+	configure_fixture(scene.db)
+	unlock_fixture(scene.game)
 	scene.game.profile.hightechResearch.clear()
 	scene.game.profile.hightechLevels={F:2,E:3,A:3}
-	scene.game.resource_samples.assign([{"time":Time.get_unix_time_from_system(),"id":"1","amount":123.0}])
+	scene.game.resource_samples.assign([{"time":Time.get_unix_time_from_system(),"id":"1","amount":123.0,"origin":"drop"}])
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=2
 	scene.hightech_buttons[E].pressed.emit()

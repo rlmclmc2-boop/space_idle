@@ -11,7 +11,7 @@ import sys
 import openpyxl
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "hightech":"hightech"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "hightech":"hightech", "charge":"charge"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
@@ -26,12 +26,12 @@ def read_rows(sheet):
     return [dict(zip(header,row)) for row in values if row[0] is not None]
 
 def convert_sheet(name, rows):
-    if name=="hightech":
+    if name in ("hightech", "charge"):
         result={}
         for row in rows:
             key=row.get("name")
             if not isinstance(key,str) or not key.strip() or key in result:
-                raise ValueError("hightech：名称必须非空且不能重复")
+                raise ValueError(f"{name}：名称必须非空且不能重复")
             result[key]=row
         return result
     if name=="equipment":
@@ -82,21 +82,21 @@ def positive(value, label, allow_zero=False):
     if not isinstance(value, (int,float)) or not math.isfinite(value) or value < 0 or (value == 0 and not allow_zero):
         raise ValueError(f'{label}: expected {"nonnegative" if allow_zero else "positive"} number, got {value!r}')
 
-def validate_description(row):
-    description=row.get('description')
-    label=f'hightech {row["name"]} description'
+def validate_description(row, field='description', section='hightech'):
+    description=row.get(field)
+    label=f'{section} {row["name"]} {field}'
     if not isinstance(description,str) or not description.strip():
         raise ValueError(f'{label}: must not be empty')
     for token in re.findall(r'para\d+', description):
-        positive(row.get(token),f'{label} {token}',True)
+        positive(row.get(token if section=='hightech' else token.replace('para','para_')),f'{label} {token}',True)
     blocks=re.findall(r'\{([^{}]+)\}',description)
     if '{' in re.sub(r'\{[^{}]+\}','',description) or '}' in re.sub(r'\{[^{}]+\}','',description):
         raise ValueError(f'{label}: invalid braces')
     for block in blocks:
         parts=block.replace('，',',').split(',')
-        if any(option.strip() not in ('向上取整','不含自身','百分比显示','保留两位小数','即100.3%展示为100%') for option in parts[1:]):
+        if any(option.strip() not in ('向上取整','不含自身','百分比显示','保留两位小数','即100.3%展示为100%','百分比','四舍五入保留整数百分比部分') for option in parts[1:]):
             raise ValueError(f'{label}: unknown rounding instruction')
-        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('（','(').replace('）',')').replace('^','**')
+        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('lv','1.0').replace('（','(').replace('）',')').replace('^','**')
         if not re.fullmatch(r'[0-9. +*/()\-]+',formula):
             raise ValueError(f'{label}: only numeric arithmetic is supported')
         try:
@@ -188,6 +188,24 @@ def validate_projection(data):
             positive(row.get('para1'),f'hightech {key} interval')
             positive(row.get('para2'),f'hightech {key} para2',True)
 
+    for key,row in data.get('charge',{}).items():
+        if key not in ('攻击充能','防御充能','熔炼器充能'):
+            raise ValueError(f'charge {key}: unsupported effect')
+        if not isinstance(row.get('func'),str) or not row['func'].strip():
+            raise ValueError(f'charge {key}: func must not be empty')
+        validate_description(row,'des','charge')
+        for field in ('para_1','para_2','para_4','para_5','para_6'):
+            positive(row.get(field),f'charge {key} {field}')
+        positive(row.get('para_3'),f'charge {key} para_3',True)
+        positive(row.get('para_7',0),f'charge {key} para_7',True)
+        if row['para_1'] != int(row['para_1']) or str(int(row['para_1'])) not in data['resources']:
+            raise ValueError(f'charge {key}: unknown resource')
+        if math.floor(row['para_5'] + 0.5) < 1 or row['para_6'] < 1:
+            raise ValueError(f'charge {key}: rounded charge count must stay positive; growth multiplier must be at least 1')
+        positive(row.get('unlock'),f'charge {key} unlock',True)
+        if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
+            raise ValueError(f'charge {key}: invalid unlock level')
+
     data["defaults"]["maxEquipmentLevel"]=max(len(equipment[key]) for key in ("armour","shield","laser","missile","cannon"))
 
 def encode(data):
@@ -201,6 +219,8 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
+                if name == 'charge':
+                    continue  # Older master workbooks predate the optional charge sheet.
                 raise ValueError("缺少配置表："+name)
             data[section]=convert_sheet(name,read_rows(book[name]))
     finally:

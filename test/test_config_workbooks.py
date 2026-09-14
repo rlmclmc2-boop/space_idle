@@ -66,10 +66,10 @@ class IncrementalTests(unittest.TestCase):
                     self.assertNotIn("xl/calcChain.xml", output.namelist())
         projected = full.full_import(self.source, self.root / "baseline.json")
         result = self.first_import()
-        self.assertEqual(set(full.SECTIONS), set(result["parsed"]))
+        self.assertEqual(set(full.SECTIONS) & set(names), set(result["parsed"]))
         actual = json.loads(self.target.read_text(encoding="utf-8"))
         for section in full.SECTIONS.values():
-            self.assertEqual(projected[section], actual[section])
+            self.assertEqual(projected.get(section), actual.get(section))
 
     def test_no_change_reads_no_workbook_and_writes_nothing(self):
         self.first_import()
@@ -92,7 +92,7 @@ class IncrementalTests(unittest.TestCase):
         after = json.loads(self.target.read_text(encoding="utf-8"))
         self.assertEqual(37, after["config"]["movement"])
         for section in set(full.SECTIONS.values()) - {"config"}:
-            self.assertEqual(before[section], after[section])
+            self.assertEqual(before.get(section), after.get(section))
 
     def test_invalid_data_preserves_json_and_dirty_state(self):
         self.first_import()
@@ -152,7 +152,7 @@ class IncrementalTests(unittest.TestCase):
         self.assertEqual(90, after["hightech"]["超时空炼铁炉"]["timeCostBase"])
         self.assertEqual(before["hightech"]["超时空炼铁炉"]["des"], after["hightech"]["超时空炼铁炉"]["des"])
         for section in full.SECTIONS.values():
-            if section != "hightech": self.assertEqual(before[section], after[section])
+            if section != "hightech": self.assertEqual(before.get(section), after.get(section))
 
     def test_hightech_invalid_interval_preserves_projection(self):
         self.first_import()

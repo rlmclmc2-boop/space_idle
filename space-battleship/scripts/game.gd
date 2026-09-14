@@ -28,6 +28,10 @@ var since_hit := 100.0
 var paused := false
 var speed := 1.0
 var clear_timer := 0.0
+var guard_index := -1
+var guard_elapsed := 0.0
+var guard_engaged := false
+var guard_arrived := false
 var first_clear := false
 var run_resources := {"1": 0.0, "2": 0.0}
 var uid := 0
@@ -50,6 +54,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	profile = fresh_profile()
 	if persist:
 		load_progress()
+		advance_charge(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		advance_hightech(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		save_progress()
 	reset_player()
@@ -80,12 +85,23 @@ func load_progress() -> void:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if (value is float or value is int) and is_finite(float(value)):
 			profile.resources[id] = ceilf(maxf(0, float(value)))
-	profile.loop = raw.get("loop", false) == true
+	profile.loop = false
+	var death_mode = raw.get("guardDeath", 0)
+	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
 	rebuild_unlocks()
 	var selected = raw.get("loopLevel", 0)
 	profile.loopLevel = int(selected) if (selected is int or selected is float) and profile.cleared.has(int(selected)) else 0
-	profile.loop = profile.loop and int(profile.loopLevel) > 0
+	var guard_stage = raw.get("guardStage", 0)
+	var saved_index = raw.get("guardIndex", -1)
+	var saved_distance = raw.get("guardDistance", -1)
+	if raw.get("loop", false) == true and (guard_stage is int or guard_stage is float) and guard_stage == int(guard_stage) and guard_stage >= 1 and guard_stage <= profile.highestLevel:
+		if (saved_index is int or saved_index is float) and saved_index == int(saved_index) and saved_index >= 0 and saved_index < db.levels[int(guard_stage)-1].groups.size() and (saved_distance is int or saved_distance is float) and is_finite(float(saved_distance)) and saved_distance >= 0 and saved_distance <= float(db.levels[int(guard_stage)-1].length):
+			profile.loop = true
+			profile.guardStage = int(guard_stage)
+			profile.guardIndex = int(saved_index)
+			profile.guardDistance = float(saved_distance)
 	load_hightech(raw)
+	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
 
 func settle_offline_resources(raw: Dictionary, now: float) -> void:
@@ -174,7 +190,149 @@ func equipment_stat(key: String, level: int) -> float:
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if hightech_level(tech) > 0:
 		value = ceilf(value * pow(1.0 + float(db.data.hightech[tech].para1),hightech_level(tech)))
+	var charge_bonus := charge_multiplier("防御充能" if key in ["armour", "shield"] else "攻击充能")
+	if charge_bonus != 1.0:
+		value = ceilf(value * charge_bonus)
 	return value
+
+func charge_job(key: String) -> Dictionary:
+	if not profile.has("charge"):
+		profile.charge = {}
+	if not profile.charge.has(key):
+		profile.charge[key] = {"level":0,"count":0.0,"elapsed":0.0,"active":false,"credit":0.0,"started":0}
+	return profile.charge[key]
+
+func charge_unlocked(key: String) -> bool:
+	if not db.data.get("charge",{}).has(key):
+		return false
+	var gate := int(db.data.charge[key].unlock)
+	return gate == 0 or profile.cleared.has(gate)
+
+func charge_required(key: String) -> float:
+	var row: Dictionary = db.data.charge[key]
+	return roundf(float(row.para_5) * pow(float(row.para_6),int(charge_job(key).level)))
+
+func charge_multiplier(key: String) -> float:
+	if not db.data.get("charge",{}).has(key):
+		return 1.0
+	return pow(1.0 + float(db.data.charge[key].para_3),int(charge_job(key).level))
+
+func charge_resource_rate(key: String) -> float:
+	var row: Dictionary = db.data.charge[key]
+	return roundf(float(row.para_2) * pow(1.0 + float(row.get("para_7",0)),int(charge_job(key).level)))
+
+func charge_description(key: String) -> String:
+	var row: Dictionary = db.data.charge[key].duplicate()
+	for i in range(1,8):
+		row["para"+str(i)] = row.get("para_"+str(i),0)
+	return format_description(row,str(row.des),int(charge_job(key).level))
+
+func toggle_charge(key: String) -> bool:
+	if not charge_unlocked(key):
+		return false
+	var job := charge_job(key)
+	job.active = not job.active
+	if job.active:
+		var latest := 0
+		for existing in profile.charge.values():
+			latest = maxi(latest,int(existing.get("started",0)))
+		job.started = latest + 1
+	save_progress()
+	return true
+
+func load_charge(raw: Dictionary) -> void:
+	if raw.get("charge") is Dictionary:
+		for key in db.data.get("charge",{}):
+			var saved = raw.charge.get(key)
+			if not saved is Dictionary:
+				continue
+			if not nonnegative_number(saved.get("level")) or float(saved.level) != floorf(float(saved.level)):
+				continue
+			var job := charge_job(key)
+			job.level = int(saved.level)
+			if nonnegative_number(saved.get("count")) and float(saved.count) == floorf(float(saved.count)) and float(saved.count) < charge_required(key):
+				job.count = float(saved.count)
+			if nonnegative_number(saved.get("elapsed")) and float(saved.elapsed) < float(db.data.charge[key].para_4):
+				job.elapsed = float(saved.elapsed)
+			job.active = saved.get("active",false) == true
+			if nonnegative_number(saved.get("credit")) and float(saved.credit) < 1.0:
+				job.credit = float(saved.credit)
+			if nonnegative_number(saved.get("started")) and float(saved.started) == floorf(float(saved.started)):
+				job.started = int(saved.started)
+
+func advance_charge(dt: float) -> void:
+	# A level changes the rate immediately, including within a long offline step.
+	while dt > 0.000000001:
+		var step := dt
+		var funded := false
+		for key in db.data.get("charge",{}):
+			var job := charge_job(key)
+			var row: Dictionary = db.data.charge[key]
+			if not charge_unlocked(key) or not job.active:
+				continue
+			if charge_resource_rate(key) > 0 and float(profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0:
+				continue
+			funded = true
+			if float(row.get("para_7",0)) > 0:
+				step = minf(step,(charge_required(key)-float(job.count))*float(row.para_4)-float(job.elapsed))
+		if not funded:
+			return
+		advance_charge_step(step)
+		dt -= step
+
+func advance_charge_step(dt: float) -> void:
+	if dt <= 0:
+		return
+	var groups := {}
+	for key in db.data.get("charge",{}):
+		if charge_unlocked(key) and charge_job(key).active:
+			var id := str(int(db.data.charge[key].para_1))
+			if not groups.has(id):
+				groups[id] = []
+			groups[id].append(key)
+	for id in groups:
+		var balance := floorf(maxf(0,float(profile.resources.get(id,0))))
+		var waiting: Array = groups[id].duplicate()
+		waiting.sort_custom(func(a,b):return int(charge_job(a).started) < int(charge_job(b).started))
+		var allocations := {}
+		var demands := {}
+		for key in waiting:
+			# Buy whole resources; retain their unused charging time across frames
+			# and saves, rather than rounding up a separate cost every frame.
+			demands[key] = ceilf(maxf(0,charge_resource_rate(key)*dt-float(charge_job(key).credit)-0.000000001))
+		while not waiting.is_empty():
+			var share := floorf(balance / waiting.size())
+			var satisfied := []
+			for key in waiting:
+				var demand := float(demands[key])
+				if demand <= share:
+					allocations[key] = demand
+					balance -= demand
+					satisfied.append(key)
+			if satisfied.is_empty():
+				var remainder := int(balance - share * waiting.size())
+				for key in waiting:
+					allocations[key] = share + (1.0 if remainder > 0 else 0.0)
+					remainder -= 1
+				balance = 0.0
+				break
+			for key in satisfied:
+				waiting.erase(key)
+		profile.resources[id] = maxf(0,balance)
+		for key in allocations:
+			var row: Dictionary = db.data.charge[key]
+			var job := charge_job(key)
+			job.credit += float(allocations[key])
+			var rate := charge_resource_rate(key)
+			var seconds := minf(dt,float(job.credit)/rate) if rate > 0 else dt
+			job.credit = maxf(0,float(job.credit)-seconds*rate)
+			var elapsed := float(job.elapsed) + seconds
+			var completed := floorf((elapsed + 0.000000001) / float(row.para_4))
+			job.elapsed = maxf(0,elapsed - completed * float(row.para_4))
+			job.count += completed
+			while float(job.count) >= charge_required(key):
+				job.count -= charge_required(key)
+				job.level += 1
 
 func hightech_level(key: String) -> int:
 	return int(profile.get("hightechLevels", {}).get(key, 0))
@@ -223,7 +381,10 @@ func description_number(value: float) -> String:
 
 func hightech_description(key: String, now := -1.0) -> String:
 	var row: Dictionary = db.data.hightech[key]
-	var result := str(row.get("description", ""))
+	return format_description(row,str(row.get("description", "")),hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
+
+func format_description(row: Dictionary, template: String, level: int, minute_income := 0.0, excluded_income := 0.0) -> String:
+	var result := template
 	var tokens := RegEx.new()
 	tokens.compile("para[0-9]+")
 	var braces := RegEx.new()
@@ -244,7 +405,7 @@ func hightech_description(key: String, now := -1.0) -> String:
 			var token_value = row.get(token.get_string())
 			var token_replacement := description_number(float(token_value)) if nonnegative_number(token_value) else "？"
 			formula = formula.substr(0,token.get_start()) + token_replacement + formula.substr(token.get_end())
-		formula = formula.replace("过去一分钟的铁生成量",description_number(furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,options.has("不含自身")))).replace("等级",str(hightech_level(key))).replace("（","(").replace("）",")")
+		formula = formula.replace("过去一分钟的铁生成量",description_number(excluded_income if options.has("不含自身") else minute_income)).replace("等级",str(level)).replace("lv",str(level)).replace("（","(").replace("）",")")
 		var replacement := "？"
 		var expression := Expression.new()
 		# Expression otherwise uses integer division for literals such as 1/2.
@@ -257,12 +418,14 @@ func hightech_description(key: String, now := -1.0) -> String:
 		var power := RegEx.new()
 		power.compile("(\\([^()^]*\\)|[0-9.]+)\\s*\\^\\s*([0-9.]+)")
 		formula = power.sub(formula,"pow($1,$2)",true)
-		if numeric_only and not formula.contains("^") and options.all(func(option):return option in ["向上取整","不含自身","百分比显示","保留两位小数","即100.3%展示为100%"]) and expression.parse(formula) == OK:
+		if numeric_only and not formula.contains("^") and options.all(func(option):return option in ["向上取整","不含自身","百分比显示","保留两位小数","即100.3%展示为100%","百分比","四舍五入保留整数百分比部分"]) and expression.parse(formula) == OK:
 			var value = expression.execute([],null,false,true)
 			if not expression.has_execute_failed() and (value is int or value is float) and is_finite(float(value)):
-				if options.has("百分比显示"):
+				if options.has("百分比显示") or options.has("百分比"):
 					var percent := float(value) * 100.0
-					if options.has("即100.3%展示为100%"):
+					if options.has("四舍五入保留整数百分比部分"):
+						replacement = (NUMBER_FORMAT.precise(roundf(percent)) if percent < 1000.0 else NUMBER_FORMAT.compact(roundf(percent))) + "%"
+					elif options.has("即100.3%展示为100%"):
 						replacement = NUMBER_FORMAT.compact(floorf(percent + 0.00000001)) + "%"
 					elif options.has("保留两位小数") and percent < 1000.0:
 						replacement = "%.2f%%" % percent
@@ -431,20 +594,63 @@ func select_loop_level(level: int) -> bool:
 	if not profile.cleared.has(level):
 		return false
 	profile.loopLevel = level
-	if profile.loop:
-		return start(level, true)
-	save_progress()
-	return true
+	return start(level, false)
 
 func toggle_loop() -> void:
 	if profile.loop:
 		profile.loop = false
+		guard_elapsed = 0
+		guard_arrived = false
 		save_progress()
-	elif profile.cleared.has(int(profile.get("loopLevel", 0))):
-		start(int(profile.loopLevel), true)
+	elif state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR] and not db.levels[stage-1].groups.is_empty():
+		guard_index = clampi(group_index if state == State.TRAVEL else group_index-1, 0, db.levels[stage-1].groups.size()-1)
+		profile.loop = true
+		guard_elapsed = 0
+		profile.guardStage = stage
+		guard_engaged = not targets().is_empty()
+		profile.guardIndex = guard_index
+		guard_arrived = state != State.TRAVEL
+		profile.guardDistance = distance if guard_arrived else float(db.levels[stage-1].groups[guard_index].position) * float(db.levels[stage-1].length)
+		if state == State.LEVEL_CLEAR:
+			clear_timer = guard_interval()
+		save_progress()
+
+func guarding_here() -> bool:
+	return profile.loop and guard_arrived
+
+func set_guard_death(mode: int) -> void:
+	if mode in [0,1,2]:
+		profile.guardDeath = mode
+		save_progress()
+
+func guard_interval() -> float:
+	var encounters: Array = db.levels[stage-1].groups
+	var previous := 0.0 if guard_index == 0 else float(encounters[guard_index-1].position)
+	var gap := float(encounters[guard_index].position) * float(db.levels[stage-1].length) - previous * float(db.levels[stage-1].length)
+	return gap / float(db.config.movement) if float(db.config.movement) > 0 else INF
+
+func respawn_guard() -> void:
+	guard_elapsed = 0
+	group_index = guard_index
+	spawn_group(true)
+
+func resume_guard() -> void:
+	retreat_boss_pending = false
+	guard_index = int(profile.guardIndex)
+	distance = float(profile.guardDistance)
+	group_index = guard_index + 1
+	guard_elapsed = 0
+	guard_engaged = false
+	guard_arrived = true
+	change_state(State.COMBAT)
+
+func advance_after_clear() -> bool:
+	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
+		return false
+	return start(next_stage(), profile.loop and not guard_arrived)
 
 func next_stage() -> int:
-	return int(profile.get("loopLevel", stage)) if profile.loop else mini(stage + 1, db.levels.size())
+	return mini(stage + 1, db.levels.size())
 
 func start(level: int, loop_mode: bool) -> bool:
 	if level < 1 or level > int(profile.highestLevel):
@@ -453,6 +659,10 @@ func start(level: int, loop_mode: bool) -> bool:
 	stage = level
 	distance = 0
 	group_index = 0
+	guard_index = -1
+	guard_elapsed = 0
+	guard_engaged = false
+	guard_arrived = false
 	retreat_boss_pending = false
 	enemies.clear()
 	projectiles.clear()
@@ -461,6 +671,8 @@ func start(level: int, loop_mode: bool) -> bool:
 	reset_player()
 	paused = false
 	profile.loop = loop_mode
+	if loop_mode:
+		guard_index = int(profile.get("guardIndex", 0))
 	run_resources = {"1":0.0,"2":0.0}
 	change_state(State.TRAVEL)
 	save_progress()
@@ -477,10 +689,15 @@ func is_boss_encounter() -> bool:
 	return group_index > 0 and group_index == db.levels[stage - 1].groups.size()
 
 func spawn_group(keep_distance := false) -> void:
+	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
 	if not keep_distance:
 		distance = float(encounter.position) * float(db.levels[stage - 1].length)
 	group_index += 1
+	if profile.loop and stage == int(profile.guardStage) and group_index == guard_index+1:
+		guard_arrived = true
+		distance = maxf(distance, float(profile.guardDistance))
+		profile.guardDistance = distance
 	enemies.clear()
 	var slots: Array = db.groups[str(int(encounter.id))].slots
 	for slot in range(slots.size()):
@@ -598,6 +815,11 @@ func hit_player(raw: float, type: int) -> void:
 		begin_retreat()
 
 func begin_retreat() -> void:
+	guard_arrived = false
+	guard_elapsed = 0
+	guard_engaged = false
+	if int(profile.get("guardDeath", 0)) == 0:
+		profile.loop = false
 	var original_stage := stage
 	retreat_boss_pending = false
 	retreat_from = distance
@@ -639,7 +861,8 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int) -> void:
 		for drop in enemy.drops:
 			if rng.randf() < float(drop.chance):
 				uid += 1
-				drops.append({"uid":uid,"x":enemy.x - 40,"y":enemy.y,"age":0.0,"id":str(int(drop.resourceId)),"amount":ceilf(float(drop.amount)*float(enemy.res_ratio))})
+				var multiplier := charge_multiplier("熔炼器充能") if int(drop.resourceId) == 1 else 1.0
+				drops.append({"uid":uid,"x":enemy.x - 40,"y":enemy.y,"age":0.0,"id":str(int(drop.resourceId)),"amount":ceilf(float(drop.amount)*float(enemy.res_ratio)*multiplier)})
 
 func collect(drop: Dictionary, manual: bool) -> void:
 	if not drops.has(drop):
@@ -784,6 +1007,7 @@ func tick(dt: float) -> void:
 	if paused:
 		return
 	advance_auto_gen(dt)
+	advance_charge(dt)
 	advance_hightech(dt, dt / maxf(speed, 0.001))
 	hightech_save_elapsed += dt / maxf(speed, 0.001)
 	if hightech_save_elapsed >= 5.0:
@@ -803,7 +1027,10 @@ func tick(dt: float) -> void:
 			return
 		clear_timer -= dt
 		if clear_timer <= 0:
-			start(next_stage(), profile.loop)
+			if guarding_here():
+				respawn_guard()
+			else:
+				advance_after_clear()
 		return
 	if state == State.RETREAT:
 		tick_projectiles(dt)
@@ -814,6 +1041,13 @@ func tick(dt: float) -> void:
 			distance = retreat_target
 			reset_player()
 			change_state(State.TRAVEL)
+			if profile.loop and int(profile.get("guardDeath", 0)) == 2:
+				guard_index = mini(group_index, db.levels[stage-1].groups.size()-1)
+				profile.guardStage = stage
+				profile.guardIndex = guard_index
+				profile.guardDistance = distance
+				resume_guard()
+				save_progress()
 		return
 	if not is_active():
 		return
@@ -865,12 +1099,25 @@ func tick(dt: float) -> void:
 				enemy.cooldowns[i] = float(weapon.cd)
 	tick_projectiles(dt)
 	if state == State.COMBAT and targets().is_empty():
+		if guarding_here():
+			if guard_engaged and is_boss_encounter():
+				guard_engaged = false
+				projectiles.clear()
+				clear_level()
+				clear_timer = guard_interval()
+				return
+			guard_elapsed += dt
+			if guard_elapsed >= guard_interval():
+				respawn_guard()
+			return
 		if is_boss_encounter():
 			projectiles.clear()
 			clear_level()
 		else:
 			change_state(State.TRAVEL)
 			event.emit("wave_clear", {})
+	elif state == State.COMBAT:
+		guard_elapsed = 0
 
 func tick_projectiles(dt: float) -> void:
 	for shot in projectiles.duplicate():

@@ -83,7 +83,7 @@ func run() -> void:
 	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "Hightech tab hidden before first unlock")
 	check(scene.game.hightech_slots()==["","","","","",""], "Six anonymous expansion slots reserved")
 	check(card(0).tech_key=="" and card(0)._get_drag_data(Vector2.ZERO)==null, "Empty slot cannot start drag")
-	scene.game.profile.cleared = [5]
+	scene.game.profile.cleared = [int(scene.db.data.hightech[BattleGame.FURNACE].unlock)]
 	scene.build_ui()
 	await frames()
 	check(scene.hightech_buttons.keys()==[BattleGame.FURNACE], "Only cleared-gate tech shown")
@@ -91,7 +91,7 @@ func run() -> void:
 	scene.equipment_tabs.current_tab = 2
 	await frames()
 	await capture("hightech-one-unlocked")
-	scene.game.profile.cleared = [5,8]
+	scene.game.profile.cleared = scene.db.data.hightech.values().map(func(row):return int(row.unlock))
 	scene.build_ui()
 	await frames()
 	check(scene.hightech_buttons.size()==3 and scene.game.hightech_slots().slice(0,3)==[BattleGame.FURNACE,BattleGame.ENERGY_FOCUS,BattleGame.DENSE_ARMOUR], "New unlocks fill vacant slots")
@@ -109,7 +109,7 @@ func run() -> void:
 	check(scene.game.hightech_slots().slice(0,3)==[BattleGame.ENERGY_FOCUS,BattleGame.FURNACE,BattleGame.DENSE_ARMOUR], "Native drop swaps instead of inserting")
 	check(scene.equipment_tabs.current_tab==2, "Drop rebuild preserves hightech tab")
 	await begin_drag(0)
-	var button_position: Vector2 = scene.hightech_buttons[BattleGame.DENSE_ARMOUR].global_position+Vector2(180,12)
+	var button_position: Vector2 = scene.hightech_buttons[BattleGame.DENSE_ARMOUR].global_position+scene.hightech_buttons[BattleGame.DENSE_ARMOUR].size/2
 	await move_mouse(button_position,true)
 	await click_mouse(button_position,false)
 	check(scene.game.hightech_slots()[2]==BattleGame.ENERGY_FOCUS and scene.game.profile.hightechResearch.is_empty(), "Dropping onto research button swaps without starting research")

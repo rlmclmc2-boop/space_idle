@@ -49,6 +49,8 @@ var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
 var hightech_buttons: Dictionary = {}
 var hightech_descriptions: Dictionary = {}
+var hightech_progress: Dictionary = {}
+var charge_cards: Dictionary = {}
 const HIGHTECH_SLOT_SCRIPT := preload("res://scripts/hightech_slot.gd")
 const HIGHTECH_CARD_SIZE := Vector2(443,112)
 var hightech_scroll: ScrollContainer
@@ -72,7 +74,9 @@ func _ready() -> void:
 	audio = AudioStreamPlayer.new()
 	audio.volume_db = -25
 	add_child(audio)
-	game.start(int(game.profile.loopLevel) if game.profile.loop else int(game.profile.highestLevel), bool(game.profile.loop))
+	game.start(int(game.profile.guardStage) if game.profile.loop else int(game.profile.highestLevel), bool(game.profile.loop))
+	if game.profile.loop:
+		game.resume_guard()
 	build_ui()
 	if not game.offline_rewards.is_empty():
 		var rewards: PackedStringArray = []
@@ -143,7 +147,7 @@ func _process(delta: float) -> void:
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
 	if is_instance_valid(loop_button):
-		loop_button.text = "⟳  循环：" + ("开启" if game.profile.loop else "关闭")
+		loop_button.text = "驻守：" + ("开启" if game.profile.loop else "关闭")
 	for key in upgrade_buttons:
 		var b: Button = upgrade_buttons[key]
 		if is_instance_valid(b):
@@ -163,9 +167,12 @@ func _process(delta: float) -> void:
 		var b: Button = hightech_buttons[key]
 		b.disabled = not game.can_research(key)
 		b.text = hightech_button_text(key)
+		refresh_hightech_progress(key)
 	for key in hightech_descriptions:
 		hightech_descriptions[key].text = game.hightech_description(key)
 		hightech_descriptions[key].tooltip_text = hightech_descriptions[key].text
+	for key in charge_cards:
+		refresh_charge_card(key)
 	if is_instance_valid(hightech_scroll) and hightech_scroll.is_visible_in_tree() and get_viewport().gui_is_dragging():
 		var mouse := hightech_scroll.get_local_mouse_position()
 		if mouse.y >= 0 and mouse.y <= hightech_scroll.size.y:
@@ -340,6 +347,8 @@ func build_ui() -> void:
 	equipment_cooldowns.clear()
 	hightech_buttons.clear()
 	hightech_descriptions.clear()
+	hightech_progress.clear()
+	charge_cards.clear()
 	if not game.pending_unlocks.is_empty():
 		button("继续", Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
 		return
@@ -352,17 +361,31 @@ func build_ui() -> void:
 	loop_select = OptionButton.new()
 	loop_select.position = Vector2(1010,92)
 	loop_select.size = Vector2(190,38)
-	loop_select.add_item("选择循环关卡", 0)
+	loop_select.add_item("跃迁至关卡", 0)
 	for level in range(1, db.levels.size()+1):
 		if game.profile.cleared.has(level):
-			loop_select.add_item("第 %s 关" % number(level), level)
+			loop_select.add_item("跃迁 · 第 %s 关" % number(level), level)
 			if level == int(game.profile.get("loopLevel", 0)):
 				loop_select.select(loop_select.item_count-1)
 	loop_select.set_item_disabled(0, true)
 	loop_select.item_selected.connect(func(index):game.select_loop_level(loop_select.get_item_id(index));build_ui())
 	ui.add_child(loop_select)
-	loop_button = button("⟳  循环：" + ("开启" if game.profile.loop else "关闭"),Rect2(1210,92,192,38),func():game.toggle_loop();build_ui(),false,int(game.profile.get("loopLevel", 0))==0)
+	loop_button = button("驻守：" + ("开启" if game.profile.loop else "关闭"),Rect2(1210,92,142,38),func():game.toggle_loop();build_ui(),false,game.state == BattleGame.State.RETREAT)
+	var guard_settings := MenuButton.new()
+	guard_settings.text = "设置"
+	guard_settings.position = Vector2(1356,92)
+	guard_settings.size = Vector2(46,38)
+	guard_settings.tooltip_text = "驻守死亡处理"
+	var death_menu := guard_settings.get_popup()
+	var death_options := ["后退并取消驻守", "后退后返回原点继续驻守", "后退并保持驻守（不返回）"]
+	for mode in range(death_options.size()):
+		death_menu.add_radio_check_item(death_options[mode], mode)
+		death_menu.set_item_checked(mode, mode == int(game.profile.get("guardDeath", 0)))
+	death_menu.id_pressed.connect(func(mode):game.set_guard_death(mode);build_ui())
+	ui.add_child(guard_settings)
 	build_equipment_tabs()
+	if game.state == BattleGame.State.LEVEL_CLEAR:
+		button("立即过关",Rect2(780,302,200,46),func():game.advance_after_clear(),true)
 	button("音效：" + ("开" if sound_on else "关"),Rect2(1262,778,140,26),func():sound_on=not sound_on;build_ui())
 
 func text_at(value: String, pos: Vector2, size := 16, color := INK) -> void:
@@ -442,7 +465,10 @@ func draw_battle() -> void:
 	for j in range(9):
 		var xx := 40+1362*float(j+1)/10
 		draw_circle(Vector2(xx,156),4,CYAN if game.group_index>j else LINE)
-	text_at("后退中 / RETREAT" if game.state==BattleGame.State.RETREAT else "自动交战 / AUTO ENGAGE" if game.state==BattleGame.State.COMBAT else "自动巡航 / CRUISING",Vector2(40,197),12,CYAN)
+	var travel_status := "后退中 / RETREAT" if game.state==BattleGame.State.RETREAT else "自动交战 / AUTO ENGAGE" if game.state==BattleGame.State.COMBAT else "自动巡航 / CRUISING"
+	if game.guarding_here() and game.state == BattleGame.State.COMBAT and game.targets().is_empty():
+		travel_status = "驻守 · %s 秒后刷新" % number(maxf(0,game.guard_interval()-game.guard_elapsed))
+	text_at(travel_status,Vector2(40,197),12,CYAN)
 	text_at("遭遇 %s / %s" % [number(game.group_index),number(9)],Vector2(1266,197),13,MUTED)
 	var offset := Vector2(randf_range(-shake,shake),randf_range(-shake,shake))
 	for slot in range(10):
@@ -513,7 +539,7 @@ func draw_battle() -> void:
 		box(Rect2(430,280,580,95),Color("101c2b"),CYAN)
 		text_at("第 %s 关通关" % number(game.stage),Vector2(458,318),26,CYAN)
 		var target := game.next_stage()
-		text_at("%s 秒后%s第 %s 关" % [number(maxf(0,game.clear_timer)),"重刷" if target==game.stage else "进入",number(target)],Vector2(458,352),17,INK)
+		text_at("%s 秒后刷新驻守敌群" % number(maxf(0,game.clear_timer)) if game.guarding_here() else "%s 秒后进入第 %s 关" % [number(maxf(0,game.clear_timer)),number(target)],Vector2(458,352),17,INK)
 	if game.paused and game.pending_unlocks.is_empty():
 		if boss_battle:
 			box(Rect2(565,533,310,46),Color("142334"),CYAN)
@@ -549,11 +575,11 @@ func draw_help() -> void:
 	draw_rect(Rect2(0,78,1440,696),Color(0.02,0.04,0.08,0.97))
 	box(Rect2(310,143,820,551))
 	text_at("操作指南",Vector2(360,203),30,CYAN)
-	var lines := ["01   战舰自动前进、锁定并攻击敌人。", "02   点击下方装备的升级按钮，立即强化对应装备。", "03   生命归零后按配置距离后退，恢复生命后自动继续。", "04   未解锁装备不显示；获得新装备时会弹窗通知。", "05   选择已通关关卡并开启循环，持续重刷指定关卡。", "06   鼠标悬停残骸获得全额资源，超时自动拾取有损耗。", "空格 / Esc：暂停或继续；QA 工具可切换 ×1 / ×2 / ×5", "升级武器不会恢复生命；升级防御装备仅增加提升的容量。", "资源与装备自动保存；生命归零不会扣除已获得资源。"]
+	var lines := ["01   战舰自动前进、锁定并攻击敌人。", "02   点击下方装备的升级按钮，立即强化对应装备。", "03   驻守设置可选择死亡后取消、返回原点或退后就地驻守。", "04   未解锁装备不显示；获得新装备时会弹窗通知。", "05   驻守在清敌后按航行间隔刷新；跃迁可前往已通关关卡。", "06   鼠标悬停残骸获得全额资源，超时自动拾取有损耗。", "空格 / Esc：暂停或继续；QA 工具可切换 ×1 / ×2 / ×5", "升级武器不会恢复生命；升级防御装备仅增加提升的容量。", "资源与装备自动保存；生命归零不会扣除已获得资源。"]
 	for i in range(lines.size()):
 		text_at(lines[i],Vector2(360,250+i*39),16,MUTED if i>5 else INK)
 
-func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 13, color := INK) -> void:
+func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 13, color := INK) -> Label:
 	var label := Label.new()
 	label.text = value
 	label.position = pos
@@ -561,6 +587,7 @@ func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 
 	label.add_theme_font_size_override("font_size",font_size)
 	label.add_theme_color_override("font_color",color)
 	parent.add_child(label)
+	return label
 
 func build_equipment_tabs() -> void:
 	equipment_tabs = TabContainer.new()
@@ -579,6 +606,7 @@ func build_equipment_tabs() -> void:
 		tab_style.content_margin_bottom = 4
 		equipment_tabs.add_theme_stylebox_override(state,tab_style)
 	ui.add_child(equipment_tabs)
+	var unlocked_pages: Array[bool] = []
 	for page in EQUIPMENT_PAGES:
 		var scroll := ScrollContainer.new()
 		scroll.name = page.title
@@ -648,23 +676,118 @@ func build_equipment_tabs() -> void:
 				fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				cooldown.add_child(fill)
 				equipment_cooldowns[key] = fill
+		unlocked_pages.append(cards.get_child_count() > 0)
 		if cards.get_child_count() == 0:
 			equipment_label(cards,"暂无已解锁装备",Vector2(12,12),14,MUTED)
 	build_hightech_tab()
-	equipment_tabs.set_tab_hidden(2,hightech_buttons.is_empty())
-	if equipment_page == 2 and hightech_buttons.is_empty():
-		equipment_page = 0
-	equipment_tabs.current_tab = mini(equipment_page,equipment_tabs.get_tab_count()-1)
+	build_charge_tab()
+	unlocked_pages.append(not hightech_buttons.is_empty())
+	unlocked_pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
+	for index in range(unlocked_pages.size()):
+		equipment_tabs.set_tab_hidden(index,not unlocked_pages[index])
+	equipment_page = clampi(equipment_page,0,unlocked_pages.size()-1)
+	if not unlocked_pages[equipment_page]:
+		equipment_page = unlocked_pages.find(true)
+	equipment_tabs.current_tab = equipment_page
 	equipment_tabs.tab_changed.connect(func(index):equipment_page=index)
 
 func hightech_button_text(key: String) -> String:
 	if game.profile.hightechResearch.has(key):
-		return ("连续研发中" if game.active_research().has(key) else "继续研发") + " · %s秒" % number(ceilf(float(game.profile.hightechResearch[key].remaining)))
+		return "连续研发中" if game.active_research().has(key) else "继续研发"
 	if not game.hightech_unlocked(key):
 		return "通关第%s关解锁" % number(db.data.hightech[key].unlock)
 	if not game.can_research(key):
 		return "研发名额已满"
-	return ("切换研发" if not game.active_research().is_empty() else "研发") + " Lv.%s · %s秒" % [number(game.hightech_level(key)+1),number(game.hightech_duration(key))]
+	return "切换研发" if not game.active_research().is_empty() else "研发"
+
+func refresh_hightech_progress(key: String) -> void:
+	var controls: Dictionary = hightech_progress[key]
+	var job: Dictionary = game.profile.hightechResearch.get(key,{})
+	var duration := float(job.get("duration",game.hightech_duration(key)))
+	var elapsed := clampf(duration-float(job.get("remaining",duration)),0,duration)
+	var fraction := elapsed/duration if duration > 0 else 0.0
+	controls.label.text = "研发进度  %.0f%%  ·  %s/%s秒" % [floorf(fraction*100),number(elapsed),number(duration)]
+	controls.bar.get_child(0).size.x = controls.bar.size.x*fraction
+	controls.bar.get_child(0).color = CYAN if game.active_research().has(key) and not game.paused else ORANGE
+
+func build_charge_tab() -> void:
+	var scroll := ScrollContainer.new()
+	scroll.name = "充能"
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	equipment_tabs.add_child(scroll)
+	var cards := HBoxContainer.new()
+	cards.add_theme_constant_override("separation",8)
+	scroll.add_child(cards)
+	for key in db.data.get("charge",{}):
+		var card := Panel.new()
+		card.custom_minimum_size = HIGHTECH_CARD_SIZE
+		card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+		cards.add_child(card)
+		var title := equipment_label(card,"",Vector2(12,5),14,CYAN)
+		var status := equipment_label(card,"",Vector2(327,7),11,MUTED)
+		status.size.x = 104
+		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		var description := equipment_label(card,"",Vector2(12,27),12,MUTED)
+		description.size.x = 419
+		description.clip_text = true
+		var progress := equipment_label(card,"",Vector2(12,48),11,INK)
+		var charge_bar := charge_progress_bar(card,Vector2(12,67),303,CYAN)
+		var level_progress := equipment_label(card,"",Vector2(12,78),11,MUTED)
+		var level_bar := charge_progress_bar(card,Vector2(12,97),303,Color("aa96ed"))
+		var cost := equipment_label(card,"",Vector2(333,48),11,MUTED)
+		cost.size.x = 98
+		cost.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cost.clip_text = true
+		var action := button("",Rect2(331,75,100,28),func():
+			game.toggle_charge(key)
+			refresh_charge_card(key),true)
+		action.reparent(card,false)
+		action.add_theme_font_size_override("font_size",14)
+		charge_cards[key] = {"title":title,"status":status,"description":description,"progress":progress,"charge_bar":charge_bar,"level_progress":level_progress,"level_bar":level_bar,"cost":cost,"button":action}
+		refresh_charge_card(key)
+
+func charge_progress_bar(card: Control, pos: Vector2, width: float, color: Color) -> ColorRect:
+	var progress := ColorRect.new()
+	progress.position = pos
+	progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	progress.color = LINE
+	progress.size = Vector2(width,6)
+	var fill := ColorRect.new()
+	fill.color = color
+	fill.size = Vector2(0,6)
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	progress.add_child(fill)
+	card.add_child(progress)
+	return progress
+
+func refresh_charge_card(key: String) -> void:
+	var controls: Dictionary = charge_cards[key]
+	var row: Dictionary = db.data.charge[key]
+	var job := game.charge_job(key)
+	controls.title.text = "%s Lv.%s" % [key,number(job.level)]
+	controls.description.text = game.charge_description(key)
+	controls.description.tooltip_text = controls.description.text
+	var fraction := clampf(float(job.elapsed)/float(row.para_4),0,1)
+	controls.progress.text = "本次充能  %s/%s秒" % [number(job.elapsed),number(row.para_4)]
+	controls.charge_bar.get_child(0).size.x = controls.charge_bar.size.x * fraction
+	controls.level_progress.text = "升级进度  %s/%s次" % [number(job.count),number(game.charge_required(key))]
+	controls.level_bar.get_child(0).size.x = controls.level_bar.size.x * clampf((float(job.count)+fraction)/game.charge_required(key),0,1)
+	controls.cost.text = "%s %s/秒" % [db.data.resources[str(int(row.para_1))],number(game.charge_resource_rate(key))]
+	controls.cost.tooltip_text = controls.cost.text
+	var unlocked := game.charge_unlocked(key)
+	controls.button.disabled = not unlocked
+	if not unlocked:
+		controls.status.text = "未解锁"
+		controls.button.text = "第%s关解锁" % number(row.unlock)
+	elif job.active:
+		controls.status.text = "资源不足" if game.charge_resource_rate(key) > 0 and float(game.profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0 else "充能中"
+		controls.button.text = "暂停"
+	else:
+		var started := int(job.started) > 0
+		controls.status.text = "已暂停" if started else "未启动"
+		controls.button.text = "继续充能" if started else "启动充能"
+	controls.status.add_theme_color_override("font_color",CYAN if controls.status.text=="充能中" else Color("ffc178") if controls.status.text=="资源不足" else MUTED)
 
 func select_research(key: String) -> void:
 	var active := game.active_research()
@@ -724,9 +847,13 @@ func build_hightech_tab() -> void:
 		description.add_theme_color_override("font_color",MUTED)
 		card.add_child(description)
 		hightech_descriptions[key] = description
-		var b := button(hightech_button_text(key),Rect2(10,79,423,27),func():select_research(key),true,not game.can_research(key))
+		var progress_text := equipment_label(card,"",Vector2(10,77),11,INK)
+		var progress_bar := charge_progress_bar(card,Vector2(10,99),303,CYAN)
+		hightech_progress[key] = {"label":progress_text,"bar":progress_bar}
+		refresh_hightech_progress(key)
+		var b := button(hightech_button_text(key),Rect2(331,77,102,29),func():select_research(key),true,not game.can_research(key))
 		b.reparent(card,false)
-		b.add_theme_font_size_override("font_size",14)
+		b.add_theme_font_size_override("font_size",12)
 		b.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
 		hightech_buttons[key] = b
 		equipment_label(card,"⠿ 拖动换位",Vector2(350,5),12,MUTED)

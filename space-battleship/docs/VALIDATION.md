@@ -1,5 +1,49 @@
 # 验证与证据
 
+## 2026-09-15 充能升级次数四舍五入
+
+- charge_required统一返回round(para_5×para_6^等级)，供升级、离线边界、存档校验和进度条使用。配置允许小数参数，保留正次数检查；只同步最新charge投影（当前para_6=1.3），其他运行段不变。
+- 隔离 `test/run.py`：成长20项通过（`../../test/work/test_charge_growth-qz8zpg7n/`），新增1.5→2、2.25→2、无小数次数残留、跨级扣费边界及基础次数舍入；原充能53项通过（`../../test/work/test_charge-rscuqbf1/`），固定次数参数夹具避免平衡修改影响机制测试；配置6用例通过（`../../test/work/test_charge_config-7cr3a87e/`），验证小数参数可导入及非法范围拒绝。
+- Godot导入/运行退出0，仅既有根证书提示。未修改源表或正式玩家存档。
+
+## 2026-09-15 高科技研发进度条
+
+- `test/run.py test_hightech_progress.gd` 在 `../../test/work/test_hightech_progress-85jf83c2/` 12项通过：未开始空条、半程比例/百分比、切换保留与颜色、续研下一等级归零、暂停保留、重建保留页签及各卡片条/按钮边界。编辑器导入、有图形执行退出0；已查看 hightech-progress.png，描述、进度文字/条和右侧按钮无重叠。
+- 拖拽直接影响回归 `test_hightech_slots.gd` 在 `../../test/work/test_hightech_slots-hypa6tid/` 32项全通过，覆盖按钮落点、换位/空槽、扩展、存档和页签解锁；按钮落点改为实际按钮中心。测试解锁条件改读当前配置，替代已过期的固定关卡夹具；首轮专项因旧夹具无法解锁而停止，修正后以上最终运行通过。
+- 最终日志无脚本错误，仅既有根证书提示。本次只改UI显示及相关测试，未改研发计算、Excel、运行JSON或正式存档，未跑无关玩法测试。
+
+## 2026-09-15 充能消耗等级成长
+
+- 只读核对charge!A1:K6：三项para_7均为0.05，基础para_2已由用户改为1；以当前分表仅同步charge运行投影，断言其他段不变。用户最新补充完整公式结果四舍五入，替代先前向上取整。
+- `test/run.py test_charge_growth.gd`：最终16项通过，覆盖0级基础、升级即刻变价、长步跨级、800小步与长步结算一致、断料恢复、幂次后四舍五入、半整数向上舍入、0费率、旧配置兼容、credit跨级、实际离线加载与上限、卡片费率。证据：`../../test/work/test_charge_growth-_s9i95vz/`。
+- `test/run.py test_charge.gd`：53项通过（`../../test/work/test_charge-438fqvk8/`），旧机制测试明确固定基础5与para_7=0，避免绑定用户平衡调整。`test_charge_config.py`：5用例通过（`../../test/work/test_charge_config-dy00_9qx/`），包含para_7负值/空值/无穷拒绝和源表投影一致。
+- Godot导入/运行退出0，仅既有根证书提示。正式源表与玩家存档未修改，未运行无关测试。
+
+## 2026-09-15 充能进度条卡片
+
+- `test/run.py test_charge.gd`：53项全部通过，Godot导入/运行退出0；新增本次与累计进度条比例、暂停保留、资源补充状态恢复及固定条高检查，原充能逻辑回归仍通过。
+- 已检查 `../../test/work/test_charge-p0897q_o/space-battleship/charge.png`，三卡片的双进度条、标题、效果、状态、消耗及按钮无重叠。首次原生ProgressBar最小高度导致重叠，已改为复用现有冷却条的ColorRect结构，最终固定6像素。仅既有根证书提示；未改配置、充能计算或正式存档。
+
+## 2026-09-15 页签解锁显示规范
+
+- `test/run.py test_tab_unlocks.gd`：隔离图形专项14项全部通过，Godot导入/运行退出0。覆盖武器、防御、高科技、充能四页的解锁门槛、首项解锁显示、原选择保留、重新锁定回退及全部锁定时无选中页。配置门槛只在测试内存设置。
+- 证据：`../../test/work/test_tab_unlocks-ez5_pg6s/`。已检查 `space-battleship/tabs-before-unlock.png` 和 `tabs-charge-unlocked.png`，确认解锁前无充能入口，解锁后可正常展示三卡片。仅既有根证书提示，未改正式配置/存档。
+
+## 2026-09-15 过期测试修复
+
+- 保留两组有效回归。`test_hightech_continuous.gd` 增加统一的内存机制夹具，明确研发耗时/成长/并发/离线上限、效果参数及描述；按当前配置unlock解锁，收入样本标注origin=drop。在线、重载、UI使用相同前提，继续验证暂停、切换、跨级、离线与描述。
+- `test_level_editor.py` 在隔离编辑请求中显式设置 `=D4` 和 `=ROUND(D4*1.17,2)` 测试公式链，保留2.34的独立期望，并断言保存后公式原文仍在；不再以正式配置的成长倍率作为该机制测试前提。
+- bundled Python、`PYTHONIOENCODING=utf-8`，通过 `test/run.py` 隔离执行：连续研发20项全过（`../../test/work/test_hightech_continuous-m395e3w3/`）；编辑器7用例全过（`../../test/work/test_level_editor-0xj8c4_9/`）。Godot导入/执行退出0，仅既有根证书提示。未改游戏实现、正式Excel、运行JSON或玩家存档；U-015已解决。
+
+## 2026-09-15 充能页签
+
+- 只读重新核对用户修正后的 `config_excel/charge.xlsx` · charge!A1:J6，以 func 实现三种效果、des 构建描述；运行JSON仅新增charge及其source_files路径，保留其他现有修改，未写源表或正式玩家存档。
+- bundled Python执行 `test/run.py test_charge.gd`：48项、0失败，Godot4.7.2导入/运行退出0。覆盖解锁、同时启动、整数扣费、均分及启动顺序余数、断料冻结/补充继续、跨级累计、暂停、保存恢复、旧档、离线扣费/上限、攻击与高科技叠加、双防御、仅击杀铁加成、描述安全解析与百分比舍入、实际卡片按钮和页签保留。小步长100帧确认没有逐帧额外扣费。
+- 证据：`../../test/work/test_charge-n2vt75kf/` 的import.log/test.log及 `space-battleship/charge.png`。已检查三卡片截图，标题、动态描述、进度、消耗、等待按钮无重叠。Godot仅有既有根证书提示。
+- `test/run.py test_charge_config.py`：5用例通过（`../../test/work/test_charge_config-7mhiznln/`），验证源表投影、参数/表达式拒绝、失败保留JSON、无变化不解析、关卡编辑器发现并保留charge配置。
+- `test/run.py test_config_workbooks.py`：14用例通过（`../../test/work/test_config_workbooks-atng1xew/`）；测试断言适配旧总表没有可选charge的情形。Windows运行命令设置 `PYTHONIOENCODING=utf-8`，避免旧控制台打印中文异常。
+- 两个旧回归的配置前提问题见 TODO U-015：连续研发测试在缺研发项处中止；关卡编辑器7用例中6通过、1个旧数值期望失败。本次共享描述逻辑及charge编辑器集成已分别通过上述专项，没有改无关配置或旧测试期望。
+
 ## 2026-09-14 自动生成资源
 
 - 只读核对 `config_excel/config.xlsx!A11:C11` 得到 `autoGenRes=10,2,10,40`；使用 bundled Python 执行增量配置导入，确认仅更新 config 投影并成功写入 `data/game_data.json`。
@@ -175,6 +219,17 @@
 测试解释：test_game 在内存覆盖部分武器伤害/CD/成本作为机制基准，数据文件保持不变；其“uses Excel”断言名不代表检查真实源表值。10关通关使用强化装备，尚未验证真实初始数值平衡，见 U-013。更早失败已由外部测试更新解决，不作为当前阻塞。
 
 ## 后续任务命令
+
+### 2026-09-15 驻守与跃迁
+
+- test/run.py 隔离运行：test_guard.gd 最终28项全通过（work/test_guard-sdhs2lgq），test_loop_retreat.gd 更新旧循环期望后17项全通过（work/test_loop_retreat-hzwqja8k），test_skip_clear.gd 更新驻守离开期望后7项全通过（work/test_skip_clear-9n915e6x）。各编辑器导入与测试退出0；仅既有Windows根证书提示。
+- 覆盖巡航到下一波、战斗中原点驻守、清空才计时、间距/速度换算、暂停、原波刷新、关闭恢复推进、三种死亡选项、跨关返回/就地驻守、最终遭遇通关后重刷、独立跃迁、驻守位置及选项存档、实际设置菜单信号；相关即时换关与原死亡回退同步验证。
+- 检查最终副本 space-battleship/guard.png，跃迁/驻守/设置及刷新倒计时无重叠；产物均在 ../test/work，各副本 import.log/test.log 为证据。未运行无关完整战斗、充能或配置导入测试。
+
+### 2026-09-15 立即过关按钮
+
+- 通过 test/run.py 运行 test_skip_clear.gd，隔离副本 `../test/work/test_skip_clear-5t6ofpk4/`；编辑器导入退出0，专项7项全通过，测试退出0。
+- 覆盖战斗中拒绝跳关、保留解锁确认、倒计时期间按钮可用、实际按钮信号立即换关、防重复跳关、循环目标及原自动倒计时。检查 space-battleship/skip-clear.png；仅既有Windows根证书提示，未运行无关测试。
 
 ### 2026-09-14 离线资源收益
 

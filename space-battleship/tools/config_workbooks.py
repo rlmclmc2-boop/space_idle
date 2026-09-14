@@ -216,6 +216,12 @@ def incremental_import(directory, target):
     snapshot, paths, changed = {}, {}, []
     for name, section in SECTIONS.items():
         filename = manifest.get("sheets", {}).get(name)
+        if name == 'charge' and not filename:
+            if not (directory / 'charge.xlsx').is_file():
+                if current.get('charge'):
+                    raise ValueError('缺少 charge.xlsx；原配置保留，请恢复文件')
+                continue
+            filename = 'charge.xlsx'
         if not filename or pathlib.Path(filename).name != filename:
             raise ValueError("分表清单缺少或包含无效路径：" + name)
         path = directory / filename

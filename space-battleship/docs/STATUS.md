@@ -1,9 +1,20 @@
 # Current Status
 
 Goal:
-新增按 config.autoGenRes 配置运行的自动生成资源。
+完成充能升级所需次数计算后四舍五入，保持整数结算与显示。
+完成高科技研发进度条展示与验证。
+完成循环改驻守、独立跃迁及三项死亡设置；充能para_7消耗成长已按最新要求改为四舍五入。
 
 Done:
+- 2026-09-15：升级所需充能次数统一round(para_5×para_6^等级)，配置允许小数基数/成长，实际升级、离线边界与进度条共用整数结果；同步最新charge。成长20项、原充能53项、配置6用例全部通过，见VALIDATION充能升级次数四舍五入。
+- 2026-09-15：高科技卡片左下改为研发进度条、百分比及已用/总时长，右侧保留操作按钮；暂停/切换保持进度，自动续研下一等级归零。复用现有进度条结构；专项12项、拖拽回归32项通过，已验图，见VALIDATION高科技研发进度条。
+- 2026-09-15：循环替换为驻守：巡航到下一波后停留，清空敌人后按相邻遭遇距离/飞船速度计时原点刷新；跃迁独立进入已通关关卡。死亡设置支持取消、返回原点、退后就地驻守，位置/选择持久化。驻守28项、回退17项、立即过关7项全部通过，编辑器导入退出0，已验图；见VALIDATION驻守与跃迁。
+- 2026-09-15：充能每秒消耗改为round(para_2×(1+para_7)^等级)，按用户最新要求四舍五入，扣费与UI共用入口；在线/离线按升级边界切换费率，保留整数分配与断料进度。仅同步最新charge投影；最终成长16项、原充能53项、配置5用例通过，见VALIDATION充能消耗等级成长。
+- 2026-09-15：充能卡片改为本次充能/累计升级双进度条，顶部等级与状态、第二行效果，右侧消耗及启停按钮；暂停/断料保留显示进度。53项专项全部通过，已验图，无重叠，见VALIDATION充能进度条卡片。
+- 2026-09-15：通关倒计时面板新增“立即过关”，点击跳过等待；与倒计时共用受状态保护的换关入口，保留解锁确认。专项7项全通过、编辑器导入退出0，已检查窗口截图，见VALIDATION立即过关按钮。
+- 2026-09-15：AGENTS与UI规范新增“所有游戏页签未解锁前不展示”；武器/防御/高科技/充能统一按首项解锁显示，重新锁定回退到首个可见页。隔离专项14项全通过，已检查充能解锁前后截图，见VALIDATION页签解锁显示规范。
+- 2026-09-15：修复两组过期测试：连续研发统一隔离参数、按当前unlock解锁、补收入来源；关卡编辑器显式设置测试公式链并检查公式保留。连续研发20项、编辑器7用例全部通过，U-015已解决；游戏实现和正式配置未改，见VALIDATION过期测试修复。
+- 2026-09-15：新增攻击/防御/熔炼器充能页签、配置导入与存档。三项可同时运行、离线继续；整数资源不足先均分，余数按启动先后分配，断料/暂停/重启保留进度。熔炼器仅加成击杀掉落铁，描述按des动态百分比四舍五入。充能48项、配置5用例、增量导入14用例通过，已验图；旧测试配置问题见U-015，证据见VALIDATION充能页签。
 - 2026-09-14：接入自动生成资源：按间隔从右侧随机高度生成，按当前关卡资源倍率取整，向左飞行；鼠标划过全额拾取，飞过飞船按自动拾取损耗结算，并补充配置校验与专项测试。
 - 2026-09-14：修复少量敌人时导弹齐射视觉重叠：仍按 para1 发射全部导弹，目标不足循环复用，并以小幅上下错位显示；专项目标测试21项通过。
 - 2026-09-14：所有 equipment（含装甲）均新增10连升级和MAX升级，沿用逐级成本汇总、资源校验与容量/生命保损逻辑；专项测试更新通过。
@@ -56,13 +67,21 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无，本次大重启实现与验证已完成。
+- 无，本次充能消耗成长实现与验证已完成。
 
 Blocked:
+- 本次无阻塞；U-015已解决。
 - 2026-09-14：Git 首次推送已完成，main 跟踪 origin/main，同步无阻塞。
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
+0. QA「大重启」加载充能次数四舍五入规则；最新charge已同步。
+0. QA「大重启」加载高科技研发进度条，无需重读配置。
+0. QA「大重启」加载充能消耗成长；最新charge已同步，无需重读配置。
+0. QA「大重启」加载充能双进度条卡片，无需重读配置。
+0. QA「大重启」加载统一页签显示规则；充能首项解锁前不展示，无需重读配置。
+0. 本次测试修复无待办；后续机制测试使用明确隔离参数，避免绑定不断变化的平衡数值。
+0. 使用QA「大重启」或关闭后从启动.cmd启动以加载充能页签；charge已投影，无需用旧总表覆盖分表。
 0. 重启游戏验证自动生成资源的右侧生成、飞行、鼠标拾取与飞船自动拾取。
 0. 重启游戏查看所有 equipment 卡片的10连/MAX按钮。
 0. 当前运行中的旧QA需先手动关闭游戏并从启动.cmd启动一次，随后即可点击「大重启」应用后续代码改动。
@@ -80,6 +99,14 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- scripts/game.gd；tools/import_workbook.py；data/game_data.json；../test/test_charge_growth.gd；../test/test_charge.gd；../test/test_charge_config.py；docs/modules/progression.md；docs/DATA.md；docs/VALIDATION.md（充能升级次数四舍五入）
+- scripts/game.gd；scripts/main.gd；../test/test_guard.gd；../test/test_loop_retreat.gd；../test/test_skip_clear.gd；docs/modules/map.md；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；config_excel/charge.xlsx；../test/test_charge_growth.gd；../test/test_charge.gd；../test/test_charge_config.py；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
+- scripts/main.gd；../test/test_charge.gd；docs/modules/ui.md；docs/VALIDATION.md（充能进度条卡片）
+- scripts/main.gd；scripts/game.gd；../test/test_skip_clear.gd；docs/modules/ui.md；docs/VALIDATION.md
+- AGENTS.md；scripts/main.gd；../test/test_tab_unlocks.gd；docs/modules/ui.md；docs/VALIDATION.md
+- ../test/test_hightech_continuous.gd；../test/test_level_editor.py；docs/TODO.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；tools/config_workbooks.py；tools/level_editor_store.py；config_excel/charge.xlsx；data/game_data.json；../test/test_charge.gd；../test/test_charge_config.py；../test/test_config_workbooks.py；docs/modules/progression.md；docs/modules/economy.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md；docs/TODO.md
 - scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；../test/test_auto_gen_resources.gd；docs/modules/economy.md；docs/modules/ui.md；docs/DATA.md
 - scripts/config_panel.gd；scripts/restart_host.gd；../test/test_full_restart.py；../test/test_full_restart_driver.gd；docs/modules/ui.md；docs/VALIDATION.md
 - scripts/game.gd；../test/test_target_resistance.gd；docs/modules/weapons.md；docs/VALIDATION.md

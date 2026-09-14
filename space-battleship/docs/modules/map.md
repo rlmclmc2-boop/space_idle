@@ -18,6 +18,12 @@
 
 2026-09-13 用户确认跨关回退落在上一关 BOSS 后方时重新触发该关 BOSS；保留剩余距离算出的落点，恢复生命后复用 spawn_group 在落点重放 BOSS，避免没有后续敌群而无限空驶。
 `start()` 限制 1≤level≤highestLevel，清本次战斗、恢复玩家、进入 TRAVEL。`spawn_group()` 将距离设为遭遇位置并增加 group_index。按上述最后一场判定通关，不以走到 length 为胜利条件。跨关后退仅在落点越过目的关最后遭遇时重放最后一场；越过前置大型舰不重放它。
-`clear_level()` 更新通关与解锁。等待 defaults.loopDelay 后，循环开启则重刷 profile.loopLevel，否则到下一关（上限为最后一关）；弹窗等待见 [progression](progression.md)。UI 从已通关关卡中选择目标，开启立即进入目标关卡；开启中改选也立即切换。关闭后恢复自动推进。目标独立保存，死亡退关不修改目标；重启恢复有效目标，旧存档缺少目标时关闭循环并要求选择。
+2026-09-15 用户替代旧循环规则为“驻守”：战斗中开启驻守当前遭遇点；巡航中开启先到下一波再驻守（用户最终确认）。该波敌人全部消失后才开始计时，间隔=（该波位置距离−上一波位置距离）/config.movement；第一波从关卡起点计算。驻守期间不前进，计时结束复用 spawn_group 在原位置刷新同一波，不叠加活敌；暂停冻结计时，速度倍率随现有模拟时间生效。关闭驻守后继续正常推进。
+
+最终遭遇仍复用 clear_level 通关解锁及清弹，待解锁提示确认后按驻守间隔刷新最终敌群；不自动换关。“立即过关”仍可离开驻守进入下一关。非驻守保持 defaults.loopDelay 自动换关。弹窗等待见 [progression](progression.md)。
+
+“跃迁”独立保留已通关关卡选择，选择后立即进入该关并结束当前驻守。驻守死亡设置提供：0后退并取消（默认）；1后退后沿正常遭遇路线返回原驻守点（可跨关）；2后退后在落点保持驻守，不返回，刷新目的关落点对应的下一遭遇，落点已越过最终遭遇时重放最终遭遇。三项均保留现有后退距离与恢复规则，来源为2026-09-15用户确认。
+
+驻守复用 profile.loop 开关，guardStage/guardIndex/guardDistance 保存目的点，guardDeath 保存死亡选项；重启在有效驻守点重新开始等待计时，不保存敌群或计时中间量。旧循环存档无驻守目的点时关闭驻守，旧已通关列表继续用于跃迁。
 
 追踪：level/monGroup/mon → JSON levels/groups/enemies → database.ratio、game.start/spawn_group/clear_level/tick → test_final_encounter、test_loop_retreat；编队重叠校验缺口见 U-007。

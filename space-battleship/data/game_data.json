@@ -11606,17 +11606,17 @@
   ],
   "resources": {
     "1": "铁",
-    "2": "铝"
+    "2": "铀"
   },
   "config": {
     "startEquip": "armour,laser",
     "dmgReduce": 0.5,
     "movement": 50,
     "autoCollectReduce": 0.5,
-    "backRange": 300,
+    "backRange": 200,
     "hightechLimit": 1,
     "offlineMax": 4,
-    "autoGenRes": "10,2,10,40"
+    "autoGenRes": "30,2,5,40"
   },
   "defaults": {
     "autoCollectDelay": 5.0,
@@ -11633,13 +11633,14 @@
     "enemyCannonMissingDamageAndCooldown": "Use player cannon row 1 for missing fields."
   },
   "source_files": {
-    "level": "D:\\放置\\space-battleship\\config_excel\\level.xlsx",
-    "equipment": "D:\\放置\\space-battleship\\config_excel\\equipment.xlsx",
-    "mon": "D:\\放置\\space-battleship\\config_excel\\mon.xlsx",
-    "monGroup": "D:\\放置\\space-battleship\\config_excel\\monGroup.xlsx",
-    "res": "D:\\放置\\space-battleship\\config_excel\\res.xlsx",
-    "config": "D:\\放置\\space-battleship\\config_excel\\config.xlsx",
-    "hightech": "D:\\放置\\space-battleship\\config_excel\\hightech.xlsx"
+    "level": "G:\\放置\\space-battleship\\config_excel\\level.xlsx",
+    "equipment": "G:\\放置\\space-battleship\\config_excel\\equipment.xlsx",
+    "mon": "G:\\放置\\space-battleship\\config_excel\\mon.xlsx",
+    "monGroup": "G:\\放置\\space-battleship\\config_excel\\monGroup.xlsx",
+    "res": "G:\\放置\\space-battleship\\config_excel\\res.xlsx",
+    "config": "G:\\放置\\space-battleship\\config_excel\\config.xlsx",
+    "hightech": "G:\\放置\\space-battleship\\config_excel\\hightech.xlsx",
+    "charge": "G:\\放置\\space-battleship\\config_excel\\charge.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -11671,6 +11672,47 @@
       "unlock": 5,
       "para1": 0.1,
       "para2": null
+    }
+  },
+  "charge": {
+    "攻击充能": {
+      "name": "攻击充能",
+      "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有武器伤害*(1+para3)^lv",
+      "des": "所有武器伤害提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
+      "unlock": 1,
+      "para_1": 2,
+      "para_2": 1,
+      "para_3": 0.1,
+      "para_4": 5,
+      "para_5": 1,
+      "para_6": 1.3,
+      "para_7": 0.1
+    },
+    "防御充能": {
+      "name": "防御充能",
+      "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有防御装备的效果值(生命,护盾等)*(1+para3)^lv",
+      "des": "所有防御强度提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
+      "unlock": 1,
+      "para_1": 2,
+      "para_2": 1,
+      "para_3": 0.1,
+      "para_4": 5,
+      "para_5": 1,
+      "para_6": 1.3,
+      "para_7": 0.1
+    },
+    "熔炼器充能": {
+      "name": "熔炼器充能",
+      "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使掉落的铁的数量*(1+para3)^lv,只影响掉落的铁",
+      "des": "掉落的铁矿量提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
+      "unlock": 1,
+      "para_1": 2,
+      "para_2": 1,
+      "para_3": 0.1,
+      "para_4": 5,
+      "para_5": 1,
+      "para_6": 1.3,
+      "para_7": 0.1
     }
   }
 }

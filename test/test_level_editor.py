@@ -30,10 +30,12 @@ class EditorTests(unittest.TestCase):
         group = {'id': 999, 'des': '测试编队', 'mon': '{null,null,null,null,999,null,null,null,null,null}'}
         r['tables']['monGroup']['rows'].append(group)
         level = r['tables']['level']['rows'][0]
-        level['monGroup'] = '{999|0.1,' + str(level['monGroup']).strip('{}')[0:] + '}'
         # Replace a first encounter without duplicating its position.
         level['monGroup'] = '{999|0.01,6|0.9}'
         level['atkRatio'] = 2
+        # Known formula chain tests cache recalculation independently of balance edits.
+        level['lifeRatio'] = '=D4'
+        r['tables']['level']['rows'][1]['atkRatio'] = '=ROUND(D4*1.17,2)'
         result = self.store.execute(r, True)
         data = json.loads(self.store.target.read_text(encoding='utf-8'))
         self.assertEqual(data['enemies']['999']['health'], 321)
@@ -42,6 +44,7 @@ class EditorTests(unittest.TestCase):
         self.assertEqual(data['levels'][1]['atkRatio'], 2.34)
         self.assertTrue(Path(result['backup']).is_dir())
         self.assertEqual(result['tables']['level']['rows'][0]['lifeRatio'], '=D4')
+        self.assertEqual(result['tables']['level']['rows'][1]['atkRatio'], '=ROUND(D4*1.17,2)')
         self.assertEqual(incremental_import(self.store.directory, self.store.target)['changed'], [])
         with zipfile.ZipFile(self.store.paths['level']) as changed, zipfile.ZipFile(__import__('io').BytesIO(self.original[self.store.paths['level']])) as original:
             self.assertEqual(changed.read('xl/styles.xml'), original.read('xl/styles.xml'))

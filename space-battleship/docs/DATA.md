@@ -40,10 +40,15 @@
 | monGroup!A4:C10 | 7 种十槽编队，null 为空 | groups[字符串id].slots[] |
 | res!A4:B5 | 资源 ID/名称 | resources[字符串id] |
 | hightech!A4:H6 | 三项高科技名称、des 效果规则、description 界面模板、研发耗时/成长、解锁与效果参数 | hightech[name]；规则见 modules/progression.md，模板见 modules/ui.md |
+| config_excel/charge.xlsx · charge!A1:K6 | 三项充能；func 功能、des 卡片模板、unlock 通关门槛、para_1 至 para_7 | charge[name]；规则见 modules/progression.md |
 | config!A9:C11 | hightechLimit 同时研发数、offlineMax 离线上限（小时）、autoGenRes 自动生成资源参数 | config.hightechLimit / config.offlineMax / config.autoGenRes |
 | config!A4:C8 | 起始装备、减伤、移动、自动拾取损耗、死亡后退距离 backRange | config[name]=para_1 |
 
 装备通用字段：name+level 联合定位；dmg/CD 为单发伤害/冷却；dmgtype 见 combat；unlock 为通关条件（不把空白含义擅自补齐，见 U-004）；res_x 与 cost_x 配对表示**升到该行等级**的资源及数量。
+
+2026-09-15 新增可选 charge 投影：旧总表未含 charge 时保留已有投影，旧分表清单尚未登记时按固定文件名 `charge.xlsx` 发现；文件须只含同名工作表。增量导入与关卡编辑器均纳入该文件及指纹，已存在充能投影但文件丢失时增量导入报错保留原数据。校验三种已实现效果名、功能/描述非空、参数范围、资源引用及解锁关卡；`func` 是策划功能说明，不作为可执行代码。此次只投影 charge 并追加其 source_files 来源，其他运行配置保留，不同步旧总表。
+
+2026-09-15 升级所需次数按用户要求计算后四舍五入；para_5/para_6允许小数，不再要求参数本身为整数。校验仍要求基础次数舍入后至少1、成长倍率至少1，防止出现0次升级的无限循环；计算规则归progression。
 para 含义：armour.para1=生命；shield.para1=容量、para2=每秒最大容量恢复比例、para3=受击后恢复延迟；laser/cannon.para1=弹速；missile.para1=目标数量、para2=弹速。来源：各装备首行 B 列说明。
 
 ## 公式与投影流程
