@@ -74,19 +74,22 @@ func run() -> void:
 	scene.game.profile.cleared = []
 	scene.game.profile.hightechOrder = []
 	scene.build_ui()
-	scene.equipment_tabs.current_tab = 2
 	await frames()
 	var qa := root.get_node_or_null("QATools")
 	if qa != null:
 		qa.hide()
 	await frames()
 	check(scene.hightech_buttons.is_empty(), "All locked technologies hidden")
+	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "Hightech tab hidden before first unlock")
 	check(scene.game.hightech_slots()==["","","","","",""], "Six anonymous expansion slots reserved")
 	check(card(0).tech_key=="" and card(0)._get_drag_data(Vector2.ZERO)==null, "Empty slot cannot start drag")
 	scene.game.profile.cleared = [5]
 	scene.build_ui()
 	await frames()
 	check(scene.hightech_buttons.keys()==[BattleGame.FURNACE], "Only cleared-gate tech shown")
+	check(not scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "First unlock reveals tab without switching selection")
+	scene.equipment_tabs.current_tab = 2
+	await frames()
 	await capture("hightech-one-unlocked")
 	scene.game.profile.cleared = [5,8]
 	scene.build_ui()
@@ -161,6 +164,7 @@ func run() -> void:
 	scene.build_ui()
 	await frames()
 	check(scene.hightech_buttons.is_empty() and scene.game.hightech_slots().count("")==6, "Relocked configuration never leaks names through saved order")
+	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "Relock hides selected hightech tab and returns to weapons")
 	check(scene.equipment_tabs.get_rect().end.y<=778, "Slots and horizontal scrolling fit above footer")
 	print("Hightech slots: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

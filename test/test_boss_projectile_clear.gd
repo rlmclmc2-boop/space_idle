@@ -19,6 +19,7 @@ func run() -> void:
 	var g: BattleGame = scene.game
 	g.save_enabled = false
 	g.start(1,false)
+	g.group_index = g.db.levels[0].groups.size()-1
 	g.spawn_group()
 	var boss: Dictionary = g.enemies[0]
 	g.enemies.assign([boss])
@@ -69,9 +70,10 @@ func run() -> void:
 	g.fire(normal,g.player,weapon,1,true,"laser_mon")
 	g.hit_enemy(normal,1000000000,1)
 	check(not g.projectiles.is_empty(),"Ordinary enemy death preserves projectiles")
-	normal.hp = 1
-	normal.boss = true
-	g.hit_enemy(normal,1000000000,1)
-	check(g.projectiles.is_empty(),"Direct boss damage also clears immediately")
+	g.group_index = g.db.levels[g.stage-1].groups.size()-1
+	g.spawn_group()
+	for enemy in g.enemies:
+		g.hit_enemy(enemy,1000000000,1)
+	check(g.projectiles.is_empty(),"Direct final-group damage also clears immediately")
 	print("Boss projectile clear: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

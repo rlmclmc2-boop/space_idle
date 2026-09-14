@@ -17,7 +17,10 @@ func run() -> void:
 	check(g.boss_info()=="？？？", "Ordinary wave does not reveal boss")
 	g.group_index = db.levels[0].groups.size()-1
 	g.spawn_group()
-	check(g.boss_info()==str(g.enemies[0].des), "Encounter reveals configured boss description")
+	var descriptions: Array[String] = []
+	for enemy in g.enemies:
+		if not descriptions.has(str(enemy.des)): descriptions.append(str(enemy.des))
+	check(g.boss_info()==" / ".join(descriptions), "Encounter reveals final-group descriptions")
 	g.begin_retreat()
 	check(g.boss_info()!="？？？", "Death retains discovery")
 	g.start(1,false)

@@ -6,6 +6,7 @@ var worker: Thread
 var output: Array = []
 var python_path := ""
 var restart_button: Button
+var full_restart_button: Button
 var delete_save_button: Button
 var deleting_save := false
 var restarting := false
@@ -91,6 +92,12 @@ func _ready() -> void:
 		DirAccess.make_dir_recursive_absolute(config_directory)
 		OS.shell_open(config_directory))
 	split_row.add_child(open_directory)
+	var level_editor_button := Button.new()
+	level_editor_button.text = "关卡编辑器"
+	level_editor_button.pressed.connect(func():
+		var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--path", ProjectSettings.globalize_path("res://"), "res://level_editor.tscn"]))
+		if pid == -1: status_label.text = "关卡编辑器启动失败，请使用项目内的启动入口。")
+	split_row.add_child(level_editor_button)
 	var directory_label := Label.new()
 	directory_label.text = "读取配置：config_excel/ 中有修改的分表\n直接编辑分表后不用同步；同步会按总表更新同名文件。"
 	directory_label.tooltip_text = config_directory
@@ -114,6 +121,12 @@ func _ready() -> void:
 	restart_button.custom_minimum_size.y = 46
 	restart_button.pressed.connect(restart_game)
 	buttons.add_child(restart_button)
+	full_restart_button = Button.new()
+	full_restart_button.text = "大重启"
+	full_restart_button.tooltip_text = "保存进度，彻底退出游戏和 QA，再导入资源并启动新进程，应用代码改动。"
+	full_restart_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	full_restart_button.pressed.connect(full_restart)
+	buttons.add_child(full_restart_button)
 	delete_save_button = Button.new()
 	delete_save_button.text = "删除存档"
 	delete_save_button.tooltip_text = "清除游戏进度并从头开始，保留 QA 配置设置。"
@@ -191,6 +204,7 @@ func execute_import() -> int:
 	return OS.execute(python_path,PackedStringArray([ProjectSettings.globalize_path("res://tools/config_workbooks.py"),operation,"--source",import_source,"--directory",config_directory]),output,true,false)
 
 func _process(_delta: float) -> void:
+	full_restart_button.disabled = worker != null or restarting or game_scene() == null
 	delete_save_button.disabled = worker != null or restarting or game_scene() == null
 	control_poll += _delta
 	if control_poll >= 0.2:
@@ -257,6 +271,40 @@ func send_control(values: Dictionary) -> void:
 
 func delete_save() -> void:
 	restart_game(true)
+
+func full_restart() -> void:
+	if worker != null or restarting:
+		return
+	var scene := game_scene()
+	if scene == null:
+		status_label.text = "游戏场景尚未就绪。"
+		return
+	var failed := [false]
+	var on_event := func(kind, _info):
+		if kind == "save_error": failed[0] = true
+	scene.game.event.connect(on_event)
+	scene.game.settle_drops()
+	scene.game.save_progress()
+	scene.game.event.disconnect(on_event)
+	if failed[0]:
+		status_label.text = "保存进度失败，未执行大重启。"
+		return
+	if settings.save("user://qa_settings.cfg") != OK:
+		status_label.text = "保存 QA 设置失败，未执行大重启。"
+		return
+	var project := ProjectSettings.globalize_path("res://")
+	if DirAccess.make_dir_recursive_absolute(project.path_join(".runtime")) != OK:
+		status_label.text = "无法创建大重启日志目录，未退出游戏。"
+		return
+	var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--headless", "--path", project, "--log-file", project.path_join(".runtime/full-restart.log"), "--script", "res://scripts/restart_host.gd", "--", str(OS.get_process_id())]))
+	if pid == -1:
+		status_label.text = "大重启启动失败，当前游戏已保留。"
+		return
+	restarting = true
+	full_restart_button.disabled = true
+	scene.set_process(false)
+	scene.game.save_enabled = false
+	get_tree().quit()
 
 func restart_game(clear_save: bool = false) -> void:
 	if worker != null or restarting:

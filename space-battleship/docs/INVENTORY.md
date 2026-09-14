@@ -10,7 +10,11 @@
 | `project.godot`, `main.tscn` | 项目配置、游戏入口 | 架构/启动任务 |
 | `scripts/database.gd`, `game.gd` | 数据层、模拟及进度 | 按符号 |
 | `scripts/main.gd` | 游戏 UI、程序绘图、声音、QA 创建 | 按符号 |
+| `scripts/number_format.gd` | 游戏内数量的 K/M/B/T 公共显示格式化 | UI 数值任务 |
 | `scripts/config_panel.gd` | 附属 QA 窗口、导入/场景重载/控制 | 按符号 |
+| `scripts/restart_host.gd` | QA大重启辅助进程：等待旧进程退出、资源导入与新进程启动 | 重启任务 |
+| `level_editor.tscn`, `scripts/level_editor.gd`, `tools/level_editor_store.py`, `关卡编辑器.cmd` | 独立关卡编辑器及源表保存事务；交接携带 | 关卡编辑器任务 |
+| `docs/LEVEL_EDITOR.md`, `../test/test_level_editor.py`, `../test/test_level_editor.gd` | 编辑器说明与隔离验证 | 关卡编辑器任务 |
 | `data/game_data.json` | 现有运行数值投影；来源须核对 | 按键 |
 | `tools/import_workbook.py` | 导入与校验 | 数据变更 |
 | `tools/config_workbooks.py` | 独立 Excel 同步及增量投影；依赖 openpyxl/lxml | 配置流程 |

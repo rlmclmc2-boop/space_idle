@@ -13,7 +13,7 @@ import openpyxl
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "hightech":"hightech"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
-FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row at the requested level.","enemyCannonMissingDamageAndCooldown":"Use player cannon row at the requested level."}
+FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
 def clean(value):
     return str(value).translate(str.maketrans({"｛":"{","｝":"}","，":",","；":";"})).strip("{} ")
@@ -46,7 +46,13 @@ def convert_sheet(name, rows):
     if name=="mon":
         result={}
         for row in rows:
-            row["equipment"]=[{"name":p.split("|")[0],"level":int(p.split("|")[1])} for p in clean(row["equipment"]).split(",")]
+            mounts = []
+            for part in clean(row["equipment"]).split(","):
+                fields = part.split("|")
+                if len(fields) != 2 or not fields[0].strip() or not fields[1].strip().isdigit() or int(fields[1]) < 1:
+                    raise ValueError(f'mon {row["id"]}：武器格式应为 name|正整数数量')
+                mounts.extend({"name": fields[0].strip()} for _ in range(int(fields[1])))
+            row["equipment"] = mounts
             drop=clean(row["res"]).split(",")
             if len(drop)==4:
                 drop=[drop[0],drop[1],drop[2]+"."+drop[3]]
@@ -88,9 +94,9 @@ def validate_description(row):
         raise ValueError(f'{label}: invalid braces')
     for block in blocks:
         parts=block.replace('，',',').split(',')
-        if any(option.strip() not in ('向上取整','不含自身') for option in parts[1:]):
+        if any(option.strip() not in ('向上取整','不含自身','百分比显示','保留两位小数','即100.3%展示为100%') for option in parts[1:]):
             raise ValueError(f'{label}: unknown rounding instruction')
-        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('（','(').replace('）',')')
+        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('（','(').replace('）',')').replace('^','**')
         if not re.fullmatch(r'[0-9. +*/()\-]+',formula):
             raise ValueError(f'{label}: only numeric arithmetic is supported')
         try:
@@ -98,7 +104,7 @@ def validate_description(row):
         except SyntaxError as error:
             raise ValueError(f'{label}: invalid expression') from error
         for node in ast.walk(tree):
-            if not isinstance(node,(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.UAdd,ast.USub,ast.Constant)) or (isinstance(node,ast.Constant) and (type(node.value) not in (int,float) or not math.isfinite(node.value))):
+            if not isinstance(node,(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow,ast.UAdd,ast.USub,ast.Constant)) or (isinstance(node,ast.Constant) and (type(node.value) not in (int,float) or not math.isfinite(node.value))):
                 raise ValueError(f'{label}: only numeric arithmetic is supported')
 
 
@@ -143,6 +149,22 @@ def validate_projection(data):
     positive(config['movement'],'movement')
     positive(config['backRange'],'backRange',True)
     positive(config.get('offlineMax'),'offlineMax (hours)',True)
+    auto_gen = config.get('autoGenRes')
+    if auto_gen is not None:
+        if not isinstance(auto_gen, str):
+            raise ValueError('autoGenRes: expected interval, resource ID, amount, speed')
+        parts = [part.strip() for part in auto_gen.replace('，', ',').split(',')]
+        if len(parts) != 4 or not parts[0] or not parts[1] or not parts[2] or not parts[3]:
+            raise ValueError('autoGenRes: expected interval, resource ID, amount, speed')
+        if not re.fullmatch(r'\d+', parts[1]) or str(int(parts[1])) not in data['resources']:
+            raise ValueError(f'autoGenRes: unknown resource ID {parts[1]!r}')
+        try:
+            interval, amount, speed = (float(parts[0]), float(parts[2]), float(parts[3]))
+        except ValueError as error:
+            raise ValueError('autoGenRes: interval, amount and speed must be numbers') from error
+        positive(interval, 'autoGenRes interval')
+        positive(amount, 'autoGenRes amount', True)
+        positive(speed, 'autoGenRes speed')
     limit=config.get('hightechLimit')
     positive(limit,'hightechLimit')
     if isinstance(limit,bool) or limit != int(limit):

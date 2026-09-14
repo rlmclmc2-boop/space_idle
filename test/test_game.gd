@@ -46,8 +46,8 @@ func run() -> void:
 	retreat_probe.begin_retreat()
 	check(retreat_probe.retreat_target==900,"Zero backRange preserves distance")
 	db.config.backRange = saved_back_range
-	check(db.enemy_weapon("laser_mon",2).dmg==24,"Enemy level 2 fallback")
-	check(db.enemy_weapon("cannon-mon",1).dmg==20,"Enemy cannon blank fallback")
+	check(db.enemy_weapon("laser_mon").dmg==db.equip("laser_mon",1).dmg,"Enemy weapon uses its own base row")
+	check(db.enemy_weapon("cannon-mon").dmg==20,"Enemy cannon blank fallback")
 	check(is_equal_approx(db.ratio(2,0.5,"lifeRatio"),1.085),"Within-stage interpolation")
 	var g := BattleGame.new(db,false)
 	g.rng.seed = 42

@@ -19,6 +19,8 @@ res!A4:B5 定义铁、钛，JSON resources 为资源 ID → 名称。mon!G4:G9 �
 
 资源无小数，各资源计算完成后向上取整，中间计算不取整；自动拾取减免独立于掉落计算，单独取整一次，显示与实际获得一致（来源：同日用户最新指令“自动拾取的减免独立于这个规则”）。例如掉落 3×1.1 向上取整为4，自动损耗40%后 ceil(4×0.6)=3，提示与入账均为3。该指令替代此前倍率与自动损耗合并取整的规则。起始资源及旧存档余额在读入时向上取整；最终升级成本见 [progression](progression.md)。不改变非资源运算。
 `collect_near()` 在未暂停时拾取鼠标周围距离<55 的掉落。超过 defaults.autoCollectDelay 自动拾取；换关、leave、关闭游戏会以自动系数结算残余掉落。默认等待/拾取半径为实现补充，来源边界见 U-005/U-006。
+
+`config.autoGenRes` 为“生成间隔秒,资源ID,数量,移动速度”。在线活动时从屏幕右侧随机高度生成资源，数量先乘当前关卡 `resRatio` 后向上取整；资源向左飞行，鼠标划过时全额拾取，飞过玩家位置时按自动拾取损耗结算。该类资源不使用普通掉落的超时自动拾取，也不写入存档。
 升级消耗归 [progression](progression.md)，原表值不在本文重复。
 
 追踪：mon/res/config → JSON enemies.drops/resources/config → game.hit_enemy/collect/settle_drops/collect_near → test_game Hover collects、Timed pickup、Exit settles。新资源兼容性见 U-007。

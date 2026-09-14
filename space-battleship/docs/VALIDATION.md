@@ -1,5 +1,90 @@
 # 验证与证据
 
+## 2026-09-14 自动生成资源
+
+- 只读核对 `config_excel/config.xlsx!A11:C11` 得到 `autoGenRes=10,2,10,40`；使用 bundled Python 执行增量配置导入，确认仅更新 config 投影并成功写入 `data/game_data.json`。
+- `python test/run.py test_auto_gen_resources.gd`：7项通过，覆盖配置投影、资源倍率取整、右侧生成、左移速度、鼠标全额拾取、到船自动损耗及不受普通超时拾取影响；Godot 4.7.2 导入/运行退出0，仅有既有根证书提示。
+- `python test/run.py test_import.py`：通过。尝试运行既有 `test_game.gd` 时因总表与当前分表/运行配置的既有不一致在无关断言处失败并中止，本次未修改其期望。
+
+## 2026-09-14 全部 equipment 批量升级
+
+- `test_bulk_upgrades.gd` 已覆盖装甲、护盾及武器均显示10连/MAX按钮；批量成本与等级逻辑专项回归通过。
+
+## 2026-09-14 QA大重启
+
+- `test/run.py test_full_restart.py`，环境变量 `SPACE_BATTLESHIP_TEST_GODOT` 指向本机4.7.2引擎；最终隔离目录 `../../test/work/test_full_restart-5jyi33vv/`。驱动真实点击QA按钮退出旧进程，辅助进程重新导入并启动新游戏；验证忙碌保护、新旧PID不同、当前进程加载后才修改的源码在新进程执行、用户目录相同、资源进度及QA倍速保留。测试创建的所有游戏进程自行退出，退出0。
+- 已检查 qa-full-restart.png，「大重启」与原重启/读取/删除同排，无裁切。原 `test_config_panel.gd` 在 `../../test/work/test_config_panel-f5w28und/` 14项全部通过，原同进程重载/配置导入等保持正常。
+- 资源导入及测试仅在test/work副本运行，未重启用户正式游戏或改正式配置/存档。Godot仅既有根证书提示；首次测试的证据读取因Windows默认编码失败，改显式UTF-8后通过。测试命令建议设置PYTHONIOENCODING=utf-8。
+
+## 2026-09-14 游戏内数值 K/M/B/T 展示
+
+- 新增 `scripts/number_format.gd` 作为公共格式化入口；游戏内资源、生命/护盾、伤害、费用、掉落、命中飘字、研发倒计时及高科技描述的数量展示统一接入。实际计算、数值与存档不变。
+- `python test/run.py test_equipment_tabs.gd`：9项通过；`test_resource_display.gd`：9项通过；`test_hightech.gd`：46项通过；`test_hightech_continuous.gd`：20项通过。Godot 4.7.2 导入与图形执行退出0，仅既有根证书提示。
+- 已查看隔离截图 `../../test/work/test_equipment_tabs-pjze_dk8/space-battleship/tabs-weapons.png`：资源显示为 `990K/1M`，生命显示为 `1.2K/1.2K`，装备伤害与费用显示无重叠。
+
+## 2026-09-14 导弹数量与不同目标优先
+
+- `python test/run.py test_target_resistance.gd`：隔离运行21项全部通过；覆盖按 para1 发射、目标不足时循环复用、同目标齐射的视觉错位、抗性优先、不同目标优先及失锁重选。Godot编辑器扫描退出0，仅有既有Windows根证书提示。
+
+## 2026-09-14 武器与护盾批量升级
+
+- `python test/run.py test_bulk_upgrades.gd`：隔离运行9项全部通过，覆盖10连十级总成本一次扣除、资源不足时不部分升级、MAX按当前资源推进，以及武器/护盾按钮和装甲单次按钮范围；Godot编辑器扫描退出0，仅有既有Windows根证书提示。
+- 相关旧测试 `test_equipment_tabs.gd` 当前仍受同期 `number()` 显示格式断言影响失败，`test_game.gd` 受当前用户配置与旧测试夹具不一致影响失败；本次未修改其无关期望。
+
+## 2026-09-14 高科技复利与双防御
+
+- 读取独立 `config_excel/hightech.xlsx!A5:H6` 的新 des/description；总表同范围仍为旧版，本次以分表为准。复用转换/校验/原子写入仅更新运行 hightech 段，写入前断言其他段不变，未覆盖总表、分表或玩家存档。
+- 隔离 `test/run.py`：test_hightech.gd 46项全过（`../../test/work/test_hightech-i9g4qsmd/`）；test_hightech_continuous.gd 20项全过（`../../test/work/test_hightech_continuous-3x_cgy1d/`）；test_config_workbooks.py 14项全过（`../../test/work/test_config_workbooks-11x4bmad/`）。覆盖三种武器幂次成长、生命/护盾上限与当前容量保持、0级/3级模板、全角括号、整数百分比截断及导入校验。旧描述断言按新模板更新后复验通过。
+- 已查看 hightech-continuous.png：3级显示所有武器133%、生命125%，文本和研发按钮布局正常。Godot 4.7.2 导入及图形退出0，无脚本错误，仅既有根证书提示。
+
+## 2026-09-14 炼铁炉历史峰值
+
+- 隔离运行 `python test/run.py <测试名>`：test_furnace_income.gd 17项（`../../test/work/test_furnace_income-tzlmqcrq/`）、test_hightech.gd 40项（`../../test/work/test_hightech-i7rcc70m/`）、test_hightech_continuous.gd 18项（`../../test/work/test_hightech_continuous-4tzhrw63/`）全部通过。覆盖峰值记录/过期保持/新高/等级成长/存档恢复/旧样本兼容及描述与实际产量。
+- 连续研发UI夹具显式固定 para2=0.5，与该测试机制期望一致；首次该断言受运行配置0.25影响失败，修正夹具后18项全过。Godot 4.7.2 导入及图形执行退出0，仅既有根证书提示；未修改正式配置或玩家存档。
+
+## 2026-09-14 抗性索敌
+
+- `python test/run.py test_target_resistance.gd` 隔离运行20项全部通过，编辑器导入与执行退出0。覆盖三种武器实际发射优先不抵抗目标、组内排序、全抵抗回退与发射、死敌排除、无参数原排序、导弹多目标补选与失锁重选。
+- 产物：`../../test/work/test_target_resistance-84ckf0at/` 的 import.log、test.log。仅既有根证书提示，无脚本错误；夹具只改内存，未修改正式配置或玩家存档，未运行无关测试。
+
+## 2026-09-14 武器卡片CD
+
+- `python test/run.py test_equipment_tabs.gd`：隔离编辑器导入与图形测试退出0，8项检查全部通过。已查看三种武器卡片截图，CD 秒数与名称/等级无重叠；静态检查仅 cd > 0 的攻击装备显示，升级重建时重新读取当前等级。
+- 产物：`../../test/work/test_equipment_tabs-06hjc10e/`，截图在其 space-battleship/tabs-weapons.png。仅既有根证书提示，无脚本错误；未修改配置或正式玩家存档，未跑无关测试。
+
+## 2026-09-14 武器数量
+
+- 经 test/run.py 隔离运行：test_enemy_weapon_counts.py 2用例通过（数量展开、混合顺序、非法数量）；test_enemy_weapon_positions.gd 193项通过（当前两艘 |2 敌机实际生成/发射两件基础伤害武器、独立冷却及既有排列回归）。Godot导入和执行退出0，仅既有根证书提示。
+- test_level_editor.py 7用例、test_config_workbooks.py 14用例全部通过；首次默认Python缺lxml，改用已有完整依赖的Python后通过，未安装依赖或修改运行器。
+- 证据：../../test/work/test_enemy_weapon_counts-9kvnjtf0/、../../test/work/test_enemy_weapon_positions-6j0zz6vp/、../../test/work/test_level_editor-17ocyzp9/、../../test/work/test_config_workbooks-yojzdhsi/。正式JSON仅转换敌机装备数量投影及补全说明，源表/玩家存档不变。
+
+## 2026-09-14 BOSS多船血条
+
+- `test/run.py test_boss_health_cards.gd` 隔离图形运行，Godot 4.7.2；最终 `../../test/work/test_boss_health_cards-_3lrvemo/` 17项全部通过。覆盖1/2/5/6/10个独立卡片、战斗区域内不重叠、size与旧boss字段不影响卡片、独立生命更新、死亡移除与其他卡片位置稳定、前置大型舰无BOSS面板、通关/换关无残留。
+- 已检查双大型舰、十小型舰与暂停截图；十船最终截图使用运行时44像素槽距。长描述省略、血量可读、暂停框不遮卡片；BOSS战拾取说明左移，避免与第十艘编号重叠。截图为上述目录 boss-health-two.png、boss-health-ten.png、boss-health-paused.png。
+- 编辑器扫描和图形测试退出0，无本次脚本错误，仅既有Windows根证书提示。只改 main.gd 显示与专项测试，未修改配置、战斗数值或正式存档，保留同期高科技UI改动；未运行无关完整战斗测试。
+
+## 2026-09-14 最后一场BOSS战
+
+- 使用当前本机 Godot 4.7.2，经 `test/run.py` 隔离执行；新专项 `test_final_encounter.gd` 在 `../../test/work/test_final_encounter-_vrpj8rm/` 18项通过。覆盖连续两个前置大型舰战不通关/不揭示/不清弹、最后小型舰群身份和信息、多敌全灭门槛、最后死亡立即清弹、单场关卡、跨关落在前置大型舰后不重放及越过最终小型群后原地重放。
+- 直接影响回归：`test_boss_projectile_clear.gd` 8项通过（`../../test/work/test_boss_projectile_clear-5aawui9o/`），`test_boss_info.gd` 8项通过（`../../test/work/test_boss_info-urfaxzop/`），`test_loop_retreat.gd` 18项通过（`../../test/work/test_loop_retreat-95awui2q/`）。清弹夹具改为实际最终遭遇，信息期望改为最终敌群所有不同描述。
+- `test_level_editor.py` 在 `../../test/work/test_level_editor-_z5c4877/` 7用例通过，新增前置大型舰+最后小型舰配置不再产生旧BOSS警告的验证。编辑器仅调整对应说明文字，本次未重复截图验收。
+- Godot扫描及最终测试均退出0，仅既有Windows根证书提示。全部使用隔离配置/用户目录；未改动用户同期编辑的源表、运行JSON或正式玩家存档。初次命令引用上次4.6路径已失效，查明当前引擎为4.7.2后完成上述验证。
+
+## 2026-09-14 高科技页签显示门槛
+
+- `python test/run.py test_hightech_slots.gd`：隔离目录 `../../test/work/test_hightech_slots-apj6o7x9/`，Godot 4.7.2 编辑器导入与图形执行退出0，32项检查全部通过。覆盖首项解锁前隐藏、解锁显示且不切页、全锁后选中页回退，以及既有拖拽/排序/滚动/存档回归；日志仅既有根证书提示，无脚本错误。
+- 游戏代码仅新增页签隐藏与选中页回退判断；未修改配置或正式玩家存档。
+
+## 2026-09-14 关卡编辑器
+
+- `test/run.py test_level_editor.py`：6用例全部通过，产物 `../../test/work/test_level_editor-scv_pbo4/`。覆盖新增/修改/删除的源表与运行投影往返、公式及级联缓存/样式保留、增量导入无变化、外部修改冲突、十类非法输入、只读校验、Godot浮点ID传输、提交失败回滚。
+- `test/run.py test_level_editor.gd --godot space-battleship/engine/Godot_v4.6-stable_win64.exe`（工作区根执行）：14项全部通过，产物 `../../test/work/test_level_editor-v35v2nyu/`。真实图形场景覆盖读取、复制、字段编辑、搜索、十槽下拉引用及换机、遭遇行、校验、保存导入、重载、删除与引用保护。已查看 formation-editor.png 和 level-editor.png，列表/字段/遭遇可读，长表单与引用区域可滚动。
+- 直接影响回归 `test_config_panel.gd`：14项全部通过，产物 `../../test/work/test_config_panel-000pz01m/`；原拆分/读取/重载与控制流程保持正常。
+- 当前工作区未携带历史记录中的4.7.2引擎。本次从官方 GitHub 4.6-stable release 下载 Windows 版到忽略的 engine/，以上测试实际使用 Godot 4.6.stable.official.89cea1439；编辑器启动器也支持 SPACE_BATTLESHIP_GODOT 或 engine 自动发现。各次导入/最终图形执行退出0，仅既有Windows根证书提示；不声称4.7.2本机验证。
+- 首轮图形测试发现整数ID经过Godot JSON传输成为小数，已在数值XML写出和UI引用显示两端修复，并新增专项断言。所有写配置测试均在隔离副本，不改正式源表、运行JSON或玩家存档。
+- 实际执行项目关卡编辑器.cmd，资源导入完成且独立「太空战舰 · 关卡编辑器」窗口成功打开。启动器为编辑器设置独立 `.runtime/level-editor-user` 环境，避免依赖系统编辑器设置目录的写权限；新脚本 UID 已保留。
+
 ## 2026-09-14 炼铁炉排除自身收益与描述同步
 
 - `test/run.py test_furnace_income.gd` 在 `../../test/work/test_furnace_income-vyqeqkhx/` 12项通过：普通手动/自动损耗后收入、炉子来源标记、总收入与炉子基数分离、连续三轮领取不放大、最新“不含自身”描述结果、存档来源保留、60秒边界及其他资源排除、旧档未知来源样本处理。

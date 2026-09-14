@@ -19,6 +19,7 @@ func run() -> void:
 	scene.game.save_enabled = false
 	scene.game.pending_unlocks.clear()
 	scene.build_ui()
+	check(scene.number(4300.0)=="4.3K" and scene.number(10249.0)=="10K" and scene.number(105739.0)=="100K", "Equipment display uses KMBT formatting")
 	check(scene.equipment_tabs.get_tab_title(0)=="武器","Weapons first")
 	check(scene.upgrade_buttons.size()==2,"Starting unlocked equipment retained")
 	check(not scene.upgrade_buttons.armour.is_visible_in_tree(),"Defence hidden on weapons page")

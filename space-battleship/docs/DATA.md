@@ -10,6 +10,8 @@
 
 ## 原表索引与 JSON 映射
 
+- 2026-09-14 用户要求关卡编辑器：`tools/level_editor_store.py` 编辑 mon/monGroup/level 分表并复用投影转换/校验，显式保存时一起提交分表、JSON 和增量指纹；保留公式并重算受支持的缓存，不回写总表。操作、备份和公式边界归 [LEVEL_EDITOR](LEVEL_EDITOR.md)。
+
 - 2026-09-14 离线上限：config!A10:C10 的 offlineMax（单位小时）投影到 config.offlineMax；总表与分表已核对。导入复用 config 通用转换，并校验非负有限数字；规则归 modules/economy.md。
 
 ### 2026-09-14 · 分表与增量配置（用户确认）
@@ -38,7 +40,7 @@
 | monGroup!A4:C10 | 7 种十槽编队，null 为空 | groups[字符串id].slots[] |
 | res!A4:B5 | 资源 ID/名称 | resources[字符串id] |
 | hightech!A4:H6 | 三项高科技名称、des 效果规则、description 界面模板、研发耗时/成长、解锁与效果参数 | hightech[name]；规则见 modules/progression.md，模板见 modules/ui.md |
-| config!A9:C10 | hightechLimit 同时研发数、offlineMax 离线上限（小时） | config.hightechLimit / config.offlineMax |
+| config!A9:C11 | hightechLimit 同时研发数、offlineMax 离线上限（小时）、autoGenRes 自动生成资源参数 | config.hightechLimit / config.offlineMax / config.autoGenRes |
 | config!A4:C8 | 起始装备、减伤、移动、自动拾取损耗、死亡后退距离 backRange | config[name]=para_1 |
 
 装备通用字段：name+level 联合定位；dmg/CD 为单发伤害/冷却；dmgtype 见 combat；unlock 为通关条件（不把空白含义擅自补齐，见 U-004）；res_x 与 cost_x 配对表示**升到该行等级**的资源及数量。
@@ -48,7 +50,7 @@ para 含义：armour.para1=生命；shield.para1=容量、para2=每秒最大容�
 
 当前公式按族：level!D5:D13 为 `ROUND(上一行*1.17,2)`，E/F 引用同一行前列；装备成长与铁成本的乘数/舍入以对应 E/I/L 单元格公式为准，不能在代码或文档再维护一套常量曲线。formula→缓存→JSON→ShipDatabase，运行时按等级查行，不执行 Excel 公式。
 
-导入器使用 openpyxl `data_only=True`，**不重算公式**。须先在表格软件计算并保存；缺缓存或过期缓存先登记问题。工具处理全角分隔符并保留原字段；`mon.equipment` 的 `|` 解释有争议见 U-002。
+导入器使用 openpyxl `data_only=True`，**不重算公式**。须先在表格软件计算并保存；缺缓存或过期缓存先登记问题。工具处理全角分隔符并保留原字段；`mon.equipment` 的 `|` 右侧为正整数数量，投影按数量展开为仅含 name 的独立条目；敌方没有装备等级，规则见 modules/weapons.md。
 
 只读定位（项目根，Python 环境须含 openpyxl）：
 

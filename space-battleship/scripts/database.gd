@@ -30,10 +30,10 @@ func max_equipment_level(key: String) -> int:
 		highest = maxi(highest, int(row.level))
 	return highest
 
-func enemy_weapon(key: String, level: int) -> Dictionary:
-	var row := equip(key, level).duplicate(true)
+func enemy_weapon(key: String) -> Dictionary:
+	var row := equip(key, 1).duplicate(true)
 	var base_key := key.replace("_mon", "").replace("-mon", "")
-	var fallback := equip(base_key, level)
+	var fallback := equip(base_key, 1)
 	if row.is_empty():
 		return fallback.duplicate(true)
 	for field in ["dmg", "cd", "dmgtype", "para1", "para2"]:

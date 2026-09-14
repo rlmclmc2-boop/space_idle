@@ -52,16 +52,24 @@ func run() -> void:
 	db.config.hightechLimit = 2
 	check(g.research(E) and g.research(A) and not g.research(F), "Concurrency reads config instead of hardcoded one")
 	g.player.armour = 17
+	g.player.shield = 7
 	var base_armour := float(db.equip("armour",1).para1)
 	var base_laser := float(db.equip("laser",1).dmg)
 	var base_cannon := float(db.equip("cannon",1).dmg)
 	g.advance_hightech(60)
 	check(g.stat("armour") == ceilf(base_armour*1.08) and g.player.armour == 17, "Armour maximum multiplied and rounded, current unchanged")
 	check(g.stat("laser") == ceilf(base_laser*1.1), "Energy weapon damage multiplied and rounded")
-	check(g.stat("cannon") == base_cannon, "Physical weapon unchanged")
+	check(g.stat("cannon") == ceilf(base_cannon*1.1), "Physical weapon also enhanced")
 	db.equipment.cannon[0].dmgtype = 1
-	check(g.stat("cannon") == ceilf(base_cannon*1.1), "Energy effect follows damage type, not weapon name")
+	check(g.stat("cannon") == ceilf(base_cannon*1.1), "All weapon types share the enhancement")
 	db.equipment.cannon[0].dmgtype = 2
+	check(g.stat("shield")==ceilf(float(db.equip("shield",1).para1)*1.08) and g.player.shield==7, "Shield maximum grows without refilling current shield")
+	g.profile.hightechLevels[E]=3
+	g.profile.hightechLevels[A]=3
+	for key in ["laser","cannon","missile"]:
+		check(g.stat(key)==ceilf(float(db.equip(key,1).dmg)*pow(1.1,3)), "All player weapons compound at level three: "+key)
+	for key in ["armour","shield"]:
+		check(g.stat(key)==ceilf(float(db.equip(key,1).para1)*pow(1.08,3)), "Both defensive maxima compound: "+key)
 	g.reset_player()
 	check(g.player.armour == g.stat("armour"), "Existing recovery uses enhanced maximum")
 	g = BattleGame.new(db, false)
@@ -78,7 +86,7 @@ func run() -> void:
 	check(not g.drops.has(block) and g.profile.resources["1"]==16, "Click credits full furnace amount")
 	check(g.resource_minute_total("1", now+0.1)==47, "Furnace pickup uses the same income sample stream")
 	g.advance_hightech(30,30,now+30)
-	check(g.drops.size()==1 and g.drops[0].amount==0, "Next block excludes furnace income after normal samples expire")
+	check(g.drops.size()==1 and g.drops[0].amount==16, "Next block retains peak after normal samples expire")
 	g.advance_hightech(10,10,now+40)
 	check(g.drops.is_empty() and g.profile.resources["1"]==16, "Block expires at ten seconds without credit")
 	g.paused = true
@@ -138,7 +146,7 @@ func run() -> void:
 	check(not scene.hightech_buttons[A].disabled, "Other technology offers research switching")
 	var card: Control = scene.hightech_buttons[A].get_parent()
 	var description: Label = card.get_child(1)
-	check(description.text=="生命增加0" and not description.text.contains("armour"), "Description comes from description instead of des")
+	check(description.text=="生命增加100%" and not description.text.contains("armour"), "Description comes from description instead of des")
 	scene.game.profile.hightechLevels[F] = 1
 	scene.game.resource_samples.assign([{"time":Time.get_unix_time_from_system(),"id":"1","amount":120.0}])
 	scene.game.advance_hightech(30)

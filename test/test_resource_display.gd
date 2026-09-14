@@ -15,7 +15,7 @@ func run() -> void:
 	scene.game.save_enabled = false
 	scene.game.profile.resources["1"] = 123
 	scene.game.profile.resources["2"] = 45
-	check(scene.resource_display("1")=="123" and scene.resource_display("2")=="45", "Default displays unchanged totals")
+	check(scene.resource_display("1")=="120" and scene.resource_display("2")=="45", "Default displays use KMBT totals")
 	scene.resource_mode_button.pressed.emit()
 	check(scene.resource_rate_mode and scene.resource_display("1")=="0.00/秒", "Button switches to empty rate")
 	for manual in [true,false]:

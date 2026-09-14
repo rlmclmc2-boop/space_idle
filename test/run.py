@@ -30,7 +30,7 @@ def main():
     for name in ("scripts", "tools", "data", "config_excel", "assets"):
         shutil.copytree(source / name, game / name,
                         ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*"))
-    for name in ("project.godot", "main.tscn"):
+    for name in ("project.godot", "main.tscn", "level_editor.tscn"):
         shutil.copy2(source / name, game / name)
     shutil.copy2(workspace / "太空战舰.xlsx", area / "太空战舰.xlsx")
     isolated_tests = area / "test"

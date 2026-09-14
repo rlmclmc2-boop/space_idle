@@ -37,17 +37,21 @@ func run() -> void:
 	var now := Time.get_unix_time_from_system()
 	g.profile.hightechLevels[F]=2
 	g.resource_samples.assign([{"time":now-1,"id":"1","amount":123.0}])
-	check(g.hightech_description(F,now)=="每30秒在屏幕中生成一个含有123的铁块", "Parameter and live minute-income rounded expression substituted")
-	check(g.hightech_description(E)=="能量武器伤害提高0.3", "Current level expression has no floating point tail")
+	check(g.hightech_description(F,now)=="每30秒在屏幕中生成一个含有120的铁块", "Parameter and live minute-income use KMBT formatting")
+	check(g.hightech_description(E)=="所有武器伤害提高130%", "Current level expression uses KMBT formatting")
 	g.profile.hightechLevels[A]=3
-	check(g.hightech_description(A)=="生命增加0.24", "Fractional parameter precision retained")
-	check(g.hightech_description(F,now+61)=="每30秒在屏幕中生成一个含有0的铁块", "Description reflects expired minute samples")
+	check(g.hightech_description(A)=="生命增加120%", "Percentage expression uses KMBT formatting")
+	check(g.hightech_description(F,now+61)=="每30秒在屏幕中生成一个含有120的铁块", "Description retains peak after minute samples expire")
 	db.data.hightech[F].description="para1 / para2 / {para1*(等级+1),向上取整}"
 	check(g.hightech_description(F)=="30 / 0.5 / 90", "Repeated tokens and parenthesized arithmetic")
 	db.data.hightech[F].description="{1/2}"
 	check(g.hightech_description(F)=="0.5", "Arithmetic division retains fractions")
 	db.data.hightech[F].description="{load(1)} {1/0}"
 	check(g.hightech_description(F)=="？ ？", "Invalid expression never executes arbitrary calls or displays misleading zero")
+	db.data.hightech[F].description="{1.003,百分比显示,保留两位小数,即100.3%展示为100%}"
+	check(g.hightech_description(F)=="100%", "Percentage truncates rather than rounding")
+	g.profile.hightechLevels[E]=0
+	check(g.hightech_description(E)=="所有武器伤害提高100%", "Zero level shows base multiplier")
 	# Save an active and a suspended job, then simulate an offline interval.
 	g.profile.hightechLevels[E]=0
 	g.profile.hightechResearch={E:{"remaining":60.0,"duration":60.0,"active":true},A:{"remaining":35.0,"duration":60.0,"active":false}}
@@ -72,6 +76,7 @@ func run() -> void:
 	root.add_child(scene)
 	scene.set_process(false)
 	scene.game.save_enabled=false
+	scene.db.data.hightech[F].para2=0.5
 	scene.game.profile.cleared=[5,8]
 	scene.game.profile.hightechResearch.clear()
 	scene.game.profile.hightechLevels={F:2,E:3,A:3}
@@ -86,7 +91,7 @@ func run() -> void:
 	check(scene.game.active_research()==[A] and scene.hightech_buttons[E].text.contains("继续研发"), "UI switches and labels retained progress")
 	scene.game.resource_samples.clear()
 	scene._process(0)
-	check(scene.hightech_descriptions[F].text.contains("含有0的铁块"), "UI description refreshes without rebuilding cards")
+	check(scene.hightech_descriptions[F].text.contains("含有120的铁块"), "UI retains peak without rebuilding cards")
 	scene.queue_redraw()
 	await process_frame
 	await RenderingServer.frame_post_draw

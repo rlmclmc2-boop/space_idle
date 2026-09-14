@@ -184,6 +184,7 @@ class IncrementalTests(unittest.TestCase):
     def test_description_expression_validation(self):
         row={"name":"test","para1":0.08,"description":"每para1秒 {过去一分钟的铁生成量*para1*等级,向上取整}"}
         full.validate_description(row)
+        full.validate_description({**row,"description":"{（1+para1）^等级,百分比显示,保留两位小数,即100.3%展示为100%}"})
         for invalid in [None,"","{para1*等级","{unknown*2}","{load(1)}","{1,未知规则}","para9"]:
             with self.subTest(description=invalid):
                 with self.assertRaises(ValueError): full.validate_description({**row,"description":invalid})

@@ -9,6 +9,6 @@
 ## CONFIRMED · 当前代码
 
 `BattleGame.player` 为 `{x,y,armour,shield}`；装备等级/解锁在 profile，非玩家对象。`stat()` 按装备等级查行；`max_shield()` 在未解锁时为零；`reset_player()` 回满现有最大生命/已解锁护盾。
-敌人实例复制 enemies 数据行，附加 uid、slot、x/y、hp/max_hp、res_ratio、boss、cooldowns。`spawn_group()` 按 size>1 标为 BOSS；生命按关内倍率向上取整。没有单独舰船 class、品质或舰船等级系统；范围见 U-009。
+敌人实例复制 enemies 数据行，附加 uid、slot、x/y、hp/max_hp、res_ratio、boss、cooldowns。兼容字段 enemy.boss 仍按 size>1 标记大型舰外观及武器偏移，已不决定是否BOSS战、通关或清弹；战斗身份归 [map](map.md) 的最后一场规则。生命按关内倍率向上取整。没有单独舰船 class、品质或舰船等级系统；范围见 U-009。
 
 接口/验证：`scripts/game.gd` 的 stat/max_shield/reset_player/spawn_group；`../test/test_game.gd` 搜索 Shield waits、Shield regenerates、Hit restarts shield delay、Shield recovery caps、Armour upgrade。恢复夹具读取当前 para2/para3，隔离敌群干扰，覆盖等待、每秒恢复、受击中断及上限。成长与即时升级行为只见 [progression](progression.md)。未覆盖边界见 TODO U-006。

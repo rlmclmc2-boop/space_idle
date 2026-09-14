@@ -1,9 +1,26 @@
 # Current Status
 
 Goal:
-完成炼铁炉60秒基数排除自身收益，并同步最新 description；保留顶部总收入与既有研发行为。
+新增按 config.autoGenRes 配置运行的自动生成资源。
 
 Done:
+- 2026-09-14：接入自动生成资源：按间隔从右侧随机高度生成，按当前关卡资源倍率取整，向左飞行；鼠标划过全额拾取，飞过飞船按自动拾取损耗结算，并补充配置校验与专项测试。
+- 2026-09-14：修复少量敌人时导弹齐射视觉重叠：仍按 para1 发射全部导弹，目标不足循环复用，并以小幅上下错位显示；专项目标测试21项通过。
+- 2026-09-14：所有 equipment（含装甲）均新增10连升级和MAX升级，沿用逐级成本汇总、资源校验与容量/生命保损逻辑；专项测试更新通过。
+- 2026-09-14：QA增加「大重启」，保存后由独立辅助进程等待旧进程退出、资源导入、启动新游戏。真实隔离进程测试确认PID变化、新代码执行、用户目录及进度/QA设置保留；原QA14项回归通过。见 VALIDATION QA大重启。
+- 2026-09-14：导弹恢复按 para1 始终发射全部数量，目标不足时循环复用；初始锁定与失锁重选均优先不同目标。目标抗性专项21项全部通过。
+- 2026-09-14：武器与护盾新增10连升级和MAX升级；10连按连续10级总成本一次扣费，MAX按当前资源推进至可负担最高等级，装甲保留单次升级。新增批量升级专项9项全部通过；已有装备页签/完整模拟测试受同期显示格式与当前配置影响仍有既有失败。
+- 2026-09-14：游戏内所有数值展示统一接入公共 K/M/B/T 格式化脚本，覆盖装备页、顶部生命/护盾、资源、掉落、伤害、费用、研发倒计时和高科技描述；实际数值、计算与存档不变。新增格式化回归断言。
+- 2026-09-14：正电子聚焦装置覆盖全部玩家武器，简并态装甲覆盖生命/护盾上限，均改为幂次成长；模板支持幂及整数百分比（用户确认截断）。仅同步 hightech 运行段，保留其他配置与同期修改。46项高科技、20项连续研发、14项配置验证通过，已验图；见 VALIDATION 高科技复利与双防御。
+- 2026-09-14：炼铁炉保存一分钟非自身铁收入峰值，收入过期不回落，等级仍参与乘算；兼容旧档。炼铁炉17项、高科技40项、连续研发18项通过，见 VALIDATION 炼铁炉历史峰值。
+- 2026-09-14：玩家武器及导弹失锁重选优先不抵抗自身伤害类型的敌人，同组保持原顺序，全抵抗仍攻击；隔离专项20项通过，见 VALIDATION 抗性索敌。
+- 2026-09-14：武器卡片右上角新增 CD 秒数，cd > 0 时显示，复用当前等级数据及界面重建；隔离装备页签8项检查通过，已检查三种武器截图，无重叠。证据见 VALIDATION 武器卡片CD。
+- 2026-09-14：按用户确认将 mon.equipment 的 | 右值改为数量，导入展开独立条目、敌方固定基础武器行、编辑器按数量提示/校验；转换当前JSON并提升增量缓存版本。数量2用例、战斗193项、编辑器7用例、增量配置14用例全部通过；U-002/U-003已解决，证据见 VALIDATION 武器数量。
+- 2026-09-14：只读核对 mon.equipment 导入、enemy_weapon 同级回退、敌方发射与命中减伤路径及当前运行 JSON；|2 按等级解析，缺敌方2级行时采用玩家2级行，每条目每轮一发。规则归 modules/weapons.md、modules/combat.md，既有语义冲突见 U-002/U-003；仅更新状态，未改代码/配置，未运行游戏测试。
+- 2026-09-14：BOSS血条由重叠单框改为每实例独立卡片，仅展示当前最终遭遇的存活飞船，不按size/旧boss字段筛选。1–5艘单列、6–10艘双列，编号对应船体，死亡卡片移除且其他位置稳定；暂停提示避让。图形专项17项通过，已检查双船/十船/暂停截图，见 VALIDATION BOSS多船血条。
+- 2026-09-14：BOSS战身份改按最后遭遇，全灭才通关；前置大型舰保留外观但不触发通关/发现/清弹。最后一场的小型舰也能通关，关卡信息及跨关后退重放统一按最终敌群；编辑器移除旧BOSS存在/提前通关警告。专项18项、清弹8项、信息8项、循环后退18项及编辑器后端7用例全部通过，见 VALIDATION 最后一场BOSS战。
+- 2026-09-14：高科技页签在无已解锁卡片时隐藏，首项解锁后显示且保留当前页；全部重新锁定时从高科技返回武器页。隔离卡槽专项32项全通过，见 VALIDATION 高科技页签显示门槛。
+- 2026-09-14：完成独立关卡编辑器及 QA 入口，支持三类配置增删改查/复制、十格编队、遭遇列表、引用保护、草稿校验、公式缓存重算、冲突检测、备份与批量回滚；保存分表并更新运行 JSON/增量指纹。后端6个用例、图形14项、QA回归14项全部通过，已验编队/关卡截图。正式配置与玩家存档未修改；使用说明见 LEVEL_EDITOR，证据见 VALIDATION 关卡编辑器。
 - 2026-09-14：炼铁炉生成与预计产量均排除自身入账，来源随样本保存；顶部每秒/总收入仍包含全部实际拾取。接入 description 的“不含自身”修饰并同步最新高科技表（含 para2=0.25）。专项12项、高科技40项、连续研发18项、配置14项全部通过；见 VALIDATION 炼铁炉排除自身收益与描述同步。
 - 2026-09-14：高科技界面改读 description，paraN 与花括号四则表达式动态替换，支持当前等级/一分钟铁量及向上取整。完成后自动研发下一级，切换保留暂停项进度，在线/离线仅推进活动项；已兼容原存档及并发配置。连续专项18项、配置14项、高科技40项、卡槽29项通过，已检查截图；见 VALIDATION 高科技动态描述与连续研发。
 - 2026-09-14：高科技隐藏未解锁项，预留6个固定槽并按整页扩展；拖标题到卡片交换、拖到空槽移入、区域外取消，支持预览/高亮和边缘滚动。顺序及空位自动保存，新解锁填空位；重建保留页签/滚动且不打断拖拽。卡槽29项与原高科技40项全部通过，已检查三张截图；见 VALIDATION 高科技卡槽换位。
@@ -39,23 +56,48 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无，本次修改与验证已完成。
+- 无，本次大重启实现与验证已完成。
 
 Blocked:
 - 2026-09-14：Git 首次推送已完成，main 跟踪 origin/main，同步无阻塞。
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
-0. 重启后使用最新 description 及排除自身的炼铁基数；旧档来源不明样本保留总收入显示，但不参与炉子计算，最多60秒自然过期。本次无待确认规则。
+0. 重启游戏验证自动生成资源的右侧生成、飞行、鼠标拾取与飞船自动拾取。
+0. 重启游戏查看所有 equipment 卡片的10连/MAX按钮。
+0. 当前运行中的旧QA需先手动关闭游戏并从启动.cmd启动一次，随后即可点击「大重启」应用后续代码改动。
+0. 重启游戏验证导弹数量不足目标时的齐射与换靶效果。
+0. 重启游戏查看武器与护盾卡片的10连/MAX按钮及10级总消耗提示。
+0. 重启游戏加载新版高科技效果和描述；运行 hightech 已同步，无需用旧总表覆盖分表。
+0. 重启游戏加载抗性索敌规则，无需重新导入配置。
+0. 重启游戏查看武器卡片 CD，无需重新导入配置。
+0. 重启游戏及关卡编辑器加载武器数量规则；运行JSON已迁移，源表与玩家存档未改。
+0. 重启游戏查看BOSS战独立血条；无需重新导入配置。
+本次峰值规则已完成，无待办；后续配置流程如下。
+0. 重启游戏及已打开的关卡编辑器以加载最后一场BOSS战规则；不需修改配置或存档。编队重叠仍仅警告，见 U-007。
 1. 从工作区启动.cmd启动；后续测试只使用test/run.py及test/work，不在根目录生成验证副本。
 2. 日常改独立分表后直接读取配置；改总表后先显式同步。首次读取会建立缓存，后续只解析修改过的文件。
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；../test/test_auto_gen_resources.gd；docs/modules/economy.md；docs/modules/ui.md；docs/DATA.md
+- scripts/config_panel.gd；scripts/restart_host.gd；../test/test_full_restart.py；../test/test_full_restart_driver.gd；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；../test/test_target_resistance.gd；docs/modules/weapons.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；../test/test_bulk_upgrades.gd；docs/modules/progression.md；docs/modules/ui.md
+- scripts/game.gd；tools/import_workbook.py；data/game_data.json；config_excel/hightech.xlsx；../test/test_hightech.gd；../test/test_hightech_continuous.gd；../test/test_config_workbooks.py；docs/modules/progression.md；docs/modules/ui.md
+- scripts/game.gd；../test/test_furnace_income.gd；../test/test_hightech.gd；../test/test_hightech_continuous.gd；docs/modules/progression.md；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；../test/test_target_resistance.gd；docs/modules/weapons.md；docs/VALIDATION.md（抗性索敌）
+- scripts/main.gd；docs/modules/ui.md；../test/test_equipment_tabs.gd；docs/VALIDATION.md（武器卡片CD）
+- tools/import_workbook.py；tools/config_workbooks.py；tools/level_editor_store.py；scripts/database.gd；scripts/game.gd；scripts/level_editor.gd；data/game_data.json；../test/test_enemy_weapon_counts.py；../test/test_enemy_weapon_positions.gd；../test/test_game.gd；docs/modules/weapons.md；docs/DATA.md；docs/TODO.md；docs/VALIDATION.md
+- tools/import_workbook.py:49；scripts/database.gd:33；scripts/game.gd:496、716；data/game_data.json；docs/modules/weapons.md；docs/modules/combat.md；docs/TODO.md（本次伤害检查）
+- scripts/main.gd；../test/test_boss_health_cards.gd；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/level_editor.gd；tools/level_editor_store.py；../test/test_final_encounter.gd；../test/test_boss_projectile_clear.gd；../test/test_boss_info.gd；../test/test_level_editor.py；docs/modules/map.md；docs/LEVEL_EDITOR.md
+- scripts/main.gd；../test/test_hightech_slots.gd；docs/modules/ui.md；docs/VALIDATION.md
+- level_editor.tscn；scripts/level_editor.gd；tools/level_editor_store.py；关卡编辑器.cmd；scripts/config_panel.gd；../test/test_level_editor.py；../test/test_level_editor.gd；docs/LEVEL_EDITOR.md；docs/VALIDATION.md
 - scripts/game.gd；tools/import_workbook.py；data/game_data.json；../test/test_furnace_income.gd；../test/test_hightech.gd；../test/test_hightech_continuous.gd；docs/modules/progression.md；docs/modules/ui.md；docs/VALIDATION.md
 - scripts/game.gd；scripts/main.gd；tools/import_workbook.py；config_excel/hightech.xlsx；data/game_data.json；../test/test_hightech_continuous.gd；../test/test_hightech.gd；../test/test_config_workbooks.py；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
 - scripts/hightech_slot.gd；scripts/main.gd；scripts/game.gd；../test/test_hightech_slots.gd；docs/modules/ui.md；docs/VALIDATION.md
-- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；../test/test_hightech.gd；../test/test_config_workbooks.py；../test/test_resource_display.gd；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
+- scripts/game.gd；scripts/main.gd；scripts/number_format.gd；tools/import_workbook.py；data/game_data.json；../test/test_hightech.gd；../test/test_config_workbooks.py；../test/test_resource_display.gd；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md
 - scripts/game.gd；scripts/main.gd；data/game_data.json；tools/import_workbook.py；../test/test_offline_resources.gd；../test/test_offline_config.py；docs/modules/economy.md；docs/DATA.md
 - scripts/game.gd；../test/test_boss_projectile_clear.gd；../test/test_game.gd；docs/modules/weapons.md；docs/VALIDATION.md
 - ../test/capture_enemy_weapon_positions.gd；docs/VALIDATION.md（重复武器发射位置视觉证据）
