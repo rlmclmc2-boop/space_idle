@@ -81,6 +81,44 @@ func run() -> void:
 	old.load_hightech(legacy)
 	check(old.hightech_level(E)==0 and old.profile.scientists==0 and old.profile.techPoints.values().all(func(value):return value==0),"Old hightech progress discarded")
 	check(not old.profile.has("hightechResearch"),"Old timer schema removed")
+	# Preserve still-current effect/description coverage from the retired timer tests.
+	var effects := BattleGame.new(db,false)
+	effects.player.armour=17
+	effects.player.shield=7
+	effects.profile.hightechLevels={E:3,A:3}
+	for key in ["laser","cannon","missile"]:
+		check(effects.equipment_stat(key,1)==ceilf(float(db.equip(key,1).dmg)*pow(1.0+float(db.data.hightech[E].para1),3)),"All weapons retain compound research effect: "+key)
+	for key in ["armour","shield"]:
+		check(effects.equipment_stat(key,1)==ceilf(float(db.equip(key,1).para1)*pow(1.0+float(db.data.hightech[A].para1),3)),"Both defences retain compound research effect: "+key)
+	check(effects.player.armour==17 and effects.player.shield==7,"Research effects do not refill current defence")
+	effects.reset_player()
+	check(effects.player.armour==effects.stat("armour"),"Recovery uses enhanced maximum")
+	var row := {"para1":30,"para2":0.5}
+	check(effects.format_description(row,"para1 / para2 / {para1*(等级+1),向上取整}",2)=="30 / 0.5 / 90","Description repeated tokens and arithmetic")
+	check(effects.format_description(row,"{1/2}",1)=="0.5","Description retains fractional division")
+	check(effects.format_description(row,"{load(1)}",1)=="？","Description rejects function calls")
+	check(effects.format_description(row,"{1.003,百分比显示,保留两位小数,即100.3%展示为100%}",1)=="100%","Description percentage truncates")
+	check(effects.format_description(row,"{（1+0.1）^等级,百分比显示}",3)=="130%","Description power preserves compact percentage formatting")
+	var capped := BattleGame.new(db,false)
+	capped.profile.cleared=g.profile.cleared.duplicate()
+	capped.profile.scientists=1
+	capped.profile.scientistAssignments={E:1}
+	var capped_raw := capped.profile.duplicate(true)
+	capped_raw.hightechSavedAt=Time.get_unix_time_from_system()-1000
+	db.config.offlineMax=0.01
+	file=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
+	file.store_string(JSON.stringify(capped_raw))
+	file.close()
+	capped=BattleGame.new(db)
+	check(capped.hightech_level(E)==3 and absf(float(capped.profile.techPoints[E]))<0.001,"Offline cap crosses exact research completion boundaries")
+	var capped_again := BattleGame.new(db)
+	check(capped_again.hightech_level(E)==3 and float(capped_again.profile.techPoints[E])<0.5,"Reload cannot claim the offline interval twice")
+	db.config.offlineMax=0
+	file=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
+	file.store_string(JSON.stringify(capped_raw))
+	file.close()
+	capped=BattleGame.new(db)
+	check(capped.hightech_level(E)==0 and float(capped.profile.techPoints.get(E,0))==0,"Zero offline cap disables research")
 	var bulk := BattleGame.new(db,false)
 	bulk.profile.cleared=g.profile.cleared.duplicate()
 	bulk.profile.resources={"1":100000.0,"2":10000.0}
@@ -131,6 +169,17 @@ func run() -> void:
 	scene.scientist_assignment_buttons[F][1].pressed.emit()
 	await process_frame
 	check(scene.game.assigned_scientists(F)==11,"UI MAX assignment button")
+	scene.game.profile.techPoints[F]=scene.game.hightech_required(F)*0.5
+	scene.game.paused=true
+	scene.refresh_hightech_progress(F)
+	var progress: Dictionary=scene.hightech_progress[F]
+	check(is_equal_approx(progress.bar.get_child(0).size.x,progress.bar.size.x*0.5) and progress.label.text.contains("50%"),"Point progress fills half the bar and agrees with percentage")
+	check(progress.bar.get_child(0).color==scene.ORANGE,"Paused research bar stays orange")
+	scene.build_ui()
+	check(scene.equipment_tabs.current_tab==2 and scene.hightech_progress[F].label.text.contains("50%"),"Rebuild retains selected tab and point progress")
+	for key in scene.hightech_progress:
+		var controls: Dictionary=scene.hightech_progress[key]
+		check(controls.bar.position.y+controls.bar.size.y<=112 and controls.bar.position.x+controls.bar.size.x<scene.hightech_buttons[key].position.x,"Research bar fits before the action button")
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://scientists.png")
 	print("Scientists: %d checks, %d failures" % [checks,failures])

@@ -66,13 +66,17 @@ func run() -> void:
 	check(g.charge_description(ATTACK)=="所有武器伤害提高111%","Percentage midpoint rounds up")
 	db.data.charge[ATTACK].para_3=0.1
 	g.charge_job(ATTACK).level=3
+	# stat() totals installed slots; unlocking alone leaves those slots empty.
+	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+	check(g.equip_slot("weapons",1,"cannon"),"Install cannon for charge effect")
+	check(g.equip_slot("weapons",2,"missile"),"Install missile for charge effect")
+	check(g.equip_slot("defence",1,"shield"),"Install shield before measuring defence bonus")
 	for key in ["laser","cannon","missile"]:
 		check(g.stat(key)==ceilf(float(db.equip(key,1).dmg)*pow(1.1,3)),"All player weapons receive attack multiplier: "+key)
 	g.profile.hightechLevels[BattleGame.ENERGY_FOCUS]=2
 	check(g.stat("laser")==ceilf(ceilf(float(db.equip("laser",1).dmg)*pow(1+float(db.data.hightech[BattleGame.ENERGY_FOCUS].para1),2))*pow(1.1,3)),"Charge composes with existing hightech")
 	var hp: float=g.player.armour
 	var shield: float=g.player.shield
-	g.profile.unlocked.append("shield")
 	g.charge_job(DEFENCE).level=2
 	check(g.stat("armour")==ceilf(float(db.equip("armour",1).para1)*pow(1.1,2)) and g.max_shield()==ceilf(float(db.equip("shield",1).para1)*pow(1.1,2)),"Defence increases both capacities")
 	check(g.player.armour==hp and g.player.shield==shield,"Capacity bonus preserves current health and shield")

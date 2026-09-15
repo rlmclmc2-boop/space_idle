@@ -1,9 +1,10 @@
 # Current Status
 
 Goal:
-降低超过10^20时的大数结算与显示开销。
+实施获批重构 Phase 1～4，完成后提交 CHECKPOINT 1；Phase 5 必须单独确认。
 
 Done:
+- 2026-09-15：Phase 1 行为基线完成，11个隔离专项通过；补有效历史覆盖并修正未安装装备的旧测试夹具，正确规则断言未改。记录与日志入口见 ../REFACTOR_PLAN.md 第7节。
 - 2026-09-15：高科技大数预算采用公式批量升级并合并事件；公共大数显示采用科学计数法，修复整数溢出和无穷值循环。近似范围见progression，专项与科学家回归见VALIDATION。
 - 2026-09-15：修复充能扣费只在5秒周期存档的问题；资源余额发生扣除后立即保存，保留原有整数分配、credit与进度结算。新增即时存档回归断言。
 - 2026-09-15：伤害飘字按实际文字边界避让，向上分行、上方不足向右续列；同帧及连续命中均保留独立数字。隔离专项通过并已验图，见VALIDATION伤害数字避让。
@@ -82,7 +83,7 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无，本次修改已完成。
+- Phase 2：仅清理经确认已废弃的内容；不改旧levels/cooldowns与存档迁移。
 
 Blocked:
 - 本次无阻塞；U-015已解决。
@@ -90,6 +91,7 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
+0. 按Phase 2→3→4验证推进；Phase 4后停止等待确认。以下旧任务记录不扩大本轮授权。
 0. QA「大重启」加载大数性能修复，无需清档。
 0. QA「大重启」加载伤害数字避让显示。
 0. 重启查看科学家批量操作。
@@ -123,6 +125,7 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- REFACTOR_PLAN.md；../test/test_ships.gd；../test/test_scientists.gd；../test/test_furnace_income.gd；../test/test_bulk_upgrades.gd；../test/test_equipment_limits.gd；../test/test_charge.gd；../test/README.md。
 - scripts/game.gd；scripts/number_format.gd；../test/test_large_numbers.gd；docs/modules/progression.md；docs/VALIDATION.md
 - scripts/main.gd；../test/test_damage_text.gd；docs/modules/ui.md；docs/VALIDATION.md
 - scripts/main.gd；../test/test_equipment_tabs.gd；docs/modules/ui.md；docs/VALIDATION.md（装备卡片重排）

@@ -62,5 +62,27 @@ func run() -> void:
 	var old := BattleGame.new(db,false)
 	old.load_hightech(legacy)
 	check(old.resource_minute_total("1")==500 and old.resource_minute_total("1",-1,true)==0, "Legacy unknown origins retain displayed totals without entering furnace input")
+	# Interaction/lifetime coverage retained from the retired research-timer suite.
+	var interactive := BattleGame.new(db,false)
+	interactive.rng.seed=1701
+	interactive.profile.hightechLevels[F]=1
+	interactive.profile.furnaceIncomePeak=31
+	interactive.advance_hightech(30)
+	var block: Dictionary=interactive.drops[0]
+	check(block.amount==16,"Furnace output rounds up")
+	interactive.collect_near(Vector2(block.x,block.y))
+	interactive.settle_drops()
+	check(interactive.drops.has(block) and interactive.profile.resources["1"]==0,"Furnace is neither hovered nor auto-settled")
+	interactive.collect_near(Vector2(block.x,block.y),true)
+	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Click grants full furnace amount")
+	interactive.advance_hightech(30)
+	interactive.advance_hightech(10)
+	check(interactive.drops.is_empty() and interactive.profile.resources["1"]==16,"Unclaimed block expires without credit")
+	interactive.paused=true
+	var elapsed := float(interactive.profile.furnaceElapsed)
+	interactive.tick(5)
+	check(interactive.profile.furnaceElapsed==elapsed,"Pause freezes furnace")
+	interactive.advance_hightech(3600)
+	check(interactive.drops.size()<=1,"Long offline interval retains only unexpired blocks")
 	print("Furnace income: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

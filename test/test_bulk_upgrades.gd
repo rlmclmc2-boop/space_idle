@@ -40,11 +40,31 @@ func run() -> void:
 	max_game.profile.resources = {"1":first_two.get("1",0),"2":first_two.get("2",0)}
 	check(max_game.max_upgrade_amount("laser")==2,"MAX finds highest affordable level")
 	check(max_game.upgrade_max("laser") and max_game.profile.levels.laser==3,"MAX upgrades to affordable level")
+	for key in ["armour","shield","laser","missile","cannon"]:
+		var all := BattleGame.new(db,false)
+		all.profile.unlocked=["armour","shield","laser","missile","cannon"]
+		all.profile.loadout=all.default_loadout(all.profile.selectedShip,all.profile.unlocked)
+		var costs := {}
+		for level in range(2,12):
+			costs=sum_cost(costs,all.upgrade_cost_for_level(key,level))
+		all.profile.resources={"1":float(costs.get("1",0)),"2":float(costs.get("2",0))}
+		var sequential := BattleGame.new(db,false)
+		sequential.profile=all.profile.duplicate(true)
+		for i in range(10):
+			check(sequential.upgrade(key),"Single upgrade for "+key)
+		check(all.upgrade(key,10) and all.profile.resources==sequential.profile.resources and all.profile.levels[key]==11,"Ten matches ten singles for "+key)
+		var max_all := BattleGame.new(db,false)
+		max_all.profile.unlocked=all.profile.unlocked.duplicate()
+		max_all.profile.loadout=max_all.default_loadout(max_all.profile.selectedShip,max_all.profile.unlocked)
+		max_all.profile.resources={"1":float(costs.get("1",0)),"2":float(costs.get("2",0))}
+		check(max_all.max_upgrade_amount(key)==10 and max_all.upgrade_max(key) and max_all.profile.resources==all.profile.resources,"MAX matches exact ten-level budget for "+key)
 	var scene = load("res://main.tscn").instantiate()
 	root.add_child(scene)
 	await process_frame
 	scene.game.save_enabled = false
 	scene.game.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
+	# Unlocking does not install equipment into empty slots.
+	check(scene.game.equip_slot("defence",1,"shield"),"Install shield for bulk UI checks")
 	scene.game.profile.resources = {"1":1e25,"2":1e25}
 	scene.build_ui()
 	check(scene.ten_upgrade_buttons.has("laser") and scene.ten_upgrade_buttons.has("shield"),"Weapons and shield expose 10-upgrade")

@@ -14,8 +14,12 @@ func run() -> void:
 	var db := ShipDatabase.new()
 	var game := BattleGame.new(db,false)
 	game.profile.resources = {"1":1e25,"2":1e25}
-	game.profile.cleared=[1,2]
+	game.profile.cleared=BattleGame.EQUIPMENT.map(func(key):return db.unlock_level(key))
 	game.rebuild_unlocks()
+	# Cap assertions require installed equipment, not just unlocked options.
+	check(game.equip_slot("weapons",1,"cannon"),"Install cannon for cap checks")
+	check(game.equip_slot("weapons",2,"missile"),"Install missile for cap checks")
+	check(game.equip_slot("defence",1,"shield"),"Install shield for cap checks")
 	for key in BattleGame.EQUIPMENT:
 		var cap := db.max_equipment_level(key)
 		check(cap==100,"Excel 100 levels / "+key)
