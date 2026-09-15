@@ -23,7 +23,9 @@ func snapshot(game: BattleGame) -> Dictionary:
 	return {"profile":game.profile.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"player":game.player.duplicate(true)}
 
 func check_reads(game: BattleGame, label: String) -> void:
-	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit}
+	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit,"tech slots":game.hightech_slots,"furnace peak":game.furnace_income_peak,"income":game.resource_minute_total.bind("1")}
+	for key in game.db.data.get("hightech",{}):
+		readers["tech description/"+key]=game.hightech_description.bind(key)
 	for key in BattleGame.EQUIPMENT:
 		readers["stat/"+key]=game.stat.bind(key)
 		readers["entry/"+key]=game.first_equipment_entry.bind(key)
@@ -46,8 +48,10 @@ func check_reads(game: BattleGame, label: String) -> void:
 		readers["description/"+key]=game.charge_description.bind(key)
 	for name in readers:
 		var before := snapshot(game)
+		var weapons: Array = game.profile.loadout.weapons
 		readers[name].call()
 		check(snapshot(game)==before,"Read purity: "+label+" / "+name)
+		check(is_same(weapons,game.profile.loadout.weapons),"Read preserves slot array identity: "+label+" / "+name)
 
 func write_save(raw: Dictionary) -> void:
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
@@ -140,6 +144,48 @@ func _initialize() -> void:
 	restored.start(1,false)
 	check(restored.profile.loadout==first_load.profile.loadout and restored.player==first_load.player and restored.profile.resources==first_load.profile.resources,"Repeated load preserves equipment health and resources")
 	check_reads(restored,"reloaded")
+	check(not exported.has("cooldowns") and not restored.profile.has("cooldowns"),"Cooldowns remain transient across version one saves")
+	var without_levels := contradictory.duplicate(true)
+	without_levels.erase("levels")
+	write_save(without_levels)
+	var migrated := BattleGame.new(db)
+	migrated.save_enabled=false
+	check(migrated.slot_entry("weapons",0).level==1 and migrated.slot_entry("weapons",1).level==5,"Missing legacy levels keep historical first-slot default precedence")
+	var empty_save := saved.duplicate(true)
+	empty_save.loadout = migrated.empty_loadout(migrated.profile.selectedShip)
+	write_save(empty_save)
+	# Keep exactly the same input for both loads; the persisting constructor
+	# would replace the legacy input with a compatibility export after loading.
+	migrated = BattleGame.new(db,false)
+	migrated.load_progress()
+	migrated.reset_player()
+	check(migrated.weapon_entries().all(func(entry):return entry.key=="") and migrated.defense_entries().all(func(entry):return entry.key==""),"Explicit empty old slots never auto-install from legacy levels")
+	check(migrated.player.armour==0 and migrated.player.shield==0,"Empty old defence retains zero capacities")
+	check_reads(migrated,"empty old save")
+	var same_load := snapshot(migrated)
+	migrated.load_progress()
+	check(snapshot(migrated)==same_load,"Loading the same empty save again does not mutate equipment, resources or life")
+	var shield_game := BattleGame.new(db,false)
+	shield_game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+	shield_game.equip_slot("defence",1,"shield")
+	shield_game.start(1,false)
+	shield_game.group_index=db.levels[0].groups.size()
+	shield_game.player.shield=0
+	shield_game.since_hit=0
+	var shield_row := db.equip("shield",1)
+	shield_game.tick(maxf(0,float(shield_row.para3)-0.1))
+	check(shield_game.player.shield==0,"Shield waits for configured delay")
+	shield_game.since_hit=float(shield_row.para3)
+	shield_game.tick(1)
+	check(is_equal_approx(shield_game.player.shield,minf(shield_game.max_shield(),shield_game.max_shield()*float(shield_row.para2))),"Shield regenerates at configured capacity rate")
+	shield_game.hit_player(1,1)
+	var shield_after_hit := float(shield_game.player.shield)
+	shield_game.tick(maxf(0,float(shield_row.para3)-0.1))
+	check(shield_game.player.shield==shield_after_hit,"Hit restarts shield delay")
+	shield_game.player.shield=shield_game.max_shield()-0.01
+	shield_game.since_hit=float(shield_row.para3)
+	shield_game.tick(1)
+	check(shield_game.player.shield==shield_game.max_shield(),"Shield recovery caps at maximum")
 	var reads := BattleGame.new(db,false)
 	before=snapshot(reads)
 	reads.stat("laser")
@@ -152,6 +198,10 @@ func _initialize() -> void:
 	check(snapshot(reads)==before and reads.slot_entry("weapons",0).level==1,"Stale legacy levels cannot mutate runtime slots")
 	check(not restored.profile.has("levels"),"Legacy export never installs a second runtime level source")
 	check_reads(reads,"stale legacy input")
+	reads.profile.hightechLevels[BattleGame.FURNACE]=1
+	reads.resource_samples=[{"time":Time.get_unix_time_from_system(),"id":"1","amount":150.0,"origin":"drop"}]
+	check_reads(reads,"unsettled sample and furnace description")
+	check(reads.furnace_income_peak()==150 and reads.profile.furnaceIncomePeak==0,"Peak query computes without committing historical state")
 	var file := FileAccess.open("res://state-ownership-baseline.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(evidence,"\t"))
 	file.close()

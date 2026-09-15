@@ -54,6 +54,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	save_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
 		advance_charge(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
@@ -152,6 +153,7 @@ func load_progress() -> void:
 		if not entry.is_empty():
 			entry.level = clampi(int(value), 1, db.max_equipment_level(key)) if value is float or value is int else 1
 	load_hightech(raw)
+	profile.hightechOrder = hightech_slots()
 	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
 
@@ -204,7 +206,7 @@ func load_hightech(raw: Dictionary) -> void:
 				# Legacy samples have no reliable source; keep totals but exclude them
 				# from furnace input until this short rolling window expires.
 				resource_samples.append({"time":float(sample.time), "amount":float(sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
-	furnace_income_peak(float(profile.hightechSavedAt))
+	profile.furnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt))
 	if raw.get("hightechDrops") is Array:
 		for drop in raw.hightechDrops:
 			if drop is Dictionary and nonnegative_number(drop.get("age")) and float(drop.age) < 10 and nonnegative_number(drop.get("amount")) and nonnegative_number(drop.get("x")) and nonnegative_number(drop.get("y")):
@@ -222,6 +224,7 @@ func rebuild_unlocks() -> void:
 	if not ship_unlocked(str(profile.get("selectedShip", first_ship()))):
 		profile.selectedShip = first_ship()
 	ensure_loadout()
+	profile.hightechOrder = hightech_slots()
 
 func ensure_loadout() -> void:
 	var row := db.ship(str(profile.get("selectedShip", first_ship())))
@@ -247,6 +250,7 @@ func ensure_loadout() -> void:
 func save_progress() -> void:
 	if not save_enabled:
 		return
+	profile.hightechOrder = hightech_slots()
 	profile.hightechSavedAt = Time.get_unix_time_from_system()
 	prune_resource_samples(float(profile.hightechSavedAt))
 	profile.resourceSamples = resource_samples
@@ -615,7 +619,6 @@ func hightech_slots() -> Array:
 	for key in unlocked:
 		if not slots.has(key):
 			slots[slots.find("")] = key
-	profile.hightechOrder = slots
 	return slots
 
 func swap_hightech_slots(source: int, target: int) -> bool:
@@ -625,6 +628,7 @@ func swap_hightech_slots(source: int, target: int) -> bool:
 	var key = slots[source]
 	slots[source] = slots[target]
 	slots[target] = key
+	profile.hightechOrder = slots
 	save_progress()
 	return true
 
@@ -851,8 +855,7 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 	return total
 
 func furnace_income_peak(now := -1.0) -> float:
-	profile.furnaceIncomePeak = maxf(float(profile.get("furnaceIncomePeak",0.0)),resource_minute_total("1",now,true))
-	return float(profile.furnaceIncomePeak)
+	return maxf(float(profile.get("furnaceIncomePeak",0.0)),resource_minute_total("1",now,true))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -913,7 +916,8 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			if age >= 10.0:
 				break
 			uid += 1
-			var amount := ceilf(furnace_income_peak(end_time - age * wall_per_step) * float(row.para2) * hightech_level(FURNACE))
+			profile.furnaceIncomePeak = furnace_income_peak(end_time - age * wall_per_step)
+			var amount := ceilf(float(profile.furnaceIncomePeak) * float(row.para2) * hightech_level(FURNACE))
 			drops.append({"uid":uid,"x":rng.randf_range(440,1220),"y":rng.randf_range(300,505),"age":age,"id":"1","amount":amount,"hightech":true})
 
 func max_shield() -> float:
@@ -1229,7 +1233,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	var amount := ceilf(float(drop.amount) * (1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	profile.resources[drop.id] += amount
 	resource_samples.append({"time":Time.get_unix_time_from_system(),"id":str(drop.id),"amount":amount,"origin":"furnace" if drop.get("hightech",false) else "drop"})
-	furnace_income_peak()
+	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] += amount
 	var info := drop.duplicate()
 	info.amount = amount
