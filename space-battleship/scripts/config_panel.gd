@@ -163,7 +163,7 @@ func _ready() -> void:
 	var screen_rect := DisplayServer.screen_get_usable_rect(parent_window.current_screen)
 	position = Vector2i(clampi(parent_window.position.x+parent_window.size.x+12,screen_rect.position.x,screen_rect.end.x-size.x),clampi(parent_window.position.y,screen_rect.position.y,screen_rect.end.y-size.y))
 
-func find_python() -> String:
+static func find_python() -> String:
 	var configured := OS.get_environment("SPACE_BATTLESHIP_PYTHON")
 	if not configured.is_empty() and FileAccess.file_exists(configured):
 		return configured

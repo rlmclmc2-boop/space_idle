@@ -27,7 +27,7 @@ func check_python_resolution() -> void:
 	file = FileAccess.open(configured,FileAccess.WRITE)
 	file.close()
 	OS.set_environment("USERPROFILE",home)
-	var resolver = load("res://scripts/config_panel.gd").new()
+	var resolver = preload("res://scripts/config_panel.gd")
 	OS.set_environment("SPACE_BATTLESHIP_PYTHON",configured)
 	check(resolver.find_python()==configured,"Python environment override precedes bundled path")
 	OS.set_environment("SPACE_BATTLESHIP_PYTHON",home.path_join("missing.exe"))
@@ -36,7 +36,6 @@ func check_python_resolution() -> void:
 	check(resolver.find_python()==bundled,"Empty override uses bundled Python")
 	OS.set_environment("USERPROFILE",home.path_join("missing-home"))
 	check(resolver.find_python()=="python","Missing bundled Python falls back to PATH")
-	resolver.free()
 	OS.set_environment("SPACE_BATTLESHIP_PYTHON",previous_python)
 	OS.set_environment("USERPROFILE",previous_home)
 

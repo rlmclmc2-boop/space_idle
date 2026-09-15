@@ -356,10 +356,7 @@ func run_action(action: String) -> void:
 		file.store_string(JSON.stringify(document))
 		file.close()
 		args.append_array(["--request", request_path])
-	var resolver = load("res://scripts/config_panel.gd").new()
-	var python: String = resolver.find_python()
-	resolver.free()
-	# Resolve through existing QA convention without adding its window to the tree.
+	var python: String = preload("res://scripts/config_panel.gd").find_python()
 	worker = Thread.new()
 	worker.start(func(): return OS.execute(python, args, output, true, false))
 	set_busy(true)
