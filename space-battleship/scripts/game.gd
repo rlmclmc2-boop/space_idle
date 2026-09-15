@@ -5,7 +5,6 @@ signal event(kind: String, payload: Dictionary)
 
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon"]
-const BULK_EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon"]
 const SAVE_PATH := "user://progress.json"
 const FURNACE := "超时空炼铁炉"
 const ENERGY_FOCUS := "正电子聚焦装置"
@@ -340,7 +339,7 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry := slot_entry(category, index)
 	if entry.is_empty() or str(entry.key).is_empty() or not profile.unlocked.has(str(entry.key)):
 		return false
-	if levels > 1 and not BULK_EQUIPMENT.has(str(entry.key)):
+	if levels > 1 and not EQUIPMENT.has(str(entry.key)):
 		return false
 	var costs := slot_upgrade_cost(category, index, levels)
 	if costs.is_empty():
@@ -1330,7 +1329,7 @@ func max_upgrade_amount(key: String) -> int:
 func max_upgrade_amount_slot(category: String, index: int) -> int:
 	var entry := slot_entry(category,index)
 	var key := str(entry.get("key", ""))
-	if entry.is_empty() or key.is_empty() or not BULK_EQUIPMENT.has(key) or not profile.unlocked.has(key):
+	if entry.is_empty() or key.is_empty() or not EQUIPMENT.has(key) or not profile.unlocked.has(key):
 		return 0
 	var available: Dictionary = profile.resources.duplicate()
 	var amount := 0

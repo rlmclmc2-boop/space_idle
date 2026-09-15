@@ -724,7 +724,7 @@ func build_equipment_tabs() -> void:
 			var lv := int(entry.get("level",1))
 			var maxed := lv >= db.max_equipment_level(key)
 			var next := db.equip(key,mini(lv+1,db.max_equipment_level(key))) if not key.is_empty() else {}
-			var bulk: bool = BattleGame.BULK_EQUIPMENT.has(key)
+			var bulk: bool = BattleGame.EQUIPMENT.has(key)
 			var card := Panel.new()
 			card.custom_minimum_size = Vector2(440,112)
 			card.add_theme_stylebox_override("panel",style(PANEL,LINE))
