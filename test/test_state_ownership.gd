@@ -22,6 +22,33 @@ func check(ok: bool, label: String) -> void:
 func snapshot(game: BattleGame) -> Dictionary:
 	return {"profile":game.profile.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"player":game.player.duplicate(true)}
 
+func check_reads(game: BattleGame, label: String) -> void:
+	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit}
+	for key in BattleGame.EQUIPMENT:
+		readers["stat/"+key]=game.stat.bind(key)
+		readers["entry/"+key]=game.first_equipment_entry.bind(key)
+		readers["count/"+key]=game.equipment_count.bind(key)
+		readers["cost/"+key]=game.upgrade_cost.bind(key)
+		readers["can/"+key]=game.can_upgrade.bind(key)
+		readers["max/"+key]=game.max_upgrade_amount.bind(key)
+	for category in ["weapons","defence"]:
+		for index in range(game.loadout_entries(category).size()):
+			var id := game.slot_id(category,index)
+			readers["slot/"+id]=game.slot_entry.bind(category,index)
+			readers["cost/"+id]=game.slot_upgrade_cost.bind(category,index,10)
+			readers["can/"+id]=game.can_upgrade_slot.bind(category,index,10)
+			readers["max/"+id]=game.max_upgrade_amount_slot.bind(category,index)
+	for key in game.db.data.get("charge",{}):
+		readers["charge/"+key]=game.charge_job.bind(key)
+		readers["required/"+key]=game.charge_required.bind(key)
+		readers["multiplier/"+key]=game.charge_multiplier.bind(key)
+		readers["rate/"+key]=game.charge_resource_rate.bind(key)
+		readers["description/"+key]=game.charge_description.bind(key)
+	for name in readers:
+		var before := snapshot(game)
+		readers[name].call()
+		check(snapshot(game)==before,"Read purity: "+label+" / "+name)
+
 func write_save(raw: Dictionary) -> void:
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify(raw))
@@ -33,6 +60,7 @@ func _initialize() -> void:
 	db.config.autoGenRes=""
 	db.ships[db.ships.keys()[0]].sameEquipmentLimit=2
 	var game := BattleGame.new(db,false)
+	check_reads(game,"fresh")
 	game.event.connect(func(kind,payload):events.append({"kind":kind,"payload":payload.duplicate(true)}))
 	game.rng.seed=1701
 	game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
@@ -43,6 +71,7 @@ func _initialize() -> void:
 	check(game.upgrade_slot("weapons",0,2),"Upgrade first duplicate to level three")
 	check(game.upgrade_slot("weapons",1),"Upgrade second duplicate to level two")
 	check(game.slot_entry("weapons",0).level==3 and game.slot_entry("weapons",1).level==2,"Duplicate levels independent")
+	check_reads(game,"duplicate levels")
 	record(game,"upgrades")
 	game.start(1,false)
 	game.spawn_group()
@@ -70,6 +99,7 @@ func _initialize() -> void:
 	game.tick(0.05)
 	evidence.after_next_tick=game.cooldowns.duplicate(true)
 	check(is_equal_approx(game.cooldowns.weapons_1,0.15),"First removal must not overwrite the surviving slot cooldown")
+	check_reads(game,"removed first")
 	record(game,"first removal")
 	game.change_state(BattleGame.State.TRAVEL)
 	var cd := float(db.equip("laser",2).cd)
@@ -103,22 +133,25 @@ func _initialize() -> void:
 	var first_load := snapshot(restored)
 	restored.save_enabled=true
 	restored.save_progress()
+	var exported = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	check(exported.version==1 and exported.levels.laser==3 and exported.loadout.weapons[1].level==5,"Version one exports derived first level and independent duplicate")
 	restored=BattleGame.new(db)
 	restored.save_enabled=false
 	restored.start(1,false)
 	check(restored.profile.loadout==first_load.profile.loadout and restored.player==first_load.player and restored.profile.resources==first_load.profile.resources,"Repeated load preserves equipment health and resources")
+	check_reads(restored,"reloaded")
 	var reads := BattleGame.new(db,false)
 	before=snapshot(reads)
 	reads.stat("laser")
 	evidence.fresh_stat_mutates=snapshot(reads)!=before
+	check(snapshot(reads)==before,"Fresh stat read cannot create charge state")
 	reads.profile["levels"]={"laser":4}
 	before=snapshot(reads)
 	reads.weapon_entries()
 	evidence.legacy_read_mutates=snapshot(reads)!=before
 	check(snapshot(reads)==before and reads.slot_entry("weapons",0).level==1,"Stale legacy levels cannot mutate runtime slots")
 	check(not restored.profile.has("levels"),"Legacy export never installs a second runtime level source")
-	# Record current read impurity; a later migration must replace this with a
-	# strict pre/post equality gate, never whitelist profile writes as caching.
+	check_reads(reads,"stale legacy input")
 	var file := FileAccess.open("res://state-ownership-baseline.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(evidence,"\t"))
 	file.close()

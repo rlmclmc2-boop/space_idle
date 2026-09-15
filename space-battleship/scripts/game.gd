@@ -66,6 +66,9 @@ func fresh_profile() -> Dictionary:
 	var selected := first_ship()
 	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	profile.loadout = default_loadout(selected, profile.unlocked)
+	profile.charge = {}
+	for key in db.data.get("charge", {}):
+		profile.charge[key] = {"level":0,"count":0.0,"elapsed":0.0,"active":false,"credit":0.0,"started":0}
 	return profile
 
 func first_ship() -> String:
@@ -275,19 +278,15 @@ func first_equipment_entry(key: String) -> Dictionary:
 	return {}
 
 func loadout_entries(category: String) -> Array:
-	ensure_loadout()
 	return profile.loadout.get(category, [])
 
 func weapon_entries() -> Array:
-	var entries := loadout_entries("weapons")
-	return entries
+	return loadout_entries("weapons")
 
 func defense_entries() -> Array:
-	var entries := loadout_entries("defence")
-	return entries
+	return loadout_entries("defence")
 
 func stat(key: String) -> float:
-	ensure_loadout()
 	var total := 0.0
 	for category in ["weapons", "defence"]:
 		for entry in profile.loadout.get(category, []):
@@ -455,10 +454,6 @@ func equipment_stat(key: String, level: int) -> float:
 	return value
 
 func charge_job(key: String) -> Dictionary:
-	if not profile.has("charge"):
-		profile.charge = {}
-	if not profile.charge.has(key):
-		profile.charge[key] = {"level":0,"count":0.0,"elapsed":0.0,"active":false,"credit":0.0,"started":0}
 	return profile.charge[key]
 
 func charge_unlocked(key: String) -> bool:

@@ -51,7 +51,7 @@ func run() -> void:
 	g.toggle_charge(ATTACK)
 	g.advance_charge(5)
 	check(g.charge_job(ATTACK).level==2,"Resume retains completed charge count")
-	g.profile.charge.clear()
+	g.profile.charge = g.fresh_profile().charge
 	g.toggle_charge(ATTACK)
 	g.profile.resources["2"]=10000.0
 	g.advance_charge(36.25)
@@ -103,7 +103,7 @@ func run() -> void:
 	g.tick(10)
 	check(g.charge_job(ATTACK).elapsed==saved_elapsed,"Pause freezes charging")
 	g.paused=false
-	g.profile.charge.clear()
+	g.profile.charge = g.fresh_profile().charge
 	g.toggle_charge(ATTACK)
 	g.speed=5
 	g.tick(0.5) # main passes delta * speed to tick.
@@ -123,7 +123,7 @@ func run() -> void:
 	g.save_progress()
 	var loaded := BattleGame.new(db,true)
 	check(loaded.profile.resources["2"]==10 and loaded.charge_job(ATTACK).elapsed==0.5 and loaded.charge_job(ATTACK).credit==0.5 and not loaded.charge_job(ATTACK).active,"Saved progress, pause and prepaid charging time survive reopen")
-	loaded.profile.charge.clear()
+	loaded.profile.charge = loaded.fresh_profile().charge
 	for key in db.data.charge:
 		loaded.toggle_charge(key)
 	loaded.profile.resources["2"]=150.0
@@ -190,7 +190,7 @@ func run() -> void:
 		row.para_6=2
 		row.para_7=0
 	scene.game.profile.cleared=[1]
-	scene.game.profile.charge.clear()
+	scene.game.profile.charge = scene.game.fresh_profile().charge
 	scene.game.profile.resources["2"]=30.0
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=3
