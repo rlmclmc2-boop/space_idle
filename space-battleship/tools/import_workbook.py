@@ -26,6 +26,14 @@ def read_rows(sheet):
     return [dict(zip(header,row)) for row in values if row[0] is not None]
 
 def convert_sheet(name, rows):
+    if name in ('mon', 'monGroup', 'res', 'level'):
+        ids = [row.get('id') for row in rows]
+        if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
+            raise ValueError(f'{name}：ID 必须为不重复的正整数')
+    if name == 'config':
+        keys = [row.get('name') for row in rows]
+        if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
+            raise ValueError('config：名称必须非空且不能重复')
     if name in ("hightech", "charge"):
         result={}
         for row in rows:
@@ -39,8 +47,10 @@ def convert_sheet(name, rows):
         for row in rows:
             result.setdefault(row["name"],[]).append(row)
         for items in result.values():
-            if any(not isinstance(r.get("level"),(int,float)) for r in items):
+            if any(type(r.get('level')) not in (int, float) or not math.isfinite(r['level']) or r['level'] < 1 or r['level'] != int(r['level']) for r in items):
                 raise ValueError("equipment：等级为空或不是数字，请在 Excel 中重新计算并保存")
+            if len({r['level'] for r in items}) != len(items):
+                raise ValueError('equipment：同名装备等级不能重复')
             items.sort(key=lambda r:r["level"])
         return result
     if name=="mon":
@@ -165,9 +175,21 @@ def validate_projection(data):
         for enemy_id in g['slots']:
             if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(f'Unknown enemy {enemy_id}')
     for enemy in enemies.values():
+        eid = enemy['id']
+        size = enemy['size']
+        if type(size) not in (int, float) or not math.isfinite(size) or size != int(size) or size < 1:
+            raise ValueError(f'敌机 {eid}：外观尺寸等级必须为正整数')
+        if enemy['armourType'] not in (0, 1, 2): raise ValueError(f'敌机 {eid}：抗性应为 0/1/2')
+        for weapon in enemy['equipment']:
+            key = weapon['name']
+            base = key.replace('_mon', '').replace('-mon', '')
+            candidates = equipment.get(key, []) + equipment.get(base, [])
+            if base not in ('laser', 'cannon', 'missile') or not any(r['level'] == 1 for r in candidates):
+                raise ValueError(f'敌机 {eid}：无效武器 {key}')
         positive(enemy['health'],f'enemy {enemy["id"]} health')
         positive(enemy['dmgMultiple'],f'enemy {enemy["id"]} damage multiplier',True)
         for drop in enemy['drops']:
+            if str(drop['resourceId']) not in data['resources']: raise ValueError(f'敌机 {eid}：无效掉落资源')
             positive(drop['amount'],'drop amount',True)
             if not 0<=drop['chance']<=1: raise ValueError('Drop chance must be between 0 and 1')
     for key in ('dmgReduce','autoCollectReduce'):

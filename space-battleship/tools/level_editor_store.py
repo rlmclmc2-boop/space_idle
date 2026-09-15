@@ -169,19 +169,6 @@ class Store:
             data[SECTIONS[name]] = read_changed_file(self.paths[name], name, raw)
         validate_projection(data)
         warnings = []
-        for eid, enemy in data['enemies'].items():
-            size = enemy['size']
-            if type(size) not in (int, float) or not math.isfinite(size) or size != int(size) or size < 1:
-                raise ValueError(f'敌机 {eid}：外观尺寸等级必须为正整数')
-            if enemy['armourType'] not in (0, 1, 2): raise ValueError(f'敌机 {eid}：抗性应为 0/1/2')
-            for weapon in enemy['equipment']:
-                key = weapon['name']
-                base = key.replace('_mon', '').replace('-mon', '')
-                candidates = data['equipment'].get(key, []) + data['equipment'].get(base, [])
-                if base not in ('laser', 'cannon', 'missile') or not any(r['level'] == 1 for r in candidates):
-                    raise ValueError(f'敌机 {eid}：无效武器 {key}')
-            for drop in enemy['drops']:
-                if str(drop['resourceId']) not in data['resources']: raise ValueError(f'敌机 {eid}：无效掉落资源')
         data['source_files'] = {n: str(p.resolve()) for n, p in self.paths.items()}
         payload = encode(data)
         state = {'version': CACHE_VERSION, 'directory': str(self.directory.resolve()),

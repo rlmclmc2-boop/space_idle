@@ -3,6 +3,7 @@
 ## CURRENT
 
 - 项目版本0.2.0；本轮重构完成，Phase 13最终验收通过。无进行中的重构项。
+- U-008 普通 QA 重启的保存失败拦截已修复：保存报错时保留当前场景与进度并提示重试；隔离故障专项13项、清档重启7项、存档边界16项均通过，已核对失败提示画面。证据在`../test/work/test_restart_save_failure-jjx712xo/`（相对项目根）。
 - 新任务遵循[AGENTS](../AGENTS.md)；需定位实现/数据/测试时按需读[ARCHITECTURE](ARCHITECTURE.md)。
 
 ## DONE
@@ -21,7 +22,7 @@
 | U-005 | 拾取/回退/换关默认时长、弹速换算、初始资源、保损/自动推进等实现补充尚未全部获策划确认；JSON.defaults、game.gd。 |
 | U-006 | 最小/零伤害、跨盾取整、一级行抗性、同优先级索敌与拾取半径的设计适用范围待定；`game.gd:reduced_damage/hit_player`。 |
 | U-007 | 资源/装备扩展与不同导入入口引用/重复ID校验未完整对齐；仍有五类装备、资源ID1/2及config参数映射限制，`tools/import_workbook.py`。 |
-| U-008 | 非连续cleared、坏档/多实例共享档、普通QA重载未阻止保存失败等风险未解决；`game.gd:load_progress/save_progress`、config_panel.gd。 |
+| U-008 | 非连续cleared、坏档/多实例共享档等风险未解决；`game.gd:load_progress/save_progress`。普通QA重启已拦截save_error，但不代表存档所有写入故障均可检测或恢复。 |
 | U-009 | 品质、独立能源/建造/探索、独立关卡AI及全局结局未设计；范围问题，不自动创建模块。 |
 | U-010 | 跨平台发布、依赖锁定、导出预设/CI与可迁移启动未完成；project.godot、启动脚本、[操作说明](../README.md)。 |
 | U-011 | 旧State/leave仍有消费者；敌方导弹未被编队引用且不套玩家齐射机制；`game.gd`、TEST_MAP，先核用途。 |

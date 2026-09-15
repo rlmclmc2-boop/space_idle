@@ -323,8 +323,16 @@ func restart_game(clear_save: bool = false) -> void:
 		scene.game.save_enabled = false
 		scene.set_process(false)
 	else:
+		var failed := [false]
+		var on_event := func(kind, _info):
+			if kind == "save_error": failed[0] = true
+		scene.game.event.connect(on_event)
 		scene.game.settle_drops()
 		scene.game.save_progress()
+		scene.game.event.disconnect(on_event)
+		if failed[0]:
+			status_label.text = "保存进度失败，未重载游戏。请排除存档写入故障后重试。"
+			return
 	deleting_save = clear_save
 	restarting = true
 	import_button.disabled = true

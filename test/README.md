@@ -37,7 +37,7 @@ python test/run.py test_rule_rounding.gd
 | 充能费率与次数 | test_charge.gd / test_charge_growth.gd |
 | 驻守/回退/过关 | test_guard.gd / test_loop_retreat.gd / test_skip_clear.gd |
 | 关卡编辑器 | test_level_editor.py / test_level_editor.gd |
-| QA与进程重启 | test_config_panel.gd / test_delete_save.gd / test_full_restart.py |
+| QA与进程重启 | test_config_panel.gd / test_delete_save.gd / test_full_restart.py；普通重启保存失败用 test_restart_save_failure.gd |
 | 配置输入与故障 | test_config_input_matrix.py；4入口接受/错误/文件副作用及事务观察 |
 | 科学家配置 | test_scientist_config.py |
 
