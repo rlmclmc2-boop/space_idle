@@ -1,9 +1,10 @@
 # Current Status
 
 Goal:
-Phase 8已完成审查与隔离验证，结论KEEP CURRENT IMPLEMENTATION；CHECKPOINT 4待确认，不得开始Phase 9。
+Phase 9已完成，CHECKPOINT 5待确认；不得开始Phase 10。
 
 Done:
+- 2026-09-15：Phase 9先建立30组帧场景及离线/保存基线，各3轮raw+3轮插桩；仅优化科学家MAX可用性判断，生产净增4行，无缓存。1009+63+11项通过，相同探针复测收益可重复；CHECKPOINT 5与全部数据见REFACTOR_PLAN第11节。
 - 2026-09-15：Phase 8未找到净收益明确的等价抽取，A12/A13保持原实现。新增独立输入/故障矩阵，冻结入口差异；详细结果见REFACTOR_PLAN第10节，既有风险统一见U-018/U-019/U-020。
 - 2026-09-15：Phase 6改为静态find_python，移除编辑器查找Python时的QA Window创建/释放；18项编辑器、14项QA及独立进程大重启验证通过。Phase 7未发现可安全删除的重复入口，目录保持不变。CHECKPOINT 3及Phase 8待批准范围见REFACTOR_PLAN第9节。
 - 2026-09-15：Phase 5完成：装备等级归槽位、玩家冷却仅槽位键；旧levels仅加载/保存投影，普通读取不写档案。状态专项1114项及直接影响专项通过，U-016已按用户授权修复；CHECKPOINT 2及日志见REFACTOR_PLAN第8节。
@@ -89,9 +90,10 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无运行中的重构；等待CHECKPOINT 4确认。
+- 无运行中的重构；等待CHECKPOINT 5确认。
 
 Blocked:
+- Phase 9无未解决相关测试失败；剩余UI重建热点见U-021。U-018/U-019/U-020未处理。
 - Phase 8未修改生产代码；既有总表测试失败见U-018，回滚失败及并发覆盖风险见U-019/U-020，不能宣称完整事务安全。
 - Phase 6～7无未解决专项失败；旧总表与现行导入模式差异见U-018，历史综合测试限制见U-017。
 - Phase 1～4无未解决验证失败；后续暂停为授权检查点，不是技术阻塞。
@@ -100,7 +102,7 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
-0. 等待CHECKPOINT 4及Phase 9单独批准；本轮停止。已知数据链路风险如需修复须另行授权。
+0. 等待CHECKPOINT 5及Phase 10批准；本轮停止。数据链路风险仍需独立授权。
 0. QA「大重启」加载大数性能修复，无需清档。
 0. QA「大重启」加载伤害数字避让显示。
 0. 重启查看科学家批量操作。
@@ -134,6 +136,7 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- REFACTOR_PLAN.md第11节；scripts/game.gd:can_generate_scientist；../test/test_performance.py；../test/phase9_probe.gd；../test/test_scientist_affordability.gd。
 - REFACTOR_PLAN.md第10节；../test/test_config_input_matrix.py；../test/work/refactor-phase8/；docs/TODO.md U-018/U-019/U-020。
 - REFACTOR_PLAN.md第9节；scripts/config_panel.gd；scripts/level_editor.gd；../test/test_level_editor.gd；../test/test_config_panel.gd；../test/work/refactor-phase6-7/；docs/INVENTORY.md。
 - REFACTOR_PLAN.md第8节；scripts/game.gd；scripts/main.gd；../test/test_state_ownership.gd；../test/work/refactor-phase5/；docs/modules/ships.md；docs/VALIDATION.md。

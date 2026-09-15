@@ -666,3 +666,97 @@ U-018/U-019/U-020仍在；尤其不能保证恢复失败原子性和多写入者
 | game.tick/tick_projectiles | 固定敌舰/弹体数量下P95与遍历次数 | 同帧击杀换靶、时间推进、资源/生命计算 |
 
 只有实测显著且复杂度净下降才考虑修改；当前停在CHECKPOINT 4，等待批准，不进入Phase 9。
+
+## 11. CHECKPOINT 5 — Phase 9（2026-09-15）
+
+### BASELINE
+
+Phase 9A先完成测量与排名，再进入9B。完整[PERFORMANCE_BASELINE](../test/work/phase9-baseline-final-_urn6lcv/PERFORMANCE_BASELINE.md)包含全部场景frame/tick median/P95、逐类UI耗时、build及同帧重复、weapon_entries/stat/DB/scientist MAX/索敌排序/弹体遍历/save计数。每轮原始统计在同目录raw-0～2.json、instrumented-0～2.json及results.json，不能只取最快一次。
+
+固定当前JSON、随机种子1701、1440×810、Godot 4.7.2 GL Compatibility、RTX 2060、关闭VSync；每组预热30帧、采样120帧，三次独立进程。驱动以固定delta=1/60调用原main._process，1/2/5X仍由生产代码细分。frame为调用至下一process_frame的墙钟间隔，含渲染/调度；不等于纯GPU耗时或自由运行FPS。偶数样本median取上中位数，P95取nearest-rank；汇总使用三轮统计值的中位数。
+
+IDLE、NORMAL、FULL_LOADOUT、HEAVY_COMBAT、UI_EQUIPMENT、UI_SCIENTISTS（含科技）、UI_CHARGE、LARGE_VALUE、LARGE_SCIENTISTS、INCOME_60S均测1X/2X/5X，共30组；另有离线与实际保存样本，各轮预热5次后采30次。以下为5X索引，其余倍速及tick详见完整基线，单位ms：
+
+| 场景 | frame median / P95 | main CPU median / P95 |
+|---|---|---|
+| IDLE | 5.322 / 6.750 | 1.293 / 1.642 |
+| NORMAL | 6.874 / 9.191 | 1.544 / 1.856 |
+| FULL_LOADOUT | 13.254 / 16.198 | 4.821 / 5.933 |
+| HEAVY_COMBAT | 13.622 / 17.279 | 4.912 / 6.675 |
+| UI_EQUIPMENT | 5.745 / 7.033 | 1.485 / 1.724 |
+| UI_SCIENTISTS | 5.952 / 7.359 | 1.561 / 1.852 |
+| UI_CHARGE | 5.955 / 7.430 | 1.450 / 1.749 |
+| LARGE_VALUE | 12.188 / 14.163 | 7.754 / 8.926 |
+| LARGE_SCIENTISTS | 8.246 / 246.131 | 3.579 / 3.920 |
+| INCOME_60S | 5.669 / 7.715 | 1.528 / 2.249 |
+
+离线median/P95=15.500/19.607ms；真实隔离保存=1.753/2.210ms。非IDLE/NORMAL夹具解锁当前70关；满装为8武器槽+4防御槽，符合同类限制；重编队由当前配置选取，实测最多6敌舰、20弹体。大资源为1e100；大量科学家为100万人、1000人研究；收入窗口用240个样本；离线为100人研究、当前4小时上限，充能任务未启动。所有写入均在test/work，不改正式输入或玩家档。
+
+试跑未混入基线：先有超时与离线UI监听夹具问题；随后定位临时Engine元数据未清理导致退出异常。最小探针移除元数据后退出0，最终测量器同样清理。最终before及after各6个完整进程全部退出0。源码/配置均来自隔离副本；插桩包含子调用及记录开销，仅用于归因，不能直接替代raw收益。
+
+### RANKING
+
+| 等级 | 候选与决定 |
+|---|---|
+| HOT，优化 | 科学家MAX可用性：LARGE_VALUE中反复完整枚举，占据明显帧预算，可只判断首个付费购买，保持原购买算法 |
+| HOT，保留 | 满装装备MAX刷新，约2.1～2.2ms/帧（插桩包含子调用）。不能直接替换为can_upgrade_slot：空成本、整数转换等边界未证明等价；不增加策略参数或缓存来强行优化 |
+| HOT，保留 | 实际build_ui重建成本，详见U-021。观测31次重建而非重复重建；局部刷新需增加控件维护与事件验证，本轮不扩大改动 |
+| WARM | hightech/charge/装备按钮和描述、DB查询、tick及tick_projectiles；有可测成本但没有已证明复杂度净下降的独立修改。不能把嵌套耗时重复算作收益 |
+| COLD | weapon_entries/stat、索敌排序/导弹占用、收入统计、当前离线与保存样本：本次规模下不值得引入状态或索引；低频保存不因耗时而延迟 |
+| COLD | on_event→同帧deferred合并：全部场景同帧额外重建为0，明确不实施 |
+
+### OPTIMIZED
+
+仅`game.can_generate_scientist(amount<0)`：用`scientist_purchase(1)`确认首人可负担，再检查首人至少有一项正费用。旧MAX遇到全部免费首人会返回0，此语义仍保留。正数量查询和`generate_scientist(-1)`实际购买流程保持不变；没有新增价格公式、状态或接口层。
+
+### REVERTED
+
+没有生产优化被撤回：只实施上述一个候选并通过保留门槛。UI同帧合并和其他热点在修改前就因无重复证据或复杂度/行为风险取消，没有把未尝试内容冒充回退。失败的测量试跑已排除，不算优化成果。
+
+### PERFORMANCE
+
+同一探针逐字节一致，前后源码哈希仅game.gd不同；配置哈希相同。[完整before/after](../test/work/phase9-after-scientist-asjbrfwo/PERFORMANCE_RESULT.md)记录全部30组及各轮范围，以下为LARGE_VALUE，单位ms：
+
+| 倍速 | raw main CPU median/P95 前→后 | raw frame median/P95 前→后 | refresh_scientists median/P95（插桩）前→后 |
+|---|---|---|---|
+| 1X | 7.550/9.129 → 3.311/3.905 | 12.058/14.309 → 7.878/9.319 | 5.711/6.141 → 0.173/0.217 |
+| 2X | 7.587/8.686 → 3.290/3.885 | 12.098/13.916 → 7.896/9.961 | 5.687/6.679 → 0.173/0.209 |
+| 5X | 7.754/8.926 → 3.305/3.548 | 12.188/14.163 → 7.616/8.765 | 5.685/7.720 → 0.175/0.215 |
+
+5X三轮CPU median分别为7.754/7.648/7.762→3.304/3.305/3.306；frame median分别12.188/12.026/12.249→7.616/7.844/7.600，区间不重叠。没有将其他场景的小幅波动归功于优化。大量科学家场景的frame P95仍约248ms，其全量重建问题没有消失。
+
+### BEHAVIOR
+
+修改前后可购买性专项1009项通过，涵盖正数/MAX/负数别名、锁定、多资源、免费与费用递减、大数、profile深比较和暂停时按钮即时更新。修改后科学家63项、大数11项通过；没有修改已有正确断言。行为专项通过后才开始性能复测。
+
+三轮逐场景比较，tick、tick_projectiles、targets、missile_target、weapon_entries、stat、save_progress、build_ui调用数，以及排序/弹体/导弹占用遍历数全部一致。它们是辅助证据，不能替代规则断言。生产diff只涉及可购买性读取，没有改时间步进、伤害/资源公式、冷却、事件、UI结构、拖拽、滚动、保存承诺或旧档迁移；未发现行为差异。
+
+### ALLOCATIONS
+
+LARGE_VALUE每120帧，scientist_cost调用104400→1800，减少102600次费用计算；完整MAX枚举120→0。can_generate_scientist与scientist_purchase总调用均360→360，refresh_scientists仍120→120，因此不是跳过UI刷新。每个费用调用创建的费用字典随调用减少（代码可推导），没有可靠测量总分配字节、峰值内存或GC收益；不把临时插桩数组算成游戏分配。
+
+### CACHE
+
+没有引入缓存。`first`仅当前调用的局部结果，无跨帧生命周期、失效规则或第二状态源。测量器只存在于测试副本，退出前移除Engine元数据，不进入生产场景。
+
+### CODE_DIFF
+
+运行代码仅game.gd净增4行，未删行、未增加运行文件；测试新增3份，共308行：专用启动器102、隔离探针156、可购买性专项50。无通用Profiler/Manager/Service。其余为检查点、状态、风险及测试入口文档；具体提交diff可回退。
+
+### COMPLEXITY
+
+仅增加一个负数量分支和首人非免费判断；价格/舍入/资源判断仍调用已有权威计算。复杂度代价小，布尔查询不再按可购买人数循环，无缓存失效或跨模块同步。**KEEP**：收益可重复、行为专项通过、未明显增加运行复杂度。
+
+### TOKEN_IMPACT
+
+未来理解MAX按钮无需追踪整次批量购买循环才能判断性能；边界注释解释免费首人的特殊语义。测试工具仅性能任务按需读取，常规任务不读完整矩阵；没有宣称测得AI Token百分比。
+
+### RISKS
+
+U-021及装备MAX刷新仍是剩余热点。测试是固定步长/指定配置的同机比较，不代表所有硬件、无限敌人、全部进度或活动充能的性能；实际分配字节未可靠测量。U-018/U-019/U-020原样保留，本阶段未处理数据正确性/事务问题。
+
+正式12份输入SHA-256与Phase 8基线全部一致，[哈希证据](../test/work/phase9-after-scientist-asjbrfwo/formal-input-hashes.json)。实测存档位于隔离userdata目录；没有读取或写入正式玩家档。根证书提示为既有环境信息，测试和完整测量进程正常退出。
+
+### NEXT
+
+本次修改具备进入Phase 10核心规则测试复核的直接验证基础，无未解决相关失败；后续仍须用户批准。**Phase 9完成后停止，未开始Phase 10。**

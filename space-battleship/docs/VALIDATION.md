@@ -1,5 +1,12 @@
 # 验证与证据
 
+## 2026-09-15 Phase 9
+
+- 优化前后分别3轮未插桩+3轮插桩，30组固定帧场景、独立离线/保存样本；测量前30帧预热、120帧采样。最终12个完整测量进程均正常退出；试跑异常与排除原因见CHECKPOINT 5，不计入收益。
+- `test_scientist_affordability.gd`修改前后1009项通过；修改后`test_scientists.gd`63项、`test_large_numbers.gd`11项通过。保留正确断言，覆盖免费/递减/大数/多资源费用、锁定、读取不变性与暂停时即时按钮状态；实际购买、资源与离线规则由既有专项继续验证。
+- SAME PROBE复测：LARGE_VALUE/5X raw CPU median/P95从7.754/8.926ms降至3.305/3.548ms；完整MAX枚举每120帧120→0，scientist_cost调用104400→1800。生产仅game.gd增加4行，无缓存。逐轮值、全部场景与调用计数差分见[CHECKPOINT 5](../REFACTOR_PLAN.md)。
+- tick/弹体/索敌/武器读取/stat/save/build_ui及遍历计数三轮逐场景一致；12份正式配置输入哈希不变，所有测试存档位于test/work。没有运行不相关的旧总表失败专项，也未处理U-018/U-019/U-020。保留根证书提示，不影响上述进程退出与验证。
+
 ## 2026-09-15 Phase 8
 
 - KEEP CURRENT IMPLEMENTATION：三个生产tools文件哈希与隔离基线一致，运行代码零修改；正式12份输入SHA-256未变。

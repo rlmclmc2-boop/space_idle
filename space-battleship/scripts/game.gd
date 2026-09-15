@@ -735,6 +735,10 @@ func scientist_purchase(amount := 1) -> Dictionary:
 	return {"count":count,"costs":total}
 
 func can_generate_scientist(amount := 1) -> bool:
+	if amount < 0:
+		# MAX is available only if its first purchase is affordable and not free.
+		var first := scientist_purchase(1)
+		return int(first.count)>0 and first.costs.values().any(func(cost):return float(cost)>0)
 	return int(scientist_purchase(amount).count)>0
 
 func generate_scientist(amount := 1) -> bool:

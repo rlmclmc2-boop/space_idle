@@ -21,3 +21,5 @@ Windows 运行器创建临时副本后启用父目录权限继承，让命令行
 Phase 5状态边界与读取纯度：`test_state_ownership.gd`；旧levels只通过原始存档字典输入，普通夹具直接设置槽位等级/槽位冷却。完整阶段证据见REFACTOR_PLAN第8节；历史综合探针限制见TODO U-017。
 
 Phase 8输入、投影、公式缓存与事务现状：`test_config_input_matrix.py`。用`python test/run.py test_config_input_matrix.py`执行，Windows重定向日志时设置`PYTHONUTF8=1`。产物INPUT_MATRIX.json记录完整返回值、异常、文件哈希及故障副作用，INPUT_MATRIX.md用于浏览。故障观察通过不代表回滚失败仍具原子性，限制见TODO U-019/U-020；不以旧总表补猜当前配置。
+
+Phase 9：性能测量直接运行`python test/test_performance.py --label <证据名>`，由它创建隔离项目，调用专用`phase9_probe.gd`；不通过run.py运行探针。默认3轮raw与3轮instrumented，期间不要同时跑其他测试。完整基线/比较见REFACTOR_PLAN第11节。`python test/run.py test_scientist_affordability.gd`验证布尔可购买性、读取不变性和暂停时按钮即时更新；科学家规则继续由`test_scientists.gd`保护。无生产Profiler或缓存层。
