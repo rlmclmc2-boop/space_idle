@@ -327,7 +327,16 @@ EXPECTED_GAIN 顺序统一为：代码复杂度 / 文件数量 / 依赖复杂度
 - 保留：State枚举（LEVEL_SELECT虽无调用，但删除涉及其他状态整数值，收益不足）；leave/MAIN_MENU/UPGRADE/DEFEAT仍有调用；旧default字段不在此次修改投影链；截图入口、legacy探针、绘图fallback、旧档迁移仍有用途。
 - 验证：科学家63项、拖拽32项全部通过，Godot导入退出0；相关执行引用搜索无命中，diff及空白检查通过。日志 `../test/work/refactor-checkpoint-1/phase2-*.log`。无新行为差异或验证失败。
 
-### Phase 3：空槽创建子项完成
+### Phase 3：完成
 
 - default_loadout复用既有empty_loadout，每次仍创建独立槽位字典，默认安装顺序不变，未触及ensure_loadout或旧状态同步。
 - 舰船专项、卸下25项、五类批量升级70项通过，Godot导入退出0，diff检查通过。日志 `../test/work/refactor-checkpoint-1/phase3-*.log`。
+- 科学家+1按钮直接绑定现有assign_scientist，移除select_research转发和恒定文案函数；文案仅在建钮时设置，未改分配/保存/事件/拖拽。科学家63项、拖拽32项通过，已检查科学家截图，残留符号搜索与diff检查通过。
+- 同义装备升级转发仍涉及旧levels和首槽选择，留到Phase 5；公式求值器没有安全净收益，保持不动。以下为源码对照，不冒充运行测试：
+
+| 输入/边界 | inspect_knowledge | level_editor_store | 本轮决定 |
+|---|---|---|---|
+| 一元负号 `=-1` | 没有UnaryOp分支，报unsupported | 支持负号 | 不合并语法接受范围 |
+| 小写 `=round(1.5,0)` | 仅识别大写ROUND | upper后识别 | 不改变合法输入集合 |
+| 递归公式中间结果 | Decimal保留到比较 | 每个单元格转float，再转Decimal参与引用 | 不改变精度与缓存内容 |
+| 单元格引用/非法值 | 工作簿上下文、审计异常分类 | 草稿cells、数值类型/有限性检查及文件单元格错误信息 | 不创建通用解析层，不引入工具反向依赖 |

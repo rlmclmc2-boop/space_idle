@@ -199,7 +199,6 @@ func _process(delta: float) -> void:
 	for key in hightech_buttons:
 		var b: Button = hightech_buttons[key]
 		b.disabled = not game.can_research(key)
-		b.text = hightech_button_text(key)
 		refresh_hightech_progress(key)
 	for key in hightech_descriptions:
 		hightech_descriptions[key].text = game.hightech_description(key)
@@ -932,9 +931,6 @@ func build_ship_tab() -> void:
 			card.add_child(selector)
 			equipment_label(card,"更换时配置 · Lv.1" if not str(entry.get("key", "")).is_empty() else "可保留为空",Vector2(8,59),11,MUTED)
 
-func hightech_button_text(_key: String) -> String:
-	return "+1"
-
 func refresh_scientists() -> void:
 	if not is_instance_valid(scientist_generate_button):
 		return
@@ -1041,9 +1037,6 @@ func refresh_charge_card(key: String) -> void:
 		controls.button.text = "继续充能" if started else "启动充能"
 	controls.status.add_theme_color_override("font_color",CYAN if controls.status.text=="充能中" else Color("ffc178") if controls.status.text=="资源不足" else MUTED)
 
-func select_research(key: String) -> void:
-	game.assign_scientist(key,1)
-
 func confirm_unequip(category: String, index: int) -> void:
 	var entry := game.slot_entry(category,index).duplicate()
 	if entry.is_empty() or str(entry.key).is_empty():
@@ -1128,7 +1121,7 @@ func build_hightech_tab() -> void:
 		var progress_bar := charge_progress_bar(card,Vector2(10,99),303,CYAN)
 		hightech_progress[key] = {"label":progress_text,"bar":progress_bar}
 		refresh_hightech_progress(key)
-		var b := button(hightech_button_text(key),Rect2(387,77,46,29),func():select_research(key),true,not game.can_research(key))
+		var b := button("+1",Rect2(387,77,46,29),func():game.assign_scientist(key,1),true,not game.can_research(key))
 		b.reparent(card,false)
 		b.add_theme_font_size_override("font_size",12)
 		b.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
