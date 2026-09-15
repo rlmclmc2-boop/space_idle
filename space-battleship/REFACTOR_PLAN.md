@@ -1,6 +1,8 @@
 # 太空战舰：项目审计与分阶段重构方案
 
-本文件是重构审计与阶段历史，保留至整个重构完成；不是现行规则权威或默认AI上下文。现行入口为AGENTS，旧文档迁移见DOCUMENT_MIGRATION_MAP。
+HISTORY ONLY / NOT AUTHORITATIVE / DO NOT READ BY DEFAULT
+
+本文件仅保留本轮重构审计证据与阶段历史，不是现行规则权威或任务前置阅读。现行入口为AGENTS，旧文档迁移见DOCUMENT_MIGRATION_MAP；其中各阶段的等待确认/下一步仅描述当时状态。
 
 日期：2026-09-15。审计基线：工作区 Git HEAD `7f4d704`；审计开始时工作树干净。
 
