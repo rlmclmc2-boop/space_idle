@@ -17,3 +17,5 @@
 ## PROPOSED · 尚未实施
 
 只提出维护路线，不宣称已实现：先完成 TODO P1 的规则裁决与数据校验，再按实际瓶颈决定是否抽离逻辑。当前任务不引入新框架、新玩法、src/assets 迁移或新的存档结构。
+
+Phase 6编辑器Python定位：level_editor直接调用config_panel.find_python静态函数，复用环境指定→内置路径→PATH顺序；保留脚本引用，不创建QA窗口。没有新增运行时服务。

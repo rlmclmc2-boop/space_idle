@@ -1,9 +1,10 @@
 # Current Status
 
 Goal:
-Phase 5已完成，CHECKPOINT 2待确认；停在Phase 6之前。
+Phase 6～7已完成，CHECKPOINT 3待确认；不得开始Phase 8。
 
 Done:
+- 2026-09-15：Phase 6改为静态find_python，移除编辑器查找Python时的QA Window创建/释放；18项编辑器、14项QA及独立进程大重启验证通过。Phase 7未发现可安全删除的重复入口，目录保持不变。CHECKPOINT 3及Phase 8待批准范围见REFACTOR_PLAN第9节。
 - 2026-09-15：Phase 5完成：装备等级归槽位、玩家冷却仅槽位键；旧levels仅加载/保存投影，普通读取不写档案。状态专项1114项及直接影响专项通过，U-016已按用户授权修复；CHECKPOINT 2及日志见REFACTOR_PLAN第8节。
 - 2026-09-15：Phase 4完成，统一EQUIPMENT清单；批量升级70/上限28/页签解锁14/装备页282项通过，已验图。12份正式配置输入哈希不变，未接触玩家档。源码与测试净减217行，CHECKPOINT 1见REFACTOR_PLAN第7节。
 - 2026-09-15：Phase 3完成，默认装备复用空槽创建，移除科学家+1按钮的两个包装函数；舰船/卸下/批量升级/科学家/拖拽通过。公式求值器和旧装备API因语义差异保持不动。
@@ -87,17 +88,17 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无运行中的重构；等待CHECKPOINT 2确认。
+- 无运行中的重构；等待CHECKPOINT 3确认。
 
 Blocked:
-- Phase 5无未解决专项失败；历史综合测试边界见U-017。
+- Phase 6～7无未解决专项失败；旧总表与现行导入模式差异见U-018，历史综合测试限制见U-017。
 - Phase 1～4无未解决验证失败；后续暂停为授权检查点，不是技术阻塞。
 - 本次无阻塞；U-015已解决。
 - 2026-09-14：Git 首次推送已完成，main 跟踪 origin/main，同步无阻塞。
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
-0. 等待用户批准Phase 6；本轮停止。Phase 8/9仍须各自提交进入前检查点。
+0. 等待用户单独批准Phase 8；本轮停止。不得改配置链路或进行Phase 9性能优化。
 0. QA「大重启」加载大数性能修复，无需清档。
 0. QA「大重启」加载伤害数字避让显示。
 0. 重启查看科学家批量操作。
@@ -131,6 +132,7 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- REFACTOR_PLAN.md第9节；scripts/config_panel.gd；scripts/level_editor.gd；../test/test_level_editor.gd；../test/test_config_panel.gd；../test/work/refactor-phase6-7/；docs/INVENTORY.md。
 - REFACTOR_PLAN.md第8节；scripts/game.gd；scripts/main.gd；../test/test_state_ownership.gd；../test/work/refactor-phase5/；docs/modules/ships.md；docs/VALIDATION.md。
 - REFACTOR_PLAN.md；scripts/game.gd；scripts/main.gd；../test/test_ships.gd；../test/test_scientists.gd；../test/test_furnace_income.gd；../test/test_bulk_upgrades.gd；../test/test_equipment_limits.gd；../test/test_charge.gd；../test/README.md。
 - scripts/game.gd；scripts/number_format.gd；../test/test_large_numbers.gd；docs/modules/progression.md；docs/VALIDATION.md

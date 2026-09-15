@@ -462,3 +462,96 @@ Phase 5完成：运行等级归槽位，玩家冷却仅槽位键，旧字段迁�
 **NEXT**
 
 Phase 5直接影响范围已具备进入Phase 6的验证基础；仍须用户确认CHECKPOINT 2后方可开始。本轮停止。Phase 8和Phase 9的单独进入前检查点要求继续有效。
+
+## 9. CHECKPOINT 3：Phase 6～7（2026-09-15）
+
+用户批准CHECKPOINT 2，授权Phase 6→7连续执行；Phase 7后停止，Phase 8与9未获实施授权。本次起点8fedb11。
+
+### DONE
+
+- Phase 6：确认find_python仅使用OS环境变量和FileAccess，不读Window实例字段；改为现有config_panel.gd的静态函数，level_editor直接调用。查找函数体、线程执行参数、编辑器保存/校验逻辑均未改。
+- 先建立查找分支及QA基线（2fd0be9），通过后提交生产改动（818d961）。没有新增PythonService、Helper或其他模块。
+- Phase 7：核对三个启动脚本、两个场景、测试运行器及受保护模块的调用者；没有值得修改的目录结构，保持现状。仅修正文档中固定旧盘符及引擎位置表述，未移动文件。
+
+### DEPENDENCY_BEFORE
+
+`level_editor.run_action → load(config_panel).new() → Window实例.find_python → free()`：只为查找路径创建、释放窗口，生命周期无业务必要。
+
+### DEPENDENCY_AFTER
+
+`level_editor.run_action → preload(config_panel).find_python()`：直接静态调用。仍保留现有脚本引用，不声称消除了模块依赖；无需理解窗口初始化或释放即可理解Python定位。
+
+### REMOVED
+
+删除一次无用Window创建、一次free及描述该绕行的注释；没有删除其他入口、模块、QA动作或线程。Python优先级仍为有效SPACE_BATTLESHIP_PYTHON → USERPROFILE下既有内置路径 → 字符串python交给PATH。
+
+### KEPT
+
+| 模块/入口 | 保留原因 |
+|---|---|
+| ship_visuals | game/main共用舰船几何与炮口位置，内联合并会复制规则 |
+| number_format | 游戏与UI共用数量格式，集中维护精度及大数显示 |
+| hightech_slot | 独立控件负责Godot拖拽、命中与反馈，并非多余转发 |
+| restart_host | 必须在旧进程退出后继续导入和启动新进程，生命周期不能并回旧游戏 |
+| QA restart_game/reload_game/full_restart | 分别处理保存与忙碌门、deferred场景切换、独立进程重启，不可按函数名视为重复 |
+| QA轻量动作入口 | import_config/delete_save等表达按钮动作，未发现足以抵消调用点可读性损失的净收益，保持 |
+| ../启动.cmd | 资源导入成功后启动main场景，使用游戏.userdata |
+| 打开编辑器.cmd | --editor启动Godot项目开发界面，与游戏启动不同 |
+| 关卡编辑器.cmd / level_editor.tscn | 独立业务编辑器、可选引擎覆盖、独立.runtime/level-editor-user |
+| main.tscn / project.godot | 正常游戏场景与项目入口配置，不能与业务编辑器场景合并 |
+| test/run.py与各专项 | 统一隔离运行器与不同验证职责，测试相对路径已经稳定 |
+
+### DIRECTORY
+
+目录、文件路径和入口数量均不变。scripts/tools/data/config_excel/assets及外置test保留；未拆main/game，未创建src层，未合并AI文档体系。当前边界已有明确用途；移动会增加引用修改与定位跳转，没有证据证明净收益。
+
+### TEST
+
+日志统一在`../test/work/refactor-phase6-7/`：
+
+- before-test_level_editor.gd.log / after-test_level_editor.gd.log：修改前后均18项通过，其中4项覆盖有效覆盖路径（含空格）、无效覆盖回退、空覆盖回退、内置不存在的PATH回退；其余验证读取、编辑、校验、保存、重载及删除引用保护。PATH分支验证返回命令名，不宣称当前机器通过PATH安装了全部Python依赖。
+- before-test_config_panel.gd.log：运行代码未改前有3项失败，原因见U-018。测试保留真实拆分按钮检查，随后恢复隔离副本的现行分表用于导入，不改导入规则或正式输入。before-fixed-qa.log / after-test_config_panel.gd.log：14项通过，覆盖无变化不写JSON、暂停/倍速、同进程重启和QA身份/设置保留。
+- full-restart.log：独立进程大重启通过，验证忙碌保护、新PID、执行更新代码、同一隔离用户目录、进度及偏好保留。
+- 所有运行经test/run.py，创建新的无缓存项目副本、隔离用户目录。三份.cmd仅静态检查，实际运行的是对应场景/重启专项，没有启动正式游戏或访问正式玩家档。
+- input-hashes-check.txt：12份正式输入SHA-256与前序基线一致；tools、data、config_excel、game.gd及main.gd均无diff。Godot导入退出0，diff检查通过。无未解决专项失败；仍有既有Windows根证书提示。
+
+### BEHAVIOR_DIFF
+
+受测行为无变化；Python查找优先级、工作线程命令、QA控制与重启语义不变。仅改变静态API调用方式并移除无用对象生命周期。游戏数值、规则、存档格式、正式玩家档和配置实现未修改。
+
+### CODE_DIFF
+
+相对8fedb11：运行代码增加2行、删除5行，净减3行，仅config_panel.gd/level_editor.gd；测试净增35行，仅既有两份专项。新增/删除/移动运行文件、测试文件、入口均为0。Phase 7无运行代码修改。源码和测试合计净增32行，新增内容用于保护定位分支与修正隔离夹具，不以减少断言换取行数下降。
+
+### TOKEN_IMPACT
+
+编辑器的Python定位现在一眼可见，未来AI无需追踪Window实例创建、初始化和释放。未增加通用定位模块，避免新增跨文件跳转。入口地图说明各自职责及隔离目录，降低误删/误合并所需反复审查；没有测量或宣称Token百分比收益。
+
+### RISKS
+
+- find_python仍在config_panel脚本中；静态引用保留是有意选择，移到新文件没有明确净收益。
+- 正式三份.cmd未直接运行；已静态核对其不同参数/用户目录，并用隔离场景和真实重启验证对应路径。不能把这当作其他平台启动兼容性证明。
+- Phase 8现存输入策略差异不能自动修正；旧总表缺科学家字段见U-018，不能猜测默认数值或用重新拆分覆盖正式分表。
+- 原有U-017及其他未决规则继续保留。下一阶段必须重新建立自己的输入与事务基线。
+
+### PHASE8_PLAN（待批准，尚未实施）
+
+本轮只按符号只读复核tools源码，没有运行Phase 8重构或改写其文件。重新确认以下具体边界：
+
+| 当前事实 | Phase 8拟处理范围 | 文件 |
+|---|---|---|
+| incremental_import允许charge/ship缺清单时按文件发现；若原JSON已有对应节但文件丢失则拒绝 | A12先建立逐入口输入矩阵；只把证实等价的发现/路径部分放回既有config_workbooks，由Store复用。若保留差异需要大量策略参数，取消合并 | tools/config_workbooks.py、tools/level_editor_store.py |
+| Store.__init__只对charge特殊处理；ship缺映射会失败；其路径检查显式禁止两种斜杠 | 保留当前接受/拒绝集合、异常与UI提示；不自动让Store接受缺ship，不自动收紧增量入口 | 同上 |
+| Store.prepare已调用validate_projection，又有编辑表ID、敌机外观/抗性、武器引用和掉落资源检查 | A13默认KEEP；只有逐项证明范围及错误语义相同才抽取到已有校验入口。不能把编辑器额外检查直接加入所有导入流程 | tools/level_editor_store.py；仅证实有共用项时改tools/import_workbook.py |
+| Store.snapshot包含分表、目标JSON及manifest；增量路径使用CACHE_VERSION/directory/target_hash/hashes并提交前复核源文件 | 冻结指纹字段、版本、绝对路径行为和提交顺序；先验证清单/目标/源文件并发变更现状。发现额外风险单列，不顺手加强规则 | 上述tools；manifest、fingerprint及JSON只作隔离夹具/验收目标 |
+| Store.workbook_bytes维护公式及XML缓存；atomic_batch已有备份、暂存及回滚；直接导入另有单文件提交 | 不合并不同公式求值器，不改精度、支持语法、缓存、ZIP保真或事务实现。两条入口承担不同事务职责，不强行共用一条完整流程 | 本阶段不预设修改公式/事务函数，仅验证直接影响范围 |
+
+获准后的小步顺序：
+
+1. **基线**：在test/work中复制现行分表、清单和投影；运行现有test_config_workbooks.py、test_level_editor.py、test_import.py及相关配置专项，确认夹具适用。旧总表另作拒绝样本，不补策划值。
+2. **输入矩阵**：在既有测试文件补完整/旧/缺失/损坏manifest、charge/ship有无映射与文件、原JSON节存在与否、路径斜杠/非法路径、必需表缺失。逐入口记录接受/拒绝、错误信息和文件是否写入，不预设入口结果相同。
+3. **最小共用项**：仅在A12有明确净收益时改config_workbooks/Store；每小项跑对应矩阵并比较前后结果，不通过就定位或回退。A13可不改，绝不扩大校验范围。
+4. **事务与投影回归**：无变化时不解析/不写；单表变化只替换对应投影；保留其他JSON字段/source_files；缺公式缓存、坏引用、读中改源/清单/目标、提交失败和回滚失败均按原行为验证。对JSON有效数值及字段逐项比较，对不应变化的分表和ZIP部件逐字节比较；验证失败后原文件、缓存、备份/临时文件状态。
+5. **集成**：隔离运行编辑器读取→校验→保存→重载与QA导入→无变化→重启。正式Excel/game_data.json/manifest不作为重构写入目标；任何确需改变旧输入兼容、错误处理或失败原子性的事项另行提出确认。
+
+预计测试修改仍集中在既有`test/test_config_workbooks.py`、`test/test_level_editor.py`，有明确覆盖缺口再改`test/test_import.py`及对应配置专项；不新建框架。检查全部通过、确认行为不变后才推进下一小项。**当前停止在CHECKPOINT 3，必须再次获批才能开始Phase 8；Phase 9性能优化也未开始。**

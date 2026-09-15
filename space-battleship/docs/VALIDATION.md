@@ -1,5 +1,12 @@
 # 验证与证据
 
+## 2026-09-15 Phase 6～7
+
+- `test_level_editor.gd`修改前后18项通过，含环境指定/无效指定/空指定/内置缺失四种Python定位分支，以及独立编辑器读取、草稿校验、保存、重载及引用删除保护。
+- `test_config_panel.gd`当前分表夹具14项通过，覆盖导入/无变化不写JSON、暂停/速度、同进程重启、QA窗口身份与偏好保留。旧总表夹具失败定位见TODO U-018；未修改生产校验。
+- `test_full_restart.py`通过：busy guard、新PID、新源码、同一隔离用户目录、存档进度与QA设置。所有运行均经test/run.py创建无缓存隔离副本；未执行正式启动脚本或读取正式存档。三份.cmd已静态核对目标/参数/路径，未宣称逐一执行脚本。
+- 日志与CHECKPOINT 3见[REFACTOR_PLAN第9节](../REFACTOR_PLAN.md)。12份正式配置输入哈希未变，tools/data/config_excel及game/main无diff。仅既有根证书提示，无未解决专项失败。
+
 ## 2026-09-15 Phase 5
 
 - 全部经`test/run.py`隔离项目与用户目录；最终结果、失败定位与日志清单统一见 [REFACTOR_PLAN第8节](../REFACTOR_PLAN.md)。正式玩家存档未读写，version仍为1，12份正式配置输入哈希不变。

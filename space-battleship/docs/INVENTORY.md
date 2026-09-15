@@ -1,6 +1,6 @@
 # 文件地图与交接包
 
-范围：工作区 `G:/放置`，游戏根 `space-battleship/`。主目录可见文件仅为太空战舰.xlsx与启动.cmd；Git/协作入口文件隐藏，Excel使用中的锁文件保留。2026-09-14 已在工作区根建立 Git 仓库，SourceTree 本地条目为“放置”，origin 为 `https://github.com/rlmclmc2-boop/space_idle.git`；main 已推送并跟踪 origin/main。根 `.gitignore` 纳入入口、原始总表与游戏项目，排除引擎和验证副本；缓存与玩家存档沿用项目忽略规则。路径下文相对游戏根。
+范围：工作区根包含游戏根 `space-battleship/`，保持相对布局，不绑定盘符。主目录可见文件仅为太空战舰.xlsx与启动.cmd；Git/协作入口文件隐藏，Excel使用中的锁文件保留。2026-09-14 已在工作区根建立 Git 仓库，SourceTree 本地条目为“放置”，origin 为 `https://github.com/rlmclmc2-boop/space_idle.git`；main 已推送并跟踪 origin/main。根 `.gitignore` 纳入入口、原始总表与游戏项目，排除引擎和验证副本；缓存与玩家存档沿用项目忽略规则。路径下文相对游戏根。
 
 | 路径 | 类型/用途 | 默认读取 |
 |---|---|---|
@@ -23,7 +23,7 @@
 | `../test/test_config_workbooks.py` | 拆分保真、变更检测、失败回滚验证 | 配置流程 |
 | `tools/inspect_knowledge.py` | 新增只读审计/按范围查表工具 | 数据核对 |
 | `../test/test_import.py`, `test_game.gd`, `test_config_panel.gd` | 导入、模拟/按钮、同进程 QA 集成 | 对应任务 |
-| `../启动.cmd`, `打开编辑器.cmd` | 便携启动脚本 | 运行/迁移 |
+| `../启动.cmd`, `打开编辑器.cmd` | 前者导入资源后运行main.tscn；后者启动Godot项目编辑器；用途不同，均保留 | 运行/迁移 |
 | `*.gd.uid`, `*.png.import` | Godot 资源标识/导入描述 | 资源任务，保留 |
 | `../test/` | 测试源码、运行器；产物统一放 work/ | 对应测试 |
 | `assets/weapons/` | 三种透明弹体PNG及生成来源/提示词；main.gd直接引用；`icons/` 为三种槽位武器模块图标 | 武器美术任务 |
@@ -36,5 +36,7 @@
 资源审计：场景引用脚本；画面由 main.gd 绘制，其中弹体加载 assets/weapons 的三张PNG，舰船/UI及音效仍程序生成。源码未发现 preview 图像的加载引用，旧截图已按用户要求清理；不能据此推断所有缓存均可删除。交接须携带 assets/weapons，不能只复制脚本。
 
 遗留分类：MAIN_MENU/LEVEL_SELECT/UPGRADE/DEFEAT 枚举与 leave() 为遗留接口候选（测试仍引用部分），不是可直接删除的死代码。QA工具.cmd、测试配置.cmd、config_tool.tscn、config_host.gd 在整理期间被外部开发流程移除，当前不再作为入口。问题统一见 TODO U-011。
+
+Phase 7入口核查：独立关卡编辑器使用level_editor.tscn及.runtime/level-editor-user隔离目录，与游戏和Godot项目编辑器的.userdata不同。三份.cmd均保留；测试通过test/run.py在work内复制布局，不移动引擎或用户目录。当前Windows启动代码默认查找游戏根下engine目录；“外置引擎”指不纳入源码交接的二进制依赖，并非统一使用游戏根之外的路径。
 
 跨电脑：交接工作区根的启动.cmd、test 测试源码，以及整个游戏根的源文件、data、config_excel（含清单）、docs、tools、assets、场景、Godot UID 和启动说明，连同上一级总表保留相对布局。安装匹配引擎及 Python/openpyxl/lxml，或设置 `SPACE_BATTLESHIP_PYTHON`。不要求携带缓存；需续接玩家进度时另行保留 `.userdata`，它不是共享设计。其他系统手动运行 Godot 并配置隔离用户目录；`.cmd` 不可跨系统执行。平台 AI 不自动发现 AGENTS 时，在任务首句要求显式读取它。
