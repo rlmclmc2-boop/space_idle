@@ -16,6 +16,8 @@
 - `scripts/ship_visuals.gd` 集中维护各舰素材真实槽位中心与内径。武器透明边距在绘制时裁去，可见宽度为槽内径78%并再乘独立 `MODULE_VISUAL_SCALE`，避免舰体按占地缩放后炮台不可辨；炮口位于放大模块右侧中心。导弹齐射错位限制在舱口内，发射粒子使用实际弹体起点并跟随战场震屏。
 
 `ship` 分表提供 5 艘我方舰船的 `weaponSlots`、`defenseSlots`、`movement`、`unlock`。`profile.selectedShip` 保存当前舰船，`profile.loadout.weapons/defence` 按槽位保存 `{key,level}`；空槽不参与战斗，重复装备各自计算属性、冷却和升级。换舰页签仅列出已解锁战舰，目标舰装备由用户在确认前配置；换舰退还当前槽位的升级投入，目标槽位回到 Lv.1，并调用 `start(1,false)`；`cleared`、高科技、科学家和其他进度保留。
+Phase 5状态边界：装备等级唯一所有者是`profile.loadout[category][index].level`；旧`levels`只在version 1加载时覆盖首个同名槽位，缺失/非法值沿用1级优先，其他重复槽位保留各自等级。保存临时字典从首槽派生`levels`（未安装为1），不写回运行profile。空槽不因旧等级重装。`ensure_loadout`仅在加载/重建解锁时归一化，安装/卸下/换舰直接构造合法槽位；普通槽位/属性查询不归一化、不替换数组。直接修改测试档案后需要显式维护这些约束。
+
 `BattleGame.player` 为 `{x,y,armour,shield}`；`stat()` 汇总当前已装同类装备，`max_shield()` 在未安装护盾时为零；`reset_player()` 回满现有最大生命/护盾。
 敌人实例复制 enemies 数据行，附加 uid、slot、x/y、hp/max_hp、res_ratio、boss、cooldowns。兼容字段 enemy.boss 仍按 size>1 标记大型舰外观及武器偏移，已不决定是否BOSS战、通关或清弹；战斗身份归 [map](map.md) 的最后一场规则。生命按关内倍率向上取整。没有单独舰船 class、品质或舰船等级系统；范围见 U-009。
 

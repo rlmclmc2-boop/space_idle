@@ -5,6 +5,8 @@
 - **CONFIRMED · 用户本次指令**：常规装备页不能更换已装装备，只能给空槽新增；换舰时在“战舰”页签为目标舰选择装备，确认后才提交。换舰返还当前槽位全部升级资源，目标装备从1级开始。
 - `equip_slot` 仅接受空槽，`valid_loadout` 校验目标舰槽位、解锁状态及同种装备上限；`switch_ship` 接收已确认的目标配置后才重置关卡。旧存档中的卸下接口保留兼容，不再由常规装备页提供入口。
 
+Phase 5读取边界：hightech_slots返回派生排序，持久顺序在创建/加载/解锁/拖拽/保存时写入；furnace_income_peak只计算，历史峰值在加载/拾取/生产结算时提交，描述查询不再写profile。公式与结算顺序不变。
+
 ## 2026-09-15 · 充能
 
 - **CONFIRMED · 来源**：`config_excel/charge.xlsx` 的 charge!A1:K6，功能按 B4:B6（func），显示按 C4:C6（des）；用户确认三项可同时启动、离线继续消耗资源、同种资源不足平均分配并保留当前进度，熔炼器只提升击杀掉落的铁。
@@ -13,7 +15,7 @@
 - 攻击充能将所有玩家武器伤害乘 `(1+para_3)^等级`，防御充能将生命/护盾上限乘该倍率，复用现有 stat/equipment_stat 并在既有高科技效果后向上取整；敌舰及已发射弹体不变。防御升级沿用高科技容量行为，不补当前生命/护盾。
 - 熔炼器充能仅在敌舰死亡产生资源ID1掉落时乘倍率，与关卡倍率一起计算后向上取整；不影响自动生成资源、超时空炼铁炉或拾取后的二次收入统计。自动拾取损耗仍独立计算。
 - 在线使用模拟时间，跟随暂停/倍速；离线复用 offlineMax（小时）上限，按现实1倍时间推进。先按既有流程入账离线资源，再计算可供充能的余额。同种资源不足时按活动项均分整数，某项所需不足其份额时余量继续分给其他项。**CONFIRMED · 用户补充**：资源余额不保留小数，除不尽的余数按启动先后分配，最后1个资源给最早启动项。无资源时不清空进度、不关闭活动项，后续来资源自动继续；手动重新启动重新进入顺序。
-- `profile.charge[name]` 保存 level/count/elapsed/active/started/credit，充能资源余额每次扣除后立即存档，其他进度复用5秒周期及现有存档时机；旧档缺字段从0级未启动状态开始。**DERIVED · 整数扣费与连续时间的衔接**：按需扣整数资源，已扣但尚未随时间用完的不足1单位充能量记为 credit，后续帧先消耗它，避免每帧取整重复扣费；它不是资源余额。单次进度、本级次数、启动顺序、暂停状态和已扣充能余量在重启后保留。
+- `profile.charge[name]` 保存 level/count/elapsed/active/started/credit，所有配置项的默认状态在fresh_profile创建；charge_job及倍率/费用/描述查询不再懒写状态。充能资源余额每次扣除后立即存档，其他进度复用5秒周期及现有存档时机；旧档缺字段从0级未启动状态开始。**DERIVED · 整数扣费与连续时间的衔接**：按需扣整数资源，已扣但尚未随时间用完的不足1单位充能量记为 credit，后续帧先消耗它，避免每帧取整重复扣费；它不是资源余额。单次进度、本级次数、启动顺序、暂停状态和已扣充能余量在重启后保留。
 - 追踪：import_workbook/config_workbooks → game.charge_*、advance_charge、equipment_stat、hit_enemy → main.build_charge_tab；专项见 VALIDATION“充能页签”。
 
 ## 2026-09-15 · 科学家与高科技
@@ -41,7 +43,7 @@
 
 ## CONFIRMED · 当前代码
 
-`fresh_profile()` 为当前舰船槽位创建装备实例，并保留 `levels` 作为旧存档/测试兼容别名。`rebuild_unlocks()` 由 cleared 重建 highestLevel 与 unlocked；舰船按 ship.unlock 独立解锁。空 unlock 由 database.unlock_level 解释为 0，从而默认开放。通关列表不要求连续，读取限制见 U-008。
+`fresh_profile()` 为当前舰船槽位创建装备实例；等级与旧档迁移的唯一所有权见 [ships](ships.md)。`rebuild_unlocks()` 由 cleared 重建 highestLevel 与 unlocked；舰船按 ship.unlock 独立解锁。空 unlock 由 database.unlock_level 解释为 0，从而默认开放。通关列表不要求连续，读取限制见 U-008。
 `upgrade_cost()` 读当前等级+1 的行并动态扫描 res_ 前缀，最终成本向上取整（来源：2026-09-13 用户资源取整指令，见 economy）；`can_upgrade()` 要求已解锁、未到 defaults.maxEquipmentLevel、每种资源足够；`upgrade()` 使用同一整数成本扣费、升级并保存。
 - **CONFIRMED · 2026-09-14用户要求**：所有 equipment 额外提供10连升级和MAX升级。10连必须能连续升10级，按目标各等级成本求和后一次扣费并一次变更等级；MAX按当前资源逐级判断，升到可负担的最高等级或配置上限。所有批量升级沿用单次升级的容量/生命保损规则。
 升级立即影响后续出手；已发射弹体仍使用创建时伤害。武器升级不恢复生命也不重置冷却。装甲/护盾仅补新增容量；RETREAT 中不补，结束后统一恢复。该保损行为为实现事实，见 U-005。

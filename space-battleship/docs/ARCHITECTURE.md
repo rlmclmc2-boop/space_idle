@@ -8,7 +8,7 @@
 
 活动状态：TRAVEL → COMBAT → TRAVEL 或 LEVEL_CLEAR → TRAVEL；装甲耗尽 → RETREAT → TRAVEL；paused 与 pending_unlocks 是额外控制门。MAIN_MENU、LEVEL_SELECT、DEFEAT、UPGRADE 枚举仍存在，不表示当前有这些页面；见 U-011。
 
-核心对象：profile（version/highestLevel/cleared/levels/resources/unlocked/loop）、player、enemies、projectiles、drops、cooldowns。对象字段和所有权见各模块；没有 ECS、Autoload 管理器、数据库服务或联网后端。
+核心对象：profile（version/highestLevel/cleared/loadout/resources/unlocked/loop）、player、enemies、projectiles、drops、cooldowns。对象字段和所有权见各模块；没有 ECS、Autoload 管理器、数据库服务或联网后端。
 
 存档：game.load_progress/save_progress，`user://progress.json`，version=1；先写 .tmp 再 rename。校验部分字段、重建解锁；不保存距离、当前敌群、弹道、冷却，也不结算离线收益。窗口关闭/拾取/升级/通关等会保存。user:// 实际目录由启动脚本的 APPDATA/LOCALAPPDATA 决定，正式玩家目录 `.userdata`，测试必须隔离。QA 偏好同属 user://，控制接口见 [ui](modules/ui.md)。鲁棒性缺口见 U-008。
 

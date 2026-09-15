@@ -357,3 +357,108 @@ EXPECTED_GAIN 顺序统一为：代码复杂度 / 文件数量 / 依赖复杂度
 - **RISKS**：旧levels对首槽写回、cooldowns双键优先级、ensure_loadout读取时替换数组、旧档矛盾字段处理仍在，必须Phase 5专项保护。其他历史测试可能仍混有旧安装/计时假设，先检查夹具再运行，不改变正确规则断言；既有未决规则仍见TODO。
 - **DIFF_SUMMARY**：运行时代码只改game.gd与main.gd，净减少12行；测试GDScript净减少205行，合计净减少217行，无新增运行模块/依赖/抽象层。没有进行或宣称实测性能提速；来源统计相对 `7f4d704`，不计方案/状态/README文档。
 - **NEXT**：等待用户单独批准Phase 5；Phase 8与Phase 9前再次提交高风险检查点。
+
+## 8. Phase 5专项（2026-09-15）
+
+用户已单独授权Phase 5；完成后必须停止，不进入Phase 6。本阶段先专项基线，再按消费者逐项迁移；存档version不变，正式玩家档不读不写。起点提交 `693f8f1`。
+
+### 基线与调用者清单
+
+- `test_state_ownership.gd` 在未修改运行源码的隔离副本执行：20项中19项通过，首槽卸下独立冷却1项失败；停止该小项，原因与待裁决范围只在TODO U-016登记。日志 `../test/work/refactor-phase5/baseline.log`。
+- 已通过：同名等级、暂停、普通独立倒计时、首槽退款/空槽/剩余等级、前进完整CD及冻结、护盾升级保绝对损失、无loadout旧档迁移、矛盾levels只覆盖首同名槽、重复保存加载的装备/生命/资源一致。
+- 当前读取副作用探针记录：新游戏stat(laser)会创建充能job；weapon_entries会把旧levels写回槽位。探针只记录现状，尚不是读取纯度通过证明。
+
+| 信息 | 正常运行读取者 | 正常运行写入者 | 旧档/导出边界 | 测试依赖 |
+|---|---|---|---|---|
+| profile.levels | sync_legacy_level；upgrade_cost/upgrade_costs的无实例回退 | fresh_profile；equip_slot/unequip_slot/switch_ship/upgrade_slot；sync反向写槽位 | load_progress读旧levels；save_progress目前直接序列化profile | bulk_upgrades、equipment_limits、equipment_tabs、game、ships、unequip、delete_save；Phase5基线中的raw字典专属旧输入 |
+| 玩家cooldowns名称键 | tick的首同名槽优先取值；main冷却条fallback | change_state(TRAVEL)、tick | 无存档读写；玩家冷却不持久化 | game、target_resistance、travel_cooldowns、ships、Phase5基线 |
+| 玩家cooldowns槽位键 | tick、main冷却条 | change_state(TRAVEL)、tick；equip/unequip清槽；start/retreat清全部 | 非持久化运行状态 | 现有ships与新增Phase5基线 |
+| 敌方cooldowns数组 | 敌方tick | spawn_group、敌方tick | 不保存 | enemy_weapon_positions及capture；独立于玩家，不迁移 |
+| ensure_loadout | 当前被loadout_entries/stat隐式调用，进而影响weapon/defense/slot_entry、tick、绘制与UI资格检查 | normalize重建槽位数组；rebuild_unlocks和load_progress显式调用 | 加载归一化必须保留 | ships、ship_equipment_limit、ship_visuals、unequip；直接改测试profile后须明确写边界 |
+| sync_legacy_level | weapon_entries/defense_entries/stat、upgrade_cost/upgrade_costs/can_upgrade_amount/max_upgrade_amount/upgrade | 第一同名槽位level | 目前不限于加载，需收敛 | 多个测试用profile.levels写入后依赖读取同步 |
+| 名称升级API | main._process单级/10级/MAX资格轮询 | upgrade/upgrade_max转首同名槽 | 无独立存档责任 | bulk_upgrades、equipment_limits、game；UI按钮回调已调用槽位API |
+| stat间接充能读取 | equipment_stat→charge_multiplier→charge_job | charge_job懒创建profile.charge及job | 加载充能仍使用同一job入口 | charge、charge_growth、科学家/舰船属性测试 |
+
+界面按钮字典的名称/槽位混合键目前是控件索引，不是等级或冷却数据副本；迁移时需验证首个同名控件与后续槽位控件分别引用正确实例。QA本身没有读写levels/cooldowns，删除存档测试的旧等级写入是夹具。
+
+### 实施与验证记录
+
+用户对U-016回复“修复”，授权纠正剩余槽位被旧名称键覆盖的缺陷；除此之外不修改游戏规则。以下各项先验证、检查diff，再进入下一项。
+
+| 小项 | 结果 / 回退提交 | 验证日志（均在`../test/work/refactor-phase5/`） |
+|---|---|---|
+| 玩家冷却按槽位唯一读写；UI取消名称回退 | c9a6af7；保留原失败断言并修复 | cooldown-fix.log、travel.log、targets.log、cooldown-test_state_ownership.gd.log、cooldown-test_ships.gd.log |
+| 旧levels仅加载迁移/保存派生，删除运行同步 | 8edaa91 | levels.log、levels-test_ships.gd.log、levels-test_bulk_upgrades.gd.log、levels-test_equipment_limits.gd.log、levels-test_unequip.gd.log |
+| 装备查询退出ensure；充能状态创建时初始化 | 1a87f4d | purity.log、purity-fixed-test_charge.gd.log、purity-fixed-test_charge_growth.gd.log、purity-fixed-test_ships.gd.log、purity-fixed-test_unequip.gd.log |
+| UI资格查询直接绑定槽位 | be66613；节点索引兼容保留 | ui-test_equipment_tabs.gd.log、ui-test_bulk_upgrades.gd.log、ui-test_equipment_limits.gd.log、delete-fixed.log |
+| 科技排序/收入描述退出隐式写入，提交移到明确边界 | b0f4706；只收敛读取副作用，没有依赖整理或生产公式修改 | read-boundary-before-*.log、read-boundary-*.log、final-state-fixed.log、final-test_*.log |
+| 同名装备UI专项补充 | 独立测试提交；不新增运行实现 | final-duplicate-ui.log：27项通过 |
+
+失败处置记录（不计作未解决失败）：
+
+- 原冷却基线20项中1项失败，按用户授权修复；没有更改0.15秒的正确断言。
+- 充能旧夹具4处直接clear状态后依赖读取懒创建；首次运行脚本错误并由隔离运行器超时退出。停止该项后，将夹具重置改为fresh_profile().charge，原57项及20项成长断言全通过，费用/分配/时间断言未改。
+- 删除存档测试原用整个运行profile比较fresh_profile，混入时间戳及保存/UI元数据。693f8f1隔离复跑同样2项失败（delete-baseline.log）；改为显式校验元数据默认值，只有时钟字段不作进度相等比较。7项通过；删除/重启实现未修改。
+- 新增重复加载夹具第一次使用会自动保存的构造器，第二次实际读到转换后的另一个输入，补齐零级科技字段导致深比较失败（reload-diagnosis.log）。关闭夹具自动保存后，同一旧输入连续加载，完整深比较通过；未改变科技规则或放宽该断言。
+
+### CHECKPOINT 2
+
+**DONE**
+
+Phase 5完成：运行等级归槽位，玩家冷却仅槽位键，旧字段迁移收敛到边界，装备/充能/科技排序/收入描述读取不再写入运行档案。所有本阶段小项均验证后继续；Phase 6未开始。
+
+**STATE_BEFORE**
+
+- 槽位level与profile.levels双向同步，读取旧别名还会覆盖首槽。
+- 玩家cooldowns同时维护装备名称和槽位键，首槽优先读取名称键。
+- 普通查询反复ensure_loadout重建数组；stat间接创建charge job；科技槽位查询写排序，描述查询写历史峰值。
+
+**STATE_AFTER**
+
+| 状态 | 唯一运行所有者 / 写入边界 |
+|---|---|
+| 装备等级 | profile.loadout[category][index].level；安装/卸下/升级/换舰以及加载迁移 |
+| 玩家剩余冷却 | BattleGame.cooldowns[weapons_<index>]，以槽位身份索引；不另在loadout存冷却副本，不持久化 |
+| 敌方冷却 | 原enemy.cooldowns数组；未改 |
+| 当前生命/护盾 | player.armour/player.shield；容量由已装槽位派生，原保损/恢复语义不变 |
+| 充能状态 | profile.charge[key]；fresh_profile初始化，加载及明确充能操作更新 |
+| 科技顺序、历史收入峰值 | 原profile.hightechOrder/furnaceIncomePeak；仅在对应初始化、加载、解锁、拖拽、保存或收入结算边界写入 |
+
+**LEGACY**
+
+- 保存version仍为1；读取旧levels时仍遵循首同名槽优先、缺失/非法值按1级、其他重复槽保留自身等级的既有有效行为。
+- 保存临时字典从当前首同名槽派生levels；未安装装备派生1级。运行profile不保存该兼容副本；旧未安装装备的无效等级不再作为运行状态保留。
+- 名称升级/费用API共7个仍由现有测试使用，保留为无状态的首槽查询/转发：upgrade_cost、upgrade_costs、can_upgrade_amount、can_upgrade、max_upgrade_amount、upgrade、upgrade_max。生产UI已全部调用槽位API；没有为删除测试调用而新增通用适配层。
+- ensure_loadout保留加载/重建解锁用途及显式测试边界，只有2个生产调用点。玩家名称冷却从未进入存档，无须引入迁移接口。
+
+**REMOVED**
+
+删除sync_legacy_level、profile.levels运行初始化/读写、名称冷却读写及UI回退、查询中的ensure调用、charge_job懒创建、科技排序/描述查询隐式提交。没有删除仍有消费者的名称API。
+
+**READ_PURITY**
+
+状态专项1114项通过，其中539次读取前后profile/cooldowns/player完整深比较、539次槽位数组身份检查。7种状态、每种77个读取入口/参数组合；包括同名不同级、首槽卸下、重载、空槽、残留旧字段、未提交收入样本。无缓存写入豁免；未宣称对任意仓库外直接改写或任意函数做全仓证明。
+
+**SAVE_COMPAT**
+
+缺loadout旧档、矛盾levels、缺levels、显式空槽、同名重复槽、保存派生首槽等级、冷却不持久化、重复导出重开及同一旧输入重复加载均通过。装备/生命/资源保持；未触碰正式玩家存档。初始化提前存在零值充能状态，查询不再懒添加字段；兼容导出仍可由原version 1读取。
+
+**TEST**
+
+专项1114；装备页282；批量70；等级上限28；同种数量限制68；卸下及重复UI27；换舰页8；前进冷却22；抗性索敌21；充能57/成长20；科技排序32；科学家63；炼铁炉23；离线资源11；删除存档7；舰船专项通过。所跑测试均为隔离副本，Godot导入退出0。保留已有根证书提示及QA子窗口警告；没有未解决的本阶段测试失败。历史综合探针限制见TODO U-017，不宣称全仓测试全绿。
+
+**BEHAVIOR_DIFF**
+
+唯一获准游戏行为修复为U-016（影响该缺陷场景的后续开火时机）。在此修复后的基线上，升级、卸下、护盾升级、换舰的资源/生命/等级/冷却/事件序列JSON逐字一致：trace-before.log与final-state-fixed.log对应的state-ownership-trace.json，比较记录trace-comparison.txt。12份正式配置输入SHA-256与Phase 1一致；无数值/生产公式修改。读取不再触发写入是本阶段预期API行为改变。
+
+**CODE_DIFF**
+
+相对693f8f1，运行源码仅game.gd/main.gd：增加42行、删除62行，净减20行；无新增运行文件、依赖或抽象层。测试增加294行、删除53行，净增241行（其中新增212行专项）；不是以删测试追求总行数下降。UI从名称→首槽转发改为槽位入口，属性/武器查询不再进入归一化及同步链。没有性能或Token的实测百分比；理解成本降低来自状态所有权和写入边界明确，而非更多目录。
+
+**RISKS**
+
+公开Dictionary仍可被直接改写；测试或后续代码须使用槽位写入API，原始旧输入只能走加载边界，不能期待读取修复非法状态。名称兼容API仍有测试消费者，未来删除前须迁移消费者。旧version 1首槽优先是刻意保留的兼容规则，不应擅自改成loadout优先。U-017及其他原有未决规则未扩大处理。
+
+**NEXT**
+
+Phase 5直接影响范围已具备进入Phase 6的验证基础；仍须用户确认CHECKPOINT 2后方可开始。本轮停止。Phase 8和Phase 9的单独进入前检查点要求继续有效。
