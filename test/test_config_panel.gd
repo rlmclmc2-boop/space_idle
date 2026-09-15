@@ -20,6 +20,10 @@ func wait_for(predicate: Callable) -> bool:
 
 func run() -> void:
 	var original := FileAccess.get_file_as_string("res://data/game_data.json")
+	var current_tables := {}
+	for name in DirAccess.get_files_at("res://config_excel"):
+		if name.ends_with(".xlsx") or name == ".split_manifest.json":
+			current_tables[name] = FileAccess.get_file_as_bytes("res://config_excel/"+name)
 	if FileAccess.file_exists("res://data/.import_state.json"):
 		DirAccess.remove_absolute("res://data/.import_state.json")
 	change_scene_to_file("res://main.tscn")
@@ -36,6 +40,12 @@ func run() -> void:
 	await wait_for(func():return panel.worker==null)
 	check(panel.status_label.text.begins_with("拆分同步成功"),"Split/sync button creates separate workbooks")
 	check(FileAccess.file_exists("res://config_excel/equipment.xlsx") and not FileAccess.file_exists("res://config_excel/总览.xlsx"),"Split excludes overview")
+	# The historical aggregate lacks current scientist fields. Test importing
+	# the current source tables without weakening the production validator.
+	for name in current_tables:
+		var file := FileAccess.open("res://config_excel/"+name,FileAccess.WRITE)
+		file.store_buffer(current_tables[name])
+		file.close()
 	panel.import_button.pressed.emit()
 	await wait_for(func():return panel.worker==null)
 	check(panel.status_label.text.begins_with("导入成功"),"Selected Excel import")

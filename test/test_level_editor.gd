@@ -15,7 +15,33 @@ func wait_idle(editor: Control) -> void:
 func _initialize() -> void:
 	call_deferred("run")
 
+func check_python_resolution() -> void:
+	var previous_python := OS.get_environment("SPACE_BATTLESHIP_PYTHON")
+	var previous_home := OS.get_environment("USERPROFILE")
+	var home := ProjectSettings.globalize_path("res://.runtime/python-resolver")
+	var bundled := home.path_join(".cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe")
+	DirAccess.make_dir_recursive_absolute(bundled.get_base_dir())
+	var file := FileAccess.open(bundled,FileAccess.WRITE)
+	file.close()
+	var configured := home.path_join("configured python.exe")
+	file = FileAccess.open(configured,FileAccess.WRITE)
+	file.close()
+	OS.set_environment("USERPROFILE",home)
+	var resolver = load("res://scripts/config_panel.gd").new()
+	OS.set_environment("SPACE_BATTLESHIP_PYTHON",configured)
+	check(resolver.find_python()==configured,"Python environment override precedes bundled path")
+	OS.set_environment("SPACE_BATTLESHIP_PYTHON",home.path_join("missing.exe"))
+	check(resolver.find_python()==bundled,"Missing override falls back to bundled Python")
+	OS.set_environment("SPACE_BATTLESHIP_PYTHON","")
+	check(resolver.find_python()==bundled,"Empty override uses bundled Python")
+	OS.set_environment("USERPROFILE",home.path_join("missing-home"))
+	check(resolver.find_python()=="python","Missing bundled Python falls back to PATH")
+	resolver.free()
+	OS.set_environment("SPACE_BATTLESHIP_PYTHON",previous_python)
+	OS.set_environment("USERPROFILE",previous_home)
+
 func run() -> void:
+	check_python_resolution()
 	var editor = load("res://level_editor.tscn").instantiate()
 	root.add_child(editor)
 	await wait_idle(editor)
