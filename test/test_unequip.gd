@@ -27,6 +27,16 @@ func run() -> void:
 	check(game.upgrade_slot("weapons",1), "upgrade duplicate")
 	var second_cost: Dictionary = game.upgrade_costs_for_level("laser",1,1)
 	var before: Dictionary = game.profile.resources.duplicate()
+	# Only the lower-level duplicate is affordable; UI queries must keep slot identity.
+	var next_second: Dictionary = game.slot_upgrade_cost("weapons",1)
+	game.profile.resources = {"1":float(next_second.get("1",0)),"2":float(next_second.get("2",0))}
+	game.paused = true
+	scene.build_ui()
+	scene._process(0)
+	check(scene.upgrade_buttons.laser.disabled and not scene.upgrade_buttons.weapons_1.disabled, "duplicate UI affordability belongs to each slot")
+	check(scene.upgrade_buttons.laser.get_meta("slot")=="weapons_0" and scene.upgrade_buttons.weapons_1.get_meta("slot")=="weapons_1", "duplicate buttons retain distinct slot identities")
+	game.paused = false
+	game.profile.resources = before.duplicate()
 	check(not game.equip_slot("weapons",0,"cannon"), "reject direct replacement")
 	check(game.profile.resources == before, "replacement cannot refund")
 	scene.confirm_unequip("weapons",0)
