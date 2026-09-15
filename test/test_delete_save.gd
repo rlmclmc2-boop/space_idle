@@ -18,7 +18,7 @@ func run() -> void:
 	var original_id: int = panel.get_instance_id()
 	var settings_before := FileAccess.get_file_as_string("user://qa_settings.cfg")
 	current_scene.game.profile.resources["1"] = 999999
-	current_scene.game.profile.levels.armour = 5
+	current_scene.game.first_equipment_entry("armour").level = 5
 	current_scene.game.profile.cleared = [1]
 	current_scene.game.profile.bossSeen = [1]
 	current_scene.game.save_progress()

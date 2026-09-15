@@ -27,10 +27,10 @@ func run() -> void:
 	check(scene.upgrade_buttons.armour.is_visible_in_tree(),"Defence switch exposes armour")
 	scene.game.profile.resources["1"] = 1000000
 	scene.game.profile.resources["2"] = 1000000
-	var level := int(scene.game.profile.levels.armour)
+	var level := int(scene.game.first_equipment_entry("armour").level)
 	scene.build_ui()
 	scene.upgrade_buttons.armour.pressed.emit()
-	check(scene.game.profile.levels.armour==level+1,"Upgrade still works")
+	check(scene.game.first_equipment_entry("armour").level==level+1,"Upgrade still works")
 	check(scene.equipment_tabs.current_tab==1,"Upgrade preserves selected page")
 	scene.game.profile.unlocked = ["armour","shield","laser","cannon","missile"]
 	scene.build_ui()

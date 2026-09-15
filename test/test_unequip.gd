@@ -21,7 +21,7 @@ func run() -> void:
 	game.profile.unlocked = ["laser","cannon","missile","armour","shield"]
 	game.profile.resources = {"1":10000000.0,"2":10000000.0}
 	game.profile.loadout.weapons = [{"key":"laser","level":1},{"key":"laser","level":1},{"key":"","level":1}]
-	game.profile.levels.laser = 1
+	game.first_equipment_entry("laser").level = 1
 	var initial: Dictionary = game.profile.resources.duplicate()
 	check(game.upgrade_slot("weapons",0,2), "upgrade first")
 	check(game.upgrade_slot("weapons",1), "upgrade duplicate")
@@ -54,8 +54,8 @@ func run() -> void:
 	check(game.slot_entry("weapons",0).key == "cannon" and game.slot_entry("weapons",0).level == 1, "new type persisted")
 	check(game.profile.resources == before, "level one removal free")
 	game.profile.loadout.defence = [{"key":"armour","level":1},{"key":"shield","level":1}]
-	game.profile.levels.armour = 1
-	game.profile.levels.shield = 1
+	game.first_equipment_entry("armour").level = 1
+	game.first_equipment_entry("shield").level = 1
 	for index in range(2):
 		before = game.profile.resources.duplicate()
 		check(game.upgrade_slot("defence",index), "defence upgrade")

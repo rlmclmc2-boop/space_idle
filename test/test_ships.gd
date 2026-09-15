@@ -31,10 +31,10 @@ func _initialize() -> void:
 	assert(float(game.profile.resources["1"]) > before, "equipment investment refunded")
 	for entry in game.weapon_entries() + game.defense_entries():
 		assert(int(entry.level) == 1, "ship switch resets equipment levels")
-	# Freeze the current legacy write-through contract before Phase 5 changes it.
+	# Runtime fixtures write the authoritative slot; raw legacy input is tested below.
 	var legacy := BattleGame.new(db,false)
-	legacy.profile.levels.laser=3
-	assert(legacy.weapon_entries()[0].level==3,"Legacy levels currently write through on read")
+	legacy.first_equipment_entry("laser").level=3
+	assert(legacy.weapon_entries()[0].level==3,"Slot level is visible through weapon reads")
 	legacy.start(1,false)
 	legacy.cooldowns.weapons_0=0.5
 	legacy.spawn_group()

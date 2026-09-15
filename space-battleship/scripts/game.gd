@@ -64,7 +64,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "levels":{"armour":1,"shield":1,"laser":1,"missile":1,"cannon":1}, "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	profile.loadout = default_loadout(selected, profile.unlocked)
 	return profile
 
@@ -116,10 +116,6 @@ func load_progress() -> void:
 		for n in raw.bossSeen:
 			if (n is float or n is int) and n == int(n) and n >= 1 and n <= db.levels.size() and not profile.bossSeen.has(int(n)):
 				profile.bossSeen.append(int(n))
-	for key in EQUIPMENT:
-		var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
-		if value is float or value is int:
-			profile.levels[key] = clampi(int(value), 1, db.max_equipment_level(key))
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if (value is float or value is int) and is_finite(float(value)):
@@ -144,12 +140,14 @@ func load_progress() -> void:
 	profile.loadout = default_loadout(profile.selectedShip, profile.unlocked)
 	if raw.get("loadout") is Dictionary:
 		profile.loadout = raw.loadout.duplicate(true)
-	else:
-		for key in EQUIPMENT:
-			var legacy_entry := first_equipment_entry(key)
-			if not legacy_entry.is_empty():
-				legacy_entry.level = clampi(int(profile.levels.get(key, 1)), 1, db.max_equipment_level(key))
 	ensure_loadout()
+	# Version 1 gives the legacy level precedence for the first installed instance,
+	# even when loadout is present. Resolve that conflict once, at the input boundary.
+	for key in EQUIPMENT:
+		var entry := first_equipment_entry(key)
+		var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
+		if not entry.is_empty():
+			entry.level = clampi(int(value), 1, db.max_equipment_level(key)) if value is float or value is int else 1
 	load_hightech(raw)
 	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
@@ -258,7 +256,12 @@ func save_progress() -> void:
 	if file == null:
 		event.emit("save_error", {})
 		return
-	file.store_string(JSON.stringify(profile, "\t"))
+	# Compatibility projection only; never install name-based levels in runtime.
+	var saved := profile.duplicate()
+	saved.levels = {}
+	for key in EQUIPMENT:
+		saved.levels[key] = int(first_equipment_entry(key).get("level", 1))
+	file.store_string(JSON.stringify(saved, "\t"))
 	file.close()
 	var err := DirAccess.rename_absolute(SAVE_PATH + ".tmp", SAVE_PATH)
 	if err != OK:
@@ -277,30 +280,20 @@ func loadout_entries(category: String) -> Array:
 
 func weapon_entries() -> Array:
 	var entries := loadout_entries("weapons")
-	for key in WEAPON_KEYS:
-		sync_legacy_level(key)
 	return entries
 
 func defense_entries() -> Array:
 	var entries := loadout_entries("defence")
-	for key in DEFENSE_KEYS:
-		sync_legacy_level(key)
 	return entries
 
 func stat(key: String) -> float:
 	ensure_loadout()
-	sync_legacy_level(key)
 	var total := 0.0
 	for category in ["weapons", "defence"]:
 		for entry in profile.loadout.get(category, []):
 			if str(entry.get("key", "")) == key:
 				total += equipment_stat(key, int(entry.level))
 	return total
-
-func sync_legacy_level(key: String) -> void:
-	var legacy_entry := first_equipment_entry(key)
-	if not legacy_entry.is_empty() and int(legacy_entry.level) != int(profile.levels.get(key, 1)):
-		legacy_entry.level = clampi(int(profile.levels.get(key, 1)), 1, db.max_equipment_level(key))
 
 func ship_movement() -> float:
 	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
@@ -404,7 +397,6 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	var old_total_armour := stat("armour")
 	var old_total_shield := stat("shield")
 	profile.loadout[category][index] = {"key":key, "level":1}
-	profile.levels[key] = int(first_equipment_entry(key).level)
 	if category == "defence" and player.has("armour"):
 		player.armour = clampf(player.armour + stat("armour") - old_total_armour, 0, stat("armour"))
 		player.shield = clampf(player.shield + max_shield() - old_total_shield, 0, max_shield())
@@ -422,8 +414,6 @@ func unequip_slot(category: String, index: int) -> bool:
 	var key := str(entry.key)
 	refund_equipment(key, int(entry.level))
 	profile.loadout[category][index] = {"key":"", "level":1}
-	# The legacy alias must follow the remaining first instance, not overwrite it.
-	profile.levels[key] = int(first_equipment_entry(key).get("level", 1))
 	cooldowns.erase(slot_id(category, index))
 	if category == "defence" and player.has("armour"):
 		player.armour = minf(player.armour, stat("armour"))
@@ -450,8 +440,6 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 		for index in range(next_loadout[category].size()):
 			var equip_key := str(next_loadout[category][index].get("key", ""))
 			profile.loadout[category][index] = {"key":equip_key, "level":1}
-	for equip_key in EQUIPMENT:
-		profile.levels[equip_key] = 1
 	profile.loop = false
 	return start(1, false)
 
@@ -1296,19 +1284,16 @@ func upgrade_cost_for_level(key: String, level: int) -> Dictionary:
 	return cost
 
 func upgrade_cost(key: String, levels := 1) -> Dictionary:
-	sync_legacy_level(key)
 	var entry := first_equipment_entry(key)
-	var current := int(entry.level) if not entry.is_empty() else int(profile.levels.get(key, 1))
+	var current := int(entry.level) if not entry.is_empty() else 1
 	return upgrade_cost_for_level(key, current + 1) if levels == 1 else upgrade_costs_for_level(key, current, levels)
 
 func upgrade_costs(key: String, levels: int) -> Dictionary:
-	sync_legacy_level(key)
 	var entry := first_equipment_entry(key)
-	var current := int(entry.level) if not entry.is_empty() else int(profile.levels.get(key, 1))
+	var current := int(entry.level) if not entry.is_empty() else 1
 	return upgrade_costs_for_level(key, current, levels)
 
 func can_upgrade_amount(key: String, levels: int) -> bool:
-	sync_legacy_level(key)
 	var entry := first_equipment_entry(key)
 	if entry.is_empty():
 		return false
@@ -1318,7 +1303,6 @@ func can_upgrade(key: String, levels := 1) -> bool:
 	return can_upgrade_amount(key, levels)
 
 func max_upgrade_amount(key: String) -> int:
-	sync_legacy_level(key)
 	var entry := first_equipment_entry(key)
 	if entry.is_empty():
 		return 0
@@ -1347,7 +1331,6 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
-	sync_legacy_level(key)
 	var category := "weapons" if WEAPON_KEYS.has(key) else "defence"
 	var entries := weapon_entries() if category == "weapons" else defense_entries()
 	var index := -1
@@ -1368,8 +1351,6 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var before := equipment_stat(key, int(entry.level))
 	profile.loadout[category][index].level = int(entry.level) + levels
 	var after := equipment_stat(key, int(profile.loadout[category][index].level))
-	if first_equipment_entry(key).get("level", 0) == int(profile.loadout[category][index].level):
-		profile.levels[key] = int(profile.loadout[category][index].level)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if key == "armour" and state != State.RETREAT:
 		player.armour += after - before

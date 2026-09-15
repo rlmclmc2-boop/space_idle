@@ -3,6 +3,15 @@ extends SceneTree
 var checks := 0
 var failures := 0
 var evidence := {}
+var events: Array = []
+var trace: Array = []
+
+func record(game: BattleGame, label: String) -> void:
+	var slots := {}
+	for id in game.cooldowns:
+		if str(id).begins_with("weapons_"):
+			slots[id] = game.cooldowns[id]
+	trace.append({"step":label,"loadout":game.profile.loadout.duplicate(true),"resources":game.profile.resources.duplicate(true),"player":game.player.duplicate(true),"cooldowns":slots,"state":game.state,"events":events.duplicate(true)})
 
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -24,6 +33,7 @@ func _initialize() -> void:
 	db.config.autoGenRes=""
 	db.ships[db.ships.keys()[0]].sameEquipmentLimit=2
 	var game := BattleGame.new(db,false)
+	game.event.connect(func(kind,payload):events.append({"kind":kind,"payload":payload.duplicate(true)}))
 	game.rng.seed=1701
 	game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	check(game.equip_slot("weapons",1,"laser"),"Install duplicate weapon")
@@ -33,6 +43,7 @@ func _initialize() -> void:
 	check(game.upgrade_slot("weapons",0,2),"Upgrade first duplicate to level three")
 	check(game.upgrade_slot("weapons",1),"Upgrade second duplicate to level two")
 	check(game.slot_entry("weapons",0).level==3 and game.slot_entry("weapons",1).level==2,"Duplicate levels independent")
+	record(game,"upgrades")
 	game.start(1,false)
 	game.spawn_group()
 	for enemy in game.enemies:
@@ -59,6 +70,7 @@ func _initialize() -> void:
 	game.tick(0.05)
 	evidence.after_next_tick=game.cooldowns.duplicate(true)
 	check(is_equal_approx(game.cooldowns.weapons_1,0.15),"First removal must not overwrite the surviving slot cooldown")
+	record(game,"first removal")
 	game.change_state(BattleGame.State.TRAVEL)
 	var cd := float(db.equip("laser",2).cd)
 	check(is_equal_approx(game.cooldowns.weapons_1,cd),"Travel resets remaining slot to its full cooldown")
@@ -68,6 +80,11 @@ func _initialize() -> void:
 	var max_before := game.max_shield()
 	check(game.upgrade_slot("defence",1),"Upgrade shield")
 	check(game.player.shield==100+game.max_shield()-max_before,"Shield upgrade preserves absolute missing capacity")
+	record(game,"shield upgrade")
+	game.profile.cleared=[10]
+	check(game.switch_ship("Destroyer"),"Switch unlocked ship")
+	check(game.weapon_entries().all(func(entry):return entry.level==1) and game.defense_entries().all(func(entry):return entry.level==1),"Switch resets all slot levels")
+	record(game,"switch ship")
 	var saved := {"version":1,"levels":{"laser":3,"armour":2},"resources":{"1":123,"2":7}}
 	write_save(saved)
 	var restored := BattleGame.new(db)
@@ -94,14 +111,19 @@ func _initialize() -> void:
 	before=snapshot(reads)
 	reads.stat("laser")
 	evidence.fresh_stat_mutates=snapshot(reads)!=before
-	reads.profile.levels.laser=4
+	reads.profile["levels"]={"laser":4}
 	before=snapshot(reads)
 	reads.weapon_entries()
 	evidence.legacy_read_mutates=snapshot(reads)!=before
+	check(snapshot(reads)==before and reads.slot_entry("weapons",0).level==1,"Stale legacy levels cannot mutate runtime slots")
+	check(not restored.profile.has("levels"),"Legacy export never installs a second runtime level source")
 	# Record current read impurity; a later migration must replace this with a
 	# strict pre/post equality gate, never whitelist profile writes as caching.
 	var file := FileAccess.open("res://state-ownership-baseline.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(evidence,"\t"))
+	file.close()
+	file = FileAccess.open("res://state-ownership-trace.json",FileAccess.WRITE)
+	file.store_string(JSON.stringify(trace,"\t"))
 	file.close()
 	print("State ownership baseline: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

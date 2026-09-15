@@ -146,9 +146,9 @@ func run() -> void:
 	check(not g.can_upgrade("laser"),"Insufficient resources reject upgrade")
 	g.profile.resources["1"]=120
 	check(g.upgrade("laser") and g.stat("laser")==24 and g.profile.resources["1"]==0,"Upgrade applies next Excel row and cost")
-	g.profile.levels.laser=9
+	g.first_equipment_entry("laser").level=9
 	check(g.upgrade_cost("laser")["2"]==10,"Level 10 titanium cost")
-	g.profile.levels.laser=20
+	g.first_equipment_entry("laser").level=20
 	check(not g.can_upgrade("laser"),"Level cap")
 	# Only missiles retarget after their original target dies.
 	for key in ["laser", "cannon", "missile"]:
@@ -224,8 +224,8 @@ func run() -> void:
 	# Full authentic combat path with upgraded equipment, without forced kills.
 	var full := BattleGame.new(db,false)
 	full.rng.seed=7
-	full.profile.levels.armour=20
-	full.profile.levels.laser=20
+	full.first_equipment_entry("armour").level=20
+	full.first_equipment_entry("laser").level=20
 	full.start(1,false)
 	for i in range(60000):
 		full.tick(1.0/60.0)
@@ -255,12 +255,12 @@ func run() -> void:
 	full.tick(0.02)
 	check(full.state==BattleGame.State.COMBAT and full.group_index==6,"Encounter at retreat destination is replayed")
 	full.profile.resources["1"]=1000
-	full.profile.levels.laser=1
+	full.first_equipment_entry("laser").level=1
 	full.player.armour=500
 	var cd_before := float(full.cooldowns.get("weapons_0",0))
 	check(full.upgrade("laser") and full.stat("laser")==24,"Direct in-combat upgrade")
 	check(full.player.armour==500 and full.cooldowns.get("weapons_0",0)==cd_before,"Weapon upgrade preserves life and cooldown")
-	full.profile.levels.armour=1
+	full.first_equipment_entry("armour").level=1
 	full.player.armour=30
 	full.upgrade("armour")
 	check(full.player.armour==50,"Armour upgrade adds only capacity delta")
@@ -268,7 +268,7 @@ func run() -> void:
 	for n in range(2,11):
 		full.profile.highestLevel=n
 		for key in BattleGame.EQUIPMENT:
-			full.profile.levels[key]=20
+			full.first_equipment_entry(key).level=20
 		full.start(n,false)
 		for i in range(60000):
 			full.tick(1.0/60.0)

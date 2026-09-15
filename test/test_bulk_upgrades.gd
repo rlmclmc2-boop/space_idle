@@ -24,22 +24,22 @@ func run() -> void:
 	game.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
 	game.profile.resources = {"1":1e25,"2":1e25}
 	var ten_cost := game.upgrade_costs("laser",10)
-	check(game.upgrade("laser",10) and game.profile.levels.laser==11,"10-upgrade advances exactly ten levels")
+	check(game.upgrade("laser",10) and game.first_equipment_entry("laser").level==11,"10-upgrade advances exactly ten levels")
 	check(game.profile.resources["1"]==1e25-ten_cost.get("1",0) and game.profile.resources["2"]==1e25-ten_cost.get("2",0),"10-upgrade charges summed cost once")
 	var blocked := BattleGame.new(db,false)
 	blocked.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
-	blocked.profile.levels.laser = 1
+	blocked.first_equipment_entry("laser").level = 1
 	blocked.profile.resources = {"1":ten_cost.get("1",0)-1,"2":ten_cost.get("2",0)}
-	check(not blocked.can_upgrade_amount("laser",10) and not blocked.upgrade("laser",10) and blocked.profile.levels.laser==1,"10-upgrade is all-or-nothing")
+	check(not blocked.can_upgrade_amount("laser",10) and not blocked.upgrade("laser",10) and blocked.first_equipment_entry("laser").level==1,"10-upgrade is all-or-nothing")
 	var max_game := BattleGame.new(db,false)
 	max_game.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
-	max_game.profile.levels.laser = 1
+	max_game.first_equipment_entry("laser").level = 1
 	var first := max_game.upgrade_cost_for_level("laser",2)
 	var second := max_game.upgrade_cost_for_level("laser",3)
 	var first_two := sum_cost(first,second)
 	max_game.profile.resources = {"1":first_two.get("1",0),"2":first_two.get("2",0)}
 	check(max_game.max_upgrade_amount("laser")==2,"MAX finds highest affordable level")
-	check(max_game.upgrade_max("laser") and max_game.profile.levels.laser==3,"MAX upgrades to affordable level")
+	check(max_game.upgrade_max("laser") and max_game.first_equipment_entry("laser").level==3,"MAX upgrades to affordable level")
 	for key in ["armour","shield","laser","missile","cannon"]:
 		var all := BattleGame.new(db,false)
 		all.profile.unlocked=["armour","shield","laser","missile","cannon"]
@@ -52,7 +52,7 @@ func run() -> void:
 		sequential.profile=all.profile.duplicate(true)
 		for i in range(10):
 			check(sequential.upgrade(key),"Single upgrade for "+key)
-		check(all.upgrade(key,10) and all.profile.resources==sequential.profile.resources and all.profile.levels[key]==11,"Ten matches ten singles for "+key)
+		check(all.upgrade(key,10) and all.profile.resources==sequential.profile.resources and all.first_equipment_entry(key).level==11,"Ten matches ten singles for "+key)
 		var max_all := BattleGame.new(db,false)
 		max_all.profile.unlocked=all.profile.unlocked.duplicate()
 		max_all.profile.loadout=max_all.default_loadout(max_all.profile.selectedShip,max_all.profile.unlocked)
