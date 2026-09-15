@@ -555,3 +555,114 @@ Phase 5直接影响范围已具备进入Phase 6的验证基础；仍须用户确
 5. **集成**：隔离运行编辑器读取→校验→保存→重载与QA导入→无变化→重启。正式Excel/game_data.json/manifest不作为重构写入目标；任何确需改变旧输入兼容、错误处理或失败原子性的事项另行提出确认。
 
 预计测试修改仍集中在既有`test/test_config_workbooks.py`、`test/test_level_editor.py`，有明确覆盖缺口再改`test/test_import.py`及对应配置专项；不新建框架。检查全部通过、确认行为不变后才推进下一小项。**当前停止在CHECKPOINT 3，必须再次获批才能开始Phase 8；Phase 9性能优化也未开始。**
+
+## 10. CHECKPOINT 4 — Phase 8（2026-09-15）
+
+### DONE
+
+**KEEP CURRENT IMPLEMENTATION。** 从0915e00建立独立基线，先运行现有专项，再对当前正式分表的隔离副本建立输入与故障矩阵，最后逐项判断A12/A13。未找到兼具语义等价和净收益的抽取，生产实现没有修改，也没有进行Phase 9。新增一份独立特征测试用于隔离旧总表夹具问题与当前入口行为；没有新增测试框架或运行抽象。
+
+### INPUT_MATRIX
+
+完整证据：[190项输入/故障结果](../test/work/test_config_input_matrix-p4zzrewj/phase8-matrix/INPUT_MATRIX.md)、[完整返回值、错误文本和文件哈希](../test/work/test_config_input_matrix-p4zzrewj/phase8-matrix/INPUT_MATRIX.json)。记录4个入口×43组输入=172项；另18项故障注入。以下为压缩索引，具体错误文本/调用阶段以JSON为准，不能仅凭异常类型判断等价。
+
+| 输入 | incremental_import | Store.load | Store.validate / save |
+|---|---|---|---|
+| 完整当前分表、附加JSON字段 | 接受 | 接受 | 接受 |
+| 损坏manifest JSON | JSONDecodeError | 构造时JSONDecodeError | 同左 |
+| 缺manifest / 空对象 / 空数组 | ValueError | FileNotFoundError / KeyError / TypeError | 同左 |
+| sheets缺失 / null / 数组 | ValueError / AttributeError / AttributeError | KeyError / TypeError / TypeError | 同左 |
+| 必需映射缺失 | ValueError | 构造时KeyError | 同左 |
+| 路径空串 / null / 数字 | ValueError / ValueError / TypeError | PermissionError / TypeError / TypeError | 同左 |
+| 父路径、反斜杠、绝对路径 | ValueError | ValueError，错误文本/时机不同 | 同左 |
+| 缺文件 / 文件中缺预期sheet / 损坏xlsx | 包装为ValueError | FileNotFoundError / KeyError / BadZipFile | 同左 |
+| charge缺映射、文件存在 | 接受 | 接受 | 接受 |
+| ship缺映射、文件存在 | 接受 | KeyError | 同左 |
+| charge或ship映射null / 空串、回退文件存在 | 接受 | TypeError / PermissionError | 同左 |
+| charge缺映射和文件、JSON已有投影 | ValueError | 接受 | 接受 |
+| charge缺映射和文件、JSON无投影 | 接受 | 接受 | 接受 |
+| ship缺映射和文件、JSON有 / 无投影 | ValueError / 接受 | KeyError / KeyError | 同左 |
+| 目标JSON缺失 / 损坏 | 接受并创建 / JSONDecodeError | FileNotFoundError / JSONDecodeError | 同左 |
+| 损坏导入缓存 | JSONDecodeError | 接受 | 接受 |
+| 有效缓存 / 旧版本 / 错误target_hash | 接受；有效缓存不解析不写入 | 接受 | 接受 |
+| 非法生命、重复ID、坏敌群引用 | ValueError | 接受 | ValueError |
+| 非法size、抗性、武器引用、掉落资源 | 接受 | 接受 | ValueError |
+| 真实公式单元格缺XML数值缓存 | ValueError | 接受 | ValueError |
+
+所有普通拒绝及Store.load/validate均验证文件内容不变。成功时，增量导入只可能写JSON/导入缓存，不写Excel/manifest；Store.save按现有逻辑写编辑表、JSON、缓存与备份，不写manifest，具体写入集合按各行记录。已验证有效缓存增量导入连mtime也不变。完整返回结构保存在JSON，不用统一错误接口替代。
+
+“重构前/后”相同：**没有生产修改**，矩阵记录的三个tools文件SHA-256与最终源码核对一致；没有声称对某个改写版本做过差分。full_import另运行旧总表缺techPointGet拒绝与不写目标验证；没有用猜值制造可接受总表，也未完成其所有可接受总表组合的验证。
+
+### SHARED
+
+本阶段新增共享逻辑为0。既有read_changed_file、validate_projection、atomic_batch及指纹/编码工具继续复用，不重复抽取。
+
+### KEPT_SEPARATE
+
+- A12的manifest读取：缺失、空值、结构错误的异常类型与时机不同，不能直接用read_json替换Store构造逻辑。
+- 分表发现：charge/ship可选规则不同；用统一函数需要策略开关，违背净复杂度要求。
+- 路径及存在性检查：表面相近但空值、目录、缺文件及错误包装不同。剩余单行路径拼接的抽取不能减少理解成本。
+- Store.snapshot/prepare/save与增量指纹/提交前复核不同；full_import另用单目标替换，不合并事务模型。
+
+### VALIDATION
+
+A13 KEEP：原有通用投影校验保持共享；编辑表ID校验的时机与上下文、敌机外观/抗性、武器引用、掉落资源仍由Store负责。即使重复ID等最终都拒绝，也没有证明其全部输入范围、错误语义和调用时机等价，不增加普通导入的拒绝条件。
+
+### TRANSACTION
+
+逐项记录替换顺序。增量提交目标JSON→缓存；Store先备份再提交编辑表/JSON/缓存，回滚按完成顺序逆序恢复。暂存失败与缓存替换失败且恢复成功时，原文件全部恢复、无临时文件残留。成功Store保存的备份与写前原始字节一致。
+
+**恢复本身失败时，当前实现不满足“失败不得半提交”。** 两条写入入口均抛RuntimeError并可能遗留修改过的JSON；Store备份也可能在回滚中删除。测试明确观察此既有行为，不把该用例通过当作事务安全认证。问题唯一记录于U-019，未擅自修复。
+
+### PROJECTION
+
+隔离修改mon.health，仅解析mon、仅改变enemies投影；其他JSON字段（含未知字段）逐值相等。source_files仍为原有路径行为，完整返回保留于矩阵；CACHE_VERSION=4、target_hash及每个source hash逐项核对。Store保存生成的缓存被下一次增量导入接受且不解析。没有修改正式投影或源数值。
+
+### EXCEL
+
+Store隔离编辑level两项公式，验证ROUND(1.005,2)=1.01及D4/3的Decimal→float引用边界；公式文本和XML数值缓存匹配。其他分表整文件字节相等，目标xlsx的ZIP成员名称/顺序相同，非目标worksheet部件逐字节相同，备份是原始完整字节。没有修改公式求值器、XML缓存算法、workbook格式或ZIP实现。此为指定样本验证，不宣称穷尽Excel公式语言或ZIP压缩细节的所有组合。
+
+### FAILURE_CASES
+
+- 损坏manifest、缺表、错误路径、坏引用：类型、全文、阶段和文件副作用见矩阵；不同入口差异保留。
+- 源文件并发变化：增量拒绝，Store.save拒绝；只留下注入的外部修改，没有本次提交。
+- manifest/目标并发变化：增量仍提交，目标外部新增字段被覆盖；Store.save拒绝并保留外部修改；Store.validate没有提交前最终检查，返回成功但不写。见U-020。
+- 暂存失败、提交失败及恢复失败：18项故障组合包括只校验入口不触及写入注入点；恢复失败的危险结果如TRANSACTION所述，未隐藏也未修复。
+
+### FORMAL_INPUT
+
+正式总表、9份分表、game_data.json及manifest共12份，SHA-256与既有正式输入基线全部一致；核对证据在[formal-input-hashes.json](../test/work/refactor-phase8/formal-input-hashes.json)。本轮测试只写test/work隔离副本，没有操作正式玩家存档、正式缓存或正式备份。
+
+### TEST
+
+- 独立矩阵：172项输入结果、18项故障结果，212项断言通过；日志见[Phase 8 UTF-8运行日志](../test/work/refactor-phase8/matrix-utf8.log)。首次完整回显曾因GBK编码失败，改为进程环境PYTHONUTF8=1重新运行，不改运行器或生产实现。
+- 既有test_level_editor.py：8项通过。
+- 既有test_config_workbooks.py：14项中4项通过、10项因旧总表techPointGet缺失报错；test_import.py同原因在初始导入失败。原正确断言未改，没有带着失败叠加生产重构。日志在[基线目录](../test/work/refactor-phase8/)，问题见U-018。
+- 未改UI/游戏代码，未重复执行Phase 6的QA/重启或游戏专项；本阶段完成Store读取→校验→保存→重载和后续增量缓存验证。不能宣称全仓测试全绿。
+
+### BEHAVIOR_DIFF
+
+生产行为变化为0。观察到的入口差异及异常风险均来自原实现。没有合并、加强验证或调整错误处理；没有全项目重写。
+
+### CODE_DIFF
+
+生产代码新增/删除0行，运行文件数量变化0；新增一份321行独立输入矩阵测试，未删除或放宽既有断言；文档更新检查点、状态、风险和测试入口。测试专为当前分表与故障观察独立存在，避免混用U-018历史总表夹具。文件总数净增1，仅测试文件。
+
+### COMPLEXITY
+
+运行复杂度、依赖、调用链和运行开销均未变化，不声称代码缩减收益。得到可按需查询的入口证据，后续AI无需为A12再次通读三条完整链路；增加测试阅读成本，默认只读本节结论，完整矩阵留在test/work按需读取。未引入mode/strategy/policy等策略参数。
+
+### RISKS
+
+U-018/U-019/U-020仍在；尤其不能保证恢复失败原子性和多写入者安全。本次KEEP并不意味着这些风险已消除。故障模拟覆盖指定调用点，不替代断电、磁盘损坏或操作系统权限全部组合；完整旧总表正向导入仍受真实字段缺失阻碍。
+
+### PHASE9_CANDIDATES（仅候选，未测量/未实施）
+
+| 当前入口 | 获批后值得测量的指标 | 不得破坏 |
+|---|---|---|
+| main._process、refresh_scientists及进度/按钮刷新 | 每帧调用次数、耗时中位数/P95、稳定状态重复计算 | 即时可点击、暂停、拖拽与文本变化 |
+| main.on_event→call_deferred(build_ui) | 同帧重建次数、分配量、UI帧耗时 | 事件顺序、滚动、弹窗、页签解锁 |
+| game.weapon_entries/stat与database.enemy_weapon | 同tick重复查询/数组分配占比 | 槽位独立、装备变化即时生效、敌武器规则 |
+| game.tick/tick_projectiles | 固定敌舰/弹体数量下P95与遍历次数 | 同帧击杀换靶、时间推进、资源/生命计算 |
+
+只有实测显著且复杂度净下降才考虑修改；当前停在CHECKPOINT 4，等待批准，不进入Phase 9。

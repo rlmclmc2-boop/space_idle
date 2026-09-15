@@ -1,5 +1,12 @@
 # 验证与证据
 
+## 2026-09-15 Phase 8
+
+- KEEP CURRENT IMPLEMENTATION：三个生产tools文件哈希与隔离基线一致，运行代码零修改；正式12份输入SHA-256未变。
+- `test_config_input_matrix.py`：4入口×43输入=172项结果，另18项故障注入，212项断言通过，UTF-8运行退出0。完整返回、错误文本、文件副作用与哈希存于test/work；入口和产物链接见[CHECKPOINT 4](../REFACTOR_PLAN.md#10-checkpoint-4--phase-82026-09-15)。
+- `test_level_editor.py`8项通过；旧总表驱动的`test_config_workbooks.py`14项中10项报错，`test_import.py`在初始导入失败，原因techPointGet缺失见U-018。未改正确断言或猜默认值。
+- 成功回滚与备份、单表投影、未知JSON字段、缓存指纹、公式/ROUND/XML缓存、非目标ZIP部件均按隔离样本验证。回滚自身失败和并发覆盖是已观察的既有危险行为（U-019/U-020），不能把特征测试通过解释为这些行为安全。未开始Phase 9。
+
 ## 2026-09-15 Phase 6～7
 
 - `test_level_editor.gd`修改前后18项通过，含环境指定/无效指定/空指定/内置缺失四种Python定位分支，以及独立编辑器读取、草稿校验、保存、重载及引用删除保护。

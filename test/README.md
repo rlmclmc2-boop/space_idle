@@ -19,3 +19,5 @@ Windows 运行器创建临时副本后启用父目录权限继承，让命令行
 2026-09-15 重构基线：`test_ships.gd` 覆盖默认/空槽独立性、旧levels/cooldowns写入及旧档迁移；`test_bulk_upgrades.gd` 覆盖五类装备的单级/10级/MAX一致性。科学家描述/离线上限/进度UI、炼铁炉拾取与寿命的有效历史断言已分别纳入 `test_scientists.gd`、`test_furnace_income.gd`。装备属性/上限测试必须显式安装空槽装备，解锁不等于安装。阶段结果见 [重构方案](../space-battleship/REFACTOR_PLAN.md)。
 
 Phase 5状态边界与读取纯度：`test_state_ownership.gd`；旧levels只通过原始存档字典输入，普通夹具直接设置槽位等级/槽位冷却。完整阶段证据见REFACTOR_PLAN第8节；历史综合探针限制见TODO U-017。
+
+Phase 8输入、投影、公式缓存与事务现状：`test_config_input_matrix.py`。用`python test/run.py test_config_input_matrix.py`执行，Windows重定向日志时设置`PYTHONUTF8=1`。产物INPUT_MATRIX.json记录完整返回值、异常、文件哈希及故障副作用，INPUT_MATRIX.md用于浏览。故障观察通过不代表回滚失败仍具原子性，限制见TODO U-019/U-020；不以旧总表补猜当前配置。
