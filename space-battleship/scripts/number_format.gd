@@ -2,12 +2,27 @@ class_name NumberFormat
 extends RefCounted
 
 static func plain(value: float) -> String:
+	if not is_finite(value):
+		return str(value)
+	if absf(value) >= 1e20:
+		var exponent := floori(log(absf(value))/log(10.0))
+		var mantissa := value/pow(10.0,exponent)
+		if absf(mantissa) >= 9.995:
+			mantissa /= 10.0
+			exponent += 1
+		return "%.2fe+%d" % [mantissa,exponent]
+	if absf(value) >= 9e18:
+		return "%.0f" % value
 	return str(int(value)) if is_equal_approx(value,roundf(value)) else "%.1f" % value
 
 static func precise(value: float) -> String:
+	if not is_finite(value) or absf(value) >= 9e18:
+		return plain(value)
 	return ("%.8f" % value).rstrip("0").trim_suffix(".") if value != roundf(value) else str(int(value))
 
 static func compact(value: float) -> String:
+	if not is_finite(value) or value >= 1e20:
+		return plain(value)
 	value = maxf(0.0,value)
 	if value < 100.0:
 		return plain(value)

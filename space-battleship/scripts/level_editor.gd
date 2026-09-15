@@ -3,7 +3,7 @@ extends Control
 
 const TABLES := ["mon", "monGroup", "level"]
 const TITLES := ["敌方飞行器", "敌方飞行器组", "关卡配置"]
-const LABELS := {"id":"ID", "des":"描述", "equipment":"武器 name|数量，逗号分隔", "dmgMultiple":"伤害倍率", "health":"基础生命", "armourType":"抗性 0=无 / 1=能量 / 2=物理", "res":"掉落 资源ID,数量,概率", "size":"占格数（大于1显示大型舰）", "length":"关卡长度", "atkRatio":"攻击倍率", "lifeRatio":"生命倍率", "resRatio":"资源倍率"}
+const LABELS := {"id":"ID", "des":"描述", "equipment":"武器 name|数量，逗号分隔", "dmgMultiple":"伤害倍率", "health":"基础生命", "armourType":"抗性 0=无 / 1=能量 / 2=物理", "res":"掉落 资源ID,数量,概率", "size":"外观尺寸等级（每舰固定占1格）", "length":"关卡长度", "atkRatio":"攻击倍率", "lifeRatio":"生命倍率", "resRatio":"资源倍率"}
 const NUMBERS := ["id", "dmgMultiple", "health", "armourType", "size", "length", "atkRatio", "lifeRatio", "resRatio"]
 var document: Dictionary = {}
 var table := "mon"
@@ -166,7 +166,7 @@ func show_record(index: int) -> void:
 		fields[key] = entry
 	if table == "monGroup":
 		var hint := Label.new()
-		hint.text = "十格编队（从上到下）；大舰只填起始格，后续占用格留空。"
+		hint.text = "十格编队（从上到下）；每艘敌舰只占一格，size仅决定外观。"
 		form.add_child(hint)
 		var values := clean(str(record.mon)).split(",")
 		var grid := GridContainer.new()

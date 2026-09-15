@@ -114,5 +114,12 @@ class EditorTests(unittest.TestCase):
             with self.assertRaises(OSError): self.store.execute(self.request, True)
         for path, raw in self.original.items(): self.assertEqual(path.read_bytes(), raw)
 
+    def test_large_ships_each_use_one_slot(self):
+        enemy = self.request['tables']['mon']['rows'][0]
+        enemy['size'] = 100
+        self.request['tables']['monGroup']['rows'][0]['mon'] = '{' + ','.join([str(enemy['id'])] * 10) + '}'
+        result = self.store.execute(self.request)
+        self.assertFalse(any('占格' in w or '越界' in w for w in result['warnings']))
+
 
 if __name__ == '__main__': unittest.main()

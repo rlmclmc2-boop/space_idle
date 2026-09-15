@@ -1,5 +1,60 @@
 # 验证与证据
 
+## 2026-09-15 大数性能
+
+- `python test/run.py test_large_numbers.gd` 隔离导入/执行退出0，11项全部通过：1e20/1e30研究点批量结算、非负余量、常量费用、整数安全边界、科学计数法、无穷值终止和小数值显示兼容。最终产物 `../../test/work/test_large_numbers-s18tguf8/`，1e20预算约百亿级升级单次耗时40微秒（专项测量，非整帧基准）。
+- `python test/run.py test_scientists.gd` 38项全部通过，产物 `../../test/work/test_scientists-o7xdptzn/`；验证原低数值研究及批量生成/分配流程。仅既有Windows根证书提示，无脚本错误；未操作正式配置或玩家存档。相关diff空白检查通过。大数近似行为归progression模块。
+
+## 2026-09-15 伤害数字避让
+
+- `python test/run.py test_damage_text.gd` 隔离导入及图形执行退出0；验证敌我同帧24次伤害全部保留、两两边界不重叠，上浮后追加6次相邻命中仍不重叠，清空后原位置复用。已检查 `../../test/work/test_damage_text-8vtc14wz/space-battleship/damage-text.png`，分行/分列数字清晰。仅既有根证书提示，无脚本错误；未操作正式存档。
+
+## 2026-09-15 科学家批量操作
+
+- `test/run.py test_scientists.gd` 在 `../../test/work/test_scientists-4w9itbu8/` 38项全部通过，导入与图形执行退出0。新增逐个费用与×10总扣费等价、MAX资源边界、失败原子性、分配不足十人、全部重均分/余数/点数保留，以及真实×10生成、×10/MAX分配按钮验证。原零级效果断言改用equipment_stat隔离同期多槽装备影响。
+- 已查看批量操作截图：管理卡生成×1/×10/MAX和平均分配全部、各卡片+10/MAX与+1/−1无重叠，研究点条正常。仅既有根证书提示；未修改正式配置或玩家存档。
+
+## 2026-09-15 武器/防御卡片重排
+
+- `python test/run.py test_equipment_tabs.gd`：282项通过、0失败；覆盖升级/切页保持、空槽安装三类装备，以及满装两页所有可见卡片子控件边界与两两不重叠检查。产物 `../../test/work/test_equipment_tabs-u8hmckx_/`，已核查 `tabs-filled-0.png` 与 `tabs-filled-1.png`；空槽边界检查另在 `test_equipment_tabs-mizjfqdv` 156项通过。Godot隔离副本运行，未操作正式存档，仅既有根证书警告。
+
+## 2026-09-15 敌舰图片与单格编队
+
+- `test_enemy_ship_visuals.gd`：24项通过；六档素材截图及十艘size=100同屏截图，验证尺寸对应舰缘发射、十格独立定位和中央索敌。产物 `../../test/work/test_enemy_ship_visuals-pbq0u_hg/`，Godot 4.7.2隔离执行，无正式存档操作。
+- `test_level_editor.py`：8项通过，产物 `../../test/work/test_level_editor-n0izhj1b/`；包括size=100十舰编队校验。系统Python缺lxml，改用已带依赖的桌面内置Python运行通过。
+
+## 2026-09-15 战舰更换页签
+
+- `python test/run.py test_ship_tab.gd`：8项通过，退出0；覆盖第二艘战舰解锁前隐藏、仅列出已解锁战舰、换舰页签内配置装备、确认前不切换及确认后提交目标配置。已查看 `test/work/test_ship_tab-jc11ds1y/space-battleship/ship-tab.png`，槽位卡片与确认按钮无重叠。
+- 直接影响回归：`test_equipment_tabs.gd` 9项通过、`test_tab_unlocks.gd` 14项通过、`test_unequip.gd` 25项通过；`test_ship_visuals.gd` 167项通过，炮口坐标保持一致且炮台显示缩放调整生效。Godot 4.7.2 仅有既有系统根证书提示，无脚本错误。
+
+## 2026-09-15 同种装备上限
+
+- 隔离 `test_ship_equipment_limit.gd` 68项通过，退出0；覆盖五舰武器/防御限额、拒绝超限不扣资源、卸下释放名额及重新安装1级。产物位于test/work/test_ship_equipment_limit-uh2t2__k；无脚本错误。
+- ship分表经read_rows/convert_sheet与JSON.ship完全一致，validate_projection通过。未操作正式存档。
+
+## 2026-09-15 移除已装备下拉箭头
+
+- 隔离运行 `test_unequip.gd`：25项通过，退出0；已核查 `test/work/test_unequip-pktf_4v9/space-battleship/unequip-confirm.png`，占用槽显示普通名称无箭头，空槽仍保留下拉入口。
+
+## 2026-09-15 确认卸下装备
+
+- `python test/run.py test_unequip.gd`：隔离导入及运行退出0，25项检查、0失败。覆盖禁止直接替换、弹窗取消/确认、各资源全额退款、重复退款保护、同名实例等级隔离、重新安装1级、两类防御退款与空槽不自动补装。
+- `test/work/test_unequip-ncehi7p4/space-battleship/unequip-confirm.png`、`unequip-empty.png` 已核查；正式存档未操作。引擎证书库和QA子窗口嵌入警告不影响测试，无脚本错误。
+
+## 2026-09-15 舰船尺寸与槽位
+
+- `python test/run.py test_ship_visuals.gd`：隔离导入及运行退出0，167项检查、0失败；覆盖五舰占地比例、槽位数、各槽三种武器弹体起点与fire事件坐标，以及动态size缩放。
+- 使用read_rows/convert_sheet读取ship分表，与运行JSON.ship逐项相等；validate_projection通过。
+- `test/work/test_ship_visuals-bstcb_7j/space-battleship/visual-*.png` 五舰截图已核查，舰体按占地缩放、模块不遮槽环。正式存档未读写。引擎有系统证书库警告，无脚本错误。
+
+## 2026-09-15 科学家研究点制
+
+- `test/run.py test_scientists.gd`：28项全部通过，`../../test/work/test_scientists-7qfn_kf_/`。覆盖0级无效果、未解锁禁用、逐人复利费用/四舍五入、多资源扣费、余额不足、分配守恒、多人指数速率、并行研究/升级剩余点、撤回保留、暂停、真实存档往返、离线推进、旧档废弃和真实生成/分配/撤回按钮。
+- `test_scientist_config.py`：6用例通过，`../../test/work/test_scientist_config-_2fzuvee/`；验证实际分表投影一致、小数hightechLimit、多资源扩展、非法费用/点数拒绝与timeCost不再使用。仅同步config/hightech运行段，未改Excel或正式存档。
+- `test_hightech_slots.gd`：32项通过，`../../test/work/test_hightech_slots-2y2d4mlj/`；真实拖放、空槽、边缘滚动、页签隐藏及存档顺序保留。管理卡增加后专项按新位置滚动，研发归属断言改为科学家分配。
+- 已检查 scientists.png：管理卡费用、空闲人数、卡片人数/点速率/点数/百分比及+1/−1可读，0级显示未研发无效果。Godot 4.7.2 导入及图形执行退出0，仅既有根证书提示。旧计时专项已在test/README说明废弃范围，新验收入口如上。
+
 ## 2026-09-15 充能升级次数四舍五入
 
 - charge_required统一返回round(para_5×para_6^等级)，供升级、离线边界、存档校验和进度条使用。配置允许小数参数，保留正次数检查；只同步最新charge投影（当前para_6=1.3），其他运行段不变。

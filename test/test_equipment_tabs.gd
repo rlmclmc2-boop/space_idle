@@ -34,7 +34,7 @@ func run() -> void:
 	check(scene.equipment_tabs.current_tab==1,"Upgrade preserves selected page")
 	scene.game.profile.unlocked = ["armour","shield","laser","cannon","missile"]
 	scene.build_ui()
-	check(scene.upgrade_buttons.size()==5,"All equipment retained across pages")
+	check(scene.upgrade_buttons.size()==2,"Only installed equipment retains upgrade cards")
 	scene.equipment_tabs.current_tab = 0
 	scene.queue_redraw()
 	await process_frame
@@ -45,5 +45,24 @@ func run() -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://tabs-defence.png")
 	check(scene.equipment_tabs.get_rect().end.y<=778,"Tabs stay above footer")
+	check(scene.game.equip_slot("weapons",1,"cannon"),"Empty weapon slot installs cannon")
+	check(scene.game.equip_slot("weapons",2,"missile"),"Empty weapon slot installs missile")
+	check(scene.game.equip_slot("defence",1,"shield"),"Empty defence slot installs shield")
+	scene.build_ui()
+	for page_index in [0,1]:
+		scene.equipment_tabs.current_tab = page_index
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://tabs-filled-%d.png" % page_index)
+		var cards = scene.equipment_tabs.get_child(page_index).get_child(0)
+		for card in cards.get_children():
+			var items: Array[Control] = []
+			for child in card.get_children():
+				if child is Control and child.visible:
+					check(Rect2(Vector2.ZERO,card.size).encloses(child.get_rect()),"Card content stays inside its bounds: %s %s" % [child.get_class(),child.get_rect()])
+					items.append(child)
+			for a in range(items.size()):
+				for b in range(a+1,items.size()):
+					check(not items[a].get_rect().intersects(items[b].get_rect()),"Card rows and actions do not overlap")
 	print("Equipment tabs: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

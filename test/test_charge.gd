@@ -104,6 +104,14 @@ func run() -> void:
 	g.speed=5
 	g.tick(0.5) # main passes delta * speed to tick.
 	check(g.charge_job(ATTACK).elapsed==0.5,"Charging follows simulation time")
+	var immediate := BattleGame.new(db,false)
+	immediate.profile.cleared=[1]
+	immediate.profile.resources["2"]=100
+	immediate.toggle_charge(ATTACK)
+	immediate.save_enabled=true
+	immediate.tick(0.5)
+	var immediate_raw: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	check(float(immediate_raw.resources["2"])==97,"Charge resource debit is persisted immediately")
 	# Actual save/load: integer resources and already paid charging time persist.
 	g.profile.resources["2"]=10
 	g.toggle_charge(ATTACK)

@@ -40,7 +40,7 @@ func click_mouse(pos: Vector2, pressed: bool) -> void:
 	await frames()
 
 func card(index: int) -> Control:
-	return scene.hightech_scroll.get_child(0).get_child(index)
+	return scene.hightech_scroll.get_child(0).get_child(index+1)
 
 func title_position(index: int) -> Vector2:
 	return card(index).global_position+Vector2(190,16)
@@ -89,6 +89,8 @@ func run() -> void:
 	check(scene.hightech_buttons.keys()==[BattleGame.FURNACE], "Only cleared-gate tech shown")
 	check(not scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "First unlock reveals tab without switching selection")
 	scene.equipment_tabs.current_tab = 2
+	scene.hightech_scroll.scroll_horizontal=338
+	scene.hightech_scroll_offset=338
 	await frames()
 	await capture("hightech-one-unlocked")
 	scene.game.profile.cleared = scene.db.data.hightech.values().map(func(row):return int(row.unlock))
@@ -112,7 +114,7 @@ func run() -> void:
 	var button_position: Vector2 = scene.hightech_buttons[BattleGame.DENSE_ARMOUR].global_position+scene.hightech_buttons[BattleGame.DENSE_ARMOUR].size/2
 	await move_mouse(button_position,true)
 	await click_mouse(button_position,false)
-	check(scene.game.hightech_slots()[2]==BattleGame.ENERGY_FOCUS and scene.game.profile.hightechResearch.is_empty(), "Dropping onto research button swaps without starting research")
+	check(scene.game.hightech_slots()[2]==BattleGame.ENERGY_FOCUS and scene.game.profile.scientistAssignments.is_empty(), "Dropping onto research button swaps without starting research")
 	var ordered: Array = scene.game.hightech_slots().duplicate()
 	await begin_drag(0)
 	await move_mouse(Vector2(750,250),true)
@@ -139,11 +141,12 @@ func run() -> void:
 	check(loaded.hightech_slots()==scene.game.hightech_slots(), "Player order and empty positions survive actual save/load")
 	scene.game.save_enabled = false
 	check(not scene.game.swap_hightech_slots(-1,0) and not scene.game.swap_hightech_slots(4,100) and not scene.game.swap_hightech_slots(1,0), "Invalid indices and empty source rejected")
-	var before: Dictionary = scene.game.profile.hightechResearch.duplicate(true)
-	scene.game.research(BattleGame.ENERGY_FOCUS)
+	var before: Dictionary = scene.game.profile.scientistAssignments.duplicate(true)
+	scene.game.profile.scientists=1
+	scene.game.assign_scientist(BattleGame.ENERGY_FOCUS,1)
 	scene.game.swap_hightech_slots(0,2)
-	check(scene.game.profile.hightechResearch.has(BattleGame.ENERGY_FOCUS), "Sorting leaves active research attached to technology")
-	scene.game.profile.hightechResearch = before
+	check(scene.game.profile.scientistAssignments.has(BattleGame.ENERGY_FOCUS), "Sorting leaves active research attached to technology")
+	scene.game.profile.scientistAssignments = before
 	for i in range(7):
 		var key := "扩展测试%d" % i
 		var row: Dictionary = scene.db.data.hightech[BattleGame.FURNACE].duplicate(true)

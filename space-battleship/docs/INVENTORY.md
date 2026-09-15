@@ -18,7 +18,7 @@
 | `data/game_data.json` | 现有运行数值投影；来源须核对 | 按键 |
 | `tools/import_workbook.py` | 导入与校验 | 数据变更 |
 | `tools/config_workbooks.py` | 独立 Excel 同步及增量投影；依赖 openpyxl/lxml | 配置流程 |
-| `config_excel/*.xlsx`, `.split_manifest.json` | 可编辑分表与对应关系，交接必须携带 | 按对应表 |
+| `config_excel/*.xlsx`, `.split_manifest.json` | 可编辑分表与对应关系，交接必须携带；`ship.xlsx` 为 5 艘我方舰船配置 | 按对应表 |
 | `data/.import_state.json` | 成功导入指纹缓存，可重建 | 导入问题 |
 | `../test/test_config_workbooks.py` | 拆分保真、变更检测、失败回滚验证 | 配置流程 |
 | `tools/inspect_knowledge.py` | 新增只读审计/按范围查表工具 | 数据核对 |
@@ -26,7 +26,9 @@
 | `../启动.cmd`, `打开编辑器.cmd` | 便携启动脚本 | 运行/迁移 |
 | `*.gd.uid`, `*.png.import` | Godot 资源标识/导入描述 | 资源任务，保留 |
 | `../test/` | 测试源码、运行器；产物统一放 work/ | 对应测试 |
-| `assets/weapons/` | 三种透明弹体PNG及生成来源/提示词；main.gd直接引用 | 武器美术任务 |
+| `assets/weapons/` | 三种透明弹体PNG及生成来源/提示词；main.gd直接引用；`icons/` 为三种槽位武器模块图标 | 武器美术任务 |
+| `assets/ships/` | 5 种我方与 6 种敌方透明舰船 PNG；我方舰船已由运行时按 ship 表接入；规范见 `docs/ART_GUIDELINES.md` | 舰船美术任务 |
+| `docs/ART_GUIDELINES.md` | 舰船槽位与后续武器图标的统一美术规范 | 美术任务 |
 | `.godot/`, `.runtime/` | 引擎缓存、测试/编辑器状态与日志 | 默认排除 |
 | `.userdata/` | 玩家进度、QA 偏好、日志/缓存 | 非默认上下文 |
 | `docs/`, `AGENTS.md`, `README.md` | 新建知识系统及人类入口 | 按路由 |

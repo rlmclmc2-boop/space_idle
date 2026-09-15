@@ -1,11 +1,26 @@
 # Current Status
 
 Goal:
-完成充能升级所需次数计算后四舍五入，保持整数结算与显示。
-完成高科技研发进度条展示与验证。
-完成循环改驻守、独立跃迁及三项死亡设置；充能para_7消耗成长已按最新要求改为四舍五入。
+降低超过10^20时的大数结算与显示开销。
 
 Done:
+- 2026-09-15：高科技大数预算采用公式批量升级并合并事件；公共大数显示采用科学计数法，修复整数溢出和无穷值循环。近似范围见progression，专项与科学家回归见VALIDATION。
+- 2026-09-15：修复充能扣费只在5秒周期存档的问题；资源余额发生扣除后立即保存，保留原有整数分配、credit与进度结算。新增即时存档回归断言。
+- 2026-09-15：伤害飘字按实际文字边界避让，向上分行、上方不足向右续列；同帧及连续命中均保留独立数字。隔离专项通过并已验图，见VALIDATION伤害数字避让。
+- 2026-09-15：新增科学家批量生成×10/MAX、批量分配+10/MAX与平均分配全部；复用费用舍入和分配保存，研究点保留。38项专项通过，已验图；见VALIDATION科学家批量操作。
+- 2026-09-15：武器/防御改为双区卡片，左侧名称等级/属性/状态，右侧费用与升级；冷却条独立到底部，空槽独立安装区，长文省略并支持悬停全文。隔离282项通过，两页满装截图已核查；不改装备规则和数值。
+- 2026-09-15：敌舰固定1格，size只选择六档PNG及显示大小；镜像朝左，定位/索敌按单格，血条/编号/发射适配尺寸；编辑器移除size占格警告并允许大于10的正整数。专项检查和截图见VALIDATION。
+- 2026-09-15：战舰更换移入独立页签，第二艘战舰解锁前隐藏且仅列出已解锁战舰；目标舰装备在确认换舰前配置，常规装备页仅允许给空槽新增。炮台模块采用独立2.5倍显示缩放，保持舰体占地与炮口规则。新增换舰页签专项通过，视觉截图已核查。
+- 2026-09-15：para_6投影、正整数校验及缓存版本更新；武器/防御安装统一限制同种数量，选项标记已达上限并禁用，卸下释放名额。68项专项通过，Excel投影一致；旧档超限不自动拆除，禁止继续增加。
+- 2026-09-15：已装备名称改为普通文字，不再显示禁用下拉箭头；空槽选择和卸下确认不变。25项回归通过，截图已核查。
+- 2026-09-15：已占用槽禁止直接切换，新增确认卸下与全额升级资源退款；空槽保持空置，重新装备1级，同名实例等级独立。修复装备赋值使用失效数组引用的问题。隔离专项25项通过，确认弹窗及空槽截图已核查。
+- 2026-09-15：ship.para_5 接入size与导入校验，更新缓存版本；舰船按占地等比缩放，五舰真实槽位坐标、去透明边距后的模块和炮口统一映射，修正发射粒子起点及震屏偏移。专项167项通过，Excel投影一致，五舰截图已核查，见VALIDATION舰船尺寸与槽位。
+- 2026-09-15：接入 ship 分表与 5 艘我方舰船；舰船按解锁关卡开放，武器/防御槽可从已解锁装备自由配置，重复装备按槽位独立升级/冷却。换舰退还升级投入、槽位回到 Lv.1 并从第1关重启，保留通关/高科技/科学家等进度；运行时接入舰船 PNG 与三种槽位武器图标。专项 `test_ships.gd`、装备页和旅行冷却回归通过。
+- 2026-09-15：复核发现首版槽位武器图标带有独立圆形底座，与舰船内凹圆槽重复；重新设计为无外环、横向侧视的嵌入式发射器/导弹舱/短炮管，并替换三张图标。透明 alpha、方形画布和三类武器辨识已复核。
+- 2026-09-15：为激光、导弹、火炮新增三张圆形槽位武器模块图标，分别使用青色发射器、白红导弹舱、铜箍磁轨炮塔；统一透明方形源图，可按小/中/大型槽位缩放。保留原三张飞行弹体，不改运行时引用或数值。已检查三张图标尺寸与透明 alpha。
+- 2026-09-15：复核发现 `enemy-super-8slot.png` 实际仅有 6 个可辨识槽位；重新生成并替换为上 4、下 4 的 8 槽版本，保持透明 PNG、1774×887 画布及敌方配色。已重新检查尺寸与透明 alpha。
+- 2026-09-15：按统一侧视与透明 PNG 规范新增 5 种我方舰船（3/4/5/6/8 槽）和 6 种敌方舰船（1/1/2/4/6/8 槽），槽位按小/中/大型统一表现；补充舰船资产 README、美术规范和交接清单。仅新增素材与文档，未接入运行时。透明度、尺寸和槽位数量已自检。
+- 2026-09-15：高科技改为科学家生成/分配及研究点升级；费用和收益公式读新config，升级读tpCost，旧并发/计时废弃。按用户确认迁移旧档高科技为0级，其他进度保留；新版分配/点数可持久化。验证见 VALIDATION 科学家研究点制。
 - 2026-09-15：升级所需充能次数统一round(para_5×para_6^等级)，配置允许小数基数/成长，实际升级、离线边界与进度条共用整数结果；同步最新charge。成长20项、原充能53项、配置6用例全部通过，见VALIDATION充能升级次数四舍五入。
 - 2026-09-15：高科技卡片左下改为研发进度条、百分比及已用/总时长，右侧保留操作按钮；暂停/切换保持进度，自动续研下一等级归零。复用现有进度条结构；专项12项、拖拽回归32项通过，已验图，见VALIDATION高科技研发进度条。
 - 2026-09-15：循环替换为驻守：巡航到下一波后停留，清空敌人后按相邻遭遇距离/飞船速度计时原点刷新；跃迁独立进入已通关关卡。死亡设置支持取消、返回原点、退后就地驻守，位置/选择持久化。驻守28项、回退17项、立即过关7项全部通过，编辑器导入退出0，已验图；见VALIDATION驻守与跃迁。
@@ -67,7 +82,7 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无，本次充能消耗成长实现与验证已完成。
+- 无，本次修改已完成。
 
 Blocked:
 - 本次无阻塞；U-015已解决。
@@ -75,6 +90,15 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
+0. QA「大重启」加载大数性能修复，无需清档。
+0. QA「大重启」加载伤害数字避让显示。
+0. 重启查看科学家批量操作。
+0. QA「大重启」加载武器/防御卡片新布局，无需删除存档。
+0. QA「大重启」加载敌舰PNG及尺寸调整。
+0. QA「大重启」加载同种装备上限；旧档超限装备可通过确认卸下退款。
+0. QA「大重启」加载先卸下再装备交互，无需删除存档。
+0. QA「大重启」加载舰船占地缩放与槽位修正，无需删除存档。
+0. 重启加载科学家系统，旧高科技在读档时自动重置；无需删除整个存档。
 0. QA「大重启」加载充能次数四舍五入规则；最新charge已同步。
 0. QA「大重启」加载高科技研发进度条，无需重读配置。
 0. QA「大重启」加载充能消耗成长；最新charge已同步，无需重读配置。
@@ -99,6 +123,17 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- scripts/game.gd；scripts/number_format.gd；../test/test_large_numbers.gd；docs/modules/progression.md；docs/VALIDATION.md
+- scripts/main.gd；../test/test_damage_text.gd；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/main.gd；../test/test_equipment_tabs.gd；docs/modules/ui.md；docs/VALIDATION.md（装备卡片重排）
+- scripts/main.gd；scripts/game.gd；assets/ships/enemy/；../test/test_enemy_ship_visuals.gd；docs/modules/ships.md
+- tools/import_workbook.py；tools/config_workbooks.py；data/game_data.json；scripts/game.gd；scripts/main.gd；../test/test_ship_equipment_limit.gd；docs/modules/ships.md
+- scripts/game.gd；scripts/main.gd；../test/test_unequip.gd；docs/modules/progression.md；docs/modules/ui.md；docs/VALIDATION.md
+- scripts/ship_visuals.gd；scripts/game.gd；scripts/main.gd；tools/import_workbook.py；tools/config_workbooks.py；data/game_data.json；../test/test_ship_visuals.gd；docs/modules/ships.md
+- scripts/game.gd；scripts/main.gd；scripts/database.gd；tools/import_workbook.py；tools/config_workbooks.py；config_excel/ship.xlsx；data/game_data.json；../test/test_ships.gd；docs/DATA.md；docs/modules/ships.md；docs/modules/progression.md；docs/modules/ui.md
+- assets/weapons/icons/laser-emitter.png；assets/weapons/icons/missile-pod.png；assets/weapons/icons/cannon-turret.png；assets/weapons/README.md；docs/ART_GUIDELINES.md
+- assets/ships/player/*.png；assets/ships/enemy/*.png；assets/ships/README.md；docs/ART_GUIDELINES.md；docs/INVENTORY.md；docs/STATUS.md
+- scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；../test/test_scientists.gd；../test/test_scientist_config.py；../test/test_hightech_slots.gd；docs/modules/progression.md；docs/modules/ui.md
 - scripts/game.gd；tools/import_workbook.py；data/game_data.json；../test/test_charge_growth.gd；../test/test_charge.gd；../test/test_charge_config.py；docs/modules/progression.md；docs/DATA.md；docs/VALIDATION.md（充能升级次数四舍五入）
 - scripts/game.gd；scripts/main.gd；../test/test_guard.gd；../test/test_loop_retreat.gd；../test/test_skip_clear.gd；docs/modules/map.md；docs/modules/ui.md；docs/VALIDATION.md
 - scripts/game.gd；scripts/main.gd；tools/import_workbook.py；data/game_data.json；config_excel/charge.xlsx；../test/test_charge_growth.gd；../test/test_charge.gd；../test/test_charge_config.py；docs/modules/progression.md；docs/modules/ui.md；docs/DATA.md；docs/VALIDATION.md

@@ -13,6 +13,8 @@ const DENSE_ARMOUR := "简并态装甲"
 const NUMBER_FORMAT := preload("res://scripts/number_format.gd")
 const HIGHTECH_SLOTS_PER_PAGE := 3
 const HIGHTECH_MIN_SLOTS := 6
+const WEAPON_KEYS := ["laser", "missile", "cannon"]
+const DEFENSE_KEYS := ["armour", "shield"]
 var db: ShipDatabase
 var profile: Dictionary
 var state: State = State.MAIN_MENU
@@ -46,6 +48,7 @@ var hightech_save_elapsed := 0.0
 var resource_samples: Array[Dictionary] = []
 var offline_rewards: Dictionary = {}
 var auto_gen_elapsed := 0.0
+var charge_resources_dirty := false
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
@@ -57,10 +60,51 @@ func _init(database: ShipDatabase, persist := true) -> void:
 		advance_charge(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		advance_hightech(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		save_progress()
+		charge_resources_dirty = false
 	reset_player()
 
 func fresh_profile() -> Dictionary:
-	return {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "levels":{"armour":1,"shield":1,"laser":1,"missile":1,"cannon":1}, "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "hightechLevels":{}, "hightechResearch":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var selected := first_ship()
+	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "levels":{"armour":1,"shield":1,"laser":1,"missile":1,"cannon":1}, "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	profile.loadout = default_loadout(selected, profile.unlocked)
+	return profile
+
+func first_ship() -> String:
+	return str(db.ships.keys()[0]) if not db.ships.is_empty() else "Frigate"
+
+func ship_unlocked(key: String) -> bool:
+	var row := db.ship(key)
+	var gate := int(row.get("unlock", 0))
+	return not row.is_empty() and (gate == 0 or profile.cleared.has(gate))
+
+func default_loadout(key: String, unlocked: Array) -> Dictionary:
+	var row := db.ship(key)
+	var weapons: Array = []
+	var defence: Array = []
+	for i in range(int(row.get("weaponSlots", 0))):
+		weapons.append({"key":"", "level":1})
+	for i in range(int(row.get("defenseSlots", 0))):
+		defence.append({"key":"", "level":1})
+	for equip_key in unlocked:
+		if WEAPON_KEYS.has(str(equip_key)):
+			var empty := weapons.find_custom(func(entry):return str(entry.key).is_empty())
+			if empty >= 0:
+				weapons[empty].key = str(equip_key)
+		elif DEFENSE_KEYS.has(str(equip_key)):
+			var empty_defence := defence.find_custom(func(entry):return str(entry.key).is_empty())
+			if empty_defence >= 0:
+				defence[empty_defence].key = str(equip_key)
+	return {"weapons":weapons, "defence":defence}
+
+func empty_loadout(key: String) -> Dictionary:
+	var row := db.ship(key)
+	var weapons: Array = []
+	var defence: Array = []
+	for i in range(int(row.get("weaponSlots", 0))):
+		weapons.append({"key":"", "level":1})
+	for i in range(int(row.get("defenseSlots", 0))):
+		defence.append({"key":"", "level":1})
+	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
@@ -100,6 +144,17 @@ func load_progress() -> void:
 			profile.guardStage = int(guard_stage)
 			profile.guardIndex = int(saved_index)
 			profile.guardDistance = float(saved_distance)
+	var saved_ship := str(raw.get("selectedShip", first_ship()))
+	profile.selectedShip = saved_ship if ship_unlocked(saved_ship) else first_ship()
+	profile.loadout = default_loadout(profile.selectedShip, profile.unlocked)
+	if raw.get("loadout") is Dictionary:
+		profile.loadout = raw.loadout.duplicate(true)
+	else:
+		for key in EQUIPMENT:
+			var legacy_entry := first_equipment_entry(key)
+			if not legacy_entry.is_empty():
+				legacy_entry.level = clampi(int(profile.levels.get(key, 1)), 1, db.max_equipment_level(key))
+	ensure_loadout()
 	load_hightech(raw)
 	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
@@ -122,6 +177,10 @@ func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
 
 func load_hightech(raw: Dictionary) -> void:
+	raw = raw.duplicate(true)
+	if int(raw.get("hightechVersion",0)) != 2:
+		for field in ["hightechLevels","hightechResearch","scientists","scientistAssignments","techPoints","furnaceElapsed","hightechDrops"]:
+			raw.erase(field)
 	if raw.get("hightechOrder") is Array:
 		profile.hightechOrder = raw.hightechOrder.filter(func(key):return key is String)
 	for field in ["hightechSavedAt", "furnaceElapsed", "furnaceIncomePeak"]:
@@ -132,12 +191,17 @@ func load_hightech(raw: Dictionary) -> void:
 			var value = raw.hightechLevels.get(key, 0)
 			if nonnegative_number(value) and float(value) == floorf(float(value)):
 				profile.hightechLevels[key] = int(value)
-	if raw.get("hightechResearch") is Dictionary:
-		# Preserve already-started work if the configured concurrency is later reduced.
-		for key in raw.hightechResearch:
-			var job = raw.hightechResearch[key]
-			if db.data.get("hightech", {}).has(key) and job is Dictionary and nonnegative_number(job.get("remaining")) and nonnegative_number(job.get("duration")) and float(job.remaining) <= float(job.duration):
-				profile.hightechResearch[key] = {"remaining":float(job.remaining), "duration":float(job.duration), "active":job.get("active", true) == true}
+	if nonnegative_number(raw.get("scientists")):
+		profile.scientists = int(raw.scientists)
+	var available := int(profile.scientists)
+	for key in db.data.get("hightech", {}):
+		var count = raw.get("scientistAssignments", {}).get(key,0) if raw.get("scientistAssignments") is Dictionary else 0
+		if nonnegative_number(count) and hightech_unlocked(key):
+			profile.scientistAssignments[key] = mini(int(count),available)
+			available -= int(profile.scientistAssignments[key])
+		var points = raw.get("techPoints", {}).get(key,0) if raw.get("techPoints") is Dictionary else 0
+		if nonnegative_number(points):
+			profile.techPoints[key] = float(points)
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
 			if sample is Dictionary and nonnegative_number(sample.get("time")) and nonnegative_number(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
@@ -159,6 +223,30 @@ func rebuild_unlocks() -> void:
 	for key in EQUIPMENT:
 		if db.unlock_level(key) == 0 or profile.cleared.has(db.unlock_level(key)):
 			profile.unlocked.append(key)
+	if not ship_unlocked(str(profile.get("selectedShip", first_ship()))):
+		profile.selectedShip = first_ship()
+	ensure_loadout()
+
+func ensure_loadout() -> void:
+	var row := db.ship(str(profile.get("selectedShip", first_ship())))
+	if row.is_empty():
+		profile.selectedShip = first_ship()
+		row = db.ship(profile.selectedShip)
+	var base := default_loadout(profile.selectedShip, profile.unlocked)
+	var saved: Dictionary = profile.get("loadout", {})
+	for category in ["weapons", "defence"]:
+		var allowed: Array = WEAPON_KEYS if category == "weapons" else DEFENSE_KEYS
+		var count := int(row.get("weaponSlots", 0)) if category == "weapons" else int(row.get("defenseSlots", 0))
+		var entries: Array = saved.get(category, []) if saved.get(category, []) is Array else []
+		var normalized: Array = []
+		for i in range(count):
+			var entry = entries[i] if i < entries.size() and entries[i] is Dictionary else base[category][i]
+			var equip_key := str(entry.get("key", "")) if entry is Dictionary else ""
+			var level := int(entry.get("level", 1)) if entry is Dictionary and (entry.get("level", 1) is int or entry.get("level", 1) is float) else 1
+			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
+				equip_key = ""
+			normalized.append({"key":equip_key, "level":clampi(level, 1, db.max_equipment_level(equip_key)) if not equip_key.is_empty() else 1})
+		profile.loadout[category] = normalized
 
 func save_progress() -> void:
 	if not save_enabled:
@@ -181,8 +269,196 @@ func save_progress() -> void:
 	if err != OK:
 		event.emit("save_error", {})
 
+func first_equipment_entry(key: String) -> Dictionary:
+	for category in ["weapons", "defence"]:
+		for entry in profile.get("loadout", {}).get(category, []):
+			if str(entry.get("key", "")) == key:
+				return entry
+	return {}
+
+func loadout_entries(category: String) -> Array:
+	ensure_loadout()
+	return profile.loadout.get(category, [])
+
+func weapon_entries() -> Array:
+	var entries := loadout_entries("weapons")
+	for key in WEAPON_KEYS:
+		sync_legacy_level(key)
+	return entries
+
+func defense_entries() -> Array:
+	var entries := loadout_entries("defence")
+	for key in DEFENSE_KEYS:
+		sync_legacy_level(key)
+	return entries
+
 func stat(key: String) -> float:
-	return equipment_stat(key, int(profile.levels[key]))
+	ensure_loadout()
+	sync_legacy_level(key)
+	var total := 0.0
+	for category in ["weapons", "defence"]:
+		for entry in profile.loadout.get(category, []):
+			if str(entry.get("key", "")) == key:
+				total += equipment_stat(key, int(entry.level))
+	return total
+
+func sync_legacy_level(key: String) -> void:
+	var legacy_entry := first_equipment_entry(key)
+	if not legacy_entry.is_empty() and int(legacy_entry.level) != int(profile.levels.get(key, 1)):
+		legacy_entry.level = clampi(int(profile.levels.get(key, 1)), 1, db.max_equipment_level(key))
+
+func ship_movement() -> float:
+	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
+
+func ship_name() -> String:
+	return str(db.ship(str(profile.get("selectedShip", first_ship()))).get("des", profile.get("selectedShip", first_ship())))
+
+func slot_entry(category: String, index: int) -> Dictionary:
+	var entries := loadout_entries(category)
+	return entries[index] if index >= 0 and index < entries.size() else {}
+
+func slot_id(category: String, index: int) -> String:
+	return "%s_%d" % [category, index]
+
+func first_weapon_index(key: String) -> int:
+	for index in range(weapon_entries().size()):
+		if str(weapon_entries()[index].key) == key:
+			return index
+	return -1
+
+func slot_upgrade_cost(category: String, index: int, levels := 1) -> Dictionary:
+	var entry := slot_entry(category, index)
+	return {} if entry.is_empty() or str(entry.key).is_empty() else upgrade_costs_for_level(str(entry.key), int(entry.level), levels)
+
+func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictionary:
+	var total := {}
+	if levels <= 0 or current + levels > db.max_equipment_level(key):
+		return total
+	for level in range(current + 1, current + levels + 1):
+		var cost := upgrade_cost_for_level(key, level)
+		for id in cost:
+			total[id] = int(total.get(id, 0)) + int(cost[id])
+	return total
+
+func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
+	var entry := slot_entry(category, index)
+	if entry.is_empty() or str(entry.key).is_empty() or not profile.unlocked.has(str(entry.key)):
+		return false
+	if levels > 1 and not BULK_EQUIPMENT.has(str(entry.key)):
+		return false
+	var costs := slot_upgrade_cost(category, index, levels)
+	if costs.is_empty():
+		return false
+	for id in costs:
+		if float(profile.resources.get(id, 0)) < float(costs[id]):
+			return false
+	return true
+
+func refund_equipment(key: String, level: int) -> void:
+	for target_level in range(2, level + 1):
+		for id in upgrade_cost_for_level(key, target_level):
+			profile.resources[id] = float(profile.resources.get(id, 0)) + float(upgrade_cost_for_level(key, target_level)[id])
+
+func equipment_limit() -> int:
+	return int(db.ship(str(profile.selectedShip)).get("sameEquipmentLimit", 1))
+
+func equipment_count(key: String) -> int:
+	var count := 0
+	for category in ["weapons", "defence"]:
+		for entry in profile.loadout.get(category, []):
+			if str(entry.get("key", "")) == key:
+				count += 1
+	return count
+
+func valid_loadout(key: String, loadout: Dictionary) -> bool:
+	if not ship_unlocked(key):
+		return false
+	var row := db.ship(key)
+	var counts := {}
+	for category in ["weapons", "defence"]:
+		var allowed: Array = WEAPON_KEYS if category == "weapons" else DEFENSE_KEYS
+		var expected := int(row.get("weaponSlots", 0)) if category == "weapons" else int(row.get("defenseSlots", 0))
+		var entries = loadout.get(category, [])
+		if not entries is Array or entries.size() != expected:
+			return false
+		for entry in entries:
+			if not entry is Dictionary:
+				return false
+			var equip_key := str(entry.get("key", ""))
+			if equip_key.is_empty():
+				continue
+			if not allowed.has(equip_key) or not profile.unlocked.has(equip_key):
+				return false
+			counts[equip_key] = int(counts.get(equip_key, 0)) + 1
+	for equip_key in counts:
+		if int(counts[equip_key]) > int(row.get("sameEquipmentLimit", 1)):
+			return false
+	return true
+
+func equip_slot(category: String, index: int, key: String) -> bool:
+	if category not in ["weapons", "defence"]:
+		return false
+	var allowed: Array = WEAPON_KEYS if category == "weapons" else DEFENSE_KEYS
+	var entries := loadout_entries(category)
+	if index < 0 or index >= entries.size() or not allowed.has(key) or not profile.unlocked.has(key):
+		return false
+	if not str(entries[index].key).is_empty():
+		return false
+	if equipment_count(key) >= equipment_limit():
+		return false
+	var old_total_armour := stat("armour")
+	var old_total_shield := stat("shield")
+	profile.loadout[category][index] = {"key":key, "level":1}
+	profile.levels[key] = int(first_equipment_entry(key).level)
+	if category == "defence" and player.has("armour"):
+		player.armour = clampf(player.armour + stat("armour") - old_total_armour, 0, stat("armour"))
+		player.shield = clampf(player.shield + max_shield() - old_total_shield, 0, max_shield())
+	if category == "weapons":
+		cooldowns.erase(slot_id(category, index))
+	save_progress()
+	return true
+
+func unequip_slot(category: String, index: int) -> bool:
+	if category not in ["weapons", "defence"]:
+		return false
+	var entry := slot_entry(category, index)
+	if entry.is_empty() or str(entry.key).is_empty():
+		return false
+	var key := str(entry.key)
+	refund_equipment(key, int(entry.level))
+	profile.loadout[category][index] = {"key":"", "level":1}
+	# The legacy alias must follow the remaining first instance, not overwrite it.
+	profile.levels[key] = int(first_equipment_entry(key).get("level", 1))
+	cooldowns.erase(slot_id(category, index))
+	if category == "defence" and player.has("armour"):
+		player.armour = minf(player.armour, stat("armour"))
+		player.shield = minf(player.shield, max_shield())
+	save_progress()
+	return true
+
+func refund_all_equipment() -> void:
+	for category in ["weapons", "defence"]:
+		for entry in profile.loadout.get(category, []):
+			if not str(entry.get("key", "")).is_empty():
+				refund_equipment(str(entry.key), int(entry.level))
+
+func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
+	if key == str(profile.get("selectedShip", "")) or not ship_unlocked(key):
+		return false
+	var next_loadout := default_loadout(key, profile.unlocked) if selected_loadout.is_empty() else selected_loadout.duplicate(true)
+	if not valid_loadout(key, next_loadout):
+		return false
+	refund_all_equipment()
+	profile.selectedShip = key
+	profile.loadout = empty_loadout(key)
+	for category in ["weapons", "defence"]:
+		for index in range(next_loadout[category].size()):
+			var equip_key := str(next_loadout[category][index].get("key", ""))
+			profile.loadout[category][index] = {"key":equip_key, "level":1}
+	for equip_key in EQUIPMENT:
+		profile.levels[equip_key] = 1
+	profile.loop = false
+	return start(1, false)
 
 func equipment_stat(key: String, level: int) -> float:
 	var row := db.equip(key, level)
@@ -318,7 +594,10 @@ func advance_charge_step(dt: float) -> void:
 				break
 			for key in satisfied:
 				waiting.erase(key)
+		var previous_balance := float(profile.resources.get(id,0))
 		profile.resources[id] = maxf(0,balance)
+		if not is_equal_approx(previous_balance,float(profile.resources[id])):
+			charge_resources_dirty = true
 		for key in allocations:
 			var row: Dictionary = db.data.charge[key]
 			var job := charge_job(key)
@@ -371,15 +650,17 @@ func swap_hightech_slots(source: int, target: int) -> bool:
 	save_progress()
 	return true
 
-func hightech_duration(key: String) -> float:
+func hightech_required(key: String) -> float:
 	var row: Dictionary = db.data.hightech[key]
 	# D2 gives a linear series: 10, 12, 14, ...; target level is current + 1.
-	return roundf(float(row.timeCostBase) * (1.0 + float(row.timeCostMutiple) * hightech_level(key)))
+	return roundf(float(row.tpCostBase) * (1.0 + float(row.tpCostMutiple) * hightech_level(key)))
 
 func description_number(value: float) -> String:
-	return ("%.8f" % value).rstrip("0").trim_suffix(".") if value != roundf(value) else str(int(value))
+	return NUMBER_FORMAT.precise(value)
 
 func hightech_description(key: String, now := -1.0) -> String:
+	if hightech_level(key)==0:
+		return "未研发，无效果"
 	var row: Dictionary = db.data.hightech[key]
 	return format_description(row,str(row.get("description", "")),hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
 
@@ -442,29 +723,90 @@ func format_description(row: Dictionary, template: String, level: int, minute_in
 		result = result.substr(0,token.get_start()) + token_replacement + result.substr(token.get_end())
 	return result
 
+func scientist_cost(offset := 0) -> Dictionary:
+	var parts := str(db.config.scientistCost).split(",")
+	var multiplier := pow(float(parts[0]),int(profile.scientists)+offset)
+	var costs := {}
+	for entry in Array(parts).slice(1):
+		var pair := str(entry).split("|")
+		costs[pair[0]] = roundf(float(pair[1])*multiplier)
+	return costs
+
+func scientist_purchase(amount := 1) -> Dictionary:
+	var total := {}
+	var count := 0
+	if not db.data.hightech.keys().any(func(key):return hightech_unlocked(key)):
+		return {"count":0,"costs":total}
+	while amount < 0 or count < amount:
+		var costs := scientist_cost(count)
+		var paid := false
+		for id in costs:
+			paid = paid or float(costs[id]) > 0
+			if not is_finite(float(costs[id])) or float(total.get(id,0))+float(costs[id]) > float(profile.resources.get(id,0)):
+				return {"count":count if amount < 0 else 0,"costs":total}
+		# An unbounded free tail has no finite MAX purchase.
+		if amount < 0 and not paid:
+			return {"count":count,"costs":total}
+		for id in costs:
+			total[id] = float(total.get(id,0))+float(costs[id])
+		count += 1
+	return {"count":count,"costs":total}
+
+func can_generate_scientist(amount := 1) -> bool:
+	return int(scientist_purchase(amount).count)>0
+
+func generate_scientist(amount := 1) -> bool:
+	var purchase := scientist_purchase(amount)
+	if int(purchase.count)<=0:
+		return false
+	for id in purchase.costs:
+		profile.resources[id] -= purchase.costs[id]
+	profile.scientists += int(purchase.count)
+	save_progress()
+	event.emit("scientists_changed", {})
+	return true
+
+func distribute_scientists() -> bool:
+	var keys := hightech_slots().filter(func(key):return not str(key).is_empty())
+	if keys.is_empty() or int(profile.scientists)<=0:
+		return false
+	profile.scientistAssignments.clear()
+	var total := int(profile.scientists)
+	for i in range(keys.size()):
+		profile.scientistAssignments[keys[i]] = total/keys.size() + (1 if i < total%keys.size() else 0)
+	save_progress()
+	event.emit("scientists_changed", {})
+	return true
+
+func assigned_scientists(key: String) -> int:
+	return int(profile.scientistAssignments.get(key,0))
+
+func idle_scientists() -> int:
+	var count := int(profile.scientists)
+	for key in profile.scientistAssignments:
+		count -= assigned_scientists(key)
+	return count
+
 func can_research(key: String) -> bool:
-	return hightech_unlocked(key) and not active_research().has(key) and int(db.config.get("hightechLimit", 0)) > 0
+	return hightech_unlocked(key) and idle_scientists() > 0
+
+func assign_scientist(key: String, delta: int) -> bool:
+	if not hightech_unlocked(key) or delta == 0 or (delta > 0 and idle_scientists() <= 0) or (delta < 0 and assigned_scientists(key) <= 0):
+		return false
+	profile.scientistAssignments[key] = assigned_scientists(key)+clampi(delta,-assigned_scientists(key),idle_scientists())
+	save_progress()
+	event.emit("scientists_changed", {})
+	return true
+
+func research_rate(key: String) -> float:
+	var count := assigned_scientists(key)
+	if count <= 0 or not hightech_unlocked(key):
+		return 0.0
+	var base := float(db.config.techPointGet)*count
+	return roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base
 
 func active_research() -> Array:
-	return profile.hightechResearch.keys().filter(func(key):return profile.hightechResearch[key].get("active", true))
-
-func research(key: String, replace_key := "") -> bool:
-	if not can_research(key):
-		return false
-	var active := active_research()
-	if active.size() >= int(db.config.hightechLimit):
-		if replace_key.is_empty() and active.size() == 1:
-			replace_key = str(active[0])
-		if not active.has(replace_key):
-			return false
-		profile.hightechResearch[replace_key].active = false
-	if not profile.hightechResearch.has(key):
-		var duration := hightech_duration(key)
-		profile.hightechResearch[key] = {"remaining":duration,"duration":duration}
-	profile.hightechResearch[key].active = true
-	save_progress()
-	event.emit("research", {"key":key})
-	return true
+	return db.data.hightech.keys().filter(func(key):return research_rate(key)>0)
 
 func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if real_dt < 0:
@@ -472,26 +814,49 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if end_time < 0:
 		end_time = Time.get_unix_time_from_system()
 	var wall_per_step := real_dt / dt if dt > 0 else 1.0
-	# Split at completion boundaries, so a newly completed furnace only runs afterward.
-	var remaining := dt
-	while true:
+	# Huge point budgets cannot be settled one level/event at a time.
+	# Ignore per-level rounding and use the linear cost series in this regime.
+	var bulk := active_research().any(func(key):return float(profile.techPoints.get(key,0))+research_rate(key)*dt >= 1e20)
+	if bulk:
+		for key in active_research():
+			advance_hightech_bulk(key,dt)
+		# At this scale furnace output uses the end-of-step level (approximate).
+		advance_furnace(dt,end_time,wall_per_step)
+		return
+	# Keep furnace activation at the exact research completion boundary.
+	var remaining := maxf(dt,0)
+	while remaining > 0:
 		var step := remaining
 		for key in active_research():
-			var job: Dictionary = profile.hightechResearch[key]
-			step = minf(step, float(job.remaining))
-		advance_furnace(step, end_time - (remaining - step) * wall_per_step, wall_per_step)
+			step = minf(step,maxf(0,hightech_required(key)-float(profile.techPoints.get(key,0)))/research_rate(key))
+		advance_furnace(step,end_time-(remaining-step)*wall_per_step,wall_per_step)
 		remaining -= step
 		for key in active_research():
-			var job: Dictionary = profile.hightechResearch[key]
-			job.remaining = maxf(0, float(job.remaining) - step)
-			if job.remaining <= 0:
-				profile.hightechLevels[key] = hightech_level(key) + 1
-				job.duration = hightech_duration(key)
-				job.remaining = job.duration
-				# Armour research changes the maximum only; do not heal current armour.
+			profile.techPoints[key] = float(profile.techPoints.get(key,0))+research_rate(key)*step
+			var required := hightech_required(key)
+			if float(profile.techPoints[key])+0.00000001 >= required:
+				profile.techPoints[key] = maxf(0,float(profile.techPoints[key])-required)
+				profile.hightechLevels[key] = hightech_level(key)+1
 				event.emit("hightech_complete", {"key":key})
-		if remaining <= 0:
-			break
+
+func advance_hightech_bulk(key: String, dt: float) -> void:
+	var points := minf(float(profile.techPoints.get(key,0))+research_rate(key)*dt,1e308)
+	var row: Dictionary = db.data.hightech[key]
+	var level := hightech_level(key)
+	var growth := float(row.tpCostBase)*float(row.tpCostMutiple)
+	var first := float(row.tpCostBase)+growth*level
+	var linear := first-growth*0.5
+	# Stable quadratic root; sqrt factors avoid overflowing growth * points.
+	var root := absf(linear)
+	root = sqrt(pow(root/sqrt(maxf(points,1.0)),2)+2.0*growth)*sqrt(maxf(points,1.0))
+	var count := floorf(points/(linear*0.5+root*0.5)) if growth > 0 else floorf(points/maxf(1,roundf(first)))
+	# Leave headroom for integer conversion and subsequent level increments.
+	count = clampf(count,0,maxf(0,9e18-float(level)))
+	var spent := count*(first+growth*(count-1)*0.5) if growth > 0 else count*maxf(1,roundf(first))
+	profile.techPoints[key] = maxf(0,points-spent)
+	if count > 0:
+		profile.hightechLevels[key] = level+int(count)
+		event.emit("hightech_complete", {"key":key})
 
 func prune_resource_samples(now: float) -> void:
 	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
@@ -583,10 +948,16 @@ func reset_player() -> void:
 func change_state(next: State) -> void:
 	if next == State.TRAVEL:
 		cooldowns.clear()
-		for key in profile.unlocked:
-			var cd := float(db.equip(key,int(profile.levels[key])).cd)
+		for index in range(weapon_entries().size()):
+			var entry: Dictionary = weapon_entries()[index]
+			var key := str(entry.key)
+			if key.is_empty():
+				continue
+			var cd := float(db.equip(key,int(entry.level)).cd)
 			if cd > 0:
-				cooldowns[key] = cd
+				cooldowns[slot_id("weapons", index)] = cd
+				if first_weapon_index(key) == index:
+					cooldowns[key] = cd
 	state = next
 	event.emit("state", {"state":state})
 
@@ -627,7 +998,7 @@ func guard_interval() -> float:
 	var encounters: Array = db.levels[stage-1].groups
 	var previous := 0.0 if guard_index == 0 else float(encounters[guard_index-1].position)
 	var gap := float(encounters[guard_index].position) * float(db.levels[stage-1].length) - previous * float(db.levels[stage-1].length)
-	return gap / float(db.config.movement) if float(db.config.movement) > 0 else INF
+	return gap / ship_movement() if ship_movement() > 0 else INF
 
 func respawn_guard() -> void:
 	guard_elapsed = 0
@@ -709,7 +1080,7 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.uid = uid
 		enemy.slot = slot
 		enemy.x = 1130.0
-		enemy.y = 198.0 + (slot + (float(row.size) - 1.0) / 2.0) * 44.0
+		enemy.y = 198.0 + slot * 44.0
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
 		enemy.max_hp = enemy.hp
 		enemy.res_ratio = ratio("resRatio")
@@ -753,8 +1124,8 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 				return not a_resists
 		if a.x != b.x:
 			return a.x < b.x
-		var ac := absf(float(a.slot) + (float(a.size)-1)/2 - 4.5)
-		var bc := absf(float(b.slot) + (float(b.size)-1)/2 - 4.5)
+		var ac := absf(float(a.slot) - 4.5)
+		var bc := absf(float(b.slot) - 4.5)
 		return ac < bc if ac != bc else a.slot < b.slot)
 	return alive
 
@@ -770,18 +1141,26 @@ func enemy_weapon_offset(enemy: Dictionary, equipment_index: int) -> Vector2:
 			if i < equipment_index:
 				ordinal += 1
 			count += 1
+	var visuals = preload("res://scripts/ship_visuals.gd")
+	var dimensions: Vector2 = visuals.CANVAS * visuals.enemy_scale_for(enemy)
+	# fire() adds -45; compensate so all sizes launch from their left hull edge.
+	var launch_x := 45.0 - dimensions.x * 0.45
 	if count <= 1:
-		return Vector2.ZERO
+		return Vector2(launch_x,0)
 	# Spread identical mounts across the visible hull, including its wings.
-	var half_span := 39.0 * (1.4 if enemy.boss else 0.53)
-	return Vector2(0, lerpf(-half_span, half_span, float(ordinal) / float(count - 1)))
+	var half_span := dimensions.y * 0.3
+	return Vector2(launch_x, lerpf(-half_span, half_span, float(ordinal) / float(count - 1)))
+
+func player_weapon_offset(index: int) -> Vector2:
+	var visuals = preload("res://scripts/ship_visuals.gd")
+	return visuals.muzzle(str(profile.selectedShip), index) * visuals.scale_for(db.ship(str(profile.selectedShip)))
 
 func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
-	projectiles.append({"x":float(source.x) + (-45 if hostile else 70) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
+	projectiles.append({"x":float(source.x) + (-45 if hostile else 0) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
 	shot.direction = Vector2(target.x - shot.x, target.y - shot.y).normalized()
-	event.emit("fire", {"x":source.x,"y":source.y,"type":int(weapon.dmgtype)})
+	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype)})
 
 func missile_target(candidates: Array[Dictionary]) -> Dictionary:
 	for candidate in candidates:
@@ -924,43 +1303,42 @@ func upgrade_cost_for_level(key: String, level: int) -> Dictionary:
 	return cost
 
 func upgrade_cost(key: String, levels := 1) -> Dictionary:
-	return upgrade_cost_for_level(key, int(profile.levels[key]) + 1) if levels == 1 else upgrade_costs(key, levels)
+	sync_legacy_level(key)
+	var entry := first_equipment_entry(key)
+	var current := int(entry.level) if not entry.is_empty() else int(profile.levels.get(key, 1))
+	return upgrade_cost_for_level(key, current + 1) if levels == 1 else upgrade_costs_for_level(key, current, levels)
 
 func upgrade_costs(key: String, levels: int) -> Dictionary:
-	var total := {}
-	if levels <= 0 or not profile.levels.has(key):
-		return total
-	var current := int(profile.levels[key])
-	if current + levels > db.max_equipment_level(key):
-		return total
-	for level in range(current + 1, current + levels + 1):
-		var cost := upgrade_cost_for_level(key, level)
-		for id in cost:
-			total[id] = int(total.get(id, 0)) + int(cost[id])
-	return total
+	sync_legacy_level(key)
+	var entry := first_equipment_entry(key)
+	var current := int(entry.level) if not entry.is_empty() else int(profile.levels.get(key, 1))
+	return upgrade_costs_for_level(key, current, levels)
 
 func can_upgrade_amount(key: String, levels: int) -> bool:
-	if levels <= 0 or not profile.unlocked.has(key) or not profile.levels.has(key):
+	sync_legacy_level(key)
+	var entry := first_equipment_entry(key)
+	if entry.is_empty():
 		return false
-	if levels > 1 and not BULK_EQUIPMENT.has(key):
-		return false
-	if int(profile.levels[key]) + levels > db.max_equipment_level(key):
-		return false
-	var costs := upgrade_costs(key, levels)
-	for id in costs:
-		if float(profile.resources.get(id, 0)) < float(costs[id]):
-			return false
-	return true
+	return can_upgrade_slot("weapons" if WEAPON_KEYS.has(key) else "defence", (weapon_entries() if WEAPON_KEYS.has(key) else defense_entries()).find(entry), levels)
 
 func can_upgrade(key: String, levels := 1) -> bool:
 	return can_upgrade_amount(key, levels)
 
 func max_upgrade_amount(key: String) -> int:
-	if not BULK_EQUIPMENT.has(key) or not profile.unlocked.has(key) or not profile.levels.has(key):
+	sync_legacy_level(key)
+	var entry := first_equipment_entry(key)
+	if entry.is_empty():
+		return 0
+	return max_upgrade_amount_slot("weapons" if WEAPON_KEYS.has(key) else "defence", (weapon_entries() if WEAPON_KEYS.has(key) else defense_entries()).find(entry))
+
+func max_upgrade_amount_slot(category: String, index: int) -> int:
+	var entry := slot_entry(category,index)
+	var key := str(entry.get("key", ""))
+	if entry.is_empty() or key.is_empty() or not BULK_EQUIPMENT.has(key) or not profile.unlocked.has(key):
 		return 0
 	var available: Dictionary = profile.resources.duplicate()
 	var amount := 0
-	var current := int(profile.levels[key])
+	var current := int(entry.level)
 	for level in range(current + 1, db.max_equipment_level(key) + 1):
 		var costs := upgrade_cost_for_level(key, level)
 		var affordable := true
@@ -976,20 +1354,36 @@ func max_upgrade_amount(key: String) -> int:
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
-	if not can_upgrade_amount(key, levels):
+	sync_legacy_level(key)
+	var category := "weapons" if WEAPON_KEYS.has(key) else "defence"
+	var entries := weapon_entries() if category == "weapons" else defense_entries()
+	var index := -1
+	for i in range(entries.size()):
+		if str(entries[i].key) == key:
+			index = i
+			break
+	return upgrade_slot(category, index, levels)
+
+func upgrade_slot(category: String, index: int, levels := 1) -> bool:
+	if not can_upgrade_slot(category, index, levels):
 		return false
-	var costs := upgrade_costs(key, levels)
+	var entry := slot_entry(category, index)
+	var key := str(entry.key)
+	var costs := slot_upgrade_cost(category, index, levels)
 	for id in costs:
 		profile.resources[id] -= costs[id]
-	var before := stat(key)
-	profile.levels[key] += levels
+	var before := equipment_stat(key, int(entry.level))
+	profile.loadout[category][index].level = int(entry.level) + levels
+	var after := equipment_stat(key, int(profile.loadout[category][index].level))
+	if first_equipment_entry(key).get("level", 0) == int(profile.loadout[category][index].level):
+		profile.levels[key] = int(profile.loadout[category][index].level)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if key == "armour" and state != State.RETREAT:
-		player.armour += stat(key) - before
+		player.armour += after - before
 	elif key == "shield" and state != State.RETREAT:
-		player.shield += stat(key) - before
+		player.shield += after - before
 	save_progress()
-	event.emit("upgrade", {"key":key,"levels":levels,"cost":costs})
+	event.emit("upgrade", {"key":key,"slot":slot_id(category,index),"levels":levels,"cost":costs})
 	return true
 
 func upgrade_max(key: String) -> bool:
@@ -1008,6 +1402,9 @@ func tick(dt: float) -> void:
 		return
 	advance_auto_gen(dt)
 	advance_charge(dt)
+	if charge_resources_dirty:
+		charge_resources_dirty = false
+		save_progress()
 	advance_hightech(dt, dt / maxf(speed, 0.001))
 	hightech_save_elapsed += dt / maxf(speed, 0.001)
 	if hightech_save_elapsed >= 5.0:
@@ -1052,7 +1449,8 @@ func tick(dt: float) -> void:
 	if not is_active():
 		return
 	since_hit += dt
-	var shield := db.equip("shield", int(profile.levels.shield))
+	var shield_entry := first_equipment_entry("shield")
+	var shield := db.equip("shield", int(shield_entry.level)) if not shield_entry.is_empty() else db.equip("shield", 1)
 	if since_hit >= float(shield.para3):
 		player.shield = minf(max_shield(), player.shield + max_shield() * float(shield.para2) * dt)
 	if state == State.TRAVEL:
@@ -1063,17 +1461,25 @@ func tick(dt: float) -> void:
 			retreat_boss_pending = false
 			spawn_group(true)
 			return
-		distance += float(db.config.movement) * dt
+		distance += ship_movement() * dt
 		var level: Dictionary = db.levels[stage - 1]
 		if group_index < level.groups.size() and distance >= float(level.groups[group_index].position)*float(level.length):
 			spawn_group()
 		return
-	for key in profile.unlocked:
-		var weapon := db.equip(key, int(profile.levels[key]))
+	for index in range(weapon_entries().size()):
+		var entry: Dictionary = weapon_entries()[index]
+		var key := str(entry.key)
+		if key.is_empty():
+			continue
+		var weapon := db.equip(key, int(entry.level))
 		if float(weapon.cd) <= 0:
 			continue
-		cooldowns[key] = maxf(0, float(cooldowns.get(key, 0)) - dt)
-		if cooldowns[key] <= 0:
+		var id := slot_id("weapons", index)
+		var remaining := float(cooldowns.get(key, cooldowns.get(id, float(weapon.cd)))) if first_weapon_index(key) == index else float(cooldowns.get(id, float(weapon.cd)))
+		cooldowns[id] = maxf(0, remaining - dt)
+		if first_weapon_index(key) == index:
+			cooldowns[key] = cooldowns[id]
+		if cooldowns[id] <= 0:
 			var candidates := targets(int(weapon.dmgtype))
 			var count := int(weapon.para1) if key == "missile" else 1
 			for i in range(count):
@@ -1082,10 +1488,13 @@ func tick(dt: float) -> void:
 				var target := candidates[i % candidates.size()] if key == "missile" else candidates[0]
 				var launch_offset := Vector2.ZERO
 				if key == "missile" and count > 1:
-					launch_offset.y = (float(i) - float(count - 1) / 2.0) * 12.0
-				fire(player, target, weapon, stat(key), false, key, launch_offset)
+					# Keep the volley inside its pod instead of outside the hull.
+					launch_offset.y = (float(i) / float(count - 1) - 0.5) * preload("res://scripts/ship_visuals.gd").module_width(str(profile.selectedShip)) * preload("res://scripts/ship_visuals.gd").scale_for(db.ship(str(profile.selectedShip))) * 0.2
+				fire(player, target, weapon, equipment_stat(key, int(entry.level)), false, key, launch_offset + player_weapon_offset(index))
 			if count > 0 and not candidates.is_empty():
-				cooldowns[key] = float(weapon.cd)
+				cooldowns[id] = float(weapon.cd)
+				if first_weapon_index(key) == index:
+					cooldowns[key] = float(weapon.cd)
 	for enemy in enemies:
 		if enemy.hp <= 0:
 			continue

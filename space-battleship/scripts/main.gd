@@ -16,7 +16,29 @@ const PROJECTILE_TEXTURES := {
 }
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
+const SLOT_TEXTURES := {
+	"laser":preload("res://assets/weapons/icons/laser-emitter.png"),
+	"cannon":preload("res://assets/weapons/icons/cannon-turret.png"),
+	"missile":preload("res://assets/weapons/icons/missile-pod.png")
+}
+const SHIP_TEXTURES := {
+	"Frigate":preload("res://assets/ships/player/player-scout-3slot.png"),
+	"Destroyer":preload("res://assets/ships/player/player-interceptor-4slot.png"),
+	"Cruiser":preload("res://assets/ships/player/player-cruiser-5slot.png"),
+	"Battleship":preload("res://assets/ships/player/player-battleship-6slot.png"),
+	"Heavy_Battleship":preload("res://assets/ships/player/player-dreadnought-8slot.png")
+}
 const NUMBER_FORMAT := preload("res://scripts/number_format.gd")
+const ENEMY_SHIP_TEXTURES := [
+	preload("res://assets/ships/enemy/enemy-scout-1slot.png"),
+	preload("res://assets/ships/enemy/enemy-medium-1slot.png"),
+	preload("res://assets/ships/enemy/enemy-medium-2slot.png"),
+	preload("res://assets/ships/enemy/enemy-large-4slot.png"),
+	preload("res://assets/ships/enemy/enemy-large-6slot.png"),
+	preload("res://assets/ships/enemy/enemy-super-8slot.png")
+]
+const SHIP_VISUALS := preload("res://scripts/ship_visuals.gd")
+var module_regions: Dictionary = {}
 var db: ShipDatabase
 var game: BattleGame
 var font: SystemFont
@@ -47,9 +69,16 @@ const EQUIPMENT_PAGES := [{"title":"武器","keys":["laser","cannon","missile"]}
 var equipment_page := 0
 var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
+var ship_candidate := ""
+var ship_candidate_loadout: Dictionary = {}
 var hightech_buttons: Dictionary = {}
 var hightech_descriptions: Dictionary = {}
 var hightech_progress: Dictionary = {}
+var scientist_generate_button: Button
+var scientist_bulk_buttons: Dictionary = {}
+var scientist_assignment_buttons: Dictionary = {}
+var scientist_summary: Label
+var scientist_remove_buttons: Dictionary = {}
 var charge_cards: Dictionary = {}
 const HIGHTECH_SLOT_SCRIPT := preload("res://scripts/hightech_slot.gd")
 const HIGHTECH_CARD_SIZE := Vector2(443,112)
@@ -134,7 +163,7 @@ func _process(delta: float) -> void:
 			var step := minf(remaining, 1.0/60.0)
 			game.tick(step)
 			remaining -= step
-		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else float(db.config.movement)*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
+		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.ship_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
 		for p in particles:
 			p.life -= dt
 			p.pos += p.vel*dt
@@ -151,18 +180,22 @@ func _process(delta: float) -> void:
 	for key in upgrade_buttons:
 		var b: Button = upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = not game.can_upgrade(key)
+			b.disabled = not game.can_upgrade_slot("defence" if str(key).begins_with("defence_") else "weapons" if str(key).begins_with("weapons_") else ("weapons" if BattleGame.WEAPON_KEYS.has(str(key)) else "defence"), int(str(key).get_slice("_",1))) if str(key).contains("_") else not game.can_upgrade(str(key))
 	for key in ten_upgrade_buttons:
 		var b: Button = ten_upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = not game.can_upgrade_amount(key,10)
+			b.disabled = not game.can_upgrade_slot("defence" if str(key).begins_with("defence_") else "weapons", int(str(key).get_slice("_",1)), 10) if str(key).contains("_") else not game.can_upgrade_amount(str(key),10)
 	for key in max_upgrade_buttons:
 		var b: Button = max_upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = game.max_upgrade_amount(key) <= 0
-	for key in equipment_cooldowns:
-		var cd := float(db.equip(key,int(game.profile.levels[key])).cd)
-		equipment_cooldowns[key].size.x = 196*clampf(1.0-float(game.cooldowns.get(key,0))/maxf(cd,0.001),0,1)
+			b.disabled = game.max_upgrade_amount_slot("defence" if str(key).begins_with("defence_") else "weapons", int(str(key).get_slice("_",1))) <= 0 if str(key).contains("_") else game.max_upgrade_amount(str(key)) <= 0
+	for id in equipment_cooldowns:
+		var index := int(str(id).get_slice("_",1))
+		var entry := game.slot_entry("weapons",index)
+		var key := str(entry.get("key", ""))
+		var cd := float(db.equip(key,int(entry.get("level",1))).cd) if not key.is_empty() else 1.0
+		equipment_cooldowns[id].size.x = equipment_cooldowns[id].get_parent().size.x*clampf(1.0-float(game.cooldowns.get(id,game.cooldowns.get(key,0)))/maxf(cd,0.001),0,1)
+	refresh_scientists()
 	for key in hightech_buttons:
 		var b: Button = hightech_buttons[key]
 		b.disabled = not game.can_research(key)
@@ -211,7 +244,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			call_deferred("build_ui")
 		"hit":
 			var color := ORANGE if info.player else (CYAN if info.type == 1 else ORANGE)
-			floats.append({"pos":Vector2(info.x,info.y-36),"text":"−%s" % number(info.amount),"color":color,"life":0.9})
+			var label := "−%s" % number(info.amount)
+			floats.append({"pos":damage_text_position(Vector2(info.x,info.y-36),label),"text":label,"color":color,"life":0.9,"damage":true})
 			burst(Vector2(info.x,info.y),color,7,70)
 			if info.player:
 				shake = 3
@@ -237,6 +271,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			var levels := int(info.get("levels",1))
 			toast(NAMES[info.key] + ("升级完成" if levels == 1 else "连续升级%s级完成" % number(levels)))
 			build_ui()
+		"scientists_changed":
+			call_deferred("build_ui")
 		"research", "hightech_complete":
 			toast(str(info.key) + ("研发完成" if kind == "hightech_complete" else "开始研发"))
 			call_deferred("build_ui")
@@ -348,6 +384,11 @@ func build_ui() -> void:
 	hightech_buttons.clear()
 	hightech_descriptions.clear()
 	hightech_progress.clear()
+	scientist_remove_buttons.clear()
+	scientist_bulk_buttons.clear()
+	scientist_assignment_buttons.clear()
+	scientist_generate_button = null
+	scientist_summary = null
 	charge_cards.clear()
 	if not game.pending_unlocks.is_empty():
 		button("继续", Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
@@ -387,6 +428,29 @@ func build_ui() -> void:
 	if game.state == BattleGame.State.LEVEL_CLEAR:
 		button("立即过关",Rect2(780,302,200,46),func():game.advance_after_clear(),true)
 	button("音效：" + ("开" if sound_on else "关"),Rect2(1262,778,140,26),func():sound_on=not sound_on;build_ui())
+
+func damage_text_rect(pos: Vector2, value: String) -> Rect2:
+	return Rect2(pos-Vector2(0,font.get_ascent(18)),Vector2(font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x,font.get_height(18))).grow(3)
+
+func damage_text_position(origin: Vector2, value: String) -> Vector2:
+	var pos := origin
+	# All damage labels rise at the same speed, so separated bounds stay separated.
+	while true:
+		var bounds := damage_text_rect(pos,value)
+		var blocked := false
+		for entry in floats:
+			if entry.get("damage",false) and entry.life > 0:
+				var occupied := damage_text_rect(entry.pos,entry.text)
+				if bounds.intersects(occupied):
+					pos.y -= bounds.end.y-occupied.position.y+1
+					if pos.y < 150:
+						pos.x = occupied.end.x+4
+						pos.y = origin.y
+					blocked = true
+					break
+		if not blocked:
+			return pos
+	return pos
 
 func text_at(value: String, pos: Vector2, size := 16, color := INK) -> void:
 	draw_string(font,pos,value,HORIZONTAL_ALIGNMENT_LEFT,-1,size,color)
@@ -475,21 +539,28 @@ func draw_battle() -> void:
 		text_at("%02d" % slot,Vector2(1370,202+slot*44),10,Color("34475c"))
 		draw_line(Vector2(1330,198+slot*44),Vector2(1353,198+slot*44),Color("253345"))
 	if game.player.armour>0 or game.state==BattleGame.State.RETREAT:
-		draw_ship(Vector2(game.player.x,game.player.y)+offset,1.15,false,1,game.player.shield>0)
-		text_at("先锋号",Vector2(246,489),16,INK)
-		text_at("VANGUARD / 01",Vector2(215,515),11,MUTED)
+		draw_ship(Vector2(game.player.x,game.player.y)+offset,0.24,false,1,game.player.shield>0)
+		text_at(game.ship_name(),Vector2(246,489),16,INK)
+		text_at("%s / %02dW-%02dD" % [game.profile.selectedShip,game.weapon_entries().size(),game.defense_entries().size()],Vector2(215,515),11,MUTED)
 	for enemy in game.enemies:
 		if enemy.hp <= 0:
 			continue
 		var pos := Vector2(enemy.x,enemy.y)+offset
-		draw_ship(pos,1.4 if enemy.boss else 0.53,true,int(enemy.armourType),false)
-		var w := 155.0 if enemy.boss else 78.0
-		bar(Rect2(pos.x-w/2,pos.y-(58 if enemy.boss else 27),w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+		var dimensions: Vector2 = SHIP_VISUALS.CANVAS * SHIP_VISUALS.enemy_scale_for(enemy)
+		draw_set_transform(pos,0.0,Vector2(-1,1))
+		draw_texture_rect(ENEMY_SHIP_TEXTURES[clampi(int(enemy.size)-1,0,ENEMY_SHIP_TEXTURES.size()-1)],Rect2(-dimensions/2,dimensions),false)
+		draw_set_transform(Vector2.ZERO)
+		var w := dimensions.x * 0.8
+		bar(Rect2(pos.x-w/2,pos.y-dimensions.y/2,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
 		if not boss_battle:
-			text_at("%s / %s" % [enemy_health(float(enemy.hp)),enemy_health(float(enemy.max_hp))],Vector2(pos.x+65,pos.y+4),12,INK)
+			var health_position := Vector2(pos.x+dimensions.x/2+8,pos.y+4)
+			if health_position.x > 1240:
+				health_position = Vector2(pos.x-w/2,pos.y-dimensions.y/2-6)
+			text_at("%s / %s" % [enemy_health(float(enemy.hp)),enemy_health(float(enemy.max_hp))],health_position,12,INK)
 		else:
-			box(Rect2(pos + Vector2(-20, -10), Vector2(40, 20)), PANEL, LINE)
-			text_at("#%02d" % (int(enemy.slot)+1),pos+Vector2(-15,5),12,INK)
+			var marker := pos + Vector2(dimensions.x/2+8,-10)
+			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
+			text_at("#%02d" % (int(enemy.slot)+1),marker+Vector2(5,15),12,INK)
 	for card in boss_health_cards():
 		var rect: Rect2 = card.rect
 		var color: Color = ORANGE if int(card.enemy.armourType) == 2 else CYAN
@@ -524,7 +595,7 @@ func draw_battle() -> void:
 		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),26,color)
 		text_at("%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,41),12,color)
 	for p in particles:
-		draw_circle(p.pos,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
+		draw_circle(p.pos+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
 	for f in floats:
 		text_at(f.text,f.pos,18,Color(f.color,clampf(float(f.life)*2,0,1)))
 	draw_rect(Rect2(0,615,1440,195),Color("0c1522"))
@@ -551,6 +622,25 @@ func draw_battle() -> void:
 			text_at("按空格或点击继续",Vector2(648,365),14,MUTED)
 
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield: bool) -> void:
+	if not hostile and SHIP_TEXTURES.has(str(game.profile.selectedShip)):
+		var ship_key := str(game.profile.selectedShip)
+		scale_value = SHIP_VISUALS.scale_for(db.ship(ship_key))
+		draw_set_transform(pos,0.0,Vector2.ONE*scale_value)
+		draw_texture_rect(SHIP_TEXTURES[ship_key],Rect2(-SHIP_VISUALS.CANVAS/2,SHIP_VISUALS.CANVAS),false)
+		var entries := game.weapon_entries()
+		for index in range(entries.size()):
+			var entry: Dictionary = entries[index]
+			var key := str(entry.get("key", ""))
+			if key.is_empty() or not SLOT_TEXTURES.has(key):
+				continue
+			if not module_regions.has(key):
+				module_regions[key] = Rect2(SLOT_TEXTURES[key].get_image().get_used_rect())
+			var region: Rect2 = module_regions[key]
+			var width := SHIP_VISUALS.module_width(ship_key)
+			var icon_size := region.size * (width / region.size.x)
+			draw_texture_rect_region(SLOT_TEXTURES[key],Rect2(SHIP_VISUALS.center(ship_key,index)-icon_size/2,icon_size),region)
+		draw_set_transform(Vector2.ZERO)
+		return
 	draw_set_transform(pos,PI if hostile else 0.0,Vector2.ONE*scale_value)
 	var accent := ORANGE if hostile and type==2 else Color("bf9cf2") if hostile else CYAN
 	var body := Color("5e5264") if hostile else Color("698698")
@@ -589,6 +679,15 @@ func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 
 	parent.add_child(label)
 	return label
 
+func equipment_card_label(parent: Control, value: String, rect: Rect2, font_size := 13, color := INK) -> Label:
+	var label := equipment_label(parent,value,rect.position,font_size,color)
+	label.size = rect.size
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.tooltip_text = value
+	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	return label
+
 func build_equipment_tabs() -> void:
 	equipment_tabs = TabContainer.new()
 	equipment_tabs.position = Vector2(38,620)
@@ -607,7 +706,9 @@ func build_equipment_tabs() -> void:
 		equipment_tabs.add_theme_stylebox_override(state,tab_style)
 	ui.add_child(equipment_tabs)
 	var unlocked_pages: Array[bool] = []
-	for page in EQUIPMENT_PAGES:
+	var page_entries: Array = [game.weapon_entries(), game.defense_entries()]
+	for page_index in range(EQUIPMENT_PAGES.size()):
+		var page: Dictionary = EQUIPMENT_PAGES[page_index]
 		var scroll := ScrollContainer.new()
 		scroll.name = page.title
 		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -616,73 +717,111 @@ func build_equipment_tabs() -> void:
 		var cards := HBoxContainer.new()
 		cards.add_theme_constant_override("separation",8)
 		scroll.add_child(cards)
-		for key in page.keys:
-			if not game.profile.unlocked.has(key):
-				continue
-			var lv := int(game.profile.levels[key])
+		for slot_index in range(page_entries[page_index].size()):
+			var entry: Dictionary = page_entries[page_index][slot_index]
+			var key := str(entry.get("key", ""))
+			var defence: bool = page_index == 1
+			var slot_key := game.slot_id("defence" if defence else "weapons",slot_index)
+			var lv := int(entry.get("level",1))
 			var maxed := lv >= db.max_equipment_level(key)
-			var next := db.equip(key,mini(lv+1,db.max_equipment_level(key)))
-			var defence: bool = key in ["armour","shield"]
+			var next := db.equip(key,mini(lv+1,db.max_equipment_level(key))) if not key.is_empty() else {}
 			var bulk: bool = BattleGame.BULK_EQUIPMENT.has(key)
 			var card := Panel.new()
-			card.custom_minimum_size = Vector2(216,112)
+			card.custom_minimum_size = Vector2(440,112)
 			card.add_theme_stylebox_override("panel",style(PANEL,LINE))
 			cards.add_child(card)
-			if PROJECTILE_TEXTURES.has(key):
+			equipment_card_label(card,"%s槽 %s" % ["防御" if defence else "武器",number(slot_index+1)],Rect2(248,8,180,20),12,CYAN)
+			if not key.is_empty() and SLOT_TEXTURES.has(key):
 				var icon := TextureRect.new()
-				icon.texture = PROJECTILE_TEXTURES[key]
+				icon.texture = SLOT_TEXTURES[key]
 				icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon.position = Vector2(8,7)
-				icon.size = Vector2(34,20)
+				icon.position = Vector2(12,8)
+				icon.size = Vector2(34,26)
 				card.add_child(icon)
-			equipment_label(card,"%s Lv.%s" % [NAMES[key],number(lv)],Vector2(8 if defence else 46,6),14)
+			var selector := OptionButton.new()
+			selector.fit_to_longest_item = false
+			selector.clip_text = true
+			selector.position = Vector2(248,42)
+			selector.size = Vector2(180,32)
+			selector.disabled = not key.is_empty()
+			selector.visible = key.is_empty()
+			selector.add_theme_font_override("font",font)
+			selector.add_theme_font_size_override("font_size",12)
+			selector.add_item("空槽")
+			for option_key in page.keys:
+				if game.profile.unlocked.has(option_key):
+					selector.add_item(NAMES[option_key],page.keys.find(option_key)+1)
+					var limit_reached := game.equipment_count(option_key) >= game.equipment_limit()
+					selector.set_item_disabled(selector.item_count-1,limit_reached)
+					if limit_reached:
+						selector.set_item_text(selector.item_count-1,NAMES[option_key]+"（已达上限）")
+					if option_key == key:
+						selector.select(selector.item_count-1)
+			selector.item_selected.connect(func(option):
+				var selected := ""
+				if option > 0:
+					selected = str(page.keys[selector.get_item_id(option)-1])
+				if selected.is_empty():
+					return
+				if game.equip_slot("defence" if defence else "weapons",slot_index,selected):
+					build_ui()
+			)
+			card.add_child(selector)
+			if not key.is_empty():
+				equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],number(lv)],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,174 if SLOT_TEXTURES.has(key) else 216,26),15)
+				equipment_card_label(card,"已装配 · 换舰时可调整",Rect2(12,72,216 if defence else 144,20),11,MUTED)
+			if key.is_empty():
+				equipment_card_label(card,"空置槽位",Rect2(12,10,216,26),16)
+				equipment_card_label(card,"选择右侧装备即可安装",Rect2(12,42,216,22),13,MUTED)
+				equipment_card_label(card,"安装后仅可在换舰时调整",Rect2(12,76,216,20),11,MUTED)
+				continue
 			var cd := float(db.equip(key,lv).get("cd",0))
 			if not defence and cd > 0:
-				equipment_label(card,"CD %s秒" % number(cd),Vector2(158,8),11,MUTED)
-			equipment_label(card,("容量" if defence else "伤害")+" %s → %s" % [number(game.stat(key)),number(game.equipment_stat(key,int(next.level)))],Vector2(10,31),13,MUTED)
-			var single_cost := game.upgrade_cost(key)
-			var ten_available := lv + 10 <= db.max_equipment_level(key)
-			var ten_cost := game.upgrade_costs(key,10)
-			equipment_label(card,"已达最高等级" if maxed else "单次：" + cost_text(single_cost),Vector2(10,47),11)
-			if bulk:
-				equipment_label(card,"10级总计：" + (cost_text(ten_cost) if ten_available else "不可用"),Vector2(10,61),11,MUTED)
-			var upgrade := button("已满级" if maxed else "升级 ↑",Rect2(10,79,60,27),func():game.upgrade(key),true,not game.can_upgrade(key))
+				equipment_card_label(card,"CD %s秒" % number(cd),Rect2(160,72,68,20),11,CYAN)
+			equipment_card_label(card,("容量" if defence else "伤害")+" %s" % number(game.equipment_stat(key,lv))+(" → %s" % number(game.equipment_stat(key,int(next.level))) if not maxed else " · 满级"),Rect2(12,42,216,24),14,CYAN)
+			var single_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index)
+			var ten_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index,10)
+			equipment_card_label(card,"已达最高等级" if maxed else "单次：%s" % cost_text(single_cost),Rect2(248,36,180,26),12,MUTED)
+			var upgrade := button("已满级" if maxed else "升级",Rect2(248,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index),true,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index))
+			upgrade.tooltip_text = "已达最高等级" if maxed else "升1级，消耗："+cost_text(single_cost)
 			upgrade.reparent(card,false)
 			upgrade.add_theme_font_size_override("font_size",12)
-			upgrade_buttons[key] = upgrade
+			upgrade_buttons[key if not upgrade_buttons.has(key) else slot_key] = upgrade
 			if bulk:
-				var ten := button("10连",Rect2(78,79,60,27),func():game.upgrade(key,10),false,not game.can_upgrade_amount(key,10))
+				var ten := button("10连",Rect2(310,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,10),false,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index,10))
 				ten.reparent(card,false)
 				ten.add_theme_font_size_override("font_size",12)
 				ten.tooltip_text = "一次升10级，总消耗：" + cost_text(ten_cost)
-				ten_upgrade_buttons[key] = ten
-				var max_amount := game.max_upgrade_amount(key)
-				var max_button := button("MAX",Rect2(146,79,60,27),func():game.upgrade_max(key),false,max_amount <= 0)
+				ten_upgrade_buttons[key if not ten_upgrade_buttons.has(key) else slot_key] = ten
+				var max_amount := game.max_upgrade_amount_slot("defence" if defence else "weapons",slot_index)
+				var max_button := button("MAX",Rect2(372,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,max_amount),false,max_amount <= 0)
 				max_button.reparent(card,false)
 				max_button.add_theme_font_size_override("font_size",12)
-				max_button.tooltip_text = "升级至 Lv.%s，总消耗：%s" % [number(lv + max_amount),cost_text(game.upgrade_costs(key,max_amount))]
-				max_upgrade_buttons[key] = max_button
+				max_button.tooltip_text = "升级至 Lv.%s，总消耗：%s" % [number(lv + max_amount),cost_text(game.slot_upgrade_cost("defence" if defence else "weapons",slot_index,max_amount))]
+				max_upgrade_buttons[key if not max_upgrade_buttons.has(key) else slot_key] = max_button
 			if not defence:
 				var cooldown := ColorRect.new()
-				cooldown.position = Vector2(10,73)
-				cooldown.size = Vector2(196,3)
+				cooldown.position = Vector2(12,98)
+				cooldown.size = Vector2(216,4)
 				cooldown.color = LINE
 				cooldown.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(cooldown)
 				var fill := ColorRect.new()
-				fill.size = Vector2(196,3)
+				fill.size = Vector2(216,4)
 				fill.color = CYAN
 				fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				cooldown.add_child(fill)
-				equipment_cooldowns[key] = fill
-		unlocked_pages.append(cards.get_child_count() > 0)
+				equipment_cooldowns[slot_key] = fill
+		unlocked_pages.append(page_entries[page_index].any(func(entry):return game.profile.unlocked.has(str(entry.get("key", "")))))
 		if cards.get_child_count() == 0:
-			equipment_label(cards,"暂无已解锁装备",Vector2(12,12),14,MUTED)
+			equipment_label(cards,"暂无装备槽",Vector2(12,12),14,MUTED)
 	build_hightech_tab()
 	build_charge_tab()
 	unlocked_pages.append(not hightech_buttons.is_empty())
 	unlocked_pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
+	build_ship_tab()
+	unlocked_pages.append(unlocked_ship_keys().size() > 1)
 	for index in range(unlocked_pages.size()):
 		equipment_tabs.set_tab_hidden(index,not unlocked_pages[index])
 	equipment_page = clampi(equipment_page,0,unlocked_pages.size()-1)
@@ -691,24 +830,137 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.current_tab = equipment_page
 	equipment_tabs.tab_changed.connect(func(index):equipment_page=index)
 
-func hightech_button_text(key: String) -> String:
-	if game.profile.hightechResearch.has(key):
-		return "连续研发中" if game.active_research().has(key) else "继续研发"
-	if not game.hightech_unlocked(key):
-		return "通关第%s关解锁" % number(db.data.hightech[key].unlock)
-	if not game.can_research(key):
-		return "研发名额已满"
-	return "切换研发" if not game.active_research().is_empty() else "研发"
+func unlocked_ship_keys() -> Array:
+	var result: Array = []
+	for key in db.ships:
+		if game.ship_unlocked(str(key)):
+			result.append(str(key))
+	return result
+
+func candidate_equipment_count(key: String, except_category: String, except_index: int) -> int:
+	var count := 0
+	for category in ["weapons", "defence"]:
+		for index in range(ship_candidate_loadout.get(category, []).size()):
+			if category == except_category and index == except_index:
+				continue
+			if str(ship_candidate_loadout[category][index].get("key", "")) == key:
+				count += 1
+	return count
+
+func build_ship_tab() -> void:
+	var page := Control.new()
+	page.name = "战舰"
+	equipment_tabs.add_child(page)
+	var keys := unlocked_ship_keys()
+	var current := str(game.profile.selectedShip)
+	if ship_candidate.is_empty() or not keys.has(ship_candidate):
+		ship_candidate = current
+		ship_candidate_loadout = game.profile.loadout.duplicate(true)
+	elif ship_candidate == current:
+		ship_candidate_loadout = game.profile.loadout.duplicate(true)
+	if not ship_candidate_loadout.has("weapons") or not ship_candidate_loadout.has("defence"):
+		ship_candidate_loadout = game.empty_loadout(ship_candidate)
+
+	var picker := OptionButton.new()
+	picker.position = Vector2(12,8)
+	picker.size = Vector2(220,30)
+	picker.add_theme_font_override("font",font)
+	picker.add_theme_font_size_override("font_size",13)
+	for key in keys:
+		var row: Dictionary = db.ship(key)
+		picker.add_item(str(row.des),picker.item_count)
+		picker.set_item_metadata(picker.item_count-1,key)
+		picker.set_item_tooltip(picker.item_count-1,"武器槽 %s · 防御槽 %s · 移动 %s" % [number(row.weaponSlots),number(row.defenseSlots),number(row.movement)])
+		if key == ship_candidate:
+			picker.select(picker.item_count-1)
+	picker.item_selected.connect(func(index):
+		ship_candidate = str(picker.get_item_metadata(index))
+		ship_candidate_loadout = game.profile.loadout.duplicate(true) if ship_candidate == current else game.empty_loadout(ship_candidate)
+		build_ui()
+	)
+	page.add_child(picker)
+
+	var valid := game.valid_loadout(ship_candidate,ship_candidate_loadout)
+	var status := equipment_label(page,"当前：%s · 空槽可保留，装备需在此页签选定" % game.ship_name(),Vector2(248,14),12,MUTED)
+	if ship_candidate != current:
+		status.text = "%s · 新舰装备等级从 Lv.1 开始" % ("配置有效" if valid else "请检查装备数量/解锁状态")
+	var confirm := button("确认更换",Rect2(1250,8,118,30),func():
+		if game.switch_ship(ship_candidate,ship_candidate_loadout):
+			ship_candidate = str(game.profile.selectedShip)
+			ship_candidate_loadout = game.profile.loadout.duplicate(true)
+			build_ui()
+	,true,ship_candidate == current or not valid)
+	confirm.reparent(page,false)
+	confirm.add_theme_font_size_override("font_size",13)
+
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(10,45)
+	scroll.size = Vector2(1358,93)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	page.add_child(scroll)
+	var cards := HBoxContainer.new()
+	cards.add_theme_constant_override("separation",8)
+	scroll.add_child(cards)
+	for category in ["weapons", "defence"]:
+		var entries: Array = ship_candidate_loadout[category]
+		for index in range(entries.size()):
+			var entry: Dictionary = entries[index]
+			var card := Panel.new()
+			card.custom_minimum_size = Vector2(184,78)
+			card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+			cards.add_child(card)
+			equipment_label(card,"%s槽 %s" % ["武器" if category == "weapons" else "防御",number(index+1)],Vector2(8,6),12,CYAN)
+			var selector := OptionButton.new()
+			selector.position = Vector2(8,30)
+			selector.size = Vector2(168,27)
+			selector.add_theme_font_override("font",font)
+			selector.add_theme_font_size_override("font_size",12)
+			selector.add_item("空槽")
+			for option_key in (EQUIPMENT_PAGES[0].keys if category == "weapons" else EQUIPMENT_PAGES[1].keys):
+				if game.profile.unlocked.has(option_key):
+					selector.add_item(NAMES[option_key])
+					selector.set_item_metadata(selector.item_count-1,option_key)
+					selector.set_item_disabled(selector.item_count-1,candidate_equipment_count(option_key,category,index) >= int(db.ship(ship_candidate).get("sameEquipmentLimit",1)))
+					if option_key == str(entry.get("key", "")):
+						selector.select(selector.item_count-1)
+			selector.item_selected.connect(func(option):
+				var selected := str(selector.get_item_metadata(option)) if option > 0 else ""
+				ship_candidate_loadout[category][index] = {"key":selected,"level":1}
+				build_ui()
+			)
+			card.add_child(selector)
+			equipment_label(card,"更换时配置 · Lv.1" if not str(entry.get("key", "")).is_empty() else "可保留为空",Vector2(8,59),11,MUTED)
+
+func hightech_button_text(_key: String) -> String:
+	return "+1"
+
+func refresh_scientists() -> void:
+	if not is_instance_valid(scientist_generate_button):
+		return
+	scientist_summary.text = "科学家 %s人 · 空闲 %s人" % [number(game.profile.scientists),number(game.idle_scientists())]
+	var costs: Array[String] = []
+	for id in game.scientist_cost():
+		costs.append("%s %s" % [db.data.resources[id],number(game.scientist_cost()[id])])
+	scientist_generate_button.text = "生成 ×1"
+	scientist_generate_button.tooltip_text = " / ".join(costs)
+	for amount in scientist_bulk_buttons:
+		scientist_bulk_buttons[amount].disabled = not game.can_generate_scientist(amount)
+	for key in scientist_assignment_buttons:
+		for action in scientist_assignment_buttons[key]:
+			action.disabled = not game.can_research(key)
+	scientist_generate_button.disabled = not game.can_generate_scientist()
+	for key in scientist_remove_buttons:
+		scientist_remove_buttons[key].disabled = game.assigned_scientists(key)<=0
 
 func refresh_hightech_progress(key: String) -> void:
 	var controls: Dictionary = hightech_progress[key]
-	var job: Dictionary = game.profile.hightechResearch.get(key,{})
-	var duration := float(job.get("duration",game.hightech_duration(key)))
-	var elapsed := clampf(duration-float(job.get("remaining",duration)),0,duration)
-	var fraction := elapsed/duration if duration > 0 else 0.0
-	controls.label.text = "研发进度  %.0f%%  ·  %s/%s秒" % [floorf(fraction*100),number(elapsed),number(duration)]
+	var required := game.hightech_required(key)
+	var points := float(game.profile.techPoints.get(key,0))
+	var fraction := clampf(points/required,0,1)
+	controls.label.text = "%s人 · %s点/秒 · %s/%s点 · %.0f%%" % [number(game.assigned_scientists(key)),number(game.research_rate(key)),number(points),number(required),floorf(fraction*100)]
 	controls.bar.get_child(0).size.x = controls.bar.size.x*fraction
-	controls.bar.get_child(0).color = CYAN if game.active_research().has(key) and not game.paused else ORANGE
+	controls.bar.get_child(0).color = CYAN if game.research_rate(key)>0 and not game.paused else ORANGE
 
 func build_charge_tab() -> void:
 	var scroll := ScrollContainer.new()
@@ -790,18 +1042,26 @@ func refresh_charge_card(key: String) -> void:
 	controls.status.add_theme_color_override("font_color",CYAN if controls.status.text=="充能中" else Color("ffc178") if controls.status.text=="资源不足" else MUTED)
 
 func select_research(key: String) -> void:
-	var active := game.active_research()
-	if active.size() <= 1 or active.size() < int(db.config.hightechLimit):
-		game.research(key)
+	game.assign_scientist(key,1)
+
+func confirm_unequip(category: String, index: int) -> void:
+	var entry := game.slot_entry(category,index).duplicate()
+	if entry.is_empty() or str(entry.key).is_empty():
 		return
-	var menu := PopupMenu.new()
-	ui.add_child(menu)
-	for current in active:
-		menu.add_item("暂停 " + str(current) + "，改研 " + key)
-	menu.id_pressed.connect(func(index):game.research(key,str(active[index])))
-	menu.popup_hide.connect(func():menu.queue_free())
-	menu.position = Vector2i(get_global_mouse_position())
-	menu.popup()
+	var ship_key := str(game.profile.selectedShip)
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "确认卸下装备"
+	dialog.dialog_text = "卸下 %s（Lv.%d）？\n返还该装备全部升级资源，槽位将留空。\n重新装备后为1级。" % [NAMES[str(entry.key)],int(entry.level)]
+	dialog.ok_button_text = "确认卸下"
+	dialog.cancel_button_text = "保留装备"
+	add_child(dialog)
+	dialog.confirmed.connect(func():
+		if str(game.profile.selectedShip) == ship_key and game.slot_entry(category,index) == entry:
+			if game.unequip_slot(category,index):
+				build_ui()
+		dialog.queue_free())
+	dialog.canceled.connect(func():dialog.queue_free())
+	dialog.popup_centered()
 
 func build_hightech_tab() -> void:
 	var scroll := ScrollContainer.new()
@@ -813,6 +1073,23 @@ func build_hightech_tab() -> void:
 	var cards := HBoxContainer.new()
 	cards.add_theme_constant_override("separation",8)
 	scroll.add_child(cards)
+	var manager := Panel.new()
+	manager.custom_minimum_size = Vector2(330,112)
+	manager.add_theme_stylebox_override("panel",style(PANEL,LINE))
+	cards.add_child(manager)
+	scientist_summary = equipment_label(manager,"",Vector2(10,8),14,CYAN)
+	var distribute := button("平均分配全部",Rect2(10,37,310,29),func():game.distribute_scientists(),true)
+	distribute.reparent(manager,false)
+	distribute.tooltip_text = "重新均分到已解锁高科技，余数按卡片顺序分配"
+	scientist_generate_button = button("",Rect2(10,77,100,29),func():game.generate_scientist(),true)
+	scientist_generate_button.reparent(manager,false)
+	scientist_generate_button.add_theme_font_size_override("font_size",12)
+	for amount in [10,-1]:
+		var action := button("生成 ×10" if amount==10 else "生成 MAX",Rect2(115 if amount==10 else 220,77,100,29),func():game.generate_scientist(amount),true)
+		action.reparent(manager,false)
+		action.add_theme_font_size_override("font_size",12)
+		scientist_bulk_buttons[amount]=action
+	refresh_scientists()
 	var slots := game.hightech_slots()
 	for index in range(slots.size()):
 		var key: String = slots[index]
@@ -841,7 +1118,7 @@ func build_hightech_tab() -> void:
 		description.tooltip_text = description.text
 		description.mouse_filter = Control.MOUSE_FILTER_PASS
 		description.position = Vector2(10,29)
-		description.size = Vector2(423,44)
+		description.size = Vector2(423,24)
 		description.add_theme_font_override("font",font)
 		description.add_theme_font_size_override("font_size",12)
 		description.add_theme_color_override("font_color",MUTED)
@@ -851,11 +1128,22 @@ func build_hightech_tab() -> void:
 		var progress_bar := charge_progress_bar(card,Vector2(10,99),303,CYAN)
 		hightech_progress[key] = {"label":progress_text,"bar":progress_bar}
 		refresh_hightech_progress(key)
-		var b := button(hightech_button_text(key),Rect2(331,77,102,29),func():select_research(key),true,not game.can_research(key))
+		var b := button(hightech_button_text(key),Rect2(387,77,46,29),func():select_research(key),true,not game.can_research(key))
 		b.reparent(card,false)
 		b.add_theme_font_size_override("font_size",12)
 		b.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
 		hightech_buttons[key] = b
+		var remove := button("−1",Rect2(331,77,46,29),func():game.assign_scientist(key,-1),true,game.assigned_scientists(key)<=0)
+		remove.reparent(card,false)
+		remove.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
+		scientist_remove_buttons[key] = remove
+		scientist_assignment_buttons[key]=[]
+		for amount in [10,-1]:
+			var action := button("+10" if amount==10 else "MAX",Rect2(331 if amount==10 else 387,46,46,27),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),true)
+			action.reparent(card,false)
+			action.add_theme_font_size_override("font_size",11)
+			action.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
+			scientist_assignment_buttons[key].append(action)
 		equipment_label(card,"⠿ 拖动换位",Vector2(350,5),12,MUTED)
 	scroll.set_deferred("scroll_horizontal",hightech_scroll_offset)
 

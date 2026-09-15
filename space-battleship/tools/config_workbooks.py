@@ -24,7 +24,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 2
+CACHE_VERSION = 4
 
 
 def sha(value):
@@ -216,12 +216,12 @@ def incremental_import(directory, target):
     snapshot, paths, changed = {}, {}, []
     for name, section in SECTIONS.items():
         filename = manifest.get("sheets", {}).get(name)
-        if name == 'charge' and not filename:
-            if not (directory / 'charge.xlsx').is_file():
-                if current.get('charge'):
-                    raise ValueError('缺少 charge.xlsx；原配置保留，请恢复文件')
+        if name in ('charge','ship') and not filename:
+            filename = f'{name}.xlsx'
+            if not (directory / filename).is_file():
+                if current.get(SECTIONS[name]):
+                    raise ValueError(f'缺少 {filename}；原配置保留，请恢复文件')
                 continue
-            filename = 'charge.xlsx'
         if not filename or pathlib.Path(filename).name != filename:
             raise ValueError("分表清单缺少或包含无效路径：" + name)
         path = directory / filename

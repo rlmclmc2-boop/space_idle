@@ -10,6 +10,8 @@
 
 ## 原表索引与 JSON 映射
 
+- 2026-09-15 科学家重做以独立 config!A11:C13 与 hightech!A1:H6 为来源；scientistCost 为倍率及可扩展多资源费用，techPointGet 为单人速率，hightechLimit 改为多人衰减指数；高科技读取 tpCostBase/tpCostMutiple，timeCost 列废弃。仅同步 config/hightech 运行段，旧总表不得覆盖新分表。规则见 progression。
+
 - 2026-09-14 用户要求关卡编辑器：`tools/level_editor_store.py` 编辑 mon/monGroup/level 分表并复用投影转换/校验，显式保存时一起提交分表、JSON 和增量指纹；保留公式并重算受支持的缓存，不回写总表。操作、备份和公式边界归 [LEVEL_EDITOR](LEVEL_EDITOR.md)。
 
 - 2026-09-14 离线上限：config!A10:C10 的 offlineMax（单位小时）投影到 config.offlineMax；总表与分表已核对。导入复用 config 通用转换，并校验非负有限数字；规则归 modules/economy.md。
@@ -36,13 +38,14 @@
 | equipment!A64:N83 | missile 1–20 级 | equipment.missile[] |
 | equipment!A84:N103 | cannon 1–20 级 | equipment.cannon[] |
 | equipment!A104:N106 | 三种敌方武器，仅 1 级 | equipment 中原始 `_mon`/`-mon` 键 |
-| mon!A4:H9 | 6 敌机，武器引用、生命、抗性、掉落、占格 | enemies[字符串id]；equipment[]、drops[] 被解析 |
+| mon!A4:H9 | 6 敌机，武器引用、生命、抗性、掉落、size外观等级（2026-09-15用户修订，固定单格） | enemies[字符串id]；equipment[]、drops[] 被解析 |
 | monGroup!A4:C10 | 7 种十槽编队，null 为空 | groups[字符串id].slots[] |
 | res!A4:B5 | 资源 ID/名称 | resources[字符串id] |
-| hightech!A4:H6 | 三项高科技名称、des 效果规则、description 界面模板、研发耗时/成长、解锁与效果参数 | hightech[name]；规则见 modules/progression.md，模板见 modules/ui.md |
+| hightech!A4:H6 | 三项高科技名称、des 效果规则、description 界面模板、研究点消耗/成长、解锁与效果参数 | hightech[name]；规则见 modules/progression.md，模板见 modules/ui.md |
 | config_excel/charge.xlsx · charge!A1:K6 | 三项充能；func 功能、des 卡片模板、unlock 通关门槛、para_1 至 para_7 | charge[name]；规则见 modules/progression.md |
 | config!A9:C11 | hightechLimit 同时研发数、offlineMax 离线上限（小时）、autoGenRes 自动生成资源参数 | config.hightechLimit / config.offlineMax / config.autoGenRes |
 | config!A4:C8 | 起始装备、减伤、移动、自动拾取损耗、死亡后退距离 backRange | config[name]=para_1 |
+| ship!A1:H8 · `config_excel/ship.xlsx` | 5 艘我方舰船的名称、描述、武器槽、护甲槽、移动速度、解锁关卡、占地、同种装备上限 | ship[name]；para_5 → size；para_6 → sameEquipmentLimit；运行时按槽位实例保存装备 |
 
 装备通用字段：name+level 联合定位；dmg/CD 为单发伤害/冷却；dmgtype 见 combat；unlock 为通关条件（不把空白含义擅自补齐，见 U-004）；res_x 与 cost_x 配对表示**升到该行等级**的资源及数量。
 

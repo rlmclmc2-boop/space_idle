@@ -8,6 +8,7 @@ var groups: Dictionary
 var levels: Array
 var config: Dictionary
 var defaults: Dictionary
+var ships: Dictionary
 
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
@@ -17,12 +18,16 @@ func _init() -> void:
 	levels = data.levels
 	config = data.config
 	defaults = data.defaults
+	ships = data.get("ship", {})
 
 func equip(key: String, level: int) -> Dictionary:
 	for row in equipment.get(key, []):
 		if int(row.level) == level:
 			return row
 	return {}
+
+func ship(key: String) -> Dictionary:
+	return ships.get(key, {})
 
 func max_equipment_level(key: String) -> int:
 	var highest := 1

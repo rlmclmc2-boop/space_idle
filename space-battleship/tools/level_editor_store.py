@@ -171,8 +171,8 @@ class Store:
         warnings = []
         for eid, enemy in data['enemies'].items():
             size = enemy['size']
-            if type(size) not in (int, float) or size != int(size) or not 1 <= size <= 10:
-                raise ValueError(f'敌机 {eid}：占格数必须为 1–10 整数')
+            if type(size) not in (int, float) or not math.isfinite(size) or size != int(size) or size < 1:
+                raise ValueError(f'敌机 {eid}：外观尺寸等级必须为正整数')
             if enemy['armourType'] not in (0, 1, 2): raise ValueError(f'敌机 {eid}：抗性应为 0/1/2')
             for weapon in enemy['equipment']:
                 key = weapon['name']
@@ -182,14 +182,6 @@ class Store:
                     raise ValueError(f'敌机 {eid}：无效武器 {key}')
             for drop in enemy['drops']:
                 if str(drop['resourceId']) not in data['resources']: raise ValueError(f'敌机 {eid}：无效掉落资源')
-        for gid, group in data['groups'].items():
-            occupied = set()
-            for slot, eid in enumerate(group['slots']):
-                if eid is None: continue
-                end = slot + int(data['enemies'][str(eid)]['size'])
-                if end > 10 or any(i in occupied for i in range(slot, end)):
-                    warnings.append(f'编队 {gid}：第 {slot+1} 格发生占格重叠或越界（现有运行逻辑允许，见 U-007）')
-                occupied.update(range(slot, end))
         data['source_files'] = {n: str(p.resolve()) for n, p in self.paths.items()}
         payload = encode(data)
         state = {'version': CACHE_VERSION, 'directory': str(self.directory.resolve()),

@@ -11,7 +11,7 @@ import sys
 import openpyxl
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "hightech":"hightech", "charge":"charge"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
@@ -69,6 +69,14 @@ def convert_sheet(name, rows):
         return {str(r["id"]):r["name"] for r in rows}
     if name=="config":
         return {r["name"]:r["para_1"] for r in rows}
+    if name=="ship":
+        result={}
+        for row in rows:
+            key=row.get("name")
+            if not isinstance(key,str) or not key.strip() or key in result:
+                raise ValueError("ship：名称必须非空且不能重复")
+            result[key]={"name":key,"des":row.get("des"),"weaponSlots":row.get("para_1"),"defenseSlots":row.get("para_2"),"movement":row.get("para_3"),"unlock":row.get("para_4"),"size":row.get("para_5"),"sameEquipmentLimit":row.get("para_6")}
+        return result
     raise ValueError("未知配置表："+name)
 
 def projection_base(previous, source):
@@ -114,6 +122,24 @@ def validate_projection(data):
     groups=data["groups"]
     enemies=data["enemies"]
     config=data["config"]
+    ships=data.get("ship",{})
+    if ships:
+        if len(ships) != 5:
+            raise ValueError(f'ship 表：应有 5 艘舰船，当前 {len(ships)} 艘')
+        for key,row in ships.items():
+            if not isinstance(row.get('des'),str) or not row['des'].strip():
+                raise ValueError(f'ship {key}: des must not be empty')
+            for field in ('weaponSlots','defenseSlots','movement','unlock','size'):
+                positive(row.get(field),f'ship {key} {field}', field == 'unlock')
+            if row['weaponSlots'] != int(row['weaponSlots']) or row['weaponSlots'] < 1:
+                raise ValueError(f'ship {key}: weaponSlots must be a positive integer')
+            positive(row.get('sameEquipmentLimit'),f'ship {key} sameEquipmentLimit')
+            if row['sameEquipmentLimit'] != int(row['sameEquipmentLimit']):
+                raise ValueError(f'ship {key}: sameEquipmentLimit must be a positive integer')
+            if row['defenseSlots'] != int(row['defenseSlots']) or row['defenseSlots'] < 1:
+                raise ValueError(f'ship {key}: defenseSlots must be a positive integer')
+            if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
+                raise ValueError(f'ship {key}: unlock must reference a level or be zero')
     for key in ('armour','shield','laser','missile','cannon'):
         items=equipment.get(key,[])
         if not items or [r['level'] for r in items] != list(range(1,len(items)+1)):
@@ -167,16 +193,27 @@ def validate_projection(data):
         positive(speed, 'autoGenRes speed')
     limit=config.get('hightechLimit')
     positive(limit,'hightechLimit')
-    if isinstance(limit,bool) or limit != int(limit):
-        raise ValueError('hightechLimit: expected positive integer')
+    positive(config.get('techPointGet'),'techPointGet')
+    parts=str(config.get('scientistCost','')).replace('，',',').split(',')
+    if len(parts)<2: raise ValueError('scientistCost: expected multiplier and resource costs')
+    try:
+        positive(float(parts[0]),'scientistCost multiplier')
+        seen=set()
+        for part in parts[1:]:
+            rid,amount=part.split('|')
+            if rid not in data['resources'] or rid in seen: raise ValueError('scientistCost: invalid or duplicate resource')
+            seen.add(rid)
+            positive(float(amount),'scientistCost amount',True)
+    except (ValueError,TypeError) as error:
+        raise ValueError('scientistCost: invalid resource costs') from error
     for key,row in data['hightech'].items():
         validate_description(row)
         if not isinstance(row.get('des'),str) or not row['des'].strip():
             raise ValueError(f'hightech {key}: des must not be empty')
-        positive(row.get('timeCostBase'),f'hightech {key} timeCostBase')
-        if math.floor(row['timeCostBase']+0.5)<1:
-            raise ValueError(f'hightech {key}: rounded research duration must be positive')
-        positive(row.get('timeCostMutiple'),f'hightech {key} timeCostMutiple',True)
+        positive(row.get('tpCostBase'),f'hightech {key} tpCostBase')
+        if math.floor(row['tpCostBase']+0.5)<1:
+            raise ValueError(f'hightech {key}: rounded research points must be positive')
+        positive(row.get('tpCostMutiple'),f'hightech {key} tpCostMutiple',True)
         unlock=row.get('unlock')
         positive(unlock,f'hightech {key} unlock',True)
         if unlock != int(unlock) or unlock > len(levels):
@@ -219,8 +256,8 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name == 'charge':
-                    continue  # Older master workbooks predate the optional charge sheet.
+                if name in ('charge','ship'):
+                    continue  # Older master workbooks predate optional projections.
                 raise ValueError("缺少配置表："+name)
             data[section]=convert_sheet(name,read_rows(book[name]))
     finally:
