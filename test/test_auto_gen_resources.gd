@@ -14,7 +14,7 @@ func _initialize() -> void:
 
 func run() -> void:
 	var db := ShipDatabase.new()
-	check(db.config.get("autoGenRes") == "10,2,10,40", "Config projection includes auto-generated resource parameters")
+	# Production values may change; mechanics below use an explicit isolated fixture.
 	db.config.autoGenRes = "1,2,10,40"
 	db.config.autoCollectReduce = 0.5
 	var g := BattleGame.new(db, false)
@@ -45,5 +45,5 @@ func run() -> void:
 	g.drops.append(timed)
 	g.tick(0.1)
 	check(g.drops.has(timed), "Generated resource does not use timed pickup")
-	print("PASS: ", checks, " checks")
+	print("Auto resources: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures > 0 else 0)

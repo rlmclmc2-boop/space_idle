@@ -28,10 +28,17 @@ func run() -> void:
 	var ship_page: Control = scene.equipment_tabs.get_child(4)
 	var picker: OptionButton = ship_page.get_child(0)
 	check(picker.item_count == 2, "Only unlocked ships are listed")
+	var runtime_before: Dictionary = scene.game.profile.duplicate(true)
 	picker.select(1)
 	picker.item_selected.emit(1)
 	await process_frame
 	check(scene.game.profile.selectedShip == "Frigate", "Selecting a ship does not switch immediately")
+	scene.ship_candidate_loadout.weapons[0].key = "cannon"
+	check(scene.game.profile==runtime_before,"Editing candidate never mutates runtime loadout or resources")
+	var draft: Dictionary = scene.ship_candidate_loadout.duplicate(true)
+	scene.build_ui()
+	check(scene.ship_candidate=="Destroyer" and scene.ship_candidate_loadout==draft,"UI rebuild preserves uncommitted ship draft")
+	check(scene.game.profile==runtime_before,"Draft rebuild does not commit or refund equipment")
 	scene.equipment_tabs.current_tab = 4
 	scene.queue_redraw()
 	await process_frame

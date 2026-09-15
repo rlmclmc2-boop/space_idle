@@ -1,5 +1,7 @@
 # Architecture
 
+核心规则测试按 [测试入口](../../test/README.md#按规则定位phase-10) 定位；逐条规则、断言与覆盖缺口见 [TEST_MAP](../../test/TEST_MAP.md)。资源取整、槽位、目标、科学家、存档、UI解锁均有少量专项入口；历史test_game不是整套验收基线。
+
 ## CURRENT · 代码确认
 
 `project.godot → main.tscn → main.gd` 创建 `ShipDatabase(RefCounted)`、`BattleGame(RefCounted)`。数据库仅加载一次 res://data/game_data.json；游戏逻辑持有 db、profile 和战斗字典数组，通过 event(kind,payload) 通知 UI。main.gd 负责输入、tick 驱动、按钮构建、绘制/声音和 QA 面板创建，不是完全独立的纯视图。
@@ -10,7 +12,7 @@
 
 核心对象：profile（version/highestLevel/cleared/loadout/resources/unlocked/loop）、player、enemies、projectiles、drops、cooldowns。对象字段和所有权见各模块；没有 ECS、Autoload 管理器、数据库服务或联网后端。
 
-存档：game.load_progress/save_progress，`user://progress.json`，version=1；先写 .tmp 再 rename。校验部分字段、重建解锁；不保存距离、当前敌群、弹道、冷却，也不结算离线收益。窗口关闭/拾取/升级/通关等会保存。user:// 实际目录由启动脚本的 APPDATA/LOCALAPPDATA 决定，正式玩家目录 `.userdata`，测试必须隔离。QA 偏好同属 user://，控制接口见 [ui](modules/ui.md)。鲁棒性缺口见 U-008。
+存档：game.load_progress/save_progress，`user://progress.json`，version=1；先写 .tmp 再 rename。校验部分字段、重建解锁；不保存距离、当前敌群、弹道、冷却。当前初始化先加载（含离线资源收入），再结算充能、研究并保存，最后恢复玩家容量；顺序由test_save_boundaries保护。窗口关闭/拾取/升级/通关等会保存。user:// 实际目录由启动脚本的 APPDATA/LOCALAPPDATA 决定，正式玩家目录 `.userdata`，测试必须隔离。QA 偏好同属 user://，控制接口见 [ui](modules/ui.md)。鲁棒性缺口见 U-008。
 
 依赖/构建：GDScript 无第三方游戏包；Python 导入依赖 openpyxl；QA 优先 SPACE_BATTLESHIP_PYTHON，其次本机 bundled Python，再回退 python。Windows 启动脚本依赖父目录固定引擎名。未发现 export_presets.cfg、CI 或依赖锁定清单（U-010）。Godot 配置功能标签 4.3 不等于已验证最低兼容版本。
 

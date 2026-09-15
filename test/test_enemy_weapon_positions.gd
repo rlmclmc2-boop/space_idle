@@ -57,8 +57,6 @@ func _initialize() -> void:
 					check(shot.direction.is_equal_approx((Vector2(g.player.x,g.player.y)-Vector2(shot.x,shot.y)).normalized()), "Aim follows actual mount")
 					var weapon := db.enemy_weapon(equipment[kind].name)
 					check(enemy.cooldowns[i * 2 + kind] == float(weapon.cd) and shot.damage == ceilf(float(weapon.dmg) * g.ratio("atkRatio")), "Cooldown and damage preserved")
-	var weapon := db.equip("laser", 1)
-	g.fire(g.player, g.enemies[0], weapon, 1, false, "laser")
-	check(g.projectiles.back().x == g.player.x + 70 and g.projectiles.back().y == g.player.y, "Player origin preserved")
+	# Player origins follow ship socket geometry, covered by test_ship_visuals.gd.
 	print("Enemy weapon positions: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)

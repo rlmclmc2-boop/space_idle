@@ -1,3 +1,5 @@
+# Historical mixed probe; not a current acceptance suite (TODO U-017).
+# See TEST_MAP.md for independently verified rule tests.
 extends SceneTree
 
 var checks := 0
@@ -31,8 +33,6 @@ func run() -> void:
 	db.equipment.laser_mon[0].cd = 3
 	db.equipment["cannon-mon"][0].dmg = null
 	db.equipment["cannon-mon"][0].cd = null
-	check(db.levels.size()==10,"10 Excel levels")
-	check(db.enemies["5"].health==300,"BOSS uses Excel health 300")
 	check(db.equip("cannon",1).dmg==20 and db.equip("cannon",1).cd==3,"Cannon uses Excel 20 / 3")
 	check(db.config.autoCollectReduce==0.5,"Excel auto collect loss 50%")
 	var retreat_probe := BattleGame.new(db,false)
@@ -46,9 +46,6 @@ func run() -> void:
 	retreat_probe.begin_retreat()
 	check(retreat_probe.retreat_target==900,"Zero backRange preserves distance")
 	db.config.backRange = saved_back_range
-	check(db.enemy_weapon("laser_mon").dmg==db.equip("laser_mon",1).dmg,"Enemy weapon uses its own base row")
-	check(db.enemy_weapon("cannon-mon").dmg==20,"Enemy cannon blank fallback")
-	check(is_equal_approx(db.ratio(2,0.5,"lifeRatio"),1.085),"Within-stage interpolation")
 	var g := BattleGame.new(db,false)
 	g.rng.seed = 42
 	check(g.profile.unlocked.has("laser") and not g.profile.unlocked.has("missile"),"Starting equipment")
@@ -68,15 +65,7 @@ func run() -> void:
 	advance(g,8)
 	check(g.player.armour==before,"Pause freezes simulation")
 	g.paused = false
-	check(g.reduced_damage(5,1,1)==3 and g.reduced_damage(0.2,2,2)==1,"Resistance, ceil, min 1")
-	g.player.shield = 10
-	g.player.armour = 100
-	g.hit_player(30,1)
-	check(g.player.shield==0 and g.player.armour==90,"Shield overflow uses remaining raw damage")
-	g.player.shield = 5
-	g.player.armour = 100
-	g.hit_player(15,2)
-	check(g.player.shield==0 and g.player.armour==95,"Physical overflow armour resistance")
+	# Damage/overflow assertions migrated to test_rule_rounding.gd.
 	g.profile.cleared=[1,2]
 	g.rebuild_unlocks()
 	g.start(1,false)
@@ -115,34 +104,7 @@ func run() -> void:
 	g.drops=[{"uid":12,"x":500.0,"y":300.0,"age":0.0,"id":"1","amount":1.0}]
 	advance(g,5.1)
 	check(g.profile.resources["1"]==3 and g.drops.is_empty(),"Timed pickup rounds each final collection up")
-	var resources := BattleGame.new(db,false)
-	resources.profile.resources["1"] = 0
-	var collected: Array[Dictionary] = []
-	resources.event.connect(func(kind, info):
-		if kind == "collect":
-			collected.append(info))
-	var resource_enemy := {"hp":1.0,"armourType":0,"x":500.0,"y":300.0,"res_ratio":1.1,"drops":[{"resourceId":1,"amount":3.0,"chance":1.0}]}
-	resources.hit_enemy(resource_enemy,10,1)
-	check(resources.drops[0].amount==4,"Drop rounds after multiplier: ceil(3 * 1.1)")
-	var original_loss = db.config.autoCollectReduce
-	db.config.autoCollectReduce = 0.4
-	resources.collect(resources.drops[0],false)
-	db.config.autoCollectReduce = original_loss
-	check(resources.profile.resources["1"]==3 and resources.run_resources["1"]==3 and collected[0].amount==3,"Auto loss rounds independently and display matches credit: ceil(4 * 0.6)")
-	resources.drops=[{"uid":99,"x":500.0,"y":300.0,"age":0.0,"id":"1","amount":4.0}]
-	resources.collect(resources.drops[0],true)
-	check(resources.profile.resources["1"]==7 and resources.run_resources["1"]==7 and collected[1].amount==4,"Manual collection credits the displayed integer drop")
-	var original_cost = db.equipment.laser[1].cost_1
-	db.equipment.laser[1].cost_1 = 3.2
-	resources.profile.resources["1"] = 3
-	check(resources.upgrade_cost("laser")["1"]==4 and not resources.can_upgrade("laser"),"Fractional final cost rounds up for affordability")
-	resources.profile.resources["1"] = 5
-	check(resources.upgrade("laser") and resources.profile.resources["1"]==1,"Upgrade deducts the same rounded cost")
-	db.equipment.laser[1].cost_1 = original_cost
-	var original_start = db.defaults.startingIron
-	db.defaults.startingIron = 1.2
-	check(resources.fresh_profile().resources["1"]==2,"Starting resources round up")
-	db.defaults.startingIron = original_start
+	# Staged rounding and cost assertions migrated to test_rule_rounding.gd.
 	check(not g.can_upgrade("laser"),"Insufficient resources reject upgrade")
 	g.profile.resources["1"]=120
 	check(g.upgrade("laser") and g.stat("laser")==24 and g.profile.resources["1"]==0,"Upgrade applies next Excel row and cost")
@@ -150,69 +112,7 @@ func run() -> void:
 	check(g.upgrade_cost("laser")["2"]==10,"Level 10 titanium cost")
 	g.first_equipment_entry("laser").level=20
 	check(not g.can_upgrade("laser"),"Level cap")
-	# Only missiles retarget after their original target dies.
-	for key in ["laser", "cannon", "missile"]:
-		var tracking := BattleGame.new(db,false)
-		tracking.start(1,false)
-		tracking.spawn_group()
-		tracking.profile.unlocked = []
-		for enemy in tracking.enemies:
-			enemy.equipment = []
-		var original := tracking.targets()[0]
-		var survivor := tracking.targets()[1]
-		var hp_before := float(survivor.hp)
-		tracking.fire(tracking.player, original, db.equip(key,1), 1, false, key)
-		var shot := tracking.projectiles[0]
-		var initial_direction: Vector2 = shot.direction
-		original.hp = 0
-		tracking.tick(0.001)
-		if key == "missile":
-			check(tracking.projectiles.size()==1 and shot.target.uid==survivor.uid,"Missile retargets living enemy")
-			survivor.hp = 0
-			tracking.tick(0.001)
-			check(tracking.projectiles.has(shot) and shot.target.is_empty(),"Missile flies on when no living target remains")
-		else:
-			check(tracking.projectiles.has(shot) and shot.target.is_empty() and shot.direction==initial_direction and survivor.hp==hp_before,key+" keeps its trajectory without retargeting")
-			tracking.profile.unlocked = [key]
-			tracking.cooldowns[tracking.slot_id("weapons",tracking.first_weapon_index(key))] = 0
-			tracking.tick(0.001)
-			check(tracking.projectiles.size()==2 and tracking.projectiles[1].target.uid==survivor.uid,key+" selects living enemy on next fire")
-		var last_position := Vector2(shot.x,shot.y)
-		var last_direction: Vector2 = shot.direction
-		tracking.tick_projectiles(0.1)
-		check(Vector2(shot.x,shot.y).is_equal_approx(last_position+last_direction*shot.speed*0.1),key+" flies straight after target loss")
-		tracking.tick_projectiles(100)
-		check(not tracking.projectiles.has(shot),key+" removed only after leaving screen")
-	# A dead shooter and wave/level completion must not erase in-flight shots.
-	for boss_wave in [false]:
-		var lingering := BattleGame.new(db,false)
-		lingering.start(1,false)
-		lingering.spawn_group()
-		lingering.profile.unlocked = []
-		var shooter := lingering.enemies[0]
-		shooter.boss = boss_wave
-		lingering.fire(shooter,lingering.player,db.equip("laser",1),1,true,"laser_mon")
-		var enemy_shot := lingering.projectiles[0]
-		for enemy in lingering.enemies:
-			enemy.hp = 0
-		lingering.tick(0.001)
-		check(lingering.projectiles.has(enemy_shot),"Dead shooter projectile survives wave end: "+str(boss_wave))
-		var previous_x := float(enemy_shot.x)
-		lingering.tick(0.001)
-		check(enemy_shot.x < previous_x,"Enemy projectile moves after wave end: "+str(boss_wave))
-		var armour_before := float(lingering.player.armour)
-		enemy_shot.x = lingering.player.x + 0.01
-		enemy_shot.y = lingering.player.y
-		lingering.tick(0.001)
-		check(lingering.player.armour < armour_before and not lingering.projectiles.has(enemy_shot),"Dead shooter projectile still hits player: "+str(boss_wave))
-	var death_flight := BattleGame.new(db,false)
-	death_flight.start(1,false)
-	death_flight.spawn_group()
-	death_flight.fire(death_flight.enemies[0],death_flight.player,db.equip("laser",1),1,true,"laser_mon")
-	var orphan := death_flight.projectiles[0]
-	death_flight.hit_player(99999,1)
-	death_flight.tick(0.01)
-	check(death_flight.projectiles.has(orphan) and orphan.target.is_empty(),"Player death preserves enemy projectile in straight flight")
+	# Projectile lifecycle assertions migrated to test_projectile_lifecycle.gd.
 	# Missile salvo must select distinct living targets and respect count.
 	g.start(2,false)
 	g.group_index=1

@@ -15,6 +15,7 @@ func fixture() -> BattleGame:
 	db.levels[0].length = 1000
 	db.levels[0].groups = [{"id":1,"position":0.1},{"id":1,"position":0.3},{"id":1,"position":0.9}]
 	var g := BattleGame.new(db,false)
+	db.ships[g.first_ship()].movement = 20
 	g.profile.cleared = [1,2]
 	g.rebuild_unlocks()
 	g.start(1,false)
@@ -52,7 +53,7 @@ func run() -> void:
 	g.spawn_group()
 	g.toggle_loop()
 	check(g.guard_interval() == 10 and g.distance == 300, "Unequal adjacent spacing controls interval")
-	g.db.config.movement = 40
+	g.db.ships[g.profile.selectedShip].movement = 40
 	check(g.guard_interval() == 5, "Movement speed controls interval")
 	for mode in [0,1,2]:
 		g = fixture()

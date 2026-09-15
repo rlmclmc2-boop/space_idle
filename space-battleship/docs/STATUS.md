@@ -1,9 +1,10 @@
 # Current Status
 
 Goal:
-Phase 9已完成，CHECKPOINT 5待确认；不得开始Phase 10。
+Phase 10已完成，CHECKPOINT 6待确认；不得开始Phase 11。
 
 Done:
+- 2026-09-16：Phase 10建立62项TEST_MAP；新增取整/弹体生命周期/时间/保存边界4个专项，迁出历史有效断言，修正驻守速度夹具并删除4条过时数值/位置快照。34个核心专项最终通过；生产代码0变更、12份正式输入哈希不变。详见REFACTOR_PLAN第12节；U-017～U-021及其他未决事项保持。
 - 2026-09-15：Phase 9先建立30组帧场景及离线/保存基线，各3轮raw+3轮插桩；仅优化科学家MAX可用性判断，生产净增4行，无缓存。1009+63+11项通过，相同探针复测收益可重复；CHECKPOINT 5与全部数据见REFACTOR_PLAN第11节。
 - 2026-09-15：Phase 8未找到净收益明确的等价抽取，A12/A13保持原实现。新增独立输入/故障矩阵，冻结入口差异；详细结果见REFACTOR_PLAN第10节，既有风险统一见U-018/U-019/U-020。
 - 2026-09-15：Phase 6改为静态find_python，移除编辑器查找Python时的QA Window创建/释放；18项编辑器、14项QA及独立进程大重启验证通过。Phase 7未发现可安全删除的重复入口，目录保持不变。CHECKPOINT 3及Phase 8待批准范围见REFACTOR_PLAN第9节。
@@ -90,9 +91,10 @@ Done:
 - 2026-09-13：复用弹体清理与导弹换靶实现，更新武器模块及 U-006；新增6项回归，隔离副本运行77项检查、0失败，编辑器扫描及测试退出0。记录见VALIDATION本次武器验证。
 
 In Progress:
-- 无运行中的重构；等待CHECKPOINT 5确认。
+- 无运行中的重构；等待CHECKPOINT 6确认。
 
 Blocked:
+- Phase 10无未解决的本轮专项失败；历史综合探针仍非整套基线（U-017），完整故障恢复与跨硬件交互验证未穷尽，不宣称全仓测试全绿。
 - Phase 9无未解决相关测试失败；剩余UI重建热点见U-021。U-018/U-019/U-020未处理。
 - Phase 8未修改生产代码；既有总表测试失败见U-018，回滚失败及并发覆盖风险见U-019/U-020，不能宣称完整事务安全。
 - Phase 6～7无未解决专项失败；旧总表与现行导入模式差异见U-018，历史综合测试限制见U-017。
@@ -102,7 +104,7 @@ Blocked:
 - 本次无阻塞；其他设计裁决见 TODO P1。
 
 Next:
-0. 等待CHECKPOINT 5及Phase 10批准；本轮停止。数据链路风险仍需独立授权。
+0. 等待CHECKPOINT 6及Phase 11批准；本轮停止。数据链路风险仍需独立授权。
 0. QA「大重启」加载大数性能修复，无需清档。
 0. QA「大重启」加载伤害数字避让显示。
 0. 重启查看科学家批量操作。
@@ -136,6 +138,7 @@ Next:
 3. 优先解决TODO P1原表/实现歧义；P2验证真实数值成长节奏。
 
 Relevant Files:
+- ../test/TEST_MAP.md；../test/README.md；REFACTOR_PLAN.md第12节；../test/work/refactor-phase10/（本轮隔离日志）
 - REFACTOR_PLAN.md第11节；scripts/game.gd:can_generate_scientist；../test/test_performance.py；../test/phase9_probe.gd；../test/test_scientist_affordability.gd。
 - REFACTOR_PLAN.md第10节；../test/test_config_input_matrix.py；../test/work/refactor-phase8/；docs/TODO.md U-018/U-019/U-020。
 - REFACTOR_PLAN.md第9节；scripts/config_panel.gd；scripts/level_editor.gd；../test/test_level_editor.gd；../test/test_config_panel.gd；../test/work/refactor-phase6-7/；docs/INVENTORY.md。

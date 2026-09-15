@@ -32,5 +32,17 @@ func _initialize() -> void:
 			check(game.unequip_slot(category,0), "removal frees count")
 			check(game.equip_slot(category,0,key), "can re-equip")
 			check(game.slot_entry(category,0).level == 1, "new instance level one")
+	# Existing over-limit saves remain intact; only new installations are rejected.
+	db.ships[game.first_ship()].sameEquipmentLimit = 1
+	var old := BattleGame.new(db,false)
+	old.profile.loadout.weapons[1] = {"key":"laser","level":2}
+	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
+	file.store_string(JSON.stringify(old.profile))
+	file.close()
+	var restored := BattleGame.new(db,false)
+	restored.load_progress()
+	check(restored.equipment_count("laser")==2 and restored.slot_entry("weapons",1).level==2,"Legacy excess instances are not silently removed")
+	var before: Dictionary = restored.profile.duplicate(true)
+	check(not restored.equip_slot("weapons",2,"laser") and restored.profile==before,"Legacy excess cannot add another instance")
 	print("Equipment limits: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

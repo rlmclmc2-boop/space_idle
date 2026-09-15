@@ -1,5 +1,21 @@
 # 测试目录
 
+## 按规则定位（Phase 10）
+
+逐条状态、断言标签和仍缺少的验证见 [TEST_MAP](TEST_MAP.md)。普通规则任务先读下面对应的1～3个专项，不以 `test_game.gd` 作为整套基线。
+
+| 修改内容 | 最小测试入口 |
+|---|---|
+| 资源取整 | `test_rule_rounding.gd`；涉及自动生产加 `test_auto_gen_resources.gd` |
+| 装备槽位 | `test_state_ownership.gd`；涉及退款加 `test_unequip.gd`，数量限制加 `test_ship_equipment_limit.gd` |
+| 战斗目标 | `test_target_resistance.gd`、`test_projectile_lifecycle.gd`；涉及末敌加 `test_boss_projectile_clear.gd` |
+| 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd` |
+| 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；离线资源加 `test_offline_resources.gd` |
+| UI解锁 | `test_tab_unlocks.gd`；换舰草稿加 `test_ship_tab.gd` |
+| 时间步进 | `test_time_steps.gd`；冷却加 `test_travel_cooldowns.gd` |
+
+`test_time_steps.gd` 的局部子类只记录实际tick入参后调用原实现；没有替换算法或新增测试框架。
+
 Windows 运行器创建临时副本后启用父目录权限继承，让命令行与截图查看工具均可访问产物；不额外授予超出 `work/` 父目录的权限。
 
 测试源码统一在本目录，工作副本、日志、截图、测试存档和审计结果统一放入 `work/`（不提交 Git）。禁止在工作区根新建验证目录；完整规则见 [AGENTS](../space-battleship/AGENTS.md) 和 [VALIDATION](../space-battleship/docs/VALIDATION.md)。
