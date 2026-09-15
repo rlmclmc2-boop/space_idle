@@ -180,15 +180,18 @@ func _process(delta: float) -> void:
 	for key in upgrade_buttons:
 		var b: Button = upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = not game.can_upgrade_slot("defence" if str(key).begins_with("defence_") else "weapons" if str(key).begins_with("weapons_") else ("weapons" if BattleGame.WEAPON_KEYS.has(str(key)) else "defence"), int(str(key).get_slice("_",1))) if str(key).contains("_") else not game.can_upgrade(str(key))
+			var slot: String = b.get_meta("slot")
+			b.disabled = not game.can_upgrade_slot(slot.get_slice("_",0),int(slot.get_slice("_",1)))
 	for key in ten_upgrade_buttons:
 		var b: Button = ten_upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = not game.can_upgrade_slot("defence" if str(key).begins_with("defence_") else "weapons", int(str(key).get_slice("_",1)), 10) if str(key).contains("_") else not game.can_upgrade_amount(str(key),10)
+			var slot: String = b.get_meta("slot")
+			b.disabled = not game.can_upgrade_slot(slot.get_slice("_",0),int(slot.get_slice("_",1)),10)
 	for key in max_upgrade_buttons:
 		var b: Button = max_upgrade_buttons[key]
 		if is_instance_valid(b):
-			b.disabled = game.max_upgrade_amount_slot("defence" if str(key).begins_with("defence_") else "weapons", int(str(key).get_slice("_",1))) <= 0 if str(key).contains("_") else game.max_upgrade_amount(str(key)) <= 0
+			var slot: String = b.get_meta("slot")
+			b.disabled = game.max_upgrade_amount_slot(slot.get_slice("_",0),int(slot.get_slice("_",1))) <= 0
 	for id in equipment_cooldowns:
 		var index := int(str(id).get_slice("_",1))
 		var entry := game.slot_entry("weapons",index)
@@ -786,17 +789,20 @@ func build_equipment_tabs() -> void:
 			upgrade.tooltip_text = "已达最高等级" if maxed else "升1级，消耗："+cost_text(single_cost)
 			upgrade.reparent(card,false)
 			upgrade.add_theme_font_size_override("font_size",12)
+			upgrade.set_meta("slot",slot_key)
 			upgrade_buttons[key if not upgrade_buttons.has(key) else slot_key] = upgrade
 			if bulk:
 				var ten := button("10连",Rect2(310,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,10),false,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index,10))
 				ten.reparent(card,false)
 				ten.add_theme_font_size_override("font_size",12)
+				ten.set_meta("slot",slot_key)
 				ten.tooltip_text = "一次升10级，总消耗：" + cost_text(ten_cost)
 				ten_upgrade_buttons[key if not ten_upgrade_buttons.has(key) else slot_key] = ten
 				var max_amount := game.max_upgrade_amount_slot("defence" if defence else "weapons",slot_index)
 				var max_button := button("MAX",Rect2(372,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,max_amount),false,max_amount <= 0)
 				max_button.reparent(card,false)
 				max_button.add_theme_font_size_override("font_size",12)
+				max_button.set_meta("slot",slot_key)
 				max_button.tooltip_text = "升级至 Lv.%s，总消耗：%s" % [number(lv + max_amount),cost_text(game.slot_upgrade_cost("defence" if defence else "weapons",slot_index,max_amount))]
 				max_upgrade_buttons[key if not max_upgrade_buttons.has(key) else slot_key] = max_button
 			if not defence:

@@ -10,6 +10,19 @@ func check(value: bool, label: String) -> void:
 	if not value:
 		failures += 1
 
+func reset_profile_matches(game: BattleGame) -> bool:
+	var expected := game.fresh_profile()
+	# Saving and building the UI add metadata absent from fresh_profile().
+	# Check its reset values explicitly; wall-clock timestamps are not progress.
+	expected.hightechSavedAt = game.profile.hightechSavedAt
+	expected.offlineSavedAt = floorf(float(game.profile.hightechSavedAt))
+	expected.resourceSamples = []
+	expected.offlineRates = {"1":0.0,"2":0.0}
+	expected.hightechDrops = []
+	var reference := BattleGame.new(game.db,false)
+	expected.hightechOrder = reference.hightech_slots()
+	return game.profile == expected
+
 func run() -> void:
 	change_scene_to_file("res://main.tscn")
 	await scene_changed
@@ -25,7 +38,7 @@ func run() -> void:
 	panel.delete_save_button.pressed.emit()
 	await scene_changed
 	await process_frame
-	check(current_scene.game.profile == current_scene.game.fresh_profile(), "All progress resets to configured defaults")
+	check(reset_profile_matches(current_scene.game), "All progress resets to configured defaults")
 	check(current_scene.game.stage == 1 and not current_scene.game.paused, "Restarts at first stage")
 	check(root.get_node("QATools").get_instance_id() == original_id, "Same QA window survives")
 	check(FileAccess.get_file_as_string("user://qa_settings.cfg") == settings_before, "QA settings preserved")
@@ -41,7 +54,7 @@ func run() -> void:
 	panel.delete_save_button.pressed.emit()
 	await scene_changed
 	await process_frame
-	check(current_scene.game.profile == current_scene.game.fresh_profile(), "Reset also works without existing save")
+	check(reset_profile_matches(current_scene.game), "Reset also works without existing save")
 	await RenderingServer.frame_post_draw
 	panel.get_texture().get_image().save_png("res://preview-delete-save.png")
 	print("DELETE SAVE: ", failures, " failures")
