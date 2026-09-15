@@ -180,6 +180,15 @@ func run() -> void:
 	for key in scene.hightech_progress:
 		var controls: Dictionary=scene.hightech_progress[key]
 		check(controls.bar.position.y+controls.bar.size.y<=112 and controls.bar.position.x+controls.bar.size.x<scene.hightech_buttons[key].position.x,"Research bar fits before the action button")
+	scene.db.data.hightech[F].description="界面模板 {等级}"
+	scene.game.profile.hightechLevels[F]=2
+	scene._process(0)
+	check(scene.hightech_descriptions[F].text=="界面模板 2" and scene.hightech_descriptions[F].tooltip_text=="界面模板 2","UI refresh reads description and updates tooltip without rebuild")
+	var description: Label=scene.hightech_descriptions[F]
+	check(description.size.x<=423 and description.get_rect().end.y<=79,"Description stays within its card")
+	check(scene.equipment_tabs.get_rect().end.y<=778,"Research cards stay above footer")
+	scene.game.event.emit("hightech_complete",{"key":F})
+	check(scene.message==F+"研发完成","Completion event retains its toast")
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://scientists.png")
 	print("Scientists: %d checks, %d failures" % [checks,failures])

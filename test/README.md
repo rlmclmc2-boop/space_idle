@@ -10,7 +10,7 @@ Windows 运行器创建临时副本后启用父目录权限继承，让命令行
 
 `legacy/` 保留旧专项探针源码，仅供复用参考；不能直接视为当前规则的验收标准。旧验证副本与历史截图、JSON 审计产物已按用户要求清理，历史测试结论仍记录于 VALIDATION。
 
-2026-09-15 高科技重做后，科学家/点数/迁移/界面验证入口为 `test_scientists.gd`、配置为 `test_scientist_config.py`、拖拽为 `test_hightech_slots.gd`。旧 `test_hightech.gd`、`test_hightech_continuous.gd`、`test_hightech_progress.gd` 中计时/切换假设已废弃，不作为新版验收；历史脚本保留仅供机制参考。
+2026-09-15 高科技重做后，科学家/点数/迁移/界面验证入口为 `test_scientists.gd`、配置为 `test_scientist_config.py`、拖拽为 `test_hightech_slots.gd`。旧计时/切换测试已在有效断言迁移后删除，历史从Git查询；不能恢复旧计时假设作为新版验收。
 
 舰船槽位、重复装备独立升级、换舰重置与资源返还验证入口为 `test_ships.gd`。
 

@@ -319,3 +319,10 @@ EXPECTED_GAIN 顺序统一为：代码复杂度 / 文件数量 / 依赖复杂度
 - 日志索引：`../test/work/refactor-checkpoint-1/phase1-*.log`，各日志首行给出隔离副本路径。已检查科学家半进度及满装武器页截图；根证书读取提示、卸下测试的QA子窗口提示为当前环境/既有行为，不是规则断言失败。
 - 正式配置基线：对总表、分表及清单、运行JSON保存SHA-256到 `../test/work/refactor-checkpoint-1/input-hashes.json`；Excel打开时采用共享只读句柄，不关闭用户Excel。未读正式存档。
 - 检查：测试diff与 `git diff --check` 通过。没有启动性能优化、存档改造或状态源修改。
+
+### Phase 2：完成
+
+- 删除 `test_hightech.gd / test_hightech_continuous.gd / test_hightech_progress.gd`，共343行，未发现配套UID或执行代码引用。有效规则覆盖分流：点数/迁移/离线/属性/描述/进度UI归scientists，收入/峰值/领取/寿命归furnace_income，拖拽/页签归hightech_slots；并发计时、暂停项remaining、research切换API是已废弃语义，不迁回运行时。
+- 删除 `main.on_event` 的无发射方research分支；保留hightech_complete的文案和deferred重建。补UI描述来源/tooltip/卡片边界和完成事件断言。
+- 保留：State枚举（LEVEL_SELECT虽无调用，但删除涉及其他状态整数值，收益不足）；leave/MAIN_MENU/UPGRADE/DEFEAT仍有调用；旧default字段不在此次修改投影链；截图入口、legacy探针、绘图fallback、旧档迁移仍有用途。
+- 验证：科学家63项、拖拽32项全部通过，Godot导入退出0；相关执行引用搜索无命中，diff及空白检查通过。日志 `../test/work/refactor-checkpoint-1/phase2-*.log`。无新行为差异或验证失败。

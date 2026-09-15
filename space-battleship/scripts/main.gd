@@ -273,8 +273,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			build_ui()
 		"scientists_changed":
 			call_deferred("build_ui")
-		"research", "hightech_complete":
-			toast(str(info.key) + ("研发完成" if kind == "hightech_complete" else "开始研发"))
+		"hightech_complete":
+			toast(str(info.key) + "研发完成")
 			call_deferred("build_ui")
 		"unlock":
 			help_open = false
