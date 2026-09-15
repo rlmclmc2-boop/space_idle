@@ -10,14 +10,16 @@
 
 ## 本批舰船资产
 
-| 阵营 | 文件 | 槽位数 | 槽位尺寸 | 默认编队备注 |
+下表仅描述素材外观槽位，不规定运行编队数量；游戏领域边界见[PROJECT](PROJECT.md)。
+
+| 阵营 | 文件 | 槽位数 | 槽位尺寸 | 备注 |
 |---|---|---:|---|---|
 | 我方 | `assets/ships/player/player-scout-3slot.png` | 3 | 小 | — |
 | 我方 | `assets/ships/player/player-interceptor-4slot.png` | 4 | 小 | — |
 | 我方 | `assets/ships/player/player-cruiser-5slot.png` | 5 | 中 | — |
 | 我方 | `assets/ships/player/player-battleship-6slot.png` | 6 | 中 | — |
 | 我方 | `assets/ships/player/player-dreadnought-8slot.png` | 8 | 大型 | — |
-| 敌方 | `assets/ships/enemy/enemy-scout-1slot.png` | 1 | 小 | 默认 4 艘一组 |
+| 敌方 | `assets/ships/enemy/enemy-scout-1slot.png` | 1 | 小 | — |
 | 敌方 | `assets/ships/enemy/enemy-medium-1slot.png` | 1 | 中 | — |
 | 敌方 | `assets/ships/enemy/enemy-medium-2slot.png` | 2 | 中 | — |
 | 敌方 | `assets/ships/enemy/enemy-large-4slot.png` | 4 | 大型 | — |

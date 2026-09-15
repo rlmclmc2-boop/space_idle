@@ -1,26 +1,30 @@
-# AI 入口
+# AI 唯一入口
 
-Search → Minimum Read → Execute → Verify → Update State。
-首次接手读 [PROJECT](docs/PROJECT.md) + [STATUS](docs/STATUS.md)，之后仅按任务加载。
+太空战舰是 Godot/GDScript 横版放置自动战斗游戏：推进、战斗、收集资源并成长。
 
-| 任务 | 附加上下文（均在 docs/） |
-|---|---|
-| 舰船/防御 | modules/ships.md；伤害接口查 modules/combat.md |
-| 战斗/武器 | modules/combat.md 或 modules/weapons.md；对应函数及直接依赖 |
-| 资源/升级/解锁 | modules/economy.md 或 modules/progression.md |
-| 关卡/敌群 | modules/map.md；敌机接口查 modules/ships.md |
-| UI/QA | modules/ui.md；scripts/main.gd 或 config_panel.gd 的相关函数 |
-| 数值/Excel | DATA.md 中的表范围；tools/inspect_knowledge.py 按范围读取 |
-| Bug | 搜索错误/符号 → 命中区域 → 直接依赖 → 对应测试 |
-| 规划/架构 | GAME_DESIGN.md 或 ARCHITECTURE.md + DECISIONS.md；路线见 TODO.md |
+## 读取协议
 
-- 先 `rg` 文件名/符号/引用，再读片段；排除 `.godot/ .runtime/ .userdata/`。禁止默认读取全部模块、源码、Excel 或审计 JSON。
-- 来源协议见 [DATA](docs/DATA.md)：CONFIRMED 必带来源，代码事实不等于策划批准；DERIVED 写推导；所有 UNKNOWN/冲突只在 [TODO](docs/TODO.md) 建 ID，其他文档引用 ID。
-- One fact → One source：数值归源表，运行投影归 JSON，细则只在所属模块解释；不复制数值表，不静默解决冲突。
-- Preserve → Reuse → Modify → Create → Rewrite。先找现有实现；不擅自新增玩法、换栈、重构、移动或删除资料。保持用户正在进行的修改。
-- 所有游戏页签未解锁前不展示；新增或修改页签须复用统一解锁显示规则，具体判定与切页行为见 [UI规范](docs/modules/ui.md)。
-- 验证命令与隔离要求见 [VALIDATION](docs/VALIDATION.md)。仅运行改动及直接影响范围的必要测试；无关测试默认不跑，只有相关测试失败或存在明确风险时才扩大验证，已通过的检查无新改动不重复跑。纯文档修改仅检查相关内容和链接，不跑游戏测试。Excel 核对用临时目标，不能因整理而覆盖运行 JSON/玩家存档。
-- 测试源码统一维护在工作区 `test/`（相对项目 `../test/`）；所有测试副本、截图、日志、测试存档与审计产物只放 `test/work/`，不得再在主目录新建验证文件夹。按 [测试入口](../test/README.md) 运行所需测试。
-- 完成任务更新 STATUS 的 Done/In Progress/Blocked/Next/Relevant Files；规则改所属模块，问题改 TODO，长期决策才改 DECISIONS。检查引用及事实来源是否仍有效。
-- 交接只留 Goal / Completed / Changed / Issue / Next / Relevant Files，压缩到 STATUS 对应字段；不保存聊天、思考过程或平台私有记忆。
-- 默认汇报 Done / Changed / Validation / Next。跨平台先显式读取本文件，适配文件只能链接此入口；交接文件清单见 [INVENTORY](docs/INVENTORY.md)。
+- L0：本文件 → [STATUS](docs/STATUS.md)。默认只读这两份。
+- L1：规则含义选 [PROJECT](docs/PROJECT.md)；代码/数据/测试定位选 [ARCHITECTURE](docs/ARCHITECTURE.md)；改变既有结构前选 [DECISIONS](docs/DECISIONS.md)。按任务选择，不默认全读。
+- L2：搜索目标符号，只读最少源码、直接依赖与对应专项测试。
+- 标准流程：Search → Minimum Read → Change → Verify → Handoff。
+- 禁止默认全仓扫描、读取全部文档、整份game_data.json或旧综合测试来理解单个规则。排除缓存、引擎二进制、玩家目录及test/work；专项审计只读明确范围。
+
+## 执行约束
+
+- 先明确GOAL / SCOPE / DO_NOT_TOUCH / DONE_WHEN；用户已明确时不重复询问。保护已有修改，不顺手改无关区域。
+- 正确性优先；小步修改→对应测试→检查diff→确认行为不变。验证失败先定位或回退，不带失败叠加修改；不改正确断言迁就实现。
+- 禁止擅自改变游戏数值、规则、未决规则或恢复废弃机制。代码事实不等于策划批准；未决项只在STATUS保留ID。
+- 来源标注区分原表/用户确认、当前实现、推导（写明前提）；冲突先记录，不静默选择一方。一个事实一个权威来源。
+- 禁止擅自修改正式Excel/JSON；已编辑分表不能被旧总表覆盖。经授权的配置任务仍须先核对来源与影响范围，操作查项目README。
+- 禁止操作正式玩家存档，不用玩家目录复现问题；测试必须复制项目和用户目录，仅改隔离副本。
+- 不为重构新增Manager / Service / Framework、ECS或通用策略层；没有明确净收益则保持原实现，不机械拆长文件。
+- 不凭无引用搜索就删除代码/资源/入口；先证明实际用途及消费者。性能修改遵循DECISIONS的测量门槛。
+
+## 验证与交接
+
+- [测试入口](../test/README.md)提供隔离runner与专项路由；产物只放`../test/work/`，不在工作区根生成验证目录。
+- 只跑修改及直接影响范围的必要检查；仅文档改动检查事实、链接、未决ID和diff，不运行游戏测试。UI改动另核对实际交互/画面。
+- 完成后覆盖STATUS当前状态，不追加Done流水账；稳定规则改PROJECT，定位改ARCHITECTURE，长期取舍才改DECISIONS。
+- HANDOFF：DONE / CHANGED / VERIFY / NEXT；存在阻塞才加BLOCKERS，新长期决策才加DECISION。用户指定检查点格式时按其格式，不复述项目背景。
+- 跨AI/IDE协作以仓库文档为准，不依赖聊天或私有记忆；其他入口仅链接本文件。

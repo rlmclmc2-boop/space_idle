@@ -1,5 +1,7 @@
 # 太空战舰：项目审计与分阶段重构方案
 
+本文件是重构审计与阶段历史，保留至整个重构完成；不是现行规则权威或默认AI上下文。现行入口为AGENTS，旧文档迁移见DOCUMENT_MIGRATION_MAP。
+
 日期：2026-09-15。审计基线：工作区 Git HEAD `7f4d704`；审计开始时工作树干净。
 
 ## 0. 本轮范围与结论
@@ -12,7 +14,7 @@
 
 **结论：保留 Godot + GDScript + Excel → JSON 主干。优先清理已核实的历史负担，消除装备状态双向同步及读取副作用，再简化依赖，最后按测量结果优化。没有全项目重写、ECS、服务层或通用配置框架的必要。**
 
-证据性质：下文的代码行为是 CURRENT，不自动等于策划批准。性能均为静态热点候选，没有本轮基准测试结果；没有声称全部测试通过或全部死代码已确认。原表未展开读取，未做数值平衡或投影一致性审计；已编辑分表不能被旧总表覆盖。已有规则争议沿用 [TODO](docs/TODO.md) 的 U-001、U-004～U-013，不能借重构自行裁决。
+证据性质：下文的代码行为是 CURRENT，不自动等于策划批准。性能均为静态热点候选，没有本轮基准测试结果；没有声称全部测试通过或全部死代码已确认。原表未展开读取，未做数值平衡或投影一致性审计；已编辑分表不能被旧总表覆盖。已有规则争议沿用 [未决事项](docs/STATUS.md) 的 U-001、U-004～U-013，不能借重构自行裁决。
 
 ## 1. 当前架构地图
 
@@ -107,7 +109,7 @@ DELETE 均指后续候选；删除前必须复核符号、字符串调用、信�
 | A05 | `main._process` 用带下划线的字符串判断新旧按钮键、嵌套条件分派 | SIMPLIFY | 建钮时保存明确的槽位标识；先验证旧键是否只剩测试使用，不新增控制器 |
 | A06 | `main.hightech_button_text` 恒为 +1，`select_research` 实际分配科学家；`on_event` 仍有 research 分支 | SIMPLIFY / 条件 DELETE | 前两项仍有调用，不能标死代码；旧 research 发射在当前源码未找到，复核后删除旧分支 |
 | A07 | `State.LEVEL_SELECT` 未找到当前调用；MAIN_MENU有初始化/测试，UPGRADE/DEFEAT及leave有测试引用 | 条件 DELETE；其余 KEEP至完成迁移 | 删除枚举会改变后续枚举整数，必须保持活动值或确认全部消费者；沿用 U-011 |
-| A08 | `import_workbook.DEFAULTS.deathRetreatDistance` 与 JSON同字段；实际后退用 config.backRange | 条件 DELETE | [map](docs/modules/map.md) 已说明停用；先证明无消费者，再停止生成，最后处理投影保留字段。不得顺手改有效 backRange |
+| A08 | `import_workbook.DEFAULTS.deathRetreatDistance` 与 JSON同字段；实际后退用 config.backRange | 条件 DELETE | 旧map说明已迁至[关卡规则](docs/PROJECT.md)；先证明无消费者，再停止生成，最后处理投影保留字段。不得顺手改有效 backRange |
 | A09 | 三份旧高科技测试仍调用不存在的 research/hightechResearch；test/README 明确它们不再验收新版 | 条件 DELETE | `test_hightech.gd / test_hightech_continuous.gd / test_hightech_progress.gd` 的现行有效断言先迁到科学家专项；依赖更新后删除，历史归Git |
 | A10 | `test/legacy` 探针、`--capture` 分支、截图脚本 | 逐项核实；默认 KEEP | 截图/人工验收仍有用途；不能因 debug、legacy 命名批量删除 |
 | A11 | 两处 AST/Decimal/ROUND 公式求值：Store.workbook_bytes 与 inspect_knowledge.audit | MERGE候选，低优先级 | 支持范围不一致：一处支持正负号/大小写ROUND及float中转，另一处保留Decimal递归；不能直接替换成同一算法造成审计/写表变化 |
@@ -846,3 +848,73 @@ U-018/U-019/U-020/U-021与其他TODO均未修复。数据链路故障观察测�
 待单独批准后，先列出各文档的独有规则/来源/未决ID/测试入口，再迁入现有AGENTS、PROJECT、ARCHITECTURE、STATUS、DECISIONS五份权威文件。保留U-018～U-021等问题和本轮最小测试路由；历史结果归Git，工具使用说明与资产来源按用途保留。逐项迁移、验证引用和链接后才删失去职责的文档；只改文档时不重跑游戏测试，不承诺未测量的Token百分比。
 
 **Phase 10完成后停止。未开始Phase 11，等待CHECKPOINT 6确认。**
+
+## 13. CHECKPOINT 7 — Phase 11 AI文档压缩
+
+### DOCUMENT_MIGRATION
+
+删除前完成[DOCUMENT_MIGRATION_MAP](DOCUMENT_MIGRATION_MAP.md)：基线`c6a07c4`下26份文档、95组独有信息，按六类事实和八种去向逐组标记。先写目标，再核对关键语义及16个有效U-ID，之后才删除旧文件。映射文件是本次审计产物，不是第六份权威文档，不进入默认读取链。
+
+主要迁移：模块领域规则→PROJECT；目录/数据/状态/存档/测试定位→ARCHITECTURE；有效未决问题→STATUS；结构取舍/特殊状态/近似边界→DECISIONS；执行保护→AGENTS；启动/配置/跨机/QA操作→README；测试运行方法→test/README。日期日志、旧坐标/数值快照、已解决问题归Git，未复制进五份文档。
+
+### AUTHORITATIVE
+
+| 文件 | 单一职责 |
+|---|---|
+| AGENTS.md | 项目一句话、L0/L1/L2、任务/来源/正式文件保护、隔离验证和HANDOFF |
+| docs/PROJECT.md | 长期领域边界与来源口径；带U-ID的现行实现不冒充已批准策划 |
+| docs/ARCHITECTURE.md | 去哪找：入口、状态所有者、配置流、兼容边界、最小测试路由 |
+| docs/STATUS.md | CURRENT / DONE主要能力 / 16个KNOWN ISSUES / NEXT |
+| docs/DECISIONS.md | D001～D009：不知道就容易错误重设计的长期取舍 |
+
+### REMOVED
+
+删除12份旧AI说明：`docs/DATA.md`、`TODO.md`、`VALIDATION.md`、`INVENTORY.md`、`GAME_DESIGN.md`及`docs/modules/`下combat/economy/map/progression/ships/ui/weapons七份。没有删除源代码、测试或素材。清除旧固定20级、计时研发、size决定通关、旧炮口、旧无Git/无独立槽位等已过时描述，但保留相关U-ID的剩余未决范围。
+
+### KEPT
+
+保留六份人类/资产/测试操作文档：项目README、LEVEL_EDITOR、ART_GUIDELINES、两份资产README、test/README。编辑器中的重复战斗规则改为引用PROJECT；素材表明确只描述美术规格，不指定运行编队；测试入口保留实际命令与故障局限。TEST_MAP继续作为规则→断言检索产物。根AGENTS只链接项目入口；REFACTOR_PLAN按要求保留至整个重构结束，五份文档不要求默认读取它。
+
+### AGENTS / PROJECT / ARCHITECTURE / STATUS / DECISIONS / L0
+
+| 文件 | Before lines | After lines | Before bytes | After bytes |
+|---|---:|---:|---:|---:|
+| AGENTS | 26 | 30 | 2,991 | 2,790 |
+| PROJECT | 10 | 65 | 1,335 | 9,299 |
+| ARCHITECTURE | 23 | 70 | 3,231 | 7,181 |
+| STATUS | 202 | 39 | 38,613 | 3,286 |
+| DECISIONS | 19 | 15 | 1,016 | 2,809 |
+| **L0：AGENTS+STATUS** | **228** | **69** | **41,604** | **6,076** |
+| 五份合计 | 280 | 219 | 47,186 | 25,365 |
+
+统计为磁盘实际UTF-8字节（含换行）与文本行数；不换算精确Token。部分L1变大是承接旧模块中必须保留的独有信息，均为按需读取。基线和终值JSON在[文档验证目录](../test/work/refactor-phase11/)，原入口额外要求默认读PROJECT的成本未加入L0比较。
+
+### DUPLICATION
+
+逐组复核事实归属；不在STATUS复制规则公式，不在PROJECT列实现文件，不在AGENTS复制模块地图，不在DECISIONS保留任务流水。五份间未发现超过90字符的完全重复段落；语义复核另检查状态/舍入/兼容/数据来源，未发现相互矛盾的当前描述。入口保护与决策理由存在必要简短交叉引用，不声称关键词完全不重复。
+
+### LINKS
+
+全部现存受管Markdown及本次映射的本地链接/标题锚点检查通过；删除后发现的重构历史旧TODO链接已改指STATUS，旧map链接改指PROJECT。五份入口无旧modules/DATA/TODO等失效读取依赖；test/README与TEST_MAP可定位。最终链接数量及明细以`document-check.json`为准；历史记录中的非链接旧路径只用于解释当时状态。
+
+### MISSING
+
+未发现无法安全迁移的独有有效信息。全部26个旧文档在映射中，16个未决ID集合与旧TODO未解决项完全对应。U-002/U-003/U-014/U-015/U-016已解决记录归Git，不重新作为当前问题。已过时子句删除不表示U-007/U-009/U-010等整个问题已解决。
+
+### TOKEN_IMPACT
+
+按指定L0口径，字节减少35,528（85.4%），行数减少159；AGENTS 30行、STATUS 39行均满足目标。旧默认PROJECT读取改为按任务选择。五份合计字节减少约46.2%，但不将bytes当Token，不推断实际任务耗费已下降同一比例；实际读取成本留待Phase 12验证。
+
+### PRODUCTION_DIFF
+
+仅受管Markdown变更。游戏代码、工具、测试源码、场景、启动脚本、正式配置零diff；12份正式Excel/JSON/manifest与前阶段SHA-256一致，正式玩家档未读取或修改。仅运行文档审计脚本及Git diff/链接/ID/bytes检查，未运行游戏测试、Excel导入或Phase 12任务模拟。
+
+### RISKS
+
+压缩保留了实现事实与策划批准的区别；U-005/U-006等仍须规则裁决，不能凭PROJECT中的现行描述自行改设计。事务失败/并发、大数近似、首槽旧档优先是最易误解处，分别在STATUS/DECISIONS/ARCHITECTURE有明确入口。精确像素、公式缓存实现、旧历史证据需按符号或Git检索，不再默认携带。test/work证据不是跨机必需品，历史原文可从基线提交恢复。
+
+### PHASE12_PLAN
+
+获批后，以掉落取整、换舰页签、分表导入三种任务模拟陌生AI接手：先只给AGENTS+STATUS，再按任务选L1、搜符号与1～3个专项；记录读取文件数、实际bytes/lines、跳转次数、误读/漏约束及最终HANDOFF。确认不依赖聊天、全仓扫描、完整JSON或历史test_game；若路由缺信息，只补最短必要入口。不会借模拟修改玩法/配置/玩家档或启动新的性能优化。
+
+**Phase 11完成后停止。未开始Phase 12，等待CHECKPOINT 7确认。**

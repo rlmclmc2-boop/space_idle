@@ -1,23 +1,70 @@
-# Architecture
+# ARCHITECTURE — 按需定位
 
-核心规则测试按 [测试入口](../../test/README.md#按规则定位phase-10) 定位；逐条规则、断言与覆盖缺口见 [TEST_MAP](../../test/TEST_MAP.md)。资源取整、槽位、目标、科学家、存档、UI解锁均有少量专项入口；历史test_game不是整套验收基线。
+## 目录与入口
 
-## CURRENT · 代码确认
+相对项目根；核心为Godot/GDScript，GL Compatibility、逻辑视口1440×810。游戏只需已投影数据；配置工具依赖Python/openpyxl/lxml。启动/跨机操作看[README](../README.md)。
 
-`project.godot → main.tscn → main.gd` 创建 `ShipDatabase(RefCounted)`、`BattleGame(RefCounted)`。数据库仅加载一次 res://data/game_data.json；游戏逻辑持有 db、profile 和战斗字典数组，通过 event(kind,payload) 通知 UI。main.gd 负责输入、tick 驱动、按钮构建、绘制/声音和 QA 面板创建，不是完全独立的纯视图。
+| 任务 | 最少入口 |
+|---|---|
+| 启动/主循环/UI | `project.godot → main.tscn → scripts/main.gd`；`_ready/_process/on_event/build_ui` |
+| 领域状态/计算 | `scripts/game.gd`（BattleGame，RefCounted）；搜对应函数，不默认读全文 |
+| 数据读取 | `scripts/database.gd`（ShipDatabase，RefCounted）；`equip/enemy_weapon/ratio` |
+| 槽位/换舰 | game.gd：`slot_entry/equip_slot/unequip_slot/switch_ship/upgrade_slot` |
+| 战斗/资源 | game.gd：`tick/targets/fire/tick_projectiles/hit_player/hit_enemy/collect` |
+| 科学家/充能/炉 | game.gd：`scientist_purchase/advance_hightech/advance_charge/advance_furnace` |
+| 页签/草稿/数值 | main.gd：`build_equipment_tabs/build_ship_tab/refresh_scientists`；`hightech_slot.gd`原生拖拽、`number_format.gd`显示 |
+| 舰船素材/炮口 | `scripts/ship_visuals.gd`：尺寸、源图槽位映射及炮口；`assets/`及其README |
+| QA/重启 | main创建根级`config_panel.gd` Window，直接访问current_scene.game；普通重启重载同一进程；`restart_host.gd`执行独立进程大重启 |
+| 关卡编辑器 | `level_editor.tscn → scripts/level_editor.gd → tools/level_editor_store.py`；不创建BattleGame，Python定位直接用config_panel静态find_python |
+| 配置链路 | `tools/config_workbooks.py`拆分/增量；`import_workbook.py`转换和显式全表CLI；`level_editor_store.py`编辑事务；`inspect_knowledge.py`按范围核对 |
+| 测试 | 项目外`../test/`存源码；产物`../test/work/`；路由见下节 |
 
-数据流：`总表 → tools/config_workbooks.py split → config_excel/*.xlsx → incremental import → data/game_data.json → ShipDatabase → BattleGame → main UI`。行转换/校验复用 import_workbook.py，后者保留显式全表 CLI。main.show_qa_tools 创建根级 QATools Window，config_panel 调用配置工具、直接控制 current_scene.game，并在同一进程重载游戏场景后创建新数据库。来源与缓存控制见 [DATA](DATA.md)，接口和字段定位见 [GAME_DESIGN](GAME_DESIGN.md)。
+`data/`是运行投影与缓存；`config_excel/`是当前编辑源；`docs/`只保留领域/定位/状态/决策及人类操作/美术说明。`.godot/.runtime`是缓存与日志，`.userdata`是正式玩家数据，均非默认上下文。
 
-活动状态：TRAVEL → COMBAT → TRAVEL 或 LEVEL_CLEAR → TRAVEL；装甲耗尽 → RETREAT → TRAVEL；paused 与 pending_unlocks 是额外控制门。MAIN_MENU、LEVEL_SELECT、DEFEAT、UPGRADE 枚举仍存在，不表示当前有这些页面；见 U-011。
+## 运行数据与状态所有权
 
-核心对象：profile（version/highestLevel/cleared/loadout/resources/unlocked/loop）、player、enemies、projectiles、drops、cooldowns。对象字段和所有权见各模块；没有 ECS、Autoload 管理器、数据库服务或联网后端。
+main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知main。活动流为TRAVEL→COMBAT→TRAVEL/LEVEL_CLEAR；死亡RETREAT→TRAVEL，paused/pending_unlocks额外控制。旧枚举不等于现存页面（U-011）。
 
-存档：game.load_progress/save_progress，`user://progress.json`，version=1；先写 .tmp 再 rename。校验部分字段、重建解锁；不保存距离、当前敌群、弹道、冷却。当前初始化先加载（含离线资源收入），再结算充能、研究并保存，最后恢复玩家容量；顺序由test_save_boundaries保护。窗口关闭/拾取/升级/通关等会保存。user:// 实际目录由启动脚本的 APPDATA/LOCALAPPDATA 决定，正式玩家目录 `.userdata`，测试必须隔离。QA 偏好同属 user://，控制接口见 [ui](modules/ui.md)。鲁棒性缺口见 U-008。
+| 状态 | 唯一所有者/读取方向 |
+|---|---|
+| 舰船、装备等级 | `profile.selectedShip`、`profile.loadout[weapons/defence][index]={key,level}`；属性按槽位派生 |
+| 玩家剩余冷却 | `BattleGame.cooldowns["weapons_<index>"]`；不使用名称键，不保存 |
+| 资源余额 | `profile.resources[id]`；UI只读；`run_resources`语义见D005 |
+| 充能 | `profile.charge[name]`的level/count/elapsed/active/started/credit |
+| 科技/科学家 | profile的hightechLevels/scientists/scientistAssignments/techPoints/hightechOrder；当前研究速率派生 |
+| 当前生命/护盾 | `BattleGame.player.armour/shield`；最大值由已装备槽位及增益派生，不作第二余额 |
+| 实体 | game的enemies/projectiles/drops；敌方冷却在各敌实例装备数组，不与玩家槽位混用 |
+| 收入/炉 | game.resource_samples保存现实时间窗口；profile.furnaceIncomePeak持久；区别见D005 |
+| UI草稿 | main.ship_candidate/ship_candidate_loadout；确认才经switch_ship提交；页签/滚动/弹窗由main维护 |
 
-依赖/构建：GDScript 无第三方游戏包；Python 导入依赖 openpyxl；QA 优先 SPACE_BATTLESHIP_PYTHON，其次本机 bundled Python，再回退 python。Windows 启动脚本依赖父目录固定引擎名。未发现 export_presets.cfg、CI 或依赖锁定清单（U-010）。Godot 配置功能标签 4.3 不等于已验证最低兼容版本。
+读取与兼容选择理由见[DECISIONS](DECISIONS.md) D004/D005。合法运行状态在创建、加载、重建解锁及明确装备写入边界维护；普通属性/描述/排序读取不得调用ensure_loadout或懒写profile。
 
-## PROPOSED · 尚未实施
+## 存档与时间边界
 
-只提出维护路线，不宣称已实现：先完成 TODO P1 的规则裁决与数据校验，再按实际瓶颈决定是否抽离逻辑。当前任务不引入新框架、新玩法、src/assets 迁移或新的存档结构。
+- `game.gd:load_progress/save_progress`；SAVE_PATH为`user://progress.json`，version仍为1。先写`.tmp`再rename；失败事件不代表所有故障可恢复（STATUS U-008）。
+- 旧levels仅在加载时给首个同名已装槽位优先赋级；缺失/非数值取1，数值转整数并夹取1到配置上限，其他同名槽位保留各自等级；空槽不会被旧等级重装。缺loadout时构造默认布局。
+- 保存临时字典从首槽派生兼容levels，未安装派生1；不写回运行profile，不做新旧状态双向同步。hightechVersion=2控制科技旧档迁移，charge缺字段建零级未启用状态。
+- 加载顺序：load_progress（含离线资源）→advance_charge→advance_hightech→save_progress→reset_player；领域语义见PROJECT。驻守位置/选择持久，实体、当前距离、弹道与冷却不作为恢复现场保存。
+- main._process截断delta，再按speed拆子步调用tick；研究/充能用模拟时间，收入窗口用现实时间，周期保存按dt/speed累计。具体截断/子步值查`test_time_steps.gd`，不另维护常量表。
 
-Phase 6编辑器Python定位：level_editor直接调用config_panel.find_python静态函数，复用环境指定→内置路径→PATH顺序；保留脚本引用，不创建QA窗口。没有新增运行时服务。
+## 数据流与来源定位
+
+原始Excel总表 --显式拆分/同步→ `config_excel/*.xlsx` → import/config tools → `data/game_data.json` → ShipDatabase → BattleGame/UI。直接编辑分表从第二步开始；选择理由见D003，操作查README。
+
+| 分表键 | 投影段/定位键 |
+|---|---|
+| equipment | equipment[name][]，name+level；res_x/cost_x；para含义按各装备说明 |
+| mon / monGroup / level | enemies[id] / groups[id].slots / levels[]及groups；按id定位 |
+| res / config | resources[id] / config[name]；科学家参数按名称查，不依赖旧行号 |
+| ship / hightech / charge | ship[name] / hightech[name] / charge[name]；分别查槽位/研究点/充能字段 |
+
+- hightech.description是UI模板、des是效果说明；charge.des是UI模板、func是功能说明而非可执行代码，不能混用。
+- `.split_manifest.json`记录分表和总表对应关系；`source_files`记录投影来源路径；`data/.import_state.json`保存成功导入的源/目标指纹，缓存可重建。defaults保留既有目标补充值，fallbacks文字不是实际算法。
+- 运行时按等级查投影，不求Excel公式。普通导入读取缓存值、不负责重算；拆分保留所选OOXML、样式/资源，拒绝跨表公式。编辑器仅处理自身支持的引用/ROUND/四则范围，限制查LEVEL_EDITOR。
+- 增量路径无变化不写JSON，变化表才重投影并合并；未知/未改段须保留。CACHE_VERSION、源/目标hash、路径、公式缓存/ZIP、事务顺序均是兼容边界，不能随整理改动。
+- Store额外校验编辑ID、敌外观/抗性、武器与掉落引用；可选ship/charge发现、缺表/坏manifest及错误时机在各入口不同。改前读`test_config_input_matrix.py`，不得从一个入口推定其他入口接受范围。
+- `atomic_batch`、backup/rollback与并发失败仍有限制（STATUS U-019/U-020）；此图不是数据安全保证。不要默认整读game_data.json，按上表的单段/符号定位。
+
+## 测试路由
+
+本页 → [test/README](../../test/README.md)的最小路由 → 必要时查[TEST_MAP](../../test/TEST_MAP.md) → 1～3个专项。不要默认读取历史test_game作为规则入口；故障现状观察不替代正确规则断言。UI任务除断言还检查实际交互；人类编辑器操作见[LEVEL_EDITOR](LEVEL_EDITOR.md)，美术约束见[ART_GUIDELINES](ART_GUIDELINES.md)。

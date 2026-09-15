@@ -1,25 +1,38 @@
-# 太空战舰
+# 太空战舰 — 启动与操作
 
-装备等级上限由 Excel 中各装备的等级行自动决定，不再固定为 20。当前表支持五种装备各 100 级；不同装备也可以配置不同上限，等级须从 1 连续递增、无重复。旧存档可继续升级，若后续缩短配置，则读档按对应装备的新上限处理。
+AI从[AGENTS](AGENTS.md)开始；领域规则查[PROJECT](docs/PROJECT.md)，实现定位查[ARCHITECTURE](docs/ARCHITECTURE.md)。本页供人类启动、配置与迁移操作，不作为另一份游戏规则表。
 
-Godot 原生 GDScript 横版自动战斗游戏。AI 接手从 [AGENTS.md](AGENTS.md) 开始；当前进度只看 [STATUS](docs/STATUS.md)。
+## 启动和QA
 
-## 启动与配置
+- Windows双击工作区`启动.cmd`运行游戏；项目`打开编辑器.cmd`打开Godot工程；`关卡编辑器.cmd`打开独立配置编辑器，三者用途不同。
+- 游戏/工程启动脚本使用`engine/Godot_v4.7.2-stable_win64.exe`。独立关卡编辑器也可设`SPACE_BATTLESHIP_GODOT`；它使用`.runtime/level-editor-user/`独立用户目录。
+- 启动游戏先等待Godot资源导入，失败查看`.runtime/startup-import.log`；资源导入不读取Excel。游戏运行只需引擎和已有投影。
+- F1显示QA，关闭面板仅隐藏；暂停及1X/2X/5X在QA，偏好保存于`user://qa_settings.cfg`。空格/Esc按当前状态确认解锁、关闭帮助或暂停。
+- 「重启游戏」在同进程重载场景；「大重启」保存进度/QA设置后，由辅助进程等待旧进程退出、导入磁盘资源再启动，应用代码更改，不自动读Excel。大重启保存失败留在原会话，导入失败不启动。
+- 大重启忙碌时不要重复操作；错误看`.runtime/full-restart.log`及`full-restart-import.log`，修正后从启动入口重开。普通重启保存失败边界见[STATUS](docs/STATUS.md) U-008，不能推定与大重启一致。
+- 「删除存档」是人类明确选择的破坏性操作：重置游戏进度，保留QA偏好和配置；旧场景停用保存以防回写。它不是排障或测试的默认步骤；AI保护约束见AGENTS。
 
-Windows 双击 `../启动.cmd`；`打开编辑器.cmd` 打开项目。引擎位于项目 engine/ 目录，名称与启动脚本一致；迁移清单见 [INVENTORY](docs/INVENTORY.md)。游戏运行只需引擎与现有 JSON。
+## 配置操作
 
-游戏内自动显示附属 QA 窗口，关闭面板仅隐藏，F1 可重显。QA 与游戏共用一个进程；暂停、倍速、读取配置和场景重载说明见 [UI / QA](docs/modules/ui.md)。
+当前源与投影关系见[ARCHITECTURE](docs/ARCHITECTURE.md)。Python需openpyxl/lxml，可用`SPACE_BATTLESHIP_PYTHON`指定解释器；游戏本身无需Python。
 
-QA 新增“拆分／同步 Excel”：将所选总表中总览以外的工作表写入 `config_excel/`，没有则新建，有则更新同名文件。随后“读取配置”只解析有修改的分表，成功后“重启游戏”应用。首次读取会建立缓存；之后无变化不重写 JSON。直接编辑分表后不必再同步，总表同步会覆盖同名分表的差异。详细流程和边界见 [DATA](docs/DATA.md)。
+1. 日常编辑独立分表：在表格软件中计算并保存`config_excel/`对应Excel → QA「读取配置」→ 成功后「重启游戏」。不要先同步总表。
+2. 只有明确要用所选总表替换对应分表时，才用「拆分／同步 Excel」；它排除总览，更新同名表，不合并两处编辑、不删除无关文件。先备份并核对差异；旧总表与现行字段不兼容问题见STATUS U-018。
+3. 普通导入不重算Excel公式，缺缓存应回表格软件计算保存；跨表公式可能阻止拆分。失败查看具体文件/单元格，不用猜默认值或手工JSON补数来绕过。
+4. 无变化会显示无变化；导入/同步/重载期间按钮互斥。关卡编辑器的公式、备份与恢复按[LEVEL_EDITOR](docs/LEVEL_EDITOR.md)，不同入口的事务能力不能互相推定（U-019/U-020）。
 
-Python/openpyxl/lxml 用于配置工具；可通过 `SPACE_BATTLESHIP_PYTHON` 指定环境。游戏运行不需要 Python。不要直接手改生成 JSON 的策划数值。
+## 只读定位
 
-## 项目导航
+按稳定name/id与字段键找表，旧资料行号可能失效。项目根示例（范围按目标调整）：
 
-- [项目概览](docs/PROJECT.md) 与 [游戏设计地图](docs/GAME_DESIGN.md)：按系统找规则和实现。
-- [当前架构](docs/ARCHITECTURE.md)：数据流、状态、存档、QA关系。
-- [TODO / UNKNOWN 与开发路线](docs/TODO.md)：冲突、缺失、决策和优先级。
-- [验证方法与最新结果](docs/VALIDATION.md)：测试隔离、证据和覆盖边界。
-- [长期决策](docs/DECISIONS.md)：仅保存长期选择及理由。
+```sh
+python tools/inspect_knowledge.py --source config_excel/equipment.xlsx --sheet equipment --range A1:N6
+```
 
-运行目录 `.userdata` 包含玩家存档；`.runtime` 和 `.godot` 为测试/引擎状态，默认不作为AI上下文。不要用玩家存档目录运行测试。数值与玩法细则只在对应来源维护，本README不复制。
+指定`--sheet`必须同时指定`--range`；默认只打印结果。确需完整来源审计时才省略范围，并用`--output ../test/work/<任务>/source-check.json`保存证据。审计退出1可能代表来源变化、缓存问题或投影差异，不等于崩溃；旧总表审计结果不能证明独立分表仍与它一致。
+
+## 跨电脑交接
+
+保持工作区根`启动.cmd`、`太空战舰.xlsx`、`test/`和`space-battleship/`的相对布局。项目携带脚本、tools、场景、project.godot、data投影、config_excel（含manifest）、assets、Godot UID/导入描述、文档与启动脚本；不要只复制源码而遗漏素材/分表。
+引擎二进制另行提供并匹配启动路径；安装上述Python依赖。缓存`.godot/.runtime`不作为交接必需品；正式`.userdata`属于个人进度，不是设计资料，续接进度须另行由所有者备份。其他平台不能执行.cmd，发布支持仍见U-010。
+测试操作见[test/README](../test/README.md)，美术交付见[ART_GUIDELINES](docs/ART_GUIDELINES.md)。重构审计文件保留作本次历史，普通任务不需要读取。
