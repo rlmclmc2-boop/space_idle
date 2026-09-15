@@ -78,13 +78,9 @@ func ship_unlocked(key: String) -> bool:
 	return not row.is_empty() and (gate == 0 or profile.cleared.has(gate))
 
 func default_loadout(key: String, unlocked: Array) -> Dictionary:
-	var row := db.ship(key)
-	var weapons: Array = []
-	var defence: Array = []
-	for i in range(int(row.get("weaponSlots", 0))):
-		weapons.append({"key":"", "level":1})
-	for i in range(int(row.get("defenseSlots", 0))):
-		defence.append({"key":"", "level":1})
+	var loadout := empty_loadout(key)
+	var weapons: Array = loadout.weapons
+	var defence: Array = loadout.defence
 	for equip_key in unlocked:
 		if WEAPON_KEYS.has(str(equip_key)):
 			var empty := weapons.find_custom(func(entry):return str(entry.key).is_empty())
@@ -94,7 +90,7 @@ func default_loadout(key: String, unlocked: Array) -> Dictionary:
 			var empty_defence := defence.find_custom(func(entry):return str(entry.key).is_empty())
 			if empty_defence >= 0:
 				defence[empty_defence].key = str(equip_key)
-	return {"weapons":weapons, "defence":defence}
+	return loadout
 
 func empty_loadout(key: String) -> Dictionary:
 	var row := db.ship(key)

@@ -326,3 +326,8 @@ EXPECTED_GAIN 顺序统一为：代码复杂度 / 文件数量 / 依赖复杂度
 - 删除 `main.on_event` 的无发射方research分支；保留hightech_complete的文案和deferred重建。补UI描述来源/tooltip/卡片边界和完成事件断言。
 - 保留：State枚举（LEVEL_SELECT虽无调用，但删除涉及其他状态整数值，收益不足）；leave/MAIN_MENU/UPGRADE/DEFEAT仍有调用；旧default字段不在此次修改投影链；截图入口、legacy探针、绘图fallback、旧档迁移仍有用途。
 - 验证：科学家63项、拖拽32项全部通过，Godot导入退出0；相关执行引用搜索无命中，diff及空白检查通过。日志 `../test/work/refactor-checkpoint-1/phase2-*.log`。无新行为差异或验证失败。
+
+### Phase 3：空槽创建子项完成
+
+- default_loadout复用既有empty_loadout，每次仍创建独立槽位字典，默认安装顺序不变，未触及ensure_loadout或旧状态同步。
+- 舰船专项、卸下25项、五类批量升级70项通过，Godot导入退出0，diff检查通过。日志 `../test/work/refactor-checkpoint-1/phase3-*.log`。
