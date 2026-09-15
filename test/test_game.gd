@@ -174,7 +174,7 @@ func run() -> void:
 		else:
 			check(tracking.projectiles.has(shot) and shot.target.is_empty() and shot.direction==initial_direction and survivor.hp==hp_before,key+" keeps its trajectory without retargeting")
 			tracking.profile.unlocked = [key]
-			tracking.cooldowns[key] = 0
+			tracking.cooldowns[tracking.slot_id("weapons",tracking.first_weapon_index(key))] = 0
 			tracking.tick(0.001)
 			check(tracking.projectiles.size()==2 and tracking.projectiles[1].target.uid==survivor.uid,key+" selects living enemy on next fire")
 		var last_position := Vector2(shot.x,shot.y)
@@ -257,9 +257,9 @@ func run() -> void:
 	full.profile.resources["1"]=1000
 	full.profile.levels.laser=1
 	full.player.armour=500
-	var cd_before := float(full.cooldowns.get("laser",0))
+	var cd_before := float(full.cooldowns.get("weapons_0",0))
 	check(full.upgrade("laser") and full.stat("laser")==24,"Direct in-combat upgrade")
-	check(full.player.armour==500 and full.cooldowns.get("laser",0)==cd_before,"Weapon upgrade preserves life and cooldown")
+	check(full.player.armour==500 and full.cooldowns.get("weapons_0",0)==cd_before,"Weapon upgrade preserves life and cooldown")
 	full.profile.levels.armour=1
 	full.player.armour=30
 	full.upgrade("armour")

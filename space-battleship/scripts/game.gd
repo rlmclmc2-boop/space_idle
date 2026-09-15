@@ -951,8 +951,6 @@ func change_state(next: State) -> void:
 			var cd := float(db.equip(key,int(entry.level)).cd)
 			if cd > 0:
 				cooldowns[slot_id("weapons", index)] = cd
-				if first_weapon_index(key) == index:
-					cooldowns[key] = cd
 	state = next
 	event.emit("state", {"state":state})
 
@@ -1470,10 +1468,8 @@ func tick(dt: float) -> void:
 		if float(weapon.cd) <= 0:
 			continue
 		var id := slot_id("weapons", index)
-		var remaining := float(cooldowns.get(key, cooldowns.get(id, float(weapon.cd)))) if first_weapon_index(key) == index else float(cooldowns.get(id, float(weapon.cd)))
+		var remaining := float(cooldowns.get(id, float(weapon.cd)))
 		cooldowns[id] = maxf(0, remaining - dt)
-		if first_weapon_index(key) == index:
-			cooldowns[key] = cooldowns[id]
 		if cooldowns[id] <= 0:
 			var candidates := targets(int(weapon.dmgtype))
 			var count := int(weapon.para1) if key == "missile" else 1
@@ -1488,8 +1484,6 @@ func tick(dt: float) -> void:
 				fire(player, target, weapon, equipment_stat(key, int(entry.level)), false, key, launch_offset + player_weapon_offset(index))
 			if count > 0 and not candidates.is_empty():
 				cooldowns[id] = float(weapon.cd)
-				if first_weapon_index(key) == index:
-					cooldowns[key] = float(weapon.cd)
 	for enemy in enemies:
 		if enemy.hp <= 0:
 			continue

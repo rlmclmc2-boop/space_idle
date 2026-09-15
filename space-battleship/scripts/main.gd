@@ -194,7 +194,7 @@ func _process(delta: float) -> void:
 		var entry := game.slot_entry("weapons",index)
 		var key := str(entry.get("key", ""))
 		var cd := float(db.equip(key,int(entry.get("level",1))).cd) if not key.is_empty() else 1.0
-		equipment_cooldowns[id].size.x = equipment_cooldowns[id].get_parent().size.x*clampf(1.0-float(game.cooldowns.get(id,game.cooldowns.get(key,0)))/maxf(cd,0.001),0,1)
+		equipment_cooldowns[id].size.x = equipment_cooldowns[id].get_parent().size.x*clampf(1.0-float(game.cooldowns.get(id,0))/maxf(cd,0.001),0,1)
 	refresh_scientists()
 	for key in hightech_buttons:
 		var b: Button = hightech_buttons[key]

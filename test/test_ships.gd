@@ -36,15 +36,15 @@ func _initialize() -> void:
 	legacy.profile.levels.laser=3
 	assert(legacy.weapon_entries()[0].level==3,"Legacy levels currently write through on read")
 	legacy.start(1,false)
-	legacy.cooldowns.laser=0.5
+	legacy.cooldowns.weapons_0=0.5
 	legacy.spawn_group()
 	legacy.enemies[0].equipment=[]
 	legacy.paused=true
 	legacy.tick(0.1)
-	assert(legacy.cooldowns.laser==0.5,"Pause preserves legacy cooldown input")
+	assert(legacy.cooldowns.weapons_0==0.5,"Pause preserves slot cooldown")
 	legacy.paused=false
 	legacy.tick(0.1)
-	assert(is_equal_approx(legacy.cooldowns.weapons_0,0.4) and legacy.cooldowns.laser==legacy.cooldowns.weapons_0,"Legacy cooldown currently writes through to first slot")
+	assert(is_equal_approx(legacy.cooldowns.weapons_0,0.4),"Slot cooldown counts down independently")
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify({"version":1,"levels":{"laser":3},"resources":{"1":123,"2":7}}))
 	file.close()

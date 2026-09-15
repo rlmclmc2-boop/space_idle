@@ -16,6 +16,8 @@ func _initialize() -> void:
 		g.start(1,false)
 		g.spawn_group()
 		g.profile.unlocked = [key]
+		g.profile.loadout = g.empty_loadout(g.profile.selectedShip)
+		g.equip_slot("weapons",0,key)
 		var weapon := db.equip(key,1)
 		var damage_type := int(weapon.dmgtype)
 		var base := g.enemies[0].duplicate(true)
@@ -33,7 +35,7 @@ func _initialize() -> void:
 		check(ordered[0].uid == 102 and ordered[1].uid == 103 and ordered[2].uid == 100,key+" non-resistant first, positional ties retained")
 		if key == "missile":
 			weapon.para1 = 3
-		g.cooldowns[key] = 0
+		g.cooldowns.weapons_0 = 0
 		g.tick(0.001)
 		check(g.projectiles[0].target.uid == 102,key+" actual firing prefers non-resistant")
 		if key == "missile":
@@ -45,13 +47,13 @@ func _initialize() -> void:
 			enemy.armourType = damage_type
 		check(g.targets(damage_type)[0].uid == 100,key+" all resistant falls back to position")
 		g.projectiles.clear()
-		g.cooldowns[key] = 0
+		g.cooldowns.weapons_0 = 0
 		g.tick(0.001)
 		check(g.projectiles[0].target.uid == 100,key+" all resistant still fires")
 		if key == "missile":
 			g.projectiles.clear()
 			g.enemies.resize(1)
-			g.cooldowns[key] = 0
+			g.cooldowns.weapons_0 = 0
 			g.tick(0.001)
 			check(g.projectiles.size()==3 and g.projectiles.all(func(shot):return shot.target.uid==100) and g.projectiles[0].y < g.projectiles[1].y and g.projectiles[1].y < g.projectiles[2].y,"Missile salvo remains visible with one target")
 		for enemy in g.enemies:
