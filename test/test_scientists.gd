@@ -149,10 +149,19 @@ func run() -> void:
 	scene.game.profile.resources={"1":10000.0,"2":1000.0}
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=2
+	check(scene.scientist_distribute_button.disabled,"Zero scientists disables distribution")
+	var first_cost_text: String = scene.scientist_cost_label.text
+	for id in scene.game.scientist_cost():
+		check(first_cost_text.contains("%s %s" % [scene.db.data.resources[id],scene.number(scene.game.scientist_cost()[id])]),"Visible generation cost includes resource and amount")
 	scene.scientist_generate_button.pressed.emit()
 	await process_frame
+	check(not scene.scientist_distribute_button.disabled and scene.scientist_cost_label.text!=first_cost_text,"Generation refreshes visible cost and enables distribution")
 	scene.hightech_buttons[F].pressed.emit()
 	await process_frame
+	check(not scene.scientist_distribute_button.disabled,"Fully assigned scientists can still be redistributed")
+	scene.scientist_distribute_button.pressed.emit()
+	await process_frame
+	check(scene.game.assigned_scientists(F)==1 and scene.game.idle_scientists()==0,"Distribution button redistributes existing scientists")
 	scene.game.advance_hightech(5)
 	scene.refresh_hightech_progress(F)
 	check(scene.game.assigned_scientists(F)==1 and scene.hightech_progress[F].label.text.contains("点/秒"),"UI generates and assigns scientist with point progress")
@@ -187,6 +196,7 @@ func run() -> void:
 	var description: Label=scene.hightech_descriptions[F]
 	check(description.size.x<=423 and description.get_rect().end.y<=79,"Description stays within its card")
 	check(scene.equipment_tabs.get_rect().end.y<=778,"Research cards stay above footer")
+	check(scene.scientist_distribute_button.get_rect().end.y<=scene.scientist_cost_label.position.y and scene.scientist_cost_label.get_rect().end.y<=scene.scientist_generate_button.position.y,"Visible cost fits between distribution and generation buttons")
 	scene.game.event.emit("hightech_complete",{"key":F})
 	check(scene.message==F+"研发完成","Completion event retains its toast")
 	await RenderingServer.frame_post_draw

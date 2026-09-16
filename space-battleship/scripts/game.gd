@@ -328,7 +328,7 @@ func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictiona
 	for level in range(current + 1, current + levels + 1):
 		var cost := upgrade_cost_for_level(key, level)
 		for id in cost:
-			total[id] = int(total.get(id, 0)) + int(cost[id])
+			total[id] = float(total.get(id, 0)) + float(cost[id])
 	return total
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
@@ -341,7 +341,7 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if costs.is_empty():
 		return false
 	for id in costs:
-		if float(profile.resources.get(id, 0)) < float(costs[id]):
+		if not is_finite(float(costs[id])) or float(profile.resources.get(id, 0)) < float(costs[id]):
 			return false
 	return true
 
@@ -1216,7 +1216,7 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int) -> void:
 		return
 	var amount := reduced_damage(raw, type, int(enemy.armourType))
 	enemy.hp = maxf(0, enemy.hp - amount)
-	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type})
+	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid})
 	if enemy.hp <= 0:
 		if is_boss_encounter() and targets().is_empty():
 			projectiles.clear()
@@ -1319,11 +1319,12 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 	var available: Dictionary = profile.resources.duplicate()
 	var amount := 0
 	var current := int(entry.level)
-	for level in range(current + 1, db.max_equipment_level(key) + 1):
+	var level := current + 1
+	while level <= db.max_equipment_level(key):
 		var costs := upgrade_cost_for_level(key, level)
 		var affordable := true
 		for id in costs:
-			if float(available.get(id, 0)) < float(costs[id]):
+			if not is_finite(float(costs[id])) or float(available.get(id, 0)) < float(costs[id]):
 				affordable = false
 				break
 		if not affordable:
@@ -1331,6 +1332,7 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 		for id in costs:
 			available[id] = float(available.get(id, 0)) - float(costs[id])
 		amount += 1
+		level += 1
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:

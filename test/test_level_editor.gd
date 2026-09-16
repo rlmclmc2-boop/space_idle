@@ -73,7 +73,8 @@ func run() -> void:
 	editor.tabs.current_tab = 2
 	await process_frame
 	check(editor.encounters.size() > 0, "encounter rows")
-	editor.fields.atkRatio.text = "2"
+	check(not editor.fields.has("atkRatio") and not editor.fields.has("lifeRatio") and not editor.fields.has("resRatio"), "Level ratios are not editable")
+	editor.fields.length.text = "1200"
 	editor.run_action("validate")
 	await wait_idle(editor)
 	print(editor.status.text)

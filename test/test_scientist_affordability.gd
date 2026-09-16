@@ -38,6 +38,7 @@ func run() -> void:
 	scene.game.save_enabled=false
 	scene.game.profile.cleared=scene.db.data.hightech.values().map(func(row):return int(row.unlock))
 	scene.build_ui()
+	scene.equipment_tabs.current_tab=2
 	for paused in [false,true]:
 		scene.game.paused=paused
 		for balance in [0.0,1e100,0.0]:

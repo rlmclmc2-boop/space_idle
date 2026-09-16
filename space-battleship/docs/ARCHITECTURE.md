@@ -25,6 +25,12 @@
 
 main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知main。活动流为TRAVEL→COMBAT→TRAVEL/LEVEL_CLEAR；死亡RETREAT→TRAVEL，paused/pending_unlocks额外控制。旧枚举不等于现存页面（U-011）。
 
+装备升级事件按slot走`main.refresh_equipment_cards(slot)`；`refresh_visible_cards`只检查当前可见页，切页立即补齐。资源影响消费按钮，科学家分配影响空闲数/分配按钮及对应进度，科技增益影响对应类别装备；值相同不写控件。MAX仍在点击时枚举当前预算。
+
+`refresh_structure`只替换装备类型/数量变化的槽卡；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。战舰草稿编辑保留选择器，候选舰变化只重建候选槽区。`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
+
+`create_draw_layers/refresh_draw_layers`分离静态背景、静态边框标题、星空、战场、资源栏和覆盖层；只有战场/星空动画保留必要连续绘制，其余按显示依赖变化重绘。绘制辅助函数使用当前draw_surface，根节点不再逐帧queue_redraw。UI依赖快照存于所属控件的refresh_state元数据，key为各刷新函数显式列出的输入；输入变化失效、控件替换自然释放，仅UI读写，不回写game/profile，隐藏页在显示时补齐。按钮display_level只控制等级文案/费用提示，不缓存购买结果。
+
 | 状态 | 唯一所有者/读取方向 |
 |---|---|
 | 舰船、装备等级 | `profile.selectedShip`、`profile.loadout[weapons/defence][index]={key,level}`；属性按槽位派生 |
@@ -53,14 +59,14 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 
 | 分表键 | 投影段/定位键 |
 |---|---|
-| equipment | equipment[name][]，name+level；res_x/cost_x；para含义按各装备说明 |
+| equipment | equipment[name][]仅保留level=1基础行；database.equip/equipment_growth计算目标级；res_x/cost_x/costMulti_x（兼容cost_multi_x）；para含义按各装备说明 |
 | mon / monGroup / level | enemies[id] / groups[id].slots / levels[]及groups；按id定位 |
 | res / config | resources[id] / config[name]；科学家参数按名称查，不依赖旧行号 |
 | ship / hightech / charge | ship[name] / hightech[name] / charge[name]；分别查槽位/研究点/充能字段 |
 
 - hightech.description是UI模板、des是效果说明；charge.des是UI模板、func是功能说明而非可执行代码，不能混用。
 - `.split_manifest.json`记录分表和总表对应关系；`source_files`记录投影来源路径；`data/.import_state.json`保存成功导入的源/目标指纹，缓存可重建。defaults保留既有目标补充值，fallbacks文字不是实际算法。
-- 运行时按等级查投影，不求Excel公式。普通导入读取缓存值、不负责重算；拆分保留所选OOXML、样式/资源，拒绝跨表公式。编辑器仅处理自身支持的引用/ROUND/四则范围，限制查LEVEL_EDITOR。
+- 装备运行时由一级基础投影按等级计算，不读取旧高等级行、不求Excel公式。普通导入读取缓存值、不负责重算；拆分保留所选OOXML、样式/资源，拒绝跨表公式。编辑器仅处理自身支持的引用/ROUND/四则范围，限制查LEVEL_EDITOR。
 - 增量路径无变化不写JSON，变化表才重投影并合并；未知/未改段须保留。CACHE_VERSION、源/目标hash、路径、公式缓存/ZIP、事务顺序均是兼容边界，不能随整理改动。
 - Store额外校验编辑ID、敌外观/抗性、武器与掉落引用；可选ship/charge发现、缺表/坏manifest及错误时机在各入口不同。改前读`test_config_input_matrix.py`，不得从一个入口推定其他入口接受范围。
 - `atomic_batch`、backup/rollback与并发失败仍有限制（STATUS U-019/U-020）；此图不是数据安全保证。不要默认整读game_data.json，按上表的单段/符号定位。

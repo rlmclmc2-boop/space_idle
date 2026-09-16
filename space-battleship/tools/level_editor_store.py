@@ -1,6 +1,7 @@
 """Level editor source transaction. Uses the existing XLSX projection contract."""
 import argparse
 import ast
+import copy
 from decimal import Decimal, ROUND_HALF_UP
 import io
 import json
@@ -19,6 +20,7 @@ from config_workbooks import (Q, MANIFEST, CACHE_VERSION, atomic_batch, sha,
 from import_workbook import ROOT, SECTIONS, validate_projection, encode
 
 EDITABLE = ('mon', 'monGroup', 'level')
+LEVEL_RATIOS = ('atkRatio', 'lifeRatio', 'resRatio')
 
 
 class Store:
@@ -113,6 +115,23 @@ class Store:
             part = dict(sheet_parts(archive))[name]
             tree = ET.fromstring(archive.read(part))
             body = tree.find(Q + 'sheetData')
+            preserved, existing_ids = {}, set()
+            if name == 'level':
+                book = openpyxl.load_workbook(io.BytesIO(self.paths[name].read_bytes()), data_only=True)
+                try:
+                    sheet = book[name]
+                    for old_row in body:
+                        old_index = int(old_row.get('r'))
+                        if old_index < 4: continue
+                        record_id = sheet.cell(old_index, 1).value
+                        existing_ids.add(record_id)
+                        for old_cell in old_row:
+                            column = re.sub(r'\d', '', old_cell.get('r'))
+                            for key in LEVEL_RATIOS:
+                                if key in headers and column == get_column_letter(headers.index(key)+1):
+                                    preserved[(record_id, key)] = copy.deepcopy(old_cell)
+                finally:
+                    book.close()
             styles, exact_styles, row_attributes = {}, {}, {}
             for row in list(body):
                 if int(row.get('r')) >= 4:
@@ -126,6 +145,16 @@ class Store:
                 for c, key in enumerate(headers, 1):
                     letter = get_column_letter(c)
                     address = f'{letter}{r}'
+                    if name == 'level' and key in LEVEL_RATIOS:
+                        original = preserved.get((record.get('id'), key))
+                        if original is not None:
+                            cell = copy.deepcopy(original)
+                            cell.set('r', address)
+                            row.append(cell)
+                        elif record.get('id') not in existing_ids:
+                            cell = ET.SubElement(row, Q + 'c', r=address)
+                            ET.SubElement(cell, Q + 'v').text = '1'
+                        continue
                     raw = record.get(key)
                     if raw is None: continue
                     cell = ET.SubElement(row, Q + 'c', r=address)
@@ -153,7 +182,11 @@ class Store:
         current = self.load()
         if current['snapshot'] != request['snapshot']:
             raise ValueError('配置已被 Excel、QA 或另一个编辑器修改。请重新加载后再编辑，未覆盖文件。')
-        tables = request['tables']
+        tables = copy.deepcopy(request['tables'])
+        original_levels = {r['id']: r for r in current['tables']['level']['rows']}
+        for row in tables['level']['rows']:
+            for key in LEVEL_RATIOS:
+                row[key] = original_levels.get(row.get('id'), {}).get(key, 1)
         files = {}
         for name in EDITABLE:
             if tables[name]['headers'] != current['tables'][name]['headers']:
@@ -166,8 +199,9 @@ class Store:
         data = json.loads(self.target.read_text(encoding='utf-8'))
         raw_files = {n: files.get(p, p.read_bytes()) for n, p in self.paths.items()}
         for name, raw in raw_files.items():
-            data[SECTIONS[name]] = read_changed_file(self.paths[name], name, raw)
-        validate_projection(data)
+            ignored = [get_column_letter(tables['level']['headers'].index(k)+1) for k in LEVEL_RATIOS if k in tables['level']['headers']] if name == 'level' else []
+            data[SECTIONS[name]] = read_changed_file(self.paths[name], name, raw, ignored_formula_columns=ignored)
+        validate_projection(data, check_level_ratios=False)
         warnings = []
         data['source_files'] = {n: str(p.resolve()) for n, p in self.paths.items()}
         payload = encode(data)

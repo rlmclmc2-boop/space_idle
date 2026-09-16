@@ -7,7 +7,12 @@ var tech_key := ""
 var drop_highlight := false
 
 func _ready() -> void:
-	mouse_exited.connect(func():drop_highlight=false;queue_redraw())
+	mouse_exited.connect(func():set_drop_highlight(false))
+
+func set_drop_highlight(value: bool) -> void:
+	if drop_highlight != value:
+		drop_highlight = value
+		queue_redraw()
 
 func _get_drag_data(_position: Vector2):
 	if tech_key.is_empty():
@@ -26,20 +31,17 @@ func _get_drag_data(_position: Vector2):
 	return {"kind":"hightech_slot","container":get_parent().get_instance_id(),"source":slot_index}
 
 func _can_drop_data(_position: Vector2, data) -> bool:
-	drop_highlight = data is Dictionary and data.get("kind") == "hightech_slot" and data.get("container") == get_parent().get_instance_id() and data.get("source") is int and int(data.source) != slot_index
-	queue_redraw()
+	set_drop_highlight(data is Dictionary and data.get("kind") == "hightech_slot" and data.get("container") == get_parent().get_instance_id() and data.get("source") is int and int(data.source) != slot_index)
 	return drop_highlight
 
 func _drop_data(position: Vector2, data) -> void:
 	if _can_drop_data(position,data):
 		swap_requested.emit(int(data.source),slot_index)
-	drop_highlight = false
-	queue_redraw()
+	set_drop_highlight(false)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
-		drop_highlight = false
-		queue_redraw()
+		set_drop_highlight(false)
 
 func _draw() -> void:
 	if drop_highlight:

@@ -32,6 +32,7 @@ class EditorTests(unittest.TestCase):
         level = r['tables']['level']['rows'][0]
         # Replace a first encounter without duplicating its position.
         level['monGroup'] = '{999|0.01,6|0.9}'
+        original_ratios = copy.deepcopy(r['tables']['level']['rows'])
         level['atkRatio'] = 2
         # Known formula chain tests cache recalculation independently of balance edits.
         level['lifeRatio'] = '=D4'
@@ -40,11 +41,11 @@ class EditorTests(unittest.TestCase):
         data = json.loads(self.store.target.read_text(encoding='utf-8'))
         self.assertEqual(data['enemies']['999']['health'], 321)
         self.assertEqual(data['groups']['999']['slots'][4], 999)
-        self.assertEqual(data['levels'][0]['lifeRatio'], 2)
-        self.assertEqual(data['levels'][1]['atkRatio'], 2.34)
+
+
         self.assertTrue(Path(result['backup']).is_dir())
-        self.assertEqual(result['tables']['level']['rows'][0]['lifeRatio'], '=D4')
-        self.assertEqual(result['tables']['level']['rows'][1]['atkRatio'], '=ROUND(D4*1.17,2)')
+        self.assertEqual(result['tables']['level']['rows'][0]['lifeRatio'], original_ratios[0]['lifeRatio'])
+        self.assertEqual(result['tables']['level']['rows'][1]['atkRatio'], original_ratios[1]['atkRatio'])
         self.assertEqual(incremental_import(self.store.directory, self.store.target)['changed'], [])
         with zipfile.ZipFile(self.store.paths['level']) as changed, zipfile.ZipFile(__import__('io').BytesIO(self.original[self.store.paths['level']])) as original:
             self.assertEqual(changed.read('xl/styles.xml'), original.read('xl/styles.xml'))
@@ -62,13 +63,43 @@ class EditorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '修改'): self.store.execute(self.request, True)
         self.assertEqual(p.read_bytes(), changed)
 
+    def test_ratios_are_preserved_without_validation(self):
+        from lxml import etree as ET
+        from config_workbooks import Q, sheet_parts
+        import io
+        path = self.store.paths['level']
+        with zipfile.ZipFile(path) as archive:
+            part = dict(sheet_parts(archive))['level']
+            tree = ET.fromstring(archive.read(part))
+            cells = {c.get('r'): c for c in tree.iter(Q+'c')}
+            for address, raw in [('D4', '=UNSUPPORTED(D4)'), ('E4', '-5'), ('F4', '0')]:
+                cell = cells[address]
+                for child in list(cell): cell.remove(child)
+                cell.attrib.pop('t', None)
+                ET.SubElement(cell, Q+('f' if raw.startswith('=') else 'v')).text = raw.lstrip('=')
+            expected = {a: ET.tostring(cells[a]) for a in ['D4','E4','F4']}
+            output = io.BytesIO()
+            with zipfile.ZipFile(output, 'w') as target:
+                for item in archive.infolist(): target.writestr(item, ET.tostring(tree) if item.filename == part else archive.read(item.filename))
+        path.write_bytes(output.getvalue())
+        request = self.store.load()
+        request['tables']['level']['rows'][0]['length'] = 1234
+        self.store.execute(request)
+        self.store.execute(request, True)
+        with zipfile.ZipFile(path) as archive:
+            cells = {c.get('r'): c for c in ET.fromstring(archive.read(part)).iter(Q+'c')}
+            for address, raw in expected.items(): self.assertEqual(ET.tostring(cells[address]), raw)
+        from import_workbook import validate_projection
+        data = json.loads(self.store.target.read_text(encoding='utf-8'))
+        with self.assertRaises(ValueError): validate_projection(data)
+
     def test_bad_inputs_do_not_write(self):
         changes = [
             ('mon', 'id', 2), ('mon', 'health', -1), ('mon', 'size', 1.5),
             ('mon', 'equipment', '{missing|1}'), ('mon', 'res', '{999,1,1}'),
             ('monGroup', 'mon', '{999,null,null,null,null,null,null,null,null,null}'),
-            ('level', 'monGroup', '{1|0.2,2|0.1}'), ('level', 'atkRatio', '=D4'),
-            ('level', 'atkRatio', '=SUM(D5:D6)'), ('level', 'id', 100),
+            ('level', 'monGroup', '{1|0.2,2|0.1}'),
+             ('level', 'id', 100),
         ]
         for name, key, value in changes:
             with self.subTest(name=name, key=key):

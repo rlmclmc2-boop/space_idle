@@ -185,13 +185,15 @@ def sync_workbooks(source, directory):
             "directory":str(directory.resolve()),"message":f"拆分同步成功：新建 {len(created)}，更新 {len(updated)}，未变 {len(unchanged)}。"}
 
 
-def read_changed_file(path, name, raw):
+def read_changed_file(path, name, raw, *, ignored_formula_columns=()):
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         parts = sheet_parts(archive)
         if len(parts) != 1 or parts[0][0] != name:
             raise ValueError(f"{path.name} 必须仅包含名为 {name} 的工作表")
         tree = ET.fromstring(archive.read(parts[0][1]))
         for cell in tree.iter(Q + "c"):
+            if re.sub(r'\d', '', cell.get('r', '')) in ignored_formula_columns:
+                continue
             if cell.find(Q + "f") is not None:
                 value = cell.find(Q + "v")
                 if value is None or value.text is None:

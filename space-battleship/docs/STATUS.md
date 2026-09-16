@@ -2,9 +2,11 @@
 
 ## CURRENT
 
-- 项目版本0.2.0；本轮重构完成，Phase 13最终验收通过。无进行中的重构项。
-- U-008 普通 QA 重启的保存失败拦截已修复：保存报错时保留当前场景与进度并提示重试；隔离故障专项13项、清档重启7项、存档边界16项均通过，已核对失败提示画面。证据在`../test/work/test_restart_save_failure-jjx712xo/`（相对项目根）。
-- 新任务遵循[AGENTS](../AGENTS.md)；需定位实现/数据/测试时按需读[ARCHITECTURE](ARCHITECTURE.md)。
+- UI局部更新约束已写入[AGENTS](../AGENTS.md)作为新增/修改UI的必遵规范：明确依赖范围、复用控件、最小结构更新、独立绘制层及刷新范围回归要求。仅文档变更，已核对链接、现有实现入口和diff，未运行游戏测试。
+- DONE：按用户要求放大敌舰，size 1～6显示高度由32～44改为48～128像素；仍每敌一格，槽位中心/索敌/伤害不变，现有炮口及血条自动适配。
+- CHANGED：scripts/ship_visuals.gd；../test/test_enemy_ship_visuals.gd；docs/PROJECT.md。正式配置与存档未修改。
+- VERIFY：敌舰视觉专项30项通过，覆盖六档尺寸/炮口和十舰槽位/索敌；截图测试适配独立battle_layer重绘，已核对大型舰与十舰画面；大舰在相邻槽会视觉重叠，符合仅放大不改占格的范围。证据：../test/work/test_enemy_ship_visuals-ta1kwek5/，Godot退出0。
+- NEXT：重启游戏查看放大后的敌舰。
 
 ## DONE
 
@@ -32,7 +34,7 @@
 | U-018 | 旧总表缺techPointGet等当前字段，部分总表测试仍失败；`test_config_input_matrix.py`，不得猜默认值。 |
 | U-019 | 提交后回滚自身失败可能留下半提交，Store备份也可能被清理；`atomic_batch`与输入矩阵故障观察。 |
 | U-020 | incremental导入不复核并发目标/manifest，可能覆盖外部目标修改；Store.save拒绝但validate无最终复核；输入矩阵。 |
-| U-021 | 高科技完成引发全量UI重建仍有高倍速大数热点；`main.gd:on_event/build_ui`、`test_performance.py`。 |
+| U-022 | ship.xlsx的sameEquipmentLimit投影均为1，既有JSON五舰为1/2/2/3/3；本次装备任务保留原JSON舰船段，未裁决差异。后续全量读取配置可能应用分表值，需单独核实来源。 |
 
 ## NEXT
 

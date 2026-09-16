@@ -45,6 +45,8 @@ def convert_sheet(name, rows):
     if name=="equipment":
         result={}
         for row in rows:
+            if row.get('level') != 1:
+                continue  # Legacy higher-level rows are no longer configuration.
             result.setdefault(row["name"],[]).append(row)
         for items in result.values():
             if any(type(r.get('level')) not in (int, float) or not math.isfinite(r['level']) or r['level'] < 1 or r['level'] != int(r['level']) for r in items):
@@ -126,7 +128,7 @@ def validate_description(row, field='description', section='hightech'):
                 raise ValueError(f'{label}: only numeric arithmetic is supported')
 
 
-def validate_projection(data):
+def validate_projection(data, *, check_level_ratios=True):
     equipment=data["equipment"]
     levels=data["levels"]
     groups=data["groups"]
@@ -152,19 +154,28 @@ def validate_projection(data):
                 raise ValueError(f'ship {key}: unlock must reference a level or be zero')
     for key in ('armour','shield','laser','missile','cannon'):
         items=equipment.get(key,[])
-        if not items or [r['level'] for r in items] != list(range(1,len(items)+1)):
-            raise ValueError(f'equipment 表 {key}：等级必须从 1 连续递增，不能重复或缺级；当前共 {len(items)} 行')
-        for r in items:
+        bases = [r for r in items if r.get('level') == 1]
+        if len(bases) != 1:
+            raise ValueError(f'equipment {key}: expected exactly one base row (level 1)')
+        for r in bases:
             positive(r['para1'] if key in ('armour','shield') else r['dmg'],f'{key} Lv.{r["level"]} value')
             if key not in ('armour','shield'):
                 positive(r['cd'], f'{key} cooldown')
                 positive(r['para2'] if key=='missile' else r['para1'],f'{key} projectile speed')
-            for field in ('cost_1','cost_2'):
-                if r[field] is not None: positive(r[field],f'{key} {field}',True)
+            growth = 'para2' if key == 'armour' else 'para4' if key == 'shield' else 'dmgMulti'
+            positive(r.get(growth), f'{key} {growth}', True)
+    for key, items in equipment.items():
+        for r in (r for r in items if r.get('level') == 1):
+            for field, value in r.items():
+                if re.fullmatch(r'cost_\d+', str(field)) and value is not None:
+                    positive(value, f'{key} {field}', True)
+                    suffix = field.removeprefix('cost_')
+                    positive(r.get('cost_multi_' + suffix, r.get('costMulti_' + suffix)), f'{key} cost multiplier {suffix}', True)
     if [r['id'] for r in levels] != list(range(1,len(levels)+1)) or not levels:
         raise ValueError('Level IDs must be consecutive from 1')
     for level in levels:
-        for key in ('length','atkRatio','lifeRatio','resRatio'): positive(level[key],f'level {level["id"]} {key}')
+        for key in (('length','atkRatio','lifeRatio','resRatio') if check_level_ratios else ('length',)):
+            positive(level[key],f'level {level["id"]} {key}')
         positions=[g['position'] for g in level['groups']]
         if not positions or positions!=sorted(set(positions)) or not all(0<=p<=1 for p in positions):
             raise ValueError(f'level {level["id"]}: invalid encounter positions')
@@ -265,7 +276,7 @@ def validate_projection(data):
         if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
             raise ValueError(f'charge {key}: invalid unlock level')
 
-    data["defaults"]["maxEquipmentLevel"]=max(len(equipment[key]) for key in ("armour","shield","laser","missile","cannon"))
+    data["defaults"].pop("maxEquipmentLevel", None)
 
 def encode(data):
     return json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False).encode("utf-8")

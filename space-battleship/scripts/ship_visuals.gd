@@ -17,7 +17,7 @@ static func scale_for(ship: Dictionary) -> float:
 
 static func enemy_scale_for(ship: Dictionary) -> float:
 	# Every enemy occupies one formation slot; size is a visual tier only.
-	return (32.0 + clampf(float(ship.get("size",1))-1.0,0.0,5.0)*2.4) / CANVAS.y
+	return (48.0 + clampf(float(ship.get("size",1))-1.0,0.0,5.0)*16.0) / CANVAS.y
 
 static func center(key: String, index: int) -> Vector2:
 	return SOCKETS[key][index] - CANVAS / 2.0

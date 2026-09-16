@@ -151,6 +151,7 @@ func show_record(index: int) -> void:
 		return
 	var record: Dictionary = rows()[index]
 	for key in document.tables[table].headers:
+		if table == "level" and key in ["atkRatio", "lifeRatio", "resRatio"]: continue
 		if key == "mon" or key == "monGroup": continue
 		var line := HBoxContainer.new()
 		form.add_child(line)
@@ -184,7 +185,7 @@ func show_record(index: int) -> void:
 		hint.text = "遭遇位置 0–1（0.1 = 10%），按位置升序；最后一场为 BOSS 战。"
 		form.add_child(hint)
 		var formula_hint := Label.new()
-		formula_hint.text = "倍率可填数字或 Excel 公式；本条记录对应第 %d 行。增删后请核对公式地址。" % (index + 4)
+		formula_hint.text = "攻击、生命、资源倍率由分表维护，编辑器保留原值，不编辑或校验。"
 		form.add_child(formula_hint)
 		encounter_box = VBoxContainer.new()
 		form.add_child(encounter_box)

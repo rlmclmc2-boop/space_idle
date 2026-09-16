@@ -1,0 +1,196 @@
+extends SceneTree
+
+class TrackedUI extends "res://scripts/main.gd":
+	var writes: Array = []
+	var builds := 0
+	func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
+		if control.get(property) != value:
+			writes.append(control)
+		super.set_ui_value(control,property,value)
+	func build_ui() -> void:
+		builds += 1
+		super.build_ui()
+
+var checks := 0
+var failures := 0
+func check(ok: bool, label: String) -> void:
+	checks += 1
+	if not ok:
+		failures += 1
+		printerr(label)
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func click(control: Control) -> void:
+	var mouse := InputEventMouseMotion.new()
+	mouse.position = control.get_global_rect().get_center()
+	Input.parse_input_event(mouse)
+	for pressed in [true,false]:
+		var event := InputEventMouseButton.new()
+		event.position = mouse.position
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = pressed
+		Input.parse_input_event(event)
+		await process_frame
+
+func run() -> void:
+	var scene := TrackedUI.new()
+	scene.automation_args=["--capture"]
+	root.add_child(scene)
+	scene.automation_args=[]
+	scene.set_process(false)
+	scene.game.save_enabled=false
+	scene.game.paused=true
+	scene.game.pending_unlocks.clear()
+	scene.game.profile.cleared=range(1,51)
+	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+	scene.game.profile.resources={"1":1e6,"2":1e6}
+	scene.build_ui()
+	scene._process(0)
+	await process_frame
+	var tabs := scene.equipment_tabs
+	var builds := scene.builds
+	var defence: Label = scene.equipment_card_controls.defence_0.title
+	var tech: String = scene.hightech_buttons.keys()[0]
+	var tech_panel: Node = scene.hightech_buttons[tech].get_parent()
+	var charge: String = scene.charge_cards.keys()[0]
+	var charge_title: Label = scene.charge_cards[charge].title
+	var draws := {"background":0,"resources":0,"battle":0,"stars":0}
+	scene.background_layer.draw.connect(func():draws.background+=1)
+	scene.resource_layer.draw.connect(func():draws.resources+=1)
+	scene.battle_layer.draw.connect(func():draws.battle+=1)
+	scene.stars_layer.draw.connect(func():draws.stars+=1)
+	await process_frame
+	for key in draws: draws[key]=0
+	scene.writes.clear()
+	for i in 3: scene._process(0)
+	await process_frame
+	check(scene.writes.is_empty(),"Unchanged paused UI has no property writes")
+	check(draws.values().all(func(count):return count==0),"Unchanged paused layers are not redrawn")
+	var before := int(scene.game.slot_entry("weapons",0).level)
+	await click(scene.upgrade_buttons.laser)
+	check(int(scene.game.slot_entry("weapons",0).level)==before+1,"Real click upgrades equipment")
+	check(not scene.writes.has(defence) and not scene.writes.has(charge_title),"Upgrade does not write unrelated card titles")
+	check(scene.equipment_tabs==tabs and scene.builds==builds,"Upgrade keeps complete UI tree")
+	check(scene.hightech_buttons[tech].get_parent()==tech_panel,"Upgrade preserves research card")
+	scene._process(0)
+	await process_frame
+	check(draws.background==0 and draws.stars==0 and draws.resources>0,"Resource spending redraws resources without static background or stars")
+	scene.equipment_tabs.current_tab=2
+	await process_frame
+	await click(scene.scientist_generate_button)
+	await click(scene.hightech_buttons[tech])
+	check(scene.game.assigned_scientists(tech)==1,"Real mouse generates and assigns scientist")
+	check(scene.builds==builds and scene.hightech_buttons[tech].get_parent()==tech_panel,"Scientific actions retain all UI instances")
+	check(scene.hightech_buttons.values().all(func(button):return button.disabled),"All research buttons reflect shared idle count")
+	scene.game.profile.hightechLevels[tech]=1
+	scene.on_event("hightech_complete",{"key":tech})
+	check(scene.hightech_titles[tech].text.contains("Lv.1") and scene.builds==builds,"Completion updates research card without full rebuild")
+	scene.on_event("state",{})
+	check(scene.builds==builds and scene.equipment_tabs==tabs,"Battle state preserves UI")
+	var source: int=tech_panel.slot_index
+	check(scene.game.swap_hightech_slots(source,source+1),"Research order changes")
+	scene.sync_hightech_slots()
+	check(tech_panel.slot_index==source+1 and scene.hightech_buttons[tech].get_parent()==tech_panel,"Drag ordering moves existing card")
+	await process_frame
+	var target: Control=scene.hightech_container.get_child(source+1)
+	var start: Vector2=tech_panel.get_global_rect().position+Vector2(100,12)
+	var end: Vector2=target.get_global_rect().position+Vector2(100,12)
+	var motion := InputEventMouseMotion.new()
+	motion.position=start
+	Input.parse_input_event(motion)
+	var press := InputEventMouseButton.new()
+	press.position=start
+	press.button_index=MOUSE_BUTTON_LEFT
+	press.pressed=true
+	Input.parse_input_event(press)
+	await process_frame
+	for position in [start+Vector2(-30,0),end]:
+		motion=InputEventMouseMotion.new()
+		motion.position=position
+		motion.relative=Vector2(-30,0)
+		motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+		Input.parse_input_event(motion)
+		await process_frame
+	press=InputEventMouseButton.new()
+	press.position=end
+	press.button_index=MOUSE_BUTTON_LEFT
+	press.pressed=false
+	Input.parse_input_event(press)
+	await process_frame
+	scene._process(0)
+	check(tech_panel.slot_index==source and scene.builds==builds,"Real drag moves research card without rebuilding UI")
+	scene.equipment_tabs.current_tab=3
+	await process_frame
+	await click(scene.charge_cards[charge].button)
+	check(scene.game.charge_job(charge).active and scene.charge_cards[charge].button.text=="暂停","Real charge click refreshes owning card")
+	check(scene.builds==builds,"Charge action does not rebuild UI")
+	scene.equipment_tabs.current_tab=0
+	var hidden_text: String=scene.charge_cards[charge].progress.text
+	scene.game.charge_job(charge).elapsed=1
+	scene._process(0)
+	check(scene.charge_cards[charge].progress.text==hidden_text,"Hidden charge page is not refreshed each frame")
+	scene.equipment_tabs.current_tab=3
+	check(scene.charge_cards[charge].progress.text!=hidden_text,"Showing charge page catches up immediately")
+	await click(scene.help_button)
+	scene._process(0)
+	check(scene.help_open and not tabs.visible and scene.builds==builds,"Help toggles visibility without rebuilding")
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://.runtime/local-help.png")
+	scene.help_open=false
+	scene.refresh_navigation()
+	check(tabs.visible and scene.equipment_tabs==tabs,"Closing help restores same tab tree")
+	await click(scene.sound_button)
+	check(scene.sound_on and scene.builds==builds,"Sound toggles only its control")
+	scene.equipment_tabs.current_tab=4
+	var picker: OptionButton=scene.ship_controls.picker
+	picker.select(1)
+	picker.item_selected.emit(1)
+	check(scene.ship_candidate!=scene.game.profile.selectedShip and scene.builds==builds,"Ship selection only changes draft slots")
+	var selector: OptionButton=scene.ship_controls.selectors.weapons_0
+	selector.select(1)
+	selector.item_selected.emit(1)
+	check(scene.ship_controls.selectors.weapons_0==selector and scene.builds==builds,"Draft edit retains its own selector and other UI")
+	var armour: OptionButton=scene.ship_controls.selectors.defence_0
+	armour.select(1)
+	armour.item_selected.emit(1)
+	await process_frame
+	await click(scene.ship_controls.confirm)
+	check(scene.game.profile.selectedShip==scene.ship_candidate and scene.builds==builds,"Ship confirmation updates related slots without rebuilding UI")
+	check(scene.charge_cards[charge].title==charge_title and scene.hightech_buttons[tech].get_parent()==tech_panel,"Ship change preserves charge and research controls")
+	var defence_panel: Panel=scene.equipment_panels.defence_0
+	check(scene.game.unequip_slot("weapons",0),"Isolated fixture can empty a weapon slot")
+	scene.refresh_structure()
+	var empty_panel: Panel=scene.equipment_panels.weapons_0
+	scene.equipment_tabs.current_tab=0
+	var equip: OptionButton=empty_panel.get_meta("selector")
+	equip.select(1)
+	equip.item_selected.emit(1)
+	check(scene.equipment_panels.weapons_0!=empty_panel and scene.equipment_panels.defence_0==defence_panel,"Installing equipment replaces only its empty card")
+	check(scene.builds==builds and scene.ship_candidate_loadout.weapons[0].key==scene.game.slot_entry("weapons",0).key,"Installing equipment updates related current-ship draft without full rebuild")
+	# Relock/unlock fixtures verify only affected hightech slot content changes.
+	var other_tech: String=scene.hightech_buttons.keys().filter(func(key):return key!=tech)[0]
+	var other_panel: Node=scene.hightech_buttons[other_tech].get_parent()
+	scene.db.data.hightech[tech].unlock=99
+	scene.game.profile.cleared.erase(1)
+	scene.refresh_structure()
+	check(not scene.hightech_buttons.has(tech) and scene.hightech_buttons[other_tech].get_parent()==other_panel,"Relocking one technology preserves unrelated research cards")
+	scene.game.profile.cleared.append(99)
+	scene.refresh_structure()
+	check(scene.hightech_buttons.has(tech) and scene.hightech_buttons[other_tech].get_parent()==other_panel and scene.builds==builds,"Unlocking one technology adds only affected slot content")
+	scene.game.pending_unlocks=["shield"]
+	scene.on_event("unlock",{})
+	check(scene.continue_button.visible and not tabs.visible and scene.builds==builds,"Unlock overlay preserves underlying UI")
+	await process_frame
+	await click(scene.continue_button)
+	check(tabs.visible and scene.game.pending_unlocks.is_empty() and scene.builds==builds,"Unlock acknowledgment restores existing controls")
+	scene.equipment_tabs.current_tab=2
+	scene._process(0)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://.runtime/local-research.png")
+	print("Local UI: %d checks, %d failures" % [checks,failures])
+	scene.queue_free()
+	await process_frame
+	quit(1 if failures else 0)

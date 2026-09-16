@@ -8,8 +8,10 @@
 |---|---|
 | 资源取整 | `test_rule_rounding.gd`；涉及自动生产加 `test_auto_gen_resources.gd` |
 | 装备槽位 | `test_state_ownership.gd`；涉及退款加 `test_unequip.gd`，数量限制加 `test_ship_equipment_limit.gd` |
+| 装备计算成长 | `test_equipment_growth.gd` / `test_equipment_growth_import.py`；批量购买加 `test_bulk_upgrades.gd` |
+| UI局部刷新/绘制 | `test_local_ui.gd`（控件身份、写入/绘制范围、真实点击/拖拽、隐藏页补齐、局部解锁）；升级用`test_upgrade_ui.gd`（真实输入、动态MAX、事件不重建）。定向性能用`test_upgrade_ui_probe.gd`经run.py隔离，3轮两种预算，勿并行其他性能测试 |
 | 战斗目标 | `test_target_resistance.gd`、`test_projectile_lifecycle.gd`；涉及末敌加 `test_boss_projectile_clear.gd` |
-| 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd` |
+| 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd`；重建首帧按钮闪动用`test_hightech_flicker.gd` |
 | 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；离线资源加 `test_offline_resources.gd` |
 | UI解锁 | `test_tab_unlocks.gd`；换舰草稿加 `test_ship_tab.gd` |
 | 时间步进 | `test_time_steps.gd`；冷却加 `test_travel_cooldowns.gd` |

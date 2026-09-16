@@ -14,11 +14,12 @@ func run() -> void:
 		enemy.merge({"size":size,"x":1050.0,"y":400.0,"hp":100.0,"max_hp":100.0,"slot":0,"uid":1,"boss":size>1},true)
 		scene.game.enemies.assign([enemy])
 		var offset: Vector2 = scene.game.enemy_weapon_offset(enemy,0)
-		var height := 32.0+(size-1)*2.4
+		var height := 48.0+(size-1)*16.0
+		assert(is_equal_approx(scene.SHIP_VISUALS.CANVAS.y * scene.SHIP_VISUALS.enemy_scale_for(enemy),height),"Visual size follows enlarged tier")
 		assert(is_equal_approx(-45+offset.x,-height*2*0.45),"Launch tracks left hull edge")
 		assert(absf(offset.y)<height/2,"Mount remains inside visible height")
 		scene.build_ui()
-		scene.queue_redraw()
+		scene.battle_layer.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://enemy-size-%d.png" % size)
@@ -33,9 +34,9 @@ func run() -> void:
 		assert(scene.game.enemies[index].y==198+index*44,"Size cannot move slot center")
 	assert(scene.game.targets()[0].slot==4,"Target priority uses single-slot centers")
 	scene.build_ui()
-	scene.queue_redraw()
+	scene.battle_layer.queue_redraw()
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://enemy-ten-large.png")
-	print("Enemy ship visuals: 24 checks passed; seven screenshots")
+	print("Enemy ship visuals: 30 checks passed; seven screenshots")
 	quit()
