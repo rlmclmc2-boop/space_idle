@@ -11,6 +11,8 @@
 | 数据读取 | `scripts/database.gd`（ShipDatabase，RefCounted）；`equip/enemy_weapon/ratio` |
 | 槽位/换舰 | game.gd：`slot_entry/equip_slot/unequip_slot/switch_ship/upgrade_slot` |
 | 战斗/资源 | game.gd：`tick/targets/fire/tick_projectiles/hit_player/hit_enemy/collect` |
+| 宝石/碎片/镶嵌 | game.gd：`load_jewels/pickup_jewel_fragment/combine_jewels/decompose_jewel/socket_jewel/unsocket_jewel`；database.gd：`jewel/jewel_parameter/jewel_effect`保留原表字段并适配func行为 |
+| 宝石效果/界面 | game.gd：`jewel_equipment_stat/jewel_critical/jewel_fire/jewel_on_hit/jewel_hit_player/advance_jewel_repair`；main.gd追加宝石页/装备镶嵌按钮，`jewel_panel.gd`仅持有UI选择与固定格控件 |
 | 科学家/充能/炉 | game.gd：`scientist_purchase/advance_hightech/advance_charge/advance_furnace` |
 | 页签/草稿/数值 | main.gd：`build_equipment_tabs/build_ship_tab/refresh_scientists`；`hightech_slot.gd`原生拖拽、`number_format.gd`显示 |
 | 舰船素材/炮口 | `scripts/ship_visuals.gd`：尺寸、源图槽位映射及炮口；`assets/`及其README |
@@ -42,6 +44,8 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 | 实体 | game的enemies/projectiles/drops；敌方冷却在各敌实例装备数组，不与玩家槽位混用 |
 | 收入/炉 | game.resource_samples保存现实时间窗口；profile.furnaceIncomePeak持久；区别见D005 |
 | UI草稿 | main.ship_candidate/ship_candidate_loadout；确认才经switch_ship提交；页签/滚动/弹窗由main维护 |
+| 宝石持久数据 | profile.jewels、jewelFragments、loadout每项sockets/attacks/hits；未镶嵌/已镶嵌只有一个所有者；运行token和serial不写存档 |
+| 宝石临时战斗状态 | game.jewel_repeats为延时发射、jewel_charged为已触发下次齐射增益、jewel_defence_times为模块受伤计时、jewel_defence_damage为总生命/盾的模块受损分配；reset_player/换舰清理，不保存战斗现场 |
 
 读取与兼容选择理由见[DECISIONS](DECISIONS.md) D004/D005。合法运行状态在创建、加载、重建解锁及明确装备写入边界维护；普通属性/描述/排序读取不得调用ensure_loadout或懒写profile。
 
@@ -63,6 +67,7 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 | mon / monGroup / level | enemies[id] / groups[id].slots / levels[]及groups；按id定位 |
 | res / config | resources[id] / config[name]；科学家参数按名称查，不依赖旧行号 |
 | ship / hightech / charge | ship[name] / hightech[name] / charge[name]；分别查槽位/研究点/充能字段 |
+| jewel | jewel[id]保留name/func/des/maxLevel/para_1…原字段；缺manifest条目时发现独立jewel.xlsx，旧总表缺jewel不覆盖已有投影；仅本次config/jewel段按分表投影，其余段保持原值 |
 
 - hightech.description是UI模板、des是效果说明；charge.des是UI模板、func是功能说明而非可执行代码，不能混用。
 - `.split_manifest.json`记录分表和总表对应关系；`source_files`记录投影来源路径；`data/.import_state.json`保存成功导入的源/目标指纹，缓存可重建。defaults保留既有目标补充值，fallbacks文字不是实际算法。

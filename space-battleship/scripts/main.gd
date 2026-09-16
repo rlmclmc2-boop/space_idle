@@ -108,6 +108,7 @@ var stars_layer: Node2D
 var battle_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
+var jewel_panel: Panel
 var hightech_sync_pending := false
 
 func _ready() -> void:
@@ -236,6 +237,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
+		"jewels_changed":
+			if is_instance_valid(jewel_panel):
+				jewel_panel.refresh()
+			if not str(info.get("slot", "")).is_empty():
+				refresh_equipment_cards(str(info.slot))
+		"jewel_error":
+			toast(str(info.message))
+		"jewel_pickup":
+			toast("拾取 " + str(db.jewel(str(info.jewel)).get("name", info.jewel)) + "碎片")
 		"state":
 			refresh_structure()
 			refresh_navigation()
@@ -457,6 +467,9 @@ func build_ui() -> void:
 	advance_button = button("立即过关",Rect2(780,302,200,46),func():game.advance_after_clear(),true)
 	sound_button = button("",Rect2(1262,778,140,26),func():sound_on=not sound_on;refresh_navigation())
 	refresh_navigation()
+	jewel_panel = preload("res://scripts/jewel_panel.gd").new()
+	ui.add_child(jewel_panel)
+	jewel_panel.setup(self)
 	refresh_draw_layers(0)
 
 func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
@@ -517,6 +530,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(not hightech_buttons.is_empty())
 	pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
 	pages.append(unlocked_ship_keys().size()>1)
+	pages.append(game.jewels_unlocked())
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
@@ -877,7 +891,7 @@ func draw_battle() -> void:
 		else:
 			draw_surface.draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/10.0,0,1),24,Color(color,0.35),2)
 		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),26,color)
-		text_at("%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,41),12,color)
+		text_at("%s碎片 · 点击拾取" % db.jewel(str(drop.jewel)).get("name",drop.jewel) if drop.has("jewel") else "%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,41),12,color)
 	for p in particles:
 		draw_surface.draw_circle(p.pos+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
 	for f in floats:
@@ -1003,6 +1017,12 @@ func build_equipment_tabs() -> void:
 	build_hightech_tab()
 	build_charge_tab()
 	build_ship_tab()
+	var jewel_tab := Control.new()
+	jewel_tab.name = "宝石"
+	equipment_tabs.add_child(jewel_tab)
+	var open_jewels := button("打开宝石工坊 · 背包 / 合成 / 分解", Rect2(22,20,460,45), func():jewel_panel.open())
+	open_jewels.reparent(jewel_tab,false)
+	equipment_card_label(jewel_tab,"装备镶嵌请点击武器或防御卡上的「镶嵌」",Rect2(505,24,780,38),16,MUTED)
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):equipment_page=index;refresh_visible_cards())
 
@@ -1064,13 +1084,18 @@ func build_equipment_card(category: String, slot_index: int) -> void:
 	card.add_child(selector)
 	if not key.is_empty():
 		equipment_card_controls[slot_key] = {"panel":card}
-		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],number(lv)],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,174 if SLOT_TEXTURES.has(key) else 216,26),15)
+		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],number(lv)],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,130 if SLOT_TEXTURES.has(key) else 172,26),15)
 		equipment_card_label(card,"已装配 · 换舰时可调整",Rect2(12,72,216 if defence else 144,20),11,MUTED)
 	if key.is_empty():
 		equipment_card_label(card,"空置槽位",Rect2(12,10,216,26),16)
 		equipment_card_label(card,"选择右侧装备即可安装",Rect2(12,42,216,22),13,MUTED)
 		equipment_card_label(card,"安装后仅可在换舰时调整",Rect2(12,76,216,20),11,MUTED)
 		return
+	var socket_action := button("镶嵌",Rect2(190,8,50,26),func():jewel_panel.open(category,slot_index))
+	socket_action.reparent(card,false)
+	socket_action.add_theme_font_size_override("font_size",11)
+	socket_action.visible = game.jewels_unlocked()
+	equipment_card_controls[slot_key].socket = socket_action
 	var cd := float(db.equip(key,lv).get("cd",0))
 	if not defence and cd > 0:
 		equipment_card_label(card,"CD %s秒" % number(cd),Rect2(160,72,68,20),11,CYAN)
@@ -1134,10 +1159,11 @@ func refresh_equipment_cards(only_slot := "") -> void:
 		var controls: Dictionary = equipment_card_controls[slot]
 		var tech := BattleGame.DENSE_ARMOUR if category == "defence" else BattleGame.ENERGY_FOCUS
 		var effect := game.charge_multiplier("防御充能" if category == "defence" else "攻击充能")
-		if not ui_state_changed(controls.title,[level,game.hightech_level(tech),effect]):
+		set_ui_value(controls.socket,"visible",game.jewels_unlocked())
+		if not ui_state_changed(controls.title,[level,game.hightech_level(tech),effect,game.jewel_equipment_stat(entry),entry.get("sockets",[])]):
 			continue
 		set_ui_value(controls.title,"text","%s · Lv.%s" % [NAMES[key],number(level)])
-		set_ui_value(controls.stat,"text",("容量" if category == "defence" else "伤害")+" %s" % number(game.equipment_stat(key,level))+(" → %s" % number(game.equipment_stat(key,level+1)) if not maxed else " · 满级"))
+		set_ui_value(controls.stat,"text",("容量" if category == "defence" else "伤害")+" %s" % number(game.jewel_equipment_stat(entry))+(" → %s" % number(game.jewel_equipment_stat(entry,level+1)) if not maxed else " · 满级"))
 		set_ui_value(controls.cost,"text","已达最高等级" if maxed else "单次：%s" % cost_text(game.slot_upgrade_cost(category,index)))
 		for label in [controls.title,controls.stat,controls.cost]:
 			set_ui_value(label,"tooltip_text",label.text)

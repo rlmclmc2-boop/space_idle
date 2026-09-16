@@ -13,6 +13,7 @@
 | 战斗目标 | `test_target_resistance.gd`、`test_projectile_lifecycle.gd`；涉及末敌加 `test_boss_projectile_clear.gd` |
 | 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd`；重建首帧按钮闪动用`test_hightech_flicker.gd` |
 | 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；离线资源加 `test_offline_resources.gd` |
+| 宝石 | `test_jewels.gd`（容量/拾取/合成/分解/镶嵌/10种效果/存档）；`test_jewel_ui.gd`（真实点击、局部写入/重绘/隐藏恢复与截图）；`test_jewel_import.py`（来源一致、重复ID、分表发现与缓存） |
 | UI解锁 | `test_tab_unlocks.gd`；换舰草稿加 `test_ship_tab.gd` |
 | 时间步进 | `test_time_steps.gd`；冷却加 `test_travel_cooldowns.gd` |
 

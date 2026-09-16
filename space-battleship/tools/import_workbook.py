@@ -11,7 +11,7 @@ import sys
 import openpyxl
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge", "jewel":"jewel"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
@@ -26,10 +26,17 @@ def read_rows(sheet):
     return [dict(zip(header,row)) for row in values if row[0] is not None]
 
 def convert_sheet(name, rows):
-    if name in ('mon', 'monGroup', 'res', 'level'):
+    if name in ('mon', 'monGroup', 'res', 'level', 'jewel'):
         ids = [row.get('id') for row in rows]
         if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
             raise ValueError(f'{name}：ID 必须为不重复的正整数')
+    if name == 'jewel':
+        for row in rows:
+            positive(row.get('maxLevel'), 'jewel maxLevel')
+            positive(row.get('para_3', row.get('para3')), 'jewel fragments')
+            if row['maxLevel'] != int(row['maxLevel']) or row.get('para_3', row.get('para3')) != int(row.get('para_3', row.get('para3'))):
+                raise ValueError('jewel：最大等级和碎片需求必须是正整数')
+        return {str(int(row['id'])): row for row in rows}
     if name == 'config':
         keys = [row.get('name') for row in rows]
         if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
@@ -289,7 +296,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('charge','ship'):
+                if name in ('charge','ship','jewel'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError("缺少配置表："+name)
             data[section]=convert_sheet(name,read_rows(book[name]))

@@ -45,6 +45,26 @@ func equip(key: String, level: int) -> Dictionary:
 func ship(key: String) -> Dictionary:
 	return ships.get(key, {})
 
+func jewel(id: String) -> Dictionary:
+	return data.get("jewel", {}).get(id, {})
+
+func jewel_parameter(id: String, index: int) -> float:
+	var row := jewel(id)
+	var value = row.get("para_%d" % index, row.get("para%d" % index, 0))
+	return float(value) if value is float or value is int else 0.0
+
+func jewel_max_level(id: String) -> int:
+	return int(jewel(id).get("maxLevel", 0))
+
+func jewel_effect(id: String) -> String:
+	# func is authored prose, not executable code. Adapt its declared behavior,
+	# independently of IDs/names; unsupported definitions never execute as code.
+	var definition := str(jewel(id).get("func", ""))
+	for pair in [["历史攻击次数", "proficiency"], ["受到过的伤害次数", "adaptation"], ["额外*(1+", "iron"], ["电子干扰", "interference"], ["连续para4秒", "repair"], ["额外发射", "repeat"], ["固定增加该武器para2暴击", "critical"], ["CD立即结束", "charge"], ["该伤害-", "resistance"], ["不会因受到伤害而打断", "tenacity"]]:
+		if definition.contains(pair[0]):
+			return pair[1]
+	return ""
+
 func equipment_growth(base: float, multiplier: float, level: int) -> float:
 	var value := base * pow(1.0 + multiplier, level - 1)
 	if not is_finite(value) or value <= 0.0:

@@ -2,16 +2,17 @@
 
 ## CURRENT
 
-- UI局部更新约束已写入[AGENTS](../AGENTS.md)作为新增/修改UI的必遵规范：明确依赖范围、复用控件、最小结构更新、独立绘制层及刷新范围回归要求。仅文档变更，已核对链接、现有实现入口和diff，未运行游戏测试。
-- DONE：按用户要求放大敌舰，size 1～6显示高度由32～44改为48～128像素；仍每敌一格，槽位中心/索敌/伤害不变，现有炮口及血条自动适配。
-- CHANGED：scripts/ship_visuals.gd；../test/test_enemy_ship_visuals.gd；docs/PROJECT.md。正式配置与存档未修改。
-- VERIFY：敌舰视觉专项30项通过，覆盖六档尺寸/炮口和十舰槽位/索敌；截图测试适配独立battle_layer重绘，已核对大型舰与十舰画面；大舰在相邻槽会视觉重叠，符合仅放大不改占格的范围。证据：../test/work/test_enemy_ship_visuals-ta1kwek5/，Godot退出0。
-- NEXT：重启游戏查看放大后的敌舰。
+- DONE：宝石/碎片/合成/满级分解/装备镶嵌/10种func效果与暴击已实现。正式参数读取当前config.xlsx和jewel.xlsx；用户执行中补充jewelCompose后已按原格式接入，未编辑Excel。30格容量、重复点击、同ID限制、卸装备/换舰回收、旧档默认值均有专项保护。
+- CHANGED：scripts/game.gd、database.gd、main.gd、新增jewel_panel.gd；tools/import_workbook.py、config_workbooks.py支持jewel分表；data/game_data.json仅新增jewel段及宝石config字段，已比较确认其他投影和既有参数不变。规则/定位更新在PROJECT、ARCHITECTURE；测试路由在../../test/README.md。
+- VERIFY：隔离runner通过宝石99项、宝石真实点击/UI19项、原局部UI33项、页签14项、装备状态1114项、弹道19项、抗性21项、末波清弹8项、存档16项，共1343项，另宝石分表投影/重复ID/发现/缓存验证通过。没有新增脚本/runtime错误；引擎环境既有根证书读取提示仍出现。Python配置测试使用项目QA同款bundled Python（系统Python缺lxml）。
+- EVIDENCE：../../test/work/test_jewels-uppk29o5/；test_jewel_ui-y3pg1ubn/space-battleship/.runtime/jewel-workshop.png与jewel-sockets.png（其余路径同在../../test/work/）；test_local_ui-eifu872a/、test_tab_unlocks-hna0oun3/、test_state_ownership-i5rw4u91/、test_projectile_lifecycle-lphx1jlt/、test_target_resistance-d5ijmwv_/、test_boss_projectile_clear-e4ncql4c/、test_save_boundaries-f8vxke9_/、test_jewel_import-16rejk3v/。已核对真实鼠标操作和工坊/镶嵌截图。
+- UI范围：背包始终复用30个格按钮；合成/分解/拾取/排序更新变化内容，镶嵌额外更新对应装备卡；插槽数量变化只增减插槽按钮。隐藏面板停刷，暂停静止无属性写入或额外绘制，无普通操作调用build_ui。完整构建仍仅用于初始化/显式重置。
+- NEXT：通过项目既有“大重启”入口加载代码；达到配置门槛后进入宝石页，装备卡“镶嵌”管理插槽。无需操作正式玩家存档。
 
 ## DONE
 
 - 已具备自动战斗、驻守/跃迁、资源与离线结算、独立槽位装备/换舰、科学家研究、充能和炼铁炉。
-- 已具备游戏UI、QA、关卡编辑器、分表投影及专项测试；装备等级/玩家冷却以槽位为权威，读取无隐式写入。
+- 已具备宝石/碎片/合成/分解/镶嵌与战斗效果；游戏UI、QA、关卡编辑器、分表投影及专项测试；装备等级/玩家冷却以槽位为权威，读取无隐式写入。
 
 ## KNOWN ISSUES
 
