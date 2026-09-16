@@ -2,12 +2,11 @@
 
 ## CURRENT
 
-- DONE：宝石/碎片/合成/满级分解/装备镶嵌/10种func效果与暴击已实现。正式参数读取当前config.xlsx和jewel.xlsx；用户执行中补充jewelCompose后已按原格式接入，未编辑Excel。30格容量、重复点击、同ID限制、卸装备/换舰回收、旧档默认值均有专项保护。
-- CHANGED：scripts/game.gd、database.gd、main.gd、新增jewel_panel.gd；tools/import_workbook.py、config_workbooks.py支持jewel分表；data/game_data.json仅新增jewel段及宝石config字段，已比较确认其他投影和既有参数不变。规则/定位更新在PROJECT、ARCHITECTURE；测试路由在../../test/README.md。
-- VERIFY：隔离runner通过宝石99项、宝石真实点击/UI19项、原局部UI33项、页签14项、装备状态1114项、弹道19项、抗性21项、末波清弹8项、存档16项，共1343项，另宝石分表投影/重复ID/发现/缓存验证通过。没有新增脚本/runtime错误；引擎环境既有根证书读取提示仍出现。Python配置测试使用项目QA同款bundled Python（系统Python缺lxml）。
-- EVIDENCE：../../test/work/test_jewels-uppk29o5/；test_jewel_ui-y3pg1ubn/space-battleship/.runtime/jewel-workshop.png与jewel-sockets.png（其余路径同在../../test/work/）；test_local_ui-eifu872a/、test_tab_unlocks-hna0oun3/、test_state_ownership-i5rw4u91/、test_projectile_lifecycle-lphx1jlt/、test_target_resistance-d5ijmwv_/、test_boss_projectile_clear-e4ncql4c/、test_save_boundaries-f8vxke9_/、test_jewel_import-16rejk3v/。已核对真实鼠标操作和工坊/镶嵌截图。
-- UI范围：背包始终复用30个格按钮；合成/分解/拾取/排序更新变化内容，镶嵌额外更新对应装备卡；插槽数量变化只增减插槽按钮。隐藏面板停刷，暂停静止无属性写入或额外绘制，无普通操作调用build_ui。完整构建仍仅用于初始化/显式重置。
-- NEXT：通过项目既有“大重启”入口加载代码；达到配置门槛后进入宝石页，装备卡“镶嵌”管理插槽。无需操作正式玩家存档。
+- DONE：导航刷新已按实际显示依赖收窄，不再遍历ui子节点统一设置可见性；保留宝石面板自主开关修复。音效仅更新自身文字，驻守仅更新自身文字/禁用，死亡设置仅改菜单勾选；前进与战斗显示结果相同时不进入属性更新。
+- CHANGED：scripts/main.gd明确帮助/解锁可见性关联组，使用所属控件的局部依赖快照；跃迁目标改变只select，通关列表变化只增减选项/修正变化项，不clear重建。../../test/test_local_ui.gd扩展导航属性检查与实际写入区分；ARCHITECTURE记录入口和快照归属。未改变游戏规则、配置或正式玩家存档。
+- VERIFY：隔离test_local_ui.gd 46项与test_jewel_ui.gd 26项通过，退出码均0。覆盖真实点击、仅目标属性检查、无关层不重绘、任意兄弟控件不被导航显示、跃迁选项身份保留、静止不进入属性setter、UI实例保留及宝石关闭后不重开。已核对帮助与宝石界面截图，git diff --check通过；仅有引擎既有根证书提示。
+- EVIDENCE：../../test/work/test_local_ui-3cv3awwg/；../../test/work/test_jewel_ui-rvbcpeh8/。截图位于各自space-battleship/.runtime/。
+- NEXT：游戏“大重启”加载最新代码。帮助/解锁仍更新其实际关联控件；初始化/显式重置仍允许完整构建，普通导航操作不重建UI。
 
 ## DONE
 

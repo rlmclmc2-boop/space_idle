@@ -55,12 +55,31 @@ func run() -> void:
 	scene.refresh_equipment_cards("weapons_0")
 	check(not tabs.is_tab_hidden(5) and scene.builds==builds,"Unlock only changes visibility")
 	var panel=scene.jewel_panel
+	for next_state in [BattleGame.State.TRAVEL,BattleGame.State.COMBAT,BattleGame.State.LEVEL_CLEAR]:
+		scene.writes.clear()
+		scene.game.state=next_state
+		scene.on_event("state",{})
+		check(not panel.visible and not scene.writes.has(panel),"Navigation must not open hidden workshop: " + str(next_state))
+		panel.hide()
 	for i in 3:
 		scene.game.profile.jewels.append(scene.game.new_jewel("7"))
 	scene.equipment_tabs.current_tab=5
 	await process_frame
 	await click(scene.equipment_tabs.get_child(5).get_child(0))
 	check(panel.visible and panel.cells.size()==30,"Real click opens 30-cell workshop")
+	var close_button: Button=null
+	for child in panel.get_children():
+		if child is Button and child.text=="关闭":
+			close_button=child
+	await click(close_button)
+	check(not panel.visible,"Real close button hides workshop")
+	scene.game.state=BattleGame.State.TRAVEL
+	scene.on_event("state",{})
+	check(not panel.visible and not panel.is_processing(),"Travel after closing cannot reopen workshop")
+	panel.hide()
+	await click(scene.equipment_tabs.get_child(5).get_child(0))
+	check(panel.visible,"Explicit button can reopen closed workshop")
+	check(scene.builds==builds and scene.equipment_tabs==tabs,"Visibility changes preserve UI instances")
 	var cell=panel.cells[0]
 	var draws:={"background":0,"defence":0,"cell":0}
 	scene.background_layer.draw.connect(func():draws.background+=1)

@@ -97,6 +97,7 @@ var hightech_titles: Dictionary = {}
 var hightech_container: HBoxContainer
 var ship_controls: Dictionary = {}
 var help_button: Button
+var help_close_button: Button
 var continue_button: Button
 var advance_button: Button
 var sound_button: Button
@@ -436,8 +437,7 @@ func build_ui() -> void:
 	resource_mode_button = button("资源：每秒" if resource_rate_mode else "资源：总量",Rect2(664,25,156,38),toggle_resource_display)
 	resource_mode_button.tooltip_text = "切换总量 / 最近60秒实际拾取量÷60（现实时间）"
 	continue_button = button("继续",Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
-	var close_help := button("知道了",Rect2(600,626,240,44),func():help_open=false;refresh_navigation(),true)
-	close_help.set_meta("help_close",true)
+	help_close_button = button("知道了",Rect2(600,626,240,44),func():help_open=false;refresh_navigation(),true)
 	loop_select = OptionButton.new()
 	loop_select.position = Vector2(1010,92)
 	loop_select.size = Vector2(190,38)
@@ -659,37 +659,55 @@ func refresh_ship_controls() -> void:
 func refresh_navigation() -> void:
 	if not is_instance_valid(advance_button):
 		return
-	if not ui_state_changed(advance_button,[help_open,game.pending_unlocks,game.state,game.profile.loop,game.profile.cleared,game.profile.get("loopLevel",0),game.profile.get("guardDeath",0),sound_on]):
-		return
 	var unlocking := not game.pending_unlocks.is_empty()
-	for child in ui.get_children():
-		var visible_now := not help_open and not unlocking
-		if child == help_button or child == resource_mode_button:
-			visible_now = not unlocking
-		elif child == continue_button:
-			visible_now = unlocking
-		elif child.has_meta("help_close"):
-			visible_now = help_open and not unlocking
-		elif child == advance_button:
-			visible_now = visible_now and game.state==BattleGame.State.LEVEL_CLEAR
-		set_ui_value(child,"visible",visible_now)
-	set_ui_value(loop_button,"text","驻守："+("开启" if game.profile.loop else "关闭"))
-	set_ui_value(loop_button,"disabled",game.state==BattleGame.State.RETREAT)
-	set_ui_value(sound_button,"text","音效："+("开" if sound_on else "关"))
-	if ui_state_changed(loop_select,[game.profile.cleared,game.profile.get("loopLevel",0)]):
-		loop_select.clear()
-		loop_select.add_item("跃迁至关卡",0)
+	# These explicit groups share visibility dependencies, not just a parent.
+	# Their local snapshots expire with their controls on explicit UI rebuild.
+	if ui_state_changed(help_button,[unlocking]):
+		set_ui_value(help_button,"visible",not unlocking)
+		set_ui_value(resource_mode_button,"visible",not unlocking)
+		set_ui_value(continue_button,"visible",unlocking)
+	var help_visible := help_open and not unlocking
+	if ui_state_changed(help_close_button,[help_visible]):
+		set_ui_value(help_close_button,"visible",help_visible)
+	var navigation_visible := not help_open and not unlocking
+	if ui_state_changed(guard_settings,[navigation_visible]):
+		for control in [loop_select,loop_button,guard_settings,equipment_tabs,sound_button]:
+			set_ui_value(control,"visible",navigation_visible)
+	var advance_visible := navigation_visible and game.state==BattleGame.State.LEVEL_CLEAR
+	if ui_state_changed(advance_button,[advance_visible]):
+		set_ui_value(advance_button,"visible",advance_visible)
+	if ui_state_changed(loop_button,[game.profile.loop,game.state==BattleGame.State.RETREAT]):
+		set_ui_value(loop_button,"text","驻守："+("开启" if game.profile.loop else "关闭"))
+		set_ui_value(loop_button,"disabled",game.state==BattleGame.State.RETREAT)
+	if ui_state_changed(sound_button,[sound_on]):
+		set_ui_value(sound_button,"text","音效："+("开" if sound_on else "关"))
+	var selection := int(game.profile.get("loopLevel",0))
+	if ui_state_changed(loop_select,[game.profile.cleared]):
+		var ids: Array[int] = [0]
 		for level in range(1,db.levels.size()+1):
 			if game.profile.cleared.has(level):
-				loop_select.add_item("跃迁 · 第 %s 关" % number(level),level)
-				if level==int(game.profile.get("loopLevel",0)):
-					loop_select.select(loop_select.item_count-1)
-		loop_select.set_item_disabled(0,true)
+				ids.append(level)
+		while loop_select.item_count > ids.size():
+			loop_select.remove_item(loop_select.item_count-1)
+		for index in ids.size():
+			var label := "跃迁至关卡" if index==0 else "跃迁 · 第 %s 关" % number(ids[index])
+			if index >= loop_select.item_count:
+				loop_select.add_item(label,ids[index])
+			elif loop_select.get_item_id(index) != ids[index]:
+				loop_select.set_item_id(index,ids[index])
+				loop_select.set_item_text(index,label)
+		if not loop_select.is_item_disabled(0):
+			loop_select.set_item_disabled(0,true)
+	if not game.profile.cleared.has(selection):
+		selection = 0
+	if loop_select.get_selected_id() != selection:
+		loop_select.select(loop_select.get_item_index(selection))
 	var menu := guard_settings.get_popup()
-	for mode in menu.item_count:
-		var checked := mode==int(game.profile.get("guardDeath",0))
-		if menu.is_item_checked(mode) != checked:
-			menu.set_item_checked(mode,checked)
+	if ui_state_changed(menu,[game.profile.get("guardDeath",0)]):
+		for mode in menu.item_count:
+			var checked := mode==int(game.profile.get("guardDeath",0))
+			if menu.is_item_checked(mode) != checked:
+				menu.set_item_checked(mode,checked)
 
 func create_draw_layers() -> void:
 	background_layer = Node2D.new()

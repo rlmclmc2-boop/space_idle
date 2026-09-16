@@ -2,8 +2,10 @@ extends SceneTree
 
 class TrackedUI extends "res://scripts/main.gd":
 	var writes: Array = []
+	var property_checks: Array = []
 	var builds := 0
 	func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
+		property_checks.append(control)
 		if control.get(property) != value:
 			writes.append(control)
 		super.set_ui_value(control,property,value)
@@ -190,7 +192,66 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/local-research.png")
+	await check_navigation_scope(scene)
 	print("Local UI: %d checks, %d failures" % [checks,failures])
 	scene.queue_free()
 	await process_frame
 	quit(1 if failures else 0)
+
+func check_navigation_scope(scene: TrackedUI) -> void:
+	scene.refresh_navigation()
+	var tabs := scene.equipment_tabs
+	var builds := scene.builds
+	var extra := Control.new()
+	extra.hide()
+	scene.ui.add_child(extra)
+	var draws := {"tabs":0,"background":0,"resources":0}
+	tabs.draw.connect(func():draws.tabs+=1)
+	scene.background_layer.draw.connect(func():draws.background+=1)
+	scene.resource_layer.draw.connect(func():draws.resources+=1)
+	await process_frame
+	for key in draws:draws[key]=0
+	scene.property_checks.clear()
+	await click(scene.sound_button)
+	check(scene.property_checks.size()==1 and scene.property_checks[0]==scene.sound_button,"Sound checks only its own text, no visibility sweep")
+	check(draws.values().all(func(count):return count==0),"Sound does not redraw unrelated tabs/background/resources")
+	check(not extra.visible,"Navigation never manages arbitrary sibling controls")
+	scene.property_checks.clear()
+	scene.game.profile.loop=not scene.game.profile.loop
+	scene.refresh_navigation()
+	check(not scene.property_checks.is_empty() and scene.property_checks.all(func(control):return control==scene.loop_button),"Guard toggle checks only its own button")
+	scene.property_checks.clear()
+	scene.game.profile.guardDeath=2
+	scene.refresh_navigation()
+	check(scene.property_checks.is_empty() and scene.guard_settings.get_popup().is_item_checked(2),"Guard setting changes only menu checkmarks")
+	scene.game.state=BattleGame.State.TRAVEL
+	scene.refresh_navigation()
+	scene.property_checks.clear()
+	scene.game.state=BattleGame.State.COMBAT
+	scene.refresh_navigation()
+	check(scene.property_checks.is_empty(),"Travel to combat has no changed navigation display")
+	scene.property_checks.clear()
+	scene.game.state=BattleGame.State.LEVEL_CLEAR
+	scene.refresh_navigation()
+	check(scene.property_checks==[scene.advance_button] and scene.advance_button.visible,"Level clear updates only advance visibility")
+	var picker := scene.loop_select
+	var sentinel := RefCounted.new()
+	picker.set_item_metadata(1,sentinel)
+	var count := picker.item_count
+	scene.property_checks.clear()
+	scene.game.profile.loopLevel=picker.get_item_id(1)
+	scene.refresh_navigation()
+	check(picker.item_count==count and is_same(picker.get_item_metadata(1),sentinel),"Changing destination preserves dropdown entries")
+	check(picker.get_selected_id()==scene.game.profile.loopLevel and scene.property_checks.is_empty(),"Destination updates selection without touching unrelated properties")
+	var last := picker.get_item_id(count-1)
+	scene.game.profile.cleared.erase(last)
+	scene.refresh_navigation()
+	check(picker.item_count==count-1 and is_same(picker.get_item_metadata(1),sentinel),"Removing level preserves unrelated options")
+	scene.game.profile.cleared.append(last)
+	scene.refresh_navigation()
+	check(picker.item_count==count and picker.get_item_id(count-1)==last and is_same(picker.get_item_metadata(1),sentinel),"Adding level preserves existing options")
+	scene.property_checks.clear()
+	for i in 3:scene.refresh_navigation()
+	check(scene.property_checks.is_empty(),"Unchanged navigation never enters property setters")
+	check(scene.equipment_tabs==tabs and scene.builds==builds,"Navigation actions never rebuild UI")
+	extra.queue_free()

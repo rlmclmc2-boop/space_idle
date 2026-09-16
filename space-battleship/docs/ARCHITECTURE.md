@@ -31,6 +31,8 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 
 `refresh_structure`只替换装备类型/数量变化的槽卡；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。战舰草稿编辑保留选择器，候选舰变化只重建候选槽区。`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
 
+导航不遍历ui共同父节点。可见性按明确依赖分组：help_button承载解锁可见性快照（帮助/资源模式/继续），help_close_button独立判断帮助关闭按钮，guard_settings承载普通导航可见性快照（驻守/跃迁/设置/页签容器/音效），advance_button仅跟踪过关按钮显示结果。驻守文字/禁用、音效文字、设置勾选由各自控件/菜单快照限定；同一显示结果不进入属性更新。loop_select快照只包含通关列表，结构变化仅增减选项及修正受影响项，目标选择独立select，不clear列表。快照随控件重建释放；宝石及其他弹窗不参与导航可见性管理。
+
 `create_draw_layers/refresh_draw_layers`分离静态背景、静态边框标题、星空、战场、资源栏和覆盖层；只有战场/星空动画保留必要连续绘制，其余按显示依赖变化重绘。绘制辅助函数使用当前draw_surface，根节点不再逐帧queue_redraw。UI依赖快照存于所属控件的refresh_state元数据，key为各刷新函数显式列出的输入；输入变化失效、控件替换自然释放，仅UI读写，不回写game/profile，隐藏页在显示时补齐。按钮display_level只控制等级文案/费用提示，不缓存购买结果。
 
 | 状态 | 唯一所有者/读取方向 |
