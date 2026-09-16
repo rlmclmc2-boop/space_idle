@@ -48,6 +48,7 @@ var particles: Array[Dictionary] = []
 var floats: Array[Dictionary] = []
 var clock := 0.0
 var star_travel := 0.0
+var star_streak := 0.0
 var shake := 0.0
 var message := ""
 var message_time := 0.0
@@ -191,6 +192,8 @@ func _process(delta: float) -> void:
 			game.tick(step)
 			remaining -= step
 		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.ship_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
+		# Blend the star-only travel effect instead of toggling 200 trails at once.
+		star_streak = move_toward(star_streak,1.0 if game.state == BattleGame.State.TRAVEL else 0.0,dt*4.0)
 		for p in particles:
 			p.life -= dt
 			p.pos += p.vel*dt
@@ -727,7 +730,7 @@ func create_draw_layers() -> void:
 func refresh_draw_layers(dt: float) -> void:
 	if not is_instance_valid(battle_layer):
 		return
-	if ui_state_changed(stars_layer,[star_travel,game.state,game.paused,game.speed]):
+	if ui_state_changed(stars_layer,[star_travel,star_streak,game.speed]):
 		stars_layer.queue_redraw()
 	# Animation is isolated to the battlefield; stationary UI/backgrounds retain draw commands.
 	var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
@@ -792,8 +795,8 @@ func draw_stars() -> void:
 		var x := fposmod(float(s.x)-star_travel*float(s.z)*4,1440)
 		var a := 0.2+float(s.z)*0.5
 		draw_surface.draw_circle(Vector2(x,s.y),float(s.z)*1.35,Color(0.7,0.83,1,a))
-		if game.state == BattleGame.State.TRAVEL and not game.paused:
-			draw_surface.draw_line(Vector2(x,s.y),Vector2(x+float(s.z)*9*game.speed,s.y),Color(0.5,0.8,1,a*0.3))
+		if star_streak > 0:
+			draw_surface.draw_line(Vector2(x,s.y),Vector2(x+float(s.z)*9*game.speed*star_streak,s.y),Color(0.5,0.8,1,a*0.3*star_streak))
 
 func draw_resources() -> void:
 	text_at(str(db.data.resources["1"]),Vector2(850,34),11,MUTED)

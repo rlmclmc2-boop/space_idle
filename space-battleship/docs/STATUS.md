@@ -2,11 +2,11 @@
 
 ## CURRENT
 
-- DONE：导航刷新已按实际显示依赖收窄，不再遍历ui子节点统一设置可见性；保留宝石面板自主开关修复。音效仅更新自身文字，驻守仅更新自身文字/禁用，死亡设置仅改菜单勾选；前进与战斗显示结果相同时不进入属性更新。
-- CHANGED：scripts/main.gd明确帮助/解锁可见性关联组，使用所属控件的局部依赖快照；跃迁目标改变只select，通关列表变化只增减选项/修正变化项，不clear重建。../../test/test_local_ui.gd扩展导航属性检查与实际写入区分；ARCHITECTURE记录入口和快照归属。未改变游戏规则、配置或正式玩家存档。
-- VERIFY：隔离test_local_ui.gd 46项与test_jewel_ui.gd 26项通过，退出码均0。覆盖真实点击、仅目标属性检查、无关层不重绘、任意兄弟控件不被导航显示、跃迁选项身份保留、静止不进入属性setter、UI实例保留及宝石关闭后不重开。已核对帮助与宝石界面截图，git diff --check通过；仅有引擎既有根证书提示。
-- EVIDENCE：../../test/work/test_local_ui-3cv3awwg/；../../test/work/test_jewel_ui-rvbcpeh8/。截图位于各自space-battleship/.runtime/。
-- NEXT：游戏“大重启”加载最新代码。帮助/解锁仍更新其实际关联控件；初始化/显式重置仍允许完整构建，普通导航操作不重建UI。
+- DONE：处理战点切换时星空拖尾整批瞬时出现/消失造成的背景亮度跳变，改为星空层自身的平滑过渡，暂停冻结；确认宝石背包只有显式操作才打开，创建即隐藏，未解锁时拒绝open，拾取/状态刷新不打开。
+- CHANGED：scripts/main.gd增加star_streak视觉过渡且星空绘制只依赖实际显示参数；scripts/jewel_panel.gd补初始化隐藏与open门槛；新增../../test/test_battle_transition_ui.gd。规则/定位/测试路由更新在PROJECT、ARCHITECTURE及../../test/README.md；未动游戏数值、配置或正式玩家存档。
+- VERIFY：战点切换13项、局部UI46项、宝石UI26项全部通过，退出码0。战点切换同一时刻背景取样区像素完全一致，随后拖尾逐渐进入/退出；静态背景/chrome/页签不重绘、不重建，暂停星空不重绘；宝石关闭状态在拾取/波次/通关后保持。已核对修复前后截图与diff；仅有引擎既有证书提示。
+- EVIDENCE：修复前../../test/work/test_battle_transition_ui-zw5abg55/；修复后../../test/work/test_battle_transition_ui-r7tap57d/、../../test/work/test_local_ui-hy08eh1f/、../../test/work/test_jewel_ui-r5by9y2i/。切换截图在对应space-battleship/.runtime/transition-*.png。
+- NEXT：游戏“大重启”加载修复，观察战点间巡航背景过渡。证据定位到星空拖尾的瞬时切换；没有观察到整屏UI重建。
 
 ## DONE
 

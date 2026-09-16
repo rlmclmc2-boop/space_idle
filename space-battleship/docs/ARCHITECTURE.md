@@ -53,6 +53,8 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 
 ## 存档与时间边界
 
+星空绘制仅依赖star_travel、star_streak与speed；star_streak是main所属星空层的临时视觉过渡值，由未暂停的_process推进，不保存、不参与战斗逻辑。状态事件不直接开关全部星星拖尾，背景/chrome/UI树不参与这段过渡。回归入口为test_battle_transition_ui.gd，包含实际波次结束、进入下一战点、暂停、像素区域对比及分层绘制计数。
+
 - `game.gd:load_progress/save_progress`；SAVE_PATH为`user://progress.json`，version仍为1。先写`.tmp`再rename；失败事件不代表所有故障可恢复（STATUS U-008）。
 - 旧levels仅在加载时给首个同名已装槽位优先赋级；缺失/非数值取1，数值转整数并夹取1到配置上限，其他同名槽位保留各自等级；空槽不会被旧等级重装。缺loadout时构造默认布局。
 - 保存临时字典从首槽派生兼容levels，未安装派生1；不写回运行profile，不做新旧状态双向同步。hightechVersion=2控制科技旧档迁移，charge缺字段建零级未启用状态。

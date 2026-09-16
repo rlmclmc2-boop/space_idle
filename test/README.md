@@ -11,6 +11,7 @@
 | 装备计算成长 | `test_equipment_growth.gd` / `test_equipment_growth_import.py`；批量购买加 `test_bulk_upgrades.gd` |
 | UI局部刷新/绘制 | `test_local_ui.gd`（控件身份、写入/绘制范围、真实点击/拖拽、隐藏页补齐、局部解锁）；升级用`test_upgrade_ui.gd`（真实输入、动态MAX、事件不重建）。定向性能用`test_upgrade_ui_probe.gd`经run.py隔离，3轮两种预算，勿并行其他性能测试 |
 | 战斗目标 | `test_target_resistance.gd`、`test_projectile_lifecycle.gd`；涉及末敌加 `test_boss_projectile_clear.gd` |
+| 战点切换画面 | `test_battle_transition_ui.gd`：真实波次切换、背景像素连续性、星空拖尾渐变/暂停、静态层不重绘、宝石面板不自动打开 |
 | 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd`；重建首帧按钮闪动用`test_hightech_flicker.gd` |
 | 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；离线资源加 `test_offline_resources.gd` |
 | 宝石 | `test_jewels.gd`（容量/拾取/合成/分解/镶嵌/10种效果/存档）；`test_jewel_ui.gd`（真实点击、局部写入/重绘/隐藏恢复与截图）；`test_jewel_import.py`（来源一致、重复ID、分表发现与缓存） |

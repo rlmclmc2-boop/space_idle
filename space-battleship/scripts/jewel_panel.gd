@@ -17,6 +17,10 @@ var equipment_title: Label
 var combine: Button
 var compose: Button
 
+func _init() -> void:
+	hide()
+	set_process(false)
+
 func setup(owner_node: Node) -> void:
 	host = owner_node
 	game = host.game
@@ -65,6 +69,8 @@ func add_button(value: String, rect: Rect2, action: Callable) -> Button:
 	return control
 
 func open(for_category := "", index := -1) -> void:
+	if not game.jewels_unlocked():
+		return
 	category = for_category
 	equipment_index = index
 	equipment_identity = game.slot_entry(category, index) if index >= 0 else {}
