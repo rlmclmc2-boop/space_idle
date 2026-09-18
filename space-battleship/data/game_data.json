@@ -247,7 +247,29 @@
         "costMulti_2": null,
         "para1": 2,
         "para2": 4,
-        "para3": null,
+        "para3": 1,
+        "para4": null
+      }
+    ],
+    "longLaser-mon": [
+      {
+        "name": "longLaser-mon",
+        "des": "锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)",
+        "level": 1,
+        "dmgtype": 1,
+        "dmg": 20,
+        "dmgMulti": 0.2,
+        "cd": 0.2,
+        "unlock": 5,
+        "res_1": 1,
+        "cost_1": 50,
+        "costMulti_1": 0.2,
+        "res_2": null,
+        "cost_2": null,
+        "costMulti_2": null,
+        "para1": 2,
+        "para2": 1,
+        "para3": 1,
         "para4": null
       }
     ]
@@ -681,6 +703,7 @@
       "atkRatio": 1,
       "lifeRatio": 1,
       "resRatio": 1,
+      "jewelRatio": 1,
       "groups": [
         {
           "id": 2,
@@ -727,6 +750,7 @@
       "atkRatio": 1.8,
       "lifeRatio": 1.8,
       "resRatio": 1.4,
+      "jewelRatio": 1.2,
       "groups": [
         {
           "id": 2,
@@ -773,6 +797,7 @@
       "atkRatio": 3.24,
       "lifeRatio": 3.24,
       "resRatio": 1.96,
+      "jewelRatio": 1.4,
       "groups": [
         {
           "id": 1,
@@ -819,6 +844,7 @@
       "atkRatio": 5.83,
       "lifeRatio": 5.83,
       "resRatio": 2.74,
+      "jewelRatio": 1.6,
       "groups": [
         {
           "id": 4,
@@ -865,6 +891,7 @@
       "atkRatio": 10.49,
       "lifeRatio": 10.49,
       "resRatio": 3.84,
+      "jewelRatio": 1.8,
       "groups": [
         {
           "id": 1,
@@ -911,6 +938,7 @@
       "atkRatio": 18.88,
       "lifeRatio": 18.88,
       "resRatio": 5.38,
+      "jewelRatio": 2,
       "groups": [
         {
           "id": 2,
@@ -957,6 +985,7 @@
       "atkRatio": 33.98,
       "lifeRatio": 33.98,
       "resRatio": 7.53,
+      "jewelRatio": 2.2,
       "groups": [
         {
           "id": 1,
@@ -1003,6 +1032,7 @@
       "atkRatio": 61.16,
       "lifeRatio": 61.16,
       "resRatio": 10.54,
+      "jewelRatio": 2.4,
       "groups": [
         {
           "id": 5,
@@ -1049,6 +1079,7 @@
       "atkRatio": 110.09,
       "lifeRatio": 110.09,
       "resRatio": 14.76,
+      "jewelRatio": 2.6,
       "groups": [
         {
           "id": 4,
@@ -1095,6 +1126,7 @@
       "atkRatio": 198.16,
       "lifeRatio": 198.16,
       "resRatio": 20.66,
+      "jewelRatio": 2.8,
       "groups": [
         {
           "id": 3,
@@ -1141,6 +1173,7 @@
       "atkRatio": 208,
       "lifeRatio": 208,
       "resRatio": 24,
+      "jewelRatio": 3,
       "groups": [
         {
           "id": 2,
@@ -1187,6 +1220,7 @@
       "atkRatio": 298,
       "lifeRatio": 298,
       "resRatio": 34,
+      "jewelRatio": 3.2,
       "groups": [
         {
           "id": 1,
@@ -1233,6 +1267,7 @@
       "atkRatio": 1198,
       "lifeRatio": 1198,
       "resRatio": 72,
+      "jewelRatio": 3.4,
       "groups": [
         {
           "id": 5,
@@ -1279,6 +1314,7 @@
       "atkRatio": 10198,
       "lifeRatio": 10198,
       "resRatio": 211,
+      "jewelRatio": 3.6,
       "groups": [
         {
           "id": 4,
@@ -1325,6 +1361,7 @@
       "atkRatio": 100198,
       "lifeRatio": 100198,
       "resRatio": 728,
+      "jewelRatio": 3.8,
       "groups": [
         {
           "id": 3,
@@ -1371,6 +1408,7 @@
       "atkRatio": 1000198,
       "lifeRatio": 1000198,
       "resRatio": 2647,
+      "jewelRatio": 4,
       "groups": [
         {
           "id": 2,
@@ -1417,6 +1455,7 @@
       "atkRatio": 10000198,
       "lifeRatio": 10000198,
       "resRatio": 9777,
+      "jewelRatio": 4.2,
       "groups": [
         {
           "id": 1,
@@ -1463,6 +1502,7 @@
       "atkRatio": 100000197,
       "lifeRatio": 100000197,
       "resRatio": 36258,
+      "jewelRatio": 4.4,
       "groups": [
         {
           "id": 5,
@@ -1509,6 +1549,7 @@
       "atkRatio": 1000000180,
       "lifeRatio": 1000000180,
       "resRatio": 134624,
+      "jewelRatio": 4.6,
       "groups": [
         {
           "id": 4,
@@ -1555,6 +1596,7 @@
       "atkRatio": 10000000000,
       "lifeRatio": 9019699279.54,
       "resRatio": 500000,
+      "jewelRatio": 4.8,
       "groups": [
         {
           "id": 3,
@@ -1601,6 +1643,7 @@
       "atkRatio": 100000000000,
       "lifeRatio": 100000000000,
       "resRatio": 700000,
+      "jewelRatio": 5,
       "groups": [
         {
           "id": 2,
@@ -1647,6 +1690,7 @@
       "atkRatio": 1000000000000,
       "lifeRatio": 1000000000000,
       "resRatio": 1000000,
+      "jewelRatio": 5.2,
       "groups": [
         {
           "id": 1,
@@ -1693,6 +1737,7 @@
       "atkRatio": 10000000000000,
       "lifeRatio": 10000000000000,
       "resRatio": 1400000,
+      "jewelRatio": 5.4,
       "groups": [
         {
           "id": 5,
@@ -1739,6 +1784,7 @@
       "atkRatio": 100000000000000,
       "lifeRatio": 100000000000000,
       "resRatio": 2000000,
+      "jewelRatio": 5.6,
       "groups": [
         {
           "id": 4,
@@ -1785,6 +1831,7 @@
       "atkRatio": 1000000000000000,
       "lifeRatio": 1000000000000000,
       "resRatio": 2800000,
+      "jewelRatio": 5.8,
       "groups": [
         {
           "id": 3,
@@ -1831,6 +1878,7 @@
       "atkRatio": 1e+16,
       "lifeRatio": 1e+16,
       "resRatio": 3900000,
+      "jewelRatio": 6,
       "groups": [
         {
           "id": 2,
@@ -1877,6 +1925,7 @@
       "atkRatio": 1e+17,
       "lifeRatio": 1e+17,
       "resRatio": 5500000,
+      "jewelRatio": 6.2,
       "groups": [
         {
           "id": 1,
@@ -1923,6 +1972,7 @@
       "atkRatio": 1e+18,
       "lifeRatio": 1e+18,
       "resRatio": 7700000,
+      "jewelRatio": 6.4,
       "groups": [
         {
           "id": 5,
@@ -1969,6 +2019,7 @@
       "atkRatio": 1e+19,
       "lifeRatio": 1e+19,
       "resRatio": 10800000,
+      "jewelRatio": 6.6,
       "groups": [
         {
           "id": 4,
@@ -2015,6 +2066,7 @@
       "atkRatio": 1e+20,
       "lifeRatio": 1e+20,
       "resRatio": 15100000,
+      "jewelRatio": 6.8,
       "groups": [
         {
           "id": 3,
@@ -2061,6 +2113,7 @@
       "atkRatio": 1e+21,
       "lifeRatio": 1e+21,
       "resRatio": 21100000,
+      "jewelRatio": 7,
       "groups": [
         {
           "id": 2,
@@ -2107,6 +2160,7 @@
       "atkRatio": 1e+22,
       "lifeRatio": 1e+22,
       "resRatio": 29500000,
+      "jewelRatio": 7.2,
       "groups": [
         {
           "id": 1,
@@ -2153,6 +2207,7 @@
       "atkRatio": 1e+23,
       "lifeRatio": 1e+23,
       "resRatio": 41300000,
+      "jewelRatio": 7.4,
       "groups": [
         {
           "id": 5,
@@ -2199,6 +2254,7 @@
       "atkRatio": 1e+24,
       "lifeRatio": 1e+24,
       "resRatio": 57800000,
+      "jewelRatio": 7.6,
       "groups": [
         {
           "id": 4,
@@ -2245,6 +2301,7 @@
       "atkRatio": 1e+25,
       "lifeRatio": 1e+25,
       "resRatio": 80900000,
+      "jewelRatio": 7.8,
       "groups": [
         {
           "id": 3,
@@ -2291,6 +2348,7 @@
       "atkRatio": 1e+26,
       "lifeRatio": 1e+26,
       "resRatio": 113300000,
+      "jewelRatio": 8,
       "groups": [
         {
           "id": 2,
@@ -2337,6 +2395,7 @@
       "atkRatio": 1e+27,
       "lifeRatio": 1e+27,
       "resRatio": 158600000,
+      "jewelRatio": 8.2,
       "groups": [
         {
           "id": 1,
@@ -2383,6 +2442,7 @@
       "atkRatio": 1e+28,
       "lifeRatio": 1e+28,
       "resRatio": 222000000,
+      "jewelRatio": 8.4,
       "groups": [
         {
           "id": 5,
@@ -2429,6 +2489,7 @@
       "atkRatio": 1e+29,
       "lifeRatio": 1e+29,
       "resRatio": 310800000,
+      "jewelRatio": 8.6,
       "groups": [
         {
           "id": 4,
@@ -2475,6 +2536,7 @@
       "atkRatio": 1e+30,
       "lifeRatio": 1e+30,
       "resRatio": 435100000,
+      "jewelRatio": 8.8,
       "groups": [
         {
           "id": 3,
@@ -2521,6 +2583,7 @@
       "atkRatio": 1e+31,
       "lifeRatio": 1e+31,
       "resRatio": 609100000,
+      "jewelRatio": 9,
       "groups": [
         {
           "id": 2,
@@ -2567,6 +2630,7 @@
       "atkRatio": 1e+32,
       "lifeRatio": 1e+32,
       "resRatio": 852700000,
+      "jewelRatio": 9.2,
       "groups": [
         {
           "id": 1,
@@ -2613,6 +2677,7 @@
       "atkRatio": 1e+33,
       "lifeRatio": 1e+33,
       "resRatio": 1193800000,
+      "jewelRatio": 9.4,
       "groups": [
         {
           "id": 5,
@@ -2659,6 +2724,7 @@
       "atkRatio": 1e+34,
       "lifeRatio": 1e+34,
       "resRatio": 1671300000,
+      "jewelRatio": 9.6,
       "groups": [
         {
           "id": 4,
@@ -2705,6 +2771,7 @@
       "atkRatio": 1e+35,
       "lifeRatio": 1e+35,
       "resRatio": 2339800000,
+      "jewelRatio": 9.8,
       "groups": [
         {
           "id": 3,
@@ -2751,6 +2818,7 @@
       "atkRatio": 1e+36,
       "lifeRatio": 1e+36,
       "resRatio": 3275700000,
+      "jewelRatio": 10,
       "groups": [
         {
           "id": 2,
@@ -2797,6 +2865,7 @@
       "atkRatio": 1e+37,
       "lifeRatio": 1e+37,
       "resRatio": 4586000000,
+      "jewelRatio": 10.2,
       "groups": [
         {
           "id": 1,
@@ -2843,6 +2912,7 @@
       "atkRatio": 1e+38,
       "lifeRatio": 1e+38,
       "resRatio": 6420400000,
+      "jewelRatio": 10.4,
       "groups": [
         {
           "id": 5,
@@ -2889,6 +2959,7 @@
       "atkRatio": 1e+39,
       "lifeRatio": 1e+39,
       "resRatio": 8988600000,
+      "jewelRatio": 10.6,
       "groups": [
         {
           "id": 4,
@@ -2935,6 +3006,7 @@
       "atkRatio": 1e+40,
       "lifeRatio": 1e+40,
       "resRatio": 12584000000,
+      "jewelRatio": 10.8,
       "groups": [
         {
           "id": 3,
@@ -2981,6 +3053,7 @@
       "atkRatio": 1e+41,
       "lifeRatio": 1e+41,
       "resRatio": 17617600000,
+      "jewelRatio": 11,
       "groups": [
         {
           "id": 2,
@@ -3027,6 +3100,7 @@
       "atkRatio": 1e+42,
       "lifeRatio": 1e+42,
       "resRatio": 24664600000,
+      "jewelRatio": 11.2,
       "groups": [
         {
           "id": 1,
@@ -3073,6 +3147,7 @@
       "atkRatio": 1e+43,
       "lifeRatio": 1e+43,
       "resRatio": 34530400000,
+      "jewelRatio": 11.4,
       "groups": [
         {
           "id": 5,
@@ -3119,6 +3194,7 @@
       "atkRatio": 1e+44,
       "lifeRatio": 1e+44,
       "resRatio": 48342600000,
+      "jewelRatio": 11.6,
       "groups": [
         {
           "id": 4,
@@ -3165,6 +3241,7 @@
       "atkRatio": 1e+45,
       "lifeRatio": 1e+45,
       "resRatio": 67679600000,
+      "jewelRatio": 11.8,
       "groups": [
         {
           "id": 3,
@@ -3211,6 +3288,7 @@
       "atkRatio": 1e+46,
       "lifeRatio": 1e+46,
       "resRatio": 94751400000,
+      "jewelRatio": 12,
       "groups": [
         {
           "id": 2,
@@ -3257,6 +3335,7 @@
       "atkRatio": 1e+47,
       "lifeRatio": 1e+47,
       "resRatio": 132652000000,
+      "jewelRatio": 12.2,
       "groups": [
         {
           "id": 1,
@@ -3303,6 +3382,7 @@
       "atkRatio": 1e+48,
       "lifeRatio": 1e+48,
       "resRatio": 185712800000,
+      "jewelRatio": 12.4,
       "groups": [
         {
           "id": 5,
@@ -3349,6 +3429,7 @@
       "atkRatio": 1e+49,
       "lifeRatio": 1e+49,
       "resRatio": 259997900000,
+      "jewelRatio": 12.6,
       "groups": [
         {
           "id": 4,
@@ -3395,6 +3476,7 @@
       "atkRatio": 1e+50,
       "lifeRatio": 1e+50,
       "resRatio": 363997100000,
+      "jewelRatio": 12.8,
       "groups": [
         {
           "id": 3,
@@ -3441,6 +3523,7 @@
       "atkRatio": 1e+51,
       "lifeRatio": 1e+51,
       "resRatio": 509595900000,
+      "jewelRatio": 13,
       "groups": [
         {
           "id": 2,
@@ -3487,6 +3570,7 @@
       "atkRatio": 1e+52,
       "lifeRatio": 1e+52,
       "resRatio": 713434300000,
+      "jewelRatio": 13.2,
       "groups": [
         {
           "id": 1,
@@ -3533,6 +3617,7 @@
       "atkRatio": 1e+53,
       "lifeRatio": 1e+53,
       "resRatio": 998808000000,
+      "jewelRatio": 13.4,
       "groups": [
         {
           "id": 5,
@@ -3579,6 +3664,7 @@
       "atkRatio": 1e+54,
       "lifeRatio": 1e+54,
       "resRatio": 1398331200000,
+      "jewelRatio": 13.6,
       "groups": [
         {
           "id": 4,
@@ -3625,6 +3711,7 @@
       "atkRatio": 1e+55,
       "lifeRatio": 1e+55,
       "resRatio": 1957663700000,
+      "jewelRatio": 13.8,
       "groups": [
         {
           "id": 3,
@@ -3671,6 +3758,7 @@
       "atkRatio": 1e+56,
       "lifeRatio": 1e+56,
       "resRatio": 2740729200000,
+      "jewelRatio": 14,
       "groups": [
         {
           "id": 2,
@@ -3717,6 +3805,7 @@
       "atkRatio": 1e+57,
       "lifeRatio": 1e+57,
       "resRatio": 3837020900000,
+      "jewelRatio": 14.2,
       "groups": [
         {
           "id": 1,
@@ -3763,6 +3852,7 @@
       "atkRatio": 1e+58,
       "lifeRatio": 1e+58,
       "resRatio": 5371829300000,
+      "jewelRatio": 14.4,
       "groups": [
         {
           "id": 5,
@@ -3809,6 +3899,7 @@
       "atkRatio": 1e+59,
       "lifeRatio": 1e+59,
       "resRatio": 7520561000000,
+      "jewelRatio": 14.6,
       "groups": [
         {
           "id": 4,
@@ -3855,6 +3946,7 @@
       "atkRatio": 1e+60,
       "lifeRatio": 1e+60,
       "resRatio": 10528785400000,
+      "jewelRatio": 14.8,
       "groups": [
         {
           "id": 3,
@@ -3913,7 +4005,7 @@
     "jewelDropLevel": 8,
     "jewelDrop": 0.2,
     "jewelCombine": 3,
-    "jewelCompose": "1|1000",
+    "jewelCreat": 100,
     "baseCriDmg": 2,
     "equipmentSocket": "1|1,20|2,40|3"
   },
@@ -3939,7 +4031,8 @@
     "config": "D:\\放置\\space-battleship\\config_excel\\config.xlsx",
     "ship": "D:\\放置\\space-battleship\\config_excel\\ship.xlsx",
     "hightech": "D:\\放置\\space-battleship\\config_excel\\hightech.xlsx",
-    "charge": "D:\\放置\\space-battleship\\config_excel\\charge.xlsx"
+    "charge": "D:\\放置\\space-battleship\\config_excel\\charge.xlsx",
+    "jewel": "D:\\放置\\space-battleship\\config_excel\\jewel.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -3978,27 +4071,27 @@
       "name": "攻击充能",
       "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有武器伤害*(1+para3)^lv",
       "des": "所有武器伤害提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
-      "unlock": 1,
+      "unlock": 2,
       "para_1": 2,
       "para_2": 1,
       "para_3": 0.1,
       "para_4": 5,
       "para_5": 1,
       "para_6": 1.3,
-      "para_7": 0.1
+      "para_7": 0.6
     },
     "防御充能": {
       "name": "防御充能",
       "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有防御装备的效果值(生命,护盾等)*(1+para3)^lv",
       "des": "所有防御强度提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
-      "unlock": 1,
+      "unlock": 2,
       "para_1": 2,
       "para_2": 1,
       "para_3": 0.1,
       "para_4": 5,
       "para_5": 1,
       "para_6": 1.3,
-      "para_7": 0.1
+      "para_7": 0.6
     },
     "熔炼器充能": {
       "name": "熔炼器充能",
@@ -4011,7 +4104,7 @@
       "para_4": 5,
       "para_5": 1,
       "para_6": 1.3,
-      "para_7": 0.1
+      "para_7": 0.6
     }
   },
   "jewel": {
@@ -4026,7 +4119,8 @@
       "para_3": 1000,
       "para_4": null,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/1.svg"
     },
     "2": {
       "id": 2,
@@ -4039,7 +4133,8 @@
       "para_3": 1000,
       "para_4": null,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/2.svg"
     },
     "3": {
       "id": 3,
@@ -4052,7 +4147,8 @@
       "para_3": 1000,
       "para_4": 10,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/3.svg"
     },
     "4": {
       "id": 4,
@@ -4065,7 +4161,8 @@
       "para_3": 1000,
       "para_4": 0.25,
       "para_5": 0.05,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/4.svg"
     },
     "5": {
       "id": 5,
@@ -4078,7 +4175,8 @@
       "para_3": 1000,
       "para_4": 4,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/5.svg"
     },
     "6": {
       "id": 6,
@@ -4091,20 +4189,22 @@
       "para_3": 1000,
       "para_4": 0.2,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/6.svg"
     },
     "7": {
       "id": 7,
       "name": "暴击宝石",
       "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到对应的武器上时,固定增加该武器para2暴击,并使该武器暴击率(包括这颗宝石附加的)*(1+para4*等级)",
-      "des": "镶嵌到对应的武器上时,该武器固定增加{para2}暴击,并使该武器来自所有来源的暴击率提升{para4*等级,百分比}",
+      "des": "镶嵌到对应的武器上时,该武器固定增加{para2,百分比}暴击,并使该武器来自所有来源的暴击率提升{para4*等级,百分比}",
       "maxLevel": 10,
       "para_1": 1,
       "para_2": 0.1,
       "para_3": 1000,
       "para_4": 0.05,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/7.svg"
     },
     "8": {
       "id": 8,
@@ -4117,7 +4217,8 @@
       "para_3": 1000,
       "para_4": 4,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/8.svg"
     },
     "9": {
       "id": 9,
@@ -4130,7 +4231,8 @@
       "para_3": 1000,
       "para_4": null,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/9.svg"
     },
     "10": {
       "id": 10,
@@ -4143,7 +4245,8 @@
       "para_3": 1000,
       "para_4": null,
       "para_5": null,
-      "para_6": null
+      "para_6": null,
+      "image": "res://assets/jewels/10.svg"
     }
   }
 }

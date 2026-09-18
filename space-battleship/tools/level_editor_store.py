@@ -32,10 +32,10 @@ class Store:
         mapping = json.loads(self.manifest.read_text(encoding='utf-8'))['sheets']
         self.paths = {}
         for name in SECTIONS:
-            if name == 'charge' and name not in mapping:
-                if not (self.directory / 'charge.xlsx').is_file():
+            if name in ('charge', 'jewel') and name not in mapping:
+                if not (self.directory / f'{name}.xlsx').is_file():
                     continue
-                mapping[name] = 'charge.xlsx'
+                mapping[name] = f'{name}.xlsx'
             filename = mapping[name]
             if Path(filename).name != filename or '/' in filename or '\\' in filename:
                 raise ValueError('分表清单路径无效：' + name)

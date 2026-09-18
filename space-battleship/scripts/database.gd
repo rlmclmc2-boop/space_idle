@@ -87,6 +87,8 @@ func enemy_weapon(key: String) -> Dictionary:
 	for field in ["dmg", "cd", "dmgtype", "para1", "para2"]:
 		if row.get(field) == null:
 			row[field] = fallback.get(field)
+	if base_key == "longLaser" and row.get("para3") == null:
+		row["para3"] = fallback.get("para3")
 	return row
 
 func unlock_level(key: String) -> int:

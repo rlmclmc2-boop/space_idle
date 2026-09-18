@@ -4,15 +4,16 @@ extends RefCounted
 signal event(kind: String, payload: Dictionary)
 
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
-const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon"]
+const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
+const JEWEL_CAPACITY := 200
 const FURNACE := "超时空炼铁炉"
 const ENERGY_FOCUS := "正电子聚焦装置"
 const DENSE_ARMOUR := "简并态装甲"
 const NUMBER_FORMAT := preload("res://scripts/number_format.gd")
 const HIGHTECH_SLOTS_PER_PAGE := 3
 const HIGHTECH_MIN_SLOTS := 6
-const WEAPON_KEYS := ["laser", "missile", "cannon"]
+const WEAPON_KEYS := ["laser", "missile", "cannon", "longLaser"]
 const DEFENSE_KEYS := ["armour", "shield"]
 var db: ShipDatabase
 var profile: Dictionary
@@ -53,6 +54,7 @@ var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
 var jewel_serial := 0
+var jewel_bulk_combining := false
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
@@ -73,7 +75,7 @@ func fresh_profile() -> Dictionary:
 	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	profile.loadout = default_loadout(selected, profile.unlocked)
 	profile.jewels = []
-	profile.jewelFragments = {}
+	profile.jewelFragments = 0.0
 	profile.charge = {}
 	for key in db.data.get("charge", {}):
 		profile.charge[key] = {"level":0,"count":0.0,"elapsed":0.0,"active":false,"credit":0.0,"started":0}
@@ -164,6 +166,7 @@ func load_progress() -> void:
 	profile.hightechOrder = hightech_slots()
 	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
+	generate_jewels()
 
 func settle_offline_resources(raw: Dictionary, now: float) -> void:
 	offline_rewards.clear()
@@ -178,6 +181,12 @@ func settle_offline_resources(raw: Dictionary, now: float) -> void:
 		if is_finite(amount) and amount > 0:
 			profile.resources[id] += amount
 			offline_rewards[id] = amount
+	var jewel_rate = raw.offlineRates.get("jewel", 0)
+	if jewels_unlocked() and nonnegative_number(jewel_rate):
+		# Saved actual income already includes its level multiplier.
+		var amount := settle_jewel_fragments(float(jewel_rate) * seconds, "offline", 1.0)
+		if amount > 0:
+			offline_rewards["jewel"] = amount
 
 func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
@@ -210,7 +219,7 @@ func load_hightech(raw: Dictionary) -> void:
 			profile.techPoints[key] = float(points)
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
-			if sample is Dictionary and nonnegative_number(sample.get("time")) and nonnegative_number(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
+			if sample is Dictionary and nonnegative_number(sample.get("time")) and nonnegative_number(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
 				# Legacy samples have no reliable source; keep totals but exclude them
 				# from furnace input until this short rolling window expires.
 				resource_samples.append({"time":float(sample.time), "amount":float(sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
@@ -270,6 +279,7 @@ func save_progress() -> void:
 	profile.offlineRates = {}
 	for id in profile.resources:
 		profile.offlineRates[id] = resource_minute_total(id, float(profile.hightechSavedAt)) / 60.0
+	profile.offlineRates["jewel"] = resource_minute_total("jewel", float(profile.hightechSavedAt)) / 60.0
 	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
 	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
 	if file == null:
@@ -968,6 +978,8 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if next != State.COMBAT:
+		projectiles = projectiles.filter(func(p): return not p.get("beam", false))
 	if next == State.TRAVEL:
 		cooldowns.clear()
 		for index in range(weapon_entries().size()):
@@ -1175,12 +1187,83 @@ func player_weapon_offset(index: int) -> Vector2:
 	var visuals = preload("res://scripts/ship_visuals.gd")
 	return visuals.muzzle(str(profile.selectedShip), index) * visuals.scale_for(db.ship(str(profile.selectedShip)))
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO) -> void:
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
 	projectiles.append({"x":float(source.x) + (-45 if hostile else 0) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
-	shot.direction = Vector2(target.x - shot.x, target.y - shot.y).normalized()
-	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype)})
+	shot.direction = Vector2(-1 if hostile else 1,0) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
+	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
+
+# A beam is one persistent projectile per mount; timing belongs to that object.
+func long_laser_valid(shot: Dictionary) -> bool:
+	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
+		return false
+	if shot.hostile:
+		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and player.armour > 0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
+	return is_same(shot.source, player) and player.armour > 0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, slot_entry("weapons", shot.mount)) and shot.entry.key == "longLaser"
+
+func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0) -> void:
+	for shot in projectiles:
+		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and long_laser_valid(shot):
+			return
+	var candidates: Array = targets(int(weapon.dmgtype)) if not hostile else []
+	var target: Dictionary = player if hostile else (candidates[0] if not candidates.is_empty() else {})
+	if not hostile:
+		for candidate in candidates:
+			if not projectiles.any(func(p):return p.get("beam",false) and not p.hostile and p.mount==mount and long_laser_valid(p) and is_same(p.target,candidate)):
+				target = candidate
+				break
+	if target.is_empty() or float(weapon.cd) <= 0:
+		return
+	var offset := enemy_weapon_offset(source, mount) if hostile else player_weapon_offset(mount)
+	if repeated:
+		offset.y += 6.0
+	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
+	var shot: Dictionary = projectiles.back()
+	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
+	if not hostile and not repeated:
+		var id := slot_id("weapons",mount)
+		shot.charged_multiplier = float(jewel_charged.get(id,1.0))
+		jewel_charged.erase(id)
+	event.emit("beam_started", {"shot":shot})
+
+func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
+	return minf(1.0 + (float(weapon.para2) - 1.0) * duration / float(weapon.para1), float(weapon.para2)) if float(weapon.para1) > 0 else float(weapon.para2)
+
+func tick_long_laser(shot: Dictionary, dt: float) -> void:
+	if not long_laser_valid(shot):
+		shot.dead = true
+		return
+	var offset := enemy_weapon_offset(shot.source, shot.mount) if shot.hostile else player_weapon_offset(shot.mount)
+	if shot.repeated:
+		offset.y += 6.0
+	shot.x = float(shot.source.x) + (-45 if shot.hostile else 0) + offset.x
+	shot.y = float(shot.source.y) + offset.y
+	shot.elapsed += dt
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else db.equip(shot.entry.key, int(shot.entry.level))
+	# Use scheduled hit times, not frame end time, including when a step spans several hits.
+	var interval := float(shot.weapon.cd)
+	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
+	while first_hit + int(shot.ticks) * interval <= float(shot.elapsed) + 0.000000001:
+		shot.ticks += 1
+		var duration := (int(shot.ticks)-1) * interval if float(shot.charge) >= 0 else int(shot.ticks) * interval
+		var multiplier := long_laser_multiplier(weapon, duration)
+		event.emit("beam_hit", {"shot":shot})
+		if shot.hostile:
+			var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
+			hit_player(raw * multiplier, int(weapon.dmgtype))
+		else:
+			shot.entry.attacks = int(shot.entry.get("attacks", 0)) + 1
+			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
+			if not shot.repeated and int(shot.ticks)==1:
+				queue_jewel_repeats(shot.mount,1.0,shot)
+			var attack := jewel_attack(shot.mount, multiplier * boost)
+			if attack.critical:
+				event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
+			hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
+		if not projectiles.has(shot) or not long_laser_valid(shot):
+			shot.dead = true
+			break
 
 func missile_target(candidates: Array[Dictionary]) -> Dictionary:
 	for candidate in candidates:
@@ -1253,13 +1336,13 @@ func acknowledge_unlocks() -> void:
 	pending_unlocks.clear()
 	event.emit("state", {"state":state})
 
-func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = []) -> void:
+func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], critical: bool = false) -> void:
 	if enemy.hp <= 0:
 		return
 	jewel_on_hit(enemy, effects)
 	var amount := reduced_damage(raw * (1.0 + float(enemy.get("interference", 0))), type, int(enemy.armourType))
 	enemy.hp = maxf(0, enemy.hp - amount)
-	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid})
+	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
 		if is_boss_encounter() and targets().is_empty():
 			projectiles.clear()
@@ -1280,12 +1363,11 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	if not drops.has(drop):
 		return
 	if drop.has("jewel"):
-		if not jewels_unlocked() or db.jewel(str(drop.jewel)).is_empty() or profile.jewels.size() >= 30:
-			if manual and profile.jewels.size() >= 30:
-				event.emit("jewel_error", {"message":"宝石背包已满，无法拾取碎片"})
+		if not jewels_unlocked():
 			return
 		drops.erase(drop)
-		pickup_jewel_fragment(str(drop.jewel))
+		drop.amount = settle_jewel_fragments(float(drop.get("amount",1)), "drop", float(drop.get("jewelRatio", jewel_ratio())))
+		jewels_changed()
 		event.emit("jewel_pickup", drop)
 		return
 	if drop.get("hightech", false) and not manual:
@@ -1505,6 +1587,7 @@ func tick(dt: float) -> void:
 		if group_index < level.groups.size() and distance >= float(level.groups[group_index].position)*float(level.length):
 			spawn_group()
 		return
+	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p))
 	for index in range(weapon_entries().size()):
 		var entry: Dictionary = weapon_entries()[index]
 		var key := str(entry.key)
@@ -1512,6 +1595,9 @@ func tick(dt: float) -> void:
 			continue
 		var weapon := db.equip(key, int(entry.level))
 		if float(weapon.cd) <= 0:
+			continue
+		if key == "longLaser":
+			lock_long_laser(player, weapon, false, index, entry)
 			continue
 		var id := slot_id("weapons", index)
 		var remaining := float(cooldowns.get(id, float(weapon.cd)))
@@ -1528,11 +1614,7 @@ func tick(dt: float) -> void:
 				if candidates.is_empty():
 					break
 				var target := candidates[i % candidates.size()] if key == "missile" else candidates[0]
-				var launch_offset := Vector2.ZERO
-				if key == "missile" and count > 1:
-					# Keep the volley inside its pod instead of outside the hull.
-					launch_offset.y = (float(i) / float(count - 1) - 0.5) * preload("res://scripts/ship_visuals.gd").module_width(str(profile.selectedShip)) * preload("res://scripts/ship_visuals.gd").scale_for(db.ship(str(profile.selectedShip))) * 0.2
-				jewel_fire(index, target, weapon, launch_offset + player_weapon_offset(index), charged)
+				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0)
 			if count > 0 and not candidates.is_empty():
 				cooldowns[id] = float(weapon.cd)
 				queue_jewel_repeats(index, charged)
@@ -1540,6 +1622,9 @@ func tick(dt: float) -> void:
 		if enemy.hp <= 0:
 			continue
 		for i in range(enemy.equipment.size()):
+			if str(enemy.equipment[i].name).replace("_mon", "").replace("-mon", "") == "longLaser":
+				lock_long_laser(enemy, db.enemy_weapon(enemy.equipment[i].name), true, i, enemy.equipment[i])
+				continue
 			enemy.cooldowns[i] -= dt
 			if enemy.cooldowns[i] <= 0:
 				var entry: Dictionary = enemy.equipment[i]
@@ -1571,6 +1656,11 @@ func tick(dt: float) -> void:
 
 func tick_projectiles(dt: float) -> void:
 	for shot in projectiles.duplicate():
+		if not projectiles.has(shot):
+			continue
+		if shot.get("beam", false):
+			tick_long_laser(shot, dt)
+			continue
 		if not shot.target.is_empty():
 			var target_dead: bool = shot.target.armour <= 0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
@@ -1585,10 +1675,11 @@ func tick_projectiles(dt: float) -> void:
 			shot.direction = delta.normalized()
 			if delta.length() <= shot.speed*dt:
 				shot.dead = true
+				event.emit("projectile_impact", {"shot":shot,"pos":Vector2(shot.target.x,shot.target.y)})
 				if shot.hostile:
 					hit_player(shot.damage, shot.type)
 				else:
-					hit_enemy(shot.target, shot.damage, shot.type, shot.get("jewelEffects", []))
+					hit_enemy(shot.target, shot.damage, shot.type, shot.get("jewelEffects", []),shot.get("critical",false))
 					# Final-group defeat clears the live array; skip its stale snapshot.
 					if projectiles.is_empty():
 						return
@@ -1599,7 +1690,7 @@ func tick_projectiles(dt: float) -> void:
 		# Include the rendered trail before removing an off-screen projectile.
 		if shot.x < -32 or shot.x > 1472 or shot.y < -32 or shot.y > 842:
 			shot.dead = true
-	projectiles = projectiles.filter(func(p): return not p.dead)
+	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
 
 # Jewel ownership lives in profile.jewels or one loadout entry, never both.
 # Stable instance tokens make stale UI callbacks harmless after sorting/moving.
@@ -1615,16 +1706,17 @@ func new_jewel(id: String, level := 1) -> Dictionary:
 
 func load_jewels(raw: Dictionary) -> void:
 	profile.jewels = []
-	profile.jewelFragments = {}
-	jewel_serial = 0
+	profile.jewelFragments = 0.0
 	if raw.get("jewels") is Array:
 		for gem in raw.jewels:
-			if jewel_valid(gem) and profile.jewels.size() < 30:
+			if jewel_valid(gem):
 				profile.jewels.append(new_jewel(str(gem.id), int(gem.level)))
 	if raw.get("jewelFragments") is Dictionary:
 		for id in raw.jewelFragments:
-			if not db.jewel(str(id)).is_empty() and nonnegative_number(raw.jewelFragments[id]):
-				profile.jewelFragments[str(id)] = int(raw.jewelFragments[id])
+			if nonnegative_number(raw.jewelFragments[id]):
+				profile.jewelFragments += float(raw.jewelFragments[id])
+	elif nonnegative_number(raw.get("jewelFragments")):
+		profile.jewelFragments = float(raw.jewelFragments)
 	for category in ["weapons", "defence"]:
 		for entry in loadout_entries(category):
 			var sockets: Array = []
@@ -1646,26 +1738,62 @@ func jewel_inventory(token: int) -> Dictionary:
 			return gem
 	return {}
 
-func pickup_jewel_fragment(id: String) -> bool:
-	if not jewels_unlocked() or db.jewel(id).is_empty() or profile.jewels.size() >= 30:
+func jewel_ratio() -> float:
+	var value = db.levels[clampi(stage-1,0,db.levels.size()-1)].get("jewelRatio",1.0)
+	return float(value) if nonnegative_number(value) else 1.0
+
+func jewel_create_cost() -> float:
+	var value = db.config.get("jewelCreat",0)
+	return float(value) if nonnegative_number(value) and float(value) == floorf(float(value)) else 0.0
+
+func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
+	if not nonnegative_number(amount):
+		return 0.0
+	var result := amount * (jewel_ratio() if ratio < 0 else ratio)
+	return snappedf(result,0.01) if nonnegative_number(result) else 0.0
+
+func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
+	var earned := jewel_fragment_amount(amount,ratio)
+	profile.jewelFragments = snappedf(float(profile.jewelFragments) + earned,0.01)
+	# Production only: refunds and offline settlement must not inflate future income.
+	if source == "drop" and earned > 0:
+		resource_samples.append({"time":Time.get_unix_time_from_system(),"id":"jewel","amount":earned,"origin":"drop"})
+	generate_jewels()
+	return earned
+
+func generate_jewels() -> void:
+	var result := generate_jewels_into(profile.jewels,float(profile.jewelFragments),jewel_serial,rng)
+	profile.jewelFragments=result.fragments
+	jewel_serial=result.serial
+
+func generate_jewels_into(inventory: Array, fragments: float, serial: int, random: RandomNumberGenerator) -> Dictionary:
+	var cost := jewel_create_cost()
+	if cost <= 0 or not jewels_unlocked():
+		return {"fragments":fragments,"serial":serial}
+	var ids: Array = db.data.get("jewel",{}).keys().filter(func(id):return db.jewel_max_level(str(id)) > 0)
+	if ids.is_empty():
+		return {"fragments":fragments,"serial":serial}
+	var count := int(minf(floorf((fragments+0.000001)/cost),maxi(0,JEWEL_CAPACITY-inventory.size())))
+	for i in count:
+		serial+=1
+		inventory.append({"id":str(ids[random.randi_range(0,ids.size()-1)]),"level":1,"token":serial})
+	return {"fragments":snappedf(fragments-count*cost,0.01),"serial":serial}
+
+func pickup_jewel_fragment(_legacy_id := "") -> bool:
+	if not jewels_unlocked():
 		return false
-	profile.jewelFragments[id] = int(profile.jewelFragments.get(id, 0)) + 1
-	for key in profile.jewelFragments:
-		var required := int(db.jewel_parameter(str(key), 3))
-		while required > 0 and int(profile.jewelFragments[key]) >= required and profile.jewels.size() < 30:
-			profile.jewelFragments[key] -= required
-			profile.jewels.append(new_jewel(str(key)))
+	settle_jewel_fragments(1.0,"drop")
 	jewels_changed()
 	return true
 
 func jewel_kill_drop(enemy: Dictionary) -> void:
-	if not jewels_unlocked() or rng.randf() >= float(db.config.get("jewelDrop", 0)):
+	if enemy.get("jewelDropChecked", false):
 		return
-	var ids: Array = db.data.get("jewel", {}).keys().filter(func(id):return db.jewel_max_level(str(id)) > 0 and db.jewel_parameter(str(id), 3) > 0)
-	if ids.is_empty():
+	enemy.jewelDropChecked = true
+	if not jewels_unlocked() or rng.randf() >= float(db.config.get("jewelDrop",0)):
 		return
 	uid += 1
-	drops.append({"uid":uid, "x":enemy.x - 65, "y":enemy.y + 22, "age":0.0, "jewel":str(ids[rng.randi_range(0, ids.size()-1)]), "id":"jewel", "amount":1})
+	drops.append({"uid":uid,"x":enemy.x-65,"y":enemy.y+22,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
 func sort_jewels(by_level: bool) -> void:
 	profile.jewels.sort_custom(func(a,b):
@@ -1678,57 +1806,141 @@ func sort_jewels(by_level: bool) -> void:
 		return int(a.token) < int(b.token))
 	jewels_changed()
 
-func can_combine_jewels(tokens: Array) -> bool:
-	var required := int(db.config.get("jewelCombine", 0))
+func jewel_combine_count() -> int:
+	var value = db.config.get("jewelCombine",0)
+	return int(value) if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)>=2 else 0
+
+func jewel_combine_eligible(gem: Dictionary) -> bool:
+	return jewel_valid(gem) and not gem.get("locked",false) and not gem.get("disabled",false) and int(gem.level)<db.jewel_max_level(str(gem.id))
+
+func can_combine_jewels(tokens: Array, inventory: Variant = null) -> bool:
+	var required := jewel_combine_count()
 	if required < 2 or tokens.size() != required:
 		return false
-	var first := jewel_inventory(int(tokens[0]))
-	if first.is_empty() or int(first.level) >= db.jewel_max_level(str(first.id)):
-		return false
+	var source: Array=profile.jewels if inventory==null else inventory
+	var by_token := {}
+	for gem in source:
+		if not gem is Dictionary or not gem.get("token") is int or by_token.has(gem.token):return false
+		by_token[gem.token]=gem
+	var first: Dictionary={}
 	var seen := {}
 	for token in tokens:
-		var gem := jewel_inventory(int(token))
-		if seen.has(token) or gem.is_empty() or gem.id != first.id or gem.level != first.level:
+		if not token is int:
+			return false
+		var gem: Dictionary=by_token.get(token,{})
+		if seen.has(token) or not jewel_combine_eligible(gem):return false
+		if first.is_empty():first=gem
+		if gem.id != first.id or gem.level != first.level:
 			return false
 		seen[token] = true
 	return true
 
-func combine_jewels(tokens: Array) -> bool:
-	if not can_combine_jewels(tokens):
+func combine_inventory_jewels(inventory: Array, tokens: Array, next_token: int) -> bool:
+	if not can_combine_jewels(tokens,inventory):
 		return false
-	var first := jewel_inventory(int(tokens[0]))
-	var result := new_jewel(str(first.id), int(first.level)+1)
-	profile.jewels = profile.jewels.filter(func(gem):return not tokens.has(int(gem.token)))
-	profile.jewels.append(result)
+	var first: Dictionary=inventory.filter(func(gem):return int(gem.token)==int(tokens[0]))[0]
+	var result := {"id":str(first.id),"level":int(first.level)+1,"token":next_token}
+	for i in range(inventory.size()-1,-1,-1):
+		if tokens.has(int(inventory[i].token)):inventory.remove_at(i)
+	inventory.append(result)
+	return true
+
+func combine_jewels(tokens: Array) -> bool:
+	if jewel_bulk_combining or not combine_inventory_jewels(profile.jewels,tokens,jewel_serial+1):return false
+	jewel_serial+=1
 	jewels_changed()
 	return true
 
-func jewel_compose_reward() -> Dictionary:
-	# Missing authoring data is not a free/guessed reward. The UI reports it.
-	var value = db.config.get("jewelCompose")
-	var result := {}
-	if value is String:
-		for part in value.split(","):
-			var pair: PackedStringArray = part.split("|")
-			if pair.size() != 2 or not db.data.resources.has(pair[0].strip_edges()) or not pair[1].is_valid_float() or not is_finite(float(pair[1])) or float(pair[1]) < 0:
-				return {}
-			var id := pair[0].strip_edges()
-			result[id] = float(result.get(id, 0)) + ceilf(float(pair[1]))
-	if value is Dictionary:
-		for id in value:
-			if not db.data.resources.has(str(id)) or not nonnegative_number(value[id]):
-				return {}
-			result[str(id)] = ceilf(float(value[id]))
-	return result
+func combine_all_jewels() -> Dictionary:
+	var failure := {"ok":false,"message":"合成异常，宝石未扣除"}
+	var required := jewel_combine_count()
+	if jewel_bulk_combining or not jewels_unlocked() or required<2 or not nonnegative_number(profile.jewelFragments):return failure
+	var tokens := {}
+	var installed := {}
+	for category in ["weapons","defence"]:
+		for entry in loadout_entries(category):
+			for gem in entry.get("sockets",[]):
+				if not gem.is_empty():installed[int(gem.token)]=true
+	for gem in profile.jewels:
+		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or int(gem.token)>jewel_serial or tokens.has(gem.token):return failure
+		tokens[gem.token]=true
+	# Work only on a private array; surviving gem objects retain their identity.
+	var working: Array=profile.jewels.duplicate()
+	var serial := jewel_serial
+	var fragments := float(profile.jewelFragments)
+	var random := RandomNumberGenerator.new()
+	random.seed=rng.seed
+	random.state=rng.state
+	var count := 0
+	while true:
+		var groups := {}
+		for gem in working:
+			if not installed.has(gem.token) and jewel_combine_eligible(gem):
+				var key := "%s:%d" % [gem.id,int(gem.level)]
+				if not groups.has(key):groups[key]=[]
+				groups[key].append(gem.token)
+		var previous := count
+		for group in groups.values():
+			for offset in range(0,group.size()-required+1,required):
+				if not combine_inventory_jewels(working,group.slice(offset,offset+required),serial+1):return failure
+				serial+=1
+				count+=1
+		if previous==count:break
+		# Preserve the existing automatic fragment refill, including its new gems.
+		var refill := generate_jewels_into(working,fragments,serial,random)
+		fragments=refill.fragments
+		serial=refill.serial
+	if count==0:return {"ok":true,"count":0,"consumed":0,"results":[],"tokens":[]}
+	var rewards := {}
+	var result_tokens: Array=[]
+	for gem in working:
+		if int(gem.token)<=jewel_serial or int(gem.level)<=1:continue
+		var key := "%s:%d" % [gem.id,int(gem.level)]
+		if not rewards.has(key):rewards[key]={"id":gem.id,"level":gem.level,"count":0}
+		rewards[key].count+=1
+		result_tokens.append(gem.token)
+	var results: Array=rewards.values()
+	results.sort_custom(func(a,b):return int(a.level)>int(b.level) if a.level!=b.level else str(a.id)<str(b.id))
+	# Save the staged profile once. Failed writes restore the live inventory unchanged.
+	var original := profile
+	profile=profile.duplicate()
+	profile.jewels=working
+	profile.jewelFragments=fragments
+	var failed := [false]
+	var on_save := func(kind: String,_info: Dictionary):
+		if kind=="save_error":failed[0]=true
+	jewel_bulk_combining=true
+	event.connect(on_save)
+	save_progress()
+	event.disconnect(on_save)
+	if failed[0]:
+		profile=original
+		jewel_bulk_combining=false
+		return failure
+	original.merge(profile,true)
+	profile=original
+	jewel_serial=serial
+	rng.state=random.state
+	event.emit("jewels_changed",{"slot":""})
+	jewel_bulk_combining=false
+	return {"ok":true,"count":count,"consumed":count*required,"results":results,"tokens":result_tokens}
+
+func jewel_compose_reward(gem: Dictionary) -> float:
+	if gem.is_empty() or jewel_create_cost() <= 0:
+		return 0.0
+	var combine_cost := int(db.config.get("jewelCombine",0))
+	if combine_cost < 2:
+		return 0.0
+	# A level N gem consumes combine^(N-1) level-one gems. Existing refunds ceil.
+	return ceilf(jewel_create_cost()*pow(combine_cost,int(gem.level)-1)*0.5)
 
 func decompose_jewel(token: int) -> bool:
 	var gem := jewel_inventory(token)
-	var reward := jewel_compose_reward()
-	if gem.is_empty() or int(gem.level) != db.jewel_max_level(str(gem.id)) or reward.is_empty():
+	var reward := jewel_compose_reward(gem)
+	if gem.is_empty() or int(gem.level) != db.jewel_max_level(str(gem.id)) or reward <= 0:
 		return false
 	profile.jewels.erase(gem)
-	for id in reward:
-		profile.resources[id] = float(profile.resources.get(id, 0)) + float(reward[id])
+	settle_jewel_fragments(reward,"decompose")
 	jewels_changed()
 	return true
 
@@ -1751,20 +1963,24 @@ func jewel_allowed(id: String, category: String) -> bool:
 	var kind := int(db.jewel_parameter(id, 1))
 	return kind == 0 or kind == (1 if category == "weapons" else 2)
 
-func jewel_socket_error(category: String, index: int, token: int) -> String:
+func jewel_socket_error(category: String, index: int, token: int, replacing_socket := -1) -> String:
 	var entry := slot_entry(category, index)
 	var gem := jewel_inventory(token)
 	if not jewels_unlocked() or entry.is_empty() or str(entry.key).is_empty() or gem.is_empty():
 		return "请选择有效装备和宝石"
 	if not jewel_allowed(str(gem.id), category):
 		return "该宝石不适用于此类装备"
-	for installed in entry.get("sockets", []):
+	var sockets: Array = entry.get("sockets", [])
+	for i in sockets.size():
+		if i == replacing_socket:
+			continue
+		var installed: Dictionary = sockets[i]
 		if not installed.is_empty() and str(installed.id) == str(gem.id):
 			return "同一装备不能镶嵌同ID宝石（包括不同等级）"
 	return ""
 
 func socket_jewel(category: String, index: int, socket: int, token: int) -> bool:
-	if not jewel_socket_error(category, index, token).is_empty():
+	if not jewel_socket_error(category, index, token, socket).is_empty():
 		return false
 	var entry := slot_entry(category, index)
 	if socket < 0 or socket >= equipment_socket_count(entry):
@@ -1772,11 +1988,15 @@ func socket_jewel(category: String, index: int, socket: int, token: int) -> bool
 	var sockets: Array = entry.get("sockets", []).duplicate()
 	while sockets.size() < equipment_socket_count(entry):
 		sockets.append({})
-	if not sockets[socket].is_empty():
+	var previous: Dictionary = sockets[socket]
+	# Reserve the old gem's return space before changing either owner.
+	if not previous.is_empty() and profile.jewels.size() >= JEWEL_CAPACITY:
 		return false
 	var gem := jewel_inventory(token)
 	sockets[socket] = gem
 	profile.jewels.erase(gem)
+	if not previous.is_empty():
+		profile.jewels.append(previous)
 	entry.sockets = sockets
 	jewels_changed(slot_id(category, index))
 	return true
@@ -1784,7 +2004,7 @@ func socket_jewel(category: String, index: int, socket: int, token: int) -> bool
 func unsocket_jewel(category: String, index: int, socket: int, expected_token: int) -> bool:
 	var entry := slot_entry(category, index)
 	var sockets: Array = entry.get("sockets", [])
-	if profile.jewels.size() >= 30 or socket < 0 or socket >= sockets.size() or sockets[socket].is_empty() or int(sockets[socket].token) != expected_token:
+	if profile.jewels.size() >= JEWEL_CAPACITY or socket < 0 or socket >= sockets.size() or sockets[socket].is_empty() or int(sockets[socket].token) != expected_token:
 		return false
 	profile.jewels.append(sockets[socket])
 	sockets[socket] = {}
@@ -1797,7 +2017,7 @@ func return_socket_jewels(entries: Array) -> bool:
 		for gem in entry.get("sockets", []):
 			if not gem.is_empty():
 				gems.append(gem)
-	if gems.size() + profile.jewels.size() > 30:
+	if gems.size() + profile.jewels.size() > JEWEL_CAPACITY:
 		event.emit("jewel_error", {"message":"宝石背包空间不足，请先整理宝石再卸装备或换舰"})
 		return false
 	profile.jewels.append_array(gems)
@@ -1806,6 +2026,7 @@ func return_socket_jewels(entries: Array) -> bool:
 	return true
 
 func jewels_changed(slot := "") -> void:
+	generate_jewels()
 	if player.has("armour"):
 		player.armour = minf(player.armour, stat("armour"))
 		player.shield = minf(player.shield, max_shield())
@@ -1847,18 +2068,34 @@ func jewel_critical(entry: Dictionary) -> Vector2:
 			multiplier *= 1.0 + float(effect.p4) * int(effect.level)
 	return Vector2(clampf(rate * multiplier, 0, 1), maxf(0, damage))
 
-func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0) -> void:
-	var entry := slot_entry("weapons", index)
+func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
+	var entry := slot_entry("weapons",index)
 	var critical := jewel_critical(entry)
 	var raw := jewel_equipment_stat(entry) * multiplier
-	if rng.randf() < critical.x:
+	var is_critical := rng.randf() < critical.x
+	if is_critical:
 		raw *= critical.y
-	fire(player, target, weapon, raw, false, str(entry.key), offset)
-	projectiles.back().jewelEffects = jewel_effects(entry)
-	for effect in projectiles.back().jewelEffects:
+	var effects := jewel_effects(entry)
+	for effect in effects:
 		effect.source = index
+	return {"damage":raw,"effects":effects,"critical":is_critical}
 
-func queue_jewel_repeats(index: int, multiplier: float) -> void:
+func missile_visual_spread(index: int, count: int) -> float:
+	return (float(index)/float(count-1)-0.5)*minf(88.0,float(count-1)*24.0) if count>1 else 0.0
+
+func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0, visual_spread := 0.0) -> void:
+	# Every player missile path resolves its live mount here, including repeats.
+	if str(slot_entry("weapons",index).key)=="missile":
+		offset = player_weapon_offset(index)
+	var attack := jewel_attack(index,multiplier)
+	fire(player,target,weapon,attack.damage,false,str(slot_entry("weapons",index).key),offset,visual_spread)
+	projectiles.back().jewelEffects = attack.effects
+	projectiles.back().critical = attack.critical
+
+func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}) -> void:
+	if not beam.is_empty():
+		if projectiles.any(func(p):return p.get("beam",false) and not p.hostile and p.mount==index and p.get("repeated",false) and long_laser_valid(p)) or jewel_repeats.any(func(p):return p.index==index and p.has("beam")):
+			return
 	var entry := slot_entry("weapons", index)
 	var pending: Array = []
 	for effect in jewel_effects(entry):
@@ -1870,23 +2107,30 @@ func queue_jewel_repeats(index: int, multiplier: float) -> void:
 		pending[choice] = pending[i]
 		pending[i] = value
 		jewel_repeats.append({"index":index, "entry":entry, "remaining":0.5 * (i+1), "multiplier":value})
+		if not beam.is_empty():
+			jewel_repeats.back().beam = beam
+			break
 
 func advance_jewel_repeats(dt: float) -> void:
 	for pending in jewel_repeats.duplicate():
 		pending.remaining -= dt
-		if pending.remaining > 0:
+		if pending.remaining > 0.000000001:
 			continue
 		jewel_repeats.erase(pending)
 		var entry := slot_entry("weapons", int(pending.index))
 		if state != State.COMBAT or not is_same(entry, pending.entry) or str(entry.key).is_empty():
 			continue
 		var weapon := db.equip(str(entry.key), int(entry.level))
+		if pending.has("beam"):
+			if projectiles.has(pending.beam) and long_laser_valid(pending.beam):
+				lock_long_laser(player,weapon,false,int(pending.index),entry,true,float(pending.multiplier))
+			continue
 		var candidates := targets(int(weapon.dmgtype))
 		if candidates.is_empty():
 			continue
 		entry.attacks = int(entry.get("attacks", 0)) + 1
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
-			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier))
+			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
 
 func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 	for effect in effects:
@@ -1917,9 +2161,23 @@ func jewel_defence_hit(index: int) -> void:
 				if not str(weapon_entries()[i].key).is_empty():
 					indices.append(i)
 			if not indices.is_empty():
-				var id := slot_id("weapons", int(indices[rng.randi_range(0, indices.size()-1)]))
-				cooldowns[id] = 0.0
-				jewel_charged[id] = maxf(float(jewel_charged.get(id, 1)), 1.0 + float(effect.p2) * int(effect.level))
+				apply_jewel_charge(int(indices[rng.randi_range(0, indices.size()-1)]),1.0 + float(effect.p2) * int(effect.level))
+
+# Charge selects a mount; continuous attacks retain the modifier on existing instances.
+func apply_jewel_charge(index: int, multiplier: float) -> void:
+	var id := slot_id("weapons",index)
+	if str(slot_entry("weapons",index).get("key","")) == "longLaser":
+		var applied := false
+		for shot in projectiles:
+			if shot.get("beam",false) and not shot.hostile and shot.mount==index and long_laser_valid(shot):
+				shot.charged_multiplier = maxf(float(shot.charged_multiplier),multiplier)
+				applied = true
+		if applied:
+			jewel_charged.erase(id)
+			return
+	else:
+		cooldowns[id] = 0.0
+	jewel_charged[id] = maxf(float(jewel_charged.get(id,1.0)),multiplier)
 
 func jewel_hit_player(raw: float, type: int) -> void:
 	sync_jewel_defence_damage()
@@ -1933,15 +2191,27 @@ func jewel_hit_player(raw: float, type: int) -> void:
 		var incoming := rest
 		var spent := 0.0
 		var damage := 0.0
+		# The aggregate remains authoritative. At huge capacities, capacity-loss
+		# can round to zero while a small, real amount of health still survives.
+		var module_remaining := 0.0
+		var module_capacity := 0.0
+		for index in defense_entries().size():
+			var entry := slot_entry("defence",index)
+			if entry.key == key:
+				var maximum := jewel_equipment_stat(entry)
+				module_capacity += maximum
+				module_remaining += maxf(0,maximum-float(jewel_defence_damage.get(index,0)))
 		for index in defense_entries().size():
 			var entry := slot_entry("defence", index)
 			if entry.key != key:
 				continue
 			var maximum := jewel_equipment_stat(entry)
-			var remaining := maxf(0, maximum - float(jewel_defence_damage.get(index, 0)))
+			var tracked := maxf(0, maximum - float(jewel_defence_damage.get(index, 0)))
+			var weight := tracked / module_remaining if module_remaining > 0 else maximum / module_capacity
+			var remaining := current * weight
 			if remaining <= 0:
 				continue
-			var share := remaining / maxf(0.001, current)
+			var share := remaining / current
 			var row := db.equip(key, int(entry.level))
 			var factor := 1.0 - float(db.config.dmgReduce) if type == int(row.dmgtype) else 1.0
 			var reduction := 0.0

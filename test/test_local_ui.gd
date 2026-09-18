@@ -193,6 +193,7 @@ func run() -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/local-research.png")
 	await check_navigation_scope(scene)
+	await check_exact_levels(scene)
 	print("Local UI: %d checks, %d failures" % [checks,failures])
 	scene.queue_free()
 	await process_frame
@@ -255,3 +256,34 @@ func check_navigation_scope(scene: TrackedUI) -> void:
 	check(scene.property_checks.is_empty(),"Unchanged navigation never enters property setters")
 	check(scene.equipment_tabs==tabs and scene.builds==builds,"Navigation actions never rebuild UI")
 	extra.queue_free()
+
+func check_exact_levels(scene: TrackedUI) -> void:
+	var builds := scene.builds
+	var title: Label = scene.equipment_card_controls.weapons_0.title
+	var tech: String = scene.hightech_titles.keys()[0]
+	var charge: String = scene.charge_cards.keys()[0]
+	for level in [99, 100, 101, 109, 119, 999, 1234]:
+		scene.game.slot_entry("weapons",0).level=level
+		scene.refresh_equipment_cards("weapons_0")
+		check(title.text.ends_with("Lv.%d" % level),"Equipment shows exact level %d" % level)
+		scene.game.profile.hightechLevels[tech]=level
+		scene.refresh_hightech_card(tech)
+		check(scene.hightech_titles[tech].text.ends_with("Lv.%d" % level),"Research shows exact level %d" % level)
+		scene.game.charge_job(charge).level=level
+		scene.refresh_charge_card(charge)
+		check(scene.charge_cards[charge].title.text.ends_with("Lv.%d" % level),"Charge shows exact level %d" % level)
+	while scene.db.levels.size()<110:
+		scene.db.levels.append(scene.db.levels[-1].duplicate(true))
+	scene.game.stage=109
+	scene.game.profile.cleared.append(109)
+	scene.game.profile.highestLevel=110
+	scene.game.profile.loopLevel=109
+	scene.refresh_navigation()
+	check(scene.loop_select.get_item_text(scene.loop_select.get_item_index(109))=="跃迁 · 第 109 关","Warp option preserves exact three-digit stage")
+	check(scene.number(1234)=="1.2K","Resource quantity formatting remains compact")
+	check(scene.equipment_card_controls.weapons_0.title==title and scene.builds==builds,"Exact levels preserve existing controls")
+	scene.equipment_tabs.current_tab=0
+	scene._process(0)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://.runtime/local-exact-levels.png")

@@ -40,3 +40,22 @@ static func compact(value: float) -> String:
 
 static func rate(value: float) -> String:
 	return "%.2f" % value if value < 1000.0 else compact(value)
+
+# Damage presentation only; no rounding is applied to combat values.
+static func damage(value: float) -> String:
+	value = absf(value)
+	if not is_finite(value):return str(value)
+	if value==0:return "0"
+	if value>=1e36:return "%.2e" % value
+	var suffixes := ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
+	var unit := 0
+	while value>=1000 and unit<suffixes.size()-1:
+		value /= 1000
+		unit += 1
+	var decimals := maxi(0,2-floori(log(maxf(value,0.001))/log(10.0)))
+	var rounded := snappedf(value,pow(10,-decimals))
+	if rounded>=1000 and unit<suffixes.size()-1:
+		rounded /= 1000
+		unit += 1
+		decimals = 2
+	return ("%.*f" % [decimals,rounded]).trim_suffix(".00")+suffixes[unit]

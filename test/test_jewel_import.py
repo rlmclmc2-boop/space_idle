@@ -22,7 +22,25 @@ projected = json.loads((ROOT / 'data/game_data.json').read_text(encoding='utf-8'
 assert projected['jewel'] == gems
 config = convert_sheet('config', read_rows(openpyxl.load_workbook(ROOT / 'config_excel/config.xlsx', data_only=True, read_only=True)['config']))
 assert projected['config'] == config
-assert config['jewelCompose'] == '1|1000'
+assert config['jewelCreat'] == 1000
+assert all((ROOT / g['image'].removeprefix('res://')).is_file() for g in gems.values())
+levels = convert_sheet('level', read_rows(openpyxl.load_workbook(ROOT / 'config_excel/level.xlsx', data_only=True, read_only=True)['level']))
+assert [r['jewelRatio'] for r in projected['levels']] == [r['jewelRatio'] for r in levels]
+for invalid in (-1, None, 'bad'):
+    try:
+        convert_sheet('level', [{'id': 1, 'jewelRatio': invalid, 'monGroup': '1|0.1'}])
+        raise AssertionError('invalid jewelRatio accepted')
+    except ValueError:
+        pass
+assert convert_sheet('level', [{'id': 1, 'monGroup': '1|0.1'}])[0]['jewelRatio'] == 1
+for invalid in (0, -1, 1.5, None):
+    try:
+        convert_sheet('config', [{'name': 'jewelCreat', 'para_1': invalid}])
+        raise AssertionError('invalid jewelCreat accepted')
+    except ValueError:
+        pass
+legacy_gem = dict(rows[0]); legacy_gem.pop('para_3', None)
+assert convert_sheet('jewel', [legacy_gem])['1']['image'].endswith('/1.svg')
 # run.py already isolates source/target and user dirs. Simulate a pre-jewel projection.
 target = ROOT / '.runtime/jewel-import.json'
 projected.pop('jewel')

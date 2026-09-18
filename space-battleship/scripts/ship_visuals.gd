@@ -15,6 +15,13 @@ const MODULE_VISUAL_SCALE := 2.5
 static func scale_for(ship: Dictionary) -> float:
 	return float(ship.get("size", 1)) * CELL_PIXELS / CANVAS.y
 
+# Presentation only: scale_for remains the original combat muzzle transform.
+static func player_display_multiplier() -> float:
+	return clampf(float(ProjectSettings.get_setting("visuals/player_ship_scale",1.25)),0.5,2.0)
+
+static func player_display_scale(ship: Dictionary) -> float:
+	return scale_for(ship)*player_display_multiplier()
+
 static func enemy_scale_for(ship: Dictionary) -> float:
 	# Every enemy occupies one formation slot; size is a visual tier only.
 	return (48.0 + clampf(float(ship.get("size",1))-1.0,0.0,5.0)*16.0) / CANVAS.y

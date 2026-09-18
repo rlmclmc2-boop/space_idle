@@ -33,9 +33,9 @@ def convert_sheet(name, rows):
     if name == 'jewel':
         for row in rows:
             positive(row.get('maxLevel'), 'jewel maxLevel')
-            positive(row.get('para_3', row.get('para3')), 'jewel fragments')
-            if row['maxLevel'] != int(row['maxLevel']) or row.get('para_3', row.get('para3')) != int(row.get('para_3', row.get('para3'))):
-                raise ValueError('jewel：最大等级和碎片需求必须是正整数')
+            if row['maxLevel'] != int(row['maxLevel']):
+                raise ValueError('jewel：最大等级必须是正整数')
+            row["image"] = row.get("image") or f"res://assets/jewels/{int(row['id'])}.svg"
         return {str(int(row['id'])): row for row in rows}
     if name == 'config':
         keys = [row.get('name') for row in rows]
@@ -82,11 +82,20 @@ def convert_sheet(name, rows):
         return {str(r["id"]):{"description":r["des"],"slots":[None if v.strip()=="null" else int(v) for v in clean(r["mon"]).split(",")]} for r in rows}
     if name=="level":
         for row in rows:
+            ratio = row.get("jewelRatio", 1)
+            if type(ratio) not in (int, float) or not math.isfinite(ratio) or ratio < 0:
+                raise ValueError("level：jewelRatio 必须为非负数")
+            row["jewelRatio"] = ratio
             row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
         return rows
     if name=="res":
         return {str(r["id"]):r["name"] for r in rows}
     if name=="config":
+        for row in rows:
+            if row["name"] == "jewelCreat":
+                positive(row["para_1"], "config jewelCreat")
+                if row["para_1"] != int(row["para_1"]):
+                    raise ValueError("config：jewelCreat 必须为正整数")
         return {r["name"]:r["para_1"] for r in rows}
     if name=="ship":
         result={}

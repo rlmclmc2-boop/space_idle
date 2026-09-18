@@ -6,6 +6,7 @@
 !/space-battleship/
 !/启动.cmd
 !/test/
+!/build_release.bat
 
 **/__pycache__/
 *.py[cod]

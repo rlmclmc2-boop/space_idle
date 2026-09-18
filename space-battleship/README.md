@@ -33,6 +33,22 @@ python tools/inspect_knowledge.py --source config_excel/equipment.xlsx --sheet e
 
 ## 跨电脑交接
 
+### Windows release（一键发布）
+
+双击工作区根目录 `build_release.bat`。成功后只分发 `release/SpaceBattleship.exe`，不需要复制本项目、引擎、Python、Excel、node_modules 或任何开发工具。自动化调用可用 `build_release.bat --no-pause`；默认成功或失败都保留窗口，失败返回非 0。
+
+- 目标为 Windows 10/11 x64，显卡及驱动需要支持 OpenGL 3.3（Godot GL Compatibility）。使用 Godot 4.7.2 **正式 release 模板 + Embed PCK**，引擎、GDScript 字节码、运行 JSON、图片、中文字体及字体许可证内嵌为单个 GUI EXE；音效由原有代码生成，无外部音频文件。不使用自解压、多文件安装器或开发引擎充当发布程序。
+- 存档通过 Godot `user://` 写到 `%APPDATA%\SpaceBattleship\progress.json`，目录由 Windows 用户环境自动确定，无需手工配置环境变量；不会写到 EXE 旁边，也不会读取开发用 `.userdata`。发布版禁用 F1 QA、QA 偏好、截图作弊参数、控制台包装程序及常规日志。现有开发入口保持原行为。
+- 构建只读取当前 `data/game_data.json`，不自动导入/重算/重置 Excel 和 JSON。Noto Sans SC 及 OFL 许可证放在 `assets/fonts/`，不需要玩家预装中文字体。
+- 首次在另一台**构建电脑**准备：放入官方 `engine/Godot_v4.7.2-stable_win64.exe`；执行 `powershell -NoProfile -ExecutionPolicy Bypass -File space-battleship/tools/install_release_template.ps1`。模板安装脚本从官方 Godot release 下载约 1.3 GB 模板包，校验固定 SHA512，只提取 `engine/templates/4.7.2.stable/windows_release_x86_64.exe`。也可从同一官方包手工提取该文件。缺失、错误版本或损坏的工具会阻断构建，不自动降级。
+- 构建顺序：独占锁 → 将旧 release 隔离到 `test/work/release-*/previous-release-not-current` → 检查工具 → 复制必要运行输入到隔离目录 → 导入/编译 → release 导出及 PCK 内嵌 → 检查唯一文件、PE GUI/x64/PCK 及系统 DLL → 同一输入另建 release 验证包 → 删除本次中间项目 → 隔离验证资源与禁用 QA → 删除验证程序 → 最终 EXE 正常入口渲染、写档并重开 → 最后发布。源码、正式玩家目录不参与测试写入。
+- 任一阶段失败立即退出，日志给出阶段、核心错误及路径；未验证 EXE 删除，旧产物保持隔离，不回填到 release。完整日志在工作区 `build.log`，分阶段日志与截图在 `test/work/release-*`。修复后重新双击，完整重跑。不要把 `previous-release-not-current` 当作本次发布结果。
+- 自动验证是本机隔离环境测试，并不等同于已经在另一台干净 Windows 真机验收；跨机验收只需复制最终 EXE，首次启动后确认字体/图片/声音、存档与重开恢复。平台系统 DLL、显卡驱动及操作系统属于运行前提，不是随包携带的开发依赖。
+
+失败保护专项：`powershell -NoProfile -ExecutionPolicy Bypass -File test/test_release_failures.ps1`，在 `test/work/` 内构造缺工具、语法错误、坏模板和运行验证失败，检查非零退出码、旧版本隔离及残缺 EXE 清除。`test/verify_release.gd` 只进入独立验证程序，不进入最终 EXE。Godot 4.7 正式模板禁止外部 `--script` 注入，不能用编辑器运行代替发布验证。验证程序检查内部断言；最终 EXE 另从正常入口启动，保留真实渲染帧与存档/重开证据。
+
+### 开发工程交接
+
 保持工作区根`启动.cmd`、`太空战舰.xlsx`、`test/`和`space-battleship/`的相对布局。项目携带脚本、tools、场景、project.godot、data投影、config_excel（含manifest）、assets、Godot UID/导入描述、文档与启动脚本；不要只复制源码而遗漏素材/分表。
 引擎二进制另行提供并匹配启动路径；安装上述Python依赖。缓存`.godot/.runtime`不作为交接必需品；正式`.userdata`属于个人进度，不是设计资料，续接进度须另行由所有者备份。其他平台不能执行.cmd，发布支持仍见U-010。
 测试操作见[test/README](../test/README.md)，美术交付见[ART_GUIDELINES](docs/ART_GUIDELINES.md)。重构审计文件保留作本次历史，普通任务不需要读取。

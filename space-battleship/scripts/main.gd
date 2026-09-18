@@ -8,7 +8,7 @@ const MUTED := Color("8195ac")
 const CYAN := Color("71e5f4")
 const ORANGE := Color("ffbc73")
 const PURPLE := Color("b3a0ff")
-const NAMES := {"armour":"复合装甲","shield":"偏转护盾","laser":"脉冲激光","missile":"追踪导弹","cannon":"磁轨火炮"}
+const NAMES := {"armour":"复合装甲","shield":"偏转护盾","laser":"脉冲激光","missile":"追踪导弹","cannon":"磁轨火炮","longLaser":"持续锁定光束"}
 const PROJECTILE_TEXTURES := {
 	"laser":preload("res://assets/weapons/laser-pulse.png"),
 	"cannon":preload("res://assets/weapons/cannon-slug.png"),
@@ -17,6 +17,7 @@ const PROJECTILE_TEXTURES := {
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
 const SLOT_TEXTURES := {
+	"longLaser":preload("res://assets/weapons/icons/laser-emitter.png"),
 	"laser":preload("res://assets/weapons/icons/laser-emitter.png"),
 	"cannon":preload("res://assets/weapons/icons/cannon-turret.png"),
 	"missile":preload("res://assets/weapons/icons/missile-pod.png")
@@ -38,13 +39,37 @@ const ENEMY_SHIP_TEXTURES := [
 	preload("res://assets/ships/enemy/enemy-super-8slot.png")
 ]
 const SHIP_VISUALS := preload("res://scripts/ship_visuals.gd")
-var module_regions: Dictionary = {}
+# Tight artwork regions exclude transparent padding in the existing module icons.
+var module_regions: Dictionary = {
+	"cannon":Rect2(106,436,1064,369),
+	"missile":Rect2(158,452,984,350),
+	"laser":Rect2(101,407,1057,440),
+	"longLaser":Rect2(101,407,1057,440)
+}
 var db: ShipDatabase
 var game: BattleGame
-var font: SystemFont
+var font: Font
 var ui: Control
 var stars: Array[Dictionary] = []
 var particles: Array[Dictionary] = []
+# UI-only references and endpoint snapshots; never written into combat state.
+var beam_visuals: Array[Dictionary] = []
+var projectile_visuals: Array[Dictionary] = []
+# UI-owned per-mount pose; never used by damage, aiming or projectile simulation.
+var turret_visuals: Dictionary = {}
+var turret_ship := ""
+const WEAPON_PARTICLE_LIMIT := 700
+# Independent presentation controls; no combat parameter reads these values.
+const BODY_SCALE := {"missile":Vector2(0.7,0.7),"cannon":Vector2(0.7,0.45)}
+const FLAME_SCALE := 0.65
+const TRAIL_SCALE := 0.55
+const IMPACT_SCALE := 0.65
+var show_damage_numbers := true
+var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
+var damage_pending: Array[Dictionary] = []
+var damage_history: Array[String] = []
+var wave_hint := 0.0
+var fx_time := 0.0
 var floats: Array[Dictionary] = []
 var clock := 0.0
 var star_travel := 0.0
@@ -66,7 +91,7 @@ var resource_mode_button: Button
 var upgrade_buttons: Dictionary = {}
 var ten_upgrade_buttons: Dictionary = {}
 var max_upgrade_buttons: Dictionary = {}
-const EQUIPMENT_PAGES := [{"title":"武器","keys":["laser","cannon","missile"]},{"title":"防御","keys":["armour","shield"]}]
+const EQUIPMENT_PAGES := [{"title":"武器","keys":["laser","cannon","missile","longLaser"]},{"title":"防御","keys":["armour","shield"]}]
 var equipment_page := 0
 var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
@@ -90,7 +115,7 @@ var hightech_scroll: ScrollContainer
 var hightech_scroll_offset := 0
 var ui_rebuild_pending := false
 var ui_rebuild_scheduled := false
-var automation_args := OS.get_cmdline_user_args()
+var automation_args := OS.get_cmdline_user_args() if OS.has_feature("debug") else PackedStringArray()
 var capture_frame := 0
 var equipment_containers: Dictionary = {}
 var equipment_panels: Dictionary = {}
@@ -114,13 +139,23 @@ var jewel_panel: Panel
 var hightech_sync_pending := false
 
 func _ready() -> void:
-	font = SystemFont.new()
-	font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
+	if OS.has_feature("release"):
+		font = load("res://assets/fonts/NotoSansSC-Regular.tres")
+		var symbols: FontFile = load("res://assets/fonts/NotoSansSymbols2-Regular.ttf")
+		symbols.allow_system_fallback = false
+		font.fallbacks = [symbols]
+	else:
+		var system_font := SystemFont.new()
+		system_font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
+		font = system_font
 	db = ShipDatabase.new()
 	game = BattleGame.new(db, not automation_args.has("--capture"))
 	game.event.connect(on_event)
 	create_draw_layers()
 	ui = Control.new()
+	if OS.has_feature("release"):
+		ui.theme = Theme.new()
+		ui.theme.default_font = font
 	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ui)
@@ -136,7 +171,7 @@ func _ready() -> void:
 	if not game.offline_rewards.is_empty():
 		var rewards: PackedStringArray = []
 		for id in game.offline_rewards:
-			rewards.append("%s +%s" % [db.data.resources[id], number(game.offline_rewards[id])])
+			rewards.append("%s +%s" % ["宝石碎片" if id == "jewel" else db.data.resources[id], ("%.2f" % game.offline_rewards[id]) if id == "jewel" else number(game.offline_rewards[id])])
 		toast("离线收益：" + "  ".join(rewards))
 		message_time = 10.0
 	if automation_args.has("--capture"):
@@ -154,7 +189,7 @@ func _ready() -> void:
 			game.profile.resources["2"] = 100.0
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
-	if DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
+	if OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
 		var preferences := ConfigFile.new()
 		preferences.load("user://qa_settings.cfg")
 		var saved_speed := int(preferences.get_value("control","speed",1))
@@ -162,6 +197,8 @@ func _ready() -> void:
 		call_deferred("show_qa_tools")
 
 func show_qa_tools() -> void:
+	if not OS.has_feature("debug"):
+		return
 	get_viewport().gui_embed_subwindows = false
 	var panel := get_tree().root.get_node_or_null("QATools")
 	if panel == null:
@@ -186,11 +223,16 @@ func _process(delta: float) -> void:
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:
+		fx_time += dt
+		wave_hint = maxf(0,wave_hint-dt)
+		advance_turrets(dt)
 		var remaining := dt*game.speed
 		while remaining > 0:
 			var step := minf(remaining, 1.0/60.0)
 			game.tick(step)
 			remaining -= step
+		sync_beam_visuals()
+		advance_projectile_visuals(dt)
 		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.ship_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
 		# Blend the star-only travel effect instead of toggling 200 trails at once.
 		star_streak = move_toward(star_streak,1.0 if game.state == BattleGame.State.TRAVEL else 0.0,dt*4.0)
@@ -201,8 +243,9 @@ func _process(delta: float) -> void:
 		particles = particles.filter(func(p):return p.life > 0)
 		for f in floats:
 			f.life -= dt
-			f.pos.y -= dt*28
+			if f.get("damage",false):f.pos.y -= dt*12
 		floats = floats.filter(func(f):return f.life > 0)
+		flush_damage_numbers()
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
 	refresh_visible_cards()
@@ -243,55 +286,74 @@ func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
 		"jewels_changed":
 			if is_instance_valid(jewel_panel):
-				jewel_panel.refresh()
+				jewel_panel.inventory_changed()
 			if not str(info.get("slot", "")).is_empty():
 				refresh_equipment_cards(str(info.slot))
 		"jewel_error":
 			toast(str(info.message))
 		"jewel_pickup":
-			toast("拾取 " + str(db.jewel(str(info.jewel)).get("name", info.jewel)) + "碎片")
+			if is_instance_valid(jewel_panel):jewel_panel.pickup_feedback(info)
 		"state":
 			refresh_structure()
 			refresh_navigation()
+		"beam_started":
+			var shot: Dictionary = info.shot
+			beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":Vector2(shot.target.x,shot.target.y),"full":false})
+			weapon_flash(visual_muzzle(shot),ORANGE if shot.hostile else CYAN,7.0,0.07)
+		"beam_hit":
+			var shot: Dictionary = info.shot
+			weapon_flash(Vector2(shot.target.x,shot.target.y),ORANGE if shot.hostile else CYAN,7.0,0.08)
+		"critical_impact":
+			weapon_flash(info.pos,Color.WHITE,14.0,0.08)
+			beam_ring(info.pos,ORANGE,0.12,11)
+			weapon_sparks(info.pos,7,140,info.direction)
 		"hit":
-			var color := ORANGE if info.player else (CYAN if info.type == 1 else ORANGE)
-			var target := "player" if info.player else "enemy:%s" % info.uid
-			var active: Dictionary = {}
-			for entry in floats:
-				if entry.get("target","") == target and entry.life > 0:
-					active = entry
-					break
-			if active.is_empty():
-				active = {"pos":Vector2(info.x,info.y-36),"amount":0.0,"color":color,"life":0.9,"damage":true,"target":target}
-				floats.append(active)
-			active.amount += float(info.amount)
-			active.text = "−%s" % number(active.amount)
-			active.pos = damage_text_position(active.pos,active.text,target)
-			burst(Vector2(info.x,info.y),color,7,70)
-			if info.player:
-				shake = 3
+			queue_damage_number(info)
 		"explode":
-			burst(Vector2(info.x,info.y),ORANGE,65 if info.boss else 26,200)
-			shake = 6 if info.boss else 2
+			var pos := Vector2(info.x,info.y)
+			weapon_flash(pos,ORANGE,22.0,0.08)
+			# Split the existing hull texture, using only an event-time visual snapshot.
+			if info.has("size"):
+				var texture: Texture2D = ENEMY_SHIP_TEXTURES[clampi(int(info.size)-1,0,ENEMY_SHIP_TEXTURES.size()-1)]
+				var dimensions: Vector2 = SHIP_VISUALS.CANVAS*SHIP_VISUALS.enemy_scale_for(info)
+				for piece in 6:
+					if particles.size()>=WEAPON_PARTICLE_LIMIT:break
+					var cell := Vector2(piece%3,piece/3)
+					var local := (cell+Vector2(0.5,0.5))*dimensions/Vector2(3,2)-dimensions/2
+					local.x = -local.x
+					particles.append({"pos":pos+local,"vel":local.normalized()*randf_range(65,120),"color":ORANGE,"life":0.52,"duration":0.52,"fragment":true,"texture":texture,"region":Rect2(cell*texture.get_size()/Vector2(3,2),texture.get_size()/Vector2(3,2)),"extent":dimensions/Vector2(3,2),"spin":randf_range(-2.5,2.5)})
+			weapon_sparks(pos,14 if info.boss else 9,150)
+			for i in 9:
+				if particles.size()<WEAPON_PARTICLE_LIMIT:
+					particles.append({"pos":pos,"vel":Vector2.from_angle(float(i)*TAU/9)*float(45+i*7),"color":ORANGE,"life":0.55,"size":7.0,"spark":true})
+			weapon_smoke(pos,Color("7e7780"),3,0.24,9)
 			beep(90)
+		"projectile_impact":
+			weapon_impact(info.shot,info.pos)
 		"fire":
-			burst(Vector2(info.x,info.y),CYAN if info.type == 1 else ORANGE,4,40)
+			if info.has("shot"):
+				weapon_launch(info.shot,float(info.get("spread",0)))
 			beep(620 if info.type == 1 else 200)
 		"collect":
-			var color := INK if info.id == "1" else PURPLE
-			var label := "+%s %s%s" % [number(info.amount),db.data.resources[info.id],"" if info.manual else " · 自动"]
-			floats.append({"pos":Vector2(info.x,info.y-12),"text":label,"color":color,"life":1.5})
-			var origin := Vector2(info.x,info.y)
-			for i in range(9):
-				particles.append({"pos":origin+Vector2(randf_range(-12,12),randf_range(-12,12)),"vel":(Vector2(890,42)-origin)*randf_range(1.0,1.4),"color":color,"life":0.65,"size":2.5})
+			var active: Dictionary = {}
+			for entry in floats:
+				if entry.get("resource","")==info.id and fx_time-float(entry.born)<0.4:active = entry
+			if active.is_empty():
+				floats = floats.filter(func(f):return f.get("resource","")!=info.id)
+				active = {"resource":info.id,"amount":0.0,"born":fx_time,"pos":Vector2(760,550+int(info.id)*18),"color":INK if info.id=="1" else PURPLE,"life":0.8}
+				floats.append(active)
+			active.amount += float(info.amount)
+			active.text = "+%s %s · 已拾取" % [number(active.amount),db.data.resources[info.id]]
 		"encounter":
-			toast("发现旗舰 · 武器自动锁定" if info.boss else "接触敌方编队 · 巡航暂停")
+			wave_hint = 0.8
 		"wave_clear":
-			toast("空域已肃清 · 恢复巡航")
+			wave_hint = 1.1
 		"upgrade":
 			var levels := int(info.get("levels",1))
-			toast(NAMES[info.key] + ("升级完成" if levels == 1 else "连续升级%s级完成" % number(levels)))
+			toast(NAMES[info.key] + ("升级完成" if levels == 1 else "连续升级%s级完成" % str(int(levels))))
 			refresh_equipment_cards(str(info.get("slot","")))
+			if is_instance_valid(jewel_panel) and jewel_panel.visible and str(info.get("slot",""))==game.slot_id(jewel_panel.category,jewel_panel.equipment_index):
+				jewel_panel.refresh()
 		"scientists_changed":
 			refresh_scientists()
 			for key in hightech_progress:
@@ -310,7 +372,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			toast("存档写入失败，请检查磁盘权限")
 
 func number(value: float) -> String:
-	# All in-game quantity text must use this shared K/M/B/T formatter.
+	# Quantities use K/M/B/T; stage identifiers and levels use exact integers.
 	return NUMBER_FORMAT.compact(value)
 
 func enemy_health(value: float) -> String:
@@ -358,8 +420,250 @@ func beep(frequency: float) -> void:
 	audio.stream = wav
 	audio.play()
 
+func weapon_key(shot: Dictionary) -> String:
+	return str(shot.key).replace("_mon", "").replace("-mon", "")
+
+func weapon_strength(shot: Dictionary) -> float:
+	return 1.0 + clampf(log(maxf(1,float(shot.damage)))/log(10.0)/30.0,0,0.5)
+
+func decoration_budget(pos: Vector2, count: int) -> int:
+	var nearby := 0
+	for particle in particles:
+		if particle.pos.distance_squared_to(pos)<6400:nearby += 1
+	return mini(count,maxi(0,18-nearby))
+
+func weapon_smoke(pos: Vector2, color: Color, count: int, duration: float, size: float) -> void:
+	for i in mini(decoration_budget(pos,count),maxi(0,WEAPON_PARTICLE_LIMIT-particles.size())):
+		particles.append({"pos":pos,"vel":Vector2(randf_range(-16,16),randf_range(-22,-6)),"color":color,"life":duration,"duration":duration,"size":size,"smoke":true})
+
+func weapon_flash(pos: Vector2, color: Color, radius: float, duration: float) -> void:
+	if particles.size()>=WEAPON_PARTICLE_LIMIT:
+		for i in particles.size():
+			if not particles[i].has("flash"):
+				particles.remove_at(i)
+				break
+		if particles.size()>=WEAPON_PARTICLE_LIMIT:particles.remove_at(0)
+	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"flash":true})
+
+func weapon_sparks(pos: Vector2, count: int, force: float, direction := Vector2.RIGHT) -> void:
+	for i in mini(decoration_budget(pos,count),maxi(0,WEAPON_PARTICLE_LIMIT-particles.size())):
+		particles.append({"pos":pos,"vel":direction.rotated(randf_range(-0.65,0.65))*randf_range(force*0.3,force),"color":ORANGE,"life":randf_range(0.12,0.22),"size":randf_range(5,11),"spark":true})
+
+func turret_angle(index: int) -> float:
+	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
+	var pose: Dictionary = turret_visuals[index]
+	return float(pose.angle) if is_same(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+
+func turret_pose(index: int) -> Dictionary:
+	if turret_ship!=str(game.profile.selectedShip):
+		turret_visuals.clear()
+		turret_ship = str(game.profile.selectedShip)
+	var entry := game.slot_entry("weapons",index)
+	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
+		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
+	return turret_visuals[index]
+
+func turret_muzzle(index: int) -> Vector2:
+	var key := str(game.profile.selectedShip)
+	var scale_value := SHIP_VISUALS.player_display_scale(db.ship(key))
+	var local := SHIP_VISUALS.center(key,index)+Vector2(SHIP_VISUALS.module_width(key)/2,0).rotated(turret_angle(index))
+	return Vector2(game.player.x,game.player.y)+local*scale_value
+
+func shot_mount(shot: Dictionary) -> int:
+	if shot.hostile:return -1
+	if shot.has("mount"):return int(shot.mount)
+	var closest := -1
+	var distance := INF
+	for index in game.weapon_entries().size():
+		if str(game.slot_entry("weapons",index).key)!=weapon_key(shot):continue
+		var muzzle := Vector2(game.player.x,game.player.y)+game.player_weapon_offset(index)
+		var candidate := muzzle.distance_squared_to(Vector2(shot.x,shot.y))
+		if candidate<distance:
+			distance = candidate
+			closest = index
+	return closest
+
+func advance_turrets(dt: float) -> void:
+	if game.paused:return
+	var entries := game.weapon_entries()
+	for index in turret_visuals.keys():
+		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
+	for index in entries.size():
+		var entry: Dictionary = entries[index]
+		if str(entry.key).is_empty():continue
+		var pose := turret_pose(index)
+		pose.recoil = maxf(0,float(pose.recoil)-dt)
+		var target: Dictionary = pose.target
+		# A live main beam owns its mount's aim; repeats cannot pull it off target.
+		for shot in game.projectiles:
+			if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index and not shot.get("repeated",false) and game.long_laser_valid(shot):
+				target = shot.target
+				break
+		if game.state!=BattleGame.State.COMBAT:
+			target = {}
+		elif target.is_empty() or not game.enemies.has(target) or float(target.get("hp",0))<=0:
+			var candidates := game.targets(int(db.equip(str(entry.key),int(entry.level)).dmgtype))
+			target = candidates[0] if not candidates.is_empty() else {}
+		pose.target = target
+		var desired := 0.0
+		if not target.is_empty():
+			var pivot := Vector2(game.player.x,game.player.y)+SHIP_VISUALS.center(str(game.profile.selectedShip),index)*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))
+			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
+			desired = clampf((Vector2(target.x,target.y)-pivot).angle(),-limit,limit)
+		var speed := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_turn_degrees_per_second",240.0)))
+		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
+
+func visual_muzzle(shot: Dictionary) -> Vector2:
+	var pos := Vector2(shot.x,shot.y)
+	if shot.hostile:return pos
+	var index := shot_mount(shot)
+	if index>=0:return turret_muzzle(index)
+	var source := Vector2(game.player.x,game.player.y)
+	return source+(pos-source)*SHIP_VISUALS.player_display_multiplier()
+
+func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
+	var key := weapon_key(shot)
+	if key=="longLaser":return
+	var mount := shot_mount(shot)
+	if mount>=0:
+		var pose := turret_pose(mount)
+		if key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time):
+			pose.target = shot.target
+			pose.fired_at = fx_time
+		if key=="cannon":pose.recoil = 0.13
+	var pos := visual_muzzle(shot)
+	var trail := PackedVector2Array()
+	trail.resize(14)
+	trail.fill(pos)
+	# One fixed trail buffer per shot, overwritten in place during flight.
+	if projectile_visuals.size()<256:
+		projectile_visuals.append({"shot":shot,"angle":turret_angle(mount) if mount>=0 else shot.direction.angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":Vector2(shot.x,shot.y),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+	var color := CYAN if key=="laser" else ORANGE
+	weapon_flash(pos,color,10.0 if key=="cannon" else 7.0,0.07)
+	if key in ["missile","cannon"]:
+		weapon_smoke(pos,Color("8992a0"),1,0.14,4.0)
+
+func advance_projectile_visuals(dt: float) -> void:
+	for i in range(projectile_visuals.size()-1,-1,-1):
+		var visual: Dictionary = projectile_visuals[i]
+		if not game.projectiles.has(visual.shot):
+			projectile_visuals.remove_at(i)
+			continue
+		visual.age += dt
+		visual.angle = lerp_angle(float(visual.angle),visual.shot.direction.angle(),1.0-exp(-dt*16.0))
+		if dt>0:
+			visual.head = (int(visual.head)+1)%14
+			visual.trail_times[visual.head] = visual.age
+			visual.trail[visual.head] = missile_visual_position(visual.shot,float(visual.spread),visual.origin)
+			visual.samples = mini(14,int(visual.samples)+1)
+
+func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2) -> Vector2:
+	var pos := Vector2(shot.x,shot.y)
+	var converge := 1.0
+	if not shot.target.is_empty():
+		converge = clampf(pos.distance_to(Vector2(shot.target.x,shot.target.y))/160.0,0,1)
+	var visual := projectile_visual(shot)
+	var logical_origin: Vector2 = visual.get("logical_origin",origin)
+	var distance := pos.distance_to(logical_origin)
+	var unfold := smoothstep(0.0,100.0,distance)
+	var blend_distance := minf(160.0,logical_origin.distance_to(Vector2(shot.target.x,shot.target.y))) if not shot.target.is_empty() else 160.0
+	var muzzle_shift := (origin-logical_origin)*(1.0-smoothstep(0.0,maxf(1,blend_distance),distance))
+	return pos+muzzle_shift+Vector2(0,spread*unfold*converge)
+
+func projectile_visual(shot: Dictionary) -> Dictionary:
+	for visual in projectile_visuals:
+		if is_same(visual.shot,shot):return visual
+	return {}
+
+func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
+	var key := weapon_key(shot)
+	var color := CYAN if key=="laser" else ORANGE
+	weapon_flash(pos,color,(18.0 if key=="missile" else 14.0)*IMPACT_SCALE,0.08)
+	if shot.get("critical",false):
+		on_event("critical_impact",{"pos":pos,"direction":shot.get("direction",Vector2.RIGHT)})
+	weapon_sparks(pos,8 if key=="cannon" else 5,210 if key=="cannon" else 160,shot.get("direction",Vector2.RIGHT))
+	if key=="missile":
+		# Short radial blast streaks read as impact, never as an area-of-damage circle.
+		for i in mini(6,decoration_budget(pos,6)):
+			if particles.size()>=WEAPON_PARTICLE_LIMIT:break
+			particles.append({"pos":pos,"vel":Vector2.from_angle(float(i)*TAU/6)*150,"color":ORANGE,"life":0.18,"size":10.0,"spark":true})
+		weapon_smoke(pos,Color("7e7780"),2,0.18,7.0*IMPACT_SCALE)
+
+func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core := true) -> float:
+	var key := weapon_key(shot)
+	var visual := projectile_visual(shot)
+	var angle: float = shot.direction.angle()
+	if not visual.is_empty():
+		angle = visual.angle
+	if not visual.is_empty():
+		var color := Color("ffc879") if key=="missile" else ORANGE if key=="cannon" else CYAN
+		for i in range(1,mini(int(visual.samples),14 if key=="missile" else 4)):
+			# The short fresh trail shares the bullet layer; only older exhaust sits behind hulls.
+			if (i<=3)!=core:continue
+			if i>4 and decoration_budget(pos,1)==0:break
+			var a: Vector2 = visual.trail[(int(visual.head)-i+14)%14]+offset
+			var b: Vector2 = visual.trail[(int(visual.head)-i+1+14)%14]+offset
+			var age: float = float(visual.age)-float(visual.trail_times[(int(visual.head)-i+14)%14])
+			var fade := maxf(0,1.0-age/(0.14 if key=="missile" else 0.065))
+			if fade<=0:break
+			draw_surface.draw_line(a,b,Color(color,fade*0.8),(3.5 if key=="missile" else 2.2)*fade*TRAIL_SCALE,true)
+	if not core:return angle
+	if not visual.is_empty():
+		var color := CYAN if key=="laser" else ORANGE
+		if float(visual.age)<0.06:
+			var fade := 1.0-float(visual.age)/0.06
+			var muzzle: Vector2 = visual.origin+offset
+			draw_surface.draw_line(muzzle,muzzle+Vector2.from_angle(angle)*(23.0 if key=="cannon" else 12.0)*fade,Color(color,fade),(5.0 if key=="cannon" else 3.0)*fade,true)
+	var heading := Vector2.from_angle(angle)
+	if key=="missile":
+		var flame := (28.0+5.0*sin(float(visual.get("age",0))*65))*FLAME_SCALE
+		var base := pos-heading*12
+		var side := heading.orthogonal()*4.5*FLAME_SCALE
+		draw_surface.draw_colored_polygon(PackedVector2Array([base+side,base-heading*flame,base-side]),Color(1,0.55,0.12,0.95))
+		draw_surface.draw_colored_polygon(PackedVector2Array([base+side*0.5,base-heading*flame*0.75,base-side*0.5]),Color(1,0.97,0.8))
+	elif key=="laser":
+		# Round, layered halo avoids the rectangular texture/glow boundary.
+		for i in range(-9,10,2):
+			draw_surface.draw_circle(pos+heading*float(i),2.8,Color(CYAN,0.06))
+		draw_surface.draw_line(pos-heading*10,pos+heading*10,CYAN,2.0,true)
+		draw_surface.draw_line(pos-heading*8,pos+heading*8,Color.WHITE,0.8,true)
+	else:
+		draw_surface.draw_line(pos-heading*15,pos,Color(ORANGE,0.75),2.0,true)
+		draw_surface.draw_circle(pos+heading*5,3.0,Color(1,0.65,0.2,0.6))
+		draw_surface.draw_line(pos+heading*2,pos+heading*9,Color(1,0.97,0.8),2.5,true)
+	return angle
+
+func beam_style(shot: Dictionary) -> Dictionary:
+	var weapon: Dictionary = game.db.enemy_weapon(shot.entry.name) if shot.hostile else game.db.equip(shot.entry.key,int(shot.entry.level))
+	var multiplier := game.long_laser_multiplier(weapon,maxf(0,float(shot.elapsed)-maxf(0,float(shot.charge))))
+	var power := clampf((multiplier-1.0)/(float(weapon.para2)-1.0),0,1) if float(weapon.para2)>1 else 1.0
+	var first_hit := float(shot.charge) if float(shot.charge)>=0 else float(shot.weapon.cd)
+	var since_tick := float(shot.elapsed)-(first_hit+(int(shot.ticks)-1)*float(shot.weapon.cd))
+	var pulse := maxf(0,1.0-since_tick/minf(0.12,float(shot.weapon.cd)*0.6)) if int(shot.ticks)>0 else 0.0
+	return {"power":power,"width":lerpf(1.2,2.8,power)+pulse*0.6,"glow":0.025+power*0.035+pulse*0.22,"pulse":pulse}
+
+func beam_ring(pos: Vector2, color: Color, duration: float, radius: float) -> void:
+	if particles.size()>=WEAPON_PARTICLE_LIMIT or decoration_budget(pos,1)==0:return
+	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"ring":true})
+
+func sync_beam_visuals() -> void:
+	for visual in beam_visuals:
+		var shot: Dictionary = visual.shot
+		var color := ORANGE if shot.hostile else CYAN
+		if not game.projectiles.has(shot) or not game.long_laser_valid(shot):
+			particles.append({"pos":visual.start,"beam_end":visual.end if int(shot.ticks)>0 else visual.start,"vel":Vector2.ZERO,"color":color,"life":0.16,"duration":0.16,"size":4.0})
+			burst(visual.start,color,6,65)
+			weapon_flash(visual.end,color,3,0.06)
+			continue
+		visual.start = visual_muzzle(shot)
+		visual.end = Vector2(shot.target.x,shot.target.y)
+		if int(shot.ticks)>0 and not visual.full and float(beam_style(shot).power)>=1.0:
+			visual.full = true
+			weapon_flash(visual.end,color,4,0.06)
+	beam_visuals = beam_visuals.filter(func(v):return game.projectiles.has(v.shot) and game.long_laser_valid(v.shot))
+
 func burst(pos: Vector2, color: Color, count: int, force: float) -> void:
-	for i in range(count):
+	for i in range(mini(decoration_budget(pos,count),maxi(0,WEAPON_PARTICLE_LIMIT-particles.size()))):
 		particles.append({"pos":pos,"vel":Vector2.from_angle(randf()*TAU)*randf_range(force*0.2,force),"color":color,"life":randf_range(0.2,0.8),"size":randf_range(1,3)})
 
 func style(color: Color, border: Color) -> StyleBoxFlat:
@@ -447,7 +751,7 @@ func build_ui() -> void:
 	loop_select.add_item("跃迁至关卡", 0)
 	for level in range(1, db.levels.size()+1):
 		if game.profile.cleared.has(level):
-			loop_select.add_item("跃迁 · 第 %s 关" % number(level), level)
+			loop_select.add_item("跃迁 · 第 %s 关" % str(int(level)), level)
 			if level == int(game.profile.get("loopLevel", 0)):
 				loop_select.select(loop_select.item_count-1)
 	loop_select.set_item_disabled(0, true)
@@ -464,7 +768,30 @@ func build_ui() -> void:
 	for mode in range(death_options.size()):
 		death_menu.add_radio_check_item(death_options[mode], mode)
 		death_menu.set_item_checked(mode, mode == int(game.profile.get("guardDeath", 0)))
-	death_menu.id_pressed.connect(func(mode):game.set_guard_death(mode);refresh_navigation())
+	death_menu.add_separator("伤害跳字")
+	death_menu.add_item("伤害详情（最近40次）",20)
+	for mode in 3:
+		death_menu.add_radio_check_item(["精简", "全部", "关闭"][mode],10+mode)
+		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
+	death_menu.id_pressed.connect(func(mode):
+		if mode==20:
+			var details := AcceptDialog.new()
+			details.title = "伤害详情 · 完整数值"
+			var detail_text := RichTextLabel.new()
+			detail_text.custom_minimum_size = Vector2(520,480)
+			detail_text.selection_enabled = true
+			detail_text.text = "\n".join(damage_history) if not damage_history.is_empty() else "暂无受击记录"
+			details.add_child(detail_text)
+			details.confirmed.connect(details.queue_free)
+			details.canceled.connect(details.queue_free)
+			ui.add_child(details)
+			details.popup_centered(Vector2i(560,600))
+		elif mode>=10:
+			set_damage_mode(mode-10)
+			for option in 3:death_menu.set_item_checked(death_menu.get_item_index(10+option),damage_mode==option)
+		else:
+			game.set_guard_death(mode)
+			refresh_navigation())
 	ui.add_child(guard_settings)
 	build_equipment_tabs()
 	advance_button = button("立即过关",Rect2(780,302,200,46),func():game.advance_after_clear(),true)
@@ -513,7 +840,7 @@ func refresh_hightech_card(key: String) -> void:
 		return
 	var title: Label = hightech_titles[key]
 	if ui_state_changed(title,[game.hightech_level(key),db.data.hightech[key]]):
-		set_ui_value(title,"text","%s Lv.%s" % [key,number(game.hightech_level(key))])
+		set_ui_value(title,"text","%s Lv.%s" % [key,str(int(game.hightech_level(key)))])
 		var description := game.hightech_description(key)
 		set_ui_value(hightech_descriptions[key],"text",description)
 		set_ui_value(hightech_descriptions[key],"tooltip_text",description)
@@ -693,7 +1020,7 @@ func refresh_navigation() -> void:
 		while loop_select.item_count > ids.size():
 			loop_select.remove_item(loop_select.item_count-1)
 		for index in ids.size():
-			var label := "跃迁至关卡" if index==0 else "跃迁 · 第 %s 关" % number(ids[index])
+			var label := "跃迁至关卡" if index==0 else "跃迁 · 第 %s 关" % str(int(ids[index]))
 			if index >= loop_select.item_count:
 				loop_select.add_item(label,ids[index])
 			elif loop_select.get_item_id(index) != ids[index]:
@@ -707,7 +1034,7 @@ func refresh_navigation() -> void:
 		loop_select.select(loop_select.get_item_index(selection))
 	var menu := guard_settings.get_popup()
 	if ui_state_changed(menu,[game.profile.get("guardDeath",0)]):
-		for mode in menu.item_count:
+		for mode in 3:
 			var checked := mode==int(game.profile.get("guardDeath",0))
 			if menu.is_item_checked(mode) != checked:
 				menu.set_item_checked(mode,checked)
@@ -741,28 +1068,73 @@ func refresh_draw_layers(dt: float) -> void:
 	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,message if message_time>0 and not help_open and game.pending_unlocks.is_empty() else ""]):
 		overlay_layer.queue_redraw()
 
-func damage_text_rect(pos: Vector2, value: String) -> Rect2:
-	return Rect2(pos-Vector2(0,font.get_ascent(18)),Vector2(font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x,font.get_height(18))).grow(3)
+func set_damage_mode(mode: int) -> void:
+	damage_mode = mode
+	show_damage_numbers = mode != 2
+	damage_pending.clear()
+	floats = floats.filter(func(f):return not f.get("damage",false))
+	battle_layer.queue_redraw()
 
-func damage_text_position(origin: Vector2, value: String, excluded_target := "") -> Vector2:
-	var pos := origin
-	# All damage labels rise at the same speed, so separated bounds stay separated.
-	while true:
-		var bounds := damage_text_rect(pos,value)
-		var blocked := false
-		for entry in floats:
-			if entry.get("damage",false) and entry.life > 0 and entry.get("target","") != excluded_target:
-				var occupied := damage_text_rect(entry.pos,entry.text)
-				if bounds.intersects(occupied):
-					pos.y -= bounds.end.y-occupied.position.y+1
-					if pos.y < 150:
-						pos.x = occupied.end.x+4
-						pos.y = origin.y
-					blocked = true
-					break
-		if not blocked:
-			return pos
-	return pos
+func queue_damage_number(info: Dictionary) -> void:
+	var exact := "%.0f" % float(info.amount) if float(info.amount)==roundf(float(info.amount)) else str(info.amount)
+	damage_history.append("%s%s：%s" % ["玩家" if info.player else "敌舰 #%s" % info.uid," · 暴击" if info.get("critical",false) else "",exact])
+	if damage_history.size()>40:damage_history.pop_front()
+	if not show_damage_numbers:return
+	var target := "player" if info.player else "enemy:%s" % info.uid
+	var critical := bool(info.get("critical",false))
+	var category := int(info.type) if damage_mode==1 else 0
+	for entries in [floats,damage_pending]:
+		for entry in entries:
+			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
+				entry.amount += float(info.amount)
+				entry.text = NUMBER_FORMAT.damage(entry.amount)
+				return
+	var height := SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))/2
+	if not info.player:
+		for enemy in game.enemies:
+			if enemy.uid==info.uid:height = SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.enemy_scale_for(enemy)/2
+	var entry := {"target":target,"critical":critical,"type":category,"amount":float(info.amount),"text":NUMBER_FORMAT.damage(info.amount),"born":fx_time,"life":0.6,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":Vector2(info.x,info.y-height-16),"pos":Vector2.ZERO}
+	damage_pending.append(entry)
+	flush_damage_numbers()
+
+func flush_damage_numbers() -> void:
+	for entry in damage_pending.duplicate():
+		if fx_time-entry.born>0.3:
+			damage_pending.erase(entry)
+			continue
+		var active := floats.filter(func(f):return f.get("target","")==entry.target)
+		if active.size()>=2:
+			active[0].life = minf(active[0].life,0.08)
+			active[0].retiring = true
+			continue
+		var pos := damage_text_position(entry.origin,entry.text,"",entry.size)
+		if pos==Vector2.INF:
+			# No safe local space: keep a bounded, short-lived visual backlog.
+			if fx_time-entry.born>0.2:damage_pending.erase(entry)
+			continue
+		entry.pos = pos
+		floats.append(entry)
+		damage_pending.erase(entry)
+
+func damage_text_rect(pos: Vector2, value: String, size_value := 19) -> Rect2:
+	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	return Rect2(pos-Vector2(maxf(0,92-width)/2,font.get_ascent(size_value)),Vector2(maxf(92,width),font.get_height(size_value))).grow(4)
+
+func damage_text_position(origin: Vector2, value: String, excluded_target := "", size_value := 19) -> Vector2:
+	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	for row in 2:
+		for shift in [0,-56,56,-140,140]:
+			var pos := Vector2(clampf(origin.x-width/2+shift,40,1390-width),origin.y-row*40)
+			var bounds := damage_text_rect(pos,value,size_value)
+			if bounds.position.y<150:continue
+			var blocked := false
+			for entry in floats:
+				if entry.get("damage",false) and entry.get("target","")!=excluded_target and bounds.grow(8).intersects(damage_text_rect(entry.pos,entry.text,entry.size)):blocked = true
+			for enemy in game.enemies:
+				var dimensions: Vector2 = SHIP_VISUALS.CANVAS*SHIP_VISUALS.enemy_scale_for(enemy)
+				if enemy.hp>0 and bounds.intersects(Rect2(Vector2(enemy.x,enemy.y)-dimensions/2-Vector2(4,8),dimensions+Vector2(8,12))):blocked = true
+			if not blocked:return pos
+	return Vector2.INF
 
 func text_at(value: String, pos: Vector2, size := 16, color := INK) -> void:
 	draw_surface.draw_string(font,pos,value,HORIZONTAL_ALIGNMENT_LEFT,-1,size,color)
@@ -839,7 +1211,7 @@ func fit_battle_text(value: String, width: float, size: int) -> String:
 
 func draw_battle() -> void:
 	var length := float(db.levels[game.stage-1].length)
-	text_at("第 %s 关" % number(game.stage),Vector2(39,111),21)
+	text_at("第 %s 关" % str(int(game.stage)),Vector2(39,111),21)
 	var boss_battle := game.state == BattleGame.State.COMBAT and game.is_boss_encounter()
 	var boss_title := "BOSS战 · 当前存活 %s / %s 艘" % [number(game.targets().size()),number(game.enemies.size())] if boss_battle else "BOSS：" + game.boss_info()
 	text_at(fit_battle_text(boss_title, 570, 16),Vector2(175,111),16,ORANGE)
@@ -857,45 +1229,8 @@ func draw_battle() -> void:
 	for slot in range(10):
 		text_at("%02d" % slot,Vector2(1370,202+slot*44),10,Color("34475c"))
 		draw_surface.draw_line(Vector2(1330,198+slot*44),Vector2(1353,198+slot*44),Color("253345"))
-	if game.player.armour>0 or game.state==BattleGame.State.RETREAT:
-		draw_ship(Vector2(game.player.x,game.player.y)+offset,0.24,false,1,game.player.shield>0)
-		text_at(game.ship_name(),Vector2(246,489),16,INK)
-		text_at("%s / %02dW-%02dD" % [game.profile.selectedShip,game.weapon_entries().size(),game.defense_entries().size()],Vector2(215,515),11,MUTED)
-	for enemy in game.enemies:
-		if enemy.hp <= 0:
-			continue
-		var pos := Vector2(enemy.x,enemy.y)+offset
-		var dimensions: Vector2 = SHIP_VISUALS.CANVAS * SHIP_VISUALS.enemy_scale_for(enemy)
-		draw_surface.draw_set_transform(pos,0.0,Vector2(-1,1))
-		draw_surface.draw_texture_rect(ENEMY_SHIP_TEXTURES[clampi(int(enemy.size)-1,0,ENEMY_SHIP_TEXTURES.size()-1)],Rect2(-dimensions/2,dimensions),false)
-		draw_surface.draw_set_transform(Vector2.ZERO)
-		var w := dimensions.x * 0.8
-		bar(Rect2(pos.x-w/2,pos.y-dimensions.y/2,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
-		if not boss_battle:
-			var health_position := Vector2(pos.x+dimensions.x/2+8,pos.y+4)
-			if health_position.x > 1240:
-				health_position = Vector2(pos.x-w/2,pos.y-dimensions.y/2-6)
-			text_at("%s / %s" % [enemy_health(float(enemy.hp)),enemy_health(float(enemy.max_hp))],health_position,12,INK)
-		else:
-			var marker := pos + Vector2(dimensions.x/2+8,-10)
-			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
-			text_at("#%02d" % (int(enemy.slot)+1),marker+Vector2(5,15),12,INK)
-	for card in boss_health_cards():
-		var rect: Rect2 = card.rect
-		var color: Color = ORANGE if int(card.enemy.armourType) == 2 else CYAN
-		box(rect,Color("131e2c"),Color("34475c"))
-		text_at(fit_battle_text(card.label,rect.size.x-24,14),rect.position+Vector2(12,18),14,color)
-		text_at(card.health,rect.position+Vector2(12,36),13,INK)
-		bar(Rect2(rect.position+Vector2(12,44),Vector2(rect.size.x-24,4)),card.ratio,color)
-	for p in game.projectiles:
-		var pos := Vector2(p.x,p.y)+offset
-		var direction: Vector2 = p.direction
-		var key := str(p.key).replace("_mon", "").replace("-mon", "")
-		var size: Vector2 = PROJECTILE_SIZES[key] * PROJECTILE_SCALE
-		draw_surface.draw_set_transform(pos, direction.angle())
-		draw_surface.draw_texture_rect(PROJECTILE_TEXTURES[key],Rect2(-size/2,size),false)
-		draw_surface.draw_set_transform(Vector2.ZERO)
 	for drop in game.drops:
+		if float(drop.age)<0.5 and not drop.get("hightech",false):continue
 		var pos := Vector2(drop.x,drop.y)
 		var color := INK if drop.id=="1" else PURPLE
 		var bob := sin(clock*3+float(drop.uid))*3
@@ -908,15 +1243,104 @@ func draw_battle() -> void:
 		if auto_gen:
 			draw_surface.draw_line(pos+Vector2(22,0),pos+Vector2(62,0),Color(color,0.25),2)
 		elif not furnace:
-			draw_surface.draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/float(db.defaults.autoCollectDelay),0,1),24,Color(color,0.35),2)
+			pass
 		else:
 			draw_surface.draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/10.0,0,1),24,Color(color,0.35),2)
-		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),26,color)
-		text_at("%s碎片 · 点击拾取" % db.jewel(str(drop.jewel)).get("name",drop.jewel) if drop.has("jewel") else "%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,41),12,color)
-	for p in particles:
-		draw_surface.draw_circle(p.pos+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
+		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),16,Color(color,0.65))
+		if furnace or pos.distance_to(get_global_mouse_position())<40:
+			text_at("宝石碎片 · 点击拾取" if drop.has("jewel") else "%s %s" % [number(drop.amount),db.data.resources[drop.id]],pos+Vector2(-19,26),12,color)
+	draw_battle_particles(offset,false)
+	for p in game.projectiles:
+		var pos := Vector2(p.x,p.y)+offset
+		if p.get("beam", false):
+			pos = visual_muzzle(p)+offset
+			if game.long_laser_valid(p):
+				var end := Vector2(p.target.x, p.target.y) + offset
+				var color := ORANGE if p.hostile else CYAN
+				if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
+					draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
+					continue
+				var visual := beam_style(p)
+				draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5,true)
+			continue
+		var flight_visual := projectile_visual(p)
+		if not flight_visual.is_empty():
+			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin)+offset
+		draw_projectile_fx(p,pos,offset,false)
+	if game.player.armour>0 or game.state==BattleGame.State.RETREAT:
+		draw_ship(Vector2(game.player.x,game.player.y)+offset,0.24,false,1,game.player.shield>0)
+		var name_y := maxf(489,float(game.player.y)+SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))/2+18)
+		text_at(game.ship_name(),Vector2(246,name_y),16,INK)
+		text_at("%s / %02dW-%02dD" % [game.profile.selectedShip,game.weapon_entries().size(),game.defense_entries().size()],Vector2(215,name_y+26),11,MUTED)
+	for enemy in game.enemies:
+		if enemy.hp <= 0:
+			continue
+		var pos := Vector2(enemy.x,enemy.y)+offset
+		var dimensions: Vector2 = SHIP_VISUALS.CANVAS * SHIP_VISUALS.enemy_scale_for(enemy)
+		draw_surface.draw_set_transform(pos,0.0,Vector2(-1,1))
+		draw_surface.draw_texture_rect(ENEMY_SHIP_TEXTURES[clampi(int(enemy.size)-1,0,ENEMY_SHIP_TEXTURES.size()-1)],Rect2(-dimensions/2,dimensions),false)
+		draw_surface.draw_set_transform(Vector2.ZERO)
+		var w := dimensions.x * 0.8
+		bar(Rect2(pos.x-w/2,pos.y-dimensions.y/2,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+		if boss_battle:
+			var marker := pos + Vector2(dimensions.x/2+8,-10)
+			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
+			text_at("#%02d" % (int(enemy.slot)+1),marker+Vector2(5,15),12,INK)
+	for card in boss_health_cards():
+		var rect: Rect2 = card.rect
+		var color: Color = ORANGE if int(card.enemy.armourType) == 2 else CYAN
+		box(rect,Color("131e2c"),Color("34475c"))
+		text_at(fit_battle_text(card.label,rect.size.x-24,14),rect.position+Vector2(12,18),14,color)
+		text_at(card.health,rect.position+Vector2(12,36),13,INK)
+		bar(Rect2(rect.position+Vector2(12,44),Vector2(rect.size.x-24,4)),card.ratio,color)
+	# Visible bullets/flames must leave the top-mounted barrels above the hull.
+	for p in game.projectiles:
+		if p.get("beam",false):continue
+		var pos := Vector2(p.x,p.y)+offset
+		var flight_visual := projectile_visual(p)
+		if not flight_visual.is_empty():
+			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin)+offset
+		var angle := draw_projectile_fx(p,pos,offset)
+		var key := str(p.key).replace("_mon", "").replace("-mon", "")
+		if key=="laser":continue
+		var size: Vector2 = PROJECTILE_SIZES[key] * PROJECTILE_SCALE * BODY_SCALE[key]
+		draw_surface.draw_set_transform(pos, angle)
+		draw_surface.draw_texture_rect(PROJECTILE_TEXTURES[key],Rect2(-size/2,size),false)
+		draw_surface.draw_set_transform(Vector2.ZERO)
+	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
+	for shot in game.projectiles:
+		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
+		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
+			var pos := visual_muzzle(shot)+offset
+			var color := ORANGE if shot.hostile else CYAN
+			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
+			var radius := lerpf(28.0,8.0,progress)
+			draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
+			draw_surface.draw_circle(pos,2.0+progress*3.0,Color.WHITE)
+			draw_surface.draw_arc(pos,radius,-PI/2,-PI/2+TAU*progress,32,color,2.0,true)
+			for ray in range(6):
+				var direction := Vector2.from_angle(float(ray)*TAU/6+float(shot.elapsed)*3)
+				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
+		elif int(shot.ticks)>0:
+			var beam := beam_style(shot)
+			var end := Vector2(shot.target.x,shot.target.y)+offset
+			var color := ORANGE if shot.hostile else CYAN
+			var pos := visual_muzzle(shot)+offset
+			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width,true)
+			draw_surface.draw_line(pos,end,Color(1,1,1,0.18+beam.pulse*0.7),beam.width*0.32,true)
+			for stream in range(4):
+				var phase := fposmod(float(shot.elapsed)*2.0+float(stream)*0.25,1.0)
+				var flow: Vector2 = pos.lerp(end,phase)
+				draw_surface.draw_line(flow,flow.lerp(end,0.035),Color(1,1,1,0.12+beam.pulse*0.5),beam.width*0.55,true)
+			draw_surface.draw_circle(pos,beam.width*1.3,Color(color,0.45))
+			draw_surface.draw_circle(end,4.0+beam.pulse*3.0,Color(color,0.3+beam.pulse*0.3))
+			draw_surface.draw_circle(end,1.8+beam.pulse*1.8,Color.WHITE)
+	draw_battle_particles(offset,true)
 	for f in floats:
-		text_at(f.text,f.pos,18,Color(f.color,clampf(float(f.life)*2,0,1)))
+		if f.get("damage",false) and not show_damage_numbers:continue
+		text_at(f.text,f.pos,int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
+	if wave_hint>0:
+		text_at("敌方接近",Vector2(670,235),18,Color(CYAN,minf(1,wave_hint*3)))
 	text_at("生命 %s / %s" % [number(game.player.armour),number(game.stat("armour"))],Vector2(40,587),15,INK)
 	bar(Rect2(40,598,273,5),float(game.player.armour)/game.stat("armour"),ORANGE)
 	if game.profile.unlocked.has("shield"):
@@ -925,9 +1349,9 @@ func draw_battle() -> void:
 	text_at("悬停拾取 100%%  /  %s 秒后自动拾取 %s%%" % [number(float(db.defaults.autoCollectDelay)),number((1.0-float(db.config.autoCollectReduce))*100)],Vector2(650 if boss_battle else 1010,596),12,MUTED)
 	if game.state == BattleGame.State.LEVEL_CLEAR and game.pending_unlocks.is_empty():
 		box(Rect2(430,280,580,95),Color("101c2b"),CYAN)
-		text_at("第 %s 关通关" % number(game.stage),Vector2(458,318),26,CYAN)
+		text_at("第 %s 关通关" % str(int(game.stage)),Vector2(458,318),26,CYAN)
 		var target := game.next_stage()
-		text_at("%s 秒后刷新驻守敌群" % number(maxf(0,game.clear_timer)) if game.guarding_here() else "%s 秒后进入第 %s 关" % [number(maxf(0,game.clear_timer)),number(target)],Vector2(458,352),17,INK)
+		text_at("%s 秒后刷新驻守敌群" % number(maxf(0,game.clear_timer)) if game.guarding_here() else "%s 秒后进入第 %s 关" % [number(maxf(0,game.clear_timer)),str(int(target))],Vector2(458,352),17,INK)
 	if game.paused and game.pending_unlocks.is_empty():
 		if boss_battle:
 			box(Rect2(565,533,310,46),Color("142334"),CYAN)
@@ -938,10 +1362,39 @@ func draw_battle() -> void:
 			text_at("航行已暂停",Vector2(637,336),26,CYAN)
 			text_at("按空格或点击继续",Vector2(648,365),14,MUTED)
 
+func draw_battle_particles(offset: Vector2, core: bool) -> void:
+	for p in particles:
+		if bool(p.has("flash") or p.has("spark") or p.has("fragment") or p.has("ring"))!=core:continue
+		if p.has("fragment"):
+			var fade := clampf(float(p.life)/float(p.duration),0,1)
+			draw_surface.draw_set_transform(p.pos+offset,float(p.spin)*(1.0-fade),Vector2(-1,1))
+			draw_surface.draw_texture_rect_region(p.texture,Rect2(-p.extent/2,p.extent),p.region,Color(1,0.8+fade*0.2,0.65+fade*0.35,fade))
+			draw_surface.draw_set_transform(Vector2.ZERO)
+		elif p.has("flash"):
+			var fade := clampf(float(p.life)/float(p.duration),0,1)
+			draw_surface.draw_circle(p.pos+offset,float(p.size)*0.55,Color(p.color,fade*0.45))
+			draw_surface.draw_circle(p.pos+offset,float(p.size)*fade*0.4,Color(1,0.98,0.88,fade))
+			for ray in 4:
+				var direction := Vector2.from_angle(float(ray)*PI/2+0.35)
+				draw_surface.draw_line(p.pos+offset,p.pos+offset+direction*float(p.size)*fade*1.5,Color(p.color,fade),2.0*fade,true)
+		elif p.has("spark"):
+			draw_surface.draw_line(p.pos+offset,p.pos-p.vel.normalized()*float(p.size)+offset,Color(p.color,clampf(float(p.life)*8,0,1)),2.2,true)
+		elif p.has("smoke"):
+			var fade := clampf(float(p.life)/float(p.duration),0,1)
+			draw_surface.draw_circle(p.pos+offset,float(p.size)*(1.0+(1.0-fade)*1.6),Color(p.color,fade*0.22))
+		elif p.has("ring"):
+			var fade := clampf(float(p.life)/float(p.duration),0,1)
+			draw_surface.draw_arc(p.pos+offset,float(p.size)*(1.0-fade)+2.0,0,TAU,24,Color(p.color,fade),2.0,true)
+		elif p.has("beam_end"):
+			var fade := clampf(float(p.life)/float(p.duration),0,1)
+			draw_surface.draw_line(p.pos+offset,p.pos.lerp(p.beam_end,fade)+offset,Color(p.color,fade*0.65),float(p.size)*fade,true)
+		else:
+			draw_surface.draw_circle(p.pos+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
+
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield: bool) -> void:
 	if not hostile and SHIP_TEXTURES.has(str(game.profile.selectedShip)):
 		var ship_key := str(game.profile.selectedShip)
-		scale_value = SHIP_VISUALS.scale_for(db.ship(ship_key))
+		scale_value = SHIP_VISUALS.player_display_scale(db.ship(ship_key))
 		draw_surface.draw_set_transform(pos,0.0,Vector2.ONE*scale_value)
 		draw_surface.draw_texture_rect(SHIP_TEXTURES[ship_key],Rect2(-SHIP_VISUALS.CANVAS/2,SHIP_VISUALS.CANVAS),false)
 		var entries := game.weapon_entries()
@@ -955,7 +1408,22 @@ func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shiel
 			var region: Rect2 = module_regions[key]
 			var width := SHIP_VISUALS.module_width(ship_key)
 			var icon_size := region.size * (width / region.size.x)
-			draw_surface.draw_texture_rect_region(SLOT_TEXTURES[key],Rect2(SHIP_VISUALS.center(ship_key,index)-icon_size/2,icon_size),region)
+			var angle := turret_angle(index)
+			var recoil := 0.0
+			if key=="cannon" and turret_visuals.has(index):
+				recoil = 8.0*clampf(float(turret_visuals[index].recoil)/0.13,0,1)/scale_value
+			# Rotate around the original socket; recoil follows the barrel's local axis.
+			draw_surface.draw_set_transform(pos+SHIP_VISUALS.center(ship_key,index)*scale_value,angle,Vector2.ONE*scale_value)
+			var mount := Vector2(-recoil,0)
+			var backing := Rect2(mount-icon_size/2,icon_size).grow(4)
+			draw_surface.draw_rect(backing,Color("09131f"))
+			draw_surface.draw_rect(backing,Color("9bc5d9"),false,width*0.06)
+			draw_surface.draw_texture_rect_region(SLOT_TEXTURES[key],Rect2(mount-icon_size/2,icon_size),region)
+			if key=="cannon":
+				draw_surface.draw_line(mount+Vector2(width*0.05,0),mount+Vector2(width*0.5,0),ORANGE,width*0.09,true)
+			elif key in ["laser","longLaser"]:
+				draw_surface.draw_circle(mount+Vector2(width*0.33,0),width*0.13,CYAN)
+				draw_surface.draw_circle(mount+Vector2(width*0.33,0),width*0.06,Color.WHITE)
 		draw_surface.draw_set_transform(Vector2.ZERO)
 		return
 	draw_surface.draw_set_transform(pos,PI if hostile else 0.0,Vector2.ONE*scale_value)
@@ -1105,7 +1573,7 @@ func build_equipment_card(category: String, slot_index: int) -> void:
 	card.add_child(selector)
 	if not key.is_empty():
 		equipment_card_controls[slot_key] = {"panel":card}
-		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],number(lv)],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,130 if SLOT_TEXTURES.has(key) else 172,26),15)
+		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],str(int(lv))],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,130 if SLOT_TEXTURES.has(key) else 172,26),15)
 		equipment_card_label(card,"已装配 · 换舰时可调整",Rect2(12,72,216 if defence else 144,20),11,MUTED)
 	if key.is_empty():
 		equipment_card_label(card,"空置槽位",Rect2(12,10,216,26),16)
@@ -1183,7 +1651,7 @@ func refresh_equipment_cards(only_slot := "") -> void:
 		set_ui_value(controls.socket,"visible",game.jewels_unlocked())
 		if not ui_state_changed(controls.title,[level,game.hightech_level(tech),effect,game.jewel_equipment_stat(entry),entry.get("sockets",[])]):
 			continue
-		set_ui_value(controls.title,"text","%s · Lv.%s" % [NAMES[key],number(level)])
+		set_ui_value(controls.title,"text","%s · Lv.%s" % [NAMES[key],str(int(level))])
 		set_ui_value(controls.stat,"text",("容量" if category == "defence" else "伤害")+" %s" % number(game.jewel_equipment_stat(entry))+(" → %s" % number(game.jewel_equipment_stat(entry,level+1)) if not maxed else " · 满级"))
 		set_ui_value(controls.cost,"text","已达最高等级" if maxed else "单次：%s" % cost_text(game.slot_upgrade_cost(category,index)))
 		for label in [controls.title,controls.stat,controls.cost]:
@@ -1422,7 +1890,7 @@ func refresh_charge_card(key: String) -> void:
 	var job := game.charge_job(key)
 	if not ui_state_changed(controls.title,[job,game.charge_unlocked(key),game.profile.resources.get(str(int(row.para_1)),0),row]):
 		return
-	set_ui_value(controls.title,"text","%s Lv.%s" % [key,number(job.level)])
+	set_ui_value(controls.title,"text","%s Lv.%s" % [key,str(int(job.level))])
 	set_ui_value(controls.description,"text",game.charge_description(key))
 	set_ui_value(controls.description,"tooltip_text",controls.description.text)
 	var fraction := clampf(float(job.elapsed)/float(row.para_4),0,1)
@@ -1436,7 +1904,7 @@ func refresh_charge_card(key: String) -> void:
 	set_ui_value(controls.button,"disabled",not unlocked)
 	if not unlocked:
 		set_ui_value(controls.status,"text","未解锁")
-		set_ui_value(controls.button,"text","第%s关解锁" % number(row.unlock))
+		set_ui_value(controls.button,"text","第%s关解锁" % str(int(row.unlock)))
 	elif job.active:
 		set_ui_value(controls.status,"text","资源不足" if game.charge_resource_rate(key) > 0 and float(game.profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0 else "充能中")
 		set_ui_value(controls.button,"text","暂停")
@@ -1523,7 +1991,7 @@ func build_hightech_card(index: int, key: String) -> void:
 		return
 	var row: Dictionary = db.data.hightech[key]
 	card.tooltip_text = "拖动标题到其他卡槽，松手交换位置并保存"
-	hightech_titles[key] = equipment_label(card,"%s Lv.%s" % [key,number(game.hightech_level(key))],Vector2(10,5),14,CYAN)
+	hightech_titles[key] = equipment_label(card,"%s Lv.%s" % [key,str(int(game.hightech_level(key)))],Vector2(10,5),14,CYAN)
 	var description := Label.new()
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.text = game.hightech_description(key)

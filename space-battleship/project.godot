@@ -7,6 +7,14 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/description="数据驱动的横版放置自动战斗游戏"
 config/version="0.2.0"
+config/use_custom_user_dir.release=true
+config/custom_user_dir_name.release="SpaceBattleship"
+
+[debug]
+file_logging/enable_file_logging.release=false
+settings/stdout/print_fps.release=false
+settings/stdout/verbose_stdout.release=false
+settings/stdout/disable_stdout.release=true
 
 [display]
 window/size/viewport_width=1440
@@ -19,3 +27,8 @@ window/stretch/mode="canvas_items"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.025, 0.037, 0.068, 1)
+
+[visuals]
+player_ship_scale=1.7
+turret_limit_degrees=85.0
+turret_turn_degrees_per_second=240.0

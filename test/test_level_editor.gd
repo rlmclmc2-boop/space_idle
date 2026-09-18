@@ -74,6 +74,10 @@ func run() -> void:
 	await process_frame
 	check(editor.encounters.size() > 0, "encounter rows")
 	check(not editor.fields.has("atkRatio") and not editor.fields.has("lifeRatio") and not editor.fields.has("resRatio"), "Level ratios are not editable")
+	check(editor.fields.has("jewelRatio"), "Jewel multiplier is available")
+	editor.fields.jewelRatio.text = "2.5"
+	editor.stash()
+	check(editor.rows()[0].jewelRatio == 2.5, "Jewel multiplier parsed as number")
 	editor.fields.length.text = "1200"
 	editor.run_action("validate")
 	await wait_idle(editor)
@@ -89,6 +93,7 @@ func run() -> void:
 	editor.run_action("load")
 	await wait_idle(editor)
 	check(editor.document.tables.mon.rows.size() == original_count + 1, "reload persisted new enemy")
+	check(editor.document.tables.level.rows[0].jewelRatio == 2.5, "Reload preserves jewel multiplier")
 	editor.tabs.current_tab = 0
 	await process_frame
 	editor.show_record(editor.rows().size()-1)
