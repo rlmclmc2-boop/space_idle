@@ -2,12 +2,11 @@
 
 ## CURRENT
 
-- DONE：新增“一键合成”：自动连续升级、跳过已装/锁定/禁用/满级宝石、碎片补位继续参与、一次保存及背包通知、异常回滚、合并最终产物及短高亮；无结果显示指定提示。
-- CHANGED：game.gd共用单次/批量合成和碎片补位实现，配方与属性规则不变；jewel_panel.gd增加按钮与结果展示，保护标记不计入可合成提示。只更新变化宝石及详情，保留其他格子/装备控件与初始化构建；新增批量领域专项，扩展UI专项，并将旧UI测试写死的1000碎片成本改为读取当前100配置。未修改正式配置、存档格式、战斗流程或玩家数据。
-- VERIFY：隔离test_jewel_combine_all 49、test_jewel_ui 66、test_jewel_fragments 22、test_jewels 110，共247项、0失败，退出码0；脚本编译和git diff --check通过。覆盖连锁、合并统计、保护状态、配置边界、重复点击、满包补位、无效数据不扣除、已报告保存失败的profile/serial/RNG回滚、重试/读档、单次通知与局部控件保留。结果页截图已核对。UI测试仍有此前独立复现的Godot弹窗焦点日志及系统证书警告，未影响断言。
-- EVIDENCE：../../test/work/test_jewel_combine_all-8uvx7sxp/、../../test/work/test_jewel_ui-tioug413/、../../test/work/test_jewel_fragments-t6m1mord/、../../test/work/test_jewels-acd05rqu/；结果截图在UI副本space-battleship/.runtime/jewel-bulk-result.png。
-- PARALLEL：保留本轮期间另一任务完成的持续光束首次发射单次双发判定，未触碰对应逻辑；其原记录验证为test_long_laser 83项及test_jewels 110项通过，证据../../test/work/test_long_laser-i20n4nfa/与../../test/work/beam-repeat-once-jewels.log。
-- NEXT：本轮无待办；未新增宝石锁定界面/持久化标记。未报告的底层存档故障仍按U-008另行处理。
+- DONE：武器/防御升级卡统一为深蓝渐变、青蓝高亮、金属切角界面；左侧图标、中部名称/精确等级/属性对比、右侧三级按钮、底部状态及进度条。卡片宽664、高112，保留战场和既有横向滚动。
+- CHANGED：main.gd复用现有卡片和升级入口，新增局部SVG皮肤及防御图标；武器裁去既有图标透明留白。伤害/护盾/装甲和CD/同类型减伤展示当前→下级，满级展示相同值及标记。武器进度沿用冷却，防御进度显示等级，悬停区分语义。升级按槽更新数值、详情与等级进度；资源仅影响消费按钮；静态皮肤无逐帧重绘。没有修改配置、战斗规则或正式玩家数据。
+- VERIFY：隔离test_upgrade_ui 21项、test_local_ui 70项，合计91项、0失败；真实点击、动态MAX、无资源禁用、长名称/属性宽度、两页预览、局部控件身份/写入和隐藏恢复通过；已核对实际武器/防御截图，git diff --check通过。Godot系统证书警告未影响测试。
+- EVIDENCE：../../test/work/test_upgrade_ui-figaxms1/space-battleship/.runtime/equipment-weapons.png、equipment-defence.png、equipment-disabled.png；局部回归路径见../../test/work/equipment-local-run.log。
+- NEXT：本轮无待办；维持原有初建/显式重置和实际槽位变化的最小卡片替换。更多槽位仍使用横向滚动。
 
 ## DONE
 

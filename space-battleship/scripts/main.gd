@@ -1473,6 +1473,35 @@ func equipment_card_label(parent: Control, value: String, rect: Rect2, font_size
 	label.mouse_filter = Control.MOUSE_FILTER_PASS
 	return label
 
+func equipment_skin(kind: String) -> StyleBoxTexture:
+	var skin := StyleBoxTexture.new()
+	skin.texture = load("res://assets/ui/equipment/%s.svg" % kind)
+	for side in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:
+		skin.set_texture_margin(side,12)
+	return skin
+
+func skin_equipment_button(action: Button, primary := false) -> void:
+	for state in ["normal","hover","pressed","disabled"]:
+		action.add_theme_stylebox_override(state,equipment_skin("disabled" if state == "disabled" else ("hover" if state in ["hover","pressed"] else ("primary" if primary else "secondary"))))
+	action.add_theme_color_override("font_color",Color("effbff"))
+	action.add_theme_color_override("font_hover_color",Color.WHITE)
+	action.add_theme_color_override("font_disabled_color",Color("728795"))
+
+func equipment_stat_text(entry: Dictionary) -> String:
+	var key := str(entry.key)
+	var lv := int(entry.level)
+	var cap := db.max_equipment_level(key)
+	var label := "护盾" if key == "shield" else ("装甲" if key == "armour" else "伤害")
+	return "%s  %s → %s%s" % [label,number(game.jewel_equipment_stat(entry)),number(game.jewel_equipment_stat(entry,mini(lv+1,cap)))," · 满级" if lv >= cap else ""]
+
+func equipment_detail_text(entry: Dictionary) -> String:
+	var key := str(entry.key)
+	var lv := int(entry.level)
+	var row := db.equip(key,lv)
+	if key in ["shield","armour"]:
+		return "同类型减伤 %s%% → %s%%" % [number(float(db.config.dmgReduce)*100),number(float(db.config.dmgReduce)*100)]
+	return "CD %s → %s 秒" % [number(float(row.cd)),number(float(db.equip(key,mini(lv+1,db.max_equipment_level(key))).cd))]
+
 func build_equipment_tabs() -> void:
 	equipment_tabs = TabContainer.new()
 	equipment_tabs.position = Vector2(38,620)
@@ -1524,27 +1553,41 @@ func build_equipment_card(category: String, slot_index: int) -> void:
 	var slot_key := game.slot_id("defence" if defence else "weapons",slot_index)
 	var lv := int(entry.get("level",1))
 	var maxed := lv >= db.max_equipment_level(key)
-	var next := db.equip(key,mini(lv+1,db.max_equipment_level(key))) if not key.is_empty() else {}
 	var bulk: bool = BattleGame.EQUIPMENT.has(key)
 	var card := Panel.new()
 	equipment_panels[slot_key] = card
 	card.set_meta("equipment_key",key)
-	card.custom_minimum_size = Vector2(440,112)
-	card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+	card.custom_minimum_size = Vector2(664,112)
+	card.add_theme_stylebox_override("panel",equipment_skin("card"))
 	cards.add_child(card)
-	equipment_card_label(card,"%s槽 %s" % ["防御" if defence else "武器",number(slot_index+1)],Rect2(248,8,180,20),12,CYAN)
-	if not key.is_empty() and SLOT_TEXTURES.has(key):
+	equipment_card_label(card,"%s槽 %s" % ["防御" if defence else "武器",number(slot_index+1)],Rect2(456,9,100,20),12,CYAN)
+	for decoration in [["icon-frame",Rect2(10,12,84,88)],["stat-strip",Rect2(101,34,337,25)]]:
+		var plate := TextureRect.new()
+		plate.texture = load("res://assets/ui/equipment/%s.svg" % decoration[0])
+		plate.position = decoration[1].position
+		plate.size = decoration[1].size
+		plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		plate.visible = not key.is_empty()
+		card.add_child(plate)
+	if not key.is_empty():
 		var icon := TextureRect.new()
-		icon.texture = SLOT_TEXTURES[key]
+		if SLOT_TEXTURES.has(key):
+			var atlas := AtlasTexture.new()
+			atlas.atlas = SLOT_TEXTURES[key]
+			atlas.region = module_regions[key]
+			icon.texture = atlas
+		else:
+			icon.texture = load("res://assets/ui/equipment/%s.svg" % key)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.position = Vector2(12,8)
-		icon.size = Vector2(34,26)
+		icon.position = Vector2(14,20)
+		icon.size = Vector2(76,70)
 		card.add_child(icon)
 	var selector := OptionButton.new()
 	selector.fit_to_longest_item = false
 	selector.clip_text = true
-	selector.position = Vector2(248,42)
+	selector.position = Vector2(456,42)
 	selector.size = Vector2(180,32)
 	selector.disabled = not key.is_empty()
 	selector.visible = key.is_empty()
@@ -1573,39 +1616,37 @@ func build_equipment_card(category: String, slot_index: int) -> void:
 	card.add_child(selector)
 	if not key.is_empty():
 		equipment_card_controls[slot_key] = {"panel":card}
-		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],str(int(lv))],Rect2(54 if SLOT_TEXTURES.has(key) else 12,8,130 if SLOT_TEXTURES.has(key) else 172,26),15)
-		equipment_card_label(card,"已装配 · 换舰时可调整",Rect2(12,72,216 if defence else 144,20),11,MUTED)
+		equipment_card_controls[slot_key].title = equipment_card_label(card,"%s · Lv.%s" % [NAMES[key],str(int(lv))],Rect2(104,8,330,25),17)
+		equipment_card_label(card,"已装配 · 换舰时可调整",Rect2(104,78,310,18),11,Color("9ab9d1"))
 	if key.is_empty():
-		equipment_card_label(card,"空置槽位",Rect2(12,10,216,26),16)
-		equipment_card_label(card,"选择右侧装备即可安装",Rect2(12,42,216,22),13,MUTED)
-		equipment_card_label(card,"安装后仅可在换舰时调整",Rect2(12,76,216,20),11,MUTED)
+		equipment_card_label(card,"空置槽位",Rect2(104,10,330,26),16)
+		equipment_card_label(card,"选择右侧装备即可安装",Rect2(104,42,330,22),13,MUTED)
+		equipment_card_label(card,"安装后仅可在换舰时调整",Rect2(104,76,330,20),11,MUTED)
 		return
-	var socket_action := button("镶嵌",Rect2(190,8,50,26),func():jewel_panel.open(category,slot_index))
+	var socket_action := button("镶嵌",Rect2(594,7,56,25),func():jewel_panel.open(category,slot_index))
 	socket_action.reparent(card,false)
 	socket_action.add_theme_font_size_override("font_size",11)
 	socket_action.visible = game.jewels_unlocked()
 	equipment_card_controls[slot_key].socket = socket_action
-	var cd := float(db.equip(key,lv).get("cd",0))
-	if not defence and cd > 0:
-		equipment_card_label(card,"CD %s秒" % number(cd),Rect2(160,72,68,20),11,CYAN)
-	equipment_card_controls[slot_key].stat = equipment_card_label(card,("容量" if defence else "伤害")+" %s" % number(game.equipment_stat(key,lv))+(" → %s" % number(game.equipment_stat(key,int(next.level))) if not maxed else " · 满级"),Rect2(12,42,216,24),14,CYAN)
+	equipment_card_controls[slot_key].stat = equipment_card_label(card,equipment_stat_text(entry),Rect2(110,34,322,24),16,CYAN)
+	equipment_card_controls[slot_key].detail = equipment_card_label(card,equipment_detail_text(entry),Rect2(104,59,334,18),12,Color("a3c9df"))
 	var single_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index)
 	var ten_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index,10)
-	equipment_card_controls[slot_key].cost = equipment_card_label(card,"已达最高等级" if maxed else "单次：%s" % cost_text(single_cost),Rect2(248,36,180,26),12,MUTED)
-	var upgrade := button("已满级" if maxed else "升级",Rect2(248,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index),true,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index))
+	equipment_card_controls[slot_key].cost = equipment_card_label(card,"已达最高等级" if maxed else "单次：%s" % cost_text(single_cost),Rect2(452,82,198,20),11,MUTED)
+	var upgrade := button("已满级" if maxed else "升级",Rect2(452,36,72,40),func():game.upgrade_slot("defence" if defence else "weapons",slot_index),true,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index))
 	upgrade.tooltip_text = "已达最高等级" if maxed else "升1级，消耗："+cost_text(single_cost)
 	upgrade.reparent(card,false)
-	upgrade.add_theme_font_size_override("font_size",12)
+	upgrade.add_theme_font_size_override("font_size",16)
 	upgrade.set_meta("slot",slot_key)
 	upgrade_buttons[key if not upgrade_buttons.has(key) else slot_key] = upgrade
 	if bulk:
-		var ten := button("10连",Rect2(310,70,56,32),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,10),false,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index,10))
+		var ten := button("10连",Rect2(532,36,55,40),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,10),false,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index,10))
 		ten.reparent(card,false)
 		ten.add_theme_font_size_override("font_size",12)
 		ten.set_meta("slot",slot_key)
 		ten.tooltip_text = "一次升10级，总消耗：" + cost_text(ten_cost)
 		ten_upgrade_buttons[key if not ten_upgrade_buttons.has(key) else slot_key] = ten
-		var max_button := button("MAX",Rect2(372,70,56,32),func():
+		var max_button := button("MAX",Rect2(595,36,55,40),func():
 			var amount := game.max_upgrade_amount_slot(category,slot_index)
 			if amount > 0:
 				game.upgrade_slot(category,slot_index,amount),false,not game.can_upgrade_slot(category,slot_index))
@@ -1614,22 +1655,30 @@ func build_equipment_card(category: String, slot_index: int) -> void:
 		max_button.set_meta("slot",slot_key)
 		max_button.tooltip_text = "按当前资源升级至可负担的最高等级"
 		max_upgrade_buttons[key if not max_upgrade_buttons.has(key) else slot_key] = max_button
-	if not defence:
+	if not key.is_empty():
 		var cooldown := ColorRect.new()
-		cooldown.position = Vector2(12,98)
-		cooldown.size = Vector2(216,4)
+		cooldown.position = Vector2(104,100)
+		cooldown.size = Vector2(330,3)
 		cooldown.color = LINE
 		cooldown.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(cooldown)
 		var fill := ColorRect.new()
-		fill.size = Vector2(216,4)
+		fill.size = Vector2(330,3)
 		fill.color = CYAN
 		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		cooldown.add_child(fill)
-		equipment_cooldowns[slot_key] = fill
+		if not defence:
+			equipment_cooldowns[slot_key] = fill
+		else:
+			fill.size.x = 330.0 * clampf(float(lv)/maxf(1,db.max_equipment_level(key)),0,1)
+			equipment_card_controls[slot_key].progress = fill
+			cooldown.tooltip_text = "装备等级进度"
+		cooldown.tooltip_text = "装备等级进度" if defence else "武器冷却就绪进度"
 	var tech := BattleGame.DENSE_ARMOUR if defence else BattleGame.ENERGY_FOCUS
 	ui_state_changed(equipment_card_controls[slot_key].title,[lv,game.hightech_level(tech),game.charge_multiplier("防御充能" if defence else "攻击充能")])
 	for action in card.get_children():
+		if action is Button:
+			skin_equipment_button(action,action == upgrade)
 		if action is Button and action.has_meta("slot"):
 			ui_state_changed(action,[lv,game.profile.resources])
 			action.set_meta("display_level",lv)
@@ -1652,9 +1701,12 @@ func refresh_equipment_cards(only_slot := "") -> void:
 		if not ui_state_changed(controls.title,[level,game.hightech_level(tech),effect,game.jewel_equipment_stat(entry),entry.get("sockets",[])]):
 			continue
 		set_ui_value(controls.title,"text","%s · Lv.%s" % [NAMES[key],str(int(level))])
-		set_ui_value(controls.stat,"text",("容量" if category == "defence" else "伤害")+" %s" % number(game.jewel_equipment_stat(entry))+(" → %s" % number(game.jewel_equipment_stat(entry,level+1)) if not maxed else " · 满级"))
+		set_ui_value(controls.stat,"text",equipment_stat_text(entry))
+		set_ui_value(controls.detail,"text",equipment_detail_text(entry))
+		if controls.has("progress"):
+			set_ui_value(controls.progress,"size",Vector2(330.0*clampf(float(level)/maxf(1,db.max_equipment_level(key)),0,1),3))
 		set_ui_value(controls.cost,"text","已达最高等级" if maxed else "单次：%s" % cost_text(game.slot_upgrade_cost(category,index)))
-		for label in [controls.title,controls.stat,controls.cost]:
+		for label in [controls.title,controls.stat,controls.detail,controls.cost]:
 			set_ui_value(label,"tooltip_text",label.text)
 	for buttons in [upgrade_buttons,ten_upgrade_buttons,max_upgrade_buttons]:
 		for button_key in buttons:

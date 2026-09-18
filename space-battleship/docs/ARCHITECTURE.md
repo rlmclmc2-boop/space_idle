@@ -28,6 +28,8 @@
 
 main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知main。活动流为TRAVEL→COMBAT→TRAVEL/LEVEL_CLEAR；死亡RETREAT→TRAVEL，paused/pending_unlocks额外控制。旧枚举不等于现存页面（U-011）。
 
+装备卡视觉：main.gd的equipment_skin/skin_equipment_button读取assets/ui/equipment中的九宫格切角SVG；equipment_stat_text/equipment_detail_text只读现有属性。两页共用664×112布局和原卡片身份；武器图标使用已有Atlas区域，防御使用独立矢量图标。武器底条仍由可见页冷却更新，防御等级底条只在对应属性快照变化时写入；无新增持续动画或刷新框架。验证入口test_upgrade_ui/test_local_ui。
+
 装备升级事件按slot走`main.refresh_equipment_cards(slot)`；`refresh_visible_cards`只检查当前可见页，切页立即补齐。资源影响消费按钮，科学家分配影响空闲数/分配按钮及对应进度，科技增益影响对应类别装备；值相同不写控件。MAX仍在点击时枚举当前预算。
 
 `refresh_structure`只替换装备类型/数量变化的槽卡；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。战舰草稿编辑保留选择器，候选舰变化只重建候选槽区。`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
