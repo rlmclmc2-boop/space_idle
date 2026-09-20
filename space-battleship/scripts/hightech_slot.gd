@@ -22,7 +22,7 @@ func _get_drag_data(_position: Vector2):
 	preview.add_theme_stylebox_override("panel",get_theme_stylebox("panel").duplicate())
 	preview.modulate.a = 0.9
 	var label := Label.new()
-	label.text = "  " + tech_key + "  ·  松手换位  "
+	label.text = UIText.t("upgrade.drag_hint", {"name":UIText.data_text("hightech",tech_key)})
 	label.add_theme_font_override("font",get_theme_font("font"))
 	label.add_theme_font_size_override("font_size",14)
 	label.add_theme_color_override("font_color",Color("71e5f4"))

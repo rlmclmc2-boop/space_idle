@@ -14,7 +14,9 @@ func run() -> void:
 	g.profile.cleared = [1,2]
 	g.rebuild_unlocks()
 	g.start(3,false)
-	check(not g.select_loop_level(3), "Reject uncleared stage")
+	g.distance = 100
+	check(g.select_loop_level(3) and g.distance == 0, "Current uncleared stage can restart by warp")
+	check(not g.select_loop_level(4), "Reject other uncleared stage")
 	check(g.select_loop_level(2) and g.stage == 2, "Warp immediately enters selected cleared stage")
 	g.toggle_loop()
 	check(g.stage == 2 and g.profile.loop and not g.guarding_here(), "Enable arms next encounter")
@@ -66,7 +68,7 @@ func run() -> void:
 	scene.game.start(3,false)
 	scene.game.profile.erase("loopLevel")
 	scene.build_ui()
-	check(not scene.loop_button.disabled and scene.loop_select.item_count == 3, "Guard is independent of cleared-stage warp selector")
+	check(not scene.loop_button.disabled and scene.loop_select.item_count == 4 and scene.loop_select.get_item_index(3) >= 0, "Guard is independent of warp selector including current uncleared stage")
 	scene.loop_select.select(2)
 	scene.loop_select.item_selected.emit(2)
 	scene.loop_button.pressed.emit()

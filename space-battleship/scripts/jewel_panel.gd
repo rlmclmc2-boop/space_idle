@@ -61,16 +61,16 @@ func setup(owner_node: Node) -> void:
 	size = Vector2(1340, 535)
 	add_theme_stylebox_override("panel", host.style(host.PANEL, host.CYAN))
 	add_theme_font_override("font", host.font)
-	label("宝石工坊", Rect2(22,12,240,32), 23)
-	var legend := label("青色 选中   绿色 可合成   金色 MAX", Rect2(280,17,600,26), 13)
+	label(UIText.t("gem.setup.text_01"), Rect2(22,12,240,32), 23)
+	var legend := label(UIText.t("gem.setup.text_02"), Rect2(280,17,600,26), 13)
 	legend.add_theme_color_override("font_color",host.MUTED)
-	add_button("关闭", Rect2(1220,12,94,34), func():hide())
-	add_button("按ID排序", Rect2(22,54,138,32), func():game.sort_jewels(false))
-	add_button("等级从高到低", Rect2(168,54,150,32), func():game.sort_jewels(true))
-	add_button("清空选择", Rect2(326,54,120,32), func():selected.clear();inspected_socket=-1;result_token=-1;bulk_summary="";refresh())
+	add_button(UIText.t("gem.setup.text_03"), Rect2(1220,12,94,34), func():hide())
+	add_button(UIText.t("gem.setup.text_04"), Rect2(22,54,138,32), func():game.sort_jewels(false))
+	add_button(UIText.t("gem.setup.text_05"), Rect2(168,54,150,32), func():game.sort_jewels(true))
+	add_button(UIText.t("gem.setup.text_06"), Rect2(326,54,120,32), func():selected.clear();inspected_socket=-1;result_token=-1;bulk_summary="";refresh())
 	summary = label("", Rect2(460,54,232,32), 14)
-	combine_all=add_button("一键合成",Rect2(708,54,158,32),combine_all_selected)
-	combine_all.tooltip_text="自动连续合成背包宝石；跳过已镶嵌、锁定、禁用及满级宝石"
+	combine_all=add_button(UIText.t("gem.setup.text_07"),Rect2(708,54,158,32),combine_all_selected)
+	combine_all.tooltip_text=UIText.t("gem.setup.text_08")
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(22,98)
 	scroll.size = Vector2(844,258)
@@ -82,7 +82,7 @@ func setup(owner_node: Node) -> void:
 	inventory_list.add_theme_constant_override("h_separation",6)
 	inventory_list.add_theme_constant_override("v_separation",6)
 	scroll.add_child(inventory_list)
-	empty_hint = label("击败敌人获得碎片\n收集足够碎片，将自动生成宝石",Rect2(100,174,640,65),19)
+	empty_hint = label(UIText.t("gem.setup.text_09"),Rect2(100,174,640,65),19)
 	empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	empty_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var divider := ColorRect.new()
@@ -98,7 +98,7 @@ func setup(owner_node: Node) -> void:
 	detail_icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	detail_icon.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	add_child(detail_icon)
-	detail_heading=label("宝石详情",Rect2(956,60,350,42),21)
+	detail_heading=label(UIText.t("gem.setup.text_10"),Rect2(956,60,350,42),21)
 	detail_scroll=ScrollContainer.new()
 	detail_scroll.position=Vector2(894,118)
 	detail_scroll.size=Vector2(414,275)
@@ -121,11 +121,11 @@ func setup(owner_node: Node) -> void:
 	preview.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING
 	preview.custom_minimum_size.x=390
 	preview.add_theme_color_override("font_color",Color("95ddc7"))
-	combine = add_button("合成", Rect2(894,408,198,40), combine_selected)
-	compose = add_button("分解宝石", Rect2(894,408,198,40), request_compose)
-	socket_action=add_button("镶嵌",Rect2(1104,408,202,40),func():operate_socket(target_socket if not selected.is_empty() else inspected_socket))
+	combine = add_button(UIText.t("gem.setup.text_11"), Rect2(894,408,198,40), combine_selected)
+	compose = add_button(UIText.t("gem.setup.text_12"), Rect2(894,408,198,40), request_compose)
+	socket_action=add_button(UIText.t("gem.setup.text_13"),Rect2(1104,408,202,40),func():operate_socket(target_socket if not selected.is_empty() else inspected_socket))
 	apply_palette(compose,"danger")
-	feedback=label("选择宝石开始强化",Rect2(894,460,412,54),14)
+	feedback=label(UIText.t("gem.setup.text_14"),Rect2(894,460,412,54),14)
 	feedback.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	feedback.add_theme_color_override("font_color",host.CYAN)
 	fragments = label("", Rect2(22,364,844,40), 13)
@@ -141,9 +141,9 @@ func setup(owner_node: Node) -> void:
 	metrics_timer.timeout.connect(refresh_metrics)
 	add_child(metrics_timer)
 	compose_dialog=ConfirmationDialog.new()
-	compose_dialog.title="分解满级宝石"
-	compose_dialog.ok_button_text="确认分解"
-	compose_dialog.cancel_button_text="保留宝石"
+	compose_dialog.title=UIText.t("gem.setup.text_15")
+	compose_dialog.ok_button_text=UIText.t("gem.setup.text_16")
+	compose_dialog.cancel_button_text=UIText.t("gem.setup.text_17")
 	# Let the dialog finish restoring focus before the consumed gem/action disappears.
 	compose_dialog.confirmed.connect(compose_selected,CONNECT_DEFERRED)
 	compose_dialog.canceled.connect(func():pending_compose=-1)
@@ -173,7 +173,7 @@ func open(for_category := "", index := -1) -> void:
 	target_socket=-1
 	result_token=-1
 	show()
-	host.set_ui_value(feedback,"text","选满同级宝石合成，或选择插槽查看镶嵌效果")
+	host.set_ui_value(feedback,"text",UIText.t("gem.open.text_01"))
 	refresh()
 	animate(self,"modulate",Color(1,1,1,0.35),Color.WHITE,0.16)
 
@@ -201,11 +201,19 @@ func select_cell(index: int) -> void:
 	pulse(gem_buttons.get(token),host.CYAN)
 
 func gem_name(gem: Dictionary) -> String:
-	return "%s Lv.%d" % [str(game.db.jewel(str(gem.id)).get("name", gem.id)), int(gem.level)]
+	return UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("jewel",str(gem.id))), "level":"%d" % (int(gem.level))})
 
 func gem_description(gem: Dictionary) -> String:
 	var id := str(gem.id)
-	var description := str(game.db.jewel(id).get("des", ""))
+	var text_key := UIText.data_key("jewel",id,"des")
+	var formulas := UIText.formulas(text_key)
+	var values := {}
+	for i in formulas.size():
+		values["effect_%d" % (i+1)] = gem_formula(gem,str(formulas[i]))
+	return UIText.t(text_key,values)
+
+func gem_formula(gem: Dictionary, description: String) -> String:
+	var id := str(gem.id)
 	var regex := RegEx.new()
 	regex.compile("\\{([^{}]+)\\}")
 	for match_value in regex.search_all(description):
@@ -266,11 +274,11 @@ func refresh() -> void:
 		var protected: bool=gem.get("locked",false) or gem.get("disabled",false)
 		var visual := "selected" if selected.has(token) else "blocked" if protected or not compatible else "max" if maxed else "ready" if ready else "new" if new_tokens.has(token) else "normal"
 		apply_palette(cell,visual)
-		var badge := "  MAX" if maxed else "  ↑" if ready else ""
-		if new_tokens.has(token):badge+=" 新"
-		host.set_ui_value(cell,"text",gem_name(gem).replace(" Lv.","\nLv.")+badge)
+		var badge := UIText.t("gem.max_badge") if maxed else UIText.t("gem.merge_badge") if ready else ""
+		if new_tokens.has(token):badge+=UIText.t("gem.refresh.text_01")
+		host.set_ui_value(cell,"text",UIText.t("gem.grid_name_level", {"item_name":UIText.data_text("jewel",str(gem.id)),"level":str(int(gem.level))})+badge)
 		host.set_ui_value(cell,"icon",gem_texture(str(gem.id)))
-		host.set_ui_value(cell,"tooltip_text",gem_name(gem)+"\n"+gem_description(gem)+"\n未镶嵌 · "+("已锁定或禁用，不参与合成" if protected else "槽位不兼容" if not compatible else "已达到最高等级" if maxed else "可合成 ↑" if ready else "同级数量不足"))
+		host.set_ui_value(cell,"tooltip_text",gem_name(gem)+"\n"+gem_description(gem)+UIText.t("gem.refresh.text_02")+(UIText.t("gem.refresh.text_03") if protected else UIText.t("gem.refresh.text_04") if not compatible else UIText.t("gem.refresh.text_05") if maxed else UIText.t("gem.refresh.text_06") if ready else UIText.t("gem.refresh.text_07")))
 	for token in gem_buttons.keys():
 		if not live_tokens.has(token):
 			var removed: Button = gem_buttons[token]
@@ -288,7 +296,7 @@ func refresh() -> void:
 		empty.custom_minimum_size = Vector2(132,64)
 		empty.disabled = true
 		empty.text="◇"
-		empty.tooltip_text="空格 · 收集碎片自动生成宝石"
+		empty.tooltip_text=UIText.t("gem.refresh.text_08")
 		apply_palette(empty,"empty")
 		empty.reparent(inventory_list,false)
 		empty_cells.append(empty)
@@ -303,9 +311,9 @@ func refresh_sockets() -> void:
 		category = ""
 		equipment_index = -1
 		entry = {}
-	var title := "装备镶嵌：请从装备卡的「镶嵌」按钮进入"
+	var title := UIText.t("gem.refresh_sockets.text_01")
 	if not entry.is_empty():
-		title = "%s · Lv.%d · %d插槽  /  选宝石镶嵌，选槽位查看" % [host.NAMES.get(str(entry.key),entry.key),int(entry.level),game.equipment_socket_count(entry)]
+		title = UIText.t("gem.refresh_sockets.text_02", {"key":"%s" % (host.NAMES.get(str(entry.key),entry.key)), "level":"%d" % (int(entry.level)), "entry":"%d" % (game.equipment_socket_count(entry))})
 	host.set_ui_value(equipment_title,"text",title)
 	var sockets: Array = entry.get("sockets",[])
 	var count := maxi(game.equipment_socket_count(entry),sockets.size())
@@ -335,11 +343,11 @@ func refresh_sockets() -> void:
 		socket_buttons.append(control)
 	for i in count:
 		var gem: Dictionary = sockets[i] if i < sockets.size() else {}
-		var error := socket_error(i)
+		var error := socket_error_key(i)
 		apply_palette(socket_buttons[i],"selected" if inspected_socket==i and selected.is_empty() else "ready" if not selected.is_empty() and error.is_empty() else "blocked" if not error.is_empty() else "installed" if not gem.is_empty() else "empty")
-		host.set_ui_value(socket_buttons[i],"text","插槽 %d · 镶嵌" % (i+1) if gem.is_empty() else gem_name(gem)+("\n已镶嵌 · 替换" if not selected.is_empty() else "\n已镶嵌 · 查看"))
+		host.set_ui_value(socket_buttons[i],"text",UIText.t("gem.refresh_sockets.text_03", {"i":"%d" % ((i+1))}) if gem.is_empty() else gem_name(gem)+(UIText.t("gem.refresh_sockets.text_04") if not selected.is_empty() else UIText.t("gem.refresh_sockets.text_05")))
 		host.set_ui_value(socket_buttons[i],"icon",null if gem.is_empty() else gem_texture(str(gem.id)))
-		host.set_ui_value(socket_buttons[i],"tooltip_text",(gem_name(gem)+"\n"+gem_description(gem)+"\n已镶嵌\n" if not gem.is_empty() else "")+(error if not error.is_empty() else "点击替换" if not selected.is_empty() and not gem.is_empty() else "点击镶嵌" if not selected.is_empty() else "查看详情 / 卸下"))
+		host.set_ui_value(socket_buttons[i],"tooltip_text",(gem_name(gem)+"\n"+gem_description(gem)+UIText.t("gem.refresh_sockets.text_06") if not gem.is_empty() else "")+(UIText.t(error) if not error.is_empty() else UIText.t("gem.refresh_sockets.text_07") if not selected.is_empty() and not gem.is_empty() else UIText.t("gem.refresh_sockets.text_08") if not selected.is_empty() else UIText.t("gem.refresh_sockets.text_09")))
 		host.set_ui_value(socket_buttons[i],"disabled",not error.is_empty() if not selected.is_empty() else gem.is_empty())
 
 func operate_socket(index: int) -> void:
@@ -349,9 +357,9 @@ func operate_socket(index: int) -> void:
 		return
 	var sockets: Array = entry.get("sockets",[])
 	var gem: Dictionary = sockets[index] if index < sockets.size() else {}
-	var error := socket_error(index)
+	var error := socket_error_key(index)
 	if not error.is_empty():
-		show_feedback(error,false)
+		show_feedback(UIText.t(error),false)
 		return
 	var destination := control_center(socket_buttons[index])
 	var old_texture: Texture2D = null if gem.is_empty() else gem_texture(str(gem.id))
@@ -367,17 +375,17 @@ func operate_socket(index: int) -> void:
 			inspected_socket=index
 			fly(texture,origin,destination)
 			if old_token >= 0:fly(old_texture,destination,bag_center(old_token))
-			show_feedback(("镶嵌成功" if gem.is_empty() else "替换成功 · 旧宝石已返回背包")+"\n"+stat_comparison(before,entry))
+			show_feedback((UIText.t("gem.operate_socket.text_01") if gem.is_empty() else UIText.t("gem.operate_socket.text_02"))+"\n"+stat_comparison(before,entry))
 		else:
-			show_feedback("背包已满或槽位不可用",false)
+			show_feedback(UIText.t("gem.operate_socket.text_03"),false)
 	elif not gem.is_empty():
 		if not game.unsocket_jewel(category,equipment_index,index,int(gem.token)):
-			show_feedback("宝石背包已满或插槽已变化",false)
+			show_feedback(UIText.t("gem.operate_socket.text_04"),false)
 		else:
 			inspected_socket=-1
 			result_token=old_token
 			fly(old_texture,destination,bag_center(old_token))
-			show_feedback("卸下成功 · 宝石已返回背包\n"+stat_comparison(before,entry))
+			show_feedback(UIText.t("gem.operate_socket.text_05")+stat_comparison(before,entry))
 	acting=false
 	refresh()
 	pulse(socket_buttons[index],host.CYAN)
@@ -398,17 +406,17 @@ func socket_gem(index: int) -> Dictionary:
 	var sockets: Array=game.slot_entry(category,equipment_index).get("sockets",[])
 	return sockets[index] if index >= 0 and index < sockets.size() else {}
 
-func socket_error(index: int) -> String:
+func socket_error_key(index: int) -> String:
 	var entry := game.slot_entry(category,equipment_index)
-	if entry.is_empty() or index < 0:return "请先选择装备插槽"
+	if entry.is_empty() or index < 0:return "gem.socket_error.text_01"
 	var installed := socket_gem(index)
 	if not selected.is_empty():
-		if index >= game.equipment_socket_count(entry):return "插槽尚未解锁"
-		var error := game.jewel_socket_error(category,equipment_index,int(selected[0]),index)
+		if index >= game.equipment_socket_count(entry):return "gem.socket_error.text_02"
+		var error := game.jewel_socket_error_key(category,equipment_index,int(selected[0]),index)
 		if not error.is_empty():return error
-	elif installed.is_empty():return "请先选择背包宝石"
+	elif installed.is_empty():return "gem.socket_error.text_03"
 	if not installed.is_empty() and game.profile.jewels.size() >= BattleGame.JEWEL_CAPACITY:
-		return "背包已满 · 请先腾出位置"
+		return "gem.socket_error.text_04"
 	return ""
 
 func refresh_detail(counts: Dictionary = {}) -> void:
@@ -418,22 +426,22 @@ func refresh_detail(counts: Dictionary = {}) -> void:
 	var installed := inspected_socket >= 0 and selected.is_empty() and not first.is_empty()
 	var required := int(game.db.config.get("jewelCombine",0))
 	var maxed := not first.is_empty() and int(first.level) >= game.db.jewel_max_level(str(first.id))
-	var description := "点击宝石查看当前效果与升级预览。\n\n绿色边框 ↑ 表示同级数量足够合成。\n选满%d颗同ID同等级宝石后即可合成。\n\n从装备卡进入工坊可管理镶嵌。" % required
+	var description := UIText.t("gem.refresh_detail.text_01", {"required":"%d" % (required)})
 	var comparison := ""
-	var heading := "选择一颗宝石"
+	var heading := UIText.t("gem.refresh_detail.text_02")
 	var can_combine := game.can_combine_jewels(selected)
-	var combine_reason := "已达到最高等级" if maxed else "数量不足 · 请选满%d颗同ID同等级宝石（已选%d）" % [required,selected.size()]
-	if not first.is_empty() and (first.get("locked",false) or first.get("disabled",false)):combine_reason="已锁定或禁用，不参与合成"
+	var combine_reason := UIText.t("gem.refresh.text_05") if maxed else UIText.t("gem.refresh_detail.text_03", {"required":"%d" % (required), "selected":"%d" % (selected.size())})
+	if not first.is_empty() and (first.get("locked",false) or first.get("disabled",false)):combine_reason=UIText.t("gem.refresh.text_03")
 	if not first.is_empty():
-		heading=gem_name(first)+(" · MAX" if maxed else "")
-		description="当前效果\n"+gem_description(first)+"\n\n"+("已镶嵌 · 插槽%d" % (inspected_socket+1) if installed else "未镶嵌")+" · 背包同级持有%d颗" % int(counts.get(gem_key(first),0))
+		heading=gem_name(first)+(UIText.t("gem.refresh_detail.text_04") if maxed else "")
+		description=UIText.t("gem.refresh_detail.text_05")+gem_description(first)+"\n\n"+(UIText.t("gem.refresh_detail.text_06", {"inspected_socket":"%d" % ((inspected_socket+1))}) if installed else UIText.t("gem.refresh_detail.text_07"))+UIText.t("gem.refresh_detail.text_08", {"first":"%d" % (int(counts.get(gem_key(first),0)))})
 		if maxed:
-			description+="\n已达到最高等级 · MAX"
-			if not installed:description+="\n分解返还：宝石碎片 +%.2f" % game.jewel_fragment_amount(game.jewel_compose_reward(first))
+			description+=UIText.t("gem.refresh_detail.text_09")
+			if not installed:description+=UIText.t("gem.refresh_detail.text_10", {"first":"%.2f" % (game.jewel_fragment_amount(game.jewel_compose_reward(first)))})
 		elif not installed:
 			var next := first.duplicate()
 			next.level=int(first.level)+1
-			comparison="下一等级 · Lv.%d\n%s\n\n合成需求 %d颗 · 已选 %d颗" % [int(next.level),gem_description(next),required,selected.size()]
+			comparison=UIText.t("gem.refresh_detail.text_11", {"level":"%d" % (int(next.level)), "next":"%s" % (gem_description(next)), "required":"%d" % (required), "selected":"%d" % (selected.size())})
 			if not can_combine:comparison+="\n"+combine_reason
 	if not selected.is_empty() and equipment_index >= 0:
 		var entry := game.slot_entry(category,equipment_index)
@@ -442,24 +450,24 @@ func refresh_detail(counts: Dictionary = {}) -> void:
 			# Prefer a compatible empty socket, then a compatible replacement.
 			for empty_only in [true,false]:
 				for i in game.equipment_socket_count(entry):
-					if socket_error(i).is_empty() and (not empty_only or socket_gem(i).is_empty()):
+					if socket_error_key(i).is_empty() and (not empty_only or socket_gem(i).is_empty()):
 						target_socket=i
 						break
 				if target_socket >= 0:break
 			if target_socket < 0 and game.equipment_socket_count(entry)>0:target_socket=0
 		var old := socket_gem(target_socket)
-		var error := socket_error(target_socket)
-		comparison="插槽 %d · %s\n" % [target_socket+1,"镶嵌预览" if old.is_empty() else "替换预览"]
-		comparison+=(preview_socket(first,target_socket) if error.is_empty() else error)+"\n\n"
-		if not old.is_empty():comparison+="当前："+gem_name(old)+"\n"+gem_description(old)+"\n\n"
-		comparison+="放入："+gem_name(first)+"（效果见上方）"
+		var error := socket_error_key(target_socket)
+		comparison=UIText.t("gem.refresh_detail.text_12", {"target_socket":"%d" % (target_socket+1), "else":"%s" % (UIText.t("gem.refresh_detail.text_13") if old.is_empty() else UIText.t("gem.refresh_detail.text_14"))})
+		comparison+=(preview_socket(first,target_socket) if error.is_empty() else UIText.t(error))+"\n\n"
+		if not old.is_empty():comparison+=UIText.t("gem.refresh_detail.text_15")+gem_name(old)+"\n"+gem_description(old)+"\n\n"
+		comparison+=UIText.t("gem.refresh_detail.text_16")+gem_name(first)+UIText.t("gem.refresh_detail.text_17")
 	if installed:
-		comparison="卸下预览\n"+preview_socket({},inspected_socket)+"\n\n卸下后完整返回背包。"
+		comparison=UIText.t("gem.refresh_detail.text_18")+preview_socket({},inspected_socket)+UIText.t("gem.refresh_detail.text_19")
 	if not bulk_summary.is_empty():
-		heading="一键合成完成"
+		heading=UIText.t("gem.refresh_detail.text_20")
 		description=bulk_summary
 		comparison=bulk_rewards
-	host.set_ui_value(summary,"text","合成台 %d / %d%s" % [selected.size(),required," · 可以合成 ↑" if can_combine else " · 选择同级宝石"])
+	host.set_ui_value(summary,"text",UIText.t("gem.refresh_detail.text_21", {"selected":"%d" % (selected.size()), "required":"%d" % (required), "else":"%s" % (UIText.t("gem.refresh_detail.text_22") if can_combine else UIText.t("gem.refresh_detail.text_23"))}))
 	host.set_ui_value(detail_heading,"text",heading)
 	host.set_ui_value(detail_icon,"texture",null if first.is_empty() else gem_texture(str(first.id)))
 	host.set_ui_value(detail,"text",description)
@@ -468,17 +476,17 @@ func refresh_detail(counts: Dictionary = {}) -> void:
 	if preview.get_theme_color("font_color")!=preview_color:preview.add_theme_color_override("font_color",preview_color)
 	host.set_ui_value(combine,"visible",bulk_summary.is_empty() and not first.is_empty() and not maxed and not installed)
 	host.set_ui_value(combine,"disabled",not can_combine)
-	host.set_ui_value(combine,"tooltip_text","合成后获得下一等级宝石" if can_combine else combine_reason)
+	host.set_ui_value(combine,"tooltip_text",UIText.t("gem.refresh_detail.text_24") if can_combine else combine_reason)
 	apply_palette(combine,"ready" if can_combine else "normal")
 	host.set_ui_value(compose,"visible",bulk_summary.is_empty() and not first.is_empty() and maxed and not installed)
 	host.set_ui_value(compose,"disabled",selected.size()!=1 or game.jewel_compose_reward(first)<=0)
-	host.set_ui_value(compose,"tooltip_text","永久消耗此宝石，返还详情中所示碎片；需要确认" if not compose.disabled else "请选择一颗可分解的满级宝石")
+	host.set_ui_value(compose,"tooltip_text",UIText.t("gem.refresh_detail.text_25") if not compose.disabled else UIText.t("gem.refresh_detail.text_26"))
 	var show_socket := bulk_summary.is_empty() and equipment_index >= 0 and (not selected.is_empty() or installed)
-	var reason := socket_error(target_socket if not selected.is_empty() else inspected_socket)
+	var reason := socket_error_key(target_socket if not selected.is_empty() else inspected_socket)
 	host.set_ui_value(socket_action,"visible",show_socket)
 	host.set_ui_value(socket_action,"disabled",not show_socket or not reason.is_empty())
-	host.set_ui_value(socket_action,"text","卸下" if installed else "镶嵌" if socket_gem(target_socket).is_empty() else "替换")
-	host.set_ui_value(socket_action,"tooltip_text",reason if not reason.is_empty() else "将宝石返回背包" if installed else "应用上方预览到目标插槽")
+	host.set_ui_value(socket_action,"text",UIText.t("gem.refresh_detail.text_27") if installed else UIText.t("gem.setup.text_13") if socket_gem(target_socket).is_empty() else UIText.t("gem.refresh_detail.text_28"))
+	host.set_ui_value(socket_action,"tooltip_text",UIText.t(reason) if not reason.is_empty() else UIText.t("gem.refresh_detail.text_29") if installed else UIText.t("gem.refresh_detail.text_30"))
 	apply_palette(socket_action,"ready" if not socket_action.disabled else "normal")
 
 func preview_socket(gem: Dictionary, index: int) -> String:
@@ -496,13 +504,13 @@ func stat_comparison(before: Dictionary, after: Dictionary) -> String:
 	var value := game.jewel_equipment_stat(after)
 	var lines: PackedStringArray=[]
 	if not is_equal_approx(old,value):
-		lines.append("%s  %s → %s  (%+.0f)" % ["容量" if category=="defence" else "单次伤害",host.number(old),host.number(value),value-old])
+		lines.append(UIText.t("gem.stat_comparison.text_01", {"else":"%s" % (UIText.t("gem.stat_comparison.text_02") if category=="defence" else UIText.t("gem.stat_comparison.text_03")), "old":"%s" % (host.number(old)), "value":"%s" % (host.number(value)), "old_4":"%+.0f" % (value-old)}))
 	if category=="weapons":
 		var old_crit := game.jewel_critical(before)
 		var new_crit := game.jewel_critical(after)
 		if not is_equal_approx(old_crit.x,new_crit.x):
-			lines.append("暴击率  %.2f%% → %.2f%%  (%+.2f%%)" % [old_crit.x*100,new_crit.x*100,(new_crit.x-old_crit.x)*100])
-	return "\n".join(lines) if not lines.is_empty() else "基础数值不变 · 特殊效果见宝石说明"
+			lines.append(UIText.t("gem.stat_comparison.text_04", {"x":"%.2f" % (old_crit.x*100), "x_2":"%.2f" % (new_crit.x*100), "x_3":"%+.2f" % ((new_crit.x-old_crit.x)*100)}))
+	return "\n".join(lines) if not lines.is_empty() else UIText.t("gem.stat_comparison.text_05")
 
 func refresh_metrics() -> void:
 	if not visible:return
@@ -514,8 +522,8 @@ func refresh_metrics() -> void:
 	if metric_state==state:return
 	var changed: bool = not metric_state.is_empty() and metric_state[0]!=state[0]
 	metric_state=state
-	var text := "%s宝石碎片：%.2f   /   每分钟宝石碎片获取量：%.2f\n" % ["背包已满 · " if state[4] else "",state[0],state[1]]
-	text+="每%.0f碎片生成随机宝石 · 当前倍率 %.2f%s" % [state[2],state[3]," · 暂停生成，碎片已保留" if state[4] else " · 最近60秒实际收入"]
+	var text := UIText.t("gem.refresh_metrics.text_01", {"else":"%s" % (UIText.t("gem.refresh_metrics.text_02") if state[4] else ""), "state":"%.2f" % (state[0]), "state_3":"%.2f" % (state[1])})
+	text+=UIText.t("gem.refresh_metrics.text_03", {"state":"%.0f" % (state[2]), "state_2":"%.2f" % (state[3]), "else":"%s" % (UIText.t("gem.refresh_metrics.text_04") if state[4] else UIText.t("gem.refresh_metrics.text_05"))})
 	host.set_ui_value(fragments,"text",text)
 	if changed:pulse(fragments,host.ORANGE if state[4] else host.CYAN)
 	refresh_detail()
@@ -638,8 +646,8 @@ func inventory_changed() -> void:
 	observed_serial=game.jewel_serial
 	refresh()
 	if generated_count>0 and not acting:
-		var text := "获得宝石 ×%d · 已放入背包" % generated_count
-		if game.profile.jewels.size()>=BattleGame.JEWEL_CAPACITY:text+=" · 背包已满，余下碎片保留"
+		var text := UIText.t("gem.inventory_changed.text_01", {"generated_count":"%d" % (generated_count)})
+		if game.profile.jewels.size()>=BattleGame.JEWEL_CAPACITY:text+=UIText.t("gem.inventory_changed.text_02")
 		show_feedback(text)
 		var shown:=0
 		for token in new_tokens:
@@ -653,9 +661,9 @@ func pickup_feedback(info: Dictionary) -> void:
 	var tab_bar: TabBar=host.equipment_tabs.get_tab_bar()
 	var target: Vector2 = control_center(fragments) if visible else tab_bar.global_position+tab_bar.get_tab_rect(5).get_center()
 	fly(gem_texture("1"),Vector2(info.x,info.y),target)
-	var text := "宝石碎片 +%.2f" % float(info.amount)
-	if generated_count>0:text+=" · 生成宝石 ×%d" % generated_count
-	if game.profile.jewels.size()>=BattleGame.JEWEL_CAPACITY:text+=" · 背包已满，碎片已保留"
+	var text := UIText.t("gem.pickup_feedback.text_01", {"amount":"%.2f" % (float(info.amount))})
+	if generated_count>0:text+=UIText.t("gem.pickup_feedback.text_02", {"generated_count":"%d" % (generated_count)})
+	if game.profile.jewels.size()>=BattleGame.JEWEL_CAPACITY:text+=UIText.t("gem.pickup_feedback.text_03")
 	show_feedback(text)
 	if visible:pulse(fragments,host.CYAN)
 
@@ -689,7 +697,7 @@ func combine_selected() -> void:
 	pulse(detail_icon,host.ORANGE)
 	pulse(gem_buttons.get(result_token),host.ORANGE)
 	pulse(detail_heading,host.ORANGE)
-	show_feedback("合成成功 · Lv.%d → Lv.%d\n新宝石已入背包，提升效果见上方" % [int(gem.level),int(gem.level)+1])
+	show_feedback(UIText.t("merge.combine_selected.text_01", {"level":"%d" % (int(gem.level)), "level_2":"%d" % (int(gem.level)+1)}))
 
 func combine_all_selected() -> void:
 	if acting:return
@@ -700,12 +708,12 @@ func combine_all_selected() -> void:
 		show_feedback(str(result.message),false)
 		return
 	if int(result.count)==0:
-		show_feedback("当前没有可合成宝石",false)
+		show_feedback(UIText.t("merge.combine_all_selected.text_01"),false)
 		return
-	bulk_summary="合成 %d 次 · 累计消耗 %d 颗\n（消耗包含继续参与合成的中间产物）" % [int(result.count),int(result.consumed)]
-	var lines: PackedStringArray=["最终获得"]
+	bulk_summary=UIText.t("merge.combine_all_selected.text_02", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed))})
+	var lines: PackedStringArray=[UIText.t("merge.combine_all_selected.text_03")]
 	for reward in result.results:
-		lines.append("%s ×%d" % [gem_name(reward),int(reward.count)])
+		lines.append(UIText.t("merge.combine_all_selected.text_04", {"reward":"%s" % (gem_name(reward)), "count":"%d" % (int(reward.count))}))
 	bulk_rewards="\n".join(lines)
 	result_token=-1
 	for token in result.tokens:
@@ -714,7 +722,7 @@ func combine_all_selected() -> void:
 		pulse(gem_buttons.get(token),host.ORANGE)
 	refresh_detail()
 	detail_scroll.scroll_vertical=0
-	show_feedback("合成 %d 次 · 累计消耗 %d 颗\n%s" % [int(result.count),int(result.consumed),"、".join(lines.slice(1))])
+	show_feedback(UIText.t("merge.combine_all_selected.text_05", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed)), "slice":"%s" % ("、".join(lines.slice(1)))}))
 	pulse(detail_icon,host.ORANGE)
 
 func request_compose() -> void:
@@ -722,7 +730,7 @@ func request_compose() -> void:
 	var gem := game.jewel_inventory(int(selected[0]))
 	if gem.is_empty():return
 	pending_compose=int(gem.token)
-	compose_dialog.dialog_text="永久分解 %s？\n返还宝石碎片 +%.2f\n满足数量的碎片会自动生成新宝石。" % [gem_name(gem),game.jewel_fragment_amount(game.jewel_compose_reward(gem))]
+	compose_dialog.dialog_text=UIText.t("merge.request_compose.text_01", {"gem":"%s" % (gem_name(gem)), "gem_2":"%.2f" % (game.jewel_fragment_amount(game.jewel_compose_reward(gem)))})
 	compose_dialog.popup_centered(Vector2i(480,180))
 
 func compose_selected() -> void:
@@ -736,8 +744,8 @@ func compose_selected() -> void:
 	var ok := game.decompose_jewel(token)
 	acting=false
 	if not ok:
-		show_feedback("分解条件已变化，宝石保留",false)
+		show_feedback(UIText.t("merge.compose_selected.text_01"),false)
 		return
 	fly(gem_texture(str(gem.id)),origin,control_center(fragments))
-	show_feedback("分解成功 · 碎片 +%.2f%s" % [reward," · 生成%d颗宝石" % generated_count if generated_count>0 else ""])
+	show_feedback(UIText.t("merge.compose_selected.text_02", {"reward":"%.2f" % (reward), "else":"%s" % (UIText.t("merge.compose_selected.text_03", {"generated_count":"%d" % (generated_count)}) if generated_count>0 else "")}))
 	pulse(fragments,host.ORANGE)

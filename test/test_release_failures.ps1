@@ -7,6 +7,7 @@ New-Item -ItemType Directory -Force -Path "$project/tools", "$sandbox/test", "$s
 Copy-Item -LiteralPath "$root/build_release.bat" -Destination $sandbox
 Copy-Item -LiteralPath "$root/space-battleship/tools/build_release.ps1" -Destination "$project/tools"
 Set-Content -LiteralPath "$sandbox/release/OldBuild.exe" -Value 'old build fixture'
+Set-Content -LiteralPath "$project/project.godot" -Value 'config_version=5'
 $results = @()
 function Expect-Failure([string]$name, [string]$stage) {
     & cmd.exe /c "`"$sandbox/build_release.bat`" --no-pause" > "$sandbox/$name.log" 2>&1
@@ -36,7 +37,9 @@ Copy-Item -LiteralPath "$root/space-battleship/engine/templates/4.7.2.stable/win
 Copy-Item -LiteralPath "$root/space-battleship/export_presets.cfg" -Destination $project
 Copy-Item -LiteralPath "$root/space-battleship/project.godot" -Destination $project
 Copy-Item -LiteralPath "$root/space-battleship/main.tscn" -Destination $project
-Set-Content -LiteralPath "$project/data/game_data.json" -Value '{}'
+foreach ($name in @('game_data.json','ui_text.json','ui_text_contract.json')) {
+    Set-Content -LiteralPath "$project/data/$name" -Value '{}'
+}
 Set-Content -LiteralPath "$project/scripts/main.gd" -Value "extends Node2D`nTHIS IS NOT VALID GDSCRIPT"
 Expect-Failure 'script-import-error' 'Import resources / compile scripts'
 Set-Content -LiteralPath "$project/scripts/main.gd" -Value 'extends Node2D'

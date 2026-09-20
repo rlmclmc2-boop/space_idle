@@ -7,6 +7,7 @@
 | 任务 | 最少入口 |
 |---|---|
 | 启动/主循环/UI | `project.godot → main.tscn → scripts/main.gd`；`_ready/_process/on_event/build_ui` |
+| UI 文案/参数保护 | `UI文案表.bat → tools/ui_text_editor.py/.html → data/ui_text.json`；`scripts/ui_text.gd` 与 `tools/ui_text.py` 读取；独立 `data/ui_text_contract.json` 维护必需参数、配置 ID 显示绑定和说明公式；操作见 `docs/UI_TEXT.md` |
 | Windows 单文件发布 | `../build_release.bat → tools/build_release.ps1 → export_presets.cfg`；模板准备 `tools/install_release_template.ps1`；`../test/verify_release.gd` 与 `../test/test_release_failures.ps1`；操作见 README 的 Windows release |
 | 领域状态/计算 | `scripts/game.gd`（BattleGame，RefCounted）；搜对应函数，不默认读全文 |
 | 数据读取 | `scripts/database.gd`（ShipDatabase，RefCounted）；`equip/enemy_weapon/ratio` |
@@ -28,13 +29,15 @@
 
 main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知main。活动流为TRAVEL→COMBAT→TRAVEL/LEVEL_CLEAR；死亡RETREAT→TRAVEL，paused/pending_unlocks额外控制。旧枚举不等于现存页面（U-011）。
 
+UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初始化；QA 场景重启会读取新文案。UIText 只保存只读文案/参数契约和已编译的占位符模式，不是游戏状态或刷新管理器。参数结果由既有 NumberFormat/format_description/gem_formula 生成，再单次替换到文案；完整配置 JSON 不被改写。文案编辑器只写 text，校验成功后保存备份并原子替换；独立契约阻止通过修改“参数”展示列绕过校验。图形元素、颜色、禁用逻辑仍按业务状态决定，宝石错误使用稳定 key 而非错误文字非空性。发布 staging 和 include_filter 均包含两份文案 JSON。
+
 装备卡视觉：main.gd的equipment_skin/skin_equipment_button读取assets/ui/equipment中的九宫格切角SVG；equipment_stat_text/equipment_detail_text只读现有属性。两页共用664×112布局和原卡片身份；武器图标使用已有Atlas区域，防御使用独立矢量图标。武器底条仍由可见页冷却更新，防御等级底条只在对应属性快照变化时写入；无新增持续动画或刷新框架。验证入口test_upgrade_ui/test_local_ui。
 
 装备升级事件按slot走`main.refresh_equipment_cards(slot)`；`refresh_visible_cards`只检查当前可见页，切页立即补齐。资源影响消费按钮，科学家分配影响空闲数/分配按钮及对应进度，科技增益影响对应类别装备；值相同不写控件。MAX仍在点击时枚举当前预算。
 
 `refresh_structure`只替换装备类型/数量变化的槽卡；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。战舰草稿编辑保留选择器，候选舰变化只重建候选槽区。`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
 
-导航不遍历ui共同父节点。可见性按明确依赖分组：help_button承载解锁可见性快照（帮助/资源模式/继续），help_close_button独立判断帮助关闭按钮，guard_settings承载普通导航可见性快照（驻守/跃迁/设置/页签容器/音效），advance_button仅跟踪过关按钮显示结果。驻守文字/禁用、音效文字、设置勾选由各自控件/菜单快照限定；同一显示结果不进入属性更新。loop_select快照只包含通关列表，结构变化仅增减选项及修正受影响项，目标选择独立select，不clear列表。快照随控件重建释放；宝石及其他弹窗不参与导航可见性管理。
+导航不遍历ui共同父节点。可见性按明确依赖分组：help_button承载解锁可见性快照（帮助/资源模式/继续），help_close_button独立判断帮助关闭按钮，guard_settings承载普通导航可见性快照（驻守/跃迁/设置/页签容器/音效），advance_button仅跟踪过关按钮显示结果。驻守文字/禁用、音效文字、设置勾选由各自控件/菜单快照限定；同一显示结果不进入属性更新。loop_select快照包含通关列表与当前stage，结构变化仅增减选项及修正受影响项，目标选择独立select，不clear列表；allow_reselect允许同一目标再次跃迁。limit_warp_popup在弹出时按主题行高限制10行，复用PopupMenu自带滚动。快照随控件重建释放；宝石及其他弹窗不参与导航可见性管理。
 
 `create_draw_layers/refresh_draw_layers`分离静态背景、静态边框标题、星空、战场、资源栏和覆盖层；只有战场/星空动画保留必要连续绘制，其余按显示依赖变化重绘。绘制辅助函数使用当前draw_surface，根节点不再逐帧queue_redraw。UI依赖快照存于所属控件的refresh_state元数据，key为各刷新函数显式列出的输入；输入变化失效、控件替换自然释放，仅UI读写，不回写game/profile，隐藏页在显示时补齐。按钮display_level只控制等级文案/费用提示，不缓存购买结果。
 
@@ -67,7 +70,7 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 - `game.gd:load_progress/save_progress`；SAVE_PATH为`user://progress.json`，version仍为1。先写`.tmp`再rename；失败事件不代表所有故障可恢复（STATUS U-008）。
 - 旧levels仅在加载时给首个同名已装槽位优先赋级；缺失/非数值取1，数值转整数并夹取1到配置上限，其他同名槽位保留各自等级；空槽不会被旧等级重装。缺loadout时构造默认布局。
 - 保存临时字典从首槽派生兼容levels，未安装派生1；不写回运行profile，不做新旧状态双向同步。hightechVersion=2控制科技旧档迁移，charge缺字段建零级未启用状态。
-- 加载顺序：load_progress（含离线资源）→advance_charge→advance_hightech→save_progress→reset_player；领域语义见PROJECT。驻守位置/选择持久，实体、当前距离、弹道与冷却不作为恢复现场保存。
+- 加载顺序：load_progress（含离线资源）→advance_charge→advance_hightech→save_progress→reset_player，随后main._ready调用resume_progress；领域语义见PROJECT。save_progress在存档投影journey中保存stage/distance/groupIndex/state、驻守到达标记、回退末波标记和待确认解锁；死亡回退投影为目的地距离。load_journey校验关卡、节点、距离与状态后暂存在profile，避免初始化离线结算保存覆盖进度；resume_progress消费并移除该临时字段，以start的checkpoint参数恢复，普通start/主动跃迁仍从零开始。运行时stage/distance/group_index保持唯一权威，不持续同步profile副本。敌人实体、弹道与冷却不保存；旧档无journey时沿用原恢复入口。专项为test_journey_resume.gd与test_warp_ui.gd。
 - main._process截断delta，再按speed拆子步调用tick；研究/充能用模拟时间，收入窗口用现实时间，周期保存按dt/speed累计。具体截断/子步值查`test_time_steps.gd`，不另维护常量表。
 
 ## 数据流与来源定位

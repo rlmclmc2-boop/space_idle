@@ -17,6 +17,9 @@ func verify() -> void:
 	check(not FileAccess.file_exists("res://scripts/config_panel.gd"), "QA tool leaked into pack")
 	check(not FileAccess.file_exists("res://export_presets.cfg"), "Build paths leaked into pack")
 	check(FileAccess.file_exists("res://assets/fonts/OFL.txt"), "Missing bundled font license")
+	check(FileAccess.file_exists("res://data/ui_text.json") and FileAccess.file_exists("res://data/ui_text_contract.json"), "Missing embedded UI text catalog")
+	check(UIText.reload_catalog().is_empty(), "Embedded UI text contract invalid")
+	check(UIText.t("battle.hp",{"current_hp":850,"max_hp":1000}).contains("850"), "Embedded UI text interpolation failed")
 	var scene = load("res://main.tscn")
 	if scene == null:
 		failures.append("Cannot load embedded main scene")

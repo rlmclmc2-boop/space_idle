@@ -41,6 +41,20 @@ func run() -> void:
 	scene.db.data.charge.values()[0].unlock=0
 	scene.build_ui()
 	check(not scene.equipment_tabs.is_tab_hidden(3),"One unlocked charge item unlocks its tab")
+	var keys: Array = scene.charge_cards.keys()
+	var first_card: Node = scene.charge_cards[keys[0]].title.get_parent()
+	var second_card: Node = scene.charge_cards[keys[1]].title.get_parent()
+	var tabs: Node = scene.equipment_tabs
+	check(first_card.visible and not second_card.visible,"Only unlocked charge cards occupy layout")
+	scene.equipment_tabs.current_tab=3
+	scene.game.profile.cleared=[1]
+	scene.refresh_structure()
+	scene.refresh_visible_cards()
+	check(second_card.visible and scene.charge_cards[keys[0]].title.get_parent()==first_card and scene.equipment_tabs==tabs,"Unlock reveals card locally and preserves existing controls")
+	check(scene.equipment_tabs.current_tab==3,"Local charge unlock preserves selected tab")
+	scene.game.profile.cleared=[]
+	scene.refresh_structure()
+	check(not second_card.visible and first_card.visible,"Relocked individual charge hides locally")
 	scene.game.profile.cleared=[2]
 	scene.build_ui()
 	check(not scene.equipment_tabs.is_tab_hidden(2),"Hightech follows same visibility rule")
@@ -63,6 +77,8 @@ func run() -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://tabs-before-unlock.png")
 	scene.game.profile.cleared=[1]
+	scene.db.data.charge.values()[1].unlock=2
+	scene.db.data.charge.values()[2].unlock=3
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=3
 	scene.queue_redraw()

@@ -2,8 +2,8 @@ extends Control
 ## Standalone authoring scene: never instantiates BattleGame or reads player saves.
 
 const TABLES := ["mon", "monGroup", "level"]
-const TITLES := ["敌方飞行器", "敌方飞行器组", "关卡配置"]
-const LABELS := {"id":"ID", "des":"描述", "equipment":"武器 name|数量，逗号分隔", "dmgMultiple":"伤害倍率", "health":"基础生命", "armourType":"抗性 0=无 / 1=能量 / 2=物理", "res":"掉落 资源ID,数量,概率", "size":"外观尺寸等级（每舰固定占1格）", "length":"关卡长度", "atkRatio":"攻击倍率", "lifeRatio":"生命倍率", "resRatio":"资源倍率", "jewelRatio":"宝石碎片倍率"}
+static var TITLES := [UIText.t("debug.global.text_01"), UIText.t("debug.global.text_02"), UIText.t("debug.global.text_03")]
+static var LABELS := {"id":UIText.t("debug.global.text_04"), "des":UIText.t("debug.global.text_05"), "equipment":UIText.t("debug.global.text_06"), "dmgMultiple":UIText.t("debug.global.text_07"), "health":UIText.t("debug.global.text_08"), "armourType":UIText.t("debug.global.text_09"), "res":UIText.t("debug.global.text_10"), "size":UIText.t("debug.global.text_11"), "length":UIText.t("debug.global.text_12"), "atkRatio":UIText.t("debug.global.text_13"), "lifeRatio":UIText.t("debug.global.text_14"), "resRatio":UIText.t("debug.global.text_15"), "jewelRatio":UIText.t("debug.global.text_16")}
 const NUMBERS := ["id", "dmgMultiple", "health", "armourType", "size", "length", "atkRatio", "lifeRatio", "resRatio", "jewelRatio"]
 var document: Dictionary = {}
 var table := "mon"
@@ -27,7 +27,7 @@ var request_path := ""
 var confirmation: ConfirmationDialog
 
 func _ready() -> void:
-	get_window().title = "太空战舰 · 关卡编辑器"
+	get_window().title = UIText.t("debug._ready.text_21")
 	get_window().min_size = Vector2i(1100, 760)
 	get_tree().auto_accept_quit = false
 	get_window().close_requested.connect(close_editor)
@@ -45,18 +45,18 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 12)
 	margin.add_child(column)
 	var heading := Label.new()
-	heading.text = "关卡编辑器    /    太空战舰"
+	heading.text = UIText.t("debug._ready.text_22")
 	heading.add_theme_font_size_override("font_size", 28)
 	column.add_child(heading)
 	var help := Label.new()
-	help.text = "编辑分表 → 校验 → 保存并导入 → QA 重启游戏。切换记录自动保留草稿，保存前不改文件。"
+	help.text = UIText.t("debug._ready.text_23")
 	column.add_child(help)
 	toolbar = HBoxContainer.new()
 	column.add_child(toolbar)
-	button(toolbar, "重新加载", reload_document)
-	button(toolbar, "校验草稿", func(): run_action("validate"))
-	button(toolbar, "保存并导入", func(): run_action("save"))
-	button(toolbar, "打开分表目录", func(): OS.shell_open(ProjectSettings.globalize_path("res://config_excel")))
+	button(toolbar, UIText.t("debug._ready.text_24"), reload_document)
+	button(toolbar, UIText.t("debug._ready.text_25"), func(): run_action("validate"))
+	button(toolbar, UIText.t("debug._ready.text_26"), func(): run_action("save"))
+	button(toolbar, UIText.t("debug._ready.text_07"), func(): OS.shell_open(ProjectSettings.globalize_path("res://config_excel")))
 	tabs = TabBar.new()
 	for title in TITLES: tabs.add_tab(title)
 	column.add_child(tabs)
@@ -74,7 +74,7 @@ func _ready() -> void:
 	left.custom_minimum_size.x = 290
 	split.add_child(left)
 	search = LineEdit.new()
-	search.placeholder_text = "搜索 ID、描述或配置内容"
+	search.placeholder_text = UIText.t("debug._ready.text_27")
 	search.text_changed.connect(func(_text): refresh_list())
 	left.add_child(search)
 	listing = ItemList.new()
@@ -85,9 +85,9 @@ func _ready() -> void:
 	left.add_child(listing)
 	var actions := HBoxContainer.new()
 	left.add_child(actions)
-	button(actions, "新增", func(): add_record(false))
-	button(actions, "复制", func(): add_record(true))
-	button(actions, "删除", delete_record)
+	button(actions, UIText.t("debug._ready.text_28"), func(): add_record(false))
+	button(actions, UIText.t("debug._ready.text_29"), func(): add_record(true))
+	button(actions, UIText.t("debug._ready.text_30"), delete_record)
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(right)
@@ -106,7 +106,9 @@ func _ready() -> void:
 	status.custom_minimum_size.y = 105
 	column.add_child(status)
 	confirmation = ConfirmationDialog.new()
-	confirmation.title = "确认操作"
+	confirmation.ok_button_text = UIText.t("system.confirm")
+	confirmation.cancel_button_text = UIText.t("system.cancel")
+	confirmation.title = UIText.t("debug._ready.text_31")
 	add_child(confirmation)
 	run_action("load")
 
@@ -130,7 +132,7 @@ func refresh_list() -> void:
 	for index in range(rows().size()):
 		var row: Dictionary = rows()[index]
 		if not search.text.is_empty() and not JSON.stringify(row).to_lower().contains(search.text.to_lower()): continue
-		var text := "%s  ·  %s" % [display_value(row.id), str(row.get("des", "关卡 " + display_value(row.id)))]
+		var text := UIText.t("debug.refresh_list.text_01", {"id":"%s" % (display_value(row.id)), "id_2":"%s" % (str(row.get("des", UIText.t("debug.refresh_list.text_02") + display_value(row.id))))})
 		listing.add_item(text)
 		listing.set_item_metadata(listing.item_count - 1, index)
 		if index == selected: listing.select(listing.item_count - 1)
@@ -147,7 +149,7 @@ func show_record(index: int) -> void:
 	selected = index
 	clear_form()
 	if index < 0 or index >= rows().size():
-		preview.text = "暂无记录。点击新增开始配置。"
+		preview.text = UIText.t("debug.show_record.text_01")
 		return
 	var record: Dictionary = rows()[index]
 	for key in document.tables[table].headers:
@@ -167,7 +169,7 @@ func show_record(index: int) -> void:
 		fields[key] = entry
 	if table == "monGroup":
 		var hint := Label.new()
-		hint.text = "十格编队（从上到下）；每艘敌舰只占一格，size仅决定外观。"
+		hint.text = UIText.t("debug.show_record.text_02")
 		form.add_child(hint)
 		var values := clean(str(record.mon)).split(",")
 		var grid := GridContainer.new()
@@ -175,27 +177,27 @@ func show_record(index: int) -> void:
 		form.add_child(grid)
 		for i in range(10):
 			var label := Label.new()
-			label.text = "第 %02d 格   " % (i + 1)
+			label.text = UIText.t("debug.show_record.text_03", {"i":"%02d" % ((i + 1))})
 			grid.add_child(label)
 			var option := choices("mon", values[i] if i < values.size() else "null", true)
 			grid.add_child(option)
 			slots.append(option)
 	elif table == "level":
 		var hint := Label.new()
-		hint.text = "遭遇位置 0–1（0.1 = 10%），按位置升序；最后一场为 BOSS 战。"
+		hint.text = UIText.t("debug.show_record.text_04")
 		form.add_child(hint)
 		var formula_hint := Label.new()
-		formula_hint.text = "攻击、生命、资源倍率由分表维护，编辑器保留原值，不编辑或校验。"
+		formula_hint.text = UIText.t("debug.show_record.text_05")
 		form.add_child(formula_hint)
 		encounter_box = VBoxContainer.new()
 		form.add_child(encounter_box)
 		for value in clean(str(record.monGroup)).split(","):
 			var parts := value.split("|")
 			if parts.size() == 2: add_encounter(parts[0], parts[1])
-		button(form, "＋ 添加遭遇", func():
+		button(form, UIText.t("debug.show_record.text_06"), func():
 			add_encounter("", "0.5")
 			dirty = true)
-	button(form, "更新预览 / 保留本条草稿", func():
+	button(form, UIText.t("debug.show_record.text_07"), func():
 		stash()
 		refresh_list()
 		update_preview())
@@ -209,10 +211,10 @@ func choices(kind: String, value: String, empty: bool = false) -> OptionButton:
 	var choice := OptionButton.new()
 	choice.custom_minimum_size.x = 300
 	if empty:
-		choice.add_item("空格")
+		choice.add_item(UIText.t("debug.choices.text_01"))
 		choice.set_item_metadata(0, "null")
 	for row in document.tables[kind].rows:
-		choice.add_item("%s · %s" % [display_value(row.id), str(row.get("des", ""))])
+		choice.add_item(UIText.t("debug.choices.text_02", {"id":"%s" % (display_value(row.id)), "des":"%s" % (str(row.get("des", "")))}))
 		choice.set_item_metadata(choice.item_count - 1, display_value(row.id))
 	var found := false
 	for i in range(choice.item_count):
@@ -220,7 +222,7 @@ func choices(kind: String, value: String, empty: bool = false) -> OptionButton:
 			choice.select(i)
 			found = true
 	if not found and not value.is_empty():
-		choice.add_item("无效引用：" + value)
+		choice.add_item(UIText.t("debug.choices.text_03") + value)
 		choice.set_item_metadata(choice.item_count - 1, value)
 		choice.select(choice.item_count - 1)
 	choice.item_selected.connect(func(_i): dirty = true)
@@ -238,7 +240,7 @@ func add_encounter(id: String, position: String) -> void:
 	line.add_child(entry)
 	var item := {"node": line, "choice": choice, "position": entry}
 	encounters.append(item)
-	button(line, "移除", func():
+	button(line, UIText.t("debug.add_encounter.text_01"), func():
 		encounters.erase(item)
 		line.queue_free()
 		dirty = true)
@@ -269,9 +271,9 @@ func add_record(duplicate: bool) -> void:
 	if duplicate and selected >= 0:
 		row = rows()[selected].duplicate(true)
 	elif table == "mon":
-		row = {"des":"新飞行器", "equipment":"{laser_mon|1}", "dmgMultiple":1, "health":100, "armourType":0, "res":"{1,10,1}", "size":1}
+		row = {"des":UIText.t("debug.add_record.text_01"), "equipment":"{laser_mon|1}", "dmgMultiple":1, "health":100, "armourType":0, "res":"{1,10,1}", "size":1}
 	elif table == "monGroup":
-		row = {"des":"新编队", "mon":"{null,null,null,null,null,null,null,null,null,null}"}
+		row = {"des":UIText.t("debug.add_record.text_02"), "mon":"{null,null,null,null,null,null,null,null,null,null}"}
 	else:
 		row = {"length":1000, "monGroup":"", "atkRatio":1, "lifeRatio":1, "resRatio":1, "jewelRatio":1}
 	var next_id := 1
@@ -290,13 +292,13 @@ func references() -> String:
 		for row in document.tables.monGroup.rows:
 			for token in clean(str(row.mon)).split(","):
 				if token.strip_edges() == id:
-					used.append("编队 " + display_value(row.id))
+					used.append(UIText.t("debug.references.text_01") + display_value(row.id))
 					break
 	elif table == "monGroup":
 		for row in document.tables.level.rows:
 			for token in clean(str(row.monGroup)).split(","):
 				if token.split("|")[0].strip_edges() == id:
-					used.append("关卡 " + display_value(row.id))
+					used.append(UIText.t("debug.refresh_list.text_02") + display_value(row.id))
 					break
 	return "、".join(used)
 
@@ -305,9 +307,9 @@ func delete_record() -> void:
 	if selected < 0: return
 	var used := references()
 	if not used.is_empty():
-		status.text = "无法删除：被 " + used + " 引用。请先修改这些记录。"
+		status.text = UIText.t("debug.delete_record.text_01") + used + UIText.t("debug.delete_record.text_02")
 		return
-	confirm_action("删除当前记录？删除保存在草稿中。删关卡后需手动保证 ID 连续并核对公式及解锁引用。", func():
+	confirm_action(UIText.t("debug.delete_record.text_03"), func():
 		rows().remove_at(selected)
 		dirty = true
 		show_record(mini(selected, rows().size()-1))
@@ -317,14 +319,14 @@ func update_preview() -> void:
 	if selected < 0: return
 	var row: Dictionary = rows()[selected]
 	var used := references()
-	preview.text = "引用：" + (used if not used.is_empty() else "无上游引用") + "\n"
+	preview.text = UIText.t("debug.update_preview.text_01") + (used if not used.is_empty() else UIText.t("debug.update_preview.text_02")) + "\n"
 	if table == "monGroup":
 		var values := clean(str(row.mon)).split(",")
-		preview.text += "从上到下：  " + "  →  ".join(values)
+		preview.text += UIText.t("debug.update_preview.text_03") + "  →  ".join(values)
 	elif table == "level":
-		preview.text += "起点 0%  →  " + clean(str(row.monGroup)).replace(",", "  →  ") + "  →  终点100%\n遭遇格式：编队ID | 长度比例；最后一场全灭后通关"
+		preview.text += UIText.t("debug.update_preview.text_04") + clean(str(row.monGroup)).replace(",", "  →  ") + UIText.t("debug.update_preview.text_05")
 	else:
-		preview.text += "武器：" + str(row.get("equipment", "")) + "    掉落：" + str(row.get("res", ""))
+		preview.text += UIText.t("debug.update_preview.text_06") + str(row.get("equipment", "")) + UIText.t("debug.update_preview.text_07") + str(row.get("res", ""))
 
 func confirm_action(message: String, action: Callable) -> void:
 	for connection in confirmation.confirmed.get_connections(): confirmation.confirmed.disconnect(connection.callable)
@@ -333,12 +335,12 @@ func confirm_action(message: String, action: Callable) -> void:
 	confirmation.popup_centered(Vector2i(720, 180))
 
 func reload_document() -> void:
-	if dirty: confirm_action("放弃所有未保存草稿，重新读取分表？", func(): run_action("load"))
+	if dirty: confirm_action(UIText.t("debug.reload_document.text_01"), func(): run_action("load"))
 	else: run_action("load")
 
 func close_editor() -> void:
 	if worker != null: return
-	if dirty: confirm_action("仍有未保存草稿，确定关闭编辑器？", func(): get_tree().quit())
+	if dirty: confirm_action(UIText.t("debug.close_editor.text_01"), func(): get_tree().quit())
 	else: get_tree().quit()
 
 func run_action(action: String) -> void:
@@ -352,7 +354,7 @@ func run_action(action: String) -> void:
 		request_path = ProjectSettings.globalize_path("res://.runtime/level-editor-%d.json" % OS.get_process_id())
 		var file := FileAccess.open(request_path, FileAccess.WRITE)
 		if file == null:
-			status.text = "无法写入编辑器草稿请求：" + str(FileAccess.get_open_error())
+			status.text = UIText.t("debug.run_action.text_01") + str(FileAccess.get_open_error())
 			return
 		file.store_string(JSON.stringify(document))
 		file.close()
@@ -361,7 +363,7 @@ func run_action(action: String) -> void:
 	worker = Thread.new()
 	worker.start(func(): return OS.execute(python, args, output, true, false))
 	set_busy(true)
-	status.text = "正在" + {"load":"读取分表", "save":"校验、备份并保存", "validate":"校验草稿"}[action] + "…"
+	status.text = UIText.t("debug.run_action.text_02") + {"load":UIText.t("debug.run_action.text_03"), "save":UIText.t("debug.run_action.text_04"), "validate":UIText.t("debug._ready.text_25")}[action] + "…"
 
 func set_busy(busy: bool) -> void:
 	for b in toolbar.get_children(): b.disabled = busy
@@ -386,16 +388,16 @@ func _process(_delta: float) -> void:
 	set_busy(false)
 	var parsed = JSON.parse_string("".join(output).strip_edges())
 	if not parsed is Dictionary:
-		status.text = "工具启动失败。请确认 Python 已安装 openpyxl / lxml。\n" + "".join(output)
+		status.text = UIText.t("debug._process.text_11") + "".join(output)
 		return
 	if not parsed.get("ok", false):
-		status.text = "未保存：" + str(parsed.get("message", "未知错误"))
+		status.text = UIText.t("debug._process.text_12") + str(parsed.get("message", UIText.t("debug._process.text_13")))
 		return
 	if parsed.has("tables"):
 		document = parsed
 		dirty = false
 		show_record(clampi(selected, 0, rows().size()-1) if rows().size() else -1)
 		refresh_list()
-	status.text = str(parsed.get("message", "已读取分表。支持新增、复制、搜索、编辑、删除；数字字段也可填写本表公式。"))
-	for warning in parsed.get("warnings", []): status.text += "\n提示：" + str(warning)
-	if parsed.has("backup"): status.text += "\n备份：" + str(parsed.backup)
+	status.text = str(parsed.get("message", UIText.t("debug._process.text_14")))
+	for warning in parsed.get("warnings", []): status.text += UIText.t("debug._process.text_15") + str(warning)
+	if parsed.has("backup"): status.text += UIText.t("debug._process.text_16") + str(parsed.backup)

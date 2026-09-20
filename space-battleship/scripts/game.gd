@@ -137,6 +137,7 @@ func load_progress() -> void:
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
 	rebuild_unlocks()
+	load_journey(raw.get("journey", {}))
 	var selected = raw.get("loopLevel", 0)
 	profile.loopLevel = int(selected) if (selected is int or selected is float) and profile.cleared.has(int(selected)) else 0
 	var guard_stage = raw.get("guardStage", 0)
@@ -167,6 +168,42 @@ func load_progress() -> void:
 	load_charge(raw)
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
 	generate_jewels()
+
+func load_journey(value) -> void:
+	if not value is Dictionary:
+		return
+	for key in ["stage", "groupIndex", "state"]:
+		if not nonnegative_number(value.get(key)) or float(value[key]) != floorf(float(value[key])):
+			return
+	if value.stage < 1 or value.stage > profile.highestLevel:
+		return
+	var level: Dictionary = db.levels[int(value.stage)-1]
+	if not nonnegative_number(value.get("distance")) or value.distance > float(level.length) or value.groupIndex > level.groups.size():
+		return
+	if not int(value.state) in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
+		return
+	if int(value.state) == State.COMBAT and value.groupIndex == 0:
+		return
+	if int(value.state) == State.LEVEL_CLEAR and (value.groupIndex != level.groups.size() or not profile.cleared.has(int(value.stage))):
+		return
+	profile.journey = {"stage":int(value.stage), "groupIndex":int(value.groupIndex), "distance":float(value.distance), "state":int(value.state), "guardArrived":value.get("guardArrived") == true, "retreatBossPending":value.get("retreatBossPending") == true}
+	profile.journey.pendingUnlocks = []
+	if value.get("pendingUnlocks") is Array:
+		for key in value.pendingUnlocks:
+			if key is String and profile.unlocked.has(key) and not profile.journey.pendingUnlocks.has(key):
+				profile.journey.pendingUnlocks.append(key)
+
+func resume_progress() -> void:
+	var checkpoint: Dictionary = profile.get("journey", {})
+	profile.erase("journey")
+	if not checkpoint.is_empty():
+		start(int(checkpoint.stage), bool(profile.loop), checkpoint)
+	else:
+		# Old saves retain their previous startup and guard behavior.
+		start(int(profile.guardStage) if profile.loop else int(profile.highestLevel), bool(profile.loop))
+		if profile.loop:
+			resume_guard()
+			save_progress()
 
 func settle_offline_resources(raw: Dictionary, now: float) -> void:
 	offline_rewards.clear()
@@ -287,6 +324,10 @@ func save_progress() -> void:
 		return
 	# Compatibility projection only; never install name-based levels in runtime.
 	var saved := profile.duplicate()
+	if state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
+		# Retreat resumes at its destination, never at the defeated encounter.
+		saved.journey = {"stage":stage, "distance":retreat_target if state == State.RETREAT else distance, "groupIndex":group_index, "state":int(state), "guardArrived":guard_arrived, "retreatBossPending":retreat_boss_pending}
+		saved.journey.pendingUnlocks = pending_unlocks.duplicate()
 	saved.jewels = profile.jewels.map(func(gem):return {"id":gem.id,"level":gem.level})
 	saved.loadout = profile.loadout.duplicate(true)
 	for category in ["weapons", "defence"]:
@@ -330,7 +371,7 @@ func ship_movement() -> float:
 	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
 
 func ship_name() -> String:
-	return str(db.ship(str(profile.get("selectedShip", first_ship()))).get("des", profile.get("selectedShip", first_ship())))
+	return UIText.data_text("ship",str(profile.get("selectedShip",first_ship())),"des")
 
 func slot_entry(category: String, index: int) -> Dictionary:
 	var entries := loadout_entries(category)
@@ -525,7 +566,7 @@ func charge_description(key: String) -> String:
 	var row: Dictionary = db.data.charge[key].duplicate()
 	for i in range(1,8):
 		row["para"+str(i)] = row.get("para_"+str(i),0)
-	return format_description(row,str(row.des),int(charge_job(key).level))
+	return ui_description(UIText.data_key("charge",key,"des"),row,int(charge_job(key).level))
 
 func toggle_charge(key: String) -> bool:
 	if not charge_unlocked(key):
@@ -684,9 +725,16 @@ func description_number(value: float) -> String:
 
 func hightech_description(key: String, now := -1.0) -> String:
 	if hightech_level(key)==0:
-		return "未研发，无效果"
+		return UIText.t("system.hightech_description.text_01")
 	var row: Dictionary = db.data.hightech[key]
-	return format_description(row,str(row.get("description", "")),hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
+	return ui_description(UIText.data_key("hightech",key,"description"),row,hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
+
+func ui_description(text_key: String, row: Dictionary, level: int, minute_income := 0.0, excluded_income := 0.0) -> String:
+	var values := {}
+	var formulas := UIText.formulas(text_key)
+	for i in formulas.size():
+		values["effect_%d" % (i+1)] = format_description(row,str(formulas[i]),level,minute_income,excluded_income)
+	return UIText.t(text_key,values)
 
 func format_description(row: Dictionary, template: String, level: int, minute_income := 0.0, excluded_income := 0.0) -> String:
 	var result := template
@@ -994,7 +1042,7 @@ func change_state(next: State) -> void:
 	event.emit("state", {"state":state})
 
 func select_loop_level(level: int) -> bool:
-	if not profile.cleared.has(level):
+	if level != stage and not profile.cleared.has(level):
 		return false
 	profile.loopLevel = level
 	return start(level, false)
@@ -1055,7 +1103,7 @@ func advance_after_clear() -> bool:
 func next_stage() -> int:
 	return mini(stage + 1, db.levels.size())
 
-func start(level: int, loop_mode: bool) -> bool:
+func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if level < 1 or level > int(profile.highestLevel):
 		return false
 	settle_drops()
@@ -1078,6 +1126,25 @@ func start(level: int, loop_mode: bool) -> bool:
 		guard_index = int(profile.get("guardIndex", 0))
 	run_resources = {"1":0.0,"2":0.0}
 	change_state(State.TRAVEL)
+	if not checkpoint.is_empty():
+		distance = float(checkpoint.distance)
+		group_index = int(checkpoint.groupIndex)
+		retreat_boss_pending = bool(checkpoint.retreatBossPending)
+		if int(checkpoint.state) == State.LEVEL_CLEAR:
+			guard_arrived = profile.loop and checkpoint.guardArrived and stage == int(profile.guardStage)
+			clear_timer = guard_interval() if guarding_here() else float(db.defaults.loopDelay)
+			pending_unlocks.assign(checkpoint.get("pendingUnlocks", []))
+			change_state(State.LEVEL_CLEAR)
+		elif profile.loop and checkpoint.guardArrived and stage == int(profile.guardStage):
+			resume_guard()
+		elif int(checkpoint.state) == State.COMBAT:
+			group_index -= 1
+			spawn_group(true)
+		elif int(checkpoint.state) == State.RETREAT:
+			retreat_from = distance
+			retreat_target = distance
+			retreat_elapsed = 0
+			change_state(State.RETREAT)
 	save_progress()
 	return true
 
@@ -1130,18 +1197,18 @@ func spawn_group(keep_distance := false) -> void:
 
 func boss_info() -> String:
 	if not profile.get("bossSeen", []).has(stage) and not profile.cleared.has(stage):
-		return "？？？"
+		return UIText.t("system.boss_info.text_01")
 	var descriptions: Array[String] = []
 	var encounters: Array = db.levels[stage - 1].groups
 	if encounters.is_empty():
-		return "？？？"
+		return UIText.t("system.boss_info.text_01")
 	for id in db.groups[str(int(encounters.back().id))].slots:
 		if id == null:
 			continue
 		var row: Dictionary = db.enemies[str(int(id))]
-		if not descriptions.has(str(row.des)):
-			descriptions.append(str(row.des))
-	return " / ".join(descriptions) if not descriptions.is_empty() else "？？？"
+		if not descriptions.has(UIText.data_text("enemies",str(int(id)),"des")):
+			descriptions.append(UIText.data_text("enemies",str(int(id)),"des"))
+	return " / ".join(descriptions) if not descriptions.is_empty() else UIText.t("system.boss_info.text_01")
 
 func targets(damage_type: int = 0) -> Array[Dictionary]:
 	var alive: Array[Dictionary] = []
@@ -1852,7 +1919,7 @@ func combine_jewels(tokens: Array) -> bool:
 	return true
 
 func combine_all_jewels() -> Dictionary:
-	var failure := {"ok":false,"message":"合成异常，宝石未扣除"}
+	var failure := {"ok":false,"message":UIText.t("gem.combine_all_jewels.text_01")}
 	var required := jewel_combine_count()
 	if jewel_bulk_combining or not jewels_unlocked() or required<2 or not nonnegative_number(profile.jewelFragments):return failure
 	var tokens := {}
@@ -1964,23 +2031,27 @@ func jewel_allowed(id: String, category: String) -> bool:
 	return kind == 0 or kind == (1 if category == "weapons" else 2)
 
 func jewel_socket_error(category: String, index: int, token: int, replacing_socket := -1) -> String:
+	var key := jewel_socket_error_key(category,index,token,replacing_socket)
+	return UIText.t(key) if not key.is_empty() else ""
+
+func jewel_socket_error_key(category: String, index: int, token: int, replacing_socket := -1) -> String:
 	var entry := slot_entry(category, index)
 	var gem := jewel_inventory(token)
 	if not jewels_unlocked() or entry.is_empty() or str(entry.key).is_empty() or gem.is_empty():
-		return "请选择有效装备和宝石"
+		return "gem.jewel_socket_error.text_01"
 	if not jewel_allowed(str(gem.id), category):
-		return "该宝石不适用于此类装备"
+		return "gem.jewel_socket_error.text_02"
 	var sockets: Array = entry.get("sockets", [])
 	for i in sockets.size():
 		if i == replacing_socket:
 			continue
 		var installed: Dictionary = sockets[i]
 		if not installed.is_empty() and str(installed.id) == str(gem.id):
-			return "同一装备不能镶嵌同ID宝石（包括不同等级）"
+			return "gem.jewel_socket_error.text_03"
 	return ""
 
 func socket_jewel(category: String, index: int, socket: int, token: int) -> bool:
-	if not jewel_socket_error(category, index, token, socket).is_empty():
+	if not jewel_socket_error_key(category, index, token, socket).is_empty():
 		return false
 	var entry := slot_entry(category, index)
 	if socket < 0 or socket >= equipment_socket_count(entry):
@@ -2018,7 +2089,7 @@ func return_socket_jewels(entries: Array) -> bool:
 			if not gem.is_empty():
 				gems.append(gem)
 	if gems.size() + profile.jewels.size() > JEWEL_CAPACITY:
-		event.emit("jewel_error", {"message":"宝石背包空间不足，请先整理宝石再卸装备或换舰"})
+		event.emit("jewel_error", {"message":UIText.t("gem.inventory_full")})
 		return false
 	profile.jewels.append_array(gems)
 	for entry in entries:

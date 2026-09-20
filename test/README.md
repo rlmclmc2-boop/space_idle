@@ -1,5 +1,7 @@
 # 测试目录
 
+打包迁移专项：`python test/test_release_portability.py`。在 `test/work/` 创建改名且含中文/空格的副本，临时映射未占用盘符，从 Windows 目录调用真实 BAT；注入旧电脑绝对模板路径，验证完整构建、独立启动、单 EXE 输出及源预设不变。结束移除临时盘符。Windows 需允许 `subst`，不使用正式玩家数据。
+
 ## 按规则定位（Phase 10）
 
 逐条状态、断言标签和仍缺少的验证见 [TEST_MAP](TEST_MAP.md)。普通规则任务先读下面对应的1～3个专项，不以 `test_game.gd` 作为整套基线。
@@ -11,6 +13,7 @@
 | 装备槽位 | `test_state_ownership.gd`；涉及退款加 `test_unequip.gd`，数量限制加 `test_ship_equipment_limit.gd` |
 | 装备计算成长 | `test_equipment_growth.gd` / `test_equipment_growth_import.py`；批量购买加 `test_bulk_upgrades.gd` |
 | UI局部刷新/绘制 | `test_local_ui.gd`（控件身份、写入/绘制范围、真实点击/拖拽、隐藏页补齐、局部解锁）；升级用`test_upgrade_ui.gd`（真实输入、动态MAX、事件不重建）。定向性能用`test_upgrade_ui_probe.gd`经run.py隔离，3轮两种预算，勿并行其他性能测试 |
+| UI 文案表 | `test_ui_text.py`（参数保护、只写文字、并发冲突、本机接口、中文硬编码审计）与 `test_ui_text.gd`（默认名称/公式一致、场景重启生效、空错误文字不放行操作）；回归 `test_local_ui.gd`、`test_jewel_ui.gd`；配置工具涉及 `test_config_panel.gd`、`test_level_editor.py`。发布专项 `python test/test_ui_text_release.py` 从工作区根直接运行，自建隔离目录，不经 run.py、不替换正式 release。 |
 | 持续锁定光束 | `test_long_laser.gd`（延迟首击、线性增长/封顶、断束重锁、敌我挂载、时间步与画面）；回归`test_projectile_lifecycle.gd`、`test_travel_cooldowns.gd` |
 | 坚韧与死亡 | `test_tenacity_survival.gd`：受击期减速恢复、微量回盾后连续溢出致死、不同容量和镶嵌位置、1e24容量下微小剩余生命；可选`res://.runtime/save-fixture.json`仅在隔离副本装载 |
 | 护盾溢出 | `test_shield_overflow.gd`：普通/防御宝石路径、抗性、恰好破盾、溢出致死及激光/火炮/导弹/持续光束 |
@@ -22,7 +25,7 @@
 | 战斗目标 | `test_target_resistance.gd`、`test_projectile_lifecycle.gd`；涉及末敌加 `test_boss_projectile_clear.gd` |
 | 战点切换画面 | `test_battle_transition_ui.gd`：真实波次切换、背景像素连续性、星空拖尾渐变/暂停、静态层不重绘、宝石面板不自动打开 |
 | 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd`；重建首帧按钮闪动用`test_hightech_flicker.gd` |
-| 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；离线资源加 `test_offline_resources.gd` |
+| 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；节点恢复用 `test_journey_resume.gd`（巡航/战斗/驻守/跨关回退/通关待确认、退出保存和真实 QA 重启）；离线资源加 `test_offline_resources.gd` |
 | 宝石 | `test_jewels.gd`（200容量/拾取/合成/分解/镶嵌/10种效果/存档）；`test_jewel_fragments.gd`（旧字典迁移、统一倍率/小数、实际收入、离线幂等/溢出/随机批量）；`test_jewel_ui.gd`（真实点击、局部写入/重绘/隐藏恢复与截图）；`test_jewel_import.py`（来源一致、重复ID、分表发现与缓存） |
 | UI解锁 | `test_tab_unlocks.gd`；换舰草稿加 `test_ship_tab.gd` |
 | 一键合成 | `test_jewel_combine_all.gd`（连锁/分组/保护标记/配置上限/碎片补位/异常回滚/单次保存通知/读档）；`test_jewel_ui.gd`（实际按钮、合并结果、高亮、无操作提示与局部刷新）；共用生成逻辑回归`test_jewel_fragments.gd` |
@@ -49,7 +52,7 @@ python test/run.py test_rule_rounding.gd
 | 退款/批量/舰船 | test_unequip.gd / test_bulk_upgrades.gd / test_ships.gd |
 | 炼铁炉与收入 | test_furnace_income.gd / test_resource_display.gd |
 | 充能费率与次数 | test_charge.gd / test_charge_growth.gd |
-| 驻守/回退/过关 | test_guard.gd / test_loop_retreat.gd / test_skip_clear.gd |
+| 驻守/回退/过关 | test_guard.gd / test_loop_retreat.gd / test_skip_clear.gd；跃迁界面用 test_warp_ui.gd（10 行、滚轮/键盘、当前关卡重复跃迁、控件/滚动保留及截图） |
 | 关卡编辑器 | test_level_editor.py / test_level_editor.gd |
 | QA与进程重启 | test_config_panel.gd / test_delete_save.gd / test_full_restart.py；普通重启保存失败用 test_restart_save_failure.gd |
 | 配置输入与故障 | test_config_input_matrix.py；4入口接受/错误/文件副作用及事务观察 |

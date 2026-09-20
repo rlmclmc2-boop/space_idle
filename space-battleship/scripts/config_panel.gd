@@ -26,7 +26,7 @@ var operation := "import"
 var config_directory := ""
 
 func _ready() -> void:
-	title = "太空战舰 · QA 工具"
+	title = UIText.t("debug._ready.text_01")
 	size = Vector2i(660,600)
 	min_size = size
 	transient = true
@@ -46,13 +46,13 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation",14)
 	margin.add_child(column)
 	var heading := Label.new()
-	heading.text = "QA 工具"
+	heading.text = UIText.t("debug._ready.text_02")
 	heading.add_theme_font_size_override("font_size",24)
 	column.add_child(heading)
 	settings.load("user://qa_settings.cfg")
 	source_path = str(settings.get_value("excel","path",ProjectSettings.globalize_path("res://../太空战舰.xlsx").simplify_path()))
 	var source := Label.new()
-	source.text = "Excel 总表（用于拆分／同步，先保存文件）"
+	source.text = UIText.t("debug._ready.text_03")
 	source.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(source)
 	var source_row := HBoxContainer.new()
@@ -65,14 +65,16 @@ func _ready() -> void:
 	source_field.focus_exited.connect(func(): select_source(source_field.text))
 	source_row.add_child(source_field)
 	browse_button = Button.new()
-	browse_button.text = "选择 Excel…"
+	browse_button.text = UIText.t("debug._ready.text_04")
 	browse_button.pressed.connect(open_picker)
 	source_row.add_child(browse_button)
 	picker = FileDialog.new()
-	picker.title = "选择配置 Excel"
+	picker.ok_button_text = UIText.t("system.open")
+	picker.cancel_button_text = UIText.t("system.cancel")
+	picker.title = UIText.t("debug._ready.text_05")
 	picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	picker.access = FileDialog.ACCESS_FILESYSTEM
-	picker.filters = PackedStringArray(["*.xlsx ; Excel 工作簿"])
+	picker.filters = PackedStringArray(["*.xlsx ; " + UIText.t("debug.excel_filter")])
 	picker.file_selected.connect(select_source)
 	add_child(picker)
 	config_directory = ProjectSettings.globalize_path("res://config_excel")
@@ -80,56 +82,56 @@ func _ready() -> void:
 	split_row.add_theme_constant_override("separation",12)
 	column.add_child(split_row)
 	split_button = Button.new()
-	split_button.text = "拆分／同步 Excel"
+	split_button.text = UIText.t("debug._ready.text_06")
 	split_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split_button.custom_minimum_size.y = 42
 	split_button.pressed.connect(func(): start_operation("split"))
 	split_row.add_child(split_button)
 	var open_directory := Button.new()
-	open_directory.text = "打开分表目录"
+	open_directory.text = UIText.t("debug._ready.text_07")
 	open_directory.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	open_directory.pressed.connect(func():
 		DirAccess.make_dir_recursive_absolute(config_directory)
 		OS.shell_open(config_directory))
 	split_row.add_child(open_directory)
 	var level_editor_button := Button.new()
-	level_editor_button.text = "关卡编辑器"
+	level_editor_button.text = UIText.t("debug._ready.text_08")
 	level_editor_button.pressed.connect(func():
 		var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--path", ProjectSettings.globalize_path("res://"), "res://level_editor.tscn"]))
-		if pid == -1: status_label.text = "关卡编辑器启动失败，请使用项目内的启动入口。")
+		if pid == -1: status_label.text = UIText.t("debug._ready.text_09"))
 	split_row.add_child(level_editor_button)
 	var directory_label := Label.new()
-	directory_label.text = "读取配置：config_excel/ 中有修改的分表\n直接编辑分表后不用同步；同步会按总表更新同名文件。"
+	directory_label.text = UIText.t("debug._ready.text_10")
 	directory_label.tooltip_text = config_directory
 	column.add_child(directory_label)
 	history_label = Label.new()
 	history_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	history_label.text = str(settings.get_value("excel","last_status","尚未读取配置。写入：data/game_data.json"))
+	history_label.text = str(settings.get_value("excel","last_status",UIText.t("debug._ready.text_11")))
 	column.add_child(history_label)
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation",12)
 	column.add_child(buttons)
 	import_button = Button.new()
-	import_button.text = "读取配置"
+	import_button.text = UIText.t("debug._ready.text_12")
 	import_button.custom_minimum_size.y = 46
 	import_button.pressed.connect(import_config)
 	import_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	buttons.add_child(import_button)
 	restart_button = Button.new()
-	restart_button.text = "重启游戏"
+	restart_button.text = UIText.t("debug._ready.text_13")
 	restart_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	restart_button.custom_minimum_size.y = 46
 	restart_button.pressed.connect(restart_game)
 	buttons.add_child(restart_button)
 	full_restart_button = Button.new()
-	full_restart_button.text = "大重启"
-	full_restart_button.tooltip_text = "保存进度，彻底退出游戏和 QA，再导入资源并启动新进程，应用代码改动。"
+	full_restart_button.text = UIText.t("debug._ready.text_14")
+	full_restart_button.tooltip_text = UIText.t("debug._ready.text_15")
 	full_restart_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	full_restart_button.pressed.connect(full_restart)
 	buttons.add_child(full_restart_button)
 	delete_save_button = Button.new()
-	delete_save_button.text = "删除存档"
-	delete_save_button.tooltip_text = "清除游戏进度并从头开始，保留 QA 配置设置。"
+	delete_save_button.text = UIText.t("debug._ready.text_16")
+	delete_save_button.tooltip_text = UIText.t("debug._ready.text_17")
 	delete_save_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	delete_save_button.pressed.connect(delete_save)
 	buttons.add_child(delete_save_button)
@@ -137,7 +139,7 @@ func _ready() -> void:
 	controls.add_theme_constant_override("separation",12)
 	column.add_child(controls)
 	pause_button = Button.new()
-	pause_button.text = "Ⅱ  暂停"
+	pause_button.text = UIText.t("debug._ready.text_18")
 	pause_button.custom_minimum_size.y = 42
 	pause_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	pause_button.pressed.connect(func(): send_control({"paused":not observed_paused}))
@@ -145,7 +147,7 @@ func _ready() -> void:
 	speed_select = OptionButton.new()
 	speed_select.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for value in [1,2,5]:
-		speed_select.add_item("×%d  航速" % value,value)
+		speed_select.add_item(UIText.t("debug._ready.text_19", {"value":"%d" % (value)}),value)
 	speed_select.select(maxi(0,speed_select.get_item_index(int(settings.get_value("control","speed",1)))))
 	speed_select.item_selected.connect(func(index):
 		var value := speed_select.get_item_id(index)
@@ -154,7 +156,7 @@ func _ready() -> void:
 		send_control({"speed":value}))
 	controls.add_child(speed_select)
 	status_label = Label.new()
-	status_label.text = "首次：拆分／同步 → 读取配置 → 重启游戏。\n之后编辑独立分表，只读取有变化的配置。"
+	status_label.text = UIText.t("debug._ready.text_20")
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(status_label)
 	close_requested.connect(close_panel)
@@ -185,7 +187,7 @@ func start_operation(action: String) -> void:
 	browse_button.disabled = true
 	source_field.editable = false
 	output.clear()
-	status_label.text = "正在拆分并同步独立 Excel……" if operation == "split" else "正在检查变化，仅解析修改过的配置表……"
+	status_label.text = UIText.t("debug.start_operation.text_01") if operation == "split" else UIText.t("debug.start_operation.text_02")
 	import_button.disabled = true
 	split_button.disabled = true
 	restart_button.disabled = true
@@ -198,7 +200,7 @@ func start_operation(action: String) -> void:
 		import_button.disabled = false
 		split_button.disabled = false
 		restart_button.disabled = false
-		status_label.text = "无法启动导入任务：" + error_string(error)
+		status_label.text = UIText.t("debug.start_operation.text_03") + error_string(error)
 
 func execute_import() -> int:
 	return OS.execute(python_path,PackedStringArray([ProjectSettings.globalize_path("res://tools/config_workbooks.py"),operation,"--source",import_source,"--directory",config_directory]),output,true,false)
@@ -216,7 +218,7 @@ func _process(_delta: float) -> void:
 		speed_select.disabled = not connected or restarting
 		if connected:
 			observed_paused = bool(live.get("paused",false))
-			pause_button.text = "▶  继续" if observed_paused else "Ⅱ  暂停"
+			pause_button.text = UIText.t("debug._process.text_01") if observed_paused else UIText.t("debug._ready.text_18")
 			var index := speed_select.get_item_index(int(live.get("speed",1)))
 			if index >= 0:
 				speed_select.select(index)
@@ -228,18 +230,18 @@ func _process(_delta: float) -> void:
 		import_button.disabled = false
 		split_button.disabled = false
 		restart_button.disabled = false
-		var detail := str(output.back()).strip_edges() if not output.is_empty() else "无法启动 Python；需安装 openpyxl 和 lxml。"
+		var detail := str(output.back()).strip_edges() if not output.is_empty() else UIText.t("debug._process.text_02")
 		var lines := detail.split("\n",false)
 		var report := JSON.new()
 		var parsed := not lines.is_empty() and report.parse(str(lines[-1])) == OK and report.data is Dictionary
 		var summary := str(report.data.get("message",detail)) if parsed else (str(lines[-1]) if not lines.is_empty() else detail)
 		status_label.text = summary
 		if result == 0:
-			status_label.text += "\n点击「读取配置」更新 JSON。" if operation == "split" else "\n需要应用新配置时，点击「重启游戏」。"
+			status_label.text += UIText.t("debug._process.text_03") if operation == "split" else UIText.t("debug._process.text_04")
 		else:
-			status_label.text = "操作失败，未提交本次更新。\n" + summary
+			status_label.text = UIText.t("debug._process.text_05") + summary
 		status_label.tooltip_text = detail
-		history_label.text = "上次%s：%s · %s\n%s" % ["同步" if operation == "split" else "读取",Time.get_datetime_string_from_system().replace("T"," "),"成功" if result == 0 else "失败",import_source if operation == "split" else config_directory]
+		history_label.text = UIText.t("debug._process.text_06", {"else":"%s" % (UIText.t("debug._process.text_07") if operation == "split" else UIText.t("debug._process.text_08")), "T":"%s" % (Time.get_datetime_string_from_system().replace("T"," ")), "else_3":"%s" % (UIText.t("debug._process.text_09") if result == 0 else UIText.t("debug._process.text_10")), "config_directory":"%s" % (import_source if operation == "split" else config_directory)})
 		settings.set_value("excel","last_status",history_label.text)
 		settings.save("user://qa_settings.cfg")
 
@@ -277,7 +279,7 @@ func full_restart() -> void:
 		return
 	var scene := game_scene()
 	if scene == null:
-		status_label.text = "游戏场景尚未就绪。"
+		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
 	var failed := [false]
 	var on_event := func(kind, _info):
@@ -287,18 +289,18 @@ func full_restart() -> void:
 	scene.game.save_progress()
 	scene.game.event.disconnect(on_event)
 	if failed[0]:
-		status_label.text = "保存进度失败，未执行大重启。"
+		status_label.text = UIText.t("debug.full_restart.text_02")
 		return
 	if settings.save("user://qa_settings.cfg") != OK:
-		status_label.text = "保存 QA 设置失败，未执行大重启。"
+		status_label.text = UIText.t("debug.full_restart.text_03")
 		return
 	var project := ProjectSettings.globalize_path("res://")
 	if DirAccess.make_dir_recursive_absolute(project.path_join(".runtime")) != OK:
-		status_label.text = "无法创建大重启日志目录，未退出游戏。"
+		status_label.text = UIText.t("debug.full_restart.text_04")
 		return
 	var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--headless", "--path", project, "--log-file", project.path_join(".runtime/full-restart.log"), "--script", "res://scripts/restart_host.gd", "--", str(OS.get_process_id())]))
 	if pid == -1:
-		status_label.text = "大重启启动失败，当前游戏已保留。"
+		status_label.text = UIText.t("debug.full_restart.text_05")
 		return
 	restarting = true
 	full_restart_button.disabled = true
@@ -311,13 +313,13 @@ func restart_game(clear_save: bool = false) -> void:
 		return
 	var scene := game_scene()
 	if scene == null:
-		status_label.text = "游戏场景尚未就绪。"
+		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
 	if clear_save:
 		if FileAccess.file_exists(BattleGame.SAVE_PATH):
 			var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(BattleGame.SAVE_PATH))
 			if error != OK:
-				status_label.text = "删除存档失败，未重新开始：" + error_string(error)
+				status_label.text = UIText.t("debug.restart_game.text_01") + error_string(error)
 				return
 		# Prevent the outgoing scene from writing its old progress back.
 		scene.game.save_enabled = false
@@ -331,7 +333,7 @@ func restart_game(clear_save: bool = false) -> void:
 		scene.game.save_progress()
 		scene.game.event.disconnect(on_event)
 		if failed[0]:
-			status_label.text = "保存进度失败，未重载游戏。请排除存档写入故障后重试。"
+			status_label.text = UIText.t("debug.restart_game.text_02")
 			return
 	deleting_save = clear_save
 	restarting = true
@@ -341,7 +343,7 @@ func restart_game(clear_save: bool = false) -> void:
 	delete_save_button.disabled = true
 	pause_button.disabled = true
 	speed_select.disabled = true
-	status_label.text = "正在清除存档并重新开始……" if clear_save else "正在重载游戏场景，读取最新 JSON……"
+	status_label.text = UIText.t("debug.restart_game.text_03") if clear_save else UIText.t("debug.restart_game.text_04")
 	call_deferred("reload_game")
 
 func reload_game() -> void:
@@ -352,9 +354,9 @@ func reload_game() -> void:
 	import_button.disabled = false
 	split_button.disabled = false
 	restart_button.disabled = false
-	status_label.text = "游戏场景已重载，最新配置已生效。\nQA 工具与游戏共用同一个进程。" if result == OK else "场景重载失败：" + error_string(result)
+	status_label.text = UIText.t("debug.reload_game.text_01") if result == OK else UIText.t("debug.reload_game.text_02") + error_string(result)
 	if deleting_save and result == OK:
-		status_label.text = "存档已清除，已从头开始。"
+		status_label.text = UIText.t("debug.reload_game.text_03")
 	deleting_save = false
 
 func close_panel() -> void:

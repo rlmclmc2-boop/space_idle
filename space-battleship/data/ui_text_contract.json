@@ -1,0 +1,2337 @@
+{
+  "entries": {
+    "main._ready.text_01": {
+      "params": [
+        "id",
+        "id_2"
+      ]
+    },
+    "main._ready.text_02": {
+      "params": []
+    },
+    "main.on_event.text_01": {
+      "params": [
+        "amount",
+        "id"
+      ]
+    },
+    "main.on_event.text_02": {
+      "params": []
+    },
+    "main.on_event.text_03": {
+      "params": [
+        "levels"
+      ]
+    },
+    "main.on_event.text_05": {
+      "params": [
+        "to"
+      ]
+    },
+    "main.on_event.text_06": {
+      "params": []
+    },
+    "main.cost_text.text_01": {
+      "params": [
+        "id",
+        "id_2"
+      ]
+    },
+    "main.build_ui.text_01": {
+      "params": []
+    },
+    "main.build_ui.text_02": {
+      "params": []
+    },
+    "main.build_ui.text_03": {
+      "params": []
+    },
+    "main.build_ui.text_04": {
+      "params": []
+    },
+    "main.build_ui.text_05": {
+      "params": []
+    },
+    "main.build_ui.text_06": {
+      "params": []
+    },
+    "main.build_ui.text_07": {
+      "params": []
+    },
+    "main.build_ui.text_08": {
+      "params": [
+        "level"
+      ]
+    },
+    "main.build_ui.text_10": {
+      "params": []
+    },
+    "main.build_ui.text_12": {
+      "params": []
+    },
+    "main.build_ui.text_13": {
+      "params": []
+    },
+    "main.build_ui.text_14": {
+      "params": []
+    },
+    "main.build_ui.text_15": {
+      "params": []
+    },
+    "main.build_ui.text_16": {
+      "params": []
+    },
+    "main.build_ui.text_17": {
+      "params": []
+    },
+    "main.build_ui.text_18": {
+      "params": []
+    },
+    "main.build_ui.text_19": {
+      "params": []
+    },
+    "main.build_ui.text_20": {
+      "params": []
+    },
+    "main.build_ui.text_21": {
+      "params": []
+    },
+    "main.build_ui.text_22": {
+      "params": []
+    },
+    "main.build_ui.text_23": {
+      "params": []
+    },
+    "main.refresh_structure.text_01": {
+      "params": []
+    },
+    "main.refresh_structure.text_02": {
+      "params": []
+    },
+    "ship.refresh_ship_controls.text_01": {
+      "params": [
+        "weaponSlots",
+        "defenseSlots",
+        "movement"
+      ]
+    },
+    "ship.refresh_ship_controls.text_02": {
+      "params": [
+        "ship_name"
+      ]
+    },
+    "ship.refresh_ship_controls.text_03": {
+      "params": [
+        "else"
+      ]
+    },
+    "ship.refresh_ship_controls.text_04": {
+      "params": []
+    },
+    "ship.refresh_ship_controls.text_05": {
+      "params": []
+    },
+    "ship.refresh_ship_controls.text_07": {
+      "params": []
+    },
+    "ship.refresh_ship_controls.text_08": {
+      "params": []
+    },
+    "main.refresh_navigation.text_02": {
+      "params": []
+    },
+    "main.refresh_navigation.text_03": {
+      "params": []
+    },
+    "battle.queue_damage_number.text_01": {
+      "params": []
+    },
+    "battle.queue_damage_number.text_02": {
+      "params": [
+        "uid"
+      ]
+    },
+    "battle.queue_damage_number.text_03": {
+      "params": []
+    },
+    "main.draw_chrome.text_01": {
+      "params": []
+    },
+    "main.draw_chrome.text_02": {
+      "params": []
+    },
+    "main.boss_health_cards.text_01": {
+      "params": [
+        "slot",
+        "des"
+      ]
+    },
+    "battle.stage": {
+      "params": [
+        "stage"
+      ]
+    },
+    "battle.draw_battle.text_02": {
+      "params": [
+        "targets",
+        "enemies"
+      ]
+    },
+    "battle.draw_battle.text_03": {
+      "params": [
+        "distance",
+        "length"
+      ]
+    },
+    "battle.draw_battle.text_04": {
+      "params": []
+    },
+    "battle.draw_battle.text_05": {
+      "params": []
+    },
+    "battle.draw_battle.text_06": {
+      "params": []
+    },
+    "battle.draw_battle.text_07": {
+      "params": [
+        "guard_elapsed"
+      ]
+    },
+    "battle.draw_battle.text_08": {
+      "params": [
+        "group_index",
+        "value"
+      ]
+    },
+    "battle.draw_battle.text_09": {
+      "params": []
+    },
+    "battle.draw_battle.text_10": {
+      "params": []
+    },
+    "battle.draw_battle.text_11": {
+      "params": [
+        "amount",
+        "id"
+      ]
+    },
+    "battle.draw_battle.text_12": {
+      "params": [
+        "selectedShip",
+        "weapon_entries",
+        "defense_entries"
+      ]
+    },
+    "battle.draw_battle.text_13": {
+      "params": []
+    },
+    "battle.hp": {
+      "params": [
+        "current_hp",
+        "max_hp"
+      ]
+    },
+    "battle.shield": {
+      "params": [
+        "current_shield",
+        "max_shield"
+      ]
+    },
+    "battle.draw_battle.text_16": {
+      "params": [
+        "autoCollectDelay",
+        "autoCollectReduce"
+      ]
+    },
+    "battle.draw_battle.text_17": {
+      "params": [
+        "stage"
+      ]
+    },
+    "battle.draw_battle.text_18": {
+      "params": [
+        "clear_timer"
+      ]
+    },
+    "battle.draw_battle.text_19": {
+      "params": [
+        "clear_timer",
+        "target"
+      ]
+    },
+    "battle.draw_battle.text_20": {
+      "params": []
+    },
+    "battle.draw_battle.text_21": {
+      "params": []
+    },
+    "main.draw_help.text_01": {
+      "params": []
+    },
+    "main.draw_help.text_02": {
+      "params": []
+    },
+    "main.draw_help.text_03": {
+      "params": []
+    },
+    "main.draw_help.text_04": {
+      "params": []
+    },
+    "main.draw_help.text_05": {
+      "params": []
+    },
+    "main.draw_help.text_06": {
+      "params": []
+    },
+    "main.draw_help.text_07": {
+      "params": []
+    },
+    "main.draw_help.text_08": {
+      "params": []
+    },
+    "main.draw_help.text_09": {
+      "params": []
+    },
+    "main.draw_help.text_10": {
+      "params": []
+    },
+    "weapon.equipment_stat_text.text_04": {
+      "params": [
+        "label",
+        "entry",
+        "cap",
+        "else"
+      ]
+    },
+    "weapon.equipment_stat_text.text_05": {
+      "params": []
+    },
+    "weapon.equipment_detail_text.text_01": {
+      "params": [
+        "dmgReduce",
+        "dmgReduce_2"
+      ]
+    },
+    "weapon.equipment_detail_text.text_02": {
+      "params": [
+        "cd",
+        "cd_2"
+      ]
+    },
+    "weapon.build_equipment_tabs.text_02": {
+      "params": []
+    },
+    "weapon.build_equipment_tabs.text_03": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_06": {
+      "params": [
+        "key",
+        "lv"
+      ]
+    },
+    "weapon.build_equipment_card.text_07": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_08": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_09": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_10": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_12": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_13": {
+      "params": [
+        "single_cost"
+      ]
+    },
+    "weapon.build_equipment_card.text_14": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_15": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_17": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_19": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_20": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_21": {
+      "params": []
+    },
+    "weapon.build_equipment_card.text_22": {
+      "params": []
+    },
+    "ship.build_ship_tab.text_02": {
+      "params": []
+    },
+    "ship.rebuild_ship_slots.text_01": {
+      "params": [
+        "else",
+        "index"
+      ]
+    },
+    "upgrade.refresh_scientists.text_01": {
+      "params": [
+        "scientists",
+        "idle_scientists"
+      ]
+    },
+    "upgrade.refresh_scientists.text_03": {
+      "params": []
+    },
+    "upgrade.refresh_hightech_progress.text_01": {
+      "params": [
+        "key",
+        "key_2",
+        "points",
+        "required",
+        "fraction"
+      ]
+    },
+    "upgrade.refresh_charge_card.text_02": {
+      "params": [
+        "elapsed",
+        "para_4"
+      ]
+    },
+    "upgrade.refresh_charge_card.text_03": {
+      "params": [
+        "count",
+        "key"
+      ]
+    },
+    "upgrade.refresh_charge_card.text_04": {
+      "params": [
+        "para_1",
+        "key"
+      ]
+    },
+    "upgrade.refresh_charge_card.text_05": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_06": {
+      "params": [
+        "unlock"
+      ]
+    },
+    "upgrade.refresh_charge_card.text_07": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_08": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_09": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_10": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_11": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_12": {
+      "params": []
+    },
+    "upgrade.refresh_charge_card.text_13": {
+      "params": []
+    },
+    "main.confirm_unequip.text_01": {
+      "params": []
+    },
+    "main.confirm_unequip.text_02": {
+      "params": [
+        "key",
+        "level"
+      ]
+    },
+    "main.confirm_unequip.text_03": {
+      "params": []
+    },
+    "main.confirm_unequip.text_04": {
+      "params": []
+    },
+    "upgrade.build_hightech_tab.text_02": {
+      "params": []
+    },
+    "upgrade.build_hightech_tab.text_03": {
+      "params": []
+    },
+    "upgrade.build_hightech_tab.text_04": {
+      "params": []
+    },
+    "upgrade.build_hightech_tab.text_05": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_01": {
+      "params": [
+        "index"
+      ]
+    },
+    "upgrade.build_hightech_card.text_02": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_03": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_04": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_05": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_06": {
+      "params": []
+    },
+    "upgrade.build_hightech_card.text_08": {
+      "params": []
+    },
+    "main.draw_unlock.text_01": {
+      "params": []
+    },
+    "main.draw_unlock.text_02": {
+      "params": []
+    },
+    "main.draw_unlock.text_03": {
+      "params": []
+    },
+    "gem.setup.text_01": {
+      "params": []
+    },
+    "gem.setup.text_02": {
+      "params": []
+    },
+    "gem.setup.text_03": {
+      "params": []
+    },
+    "gem.setup.text_04": {
+      "params": []
+    },
+    "gem.setup.text_05": {
+      "params": []
+    },
+    "gem.setup.text_06": {
+      "params": []
+    },
+    "gem.setup.text_07": {
+      "params": []
+    },
+    "gem.setup.text_08": {
+      "params": []
+    },
+    "gem.setup.text_09": {
+      "params": []
+    },
+    "gem.setup.text_10": {
+      "params": []
+    },
+    "gem.setup.text_11": {
+      "params": []
+    },
+    "gem.setup.text_12": {
+      "params": []
+    },
+    "gem.setup.text_13": {
+      "params": []
+    },
+    "gem.setup.text_14": {
+      "params": []
+    },
+    "gem.setup.text_15": {
+      "params": []
+    },
+    "gem.setup.text_16": {
+      "params": []
+    },
+    "gem.setup.text_17": {
+      "params": []
+    },
+    "gem.open.text_01": {
+      "params": []
+    },
+    "gem.name_level": {
+      "params": [
+        "item_name",
+        "level"
+      ]
+    },
+    "gem.refresh.text_01": {
+      "params": []
+    },
+    "gem.refresh.text_02": {
+      "params": []
+    },
+    "gem.refresh.text_03": {
+      "params": []
+    },
+    "gem.refresh.text_04": {
+      "params": []
+    },
+    "gem.refresh.text_05": {
+      "params": []
+    },
+    "gem.refresh.text_06": {
+      "params": []
+    },
+    "gem.refresh.text_07": {
+      "params": []
+    },
+    "gem.refresh.text_08": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_01": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_02": {
+      "params": [
+        "key",
+        "level",
+        "entry"
+      ]
+    },
+    "gem.refresh_sockets.text_03": {
+      "params": [
+        "i"
+      ]
+    },
+    "gem.refresh_sockets.text_04": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_05": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_06": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_07": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_08": {
+      "params": []
+    },
+    "gem.refresh_sockets.text_09": {
+      "params": []
+    },
+    "gem.operate_socket.text_01": {
+      "params": []
+    },
+    "gem.operate_socket.text_02": {
+      "params": []
+    },
+    "gem.operate_socket.text_03": {
+      "params": []
+    },
+    "gem.operate_socket.text_04": {
+      "params": []
+    },
+    "gem.operate_socket.text_05": {
+      "params": []
+    },
+    "gem.socket_error.text_01": {
+      "params": []
+    },
+    "gem.socket_error.text_02": {
+      "params": []
+    },
+    "gem.socket_error.text_03": {
+      "params": []
+    },
+    "gem.socket_error.text_04": {
+      "params": []
+    },
+    "gem.refresh_detail.text_01": {
+      "params": [
+        "required"
+      ]
+    },
+    "gem.refresh_detail.text_02": {
+      "params": []
+    },
+    "gem.refresh_detail.text_03": {
+      "params": [
+        "required",
+        "selected"
+      ]
+    },
+    "gem.refresh_detail.text_04": {
+      "params": []
+    },
+    "gem.refresh_detail.text_05": {
+      "params": []
+    },
+    "gem.refresh_detail.text_06": {
+      "params": [
+        "inspected_socket"
+      ]
+    },
+    "gem.refresh_detail.text_07": {
+      "params": []
+    },
+    "gem.refresh_detail.text_08": {
+      "params": [
+        "first"
+      ]
+    },
+    "gem.refresh_detail.text_09": {
+      "params": []
+    },
+    "gem.refresh_detail.text_10": {
+      "params": [
+        "first"
+      ]
+    },
+    "gem.refresh_detail.text_11": {
+      "params": [
+        "level",
+        "next",
+        "required",
+        "selected"
+      ]
+    },
+    "gem.refresh_detail.text_12": {
+      "params": [
+        "target_socket",
+        "else"
+      ]
+    },
+    "gem.refresh_detail.text_13": {
+      "params": []
+    },
+    "gem.refresh_detail.text_14": {
+      "params": []
+    },
+    "gem.refresh_detail.text_15": {
+      "params": []
+    },
+    "gem.refresh_detail.text_16": {
+      "params": []
+    },
+    "gem.refresh_detail.text_17": {
+      "params": []
+    },
+    "gem.refresh_detail.text_18": {
+      "params": []
+    },
+    "gem.refresh_detail.text_19": {
+      "params": []
+    },
+    "gem.refresh_detail.text_20": {
+      "params": []
+    },
+    "gem.refresh_detail.text_21": {
+      "params": [
+        "selected",
+        "required",
+        "else"
+      ]
+    },
+    "gem.refresh_detail.text_22": {
+      "params": []
+    },
+    "gem.refresh_detail.text_23": {
+      "params": []
+    },
+    "gem.refresh_detail.text_24": {
+      "params": []
+    },
+    "gem.refresh_detail.text_25": {
+      "params": []
+    },
+    "gem.refresh_detail.text_26": {
+      "params": []
+    },
+    "gem.refresh_detail.text_27": {
+      "params": []
+    },
+    "gem.refresh_detail.text_28": {
+      "params": []
+    },
+    "gem.refresh_detail.text_29": {
+      "params": []
+    },
+    "gem.refresh_detail.text_30": {
+      "params": []
+    },
+    "gem.stat_comparison.text_01": {
+      "params": [
+        "else",
+        "old",
+        "value",
+        "old_4"
+      ]
+    },
+    "gem.stat_comparison.text_02": {
+      "params": []
+    },
+    "gem.stat_comparison.text_03": {
+      "params": []
+    },
+    "gem.stat_comparison.text_04": {
+      "params": [
+        "x",
+        "x_2",
+        "x_3"
+      ]
+    },
+    "gem.stat_comparison.text_05": {
+      "params": []
+    },
+    "gem.refresh_metrics.text_01": {
+      "params": [
+        "else",
+        "state",
+        "state_3"
+      ]
+    },
+    "gem.refresh_metrics.text_02": {
+      "params": []
+    },
+    "gem.refresh_metrics.text_03": {
+      "params": [
+        "state",
+        "state_2",
+        "else"
+      ]
+    },
+    "gem.refresh_metrics.text_04": {
+      "params": []
+    },
+    "gem.refresh_metrics.text_05": {
+      "params": []
+    },
+    "gem.inventory_changed.text_01": {
+      "params": [
+        "generated_count"
+      ]
+    },
+    "gem.inventory_changed.text_02": {
+      "params": []
+    },
+    "gem.pickup_feedback.text_01": {
+      "params": [
+        "amount"
+      ]
+    },
+    "gem.pickup_feedback.text_02": {
+      "params": [
+        "generated_count"
+      ]
+    },
+    "gem.pickup_feedback.text_03": {
+      "params": []
+    },
+    "merge.combine_selected.text_01": {
+      "params": [
+        "level",
+        "level_2"
+      ]
+    },
+    "merge.combine_all_selected.text_01": {
+      "params": []
+    },
+    "merge.combine_all_selected.text_02": {
+      "params": [
+        "count",
+        "consumed"
+      ]
+    },
+    "merge.combine_all_selected.text_03": {
+      "params": []
+    },
+    "merge.combine_all_selected.text_04": {
+      "params": [
+        "reward",
+        "count"
+      ]
+    },
+    "merge.combine_all_selected.text_05": {
+      "params": [
+        "count",
+        "consumed",
+        "slice"
+      ]
+    },
+    "merge.request_compose.text_01": {
+      "params": [
+        "gem",
+        "gem_2"
+      ]
+    },
+    "merge.compose_selected.text_01": {
+      "params": []
+    },
+    "merge.compose_selected.text_02": {
+      "params": [
+        "reward",
+        "else"
+      ]
+    },
+    "merge.compose_selected.text_03": {
+      "params": [
+        "generated_count"
+      ]
+    },
+    "debug._ready.text_01": {
+      "params": []
+    },
+    "debug._ready.text_02": {
+      "params": []
+    },
+    "debug._ready.text_03": {
+      "params": []
+    },
+    "debug._ready.text_04": {
+      "params": []
+    },
+    "debug._ready.text_05": {
+      "params": []
+    },
+    "debug._ready.text_06": {
+      "params": []
+    },
+    "debug._ready.text_07": {
+      "params": []
+    },
+    "debug._ready.text_08": {
+      "params": []
+    },
+    "debug._ready.text_09": {
+      "params": []
+    },
+    "debug._ready.text_10": {
+      "params": []
+    },
+    "debug._ready.text_11": {
+      "params": []
+    },
+    "debug._ready.text_12": {
+      "params": []
+    },
+    "debug._ready.text_13": {
+      "params": []
+    },
+    "debug._ready.text_14": {
+      "params": []
+    },
+    "debug._ready.text_15": {
+      "params": []
+    },
+    "debug._ready.text_16": {
+      "params": []
+    },
+    "debug._ready.text_17": {
+      "params": []
+    },
+    "debug._ready.text_18": {
+      "params": []
+    },
+    "debug._ready.text_19": {
+      "params": [
+        "value"
+      ]
+    },
+    "debug._ready.text_20": {
+      "params": []
+    },
+    "debug.start_operation.text_01": {
+      "params": []
+    },
+    "debug.start_operation.text_02": {
+      "params": []
+    },
+    "debug.start_operation.text_03": {
+      "params": []
+    },
+    "debug._process.text_01": {
+      "params": []
+    },
+    "debug._process.text_02": {
+      "params": []
+    },
+    "debug._process.text_03": {
+      "params": []
+    },
+    "debug._process.text_04": {
+      "params": []
+    },
+    "debug._process.text_05": {
+      "params": []
+    },
+    "debug._process.text_06": {
+      "params": [
+        "else",
+        "T",
+        "else_3",
+        "config_directory"
+      ]
+    },
+    "debug._process.text_07": {
+      "params": []
+    },
+    "debug._process.text_08": {
+      "params": []
+    },
+    "debug._process.text_09": {
+      "params": []
+    },
+    "debug._process.text_10": {
+      "params": []
+    },
+    "debug.full_restart.text_01": {
+      "params": []
+    },
+    "debug.full_restart.text_02": {
+      "params": []
+    },
+    "debug.full_restart.text_03": {
+      "params": []
+    },
+    "debug.full_restart.text_04": {
+      "params": []
+    },
+    "debug.full_restart.text_05": {
+      "params": []
+    },
+    "debug.restart_game.text_01": {
+      "params": []
+    },
+    "debug.restart_game.text_02": {
+      "params": []
+    },
+    "debug.restart_game.text_03": {
+      "params": []
+    },
+    "debug.restart_game.text_04": {
+      "params": []
+    },
+    "debug.reload_game.text_01": {
+      "params": []
+    },
+    "debug.reload_game.text_02": {
+      "params": []
+    },
+    "debug.reload_game.text_03": {
+      "params": []
+    },
+    "debug.global.text_01": {
+      "params": []
+    },
+    "debug.global.text_02": {
+      "params": []
+    },
+    "debug.global.text_03": {
+      "params": []
+    },
+    "debug.global.text_04": {
+      "params": []
+    },
+    "debug.global.text_05": {
+      "params": []
+    },
+    "debug.global.text_06": {
+      "params": []
+    },
+    "debug.global.text_07": {
+      "params": []
+    },
+    "debug.global.text_08": {
+      "params": []
+    },
+    "debug.global.text_09": {
+      "params": []
+    },
+    "debug.global.text_10": {
+      "params": []
+    },
+    "debug.global.text_11": {
+      "params": []
+    },
+    "debug.global.text_12": {
+      "params": []
+    },
+    "debug.global.text_13": {
+      "params": []
+    },
+    "debug.global.text_14": {
+      "params": []
+    },
+    "debug.global.text_15": {
+      "params": []
+    },
+    "debug.global.text_16": {
+      "params": []
+    },
+    "debug._ready.text_21": {
+      "params": []
+    },
+    "debug._ready.text_22": {
+      "params": []
+    },
+    "debug._ready.text_23": {
+      "params": []
+    },
+    "debug._ready.text_24": {
+      "params": []
+    },
+    "debug._ready.text_25": {
+      "params": []
+    },
+    "debug._ready.text_26": {
+      "params": []
+    },
+    "debug._ready.text_27": {
+      "params": []
+    },
+    "debug._ready.text_28": {
+      "params": []
+    },
+    "debug._ready.text_29": {
+      "params": []
+    },
+    "debug._ready.text_30": {
+      "params": []
+    },
+    "debug._ready.text_31": {
+      "params": []
+    },
+    "debug.refresh_list.text_01": {
+      "params": [
+        "id",
+        "id_2"
+      ]
+    },
+    "debug.refresh_list.text_02": {
+      "params": []
+    },
+    "debug.show_record.text_01": {
+      "params": []
+    },
+    "debug.show_record.text_02": {
+      "params": []
+    },
+    "debug.show_record.text_03": {
+      "params": [
+        "i"
+      ]
+    },
+    "debug.show_record.text_04": {
+      "params": []
+    },
+    "debug.show_record.text_05": {
+      "params": []
+    },
+    "debug.show_record.text_06": {
+      "params": []
+    },
+    "debug.show_record.text_07": {
+      "params": []
+    },
+    "debug.choices.text_01": {
+      "params": []
+    },
+    "debug.choices.text_02": {
+      "params": [
+        "id",
+        "des"
+      ]
+    },
+    "debug.choices.text_03": {
+      "params": []
+    },
+    "debug.add_encounter.text_01": {
+      "params": []
+    },
+    "debug.add_record.text_01": {
+      "params": []
+    },
+    "debug.add_record.text_02": {
+      "params": []
+    },
+    "debug.references.text_01": {
+      "params": []
+    },
+    "debug.delete_record.text_01": {
+      "params": []
+    },
+    "debug.delete_record.text_02": {
+      "params": []
+    },
+    "debug.delete_record.text_03": {
+      "params": []
+    },
+    "debug.update_preview.text_01": {
+      "params": []
+    },
+    "debug.update_preview.text_02": {
+      "params": []
+    },
+    "debug.update_preview.text_03": {
+      "params": []
+    },
+    "debug.update_preview.text_04": {
+      "params": []
+    },
+    "debug.update_preview.text_05": {
+      "params": []
+    },
+    "debug.update_preview.text_06": {
+      "params": []
+    },
+    "debug.update_preview.text_07": {
+      "params": []
+    },
+    "debug.reload_document.text_01": {
+      "params": []
+    },
+    "debug.close_editor.text_01": {
+      "params": []
+    },
+    "debug.run_action.text_01": {
+      "params": []
+    },
+    "debug.run_action.text_02": {
+      "params": []
+    },
+    "debug.run_action.text_03": {
+      "params": []
+    },
+    "debug.run_action.text_04": {
+      "params": []
+    },
+    "debug._process.text_11": {
+      "params": []
+    },
+    "debug._process.text_12": {
+      "params": []
+    },
+    "debug._process.text_13": {
+      "params": []
+    },
+    "debug._process.text_14": {
+      "params": []
+    },
+    "debug._process.text_15": {
+      "params": []
+    },
+    "debug._process.text_16": {
+      "params": []
+    },
+    "debug._process.text_17": {
+      "params": []
+    },
+    "debug._process.text_18": {
+      "params": []
+    },
+    "debug._process.text_19": {
+      "params": []
+    },
+    "system.hightech_description.text_01": {
+      "params": []
+    },
+    "system.boss_info.text_01": {
+      "params": []
+    },
+    "gem.combine_all_jewels.text_01": {
+      "params": []
+    },
+    "gem.jewel_socket_error.text_01": {
+      "params": []
+    },
+    "gem.jewel_socket_error.text_02": {
+      "params": []
+    },
+    "gem.jewel_socket_error.text_03": {
+      "params": []
+    },
+    "inventory.resources.1.name": {
+      "params": []
+    },
+    "inventory.resources.2.name": {
+      "params": []
+    },
+    "ship.ship.frigate.des": {
+      "params": []
+    },
+    "ship.ship.destroyer.des": {
+      "params": []
+    },
+    "ship.ship.cruiser.des": {
+      "params": []
+    },
+    "ship.ship.battleship.des": {
+      "params": []
+    },
+    "ship.ship.heavy_battleship.des": {
+      "params": []
+    },
+    "battle.enemies.1.des": {
+      "params": []
+    },
+    "battle.enemies.2.des": {
+      "params": []
+    },
+    "battle.enemies.3.des": {
+      "params": []
+    },
+    "battle.enemies.4.des": {
+      "params": []
+    },
+    "battle.enemies.5.des": {
+      "params": []
+    },
+    "battle.enemies.6.des": {
+      "params": []
+    },
+    "battle.enemies.7.des": {
+      "params": []
+    },
+    "battle.enemies.8.des": {
+      "params": []
+    },
+    "gem.jewel.1.name": {
+      "params": []
+    },
+    "gem.jewel.1.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{para2*等级*log10(武器攻击次数),整数百分比}"
+      ]
+    },
+    "gem.jewel.2.name": {
+      "params": []
+    },
+    "gem.jewel.2.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{para2*等级*log10(承受攻击次数),整数百分比}"
+      ]
+    },
+    "gem.jewel.3.name": {
+      "params": []
+    },
+    "gem.jewel.3.des": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "{para2*等级,整数百分比}",
+        "{para4}"
+      ]
+    },
+    "gem.jewel.4.name": {
+      "params": []
+    },
+    "gem.jewel.4.des": {
+      "params": [
+        "effect_1",
+        "effect_2",
+        "effect_3"
+      ],
+      "formulas": [
+        "{para2,百分比}",
+        "{para4*等级,百分比}",
+        "{para5*等级,百分比}"
+      ]
+    },
+    "gem.jewel.5.name": {
+      "params": []
+    },
+    "gem.jewel.5.des": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "{para4}",
+        "{para2*等级,百分比}"
+      ]
+    },
+    "gem.jewel.6.name": {
+      "params": []
+    },
+    "gem.jewel.6.des": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "{para2,百分比}",
+        "{para4*等级,百分比}"
+      ]
+    },
+    "gem.jewel.7.name": {
+      "params": []
+    },
+    "gem.jewel.7.des": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "{para2,百分比}",
+        "{para4*等级,百分比}"
+      ]
+    },
+    "gem.jewel.8.name": {
+      "params": []
+    },
+    "gem.jewel.8.des": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "{para4}",
+        "{para2*等级,百分比}"
+      ]
+    },
+    "gem.jewel.9.name": {
+      "params": []
+    },
+    "gem.jewel.9.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{para2*等级,百分比}"
+      ]
+    },
+    "gem.jewel.10.name": {
+      "params": []
+    },
+    "gem.jewel.10.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{1-para2*等级,百分比}"
+      ]
+    },
+    "upgrade.hightech.item_01.description": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "para1",
+        "{过去一分钟的铁生成量*para2*等级,向上取整,不含自身}"
+      ]
+    },
+    "upgrade.hightech.item_01.name": {
+      "params": []
+    },
+    "upgrade.hightech.item_02.description": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{(1+para1)^等级,百分比显示,保留两位小数,即100.3%展示为100%}"
+      ]
+    },
+    "upgrade.hightech.item_02.name": {
+      "params": []
+    },
+    "upgrade.hightech.item_03.description": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{（1+para1）^等级,百分比显示,保留两位小数,即100.3%展示为100%}"
+      ]
+    },
+    "upgrade.hightech.item_03.name": {
+      "params": []
+    },
+    "upgrade.charge.item_01.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}"
+      ]
+    },
+    "upgrade.charge.item_01.name": {
+      "params": []
+    },
+    "upgrade.charge.item_02.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}"
+      ]
+    },
+    "upgrade.charge.item_02.name": {
+      "params": []
+    },
+    "upgrade.charge.item_03.des": {
+      "params": [
+        "effect_1"
+      ],
+      "formulas": [
+        "{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}"
+      ]
+    },
+    "upgrade.charge.item_03.name": {
+      "params": []
+    },
+    "main.window_title": {
+      "params": []
+    },
+    "gem.inventory_full": {
+      "params": []
+    },
+    "upgrade.drag_hint": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.excel_filter": {
+      "params": []
+    },
+    "gem.grid_name_level": {
+      "params": [
+        "item_name",
+        "level"
+      ]
+    },
+    "debug.level_editor_store.message_01": {
+      "params": []
+    },
+    "debug.level_editor_store.message_02": {
+      "params": []
+    },
+    "debug.level_editor_store.message_03": {
+      "params": []
+    },
+    "debug.level_editor_store.message_04": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.level_editor_store.message_05": {
+      "params": [
+        "name",
+        "address"
+      ]
+    },
+    "debug.level_editor_store.message_06": {
+      "params": []
+    },
+    "debug.level_editor_store.message_07": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.level_editor_store.message_08": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.level_editor_store.message_09": {
+      "params": []
+    },
+    "debug.level_editor_store.message_10": {
+      "params": []
+    },
+    "debug.level_editor_store.message_11": {
+      "params": []
+    },
+    "debug.level_editor_store.message_12": {
+      "params": [
+        "args"
+      ]
+    },
+    "debug.level_editor_store.message_13": {
+      "params": [
+        "name",
+        "address"
+      ]
+    },
+    "debug.config_workbooks.message_01": {
+      "params": [
+        "created",
+        "updated",
+        "unchanged"
+      ]
+    },
+    "debug.config_workbooks.message_02": {
+      "params": []
+    },
+    "debug.config_workbooks.message_03": {
+      "params": [
+        "names"
+      ]
+    },
+    "debug.config_workbooks.message_04": {
+      "params": [
+        "name",
+        "value_2"
+      ]
+    },
+    "debug.config_workbooks.message_05": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.config_workbooks.message_06": {
+      "params": [
+        "filename"
+      ]
+    },
+    "debug.config_workbooks.message_07": {
+      "params": []
+    },
+    "debug.config_workbooks.message_08": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.config_workbooks.message_09": {
+      "params": [
+        "problems"
+      ]
+    },
+    "debug.config_workbooks.message_10": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.config_workbooks.message_11": {
+      "params": [
+        "sheet_name",
+        "r"
+      ]
+    },
+    "debug.config_workbooks.message_12": {
+      "params": [
+        "name",
+        "value_2",
+        "r"
+      ]
+    },
+    "debug.config_workbooks.message_13": {
+      "params": [
+        "filename"
+      ]
+    },
+    "debug.import_workbook.message_01": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.import_workbook.message_02": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.import_workbook.message_03": {
+      "params": []
+    },
+    "debug.import_workbook.message_04": {
+      "params": [
+        "ships"
+      ]
+    },
+    "debug.import_workbook.message_05": {
+      "params": [
+        "eid"
+      ]
+    },
+    "debug.import_workbook.message_06": {
+      "params": [
+        "eid"
+      ]
+    },
+    "debug.import_workbook.message_07": {
+      "params": []
+    },
+    "debug.import_workbook.message_08": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.import_workbook.message_09": {
+      "params": []
+    },
+    "debug.import_workbook.message_10": {
+      "params": []
+    },
+    "debug.import_workbook.message_11": {
+      "params": []
+    },
+    "debug.import_workbook.message_12": {
+      "params": []
+    },
+    "debug.import_workbook.message_13": {
+      "params": [
+        "eid",
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_14": {
+      "params": [
+        "eid"
+      ]
+    },
+    "debug.import_workbook.message_15": {
+      "params": [
+        "name"
+      ]
+    },
+    "debug.import_workbook.message_16": {
+      "params": [
+        "id"
+      ]
+    },
+    "debug.import_workbook.message_17": {
+      "params": []
+    },
+    "main.subtitle": {
+      "params": []
+    },
+    "gem.max_badge": {
+      "params": []
+    },
+    "gem.merge_badge": {
+      "params": []
+    },
+    "battle.damage_record": {
+      "params": [
+        "target",
+        "critical",
+        "damage"
+      ]
+    },
+    "main.offline_rewards": {
+      "params": [
+        "rewards"
+      ]
+    },
+    "upgrade.research_complete": {
+      "params": [
+        "name"
+      ]
+    },
+    "defense.armour_name": {
+      "params": []
+    },
+    "defense.shield_name": {
+      "params": []
+    },
+    "weapon.laser_name": {
+      "params": []
+    },
+    "weapon.missile_name": {
+      "params": []
+    },
+    "weapon.cannon_name": {
+      "params": []
+    },
+    "weapon.long_laser_name": {
+      "params": []
+    },
+    "weapon.tab": {
+      "params": []
+    },
+    "defense.tab": {
+      "params": []
+    },
+    "defense.shield": {
+      "params": []
+    },
+    "defense.armour": {
+      "params": []
+    },
+    "weapon.damage": {
+      "params": []
+    },
+    "gem.tab": {
+      "params": []
+    },
+    "ship.tab": {
+      "params": []
+    },
+    "upgrade.charge_tab": {
+      "params": []
+    },
+    "upgrade.research_tab": {
+      "params": []
+    },
+    "system.editor.title": {
+      "params": []
+    },
+    "system.editor.intro": {
+      "params": []
+    },
+    "system.editor.search": {
+      "params": []
+    },
+    "system.editor.search_placeholder": {
+      "params": []
+    },
+    "system.editor.category": {
+      "params": []
+    },
+    "system.editor.all": {
+      "params": []
+    },
+    "system.editor.save": {
+      "params": []
+    },
+    "system.editor.loading": {
+      "params": []
+    },
+    "system.editor.key_header": {
+      "params": []
+    },
+    "system.editor.text_header": {
+      "params": []
+    },
+    "system.editor.params_header": {
+      "params": []
+    },
+    "system.editor.note_header": {
+      "params": []
+    },
+    "system.editor.missing": {
+      "params": [
+        "parameters"
+      ]
+    },
+    "system.editor.extra": {
+      "params": [
+        "parameters"
+      ]
+    },
+    "system.editor.braces": {
+      "params": []
+    },
+    "system.editor.count": {
+      "params": [
+        "total",
+        "dirty",
+        "invalid"
+      ]
+    },
+    "system.editor.invalid_count": {
+      "params": [
+        "count"
+      ]
+    },
+    "system.editor.load_failed": {
+      "params": []
+    },
+    "system.editor.ready": {
+      "params": []
+    },
+    "system.editor.conflict": {
+      "params": []
+    },
+    "system.editor.invalid_keys": {
+      "params": []
+    },
+    "system.editor.conflict_save": {
+      "params": []
+    },
+    "system.editor.saved": {
+      "params": []
+    },
+    "system.category.main": {
+      "params": []
+    },
+    "system.category.battle": {
+      "params": []
+    },
+    "system.category.ship": {
+      "params": []
+    },
+    "system.category.weapon": {
+      "params": []
+    },
+    "system.category.defense": {
+      "params": []
+    },
+    "system.category.gem": {
+      "params": []
+    },
+    "system.category.inventory": {
+      "params": []
+    },
+    "system.category.upgrade": {
+      "params": []
+    },
+    "system.category.merge": {
+      "params": []
+    },
+    "system.category.shop": {
+      "params": []
+    },
+    "system.category.settings": {
+      "params": []
+    },
+    "system.category.system": {
+      "params": []
+    },
+    "system.category.debug": {
+      "params": []
+    },
+    "system.category.tooltip": {
+      "params": []
+    },
+    "debug.level_editor_store.message_101": {
+      "params": [
+        "name",
+        "address",
+        "raw",
+        "error"
+      ]
+    },
+    "debug.config_workbooks.message_101": {
+      "params": [
+        "name",
+        "error"
+      ]
+    },
+    "debug.import_workbook.message_101": {
+      "params": [
+        "label",
+        "positive",
+        "value"
+      ]
+    },
+    "debug.import_workbook.message_102": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_103": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_104": {
+      "params": []
+    },
+    "debug.import_workbook.message_105": {
+      "params": []
+    },
+    "debug.import_workbook.message_106": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_107": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_108": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_109": {
+      "params": [
+        "id"
+      ]
+    },
+    "debug.import_workbook.message_110": {
+      "params": [
+        "gid"
+      ]
+    },
+    "debug.import_workbook.message_111": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_112": {
+      "params": []
+    },
+    "debug.import_workbook.message_113": {
+      "params": []
+    },
+    "debug.import_workbook.message_114": {
+      "params": [
+        "parts"
+      ]
+    },
+    "debug.import_workbook.message_115": {
+      "params": []
+    },
+    "debug.import_workbook.message_116": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_117": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_118": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_119": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_120": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_121": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_122": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_123": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_124": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_125": {
+      "params": [
+        "label"
+      ]
+    },
+    "debug.import_workbook.message_126": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_127": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_128": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_129": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_130": {
+      "params": [
+        "key"
+      ]
+    },
+    "debug.import_workbook.message_131": {
+      "params": [
+        "id"
+      ]
+    },
+    "debug.import_workbook.message_132": {
+      "params": [
+        "enemy_id"
+      ]
+    },
+    "debug.import_workbook.message_133": {
+      "params": []
+    },
+    "debug.import_workbook.message_134": {
+      "params": []
+    },
+    "debug.import_workbook.message_135": {
+      "params": []
+    },
+    "system.validation.table": {
+      "params": []
+    },
+    "system.validation.row": {
+      "params": []
+    },
+    "system.validation.key": {
+      "params": [
+        "key"
+      ]
+    },
+    "system.validation.missing": {
+      "params": [
+        "key",
+        "parameter",
+        "count"
+      ]
+    },
+    "system.validation.extra": {
+      "params": [
+        "key",
+        "parameter"
+      ]
+    },
+    "system.validation.missing_key": {
+      "params": [
+        "key"
+      ]
+    },
+    "battle.boss_info": {
+      "params": [
+        "name"
+      ]
+    },
+    "settings.guard": {
+      "params": [
+        "state"
+      ]
+    },
+    "settings.sound": {
+      "params": [
+        "state"
+      ]
+    },
+    "upgrade.cost_one": {
+      "params": [
+        "cost"
+      ]
+    },
+    "upgrade.cost_ten": {
+      "params": [
+        "cost"
+      ]
+    },
+    "upgrade.scientist_cost": {
+      "params": [
+        "cost"
+      ]
+    },
+    "upgrade.completed": {
+      "params": [
+        "name",
+        "result"
+      ]
+    },
+    "inventory.rate": {
+      "params": [
+        "rate"
+      ]
+    },
+    "battle.slot_number": {
+      "params": [
+        "slot"
+      ]
+    },
+    "battle.enemy_marker": {
+      "params": [
+        "slot"
+      ]
+    },
+    "ship.ship.frigate.code": {
+      "params": []
+    },
+    "ship.ship.destroyer.code": {
+      "params": []
+    },
+    "ship.ship.cruiser.code": {
+      "params": []
+    },
+    "ship.ship.battleship.code": {
+      "params": []
+    },
+    "ship.ship.heavy_battleship.code": {
+      "params": []
+    },
+    "main.boss_health_cards.text_02": {
+      "params": [
+        "hp",
+        "max_hp"
+      ]
+    },
+    "upgrade.refresh_scientists.text_02": {
+      "params": [
+        "id",
+        "id_2"
+      ]
+    },
+    "system.confirm": {
+      "params": []
+    },
+    "system.cancel": {
+      "params": []
+    },
+    "system.open": {
+      "params": []
+    },
+    "system.editor.visibility": {
+      "params": []
+    },
+    "system.editor.active": {
+      "params": []
+    },
+    "system.editor.deleted": {
+      "params": []
+    },
+    "system.editor.delete": {
+      "params": []
+    },
+    "system.editor.restore": {
+      "params": []
+    },
+    "system.editor.deleted_saved": {
+      "params": []
+    },
+    "system.editor.restored": {
+      "params": []
+    }
+  },
+  "bindings": {
+    "resources": {
+      "1": {
+        "name": "inventory.resources.1.name"
+      },
+      "2": {
+        "name": "inventory.resources.2.name"
+      }
+    },
+    "ship": {
+      "Frigate": {
+        "des": "ship.ship.frigate.des",
+        "code": "ship.ship.frigate.code"
+      },
+      "Destroyer": {
+        "des": "ship.ship.destroyer.des",
+        "code": "ship.ship.destroyer.code"
+      },
+      "Cruiser": {
+        "des": "ship.ship.cruiser.des",
+        "code": "ship.ship.cruiser.code"
+      },
+      "Battleship": {
+        "des": "ship.ship.battleship.des",
+        "code": "ship.ship.battleship.code"
+      },
+      "Heavy_Battleship": {
+        "des": "ship.ship.heavy_battleship.des",
+        "code": "ship.ship.heavy_battleship.code"
+      }
+    },
+    "enemies": {
+      "1": {
+        "des": "battle.enemies.1.des"
+      },
+      "2": {
+        "des": "battle.enemies.2.des"
+      },
+      "3": {
+        "des": "battle.enemies.3.des"
+      },
+      "4": {
+        "des": "battle.enemies.4.des"
+      },
+      "5": {
+        "des": "battle.enemies.5.des"
+      },
+      "6": {
+        "des": "battle.enemies.6.des"
+      },
+      "7": {
+        "des": "battle.enemies.7.des"
+      },
+      "8": {
+        "des": "battle.enemies.8.des"
+      }
+    },
+    "jewel": {
+      "1": {
+        "name": "gem.jewel.1.name",
+        "des": "gem.jewel.1.des"
+      },
+      "2": {
+        "name": "gem.jewel.2.name",
+        "des": "gem.jewel.2.des"
+      },
+      "3": {
+        "name": "gem.jewel.3.name",
+        "des": "gem.jewel.3.des"
+      },
+      "4": {
+        "name": "gem.jewel.4.name",
+        "des": "gem.jewel.4.des"
+      },
+      "5": {
+        "name": "gem.jewel.5.name",
+        "des": "gem.jewel.5.des"
+      },
+      "6": {
+        "name": "gem.jewel.6.name",
+        "des": "gem.jewel.6.des"
+      },
+      "7": {
+        "name": "gem.jewel.7.name",
+        "des": "gem.jewel.7.des"
+      },
+      "8": {
+        "name": "gem.jewel.8.name",
+        "des": "gem.jewel.8.des"
+      },
+      "9": {
+        "name": "gem.jewel.9.name",
+        "des": "gem.jewel.9.des"
+      },
+      "10": {
+        "name": "gem.jewel.10.name",
+        "des": "gem.jewel.10.des"
+      }
+    },
+    "hightech": {
+      "超时空炼铁炉": {
+        "description": "upgrade.hightech.item_01.description",
+        "name": "upgrade.hightech.item_01.name"
+      },
+      "正电子聚焦装置": {
+        "description": "upgrade.hightech.item_02.description",
+        "name": "upgrade.hightech.item_02.name"
+      },
+      "简并态装甲": {
+        "description": "upgrade.hightech.item_03.description",
+        "name": "upgrade.hightech.item_03.name"
+      }
+    },
+    "charge": {
+      "攻击充能": {
+        "des": "upgrade.charge.item_01.des",
+        "name": "upgrade.charge.item_01.name"
+      },
+      "防御充能": {
+        "des": "upgrade.charge.item_02.des",
+        "name": "upgrade.charge.item_02.name"
+      },
+      "熔炼器充能": {
+        "des": "upgrade.charge.item_03.des",
+        "name": "upgrade.charge.item_03.name"
+      }
+    }
+  }
+}

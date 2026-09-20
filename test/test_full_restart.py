@@ -26,5 +26,7 @@ assert before['pid'] != after['pid'], 'PID must change'
 assert before['user'] == after['user'], 'Same isolated save directory'
 assert after['code'] == 'fresh', 'Updated code must execute'
 assert after['save']['resources']['1'] == 432123, 'Progress must survive'
+for field in ('stage', 'groupIndex', 'distance'):
+    assert after[field] == before[field], f'Current node must survive: {field}'
 assert 'speed=5' in (Path(after['user']) / 'qa_settings.cfg').read_text(encoding="utf-8"), 'QA settings must survive'
-print('PASS: busy guard, real new PID, updated source, same user directory, saved progress, QA settings')
+print('PASS: busy guard, real new PID, updated source, same user directory, saved progress, current node, QA settings')

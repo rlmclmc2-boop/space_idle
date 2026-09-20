@@ -1,4 +1,5 @@
 """Level editor source transaction. Uses the existing XLSX projection contract."""
+from ui_text import t as ui_text
 import argparse
 import ast
 import copy
@@ -38,7 +39,7 @@ class Store:
                 mapping[name] = f'{name}.xlsx'
             filename = mapping[name]
             if Path(filename).name != filename or '/' in filename or '\\' in filename:
-                raise ValueError('分表清单路径无效：' + name)
+                raise ValueError(ui_text('debug.level_editor_store.message_04', name=name))
             self.paths[name] = self.directory / filename
 
     def snapshot(self):
@@ -58,7 +59,7 @@ class Store:
             finally:
                 book.close()
         if before != self.snapshot():
-            raise ValueError('读取时配置被修改，请重新加载')
+            raise ValueError(ui_text('debug.level_editor_store.message_01'))
         data = json.loads(self.target.read_text(encoding='utf-8'))
         return {'tables': tables, 'snapshot': before, 'equipment': data['equipment'], 'resources': data['resources']}
 
@@ -77,7 +78,7 @@ class Store:
             if address in memo:
                 return memo[address]
             if address in visiting:
-                raise ValueError(f'{name}!{address}：公式循环引用')
+                raise ValueError(ui_text('debug.level_editor_store.message_05', name=name, address=address))
             raw = cells.get(address)
             if not isinstance(raw, str) or not raw.startswith('='):
                 return raw
@@ -98,16 +99,16 @@ class Store:
                     args = [walk(a) for a in node.args]
                     if node.func.id == 'CELL' and len(args) == 1:
                         result = value(args[0], visiting | {address})
-                        if type(result) not in (int, float): raise ValueError('引用不是数字：' + str(args[0]))
+                        if type(result) not in (int, float): raise ValueError(ui_text('debug.level_editor_store.message_12', args=str(args[0])))
                         return Decimal(str(result))
                     if node.func.id.upper() == 'ROUND' and len(args) == 2:
                         return args[0].quantize(Decimal(1).scaleb(-int(args[1])), rounding=ROUND_HALF_UP)
-                raise ValueError('仅支持本表单元格引用、四则运算和 ROUND')
+                raise ValueError(ui_text('debug.level_editor_store.message_06'))
             try:
                 result = float(walk(ast.parse(expression, mode='eval').body))
-                if not math.isfinite(result): raise ValueError('非有限结果')
+                if not math.isfinite(result): raise ValueError(ui_text('debug.level_editor_store.message_11'))
             except Exception as error:
-                raise ValueError(f'{name}!{address} {raw}：{error}') from error
+                raise ValueError(ui_text('debug.level_editor_store.message_101', name=name, address=address, raw=raw, error=error)) from error
             memo[address] = result
             return result
 
@@ -164,7 +165,7 @@ class Store:
                         ET.SubElement(cell, Q + 'f').text = raw[1:]
                         ET.SubElement(cell, Q + 'v').text = str(value(address))
                     elif type(raw) in (int, float):
-                        if not math.isfinite(raw): raise ValueError(f'{name}!{address}：非有限数字')
+                        if not math.isfinite(raw): raise ValueError(ui_text('debug.level_editor_store.message_13', name=name, address=address))
                         ET.SubElement(cell, Q + 'v').text = str(int(raw)) if raw == int(raw) else str(raw)
                     else:
                         cell.set('t', 'inlineStr')
@@ -181,7 +182,7 @@ class Store:
     def prepare(self, request):
         current = self.load()
         if current['snapshot'] != request['snapshot']:
-            raise ValueError('配置已被 Excel、QA 或另一个编辑器修改。请重新加载后再编辑，未覆盖文件。')
+            raise ValueError(ui_text('debug.level_editor_store.message_02'))
         tables = copy.deepcopy(request['tables'])
         original_levels = {r['id']: r for r in current['tables']['level']['rows']}
         for row in tables['level']['rows']:
@@ -190,10 +191,10 @@ class Store:
         files = {}
         for name in EDITABLE:
             if tables[name]['headers'] != current['tables'][name]['headers']:
-                raise ValueError('不允许修改字段结构：' + name)
+                raise ValueError(ui_text('debug.level_editor_store.message_07', name=name))
             ids = [r.get('id') for r in tables[name]['rows']]
             if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
-                raise ValueError(name + '：ID 必须为不重复的正整数')
+                raise ValueError(ui_text('debug.level_editor_store.message_08', name=name))
             if tables[name] != current['tables'][name]:
                 files[self.paths[name]] = self.workbook_bytes(name, tables[name])
         data = json.loads(self.target.read_text(encoding='utf-8'))
@@ -214,12 +215,12 @@ class Store:
     def execute(self, request, save=False):
         files, warnings = self.prepare(request)
         if save:
-            if request['snapshot'] != self.snapshot(): raise ValueError('保存前文件发生变化，请重新加载')
+            if request['snapshot'] != self.snapshot(): raise ValueError(ui_text('debug.level_editor_store.message_09'))
             backup = self.root / '.runtime/level-editor-backups' / uuid.uuid4().hex
             backups = {backup / p.relative_to(self.root): p.read_bytes() for p in files if p.exists()}
             atomic_batch({**backups, **files})
-            return {**self.load(), 'warnings': warnings, 'backup': str(backup), 'message': '已保存分表并导入配置。请在 QA 重启游戏使用新配置。'}
-        return {'warnings': warnings, 'message': '校验通过；尚未写入文件。'}
+            return {**self.load(), 'warnings': warnings, 'backup': str(backup), 'message': ui_text('debug.level_editor_store.message_10')}
+        return {'warnings': warnings, 'message': ui_text('debug.level_editor_store.message_03')}
 
 
 def main():

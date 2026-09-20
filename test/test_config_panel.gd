@@ -62,6 +62,10 @@ func run() -> void:
 	check(current_scene.game.speed==5,"Direct x5")
 	panel.send_control({"paused":false})
 	check(not current_scene.game.paused,"Direct resume")
+	# Freeze and settle pre-existing drops before assigning the persistence fixture.
+	# Otherwise legitimate pickups during asynchronous reload change the balance.
+	panel.send_control({"paused":true})
+	current_scene.game.settle_drops()
 	current_scene.game.profile.resources["1"]=4321
 	var previous_scene := current_scene.get_instance_id()
 	panel.restart_button.pressed.emit()

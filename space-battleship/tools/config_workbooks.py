@@ -3,6 +3,7 @@
 Split at the OOXML package level: retain cell formulas, cached values, styles,
 column widths and sheet relationships. No spreadsheet recalculation/rewriting.
 """
+from ui_text import t as ui_text
 import argparse
 import hashlib
 import io
@@ -60,7 +61,7 @@ def atomic_batch(files):
             except OSError:
                 problems.append(str(path))
         if problems:
-            raise RuntimeError("提交失败且部分文件无法恢复，请检查：" + ", ".join(problems)) from error
+            raise RuntimeError(ui_text('debug.config_workbooks.message_09', problems=", ".join(problems))) from error
         raise
     finally:
         for temp in staged.values():
@@ -104,7 +105,7 @@ def split_package(raw, sheet_name):
             formula = cell.find(Q + "f")
             if formula is not None and formula.text:
                 if any(re.search(r"(?:'" + re.escape(other.replace("'", "''")) + r"'|(?<![\w])" + re.escape(other) + r")!", formula.text) for other in other_names):
-                    raise ValueError(f"{sheet_name}!{cell.get('r')} 含跨表公式，不能直接拆成独立文件；请先改为本表引用或数值")
+                    raise ValueError(ui_text('debug.config_workbooks.message_11', sheet_name=sheet_name, r=cell.get('r')))
         removed = {path for name, path in parts if name != sheet_name}
         removed |= {posixpath.dirname(path) + "/_rels/" + posixpath.basename(path) + ".rels" for path in tuple(removed)}
         removed.add("xl/calcChain.xml")
@@ -160,7 +161,7 @@ def sync_workbooks(source, directory):
         for name in names:
             filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).rstrip(". ") + ".xlsx"
             if filename.lower() in used or filename.lower().split(".")[0] in {"con", "prn", "aux", "nul", *("com" + str(i) for i in range(1, 10)), *("lpt" + str(i) for i in range(1, 10))}:
-                raise ValueError("工作表名称不能安全映射为独立文件：" + name)
+                raise ValueError(ui_text('debug.config_workbooks.message_10', name=name))
             used.add(filename.lower())
             mapping[name] = filename
             target = directory / filename
@@ -182,14 +183,14 @@ def sync_workbooks(source, directory):
     # No deleting unrelated files or worksheets removed from the master.
     atomic_batch(files)
     return {"ok":True,"action":"split","created":created,"updated":updated,"unchanged":unchanged,
-            "directory":str(directory.resolve()),"message":f"拆分同步成功：新建 {len(created)}，更新 {len(updated)}，未变 {len(unchanged)}。"}
+            "directory":str(directory.resolve()),"message":ui_text('debug.config_workbooks.message_01', created=len(created), updated=len(updated), unchanged=len(unchanged))}
 
 
 def read_changed_file(path, name, raw, *, ignored_formula_columns=()):
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         parts = sheet_parts(archive)
         if len(parts) != 1 or parts[0][0] != name:
-            raise ValueError(f"{path.name} 必须仅包含名为 {name} 的工作表")
+            raise ValueError(ui_text('debug.config_workbooks.message_04', name=path.name, value_2=name))
         tree = ET.fromstring(archive.read(parts[0][1]))
         for cell in tree.iter(Q + "c"):
             if re.sub(r'\d', '', cell.get('r', '')) in ignored_formula_columns:
@@ -197,7 +198,7 @@ def read_changed_file(path, name, raw, *, ignored_formula_columns=()):
             if cell.find(Q + "f") is not None:
                 value = cell.find(Q + "v")
                 if value is None or value.text is None:
-                    raise ValueError(f"{path.name} / {name}!{cell.get('r')} 公式缺少计算缓存，请在 Excel 中计算并保存")
+                    raise ValueError(ui_text('debug.config_workbooks.message_12', name=path.name, value_2=name, r=cell.get('r')))
     book = openpyxl.load_workbook(io.BytesIO(raw), read_only=True, data_only=True)
     try:
         return convert_sheet(name, read_rows(book[name]))
@@ -208,7 +209,7 @@ def read_changed_file(path, name, raw, *, ignored_formula_columns=()):
 def incremental_import(directory, target):
     manifest = read_json(directory / MANIFEST)
     if not manifest:
-        raise ValueError("请先点击「拆分／同步 Excel」，建立独立配置表")
+        raise ValueError(ui_text('debug.config_workbooks.message_02'))
     state_path = target.with_name(".import_state.json")
     state = read_json(state_path)
     original = target.read_bytes() if target.exists() else b""
@@ -222,13 +223,13 @@ def incremental_import(directory, target):
             filename = f'{name}.xlsx'
             if not (directory / filename).is_file():
                 if current.get(SECTIONS[name]):
-                    raise ValueError(f'缺少 {filename}；原配置保留，请恢复文件')
+                    raise ValueError(ui_text('debug.config_workbooks.message_13', filename=filename))
                 continue
         if not filename or pathlib.Path(filename).name != filename:
-            raise ValueError("分表清单缺少或包含无效路径：" + name)
+            raise ValueError(ui_text('debug.config_workbooks.message_05', name=name))
         path = directory / filename
         if not path.is_file():
-            raise ValueError(f"缺少 {filename}；原配置保留，请恢复文件或重新同步")
+            raise ValueError(ui_text('debug.config_workbooks.message_06', filename=filename))
         raw = path.read_bytes()
         digest = sha(raw)
         snapshot[name] = digest
@@ -236,13 +237,13 @@ def incremental_import(directory, target):
         if digest != hashes.get(name) or section not in current:
             changed.append((name, raw))
     if not changed:
-        return {"ok":True,"action":"import","changed":[],"parsed":[],"message":"没有配置变化，未读取工作表，也未改写 JSON。"}
+        return {"ok":True,"action":"import","changed":[],"parsed":[],"message":ui_text('debug.config_workbooks.message_07')}
     data = projection_base(current, directory.name)
     for name, raw in changed:
         try:
             data[SECTIONS[name]] = read_changed_file(paths[name], name, raw)
         except Exception as error:
-            raise ValueError(f"{paths[name].name}：{error}") from error
+            raise ValueError(ui_text('debug.config_workbooks.message_101', name=paths[name].name, error=error)) from error
     # Cross-table checks run against the merged JSON, not unchanged Excel files.
     validate_projection(data)
     data["source_files"] = {name:str(path.resolve()) for name,path in paths.items()}
@@ -250,11 +251,11 @@ def incremental_import(directory, target):
     # Never commit a snapshot that was changed again while it was being parsed.
     for name, path in paths.items():
         if sha(path.read_bytes()) != snapshot[name]:
-            raise ValueError(f"{path.name} 在读取过程中又被修改，请保存完成后重试")
+            raise ValueError(ui_text('debug.config_workbooks.message_08', name=path.name))
     next_state = {"version":CACHE_VERSION,"directory":str(directory.resolve()),"target_hash":sha(payload),"hashes":snapshot}
     atomic_batch({target:payload, state_path:encode(next_state)})
     names = [name for name, _ in changed]
-    return {"ok":True,"action":"import","changed":names,"parsed":names,"message":"导入成功：更新 " + "、".join(names) + "；其余配置保持不变。"}
+    return {"ok":True,"action":"import","changed":names,"parsed":names,"message":ui_text('debug.config_workbooks.message_03', names="、".join(names))}
 
 
 def main():

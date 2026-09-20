@@ -1,4 +1,5 @@
 """Excel projection and validation shared by full and incremental imports."""
+from ui_text import t as ui_text
 import argparse
 import ast
 import copy
@@ -29,24 +30,24 @@ def convert_sheet(name, rows):
     if name in ('mon', 'monGroup', 'res', 'level', 'jewel'):
         ids = [row.get('id') for row in rows]
         if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
-            raise ValueError(f'{name}：ID 必须为不重复的正整数')
+            raise ValueError(ui_text('debug.import_workbook.message_02', name=name))
     if name == 'jewel':
         for row in rows:
             positive(row.get('maxLevel'), 'jewel maxLevel')
             if row['maxLevel'] != int(row['maxLevel']):
-                raise ValueError('jewel：最大等级必须是正整数')
+                raise ValueError(ui_text('debug.import_workbook.message_07'))
             row["image"] = row.get("image") or f"res://assets/jewels/{int(row['id'])}.svg"
         return {str(int(row['id'])): row for row in rows}
     if name == 'config':
         keys = [row.get('name') for row in rows]
         if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
-            raise ValueError('config：名称必须非空且不能重复')
+            raise ValueError(ui_text('debug.import_workbook.message_03'))
     if name in ("hightech", "charge"):
         result={}
         for row in rows:
             key=row.get("name")
             if not isinstance(key,str) or not key.strip() or key in result:
-                raise ValueError(f"{name}：名称必须非空且不能重复")
+                raise ValueError(ui_text('debug.import_workbook.message_08', name=name))
             result[key]=row
         return result
     if name=="equipment":
@@ -57,9 +58,9 @@ def convert_sheet(name, rows):
             result.setdefault(row["name"],[]).append(row)
         for items in result.values():
             if any(type(r.get('level')) not in (int, float) or not math.isfinite(r['level']) or r['level'] < 1 or r['level'] != int(r['level']) for r in items):
-                raise ValueError("equipment：等级为空或不是数字，请在 Excel 中重新计算并保存")
+                raise ValueError(ui_text('debug.import_workbook.message_09'))
             if len({r['level'] for r in items}) != len(items):
-                raise ValueError('equipment：同名装备等级不能重复')
+                raise ValueError(ui_text('debug.import_workbook.message_10'))
             items.sort(key=lambda r:r["level"])
         return result
     if name=="mon":
@@ -69,7 +70,7 @@ def convert_sheet(name, rows):
             for part in clean(row["equipment"]).split(","):
                 fields = part.split("|")
                 if len(fields) != 2 or not fields[0].strip() or not fields[1].strip().isdigit() or int(fields[1]) < 1:
-                    raise ValueError(f'mon {row["id"]}：武器格式应为 name|正整数数量')
+                    raise ValueError(ui_text('debug.import_workbook.message_16', id=row["id"]))
                 mounts.extend({"name": fields[0].strip()} for _ in range(int(fields[1])))
             row["equipment"] = mounts
             drop=clean(row["res"]).split(",")
@@ -84,7 +85,7 @@ def convert_sheet(name, rows):
         for row in rows:
             ratio = row.get("jewelRatio", 1)
             if type(ratio) not in (int, float) or not math.isfinite(ratio) or ratio < 0:
-                raise ValueError("level：jewelRatio 必须为非负数")
+                raise ValueError(ui_text('debug.import_workbook.message_11'))
             row["jewelRatio"] = ratio
             row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
         return rows
@@ -95,17 +96,17 @@ def convert_sheet(name, rows):
             if row["name"] == "jewelCreat":
                 positive(row["para_1"], "config jewelCreat")
                 if row["para_1"] != int(row["para_1"]):
-                    raise ValueError("config：jewelCreat 必须为正整数")
+                    raise ValueError(ui_text('debug.import_workbook.message_17'))
         return {r["name"]:r["para_1"] for r in rows}
     if name=="ship":
         result={}
         for row in rows:
             key=row.get("name")
             if not isinstance(key,str) or not key.strip() or key in result:
-                raise ValueError("ship：名称必须非空且不能重复")
+                raise ValueError(ui_text('debug.import_workbook.message_12'))
             result[key]={"name":key,"des":row.get("des"),"weaponSlots":row.get("para_1"),"defenseSlots":row.get("para_2"),"movement":row.get("para_3"),"unlock":row.get("para_4"),"size":row.get("para_5"),"sameEquipmentLimit":row.get("para_6")}
         return result
-    raise ValueError("未知配置表："+name)
+    raise ValueError(ui_text('debug.import_workbook.message_01', name=name))
 
 def projection_base(previous, source):
     data=copy.deepcopy(previous or {})
@@ -116,32 +117,32 @@ def projection_base(previous, source):
 
 def positive(value, label, allow_zero=False):
     if not isinstance(value, (int,float)) or not math.isfinite(value) or value < 0 or (value == 0 and not allow_zero):
-        raise ValueError(f'{label}: expected {"nonnegative" if allow_zero else "positive"} number, got {value!r}')
+        raise ValueError(ui_text('debug.import_workbook.message_101', label=label, positive="nonnegative" if allow_zero else "positive", value=repr(value)))
 
 def validate_description(row, field='description', section='hightech'):
     description=row.get(field)
     label=f'{section} {row["name"]} {field}'
     if not isinstance(description,str) or not description.strip():
-        raise ValueError(f'{label}: must not be empty')
+        raise ValueError(ui_text('debug.import_workbook.message_102', label=label))
     for token in re.findall(r'para\d+', description):
         positive(row.get(token if section=='hightech' else token.replace('para','para_')),f'{label} {token}',True)
     blocks=re.findall(r'\{([^{}]+)\}',description)
     if '{' in re.sub(r'\{[^{}]+\}','',description) or '}' in re.sub(r'\{[^{}]+\}','',description):
-        raise ValueError(f'{label}: invalid braces')
+        raise ValueError(ui_text('debug.import_workbook.message_103', label=label))
     for block in blocks:
         parts=block.replace('，',',').split(',')
         if any(option.strip() not in ('向上取整','不含自身','百分比显示','保留两位小数','即100.3%展示为100%','百分比','四舍五入保留整数百分比部分') for option in parts[1:]):
-            raise ValueError(f'{label}: unknown rounding instruction')
+            raise ValueError(ui_text('debug.import_workbook.message_106', label=label))
         formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('lv','1.0').replace('（','(').replace('）',')').replace('^','**')
         if not re.fullmatch(r'[0-9. +*/()\-]+',formula):
-            raise ValueError(f'{label}: only numeric arithmetic is supported')
+            raise ValueError(ui_text('debug.import_workbook.message_107', label=label))
         try:
             tree=ast.parse(formula.strip(),mode='eval')
         except SyntaxError as error:
-            raise ValueError(f'{label}: invalid expression') from error
+            raise ValueError(ui_text('debug.import_workbook.message_124', label=label)) from error
         for node in ast.walk(tree):
             if not isinstance(node,(ast.Expression,ast.BinOp,ast.UnaryOp,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow,ast.UAdd,ast.USub,ast.Constant)) or (isinstance(node,ast.Constant) and (type(node.value) not in (int,float) or not math.isfinite(node.value))):
-                raise ValueError(f'{label}: only numeric arithmetic is supported')
+                raise ValueError(ui_text('debug.import_workbook.message_125', label=label))
 
 
 def validate_projection(data, *, check_level_ratios=True):
@@ -153,26 +154,26 @@ def validate_projection(data, *, check_level_ratios=True):
     ships=data.get("ship",{})
     if ships:
         if len(ships) != 5:
-            raise ValueError(f'ship 表：应有 5 艘舰船，当前 {len(ships)} 艘')
+            raise ValueError(ui_text('debug.import_workbook.message_04', ships=len(ships)))
         for key,row in ships.items():
             if not isinstance(row.get('des'),str) or not row['des'].strip():
-                raise ValueError(f'ship {key}: des must not be empty')
+                raise ValueError(ui_text('debug.import_workbook.message_126', key=key))
             for field in ('weaponSlots','defenseSlots','movement','unlock','size'):
                 positive(row.get(field),f'ship {key} {field}', field == 'unlock')
             if row['weaponSlots'] != int(row['weaponSlots']) or row['weaponSlots'] < 1:
-                raise ValueError(f'ship {key}: weaponSlots must be a positive integer')
+                raise ValueError(ui_text('debug.import_workbook.message_127', key=key))
             positive(row.get('sameEquipmentLimit'),f'ship {key} sameEquipmentLimit')
             if row['sameEquipmentLimit'] != int(row['sameEquipmentLimit']):
-                raise ValueError(f'ship {key}: sameEquipmentLimit must be a positive integer')
+                raise ValueError(ui_text('debug.import_workbook.message_128', key=key))
             if row['defenseSlots'] != int(row['defenseSlots']) or row['defenseSlots'] < 1:
-                raise ValueError(f'ship {key}: defenseSlots must be a positive integer')
+                raise ValueError(ui_text('debug.import_workbook.message_129', key=key))
             if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
-                raise ValueError(f'ship {key}: unlock must reference a level or be zero')
+                raise ValueError(ui_text('debug.import_workbook.message_130', key=key))
     for key in ('armour','shield','laser','missile','cannon'):
         items=equipment.get(key,[])
         bases = [r for r in items if r.get('level') == 1]
         if len(bases) != 1:
-            raise ValueError(f'equipment {key}: expected exactly one base row (level 1)')
+            raise ValueError(ui_text('debug.import_workbook.message_108', key=key))
         for r in bases:
             positive(r['para1'] if key in ('armour','shield') else r['dmg'],f'{key} Lv.{r["level"]} value')
             if key not in ('armour','shield'):
@@ -188,55 +189,55 @@ def validate_projection(data, *, check_level_ratios=True):
                     suffix = field.removeprefix('cost_')
                     positive(r.get('cost_multi_' + suffix, r.get('costMulti_' + suffix)), f'{key} cost multiplier {suffix}', True)
     if [r['id'] for r in levels] != list(range(1,len(levels)+1)) or not levels:
-        raise ValueError('Level IDs must be consecutive from 1')
+        raise ValueError(ui_text('debug.import_workbook.message_104'))
     for level in levels:
         for key in (('length','atkRatio','lifeRatio','resRatio') if check_level_ratios else ('length',)):
             positive(level[key],f'level {level["id"]} {key}')
         positions=[g['position'] for g in level['groups']]
         if not positions or positions!=sorted(set(positions)) or not all(0<=p<=1 for p in positions):
-            raise ValueError(f'level {level["id"]}: invalid encounter positions')
+            raise ValueError(ui_text('debug.import_workbook.message_109', id=level["id"]))
         for g in level['groups']:
-            if str(g['id']) not in groups: raise ValueError(f'Unknown group {g["id"]}')
+            if str(g['id']) not in groups: raise ValueError(ui_text('debug.import_workbook.message_131', id=g["id"]))
     for gid,g in groups.items():
-        if len(g['slots'])!=10: raise ValueError(f'group {gid}: expected 10 slots')
+        if len(g['slots'])!=10: raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
         for enemy_id in g['slots']:
-            if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(f'Unknown enemy {enemy_id}')
+            if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(ui_text('debug.import_workbook.message_132', enemy_id=enemy_id))
     for enemy in enemies.values():
         eid = enemy['id']
         size = enemy['size']
         if type(size) not in (int, float) or not math.isfinite(size) or size != int(size) or size < 1:
-            raise ValueError(f'敌机 {eid}：外观尺寸等级必须为正整数')
-        if enemy['armourType'] not in (0, 1, 2): raise ValueError(f'敌机 {eid}：抗性应为 0/1/2')
+            raise ValueError(ui_text('debug.import_workbook.message_05', eid=eid))
+        if enemy['armourType'] not in (0, 1, 2): raise ValueError(ui_text('debug.import_workbook.message_06', eid=eid))
         for weapon in enemy['equipment']:
             key = weapon['name']
             base = key.replace('_mon', '').replace('-mon', '')
             candidates = equipment.get(key, []) + equipment.get(base, [])
             if base not in ('laser', 'cannon', 'missile') or not any(r['level'] == 1 for r in candidates):
-                raise ValueError(f'敌机 {eid}：无效武器 {key}')
+                raise ValueError(ui_text('debug.import_workbook.message_13', eid=eid, key=key))
         positive(enemy['health'],f'enemy {enemy["id"]} health')
         positive(enemy['dmgMultiple'],f'enemy {enemy["id"]} damage multiplier',True)
         for drop in enemy['drops']:
-            if str(drop['resourceId']) not in data['resources']: raise ValueError(f'敌机 {eid}：无效掉落资源')
+            if str(drop['resourceId']) not in data['resources']: raise ValueError(ui_text('debug.import_workbook.message_14', eid=eid))
             positive(drop['amount'],'drop amount',True)
-            if not 0<=drop['chance']<=1: raise ValueError('Drop chance must be between 0 and 1')
+            if not 0<=drop['chance']<=1: raise ValueError(ui_text('debug.import_workbook.message_133'))
     for key in ('dmgReduce','autoCollectReduce'):
-        if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(f'{key} must be between 0 (inclusive) and 1 (exclusive)')
+        if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(ui_text('debug.import_workbook.message_111', key=key))
     positive(config['movement'],'movement')
     positive(config['backRange'],'backRange',True)
     positive(config.get('offlineMax'),'offlineMax (hours)',True)
     auto_gen = config.get('autoGenRes')
     if auto_gen is not None:
         if not isinstance(auto_gen, str):
-            raise ValueError('autoGenRes: expected interval, resource ID, amount, speed')
+            raise ValueError(ui_text('debug.import_workbook.message_112'))
         parts = [part.strip() for part in auto_gen.replace('，', ',').split(',')]
         if len(parts) != 4 or not parts[0] or not parts[1] or not parts[2] or not parts[3]:
-            raise ValueError('autoGenRes: expected interval, resource ID, amount, speed')
+            raise ValueError(ui_text('debug.import_workbook.message_113'))
         if not re.fullmatch(r'\d+', parts[1]) or str(int(parts[1])) not in data['resources']:
-            raise ValueError(f'autoGenRes: unknown resource ID {parts[1]!r}')
+            raise ValueError(ui_text('debug.import_workbook.message_114', parts=repr(parts[1])))
         try:
             interval, amount, speed = (float(parts[0]), float(parts[2]), float(parts[3]))
         except ValueError as error:
-            raise ValueError('autoGenRes: interval, amount and speed must be numbers') from error
+            raise ValueError(ui_text('debug.import_workbook.message_134')) from error
         positive(interval, 'autoGenRes interval')
         positive(amount, 'autoGenRes amount', True)
         positive(speed, 'autoGenRes speed')
@@ -244,29 +245,29 @@ def validate_projection(data, *, check_level_ratios=True):
     positive(limit,'hightechLimit')
     positive(config.get('techPointGet'),'techPointGet')
     parts=str(config.get('scientistCost','')).replace('，',',').split(',')
-    if len(parts)<2: raise ValueError('scientistCost: expected multiplier and resource costs')
+    if len(parts)<2: raise ValueError(ui_text('debug.import_workbook.message_105'))
     try:
         positive(float(parts[0]),'scientistCost multiplier')
         seen=set()
         for part in parts[1:]:
             rid,amount=part.split('|')
-            if rid not in data['resources'] or rid in seen: raise ValueError('scientistCost: invalid or duplicate resource')
+            if rid not in data['resources'] or rid in seen: raise ValueError(ui_text('debug.import_workbook.message_135'))
             seen.add(rid)
             positive(float(amount),'scientistCost amount',True)
     except (ValueError,TypeError) as error:
-        raise ValueError('scientistCost: invalid resource costs') from error
+        raise ValueError(ui_text('debug.import_workbook.message_115')) from error
     for key,row in data['hightech'].items():
         validate_description(row)
         if not isinstance(row.get('des'),str) or not row['des'].strip():
-            raise ValueError(f'hightech {key}: des must not be empty')
+            raise ValueError(ui_text('debug.import_workbook.message_116', key=key))
         positive(row.get('tpCostBase'),f'hightech {key} tpCostBase')
         if math.floor(row['tpCostBase']+0.5)<1:
-            raise ValueError(f'hightech {key}: rounded research points must be positive')
+            raise ValueError(ui_text('debug.import_workbook.message_117', key=key))
         positive(row.get('tpCostMutiple'),f'hightech {key} tpCostMutiple',True)
         unlock=row.get('unlock')
         positive(unlock,f'hightech {key} unlock',True)
         if unlock != int(unlock) or unlock > len(levels):
-            raise ValueError(f'hightech {key}: unlock must reference a level or be zero')
+            raise ValueError(ui_text('debug.import_workbook.message_118', key=key))
         positive(row.get('para1'),f'hightech {key} para1',True)
         if row.get('para2') is not None:
             positive(row['para2'],f'hightech {key} para2',True)
@@ -276,21 +277,21 @@ def validate_projection(data, *, check_level_ratios=True):
 
     for key,row in data.get('charge',{}).items():
         if key not in ('攻击充能','防御充能','熔炼器充能'):
-            raise ValueError(f'charge {key}: unsupported effect')
+            raise ValueError(ui_text('debug.import_workbook.message_119', key=key))
         if not isinstance(row.get('func'),str) or not row['func'].strip():
-            raise ValueError(f'charge {key}: func must not be empty')
+            raise ValueError(ui_text('debug.import_workbook.message_120', key=key))
         validate_description(row,'des','charge')
         for field in ('para_1','para_2','para_4','para_5','para_6'):
             positive(row.get(field),f'charge {key} {field}')
         positive(row.get('para_3'),f'charge {key} para_3',True)
         positive(row.get('para_7',0),f'charge {key} para_7',True)
         if row['para_1'] != int(row['para_1']) or str(int(row['para_1'])) not in data['resources']:
-            raise ValueError(f'charge {key}: unknown resource')
+            raise ValueError(ui_text('debug.import_workbook.message_121', key=key))
         if math.floor(row['para_5'] + 0.5) < 1 or row['para_6'] < 1:
-            raise ValueError(f'charge {key}: rounded charge count must stay positive; growth multiplier must be at least 1')
+            raise ValueError(ui_text('debug.import_workbook.message_122', key=key))
         positive(row.get('unlock'),f'charge {key} unlock',True)
         if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
-            raise ValueError(f'charge {key}: invalid unlock level')
+            raise ValueError(ui_text('debug.import_workbook.message_123', key=key))
 
     data["defaults"].pop("maxEquipmentLevel", None)
 
@@ -307,7 +308,7 @@ def full_import(source, target):
             if name not in book.sheetnames:
                 if name in ('charge','ship','jewel'):
                     continue  # Older master workbooks predate optional projections.
-                raise ValueError("缺少配置表："+name)
+                raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))
     finally:
         book.close()

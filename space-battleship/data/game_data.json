@@ -92,8 +92,8 @@
         "cost_2": null,
         "costMulti_2": null,
         "para1": 500,
-        "para2": 0.05,
-        "para3": 3,
+        "para2": 0.1,
+        "para3": 2,
         "para4": 0.2
       }
     ],
@@ -105,7 +105,7 @@
         "dmgtype": 1,
         "dmg": 100,
         "dmgMulti": 0.2,
-        "cd": 1,
+        "cd": 0.5,
         "unlock": null,
         "res_1": 1,
         "cost_1": 50,
@@ -113,7 +113,7 @@
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 40,
+        "para1": 30,
         "para2": null,
         "para3": null,
         "para4": null
@@ -127,7 +127,7 @@
         "dmgtype": 2,
         "dmg": 30,
         "dmgMulti": 0.2,
-        "cd": 2,
+        "cd": 1,
         "unlock": 1,
         "res_1": 1,
         "cost_1": 50,
@@ -136,7 +136,7 @@
         "cost_2": null,
         "costMulti_2": null,
         "para1": 3,
-        "para2": 30,
+        "para2": 20,
         "para3": null,
         "para4": null
       }
@@ -149,7 +149,7 @@
         "dmgtype": 2,
         "dmg": 200,
         "dmgMulti": 0.2,
-        "cd": 2,
+        "cd": 1,
         "unlock": 2,
         "res_1": 1,
         "cost_1": 50,
@@ -157,7 +157,7 @@
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 20,
+        "para1": 40,
         "para2": null,
         "para3": null,
         "para4": null
@@ -169,9 +169,9 @@
         "des": "激光武器，发射一个光束攻击锁定目标，para1是飞行速度/S",
         "level": 1,
         "dmgtype": 1,
-        "dmg": 10,
+        "dmg": 20,
         "dmgMulti": null,
-        "cd": 1,
+        "cd": 0.5,
         "unlock": null,
         "res_1": null,
         "cost_1": null,
@@ -193,7 +193,7 @@
         "dmgtype": 2,
         "dmg": 5,
         "dmgMulti": null,
-        "cd": 2,
+        "cd": 1,
         "unlock": null,
         "res_1": null,
         "cost_1": null,
@@ -213,9 +213,9 @@
         "des": "火炮武器，与激光一样，发射一个炮弹攻击锁定目标敌人，para1是飞行速度/S",
         "level": 1,
         "dmgtype": 2,
-        "dmg": 20,
+        "dmg": 40,
         "dmgMulti": null,
-        "cd": 2,
+        "cd": 1,
         "unlock": null,
         "res_1": null,
         "cost_1": null,
@@ -235,7 +235,7 @@
         "des": "锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)",
         "level": 1,
         "dmgtype": 1,
-        "dmg": 20,
+        "dmg": 40,
         "dmgMulti": 0.2,
         "cd": 0.2,
         "unlock": 5,
@@ -257,7 +257,7 @@
         "des": "锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)",
         "level": 1,
         "dmgtype": 1,
-        "dmg": 20,
+        "dmg": 40,
         "dmgMulti": 0.2,
         "cd": 0.2,
         "unlock": 5,
@@ -746,46 +746,46 @@
     {
       "id": 2,
       "length": 1000,
-      "monGroup": "{2|0.1,5|0.2,2|0.3,5|0.4,6|0.5,5|0.6,2|0.7,5|0.8,9|0.9}",
+      "monGroup": "{1|0.1,4|0.2,1|0.3,4|0.4,7|0.5,4|0.6,1|0.7,4|0.8,10|0.9}",
       "atkRatio": 1.8,
       "lifeRatio": 1.8,
       "resRatio": 1.4,
       "jewelRatio": 1.2,
       "groups": [
         {
-          "id": 2,
+          "id": 1,
           "position": 0.1
         },
         {
-          "id": 5,
+          "id": 4,
           "position": 0.2
         },
         {
-          "id": 2,
+          "id": 1,
           "position": 0.3
         },
         {
-          "id": 5,
+          "id": 4,
           "position": 0.4
         },
         {
-          "id": 6,
+          "id": 7,
           "position": 0.5
         },
         {
-          "id": 5,
+          "id": 4,
           "position": 0.6
         },
         {
-          "id": 2,
+          "id": 1,
           "position": 0.7
         },
         {
-          "id": 5,
+          "id": 4,
           "position": 0.8
         },
         {
-          "id": 9,
+          "id": 10,
           "position": 0.9
         }
       ]

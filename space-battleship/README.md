@@ -4,6 +4,7 @@ AI从[AGENTS](AGENTS.md)开始；领域规则查[PROJECT](docs/PROJECT.md)，实
 
 ## 启动和QA
 
+- 修改 UI 文字：双击项目内 [UI文案表.bat](UI文案表.bat)，只改“UI文字”列，保存后重启游戏。参数自动校验，操作及发布说明见 [UI 文案表](docs/UI_TEXT.md)。
 - Windows双击工作区`启动.cmd`运行游戏；项目`打开编辑器.cmd`打开Godot工程；`关卡编辑器.cmd`打开独立配置编辑器，三者用途不同。
 - 游戏/工程启动脚本使用`engine/Godot_v4.7.2-stable_win64.exe`。独立关卡编辑器也可设`SPACE_BATTLESHIP_GODOT`；它使用`.runtime/level-editor-user/`独立用户目录。
 - 启动游戏先等待Godot资源导入，失败查看`.runtime/startup-import.log`；资源导入不读取Excel。游戏运行只需引擎和已有投影。
@@ -37,9 +38,11 @@ python tools/inspect_knowledge.py --source config_excel/equipment.xlsx --sheet e
 
 双击工作区根目录 `build_release.bat`。成功后只分发 `release/SpaceBattleship.exe`，不需要复制本项目、引擎、Python、Excel、node_modules 或任何开发工具。自动化调用可用 `build_release.bat --no-pause`；默认成功或失败都保留窗口，失败返回非 0。
 
+打包入口以自身所在文件夹查找唯一 Godot 工程（`project.godot` 与 `tools/build_release.ps1`），不要求 D 盘或固定的工程文件夹名，也不依赖启动时的工作目录。移动工程时保留工作区内工程、`test/` 和入口脚本的相对布局。构建日志会输出检测到的工程与输出根目录；导出副本中的模板路径每次重新绑定到当前工程，源预设即使残留旧电脑绝对路径，也不会沿用或被改写。找不到工程或找到多个工程时明确报错，不猜测目标。
+
 - 目标为 Windows 10/11 x64，显卡及驱动需要支持 OpenGL 3.3（Godot GL Compatibility）。使用 Godot 4.7.2 **正式 release 模板 + Embed PCK**，引擎、GDScript 字节码、运行 JSON、图片、中文字体及字体许可证内嵌为单个 GUI EXE；音效由原有代码生成，无外部音频文件。不使用自解压、多文件安装器或开发引擎充当发布程序。
 - 存档通过 Godot `user://` 写到 `%APPDATA%\SpaceBattleship\progress.json`，目录由 Windows 用户环境自动确定，无需手工配置环境变量；不会写到 EXE 旁边，也不会读取开发用 `.userdata`。发布版禁用 F1 QA、QA 偏好、截图作弊参数、控制台包装程序及常规日志。现有开发入口保持原行为。
-- 构建只读取当前 `data/game_data.json`，不自动导入/重算/重置 Excel 和 JSON。Noto Sans SC 及 OFL 许可证放在 `assets/fonts/`，不需要玩家预装中文字体。
+- 构建读取当前 `data/game_data.json`、`data/ui_text.json` 和 `data/ui_text_contract.json`，不自动导入/重算/重置 Excel 和 JSON。Noto Sans SC 及 OFL 许可证放在 `assets/fonts/`，不需要玩家预装中文字体。
 - 首次在另一台**构建电脑**准备：放入官方 `engine/Godot_v4.7.2-stable_win64.exe`；执行 `powershell -NoProfile -ExecutionPolicy Bypass -File space-battleship/tools/install_release_template.ps1`。模板安装脚本从官方 Godot release 下载约 1.3 GB 模板包，校验固定 SHA512，只提取 `engine/templates/4.7.2.stable/windows_release_x86_64.exe`。也可从同一官方包手工提取该文件。缺失、错误版本或损坏的工具会阻断构建，不自动降级。
 - 构建顺序：独占锁 → 将旧 release 隔离到 `test/work/release-*/previous-release-not-current` → 检查工具 → 复制必要运行输入到隔离目录 → 导入/编译 → release 导出及 PCK 内嵌 → 检查唯一文件、PE GUI/x64/PCK 及系统 DLL → 同一输入另建 release 验证包 → 删除本次中间项目 → 隔离验证资源与禁用 QA → 删除验证程序 → 最终 EXE 正常入口渲染、写档并重开 → 最后发布。源码、正式玩家目录不参与测试写入。
 - 任一阶段失败立即退出，日志给出阶段、核心错误及路径；未验证 EXE 删除，旧产物保持隔离，不回填到 release。完整日志在工作区 `build.log`，分阶段日志与截图在 `test/work/release-*`。修复后重新双击，完整重跑。不要把 `previous-release-not-current` 当作本次发布结果。

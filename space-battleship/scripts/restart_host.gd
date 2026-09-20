@@ -15,7 +15,7 @@ func _process(delta: float) -> bool:
 	if old_pid < 0: return false
 	if OS.is_process_running(old_pid):
 		if elapsed > 60:
-			printerr("大重启失败：旧游戏进程未退出。")
+			printerr(UIText.t("debug._process.text_17"))
 			quit(1)
 		return false
 	old_pid = -1
@@ -23,10 +23,10 @@ func _process(delta: float) -> bool:
 	var output: Array = []
 	var result := OS.execute(OS.get_executable_path(), PackedStringArray(["--headless", "--editor", "--import", "--quit", "--path", project, "--log-file", project.path_join(".runtime/full-restart-import.log")]), output, true, false)
 	if result != 0:
-		printerr("大重启资源导入失败，请检查 .runtime/full-restart-import.log\n", "".join(output))
+		printerr(UIText.t("debug._process.text_18"), "".join(output))
 		quit(1)
 		return false
 	var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--path", project]))
-	if pid == -1: printerr("大重启失败：无法启动游戏进程。")
+	if pid == -1: printerr(UIText.t("debug._process.text_19"))
 	quit(1 if pid == -1 else 0)
 	return false

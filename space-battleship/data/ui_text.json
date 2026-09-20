@@ -1,0 +1,4468 @@
+[
+  {
+    "key": "defense.armour_name",
+    "text": "复合装甲",
+    "params": "",
+    "category": "defense",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "defense.shield_name",
+    "text": "偏转护盾",
+    "params": "",
+    "category": "defense",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "weapon.laser_name",
+    "text": "脉冲激光",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "weapon.missile_name",
+    "text": "追踪导弹",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "weapon.cannon_name",
+    "text": "磁轨火炮",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "weapon.long_laser_name",
+    "text": "持续锁定光束",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "weapon.tab",
+    "text": "武器",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "defense.tab",
+    "text": "防御",
+    "params": "",
+    "category": "defense",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:global"
+  },
+  {
+    "key": "main._ready.text_01",
+    "text": "{id} +{id_2}",
+    "params": "{id},{id_2}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:_ready · id = \"宝石碎片\" if id == \"jewel\" else db.data.resources[id]；id_2 = (\"%.2f\" % game.offline_rewards[id]) if id == \"jewel\" else number(game.offline_rewards[id])"
+  },
+  {
+    "key": "main._ready.text_02",
+    "text": "宝石碎片",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:_ready"
+  },
+  {
+    "key": "main.on_event.text_01",
+    "text": "+{amount} {id} · 已拾取",
+    "params": "{amount},{id}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:on_event · amount = number(active.amount)；id = db.data.resources[info.id]"
+  },
+  {
+    "key": "main.on_event.text_02",
+    "text": "升级完成",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:on_event"
+  },
+  {
+    "key": "main.on_event.text_03",
+    "text": "连续升级{levels}级完成",
+    "params": "{levels}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:on_event · levels = str(int(levels))"
+  },
+  {
+    "key": "main.on_event.text_05",
+    "text": "生命归零 · 后退至 {to} 距离，恢复后继续",
+    "params": "{to}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:on_event · to = number(info.to)"
+  },
+  {
+    "key": "main.on_event.text_06",
+    "text": "存档写入失败，请检查磁盘权限",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:on_event"
+  },
+  {
+    "key": "main.cost_text.text_01",
+    "text": "{id} {id_2}  ",
+    "params": "{id},{id_2}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:cost_text · id = number(cost[id])；id_2 = db.data.resources[id]"
+  },
+  {
+    "key": "main.build_ui.text_01",
+    "text": "?  操作指南",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_02",
+    "text": "资源：每秒",
+    "params": "",
+    "category": "main",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_03",
+    "text": "资源：总量",
+    "params": "",
+    "category": "main",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_04",
+    "text": "切换总量 / 最近60秒实际拾取量÷60（现实时间）",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_05",
+    "text": "继续",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_06",
+    "text": "知道了",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_07",
+    "text": "跃迁至关卡",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_08",
+    "text": "跃迁 · 第 {level} 关",
+    "params": "{level}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:build_ui · level = str(int(level))"
+  },
+  {
+    "key": "main.build_ui.text_10",
+    "text": "开启",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_12",
+    "text": "设置",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_13",
+    "text": "驻守死亡处理",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_14",
+    "text": "后退并取消驻守",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_15",
+    "text": "后退后返回原点继续驻守",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_16",
+    "text": "后退并保持驻守（不返回）",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_17",
+    "text": "伤害跳字",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_18",
+    "text": "伤害详情（最近40次）",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_19",
+    "text": "精简",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_20",
+    "text": "全部",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_21",
+    "text": "伤害详情 · 完整数值",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_22",
+    "text": "暂无受击记录",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.build_ui.text_23",
+    "text": "立即过关",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:build_ui"
+  },
+  {
+    "key": "main.refresh_structure.text_01",
+    "text": "空槽",
+    "params": "",
+    "category": "main",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:refresh_structure"
+  },
+  {
+    "key": "main.refresh_structure.text_02",
+    "text": "（已达上限）",
+    "params": "",
+    "category": "main",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:refresh_structure"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_01",
+    "text": "武器槽 {weaponSlots} · 防御槽 {defenseSlots} · 移动 {movement}",
+    "params": "{weaponSlots},{defenseSlots},{movement}",
+    "category": "ship",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_ship_controls · weaponSlots = number(row.weaponSlots)；defenseSlots = number(row.defenseSlots)；movement = number(row.movement)"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_02",
+    "text": "当前：{ship_name} · 空槽可保留，装备需在此页签选定",
+    "params": "{ship_name}",
+    "category": "ship",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_ship_controls · ship_name = game.ship_name()"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_03",
+    "text": "{else} · 新舰装备等级从 Lv.1 开始",
+    "params": "{else}",
+    "category": "ship",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_ship_controls · else = (\"配置有效\" if game.valid_loadout(ship_candidate,ship_candidate_loadout) else \"请检查装备数量/解锁状态\")"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_04",
+    "text": "配置有效",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:refresh_ship_controls"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_05",
+    "text": "请检查装备数量/解锁状态",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:refresh_ship_controls"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_07",
+    "text": "可保留为空",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:refresh_ship_controls"
+  },
+  {
+    "key": "ship.refresh_ship_controls.text_08",
+    "text": "更换时配置 · Lv.1",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:refresh_ship_controls"
+  },
+  {
+    "key": "main.refresh_navigation.text_02",
+    "text": "开",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:refresh_navigation"
+  },
+  {
+    "key": "main.refresh_navigation.text_03",
+    "text": "关",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:refresh_navigation"
+  },
+  {
+    "key": "battle.queue_damage_number.text_01",
+    "text": "玩家",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:queue_damage_number"
+  },
+  {
+    "key": "battle.queue_damage_number.text_02",
+    "text": "敌舰 #{uid}",
+    "params": "{uid}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:queue_damage_number · uid = info.uid"
+  },
+  {
+    "key": "battle.queue_damage_number.text_03",
+    "text": " · 暴击",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:queue_damage_number"
+  },
+  {
+    "key": "main.draw_chrome.text_01",
+    "text": "太空战舰",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_chrome"
+  },
+  {
+    "key": "main.draw_chrome.text_02",
+    "text": "原型 0.2    /    本地自动保存",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_chrome"
+  },
+  {
+    "key": "main.boss_health_cards.text_01",
+    "text": "#{slot}  {des}",
+    "params": "{slot},{des}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:boss_health_cards · slot = int(enemy.slot)+1；des = str(enemy.des)"
+  },
+  {
+    "key": "battle.stage",
+    "text": "第 {stage} 关",
+    "params": "{stage}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · stage = str(int(game.stage))"
+  },
+  {
+    "key": "battle.draw_battle.text_02",
+    "text": "BOSS战 · 当前存活 {targets} / {enemies} 艘",
+    "params": "{targets},{enemies}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · targets = number(game.targets().size())；enemies = number(game.enemies.size())"
+  },
+  {
+    "key": "battle.draw_battle.text_03",
+    "text": "{distance} / {length}",
+    "params": "{distance},{length}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:draw_battle · distance = number(game.distance)；length = number(length)"
+  },
+  {
+    "key": "battle.draw_battle.text_04",
+    "text": "后退中 / RETREAT",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_05",
+    "text": "自动交战 / AUTO ENGAGE",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_06",
+    "text": "自动巡航 / CRUISING",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_07",
+    "text": "驻守 · {guard_elapsed} 秒后刷新",
+    "params": "{guard_elapsed}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · guard_elapsed = number(maxf(0,game.guard_interval()-game.guard_elapsed))"
+  },
+  {
+    "key": "battle.draw_battle.text_08",
+    "text": "遭遇 {group_index} / {value}",
+    "params": "{group_index},{value}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · group_index = number(game.group_index)；value = number(9)"
+  },
+  {
+    "key": "battle.draw_battle.text_09",
+    "text": "点击领取",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_10",
+    "text": "宝石碎片 · 点击拾取",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_11",
+    "text": "{amount} {id}",
+    "params": "{amount},{id}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:draw_battle · amount = number(drop.amount)；id = db.data.resources[drop.id]"
+  },
+  {
+    "key": "battle.draw_battle.text_12",
+    "text": "{selectedShip} / {weapon_entries}W-{defense_entries}D",
+    "params": "{selectedShip},{weapon_entries},{defense_entries}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · selectedShip = game.profile.selectedShip；weapon_entries = game.weapon_entries().size()；defense_entries = game.defense_entries().size()"
+  },
+  {
+    "key": "battle.draw_battle.text_13",
+    "text": "敌方接近",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.hp",
+    "text": "生命 {current_hp} / {max_hp}",
+    "params": "{current_hp},{max_hp}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · current_hp = number(game.player.armour)；max_hp = number(game.stat(\"armour\"))"
+  },
+  {
+    "key": "battle.shield",
+    "text": "护盾 {current_shield} / {max_shield}",
+    "params": "{current_shield},{max_shield}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · current_shield = number(game.player.shield)；max_shield = number(game.max_shield())"
+  },
+  {
+    "key": "battle.draw_battle.text_16",
+    "text": "悬停拾取 100%  /  {autoCollectDelay} 秒后自动拾取 {autoCollectReduce}%",
+    "params": "{autoCollectDelay},{autoCollectReduce}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · autoCollectDelay = number(float(db.defaults.autoCollectDelay))；autoCollectReduce = number((1.0-float(db.config.autoCollectReduce))*100)"
+  },
+  {
+    "key": "battle.draw_battle.text_17",
+    "text": "第 {stage} 关通关",
+    "params": "{stage}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · stage = str(int(game.stage))"
+  },
+  {
+    "key": "battle.draw_battle.text_18",
+    "text": "{clear_timer} 秒后刷新驻守敌群",
+    "params": "{clear_timer}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · clear_timer = number(maxf(0,game.clear_timer))"
+  },
+  {
+    "key": "battle.draw_battle.text_19",
+    "text": "{clear_timer} 秒后进入第 {target} 关",
+    "params": "{clear_timer},{target}",
+    "category": "battle",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:draw_battle · clear_timer = number(maxf(0,game.clear_timer))；target = str(int(target))"
+  },
+  {
+    "key": "battle.draw_battle.text_20",
+    "text": "航行已暂停",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "battle.draw_battle.text_21",
+    "text": "按空格或点击继续",
+    "params": "",
+    "category": "battle",
+    "note": "固定文字",
+    "source": "main.gd:draw_battle"
+  },
+  {
+    "key": "main.draw_help.text_01",
+    "text": "操作指南",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_02",
+    "text": "01   战舰自动前进、锁定并攻击敌人。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_03",
+    "text": "02   点击下方装备的升级按钮，立即强化对应装备。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_04",
+    "text": "03   驻守设置可选择死亡后取消、返回原点或退后就地驻守。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_05",
+    "text": "04   未解锁装备不显示；获得新装备时会弹窗通知。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_06",
+    "text": "05   驻守在清敌后按航行间隔刷新；跃迁可前往已通关关卡。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_07",
+    "text": "06   鼠标悬停残骸获得全额资源，超时自动拾取有损耗。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_08",
+    "text": "空格 / Esc：暂停或继续；QA 工具可切换 ×1 / ×2 / ×5",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_09",
+    "text": "升级武器不会恢复生命；升级防御装备仅增加提升的容量。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "main.draw_help.text_10",
+    "text": "资源与装备自动保存；生命归零不会扣除已获得资源。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_help"
+  },
+  {
+    "key": "defense.shield",
+    "text": "护盾",
+    "params": "",
+    "category": "defense",
+    "note": "固定文字",
+    "source": "main.gd:equipment_stat_text"
+  },
+  {
+    "key": "defense.armour",
+    "text": "装甲",
+    "params": "",
+    "category": "defense",
+    "note": "固定文字",
+    "source": "main.gd:equipment_stat_text"
+  },
+  {
+    "key": "weapon.damage",
+    "text": "伤害",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:equipment_stat_text"
+  },
+  {
+    "key": "weapon.equipment_stat_text.text_04",
+    "text": "{label}  {entry} → {cap}{else}",
+    "params": "{label},{entry},{cap},{else}",
+    "category": "weapon",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:equipment_stat_text · label = label；entry = number(game.jewel_equipment_stat(entry))；cap = number(game.jewel_equipment_stat(entry,mini(lv+1,cap)))；else = \" · 满级\" if lv >= cap else \"\""
+  },
+  {
+    "key": "weapon.equipment_stat_text.text_05",
+    "text": " · 满级",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:equipment_stat_text"
+  },
+  {
+    "key": "weapon.equipment_detail_text.text_01",
+    "text": "同类型减伤 {dmgReduce}% → {dmgReduce_2}%",
+    "params": "{dmgReduce},{dmgReduce_2}",
+    "category": "weapon",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:equipment_detail_text · dmgReduce = number(float(db.config.dmgReduce)*100)；dmgReduce_2 = number(float(db.config.dmgReduce)*100)"
+  },
+  {
+    "key": "weapon.equipment_detail_text.text_02",
+    "text": "CD {cd} → {cd_2} 秒",
+    "params": "{cd},{cd_2}",
+    "category": "weapon",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:equipment_detail_text · cd = number(float(row.cd))；cd_2 = number(float(db.equip(key,mini(lv+1,db.max_equipment_level(key))).cd))"
+  },
+  {
+    "key": "gem.tab",
+    "text": "宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_tabs"
+  },
+  {
+    "key": "weapon.build_equipment_tabs.text_02",
+    "text": "打开宝石工坊 · 背包 / 合成 / 分解",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_tabs"
+  },
+  {
+    "key": "weapon.build_equipment_tabs.text_03",
+    "text": "装备镶嵌请点击武器或防御卡上的「镶嵌」",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_tabs"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_06",
+    "text": "{key} · Lv.{lv}",
+    "params": "{key},{lv}",
+    "category": "weapon",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:build_equipment_card · key = NAMES[key]；lv = str(int(lv))"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_07",
+    "text": "已装配 · 换舰时可调整",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_08",
+    "text": "空置槽位",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_09",
+    "text": "选择右侧装备即可安装",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_10",
+    "text": "安装后仅可在换舰时调整",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_12",
+    "text": "已达最高等级",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_13",
+    "text": "单次：{single_cost}",
+    "params": "{single_cost}",
+    "category": "weapon",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:build_equipment_card · single_cost = cost_text(single_cost)"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_14",
+    "text": "已满级",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_15",
+    "text": "升级",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_17",
+    "text": "10连",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_19",
+    "text": "MAX",
+    "params": "",
+    "category": "weapon",
+    "note": "固定文字；多处共用",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_20",
+    "text": "按当前资源升级至可负担的最高等级",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_21",
+    "text": "装备等级进度",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "weapon.build_equipment_card.text_22",
+    "text": "武器冷却就绪进度",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_equipment_card"
+  },
+  {
+    "key": "ship.tab",
+    "text": "战舰",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:build_ship_tab"
+  },
+  {
+    "key": "ship.build_ship_tab.text_02",
+    "text": "确认更换",
+    "params": "",
+    "category": "ship",
+    "note": "固定文字",
+    "source": "main.gd:build_ship_tab"
+  },
+  {
+    "key": "ship.rebuild_ship_slots.text_01",
+    "text": "{else}槽 {index}",
+    "params": "{else},{index}",
+    "category": "ship",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "main.gd:rebuild_ship_slots · else = \"武器\" if category == \"weapons\" else \"防御\"；index = number(index+1)"
+  },
+  {
+    "key": "upgrade.refresh_scientists.text_01",
+    "text": "科学家 {scientists}人 · 空闲 {idle_scientists}人",
+    "params": "{scientists},{idle_scientists}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_scientists · scientists = number(game.profile.scientists)；idle_scientists = number(game.idle_scientists())"
+  },
+  {
+    "key": "upgrade.refresh_scientists.text_03",
+    "text": "生成 ×1",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_scientists"
+  },
+  {
+    "key": "upgrade.refresh_hightech_progress.text_01",
+    "text": "{key}人 · {key_2}点/秒 · {points}/{required}点 · {fraction}%",
+    "params": "{key},{key_2},{points},{required},{fraction}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_hightech_progress · key = number(game.assigned_scientists(key))；key_2 = number(game.research_rate(key))；points = number(points)；required = number(required)；fraction = floorf(fraction*100)"
+  },
+  {
+    "key": "upgrade.charge_tab",
+    "text": "充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_charge_tab"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_02",
+    "text": "本次充能  {elapsed}/{para_4}秒",
+    "params": "{elapsed},{para_4}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_charge_card · elapsed = number(job.elapsed)；para_4 = number(row.para_4)"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_03",
+    "text": "升级进度  {count}/{key}次",
+    "params": "{count},{key}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_charge_card · count = number(job.count)；key = number(game.charge_required(key))"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_04",
+    "text": "{para_1} {key}/秒",
+    "params": "{para_1},{key}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_charge_card · para_1 = db.data.resources[str(int(row.para_1))]；key = number(game.charge_resource_rate(key))"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_05",
+    "text": "未解锁",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_06",
+    "text": "第{unlock}关解锁",
+    "params": "{unlock}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_charge_card · unlock = str(int(row.unlock))"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_07",
+    "text": "资源不足",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_08",
+    "text": "充能中",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_09",
+    "text": "暂停",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_10",
+    "text": "已暂停",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_11",
+    "text": "未启动",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_12",
+    "text": "继续充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "upgrade.refresh_charge_card.text_13",
+    "text": "启动充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:refresh_charge_card"
+  },
+  {
+    "key": "main.confirm_unequip.text_01",
+    "text": "确认卸下装备",
+    "params": "",
+    "category": "inventory",
+    "note": "固定文字",
+    "source": "main.gd:confirm_unequip"
+  },
+  {
+    "key": "main.confirm_unequip.text_02",
+    "text": "卸下 {key}（Lv.{level}）？\n返还该装备全部升级资源，槽位将留空。\n重新装备后为1级。",
+    "params": "{key},{level}",
+    "category": "inventory",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:confirm_unequip · key = NAMES[str(entry.key)]；level = int(entry.level)"
+  },
+  {
+    "key": "main.confirm_unequip.text_03",
+    "text": "确认卸下",
+    "params": "",
+    "category": "inventory",
+    "note": "固定文字",
+    "source": "main.gd:confirm_unequip"
+  },
+  {
+    "key": "main.confirm_unequip.text_04",
+    "text": "保留装备",
+    "params": "",
+    "category": "inventory",
+    "note": "固定文字",
+    "source": "main.gd:confirm_unequip"
+  },
+  {
+    "key": "upgrade.research_tab",
+    "text": "高科技",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_tab"
+  },
+  {
+    "key": "upgrade.build_hightech_tab.text_02",
+    "text": "平均分配全部",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_tab"
+  },
+  {
+    "key": "upgrade.build_hightech_tab.text_03",
+    "text": "重新均分到已解锁高科技，余数按卡片顺序分配",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_hightech_tab"
+  },
+  {
+    "key": "upgrade.build_hightech_tab.text_04",
+    "text": "生成 ×10",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_tab"
+  },
+  {
+    "key": "upgrade.build_hightech_tab.text_05",
+    "text": "生成 MAX",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_tab"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_01",
+    "text": "空卡槽 {index}",
+    "params": "{index}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:build_hightech_card · index = (index+1)"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_02",
+    "text": "可将高科技卡片拖到这里",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_03",
+    "text": "拖动标题到其他卡槽，松手交换位置并保存",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_04",
+    "text": "+1",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_05",
+    "text": "−1",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_06",
+    "text": "+10",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "upgrade.build_hightech_card.text_08",
+    "text": "⠿ 拖动换位",
+    "params": "",
+    "category": "upgrade",
+    "note": "固定文字",
+    "source": "main.gd:build_hightech_card"
+  },
+  {
+    "key": "main.draw_unlock.text_01",
+    "text": "新装备已解锁",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_unlock"
+  },
+  {
+    "key": "main.draw_unlock.text_02",
+    "text": "装备已自动装载，可在下方直接升级。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_unlock"
+  },
+  {
+    "key": "main.draw_unlock.text_03",
+    "text": "点击继续后恢复自动前进。",
+    "params": "",
+    "category": "main",
+    "note": "固定文字",
+    "source": "main.gd:draw_unlock"
+  },
+  {
+    "key": "gem.setup.text_01",
+    "text": "宝石工坊",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_02",
+    "text": "青色 选中   绿色 可合成   金色 MAX",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_03",
+    "text": "关闭",
+    "params": "",
+    "category": "settings",
+    "note": "固定文字；多处共用",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_04",
+    "text": "按ID排序",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_05",
+    "text": "等级从高到低",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_06",
+    "text": "清空选择",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_07",
+    "text": "一键合成",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_08",
+    "text": "自动连续合成背包宝石；跳过已镶嵌、锁定、禁用及满级宝石",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_09",
+    "text": "击败敌人获得碎片\n收集足够碎片，将自动生成宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_10",
+    "text": "宝石详情",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_11",
+    "text": "合成",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_12",
+    "text": "分解宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_13",
+    "text": "镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字；多处共用",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_14",
+    "text": "选择宝石开始强化",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_15",
+    "text": "分解满级宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_16",
+    "text": "确认分解",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.setup.text_17",
+    "text": "保留宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:setup"
+  },
+  {
+    "key": "gem.open.text_01",
+    "text": "选满同级宝石合成，或选择插槽查看镶嵌效果",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:open"
+  },
+  {
+    "key": "gem.name_level",
+    "text": "{item_name} Lv.{level}",
+    "params": "{item_name},{level}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入；多处共用",
+    "source": "jewel_panel.gd:gem_name · item_name = str(game.db.jewel(str(gem.id)).get(\"name\", gem.id))；level = int(gem.level)"
+  },
+  {
+    "key": "gem.refresh.text_01",
+    "text": " 新",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_02",
+    "text": "\n未镶嵌 · ",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_03",
+    "text": "已锁定或禁用，不参与合成",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_04",
+    "text": "槽位不兼容",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_05",
+    "text": "已达到最高等级",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_06",
+    "text": "可合成 ↑",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_07",
+    "text": "同级数量不足",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh.text_08",
+    "text": "空格 · 收集碎片自动生成宝石",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "jewel_panel.gd:refresh"
+  },
+  {
+    "key": "gem.refresh_sockets.text_01",
+    "text": "装备镶嵌：请从装备卡的「镶嵌」按钮进入",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_02",
+    "text": "{key} · Lv.{level} · {entry}插槽  /  选宝石镶嵌，选槽位查看",
+    "params": "{key},{level},{entry}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_sockets · key = host.NAMES.get(str(entry.key),entry.key)；level = int(entry.level)；entry = game.equipment_socket_count(entry)"
+  },
+  {
+    "key": "gem.refresh_sockets.text_03",
+    "text": "插槽 {i} · 镶嵌",
+    "params": "{i}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_sockets · i = (i+1)"
+  },
+  {
+    "key": "gem.refresh_sockets.text_04",
+    "text": "\n已镶嵌 · 替换",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_05",
+    "text": "\n已镶嵌 · 查看",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_06",
+    "text": "\n已镶嵌\n",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_07",
+    "text": "点击替换",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_08",
+    "text": "点击镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.refresh_sockets.text_09",
+    "text": "查看详情 / 卸下",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_sockets"
+  },
+  {
+    "key": "gem.operate_socket.text_01",
+    "text": "镶嵌成功",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:operate_socket"
+  },
+  {
+    "key": "gem.operate_socket.text_02",
+    "text": "替换成功 · 旧宝石已返回背包",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:operate_socket"
+  },
+  {
+    "key": "gem.operate_socket.text_03",
+    "text": "背包已满或槽位不可用",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:operate_socket"
+  },
+  {
+    "key": "gem.operate_socket.text_04",
+    "text": "宝石背包已满或插槽已变化",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:operate_socket"
+  },
+  {
+    "key": "gem.operate_socket.text_05",
+    "text": "卸下成功 · 宝石已返回背包\n",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:operate_socket"
+  },
+  {
+    "key": "gem.socket_error.text_01",
+    "text": "请先选择装备插槽",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:socket_error"
+  },
+  {
+    "key": "gem.socket_error.text_02",
+    "text": "插槽尚未解锁",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:socket_error"
+  },
+  {
+    "key": "gem.socket_error.text_03",
+    "text": "请先选择背包宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:socket_error"
+  },
+  {
+    "key": "gem.socket_error.text_04",
+    "text": "背包已满 · 请先腾出位置",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:socket_error"
+  },
+  {
+    "key": "gem.refresh_detail.text_01",
+    "text": "点击宝石查看当前效果与升级预览。\n\n绿色边框 ↑ 表示同级数量足够合成。\n选满{required}颗同ID同等级宝石后即可合成。\n\n从装备卡进入工坊可管理镶嵌。",
+    "params": "{required}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · required = required"
+  },
+  {
+    "key": "gem.refresh_detail.text_02",
+    "text": "选择一颗宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_03",
+    "text": "数量不足 · 请选满{required}颗同ID同等级宝石（已选{selected}）",
+    "params": "{required},{selected}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · required = required；selected = selected.size()"
+  },
+  {
+    "key": "gem.refresh_detail.text_04",
+    "text": " · MAX",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_05",
+    "text": "当前效果\n",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_06",
+    "text": "已镶嵌 · 插槽{inspected_socket}",
+    "params": "{inspected_socket}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · inspected_socket = (inspected_socket+1)"
+  },
+  {
+    "key": "gem.refresh_detail.text_07",
+    "text": "未镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_08",
+    "text": " · 背包同级持有{first}颗",
+    "params": "{first}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · first = int(counts.get(gem_key(first),0))"
+  },
+  {
+    "key": "gem.refresh_detail.text_09",
+    "text": "\n已达到最高等级 · MAX",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_10",
+    "text": "\n分解返还：宝石碎片 +{first}",
+    "params": "{first}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · first = game.jewel_fragment_amount(game.jewel_compose_reward(first))"
+  },
+  {
+    "key": "gem.refresh_detail.text_11",
+    "text": "下一等级 · Lv.{level}\n{next}\n\n合成需求 {required}颗 · 已选 {selected}颗",
+    "params": "{level},{next},{required},{selected}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · level = int(next.level)；next = gem_description(next)；required = required；selected = selected.size()"
+  },
+  {
+    "key": "gem.refresh_detail.text_12",
+    "text": "插槽 {target_socket} · {else}\n",
+    "params": "{target_socket},{else}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · target_socket = target_socket+1；else = \"镶嵌预览\" if old.is_empty() else \"替换预览\""
+  },
+  {
+    "key": "gem.refresh_detail.text_13",
+    "text": "镶嵌预览",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_14",
+    "text": "替换预览",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_15",
+    "text": "当前：",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_16",
+    "text": "放入：",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_17",
+    "text": "（效果见上方）",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_18",
+    "text": "卸下预览\n",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_19",
+    "text": "\n\n卸下后完整返回背包。",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_20",
+    "text": "一键合成完成",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_21",
+    "text": "合成台 {selected} / {required}{else}",
+    "params": "{selected},{required},{else}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_detail · selected = selected.size()；required = required；else = \" · 可以合成 ↑\" if can_combine else \" · 选择同级宝石\""
+  },
+  {
+    "key": "gem.refresh_detail.text_22",
+    "text": " · 可以合成 ↑",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_23",
+    "text": " · 选择同级宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_24",
+    "text": "合成后获得下一等级宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_25",
+    "text": "永久消耗此宝石，返还详情中所示碎片；需要确认",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_26",
+    "text": "请选择一颗可分解的满级宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_27",
+    "text": "卸下",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_28",
+    "text": "替换",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_29",
+    "text": "将宝石返回背包",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.refresh_detail.text_30",
+    "text": "应用上方预览到目标插槽",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_detail"
+  },
+  {
+    "key": "gem.stat_comparison.text_01",
+    "text": "{else}  {old} → {value}  ({old_4})",
+    "params": "{else},{old},{value},{old_4}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:stat_comparison · else = \"容量\" if category==\"defence\" else \"单次伤害\"；old = host.number(old)；value = host.number(value)；old_4 = value-old"
+  },
+  {
+    "key": "gem.stat_comparison.text_02",
+    "text": "容量",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:stat_comparison"
+  },
+  {
+    "key": "gem.stat_comparison.text_03",
+    "text": "单次伤害",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:stat_comparison"
+  },
+  {
+    "key": "gem.stat_comparison.text_04",
+    "text": "暴击率  {x}% → {x_2}%  ({x_3}%)",
+    "params": "{x},{x_2},{x_3}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:stat_comparison · x = old_crit.x*100；x_2 = new_crit.x*100；x_3 = (new_crit.x-old_crit.x)*100"
+  },
+  {
+    "key": "gem.stat_comparison.text_05",
+    "text": "基础数值不变 · 特殊效果见宝石说明",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:stat_comparison"
+  },
+  {
+    "key": "gem.refresh_metrics.text_01",
+    "text": "{else}宝石碎片：{state}   /   每分钟宝石碎片获取量：{state_3}\n",
+    "params": "{else},{state},{state_3}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_metrics · else = \"背包已满 · \" if state[4] else \"\"；state = state[0]；state_3 = state[1]"
+  },
+  {
+    "key": "gem.refresh_metrics.text_02",
+    "text": "背包已满 · ",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_metrics"
+  },
+  {
+    "key": "gem.refresh_metrics.text_03",
+    "text": "每{state}碎片生成随机宝石 · 当前倍率 {state_2}{else}",
+    "params": "{state},{state_2},{else}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:refresh_metrics · state = state[2]；state_2 = state[3]；else = \" · 暂停生成，碎片已保留\" if state[4] else \" · 最近60秒实际收入\""
+  },
+  {
+    "key": "gem.refresh_metrics.text_04",
+    "text": " · 暂停生成，碎片已保留",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_metrics"
+  },
+  {
+    "key": "gem.refresh_metrics.text_05",
+    "text": " · 最近60秒实际收入",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:refresh_metrics"
+  },
+  {
+    "key": "gem.inventory_changed.text_01",
+    "text": "获得宝石 ×{generated_count} · 已放入背包",
+    "params": "{generated_count}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:inventory_changed · generated_count = generated_count"
+  },
+  {
+    "key": "gem.inventory_changed.text_02",
+    "text": " · 背包已满，余下碎片保留",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:inventory_changed"
+  },
+  {
+    "key": "gem.pickup_feedback.text_01",
+    "text": "宝石碎片 +{amount}",
+    "params": "{amount}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:pickup_feedback · amount = float(info.amount)"
+  },
+  {
+    "key": "gem.pickup_feedback.text_02",
+    "text": " · 生成宝石 ×{generated_count}",
+    "params": "{generated_count}",
+    "category": "gem",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:pickup_feedback · generated_count = generated_count"
+  },
+  {
+    "key": "gem.pickup_feedback.text_03",
+    "text": " · 背包已满，碎片已保留",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:pickup_feedback"
+  },
+  {
+    "key": "merge.combine_selected.text_01",
+    "text": "合成成功 · Lv.{level} → Lv.{level_2}\n新宝石已入背包，提升效果见上方",
+    "params": "{level},{level_2}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:combine_selected · level = int(gem.level)；level_2 = int(gem.level)+1"
+  },
+  {
+    "key": "merge.combine_all_selected.text_01",
+    "text": "当前没有可合成宝石",
+    "params": "",
+    "category": "merge",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:combine_all_selected"
+  },
+  {
+    "key": "merge.combine_all_selected.text_02",
+    "text": "合成 {count} 次 · 累计消耗 {consumed} 颗\n（消耗包含继续参与合成的中间产物）",
+    "params": "{count},{consumed}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:combine_all_selected · count = int(result.count)；consumed = int(result.consumed)"
+  },
+  {
+    "key": "merge.combine_all_selected.text_03",
+    "text": "最终获得",
+    "params": "",
+    "category": "merge",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:combine_all_selected"
+  },
+  {
+    "key": "merge.combine_all_selected.text_04",
+    "text": "{reward} ×{count}",
+    "params": "{reward},{count}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:combine_all_selected · reward = gem_name(reward)；count = int(reward.count)"
+  },
+  {
+    "key": "merge.combine_all_selected.text_05",
+    "text": "合成 {count} 次 · 累计消耗 {consumed} 颗\n{slice}",
+    "params": "{count},{consumed},{slice}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:combine_all_selected · count = int(result.count)；consumed = int(result.consumed)；slice = \"、\".join(lines.slice(1))"
+  },
+  {
+    "key": "merge.request_compose.text_01",
+    "text": "永久分解 {gem}？\n返还宝石碎片 +{gem_2}\n满足数量的碎片会自动生成新宝石。",
+    "params": "{gem},{gem_2}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:request_compose · gem = gem_name(gem)；gem_2 = game.jewel_fragment_amount(game.jewel_compose_reward(gem))"
+  },
+  {
+    "key": "merge.compose_selected.text_01",
+    "text": "分解条件已变化，宝石保留",
+    "params": "",
+    "category": "merge",
+    "note": "固定文字",
+    "source": "jewel_panel.gd:compose_selected"
+  },
+  {
+    "key": "merge.compose_selected.text_02",
+    "text": "分解成功 · 碎片 +{reward}{else}",
+    "params": "{reward},{else}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:compose_selected · reward = reward；else = \" · 生成%d颗宝石\" % generated_count if generated_count>0 else \"\""
+  },
+  {
+    "key": "merge.compose_selected.text_03",
+    "text": " · 生成{generated_count}颗宝石",
+    "params": "{generated_count}",
+    "category": "merge",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "jewel_panel.gd:compose_selected · generated_count = generated_count"
+  },
+  {
+    "key": "debug._ready.text_01",
+    "text": "太空战舰 · QA 工具",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_02",
+    "text": "QA 工具",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_03",
+    "text": "Excel 总表（用于拆分／同步，先保存文件）",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_04",
+    "text": "选择 Excel…",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_05",
+    "text": "选择配置 Excel",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_06",
+    "text": "拆分／同步 Excel",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_07",
+    "text": "打开分表目录",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_08",
+    "text": "关卡编辑器",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_09",
+    "text": "关卡编辑器启动失败，请使用项目内的启动入口。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_10",
+    "text": "读取配置：config_excel/ 中有修改的分表\n直接编辑分表后不用同步；同步会按总表更新同名文件。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_11",
+    "text": "尚未读取配置。写入：data/game_data.json",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_12",
+    "text": "读取配置",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_13",
+    "text": "重启游戏",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_14",
+    "text": "大重启",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_15",
+    "text": "保存进度，彻底退出游戏和 QA，再导入资源并启动新进程，应用代码改动。",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_16",
+    "text": "删除存档",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_17",
+    "text": "清除游戏进度并从头开始，保留 QA 配置设置。",
+    "params": "",
+    "category": "tooltip",
+    "note": "鼠标悬停说明",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_18",
+    "text": "Ⅱ  暂停",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_19",
+    "text": "×{value}  航速",
+    "params": "{value}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_panel.gd:_ready · value = value"
+  },
+  {
+    "key": "debug._ready.text_20",
+    "text": "首次：拆分／同步 → 读取配置 → 重启游戏。\n之后编辑独立分表，只读取有变化的配置。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_ready"
+  },
+  {
+    "key": "debug.start_operation.text_01",
+    "text": "正在拆分并同步独立 Excel……",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:start_operation"
+  },
+  {
+    "key": "debug.start_operation.text_02",
+    "text": "正在检查变化，仅解析修改过的配置表……",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:start_operation"
+  },
+  {
+    "key": "debug.start_operation.text_03",
+    "text": "无法启动导入任务：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:start_operation"
+  },
+  {
+    "key": "debug._process.text_01",
+    "text": "▶  继续",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_02",
+    "text": "无法启动 Python；需安装 openpyxl 和 lxml。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_03",
+    "text": "\n点击「读取配置」更新 JSON。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_04",
+    "text": "\n需要应用新配置时，点击「重启游戏」。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_05",
+    "text": "操作失败，未提交本次更新。\n",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_06",
+    "text": "上次{else}：{T} · {else_3}\n{config_directory}",
+    "params": "{else},{T},{else_3},{config_directory}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_panel.gd:_process · else = \"同步\" if operation == \"split\" else \"读取\"；T = Time.get_datetime_string_from_system().replace(\"T\",\" \")；else_3 = \"成功\" if result == 0 else \"失败\"；config_directory = import_source if operation == \"split\" else config_directory"
+  },
+  {
+    "key": "debug._process.text_07",
+    "text": "同步",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_08",
+    "text": "读取",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_09",
+    "text": "成功",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug._process.text_10",
+    "text": "失败",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:_process"
+  },
+  {
+    "key": "debug.full_restart.text_01",
+    "text": "游戏场景尚未就绪。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:full_restart"
+  },
+  {
+    "key": "debug.full_restart.text_02",
+    "text": "保存进度失败，未执行大重启。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:full_restart"
+  },
+  {
+    "key": "debug.full_restart.text_03",
+    "text": "保存 QA 设置失败，未执行大重启。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:full_restart"
+  },
+  {
+    "key": "debug.full_restart.text_04",
+    "text": "无法创建大重启日志目录，未退出游戏。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:full_restart"
+  },
+  {
+    "key": "debug.full_restart.text_05",
+    "text": "大重启启动失败，当前游戏已保留。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:full_restart"
+  },
+  {
+    "key": "debug.restart_game.text_01",
+    "text": "删除存档失败，未重新开始：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:restart_game"
+  },
+  {
+    "key": "debug.restart_game.text_02",
+    "text": "保存进度失败，未重载游戏。请排除存档写入故障后重试。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:restart_game"
+  },
+  {
+    "key": "debug.restart_game.text_03",
+    "text": "正在清除存档并重新开始……",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:restart_game"
+  },
+  {
+    "key": "debug.restart_game.text_04",
+    "text": "正在重载游戏场景，读取最新 JSON……",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:restart_game"
+  },
+  {
+    "key": "debug.reload_game.text_01",
+    "text": "游戏场景已重载，最新配置已生效。\nQA 工具与游戏共用同一个进程。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:reload_game"
+  },
+  {
+    "key": "debug.reload_game.text_02",
+    "text": "场景重载失败：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:reload_game"
+  },
+  {
+    "key": "debug.reload_game.text_03",
+    "text": "存档已清除，已从头开始。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_panel.gd:reload_game"
+  },
+  {
+    "key": "debug.global.text_01",
+    "text": "敌方飞行器",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_02",
+    "text": "敌方飞行器组",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_03",
+    "text": "关卡配置",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_04",
+    "text": "ID",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_05",
+    "text": "描述",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_06",
+    "text": "武器 name|数量，逗号分隔",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_07",
+    "text": "伤害倍率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_08",
+    "text": "基础生命",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_09",
+    "text": "抗性 0=无 / 1=能量 / 2=物理",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_10",
+    "text": "掉落 资源ID,数量,概率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_11",
+    "text": "外观尺寸等级（每舰固定占1格）",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_12",
+    "text": "关卡长度",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_13",
+    "text": "攻击倍率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_14",
+    "text": "生命倍率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_15",
+    "text": "资源倍率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug.global.text_16",
+    "text": "宝石碎片倍率",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:global"
+  },
+  {
+    "key": "debug._ready.text_21",
+    "text": "太空战舰 · 关卡编辑器",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_22",
+    "text": "关卡编辑器    /    太空战舰",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_23",
+    "text": "编辑分表 → 校验 → 保存并导入 → QA 重启游戏。切换记录自动保留草稿，保存前不改文件。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_24",
+    "text": "重新加载",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_25",
+    "text": "校验草稿",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_26",
+    "text": "保存并导入",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_27",
+    "text": "搜索 ID、描述或配置内容",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_28",
+    "text": "新增",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_29",
+    "text": "复制",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_30",
+    "text": "删除",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug._ready.text_31",
+    "text": "确认操作",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_ready"
+  },
+  {
+    "key": "debug.refresh_list.text_01",
+    "text": "{id}  ·  {id_2}",
+    "params": "{id},{id_2}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor.gd:refresh_list · id = display_value(row.id)；id_2 = str(row.get(\"des\", \"关卡 \" + display_value(row.id)))"
+  },
+  {
+    "key": "debug.refresh_list.text_02",
+    "text": "关卡 ",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:refresh_list"
+  },
+  {
+    "key": "debug.show_record.text_01",
+    "text": "暂无记录。点击新增开始配置。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.show_record.text_02",
+    "text": "十格编队（从上到下）；每艘敌舰只占一格，size仅决定外观。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.show_record.text_03",
+    "text": "第 {i} 格   ",
+    "params": "{i}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor.gd:show_record · i = (i + 1)"
+  },
+  {
+    "key": "debug.show_record.text_04",
+    "text": "遭遇位置 0–1（0.1 = 10%），按位置升序；最后一场为 BOSS 战。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.show_record.text_05",
+    "text": "攻击、生命、资源倍率由分表维护，编辑器保留原值，不编辑或校验。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.show_record.text_06",
+    "text": "＋ 添加遭遇",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.show_record.text_07",
+    "text": "更新预览 / 保留本条草稿",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:show_record"
+  },
+  {
+    "key": "debug.choices.text_01",
+    "text": "空格",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:choices"
+  },
+  {
+    "key": "debug.choices.text_02",
+    "text": "{id} · {des}",
+    "params": "{id},{des}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor.gd:choices · id = display_value(row.id)；des = str(row.get(\"des\", \"\"))"
+  },
+  {
+    "key": "debug.choices.text_03",
+    "text": "无效引用：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:choices"
+  },
+  {
+    "key": "debug.add_encounter.text_01",
+    "text": "移除",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:add_encounter"
+  },
+  {
+    "key": "debug.add_record.text_01",
+    "text": "新飞行器",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:add_record"
+  },
+  {
+    "key": "debug.add_record.text_02",
+    "text": "新编队",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:add_record"
+  },
+  {
+    "key": "debug.references.text_01",
+    "text": "编队 ",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:references"
+  },
+  {
+    "key": "debug.delete_record.text_01",
+    "text": "无法删除：被 ",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:delete_record"
+  },
+  {
+    "key": "debug.delete_record.text_02",
+    "text": " 引用。请先修改这些记录。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:delete_record"
+  },
+  {
+    "key": "debug.delete_record.text_03",
+    "text": "删除当前记录？删除保存在草稿中。删关卡后需手动保证 ID 连续并核对公式及解锁引用。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:delete_record"
+  },
+  {
+    "key": "debug.update_preview.text_01",
+    "text": "引用：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_02",
+    "text": "无上游引用",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_03",
+    "text": "从上到下：  ",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_04",
+    "text": "起点 0%  →  ",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_05",
+    "text": "  →  终点100%\n遭遇格式：编队ID | 长度比例；最后一场全灭后通关",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_06",
+    "text": "武器：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.update_preview.text_07",
+    "text": "    掉落：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:update_preview"
+  },
+  {
+    "key": "debug.reload_document.text_01",
+    "text": "放弃所有未保存草稿，重新读取分表？",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:reload_document"
+  },
+  {
+    "key": "debug.close_editor.text_01",
+    "text": "仍有未保存草稿，确定关闭编辑器？",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:close_editor"
+  },
+  {
+    "key": "debug.run_action.text_01",
+    "text": "无法写入编辑器草稿请求：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:run_action"
+  },
+  {
+    "key": "debug.run_action.text_02",
+    "text": "正在",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:run_action"
+  },
+  {
+    "key": "debug.run_action.text_03",
+    "text": "读取分表",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:run_action"
+  },
+  {
+    "key": "debug.run_action.text_04",
+    "text": "校验、备份并保存",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:run_action"
+  },
+  {
+    "key": "debug._process.text_11",
+    "text": "工具启动失败。请确认 Python 已安装 openpyxl / lxml。\n",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_12",
+    "text": "未保存：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_13",
+    "text": "未知错误",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_14",
+    "text": "已读取分表。支持新增、复制、搜索、编辑、删除；数字字段也可填写本表公式。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_15",
+    "text": "\n提示：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_16",
+    "text": "\n备份：",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor.gd:_process"
+  },
+  {
+    "key": "debug._process.text_17",
+    "text": "大重启失败：旧游戏进程未退出。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "restart_host.gd:_process"
+  },
+  {
+    "key": "debug._process.text_18",
+    "text": "大重启资源导入失败，请检查 .runtime/full-restart-import.log\n",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "restart_host.gd:_process"
+  },
+  {
+    "key": "debug._process.text_19",
+    "text": "大重启失败：无法启动游戏进程。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "restart_host.gd:_process"
+  },
+  {
+    "key": "system.hightech_description.text_01",
+    "text": "未研发，无效果",
+    "params": "",
+    "category": "system",
+    "note": "固定文字",
+    "source": "game.gd:hightech_description"
+  },
+  {
+    "key": "system.boss_info.text_01",
+    "text": "？？？",
+    "params": "",
+    "category": "system",
+    "note": "固定文字",
+    "source": "game.gd:boss_info"
+  },
+  {
+    "key": "gem.combine_all_jewels.text_01",
+    "text": "合成异常，宝石未扣除",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "game.gd:combine_all_jewels"
+  },
+  {
+    "key": "gem.jewel_socket_error.text_01",
+    "text": "请选择有效装备和宝石",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "game.gd:jewel_socket_error"
+  },
+  {
+    "key": "gem.jewel_socket_error.text_02",
+    "text": "该宝石不适用于此类装备",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "game.gd:jewel_socket_error"
+  },
+  {
+    "key": "gem.jewel_socket_error.text_03",
+    "text": "同一装备不能镶嵌同ID宝石（包括不同等级）",
+    "params": "",
+    "category": "gem",
+    "note": "固定文字",
+    "source": "game.gd:jewel_socket_error"
+  },
+  {
+    "key": "inventory.resources.1.name",
+    "text": "铁",
+    "params": "",
+    "category": "inventory",
+    "note": "配置显示覆盖；ID 1 / name"
+  },
+  {
+    "key": "inventory.resources.2.name",
+    "text": "铀",
+    "params": "",
+    "category": "inventory",
+    "note": "配置显示覆盖；ID 2 / name"
+  },
+  {
+    "key": "ship.ship.frigate.des",
+    "text": "护卫舰",
+    "params": "",
+    "category": "ship",
+    "note": "配置显示覆盖；ID Frigate / des"
+  },
+  {
+    "key": "ship.ship.destroyer.des",
+    "text": "驱逐舰",
+    "params": "",
+    "category": "ship",
+    "note": "配置显示覆盖；ID Destroyer / des"
+  },
+  {
+    "key": "ship.ship.cruiser.des",
+    "text": "巡洋舰",
+    "params": "",
+    "category": "ship",
+    "note": "配置显示覆盖；ID Cruiser / des"
+  },
+  {
+    "key": "ship.ship.battleship.des",
+    "text": "战列舰",
+    "params": "",
+    "category": "ship",
+    "note": "配置显示覆盖；ID Battleship / des"
+  },
+  {
+    "key": "ship.ship.heavy_battleship.des",
+    "text": "重型战列舰",
+    "params": "",
+    "category": "ship",
+    "note": "配置显示覆盖；ID Heavy_Battleship / des"
+  },
+  {
+    "key": "battle.enemies.1.des",
+    "text": "激光飞船",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 1 / des"
+  },
+  {
+    "key": "battle.enemies.2.des",
+    "text": "火炮飞船",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 2 / des"
+  },
+  {
+    "key": "battle.enemies.3.des",
+    "text": "激光飞船-弱",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 3 / des"
+  },
+  {
+    "key": "battle.enemies.4.des",
+    "text": "火炮飞船-弱",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 4 / des"
+  },
+  {
+    "key": "battle.enemies.5.des",
+    "text": "中型-抵抗物理",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 5 / des"
+  },
+  {
+    "key": "battle.enemies.6.des",
+    "text": "中型-抵抗能量",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 6 / des"
+  },
+  {
+    "key": "battle.enemies.7.des",
+    "text": "大型-双武器-抵抗能量",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 7 / des"
+  },
+  {
+    "key": "battle.enemies.8.des",
+    "text": "大型-双武器-抵抗物理",
+    "params": "",
+    "category": "battle",
+    "note": "配置显示覆盖；ID 8 / des"
+  },
+  {
+    "key": "gem.jewel.1.name",
+    "text": "熟练宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 1 / name"
+  },
+  {
+    "key": "gem.jewel.1.des",
+    "text": "镶嵌到对应武器时,使该武器伤害提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 1 / des"
+  },
+  {
+    "key": "gem.jewel.2.name",
+    "text": "适应宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 2 / name"
+  },
+  {
+    "key": "gem.jewel.2.des",
+    "text": "镶嵌到对应防御时,使该防御的效果(护盾,生命)提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 2 / des"
+  },
+  {
+    "key": "gem.jewel.3.name",
+    "text": "吸铁宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 3 / name"
+  },
+  {
+    "key": "gem.jewel.3.des",
+    "text": "镶嵌到对应武器时,该武器命中敌人后使该敌人被击杀时额外掉落{effect_1}的铁,每次命中叠加一次该效果,最多{effect_2}次",
+    "params": "{effect_1},{effect_2}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 3 / des"
+  },
+  {
+    "key": "gem.jewel.4.name",
+    "text": "电子战宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 4 / name"
+  },
+  {
+    "key": "gem.jewel.4.des",
+    "text": "镶嵌到对应武器时,武器命中有{effect_1}的概率使该敌人进入电子干扰状态,电子干扰状态的敌人受到的伤害提高{effect_2},并且死亡时会爆炸,对上下两格的敌人造成自身最大生命{effect_3}的伤害",
+    "params": "{effect_1},{effect_2},{effect_3}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 4 / des"
+  },
+  {
+    "key": "gem.jewel.5.name",
+    "text": "自动维修宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 5 / name"
+  },
+  {
+    "key": "gem.jewel.5.des",
+    "text": "镶嵌到对应的防御上时,若连续{effect_1}秒没受到伤害,则每秒恢复{effect_2}的最大值,直到受到伤害为止",
+    "params": "{effect_1},{effect_2}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 5 / des"
+  },
+  {
+    "key": "gem.jewel.6.name",
+    "text": "连发宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 6 / name"
+  },
+  {
+    "key": "gem.jewel.6.des",
+    "text": "镶嵌到对应的武器上时,攻击时有{effect_1}的概率额外发射一次,额外发射的武器伤害提高{effect_2}",
+    "params": "{effect_1},{effect_2}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 6 / des"
+  },
+  {
+    "key": "gem.jewel.7.name",
+    "text": "暴击宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 7 / name"
+  },
+  {
+    "key": "gem.jewel.7.des",
+    "text": "镶嵌到对应的武器上时,该武器固定增加{effect_1}暴击,并使该武器来自所有来源的暴击率提升{effect_2}",
+    "params": "{effect_1},{effect_2}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 7 / des"
+  },
+  {
+    "key": "gem.jewel.8.name",
+    "text": "蓄能宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 8 / name"
+  },
+  {
+    "key": "gem.jewel.8.des",
+    "text": "镶嵌到对应的防御上时,该防御每受到{effect_1}次伤害,便立即使一个随机武器的CD立即结束,且这次武器的伤害提高{effect_2}",
+    "params": "{effect_1},{effect_2}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 8 / des"
+  },
+  {
+    "key": "gem.jewel.9.name",
+    "text": "抗性宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 9 / name"
+  },
+  {
+    "key": "gem.jewel.9.des",
+    "text": "镶嵌到对应的防御上时,该防御受到伤害时,固定减免其最大值的{effect_1}",
+    "params": "{effect_1}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 9 / des"
+  },
+  {
+    "key": "gem.jewel.10.name",
+    "text": "坚韧宝石",
+    "params": "",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 10 / name"
+  },
+  {
+    "key": "gem.jewel.10.des",
+    "text": "镶嵌到对应的防御上时,该防御若有持续恢复效果,则该效果不会因受到伤害而打断,但是恢复效果降低{effect_1}",
+    "params": "{effect_1}",
+    "category": "gem",
+    "note": "配置显示覆盖；ID 10 / des"
+  },
+  {
+    "key": "upgrade.hightech.item_01.description",
+    "text": "每{effect_1}秒在屏幕中生成一个含有{effect_2}的铁块",
+    "params": "{effect_1},{effect_2}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 超时空炼铁炉 / description"
+  },
+  {
+    "key": "upgrade.hightech.item_01.name",
+    "text": "超时空炼铁炉",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 超时空炼铁炉 / name"
+  },
+  {
+    "key": "upgrade.hightech.item_02.description",
+    "text": "所有武器伤害提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 正电子聚焦装置 / description"
+  },
+  {
+    "key": "upgrade.hightech.item_02.name",
+    "text": "正电子聚焦装置",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 正电子聚焦装置 / name"
+  },
+  {
+    "key": "upgrade.hightech.item_03.description",
+    "text": "生命增加{effect_1}",
+    "params": "{effect_1}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 简并态装甲 / description"
+  },
+  {
+    "key": "upgrade.hightech.item_03.name",
+    "text": "简并态装甲",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 简并态装甲 / name"
+  },
+  {
+    "key": "upgrade.charge.item_01.des",
+    "text": "所有武器伤害提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 攻击充能 / des"
+  },
+  {
+    "key": "upgrade.charge.item_01.name",
+    "text": "攻击充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 攻击充能 / name"
+  },
+  {
+    "key": "upgrade.charge.item_02.des",
+    "text": "所有防御强度提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 防御充能 / des"
+  },
+  {
+    "key": "upgrade.charge.item_02.name",
+    "text": "防御充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 防御充能 / name"
+  },
+  {
+    "key": "upgrade.charge.item_03.des",
+    "text": "掉落的铁矿量提高{effect_1}",
+    "params": "{effect_1}",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 熔炼器充能 / des"
+  },
+  {
+    "key": "upgrade.charge.item_03.name",
+    "text": "熔炼器充能",
+    "params": "",
+    "category": "upgrade",
+    "note": "配置显示覆盖；ID 熔炼器充能 / name"
+  },
+  {
+    "key": "main.window_title",
+    "text": "太空战舰 · 深空远征",
+    "params": "",
+    "category": "main",
+    "note": ""
+  },
+  {
+    "key": "gem.inventory_full",
+    "text": "宝石背包空间不足，请先整理宝石再卸装备或换舰",
+    "params": "",
+    "category": "inventory",
+    "note": "卸装/换舰错误"
+  },
+  {
+    "key": "upgrade.drag_hint",
+    "text": "  {name}  ·  松手换位  ",
+    "params": "{name}",
+    "category": "upgrade",
+    "note": "科技拖拽预览"
+  },
+  {
+    "key": "debug.excel_filter",
+    "text": "Excel 工作簿",
+    "params": "",
+    "category": "debug",
+    "note": "文件选择器"
+  },
+  {
+    "key": "gem.grid_name_level",
+    "text": "{item_name}\nLv.{level}",
+    "params": "{item_name},{level}",
+    "category": "gem",
+    "note": "背包格名称与等级"
+  },
+  {
+    "key": "debug.level_editor_store.message_01",
+    "text": "读取时配置被修改，请重新加载",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:61"
+  },
+  {
+    "key": "debug.level_editor_store.message_02",
+    "text": "配置已被 Excel、QA 或另一个编辑器修改。请重新加载后再编辑，未覆盖文件。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:184"
+  },
+  {
+    "key": "debug.level_editor_store.message_03",
+    "text": "校验通过；尚未写入文件。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:222"
+  },
+  {
+    "key": "debug.level_editor_store.message_04",
+    "text": "分表清单路径无效：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:41"
+  },
+  {
+    "key": "debug.level_editor_store.message_05",
+    "text": "{name}!{address}：公式循环引用",
+    "params": "{name},{address}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:80"
+  },
+  {
+    "key": "debug.level_editor_store.message_06",
+    "text": "仅支持本表单元格引用、四则运算和 ROUND",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:105"
+  },
+  {
+    "key": "debug.level_editor_store.message_07",
+    "text": "不允许修改字段结构：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:193"
+  },
+  {
+    "key": "debug.level_editor_store.message_08",
+    "text": "{name}：ID 必须为不重复的正整数",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:196"
+  },
+  {
+    "key": "debug.level_editor_store.message_09",
+    "text": "保存前文件发生变化，请重新加载",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:217"
+  },
+  {
+    "key": "debug.level_editor_store.message_10",
+    "text": "已保存分表并导入配置。请在 QA 重启游戏使用新配置。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:221"
+  },
+  {
+    "key": "debug.level_editor_store.message_11",
+    "text": "非有限结果",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "level_editor_store.py:108"
+  },
+  {
+    "key": "debug.level_editor_store.message_12",
+    "text": "引用不是数字：{args}",
+    "params": "{args}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:101"
+  },
+  {
+    "key": "debug.level_editor_store.message_13",
+    "text": "{name}!{address}：非有限数字",
+    "params": "{name},{address}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "level_editor_store.py:167"
+  },
+  {
+    "key": "debug.config_workbooks.message_01",
+    "text": "拆分同步成功：新建 {created}，更新 {updated}，未变 {unchanged}。",
+    "params": "{created},{updated},{unchanged}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:185"
+  },
+  {
+    "key": "debug.config_workbooks.message_02",
+    "text": "请先点击「拆分／同步 Excel」，建立独立配置表",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_workbooks.py:211"
+  },
+  {
+    "key": "debug.config_workbooks.message_03",
+    "text": "导入成功：更新 {names}；其余配置保持不变。",
+    "params": "{names}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:257"
+  },
+  {
+    "key": "debug.config_workbooks.message_04",
+    "text": "{name} 必须仅包含名为 {value_2} 的工作表",
+    "params": "{name},{value_2}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:192"
+  },
+  {
+    "key": "debug.config_workbooks.message_05",
+    "text": "分表清单缺少或包含无效路径：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:228"
+  },
+  {
+    "key": "debug.config_workbooks.message_06",
+    "text": "缺少 {filename}；原配置保留，请恢复文件或重新同步",
+    "params": "{filename}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:231"
+  },
+  {
+    "key": "debug.config_workbooks.message_07",
+    "text": "没有配置变化，未读取工作表，也未改写 JSON。",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "config_workbooks.py:239"
+  },
+  {
+    "key": "debug.config_workbooks.message_08",
+    "text": "{name} 在读取过程中又被修改，请保存完成后重试",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:253"
+  },
+  {
+    "key": "debug.config_workbooks.message_09",
+    "text": "提交失败且部分文件无法恢复，请检查：{problems}",
+    "params": "{problems}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:63"
+  },
+  {
+    "key": "debug.config_workbooks.message_10",
+    "text": "工作表名称不能安全映射为独立文件：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:163"
+  },
+  {
+    "key": "debug.config_workbooks.message_11",
+    "text": "{sheet_name}!{r} 含跨表公式，不能直接拆成独立文件；请先改为本表引用或数值",
+    "params": "{sheet_name},{r}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:107"
+  },
+  {
+    "key": "debug.config_workbooks.message_12",
+    "text": "{name} / {value_2}!{r} 公式缺少计算缓存，请在 Excel 中计算并保存",
+    "params": "{name},{value_2},{r}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:200"
+  },
+  {
+    "key": "debug.config_workbooks.message_13",
+    "text": "缺少 {filename}；原配置保留，请恢复文件",
+    "params": "{filename}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "config_workbooks.py:225"
+  },
+  {
+    "key": "debug.import_workbook.message_01",
+    "text": "未知配置表：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:108"
+  },
+  {
+    "key": "debug.import_workbook.message_02",
+    "text": "{name}：ID 必须为不重复的正整数",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:32"
+  },
+  {
+    "key": "debug.import_workbook.message_03",
+    "text": "config：名称必须非空且不能重复",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:43"
+  },
+  {
+    "key": "debug.import_workbook.message_04",
+    "text": "ship 表：应有 5 艘舰船，当前 {ships} 艘",
+    "params": "{ships}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:156"
+  },
+  {
+    "key": "debug.import_workbook.message_05",
+    "text": "敌机 {eid}：外观尺寸等级必须为正整数",
+    "params": "{eid}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:208"
+  },
+  {
+    "key": "debug.import_workbook.message_06",
+    "text": "敌机 {eid}：抗性应为 0/1/2",
+    "params": "{eid}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:209"
+  },
+  {
+    "key": "debug.import_workbook.message_07",
+    "text": "jewel：最大等级必须是正整数",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:37"
+  },
+  {
+    "key": "debug.import_workbook.message_08",
+    "text": "{name}：名称必须非空且不能重复",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:49"
+  },
+  {
+    "key": "debug.import_workbook.message_09",
+    "text": "equipment：等级为空或不是数字，请在 Excel 中重新计算并保存",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:60"
+  },
+  {
+    "key": "debug.import_workbook.message_10",
+    "text": "equipment：同名装备等级不能重复",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:62"
+  },
+  {
+    "key": "debug.import_workbook.message_11",
+    "text": "level：jewelRatio 必须为非负数",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:87"
+  },
+  {
+    "key": "debug.import_workbook.message_12",
+    "text": "ship：名称必须非空且不能重复",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:105"
+  },
+  {
+    "key": "debug.import_workbook.message_13",
+    "text": "敌机 {eid}：无效武器 {key}",
+    "params": "{eid},{key}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:215"
+  },
+  {
+    "key": "debug.import_workbook.message_14",
+    "text": "敌机 {eid}：无效掉落资源",
+    "params": "{eid}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:219"
+  },
+  {
+    "key": "debug.import_workbook.message_15",
+    "text": "缺少配置表：{name}",
+    "params": "{name}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:310"
+  },
+  {
+    "key": "debug.import_workbook.message_16",
+    "text": "mon {id}：武器格式应为 name|正整数数量",
+    "params": "{id}",
+    "category": "debug",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "import_workbook.py:72"
+  },
+  {
+    "key": "debug.import_workbook.message_17",
+    "text": "config：jewelCreat 必须为正整数",
+    "params": "",
+    "category": "debug",
+    "note": "固定文字",
+    "source": "import_workbook.py:98"
+  },
+  {
+    "key": "main.subtitle",
+    "text": "DEEP SPACE / EXPEDITION",
+    "params": "",
+    "category": "main",
+    "note": "主界面英文副标题"
+  },
+  {
+    "key": "gem.max_badge",
+    "text": "  MAX",
+    "params": "",
+    "category": "gem",
+    "note": "满级角标"
+  },
+  {
+    "key": "gem.merge_badge",
+    "text": "  ↑",
+    "params": "",
+    "category": "gem",
+    "note": "可合成角标"
+  },
+  {
+    "key": "battle.damage_record",
+    "text": "{target}{critical}：{damage}",
+    "params": "{target},{critical},{damage}",
+    "category": "battle",
+    "note": "伤害详情单条记录"
+  },
+  {
+    "key": "main.offline_rewards",
+    "text": "离线收益：{rewards}",
+    "params": "{rewards}",
+    "category": "main",
+    "note": "动态提示"
+  },
+  {
+    "key": "upgrade.research_complete",
+    "text": "{name}研发完成",
+    "params": "{name}",
+    "category": "upgrade",
+    "note": "动态提示"
+  },
+  {
+    "key": "system.editor.title",
+    "text": "UI 文案表",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.intro",
+    "text": "只需修改“UI文字”列。蓝色参数标签与程序绑定，必须完整保留。保存后重启游戏生效。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.search",
+    "text": "搜索文案",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.search_placeholder",
+    "text": "搜索文字、KEY 或备注",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.category",
+    "text": "所属界面",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.all",
+    "text": "全部界面",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.save",
+    "text": "保存文案",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.loading",
+    "text": "正在读取文案表…",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.key_header",
+    "text": "KEY / 所属界面",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.text_header",
+    "text": "UI文字（可修改）",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.params_header",
+    "text": "参数（自动识别）",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.note_header",
+    "text": "备注",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.missing",
+    "text": "缺少动态参数：{parameters}",
+    "params": "{parameters}",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.extra",
+    "text": "不允许新增或修改动态参数：{parameters}",
+    "params": "{parameters}",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.braces",
+    "text": "参数括号不完整",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.count",
+    "text": "{total} 条 · {dirty} 条待保存{invalid}",
+    "params": "{total},{dirty},{invalid}",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.invalid_count",
+    "text": " · {count} 条参数错误",
+    "params": "{count}",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.load_failed",
+    "text": "读取文案表失败",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.ready",
+    "text": "已读取文案表。可搜索、筛选后编辑，换行会原样保留。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.conflict",
+    "text": "文件已被其他窗口修改。请先保留草稿，再重新打开文案表。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.invalid_keys",
+    "text": "KEY 不完整或已改变，未保存。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.conflict_save",
+    "text": "保存前文件发生变化，未覆盖。请重新打开文案表。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.editor.saved",
+    "text": "已保存。重启游戏后生效；发布版需要重新打包。",
+    "params": "",
+    "category": "system",
+    "note": "文案编辑器"
+  },
+  {
+    "key": "system.category.main",
+    "text": "主界面",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.battle",
+    "text": "战斗",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.ship",
+    "text": "舰船",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.weapon",
+    "text": "武器",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.defense",
+    "text": "防御",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.gem",
+    "text": "宝石",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.inventory",
+    "text": "背包 / 资源",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.upgrade",
+    "text": "升级 / 研究 / 充能",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.merge",
+    "text": "合成 / 分解",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.shop",
+    "text": "商店",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.settings",
+    "text": "设置",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.system",
+    "text": "系统",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.debug",
+    "text": "DEBUG / 编辑器",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "system.category.tooltip",
+    "text": "悬停说明",
+    "params": "",
+    "category": "system",
+    "note": "文案表界面分类"
+  },
+  {
+    "key": "debug.level_editor_store.message_101",
+    "text": "{name}!{address} {raw}：{error}",
+    "params": "{name},{address},{raw},{error}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "level_editor_store.py:111"
+  },
+  {
+    "key": "debug.config_workbooks.message_101",
+    "text": "{name}：{error}",
+    "params": "{name},{error}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "config_workbooks.py:246"
+  },
+  {
+    "key": "debug.import_workbook.message_101",
+    "text": "{label}: expected {positive} number, got {value}",
+    "params": "{label},{positive},{value}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:120"
+  },
+  {
+    "key": "debug.import_workbook.message_102",
+    "text": "{label}: must not be empty",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:126"
+  },
+  {
+    "key": "debug.import_workbook.message_103",
+    "text": "{label}: invalid braces",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:131"
+  },
+  {
+    "key": "debug.import_workbook.message_104",
+    "text": "Level IDs must be consecutive from 1",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:192"
+  },
+  {
+    "key": "debug.import_workbook.message_105",
+    "text": "scientistCost: expected multiplier and resource costs",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:248"
+  },
+  {
+    "key": "debug.import_workbook.message_106",
+    "text": "{label}: unknown rounding instruction",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:135"
+  },
+  {
+    "key": "debug.import_workbook.message_107",
+    "text": "{label}: only numeric arithmetic is supported",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:138"
+  },
+  {
+    "key": "debug.import_workbook.message_108",
+    "text": "equipment {key}: expected exactly one base row (level 1)",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:176"
+  },
+  {
+    "key": "debug.import_workbook.message_109",
+    "text": "level {id}: invalid encounter positions",
+    "params": "{id}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:198"
+  },
+  {
+    "key": "debug.import_workbook.message_110",
+    "text": "group {gid}: expected 10 slots",
+    "params": "{gid}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:202"
+  },
+  {
+    "key": "debug.import_workbook.message_111",
+    "text": "{key} must be between 0 (inclusive) and 1 (exclusive)",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:224"
+  },
+  {
+    "key": "debug.import_workbook.message_112",
+    "text": "autoGenRes: expected interval, resource ID, amount, speed",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:231"
+  },
+  {
+    "key": "debug.import_workbook.message_113",
+    "text": "autoGenRes: expected interval, resource ID, amount, speed",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:234"
+  },
+  {
+    "key": "debug.import_workbook.message_114",
+    "text": "autoGenRes: unknown resource ID {parts}",
+    "params": "{parts}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:236"
+  },
+  {
+    "key": "debug.import_workbook.message_115",
+    "text": "scientistCost: invalid resource costs",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:258"
+  },
+  {
+    "key": "debug.import_workbook.message_116",
+    "text": "hightech {key}: des must not be empty",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:262"
+  },
+  {
+    "key": "debug.import_workbook.message_117",
+    "text": "hightech {key}: rounded research points must be positive",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:265"
+  },
+  {
+    "key": "debug.import_workbook.message_118",
+    "text": "hightech {key}: unlock must reference a level or be zero",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:270"
+  },
+  {
+    "key": "debug.import_workbook.message_119",
+    "text": "charge {key}: unsupported effect",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:280"
+  },
+  {
+    "key": "debug.import_workbook.message_120",
+    "text": "charge {key}: func must not be empty",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:282"
+  },
+  {
+    "key": "debug.import_workbook.message_121",
+    "text": "charge {key}: unknown resource",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:289"
+  },
+  {
+    "key": "debug.import_workbook.message_122",
+    "text": "charge {key}: rounded charge count must stay positive; growth multiplier must be at least 1",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:291"
+  },
+  {
+    "key": "debug.import_workbook.message_123",
+    "text": "charge {key}: invalid unlock level",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:294"
+  },
+  {
+    "key": "debug.import_workbook.message_124",
+    "text": "{label}: invalid expression",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:142"
+  },
+  {
+    "key": "debug.import_workbook.message_125",
+    "text": "{label}: only numeric arithmetic is supported",
+    "params": "{label}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:145"
+  },
+  {
+    "key": "debug.import_workbook.message_126",
+    "text": "ship {key}: des must not be empty",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:160"
+  },
+  {
+    "key": "debug.import_workbook.message_127",
+    "text": "ship {key}: weaponSlots must be a positive integer",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:164"
+  },
+  {
+    "key": "debug.import_workbook.message_128",
+    "text": "ship {key}: sameEquipmentLimit must be a positive integer",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:167"
+  },
+  {
+    "key": "debug.import_workbook.message_129",
+    "text": "ship {key}: defenseSlots must be a positive integer",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:169"
+  },
+  {
+    "key": "debug.import_workbook.message_130",
+    "text": "ship {key}: unlock must reference a level or be zero",
+    "params": "{key}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:171"
+  },
+  {
+    "key": "debug.import_workbook.message_131",
+    "text": "Unknown group {id}",
+    "params": "{id}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:200"
+  },
+  {
+    "key": "debug.import_workbook.message_132",
+    "text": "Unknown enemy {enemy_id}",
+    "params": "{enemy_id}",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:204"
+  },
+  {
+    "key": "debug.import_workbook.message_133",
+    "text": "Drop chance must be between 0 and 1",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:222"
+  },
+  {
+    "key": "debug.import_workbook.message_134",
+    "text": "autoGenRes: interval, amount and speed must be numbers",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:240"
+  },
+  {
+    "key": "debug.import_workbook.message_135",
+    "text": "scientistCost: invalid or duplicate resource",
+    "params": "",
+    "category": "debug",
+    "note": "配置工具校验提示",
+    "source": "import_workbook.py:254"
+  },
+  {
+    "key": "system.validation.table",
+    "text": "文案表格式不正确",
+    "params": "",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "system.validation.row",
+    "text": "文案行格式不正确",
+    "params": "",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "system.validation.key",
+    "text": "{key}：KEY 重复或不在程序接口中",
+    "params": "{key}",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "system.validation.missing",
+    "text": "{key}：缺少动态参数：{parameter}（缺少 {count} 处）",
+    "params": "{key},{parameter},{count}",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "system.validation.extra",
+    "text": "{key}：不允许新增或修改动态参数：{parameter}",
+    "params": "{key},{parameter}",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "system.validation.missing_key",
+    "text": "{key}：缺少文案 KEY",
+    "params": "{key}",
+    "category": "system",
+    "note": "文案接口检查"
+  },
+  {
+    "key": "battle.boss_info",
+    "text": "BOSS：{name}",
+    "params": "{name}",
+    "category": "battle",
+    "note": "未进入 BOSS 战时的名称"
+  },
+  {
+    "key": "settings.guard",
+    "text": "驻守：{state}",
+    "params": "{state}",
+    "category": "settings",
+    "note": "驻守开关"
+  },
+  {
+    "key": "settings.sound",
+    "text": "音效：{state}",
+    "params": "{state}",
+    "category": "settings",
+    "note": "音效开关"
+  },
+  {
+    "key": "upgrade.cost_one",
+    "text": "升1级，消耗：{cost}",
+    "params": "{cost}",
+    "category": "upgrade",
+    "note": "升级消耗提示"
+  },
+  {
+    "key": "upgrade.cost_ten",
+    "text": "一次升10级，总消耗：{cost}",
+    "params": "{cost}",
+    "category": "upgrade",
+    "note": "升级消耗提示"
+  },
+  {
+    "key": "upgrade.scientist_cost",
+    "text": "单个消耗：{cost}",
+    "params": "{cost}",
+    "category": "upgrade",
+    "note": "升级消耗提示"
+  },
+  {
+    "key": "upgrade.completed",
+    "text": "{name}{result}",
+    "params": "{name},{result}",
+    "category": "upgrade",
+    "note": "升级完成通知"
+  },
+  {
+    "key": "inventory.rate",
+    "text": "{rate}/秒",
+    "params": "{rate}",
+    "category": "inventory",
+    "note": "每秒资源收入"
+  },
+  {
+    "key": "battle.slot_number",
+    "text": "{slot}",
+    "params": "{slot}",
+    "category": "battle",
+    "note": "战场槽位编号"
+  },
+  {
+    "key": "battle.enemy_marker",
+    "text": "#{slot}",
+    "params": "{slot}",
+    "category": "battle",
+    "note": "敌舰编号"
+  },
+  {
+    "key": "ship.ship.frigate.code",
+    "text": "Frigate",
+    "params": "",
+    "category": "ship",
+    "note": "战舰次级型号标识（仅显示）"
+  },
+  {
+    "key": "ship.ship.destroyer.code",
+    "text": "Destroyer",
+    "params": "",
+    "category": "ship",
+    "note": "战舰次级型号标识（仅显示）"
+  },
+  {
+    "key": "ship.ship.cruiser.code",
+    "text": "Cruiser",
+    "params": "",
+    "category": "ship",
+    "note": "战舰次级型号标识（仅显示）"
+  },
+  {
+    "key": "ship.ship.battleship.code",
+    "text": "Battleship",
+    "params": "",
+    "category": "ship",
+    "note": "战舰次级型号标识（仅显示）"
+  },
+  {
+    "key": "ship.ship.heavy_battleship.code",
+    "text": "Heavy_Battleship",
+    "params": "",
+    "category": "ship",
+    "note": "战舰次级型号标识（仅显示）"
+  },
+  {
+    "key": "main.boss_health_cards.text_02",
+    "text": "{hp} / {max_hp}",
+    "params": "{hp},{max_hp}",
+    "category": "main",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:boss_health_cards · hp = enemy_health(float(enemy.hp))；max_hp = enemy_health(float(enemy.max_hp))"
+  },
+  {
+    "key": "upgrade.refresh_scientists.text_02",
+    "text": "{id} {id_2}",
+    "params": "{id},{id_2}",
+    "category": "upgrade",
+    "note": "动态显示；蓝色参数由程序填入",
+    "source": "main.gd:refresh_scientists · id = db.data.resources[id]；id_2 = number(game.scientist_cost()[id])"
+  },
+  {
+    "key": "system.confirm",
+    "text": "确定",
+    "params": "",
+    "category": "system",
+    "note": "通用对话框按钮"
+  },
+  {
+    "key": "system.cancel",
+    "text": "取消",
+    "params": "",
+    "category": "system",
+    "note": "通用对话框按钮"
+  },
+  {
+    "key": "system.open",
+    "text": "打开",
+    "params": "",
+    "category": "system",
+    "note": "通用对话框按钮"
+  },
+  {
+    "key": "system.editor.visibility",
+    "text": "显示范围",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.active",
+    "text": "正常文案",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.deleted",
+    "text": "已删除",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.delete",
+    "text": "删除",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.restore",
+    "text": "恢复",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.deleted_saved",
+    "text": "已删除并保存。重启游戏后，对应文字及其动态内容不再显示；可在“已删除”中恢复。",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  },
+  {
+    "key": "system.editor.restored",
+    "text": "已恢复并保存，重启游戏生效。",
+    "params": "",
+    "category": "system",
+    "note": "文案表删除与恢复"
+  }
+]

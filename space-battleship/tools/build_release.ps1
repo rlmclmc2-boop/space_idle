@@ -3,8 +3,8 @@
 param()
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-$project = Join-Path $root 'space-battleship'
+$project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$root = [IO.Directory]::GetParent($project).FullName
 $workRoot = Join-Path $root 'test/work'
 $release = Join-Path $root 'release'
 $log = Join-Path $root 'build.log'
@@ -91,6 +91,12 @@ try {
     New-Item -ItemType Directory -Force -Path $workRoot | Out-Null
     $lock = [IO.File]::Open((Join-Path $workRoot 'release-build.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
     [IO.File]::WriteAllText($log, "Space Battleship release build $(Get-Date -Format o)`r`n", $utf8)
+    Stage 'Locate project'
+    Note "Detected project: $project"
+    Note "Workspace / output root: $root"
+    if (!(Test-Path -LiteralPath (Join-Path $project 'project.godot') -PathType Leaf)) {
+        throw "Godot project missing beside tools directory: $project. Keep tools inside the project folder."
+    }
     $run = Join-Path $workRoot ('release-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,8))
     New-Item -ItemType Directory -Path $run | Out-Null
     Stage 'Clean / quarantine previous release'
@@ -106,7 +112,7 @@ try {
     $template = Join-Path $project 'engine/templates/4.7.2.stable/windows_release_x86_64.exe'
     foreach ($required in @($engine, $template, (Join-Path $project 'assets/fonts/NotoSansSC.ttf'), (Join-Path $project 'assets/fonts/OFL.txt'))) {
         if (!(Test-Path -LiteralPath $required -PathType Leaf)) {
-            throw "Missing required file: $required. See space-battleship/README.md (Windows release): install official Godot 4.7.2 editor and matching standard export template; restore the bundled OFL font. No fallback build is produced."
+            throw "Missing required file: $required. See $(Join-Path $project 'README.md') (Windows release): install official Godot 4.7.2 editor and matching standard export template; restore the bundled OFL font. No fallback build is produced."
         }
     }
     $version = Run $engine @('--version') $run 'version'
@@ -123,8 +129,20 @@ try {
     foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
     foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
     New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
-    Copy-Item -LiteralPath (Join-Path $project 'data/game_data.json') -Destination (Join-Path $staging 'data')
-    $preset = [IO.File]::ReadAllText((Join-Path $project 'export_presets.cfg')).Replace('engine/templates/4.7.2.stable/windows_release_x86_64.exe', $template.Replace('\','/'))
+    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json')) {
+        Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
+    }
+    $presetPath = Join-Path $project 'export_presets.cfg'
+    $preset = [IO.File]::ReadAllText($presetPath)
+    $templateSetting = '(?m)^custom_template/release\s*=\s*[^\r\n]*'
+    if ([regex]::Matches($preset, $templateSetting).Count -ne 1) {
+        throw "Expected one release template setting in $presetPath"
+    }
+    # Rebind even an old machine's absolute path; never modify the source preset.
+    $preset = [regex]::Replace($preset, $templateSetting, [Text.RegularExpressions.MatchEvaluator]{
+        param($match)
+        'custom_template/release="' + $template.Replace('\','/') + '"'
+    })
     [IO.File]::WriteAllText((Join-Path $staging 'export_presets.cfg'), $preset, $utf8)
     Stage 'Import resources / compile scripts'
     $null = Run $engine @('--headless','--path',$staging,'--editor','--import') $run 'import' 300 -isolated

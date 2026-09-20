@@ -2,11 +2,11 @@
 
 ## CURRENT
 
-- DONE：武器/防御升级卡统一为深蓝渐变、青蓝高亮、金属切角界面；左侧图标、中部名称/精确等级/属性对比、右侧三级按钮、底部状态及进度条。卡片宽664、高112，保留战场和既有横向滚动。
-- CHANGED：main.gd复用现有卡片和升级入口，新增局部SVG皮肤及防御图标；武器裁去既有图标透明留白。伤害/护盾/装甲和CD/同类型减伤展示当前→下级，满级展示相同值及标记。武器进度沿用冷却，防御进度显示等级，悬停区分语义。升级按槽更新数值、详情与等级进度；资源仅影响消费按钮；静态皮肤无逐帧重绘。没有修改配置、战斗规则或正式玩家数据。
-- VERIFY：隔离test_upgrade_ui 21项、test_local_ui 70项，合计91项、0失败；真实点击、动态MAX、无资源禁用、长名称/属性宽度、两页预览、局部控件身份/写入和隐藏恢复通过；已核对实际武器/防御截图，git diff --check通过。Godot系统证书警告未影响测试。
-- EVIDENCE：../../test/work/test_upgrade_ui-figaxms1/space-battleship/.runtime/equipment-weapons.png、equipment-defence.png、equipment-disabled.png；局部回归路径见../../test/work/equipment-local-run.log。
-- NEXT：本轮无待办；维持原有初建/显式重置和实际槽位变化的最小卡片替换。更多槽位仍使用横向滚动。
+- DONE：充能页仅显示已解锁卡片，未解锁卡片隐藏且不占布局空间。
+- CHANGED：scripts/main.gd 在初始化、解锁结构刷新及卡片刷新时同步可见性；隐藏卡片跳过内容刷新，解锁后复用原控件，保留其他卡片、页签和滚动容器。规则更新 docs/PROJECT.md，专项扩展 ../test/test_tab_unlocks.gd。未改充能数值、扣费或正式配置与存档。
+- VERIFY：隔离解锁专项 18 项、局部 UI 专项 70 项全部通过，覆盖卡片隐藏/解锁/重锁、控件身份、页签保留及局部写入/绘制；截图确认仅攻击充能显示。git diff --check 通过。
+- EVIDENCE：../../test/work/test_tab_unlocks-5hj_545p/test.log 及 space-battleship/tabs-charge-unlocked.png；../../test/work/test_local_ui-6_or44ya/test.log。
+- NEXT：重启开发工程加载；已有发布 EXE 需重新打包，本轮未替换 release。
 
 ## DONE
 

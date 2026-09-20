@@ -131,7 +131,8 @@ func run() -> void:
 	root.get_texture().get_image().save_png("res://guard.png")
 	for child in scene.ui.get_children():
 		if child is MenuButton and child.tooltip_text == "驻守死亡处理":
-			check(child.get_popup().item_count == 3, "Three death submenu choices")
+			var menu: PopupMenu = child.get_popup()
+			check([0,1,2].all(func(mode):return menu.get_item_index(mode) >= 0 and menu.is_item_radio_checkable(menu.get_item_index(mode))), "Three death choices remain available alongside other settings")
 			child.get_popup().id_pressed.emit(2)
 	check(scene.game.profile.guardDeath == 2, "Actual death settings signal")
 	print("Guard: %d checks, %d failures" % [checks,failures])
