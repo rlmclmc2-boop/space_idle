@@ -12,7 +12,7 @@
 | 资源取整 | `test_rule_rounding.gd`；涉及自动生产加 `test_auto_gen_resources.gd` |
 | 装备槽位 | `test_state_ownership.gd`；涉及退款加 `test_unequip.gd`，数量限制加 `test_ship_equipment_limit.gd` |
 | 装备计算成长 | `test_equipment_growth.gd` / `test_equipment_growth_import.py`；批量购买加 `test_bulk_upgrades.gd` |
-| UI局部刷新/绘制 | `test_local_ui.gd`（控件身份、写入/绘制范围、真实点击/拖拽、隐藏页补齐、局部解锁）；升级用`test_upgrade_ui.gd`（真实输入、动态MAX、事件不重建）。定向性能用`test_upgrade_ui_probe.gd`经run.py隔离，3轮两种预算，勿并行其他性能测试 |
+| UI局部刷新/绘制 | `test_local_ui.gd`（控件身份、写入/绘制范围、真实点击/拖拽、隐藏页补齐、局部解锁）；装备用`test_upgrade_ui.gd`（模块阵列、三栏、筛选排序、真实输入、模块升级/自由换装、舰体挂点、200ms展开/Esc、滚动/详情保留、静止零写入与截图）。定向性能用`test_upgrade_ui_probe.gd`经run.py隔离，3轮两种预算，勿并行其他性能测试 |
 | UI 文案表 | `test_ui_text.py`（参数保护、只写文字、并发冲突、本机接口、中文硬编码审计）与 `test_ui_text.gd`（默认名称/公式一致、场景重启生效、空错误文字不放行操作）；回归 `test_local_ui.gd`、`test_jewel_ui.gd`；配置工具涉及 `test_config_panel.gd`、`test_level_editor.py`。发布专项 `python test/test_ui_text_release.py` 从工作区根直接运行，自建隔离目录，不经 run.py、不替换正式 release。 |
 | 持续锁定光束 | `test_long_laser.gd`（延迟首击、线性增长/封顶、断束重锁、敌我挂载、时间步与画面）；回归`test_projectile_lifecycle.gd`、`test_travel_cooldowns.gd` |
 | 坚韧与死亡 | `test_tenacity_survival.gd`：受击期减速恢复、微量回盾后连续溢出致死、不同容量和镶嵌位置、1e24容量下微小剩余生命；可选`res://.runtime/save-fixture.json`仅在隔离副本装载 |
@@ -27,7 +27,8 @@
 | 科学家 | `test_scientists.gd`、`test_scientist_affordability.gd`；重建首帧按钮闪动用`test_hightech_flicker.gd` |
 | 存档 | `test_save_boundaries.gd`、`test_state_ownership.gd`；节点恢复用 `test_journey_resume.gd`（巡航/战斗/驻守/跨关回退/通关待确认、退出保存和真实 QA 重启）；离线资源加 `test_offline_resources.gd` |
 | 宝石 | `test_jewels.gd`（200容量/拾取/合成/分解/镶嵌/10种效果/存档）；`test_jewel_fragments.gd`（旧字典迁移、统一倍率/小数、实际收入、离线幂等/溢出/随机批量）；`test_jewel_ui.gd`（真实点击、局部写入/重绘/隐藏恢复与截图）；`test_jewel_import.py`（来源一致、重复ID、分表发现与缓存） |
-| UI解锁 | `test_tab_unlocks.gd`；换舰草稿加 `test_ship_tab.gd` |
+| 战场返回入口 | `test_battle_tab.gd`（六个功能页真实点击返回、选中、全局 UI、战斗/镜头状态与无关绘制保持）；回归 `test_tab_unlocks.gd`、`test_local_ui.gd` |
+| UI解锁 | `test_tab_unlocks.gd`；模块/换舰流加 `test_module_ui.gd` |
 | 一键合成 | `test_jewel_combine_all.gd`（连锁/分组/保护标记/配置上限/碎片补位/异常回滚/单次保存通知/读档）；`test_jewel_ui.gd`（实际按钮、合并结果、高亮、无操作提示与局部刷新）；共用生成逻辑回归`test_jewel_fragments.gd` |
 | 时间步进 | `test_time_steps.gd`；冷却加 `test_travel_cooldowns.gd` |
 
@@ -51,6 +52,7 @@ python test/run.py test_rule_rounding.gd
 |---|---|
 | 退款/批量/舰船 | test_unequip.gd / test_bulk_upgrades.gd / test_ships.gd |
 | 炼铁炉与收入 | test_furnace_income.gd / test_resource_display.gd |
+| 充能页面 | `test_charge_panel.gd`（配置驱动节点、五种状态、真实点击、翻页/扩展、分辨率、隐藏/暂停与局部写入绘制）；`test_local_ui.gd`、`test_tab_unlocks.gd` |
 | 充能费率与次数 | test_charge.gd / test_charge_growth.gd |
 | 驻守/回退/过关 | test_guard.gd / test_loop_retreat.gd / test_skip_clear.gd；跃迁界面用 test_warp_ui.gd（10 行、滚轮/键盘、当前关卡重复跃迁、控件/滚动保留及截图） |
 | 关卡编辑器 | test_level_editor.py / test_level_editor.gd |
@@ -61,3 +63,5 @@ python test/run.py test_rule_rounding.gd
 表内测试都经run.py隔离。矩阵生成INPUT_MATRIX.json（完整结果）与.md（索引），故障现状观察通过不代表事务安全；未决问题统一查[STATUS](../space-battleship/docs/STATUS.md)，尤其U-018/U-019/U-020。test_game及legacy探针不是默认基线，不能恢复旧机制或放宽正确断言。
 
 性能任务另用`python test/test_performance.py --label <证据名>`，由该脚本创建隔离副本并调用phase9_probe.gd，不通过run.py启动探针。默认三轮原始测量与三轮插桩；测量时不要同时跑其他测试。规则与测量门槛查DECISIONS，历史结果由Git/本次重构记录保留。
+
+模块成长重构：`test_module_refit.gd` 检查自由换装、空模块升级、同种装配、停用恢复、宝石/累计/存档、剩余比例及攻击失效边界；`test_module_ui.gd` 检查真实点击、跨页挂点定位、展开/滚动/筛选/选择保持与无变化零写入。`test_upgrade_ui.gd`/`test_ship_tab.gd` 为 UI 专项别名，`test_unequip.gd` 为模块业务专项别名；不必重复运行。旧退款/重开/同种限制断言已按用户确认规则迁移。

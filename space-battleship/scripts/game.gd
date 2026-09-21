@@ -37,6 +37,7 @@ var guard_arrived := false
 var first_clear := false
 var run_resources := {"1": 0.0, "2": 0.0}
 var uid := 0
+var projectile_serial := 0
 var save_enabled := true
 var pending_unlocks: Array[String] = []
 var retreat_from := 0.0
@@ -49,12 +50,15 @@ var resource_samples: Array[Dictionary] = []
 var offline_rewards: Dictionary = {}
 var auto_gen_elapsed := 0.0
 var charge_resources_dirty := false
+var save_dirty := false
 var jewel_repeats: Array[Dictionary] = []
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
 var jewel_serial := 0
 var jewel_bulk_combining := false
+# Preserves damage fraction while a capacity temporarily becomes zero during refit.
+var refit_health_ratios := {"armour":1.0,"shield":1.0}
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
@@ -67,12 +71,11 @@ func _init(database: ShipDatabase, persist := true) -> void:
 		advance_charge(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		advance_hightech(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		save_progress()
-		charge_resources_dirty = false
 	reset_player()
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	profile.loadout = default_loadout(selected, profile.unlocked)
 	profile.jewels = []
 	profile.jewelFragments = 0.0
@@ -155,13 +158,14 @@ func load_progress() -> void:
 	if raw.get("loadout") is Dictionary:
 		profile.loadout = raw.loadout.duplicate(true)
 	ensure_loadout()
-	# Version 1 gives the legacy level precedence for the first installed instance,
-	# even when loadout is present. Resolve that conflict once, at the input boundary.
-	for key in EQUIPMENT:
-		var entry := first_equipment_entry(key)
-		var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
-		if not entry.is_empty():
-			entry.level = clampi(int(value), 1, db.max_equipment_level(key)) if value is float or value is int else 1
+	# Legacy name levels migrate once. Module saves use their own slot levels exclusively.
+	if int(raw.get("moduleVersion",0)) < 1:
+		for key in EQUIPMENT:
+			var entry := first_equipment_entry(key)
+			var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
+			if not entry.is_empty():
+				entry.level = clampi(int(value),1,db.max_equipment_level(key)) if value is float or value is int else 1
+	profile.moduleVersion = 1
 	load_jewels(raw)
 	load_hightech(raw)
 	profile.hightechOrder = hightech_slots()
@@ -292,13 +296,13 @@ func ensure_loadout() -> void:
 		var count := int(row.get("weaponSlots", 0)) if category == "weapons" else int(row.get("defenseSlots", 0))
 		var entries: Array = saved.get(category, []) if saved.get(category, []) is Array else []
 		var normalized: Array = []
-		for i in range(count):
-			var entry = entries[i] if i < entries.size() and entries[i] is Dictionary else base[category][i]
+		for i in range(maxi(count,entries.size())):
+			var entry = entries[i] if i < entries.size() and entries[i] is Dictionary else (base[category][i] if i<count else {"key":"","level":1})
 			var equip_key := str(entry.get("key", "")) if entry is Dictionary else ""
 			var level := int(entry.get("level", 1)) if entry is Dictionary and (entry.get("level", 1) is int or entry.get("level", 1) is float) else 1
 			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
 				equip_key = ""
-			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, db.max_equipment_level(equip_key)) if not equip_key.is_empty() else 1}
+			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, 2147483647)}
 			for field in ["sockets", "attacks", "hits"]:
 				if entry.has(field):
 					normalized_entry[field] = entry[field]
@@ -306,6 +310,7 @@ func ensure_loadout() -> void:
 		profile.loadout[category] = normalized
 
 func save_progress() -> void:
+	save_dirty = true
 	if not save_enabled:
 		return
 	profile.hightechOrder = hightech_slots()
@@ -342,16 +347,35 @@ func save_progress() -> void:
 	var err := DirAccess.rename_absolute(SAVE_PATH + ".tmp", SAVE_PATH)
 	if err != OK:
 		event.emit("save_error", {})
+	else:
+		save_dirty = false
+		charge_resources_dirty = false
 
 func first_equipment_entry(key: String) -> Dictionary:
 	for category in ["weapons", "defence"]:
-		for entry in profile.get("loadout", {}).get(category, []):
+		for entry in loadout_entries(category):
 			if str(entry.get("key", "")) == key:
 				return entry
 	return {}
 
-func loadout_entries(category: String) -> Array:
+func module_entries(category: String) -> Array:
 	return profile.loadout.get(category, [])
+
+func active_slot_count(category: String, ship_key := "") -> int:
+	return int(db.ship(str(profile.selectedShip) if ship_key.is_empty() else ship_key).get("weaponSlots" if category=="weapons" else "defenseSlots",0)) if category in ["weapons","defence"] else 0
+
+func module_entry(category: String, index: int) -> Dictionary:
+	var entries := module_entries(category)
+	return entries[index] if index>=0 and index<entries.size() else {}
+
+func loadout_entries(category: String) -> Array:
+	# Active view contains references to authoritative modules, never copies of entries.
+	return module_entries(category).slice(0,active_slot_count(category))
+
+func module_cost_key(category: String) -> String:
+	# Current same-category cost curves are identical; modules retain that existing curve.
+	return "laser" if category=="weapons" else "armour"
+
 
 func weapon_entries() -> Array:
 	return loadout_entries("weapons")
@@ -362,7 +386,7 @@ func defense_entries() -> Array:
 func stat(key: String) -> float:
 	var total := 0.0
 	for category in ["weapons", "defence"]:
-		for entry in profile.loadout.get(category, []):
+		for entry in loadout_entries(category):
 			if str(entry.get("key", "")) == key:
 				total += jewel_equipment_stat(entry)
 	return total
@@ -388,7 +412,7 @@ func first_weapon_index(key: String) -> int:
 
 func slot_upgrade_cost(category: String, index: int, levels := 1) -> Dictionary:
 	var entry := slot_entry(category, index)
-	return {} if entry.is_empty() or str(entry.key).is_empty() else upgrade_costs_for_level(str(entry.key), int(entry.level), levels)
+	return {} if entry.is_empty() else upgrade_costs_for_level(module_cost_key(category), int(entry.level), levels)
 
 func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictionary:
 	var total := {}
@@ -402,9 +426,7 @@ func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictiona
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry := slot_entry(category, index)
-	if entry.is_empty() or str(entry.key).is_empty() or not profile.unlocked.has(str(entry.key)):
-		return false
-	if levels > 1 and not EQUIPMENT.has(str(entry.key)):
+	if entry.is_empty() or levels<1:
 		return false
 	var costs := slot_upgrade_cost(category, index, levels)
 	if costs.is_empty():
@@ -420,12 +442,12 @@ func refund_equipment(key: String, level: int) -> void:
 			profile.resources[id] = float(profile.resources.get(id, 0)) + float(upgrade_cost_for_level(key, target_level)[id])
 
 func equipment_limit() -> int:
-	return int(db.ship(str(profile.selectedShip)).get("sameEquipmentLimit", 1))
+	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
 
 func equipment_count(key: String) -> int:
 	var count := 0
 	for category in ["weapons", "defence"]:
-		for entry in profile.loadout.get(category, []):
+		for entry in loadout_entries(category):
 			if str(entry.get("key", "")) == key:
 				count += 1
 	return count
@@ -450,84 +472,88 @@ func valid_loadout(key: String, loadout: Dictionary) -> bool:
 			if not allowed.has(equip_key) or not profile.unlocked.has(equip_key):
 				return false
 			counts[equip_key] = int(counts.get(equip_key, 0)) + 1
-	for equip_key in counts:
-		if int(counts[equip_key]) > int(row.get("sameEquipmentLimit", 1)):
-			return false
 	return true
 
+func capture_refit_health() -> void:
+	for key in ["armour","shield"]:
+		var maximum := stat(key)
+		if maximum>0 and player.has(key):
+			refit_health_ratios[key] = clampf(float(player[key])/maximum,0,1)
+
+func apply_refit_health() -> void:
+	for key in ["armour","shield"]:
+		if player.has(key):player[key] = stat(key)*float(refit_health_ratios[key])
+	jewel_defence_damage.clear()
+	sync_jewel_defence_damage()
+
+func invalidate_module_attack(index: int) -> void:
+	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
+	jewel_charged.erase(slot_id("weapons",index))
+	for shot in projectiles:
+		if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index:shot.dead=true
+	var entry := slot_entry("weapons",index)
+	if entry.is_empty() or str(entry.key).is_empty():
+		cooldowns.erase(slot_id("weapons",index))
+	else:
+		cooldowns[slot_id("weapons",index)] = float(db.equip(str(entry.key),int(entry.level)).cd)
+
 func equip_slot(category: String, index: int, key: String) -> bool:
-	if category not in ["weapons", "defence"]:
-		return false
-	var allowed: Array = WEAPON_KEYS if category == "weapons" else DEFENSE_KEYS
-	var entries := loadout_entries(category)
-	if index < 0 or index >= entries.size() or not allowed.has(key) or not profile.unlocked.has(key):
-		return false
-	if not str(entries[index].key).is_empty():
-		return false
-	if equipment_count(key) >= equipment_limit():
-		return false
-	var old_total_armour := stat("armour")
-	var old_total_shield := stat("shield")
-	profile.loadout[category][index] = {"key":key, "level":1}
-	if category == "defence":
-		jewel_defence_damage.erase(index)
-		jewel_defence_times.erase(index)
-	if category == "defence" and player.has("armour"):
-		player.armour = clampf(player.armour + stat("armour") - old_total_armour, 0, stat("armour"))
-		player.shield = clampf(player.shield + max_shield() - old_total_shield, 0, max_shield())
-	if category == "weapons":
-		cooldowns.erase(slot_id(category, index))
+	if category not in ["weapons","defence"]:return false
+	var allowed: Array = WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS
+	var entry := slot_entry(category,index)
+	if entry.is_empty() or not allowed.has(key) or not profile.unlocked.has(key):return false
+	if str(entry.key)==key:return true
+	capture_refit_health()
+	# Replace the entry reference to invalidate old beams/repeats, keeping module assets.
+	var module := entry.duplicate(true)
+	module.key = key
+	profile.loadout[category][index] = module
+	if category=="weapons":invalidate_module_attack(index)
+	apply_refit_health()
 	save_progress()
+	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
 func unequip_slot(category: String, index: int) -> bool:
-	if category not in ["weapons", "defence"]:
-		return false
-	var entry := slot_entry(category, index)
-	if entry.is_empty() or str(entry.key).is_empty():
-		return false
-	if not return_socket_jewels([entry]):
-		return false
-	var key := str(entry.key)
-	refund_equipment(key, int(entry.level))
-	profile.loadout[category][index] = {"key":"", "level":1}
-	if category == "defence":
-		jewel_defence_damage.erase(index)
-		jewel_defence_times.erase(index)
-	cooldowns.erase(slot_id(category, index))
-	if category == "defence" and player.has("armour"):
-		player.armour = minf(player.armour, stat("armour"))
-		player.shield = minf(player.shield, max_shield())
+	var entry := slot_entry(category,index)
+	if entry.is_empty() or str(entry.key).is_empty():return false
+	capture_refit_health()
+	var module := entry.duplicate(true)
+	module.key = ""
+	profile.loadout[category][index] = module
+	if category=="weapons":invalidate_module_attack(index)
+	apply_refit_health()
 	save_progress()
+	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
 func refund_all_equipment() -> void:
-	for category in ["weapons", "defence"]:
-		for entry in profile.loadout.get(category, []):
-			if not str(entry.get("key", "")).is_empty():
-				refund_equipment(str(entry.key), int(entry.level))
+	# Retained for explicit legacy callers; normal refit never refunds module growth.
+	for category in ["weapons","defence"]:
+		for entry in loadout_entries(category):
+			if not str(entry.key).is_empty():refund_equipment(str(entry.key),int(entry.level))
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
-	if key == str(profile.get("selectedShip", "")) or not ship_unlocked(key):
-		return false
-	var next_loadout := default_loadout(key, profile.unlocked) if selected_loadout.is_empty() else selected_loadout.duplicate(true)
-	if not valid_loadout(key, next_loadout):
-		return false
-	if not return_socket_jewels(weapon_entries() + defense_entries()):
-		return false
-	jewel_repeats.clear()
-	jewel_defence_times.clear()
-	jewel_defence_damage.clear()
-	jewel_charged.clear()
-	refund_all_equipment()
+	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
+	if not selected_loadout.is_empty() and not valid_loadout(key,selected_loadout):return false
+	capture_refit_health()
+	var old_weapon_count := active_slot_count("weapons")
 	profile.selectedShip = key
-	profile.loadout = empty_loadout(key)
-	for category in ["weapons", "defence"]:
-		for index in range(next_loadout[category].size()):
-			var equip_key := str(next_loadout[category][index].get("key", ""))
-			profile.loadout[category][index] = {"key":equip_key, "level":1}
-	profile.loop = false
-	return start(1, false)
+	for category in ["weapons","defence"]:
+		var entries := module_entries(category)
+		while entries.size()<active_slot_count(category):entries.append({"key":"","level":1})
+		if not selected_loadout.is_empty():
+			for index in active_slot_count(category):
+				var requested: String = selected_loadout[category][index].key
+				if str(entries[index].key)!=requested:
+					entries[index] = entries[index].duplicate(true)
+					entries[index].key = requested
+					if category=="weapons":invalidate_module_attack(index)
+	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
+	apply_refit_health()
+	save_progress()
+	event.emit("ship_changed",{"key":key})
+	return true
 
 func equipment_stat(key: String, level: int) -> float:
 	var row := db.equip(key, level)
@@ -677,6 +703,8 @@ func advance_charge_step(dt: float) -> void:
 			while float(job.count) >= charge_required(key):
 				job.count -= charge_required(key)
 				job.level += 1
+				if key in ["攻击充能","防御充能"]:
+					event.emit("equipment_stats",{"category":"weapons" if key=="攻击充能" else "defence"})
 
 func hightech_level(key: String) -> int:
 	return int(profile.get("hightechLevels", {}).get(key, 0))
@@ -996,7 +1024,7 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 		if drop.get("hightech", false):
 			drop.age += dt
 			if float(drop.age) >= 10.0:
-				drops.erase(drop)
+				collect(drop, false)
 	if hightech_level(FURNACE) > 0 and db.data.get("hightech", {}).has(FURNACE):
 		var row: Dictionary = db.data.hightech[FURNACE]
 		var interval := float(row.para1)
@@ -1018,6 +1046,7 @@ func max_shield() -> float:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
 
 func reset_player() -> void:
+	refit_health_ratios = {"armour":1.0,"shield":1.0}
 	jewel_repeats.clear()
 	jewel_defence_times.clear()
 	jewel_defence_damage.clear()
@@ -1228,6 +1257,12 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 		return ac < bc if ac != bc else a.slot < b.slot)
 	return alive
 
+func has_alive_enemy() -> bool:
+	for enemy in enemies:
+		if enemy.hp > 0:
+			return true
+	return false
+
 func reduced_damage(raw: float, type: int, resistance: int) -> float:
 	return maxf(1, ceilf(raw * (1.0 - float(db.config.dmgReduce) if type == resistance else 1.0)))
 
@@ -1258,6 +1293,8 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
 	projectiles.append({"x":float(source.x) + (-45 if hostile else 0) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
+	projectile_serial += 1
+	shot.serial = projectile_serial
 	shot.direction = Vector2(-1 if hostile else 1,0) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
 
@@ -1321,6 +1358,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			hit_player(raw * multiplier, int(weapon.dmgtype))
 		else:
 			shot.entry.attacks = int(shot.entry.get("attacks", 0)) + 1
+			event.emit("equipment_stats",{"slot":slot_id("weapons",shot.mount)})
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
 			if not shot.repeated and int(shot.ticks)==1:
 				queue_jewel_repeats(shot.mount,1.0,shot)
@@ -1364,6 +1402,7 @@ func hit_player(raw: float, type: int) -> void:
 	for entry in defense_entries():
 		if (entry.key == "shield" and shield_loss > 0) or (entry.key == "armour" and armour_loss > 0):
 			entry.hits = int(entry.get("hits", 0)) + 1
+			event.emit("equipment_stats",{"category":"defence"})
 	event.emit("hit", {"x":player.x,"y":player.y,"amount":ceilf(shield_loss + armour_loss),"player":true,"type":type})
 	if player.armour <= 0:
 		event.emit("explode", {"x":player.x,"y":player.y,"boss":true})
@@ -1437,7 +1476,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 		jewels_changed()
 		event.emit("jewel_pickup", drop)
 		return
-	if drop.get("hightech", false) and not manual:
+	if drop.get("hightech", false) and not manual and float(drop.get("age",0)) < 10.0:
 		return
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
@@ -1520,8 +1559,8 @@ func max_upgrade_amount(key: String) -> int:
 
 func max_upgrade_amount_slot(category: String, index: int) -> int:
 	var entry := slot_entry(category,index)
-	var key := str(entry.get("key", ""))
-	if entry.is_empty() or key.is_empty() or not EQUIPMENT.has(key) or not profile.unlocked.has(key):
+	var key := module_cost_key(category)
+	if entry.is_empty():
 		return 0
 	var available: Dictionary = profile.resources.duplicate()
 	var amount := 0
@@ -1590,7 +1629,7 @@ func tick(dt: float) -> void:
 	advance_charge(dt)
 	if charge_resources_dirty:
 		charge_resources_dirty = false
-		save_progress()
+		save_dirty = true
 	advance_hightech(dt, dt / maxf(speed, 0.001))
 	hightech_save_elapsed += dt / maxf(speed, 0.001)
 	if hightech_save_elapsed >= 5.0:
@@ -1674,6 +1713,7 @@ func tick(dt: float) -> void:
 			var count := int(weapon.para1) if key == "missile" else 1
 			if not candidates.is_empty():
 				entry.attacks = int(entry.get("attacks", 0)) + 1
+				event.emit("equipment_stats",{"slot":id})
 			var charged := float(jewel_charged.get(id, 1.0))
 			if count > 0 and not candidates.is_empty():
 				jewel_charged.erase(id)
@@ -1700,7 +1740,7 @@ func tick(dt: float) -> void:
 				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
 				enemy.cooldowns[i] = float(weapon.cd)
 	tick_projectiles(dt)
-	if state == State.COMBAT and targets().is_empty():
+	if state == State.COMBAT and not has_alive_enemy():
 		if guarding_here():
 			if guard_engaged and is_boss_encounter():
 				guard_engaged = false
@@ -1785,12 +1825,12 @@ func load_jewels(raw: Dictionary) -> void:
 	elif nonnegative_number(raw.get("jewelFragments")):
 		profile.jewelFragments = float(raw.jewelFragments)
 	for category in ["weapons", "defence"]:
-		for entry in loadout_entries(category):
+		for entry in module_entries(category):
 			var sockets: Array = []
 			var ids: Array = []
 			if entry.get("sockets") is Array:
 				for gem in entry.sockets:
-					if jewel_valid(gem) and not ids.has(str(gem.id)) and jewel_allowed(str(gem.id), category) and not str(entry.key).is_empty():
+					if jewel_valid(gem) and not ids.has(str(gem.id)) and jewel_allowed(str(gem.id), category):
 						sockets.append(new_jewel(str(gem.id), int(gem.level)))
 						ids.append(str(gem.id))
 					else:
@@ -1925,7 +1965,7 @@ func combine_all_jewels() -> Dictionary:
 	var tokens := {}
 	var installed := {}
 	for category in ["weapons","defence"]:
-		for entry in loadout_entries(category):
+		for entry in module_entries(category):
 			for gem in entry.get("sockets",[]):
 				if not gem.is_empty():installed[int(gem.token)]=true
 	for gem in profile.jewels:
@@ -2106,6 +2146,7 @@ func jewels_changed(slot := "") -> void:
 
 func jewel_effects(entry: Dictionary) -> Array:
 	var result: Array = []
+	if str(entry.get("key", "")).is_empty():return result
 	var sockets: Array = entry.get("sockets", [])
 	for i in mini(sockets.size(), equipment_socket_count(entry)):
 		var gem: Dictionary = sockets[i]
@@ -2200,6 +2241,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		if candidates.is_empty():
 			continue
 		entry.attacks = int(entry.get("attacks", 0)) + 1
+		event.emit("equipment_stats",{"slot":slot_id("weapons",int(pending.index))})
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
 			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
 
@@ -2224,6 +2266,7 @@ func has_defence_jewels() -> bool:
 func jewel_defence_hit(index: int) -> void:
 	var entry := slot_entry("defence", index)
 	entry.hits = int(entry.get("hits", 0)) + 1
+	event.emit("equipment_stats",{"slot":slot_id("defence",index)})
 	jewel_defence_times[index] = 0.0
 	for effect in jewel_effects(entry):
 		if effect.kind == "charge" and int(effect.p4) > 0 and int(entry.hits) % int(effect.p4) == 0:

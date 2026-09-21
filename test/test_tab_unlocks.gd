@@ -25,50 +25,50 @@ func run() -> void:
 	for row in scene.db.data.charge.values():
 		row.unlock=1
 	scene.build_ui()
-	check(not scene.equipment_tabs.is_tab_hidden(0) and not scene.equipment_tabs.is_tab_hidden(1),"Starting equipment tabs are visible")
-	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.is_tab_hidden(3),"Hightech and charge hidden before unlock")
-	scene.equipment_tabs.current_tab=1
+	check(not scene.equipment_tabs.is_tab_hidden(0),"Starting equipment tabs are visible")
+	check(scene.equipment_tabs.is_tab_hidden(1) and scene.equipment_tabs.is_tab_hidden(2),"Hightech and charge hidden before unlock")
+	scene.equipment_tabs.current_tab=0
 	scene.game.profile.cleared=[1]
 	scene.build_ui()
-	check(not scene.equipment_tabs.is_tab_hidden(3) and scene.equipment_tabs.is_tab_hidden(2),"Charge appears at its gate independently of hightech")
-	check(scene.equipment_tabs.current_tab==1,"Unlocking a tab preserves selection")
-	scene.equipment_tabs.current_tab=3
+	check(not scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.is_tab_hidden(1),"Charge appears at its gate independently of hightech")
+	check(scene.equipment_tabs.current_tab==0,"Unlocking a tab preserves selection")
+	scene.equipment_tabs.current_tab=2
 	scene.build_ui()
-	check(scene.equipment_tabs.current_tab==3,"Rebuilding preserves unlocked charge selection")
+	check(scene.equipment_tabs.current_tab==2,"Rebuilding preserves unlocked charge selection")
 	scene.game.profile.cleared=[]
 	scene.build_ui()
-	check(scene.equipment_tabs.is_tab_hidden(3) and scene.equipment_tabs.current_tab==0,"Relocked charge falls back to first unlocked tab")
+	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0,"Relocked charge falls back to first unlocked tab")
 	scene.db.data.charge.values()[0].unlock=0
 	scene.build_ui()
-	check(not scene.equipment_tabs.is_tab_hidden(3),"One unlocked charge item unlocks its tab")
+	check(not scene.equipment_tabs.is_tab_hidden(2),"One unlocked charge item unlocks its tab")
 	var keys: Array = scene.charge_cards.keys()
 	var first_card: Node = scene.charge_cards[keys[0]].title.get_parent()
 	var second_card: Node = scene.charge_cards[keys[1]].title.get_parent()
 	var tabs: Node = scene.equipment_tabs
-	check(first_card.visible and not second_card.visible,"Only unlocked charge cards occupy layout")
-	scene.equipment_tabs.current_tab=3
+	check(first_card.visible and second_card.visible and scene.charge_panel.state_for(keys[1])=="locked","Charge page includes inspectable locked modules")
+	scene.equipment_tabs.current_tab=2
 	scene.game.profile.cleared=[1]
 	scene.refresh_structure()
 	scene.refresh_visible_cards()
 	check(second_card.visible and scene.charge_cards[keys[0]].title.get_parent()==first_card and scene.equipment_tabs==tabs,"Unlock reveals card locally and preserves existing controls")
-	check(scene.equipment_tabs.current_tab==3,"Local charge unlock preserves selected tab")
+	check(scene.equipment_tabs.current_tab==2,"Local charge unlock preserves selected tab")
 	scene.game.profile.cleared=[]
 	scene.refresh_structure()
-	check(not second_card.visible and first_card.visible,"Relocked individual charge hides locally")
+	check(second_card.visible and first_card.visible and scene.charge_panel.state_for(keys[1])=="locked","Relocked individual charge updates state locally")
 	scene.game.profile.cleared=[2]
 	scene.build_ui()
-	check(not scene.equipment_tabs.is_tab_hidden(2),"Hightech follows same visibility rule")
+	check(not scene.equipment_tabs.is_tab_hidden(1),"Hightech follows same visibility rule")
 	scene.equipment_tabs.current_tab=0
 	scene.game.profile.unlocked=["armour"]
 	scene.build_ui()
-	check(scene.equipment_tabs.is_tab_hidden(0) and scene.equipment_tabs.current_tab==1,"Locked weapon tab hides and falls back to defence")
+	check(not scene.equipment_tabs.is_tab_hidden(0) and scene.equipment_tabs.current_tab==0,"Unified equipment remains visible with defense alone")
 	scene.game.profile.unlocked=[]
 	scene.game.profile.cleared=[]
 	for row in scene.db.data.charge.values():
 		row.unlock=1
 	scene.build_ui()
-	check(scene.equipment_tabs.current_tab==-1,"No unlocked tabs leaves no selected locked page")
-	for index in range(4):
+	check(scene.equipment_tabs.current_tab==scene.BATTLE_TAB,"No unlocked features falls back to battlefield")
+	for index in range(3):
 		check(scene.equipment_tabs.is_tab_hidden(index),"All-locked page stays hidden: "+str(index))
 	scene.game.profile.unlocked=["laser","armour"]
 	scene.build_ui()
@@ -80,7 +80,7 @@ func run() -> void:
 	scene.db.data.charge.values()[1].unlock=2
 	scene.db.data.charge.values()[2].unlock=3
 	scene.build_ui()
-	scene.equipment_tabs.current_tab=3
+	scene.equipment_tabs.current_tab=2
 	scene.queue_redraw()
 	await process_frame
 	await RenderingServer.frame_post_draw

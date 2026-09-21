@@ -160,6 +160,8 @@ func _ready() -> void:
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(status_label)
 	close_requested.connect(close_panel)
+	visibility_changed.connect(update_processing)
+	update_processing()
 	# Keep native test tooling outside the game viewport.
 	var parent_window := get_parent().get_window()
 	var screen_rect := DisplayServer.screen_get_usable_rect(parent_window.current_screen)
@@ -192,6 +194,7 @@ func start_operation(action: String) -> void:
 	split_button.disabled = true
 	restart_button.disabled = true
 	worker = Thread.new()
+	set_process(true)
 	var error := worker.start(execute_import)
 	if error != OK:
 		worker = null
@@ -201,11 +204,16 @@ func start_operation(action: String) -> void:
 		split_button.disabled = false
 		restart_button.disabled = false
 		status_label.text = UIText.t("debug.start_operation.text_03") + error_string(error)
+		update_processing()
 
 func execute_import() -> int:
 	return OS.execute(python_path,PackedStringArray([ProjectSettings.globalize_path("res://tools/config_workbooks.py"),operation,"--source",import_source,"--directory",config_directory]),output,true,false)
 
-func _process(_delta: float) -> void:
+func update_processing() -> void:
+	control_poll = 0.2
+	set_process(visible or worker!=null)
+
+func refresh_controls(_delta: float) -> void:
 	full_restart_button.disabled = worker != null or restarting or game_scene() == null
 	delete_save_button.disabled = worker != null or restarting or game_scene() == null
 	control_poll += _delta
@@ -222,6 +230,9 @@ func _process(_delta: float) -> void:
 			var index := speed_select.get_item_index(int(live.get("speed",1)))
 			if index >= 0:
 				speed_select.select(index)
+
+func _process(_delta: float) -> void:
+	if visible:refresh_controls(_delta)
 	if worker != null and not worker.is_alive():
 		var result = worker.wait_to_finish()
 		worker = null
@@ -244,6 +255,7 @@ func _process(_delta: float) -> void:
 		history_label.text = UIText.t("debug._process.text_06", {"else":"%s" % (UIText.t("debug._process.text_07") if operation == "split" else UIText.t("debug._process.text_08")), "T":"%s" % (Time.get_datetime_string_from_system().replace("T"," ")), "else_3":"%s" % (UIText.t("debug._process.text_09") if result == 0 else UIText.t("debug._process.text_10")), "config_directory":"%s" % (import_source if operation == "split" else config_directory)})
 		settings.set_value("excel","last_status",history_label.text)
 		settings.save("user://qa_settings.cfg")
+		update_processing()
 
 func open_picker() -> void:
 	picker.current_dir = source_path.get_base_dir()

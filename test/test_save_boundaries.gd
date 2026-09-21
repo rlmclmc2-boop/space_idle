@@ -55,6 +55,7 @@ func _initialize() -> void:
 		if kind=="save_error": errors.append(kind))
 	loaded.profile.resources["1"] = 999
 	loaded.save_progress()
+	check(loaded.save_dirty,"Failed save retains dirty state for retry")
 	check(errors==["save_error"],"Temporary open failure emits one save_error")
 	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Temporary open failure preserves previous save bytes")
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
@@ -95,5 +96,24 @@ func _initialize() -> void:
 	db.config.offlineMax = 0
 	var repeated := BattleGame.new(db,true)
 	check(repeated.profile.resources==settled.profile.resources and repeated.offline_rewards.is_empty(),"Immediate repeat cannot reclaim offline resource credit")
+	var deferred := LoadOrderGame.new(db,false)
+	deferred.save_enabled = true
+	deferred.profile.cleared = [1]
+	deferred.profile.resources = {"1":1000.0,"2":1000.0}
+	deferred.profile.charge[key].active = true
+	deferred.profile.charge[key].started = 1
+	deferred.save_progress()
+	deferred.boundaries.clear()
+	var before_tick := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
+	deferred.tick(0.1)
+	check(deferred.save_dirty and deferred.boundaries.count("save")==0,"Charge debit marks dirty without saving during tick")
+	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==before_tick,"Charge tick leaves persisted bytes untouched")
+	deferred.hightech_save_elapsed = 4.95
+	deferred.tick(0.1)
+	check(deferred.boundaries.count("save")==1 and not deferred.save_dirty,"Existing periodic checkpoint flushes and clears dirty")
+	deferred.tick(0.1)
+	deferred.save_progress()
+	var flushed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	check(flushed.resources==deferred.profile.resources and not deferred.save_dirty,"Explicit exit/key checkpoint flushes pending charge resources")
 	print("Save boundaries: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

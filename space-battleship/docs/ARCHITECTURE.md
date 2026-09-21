@@ -1,5 +1,7 @@
 # ARCHITECTURE — 按需定位
 
+高频刷新优化：`game.tick` 将充能扣费标记为 `save_dirty`，由原 5 秒检查点或既有关键节点/退出保存清理，写入失败保留标记。普通弹体在 `fire` 分配运行期 `serial`；`main` 的视觉存活索引及绘制索引仅在单次更新/绘制中持有，已有 visual 直接传递，前后绘制复用位置和尾迹预算。`equipment_tab.refresh_pending` 只消费局部 dirty 与资源快照变化，`equipment_stats` 事件覆盖充能升级和攻击/受击累计，隐藏后显示补齐；排序独立失效，静止暂停不重算详情。快照归页面实例所有，重建即释放。QA `update_processing` 按可见性和 worker 生命周期启停，隐藏时不轮询普通控件。专项 `test_hot_paths.gd`、`test_save_boundaries.gd`；性能探针 `test_hot_path_probe.gd`。
+
 ## 目录与入口
 
 相对项目根；核心为Godot/GDScript，GL Compatibility、逻辑视口1440×810。游戏只需已投影数据；配置工具依赖Python/openpyxl/lxml。启动/跨机操作看[README](../README.md)。
@@ -11,12 +13,12 @@
 | Windows 单文件发布 | `../build_release.bat → tools/build_release.ps1 → export_presets.cfg`；模板准备 `tools/install_release_template.ps1`；`../test/verify_release.gd` 与 `../test/test_release_failures.ps1`；操作见 README 的 Windows release |
 | 领域状态/计算 | `scripts/game.gd`（BattleGame，RefCounted）；搜对应函数，不默认读全文 |
 | 数据读取 | `scripts/database.gd`（ShipDatabase，RefCounted）；`equip/enemy_weapon/ratio` |
-| 槽位/换舰 | game.gd：`slot_entry/equip_slot/unequip_slot/switch_ship/upgrade_slot` |
+| 槽位/换舰 | game.gd：`module_entries/module_entry/active_slot_count/slot_entry/equip_slot/unequip_slot/switch_ship/upgrade_slot` |
 | 战斗/资源 | game.gd：`tick/targets/fire/tick_projectiles/hit_player/hit_enemy/collect` |
 | 宝石/碎片/镶嵌 | game.gd：`load_jewels/settle_jewel_fragments/generate_jewels/combine_jewels/decompose_jewel/socket_jewel/unsocket_jewel`；database.gd：`jewel/jewel_parameter/jewel_effect`保留原表字段并适配func行为 |
 | 宝石效果/界面 | game.gd：`jewel_equipment_stat/jewel_critical/jewel_fire/jewel_on_hit/jewel_hit_player/advance_jewel_repair`；main.gd追加宝石页/装备镶嵌按钮，`jewel_panel.gd`仅持有UI选择、按token复用的六列网格控件及图片缓存 |
 | 科学家/充能/炉 | game.gd：`scientist_purchase/advance_hightech/advance_charge/advance_furnace` |
-| 页签/草稿/数值 | main.gd：`build_equipment_tabs/build_ship_tab/refresh_scientists`；`hightech_slot.gd`原生拖拽、`number_format.gd`显示 |
+| 页签/舰体/数值 | main.gd：`build_equipment_tabs/build_ship_tab/refresh_scientists`；`hightech_slot.gd`原生拖拽、`number_format.gd`显示 |
 | 舰船素材/炮口 | `scripts/ship_visuals.gd`：尺寸、源图槽位映射及炮口；`assets/`及其README |
 | QA/重启 | main创建根级`config_panel.gd` Window，直接访问current_scene.game；普通重启重载同一进程；`restart_host.gd`执行独立进程大重启 |
 | 关卡编辑器 | `level_editor.tscn → scripts/level_editor.gd → tools/level_editor_store.py`；不创建BattleGame，Python定位直接用config_panel静态find_python |
@@ -31,11 +33,16 @@ main持有db/game；game持有db与领域状态，经`event(kind,payload)`通知
 
 UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初始化；QA 场景重启会读取新文案。UIText 只保存只读文案/参数契约和已编译的占位符模式，不是游戏状态或刷新管理器。参数结果由既有 NumberFormat/format_description/gem_formula 生成，再单次替换到文案；完整配置 JSON 不被改写。文案编辑器只写 text，校验成功后保存备份并原子替换；独立契约阻止通过修改“参数”展示列绕过校验。图形元素、颜色、禁用逻辑仍按业务状态决定，宝石错误使用稳定 key 而非错误文字非空性。发布 staging 和 include_filter 均包含两份文案 JSON。
 
-装备卡视觉：main.gd的equipment_skin/skin_equipment_button读取assets/ui/equipment中的九宫格切角SVG；equipment_stat_text/equipment_detail_text只读现有属性。两页共用664×112布局和原卡片身份；武器图标使用已有Atlas区域，防御使用独立矢量图标。武器底条仍由可见页冷却更新，防御等级底条只在对应属性快照变化时写入；无新增持续动画或刷新框架。验证入口test_upgrade_ui/test_local_ui。
+装备展示：`equipment_tab.gd` 将每个模块映射为 Dictionary，以 weapons_N/defence_N 为卡片身份，包含当前装备 key、index、启用状态、等级、主属性与可升级状态。`equipment_card.gd` 共用 235×43 卡片；筛选只切 visible，排序仅 move_child。选中模块右侧通过装备 OptionButton 直接调用 equip_slot/unequip_slot；不另存配置草稿，不再按装备种类聚合等级。隐藏页标记 dirty，显示补齐；slot 事件更新目标投影，共享余额变化仅刷新其他模块可购买状态。`ship_panel.gd` 独立持有候选舰体选择，复用 SHIP_TEXTURES/SHIP_VISUALS 预览和挂点；确认只调用 switch_ship，当前舰体挂点进入对应模块。专项 test_module_ui/test_local_ui。
+
+装备展开：同一 `equipment_tab.gd` 持有 `equipment_view_mode`（compact/expanded）、`details_open` 与两种尺寸下的滚动偏移。默认原 1364×156，展开到 (38,120)、1364×656（逻辑屏高约 81%）；200ms Tween 只改变现有 TabContainer 的位置/尺寸及独立战场暗罩透明度，卡片仍为 235×43，网格由三列变四列。动画期间按 resized 布局，结束停止；反向操作/离开页签杀掉旧 Tween，遮罩与按钮跟随页面可见性。首次展开继承当前滚动偏移，容器布局稳定后恢复偏移；往返分别恢复各模式先前位置，防止扩容后的引擎钳位丢失紧凑模式位置。详情始终复用原图标、标签与按钮，概览只含核心属性/简述/操作，详细信息按钮在右栏内显示 CD、下级属性、类型、弹速/齐射/光束/护盾参数、装配条件、消耗与已有镶嵌效果。Esc 在页面 `_input` 消费，只收起，不进入 main 的暂停分支；从不修改 game.paused 或战斗时钟。`test_module_ui.gd` 验证真实输入、卡片尺寸、可见容量、模式状态及滚动恢复；test_upgrade_ui/test_ship_tab 保留为该专项别名。
+
 
 装备升级事件按slot走`main.refresh_equipment_cards(slot)`；`refresh_visible_cards`只检查当前可见页，切页立即补齐。资源影响消费按钮，科学家分配影响空闲数/分配按钮及对应进度，科技增益影响对应类别装备；值相同不写控件。MAX仍在点击时枚举当前预算。
 
-`refresh_structure`只替换装备类型/数量变化的槽卡；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。战舰草稿编辑保留选择器，候选舰变化只重建候选槽区。`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
+`refresh_structure` 刷新模块结构及选中详情，换装复用对应模块卡片；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项，拖拽结束后再移动。候选舰变化只更新舰体预览、挂点位置与说明，复用已有按钮。战场返回入口位于 `main.BATTLE_TAB`（现有页签末尾，索引 5），文案 `battle.tab`；空 Control 仅承载选中状态，仍使用原 battle_layer。切页回调关闭 jewel_panel 并调用 layout_charge_page 恢复普通布局，不触及 game。专项 `../test/test_battle_tab.gd`。
+
+`refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
 
 导航不遍历ui共同父节点。可见性按明确依赖分组：help_button承载解锁可见性快照（帮助/资源模式/继续），help_close_button独立判断帮助关闭按钮，guard_settings承载普通导航可见性快照（驻守/跃迁/设置/页签容器/音效），advance_button仅跟踪过关按钮显示结果。驻守文字/禁用、音效文字、设置勾选由各自控件/菜单快照限定；同一显示结果不进入属性更新。loop_select快照包含通关列表与当前stage，结构变化仅增减选项及修正受影响项，目标选择独立select，不clear列表；allow_reselect允许同一目标再次跃迁。limit_warp_popup在弹出时按主题行高限制10行，复用PopupMenu自带滚动。快照随控件重建释放；宝石及其他弹窗不参与导航可见性管理。
 
@@ -51,9 +58,9 @@ UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初�
 | 当前生命/护盾 | `BattleGame.player.armour/shield`；最大值由已装备槽位及增益派生，不作第二余额 |
 | 实体 | game的enemies/projectiles/drops；敌方冷却在各敌实例装备数组，不与玩家槽位混用 |
 | 收入/炉 | game.resource_samples保存现实时间窗口（jewel条目复用同一窗口供碎片速率与offlineRates.jewel；分解/离线不回灌）；profile.furnaceIncomePeak持久；区别见D005 |
-| UI草稿 | main.ship_candidate/ship_candidate_loadout；确认才经switch_ship提交；页签/滚动/弹窗由main维护 |
+| 舰体候选 | ship_panel.candidate 仅存候选舰体键；确认经 switch_ship 提交，模块配置始终读取 game；页签/滚动/弹窗由 UI 维护 |
 | 宝石持久数据 | profile.jewels、统一数值jewelFragments（旧字典1:1迁移）、loadout每项sockets/attacks/hits；未镶嵌/已镶嵌只有一个所有者；运行token和serial不写存档 |
-| 宝石临时战斗状态 | game.jewel_repeats为延时发射、jewel_charged为已触发下次齐射增益、jewel_defence_times为模块受伤计时、jewel_defence_damage为总生命/盾的模块受损分配；reset_player/换舰清理，不保存战斗现场 |
+| 宝石临时战斗状态 | game.jewel_repeats为延时发射、jewel_charged为已触发下次齐射增益、jewel_defence_times为模块受伤计时、jewel_defence_damage为总生命/盾的模块受损分配；reset_player 清理；换装/停用只清理受影响的攻击状态，换舰保留共同启用模块，不保存战斗现场 |
 
 读取与兼容选择理由见[DECISIONS](DECISIONS.md) D004/D005。合法运行状态在创建、加载、重建解锁及明确装备写入边界维护；普通属性/描述/排序读取不得调用ensure_loadout或懒写profile。
 
@@ -62,6 +69,22 @@ UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初�
 一键合成：`game.combine_all_jewels`在临时背包数组、碎片数、serial及独立RNG状态中迭代；`combine_inventory_jewels/can_combine_jewels`与单次合成共用规则，`generate_jewels_into`与普通碎片生成共用补位规则。只在演算成功后暂存待保存profile；已报告save_error恢复原profile且不推进serial/RNG，成功合并回原profile并发出一次jewels_changed。不改装备、战斗属性或存档格式；未报告的底层存档故障仍属U-008。`jewel_panel.combine_all_selected`只提交请求、展示合并结果和短高亮；bulk_summary/bulk_rewards仅为显示文本，在库存事件/选择/打开时失效。
 
 宝石表现入口集中在`jewel_panel.gd`：`inventory_changed`承接既有jewels_changed事件，`pickup_feedback`承接jewel_pickup；选择→对应格子/详情/可用槽位，库存变化→变化token及同ID同级可合成状态，镶嵌→对应槽位/详情与main指定装备卡。只读`preview_socket/stat_comparison`在副本调用既有属性函数。背包无_process轮询；可见时1秒Timer补齐滚动收入窗口及装备历史数值，隐藏即停止。新获得标记/observed_serial仅为面板的已读状态，随库存事件剔除消失token、选择时确认、面板销毁时释放，不参与业务或存档。预建样式、8个复用飞行图标及短Tween承载反馈；关闭清理面板动画，面板/主UI销毁时释放独立反馈层和确认窗。初始化完整构建保留，普通动作不重建页面。
+
+## 充能页面表现
+
+`main.build_charge_tab` 使用 `charge_panel.gd` 构建当前项目内的充能页；选中时将既有页签容器展开，离开后恢复原位置。`charge_cards` 仍引用面板节点索引，业务仍由 `BattleGame` 的 charge_job / charge_resource_rate / charge_required / toggle_charge 提供，不增加持久状态。
+
+- 进度/余额变化：可见页读取配置对应模块，仅更新改变的属性；能源核心按资源独立展示余额、可运行模块每秒费率之和乘当前倍速、resource_minute_total / 60，以及后两者之差。全局暂停时充能消耗为零；净值是滚动平均产出减当前充能负载，不含其他开支，不代表本帧整数扣款。UI 单独保留净值正负号，不能用会夹零的通用 compact 直接格式化负数。只有选中模块的依赖变化才更新右侧详情。
+- 点击模块：更新旧/新选择边框和详情，不重建模块；状态由 state_for 单一派生，按钮使用相同状态，预付量与整数支付边界参与判定。
+- 配置结构/解锁变化：sync_modules 仅增删发生变化的配置项，复用其他节点；根据数量调整宽度，保留选择与滚动。page_capacity 最多六个槽位，页数包含末尾扩展槽，按钮和页码跟随实际滚动位置；末页保持 ScrollContainer 原生边界。未知系统使用通用图标，现有显示绑定选择攻击/防御图形，不限制系统数量。
+- 管线几何：`charge_network.gd` 将核心出口和各仪表 port 的真实全局变换换算到独立线路层，生成核心→共同总线→模块接口的圆角矢量路径。滚动、尺寸或节点位置变化时重算；未变化复用路径。分支绘制和光点共用采样点及累计长度，流向固定由核心至模块，首尾淡入淡出，不用整线闪亮模拟流动。
+- 性能边界：main 的正常帧刷新只向 `refresh_sample(delta)` 传入显示时间，游戏 tick 频率不变。页面约 100ms 采样能源与可见节点，选中详情即使离屏也更新；直接交互/显式刷新仍即时执行。仪表在自己的动画时钟内对采样目标做 100ms 插值。visible_keys 与线路几何归 charge_panel 所有，由滚动条、容器排序、尺寸/接口位置及显示事件失效，合并为一次 deferred 更新；进度/余额更新不再调用布局扫描。节点销毁时 Godot 自动断开所属信号，未增加 Timer 或跨页面监听器。
+- 绘制隔离：管线结构和仪表外壳/刻度保存在各自静态 CanvasItem，只有布局或对应视觉状态改变才重录绘制命令；独立动态 CanvasItem 继续绘制原光点、圆环和核心。保留原光晕、层数和图形，不新增模糊滤镜或粒子节点。每个仪表仍只有一个持续动画时钟，隐藏/离屏/暂停停止；结构层没有 process。
+- 持续动画：`charge_circuit.gd` 只绘制核心及圆形仪表，矩形模块承载层透明。核心半径由 60 增至 78，轻微旋转/呼吸；模块含结构环、刻度及真实比例进度环。选中为细青色外圈分段，运行另有亮进度环/微光，与选择独立。观察真实作业 level/count 增加后，仅显示层保持满环并收束约 240 毫秒，再追随实际比例，不改业务时钟或数据。动画上限 30 Hz，离屏/隐藏/暂停停止，滚回补齐；静态框架不逐帧重绘。几何、作业观察和动画快照归页面/仪表所有，配置或作业变化时失效，释放时清理，不写存档。
+
+验证入口 `../test/test_charge_panel.gd` 覆盖真实点击、五种状态、预付/免费/断料、扩展/移除、滚动/翻页、多分辨率、10/20/30 系统分页、能源统计及负净值、多资源隔离、30 系统刷新耗时、流动/进度绘制上限和暂停零写入/零重绘；配套 `test_local_ui.gd` 与 `test_tab_unlocks.gd`。
+
+性能复测 `../test/test_charge_performance.gd`：隔离运行真实 main/game 帧循环，内存添加 30 个活动作业（加原 3 个系统），测量帧分位数、UI 刷新耗时、RenderingServer CPU/GPU 时间、属性写入和动静态绘制次数；断言进度期间零布局扫描、约 100ms 采样、静态管线/外壳零重绘、自动布局失效及暂停/隐藏停止。性能测量须单独运行，不与其他图形专项并行。
 
 ## 存档与时间边界
 
@@ -139,3 +162,7 @@ UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初�
 离膛遮挡修复：draw_projectile_fx的core参数分离显示层，背景pass仅绘制较老尾迹，舰船绘制后foreground pass绘制最近3段拖尾、炮口短闪、尾焰/脉冲和弹体纹理；双方弹体统一路径。连续束身只把低亮halo保留背景，细亮核在前景炮口/命中反馈pass绘制。两pass共用原missile_visual_position，不改任何出生坐标或业务状态。test_muzzle_visibility通过清除闪光/后坐后的图像色差检查验证真实离膛可见性，旧版本3种武器均失败而修复后通过。
 
 光束双发时机：tick_long_laser仅在主光束ticks首次变为1时调用公共queue_jewel_repeats；无新增计时/概率状态，后续周期命中不重试，副光束丢失不补发，新光束独立计数。test_long_laser覆盖首次概率失败后不重试和断束新锁定重新判定；普通弹体齐射入口不变。
+
+模块持久化：`profile.loadout` 保留全部已创建模块，含停用尾部；`module_entries/module_entry` 读取全部，`loadout_entries/slot_entry` 仅返回当前舰体启用范围。读接口不写状态。新存档 `moduleVersion=1`；旧名称 levels 仅在旧档迁移时覆盖首个同名实例，之后完全由模块等级主导。save/load_jewels 扫描全部模块，避免空模块/停用模块宝石丢失。换装更换该 entry 引用以失效旧光束/追加攻击，同时复制等级、sockets、attacks、hits；换舰保留共同模块引用和战斗对象。`capture_refit_health/apply_refit_health` 转换剩余比例，零容量暂存于运行态 refit_health_ratios，真实重开 reset_player 清零为满比例，沿用现有重新进入时生命恢复规则。test_module_refit 为业务主回归。
+
+未解锁舰体：ship_panel 的 silhouette ShaderMaterial 只保留纹理 alpha 并输出纯色；列表缩略图和候选大图共用。refresh 按 ship_unlocked 切换既有控件可见性，锁定候选在隐藏挂点/详情后提前返回；unlock_hint 仅读取 ship.unlock。专项 test_locked_ships。

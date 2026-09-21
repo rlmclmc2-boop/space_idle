@@ -1,5 +1,12 @@
 [
   {
+    "key": "battle.tab",
+    "text": "战场",
+    "params": "",
+    "category": "battle",
+    "note": "固定战场返回页签"
+  },
+  {
     "key": "defense.armour_name",
     "text": "复合装甲",
     "params": "",
@@ -329,7 +336,7 @@
   },
   {
     "key": "ship.refresh_ship_controls.text_03",
-    "text": "{else} · 新舰装备等级从 Lv.1 开始",
+    "text": "{else} · 模块成长与配置保留",
     "params": "{else}",
     "category": "ship",
     "note": "动态显示；蓝色参数由程序填入",
@@ -361,7 +368,7 @@
   },
   {
     "key": "ship.refresh_ship_controls.text_08",
-    "text": "更换时配置 · Lv.1",
+    "text": "沿用现有模块配置",
     "params": "",
     "category": "ship",
     "note": "固定文字",
@@ -769,7 +776,7 @@
   },
   {
     "key": "weapon.build_equipment_card.text_07",
-    "text": "已装配 · 换舰时可调整",
+    "text": "已装配 · 可自由替换",
     "params": "",
     "category": "weapon",
     "note": "固定文字",
@@ -793,7 +800,7 @@
   },
   {
     "key": "weapon.build_equipment_card.text_10",
-    "text": "安装后仅可在换舰时调整",
+    "text": "同类装备可自由替换，继承模块等级",
     "params": "",
     "category": "weapon",
     "note": "固定文字",
@@ -1033,7 +1040,7 @@
   },
   {
     "key": "main.confirm_unequip.text_02",
-    "text": "卸下 {key}（Lv.{level}）？\n返还该装备全部升级资源，槽位将留空。\n重新装备后为1级。",
+    "text": "卸下 {key}？模块 Lv.{level}、宝石及累计将保留。",
     "params": "{key},{level}",
     "category": "inventory",
     "note": "动态显示；蓝色参数由程序填入",
@@ -3265,7 +3272,7 @@
   },
   {
     "key": "gem.inventory_full",
-    "text": "宝石背包空间不足，请先整理宝石再卸装备或换舰",
+    "text": "宝石背包空间不足，请先整理背包",
     "params": "",
     "category": "inventory",
     "note": "卸装/换舰错误"
@@ -4464,5 +4471,739 @@
     "params": "",
     "category": "system",
     "note": "文案表删除与恢复"
+  },
+  {
+    "key": "charge.heading",
+    "text": "能源充能系统",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.core",
+    "text": "能源核心",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.core_note",
+    "text": "充能负载 · 实时收支 / 产出为近一分钟均值",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.bus",
+    "text": "能源总线  /  选择模块分配能源",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.detail",
+    "text": "模块详情  /  CHARGE CONTROL",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.effect",
+    "text": "增益效果",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.add",
+    "text": "+\n添加系统",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.extension_hint",
+    "text": "扩展接口已就绪：新增充能配置后自动接入；系统功能由游戏配置定义。",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.navigation",
+    "text": "点击节点查看详情 · 横向滚动或翻页浏览更多系统",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.system_count",
+    "text": "系统列表  {count} / ∞",
+    "params": "count",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.resource",
+    "text": "{name}   {amount}    |    产出 +{rate} / 秒",
+    "params": "name,amount,rate",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.state.charging",
+    "text": "充能中",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.state.paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.state.insufficient",
+    "text": "资源不足",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.state.available",
+    "text": "待机中",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.state.locked",
+    "text": "未解锁",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.eyebrow",
+    "text": "POWER DISTRIBUTION / STARSHIP SYSTEMS",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能页面",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy.available",
+    "text": "可用能源",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy.consumption",
+    "text": "充能消耗 / 秒",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy.production",
+    "text": "能源产出 / 秒",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy.net",
+    "text": "净变化 / 秒",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy_amount",
+    "text": "{name} {amount}",
+    "params": "name,amount",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.energy_basis",
+    "text": "按资源分别统计。消耗为可运行充能模块费率×当前倍速（含预付量的消耗），暂停时为零；产出为近一分钟真实平均值。净变化=产出−充能消耗，不含其他开支，不等于本帧整数扣款。",
+    "params": "",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.page",
+    "text": "{current} / {total}",
+    "params": "current,total",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.time",
+    "text": "{elapsed} / {para_4} 秒",
+    "params": "elapsed,para_4",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.upgrades",
+    "text": "升级 {count}/{key}",
+    "params": "count,key",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "charge.cost",
+    "text": "{para_1} ×{key}/秒",
+    "params": "para_1,key",
+    "category": "upgrade",
+    "note": "充能仪表及分页",
+    "source": "charge_panel.gd"
+  },
+  {
+    "key": "equipment.tab",
+    "text": "装备",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.total",
+    "text": "持有模块",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.counts",
+    "text": "运行 {equipped} · 可升级 {upgradeable} · 停用 {locked}",
+    "params": "{equipped} {upgradeable} {locked}",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.all",
+    "text": "全部类别",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.any_state",
+    "text": "全部状态",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.catalog",
+    "text": "模块阵列 · 选择模块后自由换装",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.empty",
+    "text": "没有符合筛选条件的装备",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.level",
+    "text": "Lv.{level}",
+    "params": "{level}",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.catalog_basis",
+    "text": "每张卡片对应一个模块；等级、宝石与累计随模块保留。",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.slot",
+    "text": "槽位 {index} · {name} · Lv.{level}",
+    "params": "{index} {name} {level}",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.vacant",
+    "text": "空槽",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.locked_hint",
+    "text": "尚未解锁；可查看一级属性。",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.install_hint",
+    "text": "选择同类装备直接换装，继承模块等级、宝石与累计。",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.sort.type",
+    "text": "排序：类型",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.sort.level",
+    "text": "排序：等级 ↓",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.sort.stat",
+    "text": "排序：核心属性 ↓",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.sort.state",
+    "text": "排序：状态",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.all",
+    "text": "全部子类",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.laser",
+    "text": "激光",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.cannon",
+    "text": "实弹",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.missile",
+    "text": "导弹",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.shield",
+    "text": "护盾",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.type.armour",
+    "text": "装甲",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.state.equipped",
+    "text": "已装配",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.state.upgradeable",
+    "text": "可升级",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.state.unequipped",
+    "text": "空模块",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.state.locked",
+    "text": "停用",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.upgrade",
+    "text": "升级模块",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.ten",
+    "text": "+10",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.max",
+    "text": "MAX",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.equip",
+    "text": "装配",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.replace",
+    "text": "替换",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.remove",
+    "text": "卸下",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.action.gems",
+    "text": "宝石",
+    "params": "",
+    "category": "weapon",
+    "note": "统一装备管理界面"
+  },
+  {
+    "key": "equipment.description.laser",
+    "text": "发射脉冲激光，攻击单个目标。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.description.cannon",
+    "text": "发射炮弹，攻击单个目标。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.description.missile",
+    "text": "追踪多个敌人；齐射数量受目标数量限制。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.description.longlaser",
+    "text": "持续锁定目标，蓄力后周期命中；持续照射逐渐提高伤害。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.description.armour",
+    "text": "提供舰体生命。生命耗尽后战舰撤退。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.description.shield",
+    "text": "优先承受伤害；脱离攻击一段时间后恢复。",
+    "params": "",
+    "category": "weapon",
+    "note": "依据当前装备机制的简短说明"
+  },
+  {
+    "key": "equipment.view.expand",
+    "text": "⛶ 展开",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.view.collapse",
+    "text": "收起",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.details.open",
+    "text": "详细信息",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.details.close",
+    "text": "返回概览",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.energy",
+    "text": "能量",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.physical",
+    "text": "物理",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.resistance",
+    "text": "减伤类型",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.damage_type",
+    "text": "伤害类型",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute",
+    "text": "{label}：{value}",
+    "params": "{label} {value}",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.speed",
+    "text": "弹速（单位/秒）",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.salvo",
+    "text": "齐射目标上限",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.charge_seconds",
+    "text": "蓄力（秒）",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.ramp_seconds",
+    "text": "增伤增长时间（秒）",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.max_multiplier",
+    "text": "持续伤害上限倍率",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.recovery_percent",
+    "text": "每秒护盾恢复（%）",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.attribute.recovery_delay",
+    "text": "受击后恢复等待（秒）",
+    "params": "",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "equipment.unlock_condition",
+    "text": "解锁门槛：通关 {level} 关；同种装配上限 {limit}。",
+    "params": "{level} {limit}",
+    "category": "weapon",
+    "note": "旧同种限制界面停用；保留参数契约，不用于模块界面"
+  },
+  {
+    "key": "equipment.sockets",
+    "text": "宝石插槽：{count}",
+    "params": "{count}",
+    "category": "weapon",
+    "note": "装备展开视图与分层详情"
+  },
+  {
+    "key": "module.empty_hint",
+    "text": "选择一种装备，立即继承这个模块的等级。",
+    "params": "",
+    "category": "module",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "module.keep_hint",
+    "text": "换装保留等级、宝石与累计。",
+    "params": "",
+    "category": "module",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "module.dormant_hint",
+    "text": "当前舰体无法启用；更换大舰后恢复。",
+    "params": "",
+    "category": "module",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "module.unlock_condition",
+    "text": "通关 {level} 解锁 · 同类模块自由装配",
+    "params": "{level}",
+    "category": "module",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "module.upgrade_name",
+    "text": "模块 {slot}",
+    "params": "{slot}",
+    "category": "module",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.title",
+    "text": "舰体与模块",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.hint",
+    "text": "舰体决定启用槽位，模块保留全部成长。换舰延续当前战斗。",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.apply",
+    "text": "启用舰体",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.current",
+    "text": "当前舰体 · 管理模块",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.locked",
+    "text": "尚未解锁",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.capacity",
+    "text": "武器 {weapons} · 防御 {defence}",
+    "params": "{weapons} / {defence}",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.result",
+    "text": "启用 {active} 个模块 · 保留停用 {dormant} 个模块",
+    "params": "{active} / {dormant}",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.keep",
+    "text": "等级 / 宝石 / 累计全部保留\n新增槽位从 Lv.1 开始；停用模块不参与战斗。\n生命与护盾保持切换前剩余比例。",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.mounts",
+    "text": "挂载预览 · 点击当前舰体挂点管理模块",
+    "params": "",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.module",
+    "text": "{slot} · {name} · Lv.{level}",
+    "params": "{slot} / {name} / {level}",
+    "category": "ship",
+    "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.unlock_estimate",
+    "text": "预计通关第 {level} 关解锁",
+    "params": "{level}",
+    "category": "ship",
+    "note": "未解锁舰体仅显示剪影和预计解锁关卡"
   }
 ]

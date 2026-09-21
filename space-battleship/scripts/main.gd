@@ -92,12 +92,12 @@ var upgrade_buttons: Dictionary = {}
 var ten_upgrade_buttons: Dictionary = {}
 var max_upgrade_buttons: Dictionary = {}
 var EQUIPMENT_PAGES: Array = []
-var equipment_page := 0
+const BATTLE_TAB := 5
+var equipment_panel: Control
+var equipment_page := BATTLE_TAB
 var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
 var equipment_card_controls: Dictionary = {}
-var ship_candidate := ""
-var ship_candidate_loadout: Dictionary = {}
 var hightech_buttons: Dictionary = {}
 var hightech_descriptions: Dictionary = {}
 var hightech_progress: Dictionary = {}
@@ -109,6 +109,8 @@ var scientist_cost_label: Label
 var scientist_distribute_button: Button
 var scientist_remove_buttons: Dictionary = {}
 var charge_cards: Dictionary = {}
+var charge_panel: Control
+var charge_nav_backdrop: ColorRect
 const HIGHTECH_SLOT_SCRIPT := preload("res://scripts/hightech_slot.gd")
 const HIGHTECH_CARD_SIZE := Vector2(443,112)
 var hightech_scroll: ScrollContainer
@@ -259,7 +261,7 @@ func _process(delta: float) -> void:
 		flush_damage_numbers()
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
-	refresh_visible_cards()
+	refresh_visible_cards(dt)
 	refresh_navigation()
 	refresh_draw_layers(dt)
 	if is_instance_valid(hightech_scroll) and hightech_scroll.is_visible_in_tree() and get_viewport().gui_is_dragging():
@@ -295,6 +297,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
+		"equipment_stats":
+			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
 		"jewels_changed":
 			if is_instance_valid(jewel_panel):
 				jewel_panel.inventory_changed()
@@ -361,10 +365,15 @@ func on_event(kind: String, info: Dictionary) -> void:
 			wave_hint = 1.1
 		"upgrade":
 			var levels := int(info.get("levels",1))
-			toast(UIText.t("upgrade.completed",{"name":NAMES[info.key],"result":UIText.t("main.on_event.text_02") if levels == 1 else UIText.t("main.on_event.text_03", {"levels":"%s" % (str(int(levels)))})}))
+			toast(UIText.t("upgrade.completed",{"name":UIText.t("module.upgrade_name",{"slot":str(info.get("slot",""))}),"result":UIText.t("main.on_event.text_02") if levels == 1 else UIText.t("main.on_event.text_03", {"levels":"%s" % (str(int(levels)))})}))
 			refresh_equipment_cards(str(info.get("slot","")))
 			if is_instance_valid(jewel_panel) and jewel_panel.visible and str(info.get("slot",""))==game.slot_id(jewel_panel.category,jewel_panel.equipment_index):
 				jewel_panel.refresh()
+		"module_changed":
+			refresh_equipment_cards(str(info.slot))
+			refresh_ship_controls()
+		"ship_changed":
+			refresh_structure()
 		"scientists_changed":
 			refresh_scientists()
 			for key in hightech_progress:
@@ -555,9 +564,13 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		weapon_smoke(pos,Color("8992a0"),1,0.14,4.0)
 
 func advance_projectile_visuals(dt: float) -> void:
+	var active_shots := {}
+	for shot in game.projectiles:
+		if shot.has("serial"):active_shots[shot.serial] = shot
 	for i in range(projectile_visuals.size()-1,-1,-1):
 		var visual: Dictionary = projectile_visuals[i]
-		if not game.projectiles.has(visual.shot):
+		var alive: bool = is_same(active_shots.get(visual.shot.serial),visual.shot) if visual.shot.has("serial") else game.projectiles.has(visual.shot)
+		if not alive:
 			projectile_visuals.remove_at(i)
 			continue
 		visual.age += dt
@@ -565,15 +578,15 @@ func advance_projectile_visuals(dt: float) -> void:
 		if dt>0:
 			visual.head = (int(visual.head)+1)%14
 			visual.trail_times[visual.head] = visual.age
-			visual.trail[visual.head] = missile_visual_position(visual.shot,float(visual.spread),visual.origin)
+			visual.trail[visual.head] = missile_visual_position(visual.shot,float(visual.spread),visual.origin,visual)
 			visual.samples = mini(14,int(visual.samples)+1)
 
-func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2) -> Vector2:
+func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, visual: Dictionary = {}) -> Vector2:
 	var pos := Vector2(shot.x,shot.y)
 	var converge := 1.0
 	if not shot.target.is_empty():
 		converge = clampf(pos.distance_to(Vector2(shot.target.x,shot.target.y))/160.0,0,1)
-	var visual := projectile_visual(shot)
+	if visual.is_empty():visual = projectile_visual(shot)
 	var logical_origin: Vector2 = visual.get("logical_origin",origin)
 	var distance := pos.distance_to(logical_origin)
 	var unfold := smoothstep(0.0,100.0,distance)
@@ -581,10 +594,18 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2) -
 	var muzzle_shift := (origin-logical_origin)*(1.0-smoothstep(0.0,maxf(1,blend_distance),distance))
 	return pos+muzzle_shift+Vector2(0,spread*unfold*converge)
 
-func projectile_visual(shot: Dictionary) -> Dictionary:
+func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
+	if shot.has("serial") and not index.is_empty():return index.get(shot.serial,{})
 	for visual in projectile_visuals:
 		if is_same(visual.shot,shot):return visual
 	return {}
+
+func projectile_visual_index() -> Dictionary:
+	# Frame-local serial index; no references survive the draw.
+	var index := {}
+	for visual in projectile_visuals:
+		if visual.shot.has("serial"):index[visual.shot.serial] = visual
+	return index
 
 func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 	var key := weapon_key(shot)
@@ -600,9 +621,8 @@ func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 			particles.append({"pos":pos,"vel":Vector2.from_angle(float(i)*TAU/6)*150,"color":ORANGE,"life":0.18,"size":10.0,"spark":true})
 		weapon_smoke(pos,Color("7e7780"),2,0.18,7.0*IMPACT_SCALE)
 
-func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core := true) -> float:
+func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core := true, visual: Dictionary = {}, trail_budget := -1) -> float:
 	var key := weapon_key(shot)
-	var visual := projectile_visual(shot)
 	var angle: float = shot.direction.angle()
 	if not visual.is_empty():
 		angle = visual.angle
@@ -611,7 +631,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 		for i in range(1,mini(int(visual.samples),14 if key=="missile" else 4)):
 			# The short fresh trail shares the bullet layer; only older exhaust sits behind hulls.
 			if (i<=3)!=core:continue
-			if i>4 and decoration_budget(pos,1)==0:break
+			if i>4 and trail_budget==0:break
 			var a: Vector2 = visual.trail[(int(visual.head)-i+14)%14]+offset
 			var b: Vector2 = visual.trail[(int(visual.head)-i+1+14)%14]+offset
 			var age: float = float(visual.age)-float(visual.trail_times[(int(visual.head)-i+14)%14])
@@ -827,27 +847,18 @@ func ui_state_changed(control: Node, state: Array) -> bool:
 	control.set_meta("refresh_state",state.duplicate(true))
 	return true
 
-func refresh_visible_cards() -> void:
+func refresh_visible_cards(delta := 0.0) -> void:
 	if not is_instance_valid(equipment_tabs) or not equipment_tabs.is_visible_in_tree():
 		return
 	match equipment_tabs.current_tab:
-		0,1:
-			var category := "weapons" if equipment_tabs.current_tab == 0 else "defence"
-			for index in game.profile.loadout[category].size():
-				var slot := game.slot_id(category,index)
-				refresh_equipment_cards(slot)
-				if equipment_cooldowns.has(slot):
-					var entry := game.slot_entry(category,index)
-					var cd := float(db.equip(str(entry.key),int(entry.level)).cd)
-					var fill: ColorRect = equipment_cooldowns[slot]
-					set_ui_value(fill,"size",Vector2(fill.get_parent().size.x*clampf(1.0-float(game.cooldowns.get(slot,0))/maxf(cd,0.001),0,1),fill.size.y))
-		2:
+		0:
+			equipment_panel.refresh_pending()
+		1:
 			refresh_scientists()
 			for key in hightech_progress:
 				refresh_hightech_card(key)
-		3:
-			for key in charge_cards:
-				refresh_charge_card(key)
+		2:
+			charge_panel.refresh_sample(delta)
 
 func refresh_hightech_card(key: String) -> void:
 	if not hightech_progress.has(key):
@@ -868,15 +879,15 @@ func refresh_equipment_effects(tech: String) -> void:
 		refresh_equipment_cards(game.slot_id(category,index))
 
 func refresh_tab_visibility() -> void:
-	for key in charge_cards:
-		set_ui_value(charge_cards[key].title.get_parent(),"visible",game.charge_unlocked(key))
+	if is_instance_valid(charge_panel):
+		charge_panel.sync_modules()
 	var pages: Array[bool] = []
-	for entries in [game.weapon_entries(),game.defense_entries()]:
-		pages.append(entries.any(func(entry):return game.profile.unlocked.has(str(entry.get("key","")))))
+	pages.append(not game.profile.unlocked.is_empty())
 	pages.append(not hightech_buttons.is_empty())
 	pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.jewels_unlocked())
+	pages.append(true) # The existing battlefield always has a return entry.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
@@ -885,51 +896,13 @@ func refresh_tab_visibility() -> void:
 		selected = pages.find(true)
 	set_ui_value(equipment_tabs,"current_tab",selected)
 
-func remove_equipment_card(slot: String) -> void:
-	for buttons in [upgrade_buttons,ten_upgrade_buttons,max_upgrade_buttons]:
-		for key in buttons.keys():
-			if str(buttons[key].get_meta("slot")) == slot:
-				buttons.erase(key)
-	equipment_card_controls.erase(slot)
-	equipment_cooldowns.erase(slot)
-	var card: Panel = equipment_panels[slot]
-	card.get_parent().remove_child(card)
-	card.queue_free()
-	equipment_panels.erase(slot)
-
 func refresh_structure() -> void:
 	if not is_instance_valid(equipment_tabs):
 		return
 	if not ui_state_changed(equipment_tabs,[game.profile.loadout,game.profile.unlocked,game.profile.cleared,game.profile.selectedShip]):
 		return
-	for slot in equipment_panels.keys():
-		var category := str(slot).get_slice("_",0)
-		var index := int(str(slot).get_slice("_",1))
-		if index >= game.profile.loadout[category].size() or equipment_panels[slot].get_meta("equipment_key") != str(game.slot_entry(category,index).key):
-			remove_equipment_card(slot)
-	for category in ["weapons","defence"]:
-		for index in game.profile.loadout[category].size():
-			var slot := game.slot_id(category,index)
-			if not equipment_panels.has(slot):
-				build_equipment_card(category,index)
-				equipment_containers[category].move_child(equipment_panels[slot],index)
-			var selector: OptionButton = equipment_panels[slot].get_meta("selector")
-			if selector.visible and ui_state_changed(selector,[game.profile.unlocked,game.profile.loadout,game.equipment_limit()]):
-				selector.clear()
-				selector.add_item(UIText.t("main.refresh_structure.text_01"))
-				var keys: Array = EQUIPMENT_PAGES[0 if category == "weapons" else 1].keys
-				for key in keys:
-					if game.profile.unlocked.has(key):
-						var limit_reached := game.equipment_count(key)>=game.equipment_limit()
-						selector.add_item(NAMES[key]+(UIText.t("main.refresh_structure.text_02") if limit_reached else ""),keys.find(key)+1)
-						selector.set_item_disabled(selector.item_count-1,limit_reached)
+	equipment_panel.refresh()
 	sync_hightech_slots()
-	if not ship_controls.is_empty() and ship_candidate==str(game.profile.selectedShip) and ship_controls.page.get_meta("runtime_loadout",{}) != game.profile.loadout:
-		var old_sizes := [ship_candidate_loadout.weapons.size(),ship_candidate_loadout.defence.size()]
-		ship_candidate_loadout = game.profile.loadout.duplicate(true)
-		ship_controls.page.set_meta("runtime_loadout",game.profile.loadout.duplicate(true))
-		if old_sizes != [ship_candidate_loadout.weapons.size(),ship_candidate_loadout.defence.size()]:
-			rebuild_ship_slots()
 	refresh_ship_controls()
 	refresh_tab_visibility()
 	refresh_visible_cards()
@@ -964,43 +937,7 @@ func sync_hightech_slots() -> void:
 		retired.queue_free()
 
 func refresh_ship_controls() -> void:
-	if ship_controls.is_empty():
-		return
-	var current := str(game.profile.selectedShip)
-	var picker: OptionButton = ship_controls.picker
-	var keys := unlocked_ship_keys()
-	if ui_state_changed(picker,[keys]):
-		picker.clear()
-		for key in keys:
-			var row: Dictionary = db.ship(key)
-			picker.add_item(UIText.data_text("ship",str(key),"des"))
-			picker.set_item_metadata(picker.item_count-1,key)
-			picker.set_item_tooltip(picker.item_count-1,UIText.t("ship.refresh_ship_controls.text_01", {"weaponSlots":"%s" % (number(row.weaponSlots)), "defenseSlots":"%s" % (number(row.defenseSlots)), "movement":"%s" % (number(row.movement))}))
-	if picker.selected != keys.find(ship_candidate):
-		picker.select(keys.find(ship_candidate))
-	set_ui_value(ship_controls.status,"text",UIText.t("ship.refresh_ship_controls.text_02", {"ship_name":"%s" % (game.ship_name())}) if ship_candidate==current else UIText.t("ship.refresh_ship_controls.text_03", {"else":"%s" % ((UIText.t("ship.refresh_ship_controls.text_04") if game.valid_loadout(ship_candidate,ship_candidate_loadout) else UIText.t("ship.refresh_ship_controls.text_05")))}))
-	set_ui_value(ship_controls.confirm,"disabled",ship_candidate==current or not game.valid_loadout(ship_candidate,ship_candidate_loadout))
-	for slot in ship_controls.selectors:
-		var selector: OptionButton = ship_controls.selectors[slot]
-		var category := str(slot).get_slice("_",0)
-		var index := int(str(slot).get_slice("_",1))
-		var selected := str(ship_candidate_loadout[category][index].key)
-		var options: Array = EQUIPMENT_PAGES[0 if category=="weapons" else 1].keys
-		options = options.filter(func(key):return game.profile.unlocked.has(key))
-		if ui_state_changed(selector,[options]):
-			selector.clear()
-			selector.add_item(UIText.t("main.refresh_structure.text_01"))
-			for key in options:
-				selector.add_item(NAMES[key])
-				selector.set_item_metadata(selector.item_count-1,key)
-		var selection := options.find(selected)+1
-		if selector.selected != selection:
-			selector.select(selection)
-		for i in options.size():
-			var disabled := candidate_equipment_count(options[i],category,index)>=int(db.ship(ship_candidate).get("sameEquipmentLimit",1))
-			if selector.is_item_disabled(i+1) != disabled:
-				selector.set_item_disabled(i+1,disabled)
-		set_ui_value(ship_controls.notes[slot],"text",UIText.t("ship.refresh_ship_controls.text_07") if selected.is_empty() else UIText.t("ship.refresh_ship_controls.text_08"))
+	if not ship_controls.is_empty():ship_controls.page.refresh()
 
 func limit_warp_popup() -> void:
 	var popup := loop_select.get_popup()
@@ -1251,7 +1188,7 @@ func draw_battle() -> void:
 		text_at(UIText.t("battle.slot_number",{"slot":"%02d" % slot}),Vector2(1370,202+slot*44),10,Color("34475c"))
 		draw_surface.draw_line(Vector2(1330,198+slot*44),Vector2(1353,198+slot*44),Color("253345"))
 	for drop in game.drops:
-		if float(drop.age)<0.5 and not drop.get("hightech",false):continue
+		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
 		var pos := Vector2(drop.x,drop.y)
 		var color := INK if drop.id=="1" else PURPLE
 		var bob := sin(clock*3+float(drop.uid))*3
@@ -1271,6 +1208,8 @@ func draw_battle() -> void:
 		if furnace or pos.distance_to(get_global_mouse_position())<40:
 			text_at(UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))}),pos+Vector2(-19,26),12,color)
 	draw_battle_particles(offset,false)
+	var visual_index := projectile_visual_index()
+	var flights: Array = []
 	for p in game.projectiles:
 		var pos := Vector2(p.x,p.y)+offset
 		if p.get("beam", false):
@@ -1284,10 +1223,12 @@ func draw_battle() -> void:
 				var visual := beam_style(p)
 				draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5,true)
 			continue
-		var flight_visual := projectile_visual(p)
+		var flight_visual := projectile_visual(p,visual_index)
 		if not flight_visual.is_empty():
-			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin)+offset
-		draw_projectile_fx(p,pos,offset,false)
+			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual)+offset
+		var trail_budget := decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(flight_visual.samples)>5 else 1
+		flights.append({"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget})
+		draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
 	if game.player.armour>0 or game.state==BattleGame.State.RETREAT:
 		draw_ship(Vector2(game.player.x,game.player.y)+offset,0.24,false,1,game.player.shield>0)
 		var name_y := maxf(489,float(game.player.y)+SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))/2+18)
@@ -1315,13 +1256,10 @@ func draw_battle() -> void:
 		text_at(card.health,rect.position+Vector2(12,36),13,INK)
 		bar(Rect2(rect.position+Vector2(12,44),Vector2(rect.size.x-24,4)),card.ratio,color)
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
-	for p in game.projectiles:
-		if p.get("beam",false):continue
-		var pos := Vector2(p.x,p.y)+offset
-		var flight_visual := projectile_visual(p)
-		if not flight_visual.is_empty():
-			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin)+offset
-		var angle := draw_projectile_fx(p,pos,offset)
+	for flight in flights:
+		var p: Dictionary = flight.shot
+		var pos: Vector2 = flight.pos
+		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
 		var key := str(p.key).replace("_mon", "").replace("-mon", "")
 		if key=="laser":continue
 		var size: Vector2 = PROJECTILE_SIZES[key] * PROJECTILE_SCALE * BODY_SCALE[key]
@@ -1524,6 +1462,12 @@ func equipment_detail_text(entry: Dictionary) -> String:
 	return UIText.t("weapon.equipment_detail_text.text_02", {"cd":"%s" % (number(float(row.cd))), "cd_2":"%s" % (number(float(db.equip(key,mini(lv+1,db.max_equipment_level(key))).cd)))})
 
 func build_equipment_tabs() -> void:
+	charge_nav_backdrop = ColorRect.new()
+	charge_nav_backdrop.position = Vector2(38,84)
+	charge_nav_backdrop.size = Vector2(1364,50)
+	charge_nav_backdrop.color = BG
+	charge_nav_backdrop.visible = false
+	ui.add_child(charge_nav_backdrop)
 	equipment_tabs = TabContainer.new()
 	equipment_tabs.position = Vector2(38,620)
 	equipment_tabs.size = Vector2(1364,156)
@@ -1540,20 +1484,11 @@ func build_equipment_tabs() -> void:
 		tab_style.content_margin_bottom = 4
 		equipment_tabs.add_theme_stylebox_override(state,tab_style)
 	ui.add_child(equipment_tabs)
-	for page_index in range(EQUIPMENT_PAGES.size()):
-		var scroll := ScrollContainer.new()
-		scroll.name = "EquipmentPage%d" % page_index
-		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-		equipment_tabs.add_child(scroll)
-		equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(scroll), EQUIPMENT_PAGES[page_index].title)
-		var cards := HBoxContainer.new()
-		cards.add_theme_constant_override("separation",8)
-		scroll.add_child(cards)
-		var category := "weapons" if page_index == 0 else "defence"
-		equipment_containers[category] = cards
-		for index in game.profile.loadout[category].size():
-			build_equipment_card(category,index)
+	equipment_panel = preload("res://scripts/equipment_tab.gd").new()
+	equipment_panel.name = "Equipment"
+	equipment_tabs.add_child(equipment_panel)
+	equipment_tabs.set_tab_title(0,UIText.t("equipment.tab"))
+	equipment_panel.setup(self)
 	build_hightech_tab()
 	build_charge_tab()
 	build_ship_tab()
@@ -1564,193 +1499,22 @@ func build_equipment_tabs() -> void:
 	var open_jewels := button(UIText.t("weapon.build_equipment_tabs.text_02"), Rect2(22,20,460,45), func():jewel_panel.open())
 	open_jewels.reparent(jewel_tab,false)
 	equipment_card_label(jewel_tab,UIText.t("weapon.build_equipment_tabs.text_03"),Rect2(505,24,780,38),16,MUTED)
+	var battle_tab := Control.new()
+	battle_tab.name = "Battlefield"
+	equipment_tabs.add_child(battle_tab)
+	equipment_tabs.set_tab_title(BATTLE_TAB,UIText.t("battle.tab"))
 	refresh_tab_visibility()
-	equipment_tabs.tab_changed.connect(func(index):equipment_page=index;refresh_visible_cards())
-
-func build_equipment_card(category: String, slot_index: int) -> void:
-	var page: Dictionary = EQUIPMENT_PAGES[0 if category == "weapons" else 1]
-	var cards: HBoxContainer = equipment_containers[category]
-	var entry: Dictionary = game.profile.loadout[category][slot_index]
-	var key := str(entry.get("key", ""))
-	var defence: bool = category == "defence"
-	var slot_key := game.slot_id("defence" if defence else "weapons",slot_index)
-	var lv := int(entry.get("level",1))
-	var maxed := lv >= db.max_equipment_level(key)
-	var bulk: bool = BattleGame.EQUIPMENT.has(key)
-	var card := Panel.new()
-	equipment_panels[slot_key] = card
-	card.set_meta("equipment_key",key)
-	card.custom_minimum_size = Vector2(664,112)
-	card.add_theme_stylebox_override("panel",equipment_skin("card"))
-	cards.add_child(card)
-	equipment_card_label(card,UIText.t("ship.rebuild_ship_slots.text_01", {"else":"%s" % (UIText.t("defense.tab") if defence else UIText.t("weapon.tab")), "index":"%s" % (number(slot_index+1))}),Rect2(456,9,100,20),12,CYAN)
-	for decoration in [["icon-frame",Rect2(10,12,84,88)],["stat-strip",Rect2(101,34,337,25)]]:
-		var plate := TextureRect.new()
-		plate.texture = load("res://assets/ui/equipment/%s.svg" % decoration[0])
-		plate.position = decoration[1].position
-		plate.size = decoration[1].size
-		plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		plate.visible = not key.is_empty()
-		card.add_child(plate)
-	if not key.is_empty():
-		var icon := TextureRect.new()
-		if SLOT_TEXTURES.has(key):
-			var atlas := AtlasTexture.new()
-			atlas.atlas = SLOT_TEXTURES[key]
-			atlas.region = module_regions[key]
-			icon.texture = atlas
-		else:
-			icon.texture = load("res://assets/ui/equipment/%s.svg" % key)
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.position = Vector2(14,20)
-		icon.size = Vector2(76,70)
-		card.add_child(icon)
-	var selector := OptionButton.new()
-	selector.fit_to_longest_item = false
-	selector.clip_text = true
-	selector.position = Vector2(456,42)
-	selector.size = Vector2(180,32)
-	selector.disabled = not key.is_empty()
-	selector.visible = key.is_empty()
-	selector.add_theme_font_override("font",font)
-	selector.add_theme_font_size_override("font_size",12)
-	selector.add_item(UIText.t("main.refresh_structure.text_01"))
-	for option_key in page.keys:
-		if game.profile.unlocked.has(option_key):
-			selector.add_item(NAMES[option_key],page.keys.find(option_key)+1)
-			var limit_reached := game.equipment_count(option_key) >= game.equipment_limit()
-			selector.set_item_disabled(selector.item_count-1,limit_reached)
-			if limit_reached:
-				selector.set_item_text(selector.item_count-1,NAMES[option_key]+UIText.t("main.refresh_structure.text_02"))
-			if option_key == key:
-				selector.select(selector.item_count-1)
-	card.set_meta("selector",selector)
-	selector.item_selected.connect(func(option):
-		var selected := ""
-		if option > 0:
-			selected = str(page.keys[selector.get_item_id(option)-1])
-		if selected.is_empty():
-			return
-		if game.equip_slot("defence" if defence else "weapons",slot_index,selected):
-			refresh_structure()
-	)
-	card.add_child(selector)
-	if not key.is_empty():
-		equipment_card_controls[slot_key] = {"panel":card}
-		equipment_card_controls[slot_key].title = equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_06", {"key":"%s" % (NAMES[key]), "lv":"%s" % (str(int(lv)))}),Rect2(104,8,330,25),17)
-		equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_07"),Rect2(104,78,310,18),11,Color("9ab9d1"))
-	if key.is_empty():
-		equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_08"),Rect2(104,10,330,26),16)
-		equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_09"),Rect2(104,42,330,22),13,MUTED)
-		equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_10"),Rect2(104,76,330,20),11,MUTED)
-		return
-	var socket_action := button(UIText.t("gem.setup.text_13"),Rect2(594,7,56,25),func():jewel_panel.open(category,slot_index))
-	socket_action.reparent(card,false)
-	socket_action.add_theme_font_size_override("font_size",11)
-	socket_action.visible = game.jewels_unlocked()
-	equipment_card_controls[slot_key].socket = socket_action
-	equipment_card_controls[slot_key].stat = equipment_card_label(card,equipment_stat_text(entry),Rect2(110,34,322,24),16,CYAN)
-	equipment_card_controls[slot_key].detail = equipment_card_label(card,equipment_detail_text(entry),Rect2(104,59,334,18),12,Color("a3c9df"))
-	var single_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index)
-	var ten_cost := game.slot_upgrade_cost("defence" if defence else "weapons",slot_index,10)
-	equipment_card_controls[slot_key].cost = equipment_card_label(card,UIText.t("weapon.build_equipment_card.text_12") if maxed else UIText.t("weapon.build_equipment_card.text_13", {"single_cost":"%s" % (cost_text(single_cost))}),Rect2(452,82,198,20),11,MUTED)
-	var upgrade := button(UIText.t("weapon.build_equipment_card.text_14") if maxed else UIText.t("weapon.build_equipment_card.text_15"),Rect2(452,36,72,40),func():game.upgrade_slot("defence" if defence else "weapons",slot_index),true,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index))
-	upgrade.tooltip_text = UIText.t("weapon.build_equipment_card.text_12") if maxed else UIText.t("upgrade.cost_one",{"cost":cost_text(single_cost)})
-	upgrade.reparent(card,false)
-	upgrade.add_theme_font_size_override("font_size",16)
-	upgrade.set_meta("slot",slot_key)
-	upgrade_buttons[key if not upgrade_buttons.has(key) else slot_key] = upgrade
-	if bulk:
-		var ten := button(UIText.t("weapon.build_equipment_card.text_17"),Rect2(532,36,55,40),func():game.upgrade_slot("defence" if defence else "weapons",slot_index,10),false,not game.can_upgrade_slot("defence" if defence else "weapons",slot_index,10))
-		ten.reparent(card,false)
-		ten.add_theme_font_size_override("font_size",12)
-		ten.set_meta("slot",slot_key)
-		ten.tooltip_text = UIText.t("upgrade.cost_ten",{"cost":cost_text(ten_cost)})
-		ten_upgrade_buttons[key if not ten_upgrade_buttons.has(key) else slot_key] = ten
-		var max_button := button(UIText.t("weapon.build_equipment_card.text_19"),Rect2(595,36,55,40),func():
-			var amount := game.max_upgrade_amount_slot(category,slot_index)
-			if amount > 0:
-				game.upgrade_slot(category,slot_index,amount),false,not game.can_upgrade_slot(category,slot_index))
-		max_button.reparent(card,false)
-		max_button.add_theme_font_size_override("font_size",12)
-		max_button.set_meta("slot",slot_key)
-		max_button.tooltip_text = UIText.t("weapon.build_equipment_card.text_20")
-		max_upgrade_buttons[key if not max_upgrade_buttons.has(key) else slot_key] = max_button
-	if not key.is_empty():
-		var cooldown := ColorRect.new()
-		cooldown.position = Vector2(104,100)
-		cooldown.size = Vector2(330,3)
-		cooldown.color = LINE
-		cooldown.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(cooldown)
-		var fill := ColorRect.new()
-		fill.size = Vector2(330,3)
-		fill.color = CYAN
-		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		cooldown.add_child(fill)
-		if not defence:
-			equipment_cooldowns[slot_key] = fill
-		else:
-			fill.size.x = 330.0 * clampf(float(lv)/maxf(1,db.max_equipment_level(key)),0,1)
-			equipment_card_controls[slot_key].progress = fill
-			cooldown.tooltip_text = UIText.t("weapon.build_equipment_card.text_21")
-		cooldown.tooltip_text = UIText.t("weapon.build_equipment_card.text_21") if defence else UIText.t("weapon.build_equipment_card.text_22")
-	var tech := BattleGame.DENSE_ARMOUR if defence else BattleGame.ENERGY_FOCUS
-	ui_state_changed(equipment_card_controls[slot_key].title,[lv,game.hightech_level(tech),game.charge_multiplier("防御充能" if defence else "攻击充能")])
-	for action in card.get_children():
-		if action is Button:
-			skin_equipment_button(action,action == upgrade)
-		if action is Button and action.has_meta("slot"):
-			ui_state_changed(action,[lv,game.profile.resources])
-			action.set_meta("display_level",lv)
+	equipment_tabs.tab_changed.connect(func(index):
+		equipment_page=index
+		if is_instance_valid(jewel_panel):
+			set_ui_value(jewel_panel,"visible",false)
+		layout_charge_page()
+		refresh_visible_cards())
+	layout_charge_page()
 
 func refresh_equipment_cards(only_slot := "") -> void:
-	# Upgrades change values, not the control tree or selected/scrolling pages.
-	for slot in equipment_card_controls:
-		if not only_slot.is_empty() and slot != only_slot:
-			continue
-		var category := str(slot).get_slice("_",0)
-		var index := int(str(slot).get_slice("_",1))
-		var entry := game.slot_entry(category,index)
-		var key := str(entry.key)
-		var level := int(entry.level)
-		var maxed := level >= db.max_equipment_level(key)
-		var controls: Dictionary = equipment_card_controls[slot]
-		var tech := BattleGame.DENSE_ARMOUR if category == "defence" else BattleGame.ENERGY_FOCUS
-		var effect := game.charge_multiplier("防御充能" if category == "defence" else "攻击充能")
-		set_ui_value(controls.socket,"visible",game.jewels_unlocked())
-		if not ui_state_changed(controls.title,[level,game.hightech_level(tech),effect,game.jewel_equipment_stat(entry),entry.get("sockets",[])]):
-			continue
-		set_ui_value(controls.title,"text",UIText.t("weapon.build_equipment_card.text_06", {"key":"%s" % (NAMES[key]), "lv":"%s" % (str(int(level)))}))
-		set_ui_value(controls.stat,"text",equipment_stat_text(entry))
-		set_ui_value(controls.detail,"text",equipment_detail_text(entry))
-		if controls.has("progress"):
-			set_ui_value(controls.progress,"size",Vector2(330.0*clampf(float(level)/maxf(1,db.max_equipment_level(key)),0,1),3))
-		set_ui_value(controls.cost,"text",UIText.t("weapon.build_equipment_card.text_12") if maxed else UIText.t("weapon.build_equipment_card.text_13", {"single_cost":"%s" % (cost_text(game.slot_upgrade_cost(category,index)))}))
-		for label in [controls.title,controls.stat,controls.detail,controls.cost]:
-			set_ui_value(label,"tooltip_text",label.text)
-	for buttons in [upgrade_buttons,ten_upgrade_buttons,max_upgrade_buttons]:
-		for button_key in buttons:
-			var action: Button = buttons[button_key]
-			var slot := str(action.get_meta("slot"))
-			if not only_slot.is_empty() and slot != only_slot:
-				continue
-			var category := slot.get_slice("_",0)
-			var index := int(slot.get_slice("_",1))
-			var amount := 10 if buttons == ten_upgrade_buttons else 1
-			if not ui_state_changed(action,[game.slot_entry(category,index).level,game.profile.resources]):
-				continue
-			set_ui_value(action,"disabled",not game.can_upgrade_slot(category,index,amount))
-			var entry := game.slot_entry(category,index)
-			if action.get_meta("display_level",-1) == int(entry.level):
-				continue
-			action.set_meta("display_level",int(entry.level))
-			if buttons != max_upgrade_buttons:
-				set_ui_value(action,"tooltip_text",UIText.t("upgrade.cost_ten" if amount==10 else "upgrade.cost_one",{"cost":cost_text(game.slot_upgrade_cost(category,index,amount))}))
-			if buttons == upgrade_buttons:
-				set_ui_value(action,"text",UIText.t("weapon.build_equipment_card.text_14") if int(entry.level) >= db.max_equipment_level(str(entry.key)) else UIText.t("weapon.build_equipment_card.text_15"))
+	if is_instance_valid(equipment_panel):
+		equipment_panel.refresh(only_slot)
 
 func unlocked_ship_keys() -> Array:
 	var result: Array = []
@@ -1759,120 +1523,13 @@ func unlocked_ship_keys() -> Array:
 			result.append(str(key))
 	return result
 
-func candidate_equipment_count(key: String, except_category: String, except_index: int) -> int:
-	var count := 0
-	for category in ["weapons", "defence"]:
-		for index in range(ship_candidate_loadout.get(category, []).size()):
-			if category == except_category and index == except_index:
-				continue
-			if str(ship_candidate_loadout[category][index].get("key", "")) == key:
-				count += 1
-	return count
-
 func build_ship_tab() -> void:
-	var page := Control.new()
+	var page := preload("res://scripts/ship_panel.gd").new()
 	page.name = "Ship"
 	equipment_tabs.add_child(page)
 	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(page),UIText.t("ship.tab"))
-	ship_controls = {"page":page,"selectors":{},"notes":{}}
-	page.set_meta("runtime_loadout",game.profile.loadout.duplicate(true))
-	var keys := unlocked_ship_keys()
-	var current := str(game.profile.selectedShip)
-	if ship_candidate.is_empty() or not keys.has(ship_candidate):
-		ship_candidate = current
-		ship_candidate_loadout = game.profile.loadout.duplicate(true)
-	elif ship_candidate == current:
-		ship_candidate_loadout = game.profile.loadout.duplicate(true)
-	if not ship_candidate_loadout.has("weapons") or not ship_candidate_loadout.has("defence"):
-		ship_candidate_loadout = game.empty_loadout(ship_candidate)
-
-	var picker := OptionButton.new()
-	picker.position = Vector2(12,8)
-	picker.size = Vector2(220,30)
-	picker.add_theme_font_override("font",font)
-	picker.add_theme_font_size_override("font_size",13)
-	for key in keys:
-		var row: Dictionary = db.ship(key)
-		picker.add_item(UIText.data_text("ship",str(key),"des"),picker.item_count)
-		picker.set_item_metadata(picker.item_count-1,key)
-		picker.set_item_tooltip(picker.item_count-1,UIText.t("ship.refresh_ship_controls.text_01", {"weaponSlots":"%s" % (number(row.weaponSlots)), "defenseSlots":"%s" % (number(row.defenseSlots)), "movement":"%s" % (number(row.movement))}))
-		if key == ship_candidate:
-			picker.select(picker.item_count-1)
-	picker.item_selected.connect(func(index):
-		ship_candidate = str(picker.get_item_metadata(index))
-		ship_candidate_loadout = game.profile.loadout.duplicate(true) if ship_candidate == str(game.profile.selectedShip) else game.empty_loadout(ship_candidate)
-		rebuild_ship_slots()
-		refresh_ship_controls()
-	)
-	page.add_child(picker)
-
-	var valid := game.valid_loadout(ship_candidate,ship_candidate_loadout)
-	var status := equipment_label(page,UIText.t("ship.refresh_ship_controls.text_02", {"ship_name":"%s" % (game.ship_name())}),Vector2(248,14),12,MUTED)
-	if ship_candidate != current:
-		status.text = UIText.t("ship.refresh_ship_controls.text_03", {"else":"%s" % ((UIText.t("ship.refresh_ship_controls.text_04") if valid else UIText.t("ship.refresh_ship_controls.text_05")))})
-	var confirm := button(UIText.t("ship.build_ship_tab.text_02"),Rect2(1250,8,118,30),func():
-		if game.switch_ship(ship_candidate,ship_candidate_loadout):
-			ship_candidate = str(game.profile.selectedShip)
-			ship_candidate_loadout = game.profile.loadout.duplicate(true)
-			refresh_structure()
-			refresh_ship_controls()
-	,true,ship_candidate == current or not valid)
-	confirm.reparent(page,false)
-	confirm.add_theme_font_size_override("font_size",13)
-
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(10,45)
-	scroll.size = Vector2(1358,93)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	page.add_child(scroll)
-	var cards := HBoxContainer.new()
-	cards.add_theme_constant_override("separation",8)
-	scroll.add_child(cards)
-	ship_controls.picker = picker
-	ship_controls.status = status
-	ship_controls.confirm = confirm
-	ship_controls.cards = cards
-	rebuild_ship_slots()
-	refresh_ship_controls()
-
-func rebuild_ship_slots() -> void:
-	var cards: HBoxContainer = ship_controls.cards
-	for child in cards.get_children():
-		cards.remove_child(child)
-		child.queue_free()
-	ship_controls.selectors.clear()
-	ship_controls.notes.clear()
-	for category in ["weapons", "defence"]:
-		var entries: Array = ship_candidate_loadout[category]
-		for index in range(entries.size()):
-			var entry: Dictionary = entries[index]
-			var card := Panel.new()
-			card.custom_minimum_size = Vector2(184,78)
-			card.add_theme_stylebox_override("panel",style(PANEL,LINE))
-			cards.add_child(card)
-			equipment_label(card,UIText.t("ship.rebuild_ship_slots.text_01", {"else":"%s" % (UIText.t("weapon.tab") if category == "weapons" else UIText.t("defense.tab")), "index":"%s" % (number(index+1))}),Vector2(8,6),12,CYAN)
-			var selector := OptionButton.new()
-			selector.position = Vector2(8,30)
-			selector.size = Vector2(168,27)
-			selector.add_theme_font_override("font",font)
-			selector.add_theme_font_size_override("font_size",12)
-			selector.add_item(UIText.t("main.refresh_structure.text_01"))
-			for option_key in (EQUIPMENT_PAGES[0].keys if category == "weapons" else EQUIPMENT_PAGES[1].keys):
-				if game.profile.unlocked.has(option_key):
-					selector.add_item(NAMES[option_key])
-					selector.set_item_metadata(selector.item_count-1,option_key)
-					selector.set_item_disabled(selector.item_count-1,candidate_equipment_count(option_key,category,index) >= int(db.ship(ship_candidate).get("sameEquipmentLimit",1)))
-					if option_key == str(entry.get("key", "")):
-						selector.select(selector.item_count-1)
-			selector.item_selected.connect(func(option):
-				var selected := str(selector.get_item_metadata(option)) if option > 0 else ""
-				ship_candidate_loadout[category][index] = {"key":selected,"level":1}
-				refresh_ship_controls()
-			)
-			card.add_child(selector)
-			ship_controls.selectors[game.slot_id(category,index)] = selector
-			ship_controls.notes[game.slot_id(category,index)] = equipment_label(card,UIText.t("ship.refresh_ship_controls.text_08") if not str(entry.get("key", "")).is_empty() else UIText.t("ship.refresh_ship_controls.text_07"),Vector2(8,59),11,MUTED)
+	ship_controls = {"page":page}
+	page.setup(self)
 
 func refresh_scientists() -> void:
 	if not is_instance_valid(scientist_generate_button):
@@ -1910,42 +1567,22 @@ func refresh_hightech_progress(key: String) -> void:
 	set_ui_value(controls.bar.get_child(0),"color",CYAN if game.research_rate(key)>0 and not game.paused else ORANGE)
 
 func build_charge_tab() -> void:
-	var scroll := ScrollContainer.new()
-	scroll.name = "Charge"
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	equipment_tabs.add_child(scroll)
-	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(scroll),UIText.t("upgrade.charge_tab"))
-	var cards := HBoxContainer.new()
-	cards.add_theme_constant_override("separation",8)
-	scroll.add_child(cards)
-	for key in db.data.get("charge",{}):
-		var card := Panel.new()
-		card.custom_minimum_size = HIGHTECH_CARD_SIZE
-		card.add_theme_stylebox_override("panel",style(PANEL,LINE))
-		cards.add_child(card)
-		var title := equipment_label(card,"",Vector2(12,5),14,CYAN)
-		var status := equipment_label(card,"",Vector2(327,7),11,MUTED)
-		status.size.x = 104
-		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		var description := equipment_label(card,"",Vector2(12,27),12,MUTED)
-		description.size.x = 419
-		description.clip_text = true
-		var progress := equipment_label(card,"",Vector2(12,48),11,INK)
-		var charge_bar := charge_progress_bar(card,Vector2(12,67),303,CYAN)
-		var level_progress := equipment_label(card,"",Vector2(12,78),11,MUTED)
-		var level_bar := charge_progress_bar(card,Vector2(12,97),303,Color("aa96ed"))
-		var cost := equipment_label(card,"",Vector2(333,48),11,MUTED)
-		cost.size.x = 98
-		cost.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		cost.clip_text = true
-		var action := button("",Rect2(331,75,100,28),func():
-			game.toggle_charge(key)
-			refresh_charge_card(key),true)
-		action.reparent(card,false)
-		action.add_theme_font_size_override("font_size",14)
-		charge_cards[key] = {"title":title,"status":status,"description":description,"progress":progress,"charge_bar":charge_bar,"level_progress":level_progress,"level_bar":level_bar,"cost":cost,"button":action}
-		refresh_charge_card(key)
+	charge_panel = preload("res://scripts/charge_panel.gd").new()
+	charge_panel.name = "Charge"
+	equipment_tabs.add_child(charge_panel)
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(charge_panel),UIText.t("upgrade.charge_tab"))
+	charge_panel.setup(self)
+	charge_cards = charge_panel.cards
+
+func layout_charge_page() -> void:
+	var expanded := equipment_tabs.current_tab in [2,3]
+	set_ui_value(charge_nav_backdrop,"visible",expanded)
+	if equipment_tabs.current_tab == 0:
+		equipment_panel.apply_view_layout(false)
+		return
+	equipment_panel.stop_transition()
+	set_ui_value(equipment_tabs,"position",Vector2(38,84 if expanded else 620))
+	set_ui_value(equipment_tabs,"size",Vector2(1364,692 if expanded else 156))
 
 func charge_progress_bar(card: Control, pos: Vector2, width: float, color: Color) -> ColorRect:
 	var progress := ColorRect.new()
@@ -1962,41 +1599,8 @@ func charge_progress_bar(card: Control, pos: Vector2, width: float, color: Color
 	return progress
 
 func refresh_charge_card(key: String) -> void:
-	var controls: Dictionary = charge_cards[key]
-	var visible := game.charge_unlocked(key)
-	set_ui_value(controls.title.get_parent(),"visible",visible)
-	if not visible:
-		return
-	var row: Dictionary = db.data.charge[key]
-	var job := game.charge_job(key)
-	if not ui_state_changed(controls.title,[job,game.charge_unlocked(key),game.profile.resources.get(str(int(row.para_1)),0),row]):
-		return
-	set_ui_value(controls.title,"text",UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("charge",key)), "level":"%s" % (str(int(job.level)))}))
-	set_ui_value(controls.description,"text",game.charge_description(key))
-	set_ui_value(controls.description,"tooltip_text",controls.description.text)
-	var fraction := clampf(float(job.elapsed)/float(row.para_4),0,1)
-	set_ui_value(controls.progress,"text",UIText.t("upgrade.refresh_charge_card.text_02", {"elapsed":"%s" % (number(job.elapsed)), "para_4":"%s" % (number(row.para_4))}))
-	set_ui_value(controls.charge_bar.get_child(0),"size",Vector2(controls.charge_bar.size.x * fraction,controls.charge_bar.get_child(0).size.y))
-	set_ui_value(controls.level_progress,"text",UIText.t("upgrade.refresh_charge_card.text_03", {"count":"%s" % (number(job.count)), "key":"%s" % (number(game.charge_required(key)))}))
-	set_ui_value(controls.level_bar.get_child(0),"size",Vector2(controls.level_bar.size.x * clampf((float(job.count)+fraction)/game.charge_required(key),0,1),controls.level_bar.get_child(0).size.y))
-	set_ui_value(controls.cost,"text",UIText.t("upgrade.refresh_charge_card.text_04", {"para_1":"%s" % (UIText.data_text("resources",str(str(int(row.para_1))))), "key":"%s" % (number(game.charge_resource_rate(key)))}))
-	set_ui_value(controls.cost,"tooltip_text",controls.cost.text)
-	var unlocked := game.charge_unlocked(key)
-	set_ui_value(controls.button,"disabled",not unlocked)
-	if not unlocked:
-		set_ui_value(controls.status,"text",UIText.t("upgrade.refresh_charge_card.text_05"))
-		set_ui_value(controls.button,"text",UIText.t("upgrade.refresh_charge_card.text_06", {"unlock":"%s" % (str(int(row.unlock)))}))
-	elif job.active:
-		set_ui_value(controls.status,"text",UIText.t("upgrade.refresh_charge_card.text_07") if game.charge_resource_rate(key) > 0 and float(game.profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0 else UIText.t("upgrade.refresh_charge_card.text_08"))
-		set_ui_value(controls.button,"text",UIText.t("upgrade.refresh_charge_card.text_09"))
-	else:
-		var started := int(job.started) > 0
-		set_ui_value(controls.status,"text",UIText.t("upgrade.refresh_charge_card.text_10") if started else UIText.t("upgrade.refresh_charge_card.text_11"))
-		set_ui_value(controls.button,"text",UIText.t("upgrade.refresh_charge_card.text_12") if started else UIText.t("upgrade.refresh_charge_card.text_13"))
-	var resource_blocked := game.charge_resource_rate(key) > 0 and float(game.profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0
-	var status_color := (Color("ffc178") if resource_blocked else CYAN) if unlocked and job.active else MUTED
-	if controls.status.get_theme_color("font_color") != status_color:
-		controls.status.add_theme_color_override("font_color",status_color)
+	if is_instance_valid(charge_panel):
+		charge_panel.refresh_card(key)
 
 func confirm_unequip(category: String, index: int) -> void:
 	var entry := game.slot_entry(category,index).duplicate()

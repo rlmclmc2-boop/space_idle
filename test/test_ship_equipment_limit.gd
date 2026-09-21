@@ -21,8 +21,8 @@ func _initialize() -> void:
 		game.ensure_loadout()
 		for key in ["laser","armour"]:
 			var category := "weapons" if key == "laser" else "defence"
-			var slots: int = game.profile.loadout[category].size()
-			var limit := game.equipment_limit()
+			var slots: int = game.active_slot_count(category)
+			var limit := slots
 			for index in range(mini(limit,slots)):
 				check(game.equip_slot(category,index,key), ship+" within limit")
 			if slots > limit:
@@ -43,6 +43,6 @@ func _initialize() -> void:
 	restored.load_progress()
 	check(restored.equipment_count("laser")==2 and restored.slot_entry("weapons",1).level==2,"Legacy excess instances are not silently removed")
 	var before: Dictionary = restored.profile.duplicate(true)
-	check(not restored.equip_slot("weapons",2,"laser") and restored.profile==before,"Legacy excess cannot add another instance")
+	check(restored.equip_slot("weapons",2,"laser") and restored.equipment_count("laser")==3,"Legacy same-kind cap no longer restricts installation")
 	print("Equipment limits: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

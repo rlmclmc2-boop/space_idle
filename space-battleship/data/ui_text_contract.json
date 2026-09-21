@@ -1,5 +1,200 @@
 {
   "entries": {
+    "equipment.view.expand": {
+      "params": []
+    },
+    "equipment.view.collapse": {
+      "params": []
+    },
+    "equipment.details.open": {
+      "params": []
+    },
+    "equipment.details.close": {
+      "params": []
+    },
+    "equipment.energy": {
+      "params": []
+    },
+    "equipment.physical": {
+      "params": []
+    },
+    "equipment.resistance": {
+      "params": []
+    },
+    "equipment.damage_type": {
+      "params": []
+    },
+    "equipment.attribute": {
+      "params": [
+        "label",
+        "value"
+      ]
+    },
+    "equipment.attribute.speed": {
+      "params": []
+    },
+    "equipment.attribute.salvo": {
+      "params": []
+    },
+    "equipment.attribute.charge_seconds": {
+      "params": []
+    },
+    "equipment.attribute.ramp_seconds": {
+      "params": []
+    },
+    "equipment.attribute.max_multiplier": {
+      "params": []
+    },
+    "equipment.attribute.recovery_percent": {
+      "params": []
+    },
+    "equipment.attribute.recovery_delay": {
+      "params": []
+    },
+    "equipment.unlock_condition": {
+      "params": [
+        "level",
+        "limit"
+      ]
+    },
+    "equipment.sockets": {
+      "params": [
+        "count"
+      ]
+    },
+    "equipment.description.laser": {
+      "params": []
+    },
+    "equipment.description.cannon": {
+      "params": []
+    },
+    "equipment.description.missile": {
+      "params": []
+    },
+    "equipment.description.longlaser": {
+      "params": []
+    },
+    "equipment.description.armour": {
+      "params": []
+    },
+    "equipment.description.shield": {
+      "params": []
+    },
+    "equipment.tab": {
+      "params": []
+    },
+    "equipment.total": {
+      "params": []
+    },
+    "equipment.counts": {
+      "params": [
+        "equipped",
+        "upgradeable",
+        "locked"
+      ]
+    },
+    "equipment.all": {
+      "params": []
+    },
+    "equipment.any_state": {
+      "params": []
+    },
+    "equipment.catalog": {
+      "params": []
+    },
+    "equipment.empty": {
+      "params": []
+    },
+    "equipment.level": {
+      "params": [
+        "level"
+      ]
+    },
+    "equipment.catalog_basis": {
+      "params": []
+    },
+    "equipment.slot": {
+      "params": [
+        "index",
+        "name",
+        "level"
+      ]
+    },
+    "equipment.vacant": {
+      "params": []
+    },
+    "equipment.locked_hint": {
+      "params": []
+    },
+    "equipment.install_hint": {
+      "params": []
+    },
+    "equipment.sort.type": {
+      "params": []
+    },
+    "equipment.sort.level": {
+      "params": []
+    },
+    "equipment.sort.stat": {
+      "params": []
+    },
+    "equipment.sort.state": {
+      "params": []
+    },
+    "equipment.type.all": {
+      "params": []
+    },
+    "equipment.type.laser": {
+      "params": []
+    },
+    "equipment.type.cannon": {
+      "params": []
+    },
+    "equipment.type.missile": {
+      "params": []
+    },
+    "equipment.type.shield": {
+      "params": []
+    },
+    "equipment.type.armour": {
+      "params": []
+    },
+    "equipment.state.equipped": {
+      "params": []
+    },
+    "equipment.state.upgradeable": {
+      "params": []
+    },
+    "equipment.state.unequipped": {
+      "params": []
+    },
+    "equipment.state.locked": {
+      "params": []
+    },
+    "equipment.action.upgrade": {
+      "params": []
+    },
+    "equipment.action.ten": {
+      "params": []
+    },
+    "equipment.action.max": {
+      "params": []
+    },
+    "equipment.action.equip": {
+      "params": []
+    },
+    "equipment.action.replace": {
+      "params": []
+    },
+    "equipment.action.remove": {
+      "params": []
+    },
+    "equipment.action.gems": {
+      "params": []
+    },
+    "battle.tab": {
+      "params": []
+    },
     "main._ready.text_01": {
       "params": [
         "id",
@@ -2204,6 +2399,172 @@
     },
     "system.editor.restored": {
       "params": []
+    },
+    "charge.heading": {
+      "params": []
+    },
+    "charge.core": {
+      "params": []
+    },
+    "charge.core_note": {
+      "params": []
+    },
+    "charge.bus": {
+      "params": []
+    },
+    "charge.detail": {
+      "params": []
+    },
+    "charge.effect": {
+      "params": []
+    },
+    "charge.add": {
+      "params": []
+    },
+    "charge.extension_hint": {
+      "params": []
+    },
+    "charge.navigation": {
+      "params": []
+    },
+    "charge.system_count": {
+      "params": [
+        "count"
+      ]
+    },
+    "charge.resource": {
+      "params": [
+        "name",
+        "amount",
+        "rate"
+      ]
+    },
+    "charge.state.charging": {
+      "params": []
+    },
+    "charge.state.paused": {
+      "params": []
+    },
+    "charge.state.insufficient": {
+      "params": []
+    },
+    "charge.state.available": {
+      "params": []
+    },
+    "charge.state.locked": {
+      "params": []
+    },
+    "charge.eyebrow": {
+      "params": []
+    },
+    "charge.energy.available": {
+      "params": []
+    },
+    "charge.energy.consumption": {
+      "params": []
+    },
+    "charge.energy.production": {
+      "params": []
+    },
+    "charge.energy.net": {
+      "params": []
+    },
+    "charge.energy_amount": {
+      "params": [
+        "name",
+        "amount"
+      ]
+    },
+    "charge.energy_basis": {
+      "params": []
+    },
+    "charge.page": {
+      "params": [
+        "current",
+        "total"
+      ]
+    },
+    "charge.time": {
+      "params": [
+        "elapsed",
+        "para_4"
+      ]
+    },
+    "charge.upgrades": {
+      "params": [
+        "count",
+        "key"
+      ]
+    },
+    "charge.cost": {
+      "params": [
+        "para_1",
+        "key"
+      ]
+    },
+    "module.empty_hint": {
+      "params": []
+    },
+    "module.keep_hint": {
+      "params": []
+    },
+    "module.dormant_hint": {
+      "params": []
+    },
+    "module.unlock_condition": {
+      "params": [
+        "level"
+      ]
+    },
+    "module.upgrade_name": {
+      "params": [
+        "slot"
+      ]
+    },
+    "ship.refit.title": {
+      "params": []
+    },
+    "ship.refit.hint": {
+      "params": []
+    },
+    "ship.refit.apply": {
+      "params": []
+    },
+    "ship.refit.current": {
+      "params": []
+    },
+    "ship.refit.locked": {
+      "params": []
+    },
+    "ship.refit.capacity": {
+      "params": [
+        "weapons",
+        "defence"
+      ]
+    },
+    "ship.refit.result": {
+      "params": [
+        "active",
+        "dormant"
+      ]
+    },
+    "ship.refit.keep": {
+      "params": []
+    },
+    "ship.refit.mounts": {
+      "params": []
+    },
+    "ship.refit.module": {
+      "params": [
+        "slot",
+        "name",
+        "level"
+      ]
+    },
+    "ship.refit.unlock_estimate": {
+      "params": [
+        "level"
+      ]
     }
   },
   "bindings": {

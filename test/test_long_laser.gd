@@ -14,7 +14,8 @@ func fixture() -> BattleGame:
 	g.start(1, false)
 	g.spawn_group()
 	g.profile.loadout = g.empty_loadout(g.profile.selectedShip)
-	g.profile.unlocked = ["longLaser"]
+	g.profile.loadout.defence[0] = {"key":"armour","level":1}
+	g.profile.unlocked = ["longLaser","armour"]
 	check(g.equip_slot("weapons",0,"longLaser"), "weapon installs")
 	for e in g.enemies:
 		e.hp = 100000
@@ -244,13 +245,14 @@ func run() -> void:
 	scene.game.spawn_group()
 	scene.game.profile.unlocked.append("longLaser")
 	scene.game.profile.loadout = scene.game.empty_loadout(scene.game.profile.selectedShip)
+	scene.game.profile.loadout.defence[0] = {"key":"armour","level":1}
 	check(scene.game.equip_slot("weapons",0,"longLaser"), "UI fixture equips real configuration")
 	for e in scene.game.enemies:
 		e.hp = 100000
 		e.equipment = []
 	scene.game.tick(0.01)
 	scene.refresh_structure()
-	var card = scene.equipment_panels.weapons_0
+	var card = scene.equipment_panel.cards.weapons_0
 	var background_draws := [0]
 	scene._process(0)
 	await process_frame
@@ -260,7 +262,7 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/long-laser.png")
-	check(scene.equipment_panels.weapons_0==card and background_draws[0]==0, "beam redraw preserves equipment card and static background")
+	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "beam redraw preserves equipment card and static background")
 	var live: Dictionary = scene.game.projectiles[0]
 	var low: Dictionary = scene.beam_style(live)
 	var events := [0]
@@ -297,7 +299,7 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/long-laser-break.png")
-	check(scene.equipment_panels.weapons_0==card and background_draws[0]==0, "all feedback preserves static layers and equipment instances")
+	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "all feedback preserves static layers and equipment instances")
 	scene.particles.clear()
 	scene.floats.clear()
 	scene.db.equipment.longLaser[0].para3 = 1.0
@@ -314,7 +316,7 @@ func run() -> void:
 	var visible_muzzle: Vector2 = scene.visual_muzzle(charging)
 	var muzzle_pixel := charge_image.get_pixel(int(visible_muzzle.x),int(visible_muzzle.y))
 	check(muzzle_pixel.r>0.85 and muzzle_pixel.g>0.85 and muzzle_pixel.b>0.85,"charging bright core stays visible in front of the hull")
-	check(scene.equipment_panels.weapons_0==card and background_draws[0]==0, "charge drawing preserves unrelated UI")
+	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "charge drawing preserves unrelated UI")
 	scene.db.config.equipmentSocket = 10
 	scene.db.data.jewel["6"].para_2 = 1.0
 	scene.game.slot_entry("weapons",0).sockets = [scene.game.new_jewel("6",1)]
@@ -326,7 +328,7 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/long-laser-twin.png")
-	check(scene.game.projectiles.size()==2 and scene.equipment_panels.weapons_0==card and background_draws[0]==0, "two beam rendering preserves unrelated UI")
+	check(scene.game.projectiles.size()==2 and scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "two beam rendering preserves unrelated UI")
 	scene.queue_free()
 	await process_frame
 	print("Long laser: %d checks, %d failures" % [checks, failures])

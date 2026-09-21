@@ -47,14 +47,14 @@ func run() -> void:
 	scene.game.pending_unlocks.clear()
 	scene.game.profile.highestLevel=int(scene.db.config.jewelDropLevel)-1
 	scene.refresh_tab_visibility()
-	check(scene.equipment_tabs.is_tab_hidden(5),"Jewel tab hidden below gate")
+	check(scene.equipment_tabs.is_tab_hidden(4),"Jewel tab hidden below gate")
 	var tabs:=scene.equipment_tabs
 	var builds:=scene.builds
-	var defence: Label=scene.equipment_card_controls.defence_0.title
+	var defence: Label=scene.equipment_panel.cards.defence_0.fields.title
 	scene.game.profile.highestLevel+=1
 	scene.refresh_tab_visibility()
 	scene.refresh_equipment_cards("weapons_0")
-	check(not tabs.is_tab_hidden(5) and scene.builds==builds,"Unlock only changes visibility")
+	check(not tabs.is_tab_hidden(4) and scene.builds==builds,"Unlock only changes visibility")
 	var panel=scene.jewel_panel
 	check(not panel.is_processing(),"Workshop does not poll inventory every frame")
 	for next_state in [BattleGame.State.TRAVEL,BattleGame.State.COMBAT,BattleGame.State.LEVEL_CLEAR]:
@@ -65,9 +65,9 @@ func run() -> void:
 		panel.hide()
 	for i in 3:
 		scene.game.profile.jewels.append(scene.game.new_jewel("7"))
-	scene.equipment_tabs.current_tab=5
+	scene.equipment_tabs.current_tab=4
 	await process_frame
-	await click(scene.equipment_tabs.get_child(5).get_child(0))
+	await click(scene.equipment_tabs.get_child(4).get_child(0))
 	check(panel.visible and panel.cells.size()==3,"Real click opens gem grid")
 	check(panel.inventory_list.columns==6 and panel.empty_cells.size()==27,"Six-column grid retains empty gem slots")
 	check(panel.cells[0].icon!=null and not panel.cells[0].tooltip_text.is_empty(),"Occupied slot shows corresponding gem image and effect")
@@ -82,13 +82,13 @@ func run() -> void:
 	scene.on_event("state",{})
 	check(not panel.visible and not panel.is_processing(),"Travel after closing cannot reopen workshop")
 	panel.hide()
-	await click(scene.equipment_tabs.get_child(5).get_child(0))
+	await click(scene.equipment_tabs.get_child(4).get_child(0))
 	check(panel.visible,"Explicit button can reopen closed workshop")
 	check(scene.builds==builds and scene.equipment_tabs==tabs,"Visibility changes preserve UI instances")
 	var cell=panel.cells[0]
 	var draws:={"background":0,"defence":0,"cell":0}
 	scene.background_layer.draw.connect(func():draws.background+=1)
-	scene.equipment_panels.defence_0.draw.connect(func():draws.defence+=1)
+	scene.equipment_panel.cards.defence_0.draw.connect(func():draws.defence+=1)
 	cell.draw.connect(func():draws.cell+=1)
 	await click(cell)
 	check(cell.get_meta("jewel_palette")=="selected" and cell.get_theme_stylebox("normal").border_width_left==2,"Selection has a distinct two-pixel border")
@@ -105,7 +105,7 @@ func run() -> void:
 	panel.hide()
 	scene.equipment_tabs.current_tab=0
 	await process_frame
-	await click(scene.equipment_card_controls.weapons_0.socket)
+	await click(scene.equipment_panel.detail.gems)
 	check(panel.visible and panel.equipment_index==0,"Equipment button opens socket UI")
 	await click(panel.cells[0])
 	var before_preview: Dictionary=scene.game.profile.duplicate(true)
@@ -268,7 +268,7 @@ func bulk_ui(scene: Node) -> void:
 	panel.open()
 	await create_timer(0.4).timeout
 	var old_cell: Button=panel.gem_buttons[survivor.token]
-	var card=scene.equipment_card_controls.weapons_0.title
+	var card=scene.equipment_panel.cards.weapons_0.fields.title
 	var old_builds: int=scene.builds
 	var notices := [0]
 	var on_event := func(kind,_info):

@@ -2,15 +2,14 @@
 
 ## CURRENT
 
-- DONE：充能页仅显示已解锁卡片，未解锁卡片隐藏且不占布局空间。
-- CHANGED：scripts/main.gd 在初始化、解锁结构刷新及卡片刷新时同步可见性；隐藏卡片跳过内容刷新，解锁后复用原控件，保留其他卡片、页签和滚动容器。规则更新 docs/PROJECT.md，专项扩展 ../test/test_tab_unlocks.gd。未改充能数值、扣费或正式配置与存档。
-- VERIFY：隔离解锁专项 18 项、局部 UI 专项 70 项全部通过，覆盖卡片隐藏/解锁/重锁、控件身份、页签保留及局部写入/绘制；截图确认仅攻击充能显示。git diff --check 通过。
-- EVIDENCE：../../test/work/test_tab_unlocks-5hj_545p/test.log 及 space-battleship/tabs-charge-unlocked.png；../../test/work/test_local_ui-6_or44ya/test.log。
-- NEXT：重启开发工程加载；已有发布 EXE 需重新打包，本轮未替换 release。
+- DONE：完成用户指定的六项高频性能修复；不改数值、战斗规则或 UI 结果。
+- CHANGED：game 合并充能存档、短路活敌判断、提供弹体 serial 和模块数值失效事件；main 每次绘制复用弹体索引/位置/粒子预算；equipment_tab 分离结构、数值、资源可购买性和排序刷新；config_panel 隐藏时仅处理未完成工作。保留退出/关键节点立即保存，失败不清 save_dirty。
+- VERIFY：save_boundaries 21、hot_paths 33、local_ui 70、module_ui 35、long_laser 83、journey_resume 28、weapon_fx 43、boss_projectile_clear 8、config_panel 14 项通过，共 435 项。QA 初次环境缺 lxml，改用已安装完整 Python 运行环境后通过。已核对 module_ui-titecwy2 装备截图和 weapon_fx-6_jj31lg 导弹截图。三轮隔离同场景探针中位数：装备空闲刷新 1823→2 μs，128 弹体更新 1862→490 μs，128 导弹/700 粒子战场绘制 110297→22119 μs；不等同整帧耗时。证据 ../../test/work/perf-fixes/，复用 test_hot_path_probe.gd。
+- NEXT：本轮完成。
 
 ## DONE
 
-- 已具备自动战斗、驻守/跃迁、资源与离线结算、独立槽位装备/换舰、科学家研究、充能和炼铁炉。
+- 已具备自动战斗、驻守/跃迁、资源与离线结算、独立模块成长/自由换装与换舰、科学家研究、充能和炼铁炉。
 - 已具备宝石/碎片/合成/分解/镶嵌与战斗效果；游戏UI、QA、关卡编辑器、分表投影及专项测试；装备等级/玩家冷却以槽位为权威，读取无隐式写入。
 
 ## KNOWN ISSUES
@@ -34,7 +33,7 @@
 | U-018 | 旧总表缺techPointGet等当前字段，部分总表测试仍失败；`test_config_input_matrix.py`，不得猜默认值。 |
 | U-019 | 提交后回滚自身失败可能留下半提交，Store备份也可能被清理；`atomic_batch`与输入矩阵故障观察。 |
 | U-020 | incremental导入不复核并发目标/manifest，可能覆盖外部目标修改；Store.save拒绝但validate无最终复核；输入矩阵。 |
-| U-022 | ship.xlsx的sameEquipmentLimit投影均为1，既有JSON五舰为1/2/2/3/3；本次装备任务保留原JSON舰船段，未裁决差异。后续全量读取配置可能应用分表值，需单独核实来源。 |
+| U-023 | 旧 test_charge.gd 的解锁、敌实体和保存夹具及卡片接口未适配当前项目，在 UI 段之前即失败/超时；当前页面回归改走 test_charge_panel/test_local_ui/test_tab_unlocks。证据 test/work/test_charge-av25f3xw/test.log；迁移旧综合测试时不可修改游戏规则迁就断言。 |
 
 ## NEXT
 

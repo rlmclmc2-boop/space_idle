@@ -76,8 +76,27 @@ func run() -> void:
 	interactive.collect_near(Vector2(block.x,block.y),true)
 	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Click grants full furnace amount")
 	interactive.advance_hightech(30)
-	interactive.advance_hightech(10)
-	check(interactive.drops.is_empty() and interactive.profile.resources["1"]==16,"Unclaimed block expires without credit")
+	block=interactive.drops[0]
+	interactive.advance_hightech(9.5)
+	check(interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Furnace block remains uncredited before lifetime ends")
+	interactive.advance_hightech(0.5)
+	check(interactive.drops.is_empty() and interactive.profile.resources["1"]==24,"At ten seconds furnace block automatically credits post-loss amount")
+	check(interactive.resource_samples[-1].origin=="furnace" and interactive.resource_samples[-1].amount==8 and interactive.profile.furnaceIncomePeak==31,"Automatic furnace income keeps provenance and cannot amplify production")
+	interactive.collect(block,false)
+	check(interactive.profile.resources["1"]==24,"Expired furnace block cannot be collected twice")
+	for loss in [0.0,0.25,1.0]:
+		db.config.autoCollectReduce=loss
+		var boundary := BattleGame.new(db,false)
+		var expired := {"uid":1,"id":"1","amount":17.0,"x":600.0,"y":350.0,"age":9.0,"hightech":true}
+		boundary.drops.append(expired)
+		var collected: Array=[]
+		boundary.event.connect(func(kind,info):
+			if kind=="collect": collected.append(info))
+		boundary.advance_hightech(1)
+		var expected := ceilf(17.0*(1.0-loss))
+		check(boundary.drops.is_empty() and boundary.profile.resources["1"]==expected and boundary.run_resources["1"]==expected,"Furnace expiry applies configured loss with final ceil: %s" % loss)
+		check(collected.size()==1 and collected[0].amount==expected and not collected[0].manual,"Automatic collection feedback matches credited amount: %s" % loss)
+	db.config.autoCollectReduce=0.5
 	interactive.paused=true
 	var elapsed := float(interactive.profile.furnaceElapsed)
 	interactive.tick(5)

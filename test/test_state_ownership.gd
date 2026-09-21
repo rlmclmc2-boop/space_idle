@@ -94,11 +94,11 @@ func _initialize() -> void:
 	game.tick(0.1)
 	check(is_equal_approx(game.cooldowns.weapons_0,0.7) and is_equal_approx(game.cooldowns.weapons_1,0.2),"Installed duplicates count down independently")
 	evidence.before_unequip=game.cooldowns.duplicate(true)
-	var second_cost := game.upgrade_costs_for_level("laser",1,1)
+	var resources_before_removal: Dictionary = game.profile.resources.duplicate(true)
 	check(game.unequip_slot("weapons",0),"Remove first duplicate")
 	check(game.slot_entry("weapons",0).key=="" and game.slot_entry("weapons",1).level==2,"First removal preserves empty slot and remaining level")
 	for id in original_resources:
-		check(game.profile.resources[id]==original_resources[id]-float(second_cost.get(id,0)),"First removal refunds exactly its own investment: "+id)
+		check(game.profile.resources[id]==resources_before_removal[id],"Removing equipment does not refund module investment: "+id)
 	evidence.after_unequip=game.cooldowns.duplicate(true)
 	game.tick(0.05)
 	evidence.after_next_tick=game.cooldowns.duplicate(true)
@@ -117,7 +117,7 @@ func _initialize() -> void:
 	record(game,"shield upgrade")
 	game.profile.cleared=[10]
 	check(game.switch_ship("Destroyer"),"Switch unlocked ship")
-	check(game.weapon_entries().all(func(entry):return entry.level==1) and game.defense_entries().all(func(entry):return entry.level==1),"Switch resets all slot levels")
+	check(game.slot_entry("weapons",1).level==2 and game.slot_entry("defence",1).level==2,"Switch preserves module levels")
 	record(game,"switch ship")
 	var saved := {"version":1,"levels":{"laser":3,"armour":2},"resources":{"1":123,"2":7}}
 	write_save(saved)
