@@ -33,7 +33,7 @@ class Store:
         mapping = json.loads(self.manifest.read_text(encoding='utf-8'))['sheets']
         self.paths = {}
         for name in SECTIONS:
-            if name in ('charge', 'jewel') and name not in mapping:
+            if name in ('charge', 'jewel', 'unlock', 'crew', 'crew_level', 'crew_assignment') and name not in mapping:
                 if not (self.directory / f'{name}.xlsx').is_file():
                     continue
                 mapping[name] = f'{name}.xlsx'

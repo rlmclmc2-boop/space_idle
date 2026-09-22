@@ -12,7 +12,7 @@ import sys
 import openpyxl
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge", "jewel":"jewel"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge", "jewel":"jewel", "unlock":"unlock", "crew":"crew", "crew_level":"crew_level", "crew_assignment":"crew_assignment"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
@@ -24,9 +24,29 @@ def read_rows(sheet):
     header=next(values)
     next(values,None)
     next(values,None)
-    return [dict(zip(header,row)) for row in values if row[0] is not None]
+    return [{key:value for key,value in zip(header,row) if key is not None} for row in values if row[0] is not None]
 
 def convert_sheet(name, rows):
+    if name in ('crew', 'crew_assignment', 'crew_level'):
+        result = {}
+        for source in rows:
+            row = {k: ('' if v is None else v) for k, v in source.items()}
+            key = row.get('group') if name == 'crew_level' else row.get('id')
+            if not isinstance(key, str) or not key.strip():
+                raise ValueError(f'{name}: missing string ID/group')
+            if name == 'crew_level':
+                positive(row.get('level'), 'crew_level level')
+                if row['level'] != int(row['level']):
+                    raise ValueError('crew_level: level must be an integer')
+                level = str(int(row['level']))
+                if level in result.setdefault(key, {}):
+                    raise ValueError(f'crew_level: duplicate {key}/{level}')
+                result[key][level] = row
+            else:
+                if key in result:
+                    raise ValueError(f'{name}: duplicate {key}')
+                result[key] = row
+        return result
     if name in ('mon', 'monGroup', 'res', 'level', 'jewel'):
         ids = [row.get('id') for row in rows]
         if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
@@ -42,7 +62,7 @@ def convert_sheet(name, rows):
         keys = [row.get('name') for row in rows]
         if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
             raise ValueError(ui_text('debug.import_workbook.message_03'))
-    if name in ("hightech", "charge"):
+    if name in ("hightech", "charge", "unlock"):
         result={}
         for row in rows:
             key=row.get("name")
@@ -133,7 +153,7 @@ def validate_description(row, field='description', section='hightech'):
         parts=block.replace('，',',').split(',')
         if any(option.strip() not in ('向上取整','不含自身','百分比显示','保留两位小数','即100.3%展示为100%','百分比','四舍五入保留整数百分比部分') for option in parts[1:]):
             raise ValueError(ui_text('debug.import_workbook.message_106', label=label))
-        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('等级','1.0').replace('lv','1.0').replace('（','(').replace('）',')').replace('^','**')
+        formula=re.sub(r'para\d+','1.0',parts[0]).replace('过去一分钟的铁生成量','1.0').replace('过去一分钟的宝石碎片生成量','1.0').replace('等级','1.0').replace('lv','1.0').replace('（','(').replace('）',')').replace('^','**')
         if not re.fullmatch(r'[0-9. +*/()\-]+',formula):
             raise ValueError(ui_text('debug.import_workbook.message_107', label=label))
         try:
@@ -146,6 +166,8 @@ def validate_description(row, field='description', section='hightech'):
 
 
 def validate_projection(data, *, check_level_ratios=True):
+    validate_crew(data)
+    validate_unlocks(data)
     equipment=data["equipment"]
     levels=data["levels"]
     groups=data["groups"]
@@ -158,7 +180,7 @@ def validate_projection(data, *, check_level_ratios=True):
         for key,row in ships.items():
             if not isinstance(row.get('des'),str) or not row['des'].strip():
                 raise ValueError(ui_text('debug.import_workbook.message_126', key=key))
-            for field in ('weaponSlots','defenseSlots','movement','unlock','size'):
+            for field in ('weaponSlots','defenseSlots','movement','size'):
                 positive(row.get(field),f'ship {key} {field}', field == 'unlock')
             if row['weaponSlots'] != int(row['weaponSlots']) or row['weaponSlots'] < 1:
                 raise ValueError(ui_text('debug.import_workbook.message_127', key=key))
@@ -167,8 +189,6 @@ def validate_projection(data, *, check_level_ratios=True):
                 raise ValueError(ui_text('debug.import_workbook.message_128', key=key))
             if row['defenseSlots'] != int(row['defenseSlots']) or row['defenseSlots'] < 1:
                 raise ValueError(ui_text('debug.import_workbook.message_129', key=key))
-            if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
-                raise ValueError(ui_text('debug.import_workbook.message_130', key=key))
     for key in ('armour','shield','laser','missile','cannon'):
         items=equipment.get(key,[])
         bases = [r for r in items if r.get('level') == 1]
@@ -264,14 +284,10 @@ def validate_projection(data, *, check_level_ratios=True):
         if math.floor(row['tpCostBase']+0.5)<1:
             raise ValueError(ui_text('debug.import_workbook.message_117', key=key))
         positive(row.get('tpCostMutiple'),f'hightech {key} tpCostMutiple',True)
-        unlock=row.get('unlock')
-        positive(unlock,f'hightech {key} unlock',True)
-        if unlock != int(unlock) or unlock > len(levels):
-            raise ValueError(ui_text('debug.import_workbook.message_118', key=key))
         positive(row.get('para1'),f'hightech {key} para1',True)
         if row.get('para2') is not None:
             positive(row['para2'],f'hightech {key} para2',True)
-        if key == '超时空炼铁炉':
+        if key in ('超时空炼铁炉', '宝石熔炼炉'):
             positive(row.get('para1'),f'hightech {key} interval')
             positive(row.get('para2'),f'hightech {key} para2',True)
 
@@ -289,11 +305,102 @@ def validate_projection(data, *, check_level_ratios=True):
             raise ValueError(ui_text('debug.import_workbook.message_121', key=key))
         if math.floor(row['para_5'] + 0.5) < 1 or row['para_6'] < 1:
             raise ValueError(ui_text('debug.import_workbook.message_122', key=key))
-        positive(row.get('unlock'),f'charge {key} unlock',True)
-        if row['unlock'] != int(row['unlock']) or row['unlock'] > len(levels):
-            raise ValueError(ui_text('debug.import_workbook.message_123', key=key))
 
     data["defaults"].pop("maxEquipmentLevel", None)
+
+def validate_unlocks(data):
+    rows = data.get('unlock')
+    if not isinstance(rows, dict) or not rows:
+        raise ValueError('Missing unlock table; import unlock.xlsx first')
+    targets = set()
+    allowed = {kind: set(data.get(kind, {})) for kind in ('equipment', 'ship', 'charge', 'hightech')}
+    allowed['equipment'] = {key for key in allowed['equipment'] if not key.endswith(('_mon', '-mon'))}
+    allowed['feature'] = {'jewels'}
+    allowed['crew'] = set(data.get('crew', {}))
+    for name, row in rows.items():
+        kind, target = row.get('type'), row.get('target')
+        identity = (kind, target)
+        if row.get('name') != name or kind not in allowed or target not in allowed[kind] or identity in targets:
+            raise ValueError(f'Invalid or duplicate unlock target: {name}')
+        targets.add(identity)
+        gate = row.get('level')
+        if type(gate) not in (int, float) or not math.isfinite(gate) or gate != int(gate) or not 0 <= gate <= len(data['levels']):
+            raise ValueError(f'Invalid unlock level: {name}')
+        if row.get('mode') not in ('cleared', 'reached'):
+            raise ValueError(f'Invalid unlock mode: {name}')
+        if any(not isinstance(row.get(field), str) or not row[field].strip() for field in ('title', 'desc')):
+            raise ValueError(f'Missing unlock title/desc: {name}')
+    # Crew may explicitly be initially available (empty unlockId).
+    missing = {(kind, key) for kind, keys in allowed.items() if kind != 'crew' for key in keys} - targets
+    if missing:
+        raise ValueError(f'Missing unlock targets: {sorted(missing)}')
+    # Legacy columns may arrive from an old master. Never restore a second gate source.
+    for kind in ('ship', 'charge', 'hightech'):
+        for row in data.get(kind, {}).values(): row.pop('unlock', None)
+    for items in data.get('equipment', {}).values():
+        for row in items: row.pop('unlock', None)
+    data['config'].pop('jewelDropLevel', None)
+
+
+def validate_crew(data):
+    """Shared full/incremental checks; no crew values are defaulted by code."""
+    def integer(value, label, zero=False):
+        positive(value, label, zero)
+        if isinstance(value, bool) or value != int(value):
+            raise ValueError(f'{label}: expected integer')
+    groups = data.get('crew_level', {})
+    jobs = data.get('crew_assignment', {})
+    contracts = json.loads((ROOT/'data/ui_text_contract.json').read_text(encoding='utf-8'))['entries'] if jobs else {}
+    for group, levels in groups.items():
+        for level, row in levels.items():
+            integer(row.get('level'), f'{group} level')
+            positive(row.get('needExp'), f'{group}/{level} needExp', int(level) == 1)
+            positive(row.get('powerMultiplier'), f'{group}/{level} powerMultiplier')
+    for id, row in jobs.items():
+        for field in ('targetType', 'effectType', 'description'):
+            if not isinstance(row.get(field), str) or not row[field].strip():
+                raise ValueError(f'crew_assignment {id}: missing {field}')
+        for field in ('baseValue', 'powerScale', 'levelScale', 'interval'):
+            positive(row.get(field), f'crew_assignment {id} {field}', True)
+        integer(row.get('maxCrew'), f'crew_assignment {id} maxCrew')
+        if row['effectType'] == 'AUTO_UPGRADE':
+            positive(row['baseValue'], f'{id} baseValue')
+            positive(row['interval'], f'{id} interval')
+            modes = [mode.strip() for mode in str(row.get('upgradeModes','')).split(',')]
+            if not modes or len(set(modes))!=len(modes) or any(mode!='max' and (not mode.isdigit() or not 0<int(mode)<=2147483647) for mode in modes):
+                raise ValueError(f'{id}: upgradeModes requires positive integers or max')
+        for field in ('titleTextId','descTextId'):
+            if not isinstance(row.get(field,''),str):
+                raise ValueError(f'{id}: {field} must be text')
+            key = row.get(field, '')
+            if key and (key not in contracts or not set(contracts[key]['params']).issubset(set() if field=='titleTextId' else {'value','interval','description','mode'})):
+                raise ValueError(f'{id}: unknown or incompatible {field}: {key}')
+    for id, row in data.get('crew', {}).items():
+        for field in ('name', 'description', 'icon', 'expGroup'):
+            if not isinstance(row.get(field), str) or not row[field].strip():
+                raise ValueError(f'crew {id}: missing {field}')
+        for field in ('baseLevel', 'maxLevel', 'equipmentSlotCount'):
+            integer(row.get(field), f'crew {id} {field}', field == 'equipmentSlotCount')
+        positive(row.get('basePower'), f'crew {id} basePower')
+        if row['baseLevel'] > row['maxLevel']:
+            raise ValueError(f'crew {id}: baseLevel exceeds maxLevel')
+        levels = groups.get(row['expGroup'], {})
+        if row['maxLevel']-row['baseLevel']+1 > len(levels) or any(str(n) not in levels for n in range(int(row['baseLevel']),int(row['maxLevel'])+1)):
+            raise ValueError(f'crew {id}: missing growth levels')
+        for job in jobs.values():
+            try:
+                values = [float(job['baseValue'])*float(row['basePower'])**float(job['powerScale'])*float(levels[str(level)]['powerMultiplier'])**float(job['levelScale']) for level in range(int(row['baseLevel']),int(row['maxLevel'])+1)]
+                if any(not math.isfinite(value) or (job['effectType']=='AUTO_UPGRADE' and (value<=0 or not math.isfinite(float(job['interval'])/value))) for value in values):
+                    raise ValueError(f'crew {id}: nonfinite effective power or interval')
+            except OverflowError as error:
+                raise ValueError(f'crew {id}: effect power overflow') from error
+        if row.get('defaultAssignment') and row['defaultAssignment'] not in jobs:
+            raise ValueError(f'crew {id}: unknown defaultAssignment')
+        if bool(row.get('defaultAssignment')) != bool(row.get('defaultTargetId')):
+            raise ValueError(f'crew {id}: defaultAssignment requires defaultTargetId')
+        if row.get('unlockId') and row['unlockId'] not in data.get('unlock', {}):
+            raise ValueError(f'crew {id}: unknown unlockId')
+
 
 def encode(data):
     return json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False).encode("utf-8")
@@ -306,7 +413,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('charge','ship','jewel'):
+                if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))

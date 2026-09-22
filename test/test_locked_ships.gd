@@ -33,7 +33,7 @@ func run() -> void:
 	check(panel.picture.material==null and panel.confirm.visible and panel.result.visible,"Returning to unlocked hull restores full display")
 	for id in mounts:check(panel.mounts[id]==mounts[id],"Existing mounts reused: "+id)
 	await click(panel.choices.Heavy_Battleship)
-	scene.game.profile.cleared.append(int(scene.db.ship("Heavy_Battleship").unlock))
+	scene.game.profile.cleared.append(int(scene.db.unlock_row("ship","Heavy_Battleship").level))
 	panel.refresh()
 	check(panel.picture.material==null and panel.confirm.visible and not panel.confirm.disabled,"Unlocking selected hull reveals existing controls")
 	check(not panel.locked_previews.Heavy_Battleship.visible and not panel.choices.Heavy_Battleship.text.is_empty(),"Unlocked list restores ship information")

@@ -22,7 +22,7 @@ func check(ok: bool, label: String) -> void:
 
 func fresh() -> void:
 	game=TrackedGame.new(db,false)
-	game.profile.highestLevel=int(db.config.jewelDropLevel)
+	game.profile.highestLevel=(int(db.unlock_row("feature","jewels").level)+1)
 	game.saves=0
 	notifications=0
 	game.event.connect(func(kind,_info):

@@ -8,7 +8,7 @@ func _initialize() -> void:
 	var db := ShipDatabase.new()
 	var g := BattleGame.new(db,false)
 	var key := BattleGame.ENERGY_FOCUS
-	g.profile.cleared = db.data.hightech.values().map(func(row):return int(row.unlock))
+	g.profile.cleared = db.data.hightech.keys().map(func(key):return int(db.unlock_row("hightech",key).level))
 	g.profile.scientistAssignments[key] = 1
 	db.config.techPointGet = 1e20
 	db.data.hightech[key].tpCostBase = 10.0

@@ -53,7 +53,7 @@ func run() -> void:
 	scene.refresh_visible_cards()
 	check(panel.items.weapons_0.mainStatNumber==scene.game.jewel_equipment_stat(entry),"Charge stat event refreshes affected value")
 	check(panel.stats_dirty.is_empty() and not panel.sort_dirty,"Local dirty flags clear after refresh")
-	scene.equipment_tabs.current_tab = scene.BATTLE_TAB
+	scene.return_to_battle()
 	scene.game.profile.charge[charge_key].level += 1
 	scene.game.event.emit("equipment_stats",{"category":"weapons"})
 	check(panel.dirty,"Hidden stat event defers work")

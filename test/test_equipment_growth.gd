@@ -11,6 +11,14 @@ func check(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	var db := ShipDatabase.new()
+	for key in db.equipment:
+		for level in [-1,1,2,10,100,1000]:
+			check(db.equipment_cost(key,level)==reference_cost(db,key,level),"Cost projection matches full row %s/%s" % [key,level])
+	var edge := ShipDatabase.new()
+	edge.equipment.probe=[{"level":1,"res_1":1,"cost_1":12.2,"costMulti_1":0.1,"res_2":2,"cost_2":99.5,"cost_multi_2":-0.1,"res_3":3,"cost_3":0.0,"res_4":null,"cost_4":100,"res_5":5,"cost_5":null,"res_6":6,"cost_6":2.5}]
+	for level in [0,1,2,10,100]:
+		check(edge.equipment_cost("probe",level)==reference_cost(edge,"probe",level),"Cost aliases, nulls, rounding and zero at "+str(level))
+	check(edge.equipment_cost("missing",1).is_empty(),"Missing cost configuration stays empty")
 	check(db.equipment.armour.size() == 1, "Projection contains only base rows")
 	check(db.equip("armour", 3).para1 == 1400, "Armour rounds two significant digits")
 	check(db.equip("shield", 3).para1 == 720, "Shield uses para4")
@@ -24,7 +32,7 @@ func _initialize() -> void:
 	check(db.equipment_growth(995, 0, 2) == 1000, "Rounding carries into next magnitude")
 	var original: Dictionary = db.equipment.shield[0].duplicate(true)
 	var derived := db.equip("shield", 150)
-	for field in ["para2", "para3", "cd", "unlock", "dmgtype", "des"]:
+	for field in ["para2", "para3", "cd", "dmgtype", "des"]:
 		check(derived[field] == original[field], "Static field inherited: " + field)
 	check(db.equipment.shield[0] == original, "Read does not mutate source")
 	db.equipment.laser.append({"level":2, "dmg":999999})
@@ -49,3 +57,12 @@ func _initialize() -> void:
 	check(game.profile.resources == budget, "Refund equals purchase")
 	print("Equipment growth: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
+
+func reference_cost(db: ShipDatabase, key: String, level: int) -> Dictionary:
+	var row := db.equip(key,level)
+	var costs := {}
+	for field in row:
+		if str(field).begins_with("res_") and row[field]!=null:
+			var amount = row.get("cost_"+str(field).trim_prefix("res_"))
+			if amount!=null:costs[str(int(row[field]))]=ceilf(float(amount))
+	return costs

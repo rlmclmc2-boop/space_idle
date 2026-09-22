@@ -17,7 +17,7 @@ func run() -> void:
 	db.config.jewelCreat = 10
 	db.config.offlineMax = 1
 	var game := BattleGame.new(db,false)
-	game.profile.highestLevel = int(db.config.jewelDropLevel)
+	game.profile.highestLevel = (int(db.unlock_row("feature","jewels").level)+1)
 	game.load_jewels({"jewelFragments":{"1":12,"2":8,"deleted-id":7},"jewels":[{"id":"3","level":2}]})
 	check(game.profile.jewelFragments==27 and game.profile.jewels.size()==1,"Migration sums every legacy type 1:1 including removed IDs")
 	game.rng.seed=187
@@ -76,7 +76,7 @@ func run() -> void:
 	for gem in game.profile.jewels:kinds[gem.id]=true
 	check(game.profile.jewels.size()==200 and kinds.size()==10,"Batch generates random valid gems of all configured kinds")
 	# Isolated roundtrip also verifies the saved per-second rate and no second offline grant.
-	game.profile.cleared=range(1,int(db.config.jewelDropLevel))
+	game.profile.cleared=range(1,(int(db.unlock_row("feature","jewels").level)+1))
 	game.resource_samples=[{"time":Time.get_unix_time_from_system(),"id":"jewel","amount":12.5,"origin":"drop"}]
 	game.save_enabled=true
 	game.save_progress()

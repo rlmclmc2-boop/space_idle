@@ -142,7 +142,7 @@ func run() -> void:
 	job.elapsed += 0.1
 	panel.refresh_card(key)
 	check(not scene.changed_controls.has(panel.detail.title) and not scene.changed_controls.has(panel.detail.progress),"Unselected progress does not write selected details")
-	scene.db.data.charge[second].unlock=999
+	scene.db.unlock_row("charge",second).level=999
 	panel.refresh_card(second)
 	check(panel.state_for(second)=="locked" and panel.detail.button.disabled and panel.cards[second].title.get_parent().visible,"Locked node remains inspectable")
 	check(panel.cards[second].circuit.visual_state=="locked","Locked module uses the disabled circuit palette")
@@ -152,6 +152,7 @@ func run() -> void:
 	for i in range(9):
 		var extra := "fixture_system_%d" % i
 		scene.db.data.charge[extra]=row.duplicate(true)
+		scene.db.data.unlock[extra]={"type":"charge","target":extra,"level":0,"mode":"cleared"}
 		scene.game.profile.charge[extra]={"level":i,"count":0.0,"elapsed":0.0,"active":false,"started":0,"credit":0.0}
 	panel.sync_modules()
 	await process_frame
@@ -212,6 +213,7 @@ func run() -> void:
 	for extra in scene.db.data.charge.keys().duplicate():
 		if extra.begins_with("fixture_system_"):
 			scene.db.data.charge.erase(extra)
+			scene.db.data.unlock.erase(extra)
 			scene.game.profile.charge.erase(extra)
 	panel.sync_modules()
 	panel.scroll.scroll_horizontal=0
@@ -225,6 +227,7 @@ func run() -> void:
 			if scene.db.data.charge.has(extra):
 				continue
 			scene.db.data.charge[extra]=row.duplicate(true)
+			scene.db.data.unlock[extra]={"type":"charge","target":extra,"level":0,"mode":"cleared"}
 			scene.game.profile.charge[extra]={"level":0,"count":0.0,"elapsed":1.0,"active":true,"started":index+1,"credit":0.0}
 		panel.sync_modules()
 		await process_frame
@@ -296,7 +299,7 @@ func run() -> void:
 	scene.game.advance_charge(0.04)
 	panel.refresh_card(key)
 	var gauge = panel.cards[key].circuit
-	check(gauge.completion_remaining>0 and gauge.display_progress==1.0,"A completed game round holds a full ring before contraction")
+	check(gauge.completion_remaining>0 and is_equal_approx(gauge.display_progress,gauge.progress),"A completed game round starts actual new progress immediately, with an independent accent")
 	var after_round: Dictionary = scene.game.profile.duplicate(true)
 	await shot("charge-round-complete")
 	await create_timer(0.3).timeout

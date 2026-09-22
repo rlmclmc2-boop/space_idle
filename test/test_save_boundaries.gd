@@ -72,7 +72,7 @@ func _initialize() -> void:
 	# credit must exist before charge consumes it; the result must then be saved.
 	db.config.offlineMax = 1.0/3600.0
 	var key := "攻击充能"
-	db.data.charge[key].unlock = 1
+	db.unlock_row("charge",key).level = 1
 	db.data.charge[key].para_2 = 5
 	db.data.charge[key].para_5 = 100
 	db.data.charge[key].para_4 = 1

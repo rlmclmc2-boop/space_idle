@@ -15,7 +15,7 @@ func _initialize() -> void:
 func run() -> void:
 	var db := ShipDatabase.new()
 	var g := BattleGame.new(db,false)
-	g.profile.cleared=db.data.hightech.values().map(func(row):return int(row.unlock))
+	g.profile.cleared=db.data.hightech.keys().map(func(key):return int(db.unlock_row("hightech",key).level))
 	for config in ["1.3,1|100,2|10","1.3,1|0,2|0","0.5,1|2,2|1","1.3,1|0,2|10","1.3,1|0.1,2|0.1"]:
 		db.config.scientistCost=config
 		for scientists in [0,1,20,1000000]:
@@ -36,9 +36,9 @@ func run() -> void:
 	scene.automation_args=[]
 	scene.set_process(false)
 	scene.game.save_enabled=false
-	scene.game.profile.cleared=scene.db.data.hightech.values().map(func(row):return int(row.unlock))
+	scene.game.profile.cleared=scene.db.data.hightech.keys().map(func(key):return int(scene.db.unlock_row("hightech",key).level))
 	scene.build_ui()
-	scene.equipment_tabs.current_tab=2
+	scene.equipment_tabs.current_tab=scene.equipment_tabs.get_tab_idx_from_control(scene.hightech_page)
 	for paused in [false,true]:
 		scene.game.paused=paused
 		for balance in [0.0,1e100,0.0]:

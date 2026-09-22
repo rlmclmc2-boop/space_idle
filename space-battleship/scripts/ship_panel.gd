@@ -153,4 +153,4 @@ func refresh() -> void:
 	host.set_ui_value(confirm,"disabled",not host.game.ship_unlocked(candidate))
 
 func unlock_hint(key: String) -> String:
-	return UIText.t("ship.refit.unlock_estimate",{"level":str(int(host.db.ship(key).get("unlock",0)))})
+	return UIText.t("ship.refit.unlock_estimate",{"level":str(int(host.db.unlock_row("ship",key).get("level",-1)))})

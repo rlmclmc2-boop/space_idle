@@ -21,7 +21,7 @@ func run() -> void:
 	scene.game.save_enabled=false
 	scene.game.paused=false
 	scene.game.pending_unlocks.clear()
-	scene.game.profile.highestLevel=int(scene.db.config.jewelDropLevel)
+	scene.game.profile.highestLevel=(int(scene.db.unlock_row("feature","jewels").level)+1)
 	scene.game.start(1,false)
 	scene.game.spawn_group()
 	for enemy in scene.game.enemies:enemy.hp=0

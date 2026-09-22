@@ -397,7 +397,7 @@ func refresh_detail() -> void:
 		detail.charge_bar.get_child(0).color = color
 	update_progress(detail,selected)
 	var action: String = {"charging":"upgrade.refresh_charge_card.text_09","paused":"upgrade.refresh_charge_card.text_12","available":"upgrade.refresh_charge_card.text_13","insufficient":"charge.state.insufficient","locked":"upgrade.refresh_charge_card.text_06"}[state]
-	host.set_ui_value(detail.button,"text",UIText.t(action,{"unlock":str(int(row.unlock))}) if state=="locked" else UIText.t(action))
+	host.set_ui_value(detail.button,"text",UIText.t(action,{"unlock":str(int(host.db.unlock_row("charge",selected).get("level",-1)))}) if state=="locked" else UIText.t(action))
 	host.set_ui_value(detail.button,"disabled",state in ["locked","insufficient"])
 
 func core_metrics() -> Dictionary:

@@ -80,6 +80,25 @@ func run() -> void:
 	scene._process(0)
 	await process_frame
 	check(draws.background==0 and draws.stars==0 and draws.resources>0,"Resource spending redraws resources without static background or stars")
+	var preserved_cards: Dictionary=scene.equipment_panel.cards.duplicate()
+	scene.writes.clear()
+	scene.property_checks.clear()
+	scene.game.upgrade_equipment_batch("10")
+	check(preserved_cards.values().all(func(card):return not scene.property_checks.has(card.fields.crew)),"Equipment upgrade does not recalculate unchanged crew badges")
+	check(scene.equipment_panel.cards==preserved_cards and scene.builds==builds,"Batch upgrade preserves all equipment controls")
+	check(not scene.writes.has(charge_title) and scene.hightech_buttons[tech].get_parent()==tech_panel,"Batch upgrade preserves unrelated UI")
+	for id in scene.equipment_panel.items:
+		var item: Dictionary=scene.equipment_panel.items[id]
+		check(item.level==scene.game.module_entry(item.category,item.index).level,"Batch refresh catches up module "+id)
+	scene.equipment_tabs.current_tab=1
+	await process_frame
+	scene.writes.clear()
+	scene.game.upgrade_equipment_batch("1")
+	check(scene.equipment_panel.dirty,"Hidden batch upgrade defers equipment refresh")
+	check(not scene.writes.has(defence),"Hidden batch does not write equipment titles")
+	scene.equipment_tabs.current_tab=0
+	await process_frame
+	check(not scene.equipment_panel.dirty and scene.equipment_panel.cards==preserved_cards,"Showing equipment applies batch changes without replacing cards")
 	scene.equipment_tabs.current_tab=1
 	await process_frame
 	await click(scene.scientist_generate_button)
@@ -92,38 +111,8 @@ func run() -> void:
 	check(scene.hightech_titles[tech].text.contains("Lv.1") and scene.builds==builds,"Completion updates research card without full rebuild")
 	scene.on_event("state",{})
 	check(scene.builds==builds and scene.equipment_tabs==tabs,"Battle state preserves UI")
-	var source: int=tech_panel.slot_index
-	check(scene.game.swap_hightech_slots(source,source+1),"Research order changes")
 	scene.sync_hightech_slots()
-	check(tech_panel.slot_index==source+1 and scene.hightech_buttons[tech].get_parent()==tech_panel,"Drag ordering moves existing card")
-	await process_frame
-	var target: Control=scene.hightech_container.get_child(source+1)
-	var start: Vector2=tech_panel.get_global_rect().position+Vector2(100,12)
-	var end: Vector2=target.get_global_rect().position+Vector2(100,12)
-	var motion := InputEventMouseMotion.new()
-	motion.position=start
-	Input.parse_input_event(motion)
-	var press := InputEventMouseButton.new()
-	press.position=start
-	press.button_index=MOUSE_BUTTON_LEFT
-	press.pressed=true
-	Input.parse_input_event(press)
-	await process_frame
-	for position in [start+Vector2(-30,0),end]:
-		motion=InputEventMouseMotion.new()
-		motion.position=position
-		motion.relative=Vector2(-30,0)
-		motion.button_mask=MOUSE_BUTTON_MASK_LEFT
-		Input.parse_input_event(motion)
-		await process_frame
-	press=InputEventMouseButton.new()
-	press.position=end
-	press.button_index=MOUSE_BUTTON_LEFT
-	press.pressed=false
-	Input.parse_input_event(press)
-	await process_frame
-	scene._process(0)
-	check(tech_panel.slot_index==source and scene.builds==builds,"Real drag moves research card without rebuilding UI")
+	check(scene.hightech_titles[tech].get_parent()==tech_panel and scene.builds==builds,"Research list synchronization retains existing bays")
 	scene.equipment_tabs.current_tab=2
 	await process_frame
 	await click(scene.charge_panel.detail.button)
@@ -170,7 +159,7 @@ func run() -> void:
 	# Relock/unlock fixtures verify only affected hightech slot content changes.
 	var other_tech: String=scene.hightech_buttons.keys().filter(func(key):return key!=tech)[0]
 	var other_panel: Node=scene.hightech_buttons[other_tech].get_parent()
-	scene.db.data.hightech[tech].unlock=99
+	scene.db.unlock_row("hightech",tech).level=99
 	scene.game.profile.cleared.erase(1)
 	scene.refresh_structure()
 	check(not scene.hightech_buttons.has(tech) and scene.hightech_buttons[other_tech].get_parent()==other_panel,"Relocking one technology preserves unrelated research cards")

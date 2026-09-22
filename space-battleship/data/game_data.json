@@ -7,7 +7,6 @@
       "weaponSlots": 3,
       "defenseSlots": 2,
       "movement": 50,
-      "unlock": 0,
       "size": 1,
       "sameEquipmentLimit": 999
     },
@@ -17,7 +16,6 @@
       "weaponSlots": 4,
       "defenseSlots": 2,
       "movement": 50,
-      "unlock": 10,
       "size": 1,
       "sameEquipmentLimit": 999
     },
@@ -27,7 +25,6 @@
       "weaponSlots": 5,
       "defenseSlots": 3,
       "movement": 50,
-      "unlock": 20,
       "size": 2,
       "sameEquipmentLimit": 999
     },
@@ -37,7 +34,6 @@
       "weaponSlots": 6,
       "defenseSlots": 3,
       "movement": 50,
-      "unlock": 30,
       "size": 2,
       "sameEquipmentLimit": 999
     },
@@ -47,7 +43,6 @@
       "weaponSlots": 8,
       "defenseSlots": 4,
       "movement": 50,
-      "unlock": 50,
       "size": 4,
       "sameEquipmentLimit": 999
     }
@@ -62,7 +57,6 @@
         "dmg": 0,
         "dmgMulti": null,
         "cd": 0,
-        "unlock": null,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -84,7 +78,6 @@
         "dmg": 0,
         "dmgMulti": null,
         "cd": 0,
-        "unlock": 2,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -106,7 +99,6 @@
         "dmg": 100,
         "dmgMulti": 0.2,
         "cd": 0.5,
-        "unlock": null,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -128,7 +120,6 @@
         "dmg": 30,
         "dmgMulti": 0.2,
         "cd": 1,
-        "unlock": 1,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -150,7 +141,6 @@
         "dmg": 200,
         "dmgMulti": 0.2,
         "cd": 1,
-        "unlock": 2,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -172,7 +162,6 @@
         "dmg": 20,
         "dmgMulti": null,
         "cd": 0.5,
-        "unlock": null,
         "res_1": null,
         "cost_1": null,
         "costMulti_1": null,
@@ -194,7 +183,6 @@
         "dmg": 5,
         "dmgMulti": null,
         "cd": 1,
-        "unlock": null,
         "res_1": null,
         "cost_1": null,
         "costMulti_1": null,
@@ -216,7 +204,6 @@
         "dmg": 40,
         "dmgMulti": null,
         "cd": 1,
-        "unlock": null,
         "res_1": null,
         "cost_1": null,
         "costMulti_1": null,
@@ -238,7 +225,6 @@
         "dmg": 40,
         "dmgMulti": 0.2,
         "cd": 0.2,
-        "unlock": 5,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -246,7 +232,7 @@
         "cost_2": null,
         "costMulti_2": null,
         "para1": 2,
-        "para2": 4,
+        "para2": 3,
         "para3": 1,
         "para4": null
       }
@@ -260,7 +246,6 @@
         "dmg": 40,
         "dmgMulti": 0.2,
         "cd": 0.2,
-        "unlock": 5,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -747,8 +732,8 @@
       "id": 2,
       "length": 1000,
       "monGroup": "{1|0.1,4|0.2,1|0.3,4|0.4,7|0.5,4|0.6,1|0.7,4|0.8,10|0.9}",
-      "atkRatio": 1.8,
-      "lifeRatio": 1.8,
+      "atkRatio": 1.5,
+      "lifeRatio": 1.5,
       "resRatio": 1.4,
       "jewelRatio": 1.2,
       "groups": [
@@ -794,8 +779,8 @@
       "id": 3,
       "length": 1000,
       "monGroup": "{1|0.1,2|0.2,3|0.3,1|0.4,7|0.5,3|0.6,1|0.7,2|0.8,10|0.9}",
-      "atkRatio": 3.24,
-      "lifeRatio": 3.24,
+      "atkRatio": 2.25,
+      "lifeRatio": 2.25,
       "resRatio": 1.96,
       "jewelRatio": 1.4,
       "groups": [
@@ -841,8 +826,8 @@
       "id": 4,
       "length": 1000,
       "monGroup": "{4|0.1,5|0.2,4|0.3,5|0.4,6|0.5,5|0.6,4|0.7,5|0.8,9|0.9}",
-      "atkRatio": 5.83,
-      "lifeRatio": 5.83,
+      "atkRatio": 4.05,
+      "lifeRatio": 4.05,
       "resRatio": 2.74,
       "jewelRatio": 1.6,
       "groups": [
@@ -888,8 +873,8 @@
       "id": 5,
       "length": 1000,
       "monGroup": "{1|0.1,2|0.2,4|0.3,5|0.4,8|0.5,11|0.6,12|0.7,3|0.8,8|0.9}",
-      "atkRatio": 10.49,
-      "lifeRatio": 10.49,
+      "atkRatio": 7.29,
+      "lifeRatio": 7.29,
       "resRatio": 3.84,
       "jewelRatio": 1.8,
       "groups": [
@@ -935,8 +920,8 @@
       "id": 6,
       "length": 1000,
       "monGroup": "{2|0.1,2|0.2,5|0.3,2|0.4,9|0.5,2|0.6,5|0.7,2|0.8,13|0.9}",
-      "atkRatio": 18.88,
-      "lifeRatio": 18.88,
+      "atkRatio": 13.12,
+      "lifeRatio": 13.12,
       "resRatio": 5.38,
       "jewelRatio": 2,
       "groups": [
@@ -982,8 +967,8 @@
       "id": 7,
       "length": 1000,
       "monGroup": "{1|0.1,1|0.2,4|0.3,1|0.4,10|0.5,1|0.6,4|0.7,1|0.8,14|0.9}",
-      "atkRatio": 33.98,
-      "lifeRatio": 33.98,
+      "atkRatio": 23.62,
+      "lifeRatio": 23.62,
       "resRatio": 7.53,
       "jewelRatio": 2.2,
       "groups": [
@@ -1029,8 +1014,8 @@
       "id": 8,
       "length": 1000,
       "monGroup": "{5|0.1,5|0.2,12|0.3,5|0.4,9|0.5,5|0.6,12|0.7,5|0.8,13|0.9}",
-      "atkRatio": 61.16,
-      "lifeRatio": 61.16,
+      "atkRatio": 42.52,
+      "lifeRatio": 42.52,
       "resRatio": 10.54,
       "jewelRatio": 2.4,
       "groups": [
@@ -1076,8 +1061,8 @@
       "id": 9,
       "length": 1000,
       "monGroup": "{4|0.1,4|0.2,11|0.3,4|0.4,10|0.5,4|0.6,11|0.7,4|0.8,14|0.9}",
-      "atkRatio": 110.09,
-      "lifeRatio": 110.09,
+      "atkRatio": 76.54,
+      "lifeRatio": 76.54,
       "resRatio": 14.76,
       "jewelRatio": 2.6,
       "groups": [
@@ -1123,8 +1108,8 @@
       "id": 10,
       "length": 1000,
       "monGroup": "{3|0.1,3|0.2,6|0.3,7|0.4,8|0.5,13|0.6,14|0.7,8|0.8,15|0.9}",
-      "atkRatio": 198.16,
-      "lifeRatio": 198.16,
+      "atkRatio": 137.77,
+      "lifeRatio": 137.77,
       "resRatio": 20.66,
       "jewelRatio": 2.8,
       "groups": [
@@ -1170,8 +1155,8 @@
       "id": 11,
       "length": 1000,
       "monGroup": "{2|0.1,2|0.2,5|0.3,2|0.4,9|0.5,2|0.6,5|0.7,2|0.8,13|0.9}",
-      "atkRatio": 208,
-      "lifeRatio": 208,
+      "atkRatio": 148,
+      "lifeRatio": 148,
       "resRatio": 24,
       "jewelRatio": 3,
       "groups": [
@@ -1217,8 +1202,8 @@
       "id": 12,
       "length": 1000,
       "monGroup": "{1|0.1,1|0.2,4|0.3,1|0.4,10|0.5,1|0.6,4|0.7,1|0.8,14|0.9}",
-      "atkRatio": 298,
-      "lifeRatio": 298,
+      "atkRatio": 238,
+      "lifeRatio": 238,
       "resRatio": 34,
       "jewelRatio": 3.2,
       "groups": [
@@ -1264,8 +1249,8 @@
       "id": 13,
       "length": 1000,
       "monGroup": "{5|0.1,5|0.2,12|0.3,5|0.4,9|0.5,5|0.6,12|0.7,5|0.8,13|0.9}",
-      "atkRatio": 1198,
-      "lifeRatio": 1198,
+      "atkRatio": 1138,
+      "lifeRatio": 1138,
       "resRatio": 72,
       "jewelRatio": 3.4,
       "groups": [
@@ -1311,8 +1296,8 @@
       "id": 14,
       "length": 1000,
       "monGroup": "{4|0.1,4|0.2,11|0.3,4|0.4,10|0.5,4|0.6,11|0.7,4|0.8,14|0.9}",
-      "atkRatio": 10198,
-      "lifeRatio": 10198,
+      "atkRatio": 10138,
+      "lifeRatio": 10138,
       "resRatio": 211,
       "jewelRatio": 3.6,
       "groups": [
@@ -1358,8 +1343,8 @@
       "id": 15,
       "length": 1000,
       "monGroup": "{3|0.1,3|0.2,6|0.3,7|0.4,8|0.5,13|0.6,14|0.7,8|0.8,15|0.9}",
-      "atkRatio": 100198,
-      "lifeRatio": 100198,
+      "atkRatio": 100138,
+      "lifeRatio": 100138,
       "resRatio": 728,
       "jewelRatio": 3.8,
       "groups": [
@@ -1405,8 +1390,8 @@
       "id": 16,
       "length": 1000,
       "monGroup": "{2|0.1,2|0.2,5|0.3,2|0.4,9|0.5,2|0.6,5|0.7,2|0.8,13|0.9}",
-      "atkRatio": 1000198,
-      "lifeRatio": 1000198,
+      "atkRatio": 1000138,
+      "lifeRatio": 1000138,
       "resRatio": 2647,
       "jewelRatio": 4,
       "groups": [
@@ -1452,8 +1437,8 @@
       "id": 17,
       "length": 1000,
       "monGroup": "{1|0.1,1|0.2,4|0.3,1|0.4,10|0.5,1|0.6,4|0.7,1|0.8,14|0.9}",
-      "atkRatio": 10000198,
-      "lifeRatio": 10000198,
+      "atkRatio": 10000138,
+      "lifeRatio": 10000138,
       "resRatio": 9777,
       "jewelRatio": 4.2,
       "groups": [
@@ -1499,8 +1484,8 @@
       "id": 18,
       "length": 1000,
       "monGroup": "{5|0.1,5|0.2,12|0.3,5|0.4,9|0.5,5|0.6,12|0.7,5|0.8,13|0.9}",
-      "atkRatio": 100000197,
-      "lifeRatio": 100000197,
+      "atkRatio": 100000137,
+      "lifeRatio": 100000137,
       "resRatio": 36258,
       "jewelRatio": 4.4,
       "groups": [
@@ -1546,8 +1531,8 @@
       "id": 19,
       "length": 1000,
       "monGroup": "{4|0.1,4|0.2,11|0.3,4|0.4,10|0.5,4|0.6,11|0.7,4|0.8,14|0.9}",
-      "atkRatio": 1000000180,
-      "lifeRatio": 1000000180,
+      "atkRatio": 1000000125,
+      "lifeRatio": 1000000125,
       "resRatio": 134624,
       "jewelRatio": 4.6,
       "groups": [
@@ -4002,7 +3987,6 @@
     "scientistCost": "1.3,1|100,2|10",
     "hightechLimit": 0.8,
     "techPointGet": 1,
-    "jewelDropLevel": 8,
     "jewelDrop": 0.2,
     "jewelCombine": 3,
     "jewelCreat": 100,
@@ -4032,16 +4016,19 @@
     "ship": "D:\\放置\\space-battleship\\config_excel\\ship.xlsx",
     "hightech": "D:\\放置\\space-battleship\\config_excel\\hightech.xlsx",
     "charge": "D:\\放置\\space-battleship\\config_excel\\charge.xlsx",
-    "jewel": "D:\\放置\\space-battleship\\config_excel\\jewel.xlsx"
+    "jewel": "D:\\放置\\space-battleship\\config_excel\\jewel.xlsx",
+    "unlock": "D:\\放置\\space-battleship\\config_excel\\unlock.xlsx",
+    "crew": "D:\\放置\\space-battleship\\config_excel\\crew.xlsx",
+    "crew_level": "D:\\放置\\space-battleship\\config_excel\\crew_level.xlsx",
+    "crew_assignment": "D:\\放置\\space-battleship\\config_excel\\crew_assignment.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
       "name": "超时空炼铁炉",
       "des": "每para1秒在屏幕中生成一个铁块，总共含有根据过去一分钟的铁生成量*para2*等级的铁，向上取整，点击获取，10秒后消失",
-      "description": "每para1秒在屏幕中生成一个含有{过去一分钟的铁生成量*para2*等级,向上取整,不含自身}的铁块",
+      "description": "每para1秒在屏幕中生成一个含有{过去一分钟的铁生成量*para2*等级,向上取整,不含自身}的铁的铁块",
       "tpCostBase": 60,
       "tpCostMutiple": 0.2,
-      "unlock": 3,
       "para1": 30,
       "para2": 0.1
     },
@@ -4051,7 +4038,6 @@
       "description": "所有武器伤害提高{(1+para1)^等级,百分比显示,保留两位小数,即100.3%展示为100%}",
       "tpCostBase": 60,
       "tpCostMutiple": 0.2,
-      "unlock": 4,
       "para1": 0.05,
       "para2": null
     },
@@ -4061,9 +4047,17 @@
       "description": "生命增加{（1+para1）^等级,百分比显示,保留两位小数,即100.3%展示为100%}",
       "tpCostBase": 60,
       "tpCostMutiple": 0.2,
-      "unlock": 4,
       "para1": 0.05,
       "para2": null
+    },
+    "宝石熔炼炉": {
+      "name": "宝石熔炼炉",
+      "des": "每para1秒在屏幕中生成一个宝石核心，总共含有根据过去一分钟的宝石碎片生成量*para2*等级的碎片，向上取整，鼠标划过获取，10秒后消失",
+      "description": "每para1秒在屏幕中生成一个含有{过去一分钟的宝石碎片生成量*para2*等级,向上取整,不含自身}的宝石碎片的宝石核心块",
+      "tpCostBase": 60,
+      "tpCostMutiple": 0.05,
+      "para1": 20,
+      "para2": 0.1
     }
   },
   "charge": {
@@ -4071,7 +4065,6 @@
       "name": "攻击充能",
       "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有武器伤害*(1+para3)^lv",
       "des": "所有武器伤害提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
-      "unlock": 2,
       "para_1": 2,
       "para_2": 1,
       "para_3": 0.1,
@@ -4084,7 +4077,6 @@
       "name": "防御充能",
       "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使所有防御装备的效果值(生命,护盾等)*(1+para3)^lv",
       "des": "所有防御强度提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
-      "unlock": 2,
       "para_1": 2,
       "para_2": 1,
       "para_3": 0.1,
@@ -4097,7 +4089,6 @@
       "name": "熔炼器充能",
       "func": "刚解锁为0级,启动时,每秒消耗para2的资源量,资源种类由para1决定.充能para4的时间后完成1次充能,每当完成para5*para6^等级次充能后,等级提升,并使掉落的铁的数量*(1+para3)^lv,只影响掉落的铁",
       "des": "掉落的铁矿量提高{(1+para3)^lv,百分比,四舍五入保留整数百分比部分}",
-      "unlock": 1,
       "para_1": 2,
       "para_2": 1,
       "para_3": 0.1,
@@ -4247,6 +4238,403 @@
       "para_5": null,
       "para_6": null,
       "image": "res://assets/jewels/10.svg"
+    }
+  },
+  "unlock": {
+    "armour": {
+      "name": "armour",
+      "type": "equipment",
+      "target": "armour",
+      "level": 0,
+      "mode": "cleared",
+      "title": "复合装甲",
+      "desc": "装备已自动装载，可在下方直接升级。"
+    },
+    "shield": {
+      "name": "shield",
+      "type": "equipment",
+      "target": "shield",
+      "level": 2,
+      "mode": "cleared",
+      "title": "偏转护盾",
+      "desc": "偏转护盾可以抵御能量武器,并且能自动恢复"
+    },
+    "laser": {
+      "name": "laser",
+      "type": "equipment",
+      "target": "laser",
+      "level": 0,
+      "mode": "cleared",
+      "title": "脉冲激光",
+      "desc": "装备已自动装载，可在下方直接升级。"
+    },
+    "missile": {
+      "name": "missile",
+      "type": "equipment",
+      "target": "missile",
+      "level": 1,
+      "mode": "cleared",
+      "title": "追踪导弹",
+      "desc": "导弹可以同时打击多个敌人"
+    },
+    "cannon": {
+      "name": "cannon",
+      "type": "equipment",
+      "target": "cannon",
+      "level": 2,
+      "mode": "cleared",
+      "title": "磁轨火炮",
+      "desc": "火炮对拥有能量护盾的敌人的伤害更高"
+    },
+    "longLaser": {
+      "name": "longLaser",
+      "type": "equipment",
+      "target": "longLaser",
+      "level": 5,
+      "mode": "cleared",
+      "title": "持续锁定光束",
+      "desc": "装备已自动装载，可在下方直接升级。"
+    },
+    "ship/Frigate": {
+      "name": "ship/Frigate",
+      "type": "ship",
+      "target": "Frigate",
+      "level": 0,
+      "mode": "cleared",
+      "title": "护卫舰",
+      "desc": "可在战舰页面启用护卫舰。"
+    },
+    "ship/Destroyer": {
+      "name": "ship/Destroyer",
+      "type": "ship",
+      "target": "Destroyer",
+      "level": 10,
+      "mode": "cleared",
+      "title": "驱逐舰",
+      "desc": "可在战舰页面启用驱逐舰。"
+    },
+    "ship/Cruiser": {
+      "name": "ship/Cruiser",
+      "type": "ship",
+      "target": "Cruiser",
+      "level": 20,
+      "mode": "cleared",
+      "title": "巡洋舰",
+      "desc": "可在战舰页面启用巡洋舰。"
+    },
+    "ship/Battleship": {
+      "name": "ship/Battleship",
+      "type": "ship",
+      "target": "Battleship",
+      "level": 30,
+      "mode": "cleared",
+      "title": "战列舰",
+      "desc": "可在战舰页面启用战列舰。"
+    },
+    "ship/Heavy_Battleship": {
+      "name": "ship/Heavy_Battleship",
+      "type": "ship",
+      "target": "Heavy_Battleship",
+      "level": 50,
+      "mode": "cleared",
+      "title": "重型战列舰",
+      "desc": "可在战舰页面启用重型战列舰。"
+    },
+    "charge/攻击充能": {
+      "name": "charge/攻击充能",
+      "type": "charge",
+      "target": "攻击充能",
+      "level": 2,
+      "mode": "cleared",
+      "title": "攻击充能",
+      "desc": "可在充能页面启动攻击充能。"
+    },
+    "charge/防御充能": {
+      "name": "charge/防御充能",
+      "type": "charge",
+      "target": "防御充能",
+      "level": 2,
+      "mode": "cleared",
+      "title": "防御充能",
+      "desc": "可在充能页面启动防御充能。"
+    },
+    "charge/熔炼器充能": {
+      "name": "charge/熔炼器充能",
+      "type": "charge",
+      "target": "熔炼器充能",
+      "level": 1,
+      "mode": "cleared",
+      "title": "熔炼器充能",
+      "desc": "可在充能页面启动熔炼器充能。"
+    },
+    "hightech/超时空炼铁炉": {
+      "name": "hightech/超时空炼铁炉",
+      "type": "hightech",
+      "target": "超时空炼铁炉",
+      "level": 3,
+      "mode": "cleared",
+      "title": "超时空炼铁炉",
+      "desc": "可分配科学家研究超时空炼铁炉。"
+    },
+    "hightech/正电子聚焦装置": {
+      "name": "hightech/正电子聚焦装置",
+      "type": "hightech",
+      "target": "正电子聚焦装置",
+      "level": 4,
+      "mode": "cleared",
+      "title": "正电子聚焦装置",
+      "desc": "可分配科学家研究正电子聚焦装置。"
+    },
+    "hightech/简并态装甲": {
+      "name": "hightech/简并态装甲",
+      "type": "hightech",
+      "target": "简并态装甲",
+      "level": 4,
+      "mode": "cleared",
+      "title": "简并态装甲",
+      "desc": "可分配科学家研究简并态装甲。"
+    },
+    "hightech/宝石熔炼炉": {
+      "name": "hightech/宝石熔炼炉",
+      "type": "hightech",
+      "target": "宝石熔炼炉",
+      "level": 12,
+      "mode": "cleared",
+      "title": "宝石熔炼炉",
+      "desc": "可分配科学家研究宝石熔炼炉。"
+    },
+    "feature/jewels": {
+      "name": "feature/jewels",
+      "type": "feature",
+      "target": "jewels",
+      "level": 7,
+      "mode": "reached",
+      "title": "宝石工坊",
+      "desc": "已开放宝石碎片、合成、分解和装备镶嵌。"
+    },
+    "crew/navigator": {
+      "name": "crew/navigator",
+      "type": "crew",
+      "target": "navigator",
+      "level": 10,
+      "mode": "cleared",
+      "title": "船员01",
+      "desc": "已解锁船员01，可在船员页分配到游戏系统。"
+    },
+    "crew/engineer": {
+      "name": "crew/engineer",
+      "type": "crew",
+      "target": "engineer",
+      "level": 20,
+      "mode": "cleared",
+      "title": "船员02",
+      "desc": "已解锁船员02，可在船员页分配到游戏系统。"
+    },
+    "crew/researcher": {
+      "name": "crew/researcher",
+      "type": "crew",
+      "target": "researcher",
+      "level": 25,
+      "mode": "cleared",
+      "title": "船员03",
+      "desc": "已解锁船员03，可在船员页分配到游戏系统。"
+    },
+    "crew/crew_04": {
+      "name": "crew/crew_04",
+      "type": "crew",
+      "target": "crew_04",
+      "level": 30,
+      "mode": "cleared",
+      "title": "船员04",
+      "desc": "已解锁船员04，可在船员页分配到游戏系统。"
+    },
+    "crew/crew_05": {
+      "name": "crew/crew_05",
+      "type": "crew",
+      "target": "crew_05",
+      "level": 35,
+      "mode": "cleared",
+      "title": "船员05",
+      "desc": "已解锁船员05，可在船员页分配到游戏系统。"
+    },
+    "crew/crew_06": {
+      "name": "crew/crew_06",
+      "type": "crew",
+      "target": "crew_06",
+      "level": 40,
+      "mode": "cleared",
+      "title": "船员06",
+      "desc": "已解锁船员06，可在船员页分配到游戏系统。"
+    }
+  },
+  "crew": {
+    "navigator": {
+      "id": "navigator",
+      "name": "船员01",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/navigator",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    },
+    "engineer": {
+      "id": "engineer",
+      "name": "船员02",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/engineer",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    },
+    "researcher": {
+      "id": "researcher",
+      "name": "船员03",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/researcher",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    },
+    "crew_04": {
+      "id": "crew_04",
+      "name": "船员04",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/crew_04",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    },
+    "crew_05": {
+      "id": "crew_05",
+      "name": "船员05",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/crew_05",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    },
+    "crew_06": {
+      "id": "crew_06",
+      "name": "船员06",
+      "description": "无固定职务，可自由分配到各游戏系统。",
+      "icon": "res://assets/ui/crew.svg",
+      "baseLevel": 1,
+      "maxLevel": 3,
+      "basePower": 1,
+      "expGroup": "normal",
+      "defaultAssignment": "",
+      "unlockId": "crew/crew_06",
+      "equipmentSlotCount": 2,
+      "defaultTargetId": ""
+    }
+  },
+  "crew_level": {
+    "normal": {
+      "1": {
+        "group": "normal",
+        "level": 1,
+        "needExp": 0,
+        "powerMultiplier": 1
+      },
+      "2": {
+        "group": "normal",
+        "level": 2,
+        "needExp": 100,
+        "powerMultiplier": 1.1
+      },
+      "3": {
+        "group": "normal",
+        "level": 3,
+        "needExp": 200,
+        "powerMultiplier": 1.2
+      }
+    }
+  },
+  "crew_assignment": {
+    "equipment_upgrade": {
+      "id": "equipment_upgrade",
+      "targetType": "equipment",
+      "effectType": "AUTO_UPGRADE",
+      "baseValue": 1,
+      "levelScale": 0,
+      "powerScale": 0,
+      "interval": 1,
+      "maxCrew": 1,
+      "description": "每秒尝试升级全部启用的武器和防御模块，正常消耗资源。",
+      "titleTextId": "crew.job.equipment",
+      "descTextId": "crew.effect.all_equipment",
+      "targetCategory": "",
+      "upgradeModes": "1,10,max"
+    },
+    "hightech_efficiency": {
+      "id": "hightech_efficiency",
+      "targetType": "hightech",
+      "effectType": "EFFICIENCY",
+      "baseValue": 0.1,
+      "levelScale": 1,
+      "powerScale": 1,
+      "interval": 0,
+      "maxCrew": 3,
+      "description": "提升该科技的研究点产出速率。",
+      "titleTextId": "crew.job.hightech",
+      "descTextId": "crew.effect.efficiency",
+      "targetCategory": "",
+      "upgradeModes": ""
+    },
+    "smelting_speed": {
+      "id": "smelting_speed",
+      "targetType": "smelting",
+      "effectType": "SPEED",
+      "baseValue": 0.1,
+      "levelScale": 1,
+      "powerScale": 1,
+      "interval": 0,
+      "maxCrew": 3,
+      "description": "提升宝石熔炼炉的生产速度。",
+      "titleTextId": "crew.job.smelting",
+      "descTextId": "crew.effect.speed",
+      "targetCategory": "",
+      "upgradeModes": ""
+    },
+    "production_output": {
+      "id": "production_output",
+      "targetType": "production",
+      "effectType": "OUTPUT",
+      "baseValue": 0.1,
+      "levelScale": 1,
+      "powerScale": 1,
+      "interval": 0,
+      "maxCrew": 3,
+      "description": "提升炼铁炉每次产出。",
+      "titleTextId": "crew.job.production",
+      "descTextId": "crew.effect.output",
+      "targetCategory": "",
+      "upgradeModes": ""
     }
   }
 }

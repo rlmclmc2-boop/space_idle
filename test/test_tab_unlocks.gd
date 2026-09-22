@@ -20,10 +20,10 @@ func run() -> void:
 	scene.game.profile.cleared=[]
 	scene.game.profile.unlocked=["laser","armour"]
 	# Explicit gates isolate display behavior from balance changes.
-	for row in scene.db.data.hightech.values():
-		row.unlock=2
-	for row in scene.db.data.charge.values():
-		row.unlock=1
+	for key in scene.db.data.hightech:
+		scene.db.unlock_row("hightech",key).level=2
+	for key in scene.db.data.charge:
+		scene.db.unlock_row("charge",key).level=1
 	scene.build_ui()
 	check(not scene.equipment_tabs.is_tab_hidden(0),"Starting equipment tabs are visible")
 	check(scene.equipment_tabs.is_tab_hidden(1) and scene.equipment_tabs.is_tab_hidden(2),"Hightech and charge hidden before unlock")
@@ -38,7 +38,7 @@ func run() -> void:
 	scene.game.profile.cleared=[]
 	scene.build_ui()
 	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0,"Relocked charge falls back to first unlocked tab")
-	scene.db.data.charge.values()[0].unlock=0
+	scene.db.unlock_row("charge",scene.db.data.charge.keys()[0]).level=0
 	scene.build_ui()
 	check(not scene.equipment_tabs.is_tab_hidden(2),"One unlocked charge item unlocks its tab")
 	var keys: Array = scene.charge_cards.keys()
@@ -64,10 +64,10 @@ func run() -> void:
 	check(not scene.equipment_tabs.is_tab_hidden(0) and scene.equipment_tabs.current_tab==0,"Unified equipment remains visible with defense alone")
 	scene.game.profile.unlocked=[]
 	scene.game.profile.cleared=[]
-	for row in scene.db.data.charge.values():
-		row.unlock=1
+	for key in scene.db.data.charge:
+		scene.db.unlock_row("charge",key).level=1
 	scene.build_ui()
-	check(scene.equipment_tabs.current_tab==scene.BATTLE_TAB,"No unlocked features falls back to battlefield")
+	check(scene.equipment_tabs.current_tab==-1 and scene.battle_return_button.visible,"No unlocked features falls back to battlefield")
 	for index in range(3):
 		check(scene.equipment_tabs.is_tab_hidden(index),"All-locked page stays hidden: "+str(index))
 	scene.game.profile.unlocked=["laser","armour"]
@@ -77,8 +77,8 @@ func run() -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://tabs-before-unlock.png")
 	scene.game.profile.cleared=[1]
-	scene.db.data.charge.values()[1].unlock=2
-	scene.db.data.charge.values()[2].unlock=3
+	scene.db.unlock_row("charge",scene.db.data.charge.keys()[1]).level=2
+	scene.db.unlock_row("charge",scene.db.data.charge.keys()[2]).level=3
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=2
 	scene.queue_redraw()

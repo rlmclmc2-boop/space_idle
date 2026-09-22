@@ -32,7 +32,10 @@ class ChargeConfigTests(unittest.TestCase):
                              ('des', '{1,unknown}')]:
             with self.subTest(field=field, value=value):
                 data = copy.deepcopy(self.data)
-                data['charge']['攻击充能'][field] = value
+                if field == 'unlock':
+                    data['unlock']['charge/攻击充能']['level'] = value
+                else:
+                    data['charge']['攻击充能'][field] = value
                 with self.assertRaises(ValueError):
                     iw.validate_projection(data)
 

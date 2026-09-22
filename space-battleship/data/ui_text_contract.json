@@ -195,6 +195,9 @@
     "battle.tab": {
       "params": []
     },
+    "battle.return": {
+      "params": []
+    },
     "main._ready.text_01": {
       "params": [
         "id",
@@ -2565,6 +2568,907 @@
       "params": [
         "level"
       ]
+    },
+    "lab.title": {
+      "params": []
+    },
+    "lab.hint": {
+      "params": []
+    },
+    "lab.speed": {
+      "params": []
+    },
+    "lab.duration": {
+      "params": []
+    },
+    "lab.ten_minutes": {
+      "params": []
+    },
+    "lab.one_hour": {
+      "params": []
+    },
+    "lab.ten_hours": {
+      "params": []
+    },
+    "lab.custom": {
+      "params": []
+    },
+    "lab.runs": {
+      "params": []
+    },
+    "lab.seed": {
+      "params": []
+    },
+    "lab.parameter": {
+      "params": []
+    },
+    "lab.no_scan": {
+      "params": []
+    },
+    "lab.from": {
+      "params": []
+    },
+    "lab.to": {
+      "params": []
+    },
+    "lab.step": {
+      "params": []
+    },
+    "lab.directory": {
+      "params": []
+    },
+    "lab.start": {
+      "params": []
+    },
+    "lab.pause": {
+      "params": []
+    },
+    "lab.resume": {
+      "params": []
+    },
+    "lab.stop": {
+      "params": []
+    },
+    "lab.reset": {
+      "params": []
+    },
+    "lab.export": {
+      "params": []
+    },
+    "lab.error": {
+      "params": [
+        "error"
+      ]
+    },
+    "lab.progress": {
+      "params": [
+        "status",
+        "run",
+        "total",
+        "seconds",
+        "stage"
+      ]
+    },
+    "lab.report_header": {
+      "params": []
+    },
+    "lab.run_summary": {
+      "params": [
+        "run",
+        "seed",
+        "dps",
+        "deaths",
+        "upgrades",
+        "warnings"
+      ]
+    },
+    "lab.saved": {
+      "params": [
+        "path"
+      ]
+    },
+    "lab.status.idle": {
+      "params": []
+    },
+    "lab.status.running": {
+      "params": []
+    },
+    "lab.status.paused": {
+      "params": []
+    },
+    "lab.status.completed": {
+      "params": []
+    },
+    "lab.status.stopped": {
+      "params": []
+    },
+    "lab.effective_speed": {
+      "params": [
+        "speed"
+      ]
+    },
+    "lab.more_runs": {
+      "params": []
+    },
+    "lab.warning.weapon_dominance": {
+      "params": [
+        "key",
+        "value"
+      ]
+    },
+    "lab.warning.equipment_unused": {
+      "params": [
+        "key",
+        "value"
+      ]
+    },
+    "lab.warning.system_unused": {
+      "params": [
+        "key"
+      ]
+    },
+    "lab.warning.ttk_outside_range": {
+      "params": [
+        "value"
+      ]
+    },
+    "lab.warning.upgrade_gap": {
+      "params": [
+        "value"
+      ]
+    },
+    "lab.warning.unaffordable": {
+      "params": [
+        "value"
+      ]
+    },
+    "lab.warning.resource_surplus": {
+      "params": [
+        "key",
+        "value"
+      ]
+    },
+    "lab.v2.strategy": {
+      "params": []
+    },
+    "lab.v2.all_strategies": {
+      "params": []
+    },
+    "lab.v2.sample_interval": {
+      "params": []
+    },
+    "lab.v2.result_run": {
+      "params": []
+    },
+    "lab.v2.quick": {
+      "params": []
+    },
+    "lab.v2.sweep": {
+      "params": []
+    },
+    "lab.v2.compare": {
+      "params": []
+    },
+    "lab.v2.timeline": {
+      "params": []
+    },
+    "lab.v2.diagnosis": {
+      "params": []
+    },
+    "lab.v2.add_sweep": {
+      "params": []
+    },
+    "lab.v2.clear_sweeps": {
+      "params": []
+    },
+    "lab.v2.queue": {
+      "params": [
+        "count",
+        "parameters"
+      ]
+    },
+    "lab.v2.value": {
+      "params": []
+    },
+    "lab.v2.stage": {
+      "params": []
+    },
+    "lab.v2.dps": {
+      "params": []
+    },
+    "lab.v2.deaths": {
+      "params": []
+    },
+    "lab.v2.balance": {
+      "params": []
+    },
+    "lab.v2.ttk": {
+      "params": []
+    },
+    "lab.v2.decision_interval": {
+      "params": []
+    },
+    "lab.v2.boss_ttk": {
+      "params": []
+    },
+    "lab.v2.first_death": {
+      "params": []
+    },
+    "lab.v2.upgrade_interval": {
+      "params": []
+    },
+    "lab.v2.dps_growth": {
+      "params": []
+    },
+    "lab.v2.sensitivity_hint": {
+      "params": []
+    },
+    "lab.v2.metric": {
+      "params": []
+    },
+    "lab.v2.before": {
+      "params": []
+    },
+    "lab.v2.after": {
+      "params": []
+    },
+    "lab.v2.elasticity": {
+      "params": []
+    },
+    "lab.v2.slope": {
+      "params": []
+    },
+    "lab.v2.baseline_path": {
+      "params": []
+    },
+    "lab.v2.load_baseline": {
+      "params": []
+    },
+    "lab.v2.save_baseline": {
+      "params": []
+    },
+    "lab.v2.baseline": {
+      "params": []
+    },
+    "lab.v2.current": {
+      "params": []
+    },
+    "lab.v2.change": {
+      "params": []
+    },
+    "lab.v2.absolute": {
+      "params": []
+    },
+    "lab.v2.comparison_hint": {
+      "params": []
+    },
+    "lab.v2.no_comparison": {
+      "params": []
+    },
+    "lab.v2.no_results": {
+      "params": []
+    },
+    "lab.v2.comparable": {
+      "params": []
+    },
+    "lab.v2.incomparable": {
+      "params": [
+        "reasons"
+      ]
+    },
+    "lab.v2.baseline_loaded": {
+      "params": []
+    },
+    "lab.v2.time": {
+      "params": []
+    },
+    "lab.v2.enemy_hp": {
+      "params": []
+    },
+    "lab.v2.normal_ttk": {
+      "params": []
+    },
+    "lab.v2.income": {
+      "params": []
+    },
+    "lab.v2.survivability": {
+      "params": []
+    },
+    "lab.v2.weapon_share": {
+      "params": []
+    },
+    "lab.v2.growth_gap": {
+      "params": []
+    },
+    "lab.v2.events": {
+      "params": []
+    },
+    "lab.v2.evidence": {
+      "params": []
+    },
+    "lab.v2.timeline_context": {
+      "params": [
+        "strategy",
+        "seed",
+        "interval",
+        "samples",
+        "dropped"
+      ]
+    },
+    "lab.v2.diagnosis_hint": {
+      "params": []
+    },
+    "lab.v2.severity": {
+      "params": []
+    },
+    "lab.v2.onset": {
+      "params": []
+    },
+    "lab.v2.detected": {
+      "params": []
+    },
+    "lab.v2.issue": {
+      "params": []
+    },
+    "lab.v2.table_limit": {
+      "params": []
+    },
+    "lab.v2.strategy_dominance": {
+      "params": []
+    },
+    "lab.v2.summary": {
+      "params": [
+        "stage",
+        "ttk",
+        "boss",
+        "upgrade",
+        "decision",
+        "gap",
+        "deaths",
+        "balance"
+      ]
+    },
+    "lab.v2.build": {
+      "params": [
+        "weapons",
+        "defence",
+        "resources"
+      ]
+    },
+    "lab.v2.issue.weapon_monopoly": {
+      "params": []
+    },
+    "lab.v2.issue.weapon_ineffective": {
+      "params": []
+    },
+    "lab.v2.issue.weapon_untried": {
+      "params": []
+    },
+    "lab.v2.issue.enemy_trivial": {
+      "params": []
+    },
+    "lab.v2.issue.ttk_wall": {
+      "params": []
+    },
+    "lab.v2.issue.defence_low_value": {
+      "params": []
+    },
+    "lab.v2.issue.growth_stalled": {
+      "params": []
+    },
+    "lab.v2.issue.upgrades_too_fast": {
+      "params": []
+    },
+    "lab.v2.issue.growth_vacuum": {
+      "params": []
+    },
+    "lab.v2.issue.resource_zero": {
+      "params": []
+    },
+    "lab.v2.issue.resource_hoarding": {
+      "params": []
+    },
+    "lab.v2.issue.death_burst": {
+      "params": []
+    },
+    "lab.v2.issue.dps_breakthrough": {
+      "params": []
+    },
+    "lab.v2.issue.dps_stagnation": {
+      "params": []
+    },
+    "lab.v2.issue.few_new_choices": {
+      "params": []
+    },
+    "lab.v2.issue.system_inactive": {
+      "params": []
+    },
+    "lab.v2.issue.spending_concentration": {
+      "params": []
+    },
+    "lab.v2.issue.events_truncated": {
+      "params": []
+    },
+    "lab.v2.issue.comparison_dps": {
+      "params": []
+    },
+    "lab.v2.issue.comparison_upgrade": {
+      "params": []
+    },
+    "lab.v2.issue.comparison_weapon": {
+      "params": []
+    },
+    "upgrade.hightech.jewel_furnace.name": {
+      "params": []
+    },
+    "upgrade.hightech.jewel_furnace.description": {
+      "params": [
+        "effect_1",
+        "effect_2"
+      ],
+      "formulas": [
+        "para1",
+        "{过去一分钟的宝石碎片生成量*para2*等级,向上取整,不含自身}"
+      ]
+    },
+    "battle.jewel_furnace_core": {
+      "params": []
+    },
+    "battle.jewel_furnace_amount": {
+      "params": [
+        "amount"
+      ]
+    },
+    "unlock.remaining": {
+      "params": [
+        "count"
+      ]
+    },
+    "unlock.next": {
+      "params": []
+    },
+    "lab.mode.exact": {
+      "params": []
+    },
+    "lab.mode.fast": {
+      "params": []
+    },
+    "research.heading": {
+      "params": []
+    },
+    "research.subtitle": {
+      "params": []
+    },
+    "research.ai_summary": {
+      "params": [
+        "total",
+        "assigned",
+        "idle"
+      ]
+    },
+    "research.inventory": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.navigation": {
+      "params": []
+    },
+    "research.metrics": {
+      "params": [
+        "rate",
+        "points",
+        "required"
+      ]
+    },
+    "research.assigned": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.progress": {
+      "params": [
+        "percent"
+      ]
+    },
+    "research.foundation": {
+      "params": []
+    },
+    "research.frame": {
+      "params": []
+    },
+    "research.assembly": {
+      "params": []
+    },
+    "research.validation": {
+      "params": []
+    },
+    "research.paused": {
+      "params": []
+    },
+    "research.idle": {
+      "params": []
+    },
+    "research.complete": {
+      "params": []
+    },
+    "research.empty": {
+      "params": []
+    },
+    "gem.center.title": {
+      "params": []
+    },
+    "gem.center.socket_tab": {
+      "params": []
+    },
+    "gem.center.manage_tab": {
+      "params": []
+    },
+    "gem.center.modules": {
+      "params": []
+    },
+    "gem.center.manage_help": {
+      "params": []
+    },
+    "gem.center.search": {
+      "params": []
+    },
+    "gem.center.usable": {
+      "params": []
+    },
+    "gem.center.sort_level": {
+      "params": []
+    },
+    "gem.center.sort_type": {
+      "params": []
+    },
+    "gem.center.upgrade_installed": {
+      "params": []
+    },
+    "gem.center.combine": {
+      "params": []
+    },
+    "gem.center.welcome": {
+      "params": []
+    },
+    "gem.center.module": {
+      "params": [
+        "kind",
+        "index",
+        "state",
+        "name",
+        "level",
+        "used",
+        "count"
+      ]
+    },
+    "gem.center.active": {
+      "params": []
+    },
+    "gem.center.inactive": {
+      "params": []
+    },
+    "gem.center.choose_socket": {
+      "params": []
+    },
+    "gem.center.choose_gem": {
+      "params": []
+    },
+    "gem.center.available": {
+      "params": []
+    },
+    "gem.center.empty": {
+      "params": []
+    },
+    "gem.center.no_match": {
+      "params": []
+    },
+    "gem.center.results": {
+      "params": [
+        "count"
+      ]
+    },
+    "gem.center.socket_hint": {
+      "params": []
+    },
+    "gem.center.combine_hint": {
+      "params": []
+    },
+    "gem.center.empty_socket": {
+      "params": [
+        "index"
+      ]
+    },
+    "gem.center.locked_socket": {
+      "params": [
+        "level"
+      ]
+    },
+    "gem.center.installed": {
+      "params": []
+    },
+    "gem.center.manage_title": {
+      "params": []
+    },
+    "gem.center.target": {
+      "params": [
+        "kind",
+        "index",
+        "name",
+        "level"
+      ]
+    },
+    "gem.center.socket_done": {
+      "params": []
+    },
+    "gem.center.removed": {
+      "params": []
+    },
+    "gem.center.upgrade_unavailable": {
+      "params": []
+    },
+    "gem.center.upgraded": {
+      "params": []
+    },
+    "gem.center.socket_help": {
+      "params": []
+    },
+    "gem.center.owned": {
+      "params": [
+        "count"
+      ]
+    },
+    "gem.center.next": {
+      "params": [
+        "effect",
+        "required",
+        "have"
+      ]
+    },
+    "gem.center.max": {
+      "params": [
+        "refund"
+      ]
+    },
+    "gem.center.preview": {
+      "params": [
+        "index"
+      ]
+    },
+    "gem.center.old": {
+      "params": []
+    },
+    "gem.center.new": {
+      "params": []
+    },
+    "gem.center.none": {
+      "params": []
+    },
+    "gem.center.installed_materials": {
+      "params": [
+        "required",
+        "have"
+      ]
+    },
+    "gem.center.upgrade_preview": {
+      "params": []
+    },
+    "gem.center.full_hint": {
+      "params": []
+    },
+    "gem.center.inactive_hint": {
+      "params": []
+    },
+    "gem.center.explicit": {
+      "params": []
+    },
+    "gem.center.remove_hint": {
+      "params": []
+    },
+    "gem.center.clear_candidate": {
+      "params": []
+    },
+    "gem.center.upgrade_help": {
+      "params": []
+    },
+    "gem.center.combine_insufficient": {
+      "params": []
+    },
+    "gem.center.combine_help": {
+      "params": [
+        "required"
+      ]
+    },
+    "gem.center.manage_heading": {
+      "params": []
+    },
+    "gem.center.wrong_category": {
+      "params": []
+    },
+    "gem.center.duplicate": {
+      "params": []
+    },
+    "gem.center.unavailable": {
+      "params": []
+    },
+    "gem.center.protected": {
+      "params": []
+    },
+    "gem.center.history_hint": {
+      "params": []
+    },
+    "gem.center.decrease": {
+      "params": []
+    },
+    "gem.visual.subtitle": {
+      "params": []
+    },
+    "gem.visual.weapon": {
+      "params": []
+    },
+    "gem.visual.defence": {
+      "params": []
+    },
+    "gem.visual.universal": {
+      "params": []
+    },
+    "gem.visual.empty_display": {
+      "params": []
+    },
+    "crew.tab": {
+      "params": []
+    },
+    "crew.heading": {
+      "params": []
+    },
+    "crew.api_only": {
+      "params": []
+    },
+    "crew.choose_job": {
+      "params": []
+    },
+    "crew.choose_target": {
+      "params": []
+    },
+    "crew.assign": {
+      "params": []
+    },
+    "crew.release": {
+      "params": []
+    },
+    "crew.idle": {
+      "params": []
+    },
+    "crew.inactive": {
+      "params": []
+    },
+    "crew.unsupported": {
+      "params": []
+    },
+    "crew.empty": {
+      "params": []
+    },
+    "crew.empty_module": {
+      "params": []
+    },
+    "crew.max_level": {
+      "params": []
+    },
+    "crew.row": {
+      "params": [
+        "name",
+        "level",
+        "job",
+        "target",
+        "effect"
+      ]
+    },
+    "crew.name_level": {
+      "params": [
+        "name",
+        "level"
+      ]
+    },
+    "crew.progress": {
+      "params": [
+        "exp",
+        "needed",
+        "effect"
+      ]
+    },
+    "crew.equipment_reserved": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.module_target": {
+      "params": [
+        "kind",
+        "index",
+        "name"
+      ]
+    },
+    "crew.badge": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.badge_tip": {
+      "params": [
+        "name",
+        "level",
+        "effect"
+      ]
+    },
+    "crew.job.weapon": {
+      "params": []
+    },
+    "crew.job.defense": {
+      "params": []
+    },
+    "crew.job.hightech": {
+      "params": []
+    },
+    "crew.job.smelting": {
+      "params": []
+    },
+    "crew.job.production": {
+      "params": []
+    },
+    "crew.effect.auto": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.effect.efficiency": {
+      "params": [
+        "value"
+      ]
+    },
+    "crew.effect.speed": {
+      "params": [
+        "value"
+      ]
+    },
+    "crew.effect.output": {
+      "params": [
+        "value"
+      ]
+    },
+    "crew.effect.generic": {
+      "params": [
+        "description",
+        "value",
+        "interval"
+      ]
+    },
+    "crew.job.equipment": {
+      "params": []
+    },
+    "crew.all_equipment": {
+      "params": []
+    },
+    "crew.upgrade_amount": {
+      "params": []
+    },
+    "crew.upgrade_levels": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.upgrade_max": {
+      "params": []
+    },
+    "crew.effect.all_equipment": {
+      "params": [
+        "interval",
+        "mode"
+      ]
+    },
+    "crew.unlock_at": {
+      "params": [
+        "level"
+      ]
     }
   },
   "bindings": {
@@ -2678,6 +3582,10 @@
       "简并态装甲": {
         "description": "upgrade.hightech.item_03.description",
         "name": "upgrade.hightech.item_03.name"
+      },
+      "宝石熔炼炉": {
+        "name": "upgrade.hightech.jewel_furnace.name",
+        "description": "upgrade.hightech.jewel_furnace.description"
       }
     },
     "charge": {
@@ -2692,6 +3600,26 @@
       "熔炼器充能": {
         "des": "upgrade.charge.item_03.des",
         "name": "upgrade.charge.item_03.name"
+      }
+    },
+    "equipment": {
+      "laser": {
+        "name": "weapon.laser_name"
+      },
+      "missile": {
+        "name": "weapon.missile_name"
+      },
+      "cannon": {
+        "name": "weapon.cannon_name"
+      },
+      "longLaser": {
+        "name": "weapon.long_laser_name"
+      },
+      "armour": {
+        "name": "defense.armour_name"
+      },
+      "shield": {
+        "name": "defense.shield_name"
       }
     }
   }

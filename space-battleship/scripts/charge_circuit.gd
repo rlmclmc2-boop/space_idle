@@ -1,7 +1,7 @@
 extends Control
 ## Vector instrument only; its port is the physical anchor read by the network.
 const COLORS := {"charging":Color("65f3ff"),"paused":Color("647f93"),"insufficient":Color("c08c51"),"available":Color("43899f"),"locked":Color("344a59")}
-const COMPLETION_DURATION := 0.24
+const COMPLETION_DURATION := 0.16
 var core := false
 var flowing := false
 var viewport_active := true
@@ -103,15 +103,20 @@ func set_job_progress(value: float, level: int, count: float) -> void:
 	var completed := last_level>=0 and (level>last_level or (level==last_level and count>last_count))
 	if completed and (flowing or observed_running) and not frozen and viewport_active and is_visible_in_tree():
 		completion_remaining=COMPLETION_DURATION
-		display_progress=1.0
 	last_level=level
 	last_count=count
 	observed_running=flowing
-	if value!=progress:
+	# A round boundary resets the progress, never interpolates backwards from
+	# the previous round. Completion is an independent, fading outer accent.
+	if completed or value<progress:
+		display_progress=value
+		tween_from=value
+		tween_elapsed=0.1
+	elif value!=progress:
 		tween_from=display_progress
 		tween_elapsed=0.0
 	progress=value
-	if completion_remaining<=0 and (not flowing or not viewport_active or frozen):
+	if not flowing or not viewport_active or frozen:
 		display_progress=value
 	update_percent()
 	update_activity()
@@ -122,7 +127,7 @@ func set_job_progress(value: float, level: int, count: float) -> void:
 
 func update_percent() -> void:
 	if is_instance_valid(percent_label):
-		var value := "%d%%" % roundi((display_progress if completion_remaining>0 else progress)*100)
+		var value := "%d%%" % roundi(progress*100)
 		if percent_label.text!=value:
 			write_value.call(percent_label,"text",value)
 
@@ -141,10 +146,8 @@ func _process(delta: float) -> void:
 	phase=fmod(phase+accumulator*0.04,1.0)
 	if completion_remaining>0:
 		completion_remaining=maxf(0,completion_remaining-accumulator)
-		display_progress=lerpf(progress,1.0,smoothstep(0.0,0.08,completion_remaining))
-	else:
-		tween_elapsed=minf(0.1,tween_elapsed+accumulator)
-		display_progress=lerpf(tween_from,progress,tween_elapsed/0.1)
+	tween_elapsed=minf(0.1,tween_elapsed+accumulator)
+	display_progress=lerpf(tween_from,progress,tween_elapsed/0.1)
 	accumulator=0
 	update_percent()
 	queue_redraw()

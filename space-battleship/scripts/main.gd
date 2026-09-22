@@ -74,6 +74,9 @@ var floats: Array[Dictionary] = []
 var clock := 0.0
 var star_travel := 0.0
 var star_streak := 0.0
+# Immutable star seeds own this geometry until the scene is freed.
+var stars_mesh: ArrayMesh
+const STARFIELD_SHADER := preload("res://scripts/starfield.gdshader")
 var shake := 0.0
 var message := ""
 var message_time := 0.0
@@ -92,9 +95,10 @@ var upgrade_buttons: Dictionary = {}
 var ten_upgrade_buttons: Dictionary = {}
 var max_upgrade_buttons: Dictionary = {}
 var EQUIPMENT_PAGES: Array = []
-const BATTLE_TAB := 5
+var battle_return_button: Button
 var equipment_panel: Control
-var equipment_page := BATTLE_TAB
+var crew_panel: Control
+var equipment_page := 0
 var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
 var equipment_card_controls: Dictionary = {}
@@ -111,8 +115,10 @@ var scientist_remove_buttons: Dictionary = {}
 var charge_cards: Dictionary = {}
 var charge_panel: Control
 var charge_nav_backdrop: ColorRect
-const HIGHTECH_SLOT_SCRIPT := preload("res://scripts/hightech_slot.gd")
-const HIGHTECH_CARD_SIZE := Vector2(443,112)
+const HIGHTECH_CARD_SIZE := Vector2(324,510)
+const CONSTRUCTION_SCRIPT := preload("res://scripts/hightech_construction.gd")
+var hightech_page: Panel
+var hightech_inventory: Label
 var hightech_scroll: ScrollContainer
 var hightech_scroll_offset := 0
 var ui_rebuild_pending := false
@@ -138,7 +144,6 @@ var battle_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
 var jewel_panel: Panel
-var hightech_sync_pending := false
 
 func _ready() -> void:
 	var text_errors := UIText.reload_catalog()
@@ -209,6 +214,20 @@ func _ready() -> void:
 		game.speed = saved_speed if saved_speed in [1,2,5] else 1
 		call_deferred("show_qa_tools")
 
+var balance_lab: Window
+
+func show_balance_lab() -> void:
+	if not OS.has_feature("debug") or not ProjectSettings.get_setting("debug/balance_lab/enabled",true):return
+	get_viewport().gui_embed_subwindows = false
+	if not is_instance_valid(balance_lab):
+		balance_lab = Window.new()
+		balance_lab.transient = true
+		balance_lab.exclusive = true
+		balance_lab.set_script(load("res://scripts/balance_panel.gd"))
+		add_child(balance_lab)
+	balance_lab.set_process(true)
+	balance_lab.popup_centered()
+
 func show_qa_tools() -> void:
 	if not OS.has_feature("debug"):
 		return
@@ -227,8 +246,8 @@ func _notification(what: int) -> void:
 		game.save_progress()
 
 func _process(delta: float) -> void:
-	if hightech_sync_pending and not get_viewport().gui_is_dragging():
-		sync_hightech_slots()
+	# Freeze the live scene while the independent lab window owns focus.
+	if is_instance_valid(balance_lab) and balance_lab.visible:return
 	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
 		ui_rebuild_pending = false
 		build_ui()
@@ -264,13 +283,6 @@ func _process(delta: float) -> void:
 	refresh_visible_cards(dt)
 	refresh_navigation()
 	refresh_draw_layers(dt)
-	if is_instance_valid(hightech_scroll) and hightech_scroll.is_visible_in_tree() and get_viewport().gui_is_dragging():
-		var mouse := hightech_scroll.get_local_mouse_position()
-		if mouse.y >= 0 and mouse.y <= hightech_scroll.size.y:
-			if mouse.x >= hightech_scroll.size.x-36 and mouse.x <= hightech_scroll.size.x:
-				hightech_scroll.scroll_horizontal += int(600*delta)+1
-			elif mouse.x >= 0 and mouse.x < 36:
-				hightech_scroll.scroll_horizontal -= int(600*delta)+1
 	if automation_args.has("--capture"):
 		capture_frame += 1
 		if capture_frame == 45:
@@ -279,8 +291,13 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F8:
+		show_balance_lab()
+		get_viewport().set_input_as_handled()
+		return
+	if is_instance_valid(balance_lab) and balance_lab.visible:return
 	if event is InputEventMouseMotion:
-		game.collect_near(get_global_mouse_position())
+		game.collect_near(event.position)
 	if event is InputEventMouseButton and event.pressed:
 		game.collect_near(get_global_mouse_position(), event.button_index == MOUSE_BUTTON_LEFT)
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -297,6 +314,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
+		"crew_changed":
+			if is_instance_valid(crew_panel):crew_panel.invalidate()
+			var targets_changed: Array[String] = []
+			for item in [info.previous,info.current]:
+				var target_id := str(item.get("targetId",""))
+				if target_id.is_empty() or targets_changed.has(target_id):continue
+				targets_changed.append(target_id)
+				if is_instance_valid(equipment_panel):equipment_panel.refresh_crew_badge(target_id)
+				if equipment_tabs.current_tab==1:refresh_hightech_card(target_id)
 		"equipment_stats":
 			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
 		"jewels_changed":
@@ -366,19 +392,30 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"upgrade":
 			var levels := int(info.get("levels",1))
 			toast(UIText.t("upgrade.completed",{"name":UIText.t("module.upgrade_name",{"slot":str(info.get("slot",""))}),"result":UIText.t("main.on_event.text_02") if levels == 1 else UIText.t("main.on_event.text_03", {"levels":"%s" % (str(int(levels)))})}))
+			if bool(info.get("batch",false)):return
 			refresh_equipment_cards(str(info.get("slot","")))
 			if is_instance_valid(jewel_panel) and jewel_panel.visible and str(info.get("slot",""))==game.slot_id(jewel_panel.category,jewel_panel.equipment_index):
 				jewel_panel.refresh()
+		"upgrades_completed":
+			if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(info.slots)
+			if is_instance_valid(jewel_panel) and jewel_panel.visible and info.slots.has(game.slot_id(jewel_panel.category,jewel_panel.equipment_index)):
+				jewel_panel.refresh()
 		"module_changed":
+			if is_instance_valid(crew_panel):crew_panel.invalidate()
+			if is_instance_valid(jewel_panel) and jewel_panel.visible:jewel_panel.refresh()
 			refresh_equipment_cards(str(info.slot))
 			refresh_ship_controls()
 		"ship_changed":
 			refresh_structure()
+			if is_instance_valid(jewel_panel) and jewel_panel.visible:jewel_panel.refresh()
 		"scientists_changed":
 			refresh_scientists()
 			for key in hightech_progress:
 				refresh_hightech_progress(key)
 		"hightech_complete":
+			if game.hightech_level(str(info.key))==1 and is_instance_valid(crew_panel):crew_panel.invalidate()
+			if hightech_progress.has(str(info.key)):
+				hightech_progress[str(info.key)].construction.celebrate()
 			toast(UIText.t("upgrade.research_complete", {"name":UIText.data_text("hightech",str(info.key))}))
 			refresh_hightech_card(str(info.key))
 			refresh_equipment_effects(str(info.key))
@@ -737,11 +774,12 @@ func flush_ui_rebuild() -> void:
 		build_ui()
 
 func build_ui() -> void:
-	# Combat and research events must not remove a card while it is being dragged.
+	# Explicit UI rebuilds still preserve active drags in other feature pages.
 	if get_viewport().gui_is_dragging():
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
+	battle_return_button = null
 	if is_instance_valid(hightech_scroll):
 		hightech_scroll_offset = hightech_scroll.scroll_horizontal
 	hightech_scroll = null
@@ -834,6 +872,10 @@ func build_ui() -> void:
 	jewel_panel = preload("res://scripts/jewel_panel.gd").new()
 	ui.add_child(jewel_panel)
 	jewel_panel.setup(self)
+	jewel_panel.visibility_changed.connect(layout_battle_return)
+	if equipment_tabs.current_tab==4:jewel_panel.open()
+	battle_return_button = button(UIText.t("battle.return"),Rect2(500,25,140,38),return_to_battle)
+	layout_battle_return()
 	refresh_draw_layers(0)
 
 func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
@@ -856,16 +898,37 @@ func refresh_visible_cards(delta := 0.0) -> void:
 		1:
 			refresh_scientists()
 			for key in hightech_progress:
-				refresh_hightech_card(key)
+				var controls: Dictionary = hightech_progress[key]
+				var construction = controls.construction
+				if construction.active_in_view():
+					construction.advance(delta,game.paused)
+					controls.sample = float(controls.get("sample",0.0))+delta
+					if delta<=0 or not controls.get("in_view",false) or controls.get("paused")!=game.paused or controls.get("complete")!=(construction.completed>0) or (not game.paused and controls.sample>=0.1):
+						refresh_hightech_card(key)
+						controls.sample = 0.0
+					controls.in_view = true
+					controls.paused = game.paused
+					controls.complete = construction.completed>0
+				else:
+					controls.in_view = false
 		2:
 			charge_panel.refresh_sample(delta)
+		5:
+			if crew_panel.dirty:crew_panel.refresh()
 
 func refresh_hightech_card(key: String) -> void:
 	if not hightech_progress.has(key):
 		return
 	var title: Label = hightech_titles[key]
+	if equipment_tabs.current_tab==1:
+		var crew_badge: Dictionary = game.crew.badge(game,key)
+		set_ui_value(hightech_progress[key].crew,"text",crew_badge.text)
+		set_ui_value(hightech_progress[key].crew,"tooltip_text",crew_badge.tooltip)
 	if ui_state_changed(title,[game.hightech_level(key),db.data.hightech[key]]):
 		set_ui_value(title,"text",UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("hightech",key)), "level":"%s" % (str(int(game.hightech_level(key))))}))
+		set_ui_value(title,"tooltip_text",title.text)
+	var income := game.furnace_income_peak(-1,true) if key == BattleGame.JEWEL_FURNACE else 0.0
+	if ui_state_changed(hightech_descriptions[key],[game.hightech_level(key),db.data.hightech[key],income]):
 		var description := game.hightech_description(key)
 		set_ui_value(hightech_descriptions[key],"text",description)
 		set_ui_value(hightech_descriptions[key],"tooltip_text",description)
@@ -887,13 +950,14 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.jewels_unlocked())
-	pages.append(true) # The existing battlefield always has a return entry.
+	pages.append(game.profile.crew.any(func(item):return game.crew.unlocked(game,item.crewId)))
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
 	var selected := equipment_page
 	if selected < 0 or selected >= pages.size() or not pages[selected]:
 		selected = pages.find(true)
+	equipment_page = selected
 	set_ui_value(equipment_tabs,"current_tab",selected)
 
 func refresh_structure() -> void:
@@ -902,6 +966,7 @@ func refresh_structure() -> void:
 	if not ui_state_changed(equipment_tabs,[game.profile.loadout,game.profile.unlocked,game.profile.cleared,game.profile.selectedShip]):
 		return
 	equipment_panel.refresh()
+	if is_instance_valid(crew_panel):crew_panel.invalidate()
 	sync_hightech_slots()
 	refresh_ship_controls()
 	refresh_tab_visibility()
@@ -910,27 +975,22 @@ func refresh_structure() -> void:
 func sync_hightech_slots() -> void:
 	if not is_instance_valid(hightech_container):
 		return
-	if get_viewport().gui_is_dragging():
-		hightech_sync_pending = true
-		return
-	hightech_sync_pending = false
-	var slots := game.hightech_slots()
+	var slots := game.hightech_slots().filter(func(key):return not str(key).is_empty())
 	for index in slots.size():
 		var key := str(slots[index])
 		var matching: Control = null
-		for child in hightech_container.get_children().slice(index+1):
-			if child.get("tech_key") == key:
+		for child in hightech_container.get_children().slice(index):
+			if child.get_meta("tech_key", "") == key:
 				matching = child
 				break
 		if matching == null:
 			build_hightech_card(index,key)
 			matching = hightech_container.get_child(-1)
-		if matching.get_index() != index+1:
-			hightech_container.move_child(matching,index+1)
-		matching.slot_index = index
-	while hightech_container.get_child_count() > slots.size()+1:
+		if matching.get_index() != index:
+			hightech_container.move_child(matching,index)
+	while hightech_container.get_child_count() > slots.size():
 		var retired = hightech_container.get_child(-1)
-		var key := str(retired.tech_key)
+		var key := str(retired.get_meta("tech_key"))
 		for controls in [hightech_buttons,hightech_titles,hightech_descriptions,hightech_progress,scientist_remove_buttons,scientist_assignment_buttons]:
 			controls.erase(key)
 		hightech_container.remove_child(retired)
@@ -959,7 +1019,8 @@ func refresh_navigation() -> void:
 		set_ui_value(help_close_button,"visible",help_visible)
 	var navigation_visible := not help_open and not unlocking
 	if ui_state_changed(guard_settings,[navigation_visible]):
-		for control in [loop_select,loop_button,guard_settings,equipment_tabs,sound_button]:
+		for control in [loop_select,loop_button,guard_settings,equipment_tabs,sound_button,battle_return_button]:
+			if not is_instance_valid(control):continue
 			set_ui_value(control,"visible",navigation_visible)
 	var advance_visible := navigation_visible and game.state==BattleGame.State.LEVEL_CLEAR
 	if ui_state_changed(advance_button,[advance_visible]):
@@ -1001,6 +1062,9 @@ func create_draw_layers() -> void:
 	background_layer = Node2D.new()
 	chrome_layer = Node2D.new()
 	stars_layer = Node2D.new()
+	var star_material := ShaderMaterial.new()
+	star_material.shader=STARFIELD_SHADER
+	stars_layer.material=star_material
 	battle_layer = Node2D.new()
 	resource_layer = Node2D.new()
 	overlay_layer = Node2D.new()
@@ -1015,16 +1079,25 @@ func create_draw_layers() -> void:
 func refresh_draw_layers(dt: float) -> void:
 	if not is_instance_valid(battle_layer):
 		return
+	sync_battle_visibility()
 	if ui_state_changed(stars_layer,[star_travel,star_streak,game.speed]):
 		stars_layer.queue_redraw()
 	# Animation is isolated to the battlefield; stationary UI/backgrounds retain draw commands.
-	var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
-	if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
-		battle_layer.queue_redraw()
+	if battle_layer.visible:
+		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
+		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
+			battle_layer.queue_redraw()
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
 	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,message if message_time>0 and not help_open and game.pending_unlocks.is_empty() else ""]):
 		overlay_layer.queue_redraw()
+
+func sync_battle_visibility() -> void:
+	if not is_instance_valid(battle_layer):return
+	var covered := is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree()
+	if battle_layer.visible==covered:
+		battle_layer.visible = not covered
+		if not covered:battle_layer.queue_redraw()
 
 func set_damage_mode(mode: int) -> void:
 	damage_mode = mode
@@ -1121,12 +1194,33 @@ func draw_chrome() -> void:
 	text_at(UIText.t("main.draw_chrome.text_02"),Vector2(40,795),11,MUTED)
 
 func draw_stars() -> void:
-	for s in stars:
-		var x := fposmod(float(s.x)-star_travel*float(s.z)*4,1440)
-		var a := 0.2+float(s.z)*0.5
-		draw_surface.draw_circle(Vector2(x,s.y),float(s.z)*1.35,Color(0.7,0.83,1,a))
-		if star_streak > 0:
-			draw_surface.draw_line(Vector2(x,s.y),Vector2(x+float(s.z)*9*game.speed*star_streak,s.y),Color(0.5,0.8,1,a*0.3*star_streak))
+	if stars_mesh==null:
+		var vertices := PackedVector3Array()
+		var colors := PackedColorArray()
+		var uvs := PackedVector2Array()
+		var indices := PackedInt32Array()
+		for star in stars:
+			var offset := vertices.size()
+			for uv in [Vector2(0,0),Vector2(1,0),Vector2(1,1),Vector2(0,1)]:
+				vertices.append(Vector3(star.x+uv.x*2,star.y+uv.y*2,0))
+				uvs.append(uv)
+				colors.append(Color(star.z,star.x/1440.0,star.y/810.0,1))
+			indices.append_array(PackedInt32Array([offset,offset+1,offset+2,offset,offset+2,offset+3]))
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX]=vertices
+		arrays[Mesh.ARRAY_COLOR]=colors
+		arrays[Mesh.ARRAY_TEX_UV]=uvs
+		arrays[Mesh.ARRAY_INDEX]=indices
+		stars_mesh=ArrayMesh.new()
+		stars_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays)
+	# Reuse all 200 quads. The explicit uniforms preserve pause and the original
+	# wrap/direction/speed/trail ramp without 200-400 individual draw commands.
+	var mat: ShaderMaterial=stars_layer.material
+	mat.set_shader_parameter("travel",star_travel)
+	mat.set_shader_parameter("streak",star_streak)
+	mat.set_shader_parameter("speed",float(game.speed))
+	draw_surface.draw_mesh(stars_mesh,null)
 
 func draw_resources() -> void:
 	text_at(str(UIText.data_text("resources",str("1"))),Vector2(850,34),11,MUTED)
@@ -1193,11 +1287,12 @@ func draw_battle() -> void:
 		var color := INK if drop.id=="1" else PURPLE
 		var bob := sin(clock*3+float(drop.uid))*3
 		var furnace: bool = drop.get("hightech", false)
+		var core: bool = furnace and drop.has("jewel")
 		var auto_gen: bool = drop.get("auto_gen", false)
 		if furnace:
-			color = ORANGE
-			box(Rect2(pos-Vector2(18,18),Vector2(36,36)),PANEL,ORANGE)
-			text_at(UIText.t("battle.draw_battle.text_09"),pos+Vector2(-25,-31),12,ORANGE)
+			color = PURPLE if core else ORANGE
+			box(Rect2(pos-Vector2(18,18),Vector2(36,36)),PANEL,color)
+			text_at(UIText.t("battle.jewel_furnace_core" if core else "battle.draw_battle.text_09"),pos+Vector2(-25,-31),12,color)
 		if auto_gen:
 			draw_surface.draw_line(pos+Vector2(22,0),pos+Vector2(62,0),Color(color,0.25),2)
 		elif not furnace:
@@ -1206,7 +1301,8 @@ func draw_battle() -> void:
 			draw_surface.draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/10.0,0,1),24,Color(color,0.35),2)
 		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),16,Color(color,0.65))
 		if furnace or pos.distance_to(get_global_mouse_position())<40:
-			text_at(UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))}),pos+Vector2(-19,26),12,color)
+			var caption := UIText.t("battle.jewel_furnace_amount",{"amount":number(drop.amount)}) if core else UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
+			text_at(caption,pos+Vector2(-19,26),12,color)
 	draw_battle_particles(offset,false)
 	var visual_index := projectile_visual_index()
 	var flights: Array = []
@@ -1496,21 +1592,42 @@ func build_equipment_tabs() -> void:
 	jewel_tab.name = "Jewels"
 	equipment_tabs.add_child(jewel_tab)
 	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(jewel_tab),UIText.t("gem.tab"))
-	var open_jewels := button(UIText.t("weapon.build_equipment_tabs.text_02"), Rect2(22,20,460,45), func():jewel_panel.open())
-	open_jewels.reparent(jewel_tab,false)
-	equipment_card_label(jewel_tab,UIText.t("weapon.build_equipment_tabs.text_03"),Rect2(505,24,780,38),16,MUTED)
-	var battle_tab := Control.new()
-	battle_tab.name = "Battlefield"
-	equipment_tabs.add_child(battle_tab)
-	equipment_tabs.set_tab_title(BATTLE_TAB,UIText.t("battle.tab"))
+	crew_panel = preload("res://scripts/crew_panel.gd").new()
+	crew_panel.name = "Crew"
+	equipment_tabs.add_child(crew_panel)
+	equipment_tabs.set_tab_title(5,UIText.t("crew.tab"))
+	crew_panel.setup(self)
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
 		if is_instance_valid(jewel_panel):
-			set_ui_value(jewel_panel,"visible",false)
+			if index==4:jewel_panel.open()
+			else:set_ui_value(jewel_panel,"visible",false)
 		layout_charge_page()
+		sync_battle_visibility()
 		refresh_visible_cards())
 	layout_charge_page()
+
+func return_to_battle() -> void:
+	# Navigation only: preserve the battle and all existing feature controls.
+	if is_instance_valid(jewel_panel):set_ui_value(jewel_panel,"visible",false)
+	equipment_panel.set_view_mode("compact")
+	var first := -1
+	for index in equipment_tabs.get_tab_count():
+		if not equipment_tabs.is_tab_hidden(index):
+			first = index
+			break
+	equipment_page = first
+	set_ui_value(equipment_tabs,"current_tab",first)
+	layout_charge_page()
+
+func layout_battle_return() -> void:
+	if not is_instance_valid(battle_return_button):return
+	var jewels := equipment_tabs.current_tab==4 or (is_instance_valid(jewel_panel) and jewel_panel.visible)
+	set_ui_value(battle_return_button,"position",Vector2(1240,0) if jewels else Vector2(500,25))
+	set_ui_value(battle_return_button,"size",Vector2(162,30) if jewels else Vector2(140,38))
+	set_ui_value(battle_return_button,"visible",not help_open and game.pending_unlocks.is_empty())
+	ui.move_child(battle_return_button,-1)
 
 func refresh_equipment_cards(only_slot := "") -> void:
 	if is_instance_valid(equipment_panel):
@@ -1534,37 +1651,50 @@ func build_ship_tab() -> void:
 func refresh_scientists() -> void:
 	if not is_instance_valid(scientist_generate_button):
 		return
-	if not ui_state_changed(scientist_summary,[game.profile.scientists,game.profile.scientistAssignments,game.profile.resources,hightech_buttons.keys()]):
-		return
-	set_ui_value(scientist_summary,"text",UIText.t("upgrade.refresh_scientists.text_01", {"scientists":"%s" % (number(game.profile.scientists)), "idle_scientists":"%s" % (number(game.idle_scientists()))}))
-	var costs: Array[String] = []
-	for id in game.scientist_cost():
-		costs.append(UIText.t("upgrade.refresh_scientists.text_02", {"id":"%s" % (UIText.data_text("resources",str(id))), "id_2":"%s" % (number(game.scientist_cost()[id]))}))
-	set_ui_value(scientist_generate_button,"text",UIText.t("upgrade.refresh_scientists.text_03"))
-	set_ui_value(scientist_generate_button,"tooltip_text"," / ".join(costs))
-	set_ui_value(scientist_cost_label,"text",UIText.t("upgrade.scientist_cost",{"cost":" / ".join(costs)}))
-	set_ui_value(scientist_cost_label,"tooltip_text",scientist_cost_label.text)
-	set_ui_value(scientist_distribute_button,"disabled",int(game.profile.scientists)<=0 or game.hightech_slots().all(func(key):return str(key).is_empty()))
-	for amount in scientist_bulk_buttons:
-		set_ui_value(scientist_bulk_buttons[amount],"disabled",not game.can_generate_scientist(amount))
-	for key in scientist_assignment_buttons:
-		set_ui_value(hightech_buttons[key],"disabled",not game.can_research(key))
-		for action in scientist_assignment_buttons[key]:
-			set_ui_value(action,"disabled",not game.can_research(key))
-	set_ui_value(scientist_generate_button,"disabled",not game.can_generate_scientist())
-	for key in scientist_remove_buttons:
-		set_ui_value(scientist_remove_buttons[key],"disabled",game.assigned_scientists(key)<=0)
+	# Control-owned snapshots: resource income cannot invalidate AI deployment.
+	if ui_state_changed(scientist_summary,[game.profile.scientists,game.profile.scientistAssignments,game.profile.unlocked,hightech_buttons.keys()]):
+		var idle := game.idle_scientists()
+		set_ui_value(scientist_summary,"text",UIText.t("research.ai_summary", {"total":number(game.profile.scientists),"assigned":number(game.profile.scientists-idle),"idle":number(idle)}))
+		set_ui_value(hightech_inventory,"text",UIText.t("research.inventory",{"count":str(hightech_buttons.size())}))
+		set_ui_value(scientist_distribute_button,"disabled",int(game.profile.scientists)<=0 or hightech_buttons.is_empty())
+		for key in scientist_assignment_buttons:
+			var disabled := idle<=0 or not game.hightech_unlocked(key)
+			set_ui_value(hightech_buttons[key],"disabled",disabled)
+			for action in scientist_assignment_buttons[key]:set_ui_value(action,"disabled",disabled)
+			set_ui_value(scientist_remove_buttons[key],"disabled",game.assigned_scientists(key)<=0)
+	if ui_state_changed(scientist_cost_label,[game.profile.scientists,db.config.scientistCost]):
+		var cost := game.scientist_cost()
+		var costs: Array[String] = []
+		for id in cost:
+			costs.append(UIText.t("upgrade.refresh_scientists.text_02", {"id":UIText.data_text("resources",str(id)),"id_2":number(cost[id])}))
+		set_ui_value(scientist_generate_button,"tooltip_text"," / ".join(costs))
+		set_ui_value(scientist_cost_label,"text",UIText.t("upgrade.scientist_cost",{"cost":" / ".join(costs)}))
+		set_ui_value(scientist_cost_label,"tooltip_text",scientist_cost_label.text)
+	if ui_state_changed(scientist_generate_button,[game.profile.scientists,game.profile.resources,game.profile.unlocked,db.config.scientistCost,hightech_buttons.keys()]):
+		for amount in scientist_bulk_buttons:
+			set_ui_value(scientist_bulk_buttons[amount],"disabled",not game.can_generate_scientist(amount))
+		set_ui_value(scientist_generate_button,"disabled",not game.can_generate_scientist())
 
 func refresh_hightech_progress(key: String) -> void:
 	var controls: Dictionary = hightech_progress[key]
-	if not ui_state_changed(controls.label,[game.assigned_scientists(key),game.hightech_level(key),game.profile.techPoints.get(key,0),game.paused]):
-		return
+	var construction = controls.construction
+	var workers := game.assigned_scientists(key)
+	var rate := game.research_rate(key)
 	var required := game.hightech_required(key)
 	var points := float(game.profile.techPoints.get(key,0))
+	if not ui_state_changed(controls.label,[workers,game.hightech_level(key),points,required,rate,game.paused,construction.completed>0]):
+		return
 	var fraction := clampf(points/required,0,1)
-	set_ui_value(controls.label,"text",UIText.t("upgrade.refresh_hightech_progress.text_01", {"key":"%s" % (number(game.assigned_scientists(key))), "key_2":"%s" % (number(game.research_rate(key))), "points":"%s" % (number(points)), "required":"%s" % (number(required)), "fraction":"%.0f" % (floorf(fraction*100))}))
-	set_ui_value(controls.bar.get_child(0),"size",Vector2(controls.bar.size.x*fraction,controls.bar.get_child(0).size.y))
-	set_ui_value(controls.bar.get_child(0),"color",CYAN if game.research_rate(key)>0 and not game.paused else ORANGE)
+	construction.set_fraction(fraction)
+	construction.set_workers(workers)
+	set_ui_value(controls.label,"text",UIText.t("research.metrics",{"rate":number(rate),"points":number(points),"required":number(required)}))
+	set_ui_value(controls.workers,"text",UIText.t("research.assigned",{"count":number(workers)}))
+	var state := "research.foundation" if fraction<0.1 else "research.frame" if fraction<0.4 else "research.assembly" if fraction<0.75 else "research.validation"
+	if game.paused:state = "research.paused"
+	elif workers<=0:state = "research.idle"
+	if construction.completed>0:state = "research.complete"
+	set_ui_value(controls.state,"text",UIText.t(state))
+	set_ui_value(controls.percent,"text",UIText.t("research.progress",{"percent":"100" if construction.completed>0 else "%.0f" % floorf(fraction*100)}))
 
 func build_charge_tab() -> void:
 	charge_panel = preload("res://scripts/charge_panel.gd").new()
@@ -1575,8 +1705,14 @@ func build_charge_tab() -> void:
 	charge_cards = charge_panel.cards
 
 func layout_charge_page() -> void:
-	var expanded := equipment_tabs.current_tab in [2,3]
+	layout_battle_return()
+	var expanded := equipment_tabs.current_tab in [1,2,3,5]
 	set_ui_value(charge_nav_backdrop,"visible",expanded)
+	if equipment_tabs.current_tab==4:
+		equipment_panel.stop_transition()
+		set_ui_value(equipment_tabs,"position",Vector2(38,0))
+		set_ui_value(equipment_tabs,"size",Vector2(1364,776))
+		return
 	if equipment_tabs.current_tab == 0:
 		equipment_panel.apply_view_layout(false)
 		return
@@ -1622,104 +1758,100 @@ func confirm_unequip(category: String, index: int) -> void:
 	dialog.popup_centered()
 
 func build_hightech_tab() -> void:
+	hightech_page = Panel.new()
+	hightech_page.name = "Hightech"
+	hightech_page.add_theme_stylebox_override("panel",style(Color("08121f"),LINE))
+	equipment_tabs.add_child(hightech_page)
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(hightech_page),UIText.t("upgrade.research_tab"))
+	equipment_label(hightech_page,UIText.t("research.heading"),Vector2(18,12),25,INK)
+	equipment_label(hightech_page,UIText.t("research.subtitle"),Vector2(20,48),12,MUTED)
+	scientist_summary = equipment_label(hightech_page,"",Vector2(400,17),17,CYAN)
+	hightech_inventory = equipment_label(hightech_page,"",Vector2(20,91),12,MUTED)
+	var actions := [1,10,-1]
+	for i in actions.size():
+		var amount: int = actions[i]
+		var text_key := "upgrade.refresh_scientists.text_03" if amount==1 else "upgrade.build_hightech_tab.text_04" if amount==10 else "upgrade.build_hightech_tab.text_05"
+		var action := button(UIText.t(text_key),Rect2(857+i*119,14,110,34),func():game.generate_scientist(amount),amount==1)
+		action.reparent(hightech_page,false)
+		action.add_theme_font_size_override("font_size",13)
+		if amount==1:scientist_generate_button=action
+		else:scientist_bulk_buttons[amount]=action
+	scientist_distribute_button = button(UIText.t("upgrade.build_hightech_tab.text_02"),Rect2(1214,14,124,34),func():game.distribute_scientists())
+	scientist_distribute_button.reparent(hightech_page,false)
+	scientist_distribute_button.add_theme_font_size_override("font_size",13)
+	scientist_distribute_button.tooltip_text = UIText.t("upgrade.build_hightech_tab.text_03")
+	scientist_cost_label = equipment_card_label(hightech_page,"",Rect2(857,54,482,28),12,MUTED)
+	var hint := equipment_card_label(hightech_page,UIText.t("research.navigation"),Rect2(500,89,837,24),12,MUTED)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	var scroll := ScrollContainer.new()
 	hightech_scroll = scroll
-	scroll.name = "Hightech"
+	scroll.position = Vector2(12,121)
+	scroll.size = Vector2(1336,526)
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	equipment_tabs.add_child(scroll)
-	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(scroll),UIText.t("upgrade.research_tab"))
+	hightech_page.add_child(scroll)
 	var cards := HBoxContainer.new()
-	cards.add_theme_constant_override("separation",8)
+	cards.add_theme_constant_override("separation",12)
 	scroll.add_child(cards)
-	var manager := Panel.new()
-	manager.custom_minimum_size = Vector2(330,112)
-	manager.add_theme_stylebox_override("panel",style(PANEL,LINE))
-	cards.add_child(manager)
-	scientist_summary = equipment_label(manager,"",Vector2(10,8),14,CYAN)
-	scientist_distribute_button = button(UIText.t("upgrade.build_hightech_tab.text_02"),Rect2(10,30,310,24),func():game.distribute_scientists(),true)
-	scientist_distribute_button.reparent(manager,false)
-	scientist_distribute_button.add_theme_font_size_override("font_size",12)
-	scientist_distribute_button.size.y = 24
-	scientist_distribute_button.tooltip_text = UIText.t("upgrade.build_hightech_tab.text_03")
-	scientist_cost_label = equipment_label(manager,"",Vector2(10,56),12,CYAN)
-	scientist_generate_button = button("",Rect2(10,77,100,29),func():game.generate_scientist(),true)
-	scientist_generate_button.reparent(manager,false)
-	scientist_generate_button.add_theme_font_size_override("font_size",12)
-	for amount in [10,-1]:
-		var action := button(UIText.t("upgrade.build_hightech_tab.text_04") if amount==10 else UIText.t("upgrade.build_hightech_tab.text_05"),Rect2(115 if amount==10 else 220,77,100,29),func():game.generate_scientist(amount),true)
-		action.reparent(manager,false)
-		action.add_theme_font_size_override("font_size",12)
-		scientist_bulk_buttons[amount]=action
-	refresh_scientists()
 	hightech_container = cards
-	var slots := game.hightech_slots()
-	for index in range(slots.size()):
-		build_hightech_card(index,str(slots[index]))
+	var slots := game.hightech_slots().filter(func(key):return not str(key).is_empty())
+	for index in range(slots.size()):build_hightech_card(index,str(slots[index]))
+	refresh_scientists()
 	scroll.set_deferred("scroll_horizontal",hightech_scroll_offset)
 
-func build_hightech_card(index: int, key: String) -> void:
-	var cards := hightech_container
+func build_hightech_card(_index: int, key: String) -> void:
 	var card := Panel.new()
-	card.set_script(HIGHTECH_SLOT_SCRIPT)
-	card.slot_index = index
-	card.tech_key = key
-	card.swap_requested.connect(func(source,target):
-		if game.swap_hightech_slots(source,target):
-			call_deferred("sync_hightech_slots"))
+	card.set_meta("tech_key",key)
 	card.custom_minimum_size = HIGHTECH_CARD_SIZE
-	card.add_theme_stylebox_override("panel",style(PANEL,LINE))
+	card.add_theme_stylebox_override("panel",style(Color("0e1d2d"),Color("2b445b")))
 	card.add_theme_font_override("font",font)
-	cards.add_child(card)
-	if key.is_empty():
-		card.add_theme_stylebox_override("panel",style(BG,LINE))
-		equipment_label(card,UIText.t("upgrade.build_hightech_card.text_01", {"index":"%02d" % ((index+1))}),Vector2(16,30),14,MUTED)
-		equipment_label(card,UIText.t("upgrade.build_hightech_card.text_02"),Vector2(16,57),12,MUTED)
-		return
-	var row: Dictionary = db.data.hightech[key]
-	card.tooltip_text = UIText.t("upgrade.build_hightech_card.text_03")
-	hightech_titles[key] = equipment_label(card,UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("hightech",key)), "level":"%s" % (str(int(game.hightech_level(key))))}),Vector2(10,5),14,CYAN)
-	var description := Label.new()
+	hightech_container.add_child(card)
+	var construction := CONSTRUCTION_SCRIPT.new()
+	construction.position = Vector2(14,74)
+	construction.size = Vector2(296,304)
+	card.add_child(construction)
+	construction.setup(key)
+	var title := equipment_card_label(card,"",Rect2(14,12,295,27),16,INK)
+	title.text = UIText.t("gem.name_level",{"item_name":UIText.data_text("hightech",key),"level":str(int(game.hightech_level(key)))})
+	title.size = Vector2(295,27)
+	title.tooltip_text = title.text
+	hightech_titles[key] = title
+	var state := equipment_label(card,"",Vector2(14,46),12,construction.accent)
+	var percent := equipment_card_label(card,"",Rect2(172,44,137,24),12,MUTED)
+	percent.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	var description := equipment_card_label(card,game.hightech_description(key),Rect2(14,388,296,44),13,INK)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	description.text = game.hightech_description(key)
+	description.size = Vector2(296,44)
 	description.tooltip_text = description.text
 	description.mouse_filter = Control.MOUSE_FILTER_PASS
-	description.position = Vector2(10,29)
-	description.size = Vector2(423,24)
-	description.add_theme_font_override("font",font)
-	description.add_theme_font_size_override("font_size",12)
-	description.add_theme_color_override("font_color",MUTED)
-	card.add_child(description)
 	hightech_descriptions[key] = description
-	var progress_text := equipment_label(card,"",Vector2(10,77),11,INK)
-	var progress_bar := charge_progress_bar(card,Vector2(10,99),303,CYAN)
-	hightech_progress[key] = {"label":progress_text,"bar":progress_bar}
+	var metrics := equipment_card_label(card,"",Rect2(14,434,296,24),11,MUTED)
+	var workers := equipment_card_label(card,"",Rect2(14,469,110,24),13,construction.accent)
+	var crew_marker := equipment_card_label(card,"",Rect2(252,76,58,24),12,CYAN)
+	crew_marker.mouse_filter = Control.MOUSE_FILTER_PASS
+	hightech_progress[key] = {"label":metrics,"construction":construction,"state":state,"percent":percent,"workers":workers,"crew":crew_marker}
 	refresh_hightech_progress(key)
-	var b := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(387,77,46,29),func():game.assign_scientist(key,1),true,not game.can_research(key))
-	b.reparent(card,false)
-	b.add_theme_font_size_override("font_size",12)
-	b.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
-	hightech_buttons[key] = b
-	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(331,77,46,29),func():game.assign_scientist(key,-1),true,game.assigned_scientists(key)<=0)
+	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(131,465,39,31),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
 	remove.reparent(card,false)
-	remove.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
+	remove.add_theme_font_size_override("font_size",12)
 	scientist_remove_buttons[key] = remove
+	var add := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(177,465,39,31),func():game.assign_scientist(key,1),true,not game.can_research(key))
+	add.reparent(card,false)
+	add.add_theme_font_size_override("font_size",12)
+	hightech_buttons[key] = add
 	scientist_assignment_buttons[key]=[]
 	for amount in [10,-1]:
-		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(331 if amount==10 else 387,46,46,27),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),true,not game.can_research(key))
+		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(223 if amount==10 else 269,465,39,31),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),false,not game.can_research(key))
 		action.reparent(card,false)
 		action.add_theme_font_size_override("font_size",11)
-		action.set_drag_forwarding(Callable(),card._can_drop_data,card._drop_data)
 		scientist_assignment_buttons[key].append(action)
-	equipment_label(card,UIText.t("upgrade.build_hightech_card.text_08"),Vector2(350,5),12,MUTED)
 
 func draw_unlock() -> void:
 	draw_surface.draw_rect(Rect2(0,78,1440,732),Color(0.02,0.04,0.08,0.93))
 	box(Rect2(400,240,640,370),Color("142638"),CYAN)
-	text_at(UIText.t("main.draw_unlock.text_01"),Vector2(457,303),32,CYAN)
-	var line_y := 361
-	for key in game.pending_unlocks:
-		text_at(NAMES[key],Vector2(457,line_y),24,INK)
-		line_y += 42
-	text_at(UIText.t("main.draw_unlock.text_02"),Vector2(457,476),18,MUTED)
-	text_at(UIText.t("main.draw_unlock.text_03"),Vector2(457,509),15,MUTED)
+	var row: Dictionary = db.data.unlock[game.pending_unlocks[0]]
+	text_at(str(row.title),Vector2(457,303),32,CYAN)
+	text_at(str(row.desc),Vector2(457,361),18,INK)
+	if game.pending_unlocks.size() > 1:
+		text_at(UIText.t("unlock.remaining", {"count":str(game.pending_unlocks.size())}),Vector2(457,476),18,MUTED)
+	text_at(UIText.t("unlock.next" if game.pending_unlocks.size() > 1 else "main.draw_unlock.text_03"),Vector2(457,509),15,MUTED)

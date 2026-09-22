@@ -24,7 +24,7 @@ func run() -> void:
 	check(g.equipment_stat("laser",1)==float(db.equip("laser",1).dmg) and g.equipment_stat("shield",1)==float(db.equip("shield",1).para1),"Zero level has no stat effects")
 	check(g.hightech_description(E)=="未研发，无效果","Zero-level description explicitly states no effect")
 	check(not g.generate_scientist(),"Locked page cannot generate scientists")
-	g.profile.cleared=db.data.hightech.values().map(func(row):return int(row.unlock))
+	g.profile.cleared=db.data.hightech.keys().map(func(key):return int(db.unlock_row("hightech",key).level))
 	check(not g.generate_scientist(),"Insufficient resources rejected")
 	g.profile.resources={"1":10000.0,"2":1000.0}
 	check(g.scientist_cost()=={"1":100.0,"2":10.0},"First scientist costs base")
@@ -145,7 +145,7 @@ func run() -> void:
 	scene.game.profile.cleared=[]
 	scene.build_ui()
 	check(scene.equipment_tabs.is_tab_hidden(2),"Hightech page remains hidden before unlock")
-	scene.game.profile.cleared=db.data.hightech.values().map(func(row):return int(row.unlock))
+	scene.game.profile.cleared=db.data.hightech.keys().map(func(key):return int(db.unlock_row("hightech",key).level))
 	scene.game.profile.resources={"1":10000.0,"2":1000.0}
 	scene.build_ui()
 	scene.equipment_tabs.current_tab=2

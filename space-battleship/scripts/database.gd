@@ -45,6 +45,24 @@ func equip(key: String, level: int) -> Dictionary:
 func ship(key: String) -> Dictionary:
 	return ships.get(key, {})
 
+func equipment_cost(key: String, level: int) -> Dictionary:
+	# Same cost projection as equip(), without copying/growing unrelated combat fields.
+	if level<1:return {}
+	for row in equipment.get(key,[]):
+		if int(row.get("level",0))!=1:continue
+		var result := {}
+		for field in row:
+			if not str(field).begins_with("res_") or row[field]==null:continue
+			var suffix := str(field).trim_prefix("res_")
+			var amount = row.get("cost_"+suffix)
+			if amount==null:continue
+			var multiplier = row.get("cost_multi_"+suffix,row.get("costMulti_"+suffix))
+			if level>1 and suffix.is_valid_int() and multiplier!=null:
+				amount=equipment_growth(float(amount),float(multiplier),level)
+			result[str(int(row[field]))]=ceilf(float(amount))
+		return result
+	return {}
+
 func jewel(id: String) -> Dictionary:
 	return data.get("jewel", {}).get(id, {})
 
@@ -92,8 +110,17 @@ func enemy_weapon(key: String) -> Dictionary:
 	return row
 
 func unlock_level(key: String) -> int:
-	var v = equip(key, 1).get("unlock")
-	return 0 if v == null else int(v)
+	return int(unlock_row("equipment", key).get("level", -1))
+
+func unlock_id(kind: String, key: String) -> String:
+	for id in data.get("unlock", {}):
+		var row: Dictionary = data.unlock[id]
+		if row.type == kind and row.target == key:
+			return str(id)
+	return ""
+
+func unlock_row(kind: String, key: String) -> Dictionary:
+	return data.get("unlock", {}).get(unlock_id(kind, key), {})
 
 func ratio(level: int, progress: float, kind: String) -> float:
 	var previous := 1.0 if level == 1 else float(levels[level - 2][kind])

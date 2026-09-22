@@ -15,6 +15,8 @@ def main():
     parser.add_argument("test", choices=sorted(p.name for p in tests.iterdir()
                         if p.suffix in {".py", ".gd"} and p.name != "run.py"))
     parser.add_argument("--godot", type=Path, default=workspace / "space-battleship/engine/Godot_v4.7.2-stable_win64.exe")
+    parser.add_argument("--timeout", type=int, default=180, help="Timeout in seconds for each isolated process")
+    parser.add_argument("--headless", action="store_true", help="Disable rendering for logic benchmarks")
     args = parser.parse_args()
     work = tests / "work"
     work.mkdir(exist_ok=True)
@@ -51,7 +53,7 @@ def main():
     def run(command, label):
         with (area / (label + ".log")).open("w", encoding="utf-8") as log:
             result = subprocess.run(command, cwd=game, env=env, stdout=log,
-                                    stderr=subprocess.STDOUT, timeout=180)
+                                    stderr=subprocess.STDOUT, timeout=args.timeout)
         print((area / (label + ".log")).read_text(encoding="utf-8", errors="replace"))
         return result.returncode
 
@@ -61,7 +63,7 @@ def main():
     code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
     if code:
         return code
-    return run([godot, "--path", str(game), "--script", str(isolated_tests / args.test)], "test")
+    return run([godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)], "test")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ config/use_custom_user_dir.release=true
 config/custom_user_dir_name.release="SpaceBattleship"
 
 [debug]
+balance_lab/enabled=true
 file_logging/enable_file_logging.release=false
 settings/stdout/print_fps.release=false
 settings/stdout/verbose_stdout.release=false

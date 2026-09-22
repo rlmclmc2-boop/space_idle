@@ -25,7 +25,7 @@ func run() -> void:
 	var keys: Array = scene.game.hightech_slots().filter(func(key):return not str(key).is_empty())
 	for i in keys.size():
 		scene.game.profile.scientistAssignments[keys[i]] = 7 if i == 0 else 0
-	scene.equipment_page = 2
+	scene.equipment_page = 1
 	scene.build_ui()
 	check(scene.game.idle_scientists() == 0, "Video fixture has no idle scientists")
 	# Inspect BEFORE _process/refresh_scientists can hide a first-frame error.

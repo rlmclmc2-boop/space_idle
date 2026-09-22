@@ -13,7 +13,7 @@ func check(ok: bool, label: String) -> void:
 
 func fresh() -> BattleGame:
 	var result := BattleGame.new(db, false)
-	result.profile.highestLevel = int(db.config.jewelDropLevel)
+	result.profile.highestLevel = (int(db.unlock_row("feature","jewels").level)+1)
 	return result
 
 func add(id: String, level := 1) -> Dictionary:
@@ -41,13 +41,13 @@ func run() -> void:
 	for id in db.data.jewel:
 		check(not db.jewel_effect(str(id)).is_empty(),"Every authored func has an adapter: " + str(id))
 	game = fresh()
-	game.profile.highestLevel = int(db.config.jewelDropLevel)-1
+	game.profile.highestLevel = (int(db.unlock_row("feature","jewels").level)+1)-1
 	check(not game.jewels_unlocked(),"Locked below gate")
 	game.profile.highestLevel += 1
 	check(game.jewels_unlocked(),"Unlocked at configured gate")
-	db.config.jewelDropLevel+=1
+	db.unlock_row("feature","jewels").level+=1
 	check(not game.jewels_unlocked(),"Gate responds to config changes")
-	db.config.jewelDropLevel-=1
+	db.unlock_row("feature","jewels").level-=1
 	db.config.jewelCreat = 10
 	game.profile.jewelFragments = 24.0
 	check(game.pickup_jewel_fragment(),"Successful unified fragment pickup")
@@ -125,7 +125,8 @@ func run() -> void:
 	while game.profile.jewels.size()<200:
 		add("1")
 	before=game.profile.duplicate(true)
-	check(not game.socket_jewel("weapons",0,0,int(duplicate.token)) and game.profile==before,"Full bag replacement fails atomically")
+	check(game.socket_jewel("weapons",0,0,int(duplicate.token)) and game.profile.jewels.size()==200 and entry.sockets[0].token==duplicate.token and not game.jewel_inventory(int(installed.token)).is_empty(),"Full bag exchanges both owners without increasing size")
+	check(game.socket_jewel("weapons",0,0,int(installed.token)) and game.profile.jewels.size()==200 and entry.sockets[0].token==installed.token and not game.jewel_inventory(int(duplicate.token)).is_empty(),"Reverse exchange restores both owners with unchanged capacity")
 	check(not game.unsocket_jewel("weapons",0,0,int(installed.token)) and entry.sockets[0].token==installed.token,"Full bag preserves socket ownership")
 	check(game.unequip_slot("weapons",0) and game.module_entry("weapons",0).sockets[0].token==installed.token,"Full bag permits unloading while module retains gem")
 	game.profile.jewels.clear()
@@ -154,7 +155,7 @@ func run() -> void:
 	game = fresh()
 	db.config.jewelDrop=1.0
 	game.start(1,false);game.spawn_group()
-	game.profile.highestLevel=int(db.config.jewelDropLevel)
+	game.profile.highestLevel=(int(db.unlock_row("feature","jewels").level)+1)
 	target=game.enemies[0]
 	game.hit_enemy(target,float(target.hp)*100,0)
 	var jewel_drops: Array=game.drops.filter(func(drop):return drop.has("jewel"))
@@ -191,7 +192,7 @@ func run() -> void:
 	check(game.profile.jewelFragments>=0,"Fragment balances remain nonnegative")
 	# Save/load only inside run.py's copied project and redirected user directory.
 	game = fresh()
-	game.profile.cleared=range(1,int(db.config.jewelDropLevel))
+	game.profile.cleared=range(1,(int(db.unlock_row("feature","jewels").level)+1))
 	game.rebuild_unlocks()
 	game.profile.jewelFragments=15.0
 	add("3",2)
@@ -224,7 +225,7 @@ func effect_tests() -> void:
 	db.config.equipmentSocket=10
 	game=fresh()
 	game.start(1,false);game.spawn_group()
-	game.profile.highestLevel=int(db.config.jewelDropLevel)
+	game.profile.highestLevel=(int(db.unlock_row("feature","jewels").level)+1)
 	var entry:=game.slot_entry("weapons",0)
 	equip_gem("3")
 	var enemy: Dictionary=game.enemies[0]

@@ -15,7 +15,8 @@ func _initialize() -> void:
 
 func fixture() -> BattleGame:
 	var db := ShipDatabase.new()
-	db.data.charge[KEY].merge({"para_2":2,"para_4":1,"para_5":1,"para_6":2,"para_7":1,"unlock":0},true)
+	db.data.charge[KEY].merge({"para_2":2,"para_4":1,"para_5":1,"para_6":2,"para_7":1},true)
+	db.unlock_row("charge",KEY).level=0
 	var g := BattleGame.new(db,false)
 	g.profile.resources["2"]=100
 	g.toggle_charge(KEY)
@@ -94,7 +95,8 @@ func run() -> void:
 	scene.set_process(false)
 	scene.game.save_enabled=false
 	scene.game.profile.cleared=[1]
-	scene.db.data.charge[KEY].merge({"para_2":1,"para_7":0.05,"unlock":0},true)
+	scene.db.data.charge[KEY].merge({"para_2":1,"para_7":0.05},true)
+	scene.db.unlock_row("charge",KEY).level=0
 	scene.game.charge_job(KEY).level=15
 	scene.build_ui()
 	check(scene.charge_cards[KEY].cost.text.contains("2/秒"),"Card displays rounded current-level rate")

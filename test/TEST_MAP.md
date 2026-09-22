@@ -48,10 +48,10 @@
 | 保存完整故障恢复 | test_save_boundaries.gd | 已覆盖open/rename失败；未模拟断电、写入中磁盘满/损坏，U-008，不能保证所有故障原子性 | PARTIAL |
 | QA删除后旧场景不得复活档案 | test_delete_save.gd | disk cleared / no resurrection / new game save | COVERED |
 | 页签解锁/重锁/全隐藏 | test_tab_unlocks.gd | preserves selected / fallback / selected -1 | COVERED |
-| 拖拽、取消、按钮区域、边缘滚动 | test_hightech_slots.gd | native drag / outside cancel / no research / scroll | COVERED |
+| 科研无拖拽、配置扩展、旧顺序兼容 | test_hightech_construction.gd; test_hightech_slots.gd | no drag / 12 projects / compact legacy holes / retained nodes | COVERED |
 | 换舰草稿 | test_ship_tab.gd | selection no immediate switch / draft rebuild保持 / profile深比较不提交不退款 | COVERED |
 | 卸下确认弹窗 | test_unequip.gd | dialog / cancel / confirmed empty | COVERED |
-| 科技滚动位置与页签保持 | test_hightech_slots.gd; test_scientists.gd | scroll after drop / selected tab | COVERED |
+| 科技滚动位置与页签保持 | test_hightech_slots.gd; test_hightech_construction.gd | scroll after refresh / selected tab / focus | COVERED |
 | 通关解锁弹窗阻止自动推进 | test_skip_clear.gd | Unlock acknowledgment is preserved | COVERED |
 | 伤害文本独立数字、位置避让 | test_damage_text.gd | 同帧与连续命中、真实文字边界不相交 | COVERED |
 | 舰船/炮口/敌舰位置 | test_ship_visuals.gd; test_enemy_ship_visuals.gd; test_enemy_weapon_positions.gd | occupancy / muzzle / effect / symmetric mounts | COVERED |

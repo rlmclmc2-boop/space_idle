@@ -1,173 +1,87 @@
 extends SceneTree
-
+## Configuration and legacy order compatibility; drag UI was removed by request.
 var checks := 0
 var failures := 0
-var scene
-var view: SubViewport
-var last_mouse := Vector2.ZERO
 
 func check(ok: bool, label: String) -> void:
-	checks += 1
+	checks+=1
 	if not ok:
-		failures += 1
+		failures+=1
 		printerr(label)
 
 func _initialize() -> void:
 	call_deferred("run")
 
-func frames() -> void:
-	await process_frame
-	await process_frame
-
-func move_mouse(pos: Vector2, held := false) -> void:
-	var event := InputEventMouseMotion.new()
-	event.position = pos
-	event.global_position = pos
-	event.relative = pos-last_mouse
-	last_mouse = pos
-	event.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
-	view.push_input(event,true)
-	await frames()
-
-func click_mouse(pos: Vector2, pressed: bool) -> void:
-	var event := InputEventMouseButton.new()
-	event.position = pos
-	event.global_position = pos
-	event.button_index = MOUSE_BUTTON_LEFT
-	event.pressed = pressed
-	event.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
-	view.push_input(event,true)
-	await frames()
-
-func card(index: int) -> Control:
-	return scene.hightech_scroll.get_child(0).get_child(index+1)
-
-func title_position(index: int) -> Vector2:
-	return card(index).global_position+Vector2(190,16)
-
-func begin_drag(index: int) -> void:
-	var position := title_position(index)
-	await move_mouse(position)
-	await click_mouse(position,true)
-	await move_mouse(position+Vector2(25,0),true)
-	check(view.gui_is_dragging(), "Native card drag begins from header")
-
-func capture(name: String) -> void:
-	scene.queue_redraw()
-	await frames()
-	await RenderingServer.frame_post_draw
-	view.get_texture().get_image().save_png("res://"+name+".png")
-
 func run() -> void:
-	# A standalone viewport uses injected mouse coordinates; the native desktop
-	# pointer can lie outside this isolated test window.
-	view = SubViewport.new()
-	view.size = Vector2i(1440,810)
-	view.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-	root.add_child(view)
-	view.notify_mouse_entered()
-	scene = load("res://main.tscn").instantiate()
-	view.add_child(scene)
+	var scene=load("res://scripts/main.gd").new()
+	scene.automation_args=["--capture"]
+	root.add_child(scene)
+	scene.automation_args=[]
 	scene.set_process(false)
-	scene.game.save_enabled = false
-	scene.game.paused = true
-	scene.game.profile.cleared = []
-	scene.game.profile.hightechOrder = []
+	scene.game.save_enabled=false
+	scene.game.paused=true
+	scene.game.pending_unlocks.clear()
+	scene.game.profile.cleared=[]
+	scene.game.profile.hightechOrder=[]
 	scene.build_ui()
-	await frames()
-	var qa := root.get_node_or_null("QATools")
-	if qa != null:
-		qa.hide()
-	await frames()
-	check(scene.hightech_buttons.is_empty(), "All locked technologies hidden")
-	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "Hightech tab hidden before first unlock")
-	check(scene.game.hightech_slots()==["","","","","",""], "Six anonymous expansion slots reserved")
-	check(card(0).tech_key=="" and card(0)._get_drag_data(Vector2.ZERO)==null, "Empty slot cannot start drag")
-	scene.game.profile.cleared = [int(scene.db.data.hightech[BattleGame.FURNACE].unlock)]
-	scene.build_ui()
-	await frames()
-	check(scene.hightech_buttons.keys()==[BattleGame.FURNACE], "Only cleared-gate tech shown")
-	check(not scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "First unlock reveals tab without switching selection")
-	scene.equipment_tabs.current_tab = 2
-	scene.hightech_scroll.scroll_horizontal=338
-	scene.hightech_scroll_offset=338
-	await frames()
-	await capture("hightech-one-unlocked")
-	scene.game.profile.cleared = scene.db.data.hightech.values().map(func(row):return int(row.unlock))
-	scene.build_ui()
-	await frames()
-	check(scene.hightech_buttons.size()==3 and scene.game.hightech_slots().slice(0,3)==[BattleGame.FURNACE,BattleGame.ENERGY_FOCUS,BattleGame.DENSE_ARMOUR], "New unlocks fill vacant slots")
-	await begin_drag(0)
-	var original_card := card(0)
-	scene.build_ui()
-	check(card(0)==original_card and scene.ui_rebuild_pending, "Automatic UI rebuild waits until drag ends")
-	await move_mouse(title_position(1),true)
-	check(card(1).drop_highlight, "Valid target highlights during native drag")
-	await capture("hightech-drag-preview")
-	await click_mouse(title_position(1),false)
-	scene._process(0)
-	await frames()
-	check(not view.gui_is_dragging(), "Release ends drag")
-	check(scene.game.hightech_slots().slice(0,3)==[BattleGame.ENERGY_FOCUS,BattleGame.FURNACE,BattleGame.DENSE_ARMOUR], "Native drop swaps instead of inserting")
-	check(scene.equipment_tabs.current_tab==2, "Drop rebuild preserves hightech tab")
-	await begin_drag(0)
-	var button_position: Vector2 = scene.hightech_buttons[BattleGame.DENSE_ARMOUR].global_position+scene.hightech_buttons[BattleGame.DENSE_ARMOUR].size/2
-	await move_mouse(button_position,true)
-	await click_mouse(button_position,false)
-	check(scene.game.hightech_slots()[2]==BattleGame.ENERGY_FOCUS and scene.game.profile.scientistAssignments.is_empty(), "Dropping onto research button swaps without starting research")
-	var ordered: Array = scene.game.hightech_slots().duplicate()
-	await begin_drag(0)
-	await move_mouse(Vector2(750,250),true)
-	await click_mouse(Vector2(750,250),false)
-	check(scene.game.hightech_slots()==ordered, "Drop outside slots cancels without moving cards")
-	check(not card(1)._can_drop_data(Vector2.ZERO,{"kind":"other","container":0,"source":0}), "Foreign drag rejected")
-	await begin_drag(1)
-	var edge: Vector2 = scene.hightech_scroll.global_position+Vector2(scene.hightech_scroll.size.x-8,16)
-	await move_mouse(edge,true)
-	for i in range(20):
-		scene._process(0.1)
-		await process_frame
-	check(scene.hightech_scroll.scroll_horizontal>600, "Dragging at edge scrolls to expansion slots")
-	var empty_position := title_position(4)
-	check(scene.hightech_scroll.get_global_rect().has_point(empty_position), "Target expansion slot visible after scroll")
-	await move_mouse(empty_position,true)
-	await click_mouse(empty_position,false)
-	check(scene.game.hightech_slots()[4]==BattleGame.FURNACE and scene.game.hightech_slots()[1]=="", "Drop into empty fixed slot leaves source empty")
-	check(scene.hightech_scroll.scroll_horizontal>600, "Drop rebuild retains scroll position")
-	await capture("hightech-empty-slot-drop")
-	scene.game.save_enabled = true
+	await process_frame
+	check(scene.hightech_buttons.is_empty() and scene.hightech_container.get_child_count()==0,"Locked technologies and reserved save slots create no visible bays")
+	check(scene.equipment_tabs.is_tab_hidden(1) and scene.equipment_tabs.current_tab==0,"Research hidden before unlock and first tab remains selected")
+	var first := BattleGame.FURNACE
+	scene.game.profile.cleared=[int(scene.db.unlock_row("hightech",first).level)]
+	scene.sync_hightech_slots()
+	scene.refresh_tab_visibility()
+	check(scene.hightech_buttons.keys()==[first] and scene.hightech_container.get_child_count()==1,"First unlock creates exactly one bay")
+	check(not scene.equipment_tabs.is_tab_hidden(1) and scene.equipment_tabs.current_tab==0,"Unlock does not change selected page")
+	var first_card: Node=scene.hightech_titles[first].get_parent()
+	scene.game.profile.cleared=scene.db.data.hightech.keys().map(func(key):return int(scene.db.unlock_row("hightech",key).level))
+	scene.sync_hightech_slots()
+	scene.equipment_tabs.current_tab=1
+	await process_frame
+	check(scene.hightech_buttons.size()==4 and scene.hightech_container.get_child_count()==4,"Four configured technologies have no extra empty drag bays")
+	check(scene.hightech_titles[first].get_parent()==first_card,"Unlock keeps existing card")
+	scene.game.profile.hightechOrder=["",BattleGame.JEWEL_FURNACE,"",first,BattleGame.DENSE_ARMOUR,BattleGame.ENERGY_FOCUS]
+	var profile_before: Dictionary=scene.game.profile.duplicate(true)
+	scene.sync_hightech_slots()
+	check(scene.game.profile==profile_before,"List projection never rewrites legacy order or research state")
+	check(scene.hightech_container.get_child(0).get_meta("tech_key")==BattleGame.JEWEL_FURNACE and scene.hightech_container.get_child_count()==4,"Legacy holes are compacted visually while relative order survives")
+	check(scene.hightech_titles[first].get_parent()==first_card,"Legacy order moves original controls")
+	scene.game.profile.scientists=17
+	scene.game.profile.scientistAssignments[first]=17
+	scene.game.profile.techPoints[first]=12.0
+	scene.game.save_enabled=true
 	scene.game.save_progress()
-	var loaded := BattleGame.new(scene.db)
-	check(loaded.hightech_slots()==scene.game.hightech_slots(), "Player order and empty positions survive actual save/load")
-	scene.game.save_enabled = false
-	check(not scene.game.swap_hightech_slots(-1,0) and not scene.game.swap_hightech_slots(4,100) and not scene.game.swap_hightech_slots(1,0), "Invalid indices and empty source rejected")
-	var before: Dictionary = scene.game.profile.scientistAssignments.duplicate(true)
-	scene.game.profile.scientists=1
-	scene.game.assign_scientist(BattleGame.ENERGY_FOCUS,1)
-	scene.game.swap_hightech_slots(0,2)
-	check(scene.game.profile.scientistAssignments.has(BattleGame.ENERGY_FOCUS), "Sorting leaves active research attached to technology")
-	scene.game.profile.scientistAssignments = before
-	for i in range(7):
-		var key := "扩展测试%d" % i
-		var row: Dictionary = scene.db.data.hightech[BattleGame.FURNACE].duplicate(true)
-		row.name = key
-		row.unlock = 0
-		scene.db.data.hightech[key] = row
-	var previous: Array = scene.game.hightech_slots().duplicate()
-	scene.build_ui()
-	await frames()
-	check(scene.hightech_buttons.size()==10 and scene.game.hightech_slots().size()==12, "Configuration growth adds cards and full pages with spare slots")
-	check(scene.game.hightech_slots()==previous and scene.game.hightech_slots()[4]==BattleGame.FURNACE, "Expansion preserves existing assigned positions")
-	for i in range(7):
-		scene.db.data.hightech.erase("扩展测试%d" % i)
-	scene.game.profile.hightechOrder = [BattleGame.FURNACE,BattleGame.FURNACE,"removed",23]
-	var cleaned: Array = scene.game.hightech_slots()
-	check(cleaned.count(BattleGame.FURNACE)==1 and not cleaned.has("removed") and not cleaned.has(23), "Duplicate or removed saved entries are normalized")
-	scene.game.profile.cleared = []
-	scene.build_ui()
-	await frames()
-	check(scene.hightech_buttons.is_empty() and scene.game.hightech_slots().count("")==6, "Relocked configuration never leaks names through saved order")
-	check(scene.equipment_tabs.is_tab_hidden(2) and scene.equipment_tabs.current_tab==0, "Relock hides selected hightech tab and returns to weapons")
-	check(scene.equipment_tabs.get_rect().end.y<=778, "Slots and horizontal scrolling fit above footer")
+	# Check serialized state before the separate wall-clock offline research step.
+	var reloaded := BattleGame.new(scene.db,false)
+	reloaded.save_enabled=true
+	reloaded.load_progress()
+	check(reloaded.profile.hightechOrder==scene.game.profile.hightechOrder,"Actual save/load preserves legacy order")
+	check(reloaded.assigned_scientists(first)==17 and reloaded.profile.techPoints[first]==12.0,"AI assignments and points survive save/load")
+	scene.game.save_enabled=false
+	for i in 7:
+		var key := "future_technology_%d" % i
+		scene.db.data.hightech[key]=scene.db.data.hightech[first].duplicate(true)
+		scene.db.data.hightech[key].name=key
+		scene.db.data.unlock[key]={"type":"hightech","target":key,"level":0,"mode":"cleared"}
+	scene.sync_hightech_slots()
+	await process_frame
+	check(scene.hightech_buttons.size()==11 and scene.hightech_container.get_child_count()==11,"Configuration growth adds all projects without manual UI changes")
+	check(scene.hightech_titles[first].get_parent()==first_card,"Growth preserves original bay")
+	scene.hightech_scroll.scroll_horizontal=100000
+	await process_frame
+	var scroll: int=scene.hightech_scroll.scroll_horizontal
+	scene.sync_hightech_slots()
+	check(scroll>0 and scene.hightech_scroll.scroll_horizontal==scroll,"Unchanged list synchronization retains scrolling")
+	for i in 7:scene.db.data.hightech.erase("future_technology_%d" % i)
+	scene.sync_hightech_slots()
+	check(scene.hightech_progress.size()==4 and scene.hightech_container.get_child_count()==4,"Removed config releases only retired bay references")
+	check(scene.hightech_titles[first].get_parent()==first_card,"Shrinking preserves remaining controls")
+	scene.game.profile.cleared=[]
+	scene.sync_hightech_slots()
+	scene.refresh_tab_visibility()
+	check(scene.hightech_buttons.is_empty() and scene.hightech_progress.is_empty(),"Relock releases all unavailable research controls")
+	check(scene.equipment_tabs.is_tab_hidden(1),"Relock hides research page")
 	print("Hightech slots: %d checks, %d failures" % [checks,failures])
+	scene.queue_free()
+	await process_frame
 	quit(1 if failures else 0)

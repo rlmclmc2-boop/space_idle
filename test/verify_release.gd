@@ -32,7 +32,10 @@ func verify() -> void:
 		await get_tree().process_frame
 	check(main.db.levels.size() > 0 and main.db.equipment.size() > 0, "Missing embedded game data")
 	check(main.font is FontVariation and main.font.base_font is FontFile, "Release must use embedded font")
-	check(main.font.variation_opentype.get("wght") == 400.0, "Release font must use regular weight")
+	var text_server := TextServerManager.get_primary_interface()
+	var weight_tag := text_server.name_to_tag("wght")
+	var rendered_axes := text_server.font_get_variation_coordinates(main.font.get_rids()[0])
+	check(rendered_axes.get(weight_tag) == 400.0, "Rendered release font must use regular weight, not the Thin default")
 	check(not main.font.base_font.allow_system_fallback, "Embedded font must not depend on installed fonts")
 	check(main.ui.theme.default_font == main.font, "UI controls must inherit the embedded font")
 	check(main.font.has_char("舰".unicode_at(0)), "Missing Chinese glyph")

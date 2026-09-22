@@ -20,6 +20,7 @@ var detail: Dictionary = {}
 var slot_options: Array = []
 var subtypes := ["all","laser","cannon","missile","shield","armour"]
 var dirty := true
+var crew_badges_dirty: Dictionary = {}
 var sort_dirty := true
 var sorted_ids: Array = []
 var last_sort_mode := -1
@@ -332,14 +333,17 @@ func equipment_item(category: String, index: int) -> Dictionary:
 		"description":description,"tooltip":prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":str(entry.level)})}
 
 func refresh(only_slot := "") -> void:
+	refresh_slots([] if only_slot.is_empty() else [only_slot])
+
+func refresh_slots(changed: Array) -> void:
 	if not is_visible_in_tree():
 		dirty = true
 		return
-	var detail_changed := dirty or only_slot.is_empty() or only_slot==selected
+	var detail_changed := dirty or changed.is_empty() or changed.has(selected)
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
 			var id: String = host.game.slot_id(category,index)
-			if only_slot.is_empty() or dirty or id==only_slot or not items.has(id):
+			if changed.is_empty() or dirty or changed.has(id) or not items.has(id):
 				items[id] = equipment_item(category,index)
 				stats_dirty.erase(id)
 				sort_dirty = true
@@ -351,7 +355,9 @@ func refresh(only_slot := "") -> void:
 				cards[id] = card
 			if selected.is_empty():selected = id
 			# Spending resources changes affordability on other modules, but not their stats.
-			items[id].upgradeable = host.game.can_upgrade_slot(category,index)
+			if not (changed.is_empty() or dirty or changed.has(id)):
+				items[id].upgradeable = host.game.can_upgrade_slot(category,index)
+			if dirty and not cards[id].last_state.is_empty():cards[id].refresh_crew(id)
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
@@ -367,6 +373,18 @@ func refresh_pending() -> void:
 	elif observed_resources!=host.game.profile.resources:
 		refresh_affordability()
 	refresh_stats()
+	for id in crew_badges_dirty:
+		if cards.has(id):cards[id].refresh_crew(id)
+	crew_badges_dirty.clear()
+
+func refresh_crew_badge(id: String) -> void:
+	if id=="equipment":
+		for slot in cards:refresh_crew_badge(str(slot))
+		return
+	if not is_visible_in_tree():
+		crew_badges_dirty[id]=true
+		return
+	if cards.has(id):cards[id].refresh_crew(id)
 
 func invalidate_stats(info: Dictionary) -> void:
 	if not is_visible_in_tree():
@@ -494,8 +512,8 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.equip,"visible",false)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
 	host.set_ui_value(detail.remove,"disabled",item.locked)
-	host.set_ui_value(detail.gems,"visible",not key.is_empty() and host.game.jewels_unlocked())
-	host.set_ui_value(detail.gems,"disabled",item.locked)
+	host.set_ui_value(detail.gems,"visible",host.game.jewels_unlocked())
+	host.set_ui_value(detail.gems,"disabled",false)
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))

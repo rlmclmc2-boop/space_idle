@@ -1,5 +1,12 @@
 [
   {
+    "key": "battle.return",
+    "text": "‹ 返回战场",
+    "params": "",
+    "category": "battle",
+    "note": "顶部返回入口，收起功能大页并选中首个底部页签"
+  },
+  {
     "key": "battle.tab",
     "text": "战场",
     "params": "",
@@ -904,7 +911,7 @@
   },
   {
     "key": "upgrade.refresh_scientists.text_01",
-    "text": "科学家 {scientists}人 · 空闲 {idle_scientists}人",
+    "text": "AI 单元 {scientists} · 待命 {idle_scientists}",
     "params": "{scientists},{idle_scientists}",
     "category": "upgrade",
     "note": "动态显示；蓝色参数由程序填入",
@@ -912,7 +919,7 @@
   },
   {
     "key": "upgrade.refresh_scientists.text_03",
-    "text": "生成 ×1",
+    "text": "创建 ×1",
     "params": "",
     "category": "upgrade",
     "note": "固定文字",
@@ -920,7 +927,7 @@
   },
   {
     "key": "upgrade.refresh_hightech_progress.text_01",
-    "text": "{key}人 · {key_2}点/秒 · {points}/{required}点 · {fraction}%",
+    "text": "{key} AI · {key_2}点/秒 · {points}/{required}点 · {fraction}%",
     "params": "{key},{key_2},{points},{required},{fraction}",
     "category": "upgrade",
     "note": "动态显示；蓝色参数由程序填入",
@@ -1088,7 +1095,7 @@
   },
   {
     "key": "upgrade.build_hightech_tab.text_04",
-    "text": "生成 ×10",
+    "text": "创建 ×10",
     "params": "",
     "category": "upgrade",
     "note": "固定文字",
@@ -1096,7 +1103,7 @@
   },
   {
     "key": "upgrade.build_hightech_tab.text_05",
-    "text": "生成 MAX",
+    "text": "创建 MAX",
     "params": "",
     "category": "upgrade",
     "note": "固定文字",
@@ -1104,7 +1111,7 @@
   },
   {
     "key": "upgrade.build_hightech_card.text_01",
-    "text": "空卡槽 {index}",
+    "text": "预留建造舱 {index}",
     "params": "{index}",
     "category": "upgrade",
     "note": "动态显示；蓝色参数由程序填入",
@@ -1112,7 +1119,7 @@
   },
   {
     "key": "upgrade.build_hightech_card.text_02",
-    "text": "可将高科技卡片拖到这里",
+    "text": "可将科研项目拖到这里",
     "params": "",
     "category": "upgrade",
     "note": "固定文字",
@@ -1120,7 +1127,7 @@
   },
   {
     "key": "upgrade.build_hightech_card.text_03",
-    "text": "拖动标题到其他卡槽，松手交换位置并保存",
+    "text": "拖动标题到其他建造舱，松手交换位置并保存",
     "params": "",
     "category": "tooltip",
     "note": "鼠标悬停说明",
@@ -5205,5 +5212,1729 @@
     "params": "{level}",
     "category": "ship",
     "note": "未解锁舰体仅显示剪影和预计解锁关卡"
+  },
+  {
+    "key": "lab.title",
+    "text": "数值实验室 / Balance Lab · Debug",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.hint",
+    "text": "独立新局，不读取或写入玩家存档。固定 60Hz，无画面。关闭窗口暂停实验并恢复正常游戏。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.speed",
+    "text": "速度",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.duration",
+    "text": "时长（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.ten_minutes",
+    "text": "10 分钟",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.one_hour",
+    "text": "1 小时",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.ten_hours",
+    "text": "10 小时",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.custom",
+    "text": "自定义",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.runs",
+    "text": "次数 / 每参数",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.seed",
+    "text": "种子",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.parameter",
+    "text": "参数扫描",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.no_scan",
+    "text": "不扫描",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.from",
+    "text": "起始值",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.to",
+    "text": "结束值",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.step",
+    "text": "步长",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.directory",
+    "text": "导出目录",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.start",
+    "text": "开始",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.pause",
+    "text": "暂停",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.resume",
+    "text": "继续",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.stop",
+    "text": "停止",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.reset",
+    "text": "重置",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.export",
+    "text": "保存 JSON / CSV",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.error",
+    "text": "操作失败：{error}",
+    "params": "error",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.progress",
+    "text": "{status} · 第 {run}/{total} 次 · 游戏时间 {seconds} 秒 · 关卡 {stage}",
+    "params": "status,run,total,seconds,stage",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.report_header",
+    "text": "参数 | 平均关卡 | 平均 TTK（秒） | 首次死亡（秒） | 升级间隔（秒） | 资源盈余",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.run_summary",
+    "text": "第 {run} 次 · 种子 {seed} · DPS {dps} · 死亡 {deaths} · 升级 {upgrades} · 异常 {warnings}",
+    "params": "run,seed,dps,deaths,upgrades,warnings",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.saved",
+    "text": "报告已保存：{path}",
+    "params": "path",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.status.idle",
+    "text": "待开始",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.status.running",
+    "text": "运行中",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.status.paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.status.completed",
+    "text": "已完成",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.status.stopped",
+    "text": "已停止（部分结果）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.effective_speed",
+    "text": " · 实际平均 {speed}x",
+    "params": "speed",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.more_runs",
+    "text": "面板仅显示前 20 次；全部结果及统计请查看导出文件。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.weapon_dominance",
+    "text": "武器 {key} 伤害占比过高：{value}。",
+    "params": "key,value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.equipment_unused",
+    "text": "装备 {key} 使用率接近零：{value}（可能尚未解锁）。",
+    "params": "key,value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.system_unused",
+    "text": "系统 {key} 本轮没有参与（可能尚未解锁）。",
+    "params": "key",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.ttk_outside_range",
+    "text": "平均 TTK 超出阈值：{value} 秒。",
+    "params": "value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.upgrade_gap",
+    "text": "长期没有模块升级：{value} 秒。",
+    "params": "value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.unaffordable",
+    "text": "长期无法购买任何有效模块升级：{value} 秒。",
+    "params": "value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.warning.resource_surplus",
+    "text": "资源 {key} 持续超过收入储备阈值：{value} 秒。",
+    "params": "key,value",
+    "category": "debug",
+    "note": "Balance Lab"
+  },
+  {
+    "key": "lab.v2.strategy",
+    "text": "策略",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.all_strategies",
+    "text": "全部五种策略（配对种子）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.sample_interval",
+    "text": "采样间隔（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.result_run",
+    "text": "结果轮次",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.quick",
+    "text": "快速模拟",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.sweep",
+    "text": "参数扫描",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.compare",
+    "text": "版本对比",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.timeline",
+    "text": "时间轴",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.diagnosis",
+    "text": "诊断",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.add_sweep",
+    "text": "加入/替换队列",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.clear_sweeps",
+    "text": "清空队列",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.queue",
+    "text": "逐参数独立扫描，共 {count} 项；队列为空时只扫描当前选择。{parameters}",
+    "params": "count,parameters",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.value",
+    "text": "参数值",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.stage",
+    "text": "最终关卡",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.dps",
+    "text": "DPS",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.deaths",
+    "text": "死亡次数",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.balance",
+    "text": "资源盈余",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.ttk",
+    "text": "平均 TTK",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.decision_interval",
+    "text": "决策间隔（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.boss_ttk",
+    "text": "Boss TTK",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.first_death",
+    "text": "首次死亡（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.upgrade_interval",
+    "text": "升级间隔（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.dps_growth",
+    "text": "DPS 增长 %",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.sensitivity_hint",
+    "text": "敏感度按指标分别排序：弹性为输出相对变化 / 参数相对变化；不合成总评分，不代表统计显著性。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.metric",
+    "text": "指标",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.before",
+    "text": "起点结果",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.after",
+    "text": "终点结果",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.elasticity",
+    "text": "相对敏感度",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.slope",
+    "text": "绝对斜率",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.baseline_path",
+    "text": "粘贴独立 Baseline JSON 的完整路径",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.load_baseline",
+    "text": "加载 Baseline",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.save_baseline",
+    "text": "保存本次为 Baseline",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.baseline",
+    "text": "Baseline",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.current",
+    "text": "Current",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.change",
+    "text": "变化",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.absolute",
+    "text": "绝对变化",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.comparison_hint",
+    "text": "相同种子、时长、策略与采样配置才直接比较。伤害占比用 pp；基准为零时相对变化留空。变化方向不自动等于体验好坏。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.no_comparison",
+    "text": "先完成一次实验；可先加载 Baseline，后续运行会自动比较。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.no_results",
+    "text": "完成或停止模拟后显示结果。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.comparable",
+    "text": "样本和实验条件匹配；以下为配对条件下的描述性变化。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.incomparable",
+    "text": "实验条件不一致，请勿直接归因于参数版本：{reasons}",
+    "params": "reasons",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.baseline_loaded",
+    "text": "Baseline 已加载；下一次完成后自动比较。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.time",
+    "text": "游戏时间",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.enemy_hp",
+    "text": "新敌平均 HP",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.normal_ttk",
+    "text": "普通敌 TTK",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.income",
+    "text": "资源/分钟",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.survivability",
+    "text": "生存表现",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.weapon_share",
+    "text": "武器伤害占比",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.growth_gap",
+    "text": "成长空窗（秒）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.events",
+    "text": "事件",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.evidence",
+    "text": "对应数据",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.timeline_context",
+    "text": "策略 {strategy} · 种子 {seed} · 实际采样间隔 {interval} 秒 · {samples} 个快照 · 截断事件 {dropped} 条；决策计数仍完整。",
+    "params": "strategy,seed,interval,samples,dropped",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.diagnosis_hint",
+    "text": "按 HIGH / MEDIUM / LOW 展示具体证据。时间表示窗口起点及检测时间；未试用不等于无效。切换顶部“结果轮次”查看不同实验。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.severity",
+    "text": "严重程度",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.onset",
+    "text": "区间开始",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.detected",
+    "text": "检测时间",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue",
+    "text": "问题",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.table_limit",
+    "text": "表格最多显示 2000 行，宽表可横向滚动；完整数据、有效样本数和标准差见 JSON/CSV。",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.strategy_dominance",
+    "text": "疑似优势策略（仍需更多种子验证）",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.summary",
+    "text": "SUMMARY\n平均最终关卡 {stage} · TTK {ttk}s · Boss TTK {boss}s\n升级间隔 {upgrade}s · 决策间隔 {decision}s · 最长成长空窗 {gap}s\n死亡 {deaths} · 资源盈余 {balance}（未加权）",
+    "params": "stage,ttk,boss,upgrade,decision,gap,deaths,balance",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.build",
+    "text": "BUILD DISTRIBUTION（首轮）\n武器占比 {weapons}\n防御实际贡献 {defence}\n资源投入比例 {resources}\n时间轴问题与分级警告见对应页签。",
+    "params": "weapons,defence,resources",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.weapon_monopoly",
+    "text": "武器垄断",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.weapon_ineffective",
+    "text": "已试用武器贡献过低",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.weapon_untried",
+    "text": "武器已解锁但缺少试用证据",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.enemy_trivial",
+    "text": "普通敌人可能失去存在感",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.ttk_wall",
+    "text": "持续高 TTK，疑似数值墙",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.defence_low_value",
+    "text": "长期几乎不受伤，防御价值待验证",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.growth_stalled",
+    "text": "升级成长停滞",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.upgrades_too_fast",
+    "text": "升级过于频繁",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.growth_vacuum",
+    "text": "长时间没有有效成长",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.resource_zero",
+    "text": "资源长期耗尽",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.resource_hoarding",
+    "text": "资源长期囤积",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.death_burst",
+    "text": "短时间连续死亡",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.dps_breakthrough",
+    "text": "DPS 突然增长",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.dps_stagnation",
+    "text": "DPS 长期不增长",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.few_new_choices",
+    "text": "多个关卡没有新选择",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.system_inactive",
+    "text": "系统参与后长期未使用",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.spending_concentration",
+    "text": "单系统资源投入过高",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.events_truncated",
+    "text": "事件明细达到上限",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.comparison_dps",
+    "text": "相较 Baseline，DPS 增长明显",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.comparison_upgrade",
+    "text": "相较 Baseline，升级频率明显下降",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "lab.v2.issue.comparison_weapon",
+    "text": "相较 Baseline，武器贡献异常上升",
+    "params": "",
+    "category": "debug",
+    "note": "Balance Lab v2"
+  },
+  {
+    "key": "upgrade.hightech.jewel_furnace.name",
+    "text": "宝石熔炼炉",
+    "params": "",
+    "category": "upgrade",
+    "note": "宝石熔炼炉显示；效果来源 hightech.des"
+  },
+  {
+    "key": "upgrade.hightech.jewel_furnace.description",
+    "text": "每{effect_1}秒在屏幕中生成一个含有{effect_2}的宝石碎片的宝石核心块",
+    "params": "{effect_1} {effect_2}",
+    "category": "upgrade",
+    "note": "宝石熔炼炉显示；效果来源 hightech.des"
+  },
+  {
+    "key": "battle.jewel_furnace_core",
+    "text": "宝石核心",
+    "params": "",
+    "category": "battle",
+    "note": "宝石熔炼炉显示；效果来源 hightech.des"
+  },
+  {
+    "key": "battle.jewel_furnace_amount",
+    "text": "{amount}碎片 · 划过全额/10秒折损拾取",
+    "params": "{amount}",
+    "category": "battle",
+    "note": "宝石熔炼炉显示；效果来源 hightech.des"
+  },
+  {
+    "key": "unlock.remaining",
+    "text": "待确认解锁：{count} 项",
+    "params": "{count}",
+    "category": "main",
+    "note": "解锁队列剩余条目数",
+    "source": "main.gd:draw_unlock"
+  },
+  {
+    "key": "unlock.next",
+    "text": "点击继续查看下一项解锁。",
+    "params": "",
+    "category": "main",
+    "note": "多项解锁逐项确认",
+    "source": "main.gd:draw_unlock"
+  },
+  {
+    "key": "lab.mode.exact",
+    "text": "EXACT",
+    "params": "",
+    "category": "lab",
+    "note": "Balance Lab 模拟模式"
+  },
+  {
+    "key": "lab.mode.fast",
+    "text": "FAST（弹体近似）",
+    "params": "",
+    "category": "lab",
+    "note": "Balance Lab 模拟模式"
+  },
+  {
+    "key": "research.heading",
+    "text": "AI 原型建造舱",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.subtitle",
+    "text": "从蓝图到实体 · 每次建成，完成一轮研究",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.ai_summary",
+    "text": "AI 总量 {total}    已部署 {assigned}    待命 {idle}",
+    "params": "{total} {assigned} {idle}",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.inventory",
+    "text": "科研项目  {count}",
+    "params": "{count}",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.navigation",
+    "text": "项目自动接入 · 横向滚动查看更多建造舱",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.metrics",
+    "text": "{rate} 点/秒 · {points} / {required} 点",
+    "params": "{rate} {points} {required}",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.assigned",
+    "text": "AI  {count}",
+    "params": "{count}",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.progress",
+    "text": "建造 {percent}%",
+    "params": "{percent}",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.foundation",
+    "text": "基础定位",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.frame",
+    "text": "骨架搭建",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.assembly",
+    "text": "部件安装",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.validation",
+    "text": "系统调试",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.paused",
+    "text": "建造暂停",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.idle",
+    "text": "等待部署 AI",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.complete",
+    "text": "原型验收完成",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "research.empty",
+    "text": "预留建造舱\n解锁新科技后自动接入，也可拖入已有项目。",
+    "params": "",
+    "category": "upgrade",
+    "note": "AI 原型建造舱显示；不改变科研规则"
+  },
+  {
+    "key": "gem.center.title",
+    "text": "宝石中心",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.socket_tab",
+    "text": "镶嵌配置",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.manage_tab",
+    "text": "合成 / 分解",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.modules",
+    "text": "模块列表",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.manage_help",
+    "text": "选择一颗宝石即可查看效果。\n\n合成会自动选取同类型、同等级的背包材料。\n\n一键合成只处理背包，已镶嵌宝石保持原位。\n\n仅满级宝石可分解，分解前会确认。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.search",
+    "text": "搜索宝石名称 / 等级",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.usable",
+    "text": "仅可镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.sort_level",
+    "text": "等级优先",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.sort_type",
+    "text": "类型优先",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.upgrade_installed",
+    "text": "升级当前孔位宝石",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.combine",
+    "text": "合成一级（自动选材）",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.welcome",
+    "text": "选模块、选孔位，再选择宝石预览。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.module",
+    "text": "{kind}模块 {index} · {state}\n{name} Lv.{level}\n宝石 {used} / {count}",
+    "params": "kind,index,state,name,level,used,count",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.active",
+    "text": "启用",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.inactive",
+    "text": "停用",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.choose_socket",
+    "text": "请先选择可用孔位",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.choose_gem",
+    "text": "请选择一颗宝石",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.available",
+    "text": "可镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.empty",
+    "text": "暂无背包宝石\n战斗收集碎片后自动生成。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.no_match",
+    "text": "没有符合条件的宝石\n可修改搜索，或关闭“仅可镶嵌”。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.results",
+    "text": "显示 {count} 颗",
+    "params": "count",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.socket_hint",
+    "text": " · 选择只预览，按钮才执行",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.combine_hint",
+    "text": " · 选一颗，自动凑齐同类材料",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.empty_socket",
+    "text": "孔位 {index}\n＋ 选择宝石",
+    "params": "index",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.locked_socket",
+    "text": "模块 {level} 级解锁",
+    "params": "level",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.installed",
+    "text": "已镶嵌",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.manage_title",
+    "text": "背包宝石 · 合成与分解",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.target",
+    "text": "{kind}模块 {index} · {name} Lv.{level}",
+    "params": "kind,index,name,level",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.socket_done",
+    "text": "镶嵌完成",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.removed",
+    "text": "已卸下，宝石返回背包",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.upgrade_unavailable",
+    "text": "需要足够同类型同等级材料，且宝石未满级、未被保护。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.upgraded",
+    "text": "宝石已升一级，仍保留在原孔位",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.socket_help",
+    "text": "先在左侧选择模块，再点击孔位。\n\n选择背包宝石查看替换前后效果，点击“镶嵌”或“替换”执行。\n\n满包也可替换；单独卸下需要背包空位。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.owned",
+    "text": "背包持有同类同级：{count} 颗",
+    "params": "count",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.next",
+    "text": "下一等级效果\n{effect}\n\n合成需要 {required} 颗；可用 {have} 颗。",
+    "params": "effect,required,have",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.max",
+    "text": "已满级\n分解返还 {refund} 碎片。",
+    "params": "refund",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.preview",
+    "text": "孔位 {index} · 效果预览",
+    "params": "index",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.old",
+    "text": "当前宝石",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.new",
+    "text": "候选宝石",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.none",
+    "text": "空孔",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.installed_materials",
+    "text": "原位升级：使用当前宝石，再消耗同类同级材料 {required} 颗。\n背包可用：{have} 颗。",
+    "params": "required,have",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.upgrade_preview",
+    "text": "升级后效果",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.full_hint",
+    "text": "背包已满：可替换、可升级；卸下需空位。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.inactive_hint",
+    "text": "当前模块未参与战斗，宝石保留但暂不生效。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.explicit",
+    "text": "确认将候选宝石装入当前选定孔位",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.remove_hint",
+    "text": "卸下当前孔位宝石，返回背包",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.clear_candidate",
+    "text": "再次点击候选取消预览，或点击孔位后升级。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.upgrade_help",
+    "text": "自动选取背包同类同级材料，升级后保留原孔位。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.combine_insufficient",
+    "text": "可用的同类型同等级材料不足，或宝石不可合成。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.combine_help",
+    "text": "自动消耗 {required} 颗同类型同等级宝石。",
+    "params": "required",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.manage_heading",
+    "text": "合成与分解说明",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.wrong_category",
+    "text": "类型不适用",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.duplicate",
+    "text": "已有同类",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.unavailable",
+    "text": "当前不可用",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.protected",
+    "text": "已保护",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.history_hint",
+    "text": "熟练 / 适应效果随模块历史累计变化。此处按最近选择的模块预览；请在镶嵌页确认目标效果。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.decrease",
+    "text": "替换将降低部分属性，请核对效果。",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.visual.subtitle",
+    "text": "舰载晶体工坊 · 模块增幅与精炼",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心视觉品质"
+  },
+  {
+    "key": "gem.visual.weapon",
+    "text": "武器专用晶体",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心视觉品质"
+  },
+  {
+    "key": "gem.visual.defence",
+    "text": "防御专用晶体",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心视觉品质"
+  },
+  {
+    "key": "gem.visual.universal",
+    "text": "通用晶体",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心视觉品质"
+  },
+  {
+    "key": "gem.visual.empty_display",
+    "text": "选择宝石，查看晶体效果",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心视觉品质"
+  },
+  {
+    "key": "crew.tab",
+    "text": "船员",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.heading",
+    "text": "船员管理",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.api_only",
+    "text": "船员无固定职务，可自由分配到各系统。经验来源暂未开放；装备槽位预留。",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.choose_job",
+    "text": "选择分配系统",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.choose_target",
+    "text": "选择具体目标",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.assign",
+    "text": "分配 / 更换系统",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.release",
+    "text": "解除分配",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.idle",
+    "text": "待命",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.inactive",
+    "text": "系统暂不可用，已暂停工作",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.unsupported",
+    "text": "该目标或效果尚未注册处理器",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.empty",
+    "text": "暂无可用船员",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.empty_module",
+    "text": "空模块",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.max_level",
+    "text": "已满级",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.row",
+    "text": "{name}  Lv.{level}\n{job}  {target}\n{effect}",
+    "params": "name,level,job,target,effect",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.name_level",
+    "text": "{name}  Lv.{level}",
+    "params": "name,level",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.progress",
+    "text": "经验 {exp} / {needed}\n当前效果：{effect}",
+    "params": "exp,needed,effect",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.equipment_reserved",
+    "text": "船员装备：{count} 个预留槽位（未开放）",
+    "params": "count",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.module_target",
+    "text": "{kind}模块 {index} · {name}",
+    "params": "kind,index,name",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.badge",
+    "text": "👤{count}",
+    "params": "count",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.badge_tip",
+    "text": "{name} Lv.{level} · {effect}",
+    "params": "name,level,effect",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.weapon",
+    "text": "武器模块 · 自动升级",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.defense",
+    "text": "防御模块 · 自动升级",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.hightech",
+    "text": "高科技 · 研究效率",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.smelting",
+    "text": "宝石熔炼 · 生产速度",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.production",
+    "text": "炼铁生产 · 产出",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.effect.auto",
+    "text": "每 {interval} 秒尝试升级 1 级（正常消耗资源）",
+    "params": "interval",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.effect.efficiency",
+    "text": "研究效率 +{value}%",
+    "params": "value",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.effect.speed",
+    "text": "生产速度 +{value}%",
+    "params": "value",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.effect.output",
+    "text": "每次产出 +{value}%",
+    "params": "value",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.effect.generic",
+    "text": "{description} 当前倍率值：{value}%；检查间隔：{interval} 秒",
+    "params": "description,value,interval",
+    "category": "crew",
+    "note": "船员系统"
+  },
+  {
+    "key": "crew.job.equipment",
+    "text": "装备系统",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.all_equipment",
+    "text": "全部武器与防御模块",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.upgrade_amount",
+    "text": "每次升级数量（全部装备）",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.upgrade_levels",
+    "text": "升级 {count} 级",
+    "params": "count",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.upgrade_max",
+    "text": "升级最大值",
+    "params": "",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.effect.all_equipment",
+    "text": "每 {interval} 秒尝试为全部装备{mode}",
+    "params": "interval,mode",
+    "category": "crew",
+    "note": "船员系统分配与批量升级"
+  },
+  {
+    "key": "crew.unlock_at",
+    "text": "通关第{level}层解锁",
+    "params": "level",
+    "category": "crew",
+    "note": "仅下一名未解锁船员剪影显示，不包含身份或效果"
   }
 ]

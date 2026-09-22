@@ -25,7 +25,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 5
+CACHE_VERSION = 6
 
 
 def sha(value):
@@ -219,7 +219,7 @@ def incremental_import(directory, target):
     snapshot, paths, changed = {}, {}, []
     for name, section in SECTIONS.items():
         filename = manifest.get("sheets", {}).get(name)
-        if name in ('charge','ship','jewel') and not filename:
+        if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment') and not filename:
             filename = f'{name}.xlsx'
             if not (directory / filename).is_file():
                 if current.get(SECTIONS[name]):
