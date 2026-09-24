@@ -9,8 +9,10 @@ func _init() -> void:
 	register_target("hightech", research_targets)
 	register_target("production", production_targets)
 	register_target("smelting", smelting_targets)
+	register_target("jewel", jewel_targets)
 	register_handler("equipment", "AUTO_UPGRADE", auto_upgrade)
-	register_handler("hightech", "EFFICIENCY", passive)
+	register_handler("hightech", "AUTO_SCIENTIST", auto_scientists)
+	register_handler("jewel", "AUTO_COMBINE", auto_jewels)
 	for target in ["production", "smelting"]:
 		for effect in ["OUTPUT", "SPEED", "EFFICIENCY"]:
 			register_handler(target, effect, passive)
@@ -72,6 +74,9 @@ func load_state(g, raw) -> void:
 		if assignment in ["weapon_upgrade","defense_upgrade"]:
 			assignment = "equipment_upgrade"
 			target = "equipment"
+		if assignment == "smelting_speed":
+			assignment = "jewel_auto"
+			target = "jewels"
 		if can_assign(g,entry.crewId,assignment,target,true):
 			entry.assignmentType = assignment
 			entry.targetId = target
@@ -89,8 +94,9 @@ func gain_exp(g, id: String, amount: float, notify := true) -> bool:
 	item.exp = minf(float(item.exp)+amount,1e308)
 	while int(item.level) < int(definition.maxLevel):
 		var next := growth(g,id,int(item.level)+1)
-		if next.is_empty() or float(next.needExp)<=0 or float(item.exp)<float(next.needExp):break
-		item.exp -= float(next.needExp)
+		var needed := roundf(float(definition.get("baseExp", next.get("needExp", 0))) * pow(1.0 + float(definition.get("expGrowth", 0)), int(item.level)-1))
+		if next.is_empty() or needed<=0 or float(item.exp)<needed:break
+		item.exp -= needed
 		item.level += 1
 	if int(item.level)>=int(definition.maxLevel):item.exp=0.0
 	if notify and before != [item.level,item.exp]:
@@ -109,11 +115,15 @@ func valid_target(g, assignment: String, id: String, include_inactive := false) 
 
 func can_assign(g, id: String, assignment: String, target: String, restoring := false) -> bool:
 	if entry(g,id).is_empty() or (not restoring and not unlocked(g,id)):return false
+	if not assignment.is_empty() and not restoring:
+		for progress in g.profile.get("planets", {}).values():
+			if str(progress.get("crewId", "")) == id:return false
 	if assignment.is_empty():return target.is_empty()
 	if not valid_target(g,assignment,target,restoring):return false
 	var count := 0
 	for item in g.profile.crew:
-		if item.crewId!=id and item.assignmentType==assignment and item.targetId==target:count+=1
+		var occupied: Dictionary=assignments(g).get(str(item.assignmentType),{})
+		if item.crewId!=id and occupied.get("targetType")==assignments(g)[assignment].targetType and item.targetId==target:count+=1
 	return count < int(assignments(g)[assignment].maxCrew)
 
 func assign(g, id: String, assignment: String, target: String) -> bool:
@@ -131,24 +141,28 @@ func changed(g, item: Dictionary, previous: Dictionary) -> void:
 	g.save_progress()
 	g.event.emit("crew_changed",{"crewId":item.crewId,"previous":previous,"current":item.duplicate(true)})
 
-func upgrade_modes(g) -> Array[String]:
-	for row in assignments(g).values():
-		if row.get("targetType")=="equipment" and row.get("effectType")=="AUTO_UPGRADE":
-			var result: Array[String] = []
-			for mode in str(row.get("upgradeModes","")).split(",",false):result.append(mode.strip_edges())
-			return result
-	return []
+func upgrade_modes(g, assignment := "") -> Array[String]:
+	var result: Array[String] = []
+	for id in assignments(g):
+		var row: Dictionary=assignments(g)[id]
+		if (assignment.is_empty() or id==assignment) and row.get("effectType") in ["AUTO_UPGRADE","AUTO_SCIENTIST"]:
+			for mode in str(row.get("upgradeModes","")).split(",",false):
+				var value := mode.strip_edges()
+				if not result.has(value):result.append(value)
+	return result
 
-func set_upgrade_mode(g, id: String, mode: String) -> bool:
+func set_upgrade_mode(g, id: String, mode: String, assignment := "") -> bool:
 	var item := entry(g,id)
-	if item.is_empty() or not upgrade_modes(g).has(mode):return false
+	if item.is_empty() or not upgrade_modes(g,assignment).has(mode):return false
 	if item.upgradeMode==mode:return true
 	var previous := item.duplicate(true)
 	item.upgradeMode=mode
 	changed(g,item,previous)
 	return true
 
-func upgrade_mode_text(mode: String) -> String:
+func upgrade_mode_text(mode: String, effect_type := "AUTO_UPGRADE") -> String:
+	if effect_type=="AUTO_SCIENTIST":
+		return UIText.t("crew.scientist_max") if mode=="max" else UIText.t("crew.scientist_count",{"count":mode})
 	return UIText.t("crew.upgrade_max") if mode=="max" else UIText.t("crew.upgrade_levels",{"count":mode})
 
 func effect_value(g, item: Dictionary) -> float:
@@ -196,13 +210,23 @@ func auto_upgrade(g, item: Dictionary) -> void:
 	# Match manual module upgrades. Each later module sees the remaining resources.
 	g.upgrade_equipment_batch(mode)
 
+func auto_scientists(g, item: Dictionary) -> void:
+	var mode := str(item.get("upgradeMode",""))
+	if not upgrade_modes(g,item.assignmentType).has(mode):return
+	if g.generate_scientist(-1 if mode=="max" else int(mode)):
+		g.distribute_scientists()
+
+func auto_jewels(g, _item: Dictionary) -> void:
+	g.auto_manage_jewels()
+
 func equipment_targets(g) -> Array:
 	return [{"id":"equipment","name":UIText.t("crew.all_equipment"),"active":not g.loadout_entries("weapons").is_empty() or not g.loadout_entries("defence").is_empty()}]
 
 func research_targets(g) -> Array:
 	var result: Array = []
 	for key in g.db.data.get("hightech",{}):
-		result.append({"id":key,"name":UIText.data_text("hightech",key),"active":g.hightech_unlocked(key)})
+		result.append({"id":key,"name":UIText.data_text("hightech",key),"active":g.hightech_unlocked(key),"category":"technology"})
+	result.append({"id":"hightech","name":UIText.t("crew.hightech_system"),"active":g.db.data.get("hightech",{}).keys().any(func(key):return g.hightech_unlocked(key)),"category":"system"})
 	return result
 
 func production_targets(g) -> Array:
@@ -210,6 +234,9 @@ func production_targets(g) -> Array:
 
 func smelting_targets(g) -> Array:
 	return furnace_targets(g,[g.JEWEL_FURNACE])
+
+func jewel_targets(g) -> Array:
+	return [{"id":"jewels","name":UIText.t("crew.jewel_system"),"active":g.jewels_unlocked()}]
 
 func furnace_targets(g, keys: Array) -> Array:
 	var result: Array = []
@@ -230,20 +257,19 @@ func effect_text(g, item: Dictionary) -> String:
 	var key := str(row.get("descTextId", ""))
 	if key.is_empty():key="crew.effect.generic"
 	if not UIText.loaded:UIText.reload_catalog()
-	var possible := {"description":str(row.description),"value":"%.1f" % (value*100),"interval":"%.1f" % (float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text(str(item.get("upgradeMode","")))}
+	var possible := {"description":str(row.description),"value":"%.1f" % (value*100),"interval":"%.1f" % (float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text(str(item.get("upgradeMode","")),str(row.effectType))}
 	var values := {}
 	for parameter in UIText.contracts.get(key,{}).get("params",[]):
 		if possible.has(parameter):values[parameter]=possible[parameter]
 	return UIText.t(key,values)
 
-func badge(g, target_id: String) -> Dictionary:
+func tab_badge(g, target_types: Array) -> Dictionary:
 	var lines: Array[String] = []
 	for item in g.profile.get("crew",[]):
-		if not unlocked(g,item.crewId):continue
-		var equipment_member: bool = (target_id.begins_with("weapons_") or target_id.begins_with("defence_")) and item.targetId=="equipment"
-		if (item.targetId==target_id or equipment_member) and not str(item.assignmentType).is_empty():
+		var row: Dictionary=assignments(g).get(str(item.assignmentType),{})
+		if target_types.has(str(row.get("targetType",""))) and active(g,item):
 			lines.append(UIText.t("crew.badge_tip",{"name":str(definitions(g)[item.crewId].name),"level":item.level,"effect":effect_text(g,item)}))
-	return {"text":UIText.t("crew.badge",{"count":lines.size()}) if not lines.is_empty() else "","tooltip":"\n".join(lines)}
+	return {"text":UIText.t("crew.badge") if not lines.is_empty() else "","tooltip":"\n".join(lines)}
 
 func equipment_slots(g, id: String) -> Array:
 	return entry(g,id).get("equipmentSlots",[]).duplicate(true)

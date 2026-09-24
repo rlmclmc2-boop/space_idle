@@ -219,7 +219,7 @@ def incremental_import(directory, target):
     snapshot, paths, changed = {}, {}, []
     for name, section in SECTIONS.items():
         filename = manifest.get("sheets", {}).get(name)
-        if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment') and not filename:
+        if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment','planet') and not filename:
             filename = f'{name}.xlsx'
             if not (directory / filename).is_file():
                 if current.get(SECTIONS[name]):

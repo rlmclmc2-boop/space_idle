@@ -51,7 +51,6 @@ var inventory_scroll: ScrollContainer
 var remove_action: Button
 var upgrade_action: Button
 var action_reason: Label
-var close_button: Button
 var hero_caption: Label
 var workshop_art: TextureRect
 var module_heading: Label
@@ -66,11 +65,13 @@ func setup(owner_node: Node) -> void:
 	game=host.game
 	observed_serial=game.jewel_serial
 	create_palettes()
-	position=Vector2(50,35)
-	size=Vector2(1340,740)
+	position=Vector2(50,127)
+	size=Vector2(1340,648)
 	add_theme_stylebox_override("panel",StyleBoxEmpty.new())
 	workshop_art=TextureRect.new()
 	workshop_art.texture=preload("res://assets/jewels/premium/workshop-frame.svg")
+	workshop_art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	workshop_art.stretch_mode=TextureRect.STRETCH_SCALE
 	workshop_art.size=size
 	workshop_art.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	add_child(workshop_art)
@@ -78,7 +79,6 @@ func setup(owner_node: Node) -> void:
 	label(UIText.t("gem.center.title"),Rect2(28,21,280,32),26)
 	var subtitle:=label(UIText.t("gem.visual.subtitle"),Rect2(28,55,370,22),12)
 	subtitle.add_theme_color_override("font_color",Color("8198b1"))
-	close_button=add_button(UIText.t("gem.setup.text_03"),Rect2(1236,26,80,38),close)
 	combine_all=add_button(UIText.t("gem.setup.text_07"),Rect2(1016,26,198,38),combine_all_selected)
 	combine_all.tooltip_text=UIText.t("gem.setup.text_08")
 	module_heading=label(UIText.t("gem.center.modules"),Rect2(36,116,190,26),17)
@@ -178,6 +178,13 @@ func setup(owner_node: Node) -> void:
 	metrics_timer.wait_time=1.0
 	metrics_timer.timeout.connect(refresh_metrics)
 	add_child(metrics_timer)
+	# Match the shorter workshop frame while keeping text and jewel images at readable sizes.
+	var vertical_scale:=size.y/740.0
+	for child in get_children():
+		if child is Control and child!=workshop_art:
+			var control:=child as Control
+			control.position=Vector2(control.position.x,control.position.y*vertical_scale)
+			control.size=Vector2(control.size.x,control.size.y*vertical_scale)
 	skin_controls()
 	create_effect_pool()
 	visibility_changed.connect(on_visibility_changed)
@@ -306,8 +313,8 @@ func refresh_modules() -> void:
 			live[key]=true
 			var entry:=game.module_entry(kind,index)
 			if not module_buttons.has(key):
-				var button:=add_button("",Rect2(0,0,190,82),func():choose_module(kind,index))
-				button.custom_minimum_size=Vector2(190,82)
+				var button:=add_button("",Rect2(0,0,190,74),func():choose_module(kind,index))
+				button.custom_minimum_size=Vector2(190,74)
 				button.add_theme_font_size_override("font_size",14)
 				button.reparent(module_list,false)
 				module_buttons[key]=button
@@ -406,8 +413,8 @@ func refresh_sockets() -> void:
 		removed.queue_free()
 	while socket_buttons.size()<total:
 		var index:=socket_buttons.size()
-		var button:=add_button("",Rect2(0,0,190,74),func():select_socket(index))
-		button.custom_minimum_size=Vector2(190,74)
+		var button:=add_button("",Rect2(0,0,190,66),func():select_socket(index))
+		button.custom_minimum_size=Vector2(190,66)
 		button.add_theme_font_size_override("font_size",14)
 		button.add_theme_constant_override("icon_max_width",42)
 		button.expand_icon=true

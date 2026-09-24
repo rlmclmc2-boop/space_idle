@@ -4554,7 +4554,7 @@
   {
     "key": "charge.system_count",
     "text": "系统列表  {count} / ∞",
-    "params": "count",
+    "params": "{count}",
     "category": "upgrade",
     "note": "充能页面",
     "source": "charge_panel.gd"
@@ -4562,7 +4562,7 @@
   {
     "key": "charge.resource",
     "text": "{name}   {amount}    |    产出 +{rate} / 秒",
-    "params": "name,amount,rate",
+    "params": "{name},{amount},{rate}",
     "category": "upgrade",
     "note": "充能页面",
     "source": "charge_panel.gd"
@@ -4650,7 +4650,7 @@
   {
     "key": "charge.energy_amount",
     "text": "{name} {amount}",
-    "params": "name,amount",
+    "params": "{name},{amount}",
     "category": "upgrade",
     "note": "充能仪表及分页",
     "source": "charge_panel.gd"
@@ -4666,7 +4666,7 @@
   {
     "key": "charge.page",
     "text": "{current} / {total}",
-    "params": "current,total",
+    "params": "{current},{total}",
     "category": "upgrade",
     "note": "充能仪表及分页",
     "source": "charge_panel.gd"
@@ -4674,7 +4674,7 @@
   {
     "key": "charge.time",
     "text": "{elapsed} / {para_4} 秒",
-    "params": "elapsed,para_4",
+    "params": "{elapsed},{para_4}",
     "category": "upgrade",
     "note": "充能仪表及分页",
     "source": "charge_panel.gd"
@@ -4682,7 +4682,7 @@
   {
     "key": "charge.upgrades",
     "text": "升级 {count}/{key}",
-    "params": "count,key",
+    "params": "{count},{key}",
     "category": "upgrade",
     "note": "充能仪表及分页",
     "source": "charge_panel.gd"
@@ -4690,7 +4690,7 @@
   {
     "key": "charge.cost",
     "text": "{para_1} ×{key}/秒",
-    "params": "para_1,key",
+    "params": "{para_1},{key}",
     "category": "upgrade",
     "note": "充能仪表及分页",
     "source": "charge_panel.gd"
@@ -4712,7 +4712,7 @@
   {
     "key": "equipment.counts",
     "text": "运行 {equipped} · 可升级 {upgradeable} · 停用 {locked}",
-    "params": "{equipped} {upgradeable} {locked}",
+    "params": "{equipped},{upgradeable},{locked}",
     "category": "weapon",
     "note": "统一装备管理界面"
   },
@@ -4761,7 +4761,7 @@
   {
     "key": "equipment.slot",
     "text": "槽位 {index} · {name} · Lv.{level}",
-    "params": "{index} {name} {level}",
+    "params": "{index},{name},{level}",
     "category": "weapon",
     "note": "统一装备管理界面"
   },
@@ -5034,7 +5034,7 @@
   {
     "key": "equipment.attribute",
     "text": "{label}：{value}",
-    "params": "{label} {value}",
+    "params": "{label},{value}",
     "category": "weapon",
     "note": "装备展开视图与分层详情"
   },
@@ -5090,7 +5090,7 @@
   {
     "key": "equipment.unlock_condition",
     "text": "解锁门槛：通关 {level} 关；同种装配上限 {limit}。",
-    "params": "{level} {limit}",
+    "params": "{level},{limit}",
     "category": "weapon",
     "note": "旧同种限制界面停用；保留参数契约，不用于模块界面"
   },
@@ -5174,14 +5174,14 @@
   {
     "key": "ship.refit.capacity",
     "text": "武器 {weapons} · 防御 {defence}",
-    "params": "{weapons} / {defence}",
+    "params": "{weapons},{defence}",
     "category": "ship",
     "note": "模块成长与自由换装"
   },
   {
     "key": "ship.refit.result",
     "text": "启用 {active} 个模块 · 保留停用 {dormant} 个模块",
-    "params": "{active} / {dormant}",
+    "params": "{active},{dormant}",
     "category": "ship",
     "note": "模块成长与自由换装"
   },
@@ -5202,7 +5202,7 @@
   {
     "key": "ship.refit.module",
     "text": "{slot} · {name} · Lv.{level}",
-    "params": "{slot} / {name} / {level}",
+    "params": "{slot},{name},{level}",
     "category": "ship",
     "note": "模块成长与自由换装"
   },
@@ -5370,14 +5370,14 @@
   {
     "key": "lab.error",
     "text": "操作失败：{error}",
-    "params": "error",
+    "params": "{error}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.progress",
     "text": "{status} · 第 {run}/{total} 次 · 游戏时间 {seconds} 秒 · 关卡 {stage}",
-    "params": "status,run,total,seconds,stage",
+    "params": "{status},{run},{total},{seconds},{stage}",
     "category": "debug",
     "note": "Balance Lab"
   },
@@ -5391,14 +5391,14 @@
   {
     "key": "lab.run_summary",
     "text": "第 {run} 次 · 种子 {seed} · DPS {dps} · 死亡 {deaths} · 升级 {upgrades} · 异常 {warnings}",
-    "params": "run,seed,dps,deaths,upgrades,warnings",
+    "params": "{run},{seed},{dps},{deaths},{upgrades},{warnings}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.saved",
     "text": "报告已保存：{path}",
-    "params": "path",
+    "params": "{path}",
     "category": "debug",
     "note": "Balance Lab"
   },
@@ -5440,7 +5440,7 @@
   {
     "key": "lab.effective_speed",
     "text": " · 实际平均 {speed}x",
-    "params": "speed",
+    "params": "{speed}",
     "category": "debug",
     "note": "Balance Lab"
   },
@@ -5454,49 +5454,49 @@
   {
     "key": "lab.warning.weapon_dominance",
     "text": "武器 {key} 伤害占比过高：{value}。",
-    "params": "key,value",
+    "params": "{key},{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.equipment_unused",
     "text": "装备 {key} 使用率接近零：{value}（可能尚未解锁）。",
-    "params": "key,value",
+    "params": "{key},{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.system_unused",
     "text": "系统 {key} 本轮没有参与（可能尚未解锁）。",
-    "params": "key",
+    "params": "{key}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.ttk_outside_range",
     "text": "平均 TTK 超出阈值：{value} 秒。",
-    "params": "value",
+    "params": "{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.upgrade_gap",
     "text": "长期没有模块升级：{value} 秒。",
-    "params": "value",
+    "params": "{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.unaffordable",
     "text": "长期无法购买任何有效模块升级：{value} 秒。",
-    "params": "value",
+    "params": "{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
   {
     "key": "lab.warning.resource_surplus",
     "text": "资源 {key} 持续超过收入储备阈值：{value} 秒。",
-    "params": "key,value",
+    "params": "{key},{value}",
     "category": "debug",
     "note": "Balance Lab"
   },
@@ -5580,7 +5580,7 @@
   {
     "key": "lab.v2.queue",
     "text": "逐参数独立扫描，共 {count} 项；队列为空时只扫描当前选择。{parameters}",
-    "params": "count,parameters",
+    "params": "{count},{parameters}",
     "category": "debug",
     "note": "Balance Lab v2"
   },
@@ -5783,7 +5783,7 @@
   {
     "key": "lab.v2.incomparable",
     "text": "实验条件不一致，请勿直接归因于参数版本：{reasons}",
-    "params": "reasons",
+    "params": "{reasons}",
     "category": "debug",
     "note": "Balance Lab v2"
   },
@@ -5860,7 +5860,7 @@
   {
     "key": "lab.v2.timeline_context",
     "text": "策略 {strategy} · 种子 {seed} · 实际采样间隔 {interval} 秒 · {samples} 个快照 · 截断事件 {dropped} 条；决策计数仍完整。",
-    "params": "strategy,seed,interval,samples,dropped",
+    "params": "{strategy},{seed},{interval},{samples},{dropped}",
     "category": "debug",
     "note": "Balance Lab v2"
   },
@@ -5916,14 +5916,14 @@
   {
     "key": "lab.v2.summary",
     "text": "SUMMARY\n平均最终关卡 {stage} · TTK {ttk}s · Boss TTK {boss}s\n升级间隔 {upgrade}s · 决策间隔 {decision}s · 最长成长空窗 {gap}s\n死亡 {deaths} · 资源盈余 {balance}（未加权）",
-    "params": "stage,ttk,boss,upgrade,decision,gap,deaths,balance",
+    "params": "{stage},{ttk},{boss},{upgrade},{decision},{gap},{deaths},{balance}",
     "category": "debug",
     "note": "Balance Lab v2"
   },
   {
     "key": "lab.v2.build",
     "text": "BUILD DISTRIBUTION（首轮）\n武器占比 {weapons}\n防御实际贡献 {defence}\n资源投入比例 {resources}\n时间轴问题与分级警告见对应页签。",
-    "params": "weapons,defence,resources",
+    "params": "{weapons},{defence},{resources}",
     "category": "debug",
     "note": "Balance Lab v2"
   },
@@ -6084,7 +6084,7 @@
   {
     "key": "upgrade.hightech.jewel_furnace.description",
     "text": "每{effect_1}秒在屏幕中生成一个含有{effect_2}的宝石碎片的宝石核心块",
-    "params": "{effect_1} {effect_2}",
+    "params": "{effect_1},{effect_2}",
     "category": "upgrade",
     "note": "宝石熔炼炉显示；效果来源 hightech.des"
   },
@@ -6149,7 +6149,7 @@
   {
     "key": "research.ai_summary",
     "text": "AI 总量 {total}    已部署 {assigned}    待命 {idle}",
-    "params": "{total} {assigned} {idle}",
+    "params": "{total},{assigned},{idle}",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
   },
@@ -6170,7 +6170,7 @@
   {
     "key": "research.metrics",
     "text": "{rate} 点/秒 · {points} / {required} 点",
-    "params": "{rate} {points} {required}",
+    "params": "{rate},{points},{required}",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
   },
@@ -6331,7 +6331,7 @@
   {
     "key": "gem.center.module",
     "text": "{kind}模块 {index} · {state}\n{name} Lv.{level}\n宝石 {used} / {count}",
-    "params": "kind,index,state,name,level,used,count",
+    "params": "{kind},{index},{state},{name},{level},{used},{count}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6387,7 +6387,7 @@
   {
     "key": "gem.center.results",
     "text": "显示 {count} 颗",
-    "params": "count",
+    "params": "{count}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6408,14 +6408,14 @@
   {
     "key": "gem.center.empty_socket",
     "text": "孔位 {index}\n＋ 选择宝石",
-    "params": "index",
+    "params": "{index}",
     "category": "gem",
     "note": "宝石中心重做"
   },
   {
     "key": "gem.center.locked_socket",
     "text": "模块 {level} 级解锁",
-    "params": "level",
+    "params": "{level}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6436,7 +6436,7 @@
   {
     "key": "gem.center.target",
     "text": "{kind}模块 {index} · {name} Lv.{level}",
-    "params": "kind,index,name,level",
+    "params": "{kind},{index},{name},{level}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6478,28 +6478,28 @@
   {
     "key": "gem.center.owned",
     "text": "背包持有同类同级：{count} 颗",
-    "params": "count",
+    "params": "{count}",
     "category": "gem",
     "note": "宝石中心重做"
   },
   {
     "key": "gem.center.next",
     "text": "下一等级效果\n{effect}\n\n合成需要 {required} 颗；可用 {have} 颗。",
-    "params": "effect,required,have",
+    "params": "{effect},{required},{have}",
     "category": "gem",
     "note": "宝石中心重做"
   },
   {
     "key": "gem.center.max",
     "text": "已满级\n分解返还 {refund} 碎片。",
-    "params": "refund",
+    "params": "{refund}",
     "category": "gem",
     "note": "宝石中心重做"
   },
   {
     "key": "gem.center.preview",
     "text": "孔位 {index} · 效果预览",
-    "params": "index",
+    "params": "{index}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6527,7 +6527,7 @@
   {
     "key": "gem.center.installed_materials",
     "text": "原位升级：使用当前宝石，再消耗同类同级材料 {required} 颗。\n背包可用：{have} 颗。",
-    "params": "required,have",
+    "params": "{required},{have}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6590,7 +6590,7 @@
   {
     "key": "gem.center.combine_help",
     "text": "自动消耗 {required} 颗同类型同等级宝石。",
-    "params": "required",
+    "params": "{required}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6694,7 +6694,7 @@
   },
   {
     "key": "crew.api_only",
-    "text": "船员无固定职务，可自由分配到各系统。经验来源暂未开放；装备槽位预留。",
+    "text": "船员无固定职务，可自由分配到各系统。空闲船员可探索星球并获得经验；装备槽位预留。",
     "params": "",
     "category": "crew",
     "note": "船员系统"
@@ -6772,49 +6772,49 @@
   {
     "key": "crew.row",
     "text": "{name}  Lv.{level}\n{job}  {target}\n{effect}",
-    "params": "name,level,job,target,effect",
+    "params": "{name},{level},{job},{target},{effect}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.name_level",
     "text": "{name}  Lv.{level}",
-    "params": "name,level",
+    "params": "{name},{level}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.progress",
     "text": "经验 {exp} / {needed}\n当前效果：{effect}",
-    "params": "exp,needed,effect",
+    "params": "{exp},{needed},{effect}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.equipment_reserved",
     "text": "船员装备：{count} 个预留槽位（未开放）",
-    "params": "count",
+    "params": "{count}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.module_target",
     "text": "{kind}模块 {index} · {name}",
-    "params": "kind,index,name",
+    "params": "{kind},{index},{name}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.badge",
-    "text": "👤{count}",
-    "params": "count",
+    "text": "👤",
+    "params": "",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.badge_tip",
     "text": "{name} Lv.{level} · {effect}",
-    "params": "name,level,effect",
+    "params": "{name},{level},{effect}",
     "category": "crew",
     "note": "船员系统"
   },
@@ -6834,7 +6834,7 @@
   },
   {
     "key": "crew.job.hightech",
-    "text": "高科技 · 研究效率",
+    "text": "高科技",
     "params": "",
     "category": "crew",
     "note": "船员系统"
@@ -6856,35 +6856,28 @@
   {
     "key": "crew.effect.auto",
     "text": "每 {interval} 秒尝试升级 1 级（正常消耗资源）",
-    "params": "interval",
-    "category": "crew",
-    "note": "船员系统"
-  },
-  {
-    "key": "crew.effect.efficiency",
-    "text": "研究效率 +{value}%",
-    "params": "value",
+    "params": "{interval}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.effect.speed",
     "text": "生产速度 +{value}%",
-    "params": "value",
+    "params": "{value}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.effect.output",
     "text": "每次产出 +{value}%",
-    "params": "value",
+    "params": "{value}",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.effect.generic",
     "text": "{description} 当前倍率值：{value}%；检查间隔：{interval} 秒",
-    "params": "description,value,interval",
+    "params": "{description},{value},{interval}",
     "category": "crew",
     "note": "船员系统"
   },
@@ -6912,7 +6905,7 @@
   {
     "key": "crew.upgrade_levels",
     "text": "升级 {count} 级",
-    "params": "count",
+    "params": "{count}",
     "category": "crew",
     "note": "船员系统分配与批量升级"
   },
@@ -6926,15 +6919,260 @@
   {
     "key": "crew.effect.all_equipment",
     "text": "每 {interval} 秒尝试为全部装备{mode}",
-    "params": "interval,mode",
+    "params": "{interval},{mode}",
     "category": "crew",
     "note": "船员系统分配与批量升级"
   },
   {
     "key": "crew.unlock_at",
     "text": "通关第{level}层解锁",
-    "params": "level",
+    "params": "{level}",
     "category": "crew",
     "note": "仅下一名未解锁船员剪影显示，不包含身份或效果"
+  },
+  {
+    "key": "crew.effect.scientist_auto",
+    "text": "每 {interval} 秒购买{mode}；成功后平均分配",
+    "params": "{interval},{mode}",
+    "category": "crew",
+    "note": "船员自动AI岗位效果"
+  },
+  {
+    "key": "crew.hightech_system",
+    "text": "高科技系统",
+    "params": "",
+    "category": "crew",
+    "note": "自动AI岗位目标"
+  },
+  {
+    "key": "crew.job.jewel",
+    "text": "宝石系统",
+    "params": "",
+    "category": "crew",
+    "note": "船员宝石岗位标题"
+  },
+  {
+    "key": "crew.jewel_system",
+    "text": "宝石系统",
+    "params": "",
+    "category": "crew",
+    "note": "船员宝石岗位目标"
+  },
+  {
+    "key": "crew.effect.jewel_auto",
+    "text": "每 {interval} 秒合成背包宝石，并以同类更高级宝石替换已镶嵌宝石",
+    "params": "{interval}",
+    "category": "crew",
+    "note": "船员宝石岗位效果"
+  },
+  {
+    "key": "crew.scientist_amount",
+    "text": "每次购买数量（AI）",
+    "params": "",
+    "category": "crew",
+    "note": "船员页面购买选项"
+  },
+  {
+    "key": "crew.scientist_count",
+    "text": "×{count} AI",
+    "params": "{count}",
+    "category": "crew",
+    "note": "船员页面购买选项"
+  },
+  {
+    "key": "crew.scientist_max",
+    "text": "MAX AI",
+    "params": "",
+    "category": "crew",
+    "note": "船员页面购买选项"
+  },
+  {
+    "key": "planet.tab",
+    "text": "星球探索",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.heading",
+    "text": "星球探索",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.first.name",
+    "text": "始源星",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.detail",
+    "text": "探索度 {degree}  ·  装备数值倍率 ×{bonus}  ·  本次经验 {experience}",
+    "params": "{degree},{bonus},{experience}",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.exploring",
+    "text": "{crew} 探索中 · 剩余 {remaining} 秒",
+    "params": "{crew},{remaining}",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.ready",
+    "text": "待命 · 本次约 {seconds} 秒",
+    "params": "{seconds}",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.start",
+    "text": "开始探索",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "planet.cancel",
+    "text": "召回船员",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索"
+  },
+  {
+    "key": "crew.exploring",
+    "text": "探索中",
+    "params": "",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "crew.exploration_remaining",
+    "text": "剩余 {remaining} 秒 · 完成经验 {experience}",
+    "params": "{remaining},{experience}",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "crew.exploration_progress",
+    "text": "经验 {exp} / {needed}\n探索：{planet} · 剩余 {remaining} 秒",
+    "params": "{exp},{needed},{planet},{remaining}",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "crew.exploration_heading",
+    "text": "{planet} 探索中",
+    "params": "{planet}",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "crew.exploration_hint",
+    "text": "探索期间不能分配岗位；完成后自动待命。",
+    "params": "",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "crew.view_planet",
+    "text": "查看星球探索",
+    "params": "",
+    "category": "crew",
+    "note": "探索中的船员状态"
+  },
+  {
+    "key": "planet.list_heading",
+    "text": "星球列表",
+    "params": "",
+    "category": "planet",
+    "note": "星球沙盘左侧列表标题"
+  },
+  {
+    "key": "planet.list_entry",
+    "text": "{planet}\n探索度 {degree}",
+    "params": "{planet},{degree}",
+    "category": "planet",
+    "note": "星球沙盘左侧列表条目"
+  },
+  {
+    "key": "planet.info_heading",
+    "text": "星球信息 · 探索任务",
+    "params": "",
+    "category": "planet",
+    "note": "星球沙盘右侧信息标题"
+  },
+  {
+    "key": "planet.facility_heading",
+    "text": "轨道设施",
+    "params": "",
+    "category": "planet",
+    "note": "星球沙盘底部设施栏标题"
+  },
+  {
+    "key": "planet.facility_empty",
+    "text": "尚无已拥有的轨道设施",
+    "params": "",
+    "category": "planet",
+    "note": "星球沙盘底部设施空状态"
+  },
+  {
+    "key": "planet.facility_item",
+    "text": "{name}\nLv.{level}",
+    "params": "{name},{level}",
+    "category": "planet",
+    "note": "轨道设施视觉卡片"
+  },
+  {
+    "key": "planet.facility.scout_satellite",
+    "text": "侦察卫星",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.facility.space_station",
+    "text": "空间站",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.facility.mining_platform",
+    "text": "采矿平台",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.facility.research_facility",
+    "text": "科研设施",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.facility.defense_platform",
+    "text": "防御平台",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.facility.orbital_factory",
+    "text": "轨道工厂",
+    "params": "",
+    "category": "planet",
+    "note": "轨道设施视觉名称"
+  },
+  {
+    "key": "planet.complete_feedback",
+    "text": "探索度 {degree} · 船员经验 +{experience}",
+    "params": "{degree},{experience}",
+    "category": "planet",
+    "note": "探索完成的短暂视觉反馈"
   }
 ]

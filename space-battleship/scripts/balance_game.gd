@@ -319,7 +319,7 @@ func combine_all_jewels() -> Dictionary:
 	if metrics != null and result.get("ok",false) and result.get("count",0) > 0:metrics.use("jewel_combine",int(result.count))
 	return result
 
-func socket_jewel(category: String, index: int, socket: int, token: int) -> bool:
-	var result := super.socket_jewel(category,index,socket,token)
+func socket_jewel(category: String, index: int, socket: int, token: int, notify := true) -> bool:
+	var result := super.socket_jewel(category,index,socket,token,notify)
 	if result and metrics != null:metrics.use("jewel_equip")
 	return result

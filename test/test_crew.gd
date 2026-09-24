@@ -12,6 +12,7 @@ func _initialize() -> void:
 	db.config.offlineMax=0
 	var g:=BattleGame.new(db,false)
 	g.profile.cleared=range(1,60)
+	g.profile.highestLevel=50
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	g.profile.resources={"1":1e20,"2":1e20}
 	var c=g.crew
@@ -57,10 +58,10 @@ func _initialize() -> void:
 	g.profile.scientists=1
 	g.profile.scientistAssignments[tech]=1
 	var rate:=g.research_rate(tech)
-	check(c.assign(g,"navigator","hightech_efficiency",tech),"Move to research")
-	check(c.assign(g,"engineer","hightech_efficiency",tech),"Aggregate second researcher")
-	check(is_equal_approx(c.get_modifier(g,"hightech",tech,"EFFICIENCY"),0.22),"Sum grown and base effects")
-	check(is_equal_approx(g.research_rate(tech),rate*1.22),"Research consumes modifier")
+	check(not db.data.crew_assignment.has("hightech_efficiency") and not c.assign(g,"navigator","hightech_efficiency",tech),"Removed research-efficiency job cannot be assigned")
+	check(c.assign(g,"navigator","hightech_scientists","hightech"),"Hightech job targets scientist automation")
+	check(c.get_modifier(g,"hightech",tech,"EFFICIENCY")==0,"Hightech job provides no research-efficiency modifier")
+	check(is_equal_approx(g.research_rate(tech),rate),"Hightech assignment leaves research rate unchanged")
 	check(c.get_modifier(g,"hightech","missing","EFFICIENCY")==0,"Modifier target isolation")
 	var base_data: Dictionary=db.data.hightech.duplicate(true)
 	g.profile.hightechLevels[g.FURNACE]=1
@@ -68,12 +69,9 @@ func _initialize() -> void:
 	g.profile.furnaceIncomePeak=1000
 	g.profile.jewelFurnaceIncomePeak=1000
 	check(c.assign(g,"navigator","production_output",g.FURNACE),"Move to production")
-	check(is_equal_approx(c.get_modifier(g,"hightech",tech,"EFFICIENCY"),0.1),"Moving removes old effect")
-	check(c.assign(g,"researcher","smelting_speed",g.JEWEL_FURNACE),"Smelting speed")
-	g.drops.clear()
-	var interval:=float(db.data.hightech[g.JEWEL_FURNACE].para1)/1.1
-	g.advance_furnace(interval,1000,1)
-	check(g.drops.any(func(drop):return drop.get("jewel",false)),"Smelting speed changes production boundary")
+	check(is_equal_approx(g.research_rate(tech),rate),"Moving away from hightech leaves research rate unchanged")
+	check(c.assign(g,"researcher","jewel_auto","jewels"),"Jewel system assignment")
+	check(c.get_modifier(g,"smelting",g.JEWEL_FURNACE,"SPEED")==0,"Jewel automation does not change furnace speed")
 	g.drops.clear()
 	g.profile.furnaceElapsed=0
 	g.advance_furnace(float(db.data.hightech[g.FURNACE].para1),1000,1)
@@ -85,8 +83,18 @@ func _initialize() -> void:
 	job.id="smelting_output"
 	job.targetType="smelting"
 	db.data.crew_assignment[job.id]=job
+	var speed_job: Dictionary=job.duplicate()
+	speed_job.id="smelting_fast_test"
+	speed_job.effectType="SPEED"
+	db.data.crew_assignment[speed_job.id]=speed_job
+	c.assign(g,"researcher",speed_job.id,g.JEWEL_FURNACE)
+	check(not c.assign(g,"engineer",job.id,g.JEWEL_FURNACE),"Different jobs cannot share one system target")
+	c.assign(g,"researcher","","")
 	check(c.assign(g,"engineer",job.id,g.JEWEL_FURNACE),"New Excel-style existing-effect row works")
 	check(c.get_modifier(g,"smelting",g.JEWEL_FURNACE,"OUTPUT")>0,"New row aggregates")
+	var old_multi:=BattleGame.new(db,false)
+	old_multi.crew.load_state(old_multi,[{"crewId":"navigator","level":2,"exp":7,"assignmentType":"production_output","targetId":g.FURNACE},{"crewId":"engineer","level":2,"exp":9,"assignmentType":"production_output","targetId":g.FURNACE}])
+	check(old_multi.crew.entry(old_multi,"navigator").assignmentType=="production_output" and old_multi.crew.entry(old_multi,"engineer").assignmentType=="" and old_multi.crew.entry(old_multi,"engineer").exp==9,"Old multi-crew system keeps first assignment and later crew growth")
 	# Exercise every passive adapter against real production, not just aggregation.
 	for item in g.profile.crew:c.assign(g,item.crewId,"","")
 	for target in ["production","smelting"]:
@@ -145,11 +153,11 @@ func _initialize() -> void:
 	c.advance(g,3000)
 	check(attempts[0]==2,"Missed deadlines do not burst spending")
 	c.register_handler("equipment","AUTO_UPGRADE",c.auto_upgrade)
-	db.data.crew_level.normal["4"]={"group":"normal","level":4,"needExp":7,"powerMultiplier":2}
+	db.data.crew_level.normal["4"]={"group":"normal","level":4,"needExp":144,"powerMultiplier":2}
 	db.data.crew.navigator.maxLevel=4
 	db.data.crew.navigator.basePower=3
-	g.add_crew_exp("navigator",307)
-	g.assign_crew("navigator","hightech_efficiency",tech)
-	check(c.entry(g,"navigator").level==4 and is_equal_approx(c.effect_value(g,c.entry(g,"navigator")),0.6),"Excel-added level and base power work without code changes")
+	g.add_crew_exp("navigator",364)
+	g.assign_crew("navigator","production_output",g.FURNACE)
+	check(c.entry(g,"navigator").level==4 and is_equal_approx(c.effect_value(g,c.entry(g,"navigator")),0.6),"Configured experience growth and added power row")
 	print("CREW: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

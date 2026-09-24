@@ -65,6 +65,6 @@ func run() -> void:
 	var legacy:=BattleGame.new(g.db,false)
 	legacy.crew.load_state(legacy,[{"crewId":"navigator","level":2,"exp":17,"assignmentType":"equipment_upgrade","targetId":"equipment"}])
 	check(legacy.crew.entry(legacy,"navigator").level==2 and legacy.crew.entry(legacy,"navigator").exp==17 and legacy.profile.crew.size()==6,"Existing crew identity/growth retained; new crew initialized")
-	check(legacy.crew.badge(legacy,"weapons_0").text=="","Locked legacy assignment does not reveal crew identity")
+	check(legacy.crew.tab_badge(legacy,["equipment"]).text=="","Locked legacy assignment does not reveal crew identity")
 	print("CREW UNLOCK: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

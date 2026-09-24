@@ -14,7 +14,7 @@ func _initialize() -> void:
 func run() -> void:
 	var db := ShipDatabase.new()
 	db.config.offlineMax = 0
-	check(db.data.unlock.size()==25,"All 25 unique entities including six crew registered")
+	check(db.data.unlock.size()==26,"All 26 unique entities including six crew and one planet registered")
 	db.unlock_row("equipment","laser").level=1
 	var initial := BattleGame.new(db,false)
 	check(not initial.profile.unlocked.has("laser"),"startEquip cannot bypass an authored stage gate")

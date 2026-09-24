@@ -41,5 +41,10 @@ func run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://resource-rate.png")
+		scene.game.drops.append({"uid":92,"x":820.0,"y":390.0,"age":0.0,"id":"2","amount":5.0,"speed":40.0,"auto_gen":true})
+		scene.battle_layer.queue_redraw()
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://uranium-flight.png")
 	print("Resource display: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

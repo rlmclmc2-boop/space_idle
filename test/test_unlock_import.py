@@ -21,8 +21,8 @@ class UnlockImportTests(unittest.TestCase):
         path = ROOT / 'config_excel/unlock.xlsx'
         rows = read_changed_file(path, 'unlock', path.read_bytes())
         self.assertEqual(rows, self.data['unlock'])
-        self.assertEqual(len(rows), 25)
-        self.assertEqual(len({(r['type'], r['target']) for r in rows.values()}), 25)
+        self.assertEqual(len(rows), 26)
+        self.assertEqual(len({(r['type'], r['target']) for r in rows.values()}), 26)
         validate_projection(self.data)
         for kind in ('equipment', 'ship', 'charge', 'hightech'):
             for row in self.data[kind].values():

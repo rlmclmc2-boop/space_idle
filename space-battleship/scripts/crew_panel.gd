@@ -23,6 +23,11 @@ var locked_preview: Button
 var job_label: Label
 var api_hint: Label
 var detail_controls: Array[Control] = []
+var exploration_heading: Label
+var exploration_hint: Label
+var view_planet_button: Button
+var recall_planet_button: Button
+var exploration_samples: Dictionary = {}
 
 func setup(owner_ui: Node) -> void:
 	host=owner_ui
@@ -50,11 +55,19 @@ func setup(owner_ui: Node) -> void:
 	target_picker=picker(Rect2(620,419,650,38))
 	target_picker.item_selected.connect(func(_index):refresh_actions())
 	upgrade_picker=picker(Rect2(620,419,650,38))
-	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index]))
+	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index],job_ids[jobs.selected]))
 	assign_button=action("crew.assign",Rect2(620,479,305,40),func():
 		if jobs.selected>=0 and target_picker.selected>=0:
 			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions())
 	release_button=action("crew.release",Rect2(950,479,320,40),func():host.game.crew.assign(host.game,selected,"",""))
+	exploration_heading=host.equipment_card_label(self,"",Rect2(620,306,650,32),20,host.CYAN)
+	exploration_hint=host.equipment_card_label(self,UIText.t("crew.exploration_hint"),Rect2(620,352,650,48),15,host.MUTED)
+	exploration_hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	view_planet_button=action("crew.view_planet",Rect2(620,419,305,40),func():host.equipment_tabs.current_tab=6)
+	recall_planet_button=action("planet.cancel",Rect2(950,419,320,40),func():
+		var planet_id: String=host.game.crew_exploration(selected)
+		if not planet_id.is_empty():host.game.cancel_planet_exploration(planet_id))
+	for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:control.visible=false
 	slots=host.equipment_card_label(self,"",Rect2(620,552,650,48),15,host.MUTED)
 	detail_controls.assign([title,description,status,slots,job_label,jobs,target_label,target_picker,upgrade_picker,assign_button,release_button])
 	locked_preview=Button.new()
@@ -87,6 +100,48 @@ func invalidate() -> void:
 	dirty=true
 	if is_visible_in_tree():refresh()
 
+func exploration_remaining(id: String) -> int:
+	var progress: Dictionary=host.game.planet_progress(id)
+	return ceili(maxf(0.0,host.game.planet_duration(id)-float(progress.get("elapsed",0))))
+
+func exploration_name(id: String) -> String:
+	return UIText.data_text("planet",id)
+
+func refresh_exploration_sample() -> void:
+	if not is_visible_in_tree():return
+	if dirty:
+		refresh()
+		return
+	for planet_id in host.game.profile.planets:
+		var crew_id: String=str(host.game.profile.planets[planet_id].get("crewId",""))
+		if crew_id.is_empty():continue
+		var remaining:=exploration_remaining(str(planet_id))
+		if exploration_samples.get(crew_id,-1)==remaining:continue
+		exploration_samples[crew_id]=remaining
+		var item: Dictionary=host.game.crew.entry(host.game,crew_id)
+		if not item.is_empty() and rows.has(crew_id):refresh_row(item)
+		if selected==crew_id:refresh_detail_status(item)
+
+func refresh_row(item: Dictionary) -> void:
+	var g=host.game
+	var id: String=item.crewId
+	var definition: Dictionary=g.crew.definitions(g)[id]
+	var planet_id: String=g.crew_exploration(id)
+	var role: String
+	var target: String
+	var effect: String
+	if not planet_id.is_empty():
+		role=UIText.t("crew.exploring")
+		target=exploration_name(planet_id)
+		effect=UIText.t("crew.exploration_remaining",{"remaining":exploration_remaining(planet_id),"experience":host.number(float(g.planet_row(planet_id).get("baseExp",0))*g.planet_exp_multiplier())})
+	else:
+		var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
+		role=job_title(job) if not job.is_empty() else UIText.t("crew.idle")
+		target=g.crew.target_name(g,item)
+		effect=g.crew.effect_text(g,item)
+	host.set_ui_value(rows[id],"text",UIText.t("crew.row",{"name":definition.name,"level":item.level,"job":role,"target":target,"effect":effect}))
+	host.set_ui_value(rows[id],"tooltip_text",str(definition.description))
+
 func refresh() -> void:
 	if not is_visible_in_tree():
 		dirty=true
@@ -115,10 +170,7 @@ func refresh() -> void:
 			rows[id]=button
 			if ResourceLoader.exists(str(definition.icon)):
 				button.icon=load(str(definition.icon))
-		var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
-		var role:=job_title(job) if not job.is_empty() else UIText.t("crew.idle")
-		host.set_ui_value(rows[id],"text",UIText.t("crew.row",{"name":definition.name,"level":item.level,"job":role,"target":g.crew.target_name(g,item),"effect":g.crew.effect_text(g,item)}))
-		host.set_ui_value(rows[id],"tooltip_text",str(definition.description))
+		refresh_row(item)
 	for id in rows.keys():
 		if not ids.has(id):
 			rows[id].queue_free()
@@ -180,29 +232,51 @@ func refresh_detail() -> void:
 	if item.is_empty():
 		host.set_ui_value(title,"text","")
 		for field in [description,status,slots]:host.set_ui_value(field,"text","")
+		for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:host.set_ui_value(control,"visible",false)
 		return
 	var row: Dictionary=g.crew.definitions(g)[selected]
-	var next: Dictionary=g.crew.growth(g,selected,int(item.level)+1)
-	var needed: String=host.number(float(next.get("needExp",0))) if int(item.level)<int(row.maxLevel) else UIText.t("crew.max_level")
 	host.set_ui_value(title,"text",UIText.t("crew.name_level",{"name":row.name,"level":item.level}))
 	host.set_ui_value(description,"text",str(row.description))
-	host.set_ui_value(status,"text",UIText.t("crew.progress",{"exp":host.number(float(item.exp)),"needed":needed,"effect":g.crew.effect_text(g,item)}))
+	refresh_detail_status(item)
 	host.set_ui_value(slots,"text",UIText.t("crew.equipment_reserved",{"count":item.equipmentSlots.size()}))
 	refresh_actions()
+
+func refresh_detail_status(item: Dictionary) -> void:
+	var g=host.game
+	var row: Dictionary=g.crew.definitions(g)[str(item.crewId)]
+	var next: Dictionary=g.crew.growth(g,str(item.crewId),int(item.level)+1)
+	var needed: String=host.number(roundf(float(row.get("baseExp",next.get("needExp",0)))*pow(1.0+float(row.get("expGrowth",0)),int(item.level)-1))) if int(item.level)<int(row.maxLevel) else UIText.t("crew.max_level")
+	var planet_id: String=g.crew_exploration(str(item.crewId))
+	if planet_id.is_empty():
+		host.set_ui_value(status,"text",UIText.t("crew.progress",{"exp":host.number(float(item.exp)),"needed":needed,"effect":g.crew.effect_text(g,item)}))
+	else:
+		host.set_ui_value(status,"text",UIText.t("crew.exploration_progress",{"exp":host.number(float(item.exp)),"needed":needed,"planet":exploration_name(planet_id),"remaining":exploration_remaining(planet_id)}))
 
 func refresh_actions() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
+	var planet_id: String=g.crew_exploration(selected)
+	var exploring:=not planet_id.is_empty()
+	for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:host.set_ui_value(control,"visible",exploring)
+	for control in [job_label,jobs,target_label,assign_button,release_button]:host.set_ui_value(control,"visible",not exploring and not item.is_empty())
+	if exploring:
+		host.set_ui_value(exploration_heading,"text",UIText.t("crew.exploration_heading",{"planet":exploration_name(planet_id)}))
+		host.set_ui_value(target_picker,"visible",false)
+		host.set_ui_value(upgrade_picker,"visible",false)
+		return
 	var row: Dictionary=g.crew.assignments(g).get(job_ids[jobs.selected],{}) if jobs.selected>=0 else {}
 	var equipment: bool=row.get("targetType")=="equipment" and row.get("effectType")=="AUTO_UPGRADE"
-	host.set_ui_value(target_label,"text",UIText.t("crew.upgrade_amount" if equipment else "crew.choose_target"))
-	host.set_ui_value(target_picker,"visible",not equipment)
-	host.set_ui_value(upgrade_picker,"visible",equipment)
-	var modes: Array[String]=g.crew.upgrade_modes(g)
-	if modes!=mode_ids:
+	var scientist: bool=row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_SCIENTIST"
+	var automatic := equipment or scientist
+	host.set_ui_value(target_label,"text",UIText.t("crew.upgrade_amount" if equipment else "crew.scientist_amount" if scientist else "crew.choose_target"))
+	host.set_ui_value(target_picker,"visible",not automatic)
+	host.set_ui_value(upgrade_picker,"visible",automatic)
+	var modes: Array[String]=g.crew.upgrade_modes(g,job_ids[jobs.selected]) if jobs.selected>=0 else []
+	if modes!=mode_ids or upgrade_picker.get_meta("effect_type","")!=str(row.get("effectType","")):
 		mode_ids=modes
 		upgrade_picker.clear()
-		for mode in modes:upgrade_picker.add_item(g.crew.upgrade_mode_text(mode))
+		for mode in modes:upgrade_picker.add_item(g.crew.upgrade_mode_text(mode,str(row.effectType)))
+		upgrade_picker.set_meta("effect_type",str(row.get("effectType","")))
 	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(str(item.get("upgradeMode",""))))
 	host.set_ui_value(upgrade_picker,"disabled",item.is_empty())
 	var valid:=jobs.selected>=0 and target_picker.selected>=0

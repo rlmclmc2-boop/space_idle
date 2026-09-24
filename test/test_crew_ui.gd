@@ -2,12 +2,16 @@ extends SceneTree
 class TrackedUI extends "res://scripts/main.gd":
 	var writes: Array=[]
 	var builds:=0
+	var refreshed_slots: Array=[]
 	func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
 		if control.get(property)!=value:writes.append(control)
 		super.set_ui_value(control,property,value)
 	func build_ui() -> void:
 		builds+=1
 		super.build_ui()
+	func refresh_equipment_cards(only_slot := "") -> void:
+		refreshed_slots.append(only_slot)
+		super.refresh_equipment_cards(only_slot)
 var checks:=0
 var failures:=0
 var view: SubViewport
@@ -61,7 +65,8 @@ func run() -> void:
 	await click_at(tabs.get_global_transform()*tabs.get_tab_rect(5).get_center())
 	var panel=scene.crew_panel
 	check(scene.equipment_tabs.current_tab==5 and panel.is_visible_in_tree(),"Real crew tab click opens page")
-	check(panel.rows.size()==6 and panel.jobs.item_count==4,"Excel creates crew rows and job choices")
+	check(not scene.equipment_tabs.get_tab_title(0).contains("👤") and not scene.equipment_tabs.get_tab_title(1).contains("👤"),"Idle systems have no crew tab markers")
+	check(panel.rows.size()==6 and panel.jobs.item_count==4 and not panel.job_ids.has("hightech_efficiency"),"Excel creates crew rows without removed efficiency job")
 	check(panel.size.y>600,"Crew full-height layout")
 	var first: Button=panel.rows.navigator
 	var other: Button=panel.rows.engineer
@@ -75,6 +80,8 @@ func run() -> void:
 	panel.target_picker.item_selected.emit(panel.target_picker.selected)
 	await click(panel.assign_button)
 	check(scene.game.crew.entry(scene.game,"navigator").targetId=="equipment","Real assignment button commits selected target")
+	check(scene.equipment_tabs.get_tab_title(0).ends_with("👤") and not scene.equipment_tabs.get_tab_title(1).contains("👤"),"Equipment assignment marks only equipment tab without count")
+	check(tabs.get_tab_tooltip(0).contains("船员01") and tabs.get_tab_tooltip(0).contains("Lv.1"),"Equipment tab tooltip keeps crew identity and effect")
 	check(first.text.contains("1.0") and not panel.release_button.disabled,"Current actual interval and release feedback")
 	var draft: int=panel.jobs.selected
 	var focus: Control=view.gui_get_focus_owner()
@@ -114,14 +121,15 @@ func run() -> void:
 	view.get_texture().get_image().save_png("res://.runtime/crew-page.png")
 	await click(panel.release_button)
 	check(scene.game.crew.entry(scene.game,"navigator").assignmentType=="" and panel.release_button.disabled,"Real release button clears assignment")
+	check(not scene.equipment_tabs.get_tab_title(0).contains("👤") and tabs.get_tab_tooltip(0).is_empty(),"Release clears equipment tab marker and tooltip")
 	scene.game.assign_crew("navigator","equipment_upgrade","equipment")
 	scene.equipment_tabs.current_tab=0
 	await frames()
 	scene.refresh_visible_cards()
-	check(scene.equipment_panel.cards.weapons_0.fields.crew.text.contains("1"),"Equipment compact badge")
-	check(scene.equipment_panel.cards.weapons_0.fields.crew.tooltip_text.contains("Lv.2"),"Badge shows crew level and effect")
+	check(scene.equipment_tabs.get_tab_title(0).ends_with("👤") and tabs.get_tab_tooltip(0).contains("Lv.2"),"Equipment tab badge shows crew level and effect without count")
+	check(scene.equipment_panel.cards.values().all(func(card):return not card.fields.has("crew")),"Equipment module cards have no crew marker")
 	await RenderingServer.frame_post_draw
-	view.get_texture().get_image().save_png("res://.runtime/crew-equipment-badge.png")
+	view.get_texture().get_image().save_png("res://.runtime/crew-equipment-tab-badge.png")
 	var hidden_text: String=first.text
 	scene.writes.clear()
 	scene.game.add_crew_exp("navigator",200)
@@ -131,16 +139,49 @@ func run() -> void:
 	check(first.text.contains("Lv.3") and panel.rows.navigator==first,"Show catches up without recreation")
 	check(panel.upgrade_picker.selected==panel.mode_ids.find("10"),"Upgrade choice survives hidden page and growth")
 	var tech: String=scene.game.hightech_slots()[0]
-	scene.game.assign_crew("navigator","hightech_efficiency",tech)
+	panel.jobs.select(panel.job_ids.find("hightech_scientists"))
+	panel.jobs.item_selected.emit(panel.jobs.selected)
+	check(panel.jobs.get_item_text(panel.jobs.selected)=="高科技","Automatic scientist job is titled hightech")
+	check(panel.target_ids==["hightech"] and panel.upgrade_picker.visible and not panel.target_picker.visible,"Scientist job uses system target and amount picker")
+	check(panel.mode_ids==["1","10","max"] and panel.upgrade_picker.get_item_text(0).contains("AI"),"Scientist quantities and labels come from configuration/text")
+	panel.upgrade_picker.select(2)
+	panel.upgrade_picker.item_selected.emit(2)
+	await click(panel.assign_button)
+	check(scene.game.crew.entry(scene.game,"navigator").assignmentType=="hightech_scientists" and scene.game.crew.entry(scene.game,"navigator").upgradeMode=="max","Real scientist assignment keeps MAX choice")
+	check(first.text.contains("平均分配") and panel.rows.engineer==other,"Scientist effect updates only assigned crew row")
+	await RenderingServer.frame_post_draw
+	view.get_texture().get_image().save_png("res://.runtime/crew-scientist-mode.png")
 	scene.equipment_tabs.current_tab=1
 	await frames()
 	scene.refresh_visible_cards()
-	check(scene.hightech_progress[tech].crew.text.contains("1"),"Hightech compact badge")
+	check(scene.equipment_tabs.get_tab_title(1).ends_with("👤") and not scene.equipment_tabs.get_tab_title(0).contains("👤"),"Scientist assignment marks only hightech tab")
+	check(tabs.get_tab_tooltip(1).contains("平均分配") and not scene.hightech_progress[tech].has("crew"),"Hightech tab tooltip retains effect and inner cards have no marker")
 	scene.game.assign_crew("navigator","production_output",scene.game.FURNACE)
 	scene.refresh_visible_cards()
-	check(scene.hightech_progress[scene.game.FURNACE].crew.text.contains("1"),"Production badge on existing furnace card")
+	check(scene.equipment_tabs.get_tab_title(1).ends_with("👤") and tabs.get_tab_tooltip(1).contains("产出") and not scene.hightech_progress[scene.game.FURNACE].has("crew"),"Production crew remains on hightech tab only")
 	await RenderingServer.frame_post_draw
-	view.get_texture().get_image().save_png("res://.runtime/crew-production-badge.png")
+	view.get_texture().get_image().save_png("res://.runtime/crew-production-tab-badge.png")
+	scene.equipment_tabs.current_tab=5
+	panel.jobs.select(panel.job_ids.find("jewel_auto"))
+	panel.jobs.item_selected.emit(panel.jobs.selected)
+	check(panel.target_ids==["jewels"] and panel.target_picker.visible and not panel.upgrade_picker.visible,"Jewel target comes from configured system provider")
+	await click(panel.assign_button)
+	scene.equipment_tabs.current_tab=4
+	await frames()
+	check(scene.equipment_tabs.get_tab_title(4).ends_with("👤") and not scene.equipment_tabs.get_tab_title(1).contains("👤"),"Jewel assignment marks only jewel tab")
+	check(tabs.get_tab_tooltip(4).contains("船员01") and tabs.get_tab_tooltip(4).contains("合成"),"Jewel tab tooltip identifies crew and effect")
+	await RenderingServer.frame_post_draw
+	view.get_texture().get_image().save_png("res://.runtime/crew-jewel-tab-badge.png")
+	scene.game.module_entry("weapons",0).level=40
+	scene.game.module_entry("defence",0).level=40
+	scene.game.module_entry("weapons",0).sockets=[scene.game.new_jewel("7")]
+	scene.game.module_entry("defence",0).sockets=[scene.game.new_jewel("2")]
+	scene.game.profile.jewels=[scene.game.new_jewel("7",2),scene.game.new_jewel("2",2)]
+	scene.refreshed_slots.clear()
+	scene.game.auto_manage_jewels()
+	check(scene.refreshed_slots==["weapons_0","defence_0"],"Automatic replacements refresh only changed equipment cards once each")
+	scene.game.assign_crew("navigator","","")
+	check(not scene.equipment_tabs.get_tab_title(4).contains("👤"),"Releasing jewel crew clears tab badge")
 	# Structural config additions touch only the new row and option list.
 	scene.equipment_tabs.current_tab=5
 	var job: Dictionary=scene.db.data.crew_assignment.production_output.duplicate()
@@ -166,5 +207,8 @@ func run() -> void:
 	check(panel.rows.size()==14 and panel.rows.navigator==first,"Configured crew additions only add new rows")
 	await click(scene.battle_return_button)
 	check(scene.equipment_tabs.current_tab==0,"Real return-to-battle button leaves crew page")
+	scene.game.profile=scene.game.fresh_profile()
+	scene.build_ui()
+	check(scene.equipment_tabs.is_tab_hidden(5),"Legacy profile reset without crew data hides crew tab safely")
 	print("CREW UI: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

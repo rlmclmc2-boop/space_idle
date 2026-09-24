@@ -1,12 +1,18 @@
 # ARCHITECTURE — 按需定位
 
+星球探索：`planet.xlsx` 定义星球基础时间、经验和效果；`unlock.xlsx` 的 planet 行定义通关门槛，`level.xlsx.planetExpRatio` 定义最高关经验系数，`crew.xlsx.baseExp/expGrowth` 定义船员升级经验，`config.xlsx.planetExplorePower` 定义探索度指数。`config_workbooks/import_workbook` 导入与校验投影；`game.gd` 持有 `profile.planets`、探索计时和完成结算，`crew_system.gd` 拒绝将探索中的船员分配岗位；`jewel_equipment_stat` 为全部装备统一施加星球倍率。`planet_panel.gd` 管第7页签，`main.gd` 只在探索事件刷新星球页、船员页和受影响装备卡片。专项 `test_planet.gd`、`test_planet_ui.gd`。
+
+高科技岗位：crew_assignment.xlsx 的 hightech_scientists 为 hightech+AUTO_SCIENTIST、targetCategory=system，标题文案为“高科技”；原 hightech_efficiency 行已移除，game.research_rate 不再读取船员效率倍率。crew_system 注册 handler 低频调用 game.generate_scientist 和成功后的 distribute_scientists；crew_panel 复用数量下拉，main 仅更新对应系统页签的单个👤标记与悬浮提示。存档沿用 crew.upgradeMode 字段，旧效率分配在 load_state 中按未知岗位转待命。
+
 船员解锁：unlock.xlsx新增type=crew记录，crew.xlsx以unlockId引用；import_workbook.validate_unlocks校验crew目标，既有unlock_available/clear_level/存档统一生效。main.refresh_tab_visibility按至少一名crew.unlocked显示页签；crew_panel复用单张匿名预告，仅显示最小未解锁门槛。测试test_crew_unlock覆盖门槛/页签/剪影/存档，test_crew_ui保留局部刷新与真实交互回归。
 
-装备费用读取：game.upgrade_cost_for_level 使用 database.equipment_cost，只投影费用并复用 equipment_growth，不生成无关战斗属性；test_equipment_growth 用完整 equip 行作对照。装备卡片的船员标记由初始化/crew_changed/整体失效刷新，普通装备升级和资源变化不重算该标记。
+装备费用读取：game.upgrade_cost_for_level 使用 database.equipment_cost，只投影费用并复用 equipment_growth，不生成无关战斗属性；test_equipment_growth 用完整 equip 行作对照。船员标记只在系统页签标题，装备卡片不读取船员标记；普通装备升级和资源变化不刷新页签标记。
 
 船员批量升级优化：crew.auto_upgrade 委托 game.upgrade_equipment_batch，仍通过 upgrade_slot 校验/扣费；同步批次内按费用配置键+等级复用费用，返回前清空。逐件 upgrade 事件保留，batch 标记使 main 延后装备刷新；完成后单次保存及 upgrades_completed(slots)，equipment_tab.refresh_slots 只重读变化模块并统一检查共享资源依赖。手动升级仍走原即时路径。
 
-船员入口：`crew_system.gd` 管动态数据规范化、成长、目标/效果注册、修饰聚合与低频时钟；`game.gd` 持有其实例，并接入存档、tick、research_rate/advance_furnace。公开 API 为 add_crew_exp/assign_crew/get_crew_modifier；crew.set_upgrade_mode 保存升级偏好，AUTO_UPGRADE 对整个equipment系统遍历启用模块，MAX复用max_upgrade_amount_slot。`crew_panel.gd` 管第 6 页签，main 处理 crew_changed、目标结构变化；equipment_card 与高科技舱仅增加人数标记。配置复用 import_workbook 的三段转换/校验与 config_workbooks/Store 可选分表发现。详细字段、时钟/离线边界、UI依赖与新增岗位操作见 [CREW](CREW.md)。专项 `test_crew.gd / test_crew_ui.gd / test_crew_import.py`。
+宝石船员：crew_assignment.xlsx 的 jewel_auto 为 jewel+AUTO_COMBINE，targetId=jewels、interval=1；crew_system 的注册 handler 到期调用 game.auto_manage_jewels。该入口先对背包做一次线性候选统计，无配方时跳过 combine_all_jewels；成功合成后复用 socket_jewel/upgrade_socket_jewel 的既有校验与交换/配方，延后一次 jewels_changed(slot="",slots=[...]) 保存和事件。main.on_event 只刷新 event.slots 中的装备卡片；宝石页沿原 inventory_changed 局部刷新。一键合成内部每轮成组结算，避免每次合成都重扫整包。BalanceGame 的 socket_jewel 覆写同步透传可选通知参数，仍记录宝石装备指标。旧 smelting_speed 分配在 load_state 转为 jewel_auto。
+
+船员入口：`crew_system.gd` 管动态数据规范化、成长、目标/效果注册、修饰聚合与低频时钟；`game.gd` 持有其实例，并接入存档、tick、research_rate/advance_furnace。公开 API 为 add_crew_exp/assign_crew/get_crew_modifier；crew.set_upgrade_mode 保存升级偏好，AUTO_UPGRADE 对整个equipment系统遍历启用模块，MAX复用max_upgrade_amount_slot。`crew_panel.gd` 管第 6 页签，main 处理 crew_changed、目标结构变化及受影响系统页签标记；equipment_card 与高科技舱不显示船员标记。配置复用 import_workbook 的三段转换/校验与 config_workbooks/Store 可选分表发现。详细字段、时钟/离线边界、UI依赖与新增岗位操作见 [CREW](CREW.md)。专项 `test_crew.gd / test_crew_ui.gd / test_crew_import.py`。
 
 高频刷新优化：`game.tick` 将充能扣费标记为 `save_dirty`，由原 5 秒检查点或既有关键节点/退出保存清理，写入失败保留标记。普通弹体在 `fire` 分配运行期 `serial`；`main` 的视觉存活索引及绘制索引仅在单次更新/绘制中持有，已有 visual 直接传递，前后绘制复用位置和尾迹预算。`equipment_tab.refresh_pending` 只消费局部 dirty 与资源快照变化，`equipment_stats` 事件覆盖充能升级和攻击/受击累计，隐藏后显示补齐；排序独立失效，静止暂停不重算详情。快照归页面实例所有，重建即释放。QA `update_processing` 按可见性和 worker 生命周期启停，隐藏时不轮询普通控件。专项 `test_hot_paths.gd`、`test_save_boundaries.gd`；性能探针 `test_hot_path_probe.gd`。
 
@@ -56,7 +62,7 @@ UI 文案在 main._ready 显式读取并校验，装备名称和页签在此初�
 
 装备升级事件按slot走`main.refresh_equipment_cards(slot)`；`refresh_visible_cards`只检查当前可见页，切页立即补齐。资源影响消费按钮，科学家分配影响空闲数/分配按钮及对应进度，科技增益影响对应类别装备；值相同不写控件。MAX仍在点击时枚举当前预算。
 
-`refresh_structure` 刷新模块结构及选中详情，换装复用对应模块卡片；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项；科研拖拽已取消，列表直接同步。候选舰变化只更新舰体预览、挂点位置与说明，复用已有按钮。战场返回入口为 `main.battle_return_button/return_to_battle`，文案 `battle.return`，不再添加空战场页签。equipment_page 初始为 0；返回关闭 jewel_panel、将装备设为 compact 并选首个可见页，无功能页时为 -1。layout_battle_return 将按钮放在顶栏；宝石页及装备镶嵌面板显示时移到顶部导航右侧，避开覆盖区域。切页回调在宝石页签直接打开 jewel_panel，其他页签关闭该面板；宝石页关闭/Esc复用返回入口，装备镶嵌入口关闭仍保留装备布局。layout_charge_page 管理页面尺寸；这些入口不触及 game。专项 `../test/test_battle_tab.gd`。
+`refresh_structure` 刷新模块结构及选中详情，换装复用对应模块卡片；`sync_hightech_slots`复用并移动科技卡，仅新增/移除变化项；科研拖拽已取消，列表直接同步。候选舰变化只更新舰体预览、挂点位置与说明，复用已有按钮。战场返回入口为 `main.battle_return_button/return_to_battle`，文案 `battle.return`，不再添加空战场页签。equipment_page 初始为 0；返回关闭 jewel_panel、将装备设为 compact 并选首个可见页，无功能页时为 -1。layout_battle_return 将按钮固定在顶栏原位置；宝石页导航位于y96，面板从y127开始并在y775前结束，避开顶部一排及底部音效按钮。切页回调在宝石页签直接打开 jewel_panel，其他页签关闭该面板；宝石页关闭/Esc复用返回入口，装备镶嵌入口关闭仍保留装备布局。layout_charge_page 管理页面尺寸；这些入口不触及 game。专项 `../test/test_battle_tab.gd`。
 
 `refresh_navigation`原位更新驻守/音效及帮助/解锁可见性；普通state、科学家、科技完成不调用build_ui。build_ui保留作初建/显式重置入口。
 
@@ -96,9 +102,9 @@ Effects独立绘制最多三个圆形施工单元及验收扫描，最多24Hz。
 
 一键合成：`game.combine_all_jewels`在临时背包数组、碎片数、serial及独立RNG状态中迭代；`combine_inventory_jewels/can_combine_jewels`与单次合成共用规则，`generate_jewels_into`与普通碎片生成共用补位规则。只在演算成功后暂存待保存profile；已报告save_error恢复原profile且不推进serial/RNG，成功合并回原profile并发出一次jewels_changed。不改装备、战斗属性或存档格式；未报告的底层存档故障仍属U-008。`jewel_panel.combine_all_selected`只提交请求、展示合并结果和短高亮；bulk_summary/bulk_rewards仅为显示文本，在库存事件/选择时失效，关闭重开保留。
 
-宝石中心由`main.build_equipment_tabs`的宝石页签直接调用`jewel_panel.open`，空页签只承载选中状态，不再构建工坊入口按钮；UI重建后恢复已选宝石页。`jewel_panel.close`在宝石页签返回`BATTLE_TAB`，装备入口则仅隐藏面板。宝石中心入口集中在`jewel_panel.gd`：`choose_module/select_socket/select_cell`只修改UI选择；`operate_socket/remove_selected/upgrade_installed`才调用业务接口。`refresh_modules/refresh_sockets/refresh_inventory/refresh_detail`分别维护模块、孔位、候选、详情；选择不重建控件，排序移动原格子，筛选切visible。`inventory_changed`承接jewels_changed，模块换装/换舰事件补齐可见面板。预览只用模块副本调用原属性公式，比较颜色由数值决定，不依赖文案。1秒Timer只补齐收入窗口及当前模块历史效果，隐藏停刷；new_tokens/observed_serial仅为已读状态，随库存剔除、选择确认。图片/样式及8个飞行图标复用，关闭取消动画，销毁释放反馈层。初始化完整构建保留，其余操作均复用控件。模块列表以category/index为键；背包仍以token为键，UI排序不写profile。
+宝石中心由`main.build_equipment_tabs`的宝石页签直接调用`jewel_panel.open`，空页签只承载选中状态，不再构建工坊入口按钮；UI重建后恢复已选宝石页。宝石面板不再创建关闭按钮；顶部通用`battle_return_button`退出。`jewel_panel.close`仍服务Esc：在宝石页签调用`return_to_battle`，装备入口则仅隐藏面板。宝石中心入口集中在`jewel_panel.gd`：`choose_module/select_socket/select_cell`只修改UI选择；`operate_socket/remove_selected/upgrade_installed`才调用业务接口。`refresh_modules/refresh_sockets/refresh_inventory/refresh_detail`分别维护模块、孔位、候选、详情；选择不重建控件，排序移动原格子，筛选切visible。`inventory_changed`承接jewels_changed，模块换装/换舰事件补齐可见面板。预览只用模块副本调用原属性公式，比较颜色由数值决定，不依赖文案。1秒Timer只补齐收入窗口及当前模块历史效果，隐藏停刷；new_tokens/observed_serial仅为已读状态，随库存剔除、选择确认。图片/样式及8个飞行图标复用，关闭取消动画，销毁释放反馈层。初始化完整构建保留，其余操作均复用控件。模块列表以category/index为键；背包仍以token为键，UI排序不写profile。
 
-宝石视觉：`jewel_panel.gem_texture`把10种默认旧SVG路径映射到`assets/jewels/premium/crystal-atlas.png`的AtlasTexture区域，自定义image仍优先；纹理按ID缓存，不逐次裁图或生成。`workshop-frame.svg`由独立静态TextureRect绘制，`surface/create_palettes/skin_controls`复用样式及局部对话框Theme，未更改全局主题。候选图标80px、详情图标136px，展示顺序和效果仍来自原数据；界面只有镶嵌布局，顶部combine_all直接复用原一键合成请求；已移除管理模式、单颗合成及分解控件/弹窗/回调，库存刷新几何不变。美术来源、精确提示词和ID映射见[资源说明](../assets/jewels/premium/README.md)。
+宝石视觉：`jewel_panel.gem_texture`把10种默认旧SVG路径映射到`assets/jewels/premium/crystal-atlas.png`的AtlasTexture区域，自定义image仍优先；纹理按ID缓存，不逐次裁图或生成。`workshop-frame.svg`由独立静态TextureRect纵向适配648px面板绘制，`surface/create_palettes/skin_controls`复用样式及局部对话框Theme，未更改全局主题。候选图标80px、详情图标136px，展示顺序和效果仍来自原数据；界面只有镶嵌布局，顶部combine_all直接复用原一键合成请求；已移除管理模式、单颗合成及分解控件/弹窗/回调，库存刷新几何不变。美术来源、精确提示词和ID映射见[资源说明](../assets/jewels/premium/README.md)。
 
 原位升级：`socket_upgrade_materials/can_upgrade_socket_jewel/upgrade_socket_jewel`选择背包材料；校验已装token，在私有ingredients上复用`combine_inventory_jewels`，成功后才移除实际材料并将新token产物放回原孔，最后一次`jewels_changed(slot)`完成碎片补位、保存和通知。不更改攻击/命中/击杀入口，也不增加存档字段。专项`test_jewel_center`，UI主入口`test_jewel_center_ui`（旧`test_jewel_ui`为别名）。
 

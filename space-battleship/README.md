@@ -7,7 +7,7 @@ AI从[AGENTS](AGENTS.md)开始；领域规则查[PROJECT](docs/PROJECT.md)，实
 - 修改 UI 文字：双击项目内 [UI文案表.bat](UI文案表.bat)，只改“UI文字”列，保存后重启游戏。参数自动校验，操作及发布说明见 [UI 文案表](docs/UI_TEXT.md)。
 - Windows双击工作区`启动.cmd`运行游戏；项目`打开编辑器.cmd`打开Godot工程；`关卡编辑器.cmd`打开独立配置编辑器，三者用途不同。
 - 游戏/工程启动脚本使用`engine/Godot_v4.7.2-stable_win64.exe`。独立关卡编辑器也可设`SPACE_BATTLESHIP_GODOT`；它使用`.runtime/level-editor-user/`独立用户目录。
-- 日常启动直接使用已有资源缓存，跳过Godot资源导入；首次启动或缺少脚本类缓存/导入目录时自动导入，失败查看`.runtime/startup-import.log`。新增或替换资源后，在QA点击「大重启」重新导入并启动；资源导入不读取Excel。游戏运行只需引擎和已有投影。
+- 日常启动直接使用已有资源缓存，跳过Godot资源导入；首次启动、缺少脚本类缓存/导入目录，或新增图片、声音、字体尚无`.import`描述文件时自动导入，失败查看`.runtime/startup-import.log`。替换已有资源后，在QA点击「大重启」重新导入并启动；资源导入不读取Excel。游戏运行只需引擎和已有投影。
 - F1显示QA，关闭面板仅隐藏；暂停及1X/2X/5X在QA，偏好保存于`user://qa_settings.cfg`。空格/Esc按当前状态确认解锁、关闭帮助或暂停。
 - 「重启游戏」在同进程重载场景；「大重启」保存进度/QA设置后，由辅助进程等待旧进程退出、导入磁盘资源再启动，应用代码更改，不自动读Excel。大重启保存失败留在原会话，导入失败不启动。
 - 大重启忙碌时不要重复操作；错误看`.runtime/full-restart.log`及`full-restart-import.log`，修正后从启动入口重开。普通重启保存失败边界见[STATUS](docs/STATUS.md) U-008，不能推定与大重启一致。
@@ -18,6 +18,7 @@ AI从[AGENTS](AGENTS.md)开始；领域规则查[PROJECT](docs/PROJECT.md)，实
 当前源与投影关系见[ARCHITECTURE](docs/ARCHITECTURE.md)。Python需openpyxl/lxml，可用`SPACE_BATTLESHIP_PYTHON`指定解释器；游戏本身无需Python。
 
 1. 日常编辑独立分表：在表格软件中计算并保存`config_excel/`对应Excel → QA「读取配置」→ 成功后「重启游戏」。不要先同步总表。
+   星球探索分别编辑 `planet.xlsx`（星球参数）、`level.xlsx`（经验系数）、`crew.xlsx`（升级经验）、`config.xlsx`（探索指数）；解锁关卡仍由 `unlock.xlsx` 统一管理。
    关卡解锁统一编辑 `config_excel/unlock.xlsx`：门槛改 `level`，提示改 `title/desc`；`name/type/target` 是配置及存档身份，不随名称改字。0表示初始开放，`mode=cleared` 指定关通关，`reached` 保留宝石累计进度语义。同关多项各占一行。原分表解锁字段已移除，旧总表字段被忽略；不要把它们作为解锁编辑入口。
 2. 只有明确要用所选总表替换对应分表时，才用「拆分／同步 Excel」；它排除总览，更新同名表，不合并两处编辑、不删除无关文件。先备份并核对差异；旧总表与现行字段不兼容问题见STATUS U-018。
 3. 普通导入不重算Excel公式，缺缓存应回表格软件计算保存；跨表公式可能阻止拆分。失败查看具体文件/单元格，不用猜默认值或手工JSON补数来绕过。

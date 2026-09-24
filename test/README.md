@@ -1,8 +1,12 @@
 # 测试目录
 
+星球探索：`test_planet.gd` 检查30关解锁、空闲船员占用、暂停/召回、经验系数逐关取整、船员经验成长、探索计时及1秒下限、六类装备统一倍率；`test_planet_ui.gd` 检查独立页签显隐、完整高度、按钮状态与原生截图。回归船员、统一解锁、持续光束、宝石与局部UI。
+
+船员高科技岗位：`test_crew_scientists.gd` 检查Excel目标/间隔、x1/x10/MAX与手动购买+平均分配同结果、费用/事件/存档、失败不分配、暂停、旧高科技效率岗位清除及偏好存档；`test_crew_ui.gd` 检查岗位名称、真实分配、购买下拉、仅系统页签标记及画面。`test_crew.gd` 检查跨岗位也不能重复占用一个系统目标。回归科学家可购买性、装备、局部UI、解锁、导入和文案。
+
 船员解锁专项：`test_crew_unlock.gd` 验证六个Excel门槛、到达/通关边界、单张匿名剪影、详情隐藏、拒绝锁定分配、逐次解锁通知、控件复用、全部解锁收起及存档兼容；截图在隔离.runtime。相关回归 crew、crew_ui、crew_equipment、crew_import.py、unlock_import.py、unlock_table、ui_text.py。
 
-单级升级细分探针：`python test/run.py test_crew_single_probe.gd` 分开测12模块数据、静止卡片/标记、详情、排序、费用与真实隔离存档。微测量不替代整轮 `test_crew_performance.gd`；不要与其他性能测试同时运行。`test_equipment_growth.gd` 对照旧完整配置投影验证费用优化，`test_local_ui.gd` 验证装备升级不查询未变化船员标记。
+单级升级细分探针：`python test/run.py test_crew_single_probe.gd` 分开测12模块数据、静止卡片/标记、详情、排序、费用与真实隔离存档。微测量不替代整轮 `test_crew_performance.gd`；不要与其他性能测试同时运行。`test_equipment_growth.gd` 对照旧完整配置投影验证费用优化，`test_local_ui.gd` 验证装备升级不改船员页签标记。
 
 船员优化回归：`test_crew_equipment.gd` 另验证每轮单次保存、空轮不保存、逐件事件保留、MAX压力输入与手动结果一致及费用复用在调用结束释放；`test_local_ui.gd` 覆盖批量更新、控件保留、隐藏页延迟与恢复。
 
@@ -10,7 +14,7 @@
 
 船员批量升级专项：`test_crew_equipment.gd` 验证无职务限制、1秒全系统调度、1/10/MAX与手动统一接口同结果同费用、10级不降级、停用模块跳过、选项持久化及旧单模块分配迁移。`test_crew_ui.gd` 另含真实下拉点击/键盘选择及选项保持。
 
-船员专项：`test_crew.gd`（Excel成长、动态字段、岗位容量、全部炉效果、科研速率、统一自动升级/资源条件、暂停/低频调度、停用目标、旧档/实际保存与装备预留），`test_crew_ui.gd`（真实页签/船员/分配/解除/返回点击、现有效果、模块标记、隐藏恢复、选项/实例/焦点/滚动及零无关写入/重绘；截图在隔离.runtime），`test_crew_import.py`（分表一致、字段/引用校验、可选发现、增量缓存与旧来源保留）。通过 run.py 隔离执行，Python 导入测试需要 openpyxl/lxml；回归 module_refit、furnace_income、local_ui、ui_text.py。规则与 API 见 [CREW](../space-battleship/docs/CREW.md)。
+船员专项：`test_crew.gd`（Excel成长、动态字段、岗位容量、全部炉效果、科研速率、统一自动升级/资源条件、暂停/低频调度、停用目标、旧档/实际保存与装备预留），`test_crew_ui.gd`（真实页签/船员/分配/解除/返回点击、现有效果、系统页签标记且模块内无标记、隐藏恢复、选项/实例/焦点/滚动及零无关写入/重绘；截图在隔离.runtime），`test_crew_import.py`（分表一致、字段/引用校验、可选发现、增量缓存与旧来源保留）。通过 run.py 隔离执行，Python 导入测试需要 openpyxl/lxml；回归 module_refit、furnace_income、local_ui、ui_text.py。规则与 API 见 [CREW](../space-battleship/docs/CREW.md)。
 
 发布字体专项：`python test/run.py test_release_font.gd`。隔离绘制极细字重、发布常规字重与 Windows 开发字体；验证 TextServer 实际字重为400及文字像素覆盖量，截图写入隔离 `.runtime/font-comparison.png`。正式打包的 `verify_release.gd` 同样检查实际字重，防止配置存在但渲染未应用。
 
@@ -45,7 +49,7 @@
 | 战场返回入口 | `test_battle_tab.gd`（五个功能页顶部真实点击返回、默认首个页签、装备收起、宝石两入口/关闭、帮助显隐、全局 UI、战斗/镜头状态与无关写入/绘制保持）；回归 `test_tab_unlocks.gd`、`test_local_ui.gd` |
 | UI解锁 | `test_tab_unlocks.gd`；模块/换舰流加 `test_module_ui.gd` |
 | 统一关卡解锁 | `test_unlock_table.gd`（全关卡、多项去重、旧档/混合队列、已获权限保留），`test_unlock_import.py`（来源、唯一/完整/合法性、旧字段不覆盖、增量事务/编辑器），`test_unlock_ui.gd`（表内文案、真实按键逐项确认、无关控件保留与截图）；回归 `test_tab_unlocks`、`test_local_ui`、`test_journey_resume`、`test_charge_panel`、`test_jewels` |
-| 一键合成 | `test_jewel_combine_all.gd`（连锁/分组/保护标记/配置上限/碎片补位/异常回滚/单次保存通知/读档）；`test_jewel_ui.gd`（实际按钮、合并结果、高亮、无操作提示与局部刷新）；共用生成逻辑回归`test_jewel_fragments.gd` |
+| 一键合成/船员宝石 | `test_jewel_combine_all.gd`（连锁/分组/保护标记/配置上限/碎片补位/异常回滚/单次保存通知/读档）；`test_crew_jewels.gd`（1秒调度、同类替换、原位升级、保护、批量通知、旧档、满包空转/连锁耗时）；`test_jewel_ui.gd`（实际按钮、合并结果、高亮、无操作提示与局部刷新）；共用生成逻辑回归`test_jewel_fragments.gd` |
 | 时间步进 | `test_time_steps.gd`；冷却加 `test_travel_cooldowns.gd` |
 
 `test_time_steps.gd` 的局部子类只记录实际tick入参后调用原实现；没有替换算法或新增测试框架。

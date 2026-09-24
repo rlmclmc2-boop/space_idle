@@ -8,6 +8,8 @@ const MUTED := Color("8195ac")
 const CYAN := Color("71e5f4")
 const ORANGE := Color("ffbc73")
 const PURPLE := Color("b3a0ff")
+const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],4:["jewel"]}
+const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",4:"gem.tab"}
 var NAMES: Dictionary = {}
 const PROJECTILE_TEXTURES := {
 	"laser":preload("res://assets/weapons/laser-pulse.png"),
@@ -98,6 +100,7 @@ var EQUIPMENT_PAGES: Array = []
 var battle_return_button: Button
 var equipment_panel: Control
 var crew_panel: Control
+var planet_panel: Control
 var equipment_page := 0
 var equipment_tabs: TabContainer
 var equipment_cooldowns: Dictionary = {}
@@ -316,13 +319,21 @@ func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
 		"crew_changed":
 			if is_instance_valid(crew_panel):crew_panel.invalidate()
-			var targets_changed: Array[String] = []
+			if is_instance_valid(planet_panel):planet_panel.invalidate()
+			var tabs_changed: Dictionary = {}
 			for item in [info.previous,info.current]:
-				var target_id := str(item.get("targetId",""))
-				if target_id.is_empty() or targets_changed.has(target_id):continue
-				targets_changed.append(target_id)
-				if is_instance_valid(equipment_panel):equipment_panel.refresh_crew_badge(target_id)
-				if equipment_tabs.current_tab==1:refresh_hightech_card(target_id)
+				var row: Dictionary=game.crew.assignments(game).get(str(item.get("assignmentType","")),{})
+				for index in CREW_TAB_TYPES:
+					if CREW_TAB_TYPES[index].has(str(row.get("targetType",""))):tabs_changed[index]=true
+			for index in tabs_changed:refresh_crew_tab_badge(int(index))
+		"planet_changed":
+			if is_instance_valid(planet_panel):
+				planet_panel.invalidate()
+				if info.has("reward"):planet_panel.show_completion(str(info.get("id", "")), float(info.reward))
+			if is_instance_valid(crew_panel):crew_panel.invalidate()
+			if info.has("reward"):
+				for category in ["weapons", "defence"]:
+					for index in game.active_slot_count(category):refresh_equipment_cards(game.slot_id(category,index))
 		"equipment_stats":
 			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
 		"jewels_changed":
@@ -330,6 +341,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 				jewel_panel.inventory_changed()
 			if not str(info.get("slot", "")).is_empty():
 				refresh_equipment_cards(str(info.slot))
+			for slot in info.get("slots",[]):refresh_equipment_cards(str(slot))
 		"jewel_error":
 			toast(str(info.message))
 		"jewel_pickup":
@@ -914,16 +926,14 @@ func refresh_visible_cards(delta := 0.0) -> void:
 		2:
 			charge_panel.refresh_sample(delta)
 		5:
-			if crew_panel.dirty:crew_panel.refresh()
+			crew_panel.refresh_exploration_sample()
+		6:
+			planet_panel.refresh_sample(delta)
 
 func refresh_hightech_card(key: String) -> void:
 	if not hightech_progress.has(key):
 		return
 	var title: Label = hightech_titles[key]
-	if equipment_tabs.current_tab==1:
-		var crew_badge: Dictionary = game.crew.badge(game,key)
-		set_ui_value(hightech_progress[key].crew,"text",crew_badge.text)
-		set_ui_value(hightech_progress[key].crew,"tooltip_text",crew_badge.tooltip)
 	if ui_state_changed(title,[game.hightech_level(key),db.data.hightech[key]]):
 		set_ui_value(title,"text",UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("hightech",key)), "level":"%s" % (str(int(game.hightech_level(key))))}))
 		set_ui_value(title,"tooltip_text",title.text)
@@ -941,6 +951,14 @@ func refresh_equipment_effects(tech: String) -> void:
 	for index in game.profile.loadout[category].size():
 		refresh_equipment_cards(game.slot_id(category,index))
 
+func refresh_crew_tab_badge(index: int) -> void:
+	if not is_instance_valid(equipment_tabs) or index>=equipment_tabs.get_tab_count():return
+	var badge: Dictionary=game.crew.tab_badge(game,CREW_TAB_TYPES[index])
+	var title: String=UIText.t(str(CREW_TAB_TITLES[index]))+("  "+str(badge.text) if not str(badge.text).is_empty() else "")
+	if equipment_tabs.get_tab_title(index)!=title:equipment_tabs.set_tab_title(index,title)
+	var bar: TabBar=equipment_tabs.get_tab_bar()
+	if bar.get_tab_tooltip(index)!=badge.tooltip:bar.set_tab_tooltip(index,badge.tooltip)
+
 func refresh_tab_visibility() -> void:
 	if is_instance_valid(charge_panel):
 		charge_panel.sync_modules()
@@ -950,10 +968,12 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("charge",{}).keys().any(func(key):return game.charge_unlocked(key)))
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.jewels_unlocked())
-	pages.append(game.profile.crew.any(func(item):return game.crew.unlocked(game,item.crewId)))
+	pages.append(game.profile.get("crew",[]).any(func(item):return game.crew.unlocked(game,item.crewId)))
+	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
+	for index in CREW_TAB_TYPES:refresh_crew_tab_badge(int(index))
 	var selected := equipment_page
 	if selected < 0 or selected >= pages.size() or not pages[selected]:
 		selected = pages.find(true)
@@ -967,6 +987,7 @@ func refresh_structure() -> void:
 		return
 	equipment_panel.refresh()
 	if is_instance_valid(crew_panel):crew_panel.invalidate()
+	if is_instance_valid(planet_panel):planet_panel.invalidate()
 	sync_hightech_slots()
 	refresh_ship_controls()
 	refresh_tab_visibility()
@@ -1289,6 +1310,14 @@ func draw_battle() -> void:
 		var furnace: bool = drop.get("hightech", false)
 		var core: bool = furnace and drop.has("jewel")
 		var auto_gen: bool = drop.get("auto_gen", false)
+		if auto_gen and drop.id=="2":
+			draw_surface.draw_set_transform(pos+Vector2(0,bob),0.0,Vector2(0.25,0.25))
+			draw_auto_uranium(Vector2.ZERO,float(drop.uid))
+			draw_surface.draw_set_transform(Vector2.ZERO)
+			text_at(UIText.data_text("resources","2"),pos+Vector2(-6,25+bob),11,Color("e9ddff"))
+			if pos.distance_to(get_global_mouse_position())<40:
+				text_at(UIText.t("battle.draw_battle.text_11",{"amount":number(drop.amount),"id":UIText.data_text("resources","2")}),pos+Vector2(-25,42+bob),12,PURPLE)
+			continue
 		if furnace:
 			color = PURPLE if core else ORANGE
 			box(Rect2(pos-Vector2(18,18),Vector2(36,36)),PANEL,color)
@@ -1416,6 +1445,29 @@ func draw_battle() -> void:
 			box(Rect2(565,296,310,92),Color("142334"),CYAN)
 			text_at(UIText.t("battle.draw_battle.text_20"),Vector2(637,336),26,CYAN)
 			text_at(UIText.t("battle.draw_battle.text_21"),Vector2(648,365),14,MUTED)
+
+func draw_auto_uranium(pos: Vector2, uid: float) -> void:
+	# The generated ore moves left. Keep its glow and wake behind the crystal.
+	var pulse := 0.5+0.5*sin(fx_time*4.0+uid)
+	var violet := Color("aa83ff")
+	var ice := Color("e9ddff")
+	for i in range(3):
+		var wake := pos+Vector2(38.0+float(i)*24.0,6.0*sin(fx_time*5.0+uid+float(i)))
+		draw_surface.draw_line(pos+Vector2(15,0),wake,Color(violet,0.34-float(i)*0.07),5.0-float(i),true)
+		draw_surface.draw_circle(wake,3.0-float(i)*0.5,Color(ice,0.6-float(i)*0.12))
+	draw_surface.draw_circle(pos,35.0+4.0*pulse,Color(violet,0.075+0.025*pulse))
+	draw_surface.draw_circle(pos,26.0,Color(violet,0.13))
+	draw_surface.draw_arc(pos,30.0,-PI*0.7,PI*0.45,36,Color(ice,0.42+0.22*pulse),1.6,true)
+	draw_surface.draw_arc(pos,30.0,PI*0.5,PI*1.65,36,Color(violet,0.35),1.6,true)
+	var hull := PackedVector2Array([pos+Vector2(-21,-6),pos+Vector2(-9,-23),pos+Vector2(11,-25),pos+Vector2(25,-5),pos+Vector2(14,21),pos+Vector2(-11,23),pos+Vector2(-24,8)])
+	draw_surface.draw_colored_polygon(hull,Color("432c70"))
+	draw_surface.draw_colored_polygon(PackedVector2Array([hull[0],hull[1],pos+Vector2(0,-8),pos+Vector2(-3,12),hull[6]]),Color("7952c2"))
+	draw_surface.draw_colored_polygon(PackedVector2Array([hull[1],hull[2],hull[3],pos+Vector2(0,-8)]),Color("c3a4ff"))
+	draw_surface.draw_colored_polygon(PackedVector2Array([pos+Vector2(0,-8),hull[3],hull[4],pos+Vector2(-3,12)]),Color("9868e2"))
+	for i in hull.size():
+		draw_surface.draw_line(hull[i],hull[(i+1)%hull.size()],Color(ice,0.85),2.0,true)
+	draw_surface.draw_line(pos+Vector2(-4,-11),pos+Vector2(6,3),Color(1,1,1,0.55+0.25*pulse),2.0,true)
+	draw_surface.draw_circle(pos+Vector2(1,-2),4.0+1.5*pulse,Color(ice,0.65+0.25*pulse))
 
 func draw_battle_particles(offset: Vector2, core: bool) -> void:
 	for p in particles:
@@ -1597,6 +1649,11 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.add_child(crew_panel)
 	equipment_tabs.set_tab_title(5,UIText.t("crew.tab"))
 	crew_panel.setup(self)
+	planet_panel = preload("res://scripts/planet_panel.gd").new()
+	planet_panel.name = "Planets"
+	equipment_tabs.add_child(planet_panel)
+	equipment_tabs.set_tab_title(6,UIText.t("planet.tab"))
+	planet_panel.setup(self)
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
@@ -1623,9 +1680,8 @@ func return_to_battle() -> void:
 
 func layout_battle_return() -> void:
 	if not is_instance_valid(battle_return_button):return
-	var jewels := equipment_tabs.current_tab==4 or (is_instance_valid(jewel_panel) and jewel_panel.visible)
-	set_ui_value(battle_return_button,"position",Vector2(1240,0) if jewels else Vector2(500,25))
-	set_ui_value(battle_return_button,"size",Vector2(162,30) if jewels else Vector2(140,38))
+	set_ui_value(battle_return_button,"position",Vector2(500,25))
+	set_ui_value(battle_return_button,"size",Vector2(140,38))
 	set_ui_value(battle_return_button,"visible",not help_open and game.pending_unlocks.is_empty())
 	ui.move_child(battle_return_button,-1)
 
@@ -1706,12 +1762,12 @@ func build_charge_tab() -> void:
 
 func layout_charge_page() -> void:
 	layout_battle_return()
-	var expanded := equipment_tabs.current_tab in [1,2,3,5]
+	var expanded := equipment_tabs.current_tab in [1,2,3,4,5,6]
 	set_ui_value(charge_nav_backdrop,"visible",expanded)
 	if equipment_tabs.current_tab==4:
 		equipment_panel.stop_transition()
-		set_ui_value(equipment_tabs,"position",Vector2(38,0))
-		set_ui_value(equipment_tabs,"size",Vector2(1364,776))
+		set_ui_value(equipment_tabs,"position",Vector2(38,96))
+		set_ui_value(equipment_tabs,"size",Vector2(1364,679))
 		return
 	if equipment_tabs.current_tab == 0:
 		equipment_panel.apply_view_layout(false)
@@ -1827,9 +1883,7 @@ func build_hightech_card(_index: int, key: String) -> void:
 	hightech_descriptions[key] = description
 	var metrics := equipment_card_label(card,"",Rect2(14,434,296,24),11,MUTED)
 	var workers := equipment_card_label(card,"",Rect2(14,469,110,24),13,construction.accent)
-	var crew_marker := equipment_card_label(card,"",Rect2(252,76,58,24),12,CYAN)
-	crew_marker.mouse_filter = Control.MOUSE_FILTER_PASS
-	hightech_progress[key] = {"label":metrics,"construction":construction,"state":state,"percent":percent,"workers":workers,"crew":crew_marker}
+	hightech_progress[key] = {"label":metrics,"construction":construction,"state":state,"percent":percent,"workers":workers}
 	refresh_hightech_progress(key)
 	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(131,465,39,31),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
 	remove.reparent(card,false)

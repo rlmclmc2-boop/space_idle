@@ -76,6 +76,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	rng.randomize()
 	profile = fresh_profile()
 	crew.load_state(self, [])
+	load_planets({})
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
@@ -216,6 +217,7 @@ func load_progress() -> void:
 	profile.hightechOrder = hightech_slots()
 	load_charge(raw)
 	crew.load_state(self, raw.get("crew", []))
+	load_planets(raw.get("planets", {}))
 	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
 	generate_jewels()
 
@@ -964,6 +966,92 @@ func assign_scientist(key: String, delta: int) -> bool:
 func add_crew_exp(crew_id: String, amount: float) -> bool:
 	return crew.gain_exp(self,crew_id,amount)
 
+func planet_row(id: String) -> Dictionary:
+	return db.data.get("planet", {}).get(id, {})
+
+func planet_unlocked(id: String) -> bool:
+	var row := planet_row(id)
+	return not row.is_empty() and unlock_available(str(row.get("unlockId", "")))
+
+func planet_progress(id: String) -> Dictionary:
+	return profile.get("planets", {}).get(id, {})
+
+func crew_exploration(crew_id: String) -> String:
+	for id in profile.get("planets", {}):
+		if str(profile.planets[id].get("crewId", "")) == crew_id:return str(id)
+	return ""
+
+func planet_duration(id: String) -> float:
+	return planet_duration_from(planet_row(id), int(planet_progress(id).get("degree", 0)))
+
+func planet_exp_multiplier() -> float:
+	var level := clampi(int(profile.highestLevel), 1, db.levels.size())
+	return float(db.levels[level - 1].get("planetExpRatio", 0)) if level > 0 else 0.0
+
+func planet_equipment_multiplier() -> float:
+	var result := 1.0
+	for id in db.data.get("planet", {}):
+		var row := planet_row(str(id))
+		if row.get("effectType") == "equipment":
+			var degree := int(planet_progress(str(id)).get("degree", 0))
+			result *= pow(1.0 + float(row.get("effectValue", 0)), pow(float(degree), float(db.config.planetExplorePower)))
+	return result
+
+func load_planets(raw) -> void:
+	profile.planets = {}
+	for id in db.data.get("planet", {}):
+		var item = raw.get(id, {}) if raw is Dictionary else {}
+		if not item is Dictionary:item = {}
+		var degree = item.get("degree", 0)
+		var elapsed = item.get("elapsed", 0.0)
+		var crew_id := str(item.get("crewId", ""))
+		var valid_degree: bool = (degree is int or degree is float) and is_finite(float(degree)) and degree >= 0 and degree <= 2147483647
+		var progress := {"degree":int(degree) if valid_degree else 0, "elapsed":maxf(0.0, float(elapsed)) if (elapsed is int or elapsed is float) and is_finite(float(elapsed)) else 0.0, "crewId":""}
+		if planet_unlocked(str(id)) and not crew.entry(self, crew_id).is_empty() and crew.unlocked(self, crew_id) and str(crew.entry(self, crew_id).assignmentType).is_empty() and not profile.planets.values().any(func(other):return other.crewId == crew_id):
+			progress.crewId = crew_id
+		progress.elapsed = minf(progress.elapsed, planet_duration_from(planet_row(str(id)), int(progress.degree))) if not progress.crewId.is_empty() else 0.0
+		profile.planets[id] = progress
+
+func planet_duration_from(row: Dictionary, degree: int) -> float:
+	var base := float(row.get("baseTime", 0))
+	return maxf(1.0, base * base / (base + degree)) if base > 0 else 0.0
+
+func start_planet_exploration(id: String, crew_id: String) -> bool:
+	if not planet_unlocked(id) or planet_progress(id).is_empty() or not planet_progress(id).crewId.is_empty():return false
+	var member := crew.entry(self, crew_id)
+	if member.is_empty() or not crew.unlocked(self, crew_id) or not str(member.assignmentType).is_empty():return false
+	for progress in profile.planets.values():
+		if progress.crewId == crew_id:return false
+	profile.planets[id].crewId = crew_id
+	profile.planets[id].elapsed = 0.0
+	save_progress()
+	event.emit("planet_changed", {"id":id, "crewId":crew_id})
+	return true
+
+func cancel_planet_exploration(id: String) -> bool:
+	if planet_progress(id).is_empty() or str(planet_progress(id).crewId).is_empty():return false
+	profile.planets[id].crewId = ""
+	profile.planets[id].elapsed = 0.0
+	save_progress()
+	event.emit("planet_changed", {"id":id})
+	return true
+
+func advance_planets(dt: float) -> void:
+	if dt <= 0:return
+	for id in profile.planets:
+		var progress: Dictionary = profile.planets[id]
+		if str(progress.crewId).is_empty():continue
+		progress.elapsed += dt
+		if progress.elapsed < planet_duration(str(id)):continue
+		var member_id := str(progress.crewId)
+		progress.crewId = ""
+		progress.elapsed = 0.0
+		progress.degree += 1
+		var reward := float(planet_row(str(id)).get("baseExp", 0)) * planet_exp_multiplier()
+		if reward > 0:add_crew_exp(member_id, reward)
+		save_progress()
+		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
+
 func assign_crew(crew_id: String, assignment_type: String, target_id: String) -> bool:
 	return crew.assign(self,crew_id,assignment_type,target_id)
 
@@ -975,7 +1063,7 @@ func research_rate(key: String) -> float:
 	if count <= 0 or not hightech_unlocked(key):
 		return 0.0
 	var base := float(db.config.techPointGet)*count
-	return (roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base) * (1.0 + crew.get_modifier(self,"hightech",key,"EFFICIENCY"))
+	return roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base
 
 func active_research() -> Array:
 	return db.data.hightech.keys().filter(func(key):return research_rate(key)>0)
@@ -1729,6 +1817,7 @@ func leave(next: State) -> void:
 func tick(dt: float) -> void:
 	if paused:
 		return
+	advance_planets(dt)
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
 	advance_charge(dt)
@@ -2091,14 +2180,22 @@ func combine_all_jewels() -> Dictionary:
 			if not installed.has(gem.token) and jewel_combine_eligible(gem):
 				var key := "%s:%d" % [gem.id,int(gem.level)]
 				if not groups.has(key):groups[key]=[]
-				groups[key].append(gem.token)
+				groups[key].append(gem)
 		var previous := count
+		var consumed := {}
+		var produced: Array=[]
 		for group in groups.values():
 			for offset in range(0,group.size()-required+1,required):
-				if not combine_inventory_jewels(working,group.slice(offset,offset+required),serial+1):return failure
+				var first: Dictionary=group[offset]
+				# The grouped tokens were validated once above. Settle a whole round
+				# together instead of revalidating and scanning 200 gems per recipe.
+				for i in required:consumed[group[offset+i].token]=true
 				serial+=1
+				produced.append({"id":first.id,"level":int(first.level)+1,"token":serial})
 				count+=1
 		if previous==count:break
+		working=working.filter(func(gem):return not consumed.has(gem.token))
+		working.append_array(produced)
 		# Preserve the existing automatic fragment refill, including its new gems.
 		var refill := generate_jewels_into(working,fragments,serial,random)
 		fragments=refill.fragments
@@ -2137,6 +2234,52 @@ func combine_all_jewels() -> Dictionary:
 	event.emit("jewels_changed",{"slot":""})
 	jewel_bulk_combining=false
 	return {"ok":true,"count":count,"consumed":count*required,"results":results,"tokens":result_tokens}
+
+func jewel_auto_stock() -> Dictionary:
+	var groups := {}
+	var best := {}
+	for gem in profile.jewels:
+		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or gem.get("locked",false) or gem.get("disabled",false):continue
+		var id := str(gem.id)
+		if not best.has(id) or int(gem.level)>int(best[id].level):best[id]=gem
+		if int(gem.level)<db.jewel_max_level(id):
+			var key := "%s:%d" % [id,int(gem.level)]
+			groups[key]=int(groups.get(key,0))+1
+	return {"groups":groups,"best":best}
+
+func auto_manage_jewels() -> Dictionary:
+	var result := {"combined":0,"replaced":0,"upgraded":0}
+	if not jewels_unlocked() or jewel_bulk_combining or profile.jewels.is_empty():return result
+	var required := jewel_combine_count()
+	var stock := jewel_auto_stock()
+	# The common no-material case must not enter the full staged combine/save path.
+	if required>=2 and stock.groups.values().any(func(count):return int(count)>=required):
+		var combined := combine_all_jewels()
+		if not combined.ok:return result
+		result.combined=int(combined.count)
+		stock=jewel_auto_stock()
+	var changed_slots := {}
+	for category in ["weapons","defence"]:
+		for index in module_entries(category).size():
+			var entry := module_entry(category,index)
+			if str(entry.get("key","")).is_empty():continue
+			var sockets: Array=entry.get("sockets",[])
+			for socket in mini(sockets.size(),equipment_socket_count(entry)):
+				var installed: Dictionary=sockets[socket]
+				if not jewel_combine_eligible(installed):continue
+				var candidate: Dictionary=stock.best.get(str(installed.id),{})
+				var changed := false
+				if not candidate.is_empty() and int(candidate.level)>int(installed.level):
+					changed=socket_jewel(category,index,socket,int(candidate.token),false)
+					if changed:result.replaced+=1
+				if not changed and required>=2 and int(stock.groups.get("%s:%d" % [installed.id,int(installed.level)],0))>=required-1:
+					changed=upgrade_socket_jewel(category,index,socket,int(installed.token),false)
+					if changed:result.upgraded+=1
+				if changed:
+					changed_slots[slot_id(category,index)]=true
+					stock=jewel_auto_stock()
+	if not changed_slots.is_empty():jewels_changed("",changed_slots.keys())
+	return result
 
 func jewel_compose_reward(gem: Dictionary) -> float:
 	if gem.is_empty() or jewel_create_cost() <= 0:
@@ -2196,7 +2339,7 @@ func jewel_socket_error_key(category: String, index: int, token: int, replacing_
 			return "gem.jewel_socket_error.text_03"
 	return ""
 
-func socket_jewel(category: String, index: int, socket: int, token: int) -> bool:
+func socket_jewel(category: String, index: int, socket: int, token: int, notify := true) -> bool:
 	if not jewel_socket_error_key(category, index, token, socket).is_empty():
 		return false
 	var entry := module_entry(category, index)
@@ -2213,7 +2356,7 @@ func socket_jewel(category: String, index: int, socket: int, token: int) -> bool
 	if not previous.is_empty():
 		profile.jewels.append(previous)
 	entry.sockets = sockets
-	jewels_changed(slot_id(category, index))
+	if notify:jewels_changed(slot_id(category, index))
 	return true
 
 func unsocket_jewel(category: String, index: int, socket: int, expected_token: int) -> bool:
@@ -2239,7 +2382,7 @@ func can_upgrade_socket_jewel(category: String, index: int, socket: int) -> bool
 	var required:=jewel_combine_count()
 	return jewels_unlocked() and not jewel_bulk_combining and required>=2 and socket_upgrade_materials(category,index,socket).size()>=required-1
 
-func upgrade_socket_jewel(category: String, index: int, socket: int, expected_token: int) -> bool:
+func upgrade_socket_jewel(category: String, index: int, socket: int, expected_token: int, notify := true) -> bool:
 	if not can_upgrade_socket_jewel(category,index,socket):return false
 	var entry:=module_entry(category,index)
 	var installed: Dictionary=entry.sockets[socket]
@@ -2255,7 +2398,7 @@ func upgrade_socket_jewel(category: String, index: int, socket: int, expected_to
 		if tokens.has(int(profile.jewels[i].token)):profile.jewels.remove_at(i)
 	jewel_serial+=1
 	entry.sockets[socket]=ingredients[0]
-	jewels_changed(slot_id(category,index))
+	if notify:jewels_changed(slot_id(category,index))
 	return true
 
 func return_socket_jewels(entries: Array) -> bool:
@@ -2272,13 +2415,13 @@ func return_socket_jewels(entries: Array) -> bool:
 		entry.sockets = []
 	return true
 
-func jewels_changed(slot := "") -> void:
+func jewels_changed(slot := "", slots: Array = []) -> void:
 	generate_jewels()
 	if player.has("armour"):
 		player.armour = minf(player.armour, stat("armour"))
 		player.shield = minf(player.shield, max_shield())
 	save_progress()
-	event.emit("jewels_changed", {"slot":slot})
+	event.emit("jewels_changed", {"slot":slot,"slots":slots})
 
 func jewel_effects(entry: Dictionary) -> Array:
 	var result: Array = []
@@ -2303,7 +2446,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1) -> float:
 			var count := maxi(1, int(entry.get("attacks" if effect.kind == "proficiency" else "hits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(10.0) * 100.0) / 100.0
 			value = ceilf(value * (1.0 + bonus))
-	return value
+	return value * planet_equipment_multiplier()
 
 func jewel_critical(entry: Dictionary) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))

@@ -2,7 +2,7 @@
 
 ## 范围与来源
 
-船员、升级、岗位、模块效果、存档与 UI 已接入。2026-09-22 用户确认：只提供经验 API，暂不接自然经验来源；装备只预留，不提供掉落、背包、属性、强化或套装。
+船员、升级、岗位、模块效果、存档与 UI 已接入。2026-09-22 初版只提供经验 API；2026-09-23 星球探索开始发放经验。装备仍只预留，不提供掉落、背包、属性、强化或套装。
 
 新增三个独立分表，沿用 `config_excel → config_workbooks/import_workbook → game_data.json → ShipDatabase.data`，不另建配置系统。前三行为字段、说明、空行，第 4 行起数据。日常编辑分表后使用 QA「读取配置」并重启，勿用旧总表覆盖分表。没有 manifest 条目时沿用可选分表发现；旧总表缺船员表时保留已有船员投影。导入失败不提交。
 
@@ -21,7 +21,7 @@
 | 船员05 | crew_05 | crew/crew_05 | 35 |
 | 船员06 | crew_06 | crew/crew_06 | 40 |
 
-沿用既有“指定关卡已通关”判定，单纯到达不解锁；通关时进入现有解锁通知，授权状态沿原存档流程保存。旧档保留已有 crewId、等级、经验和分配；尚未满足新门槛的船员不产生效果，也不在模块标记中泄露信息，新增三名按配置初始化。
+沿用既有“指定关卡已通关”判定，单纯到达不解锁；通关时进入现有解锁通知，授权状态沿原存档流程保存。旧档保留已有 crewId、等级、经验和分配；尚未满足新门槛的船员不产生效果，也不在页签标记中泄露信息，新增三名按配置初始化。
 
 用户补充：第一名船员解锁前不显示船员页签，判定为至少一名船员满足其配置门槛，不把10写死在UI。页签开放后正常显示已解锁成员；未解锁部分只显示门槛最小的一张通用剪影与“通关第X层解锁”。不显示姓名、等级、职务、效果、提示详情或交互入口；更后面的成员不生成行。没有已解锁船员时隐藏详情及分配控件；全部解锁后隐藏剪影。复用单个预告控件和既有已解锁行，未改变时不重复写入或重排。剪影资源为 `assets/ui/crew_locked.svg`，提示KEY为 `crew.unlock_at`，层数来自unlock配置。
 
@@ -29,9 +29,9 @@
 
 | 分表 | 字段与含义 |
 |---|---|
-| `crew.xlsx / crew` | `id, name, description, icon, baseLevel, maxLevel, basePower, expGroup, defaultAssignment, unlockId, equipmentSlotCount`；另有可选 `defaultTargetId`，填写默认岗位时须成对填写 |
-| `crew_level.xlsx / crew_level` | `group, level, needExp, powerMultiplier`；`needExp` 是从上一级到本级所需经验，第 1 级为 0，不是累计经验 |
-| `crew_assignment.xlsx / crew_assignment` | `id, targetType, effectType, baseValue, levelScale, powerScale, interval, maxCrew, description, titleTextId, descTextId`；另有 `upgradeModes`（装备系统当前为 `1,10,max`）；保留可选 `targetCategory`，当前装备系统留空 |
+| `crew.xlsx / crew` | `id, name, description, icon, baseLevel, maxLevel, basePower, expGroup, defaultAssignment, unlockId, equipmentSlotCount, baseExp, expGrowth`；另有可选 `defaultTargetId`，填写默认岗位时须成对填写 |
+| `crew_level.xlsx / crew_level` | `group, level, needExp, powerMultiplier`；`needExp` 保留为逐级配置参考，实际升级经验由 crew 的 `baseExp` 和 `expGrowth` 计算；第 1 级为 0 |
+| `crew_assignment.xlsx / crew_assignment` | `id, targetType, effectType, baseValue, levelScale, powerScale, interval, maxCrew, description, titleTextId, descTextId`；自动装备与自动AI岗位均用 `upgradeModes=1,10,max`；宝石岗位只需正数 `interval`，无需数量选项；可选 `targetCategory` 区分高科技具体项目和整个系统 |
 
 `crew.id` 是唯一实例 ID。本版没有招募或同一配置的多个副本。全部配置实例初始化，`unlockId` 留空直接可用，否则读取现有 unlock 权限。未知 ID 不产生实例。
 
@@ -55,7 +55,7 @@
 
 `profile.crew` 为上述数组；只保存七个动态字段（本次增加 upgradeMode），不保存名称、图标、基础能力或岗位数值。`profile.crewEquipment = {}` 为预留结构。`crew.equipment_slots(game, id)` 返回独立槽数组；`crew.crew_equipment(game, equipment_id)` 预留查询返回空字典。本版槽位只允许空值。
 
-`game.add_crew_exp(crew_id, amount)` 查询 crew.expGroup，再读取 crew_level 的下一等级行，逐级扣除 needExp；余量保留，达到 Excel 的 maxLevel 后经验归零，不接自然发放。拒绝负数、非有限经验及未知船员。加载时同样规范经验和等级。
+`game.add_crew_exp(crew_id, amount)` 查询 crew.expGroup 与下一等级行；从当前等级升下一级所需经验为 `round(baseExp × (1 + expGrowth)^(当前等级−1))`。初始为100，此后120、144。逐级扣除，余量保留，达到 Excel 的 maxLevel 后经验归零。星球探索完成发放经验；拒绝负数、非有限经验及未知船员。加载时同样规范经验和等级。
 
 效果公式仅在 `crew_system.effect_value`：
 
@@ -67,20 +67,24 @@ value = baseValue × basePower^powerScale × powerMultiplier^levelScale
 
 ## 岗位与行为
 
-`game.assign_crew(crew_id, assignment_type, target_id)` 执行分配/更换；两个目标参数均传空字符串解除。一次仅一个岗位；人数上限按「岗位 ID + 目标 ID」检查。失败保持原岗位。
+`game.assign_crew(crew_id, assignment_type, target_id)` 执行分配/更换；两个目标参数均传空字符串解除。一次仅一个岗位。当前四个岗位的 Excel `maxCrew` 均为 1；占用按「targetType + targetId」检查，不同岗位也不能重复占用同一系统目标。失败保持原岗位。
 
 | 初始岗位 | 注册组合 | 目标 | 实际行为 |
 |---|---|---|---|
 | equipment_upgrade | equipment + AUTO_UPGRADE | 整个装备系统 `equipment` | 每1游戏秒按武器索引、再按防御索引遍历全部启用模块；依选项调用统一升级接口 |
-| hightech_efficiency | hightech + EFFICIENCY | 现有 hightech 键 | 科研速率乘 `1 + 聚合 EFFICIENCY`；没有科学家仍无产出 |
-| smelting_speed | smelting + SPEED | 现有宝石熔炼炉键 | 实际生产间隔除以 `1 + 聚合 SPEED` |
+| hightech_scientists（显示为“高科技”） | hightech + AUTO_SCIENTIST | 整个高科技系统 `hightech` | 每1游戏秒按船员选择的x1/x10/MAX调用 `generate_scientist`；仅购买成功后调用 `distribute_scientists` |
+| jewel_auto（显示为“宝石系统”） | jewel + AUTO_COMBINE | 整个宝石系统 `jewels` | 每1游戏秒自动合成背包宝石，再把已镶嵌宝石升级或替换为同类型更高级宝石 |
 | production_output | production + OUTPUT | 现有炼铁炉键 | 原产出乘 `1 + 聚合 OUTPUT + 聚合 EFFICIENCY`，最后沿用原向上取整 |
 
-两个炉均已注册 SPEED / OUTPUT / EFFICIENCY。炉没有独立生产消耗，第一版 EFFICIENCY 与 OUTPUT 都是产出加成，两者加算；SPEED 独立改变周期。科研 EFFICIENCY 只影响科研，不直接改变科技效果倍率。现有离线研究和炉结算也通过相同读取入口；原离线近似规则未改。
+两个炉的 SPEED / OUTPUT / EFFICIENCY handler 仍已注册，现有配置只启用炼铁炉产出岗位。炉没有独立生产消耗，EFFICIENCY 与 OUTPUT 都是产出加成，两者加算；SPEED 独立改变周期。科研速率不再读取船员 EFFICIENCY；原离线近似规则未改。
 
 `game.get_crew_modifier(targetType, targetId, effectType)` 聚合当前有效船员的加成，目标系统按需读取，不修改 Excel 投影或目标基础数据。未分配、未解锁、失效目标均贡献 0。
 
 装备分配面向整个系统，不再选择单件武器/防御。每次遍历当前舰体启用范围，停用尾部不升级；空的启用模块仍按既有模块成长规则升级。1级与10级必须完整满足该次资源/条件，不足则跳过该模块、继续检查下一件；最大值先用 max_upgrade_amount_slot 计算，再调用 upgrade_slot。各模块按顺序使用剩余资源，不复制或绕过升级规则。
+
+高科技岗位由原自动科学家岗位更名而来；旧 `hightech_efficiency` 配置已删除。当前 `baseValue=1, levelScale=0, powerScale=0, interval=1, maxCrew=1`，故等级不加快周期。购买量存于现有动态 `upgradeMode`，仍只有一个主要 assignment。x10 完整购买条件与原按钮相同；MAX 传 `-1` 给原购买接口，保留免费首人边界。购买失败不改变原科学家分配；成功后相当于自动点击现有“平均分配”，采用同样的槽位顺序、余额扣除、事件和存档流程。暂停和离线仍不推进自动购买。
+
+宝石岗位取代原宝石熔炼速度岗位。每到 Excel `interval / effect_value` 秒，先线性扫描背包判断有无可合成组；无材料时不调用完整一键合成，也不保存或通知 UI。有材料时复用 `combine_all_jewels` 的配方、等级上限、保护标记、碎片补位和存档规则。合成后只处理已有孔位中未锁定、未停用的宝石：优先从背包换入**同 ID 且严格更高等级**的未保护宝石；否则在原位配方满足时复用 `upgrade_socket_jewel`。空孔不自动填充，不跨宝石类型换属性。所有变化复用正常镶嵌校验；同一轮多孔位只保存一次，并通过 `jewels_changed.slots` 仅刷新受影响装备卡片。满包仍允许等量交换。连锁合成按每轮分组批量结算，避免每个配方重扫整包；仍只在最终成功后提交、保存、通知。此岗位没有独立资源消耗，自动合成会消耗符合配方的背包宝石；自动原位升级也会消耗匹配材料。
 
 调度器仅累计游戏时间，到期才做目标与升级条件检查；不逐帧尝试升级。暂停不推进。同一船员单次 tick 最多检查一次，大步长遗漏的周期不追补消费；离线不补自动升级。切换/解除分配重置该船员时钟（仅修改升级选项不重置），时钟不写存档，重启从完整周期开始。
 
@@ -94,16 +98,20 @@ value = baseValue × basePower^powerScale × powerMultiplier^levelScale
 
 ## UI 刷新与旧档
 
-船员页签位于现有页签之后。点击船员，选择分配系统；装备系统显示1级/10级/最大值选项，其他系统继续选择具体目标；点击分配；装备只显示未开放槽数。已有模块只加 `👤人数`，提示姓名、等级和当前实际效果。装备系统的标记同步全部装备模块，升级选项即时保存为该船员的 upgradeMode。
+船员页签位于现有页签之后。点击船员，选择分配系统；装备系统显示1级/10级/最大值选项，高科技系统显示AI购买数量，宝石系统选择唯一目标 `jewels`；点击分配；装备只显示未开放槽数。分配标记只在对应系统页签标题显示 `👤`，不显示人数，也不在模块内部显示；页签悬浮提示列出船员姓名、等级和当前效果。装备岗位对应装备页签，高科技/生产岗位对应高科技页签，宝石岗位对应宝石页签。升级选项即时保存为该船员的 upgradeMode。
+
+船员参与探索时，列表改为“探索中 + 星球名 + 剩余秒数/完成经验”；选中详情显示同一星球与倒计时，提供“查看星球探索”和“召回船员”。探索期间岗位控件隐藏，召回或完成后恢复待命与常规分配。仅可见船员页按整数秒更新该船员行和选中详情；未变化时不写属性，隐藏页恢复时补齐。
+
+高科技岗位选择整个系统时也显示x1/x10/MAX购买选项，不要求选择具体科技。岗位更换、解除和升级选项变更时只更新受影响页签的标记/提示；科技舱及装备卡片不因船员事件刷新。岗位名称、说明、周期、购买模式和容量来自 Excel；按钮文字来自 `ui_text.json`。
 
 | 触发 | 变化数据 | 刷新范围 |
 |---|---|---|
-| 经验/分配/解除/升级选项 | 该船员等级、经验、分配、upgradeMode | 复用该船员行和选中详情；旧/新目标标记；装备系统涉及全部模块标记；对应科研速率 |
+| 经验/分配/解除/升级选项 | 该船员等级、经验、分配、upgradeMode | 复用该船员行和选中详情；仅旧/新系统页签标题与提示 |
 | 换装/换舰/解锁/首次完成科技 | 可选目标、可用状态 | 船员页目标选项、涉及的行/详情；隐藏页仅标脏 |
 | 打开船员页 | 补齐隐藏期变更 | 复用所有既有行/控件，保留选择、草稿、焦点和滚动 |
 | 配置新增/删除 | 行/选项集合 | 只增删相应船员行或重建变化的下拉选项列表 |
 
-无船员数据的旧档按 Excel 初始化待命船员，不改旧档版本或旧模块数据。现有档规范字段类型、等级/经验、人数和目标，丢弃未知船员及静态字段。有效但暂不可用的系统分配读档后保留。旧 weapon_upgrade/defense_upgrade 自动迁移为 equipment_upgrade + equipment；由于现有 Excel 系统人数上限为1，多个旧分配按船员配置顺序保留首个，其余转待命，不丢等级/经验。缺失或非法 upgradeMode 使用 Excel 首个选项（当前1级）；有效选项跨读档/切页保留。正式玩家存档未被测试读取或写入。
+无船员数据的旧档按 Excel 初始化待命船员，不改旧档版本或旧模块数据。现有档规范字段类型、等级/经验、人数和目标，丢弃未知船员及静态字段。有效但暂不可用的系统分配读档后保留。旧 weapon_upgrade/defense_upgrade 自动迁移为 equipment_upgrade + equipment；旧 `smelting_speed` + 宝石熔炼炉目标迁移为 `jewel_auto` + `jewels`，保留等级/经验。同一系统目标若有多个旧分配，按船员配置顺序保留首个，其余转待命，不丢等级/经验。旧 `hightech_efficiency` 分配读档后转待命，不自动转换为会花资源的高科技岗位；等级/经验保留，玩家可手动重新分配。缺失或非法 upgradeMode 使用 Excel 首个选项（当前1级）；有效选项跨读档/切页保留。正式玩家存档未被测试读取或写入。
 
 ## 修改定位与验证
 
@@ -138,8 +146,16 @@ value = baseValue × basePower^powerScale × powerMultiplier^levelScale
 整轮同场景（12模块各升1级、装备页可见、每种资源1e6）：中位数6.67→5.57ms，UI 3.68→2.20ms，首测P95 7.51ms。由于首测尾部波动，追加一次确认：中位数5.33ms，P95 5.58ms，UI 2.10ms，单次同步存档2.25ms。两次各40组完成；可确认平均开销下降约17%～20%，不把单次测量视为固定帧率。日志 `../../test/work/crew-performance-single-opt.log`、`crew-performance-single-confirm.log`。本轮回归247项：费用92、局部UI79、船员UI30、装备46；覆盖旧费用投影一致、船员标记事件/隐藏恢复与装备升级不查询标记。
 
 - 新增：`scripts/crew_system.gd`、`scripts/crew_panel.gd`、`assets/ui/crew.svg`、三个 crew 分表。
-- 接入：`scripts/game.gd`（经验/分配/聚合 API、调度、科研/炉、存档）、`scripts/main.gd`（页签/事件/科技标记）、`scripts/equipment_tab.gd`、`scripts/equipment_card.gd`（模块标记）。
+- 接入：`scripts/game.gd`（经验/分配/聚合 API、调度、科研/炉、存档）、`scripts/main.gd`（页签/事件/系统标记）。`scripts/equipment_tab.gd`、`scripts/equipment_card.gd` 已移除模块内标记。
 - 配置：`tools/import_workbook.py`、`tools/config_workbooks.py`、`tools/level_editor_store.py`；仅新增三段 game_data 投影，保留已有其他段；新增船员文案和现有装备显示绑定。
 - 专项：`../test/test_crew.gd`、`test_crew_ui.gd`、`test_crew_equipment.gd`、`test_crew_import.py`；相关回归 `test_module_refit`、`test_furnace_income`、`test_local_ui`、`test_ui_text.py`。证据与当前结果见 STATUS。
 
-没有新增攻击或伤害结算路径：自动升级复用原 upgrade_slot，战斗组合行为由原模块接口保持；模块回归覆盖换装/宝石/累计/存档与剩余生命比例。未新增船员战斗加伤、暴击或触发效果。
+没有新增攻击或伤害结算路径：自动升级复用原 upgrade_slot，自动宝石复用原 socket_jewel/upgrade_socket_jewel，战斗组合行为由原模块接口保持。宝石换入后原 `jewel_effects` 按新等级读取效果，不复制或叠加一份船员效果：
+
+| 攻击类型 | 通用效果入口与边界 | 验证 |
+|---|---|---|
+| 激光、炮、导弹 | 每发仍由 `jewel_attack → jewel_fire → hit_enemy` 处理伤害、暴击、增伤、重复攻击、命中和击杀；多枚导弹各走原发射路径 | `test_jewels`、`test_balance_metrics`、`test_module_refit` |
+| 长激光 | 每次周期命中仍由 `jewel_attack → hit_enemy` 处理同类效果；重复光束继续按原有效目标/中断规则 | `test_long_laser`、`test_balance_metrics` |
+| 防御装备 | 不产生攻击、命中或击杀事件；原属性/减伤/修复读取新宝石等级 | `test_jewels`、`test_balance_metrics`、`test_crew_jewels` |
+
+船员仅变更宝石归属，不新增攻击次数、CD、BUFF 或击杀触发时机；`test_crew_jewels` 验证自动替换后既有暴击值随等级变化，且多孔位只发一次变更通知。正式玩家存档未被测试读取或写入。

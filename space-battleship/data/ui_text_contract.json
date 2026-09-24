@@ -3389,9 +3389,7 @@
       ]
     },
     "crew.badge": {
-      "params": [
-        "count"
-      ]
+      "params": []
     },
     "crew.badge_tip": {
       "params": [
@@ -3418,11 +3416,6 @@
     "crew.effect.auto": {
       "params": [
         "interval"
-      ]
-    },
-    "crew.effect.efficiency": {
-      "params": [
-        "value"
       ]
     },
     "crew.effect.speed": {
@@ -3469,6 +3462,146 @@
       "params": [
         "level"
       ]
+    },
+    "crew.effect.scientist_auto": {
+      "params": [
+        "interval",
+        "mode"
+      ]
+    },
+    "crew.hightech_system": {
+      "params": []
+    },
+    "crew.job.jewel": {
+      "params": []
+    },
+    "crew.jewel_system": {
+      "params": []
+    },
+    "crew.effect.jewel_auto": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.scientist_amount": {
+      "params": []
+    },
+    "crew.scientist_count": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.scientist_max": {
+      "params": []
+    },
+    "planet.tab": {
+      "params": []
+    },
+    "planet.heading": {
+      "params": []
+    },
+    "planet.first.name": {
+      "params": []
+    },
+    "planet.detail": {
+      "params": [
+        "degree",
+        "bonus",
+        "experience"
+      ]
+    },
+    "planet.exploring": {
+      "params": [
+        "crew",
+        "remaining"
+      ]
+    },
+    "planet.ready": {
+      "params": [
+        "seconds"
+      ]
+    },
+    "planet.start": {
+      "params": []
+    },
+    "planet.cancel": {
+      "params": []
+    },
+    "planet.list_heading": {
+      "params": []
+    },
+    "planet.list_entry": {
+      "params": [
+        "planet",
+        "degree"
+      ]
+    },
+    "planet.info_heading": {
+      "params": []
+    },
+    "planet.facility_heading": {
+      "params": []
+    },
+    "planet.facility_empty": {
+      "params": []
+    },
+    "planet.facility_item": {
+      "params": [
+        "name",
+        "level"
+      ]
+    },
+    "planet.facility.scout_satellite": {
+      "params": []
+    },
+    "planet.facility.space_station": {
+      "params": []
+    },
+    "planet.facility.mining_platform": {
+      "params": []
+    },
+    "planet.facility.research_facility": {
+      "params": []
+    },
+    "planet.facility.defense_platform": {
+      "params": []
+    },
+    "planet.facility.orbital_factory": {
+      "params": []
+    },
+    "planet.complete_feedback": {
+      "params": [
+        "degree",
+        "experience"
+      ]
+    },
+    "crew.exploring": {
+      "params": []
+    },
+    "crew.exploration_remaining": {
+      "params": [
+        "remaining",
+        "experience"
+      ]
+    },
+    "crew.exploration_progress": {
+      "params": [
+        "exp",
+        "needed",
+        "planet",
+        "remaining"
+      ]
+    },
+    "crew.exploration_heading": {
+      "params": [
+        "planet"
+      ]
+    },
+    "crew.exploration_hint": {
+      "params": []
+    },
+    "crew.view_planet": {
+      "params": []
     }
   },
   "bindings": {
@@ -3620,6 +3753,11 @@
       },
       "shield": {
         "name": "defense.shield_name"
+      }
+    },
+    "planet": {
+      "first": {
+        "name": "planet.first.name"
       }
     }
   }

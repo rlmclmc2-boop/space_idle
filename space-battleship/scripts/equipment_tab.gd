@@ -20,7 +20,6 @@ var detail: Dictionary = {}
 var slot_options: Array = []
 var subtypes := ["all","laser","cannon","missile","shield","armour"]
 var dirty := true
-var crew_badges_dirty: Dictionary = {}
 var sort_dirty := true
 var sorted_ids: Array = []
 var last_sort_mode := -1
@@ -357,7 +356,6 @@ func refresh_slots(changed: Array) -> void:
 			# Spending resources changes affordability on other modules, but not their stats.
 			if not (changed.is_empty() or dirty or changed.has(id)):
 				items[id].upgradeable = host.game.can_upgrade_slot(category,index)
-			if dirty and not cards[id].last_state.is_empty():cards[id].refresh_crew(id)
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
@@ -373,19 +371,6 @@ func refresh_pending() -> void:
 	elif observed_resources!=host.game.profile.resources:
 		refresh_affordability()
 	refresh_stats()
-	for id in crew_badges_dirty:
-		if cards.has(id):cards[id].refresh_crew(id)
-	crew_badges_dirty.clear()
-
-func refresh_crew_badge(id: String) -> void:
-	if id=="equipment":
-		for slot in cards:refresh_crew_badge(str(slot))
-		return
-	if not is_visible_in_tree():
-		crew_badges_dirty[id]=true
-		return
-	if cards.has(id):cards[id].refresh_crew(id)
-
 func invalidate_stats(info: Dictionary) -> void:
 	if not is_visible_in_tree():
 		dirty = true

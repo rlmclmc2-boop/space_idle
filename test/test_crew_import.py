@@ -22,7 +22,7 @@ class CrewImportTests(unittest.TestCase):
         with self.assertRaises(ValueError):convert_sheet('crew',[row,row])
         level=self.data['crew_level']['normal']['1']
         with self.assertRaises(ValueError):convert_sheet('crew_level',[level,level])
-        for section,id,field,value in [('crew','navigator','maxLevel',4),('crew','navigator','expGroup','missing'),('crew','navigator','basePower',float('nan')),('crew','navigator','unlockId','missing'),('crew_assignment','equipment_upgrade','interval',0),('crew_assignment','equipment_upgrade','maxCrew',1.5)]:
+        for section,id,field,value in [('crew','navigator','maxLevel',4),('crew','navigator','expGroup','missing'),('crew','navigator','basePower',float('nan')),('crew','navigator','unlockId','missing'),('crew_assignment','equipment_upgrade','interval',0),('crew_assignment','jewel_auto','interval',0),('crew_assignment','equipment_upgrade','maxCrew',1.5)]:
             data=copy.deepcopy(self.data);data[section][id][field]=value
             with self.assertRaises(ValueError):validate_crew(data)
         data=copy.deepcopy(self.data);data['crew_level']['normal']['2']['needExp']=0

@@ -689,6 +689,7 @@
       "lifeRatio": 1,
       "resRatio": 1,
       "jewelRatio": 1,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -736,6 +737,7 @@
       "lifeRatio": 1.5,
       "resRatio": 1.4,
       "jewelRatio": 1.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -783,6 +785,7 @@
       "lifeRatio": 2.25,
       "resRatio": 1.96,
       "jewelRatio": 1.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -830,6 +833,7 @@
       "lifeRatio": 4.05,
       "resRatio": 2.74,
       "jewelRatio": 1.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -877,6 +881,7 @@
       "lifeRatio": 7.29,
       "resRatio": 3.84,
       "jewelRatio": 1.8,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -924,6 +929,7 @@
       "lifeRatio": 13.12,
       "resRatio": 5.38,
       "jewelRatio": 2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -971,6 +977,7 @@
       "lifeRatio": 23.62,
       "resRatio": 7.53,
       "jewelRatio": 2.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -1018,6 +1025,7 @@
       "lifeRatio": 42.52,
       "resRatio": 10.54,
       "jewelRatio": 2.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 5,
@@ -1065,6 +1073,7 @@
       "lifeRatio": 76.54,
       "resRatio": 14.76,
       "jewelRatio": 2.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -1112,6 +1121,7 @@
       "lifeRatio": 137.77,
       "resRatio": 20.66,
       "jewelRatio": 2.8,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 3,
@@ -1159,6 +1169,7 @@
       "lifeRatio": 148,
       "resRatio": 24,
       "jewelRatio": 3,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -1206,6 +1217,7 @@
       "lifeRatio": 238,
       "resRatio": 34,
       "jewelRatio": 3.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -1253,6 +1265,7 @@
       "lifeRatio": 1138,
       "resRatio": 72,
       "jewelRatio": 3.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 5,
@@ -1300,6 +1313,7 @@
       "lifeRatio": 10138,
       "resRatio": 211,
       "jewelRatio": 3.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -1347,6 +1361,7 @@
       "lifeRatio": 100138,
       "resRatio": 728,
       "jewelRatio": 3.8,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 3,
@@ -1394,6 +1409,7 @@
       "lifeRatio": 1000138,
       "resRatio": 2647,
       "jewelRatio": 4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -1441,6 +1457,7 @@
       "lifeRatio": 10000138,
       "resRatio": 9777,
       "jewelRatio": 4.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -1488,6 +1505,7 @@
       "lifeRatio": 100000137,
       "resRatio": 36258,
       "jewelRatio": 4.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 5,
@@ -1535,6 +1553,7 @@
       "lifeRatio": 1000000125,
       "resRatio": 134624,
       "jewelRatio": 4.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -1582,6 +1601,7 @@
       "lifeRatio": 9019699279.54,
       "resRatio": 500000,
       "jewelRatio": 4.8,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 3,
@@ -1629,6 +1649,7 @@
       "lifeRatio": 100000000000,
       "resRatio": 700000,
       "jewelRatio": 5,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -1676,6 +1697,7 @@
       "lifeRatio": 1000000000000,
       "resRatio": 1000000,
       "jewelRatio": 5.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -1723,6 +1745,7 @@
       "lifeRatio": 10000000000000,
       "resRatio": 1400000,
       "jewelRatio": 5.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 5,
@@ -1770,6 +1793,7 @@
       "lifeRatio": 100000000000000,
       "resRatio": 2000000,
       "jewelRatio": 5.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -1817,6 +1841,7 @@
       "lifeRatio": 1000000000000000,
       "resRatio": 2800000,
       "jewelRatio": 5.8,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 3,
@@ -1864,6 +1889,7 @@
       "lifeRatio": 1e+16,
       "resRatio": 3900000,
       "jewelRatio": 6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 2,
@@ -1911,6 +1937,7 @@
       "lifeRatio": 1e+17,
       "resRatio": 5500000,
       "jewelRatio": 6.2,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 1,
@@ -1958,6 +1985,7 @@
       "lifeRatio": 1e+18,
       "resRatio": 7700000,
       "jewelRatio": 6.4,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 5,
@@ -2005,6 +2033,7 @@
       "lifeRatio": 1e+19,
       "resRatio": 10800000,
       "jewelRatio": 6.6,
+      "planetExpRatio": 0,
       "groups": [
         {
           "id": 4,
@@ -2052,6 +2081,7 @@
       "lifeRatio": 1e+20,
       "resRatio": 15100000,
       "jewelRatio": 6.8,
+      "planetExpRatio": 1,
       "groups": [
         {
           "id": 3,
@@ -2099,6 +2129,7 @@
       "lifeRatio": 1e+21,
       "resRatio": 21100000,
       "jewelRatio": 7,
+      "planetExpRatio": 1.2,
       "groups": [
         {
           "id": 2,
@@ -2146,6 +2177,7 @@
       "lifeRatio": 1e+22,
       "resRatio": 29500000,
       "jewelRatio": 7.2,
+      "planetExpRatio": 1.44,
       "groups": [
         {
           "id": 1,
@@ -2193,6 +2225,7 @@
       "lifeRatio": 1e+23,
       "resRatio": 41300000,
       "jewelRatio": 7.4,
+      "planetExpRatio": 1.73,
       "groups": [
         {
           "id": 5,
@@ -2240,6 +2273,7 @@
       "lifeRatio": 1e+24,
       "resRatio": 57800000,
       "jewelRatio": 7.6,
+      "planetExpRatio": 2.08,
       "groups": [
         {
           "id": 4,
@@ -2287,6 +2321,7 @@
       "lifeRatio": 1e+25,
       "resRatio": 80900000,
       "jewelRatio": 7.8,
+      "planetExpRatio": 2.5,
       "groups": [
         {
           "id": 3,
@@ -2334,6 +2369,7 @@
       "lifeRatio": 1e+26,
       "resRatio": 113300000,
       "jewelRatio": 8,
+      "planetExpRatio": 3,
       "groups": [
         {
           "id": 2,
@@ -2381,6 +2417,7 @@
       "lifeRatio": 1e+27,
       "resRatio": 158600000,
       "jewelRatio": 8.2,
+      "planetExpRatio": 3.6,
       "groups": [
         {
           "id": 1,
@@ -2428,6 +2465,7 @@
       "lifeRatio": 1e+28,
       "resRatio": 222000000,
       "jewelRatio": 8.4,
+      "planetExpRatio": 4.32,
       "groups": [
         {
           "id": 5,
@@ -2475,6 +2513,7 @@
       "lifeRatio": 1e+29,
       "resRatio": 310800000,
       "jewelRatio": 8.6,
+      "planetExpRatio": 5.18,
       "groups": [
         {
           "id": 4,
@@ -2522,6 +2561,7 @@
       "lifeRatio": 1e+30,
       "resRatio": 435100000,
       "jewelRatio": 8.8,
+      "planetExpRatio": 6.22,
       "groups": [
         {
           "id": 3,
@@ -2569,6 +2609,7 @@
       "lifeRatio": 1e+31,
       "resRatio": 609100000,
       "jewelRatio": 9,
+      "planetExpRatio": 7.46,
       "groups": [
         {
           "id": 2,
@@ -2616,6 +2657,7 @@
       "lifeRatio": 1e+32,
       "resRatio": 852700000,
       "jewelRatio": 9.2,
+      "planetExpRatio": 8.95,
       "groups": [
         {
           "id": 1,
@@ -2663,6 +2705,7 @@
       "lifeRatio": 1e+33,
       "resRatio": 1193800000,
       "jewelRatio": 9.4,
+      "planetExpRatio": 10.74,
       "groups": [
         {
           "id": 5,
@@ -2710,6 +2753,7 @@
       "lifeRatio": 1e+34,
       "resRatio": 1671300000,
       "jewelRatio": 9.6,
+      "planetExpRatio": 12.89,
       "groups": [
         {
           "id": 4,
@@ -2757,6 +2801,7 @@
       "lifeRatio": 1e+35,
       "resRatio": 2339800000,
       "jewelRatio": 9.8,
+      "planetExpRatio": 15.47,
       "groups": [
         {
           "id": 3,
@@ -2804,6 +2849,7 @@
       "lifeRatio": 1e+36,
       "resRatio": 3275700000,
       "jewelRatio": 10,
+      "planetExpRatio": 18.56,
       "groups": [
         {
           "id": 2,
@@ -2851,6 +2897,7 @@
       "lifeRatio": 1e+37,
       "resRatio": 4586000000,
       "jewelRatio": 10.2,
+      "planetExpRatio": 22.27,
       "groups": [
         {
           "id": 1,
@@ -2898,6 +2945,7 @@
       "lifeRatio": 1e+38,
       "resRatio": 6420400000,
       "jewelRatio": 10.4,
+      "planetExpRatio": 26.72,
       "groups": [
         {
           "id": 5,
@@ -2945,6 +2993,7 @@
       "lifeRatio": 1e+39,
       "resRatio": 8988600000,
       "jewelRatio": 10.6,
+      "planetExpRatio": 32.06,
       "groups": [
         {
           "id": 4,
@@ -2992,6 +3041,7 @@
       "lifeRatio": 1e+40,
       "resRatio": 12584000000,
       "jewelRatio": 10.8,
+      "planetExpRatio": 38.47,
       "groups": [
         {
           "id": 3,
@@ -3039,6 +3089,7 @@
       "lifeRatio": 1e+41,
       "resRatio": 17617600000,
       "jewelRatio": 11,
+      "planetExpRatio": 46.16,
       "groups": [
         {
           "id": 2,
@@ -3086,6 +3137,7 @@
       "lifeRatio": 1e+42,
       "resRatio": 24664600000,
       "jewelRatio": 11.2,
+      "planetExpRatio": 55.39,
       "groups": [
         {
           "id": 1,
@@ -3133,6 +3185,7 @@
       "lifeRatio": 1e+43,
       "resRatio": 34530400000,
       "jewelRatio": 11.4,
+      "planetExpRatio": 66.47,
       "groups": [
         {
           "id": 5,
@@ -3180,6 +3233,7 @@
       "lifeRatio": 1e+44,
       "resRatio": 48342600000,
       "jewelRatio": 11.6,
+      "planetExpRatio": 79.76,
       "groups": [
         {
           "id": 4,
@@ -3227,6 +3281,7 @@
       "lifeRatio": 1e+45,
       "resRatio": 67679600000,
       "jewelRatio": 11.8,
+      "planetExpRatio": 95.71,
       "groups": [
         {
           "id": 3,
@@ -3274,6 +3329,7 @@
       "lifeRatio": 1e+46,
       "resRatio": 94751400000,
       "jewelRatio": 12,
+      "planetExpRatio": 114.85,
       "groups": [
         {
           "id": 2,
@@ -3321,6 +3377,7 @@
       "lifeRatio": 1e+47,
       "resRatio": 132652000000,
       "jewelRatio": 12.2,
+      "planetExpRatio": 137.82,
       "groups": [
         {
           "id": 1,
@@ -3368,6 +3425,7 @@
       "lifeRatio": 1e+48,
       "resRatio": 185712800000,
       "jewelRatio": 12.4,
+      "planetExpRatio": 165.38,
       "groups": [
         {
           "id": 5,
@@ -3415,6 +3473,7 @@
       "lifeRatio": 1e+49,
       "resRatio": 259997900000,
       "jewelRatio": 12.6,
+      "planetExpRatio": 198.46,
       "groups": [
         {
           "id": 4,
@@ -3462,6 +3521,7 @@
       "lifeRatio": 1e+50,
       "resRatio": 363997100000,
       "jewelRatio": 12.8,
+      "planetExpRatio": 238.15,
       "groups": [
         {
           "id": 3,
@@ -3509,6 +3569,7 @@
       "lifeRatio": 1e+51,
       "resRatio": 509595900000,
       "jewelRatio": 13,
+      "planetExpRatio": 285.78,
       "groups": [
         {
           "id": 2,
@@ -3556,6 +3617,7 @@
       "lifeRatio": 1e+52,
       "resRatio": 713434300000,
       "jewelRatio": 13.2,
+      "planetExpRatio": 342.94,
       "groups": [
         {
           "id": 1,
@@ -3603,6 +3665,7 @@
       "lifeRatio": 1e+53,
       "resRatio": 998808000000,
       "jewelRatio": 13.4,
+      "planetExpRatio": 411.53,
       "groups": [
         {
           "id": 5,
@@ -3650,6 +3713,7 @@
       "lifeRatio": 1e+54,
       "resRatio": 1398331200000,
       "jewelRatio": 13.6,
+      "planetExpRatio": 493.84,
       "groups": [
         {
           "id": 4,
@@ -3697,6 +3761,7 @@
       "lifeRatio": 1e+55,
       "resRatio": 1957663700000,
       "jewelRatio": 13.8,
+      "planetExpRatio": 592.61,
       "groups": [
         {
           "id": 3,
@@ -3744,6 +3809,7 @@
       "lifeRatio": 1e+56,
       "resRatio": 2740729200000,
       "jewelRatio": 14,
+      "planetExpRatio": 711.13,
       "groups": [
         {
           "id": 2,
@@ -3791,6 +3857,7 @@
       "lifeRatio": 1e+57,
       "resRatio": 3837020900000,
       "jewelRatio": 14.2,
+      "planetExpRatio": 853.36,
       "groups": [
         {
           "id": 1,
@@ -3838,6 +3905,7 @@
       "lifeRatio": 1e+58,
       "resRatio": 5371829300000,
       "jewelRatio": 14.4,
+      "planetExpRatio": 1024.03,
       "groups": [
         {
           "id": 5,
@@ -3885,6 +3953,7 @@
       "lifeRatio": 1e+59,
       "resRatio": 7520561000000,
       "jewelRatio": 14.6,
+      "planetExpRatio": 1228.84,
       "groups": [
         {
           "id": 4,
@@ -3932,6 +4001,7 @@
       "lifeRatio": 1e+60,
       "resRatio": 10528785400000,
       "jewelRatio": 14.8,
+      "planetExpRatio": 1474.61,
       "groups": [
         {
           "id": 3,
@@ -3991,7 +4061,8 @@
     "jewelCombine": 3,
     "jewelCreat": 100,
     "baseCriDmg": 2,
-    "equipmentSocket": "1|1,20|2,40|3"
+    "equipmentSocket": "1|1,20|2,40|3",
+    "planetExplorePower": 0.5
   },
   "defaults": {
     "autoCollectDelay": 5.0,
@@ -4020,7 +4091,8 @@
     "unlock": "D:\\放置\\space-battleship\\config_excel\\unlock.xlsx",
     "crew": "D:\\放置\\space-battleship\\config_excel\\crew.xlsx",
     "crew_level": "D:\\放置\\space-battleship\\config_excel\\crew_level.xlsx",
-    "crew_assignment": "D:\\放置\\space-battleship\\config_excel\\crew_assignment.xlsx"
+    "crew_assignment": "D:\\放置\\space-battleship\\config_excel\\crew_assignment.xlsx",
+    "planet": "D:\\放置\\space-battleship\\config_excel\\planet.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -4055,9 +4127,9 @@
       "des": "每para1秒在屏幕中生成一个宝石核心，总共含有根据过去一分钟的宝石碎片生成量*para2*等级的碎片，向上取整，鼠标划过获取，10秒后消失",
       "description": "每para1秒在屏幕中生成一个含有{过去一分钟的宝石碎片生成量*para2*等级,向上取整,不含自身}的宝石碎片的宝石核心块",
       "tpCostBase": 60,
-      "tpCostMutiple": 0.05,
+      "tpCostMutiple": 0.2,
       "para1": 20,
-      "para2": 0.1
+      "para2": 0.02
     }
   },
   "charge": {
@@ -4374,7 +4446,7 @@
       "level": 3,
       "mode": "cleared",
       "title": "超时空炼铁炉",
-      "desc": "可分配科学家研究超时空炼铁炉。"
+      "desc": "可分配AI研究超时空炼铁炉。"
     },
     "hightech/正电子聚焦装置": {
       "name": "hightech/正电子聚焦装置",
@@ -4383,7 +4455,7 @@
       "level": 4,
       "mode": "cleared",
       "title": "正电子聚焦装置",
-      "desc": "可分配科学家研究正电子聚焦装置。"
+      "desc": "可分配AI研究正电子聚焦装置。"
     },
     "hightech/简并态装甲": {
       "name": "hightech/简并态装甲",
@@ -4392,7 +4464,7 @@
       "level": 4,
       "mode": "cleared",
       "title": "简并态装甲",
-      "desc": "可分配科学家研究简并态装甲。"
+      "desc": "可分配AI研究简并态装甲。"
     },
     "hightech/宝石熔炼炉": {
       "name": "hightech/宝石熔炼炉",
@@ -4401,7 +4473,7 @@
       "level": 12,
       "mode": "cleared",
       "title": "宝石熔炼炉",
-      "desc": "可分配科学家研究宝石熔炼炉。"
+      "desc": "可分配AI研究宝石熔炼炉。"
     },
     "feature/jewels": {
       "name": "feature/jewels",
@@ -4465,6 +4537,15 @@
       "mode": "cleared",
       "title": "船员06",
       "desc": "已解锁船员06，可在船员页分配到游戏系统。"
+    },
+    "planet/first": {
+      "name": "planet/first",
+      "type": "planet",
+      "target": "first",
+      "level": 30,
+      "mode": "cleared",
+      "title": "星球探索",
+      "desc": "首颗星球已解锁，可派遣空闲船员探索。"
     }
   },
   "crew": {
@@ -4480,7 +4561,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/navigator",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     },
     "engineer": {
       "id": "engineer",
@@ -4494,7 +4577,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/engineer",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     },
     "researcher": {
       "id": "researcher",
@@ -4508,7 +4593,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/researcher",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     },
     "crew_04": {
       "id": "crew_04",
@@ -4522,7 +4609,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/crew_04",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     },
     "crew_05": {
       "id": "crew_05",
@@ -4536,7 +4625,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/crew_05",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     },
     "crew_06": {
       "id": "crew_06",
@@ -4550,7 +4641,9 @@
       "defaultAssignment": "",
       "unlockId": "crew/crew_06",
       "equipmentSlotCount": 2,
-      "defaultTargetId": ""
+      "defaultTargetId": "",
+      "baseExp": 100,
+      "expGrowth": 0.2
     }
   },
   "crew_level": {
@@ -4570,7 +4663,7 @@
       "3": {
         "group": "normal",
         "level": 3,
-        "needExp": 200,
+        "needExp": 120,
         "powerMultiplier": 1.2
       }
     }
@@ -4591,33 +4684,33 @@
       "targetCategory": "",
       "upgradeModes": "1,10,max"
     },
-    "hightech_efficiency": {
-      "id": "hightech_efficiency",
+    "hightech_scientists": {
+      "id": "hightech_scientists",
       "targetType": "hightech",
-      "effectType": "EFFICIENCY",
-      "baseValue": 0.1,
-      "levelScale": 1,
-      "powerScale": 1,
-      "interval": 0,
-      "maxCrew": 3,
-      "description": "提升该科技的研究点产出速率。",
+      "effectType": "AUTO_SCIENTIST",
+      "baseValue": 1,
+      "levelScale": 0,
+      "powerScale": 0,
+      "interval": 1,
+      "maxCrew": 1,
+      "description": "每1秒按选定数量购买AI；成功后平均分配。",
       "titleTextId": "crew.job.hightech",
-      "descTextId": "crew.effect.efficiency",
-      "targetCategory": "",
-      "upgradeModes": ""
+      "descTextId": "crew.effect.scientist_auto",
+      "targetCategory": "system",
+      "upgradeModes": "1,10,max"
     },
-    "smelting_speed": {
-      "id": "smelting_speed",
-      "targetType": "smelting",
-      "effectType": "SPEED",
-      "baseValue": 0.1,
-      "levelScale": 1,
-      "powerScale": 1,
-      "interval": 0,
-      "maxCrew": 3,
-      "description": "提升宝石熔炼炉的生产速度。",
-      "titleTextId": "crew.job.smelting",
-      "descTextId": "crew.effect.speed",
+    "jewel_auto": {
+      "id": "jewel_auto",
+      "targetType": "jewel",
+      "effectType": "AUTO_COMBINE",
+      "baseValue": 1,
+      "levelScale": 0,
+      "powerScale": 0,
+      "interval": 1,
+      "maxCrew": 1,
+      "description": "自动合成背包宝石，并用同类型更高级宝石替换已镶嵌宝石。",
+      "titleTextId": "crew.job.jewel",
+      "descTextId": "crew.effect.jewel_auto",
       "targetCategory": "",
       "upgradeModes": ""
     },
@@ -4629,12 +4722,23 @@
       "levelScale": 1,
       "powerScale": 1,
       "interval": 0,
-      "maxCrew": 3,
+      "maxCrew": 1,
       "description": "提升炼铁炉每次产出。",
       "titleTextId": "crew.job.production",
       "descTextId": "crew.effect.output",
       "targetCategory": "",
       "upgradeModes": ""
+    }
+  },
+  "planet": {
+    "first": {
+      "id": "first",
+      "name": "始源星",
+      "unlockId": "planet/first",
+      "baseTime": 100,
+      "baseExp": 100,
+      "effectType": "equipment",
+      "effectValue": 0.1
     }
   }
 }

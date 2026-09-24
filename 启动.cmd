@@ -16,6 +16,7 @@ if not exist "%GAME_ENGINE%" (
 )
 if not exist "%GAME_ROOT%\.godot\global_script_class_cache.cfg" goto import_resources
 if not exist "%GAME_ROOT%\.godot\imported" goto import_resources
+for /r "%GAME_ROOT%\assets" %%F in (*.svg *.png *.jpg *.jpeg *.webp *.wav *.ogg *.ttf *.otf) do if not exist "%%~fF.import" goto import_resources
 goto launch_game
 
 :import_resources

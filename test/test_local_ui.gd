@@ -81,10 +81,11 @@ func run() -> void:
 	await process_frame
 	check(draws.background==0 and draws.stars==0 and draws.resources>0,"Resource spending redraws resources without static background or stars")
 	var preserved_cards: Dictionary=scene.equipment_panel.cards.duplicate()
+	var crew_tab_title: String=scene.equipment_tabs.get_tab_title(0)
 	scene.writes.clear()
 	scene.property_checks.clear()
 	scene.game.upgrade_equipment_batch("10")
-	check(preserved_cards.values().all(func(card):return not scene.property_checks.has(card.fields.crew)),"Equipment upgrade does not recalculate unchanged crew badges")
+	check(scene.equipment_tabs.get_tab_title(0)==crew_tab_title and preserved_cards.values().all(func(card):return not card.fields.has("crew")),"Equipment upgrade keeps tab marker and module cards have no crew marker")
 	check(scene.equipment_panel.cards==preserved_cards and scene.builds==builds,"Batch upgrade preserves all equipment controls")
 	check(not scene.writes.has(charge_title) and scene.hightech_buttons[tech].get_parent()==tech_panel,"Batch upgrade preserves unrelated UI")
 	for id in scene.equipment_panel.items:

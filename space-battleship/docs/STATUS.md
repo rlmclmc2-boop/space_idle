@@ -2,20 +2,42 @@
 
 ## CURRENT
 
+### 星球探索
+
+- DONE：第7页签改为左侧星球列表、中央大沙盘、右侧星球与探索信息、底部设施栏。新增透明星球贴图、缓慢表面/云带运动、大气辉光、三层前后轨道、低频运输与碎片、探索扫描及完成脉冲。六类设施视觉可从可选数据挂载，底部对应卡片联动轨道高亮；当前正式数据没有已拥有设施，底栏明确显示空状态，六类模型仍是程序绘制占位。
+- CHANGED：`planet_panel.gd` 只重排现有页签内控件并增加列表/设施视觉卡片，`planet_visual.gd` 单独绘制动态沙盘，`main.gd` 仅转交已有完成事件的实际经验。新增 `assets/ui/planet-globe.png` 和UI文案绑定；探索/经验/装备公式、解锁、正式数值配置和玩家存档不变。可选视觉字段为星球行的 `visual`（颜色、贴图）及 `visualFacilities`（数组或 Excel JSON 文本），正式表未新增字段。隐藏页停止动画，可见时最多约24Hz重绘。
+- VERIFY：隔离星球业务30项、星球页签32项、局部UI79项、文案Python 6项通过；已查看原生1440×810待命与六类设施夹具画面。设施夹具只在隔离测试注入，不写正式配置或存档。
+- EVIDENCE：`../../test/work/test_planet_ui-779j0m5g/space-battleship/.runtime/planet-tab.png`、`planet-six-facilities.png`；文案 `../../test/work/test_ui_text-aklc5081`。
+- NEXT：真实设施拥有数据和设施玩法尚不存在；未来接入时传 `id/type/owned/orbit/phase/level/status` 至视觉字段。不同星球可配 `visual.texture/surfaceColor/atmosphereColor`。当前设施仍需独立模型贴图。
+- DONE：通关30关开放独立星球页签；空闲船员可开始/召回探索。首颗星球基础时间100秒、基础经验100；完成后探索度加1，时间按基础时间平方除以基础时间加探索度，最低1秒。经验取星球基础经验乘最高关系数，30关1、之后每关乘1.2并保留两位小数；船员升级经验从100起每级增20%。装备最终数值统一乘 `(1+0.1)^(探索度^0.5)`，指数在config配置。
+- CHANGED：新增planet分表、投影、存档、探索结算与独立页签；扩展level、crew、config及unlock分表，武器/防御装备共用最终数值入口；新增UI文案绑定。探索中的船员行和详情显示星球、倒计时与完成经验，详情可跳至星球页或召回，暂时隐藏岗位分配控件。暂停不推进，离线不补探索。
+- VERIFY：配置增量导入通过；隔离星球业务30项、星球页签18项、船员58项、船员UI46项、统一解锁246项、持续光束83项、宝石111项、局部UI79项、文案6项、船员导入4项、解锁导入5项通过。船员页探索倒计时仅写该船员行与选中详情，静止采样零写入，召回后恢复待命；已查看原生1440×810两页画面，按钮完整可见。六类装备数值入口均覆盖；四类武器继续复用原宝石/暴击/BUFF/命中结算，未增加特殊攻击分支。旧 `test_config_workbooks.py` 的10项旧总表夹具缺unlock表，仍报相同的既有验证错误；本轮真实分表增量导入和对应专项通过。正式玩家存档未操作。
+- EVIDENCE：`../../test/work/crew-exploration-ui.log`、`crew-exploration-test_crew_ui.gd.log`、`crew-exploration-test_local_ui.gd.log`、`crew-exploration-test_planet.gd.log`、`crew-exploration-text.log`；[船员页实图](../../test/work/test_planet_ui-l3gtgcs3/space-battleship/.runtime/crew-exploring.png)。原验证日志：`../../test/work/planet-save-final.log`、`planet-ui-interaction.log`、`planet-crew-run.log`、`planet-crew-ui-window.log`、`planet-unlock-final.log`、`planet-long-laser-window.log`、`planet-jewels.log`、`planet-local-ui.log`、`planet-text-run.log`、`planet-import-test-utf8.log`、`planet-unlock-import-final.log`；[星球页实图](../../test/work/test_planet_ui-fegwvqil/space-battleship/.runtime/planet-tab.png)。
+- NEXT：重启开发版查看；未导出EXE。
+
+### 自动飞行铀表现
+
+- DONE：自动飞行铀改为分面晶体、柔光环、脉动亮核、尾迹与常显资源名；按用户反馈，将晶体和光圈线性尺寸再缩至上一版的1/4，资源名保持可读。鼠标靠近仍显示数量。
+- CHANGED：仅main的战场资源绘制分支；生成、移动、拾取、产量、存档与其他资源外观不变。连续动画仍由既有battle_layer绘制，隐藏与暂停沿用原调度。
+- VERIFY：隔离资源生成/拾取6项、资源显示9项、局部UI79项通过；缩小后资源显示9项再次通过，已查看原生1440×810战场截图。diff检查通过。
+- EVIDENCE：../../test/work/uranium-mechanics-test.log、uranium-visual-quarter.log、uranium-local-ui.log；[实图](../../test/work/test_resource_display-3db0ppgf/space-battleship/uranium-flight.png)。
+- NEXT：重启开发版查看；未导出正式EXE，正式玩家存档未操作。
+
 ### 启动资源导入
 
-- DONE：日常启动跳过资源导入，资源更新使用现有QA「大重启」。首次启动或缺少脚本类缓存/导入目录时仍自动导入，避免无法进入QA。
-- CHANGED：仅修改工作区启动.cmd的导入条件及README操作说明；QA保存、导入与新进程启动链路不变，未操作正式玩家存档。
-- VERIFY：隔离test_full_restart.py通过，覆盖忙碌保护、新进程执行更新代码、进度/当前节点/QA设置保留；启动脚本分支与diff检查通过。证据：../../test/work/test_full_restart-kt4_jt3k/test.log。
-- NEXT：双击启动.cmd直接进入游戏；新增或替换资源后，在QA点击「大重启」。缓存存在但损坏、或代码无法启动时，需通过Godot编辑器重新导入修复。
+- DONE：修复新增资源后从启动.cmd进入游戏时，资源尚未导入而使界面构建中断的问题。日常无新增资源仍跳过导入。
+- CHANGED：启动脚本在已有全局类/导入缓存之外，检查assets中的图片、声音、字体是否存在对应`.import`描述；发现缺失即运行既有Godot导入流程。替换已有资源仍使用QA「大重启」更新。游戏逻辑、正式玩家存档未改。
+- VERIFY：用户录屏显示点击宝石后页签选中但仍停留底部空页；同一启动进程日志首先报`crew_locked.svg`无资源加载器，随后`crew_panel.gd`编译失败，导致`build_equipment_tabs`在连接宝石页回调前中断。当前项目46个资源中仅该新增SVG缺少`.import`。隔离测试导入后宝石页UI65项、顶部页签50项通过；启动条件及diff已检查。用户现场重启待验证。
+- EVIDENCE：现场日志 `.userdata/roaming/Godot/app_userdata/太空战舰 · 深空远征/logs/godot2026-09-23T17.27.04.log`；用户录屏 `C:/Users/Administrator/Videos/Captures/太空战舰 · 深空远征 (DEBUG) 2026-09-23 17-27-20.mp4`；隔离测试 `../../test/work/jewel-reopen-ui-final.log`、`../../test/work/jewel-reopen-tabs.log`。
+- NEXT：关闭当前游戏窗口，再运行工作区启动.cmd。启动会自动导入缺失的新资源；若导入失败检查`.runtime/startup-import.log`。
 
 ### 船员系统
 
-- DONE：六名无固定职务船员，依次通关10、20、25、30、35、40关解锁。第一名解锁前隐藏整个船员页签；开放后正常显示已解锁成员，未解锁部分仅一张通用剪影及下一门槛，不显示姓名/等级/效果/提示详情，全部解锁后收起剪影。
-- CHANGED：crew.xlsx保留前三个crewId并新增crew_04～crew_06，unlock.xlsx新增6条type=crew、mode=cleared；crew.unlockId引用门槛，沿现有导入/通关通知/存档。main按至少一名crew.unlocked显示页签，crew_panel复用匿名预告与已有行，crew.badge不泄露锁定旧档成员。新增剪影SVG及crew.unlock_at文案。其他Excel记录、原样式/冻结位置及其他JSON段未改；导出库的非目标格式变化通过仅移植授权单元格到原包消除，未用旧总表覆盖。
-- VERIFY：464项通过：解锁专项52、船员56、全装备49、船员UI30、通用解锁245、页签17、船员导入4、解锁导入5、文案6。覆盖到达/通关边界、逐次通知、首人前页签隐藏、只显示下一剪影、全部解锁、禁止锁定分配、旧档等级经验保留、新成员初始化与存档往返、真实UI交互/隐藏恢复/静止零写入。首轮发现详情刷新重复切换选项显隐，修复后原零写入断言通过；旧解锁总数断言按新增6条更新为25。仅引擎既有证书诊断。
-- EVIDENCE：../../test/work/crew-unlock-final.log、crew-unlock-core.log、crew-unlock-equipment.log、crew-unlock-crew-ui-final.log、crew-unlock-gates-final.log、crew-unlock-tabs.log、crew-unlock-import.log、crew-unlock-gates-import.log、crew-unlock-text.log。已查看无页签/第一名与下一剪影画面，最新截图在 ../../test/work/test_crew_unlock-c8gz1tp4/space-battleship/.runtime/；Excel对照与预览在 ../../test/work/crew-unlock/。
-- NEXT：重启开发版生效，正式玩家存档未操作，未导出EXE。原经验仅API、装备仅预留、每1游戏秒全装备1/10/MAX规则不变；既有批次存档/UI/费用优化及其测量见 [CREW](CREW.md)，本轮未重新测性能。
+- DONE：六名船员按通关10、20、25、30、35、40关解锁；首人前隐藏页签，之后只预告下一名匿名剪影。装备岗位每秒按1/10/MAX尝试升级全部启用模块；高科技岗位每秒按×1/×10/MAX购买AI，成功后平均分配；宝石岗位每秒自动合成背包宝石，并为已镶嵌宝石换入同类型更高级宝石或按原配方原位升级。研究效率与宝石熔炼速度岗位不再配置。已分配标记只在相应系统页签显示单个👤，无人数和模块内标记。
+- CHANGED：四个岗位maxCrew均为1；宝石岗位注册 jewel+AUTO_COMBINE，旧smelting_speed存档分配迁移到 jewel_auto+jewels，等级/经验保留。无合成材料时仅线性扫描背包，不进入完整合成/保存/UI事件；有材料时复用原规则。一键合成连锁每轮批量结算，避免每个配方重扫整包；多孔位替换合并一次保存/事件，并只刷新变化装备卡片。BalanceGame 覆写同步可选通知参数。Excel interval/baseValue 控制检查周期，文案从 ui_text 获取。其他船员动态数据、解锁与装备用途不变。
+- VERIFY：本轮宝石船员20、船员58、船员UI46、宝石一键合成49、宝石规则111、宝石中心23、宝石UI68、局部UI79、船员导入4、文案6、Balance Metrics 78、换装51、长激光83项，共676项通过。200格满背包固定点每30次：原完整检查约56～58ms，船员轻检约32～33ms，均无保存/通知；97次连锁合成原测15.35ms，分组批量结算后重复测约4.76～7.84ms；十模块换宝石约2.14ms且只保存/通知一次（同步耗时，非整帧FPS）。已查看宝石页签真实截图。宝石等级仍走统一 jewel_effects/战斗结算，不增加独立攻击路径；十类宝石效果、四类武器、长激光、换装与防御宝石回归通过。攻击类型×效果适用矩阵见 CREW。
+- EVIDENCE：../../test/work/test_crew_jewels-qp29j4xn/test.log、test_crew_ui-7wondlm2/test.log、test_jewel_combine_all-s44vnu1n/test.log、test_jewels-ze0c6b0b/test.log、test_jewel_center-0zhrizng/test.log、test_jewel_center_ui-pdg5ya44/test.log、test_local_ui-hc5_u2dp/test.log、test_crew_import-rv4h37in/test.log、test_ui_text-zkxiav44/test.log、test_balance_metrics-iz8wopic/test.log、test_module_refit-3cspu5sq/test.log、test_long_laser-qe1wzvl1/test.log；[宝石页签](../../test/work/test_crew_ui-7wondlm2/space-battleship/.runtime/crew-jewel-tab-badge.png)。
+- NEXT：重启开发版生效，正式玩家存档未操作，未导出EXE。经验现由星球探索发放，船员装备仍仅预留。旧test_scientists.gd仍引用旧科研UI控件，需单独迁移。
 
 ### 充能换轮衔接
 
@@ -35,10 +57,10 @@
 
 ### 宝石中心
 
-- DONE：按最新要求取消独立「合成/分解」模式，宝石页只保留镶嵌主界面，顶部「一键合成」直接处理背包。保留已有宝石美术及其他任务修改。
-- CHANGED：删除模式切换、单颗合成和分解控件/弹窗及其界面回调；一键合成继续调用原combine_all_jewels，不受搜索/仅可镶嵌筛选限制。结果在右栏原地显示，选择模块/孔位/宝石恢复镶嵌详情。合成结果期间隐藏镶嵌操作，避免结果展示和操作目标混淆。合成成本、已装宝石升级、底层分解接口及正式数值/存档未改。
-- VERIFY：中心UI64、一键合成49、局部UI79，共192项通过。覆盖真实按钮无需选材料、跨筛选合成、连锁结果、保护/满级/已装宝石保留、重复无材料不扣除、满包替换、焦点/滚动、隐藏恢复、控件复用及零无关写入/重绘。已查看主界面与合成结果实际截图；仅引擎既有证书诊断。
-- EVIDENCE：[单页界面](../../test/work/test_jewel_ui-dg8vvhbw/space-battleship/.runtime/jewel-direct-tab.png)、[原地合成结果](../../test/work/test_jewel_ui-dg8vvhbw/space-battleship/.runtime/jewel-center-combine.png)、[UI日志](../../test/work/jewel-simple-test_jewel_ui.gd.log)、[批量合成](../../test/work/jewel-simple-test_jewel_combine_all.gd.log)、[局部刷新](../../test/work/jewel-simple-test_local_ui.gd.log)。既有U-025不在本轮修改范围。
+- DONE：按高科技页参考图收窄宝石工坊纵向范围，页面从y127到y775（1340×648），顶部标题/资源/「返回战场」整排保持原位。宝石页签导航移至y96，底部不压住音效按钮。
+- CHANGED：jewel_panel直接子控件按原740px纵向基准缩放布局，静态workshop-frame允许适配新尺寸；模块/孔位按钮缩短，文本和宝石图不整体缩小。main仅调整宝石页导航区域、背景遮挡和通用返回按钮位置。滚动列表保留，宝石业务、数值、存档不变；此前资源导入修复见上方。
+- VERIFY：宝石UI68、顶部页签50项通过；覆盖真实打开/返回、边界、画框与底栏、孔位/背包/详情、合成结果、隐藏恢复及无关控件不重建/不额外写入。已查看1440×810主画面和10颗宝石的滚动截图，顶部原布局与音效按钮均清楚可见。
+- EVIDENCE：[缩小后的宝石页](../../test/work/test_jewel_ui-x5f1xcl5/space-battleship/.runtime/jewel-direct-tab.png)、[完整背包](../../test/work/test_jewel_ui-x5f1xcl5/space-battleship/.runtime/jewel-premium-collection.png)、[宝石UI](../../test/work/jewel-compact-delivery-ui.log)、[页签回归](../../test/work/jewel-compact-delivery-tabs.log)。
 - NEXT：重启开发版查看；未重新打包正式EXE。
 
 ### AI 施工连续移动
