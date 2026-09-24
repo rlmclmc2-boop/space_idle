@@ -25,7 +25,8 @@ func _initialize() -> void:
 		for i in range(4):
 			var enemy := base.duplicate(true)
 			enemy.uid = i + 100
-			enemy.x = 800.0 + i * 50
+			enemy.x = 100.0 + i * 75
+			enemy.y = 220.0
 			enemy.hp = 1000000.0
 			enemy.equipment = []
 			enemy.armourType = damage_type if i < 2 else 3 - damage_type
@@ -55,7 +56,7 @@ func _initialize() -> void:
 			g.enemies.resize(1)
 			g.cooldowns.weapons_0 = 0
 			g.tick(0.001)
-			check(g.projectiles.size()==3 and g.projectiles.all(func(shot):return shot.target.uid==100) and g.projectiles[0].y < g.projectiles[1].y and g.projectiles[1].y < g.projectiles[2].y,"Missile salvo remains visible with one target")
+			check(g.projectiles.size()==3 and g.projectiles.all(func(shot):return shot.target.uid==100) and g.missile_visual_spread(0,3)<g.missile_visual_spread(1,3) and g.missile_visual_spread(1,3)<g.missile_visual_spread(2,3),"Missile salvo retains distinct visual lanes with one target")
 		for enemy in g.enemies:
 			enemy.hp = 0
 		check(g.targets(damage_type).is_empty(),key+" dead enemies excluded")

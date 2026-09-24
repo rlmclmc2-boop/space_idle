@@ -66,7 +66,7 @@ func setup(owner_node: Node) -> void:
 	observed_serial=game.jewel_serial
 	create_palettes()
 	position=Vector2(50,127)
-	size=Vector2(1340,648)
+	size=Vector2(1340,1180)
 	add_theme_stylebox_override("panel",StyleBoxEmpty.new())
 	workshop_art=TextureRect.new()
 	workshop_art.texture=preload("res://assets/jewels/premium/workshop-frame.svg")
@@ -75,6 +75,13 @@ func setup(owner_node: Node) -> void:
 	workshop_art.size=size
 	workshop_art.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	add_child(workshop_art)
+	for region in [Rect2(18,102,224,1008),Rect2(254,102,612,1008),Rect2(890,102,426,1008)]:
+		var frame:=Panel.new()
+		frame.position=region.position
+		frame.size=region.size
+		frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		frame.add_theme_stylebox_override("panel",surface(Color("0b1a29cc"),Color("315166")))
+		add_child(frame)
 	add_theme_font_override("font",host.font)
 	label(UIText.t("gem.center.title"),Rect2(28,21,280,32),26)
 	var subtitle:=label(UIText.t("gem.visual.subtitle"),Rect2(28,55,370,22),12)
@@ -84,7 +91,7 @@ func setup(owner_node: Node) -> void:
 	module_heading=label(UIText.t("gem.center.modules"),Rect2(36,116,190,26),17)
 	module_scroll=ScrollContainer.new()
 	module_scroll.position=Vector2(30,152)
-	module_scroll.size=Vector2(202,487)
+	module_scroll.size=Vector2(202,946)
 	module_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(module_scroll)
 	module_list=VBoxContainer.new()
@@ -120,7 +127,7 @@ func setup(owner_node: Node) -> void:
 	summary=label("",Rect2(268,284,580,25),14)
 	inventory_scroll=ScrollContainer.new()
 	inventory_scroll.position=Vector2(266,320)
-	inventory_scroll.size=Vector2(588,323)
+	inventory_scroll.size=Vector2(588,778)
 	inventory_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(inventory_scroll)
 	inventory_list=GridContainer.new()
@@ -147,7 +154,7 @@ func setup(owner_node: Node) -> void:
 	hero_caption.add_theme_color_override("font_color",Color("8ca8be"))
 	detail_scroll=ScrollContainer.new()
 	detail_scroll.position=Vector2(908,309)
-	detail_scroll.size=Vector2(394,224)
+	detail_scroll.size=Vector2(394,635)
 	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(detail_scroll)
 	var content:=VBoxContainer.new()
@@ -163,14 +170,14 @@ func setup(owner_node: Node) -> void:
 		control.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING
 		control.custom_minimum_size.x=370
 	preview.add_theme_color_override("font_color",Color("95ddc7"))
-	action_reason=label("",Rect2(908,535,394,27),13)
-	socket_action=add_button(UIText.t("gem.setup.text_13"),Rect2(908,570,190,40),func():operate_socket(target_socket))
-	remove_action=add_button(UIText.t("gem.refresh_detail.text_27"),Rect2(1108,570,194,40),remove_selected)
-	upgrade_action=add_button(UIText.t("gem.center.upgrade_installed"),Rect2(908,618,394,34),upgrade_installed)
-	fragments=label("",Rect2(36,679,826,48),13)
+	action_reason=label("",Rect2(908,951,394,27),13)
+	socket_action=add_button(UIText.t("gem.setup.text_13"),Rect2(908,986,190,40),func():operate_socket(target_socket))
+	remove_action=add_button(UIText.t("gem.refresh_detail.text_27"),Rect2(1108,986,194,40),remove_selected)
+	upgrade_action=add_button(UIText.t("gem.center.upgrade_installed"),Rect2(908,1034,394,34),upgrade_installed)
+	fragments=label("",Rect2(36,1119,826,48),13)
 	fragments.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	fragments.add_theme_font_size_override("font_size",12)
-	feedback=label(UIText.t("gem.center.welcome"),Rect2(900,679,406,48),13)
+	feedback=label(UIText.t("gem.center.welcome"),Rect2(900,1119,406,48),13)
 	feedback.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	feedback.add_theme_font_size_override("font_size",12)
 	feedback.add_theme_color_override("font_color",host.CYAN)
@@ -178,13 +185,6 @@ func setup(owner_node: Node) -> void:
 	metrics_timer.wait_time=1.0
 	metrics_timer.timeout.connect(refresh_metrics)
 	add_child(metrics_timer)
-	# Match the shorter workshop frame while keeping text and jewel images at readable sizes.
-	var vertical_scale:=size.y/740.0
-	for child in get_children():
-		if child is Control and child!=workshop_art:
-			var control:=child as Control
-			control.position=Vector2(control.position.x,control.position.y*vertical_scale)
-			control.size=Vector2(control.size.x,control.size.y*vertical_scale)
 	skin_controls()
 	create_effect_pool()
 	visibility_changed.connect(on_visibility_changed)
@@ -237,7 +237,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 func close() -> void:
 	if host.equipment_tabs.current_tab==4:
-		host.return_to_battle()
+		host.return_to_first_system()
 	else:
 		hide()
 

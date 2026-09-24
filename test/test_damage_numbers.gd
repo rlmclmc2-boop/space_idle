@@ -23,7 +23,7 @@ func run() -> void:
 		e.max_hp = 1e9
 		e.equipment = []
 	var enemy: Dictionary = scene.game.enemies[0]
-	var hit := {"player":false,"uid":999,"type":1,"x":800,"y":360,"amount":12345.0}
+	var hit := {"player":false,"uid":999,"type":1,"x":286,"y":360,"amount":12345.0}
 	check(scene.damage_mode==0,"default simplified")
 	scene.on_event("hit",hit)
 	scene.fx_time += 0.19
@@ -90,7 +90,7 @@ func run() -> void:
 	var reward: Dictionary = scene.floats.back()
 	var reward_pos: Vector2 = reward.pos
 	scene._process(0.1)
-	check(reward.pos==reward_pos and reward.pos.y>=550,"rewards stay in independent fixed region")
+	check(reward.pos==reward_pos and reward.pos.y>=500,"rewards stay in independent fixed region")
 	var menu: PopupMenu = scene.guard_settings.get_popup()
 	menu.id_pressed.emit(10)
 	check(scene.damage_mode==0 and menu.is_item_checked(menu.get_item_index(10)),"settings select simplified locally")

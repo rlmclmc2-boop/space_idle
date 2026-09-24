@@ -26,8 +26,8 @@ func run() -> void:
 	boss.boss = true
 	boss.size = 3
 	boss.hp = 1
-	boss.x = 1130.0
-	boss.y = 410.0
+	boss.x = 286.0
+	boss.y = 160.0
 	boss.equipment = []
 	g.profile.unlocked = []
 	g.player.shield = 0
@@ -61,7 +61,8 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://boss-after.png")
-	g.acknowledge_unlocks()
+	while not g.pending_unlocks.is_empty():
+		g.acknowledge_unlocks()
 	g.tick(float(g.db.defaults.loopDelay)+0.1)
 	check(g.stage == 2 and g.state == BattleGame.State.TRAVEL,"Next stage starts normally")
 	g.spawn_group()

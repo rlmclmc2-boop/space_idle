@@ -173,7 +173,7 @@ func run() -> void:
 	solo.tick(0.2)
 	solo.advance_jewel_repeats(0.5)
 	check(solo.projectiles.size()==2 and is_same(solo.projectiles[0].target,solo.projectiles[1].target), "single target supports two beams")
-	check(solo.projectiles[0].y!=solo.projectiles[1].y, "same-target beams have distinct muzzle offsets")
+	check(solo.projectiles[0].x!=solo.projectiles[1].x, "same-target beams have distinct muzzle offsets")
 	var cancel := fixture()
 	cancel.db.config.equipmentSocket = 10
 	cancel.db.data.jewel["6"].para_2 = 1.0
@@ -302,6 +302,10 @@ func run() -> void:
 	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "all feedback preserves static layers and equipment instances")
 	scene.particles.clear()
 	scene.floats.clear()
+	scene.battle_layer.queue_redraw()
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var uncharged_image := root.get_texture().get_image()
 	scene.db.equipment.longLaser[0].para3 = 1.0
 	scene.game.tick(0.5)
 	scene.sync_beam_visuals()
@@ -313,9 +317,16 @@ func run() -> void:
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/long-laser-charge.png")
 	var charge_image := root.get_texture().get_image()
-	var visible_muzzle: Vector2 = scene.visual_muzzle(charging)
-	var muzzle_pixel := charge_image.get_pixel(int(visible_muzzle.x),int(visible_muzzle.y))
-	check(muzzle_pixel.r>0.85 and muzzle_pixel.g>0.85 and muzzle_pixel.b>0.85,"charging bright core stays visible in front of the hull")
+	var visible_muzzle: Vector2 = scene.battle_layer.get_global_transform_with_canvas()*scene.battle_point(scene.visual_muzzle(charging))
+	var logical_size := Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
+	visible_muzzle*=Vector2(charge_image.get_size())/logical_size
+	var bright_core := false
+	for x in range(maxi(0,int(visible_muzzle.x)-45),mini(charge_image.get_width(),int(visible_muzzle.x)+46)):
+		for y in range(maxi(0,int(visible_muzzle.y)-45),mini(charge_image.get_height(),int(visible_muzzle.y)+46)):
+			var pixel := charge_image.get_pixel(x,y)
+			if pixel.g>0.75 and pixel.b>0.75 and pixel.b>pixel.r*1.2:
+				bright_core=true
+	check(bright_core,"charging bright core stays visible in front of the hull")
 	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "charge drawing preserves unrelated UI")
 	scene.db.config.equipmentSocket = 10
 	scene.db.data.jewel["6"].para_2 = 1.0

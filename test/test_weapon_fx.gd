@@ -96,7 +96,7 @@ func run() -> void:
 	scene.game.tick_projectiles(0.15)
 	first_pos = scene.missile_visual_position(first.shot,first.spread,first.origin)
 	last_pos = scene.missile_visual_position(last.shot,last.spread,last.origin)
-	check(last_pos.y-first_pos.y>20,"visual lanes unfold only after leaving muzzle")
+	check(last_pos.x-first_pos.x>20,"visual lanes unfold only after leaving muzzle")
 	var real_y: float = first.shot.y
 	scene.advance_projectile_visuals(0.1)
 	check(first.shot.y==real_y,"lane animation never moves real missile")
@@ -118,7 +118,7 @@ func run() -> void:
 		for i in count:
 			scene.game.jewel_fire(0,scene.game.enemies[0],scene.db.equip("missile",1),Vector2(900,900),1.0,scene.game.missile_visual_spread(i,count))
 		check(scene.game.projectiles.size()==count and scene.game.projectiles.all(func(p):return Vector2(p.x,p.y)==logical_muzzle+Vector2(17,0)),"shared emitter overrides caller offsets for volley count="+str(count))
-		check(scene.game.projectiles.all(func(p):return p.direction==Vector2.RIGHT),"initial direction follows fixed forward mount count="+str(count))
+		check(scene.game.projectiles.all(func(p):return p.direction==Vector2.UP),"initial direction follows fixed forward mount count="+str(count))
 	scene.floats.clear()
 	scene.fx_time = 10.0
 	var hit := {"player":false,"uid":999,"type":1,"x":800,"y":360,"amount":10}

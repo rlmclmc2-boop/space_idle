@@ -21,10 +21,10 @@ func run() -> void:
 	scene.refresh_structure()
 	var top: Dictionary = scene.game.enemies[0]
 	var bottom: Dictionary = scene.game.enemies[1]
-	top.x = 520.0
+	top.x = 80.0
 	top.y = 225.0
-	bottom.x = 520.0
-	bottom.y = 555.0
+	bottom.x = 500.0
+	bottom.y = 225.0
 	for enemy in scene.game.enemies:
 		enemy.hp = 100000
 		enemy.equipment = []
@@ -33,7 +33,7 @@ func run() -> void:
 	var cooldowns: Dictionary = scene.game.cooldowns.duplicate(true)
 	var rng_state: int = scene.game.rng.state
 	scene.advance_turrets(0.01)
-	check(scene.turret_angle(0)<0 and scene.turret_angle(4)>0,"mounts independently turn toward upper and lower targets")
+	check(scene.turret_angle(0)<0 and scene.turret_angle(4)>0,"mounts independently turn toward left and right targets")
 	check(absf(scene.turret_angle(0))<=deg_to_rad(2.4)+0.00001,"turn speed bounded without snapping")
 	for i in 20:scene.advance_turrets(0.05)
 	check(scene.game.enemies==enemies and scene.game.cooldowns==cooldowns and scene.game.rng.state==rng_state,"rotation leaves combat data and RNG untouched")
@@ -47,7 +47,7 @@ func run() -> void:
 	for n in 3:scene.game.jewel_fire(1,top,scene.db.equip("missile",1),scene.game.player_weapon_offset(1),1.0,scene.game.missile_visual_spread(n,3))
 	check(scene.projectile_visuals.all(func(v):return v.origin.is_equal_approx(muzzle)),"all volley shots share rotated muzzle")
 	check(scene.projectile_visuals.all(func(v):return is_equal_approx(v.angle,scene.turret_angle(1))),"missiles initially face rotated barrel")
-	check(scene.game.projectiles.all(func(p):return p.direction==Vector2.RIGHT),"logical missile direction unchanged")
+	check(scene.game.projectiles.all(func(p):return p.direction==Vector2.UP),"logical missile direction points toward enemy line")
 	var logical: Array = scene.game.projectiles.duplicate(true)
 	scene.advance_projectile_visuals(0.03)
 	check(scene.game.projectiles==logical,"visible launch and tail cannot alter actual trajectory")

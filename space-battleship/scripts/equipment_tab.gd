@@ -26,19 +26,14 @@ var last_sort_mode := -1
 var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
 var selected_next_stat := 0.0
-var equipment_view_mode := "compact"
-var details_open := false
-var expand_button: Button
-var battlefield_shade: ColorRect
-var transition: Tween
+var details_open := true
 var filters: Control
 var toolbar: Control
 var sort_picker: OptionButton
 var detail_scroll: ScrollContainer
+var detail_frame: Panel
 var detail_body: Control
 var detail_actions: GridContainer
-var scroll_positions := {"compact":Vector2.ZERO,"expanded":Vector2(-1,-1)}
-var restoring_scroll := false
 
 func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
@@ -53,7 +48,7 @@ func select_box(parent: Control, rect: Rect2, keys: Array, callback: Callable) -
 	box.size = rect.size
 	box.fit_to_longest_item = false
 	box.add_theme_font_override("font",host.font)
-	box.add_theme_font_size_override("font_size",11)
+	box.add_theme_font_size_override("font_size",14)
 	for key in keys:
 		box.add_item(UIText.t(str(key)))
 	box.item_selected.connect(func(index):
@@ -67,228 +62,109 @@ func setup(owner_ui: Node) -> void:
 	var overview := Control.new()
 	overview.name = "EquipmentOverviewPanel"
 	add_child(overview)
-	total = label(overview,"",Rect2(10,0,48,34),28,host.CYAN)
-	label(overview,UIText.t("equipment.total"),Rect2(61,0,133,18),11,host.MUTED)
-	counts = label(overview,"",Rect2(61,18,159,27),10,host.MUTED)
+	total = label(overview,"",Rect2(18,14,48,40),30,host.CYAN)
+	label(overview,UIText.t("equipment.total"),Rect2(70,17,130,26),15,host.INK)
+	counts = label(overview,"",Rect2(18,64,720,24),13,host.MUTED)
 	filters = Control.new()
 	filters.name = "EquipmentFilterPanel"
 	add_child(filters)
-	select_box(filters,Rect2(10,46,94,25),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
+	select_box(filters,Rect2(210,18,168,38),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
 	var subtype_keys: Array = []
 	for subtype in subtypes:
 		subtype_keys.append("equipment.type."+subtype)
-	select_box(filters,Rect2(110,46,105,25),subtype_keys,func(i):subtype_filter=i; apply_filters())
-	select_box(filters,Rect2(10,77,205,25),["equipment.any_state","equipment.state.equipped","equipment.state.upgradeable","equipment.state.unequipped","equipment.state.locked"],func(i):status_filter=i; apply_filters())
+	select_box(filters,Rect2(390,18,168,38),subtype_keys,func(i):subtype_filter=i; apply_filters())
+	select_box(filters,Rect2(570,18,206,38),["equipment.any_state","equipment.state.equipped","equipment.state.upgradeable","equipment.state.unequipped","equipment.state.locked"],func(i):status_filter=i; apply_filters())
 	toolbar = Control.new()
 	toolbar.name = "EquipmentToolbar"
 	add_child(toolbar)
-	label(toolbar,UIText.t("equipment.catalog"),Rect2(228,0,325,20),12,host.CYAN)
-	sort_picker = select_box(toolbar,Rect2(730,0,224,22),["equipment.sort.type","equipment.sort.level","equipment.sort.stat","equipment.sort.state"],func(i):sort_mode=i; apply_filters())
+	label(toolbar,UIText.t("equipment.catalog"),Rect2(18,94,300,24),14,host.CYAN)
+	sort_picker = select_box(toolbar,Rect2(790,18,220,38),["equipment.sort.type","equipment.sort.level","equipment.sort.stat","equipment.sort.state"],func(i):sort_mode=i; apply_filters())
 	grid_scroll = ScrollContainer.new()
 	grid_scroll.name = "EquipmentGrid"
-	grid_scroll.position = Vector2(228,24)
-	grid_scroll.size = Vector2(734,90)
+	grid_scroll.position = Vector2(14,130)
+	grid_scroll.size = Vector2(892,90)
 	grid_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(grid_scroll)
 	grid = GridContainer.new()
-	grid.columns = 3
-	grid.add_theme_constant_override("h_separation",5)
-	grid.add_theme_constant_override("v_separation",4)
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation",12)
+	grid.add_theme_constant_override("v_separation",12)
 	grid_scroll.add_child(grid)
-	empty = label(self,UIText.t("equipment.empty"),Rect2(240,47,690,30),14,host.MUTED)
+	empty = label(self,UIText.t("equipment.empty"),Rect2(32,150,840,32),16,host.MUTED)
 	build_detail()
-	build_view_controls()
+	resized.connect(layout_contents)
+	layout_contents()
 	refresh()
 
 func build_detail() -> void:
+	detail_frame = Panel.new()
+	detail_frame.name = "EquipmentInspectorFrame"
+	detail_frame.position = Vector2(920,118)
+	detail_frame.add_theme_stylebox_override("panel",host.style(Color("101e2c"),host.LINE))
+	add_child(detail_frame)
 	var scroll := ScrollContainer.new()
 	detail_scroll = scroll
 	scroll.name = "EquipmentDetailPanel"
-	scroll.position = Vector2(975,0)
-	scroll.size = Vector2(366,114)
+	scroll.position = Vector2(932,130)
+	scroll.size = Vector2(406,114)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 	var body := Control.new()
 	detail_body = body
-	body.custom_minimum_size = Vector2(348,315)
+	body.custom_minimum_size = Vector2(388,1030)
 	scroll.add_child(body)
 	detail.icon = TextureRect.new()
-	detail.icon.position = Vector2(0,1)
-	detail.icon.size = Vector2(48,42)
+	detail.icon.position = Vector2(18,12)
+	detail.icon.size = Vector2(80,80)
 	detail.icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	detail.icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	body.add_child(detail.icon)
-	detail.title = label(body,"",Rect2(55,0,190,22),14,host.CYAN)
-	detail.meta = label(body,"",Rect2(55,24,283,18),11,host.MUTED)
-	detail.slots = select_box(body,Rect2(0,46,344,25),[],func(i):change_equipment(str(slot_options[i])))
+	detail.title = label(body,"",Rect2(112,15,268,35),22,host.CYAN)
+	detail.meta = label(body,"",Rect2(112,52,270,50),14,host.MUTED)
+	detail.meta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail.primary = label(body,"",Rect2(18,125,366,32),18,host.INK)
+	detail.status = label(body,"",Rect2(18,164,366,30),14,host.CYAN)
+	detail.description = label(body,"",Rect2(18,211,365,115),14,host.INK)
+	detail.description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail.description.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	detail.slots = select_box(body,Rect2(18,756,365,38),[],func(i):change_equipment(str(slot_options[i])))
 	var actions := GridContainer.new()
 	detail_actions = actions
-	actions.columns = 6
-	actions.position = Vector2(0,77)
-	actions.add_theme_constant_override("h_separation",4)
-	actions.add_theme_constant_override("v_separation",4)
+	actions.columns = 3
+	actions.position = Vector2(18,810)
+	actions.add_theme_constant_override("h_separation",8)
+	actions.add_theme_constant_override("v_separation",8)
 	body.add_child(actions)
 	for action in ["upgrade","ten","max","equip","remove","gems"]:
 		var button := Button.new()
 		button.text = equipment_text("action."+action)
-		button.custom_minimum_size = Vector2(48,27)
+		button.custom_minimum_size = Vector2(115,42)
 		button.add_theme_font_override("font",host.font)
-		button.add_theme_font_size_override("font_size",11)
+		button.add_theme_font_size_override("font_size",13)
 		host.skin_equipment_button(button,action=="upgrade")
 		button.pressed.connect(func():act(action))
 		actions.add_child(button)
 		detail[action] = button
 	detail.more = Button.new()
-	detail.more.position = Vector2(250,0)
-	detail.more.size = Vector2(94,23)
+	detail.more.position = Vector2(18,339)
+	detail.more.size = Vector2(365,36)
 	detail.more.text = UIText.t("equipment.details.open")
 	detail.more.add_theme_font_override("font",host.font)
 	detail.more.add_theme_font_size_override("font_size",11)
 	detail.more.pressed.connect(toggle_details)
 	body.add_child(detail.more)
-	detail.description = label(body,"",Rect2(0,111,340,70),12,host.INK)
-	detail.description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	detail.description.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	detail.stats = label(body,"",Rect2(0,190,340,400),12,host.INK)
+	detail.stats = label(body,"",Rect2(18,391,365,345),16,host.INK)
 	detail.stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.stats.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	detail.stats.visible = false
+	detail.stats.visible = true
 	detail.stats.resized.connect(update_detail_height)
-
-func build_view_controls() -> void:
-	battlefield_shade = ColorRect.new()
-	battlefield_shade.name = "EquipmentBattlefieldShade"
-	battlefield_shade.position = Vector2(38,84)
-	battlefield_shade.size = Vector2(1364,530)
-	battlefield_shade.color = Color(0,0,0,0)
-	battlefield_shade.visible = false
-	host.ui.add_child(battlefield_shade)
-	host.ui.move_child(battlefield_shade,host.equipment_tabs.get_index())
-	expand_button = Button.new()
-	expand_button.position = Vector2(1250,1)
-	expand_button.size = Vector2(100,26)
-	expand_button.text = UIText.t("equipment.view.expand")
-	expand_button.add_theme_font_override("font",host.font)
-	expand_button.add_theme_font_size_override("font_size",13)
-	expand_button.pressed.connect(func():set_view_mode("expanded" if equipment_view_mode=="compact" else "compact"))
-	host.equipment_tabs.get_tab_bar().add_child(expand_button)
-	visibility_changed.connect(sync_auxiliary)
-	resized.connect(layout_contents)
-	sync_auxiliary()
-	layout_contents()
-
-func _input(event: InputEvent) -> void:
-	if is_visible_in_tree() and equipment_view_mode=="expanded" and event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
-		set_view_mode("compact")
-		get_viewport().set_input_as_handled()
-
-func remember_scroll() -> void:
-	if not restoring_scroll:
-		scroll_positions[equipment_view_mode] = Vector2(grid_scroll.scroll_vertical,detail_scroll.scroll_vertical)
-
-func stop_transition() -> void:
-	if is_instance_valid(transition):
-		transition.kill()
-	transition = null
-
-func set_view_mode(mode: String) -> void:
-	if mode not in ["compact","expanded"] or mode==equipment_view_mode:
-		return
-	remember_scroll()
-	if scroll_positions[mode].x<0:
-		scroll_positions[mode] = scroll_positions[equipment_view_mode]
-	equipment_view_mode = mode
-	apply_view_layout(true)
-
-func apply_view_layout(animated: bool) -> void:
-	stop_transition()
-	restoring_scroll = true
-	var expanded := equipment_view_mode=="expanded"
-	if expanded:
-		# Keep expanded equipment above battlefield controls, below the existing gem panel.
-		host.ui.move_child(battlefield_shade,-1)
-		host.ui.move_child(host.equipment_tabs,-1)
-		if is_instance_valid(host.jewel_panel):host.ui.move_child(host.jewel_panel,-1)
-	var destination := Vector2(38,120 if expanded else 620)
-	var dimensions := Vector2(1364,656 if expanded else 156)
-	host.set_ui_value(expand_button,"text",UIText.t("equipment.view.collapse" if expanded else "equipment.view.expand"))
-	battlefield_shade.visible = is_visible_in_tree()
-	layout_contents()
-	if animated:
-		transition = create_tween().set_parallel(true)
-		transition.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		transition.tween_property(host.equipment_tabs,"position",destination,0.2)
-		transition.tween_property(host.equipment_tabs,"size",dimensions,0.2)
-		transition.tween_property(battlefield_shade,"color:a",0.55 if expanded else 0.0,0.2)
-		transition.chain().tween_callback(finish_layout)
-	else:
-		host.set_ui_value(host.equipment_tabs,"position",destination)
-		host.set_ui_value(host.equipment_tabs,"size",dimensions)
-		battlefield_shade.color.a = 0.55 if expanded else 0.0
-		finish_layout.call_deferred()
-
-func finish_layout() -> void:
-	transition = null
-	layout_contents()
-	# Scroll ranges settle after container sorting; restore mode-local offsets afterwards.
-	restore_scroll.call_deferred()
-	sync_auxiliary()
-
-func restore_scroll() -> void:
-	var saved: Vector2 = scroll_positions[equipment_view_mode]
-	grid_scroll.scroll_vertical = int(saved.x)
-	detail_scroll.scroll_vertical = int(saved.y)
-	restoring_scroll = false
-
-func sync_auxiliary() -> void:
-	if not is_instance_valid(expand_button):return
-	var shown := is_visible_in_tree()
-	host.set_ui_value(expand_button,"visible",shown)
-	if not shown:
-		remember_scroll()
-		stop_transition()
-		restoring_scroll = false
-	host.set_ui_value(battlefield_shade,"visible",shown and (equipment_view_mode=="expanded" or (is_instance_valid(transition) and transition.is_running())))
 
 func layout_contents() -> void:
 	if not is_instance_valid(detail_body):return
-	var expanded := equipment_view_mode=="expanded"
-	var height := maxf(90,size.y-6)
-	grid.columns = 4 if expanded else 3
-	grid_scroll.position = Vector2(150 if expanded else 228,24)
-	grid_scroll.size = Vector2(972 if expanded else 734,height-24)
-	sort_picker.position.x = 886 if expanded else 730
-	toolbar.get_child(0).position.x = 150 if expanded else 228
-	counts.position = Vector2(10,35) if expanded else Vector2(61,18)
-	counts.size = Vector2(130,40) if expanded else Vector2(159,27)
-	counts.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if expanded else TextServer.AUTOWRAP_OFF
-	for index in filters.get_child_count():
-		var box: Control = filters.get_child(index)
-		box.position = Vector2(10,82+index*32) if expanded else [Vector2(10,46),Vector2(110,46),Vector2(10,77)][index]
-		box.size = Vector2(130,26) if expanded else [Vector2(94,25),Vector2(105,25),Vector2(205,25)][index]
-	detail_scroll.position.x = 1124 if expanded else 975
-	detail_scroll.size = Vector2(217 if expanded else 366,height)
-	var width := 198.0 if expanded else 340.0
-	detail_body.custom_minimum_size.x = width+4
-	detail.icon.position.y = 30 if expanded else 1
-	detail.title.position = Vector2(55,30 if expanded else 0)
-	detail.title.size = Vector2(width-55 if expanded else 190,44 if expanded else 22)
-	detail.title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if expanded else TextServer.AUTOWRAP_OFF
-	detail.more.position = Vector2(0,0) if expanded else Vector2(250,0)
-	detail.more.size.x = width if expanded else 94
-	detail.meta.position = Vector2(0,78) if expanded else Vector2(55,24)
-	detail.meta.size = Vector2(width if expanded else 283,40 if expanded else 36)
-	detail.meta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if expanded else TextServer.AUTOWRAP_OFF
-	detail.slots.position.y = 123 if expanded else 46
-	detail.slots.size.x = width if expanded else 344
-	detail_actions.position.y = 157 if expanded else 77
-	detail_actions.columns = 3 if expanded else 6
-	detail.description.position.y = 255 if expanded else 123
-	detail.description.size = Vector2(width,90)
-	detail.stats.position.y = 354 if expanded else 222
-	detail.stats.size.x = width
-	empty.position.x = grid_scroll.position.x+12
-	update_detail_height()
+	var height := maxf(440,size.y)
+	grid_scroll.size.y = height-142
+	detail_frame.size = Vector2(430,height-130)
+	detail_scroll.size.y = height-154
 
 func toggle_details() -> void:
 	details_open = not details_open
@@ -298,9 +174,12 @@ func toggle_details() -> void:
 
 func update_detail_height() -> void:
 	if not is_instance_valid(detail_body):return
-	var bottom: float = detail.description.position.y+detail.description.size.y
-	if details_open:bottom = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y)
-	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(detail_body.custom_minimum_size.x,bottom+12))
+	var stats_bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y)
+	var slots_y: float = maxf(756,stats_bottom+20) if details_open else 405.0
+	host.set_ui_value(detail.slots,"position",Vector2(18,slots_y))
+	host.set_ui_value(detail_actions,"position",Vector2(18,slots_y+54))
+	var bottom: float = detail_actions.position.y+maxf(100,detail_actions.get_minimum_size().y)
+	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(detail_body.custom_minimum_size.x,maxf(600,bottom+16)))
 
 func icon_for(key: String) -> Texture2D:
 	if not icons.has(key):
@@ -490,7 +369,10 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.slots,"disabled",item.locked)
 	host.set_ui_value(detail.icon,"texture",item.icon)
 	host.set_ui_value(detail.title,"text",item.name)
-	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":str(entry.level)})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab")+" · "+item.mainStatLabel+" "+item.mainStatValue)
+	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":str(entry.level)})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
+	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
+	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
+	host.set_ui_value(detail.status,"modulate",host.MUTED if item.locked else host.ORANGE if item.upgradeable else host.CYAN)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(category,selected_slot,10 if action=="ten" else 1))

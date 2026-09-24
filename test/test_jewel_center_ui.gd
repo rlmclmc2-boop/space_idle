@@ -24,7 +24,7 @@ func _initialize() -> void:
 func click(control: Control) -> void:
 	if not is_instance_valid(control):check(false,"Click target exists");return
 	var mouse:=InputEventMouseMotion.new()
-	mouse.position=control.get_global_rect().get_center()
+	mouse.position=control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
 	if control.get_window()!=root and root.gui_embed_subwindows:mouse.position+=Vector2(control.get_window().position)
 	Input.parse_input_event(mouse)
 	for pressed in [true,false]:
@@ -75,27 +75,16 @@ func run() -> void:
 	var incompatible:=scene.game.new_jewel("2")
 	scene.game.profile.jewels=[first,second,third,incompatible]
 	await settle()
-	var tab_bar: TabBar=scene.equipment_tabs.get_tab_bar()
-	var tab_point:=tab_bar.global_position+tab_bar.get_tab_rect(4).get_center()
-	var tab_motion:=InputEventMouseMotion.new()
-	tab_motion.position=tab_point
-	Input.parse_input_event(tab_motion)
-	for pressed in [true,false]:
-		var event:=InputEventMouseButton.new()
-		event.position=tab_point
-		event.button_index=MOUSE_BUTTON_LEFT
-		event.pressed=pressed
-		Input.parse_input_event(event)
-		await process_frame
+	await click(scene.system_nav_buttons[4])
 	await settle()
 	check(panel.visible and panel.socket_row.visible,"Real entry opens module-oriented center")
 	check(scene.equipment_tabs.get_child(4).get_child_count()==0,"Jewel tab has no intermediate launcher or instructions")
-	check(tab_bar.get_global_rect().end.y<=panel.global_position.y,"Navigation remains clickable above the jewel center")
+	check(scene.system_nav.get_global_rect().end.x<=panel.get_global_rect().position.x,"Navigation remains clickable beside the jewel center")
 	await capture("jewel-direct-tab")
-	check(panel.position.y>=127 and panel.get_global_rect().end.y<=775 and panel.size.y==648,"Workshop stays within the reference content area")
-	check(panel.workshop_art.get_global_rect().end.y<=775 and panel.fragments.get_global_rect().end.y<=775,"Artwork and footer stay inside compact workshop")
-	check(panel.get_global_rect().end.y<scene.sound_button.position.y,"Workshop does not overlap bottom sound control")
-	check(scene.equipment_tabs.position.y==96 and scene.battle_return_button.position==Vector2(500,25),"Tab row moves below unchanged top header")
+	check(panel.position.y>=150 and panel.get_global_rect().end.y<=1200 and panel.size.y==1180,"Workshop fills the shared workspace")
+	check(panel.workshop_art.get_global_rect().end.y<=1200 and panel.fragments.get_global_rect().end.y<=1200,"Artwork and footer stay inside workshop")
+	check(panel.get_global_rect().position.y>scene.sound_button.get_global_rect().end.y,"Workshop does not overlap global sound control")
+	check(scene.equipment_tabs.position==scene.WORK_CONTENT_RECT.position and scene.workspace_title.get_global_rect().end.y<=panel.get_global_rect().position.y,"Workspace stays below the global header")
 	check(panel.module_buttons.size()==scene.game.module_entries("weapons").size()+scene.game.module_entries("defence").size(),"Every existing module has an in-panel destination")
 	check(panel.socket_buttons.size()==3 and not panel.socket_buttons[0].disabled and panel.socket_buttons[2].disabled,"Empty sockets clickable; future slot shows locked level")
 	check(panel.socket_buttons[2].text.contains("40"),"Locked socket exposes exact level requirement")
@@ -107,7 +96,7 @@ func run() -> void:
 	check(scene.game.profile==before and panel.target_socket==1,"Socket and gem clicks only select; no gameplay mutation")
 	check(panel.preview.text.contains("暴击率") and not panel.socket_action.disabled,"Explicit preview uses real critical calculation")
 	var hover:=InputEventMouseMotion.new()
-	hover.position=panel.socket_buttons[0].get_global_rect().get_center()
+	hover.position=panel.socket_buttons[0].get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
 	Input.parse_input_event(hover)
 	await process_frame
 	check(panel.target_socket==1,"Hover never changes target")
@@ -227,9 +216,8 @@ func run() -> void:
 	check(scene.writes.is_empty(),"Unchanged paused center performs no property writes")
 	check(draws.background==0 and draws.defence==0 and draws.cell==0,"Unchanged center does not redraw unrelated surfaces")
 	check(not panel.get_children().any(func(child):return child is Button and child.text==UIText.t("gem.setup.text_03")),"Jewel center has no redundant close button")
-	await click(scene.battle_return_button)
-	check(not panel.visible and panel.metrics_timer.is_stopped() and panel.animations.is_empty(),"Top return stops timer and animations")
-	check(scene.equipment_tabs.current_tab==0,"Top return leaves jewel page for battlefield")
+	await click(scene.system_nav_buttons[0])
+	check(not panel.visible and panel.metrics_timer.is_stopped() and panel.animations.is_empty(),"System navigation stops hidden jewel timers and animations")
 	scene.writes.clear()
 	scene.game.pickup_jewel_fragment()
 	check(not panel.visible and scene.writes.is_empty(),"Hidden receipt does not open or write center")

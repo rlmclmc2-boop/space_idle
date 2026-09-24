@@ -98,7 +98,7 @@ func benchmark(mode: String, repetition: int) -> void:
 		building.sample=0
 		scene.refresh_hightech_card(key)
 	scene.equipment_tabs.current_tab=0 if mode=="hidden" else 1
-	scene.hightech_scroll.scroll_horizontal=0
+	scene.hightech_scroll.scroll_vertical=0
 	scene.refresh_scientists()
 	for i in 8:
 		scene.refresh_visible_cards(1.0/60.0)
@@ -195,7 +195,7 @@ func run() -> void:
 			scene.db.data.unlock.erase(key)
 			UIText.bindings.hightech.erase(key)
 	scene.sync_hightech_slots()
-	scene.hightech_scroll.scroll_horizontal=0
+	scene.hightech_scroll.scroll_vertical=0
 	scene.game.paused=true
 	scene.refresh_visible_cards()
 	await process_frame

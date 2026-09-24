@@ -21,7 +21,7 @@ func _initialize() -> void:
 
 func click(control: Control) -> void:
 	var motion := InputEventMouseMotion.new()
-	motion.position = control.get_global_rect().get_center()
+	motion.position = control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
 	Input.parse_input_event(motion)
 	for pressed in [true,false]:
 		var event := InputEventMouseButton.new()
@@ -47,8 +47,9 @@ func check_geometry(panel: Control, label: String) -> void:
 		correct=correct and route.points[0].distance_to(network.anchor_position(panel.reactor.port))<0.01
 		correct=correct and route.points[-1].distance_to(network.anchor_position(panel.cards[key].circuit.port))<0.01
 		correct=correct and network.point_at(route,route.length).distance_to(route.end)<0.01
-		for point: Vector2 in route.points:
-			correct=correct and point.y<=route.end.y+0.01
+		if route.visible:
+			for point: Vector2 in route.points:
+				correct=correct and point.y<=route.end.y+0.01
 	check(correct,"Real core and module anchors remain connected: "+label)
 	var revision: int = network.geometry_revision
 	panel.refresh_animation_visibility()
@@ -160,25 +161,25 @@ func run() -> void:
 	check(panel.cards.size()==scene.db.data.charge.size() and panel.cards.size()>6,"All configured systems are generated")
 	check(panel.cards[key].title==identity and scene.equipment_tabs==tabs,"Extension preserves unrelated card/tab identity")
 	check(panel.modules.get_child(-1)==panel.extension,"Extension slot remains at tail")
-	check(panel.scroll.get_h_scroll_bar().max_value>panel.scroll.size.x,"Many systems enable horizontal scrolling")
+	check(panel.scroll.get_v_scroll_bar().max_value>panel.scroll.size.y,"Many systems enable vertical scrolling")
 	check(panel.page_label.text=="1 / 3","Page count includes the extension slot")
 	await click(panel.next_button)
-	check(panel.scroll.scroll_horizontal>0,"Actual next-page button scrolls modules")
+	check(panel.scroll.scroll_vertical>0,"Actual next-page button scrolls modules")
 	check(panel.page_label.text=="2 / 3","Page label follows actual next-page click")
 	check_geometry(panel,"next page")
 	await click(panel.previous_button)
-	check(panel.scroll.scroll_horizontal==0,"Actual previous-page button returns to first modules")
-	panel.scroll.ensure_control_visible(panel.extension)
+	check(panel.scroll.scroll_vertical==0,"Actual previous-page button returns to first modules")
+	panel.scroll.scroll_vertical=100000
 	await process_frame
 	await process_frame
 	await shot("charge-extension")
 	before=scene.game.profile.duplicate(true)
 	await click(panel.extension)
 	check(panel.hint.text==UIText.t("charge.extension_hint") and before==scene.game.profile,"Extension slot explains configuration without inventing a game system")
-	panel.scroll.scroll_horizontal=300
-	var scroll_position: int = panel.scroll.scroll_horizontal
+	panel.scroll.scroll_vertical=300
+	var scroll_position: int = panel.scroll.scroll_vertical
 	panel.refresh_card(key)
-	check(panel.scroll.scroll_horizontal==scroll_position,"Value refresh preserves scrolling")
+	check(panel.scroll.scroll_vertical==scroll_position,"Value refresh preserves scrolling")
 	check_geometry(panel,"partial scroll")
 	scene.equipment_tabs.current_tab=0
 	await process_frame
@@ -199,7 +200,7 @@ func run() -> void:
 	check(scene.changed_controls.is_empty() and draw_count[0]==0,"Unchanged paused page causes no property writes or circuit redraws")
 	scene.game.paused=false
 	scene.refresh_visible_cards()
-	panel.scroll.scroll_horizontal=0
+	panel.scroll.scroll_vertical=0
 	panel.select_module(key)
 	await shot("charge-expanded")
 	for resolution in [Vector2i(1280,720),Vector2i(1920,1080),Vector2i(1280,960)]:
@@ -216,7 +217,7 @@ func run() -> void:
 			scene.db.data.unlock.erase(extra)
 			scene.game.profile.charge.erase(extra)
 	panel.sync_modules()
-	panel.scroll.scroll_horizontal=0
+	panel.scroll.scroll_vertical=0
 	root.size=Vector2i(1440,810)
 	await shot("charge-current")
 	check(panel.cards.size()==initial_count and panel.cards[key].title==identity,"Removing fixtures preserves actual systems")

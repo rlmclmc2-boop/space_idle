@@ -10,6 +10,15 @@ const ORANGE := Color("ffbc73")
 const PURPLE := Color("b3a0ff")
 const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],4:["jewel"]}
 const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",4:"gem.tab"}
+const RIGHT_UI_OFFSET := 608.0
+const BATTLE_ORIGIN := Vector2(20,160)
+const BATTLE_VIEW_SIZE := Vector2(572,960)
+const NAV_RECT := Rect2(4,96,144,1160)
+const WORK_RECT := Rect2(160,96,1204,1160)
+const WORK_CONTENT_RECT := Rect2(168,150,1364,1200)
+const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
+const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎"]
+const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","upgrade.charge_tab","ship.tab","gem.tab","crew.tab","planet.tab"]
 var NAMES: Dictionary = {}
 const PROJECTILE_TEXTURES := {
 	"laser":preload("res://assets/weapons/laser-pulse.png"),
@@ -97,12 +106,18 @@ var upgrade_buttons: Dictionary = {}
 var ten_upgrade_buttons: Dictionary = {}
 var max_upgrade_buttons: Dictionary = {}
 var EQUIPMENT_PAGES: Array = []
-var battle_return_button: Button
 var equipment_panel: Control
 var crew_panel: Control
 var planet_panel: Control
 var equipment_page := 0
 var equipment_tabs: TabContainer
+var system_nav: Panel
+var system_nav_buttons: Array[Button] = []
+var workspace_frame: Panel
+var workspace_title: Label
+var global_status_label: Label
+var battle_clip: Control
+var battle_hud_layer: Node2D
 var equipment_cooldowns: Dictionary = {}
 var equipment_card_controls: Dictionary = {}
 var hightech_buttons: Dictionary = {}
@@ -118,7 +133,7 @@ var scientist_remove_buttons: Dictionary = {}
 var charge_cards: Dictionary = {}
 var charge_panel: Control
 var charge_nav_backdrop: ColorRect
-const HIGHTECH_CARD_SIZE := Vector2(324,510)
+const HIGHTECH_CARD_SIZE := Vector2(644,510)
 const CONSTRUCTION_SCRIPT := preload("res://scripts/hightech_construction.gd")
 var hightech_page: Panel
 var hightech_inventory: Label
@@ -131,7 +146,7 @@ var capture_frame := 0
 var equipment_containers: Dictionary = {}
 var equipment_panels: Dictionary = {}
 var hightech_titles: Dictionary = {}
-var hightech_container: HBoxContainer
+var hightech_container: GridContainer
 var ship_controls: Dictionary = {}
 var help_button: Button
 var help_close_button: Button
@@ -182,8 +197,9 @@ func _ready() -> void:
 	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ui)
+	ui.position = Vector2(RIGHT_UI_OFFSET,0)
 	for i in range(200):
-		stars.append({"x":randf()*1440,"y":randf()*810,"z":randf_range(0.2,1.0)})
+		stars.append({"x":randf()*BattleGame.BATTLE_SIZE.x,"y":randf()*BattleGame.BATTLE_SIZE.y,"z":randf_range(0.2,1.0)})
 	audio = AudioStreamPlayer.new()
 	audio.volume_db = -25
 	add_child(audio)
@@ -299,10 +315,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if is_instance_valid(balance_lab) and balance_lab.visible:return
-	if event is InputEventMouseMotion:
-		game.collect_near(event.position)
-	if event is InputEventMouseButton and event.pressed:
-		game.collect_near(get_global_mouse_position(), event.button_index == MOUSE_BUTTON_LEFT)
+	if event is InputEventMouseMotion and battle_clip.get_global_rect().has_point(event.position):
+		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)))
+	if event is InputEventMouseButton and event.pressed and battle_clip.get_global_rect().has_point(event.position):
+		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)), event.button_index == MOUSE_BUTTON_LEFT)
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F1:
 			show_qa_tools()
@@ -393,7 +409,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 				if entry.get("resource","")==info.id and fx_time-float(entry.born)<0.4:active = entry
 			if active.is_empty():
 				floats = floats.filter(func(f):return f.get("resource","")!=info.id)
-				active = {"resource":info.id,"amount":0.0,"born":fx_time,"pos":Vector2(760,550+int(info.id)*18),"color":INK if info.id=="1" else PURPLE,"life":0.8}
+				active = {"resource":info.id,"amount":0.0,"born":fx_time,"pos":Vector2(365,505+int(info.id)*18),"color":INK if info.id=="1" else PURPLE,"life":0.8}
 				floats.append(active)
 			active.amount += float(info.amount)
 			active.text = UIText.t("main.on_event.text_01", {"amount":"%s" % (number(active.amount)), "id":"%s" % (UIText.data_text("resources",str(info.id)))})
@@ -534,9 +550,9 @@ func turret_pose(index: int) -> Dictionary:
 
 func turret_muzzle(index: int) -> Vector2:
 	var key := str(game.profile.selectedShip)
-	var scale_value := SHIP_VISUALS.player_display_scale(db.ship(key))
+	var scale_value := player_art_scale()
 	var local := SHIP_VISUALS.center(key,index)+Vector2(SHIP_VISUALS.module_width(key)/2,0).rotated(turret_angle(index))
-	return Vector2(game.player.x,game.player.y)+local*scale_value
+	return Vector2(game.player.x,game.player.y)+local.rotated(-PI/2)*scale_value
 
 func shot_mount(shot: Dictionary) -> int:
 	if shot.hostile:return -1
@@ -576,9 +592,9 @@ func advance_turrets(dt: float) -> void:
 		pose.target = target
 		var desired := 0.0
 		if not target.is_empty():
-			var pivot := Vector2(game.player.x,game.player.y)+SHIP_VISUALS.center(str(game.profile.selectedShip),index)*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))
+			var pivot := Vector2(game.player.x,game.player.y)+SHIP_VISUALS.center(str(game.profile.selectedShip),index).rotated(-PI/2)*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
-			desired = clampf((Vector2(target.x,target.y)-pivot).angle(),-limit,limit)
+			desired = clampf(wrapf((Vector2(target.x,target.y)-pivot).angle()+PI/2,-PI,PI),-limit,limit)
 		var speed := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_turn_degrees_per_second",240.0)))
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
@@ -588,7 +604,23 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
 	var source := Vector2(game.player.x,game.player.y)
-	return source+(pos-source)*SHIP_VISUALS.player_display_multiplier()
+	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.profile.selectedShip)))
+
+func player_art_scale() -> float:
+	return minf(SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip))),0.18)*1.15
+
+func battle_point(point: Vector2) -> Vector2:
+	# Presentation only: open the engagement corridor without stretching hulls or FX.
+	return Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
+
+func battle_logical_point(point: Vector2) -> Vector2:
+	var low := point.y-220.0
+	var high := point.y
+	for iteration in 20:
+		var middle := (low+high)*0.5
+		if battle_point(Vector2(0,middle)).y<point.y:low=middle
+		else:high=middle
+	return Vector2(point.x,(low+high)*0.5)
 
 func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	var key := weapon_key(shot)
@@ -641,7 +673,7 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, v
 	var unfold := smoothstep(0.0,100.0,distance)
 	var blend_distance := minf(160.0,logical_origin.distance_to(Vector2(shot.target.x,shot.target.y))) if not shot.target.is_empty() else 160.0
 	var muzzle_shift := (origin-logical_origin)*(1.0-smoothstep(0.0,maxf(1,blend_distance),distance))
-	return pos+muzzle_shift+Vector2(0,spread*unfold*converge)
+	return pos+muzzle_shift+Vector2(spread*unfold*converge,0)
 
 func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
 	if shot.has("serial") and not index.is_empty():return index.get(shot.serial,{})
@@ -681,8 +713,8 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 			# The short fresh trail shares the bullet layer; only older exhaust sits behind hulls.
 			if (i<=3)!=core:continue
 			if i>4 and trail_budget==0:break
-			var a: Vector2 = visual.trail[(int(visual.head)-i+14)%14]+offset
-			var b: Vector2 = visual.trail[(int(visual.head)-i+1+14)%14]+offset
+			var a: Vector2 = battle_point(visual.trail[(int(visual.head)-i+14)%14])+offset
+			var b: Vector2 = battle_point(visual.trail[(int(visual.head)-i+1+14)%14])+offset
 			var age: float = float(visual.age)-float(visual.trail_times[(int(visual.head)-i+14)%14])
 			var fade := maxf(0,1.0-age/(0.14 if key=="missile" else 0.065))
 			if fade<=0:break
@@ -692,7 +724,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 		var color := CYAN if key=="laser" else ORANGE
 		if float(visual.age)<0.06:
 			var fade := 1.0-float(visual.age)/0.06
-			var muzzle: Vector2 = visual.origin+offset
+			var muzzle: Vector2 = battle_point(visual.origin)+offset
 			draw_surface.draw_line(muzzle,muzzle+Vector2.from_angle(angle)*(23.0 if key=="cannon" else 12.0)*fade,Color(color,fade),(5.0 if key=="cannon" else 3.0)*fade,true)
 	var heading := Vector2.from_angle(angle)
 	if key=="missile":
@@ -791,9 +823,13 @@ func build_ui() -> void:
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
-	battle_return_button = null
+	system_nav_buttons.clear()
+	system_nav = null
+	workspace_frame = null
+	workspace_title = null
+	global_status_label = null
 	if is_instance_valid(hightech_scroll):
-		hightech_scroll_offset = hightech_scroll.scroll_horizontal
+		hightech_scroll_offset = hightech_scroll.scroll_vertical
 	hightech_scroll = null
 	equipment_containers.clear()
 	equipment_panels.clear()
@@ -821,15 +857,18 @@ func build_ui() -> void:
 	scientist_cost_label = null
 	scientist_distribute_button = null
 	charge_cards.clear()
-	help_button = button(UIText.t("main.build_ui.text_01"),Rect2(1262,25,140,38),func():help_open=not help_open;refresh_navigation())
-	resource_mode_button = button(UIText.t("main.build_ui.text_02") if resource_rate_mode else UIText.t("main.build_ui.text_03"),Rect2(664,25,156,38),toggle_resource_display)
+	build_workspace_shell()
+	global_status_label = equipment_card_label(ui,"",Rect2(-180,24,172,30),13,CYAN)
+	global_status_label.name = "GlobalStatus"
+	help_button = button(UIText.t("main.build_ui.text_01"),Rect2(1190,20,150,40),func():help_open=not help_open;refresh_navigation())
+	resource_mode_button = button(UIText.t("main.build_ui.text_02") if resource_rate_mode else UIText.t("main.build_ui.text_03"),Rect2(182,20,148,40),toggle_resource_display)
 	resource_mode_button.tooltip_text = UIText.t("main.build_ui.text_04")
 	continue_button = button(UIText.t("main.build_ui.text_05"),Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
 	help_close_button = button(UIText.t("main.build_ui.text_06"),Rect2(600,626,240,44),func():help_open=false;refresh_navigation(),true)
 	loop_select = OptionButton.new()
 	loop_select.allow_reselect = true
-	loop_select.position = Vector2(1010,92)
-	loop_select.size = Vector2(190,38)
+	loop_select.position = Vector2(680,20)
+	loop_select.size = Vector2(170,40)
 	loop_select.add_item(UIText.t("main.build_ui.text_07"), 0)
 	for level in range(1, db.levels.size()+1):
 		if game.profile.cleared.has(level) or level == game.stage:
@@ -840,11 +879,11 @@ func build_ui() -> void:
 	loop_select.item_selected.connect(func(index):game.select_loop_level(loop_select.get_item_id(index));refresh_navigation())
 	ui.add_child(loop_select)
 	loop_select.get_popup().about_to_popup.connect(limit_warp_popup)
-	loop_button = button(UIText.t("settings.guard",{"state":UIText.t("main.build_ui.text_10") if game.profile.loop else UIText.t("gem.setup.text_03")}),Rect2(1210,92,142,38),func():game.toggle_loop();refresh_navigation(),false,game.state == BattleGame.State.RETREAT)
+	loop_button = button(UIText.t("settings.guard",{"state":UIText.t("main.build_ui.text_10") if game.profile.loop else UIText.t("gem.setup.text_03")}),Rect2(860,20,130,40),func():game.toggle_loop();refresh_navigation(),false,game.state == BattleGame.State.RETREAT)
 	guard_settings = MenuButton.new()
 	guard_settings.text = UIText.t("main.build_ui.text_12")
-	guard_settings.position = Vector2(1356,92)
-	guard_settings.size = Vector2(46,38)
+	guard_settings.position = Vector2(1000,20)
+	guard_settings.size = Vector2(48,40)
 	guard_settings.tooltip_text = UIText.t("main.build_ui.text_13")
 	var death_menu := guard_settings.get_popup()
 	var death_options := [UIText.t("main.build_ui.text_14"), UIText.t("main.build_ui.text_15"), UIText.t("main.build_ui.text_16")]
@@ -878,17 +917,84 @@ func build_ui() -> void:
 			refresh_navigation())
 	ui.add_child(guard_settings)
 	build_equipment_tabs()
-	advance_button = button(UIText.t("main.build_ui.text_23"),Rect2(780,302,200,46),func():game.advance_after_clear(),true)
-	sound_button = button("",Rect2(1262,778,140,26),func():sound_on=not sound_on;refresh_navigation())
+	layout_charge_page()
+	advance_button = button(UIText.t("main.build_ui.text_23"),Rect2(368-RIGHT_UI_OFFSET,140,200,32),func():game.advance_after_clear(),true)
+	sound_button = button("",Rect2(1060,20,118,40),func():sound_on=not sound_on;refresh_navigation())
 	refresh_navigation()
 	jewel_panel = preload("res://scripts/jewel_panel.gd").new()
 	ui.add_child(jewel_panel)
 	jewel_panel.setup(self)
-	jewel_panel.visibility_changed.connect(layout_battle_return)
+	layout_jewel_workspace()
 	if equipment_tabs.current_tab==4:jewel_panel.open()
-	battle_return_button = button(UIText.t("battle.return"),Rect2(500,25,140,38),return_to_battle)
-	layout_battle_return()
+	refresh_system_nav()
 	refresh_draw_layers(0)
+
+func build_workspace_shell() -> void:
+	system_nav = Panel.new()
+	system_nav.name = "SystemNavigation"
+	system_nav.position = NAV_RECT.position
+	system_nav.size = NAV_RECT.size
+	system_nav.add_theme_stylebox_override("panel",style(Color("101c2b"),LINE))
+	ui.add_child(system_nav)
+	var navigation_scroll := ScrollContainer.new()
+	navigation_scroll.name = "SystemNavigationScroll"
+	navigation_scroll.position = Vector2(6,12)
+	navigation_scroll.size = Vector2(132,1136)
+	navigation_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	system_nav.add_child(navigation_scroll)
+	var navigation_list := VBoxContainer.new()
+	navigation_list.name = "SystemNavigationList"
+	navigation_list.add_theme_constant_override("separation",14)
+	navigation_scroll.add_child(navigation_list)
+	workspace_frame = Panel.new()
+	workspace_frame.name = "SystemWorkspace"
+	workspace_frame.position = WORK_RECT.position
+	workspace_frame.size = WORK_RECT.size
+	workspace_frame.add_theme_stylebox_override("panel",style(Color("0c1522"),LINE))
+	ui.add_child(workspace_frame)
+	workspace_title = equipment_card_label(ui,"",Rect2(180,108,1100,36),24,INK)
+	workspace_title.name = "SystemWorkspaceTitle"
+	for index in SYSTEM_TITLES.size():
+		var navigation := Button.new()
+		navigation.name = "SystemNav%d" % index
+		navigation.custom_minimum_size = Vector2(124,68)
+		navigation.add_theme_font_override("font",font)
+		navigation.add_theme_font_size_override("font_size",15)
+		navigation.pressed.connect(select_system.bind(index))
+		navigation_list.add_child(navigation)
+		system_nav_buttons.append(navigation)
+
+func select_system(index: int) -> void:
+	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
+	set_ui_value(equipment_tabs,"current_tab",index)
+	refresh_system_nav()
+
+func refresh_system_nav() -> void:
+	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
+	var selected := equipment_tabs.current_tab
+	for index in system_nav_buttons.size():
+		var navigation := system_nav_buttons[index]
+		var available := index<equipment_tabs.get_tab_count() and not equipment_tabs.is_tab_hidden(index)
+		set_ui_value(navigation,"visible",available)
+		if not available:continue
+		var caption := UIText.t(SYSTEM_TITLES[index])
+		set_ui_value(navigation,"text",SYSTEM_ICONS[index]+"  "+caption)
+		set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
+		if not navigation.has_meta("selected") or bool(navigation.get_meta("selected"))!=(index==selected):
+			navigation.set_meta("selected",index==selected)
+			var normal_style := style(Color("153443") if index==selected else Color("101c2b"),CYAN if index==selected else LINE)
+			var hover_style := style(Color("1b4150") if index==selected else Color("172638"),CYAN if index==selected else LINE)
+			navigation.add_theme_stylebox_override("normal",normal_style)
+			navigation.add_theme_stylebox_override("hover",hover_style)
+			navigation.add_theme_stylebox_override("pressed",hover_style)
+			navigation.add_theme_color_override("font_color",CYAN if index==selected else INK)
+			navigation.add_theme_color_override("font_hover_color",CYAN if index==selected else INK)
+	set_ui_value(workspace_title,"text",UIText.t(SYSTEM_TITLES[selected]) if selected>=0 else "")
+
+func layout_jewel_workspace() -> void:
+	if not is_instance_valid(jewel_panel):return
+	jewel_panel.position = WORK_CONTENT_RECT.position+Vector2(4,8)
+	jewel_panel.scale = WORK_CONTENT_SCALE
 
 func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
 	if control.get(property) != value:
@@ -979,6 +1085,7 @@ func refresh_tab_visibility() -> void:
 		selected = pages.find(true)
 	equipment_page = selected
 	set_ui_value(equipment_tabs,"current_tab",selected)
+	refresh_system_nav()
 
 func refresh_structure() -> void:
 	if not is_instance_valid(equipment_tabs):
@@ -1040,9 +1147,12 @@ func refresh_navigation() -> void:
 		set_ui_value(help_close_button,"visible",help_visible)
 	var navigation_visible := not help_open and not unlocking
 	if ui_state_changed(guard_settings,[navigation_visible]):
-		for control in [loop_select,loop_button,guard_settings,equipment_tabs,sound_button,battle_return_button]:
+		for control in [loop_select,loop_button,guard_settings,sound_button]:
 			if not is_instance_valid(control):continue
 			set_ui_value(control,"visible",navigation_visible)
+		for control in [system_nav,workspace_frame,equipment_tabs,workspace_title]:
+			if is_instance_valid(control):set_ui_value(control,"visible",navigation_visible)
+		if is_instance_valid(jewel_panel):set_ui_value(jewel_panel,"visible",navigation_visible and equipment_tabs.current_tab==4)
 	var advance_visible := navigation_visible and game.state==BattleGame.State.LEVEL_CLEAR
 	if ui_state_changed(advance_button,[advance_visible]):
 		set_ui_value(advance_button,"visible",advance_visible)
@@ -1086,15 +1196,29 @@ func create_draw_layers() -> void:
 	var star_material := ShaderMaterial.new()
 	star_material.shader=STARFIELD_SHADER
 	stars_layer.material=star_material
+	battle_clip = Control.new()
+	battle_clip.position = BATTLE_ORIGIN
+	battle_clip.size = BATTLE_VIEW_SIZE
+	battle_clip.clip_contents = true
+	battle_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	battle_layer = Node2D.new()
+	battle_hud_layer = Node2D.new()
+	battle_hud_layer.position = Vector2.ZERO
 	resource_layer = Node2D.new()
 	overlay_layer = Node2D.new()
-	var layers := [background_layer,stars_layer,chrome_layer,battle_layer,resource_layer,overlay_layer]
-	var painters := [draw_background,draw_stars,draw_chrome,draw_battle,draw_resources,draw_overlay]
+	var layers := [background_layer,stars_layer,chrome_layer,battle_layer,battle_hud_layer,resource_layer,overlay_layer]
+	var painters := [draw_background,draw_stars,draw_chrome,draw_battle,draw_vertical_battle_hud,draw_resources,draw_overlay]
 	for index in layers.size():
 		var layer: Node2D = layers[index]
 		var painter: Callable = painters[index]
-		add_child(layer)
+		if layer==stars_layer:
+			add_child(battle_clip)
+			battle_clip.add_child(layer)
+		elif layer==battle_layer:
+			battle_clip.add_child(layer)
+		else:
+			add_child(layer)
+			if layer in [resource_layer,overlay_layer]:layer.position.x=RIGHT_UI_OFFSET
 		layer.draw.connect(func():draw_surface=layer;painter.call())
 
 func refresh_draw_layers(dt: float) -> void:
@@ -1108,6 +1232,12 @@ func refresh_draw_layers(dt: float) -> void:
 		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
 		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
 			battle_layer.queue_redraw()
+	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.enemies]):
+		battle_hud_layer.queue_redraw()
+	if is_instance_valid(global_status_label) and ui_state_changed(global_status_label,[game.stage,game.state,game.paused]):
+		var state_key := "hud.state.paused" if game.paused else "hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"
+		var state_text := UIText.t(state_key)
+		set_ui_value(global_status_label,"text",UIText.t("battle.stage",{"stage":str(game.stage)})+" · "+state_text)
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
 	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,message if message_time>0 and not help_open and game.pending_unlocks.is_empty() else ""]):
@@ -1115,10 +1245,9 @@ func refresh_draw_layers(dt: float) -> void:
 
 func sync_battle_visibility() -> void:
 	if not is_instance_valid(battle_layer):return
-	var covered := is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree()
-	if battle_layer.visible==covered:
-		battle_layer.visible = not covered
-		if not covered:battle_layer.queue_redraw()
+	if not battle_layer.visible:
+		battle_layer.visible = true
+		battle_layer.queue_redraw()
 
 func set_damage_mode(mode: int) -> void:
 	damage_mode = mode
@@ -1141,10 +1270,10 @@ func queue_damage_number(info: Dictionary) -> void:
 				entry.amount += float(info.amount)
 				entry.text = NUMBER_FORMAT.damage(entry.amount)
 				return
-	var height := SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))/2
+	var height := SHIP_VISUALS.CANVAS.x*player_art_scale()/2
 	if not info.player:
 		for enemy in game.enemies:
-			if enemy.uid==info.uid:height = SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.enemy_scale_for(enemy)/2
+			if enemy.uid==info.uid:height = SHIP_VISUALS.CANVAS.x*SHIP_VISUALS.enemy_scale_for(enemy)/2
 	var entry := {"target":target,"critical":critical,"type":category,"amount":float(info.amount),"text":NUMBER_FORMAT.damage(info.amount),"born":fx_time,"life":0.6,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":Vector2(info.x,info.y-height-16),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
 	flush_damage_numbers()
@@ -1176,15 +1305,15 @@ func damage_text_position(origin: Vector2, value: String, excluded_target := "",
 	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
-			var pos := Vector2(clampf(origin.x-width/2+shift,40,1390-width),origin.y-row*40)
+			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
 			var bounds := damage_text_rect(pos,value,size_value)
-			if bounds.position.y<150:continue
+			if bounds.position.y<8:continue
 			var blocked := false
 			for entry in floats:
 				if entry.get("damage",false) and entry.get("target","")!=excluded_target and bounds.grow(8).intersects(damage_text_rect(entry.pos,entry.text,entry.size)):blocked = true
 			for enemy in game.enemies:
 				var dimensions: Vector2 = SHIP_VISUALS.CANVAS*SHIP_VISUALS.enemy_scale_for(enemy)
-				if enemy.hp>0 and bounds.intersects(Rect2(Vector2(enemy.x,enemy.y)-dimensions/2-Vector2(4,8),dimensions+Vector2(8,12))):blocked = true
+				if enemy.hp>0 and bounds.intersects(Rect2(Vector2(enemy.x,enemy.y)-Vector2(dimensions.y,dimensions.x)/2-Vector2(4,8),Vector2(dimensions.y,dimensions.x)+Vector2(8,12))):blocked = true
 			if not blocked:return pos
 	return Vector2.INF
 
@@ -1199,20 +1328,50 @@ func bar(rect: Rect2, percent: float, color: Color) -> void:
 	draw_surface.draw_rect(Rect2(rect.position,Vector2(rect.size.x*clampf(percent,0,1),rect.size.y)),color)
 
 func draw_background() -> void:
-	draw_surface.draw_rect(Rect2(0,0,1440,810),BG)
+	draw_surface.draw_rect(Rect2(0,0,2048,1280),BG)
+	draw_surface.draw_rect(Rect2(20,96,572,1160),Color("0d1927"))
+	draw_surface.draw_rect(Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE),Color("0b1725"))
+	# Static, low-contrast scenery stays within the left battle column.
+	for j in range(16,0,-1):
+		draw_surface.draw_circle(Vector2(220,520),float(j)*12,Color(0.12,0.25,0.37,0.014))
+		draw_surface.draw_circle(Vector2(390,850),float(j)*10,Color(0.22,0.15,0.30,0.012))
+	draw_surface.draw_circle(Vector2(104,1030),63,Color("152b3a"))
+	draw_surface.draw_circle(Vector2(90,1044),60,Color("0c1927"))
+	draw_surface.draw_arc(Vector2(104,1030),65,3.6,5.9,32,Color(0.24,0.49,0.59,0.18),2,true)
+	for i in 11:
+		var p := Vector2(45+float(i%2)*510,240+float(i)*75)
+		draw_surface.draw_line(p,p+Vector2(0,17),Color(LINE,0.5),1)
 	# Layered translucent disks produce a soft procedural nebula without assets.
 	for j in range(22,0,-1):
 		draw_surface.draw_circle(Vector2(1020,345),float(j)*18,Color(0.12,0.23,0.38,0.012))
 		draw_surface.draw_circle(Vector2(625,530),float(j)*13,Color(0.21,0.12,0.34,0.008))
 
 func draw_chrome() -> void:
-	draw_surface.draw_line(Vector2(38,76),Vector2(1402,76),LINE)
-	text_at("◈",Vector2(39,52),30,CYAN)
-	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(83,49),22)
-	text_at(UIText.t("main.subtitle"),Vector2(210,47),12,MUTED)
-	draw_surface.draw_rect(Rect2(0,615,1440,195),Color("0c1522"))
-	draw_surface.draw_line(Vector2(38,615),Vector2(1402,615),LINE)
-	text_at(UIText.t("main.draw_chrome.text_02"),Vector2(40,795),11,MUTED)
+	draw_surface.draw_rect(Rect2(0,0,2048,78),Color("101c2b"))
+	draw_surface.draw_line(Vector2(0,77),Vector2(2048,77),LINE,2)
+	text_at("◈",Vector2(24,53),30,CYAN)
+	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22)
+	text_at(UIText.t("main.subtitle"),Vector2(235,46),12,MUTED)
+	draw_surface.draw_line(Vector2(599,96),Vector2(599,1256),LINE,2)
+	text_at(UIText.t("main.draw_chrome.text_02"),Vector2(24,1266),11,MUTED)
+
+func draw_vertical_battle_hud() -> void:
+	var length := float(db.levels[game.stage-1].length)
+	box(Rect2(30,100,552,98),Color("101f2e"),LINE)
+	text_at(UIText.t("battle.stage",{"stage":str(int(game.stage))}),Vector2(44,129),20,INK)
+	var status := UIText.t("battle.draw_battle.text_04") if game.state==BattleGame.State.RETREAT else UIText.t("battle.draw_battle.text_05") if game.state==BattleGame.State.COMBAT else UIText.t("battle.draw_battle.text_06")
+	if game.paused and game.pending_unlocks.is_empty():status=UIText.t("hud.state.paused")
+	text_at(status,Vector2(44,156),13,CYAN)
+	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(390,129),14,MUTED)
+	bar(Rect2(44,180,524,4),game.distance/length,CYAN)
+	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
+		text_at(fit_battle_text(UIText.t("battle.draw_battle.text_02",{"targets":number(game.targets().size()),"enemies":number(game.enemies.size())}),270,12),Vector2(298,156),12,ORANGE)
+	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
+	text_at(UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))}),Vector2(44,1162),15,INK)
+	bar(Rect2(44,1174,524,7),float(game.player.armour)/maxf(1,game.stat("armour")),ORANGE)
+	if game.profile.unlocked.has("shield"):
+		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(44,1207),15,CYAN)
+		bar(Rect2(44,1219,524,7),float(game.player.shield)/maxf(1,game.max_shield()),CYAN)
 
 func draw_stars() -> void:
 	if stars_mesh==null:
@@ -1225,7 +1384,7 @@ func draw_stars() -> void:
 			for uv in [Vector2(0,0),Vector2(1,0),Vector2(1,1),Vector2(0,1)]:
 				vertices.append(Vector3(star.x+uv.x*2,star.y+uv.y*2,0))
 				uvs.append(uv)
-				colors.append(Color(star.z,star.x/1440.0,star.y/810.0,1))
+				colors.append(Color(star.z,star.x/BattleGame.BATTLE_SIZE.x,star.y/BattleGame.BATTLE_SIZE.y,1))
 			indices.append_array(PackedInt32Array([offset,offset+1,offset+2,offset,offset+2,offset+3]))
 		var arrays := []
 		arrays.resize(Mesh.ARRAY_MAX)
@@ -1244,10 +1403,10 @@ func draw_stars() -> void:
 	draw_surface.draw_mesh(stars_mesh,null)
 
 func draw_resources() -> void:
-	text_at(str(UIText.data_text("resources",str("1"))),Vector2(850,34),11,MUTED)
-	text_at(resource_display("1"),Vector2(850,58),22,INK)
-	text_at(str(UIText.data_text("resources",str("2"))),Vector2(1040,34),11,MUTED)
-	text_at(resource_display("2"),Vector2(1040,58),22,PURPLE)
+	text_at(str(UIText.data_text("resources",str("1"))),Vector2(350,32),11,MUTED)
+	text_at(resource_display("1"),Vector2(350,56),21,INK)
+	text_at(str(UIText.data_text("resources",str("2"))),Vector2(500,32),11,MUTED)
+	text_at(resource_display("2"),Vector2(500,56),21,PURPLE)
 
 func draw_overlay() -> void:
 	if message_time > 0 and not help_open and game.pending_unlocks.is_empty():
@@ -1283,28 +1442,11 @@ func fit_battle_text(value: String, width: float, size: int) -> String:
 	return value + "…"
 
 func draw_battle() -> void:
-	var length := float(db.levels[game.stage-1].length)
-	text_at(UIText.t("battle.stage", {"stage":"%s" % (str(int(game.stage)))}),Vector2(39,111),21)
 	var boss_battle := game.state == BattleGame.State.COMBAT and game.is_boss_encounter()
-	var boss_title := UIText.t("battle.draw_battle.text_02", {"targets":"%s" % (number(game.targets().size())), "enemies":"%s" % (number(game.enemies.size()))}) if boss_battle else UIText.t("battle.boss_info",{"name":game.boss_info()})
-	text_at(fit_battle_text(boss_title, 570, 16),Vector2(175,111),16,ORANGE)
-	text_at(UIText.t("battle.draw_battle.text_03", {"distance":"%s" % (number(game.distance)), "length":"%s" % (number(length))}),Vector2(40,142),13,MUTED)
-	bar(Rect2(40,155,1362,3),game.distance/length,CYAN)
-	for j in range(9):
-		var xx := 40+1362*float(j+1)/10
-		draw_surface.draw_circle(Vector2(xx,156),4,CYAN if game.group_index>j else LINE)
-	var travel_status := UIText.t("battle.draw_battle.text_04") if game.state==BattleGame.State.RETREAT else UIText.t("battle.draw_battle.text_05") if game.state==BattleGame.State.COMBAT else UIText.t("battle.draw_battle.text_06")
-	if game.guarding_here() and game.state == BattleGame.State.COMBAT and game.targets().is_empty():
-		travel_status = UIText.t("battle.draw_battle.text_07", {"guard_elapsed":"%s" % (number(maxf(0,game.guard_interval()-game.guard_elapsed)))})
-	text_at(travel_status,Vector2(40,197),12,CYAN)
-	text_at(UIText.t("battle.draw_battle.text_08", {"group_index":"%s" % (number(game.group_index)), "value":"%s" % (number(9))}),Vector2(1266,197),13,MUTED)
 	var offset := Vector2(randf_range(-shake,shake),randf_range(-shake,shake))
-	for slot in range(10):
-		text_at(UIText.t("battle.slot_number",{"slot":"%02d" % slot}),Vector2(1370,202+slot*44),10,Color("34475c"))
-		draw_surface.draw_line(Vector2(1330,198+slot*44),Vector2(1353,198+slot*44),Color("253345"))
 	for drop in game.drops:
 		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
-		var pos := Vector2(drop.x,drop.y)
+		var pos := battle_point(Vector2(drop.x,drop.y))
 		var color := INK if drop.id=="1" else PURPLE
 		var bob := sin(clock*3+float(drop.uid))*3
 		var furnace: bool = drop.get("hightech", false)
@@ -1314,33 +1456,33 @@ func draw_battle() -> void:
 			draw_surface.draw_set_transform(pos+Vector2(0,bob),0.0,Vector2(0.25,0.25))
 			draw_auto_uranium(Vector2.ZERO,float(drop.uid))
 			draw_surface.draw_set_transform(Vector2.ZERO)
-			text_at(UIText.data_text("resources","2"),pos+Vector2(-6,25+bob),11,Color("e9ddff"))
-			if pos.distance_to(get_global_mouse_position())<40:
+			text_at(UIText.data_text("resources","2"),Vector2(12,pos.y+25+bob),11,Color("e9ddff"))
+			if pos.distance_to(battle_layer.to_local(get_global_mouse_position()))<40:
 				text_at(UIText.t("battle.draw_battle.text_11",{"amount":number(drop.amount),"id":UIText.data_text("resources","2")}),pos+Vector2(-25,42+bob),12,PURPLE)
 			continue
 		if furnace:
 			color = PURPLE if core else ORANGE
 			box(Rect2(pos-Vector2(18,18),Vector2(36,36)),PANEL,color)
-			text_at(UIText.t("battle.jewel_furnace_core" if core else "battle.draw_battle.text_09"),pos+Vector2(-25,-31),12,color)
+			text_at(UIText.t("battle.jewel_furnace_core" if core else "battle.draw_battle.text_09"),Vector2(12,pos.y-31),12,color)
 		if auto_gen:
-			draw_surface.draw_line(pos+Vector2(22,0),pos+Vector2(62,0),Color(color,0.25),2)
+			draw_surface.draw_line(pos-Vector2(0,20),pos-Vector2(0,60),Color(color,0.25),2)
 		elif not furnace:
 			pass
 		else:
 			draw_surface.draw_arc(pos,24,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/10.0,0,1),24,Color(color,0.35),2)
 		text_at("⬡" if drop.id=="1" else "◇",pos+Vector2(-10,7+bob),16,Color(color,0.65))
-		if furnace or pos.distance_to(get_global_mouse_position())<40:
+		if furnace or pos.distance_to(battle_layer.to_local(get_global_mouse_position()))<40:
 			var caption := UIText.t("battle.jewel_furnace_amount",{"amount":number(drop.amount)}) if core else UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
-			text_at(caption,pos+Vector2(-19,26),12,color)
+			text_at(fit_battle_text(caption,170,12),Vector2(12,pos.y+26),12,color)
 	draw_battle_particles(offset,false)
 	var visual_index := projectile_visual_index()
 	var flights: Array = []
 	for p in game.projectiles:
-		var pos := Vector2(p.x,p.y)+offset
+		var pos := battle_point(Vector2(p.x,p.y))+offset
 		if p.get("beam", false):
-			pos = visual_muzzle(p)+offset
+			pos = battle_point(visual_muzzle(p))+offset
 			if game.long_laser_valid(p):
-				var end := Vector2(p.target.x, p.target.y) + offset
+				var end := battle_point(Vector2(p.target.x, p.target.y)) + offset
 				var color := ORANGE if p.hostile else CYAN
 				if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
 					draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
@@ -1350,36 +1492,27 @@ func draw_battle() -> void:
 			continue
 		var flight_visual := projectile_visual(p,visual_index)
 		if not flight_visual.is_empty():
-			pos = missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual)+offset
+			pos = battle_point(missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual))+offset
 		var trail_budget := decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(flight_visual.samples)>5 else 1
 		flights.append({"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget})
 		draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
 	if game.player.armour>0 or game.state==BattleGame.State.RETREAT:
-		draw_ship(Vector2(game.player.x,game.player.y)+offset,0.24,false,1,game.player.shield>0)
-		var name_y := maxf(489,float(game.player.y)+SHIP_VISUALS.CANVAS.y*SHIP_VISUALS.player_display_scale(db.ship(str(game.profile.selectedShip)))/2+18)
-		text_at(game.ship_name(),Vector2(246,name_y),16,INK)
-		text_at(UIText.t("battle.draw_battle.text_12", {"selectedShip":"%s" % (UIText.data_text("ship",str(game.profile.selectedShip),"code")), "weapon_entries":"%02d" % (game.weapon_entries().size()), "defense_entries":"%02d" % (game.defense_entries().size())}),Vector2(215,name_y+26),11,MUTED)
+		draw_ship(battle_point(Vector2(game.player.x,game.player.y))+offset,0.24,false,1,game.player.shield>0)
 	for enemy in game.enemies:
 		if enemy.hp <= 0:
 			continue
-		var pos := Vector2(enemy.x,enemy.y)+offset
-		var dimensions: Vector2 = SHIP_VISUALS.CANVAS * SHIP_VISUALS.enemy_scale_for(enemy)
-		draw_surface.draw_set_transform(pos,0.0,Vector2(-1,1))
+		var pos := battle_point(Vector2(enemy.x,enemy.y))+offset
+		var dimensions: Vector2 = SHIP_VISUALS.CANVAS * SHIP_VISUALS.enemy_scale_for(enemy)*(1.12 if boss_battle else 1.06 if int(enemy.size)>=3 else 1.0)
+		draw_surface.draw_set_transform(pos,PI/2,Vector2.ONE)
 		draw_surface.draw_texture_rect(ENEMY_SHIP_TEXTURES[clampi(int(enemy.size)-1,0,ENEMY_SHIP_TEXTURES.size()-1)],Rect2(-dimensions/2,dimensions),false)
 		draw_surface.draw_set_transform(Vector2.ZERO)
-		var w := dimensions.x * 0.8
-		bar(Rect2(pos.x-w/2,pos.y-dimensions.y/2,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+		var w := dimensions.y * 0.8
+		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
 		if boss_battle:
-			var marker := pos + Vector2(dimensions.x/2+8,-10)
+			var marker := pos + Vector2(dimensions.y/2+4,-10)
+			marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
 			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
 			text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
-	for card in boss_health_cards():
-		var rect: Rect2 = card.rect
-		var color: Color = ORANGE if int(card.enemy.armourType) == 2 else CYAN
-		box(rect,Color("131e2c"),Color("34475c"))
-		text_at(fit_battle_text(card.label,rect.size.x-24,14),rect.position+Vector2(12,18),14,color)
-		text_at(card.health,rect.position+Vector2(12,36),13,INK)
-		bar(Rect2(rect.position+Vector2(12,44),Vector2(rect.size.x-24,4)),card.ratio,color)
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	for flight in flights:
 		var p: Dictionary = flight.shot
@@ -1395,7 +1528,7 @@ func draw_battle() -> void:
 	for shot in game.projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
 		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
-			var pos := visual_muzzle(shot)+offset
+			var pos := battle_point(visual_muzzle(shot))+offset
 			var color := ORANGE if shot.hostile else CYAN
 			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
 			var radius := lerpf(28.0,8.0,progress)
@@ -1407,9 +1540,9 @@ func draw_battle() -> void:
 				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
 		elif int(shot.ticks)>0:
 			var beam := beam_style(shot)
-			var end := Vector2(shot.target.x,shot.target.y)+offset
+			var end := battle_point(Vector2(shot.target.x,shot.target.y))+offset
 			var color := ORANGE if shot.hostile else CYAN
-			var pos := visual_muzzle(shot)+offset
+			var pos := battle_point(visual_muzzle(shot))+offset
 			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width,true)
 			draw_surface.draw_line(pos,end,Color(1,1,1,0.18+beam.pulse*0.7),beam.width*0.32,true)
 			for stream in range(4):
@@ -1422,38 +1555,23 @@ func draw_battle() -> void:
 	draw_battle_particles(offset,true)
 	for f in floats:
 		if f.get("damage",false) and not show_damage_numbers:continue
-		text_at(f.text,f.pos,int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
-	if wave_hint>0:
-		text_at(UIText.t("battle.draw_battle.text_13"),Vector2(670,235),18,Color(CYAN,minf(1,wave_hint*3)))
-	text_at(UIText.t("battle.hp", {"current_hp":"%s" % (number(game.player.armour)), "max_hp":"%s" % (number(game.stat("armour")))}),Vector2(40,587),15,INK)
-	bar(Rect2(40,598,273,5),float(game.player.armour)/game.stat("armour"),ORANGE)
-	if game.profile.unlocked.has("shield"):
-		text_at(UIText.t("battle.shield", {"current_shield":"%s" % (number(game.player.shield)), "max_shield":"%s" % (number(game.max_shield()))}),Vector2(343,587),15,CYAN)
-		bar(Rect2(343,598,273,5),float(game.player.shield)/maxf(1,game.max_shield()),CYAN)
-	text_at(UIText.t("battle.draw_battle.text_16", {"autoCollectDelay":"%s" % (number(float(db.defaults.autoCollectDelay))), "autoCollectReduce":"%s" % (number((1.0-float(db.config.autoCollectReduce))*100))}),Vector2(650 if boss_battle else 1010,596),12,MUTED)
-	if game.state == BattleGame.State.LEVEL_CLEAR and game.pending_unlocks.is_empty():
-		box(Rect2(430,280,580,95),Color("101c2b"),CYAN)
-		text_at(UIText.t("battle.draw_battle.text_17", {"stage":"%s" % (str(int(game.stage)))}),Vector2(458,318),26,CYAN)
-		var target := game.next_stage()
-		text_at(UIText.t("battle.draw_battle.text_18", {"clear_timer":"%s" % (number(maxf(0,game.clear_timer)))}) if game.guarding_here() else UIText.t("battle.draw_battle.text_19", {"clear_timer":"%s" % (number(maxf(0,game.clear_timer))), "target":"%s" % (str(int(target)))}),Vector2(458,352),17,INK)
-	if game.paused and game.pending_unlocks.is_empty():
-		if boss_battle:
-			box(Rect2(565,533,310,46),Color("142334"),CYAN)
-			text_at(UIText.t("battle.draw_battle.text_20"),Vector2(661,553),20,CYAN)
-			text_at(UIText.t("battle.draw_battle.text_21"),Vector2(648,571),14,MUTED)
-		else:
-			box(Rect2(565,296,310,92),Color("142334"),CYAN)
-			text_at(UIText.t("battle.draw_battle.text_20"),Vector2(637,336),26,CYAN)
-			text_at(UIText.t("battle.draw_battle.text_21"),Vector2(648,365),14,MUTED)
+		var point := battle_point(f.pos)
+		var font_size := int(f.get("size",18))
+		var caption: String = f.text
+		if not f.get("damage",false):
+			point=Vector2(12 if f.pos.x<286 else 438,clampf(point.y,140,850))
+			font_size=13
+			caption=fit_battle_text(caption,122,font_size)
+		text_at(caption,point,font_size,Color(f.color,clampf(float(f.life)/0.2,0,1)))
 
 func draw_auto_uranium(pos: Vector2, uid: float) -> void:
-	# The generated ore moves left. Keep its glow and wake behind the crystal.
+	# The generated ore moves down toward the player.
 	var pulse := 0.5+0.5*sin(fx_time*4.0+uid)
 	var violet := Color("aa83ff")
 	var ice := Color("e9ddff")
 	for i in range(3):
-		var wake := pos+Vector2(38.0+float(i)*24.0,6.0*sin(fx_time*5.0+uid+float(i)))
-		draw_surface.draw_line(pos+Vector2(15,0),wake,Color(violet,0.34-float(i)*0.07),5.0-float(i),true)
+		var wake := pos+Vector2(6.0*sin(fx_time*5.0+uid+float(i)),-38.0-float(i)*24.0)
+		draw_surface.draw_line(pos-Vector2(0,15),wake,Color(violet,0.34-float(i)*0.07),5.0-float(i),true)
 		draw_surface.draw_circle(wake,3.0-float(i)*0.5,Color(ice,0.6-float(i)*0.12))
 	draw_surface.draw_circle(pos,35.0+4.0*pulse,Color(violet,0.075+0.025*pulse))
 	draw_surface.draw_circle(pos,26.0,Color(violet,0.13))
@@ -1474,35 +1592,35 @@ func draw_battle_particles(offset: Vector2, core: bool) -> void:
 		if bool(p.has("flash") or p.has("spark") or p.has("fragment") or p.has("ring"))!=core:continue
 		if p.has("fragment"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
-			draw_surface.draw_set_transform(p.pos+offset,float(p.spin)*(1.0-fade),Vector2(-1,1))
+			draw_surface.draw_set_transform(battle_point(p.pos)+offset,float(p.spin)*(1.0-fade),Vector2(-1,1))
 			draw_surface.draw_texture_rect_region(p.texture,Rect2(-p.extent/2,p.extent),p.region,Color(1,0.8+fade*0.2,0.65+fade*0.35,fade))
 			draw_surface.draw_set_transform(Vector2.ZERO)
 		elif p.has("flash"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
-			draw_surface.draw_circle(p.pos+offset,float(p.size)*0.55,Color(p.color,fade*0.45))
-			draw_surface.draw_circle(p.pos+offset,float(p.size)*fade*0.4,Color(1,0.98,0.88,fade))
+			draw_surface.draw_circle(battle_point(p.pos)+offset,float(p.size)*0.55,Color(p.color,fade*0.45))
+			draw_surface.draw_circle(battle_point(p.pos)+offset,float(p.size)*fade*0.4,Color(1,0.98,0.88,fade))
 			for ray in 4:
 				var direction := Vector2.from_angle(float(ray)*PI/2+0.35)
-				draw_surface.draw_line(p.pos+offset,p.pos+offset+direction*float(p.size)*fade*1.5,Color(p.color,fade),2.0*fade,true)
+				draw_surface.draw_line(battle_point(p.pos)+offset,battle_point(p.pos)+offset+direction*float(p.size)*fade*1.5,Color(p.color,fade),2.0*fade,true)
 		elif p.has("spark"):
-			draw_surface.draw_line(p.pos+offset,p.pos-p.vel.normalized()*float(p.size)+offset,Color(p.color,clampf(float(p.life)*8,0,1)),2.2,true)
+			draw_surface.draw_line(battle_point(p.pos)+offset,battle_point(p.pos)-p.vel.normalized()*float(p.size)+offset,Color(p.color,clampf(float(p.life)*8,0,1)),2.2,true)
 		elif p.has("smoke"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
-			draw_surface.draw_circle(p.pos+offset,float(p.size)*(1.0+(1.0-fade)*1.6),Color(p.color,fade*0.22))
+			draw_surface.draw_circle(battle_point(p.pos)+offset,float(p.size)*(1.0+(1.0-fade)*1.6),Color(p.color,fade*0.22))
 		elif p.has("ring"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
-			draw_surface.draw_arc(p.pos+offset,float(p.size)*(1.0-fade)+2.0,0,TAU,24,Color(p.color,fade),2.0,true)
+			draw_surface.draw_arc(battle_point(p.pos)+offset,float(p.size)*(1.0-fade)+2.0,0,TAU,24,Color(p.color,fade),2.0,true)
 		elif p.has("beam_end"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
-			draw_surface.draw_line(p.pos+offset,p.pos.lerp(p.beam_end,fade)+offset,Color(p.color,fade*0.65),float(p.size)*fade,true)
+			draw_surface.draw_line(battle_point(p.pos)+offset,battle_point(p.pos.lerp(p.beam_end,fade))+offset,Color(p.color,fade*0.65),float(p.size)*fade,true)
 		else:
-			draw_surface.draw_circle(p.pos+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
+			draw_surface.draw_circle(battle_point(p.pos)+offset,float(p.size),Color(p.color,clampf(float(p.life)*2,0,1)))
 
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield: bool) -> void:
 	if not hostile and SHIP_TEXTURES.has(str(game.profile.selectedShip)):
 		var ship_key := str(game.profile.selectedShip)
-		scale_value = SHIP_VISUALS.player_display_scale(db.ship(ship_key))
-		draw_surface.draw_set_transform(pos,0.0,Vector2.ONE*scale_value)
+		scale_value = player_art_scale()
+		draw_surface.draw_set_transform(pos,-PI/2,Vector2.ONE*scale_value)
 		draw_surface.draw_texture_rect(SHIP_TEXTURES[ship_key],Rect2(-SHIP_VISUALS.CANVAS/2,SHIP_VISUALS.CANVAS),false)
 		var entries := game.weapon_entries()
 		for index in range(entries.size()):
@@ -1520,7 +1638,7 @@ func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shiel
 			if key=="cannon" and turret_visuals.has(index):
 				recoil = 8.0*clampf(float(turret_visuals[index].recoil)/0.13,0,1)/scale_value
 			# Rotate around the original socket; recoil follows the barrel's local axis.
-			draw_surface.draw_set_transform(pos+SHIP_VISUALS.center(ship_key,index)*scale_value,angle,Vector2.ONE*scale_value)
+			draw_surface.draw_set_transform(pos+SHIP_VISUALS.center(ship_key,index).rotated(-PI/2)*scale_value,-PI/2+angle,Vector2.ONE*scale_value)
 			var mount := Vector2(-recoil,0)
 			var backing := Rect2(mount-icon_size/2,icon_size).grow(4)
 			draw_surface.draw_rect(backing,Color("09131f"))
@@ -1617,8 +1735,10 @@ func build_equipment_tabs() -> void:
 	charge_nav_backdrop.visible = false
 	ui.add_child(charge_nav_backdrop)
 	equipment_tabs = TabContainer.new()
-	equipment_tabs.position = Vector2(38,620)
-	equipment_tabs.size = Vector2(1364,156)
+	equipment_tabs.position = WORK_CONTENT_RECT.position
+	equipment_tabs.size = WORK_CONTENT_RECT.size
+	equipment_tabs.scale = WORK_CONTENT_SCALE
+	equipment_tabs.tabs_visible = false
 	equipment_tabs.add_theme_font_override("font",font)
 	equipment_tabs.add_theme_font_size_override("font_size",16)
 	equipment_tabs.add_theme_stylebox_override("panel",style(Color("0c1522"),LINE))
@@ -1661,14 +1781,14 @@ func build_equipment_tabs() -> void:
 			if index==4:jewel_panel.open()
 			else:set_ui_value(jewel_panel,"visible",false)
 		layout_charge_page()
+		refresh_system_nav()
 		sync_battle_visibility()
 		refresh_visible_cards())
 	layout_charge_page()
 
-func return_to_battle() -> void:
-	# Navigation only: preserve the battle and all existing feature controls.
+func return_to_first_system() -> void:
+	# Existing gem close path returns to the first available system.
 	if is_instance_valid(jewel_panel):set_ui_value(jewel_panel,"visible",false)
-	equipment_panel.set_view_mode("compact")
 	var first := -1
 	for index in equipment_tabs.get_tab_count():
 		if not equipment_tabs.is_tab_hidden(index):
@@ -1677,13 +1797,6 @@ func return_to_battle() -> void:
 	equipment_page = first
 	set_ui_value(equipment_tabs,"current_tab",first)
 	layout_charge_page()
-
-func layout_battle_return() -> void:
-	if not is_instance_valid(battle_return_button):return
-	set_ui_value(battle_return_button,"position",Vector2(500,25))
-	set_ui_value(battle_return_button,"size",Vector2(140,38))
-	set_ui_value(battle_return_button,"visible",not help_open and game.pending_unlocks.is_empty())
-	ui.move_child(battle_return_button,-1)
 
 func refresh_equipment_cards(only_slot := "") -> void:
 	if is_instance_valid(equipment_panel):
@@ -1761,20 +1874,9 @@ func build_charge_tab() -> void:
 	charge_cards = charge_panel.cards
 
 func layout_charge_page() -> void:
-	layout_battle_return()
-	var expanded := equipment_tabs.current_tab in [1,2,3,4,5,6]
-	set_ui_value(charge_nav_backdrop,"visible",expanded)
-	if equipment_tabs.current_tab==4:
-		equipment_panel.stop_transition()
-		set_ui_value(equipment_tabs,"position",Vector2(38,96))
-		set_ui_value(equipment_tabs,"size",Vector2(1364,679))
-		return
-	if equipment_tabs.current_tab == 0:
-		equipment_panel.apply_view_layout(false)
-		return
-	equipment_panel.stop_transition()
-	set_ui_value(equipment_tabs,"position",Vector2(38,84 if expanded else 620))
-	set_ui_value(equipment_tabs,"size",Vector2(1364,692 if expanded else 156))
+	set_ui_value(charge_nav_backdrop,"visible",false)
+	set_ui_value(equipment_tabs,"position",WORK_CONTENT_RECT.position)
+	set_ui_value(equipment_tabs,"size",WORK_CONTENT_RECT.size)
 
 func charge_progress_bar(card: Control, pos: Vector2, width: float, color: Color) -> ColorRect:
 	var progress := ColorRect.new()
@@ -1842,18 +1944,20 @@ func build_hightech_tab() -> void:
 	var scroll := ScrollContainer.new()
 	hightech_scroll = scroll
 	scroll.position = Vector2(12,121)
-	scroll.size = Vector2(1336,526)
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.size = Vector2(1336,1035)
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	hightech_page.add_child(scroll)
-	var cards := HBoxContainer.new()
-	cards.add_theme_constant_override("separation",12)
+	var cards := GridContainer.new()
+	cards.columns=2
+	cards.add_theme_constant_override("h_separation",12)
+	cards.add_theme_constant_override("v_separation",12)
 	scroll.add_child(cards)
 	hightech_container = cards
 	var slots := game.hightech_slots().filter(func(key):return not str(key).is_empty())
 	for index in range(slots.size()):build_hightech_card(index,str(slots[index]))
 	refresh_scientists()
-	scroll.set_deferred("scroll_horizontal",hightech_scroll_offset)
+	scroll.set_deferred("scroll_vertical",hightech_scroll_offset)
 
 func build_hightech_card(_index: int, key: String) -> void:
 	var card := Panel.new()
@@ -1875,27 +1979,28 @@ func build_hightech_card(_index: int, key: String) -> void:
 	var state := equipment_label(card,"",Vector2(14,46),12,construction.accent)
 	var percent := equipment_card_label(card,"",Rect2(172,44,137,24),12,MUTED)
 	percent.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	var description := equipment_card_label(card,game.hightech_description(key),Rect2(14,388,296,44),13,INK)
+	var description := equipment_card_label(card,game.hightech_description(key),Rect2(330,94,296,178),13,INK)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	description.size = Vector2(296,44)
+	description.size = Vector2(296,178)
 	description.tooltip_text = description.text
 	description.mouse_filter = Control.MOUSE_FILTER_PASS
 	hightech_descriptions[key] = description
-	var metrics := equipment_card_label(card,"",Rect2(14,434,296,24),11,MUTED)
-	var workers := equipment_card_label(card,"",Rect2(14,469,110,24),13,construction.accent)
+	var metrics := equipment_card_label(card,"",Rect2(330,300,296,90),11,MUTED)
+	metrics.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var workers := equipment_card_label(card,"",Rect2(330,424,296,24),13,construction.accent)
 	hightech_progress[key] = {"label":metrics,"construction":construction,"state":state,"percent":percent,"workers":workers}
 	refresh_hightech_progress(key)
-	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(131,465,39,31),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
+	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(330,465,54,31),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
 	remove.reparent(card,false)
 	remove.add_theme_font_size_override("font_size",12)
 	scientist_remove_buttons[key] = remove
-	var add := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(177,465,39,31),func():game.assign_scientist(key,1),true,not game.can_research(key))
+	var add := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(392,465,54,31),func():game.assign_scientist(key,1),true,not game.can_research(key))
 	add.reparent(card,false)
 	add.add_theme_font_size_override("font_size",12)
 	hightech_buttons[key] = add
 	scientist_assignment_buttons[key]=[]
 	for amount in [10,-1]:
-		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(223 if amount==10 else 269,465,39,31),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),false,not game.can_research(key))
+		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(454 if amount==10 else 516,465,54,31),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),false,not game.can_research(key))
 		action.reparent(card,false)
 		action.add_theme_font_size_override("font_size",11)
 		scientist_assignment_buttons[key].append(action)

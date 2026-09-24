@@ -20,7 +20,7 @@ func _initialize() -> void:
 
 func run() -> void:
 	var viewport := SubViewport.new()
-	viewport.size = Vector2i(1440, 810)
+	viewport.size = Vector2i(2048, 1280)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
 	var scene := TrackedUI.new()
@@ -42,7 +42,7 @@ func run() -> void:
 	check(scene.planet_panel.cards.size() == 1, "First planet shown")
 	var card: Dictionary = scene.planet_panel.cards.first
 	check(card.stage.size.x > card.root.size.x * 2.0 and card.stage.size.y > 500, "Central planet stage dominates side panels")
-	check(card.stage.get_global_rect().end.y <= card.rail.get_global_rect().position.y and card.rail.get_global_rect().end.y < 810, "Stage and facility rail fit viewport")
+	check(card.stage.get_global_rect().end.y <= card.rail.get_global_rect().position.y and card.rail.get_global_rect().end.y <= 1200, "Stage and facility rail fit viewport")
 	var selected_style: StyleBox = card.list_button.get_theme_stylebox("normal")
 	scene.planet_panel.refresh()
 	check(card.list_button.get_theme_stylebox("normal") == selected_style, "Stable refresh keeps planet selection style instance")
@@ -81,7 +81,7 @@ func run() -> void:
 	scene.equipment_tabs.current_tab = 6
 	card.visual.advance(1.0, true)
 	check(is_equal_approx(card.visual.phase, visible_phase), "Paused planet stops decorative motion")
-	check(scene.equipment_tabs.size.y > 600 and card.start.get_global_rect().end.y < 810, "Planet page and actions fit viewport")
+	check(scene.equipment_tabs.size.y > 600 and card.start.get_global_rect().end.y <= 1200, "Planet page and actions fit viewport")
 	check(card.crew_ids.size() > 0 and not card.start.disabled, "Idle crew available")
 	var chosen := str(card.crew_ids[0]) if not card.crew_ids.is_empty() else ""
 	card.start.pressed.emit()

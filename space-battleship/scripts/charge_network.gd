@@ -38,7 +38,7 @@ func sync_geometry(source: Control, ports: Dictionary, viewport: Control) -> voi
 			changed=true
 	for key in ports:
 		var end := anchor_position(ports[key])
-		var shown := end.x>=left_top.x+2 and end.x<=right_bottom.x-2
+		var shown := end.x>=left_top.x+2 and end.x<=right_bottom.x-2 and end.y>=left_top.y+2 and end.y<=right_bottom.y-2
 		var tap := Vector2(end.x,bus_y)
 		if not routes.has(key):
 			routes[key]={"state":"available","active":false,"distance":0.0,"signature":[]}

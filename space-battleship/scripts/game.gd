@@ -16,6 +16,8 @@ const HIGHTECH_SLOTS_PER_PAGE := 3
 const HIGHTECH_MIN_SLOTS := 6
 const WEAPON_KEYS := ["laser", "missile", "cannon", "longLaser"]
 const DEFENSE_KEYS := ["armour", "shield"]
+const BATTLE_SIZE := Vector2(572,696)
+const PLAYER_POSITION := Vector2(286,520)
 var db: ShipDatabase
 var profile: Dictionary
 var crew := preload("res://scripts/crew_system.gd").new()
@@ -321,7 +323,13 @@ func load_hightech(raw: Dictionary) -> void:
 				if id not in ["1","jewel"]:
 					continue
 				uid += 1
-				var restored := {"uid":uid,"x":clampf(float(drop.x),80,1300),"y":clampf(float(drop.y),285,520),"age":float(drop.age),"id":id,"amount":ceilf(float(drop.amount)),"hightech":true}
+				var drop_x := float(drop.x)
+				var drop_y := float(drop.y)
+				if drop_x>BATTLE_SIZE.x:
+					var old_x := drop_x
+					drop_x=lerpf(70,BATTLE_SIZE.x-70,clampf((drop_y-300.0)/205.0,0,1))
+					drop_y=lerpf(250,480,clampf((old_x-440.0)/780.0,0,1))
+				var restored := {"uid":uid,"x":clampf(drop_x,30,BATTLE_SIZE.x-30),"y":clampf(drop_y,80,BATTLE_SIZE.y-80),"age":float(drop.age),"id":id,"amount":ceilf(float(drop.amount)),"hightech":true}
 				if id == "jewel":
 					restored.jewel = true
 					restored.jewelRatio = 1.0
@@ -1159,8 +1167,8 @@ func advance_auto_gen(dt: float) -> void:
 	for drop in drops.duplicate():
 		if not drop.get("auto_gen", false):
 			continue
-		drop.x -= float(drop.speed) * dt
-		if drop.x <= float(player.x):
+		drop.y += float(drop.speed) * dt
+		if drop.y >= float(player.y):
 			collect(drop, false)
 	var settings := auto_gen_settings()
 	if not is_active() or settings.is_empty():
@@ -1173,7 +1181,7 @@ func advance_auto_gen(dt: float) -> void:
 	for _i in range(count):
 		uid += 1
 		var amount := ceilf(float(settings.amount) * ratio("resRatio"))
-		drops.append({"uid":uid,"x":1440.0,"y":rng.randf_range(285.0,520.0),"age":0.0,"id":settings.resource_id,"amount":amount,"speed":settings.speed,"auto_gen":true})
+		drops.append({"uid":uid,"x":rng.randf_range(70.0,BATTLE_SIZE.x-70.0),"y":0.0,"age":0.0,"id":settings.resource_id,"amount":amount,"speed":settings.speed,"auto_gen":true})
 
 func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 	for drop in drops.duplicate():
@@ -1205,7 +1213,7 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			var income := furnace_income_peak(produced_at,jewel_furnace)
 			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
 			var amount := ceilf(income * float(row.para2) * hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")))
-			var block := {"uid":uid,"x":rng.randf_range(440,1220),"y":rng.randf_range(300,505),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
+			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
 			if jewel_furnace:
 				block.jewel = true
 				block.jewelRatio = 1.0
@@ -1220,7 +1228,7 @@ func reset_player() -> void:
 	jewel_defence_times.clear()
 	jewel_defence_damage.clear()
 	jewel_charged.clear()
-	player = {"x":280.0, "y":405.0, "armour":stat("armour"), "shield":max_shield()}
+	player = {"x":PLAYER_POSITION.x, "y":PLAYER_POSITION.y, "armour":stat("armour"), "shield":max_shield()}
 	since_hit = 100
 
 func change_state(next: State) -> void:
@@ -1376,8 +1384,8 @@ func spawn_group(keep_distance := false) -> void:
 		uid += 1
 		enemy.uid = uid
 		enemy.slot = slot
-		enemy.x = 1130.0
-		enemy.y = 198.0 + slot * 44.0
+		enemy.x = 66.0 + float(slot % 5) * 110.0
+		enemy.y = 140.0 + float(int(slot / 5)) * 95.0
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
 		enemy.max_hp = enemy.hp
 		enemy.res_ratio = ratio("resRatio")
@@ -1419,8 +1427,8 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 			var b_resists := int(b.armourType) == damage_type
 			if a_resists != b_resists:
 				return not a_resists
-		if a.x != b.x:
-			return a.x < b.x
+		if a.y != b.y:
+			return a.y > b.y
 		var ac := absf(float(a.slot) - 4.5)
 		var bc := absf(float(b.slot) - 4.5)
 		return ac < bc if ac != bc else a.slot < b.slot)
@@ -1446,25 +1454,25 @@ func enemy_weapon_offset(enemy: Dictionary, equipment_index: int) -> Vector2:
 			count += 1
 	var visuals = preload("res://scripts/ship_visuals.gd")
 	var dimensions: Vector2 = visuals.CANVAS * visuals.enemy_scale_for(enemy)
-	# fire() adds -45; compensate so all sizes launch from their left hull edge.
-	var launch_x := 45.0 - dimensions.x * 0.45
+	# Enemy noses point down, toward the player.
+	var launch_y := dimensions.x * 0.45
 	if count <= 1:
-		return Vector2(launch_x,0)
+		return Vector2(0,launch_y)
 	# Spread identical mounts across the visible hull, including its wings.
 	var half_span := dimensions.y * 0.3
-	return Vector2(launch_x, lerpf(-half_span, half_span, float(ordinal) / float(count - 1)))
+	return Vector2(lerpf(-half_span, half_span, float(ordinal) / float(count - 1)),launch_y)
 
 func player_weapon_offset(index: int) -> Vector2:
 	var visuals = preload("res://scripts/ship_visuals.gd")
-	return visuals.muzzle(str(profile.selectedShip), index) * visuals.scale_for(db.ship(str(profile.selectedShip)))
+	return visuals.muzzle(str(profile.selectedShip), index).rotated(-PI/2) * visuals.scale_for(db.ship(str(profile.selectedShip)))
 
 func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
-	projectiles.append({"x":float(source.x) + (-45 if hostile else 0) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
+	projectiles.append({"x":float(source.x) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
 	projectile_serial += 1
 	shot.serial = projectile_serial
-	shot.direction = Vector2(-1 if hostile else 1,0) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
+	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
@@ -1490,7 +1498,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		return
 	var offset := enemy_weapon_offset(source, mount) if hostile else player_weapon_offset(mount)
 	if repeated:
-		offset.y += 6.0
+		offset.x += 6.0
 	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
 	var shot: Dictionary = projectiles.back()
 	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
@@ -1509,8 +1517,8 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 		return
 	var offset := enemy_weapon_offset(shot.source, shot.mount) if shot.hostile else player_weapon_offset(shot.mount)
 	if shot.repeated:
-		offset.y += 6.0
-	shot.x = float(shot.source.x) + (-45 if shot.hostile else 0) + offset.x
+		offset.x += 6.0
+	shot.x = float(shot.source.x) + offset.x
 	shot.y = float(shot.source.y) + offset.y
 	shot.elapsed += dt
 	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else db.equip(shot.entry.key, int(shot.entry.level))
@@ -1629,7 +1637,7 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], cr
 			if rng.randf() < float(drop.chance):
 				uid += 1
 				var multiplier := charge_multiplier("熔炼器充能") if int(drop.resourceId) == 1 else 1.0
-				drops.append({"uid":uid,"x":enemy.x - 40,"y":enemy.y,"age":0.0,"id":str(int(drop.resourceId)),"amount":ceilf(float(drop.amount)*float(enemy.res_ratio)*multiplier*(1.0 + float(enemy.get("jewelIron", 0)) if int(drop.resourceId) == 1 else 1.0))})
+				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"age":0.0,"id":str(int(drop.resourceId)),"amount":ceilf(float(drop.amount)*float(enemy.res_ratio)*multiplier*(1.0 + float(enemy.get("jewelIron", 0)) if int(drop.resourceId) == 1 else 1.0))})
 
 		if float(enemy.get("jewelExplosion", 0)) > 0:
 			for adjacent in enemies.duplicate():
@@ -1989,7 +1997,7 @@ func tick_projectiles(dt: float) -> void:
 		shot.x += move.x
 		shot.y += move.y
 		# Include the rendered trail before removing an off-screen projectile.
-		if shot.x < -32 or shot.x > 1472 or shot.y < -32 or shot.y > 842:
+		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
 			shot.dead = true
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
 
@@ -2095,7 +2103,7 @@ func jewel_kill_drop(enemy: Dictionary) -> void:
 	if not jewels_unlocked() or rng.randf() >= float(db.config.get("jewelDrop",0)):
 		return
 	uid += 1
-	drops.append({"uid":uid,"x":enemy.x-65,"y":enemy.y+22,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
+	drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
 func sort_jewels(by_level: bool) -> void:
 	profile.jewels.sort_custom(func(a,b):

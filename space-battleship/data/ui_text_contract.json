@@ -195,7 +195,19 @@
     "battle.tab": {
       "params": []
     },
-    "battle.return": {
+    "hud.state.travel": {
+      "params": []
+    },
+    "hud.state.combat": {
+      "params": []
+    },
+    "hud.state.retreat": {
+      "params": []
+    },
+    "hud.state.clear": {
+      "params": []
+    },
+    "hud.state.paused": {
       "params": []
     },
     "main._ready.text_01": {

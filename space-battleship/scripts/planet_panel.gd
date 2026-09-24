@@ -10,11 +10,11 @@ var list_content: VBoxContainer
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
 	add_theme_font_override("font", host.font)
-	var list_frame := _panel(Rect2(16, 20, 258, 626), Color("0d1d2b"), Color("2b5268"))
+	var list_frame := _panel(Rect2(16, 20, 258, 1138), Color("0d1d2b"), Color("2b5268"))
 	host.equipment_card_label(list_frame, UIText.t("planet.list_heading"), Rect2(16, 12, 225, 34), 21, host.CYAN)
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(10, 56)
-	scroll.size = Vector2(238, 558)
+	scroll.size = Vector2(238, 1068)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	list_frame.add_child(scroll)
 	list_content = VBoxContainer.new()
@@ -84,52 +84,58 @@ func add_card(id: String) -> void:
 	list_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	list_button.pressed.connect(func():select_planet(id))
 	list_content.add_child(list_button)
-	var stage := _panel(Rect2(284, 20, 724, 514), Color("081827"), Color("2b5268"))
+	var stage := _panel(Rect2(284, 20, 724, 972), Color("081827"), Color("2b5268"))
 	var visual := preload("res://scripts/planet_visual.gd").new()
 	visual.position = Vector2(0, 36)
-	visual.size = Vector2(724, 478)
+	visual.size = Vector2(724, 936)
 	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visual.clip_contents = true
 	stage.add_child(visual)
 	var stage_title: Label = host.equipment_card_label(stage, "", Rect2(18, 7, 688, 34), 23, host.CYAN)
 	stage_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var rail := _panel(Rect2(284, 544, 724, 102), Color("0d1d2b"), Color("2b5268"))
+	var rail := _panel(Rect2(284, 1002, 724, 156), Color("0d1d2b"), Color("2b5268"))
 	host.equipment_card_label(rail, UIText.t("planet.facility_heading"), Rect2(16, 8, 680, 26), 17, host.CYAN)
-	var empty_facilities: Label = host.equipment_card_label(rail, UIText.t("planet.facility_empty"), Rect2(18, 43, 670, 32), 15, host.MUTED)
+	var empty_facilities: Label = host.equipment_card_label(rail, UIText.t("planet.facility_empty"), Rect2(18, 60, 670, 54), 15, host.MUTED)
 	var rail_scroll := ScrollContainer.new()
 	rail_scroll.position = Vector2(12, 36)
-	rail_scroll.size = Vector2(700, 58)
+	rail_scroll.size = Vector2(700, 108)
 	rail_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	rail.add_child(rail_scroll)
 	var rail_content := HBoxContainer.new()
 	rail_content.add_theme_constant_override("separation", 10)
 	rail_scroll.add_child(rail_content)
-	var root := _panel(Rect2(1018, 20, 320, 626), Color("0d1d2b"), Color("2b5268"))
+	var root := _panel(Rect2(1018, 20, 320, 1138), Color("0d1d2b"), Color("2b5268"))
 	var title: Label = host.equipment_card_label(root, "", Rect2(19, 18, 282, 42), 24, host.CYAN)
 	host.equipment_card_label(root, UIText.t("planet.info_heading"), Rect2(20, 68, 280, 32), 18, host.MUTED)
-	var detail: Label = host.equipment_card_label(root, "", Rect2(20, 106, 280, 84), 16)
+	var detail_scroll:=ScrollContainer.new()
+	detail_scroll.position=Vector2(20,106)
+	detail_scroll.size=Vector2(280,392)
+	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	root.add_child(detail_scroll)
+	var detail: Label = host.equipment_card_label(detail_scroll, "", Rect2(0, 0, 270, 360), 16)
+	detail.custom_minimum_size=Vector2(270,360)
 	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-	var progress: Label = host.equipment_card_label(root, "", Rect2(20, 224, 280, 54), 17, host.CYAN)
+	var progress: Label = host.equipment_card_label(root, "", Rect2(20, 548, 280, 90), 17, host.CYAN)
 	progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var bar := ProgressBar.new()
-	bar.position = Vector2(20, 285)
+	bar.position = Vector2(20, 648)
 	bar.size = Vector2(280, 12)
 	bar.show_percentage = false
 	bar.add_theme_stylebox_override("background", host.style(Color("152838"), Color("2b5268")))
 	bar.add_theme_stylebox_override("fill", host.style(Color("4bc7e9"), Color("4bc7e9")))
 	root.add_child(bar)
 	var picker := OptionButton.new()
-	picker.position = Vector2(20, 348)
+	picker.position = Vector2(20, 808)
 	picker.size = Vector2(280, 42)
 	picker.add_theme_font_override("font", host.font)
 	picker.add_theme_font_size_override("font_size", 16)
 	root.add_child(picker)
-	var start: Button = host.button(UIText.t("planet.start"), Rect2(20, 411, 280, 53), func():_start_exploration(id, picker), true)
+	var start: Button = host.button(UIText.t("planet.start"), Rect2(20, 878, 280, 53), func():_start_exploration(id, picker), true)
 	start.reparent(root, false)
-	var cancel: Button = host.button(UIText.t("planet.cancel"), Rect2(20, 411, 280, 53), func():host.game.cancel_planet_exploration(id))
+	var cancel: Button = host.button(UIText.t("planet.cancel"), Rect2(20, 878, 280, 53), func():host.game.cancel_planet_exploration(id))
 	cancel.reparent(root, false)
-	var feedback: Label = host.equipment_card_label(root, "", Rect2(20, 490, 280, 40), 18, host.CYAN)
+	var feedback: Label = host.equipment_card_label(root, "", Rect2(20, 970, 280, 72), 18, host.CYAN)
 	feedback.visible = false
 	cards[id] = {"root":root, "stage":stage, "rail":rail, "rail_content":rail_content, "list_button":list_button, "title":title, "stage_title":stage_title, "detail":detail, "progress":progress, "bar":bar, "picker":picker, "start":start, "cancel":cancel, "feedback":feedback, "empty_facilities":empty_facilities, "facility_buttons":{}, "visual":visual, "crew_ids":[], "selected":null}
 
@@ -153,6 +159,7 @@ func refresh_card(id: String) -> void:
 	host.set_ui_value(card.stage_title, "text", name)
 	host.set_ui_value(card.list_button, "text", UIText.t("planet.list_entry", {"planet":name, "degree":degree}))
 	host.set_ui_value(card.detail, "text", UIText.t("planet.detail", {"degree":degree, "bonus":"%.2f" % host.game.planet_equipment_multiplier(), "experience":"%.2f" % reward}))
+	host.set_ui_value(card.detail,"custom_minimum_size",Vector2(270,maxf(360.0,card.detail.get_line_count()*26.0)))
 	var crew_id := str(progress.get("crewId", ""))
 	var active := not crew_id.is_empty()
 	var member: Dictionary = host.game.crew.definitions(host.game).get(crew_id, {})

@@ -1,10 +1,38 @@
 [
   {
-    "key": "battle.return",
-    "text": "‹ 返回战场",
+    "key": "hud.state.travel",
+    "text": "航行中",
     "params": "",
-    "category": "battle",
-    "note": "顶部返回入口，收起功能大页并选中首个底部页签"
+    "category": "main",
+    "note": "顶部全局栏的航行状态"
+  },
+  {
+    "key": "hud.state.combat",
+    "text": "战斗中",
+    "params": "",
+    "category": "main",
+    "note": "顶部全局栏的战斗状态"
+  },
+  {
+    "key": "hud.state.retreat",
+    "text": "撤退中",
+    "params": "",
+    "category": "main",
+    "note": "顶部全局栏的撤退状态"
+  },
+  {
+    "key": "hud.state.clear",
+    "text": "关卡完成",
+    "params": "",
+    "category": "main",
+    "note": "顶部全局栏的通关状态"
+  },
+  {
+    "key": "hud.state.paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "main",
+    "note": "顶部全局栏的暂停状态"
   },
   {
     "key": "battle.tab",
@@ -4545,7 +4573,7 @@
   },
   {
     "key": "charge.navigation",
-    "text": "点击节点查看详情 · 横向滚动或翻页浏览更多系统",
+    "text": "点击节点查看详情 · 向下滚动或翻页浏览更多系统",
     "params": "",
     "category": "upgrade",
     "note": "充能页面",
@@ -6162,7 +6190,7 @@
   },
   {
     "key": "research.navigation",
-    "text": "项目自动接入 · 横向滚动查看更多建造舱",
+    "text": "项目自动接入 · 向下滚动查看更多建造舱",
     "params": "",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"

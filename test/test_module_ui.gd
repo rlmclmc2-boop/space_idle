@@ -15,7 +15,7 @@ func _initialize() -> void:call_deferred("run")
 func click(control: Control) -> void:
 	for pressed in [true,false]:
 		var event := InputEventMouseButton.new()
-		event.position=control.get_global_rect().get_center()
+		event.position=control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
 		event.button_index=MOUSE_BUTTON_LEFT
 		event.pressed=pressed
 		Input.parse_input_event(event)
@@ -38,8 +38,8 @@ func run() -> void:
 	await process_frame
 	var panel: Control=scene.equipment_panel
 	check(panel.cards.size()==12,"Every module has an independent card")
-	check(panel.cards.weapons_0.fields.status.text==UIText.t("equipment.state.upgradeable") and panel.cards.weapons_0.fields.status.modulate==scene.ORANGE,"Affordable equipped module shows highlighted upgrade status")
-	check(panel.cards.weapons_7.fields.status.text==UIText.t("equipment.state.upgradeable"),"Affordable empty module also shows upgrade status")
+	check(panel.cards.weapons_0.fields.status.text==UIText.t("equipment.state.equipped") and panel.cards.weapons_0.fields.upgrade.text==UIText.t("equipment.state.upgradeable"),"Equipped and upgrade states stay separate")
+	check(panel.cards.weapons_7.fields.status.text==UIText.t("equipment.state.unequipped") and panel.cards.weapons_7.fields.upgrade.text==UIText.t("equipment.state.upgradeable"),"Affordable empty module keeps both states")
 	scene.game.profile.resources={"1":0.0,"2":0.0}
 	panel.refresh()
 	check(panel.cards.weapons_0.fields.status.text==UIText.t("equipment.state.equipped") and panel.cards.weapons_7.fields.status.text==UIText.t("equipment.state.unequipped"),"Insufficient resources restores equipment and empty states")
@@ -56,31 +56,39 @@ func run() -> void:
 	panel.act("upgrade")
 	check(scene.game.slot_entry("weapons",0).level==3,"Empty module can upgrade")
 	panel.change_equipment("longLaser")
-	panel.toggle_details()
 	panel.sort_mode=1
 	panel.category_filter=1
 	panel.apply_filters()
 	var paused: bool=scene.game.paused
-	await click(panel.expand_button)
-	await create_timer(0.3).timeout
-	check(panel.equipment_view_mode=="expanded" and scene.equipment_tabs.position.y==120,"Actual expand button raises shared panel")
-	check(panel.grid.columns==4 and int(panel.grid_scroll.size.y/47)*4>=30,"Expanded grid fits at least 30 compact cards without enlarging them")
-	check(panel.cards.weapons_0.size==Vector2(235,43),"Cards retain compact dimensions")
-	check(panel.selected=="weapons_0" and panel.details_open and panel.sort_mode==1 and panel.category_filter==1,"View state preserved")
-	check(scene.game.paused==paused,"Expand does not pause battle")
-	check(panel.battlefield_shade.visible,"Expanded background dimmed")
-	panel.detail_scroll.scroll_vertical=100
+	check(panel.grid.columns==2 and panel.grid_scroll.position.y>=120 and panel.grid_scroll.size.y>900,"Two-column overview uses page height")
+	check(panel.detail_frame.position.x>panel.grid_scroll.position.x+panel.grid_scroll.size.x and panel.detail_scroll.size.y>900,"Inspector stays beside overview")
+	check(panel.cards.weapons_0.custom_minimum_size==Vector2(426,170),"Overview card has readable dimensions")
+	check(panel.selected=="weapons_0" and panel.details_open and panel.sort_mode==1 and panel.category_filter==1,"Selection and filters preserved")
+	check(scene.game.paused==paused and scene.workspace_frame.visible and scene.battle_layer.visible,"Equipment layout leaves battle active")
+	check(panel.detail.primary.text.contains(panel.items.weapons_0.mainStatValue) and panel.detail.stats.visible,"Inspector shows core stat and full details")
+	panel.toggle_details()
+	check(not panel.detail.stats.visible and panel.detail.slots.position.y==405 and panel.selected=="weapons_0","Collapsed details keep selection and operations")
+	panel.toggle_details()
+	check(panel.detail.stats.visible and panel.detail.slots.position.y>=756,"Full inspector restores attributes above operations")
+	var category_box: OptionButton=panel.filters.get_child(0)
+	category_box.select(2)
+	category_box.item_selected.emit(2)
+	check(panel.cards.defence_0.visible and not panel.cards.weapons_0.visible,"Defence filter isolates defence cards")
+	category_box.select(0)
+	category_box.item_selected.emit(0)
+	var overflow: Array[Control]=[]
+	for i in 50:
+		var placeholder := Control.new()
+		placeholder.custom_minimum_size=Vector2(426,170)
+		panel.grid.add_child(placeholder)
+		overflow.append(placeholder)
 	await process_frame
-	var offset: int=panel.detail_scroll.scroll_vertical
-	var esc := InputEventKey.new()
-	esc.keycode=KEY_ESCAPE
-	esc.pressed=true
-	Input.parse_input_event(esc)
-	await create_timer(0.3).timeout
-	check(panel.equipment_view_mode=="compact" and scene.game.paused==paused,"Escape collapses without pausing")
-	panel.set_view_mode("expanded")
-	await create_timer(0.3).timeout
-	check(panel.detail_scroll.scroll_vertical==offset,"Expanded detail scroll restored")
+	await process_frame
+	panel.grid_scroll.scroll_vertical=800
+	await process_frame
+	check(panel.grid_scroll.scroll_vertical>0 and panel.detail_frame.position.y==118,"Fifty more entries scroll only the overview")
+	for placeholder in overflow:placeholder.queue_free()
+	panel.grid_scroll.scroll_vertical=0
 	for key in cards:check(is_same(cards[key],panel.cards[key]),"Module card instance retained: "+key)
 	panel.refresh()
 	await process_frame

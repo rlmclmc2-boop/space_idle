@@ -28,7 +28,7 @@ func run() -> void:
 	var generated: Dictionary = g.drops[0]
 	check(generated.id == "2" and generated.amount == 13 and generated.auto_gen and generated.speed == 40, "Generated resource uses ID, multiplier, and speed")
 	g.tick(2.0)
-	check(is_equal_approx(generated.x, 1360.0), "Generated resource flies left at configured speed")
+	check(is_equal_approx(generated.y, 80.0), "Generated resource flies down at configured speed")
 	g.drops.clear()
 	g.profile.resources["2"] = 0
 	generated.x = 500
@@ -36,12 +36,12 @@ func run() -> void:
 	g.drops.append(generated)
 	g.collect_near(Vector2(500, 405))
 	check(g.profile.resources["2"] == 13 and g.drops.is_empty(), "Mouse crossing collects generated resource in full")
-	var passed_ship := {"uid":999,"x":281.0,"y":405.0,"age":0.0,"id":"2","amount":13.0,"speed":40.0,"auto_gen":true}
+	var passed_ship := {"uid":999,"x":g.player.x,"y":g.player.y-1.0,"age":0.0,"id":"2","amount":13.0,"speed":40.0,"auto_gen":true}
 	g.drops.append(passed_ship)
 	g.profile.resources["2"] = 0
 	g.tick(0.1)
 	check(g.profile.resources["2"] == 7 and g.drops.is_empty(), "Reaching ship applies automatic pickup loss")
-	var timed := {"uid":1000,"x":1000.0,"y":405.0,"age":float(db.defaults.autoCollectDelay),"id":"2","amount":13.0,"speed":1.0,"auto_gen":true}
+	var timed := {"uid":1000,"x":g.player.x,"y":100.0,"age":float(db.defaults.autoCollectDelay),"id":"2","amount":13.0,"speed":1.0,"auto_gen":true}
 	g.drops.append(timed)
 	g.tick(0.1)
 	check(g.drops.has(timed), "Generated resource does not use timed pickup")

@@ -13,6 +13,7 @@ var silhouette: ShaderMaterial
 var locked_previews: Dictionary = {}
 var locked_labels: Dictionary = {}
 var information: Array[Control] = []
+var choice_scroll: ScrollContainer
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
@@ -23,15 +24,28 @@ func setup(owner_ui: Node) -> void:
 	silhouette.shader = shader
 	host.equipment_card_label(self,UIText.t("ship.refit.title"),Rect2(24,10,600,36),24,host.CYAN)
 	information.append(host.equipment_card_label(self,UIText.t("ship.refit.hint"),Rect2(24,48,1260,28),14,host.MUTED))
-	var index := 0
+	for region in [Rect2(16,94,250,1060),Rect2(274,94,776,1060),Rect2(1060,94,272,1060)]:
+		var frame:=Panel.new()
+		frame.position=region.position
+		frame.size=region.size
+		frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		frame.add_theme_stylebox_override("panel",host.style(host.PANEL,host.LINE))
+		add_child(frame)
+	choice_scroll=ScrollContainer.new()
+	choice_scroll.position=Vector2(24,105)
+	choice_scroll.size=Vector2(234,1038)
+	choice_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(choice_scroll)
+	var choice_list:=VBoxContainer.new()
+	choice_list.add_theme_constant_override("separation",10)
+	choice_scroll.add_child(choice_list)
 	for key in host.db.ships:
 		var choice := Button.new()
-		choice.position = Vector2(24,98+index*85)
-		choice.size = Vector2(230,72)
+		choice.custom_minimum_size = Vector2(226,82)
 		choice.add_theme_font_override("font",host.font)
 		choice.add_theme_font_size_override("font_size",15)
 		choice.pressed.connect(func():candidate=str(key); refresh())
-		add_child(choice)
+		choice_list.add_child(choice)
 		choices[key] = choice
 		var thumbnail := TextureRect.new()
 		thumbnail.position = Vector2(8,6)
@@ -47,26 +61,28 @@ func setup(owner_ui: Node) -> void:
 		gate_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		gate_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		locked_labels[key] = gate_label
-		index+=1
 	preview = Control.new()
-	preview.position = Vector2(280,100)
-	preview.size = Vector2(760,360)
+	preview.position = Vector2(280,170)
+	preview.size = Vector2(760,880)
 	add_child(preview)
 	picture = TextureRect.new()
-	picture.size = Vector2(760,380)
+	picture.position=Vector2(0,160)
+	picture.size = Vector2(760,500)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	preview.add_child(picture)
-	heading = host.equipment_card_label(self,"",Rect2(300,80,740,30),18,host.CYAN)
-	information.append(host.equipment_card_label(self,UIText.t("ship.refit.mounts"),Rect2(300,470,740,26),12,host.MUTED))
-	result = host.equipment_card_label(self,"",Rect2(300,506,730,30),16,host.CYAN)
-	var hint: Label = host.equipment_card_label(self,UIText.t("ship.refit.keep"),Rect2(300,543,730,80),13,host.MUTED)
+	heading = host.equipment_card_label(self,"",Rect2(300,112,730,56),18,host.CYAN)
+	information.append(host.equipment_card_label(self,UIText.t("ship.refit.mounts"),Rect2(1080,120,240,52),13,host.MUTED))
+	result = host.equipment_card_label(self,"",Rect2(1080,770,240,74),16,host.CYAN)
+	result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var hint: Label = host.equipment_card_label(self,UIText.t("ship.refit.keep"),Rect2(1080,865,240,105),13,host.MUTED)
+	hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	hint.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	information.append(hint)
 	confirm = Button.new()
-	confirm.position = Vector2(1080,532)
-	confirm.size = Vector2(240,48)
+	confirm.position = Vector2(1080,1032)
+	confirm.size = Vector2(240,56)
 	confirm.add_theme_font_override("font",host.font)
 	confirm.add_theme_font_size_override("font_size",17)
 	host.skin_equipment_button(confirm,true)
@@ -84,7 +100,6 @@ func open_module(id: String) -> void:
 	host.equipment_tabs.current_tab=0
 	host.equipment_panel.refresh()
 	host.equipment_panel.select_item(id)
-	host.equipment_panel.set_view_mode("expanded")
 
 func refresh() -> void:
 	if not is_visible_in_tree():return
@@ -99,7 +114,7 @@ func refresh() -> void:
 		host.set_ui_value(locked_labels[key],"text",unlock_hint(key) if locked else "")
 		host.set_ui_value(choices[key],"text",text)
 		if host.ui_state_changed(choices[key],[candidate==key,current==key]):
-			choices[key].add_theme_stylebox_override("normal",host.style(Color("183341") if candidate==key else Color("0c1c2b"),host.CYAN if candidate==key else host.LINE))
+			choices[key].add_theme_stylebox_override("normal",host.style(Color("183341") if candidate==key else Color("0c1c2b"),host.CYAN if candidate==key else Color("87caa8") if current==key else host.LINE))
 	host.set_ui_value(picture,"texture",host.SHIP_TEXTURES[candidate])
 	var locked: bool = not host.game.ship_unlocked(candidate)
 	host.set_ui_value(picture,"material",silhouette if locked else null)
@@ -136,11 +151,11 @@ func refresh() -> void:
 			var text: String = prefix+" · Lv."+str(entry.get("level",1))
 			var enabled := index<capacity
 			if category=="weapons" and enabled:
-				var center: Vector2 = host.SHIP_VISUALS.center(candidate,index)*760.0/1774.0+Vector2(380,190)
+				var center: Vector2 = host.SHIP_VISUALS.center(candidate,index)*760.0/1774.0+Vector2(380,410)
 				host.set_ui_value(button,"position",center-Vector2(36,16))
 				host.set_ui_value(button,"size",Vector2(72,32))
 			else:
-				host.set_ui_value(button,"position",Vector2(800,24+index*39 if category=="defence" else 200+(index-capacity)*32))
+				host.set_ui_value(button,"position",Vector2(800,70+index*42 if category=="defence" else 340+(index-capacity)*34))
 				host.set_ui_value(button,"size",Vector2(240,30))
 				text+=" · "+host.NAMES.get(key,UIText.t("equipment.vacant"))
 			if not enabled:text+=" · "+UIText.t("equipment.state.locked")

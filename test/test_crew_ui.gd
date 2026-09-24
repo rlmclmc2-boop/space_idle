@@ -44,7 +44,7 @@ func click(control: Control) -> void:
 	await click_at(control.get_global_rect().get_center())
 func run() -> void:
 	view=SubViewport.new()
-	view.size=Vector2i(1440,810)
+	view.size=Vector2i(2048,1280)
 	view.render_target_update_mode=SubViewport.UPDATE_ALWAYS
 	root.add_child(view)
 	view.notify_mouse_entered()
@@ -62,7 +62,7 @@ func run() -> void:
 	scene.refresh_structure()
 	await frames()
 	var tabs: TabBar=scene.equipment_tabs.get_tab_bar()
-	await click_at(tabs.get_global_transform()*tabs.get_tab_rect(5).get_center())
+	await click(scene.system_nav_buttons[5])
 	var panel=scene.crew_panel
 	check(scene.equipment_tabs.current_tab==5 and panel.is_visible_in_tree(),"Real crew tab click opens page")
 	check(not scene.equipment_tabs.get_tab_title(0).contains("👤") and not scene.equipment_tabs.get_tab_title(1).contains("👤"),"Idle systems have no crew tab markers")
@@ -205,8 +205,8 @@ func run() -> void:
 	await frames()
 	check(offset>0 and panel.scroll.scroll_vertical==offset and view.gui_get_focus_owner()==panel.jobs,"Growth preserves real scroll offset and picker focus")
 	check(panel.rows.size()==14 and panel.rows.navigator==first,"Configured crew additions only add new rows")
-	await click(scene.battle_return_button)
-	check(scene.equipment_tabs.current_tab==0,"Real return-to-battle button leaves crew page")
+	await click(scene.system_nav_buttons[0])
+	check(scene.equipment_tabs.current_tab==0 and scene.battle_clip.position==scene.BATTLE_ORIGIN,"System navigation leaves crew page while battle stays fixed")
 	scene.game.profile=scene.game.fresh_profile()
 	scene.build_ui()
 	check(scene.equipment_tabs.is_tab_hidden(5),"Legacy profile reset without crew data hides crew tab safely")

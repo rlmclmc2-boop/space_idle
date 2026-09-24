@@ -11,7 +11,7 @@ const STATE_LABELS := {"charging":"charge.state.charging","paused":"charge.state
 var host: Node
 var cards: Dictionary = {}
 var selected := ""
-var modules: HBoxContainer
+var modules: GridContainer
 var scroll: ScrollContainer
 var detail: Dictionary
 var energy_rows: Dictionary = {}
@@ -74,9 +74,9 @@ func _draw() -> void:
 	draw_colored_polygon(recess,Color("071421"))
 	draw_line(Vector2(368,238),Vector2(981,238),Color("1c3445"),1,true)
 	for x in [28.0,1002.0]:
-		draw_line(Vector2(x,300),Vector2(x,555),Color("142c3c"),1,true)
-		draw_line(Vector2(x,555),Vector2(x+(-15 if x>500 else 15),573),Color("355366"),2,true)
-	draw_line(Vector2(20,588),Vector2(1010,588),Color("294659"),1,true)
+		draw_line(Vector2(x,300),Vector2(x,1070),Color("142c3c"),1,true)
+		draw_line(Vector2(x,1070),Vector2(x+(-15 if x>500 else 15),1088),Color("355366"),2,true)
+	draw_line(Vector2(20,1094),Vector2(1010,1094),Color("294659"),1,true)
 
 func text(parent: Control, value: String, rect: Rect2, font_size := 14, color := INK) -> Label:
 	var label: Label = host.equipment_card_label(parent,value,rect,font_size,color)
@@ -119,28 +119,31 @@ func setup(owner_ui: Node) -> void:
 	text(self,UIText.t("charge.bus"),Rect2(380,249,530,20),13,MUTED)
 	scroll = ScrollContainer.new()
 	scroll.position = Vector2(20,274)
-	scroll.size = Vector2(990,310)
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size = Vector2(990,820)
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.follow_focus = true
 	add_child(scroll)
-	modules = HBoxContainer.new()
-	modules.add_theme_constant_override("separation",0)
+	modules = GridContainer.new()
+	modules.columns=3
+	modules.add_theme_constant_override("h_separation",10)
+	modules.add_theme_constant_override("v_separation",12)
 	scroll.add_child(modules)
-	extension = host.button(UIText.t("charge.add"),Rect2(0,0,160,294),func():
+	extension = host.button(UIText.t("charge.add"),Rect2(0,0,316,294),func():
 		host.set_ui_value(hint,"text",UIText.t("charge.extension_hint")))
-	extension.custom_minimum_size = Vector2(160,294)
+	extension.custom_minimum_size = Vector2(316,294)
 	extension.reparent(modules,false)
 	extension.tooltip_text = UIText.t("charge.extension_hint")
-	total = text(self,"",Rect2(26,596,220,24),14,CYAN)
-	hint = text(self,UIText.t("charge.navigation"),Rect2(228,596,575,36),13,MUTED)
-	previous_button = host.button("‹",Rect2(815,592,36,32),func():turn_page(-1))
+	total = text(self,"",Rect2(26,1110,220,24),14,CYAN)
+	hint = text(self,UIText.t("charge.navigation"),Rect2(228,1110,575,36),13,MUTED)
+	previous_button = host.button("↑",Rect2(815,1106,36,32),func():turn_page(-1))
 	previous_button.reparent(self,false)
-	next_button = host.button("›",Rect2(970,592,36,32),func():turn_page(1))
+	next_button = host.button("↓",Rect2(970,1106,36,32),func():turn_page(1))
 	next_button.reparent(self,false)
-	page_label = text(self,"",Rect2(855,596,110,24),14,INK)
+	page_label = text(self,"",Rect2(855,1110,110,24),14,INK)
 	page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	scroll.get_h_scroll_bar().changed.connect(refresh_paging)
-	scroll.get_h_scroll_bar().value_changed.connect(func(_value):refresh_paging())
+	scroll.get_v_scroll_bar().changed.connect(refresh_paging)
+	scroll.get_v_scroll_bar().value_changed.connect(func(_value):refresh_paging())
 	detail = build_detail()
 	visibility_changed.connect(visibility_updated)
 	resized.connect(invalidate_geometry)
@@ -153,23 +156,23 @@ func setup(owner_ui: Node) -> void:
 	refresh_core()
 
 func page_capacity() -> int:
-	return maxi(1,mini(6,int(floorf(scroll.size.x/maxf(1,extension.custom_minimum_size.x)))))
+	return maxi(3,3*int(floorf(scroll.size.y/306.0)))
 
 func page_count() -> int:
 	return maxi(1,ceili(float(cards.size()+1)/page_capacity()))
 
 func current_page() -> int:
-	var bar := scroll.get_h_scroll_bar()
+	var bar := scroll.get_v_scroll_bar()
 	if bar.max_value-bar.page > 0 and bar.value >= bar.max_value-bar.page-1:
 		return page_count()
-	return mini(page_count(),1+int(floorf(bar.value/(page_capacity()*extension.custom_minimum_size.x))))
+	return mini(page_count(),1+int(floorf(bar.value/(maxi(1,page_capacity()/3)*306.0))))
 
 func turn_page(direction: int) -> void:
 	var page := clampi(current_page()+direction,1,page_count())
-	scroll.scroll_horizontal = roundi((page-1)*page_capacity()*extension.custom_minimum_size.x)
+	scroll.scroll_vertical = roundi((page-1)*maxi(1,page_capacity()/3)*306.0)
 
 func refresh_paging() -> void:
-	var bar := scroll.get_h_scroll_bar()
+	var bar := scroll.get_v_scroll_bar()
 	host.set_ui_value(previous_button,"disabled",bar.value<=bar.min_value)
 	host.set_ui_value(next_button,"disabled",bar.value>=bar.max_value-bar.page)
 	host.set_ui_value(page_label,"text",UIText.t("charge.page",{"current":str(current_page()),"total":str(page_count())}))
@@ -205,7 +208,7 @@ func sync_modules() -> void:
 		if not cards.has(key):
 			cards[key] = build_module(key)
 	modules.move_child(extension,modules.get_child_count()-1)
-	var width := clampf(floorf(986.0/(cards.size()+1)),164,248)
+	var width := 316.0
 	host.set_ui_value(extension,"custom_minimum_size",Vector2(width,294))
 	for c in cards.values():
 		var card: Control = c.title.get_parent()
@@ -273,7 +276,7 @@ func build_module(key: String) -> Dictionary:
 func build_detail() -> Dictionary:
 	var panel := Panel.new()
 	panel.position = Vector2(1030,82)
-	panel.size = Vector2(306,544)
+	panel.size = Vector2(306,1062)
 	panel.add_theme_stylebox_override("panel",host.style(Color("0a1c2b"),CYAN))
 	add_child(panel)
 	text(panel,UIText.t("charge.detail"),Rect2(18,15,270,24),13,MUTED)
@@ -286,12 +289,12 @@ func build_detail() -> Dictionary:
 	result.charge_bar = host.charge_progress_bar(panel,Vector2(18,243),270,CYAN)
 	result.level_progress = text(panel,"",Rect2(18,264,270,24),14,MUTED)
 	result.level_bar = host.charge_progress_bar(panel,Vector2(18,296),270,Color("ae8df4"))
-	text(panel,UIText.t("charge.effect"),Rect2(18,320,270,24),15,CYAN)
-	result.description = text(panel,"",Rect2(18,350,270,62),15,INK)
+	text(panel,UIText.t("charge.effect"),Rect2(18,474,270,24),15,CYAN)
+	result.description = text(panel,"",Rect2(18,512,270,172),15,INK)
 	result.description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	result.description.mouse_filter = Control.MOUSE_FILTER_PASS
-	result.cost = text(panel,"",Rect2(18,426,270,28),15,MUTED)
-	result.button = host.button("",Rect2(18,478,270,46),activate_selected,true)
+	result.cost = text(panel,"",Rect2(18,754,270,60),15,MUTED)
+	result.button = host.button("",Rect2(18,982,270,56),activate_selected,true)
 	result.button.reparent(panel,false)
 	return result
 

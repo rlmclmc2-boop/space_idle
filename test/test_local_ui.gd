@@ -26,7 +26,7 @@ func _initialize() -> void:
 
 func click(control: Control) -> void:
 	var mouse := InputEventMouseMotion.new()
-	mouse.position = control.get_global_rect().get_center()
+	mouse.position = control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
 	Input.parse_input_event(mouse)
 	for pressed in [true,false]:
 		var event := InputEventMouseButton.new()
@@ -138,7 +138,17 @@ func run() -> void:
 	check(scene.sound_on and scene.builds==builds,"Sound toggles only its control")
 	scene.equipment_tabs.current_tab=3
 	var ship: Control=scene.ship_controls.page
-	await click(ship.choices.Destroyer)
+	var ship_center: Vector2=ship.choices.Destroyer.get_global_rect().get_center()
+	var ship_motion:=InputEventMouseMotion.new()
+	ship_motion.position=ship_center
+	root.push_input(ship_motion,true)
+	for pressed in [true,false]:
+		var ship_event:=InputEventMouseButton.new()
+		ship_event.position=ship_center
+		ship_event.button_index=MOUSE_BUTTON_LEFT
+		ship_event.pressed=pressed
+		root.push_input(ship_event,true)
+		await process_frame
 	check(ship.candidate!=scene.game.profile.selectedShip and scene.builds==builds,"Ship candidate selection is read-only and local")
 	var mount: Button=ship.mounts.weapons_0
 	ship.refresh()

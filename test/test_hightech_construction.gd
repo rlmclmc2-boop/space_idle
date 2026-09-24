@@ -66,7 +66,7 @@ func capture(name: String) -> void:
 
 func run() -> void:
 	view=SubViewport.new()
-	view.size=Vector2i(1440,810)
+	view.size=Vector2i(2048,1280)
 	view.render_target_update_mode=SubViewport.UPDATE_ALWAYS
 	root.add_child(view)
 	view.notify_mouse_entered()
@@ -95,7 +95,7 @@ func run() -> void:
 	scene.refresh_visible_cards(0.1)
 	await frames()
 	check(keys.size()==4 and scene.hightech_progress.size()==4,"All four configured technologies have construction bays")
-	check(scene.equipment_tabs.position.y==84 and scene.hightech_page.size.y>600,"Research expands across battlefield")
+	check(scene.equipment_tabs.position==scene.WORK_CONTENT_RECT.position and scene.hightech_page.size.y>600,"Research stays inside the shared workspace")
 	var identities: Array=[]
 	var shapes: Array=[]
 	for i in keys.size():
@@ -183,7 +183,7 @@ func run() -> void:
 		check(c.work_target(0)==Vector2.ZERO,"Finished geometry has no speculative construction target")
 		c.set_fraction(fractions[i])
 	await capture("hightech-four-bays")
-	check(not scene.battle_layer.visible,"Research occludes battlefield rendering")
+	check(scene.battle_layer.visible,"Battlefield remains visible beside research")
 	scene.refresh_scientists()
 	scene.inspected.clear()
 	scene.game.profile.resources["1"]+=100
@@ -288,7 +288,7 @@ func run() -> void:
 	await frames()
 	check(building.built==component and building.work_target(0)!=previous_target and draws.fx==1 and draws.geometry==0 and draws.other==0,"Paused same-component progress updates the growth frontier without unrelated redraws")
 
-	scene.return_to_battle()
+	scene.equipment_tabs.current_tab=0
 	await frames()
 	check(scene.battle_layer.visible,"Returning restores battlefield immediately")
 	for key in draws:draws[key]=0
@@ -327,7 +327,7 @@ func run() -> void:
 	await frames()
 	check(scene.hightech_progress.has(extra) and scene.hightech_progress[extra].construction.shape=="prototype","Fifth configuration row receives generic construction automatically")
 	check(scene.hightech_titles[first].get_parent()==identities[0] and scene.hightech_inventory.text.contains("5"),"Expansion preserves original bays and updates project count")
-	scene.hightech_scroll.scroll_horizontal=672
+	scene.hightech_scroll.scroll_vertical=672
 	await frames()
 	check(not building.active_in_view() and scene.hightech_progress[extra].construction.active_in_view(),"Scrolling exposes new bay and culls offscreen construction")
 	phase=building.phase
@@ -336,7 +336,7 @@ func run() -> void:
 	check(building.phase==phase and building.progress_writes+building.energy_writes==uniforms,"Offscreen effects and shader parameters stop advancing")
 	await capture("hightech-expanded")
 	# A gesture must no longer start a drag or change stored research order.
-	scene.hightech_scroll.scroll_horizontal=0
+	scene.hightech_scroll.scroll_vertical=0
 	await frames()
 	var start: Vector2=identities[0].global_position+Vector2(110,18)
 	var end: Vector2=identities[1].global_position+Vector2(110,18)
@@ -349,7 +349,7 @@ func run() -> void:
 	await press(false)
 	await frames()
 	check(scene.game.hightech_slots()==order and scene.hightech_titles[first].get_parent()==identities[0],"Pointer gesture leaves research order and bay identity intact")
-	check(scene.hightech_scroll.scroll_horizontal==0 and scene.builds==builds,"Pointer gesture and extension preserve scroll and full UI")
+	check(scene.hightech_scroll.scroll_vertical==0 and scene.builds==builds,"Pointer gesture and extension preserve scroll and full UI")
 	# Resource changes keep keyboard focus and additional pages grow from data.
 	scene.scientist_generate_button.grab_focus()
 	scene.game.profile.resources["1"]+=1
@@ -364,12 +364,12 @@ func run() -> void:
 	scene.refresh_scientists()
 	await frames()
 	check(scene.hightech_buttons.size()==12 and scene.hightech_container.get_child_count()==12,"Twelve technologies expand without empty drag slots")
-	scene.hightech_scroll.scroll_horizontal=100000
+	scene.hightech_scroll.scroll_vertical=100000
 	await frames()
-	var scroll: int=scene.hightech_scroll.scroll_horizontal
+	var scroll: int=scene.hightech_scroll.scroll_vertical
 	scene.refresh_scientists()
-	check(scroll>2000 and scene.hightech_scroll.scroll_horizontal==scroll,"Later research pages remain reachable and resource refresh retains scrolling")
-	scene.hightech_scroll.scroll_horizontal=0
+	check(scroll>2000 and scene.hightech_scroll.scroll_vertical==scroll,"Later research pages remain reachable and resource refresh retains scrolling")
+	scene.hightech_scroll.scroll_vertical=0
 	await frames()
 	scene.game.profile.techPoints[first]=0
 	scene.refresh_hightech_card(first)

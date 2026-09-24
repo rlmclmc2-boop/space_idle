@@ -5,6 +5,7 @@ var rows: Dictionary = {}
 var selected := ""
 var list: VBoxContainer
 var scroll: ScrollContainer
+var detail_scroll: ScrollContainer
 var title: Label
 var description: Label
 var status: Label
@@ -34,41 +35,57 @@ func setup(owner_ui: Node) -> void:
 	add_theme_font_override("font",host.font)
 	host.equipment_card_label(self,UIText.t("crew.heading"),Rect2(24,14,850,40),27,host.CYAN)
 	api_hint=host.equipment_card_label(self,UIText.t("crew.api_only"),Rect2(24,58,1200,30),14,host.MUTED)
+	for region in [Rect2(16,98,570,1060),Rect2(600,98,732,1060)]:
+		var frame:=Panel.new()
+		frame.position=region.position
+		frame.size=region.size
+		frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		frame.add_theme_stylebox_override("panel",host.style(host.PANEL,host.LINE))
+		add_child(frame)
 	scroll=ScrollContainer.new()
-	scroll.position=Vector2(24,105)
-	scroll.size=Vector2(550,500)
+	scroll.position=Vector2(24,110)
+	scroll.size=Vector2(550,1036)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 	list=VBoxContainer.new()
 	list.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	list.add_theme_constant_override("separation",12)
 	scroll.add_child(list)
-	title=host.equipment_card_label(self,"",Rect2(620,108,650,40),24,host.CYAN)
-	description=host.equipment_card_label(self,"",Rect2(620,158,650,60),15)
+	detail_scroll=ScrollContainer.new()
+	detail_scroll.position=Vector2(610,110)
+	detail_scroll.size=Vector2(710,1036)
+	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(detail_scroll)
+	var detail_body:=Control.new()
+	detail_body.custom_minimum_size=Vector2(690,1020)
+	detail_scroll.add_child(detail_body)
+	title=host.equipment_card_label(detail_body,"",Rect2(10,24,670,40),24,host.CYAN)
+	description=host.equipment_card_label(detail_body,"",Rect2(10,92,670,130),15)
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	status=host.equipment_card_label(self,"",Rect2(620,224,650,66),15)
+	description.clip_text=true
+	status=host.equipment_card_label(detail_body,"",Rect2(10,250,670,110),15)
 	status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	job_label=host.equipment_card_label(self,UIText.t("crew.choose_job"),Rect2(620,306,640,24),14,host.MUTED)
-	jobs=picker(Rect2(620,337,650,38))
+	job_label=host.equipment_card_label(detail_body,UIText.t("crew.choose_job"),Rect2(10,400,670,24),14,host.MUTED)
+	jobs=picker(Rect2(10,435,670,42),detail_body)
 	jobs.item_selected.connect(func(_index):refresh_targets();refresh_actions())
-	target_label=host.equipment_card_label(self,UIText.t("crew.choose_target"),Rect2(620,388,640,24),14,host.MUTED)
-	target_picker=picker(Rect2(620,419,650,38))
+	target_label=host.equipment_card_label(detail_body,UIText.t("crew.choose_target"),Rect2(10,510,670,24),14,host.MUTED)
+	target_picker=picker(Rect2(10,545,670,42),detail_body)
 	target_picker.item_selected.connect(func(_index):refresh_actions())
-	upgrade_picker=picker(Rect2(620,419,650,38))
+	upgrade_picker=picker(Rect2(10,545,670,42),detail_body)
 	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index],job_ids[jobs.selected]))
-	assign_button=action("crew.assign",Rect2(620,479,305,40),func():
+	assign_button=action("crew.assign",Rect2(10,630,318,46),func():
 		if jobs.selected>=0 and target_picker.selected>=0:
-			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions())
-	release_button=action("crew.release",Rect2(950,479,320,40),func():host.game.crew.assign(host.game,selected,"",""))
-	exploration_heading=host.equipment_card_label(self,"",Rect2(620,306,650,32),20,host.CYAN)
-	exploration_hint=host.equipment_card_label(self,UIText.t("crew.exploration_hint"),Rect2(620,352,650,48),15,host.MUTED)
+			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions(),detail_body)
+	release_button=action("crew.release",Rect2(352,630,328,46),func():host.game.crew.assign(host.game,selected,"",""),detail_body)
+	exploration_heading=host.equipment_card_label(detail_body,"",Rect2(10,400,670,32),20,host.CYAN)
+	exploration_hint=host.equipment_card_label(detail_body,UIText.t("crew.exploration_hint"),Rect2(10,450,670,88),15,host.MUTED)
 	exploration_hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	view_planet_button=action("crew.view_planet",Rect2(620,419,305,40),func():host.equipment_tabs.current_tab=6)
-	recall_planet_button=action("planet.cancel",Rect2(950,419,320,40),func():
+	view_planet_button=action("crew.view_planet",Rect2(10,560,318,46),func():host.equipment_tabs.current_tab=6,detail_body)
+	recall_planet_button=action("planet.cancel",Rect2(352,560,328,46),func():
 		var planet_id: String=host.game.crew_exploration(selected)
-		if not planet_id.is_empty():host.game.cancel_planet_exploration(planet_id))
+		if not planet_id.is_empty():host.game.cancel_planet_exploration(planet_id),detail_body)
 	for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:control.visible=false
-	slots=host.equipment_card_label(self,"",Rect2(620,552,650,48),15,host.MUTED)
+	slots=host.equipment_card_label(detail_body,"",Rect2(10,750,670,56),15,host.MUTED)
 	detail_controls.assign([title,description,status,slots,job_label,jobs,target_label,target_picker,upgrade_picker,assign_button,release_button])
 	locked_preview=Button.new()
 	locked_preview.custom_minimum_size=Vector2(520,116)
@@ -83,17 +100,17 @@ func setup(owner_ui: Node) -> void:
 		if is_visible_in_tree():refresh())
 	refresh()
 
-func picker(rect: Rect2) -> OptionButton:
+func picker(rect: Rect2, parent: Control) -> OptionButton:
 	var control:=OptionButton.new()
 	control.position=rect.position
 	control.size=rect.size
 	control.fit_to_longest_item=false
-	add_child(control)
+	parent.add_child(control)
 	return control
 
-func action(key: String, rect: Rect2, callback: Callable) -> Button:
+func action(key: String, rect: Rect2, callback: Callable, parent: Control) -> Button:
 	var control: Button=host.button(UIText.t(key),rect,callback)
-	control.reparent(self,false)
+	control.reparent(parent,false)
 	return control
 
 func invalidate() -> void:
@@ -176,6 +193,7 @@ func refresh() -> void:
 			rows[id].queue_free()
 			rows.erase(id)
 	if not ids.has(selected):selected=str(ids[0]) if not ids.is_empty() else ""
+	refresh_selection()
 	host.set_ui_value(locked_preview,"visible",next_gate>=0)
 	host.set_ui_value(locked_preview,"text",UIText.t("crew.unlock_at",{"level":next_gate}) if next_gate>=0 else "")
 	if locked_preview.get_index()!=list.get_child_count()-1:list.move_child(locked_preview,list.get_child_count()-1)
@@ -187,6 +205,7 @@ func refresh() -> void:
 func select(id: String) -> void:
 	if not host.game.crew.unlocked(host.game,id):return
 	selected=id
+	refresh_selection()
 	var item: Dictionary=host.game.crew.entry(host.game,id)
 	var index:=job_ids.find(item.assignmentType)
 	if index>=0:jobs.select(index)
@@ -194,6 +213,14 @@ func select(id: String) -> void:
 	index=target_ids.find(item.targetId)
 	if index>=0:target_picker.select(index)
 	refresh_detail()
+
+func refresh_selection() -> void:
+	for id in rows:
+		var button: Button=rows[id]
+		var active: bool=id==selected
+		if button.get_meta("selected",false)==active:continue
+		button.set_meta("selected",active)
+		button.add_theme_stylebox_override("normal",host.style(host.PANEL,host.CYAN if active else host.LINE))
 
 func job_title(row: Dictionary) -> String:
 	return UIText.t(str(row.titleTextId)) if not str(row.get("titleTextId","")).is_empty() else str(row.get("description",""))
@@ -237,6 +264,7 @@ func refresh_detail() -> void:
 	var row: Dictionary=g.crew.definitions(g)[selected]
 	host.set_ui_value(title,"text",UIText.t("crew.name_level",{"name":row.name,"level":item.level}))
 	host.set_ui_value(description,"text",str(row.description))
+	host.set_ui_value(description,"tooltip_text",str(row.description))
 	refresh_detail_status(item)
 	host.set_ui_value(slots,"text",UIText.t("crew.equipment_reserved",{"count":item.equipmentSlots.size()}))
 	refresh_actions()
