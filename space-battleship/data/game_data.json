@@ -15815,10 +15815,10 @@
       "name": "feature/galaxy",
       "type": "feature",
       "target": "galaxy",
-      "level": 60,
+      "level": 70,
       "mode": "cleared",
       "title": "星系殖民",
-      "desc": "通关第60关且征服六颗星球后，可派遣船员探索星系。"
+      "desc": "现在我们可以殖民星系了,快派遣船员出发吧"
     },
     "crew/crew_07": {
       "name": "crew/crew_07",
