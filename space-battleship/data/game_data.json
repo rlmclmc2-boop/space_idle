@@ -15815,7 +15815,7 @@
       "name": "feature/galaxy",
       "type": "feature",
       "target": "galaxy",
-      "level": 70,
+      "level": 75,
       "mode": "cleared",
       "title": "星系殖民",
       "desc": "现在我们可以殖民星系了,快派遣船员出发吧"
@@ -15860,7 +15860,7 @@
       "name": "crew/crew_11",
       "type": "crew",
       "target": "crew_11",
-      "level": 65,
+      "level": 70,
       "mode": "cleared",
       "title": "船员11",
       "desc": "已解锁船员11，可在船员页分配到游戏系统。"
@@ -15869,7 +15869,7 @@
       "name": "crew/crew_12",
       "type": "crew",
       "target": "crew_12",
-      "level": 70,
+      "level": 80,
       "mode": "cleared",
       "title": "船员12",
       "desc": "已解锁船员12，可在船员页分配到游戏系统。"
@@ -15878,7 +15878,7 @@
       "name": "crew/crew_13",
       "type": "crew",
       "target": "crew_13",
-      "level": 75,
+      "level": 90,
       "mode": "cleared",
       "title": "船员13",
       "desc": "已解锁船员13，可在船员页分配到游戏系统。"
@@ -15887,7 +15887,7 @@
       "name": "crew/crew_14",
       "type": "crew",
       "target": "crew_14",
-      "level": 80,
+      "level": 100,
       "mode": "cleared",
       "title": "船员14",
       "desc": "已解锁船员14，可在船员页分配到游戏系统。"
@@ -15896,7 +15896,7 @@
       "name": "crew/crew_15",
       "type": "crew",
       "target": "crew_15",
-      "level": 85,
+      "level": 110,
       "mode": "cleared",
       "title": "船员15",
       "desc": "已解锁船员15，可在船员页分配到游戏系统。"
@@ -15905,7 +15905,7 @@
       "name": "crew/crew_16",
       "type": "crew",
       "target": "crew_16",
-      "level": 90,
+      "level": 120,
       "mode": "cleared",
       "title": "船员16",
       "desc": "已解锁船员16，可在船员页分配到游戏系统。"
@@ -15914,7 +15914,7 @@
       "name": "crew/crew_17",
       "type": "crew",
       "target": "crew_17",
-      "level": 95,
+      "level": 130,
       "mode": "cleared",
       "title": "船员17",
       "desc": "已解锁船员17，可在船员页分配到游戏系统。"
@@ -15923,7 +15923,7 @@
       "name": "crew/crew_18",
       "type": "crew",
       "target": "crew_18",
-      "level": 100,
+      "level": 140,
       "mode": "cleared",
       "title": "船员18",
       "desc": "已解锁船员18，可在船员页分配到游戏系统。"
@@ -15932,7 +15932,7 @@
       "name": "crew/crew_19",
       "type": "crew",
       "target": "crew_19",
-      "level": 105,
+      "level": 150,
       "mode": "cleared",
       "title": "船员19",
       "desc": "已解锁船员19，可在船员页分配到游戏系统。"
@@ -15941,7 +15941,7 @@
       "name": "crew/crew_20",
       "type": "crew",
       "target": "crew_20",
-      "level": 110,
+      "level": 160,
       "mode": "cleared",
       "title": "船员20",
       "desc": "已解锁船员20，可在船员页分配到游戏系统。"

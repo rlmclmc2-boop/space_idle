@@ -1798,19 +1798,6 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			shot.dead = true
 			break
 
-func missile_target(candidates: Array[Dictionary]) -> Dictionary:
-	for candidate in candidates:
-		var occupied := false
-		for other in projectiles:
-			if other.hostile or other.key != "missile" or other.target.is_empty():
-				continue
-			if int(other.target.uid) == int(candidate.uid):
-				occupied = true
-				break
-		if not occupied:
-			return candidate
-	return candidates[0] if not candidates.is_empty() else {}
-
 func hit_player(raw, type: int) -> void:
 	if has_defence_jewels():
 		jewel_hit_player(raw, type)
@@ -2245,12 +2232,8 @@ func tick_projectiles(dt: float) -> void:
 		if not shot.target.is_empty():
 			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
-				var candidates: Array[Dictionary] = []
-				if not shot.hostile and shot.key == "missile":
-					candidates = targets(int(shot.type))
-					shot.target = missile_target(candidates)
-				else:
-					shot.target = {}
+				# Keep the last heading; a missile never acquires a replacement target.
+				shot.target = {}
 		if not shot.target.is_empty():
 			var delta := Vector2(shot.target.x - shot.x, shot.target.y - shot.y)
 			var homing: bool = str(shot.key).replace("_mon", "").replace("-mon", "") == "missile"
@@ -2554,43 +2537,64 @@ func combine_all_jewels(clean_obsolete := true) -> Dictionary:
 func jewel_auto_stock() -> Dictionary:
 	var groups := {}
 	var best := {}
+	var available: Array = []
 	for gem in profile.jewels:
 		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or gem.get("locked",false) or gem.get("disabled",false):continue
+		available.append(gem)
 		var id := str(gem.id)
 		if not best.has(id) or int(gem.level)>int(best[id].level):best[id]=gem
 		if int(gem.level)<db.jewel_max_level(id):
 			var key := "%s:%d" % [id,int(gem.level)]
 			groups[key]=int(groups.get(key,0))+1
-	return {"groups":groups,"best":best}
+	return {"groups":groups,"best":best,"available":available}
+
+func jewel_auto_candidates(category: String, entry: Dictionary, stock: Dictionary) -> Array:
+	var occupied := {}
+	for installed in entry.get("sockets",[]):
+		if installed is Dictionary and not installed.is_empty():
+			occupied[str(installed.id)]=true
+	var candidates: Array = []
+	for gem in stock.get("available",[]):
+		if not gem is Dictionary or not jewel_allowed(str(gem.id),category) or occupied.has(str(gem.id)):
+			continue
+		candidates.append(gem)
+	return candidates
 
 func auto_manage_jewels() -> Dictionary:
-	var result := {"combined":0,"replaced":0,"upgraded":0}
+	var result := {"combined":0,"cleaned":0,"replaced":0,"upgraded":0,"equipped":0}
 	if not jewels_unlocked() or jewel_bulk_combining or profile.jewels.is_empty():return result
 	var required := jewel_combine_count()
 	var stock := jewel_auto_stock()
-	# The common no-material case must not enter the full staged combine/save path.
-	if required>=2 and stock.groups.values().any(func(count):return int(count)>=required):
-		var combined := combine_all_jewels(false)
+	if required>=2:
+		var combined := combine_all_jewels(true)
 		if not combined.ok:return result
 		result.combined=int(combined.count)
+		result.cleaned=int(combined.deleted)
 		stock=jewel_auto_stock()
 	var changed_slots := {}
 	for category in ["weapons","defence"]:
-		for index in module_entries(category).size():
+		for index in loadout_entries(category).size():
 			var entry := module_entry(category,index)
 			if str(entry.get("key","")).is_empty():continue
-			var sockets: Array=entry.get("sockets",[])
-			for socket in mini(sockets.size(),equipment_socket_count(entry)):
-				var installed: Dictionary=sockets[socket]
-				if not jewel_combine_eligible(installed):continue
-				var candidate: Dictionary=stock.best.get(str(installed.id),{})
+			for socket in equipment_socket_count(entry):
+				var sockets: Array=entry.get("sockets",[])
+				var installed: Dictionary=sockets[socket] if socket<sockets.size() and sockets[socket] is Dictionary else {}
 				var changed := false
-				if not candidate.is_empty() and int(candidate.level)>int(installed.level):
-					changed=socket_jewel(category,index,socket,int(candidate.token),false)
-					if changed:result.replaced+=1
-				if not changed and required>=2 and int(stock.groups.get("%s:%d" % [installed.id,int(installed.level)],0))>=required-1:
-					changed=upgrade_socket_jewel(category,index,socket,int(installed.token),false)
-					if changed:result.upgraded+=1
+				var candidate: Dictionary = {}
+				if installed.is_empty():
+					var candidates := jewel_auto_candidates(category,entry,stock)
+					if not candidates.is_empty():
+						candidate=candidates[rng.randi_range(0,candidates.size()-1)]
+						changed=socket_jewel(category,index,socket,int(candidate.token),false)
+						if changed:result.equipped+=1
+				elif jewel_combine_eligible(installed):
+					candidate=stock.best.get(str(installed.id),{})
+					if not candidate.is_empty() and int(candidate.level)>int(installed.level):
+						changed=socket_jewel(category,index,socket,int(candidate.token),false)
+						if changed:result.replaced+=1
+					if not changed and required>=2 and int(stock.groups.get("%s:%d" % [installed.id,int(installed.level)],0))>=required-1:
+						changed=upgrade_socket_jewel(category,index,socket,int(installed.token),false)
+						if changed:result.upgraded+=1
 				if changed:
 					changed_slots[slot_id(category,index)]=true
 					stock=jewel_auto_stock()

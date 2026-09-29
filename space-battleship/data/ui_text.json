@@ -9251,7 +9251,7 @@
   },
   {
     "key": "crew.effect.jewel_auto",
-    "text": "每 {interval} 秒合成背包宝石，并以同类更高级宝石替换已镶嵌宝石",
+    "text": "每 {interval} 秒合成并清理低级背包宝石，随机装入可用宝石，并升级已镶嵌宝石",
     "params": "{interval}",
     "category": "crew",
     "note": "船员宝石岗位效果"
