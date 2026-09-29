@@ -37,7 +37,6 @@ def save_document(request):
     contract = json.loads(CONTRACT.read_text(encoding='utf-8'))['entries']
     for row in rows:
         row['text'] = edits[row['key']]
-        row['params'] = ','.join('{' + p + '}' for p in contract[row['key']]['params'])
     errors = validate(rows, contract)
     if errors:
         raise ValueError('\n'.join(errors))

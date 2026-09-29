@@ -33,7 +33,7 @@ class Store:
         mapping = json.loads(self.manifest.read_text(encoding='utf-8'))['sheets']
         self.paths = {}
         for name in SECTIONS:
-            if name in ('charge', 'jewel', 'unlock', 'crew', 'crew_level', 'crew_assignment', 'planet') and name not in mapping:
+            if name in ('jewel', 'unlock', 'crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff', 'galaxy', 'galaxy_build', 'galaxy_config') and name not in mapping:
                 if not (self.directory / f'{name}.xlsx').is_file():
                     continue
                 mapping[name] = f'{name}.xlsx'
@@ -172,7 +172,11 @@ class Store:
                         text = ET.SubElement(ET.SubElement(cell, Q + 'is'), Q + 't')
                         text.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
                         text.text = str(raw)
-            tree.find(Q + 'dimension').set('ref', f'A1:{get_column_letter(len(headers))}{len(rows)+3}')
+            dimension = tree.find(Q + 'dimension')
+            if dimension is None:
+                dimension = ET.Element(Q + 'dimension')
+                tree.insert(tree.index(body), dimension)
+            dimension.set('ref', f'A1:{get_column_letter(len(headers))}{len(rows)+3}')
             output = io.BytesIO()
             with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as result:
                 for item in archive.infolist():

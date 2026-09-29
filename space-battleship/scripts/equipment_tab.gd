@@ -14,7 +14,6 @@ var sort_mode := 0
 var grid: GridContainer
 var grid_scroll: ScrollContainer
 var total: Label
-var counts: Label
 var empty: Label
 var detail: Dictionary = {}
 var slot_options: Array = []
@@ -25,7 +24,7 @@ var sorted_ids: Array = []
 var last_sort_mode := -1
 var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
-var selected_next_stat := 0.0
+var selected_next_stat = 0.0
 var details_open := true
 var filters: Control
 var toolbar: Control
@@ -64,7 +63,6 @@ func setup(owner_ui: Node) -> void:
 	add_child(overview)
 	total = label(overview,"",Rect2(18,14,48,40),30,host.CYAN)
 	label(overview,UIText.t("equipment.total"),Rect2(70,17,130,26),15,host.INK)
-	counts = label(overview,"",Rect2(18,64,720,24),13,host.MUTED)
 	filters = Control.new()
 	filters.name = "EquipmentFilterPanel"
 	add_child(filters)
@@ -183,10 +181,11 @@ func update_detail_height() -> void:
 
 func icon_for(key: String) -> Texture2D:
 	if not icons.has(key):
-		if host.SLOT_TEXTURES.has(key):
+		var sprite_path := str(host.weapon_visual_profile(key).get("rotating_sprite",""))
+		if not sprite_path.is_empty():
 			var atlas := AtlasTexture.new()
-			atlas.atlas = host.SLOT_TEXTURES[key]
-			atlas.region = host.module_regions[key]
+			atlas.atlas = host.visual_texture(sprite_path)
+			atlas.region = host.visual_region(sprite_path)
 			icons[key] = atlas
 		else:
 			var path := "res://assets/ui/equipment/%s.svg" % key
@@ -198,17 +197,17 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var key := str(entry.get("key",""))
 	var active: bool = index<host.game.active_slot_count(category)
 	var equipped := not key.is_empty()
-	var value: float = host.game.jewel_equipment_stat(entry) if equipped else 0.0
+	var value = host.game.jewel_equipment_stat(entry) if equipped else 0.0
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
 	return {"id":host.game.slot_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
-		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),
+		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,
 		"slots":[index],"mainStatLabel":UIText.t("weapon.damage" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
-		"description":description,"tooltip":prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":str(entry.level)})}
+		"description":description,"tooltip":prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")}
 
 func refresh(only_slot := "") -> void:
 	refresh_slots([] if only_slot.is_empty() else [only_slot])
@@ -238,7 +237,7 @@ func refresh_slots(changed: Array) -> void:
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
-	refresh_counts()
+	refresh_total()
 	apply_filters()
 	if detail_changed:refresh_detail()
 	else:refresh_affordability_detail()
@@ -266,11 +265,11 @@ func refresh_stats() -> void:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
-		var value: float = host.game.jewel_equipment_stat(entry)
+		var value = host.game.jewel_equipment_stat(entry)
 		if selected==id and not item.key.is_empty():
-			var next_value: float = host.game.jewel_equipment_stat(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
-			selected_changed = selected_changed or next_value!=selected_next_stat
-		if value==item.mainStatNumber:continue
+			var next_value = host.game.jewel_equipment_stat(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
+			selected_changed = selected_changed or GrowthNumber.compare(next_value,selected_next_stat)!=0
+		if GrowthNumber.compare(value,item.mainStatNumber)==0:continue
 		item.mainStatNumber = value
 		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
 		cards[id].refresh(item,selected==id)
@@ -292,20 +291,11 @@ func refresh_affordability() -> void:
 		changed = true
 	if changed:
 		sort_dirty = sort_dirty or sort_mode==3
-		refresh_counts()
 		if sort_mode==3 or status_filter in [2,3]:apply_filters()
 	refresh_affordability_detail()
 
-func refresh_counts() -> void:
-	var equipped := 0
-	var upgrades := 0
-	var locked := 0
-	for item in items.values():
-		equipped += int(item.equipped)
-		upgrades += int(item.upgradeable)
-		locked += int(item.locked)
+func refresh_total() -> void:
 	host.set_ui_value(total,"text",str(items.size()))
-	host.set_ui_value(counts,"text",UIText.t("equipment.counts",{"equipped":str(equipped),"upgradeable":str(upgrades),"locked":str(locked)}))
 
 func select_item(key: String) -> void:
 	if not items.has(key):return
@@ -323,7 +313,7 @@ func apply_filters() -> void:
 			var x: Dictionary = items[a]
 			var y: Dictionary = items[b]
 			if sort_mode==1 and x.level!=y.level:return x.level>y.level
-			if sort_mode==2 and x.mainStatNumber!=y.mainStatNumber:return x.mainStatNumber>y.mainStatNumber
+			if sort_mode==2 and GrowthNumber.compare(x.mainStatNumber,y.mainStatNumber)!=0:return GrowthNumber.compare(x.mainStatNumber,y.mainStatNumber)>0
 			if sort_mode==3:
 				var sx := int(x.locked)*4+int(not x.equipped)*2-int(x.upgradeable)
 				var sy := int(y.locked)*4+int(not y.equipped)*2-int(y.upgradeable)
@@ -369,7 +359,8 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.slots,"disabled",item.locked)
 	host.set_ui_value(detail.icon,"texture",item.icon)
 	host.set_ui_value(detail.title,"text",item.name)
-	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":str(entry.level)})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
+	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
+	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",host.MUTED if item.locked else host.ORANGE if item.upgradeable else host.CYAN)
@@ -384,10 +375,10 @@ func refresh_detail() -> void:
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
-	var description: String = UIText.t("module.dormant_hint" if item.locked else "module.keep_hint")
-	if not key.is_empty():description = host.equipment_stat_text(entry)+"\n"+host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"+description
-	description += "\n"+UIText.t("upgrade.cost_one",{"cost":cost})
-	host.set_ui_value(detail.description,"text",item.description+"\n"+UIText.t("module.dormant_hint" if item.locked else "module.keep_hint"))
+	var description: String = ""
+	if not key.is_empty():description = host.equipment_stat_text(entry)+"\n"+host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
+	description += UIText.t("upgrade.cost_one",{"cost":cost})
+	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
 	update_detail_height()
@@ -413,9 +404,8 @@ func equipment_attributes(entry: Dictionary) -> String:
 		"shield":fields=[["recovery_percent",float(row.para2)*100],["recovery_delay",float(row.para3)]]
 	for field in fields:
 		lines.append(UIText.t("equipment.attribute",{"label":equipment_text("attribute."+str(field[0])),"value":host.number(float(field[1]))}))
-	lines.append(UIText.t("module.unlock_condition",{"level":str(host.db.unlock_level(key))}))
-	lines.append(UIText.t("module.keep_hint"))
-	lines.append(UIText.t("equipment.sockets",{"count":str(host.game.equipment_socket_count(entry))}))
+	if host.game.equipment_socket_count(entry)>0:
+		lines.append(UIText.t("equipment.sockets",{"count":str(host.game.equipment_socket_count(entry))}))
 	if is_instance_valid(host.jewel_panel):
 		for gem in entry.get("sockets",[]):
 			if not gem.is_empty():lines.append(host.jewel_panel.gem_name(gem)+" · "+host.jewel_panel.gem_description(gem))

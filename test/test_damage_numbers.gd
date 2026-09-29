@@ -32,7 +32,8 @@ func run() -> void:
 	hit.critical = true
 	scene.on_event("hit",hit)
 	check(scene.floats.size()==2 and scene.floats[1].critical and scene.floats[1].size>scene.floats[0].size,"critical separately gold and larger")
-	check(scene.floats[0].text=="24.7K" and scene.floats[0].life==0.6,"unsigned three significant digits and 600ms lifetime")
+	check(scene.floats[0].text=="24.7K" and is_equal_approx(scene.floats[0].life,scene.battle_visual.damage_number_normal_duration),"unsigned three significant digits and short ordinary lifetime")
+	check(is_equal_approx(scene.floats[1].life,scene.battle_visual.damage_number_critical_duration),"critical label stays distinct slightly longer")
 	check(scene.NUMBER_FORMAT.damage(999999)=="1M" and scene.NUMBER_FORMAT.damage(123456789)=="123M","unit carry and common units")
 	check(scene.damage_history.back().contains("12345"),"details preserve full event amount")
 	scene.fx_time += 0.02
@@ -74,11 +75,14 @@ func run() -> void:
 				var f: Dictionary = scene.floats[i]
 				if not f.get("damage",false):continue
 				for target in scene.game.enemies:
-					var dimensions: Vector2 = scene.SHIP_VISUALS.CANVAS*scene.SHIP_VISUALS.enemy_scale_for(target)
-					check(not scene.damage_text_rect(f.pos,f.text,f.size).intersects(Rect2(Vector2(target.x,target.y)-dimensions/2-Vector2(4,8),dimensions+Vector2(8,12))),"numbers avoid hull and health bar")
+					var half_width: float=scene.enemy_render_width(target)
+					var center: Vector2=scene.enemy_render_position(target)
+					var envelope := Vector2(half_width*0.6,half_width*1.15)
+					var overlap: bool = scene.damage_text_rect(scene.battle_point(f.pos),f.text,f.size).intersects(Rect2(center-envelope,envelope*2.0))
+					check(not overlap,"numbers avoid hull and health bar")
 				for j in range(i+1,scene.floats.size()):
 					var other: Dictionary = scene.floats[j]
-					check(not scene.damage_text_rect(f.pos,f.text,f.size).intersects(scene.damage_text_rect(other.pos,other.text,other.size)),"adjacent labels separated")
+					check(not scene.damage_text_rect(scene.battle_point(f.pos),f.text,f.size).intersects(scene.damage_text_rect(scene.battle_point(other.pos),other.text,other.size)),"adjacent labels separated")
 			if frame==40:
 				scene.battle_layer.queue_redraw()
 				await process_frame
@@ -86,11 +90,16 @@ func run() -> void:
 				root.get_texture().get_image().save_png("res://.runtime/damage-mode-%d.png" % mode)
 		check(mode!=2 or scene.floats.is_empty(),"off suppresses damage only")
 	check(scene.equipment_tabs==tabs and static_draws[0]==0,"damage updates preserve unrelated controls and static drawing")
+	scene.toast("Status notice")
 	scene.on_event("collect",{"id":"1","amount":123,"x":enemy.x,"y":enemy.y})
 	var reward: Dictionary = scene.floats.back()
-	var reward_pos: Vector2 = reward.pos
+	var notice: Rect2 = scene.battle_notice_rect(1)
+	check(scene.battle_notices().size()==2 and scene.pickup_effects.size()==1,"Status and resource pickup use separate status-panel rows")
+	check(Rect2(30,100,552,98).encloses(notice) and scene.pickup_effects[0].end==notice.get_center(),"Pickup flight ends inside the battle status panel")
+	scene.on_event("collect",{"id":"2","amount":7,"x":enemy.x,"y":enemy.y})
+	check(scene.battle_notices().size()==2 and scene.battle_notices()[1].resources.size()==2,"Simultaneous resource notices share one row")
 	scene._process(0.1)
-	check(reward.pos==reward_pos and reward.pos.y>=500,"rewards stay in independent fixed region")
+	check(reward.life<0.8 and scene.pickup_effects[0].life<0.42,"Pickup notice and flight advance together")
 	var menu: PopupMenu = scene.guard_settings.get_popup()
 	menu.id_pressed.emit(10)
 	check(scene.damage_mode==0 and menu.is_item_checked(menu.get_item_index(10)),"settings select simplified locally")

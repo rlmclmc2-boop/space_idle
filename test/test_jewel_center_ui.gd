@@ -24,7 +24,7 @@ func _initialize() -> void:
 func click(control: Control) -> void:
 	if not is_instance_valid(control):check(false,"Click target exists");return
 	var mouse:=InputEventMouseMotion.new()
-	mouse.position=control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
+	mouse.position=control.get_global_rect().get_center()*Vector2(root.size)/control.get_viewport_rect().size
 	if control.get_window()!=root and root.gui_embed_subwindows:mouse.position+=Vector2(control.get_window().position)
 	Input.parse_input_event(mouse)
 	for pressed in [true,false]:
@@ -32,6 +32,19 @@ func click(control: Control) -> void:
 		event.position=mouse.position
 		event.button_index=MOUSE_BUTTON_LEFT
 		event.pressed=pressed
+		Input.parse_input_event(event)
+		await process_frame
+
+func double_click(control: Control) -> void:
+	await click(control)
+	var point:=control.get_global_rect().get_center()*Vector2(root.size)/control.get_viewport_rect().size
+	if control.get_window()!=root and root.gui_embed_subwindows:point+=Vector2(control.get_window().position)
+	for pressed in [true,false]:
+		var event:=InputEventMouseButton.new()
+		event.position=point
+		event.button_index=MOUSE_BUTTON_LEFT
+		event.pressed=pressed
+		event.double_click=true
 		Input.parse_input_event(event)
 		await process_frame
 
@@ -67,11 +80,12 @@ func run() -> void:
 		scene.on_event("state",{})
 		check(not panel.visible,"Battle navigation does not open center")
 	var entry:=scene.game.module_entry("weapons",0)
+	scene.db.config.equipmentSocket="1|1,20|2,40|3"
 	entry.level=20
 	entry.sockets=[]
-	var first:=scene.game.new_jewel("7")
-	var second:=scene.game.new_jewel("7")
-	var third:=scene.game.new_jewel("7")
+	var first:=scene.game.new_jewel("5")
+	var second:=scene.game.new_jewel("5")
+	var third:=scene.game.new_jewel("5")
 	var incompatible:=scene.game.new_jewel("2")
 	scene.game.profile.jewels=[first,second,third,incompatible]
 	await settle()
@@ -88,7 +102,8 @@ func run() -> void:
 	check(panel.module_buttons.size()==scene.game.module_entries("weapons").size()+scene.game.module_entries("defence").size(),"Every existing module has an in-panel destination")
 	check(panel.socket_buttons.size()==3 and not panel.socket_buttons[0].disabled and panel.socket_buttons[2].disabled,"Empty sockets clickable; future slot shows locked level")
 	check(panel.socket_buttons[2].text.contains("40"),"Locked socket exposes exact level requirement")
-	check(not panel.gem_buttons[incompatible.token].visible and panel.cells.size()==3,"Default candidates exclude incompatible gems")
+	check(not panel.gem_buttons[incompatible.token].visible and panel.cells.size()==3,"Weapon module shows only weapon gems")
+	check(not panel.get_children().any(func(child):return child is LineEdit or child is CheckButton or child is OptionButton),"Search, availability filter and sort selector are absent")
 	check(panel.combine_all.visible and not panel.has_method("set_mode") and not panel.has_method("request_compose"),"Single page exposes bulk synthesis without management or decomposition")
 	var before:=scene.game.profile.duplicate(true)
 	await click(panel.socket_buttons[1])
@@ -96,7 +111,7 @@ func run() -> void:
 	check(scene.game.profile==before and panel.target_socket==1,"Socket and gem clicks only select; no gameplay mutation")
 	check(panel.preview.text.contains("暴击率") and not panel.socket_action.disabled,"Explicit preview uses real critical calculation")
 	var hover:=InputEventMouseMotion.new()
-	hover.position=panel.socket_buttons[0].get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
+	hover.position=panel.socket_buttons[0].get_global_rect().get_center()*Vector2(root.size)/panel.socket_buttons[0].get_viewport_rect().size
 	Input.parse_input_event(hover)
 	await process_frame
 	check(panel.target_socket==1,"Hover never changes target")
@@ -112,31 +127,46 @@ func run() -> void:
 	await click(panel.remove_action)
 	check(entry.sockets[1].is_empty() and scene.game.profile.jewels.size()==2,"Explicit removal returns upgraded gem")
 	var upgraded: Dictionary=scene.game.profile.jewels.back()
-	await click(panel.gem_buttons[upgraded.token])
-	await click(panel.socket_action)
-	var duplicate:=scene.game.new_jewel("7",3)
+	await double_click(panel.gem_buttons[upgraded.token])
+	check(entry.sockets[1].token==upgraded.token and scene.game.jewel_inventory(upgraded.token).is_empty(),"Double-click sockets into current empty slot")
+	var duplicate:=scene.game.new_jewel("5",3)
 	scene.game.profile.jewels.append(duplicate)
 	panel.inventory_changed()
 	await click(panel.socket_buttons[0])
-	check(not panel.gem_buttons[duplicate.token].visible,"Same-type conflict is filtered for other socket")
-	await click(panel.usable_only)
-	check(panel.gem_buttons[duplicate.token].visible,"Show all exposes rejected candidate for explanation")
+	check(panel.gem_buttons[duplicate.token].visible,"Conflicting gem stays visible for explanation")
 	await click(panel.gem_buttons[duplicate.token])
 	check(panel.socket_action.disabled and panel.preview.text.contains("同ID"),"Duplicate type explains reason without modifying module")
+	var unchanged: int=entry.sockets[1].token
+	await double_click(panel.gem_buttons[duplicate.token])
+	check(entry.sockets[0].is_empty() and entry.sockets[1].token==unchanged,"Double-click cannot bypass duplicate restriction")
 	await click(panel.socket_buttons[1])
 	await click(panel.gem_buttons[duplicate.token])
 	var socket_button=panel.socket_buttons[1]
 	await click(panel.socket_action)
 	check(entry.sockets[1].token==duplicate.token and not scene.game.jewel_inventory(upgraded.token).is_empty(),"Same-type replacement returns old gem")
+	var quick_other:=scene.game.new_jewel("1")
+	scene.game.profile.jewels.append(quick_other)
+	panel.inventory_changed()
+	await double_click(panel.gem_buttons[quick_other.token])
+	check(entry.sockets[0].token==quick_other.token and entry.sockets[1].token==duplicate.token and panel.target_socket==0,"Double-click uses first empty unlocked socket when selected socket is occupied")
+	await double_click(panel.gem_buttons[upgraded.token])
+	check(entry.sockets[0].token==quick_other.token and entry.sockets[1].token==duplicate.token,"Double-click never replaces an occupied slot")
+	var no_space:=scene.game.new_jewel("4")
+	scene.game.profile.jewels.append(no_space)
+	panel.inventory_changed()
+	await double_click(panel.gem_buttons[no_space.token])
+	check(not scene.game.jewel_inventory(no_space.token).is_empty() and panel.feedback.text.contains("没有可用空孔位"),"Double-click reports when every unlocked socket is occupied")
 	check(panel.socket_buttons[1]==socket_button,"Replacement retains socket control")
 	await click(panel.module_buttons.defence_0)
 	check(panel.category=="defence" and panel.equipment_index==0 and panel.selected.is_empty(),"Switch module without closing; candidate cleared")
+	check(panel.gem_buttons[incompatible.token].visible and not panel.gem_buttons[upgraded.token].visible and panel.cells.size()==1,"Defence module shows only defence gems")
 	await click(panel.module_buttons.weapons_0)
+	check(not panel.gem_buttons[incompatible.token].visible and panel.gem_buttons[upgraded.token].visible,"Returning to weapon module restores weapon gems")
 	await click(panel.socket_buttons[1])
 	await click(panel.gem_buttons[upgraded.token])
 	check(panel.action_reason.text.contains("降低") and panel.preview.get_theme_color("font_color")==scene.ORANGE,"Lower stats use explicit warning and orange preview")
 	await capture("jewel-center-sockets")
-	scene.game.profile.jewels=[scene.game.new_jewel("7"),scene.game.new_jewel("7"),scene.game.new_jewel("7")]
+	scene.game.profile.jewels=[scene.game.new_jewel("5"),scene.game.new_jewel("5"),scene.game.new_jewel("5")]
 	panel.inventory_changed()
 	await settle()
 	var sockets_before: Array=entry.sockets.duplicate(true)
@@ -154,15 +184,11 @@ func run() -> void:
 	var event_callback:=func(kind,info):
 		if kind=="jewels_changed":notices.append(info)
 	scene.game.event.connect(event_callback)
-	panel.search.text="__no_match__"
-	panel.search.text_changed.emit(panel.search.text)
 	await click(panel.combine_all)
 	check(notices.size()==1 and panel.bulk_summary.contains("合成 8 次") and panel.bulk_rewards.contains("Lv.3 ×2"),"Bulk synthesis is atomic and reports final rewards")
 	check(panel.gem_buttons[protected.token]==survivor and scene.builds==builds,"Bulk synthesis preserves survivor control and main UI")
-	check(panel.cells.is_empty(),"Bulk synthesis includes inventory hidden by active filters")
+	check(panel.cells.size()==scene.game.profile.jewels.filter(func(gem):return scene.game.jewel_allowed(str(gem.id),"weapons")).size(),"Bulk synthesis shows only current module category")
 	await capture("jewel-center-combine")
-	panel.search.text=""
-	panel.search.text_changed.emit("")
 	before=scene.game.profile.duplicate(true)
 	await click(panel.combine_all)
 	check(scene.game.profile==before and notices.size()==1,"Repeated empty bulk action cannot debit or notify")
@@ -178,31 +204,26 @@ func run() -> void:
 	panel.open("weapons",0)
 	await click(panel.socket_buttons[1])
 	check(panel.remove_action.disabled,"Full bag removal visibly blocked")
-	var replacement:=scene.game.new_jewel("7",4)
+	var replacement:=scene.game.new_jewel("5",4)
 	scene.game.profile.jewels[0]=replacement
 	panel.inventory_changed()
 	await settle()
 	await click(panel.gem_buttons[replacement.token])
+	await settle()
 	check(not panel.socket_action.disabled,"Full bag replacement visibly available")
 	var previous_token: int=entry.sockets[1].token
 	await click(panel.socket_action)
 	check(entry.sockets[1].token==replacement.token and not scene.game.jewel_inventory(previous_token).is_empty() and scene.game.profile.jewels.size()==200,"Full bag real click swaps owners without losing a gem")
-	panel.usable_only.button_pressed=false
 	panel.refresh()
 	await settle()
 	panel.inventory_scroll.scroll_vertical=120
 	var scroll: int=panel.inventory_scroll.scroll_vertical
 	var retained: Button=panel.cells[0]
-	panel.search.grab_focus()
-	var focus=panel.search
+	panel.socket_buttons[1].grab_focus()
+	var focus=panel.socket_buttons[1]
 	scene.game.sort_jewels(true)
-	check(panel.gem_buttons.values().has(retained) and panel.inventory_scroll.scroll_vertical==scroll and focus.has_focus(),"Inventory reorder retains controls, scroll and search focus")
-	panel.search.text="__no_match__"
-	panel.search.text_changed.emit(panel.search.text)
-	check(panel.cells.is_empty() and panel.empty_hint.visible,"Search empty result explains filtering")
-	panel.search.text=""
-	panel.search.text_changed.emit("")
-	check(panel.cells.size()==200,"Clear search restores candidates")
+	check(panel.gem_buttons.values().has(retained) and panel.inventory_scroll.scroll_vertical==scroll and focus.has_focus(),"Inventory reorder retains controls, scroll and socket focus")
+	check(panel.cells.size()==scene.game.profile.jewels.filter(func(gem):return scene.game.jewel_allowed(str(gem.id),"weapons")).size() and not panel.empty_hint.visible,"Weapon candidates remain visible")
 	var draws:={"background":0,"defence":0,"cell":0}
 	scene.background_layer.draw.connect(func():draws.background+=1)
 	scene.equipment_panel.cards.defence_0.draw.connect(func():draws.defence+=1)
@@ -225,7 +246,7 @@ func run() -> void:
 	check(panel.fragments.text.contains("%.2f" % scene.game.profile.jewelFragments),"Reopen catches up hidden fragment changes")
 	check(panel.socket_row.visible and panel.inventory_scroll.scroll_vertical==scroll,"Reopen retains socket view and scroll")
 	# All retained modules are manageable, including dormant and empty modules.
-	var dormant: Dictionary={"key":"laser","level":20,"sockets":[scene.game.new_jewel("7")],"attacks":0,"hits":0}
+	var dormant: Dictionary={"key":"laser","level":20,"sockets":[scene.game.new_jewel("5")],"attacks":0,"hits":0}
 	scene.game.profile.loadout.weapons.append(dormant)
 	var dormant_index:=scene.game.module_entries("weapons").size()-1
 	panel.refresh()
@@ -253,7 +274,6 @@ func run() -> void:
 	panel.open()
 	check(not scene.game.paused,"Opening expanded center does not pause ongoing battle")
 	scene.game.paused=true
-	panel.usable_only.button_pressed=false
 	scene.game.profile.jewels.clear()
 	scene.game.profile.jewelFragments=0
 	panel.inventory_changed()
@@ -262,8 +282,11 @@ func run() -> void:
 	await capture("jewel-center-empty")
 	scene.game.profile.jewelFragments=scene.game.jewel_create_cost()-1
 	scene.game.pickup_jewel_fragment()
-	check(panel.cells.size()==1 and panel.new_tokens.size()==1,"Receipt creates and marks new gem")
-	await click(panel.cells[0])
+	check(scene.game.profile.jewels.size()==1 and panel.new_tokens.size()==1,"Receipt creates and marks new gem")
+	var received: Dictionary=scene.game.profile.jewels[0]
+	panel.open("weapons" if scene.game.jewel_allowed(str(received.id),"weapons") else "defence",0)
+	await click(panel.gem_buttons[received.token])
+	await settle()
 	check(panel.new_tokens.is_empty(),"Inspect acknowledges new gem")
 	for i in 3:panel.hide();panel.open()
 	check(panel.combine_all.get_signal_connection_list("pressed").size()==1,"Reopen does not duplicate bulk action handlers")
@@ -271,23 +294,37 @@ func run() -> void:
 	scene.game.profile.jewels.clear()
 	for id in scene.db.data.jewel:
 		scene.game.profile.jewels.append(scene.game.new_jewel(str(id),int(id)%4+1))
-	panel.search.text=""
-	panel.usable_only.button_pressed=false
 	panel.inventory_scroll.scroll_vertical=0
 	panel.inventory_changed()
+	panel.open("weapons",0)
 	await settle()
-	var art: Texture2D=panel.gem_texture("7")
+	var art: Texture2D=panel.gem_texture("5")
 	check(art is AtlasTexture and art.atlas.get_image().get_pixel(0,0).a==0,"Premium gems use the transparent production atlas")
-	check(panel.gem_texture("1")!=art and panel.gem_texture("10") is AtlasTexture,"Gem identities use separate atlas regions")
-	await click(panel.gem_buttons[scene.game.profile.jewels[6].token])
+	check(panel.gem_texture("1")!=art and panel.gem_texture("6") is AtlasTexture,"Gem identities use separate atlas regions")
+	await click(panel.gem_buttons[scene.game.profile.jewels[4].token])
 	await capture("jewel-premium-collection")
 	panel.open("weapons",0)
 	panel.select_socket(1)
-	panel.usable_only.button_pressed=false
 	panel.refresh()
 	await settle()
-	await click(panel.gem_buttons[scene.game.profile.jewels[6].token])
+	await click(panel.gem_buttons[scene.game.profile.jewels[4].token])
 	await capture("jewel-premium-sockets")
+	var active_entry:=scene.game.module_entry("weapons",0)
+	var installed_keep:=scene.game.new_jewel("5",30)
+	active_entry.sockets=[installed_keep,{},{}]
+	scene.game.profile.jewels=[scene.game.new_jewel("5",19),scene.game.new_jewel("5",20),scene.game.new_jewel("2",1)]
+	panel.open("weapons",0)
+	panel.inventory_changed()
+	await click(panel.combine_all)
+	check(scene.game.profile.jewels.size()==2 and is_same(active_entry.sockets[0],installed_keep) and panel.feedback.text.contains("清理过低等级宝石 1 颗"),"Cleanup-only click reports deletion and preserves equipped gem")
+	var defence_entry:=scene.game.module_entry("defence",0)
+	defence_entry.level=221
+	defence_entry.sockets=[scene.game.new_jewel("2",4),scene.game.new_jewel("6",4),scene.game.new_jewel("3",4)]
+	panel.open("defence",0)
+	await settle()
+	check(panel.socket_buttons.slice(0,3).all(func(button):return button.icon!=null and button.text=="Lv.4"),"Installed socket buttons show every gem icon and only its level")
+	check(panel.socket_buttons[2].tooltip_text.contains("自动维修宝石"),"Full gem name remains in socket tooltip")
+	await capture("jewel-compact-installed")
 	var escape:=InputEventKey.new()
 	escape.keycode=KEY_ESCAPE
 	escape.pressed=true

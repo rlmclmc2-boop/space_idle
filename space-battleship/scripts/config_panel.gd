@@ -18,6 +18,7 @@ var picker: FileDialog
 var history_label: Label
 var pause_button: Button
 var speed_select: OptionButton
+var speed_options: Array[Dictionary] = []
 var settings := ConfigFile.new()
 var control_poll := 0.0
 var observed_paused := false
@@ -146,14 +147,12 @@ func _ready() -> void:
 	controls.add_child(pause_button)
 	speed_select = OptionButton.new()
 	speed_select.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	for value in [1,2,5]:
-		speed_select.add_item(UIText.t("debug._ready.text_19", {"value":"%d" % (value)}),value)
-	speed_select.select(maxi(0,speed_select.get_item_index(int(settings.get_value("control","speed",1)))))
+	var live_scene := game_scene()
+	if live_scene != null:
+		sync_speed_options(live_scene)
 	speed_select.item_selected.connect(func(index):
-		var value := speed_select.get_item_id(index)
-		settings.set_value("control","speed",value)
-		settings.save("user://qa_settings.cfg")
-		send_control({"speed":value}))
+		if index >= 0 and index < speed_options.size():
+			send_control({"speed":float(speed_options[index].multiplier)}))
 	controls.add_child(speed_select)
 	status_label = Label.new()
 	status_label.text = UIText.t("debug._ready.text_20")
@@ -225,11 +224,22 @@ func refresh_controls(_delta: float) -> void:
 		pause_button.disabled = not connected or restarting
 		speed_select.disabled = not connected or restarting
 		if connected:
+			sync_speed_options(scene)
 			observed_paused = bool(live.get("paused",false))
 			pause_button.text = UIText.t("debug._process.text_01") if observed_paused else UIText.t("debug._ready.text_18")
-			var index := speed_select.get_item_index(int(live.get("speed",1)))
-			if index >= 0:
-				speed_select.select(index)
+			for index in speed_options.size():
+				if is_equal_approx(float(speed_options[index].multiplier),float(live.speed)):
+					speed_select.select(index)
+					break
+
+func sync_speed_options(scene: Node) -> void:
+	var configured: Array[Dictionary] = scene.game.chrono_options()
+	if configured == speed_options:
+		return
+	speed_options = configured
+	speed_select.clear()
+	for option in speed_options:
+		speed_select.add_item(UIText.t("debug._ready.text_19", {"value":str(option.multiplier)}))
 
 func _process(_delta: float) -> void:
 	if visible:refresh_controls(_delta)
@@ -280,8 +290,8 @@ func send_control(values: Dictionary) -> void:
 	if values.has("paused"):
 		scene.game.paused = bool(values.paused)
 		observed_paused = scene.game.paused
-	if int(values.get("speed",0)) in [1,2,5]:
-		scene.game.speed = int(values.speed)
+	if values.has("speed"):
+		scene.game.set_speed(float(values.speed))
 
 func delete_save() -> void:
 	restart_game(true)

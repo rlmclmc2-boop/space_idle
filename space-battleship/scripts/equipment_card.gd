@@ -28,12 +28,12 @@ func setup(owner_ui: Node) -> void:
 	add_theme_stylebox_override("focus",host.style(Color.TRANSPARENT,host.CYAN))
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon]
+	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon]
 	if last_state == state:
 		return
 	last_state = state
 	host.set_ui_value(fields.title,"text",item.name)
-	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":str(item.level)}))
+	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
 	host.set_ui_value(fields.stat,"text",item.mainStatLabel+" "+item.mainStatValue)
 	host.set_ui_value(fields.status,"text",UIText.t("equipment.state."+item.status))

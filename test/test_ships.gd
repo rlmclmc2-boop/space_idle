@@ -46,7 +46,7 @@ func _initialize() -> void:
 	legacy.tick(0.1)
 	assert(is_equal_approx(legacy.cooldowns.weapons_0,0.4),"Slot cooldown counts down independently")
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
-	file.store_string(JSON.stringify({"version":1,"levels":{"laser":3},"resources":{"1":123,"2":7}}))
+	file.store_string(JSON.stringify({"version":BattleGame.SAVE_VERSION,"levels":{"laser":3},"resources":{"1":123,"2":7}}))
 	file.close()
 	var restored := BattleGame.new(db,false)
 	restored.load_progress()

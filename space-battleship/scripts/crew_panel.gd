@@ -1,5 +1,8 @@
 extends Control
 ## Event-driven page. Rows/options survive ordinary changes, including hidden updates.
+## Selection changes row highlights and the detail; crew changes update dependent labels/actions.
+## Exploration samples update only the selected countdown. Unlocks add/remove affected rows.
+## Equipment slots remain a crew_system/profile interface with no presentation on this page.
 var host: Node
 var rows: Dictionary = {}
 var selected := ""
@@ -9,7 +12,6 @@ var detail_scroll: ScrollContainer
 var title: Label
 var description: Label
 var status: Label
-var slots: Label
 var jobs: OptionButton
 var target_picker: OptionButton
 var target_label: Label
@@ -22,94 +24,185 @@ var target_ids: Array = []
 var dirty := true
 var locked_preview: Button
 var job_label: Label
-var api_hint: Label
-var detail_controls: Array[Control] = []
-var exploration_heading: Label
-var exploration_hint: Label
-var view_planet_button: Button
-var recall_planet_button: Button
 var exploration_samples: Dictionary = {}
+
+const SURFACE := Color("071b2c")
+const ACCENT := Color("27dff4")
+const BORDER := Color("184861")
+var row_fields: Dictionary = {}
+var portrait: TextureRect
+var experience: ProgressBar
+var exp_label: Label
+var list_heading: Label
+var effect_section: VBoxContainer
+var effect_title: Label
+var assignment_section: VBoxContainer
+var detail_body: VBoxContainer
+var level_effect_label: Label
+var parameter_column: VBoxContainer
+
+func label(parent: Node, value: String, font_size := 22, color := Color("dceefa")) -> Label:
+	var control:=Label.new()
+	control.text=value
+	control.add_theme_font_size_override("font_size",font_size)
+	control.add_theme_color_override("font_color",color)
+	control.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	parent.add_child(control)
+	return control
+
+func section(parent: Node, key: String) -> VBoxContainer:
+	var box:=VBoxContainer.new()
+	box.add_theme_constant_override("separation",16)
+	parent.add_child(box)
+	var heading:=HBoxContainer.new()
+	heading.add_theme_constant_override("separation",16)
+	box.add_child(heading)
+	var marker:=ColorRect.new()
+	marker.color=ACCENT
+	marker.custom_minimum_size=Vector2(4,24)
+	marker.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	heading.add_child(marker)
+	label(heading,UIText.t(key),24,ACCENT)
+	var line:=HSeparator.new()
+	var divider:=StyleBoxLine.new()
+	divider.color=BORDER
+	divider.thickness=1
+	line.add_theme_stylebox_override("separator",divider)
+	line.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	line.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	heading.add_child(line)
+	return box
+
+func avatar(parent: Node, extent: float) -> TextureRect:
+	var image:=TextureRect.new()
+	image.texture=preload("res://assets/ui/crew.svg")
+	image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	image.custom_minimum_size=Vector2.ONE*extent
+	image.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	parent.add_child(image)
+	return image
 
 func setup(owner_ui: Node) -> void:
 	host=owner_ui
 	add_theme_font_override("font",host.font)
-	host.equipment_card_label(self,UIText.t("crew.heading"),Rect2(24,14,850,40),27,host.CYAN)
-	api_hint=host.equipment_card_label(self,UIText.t("crew.api_only"),Rect2(24,58,1200,30),14,host.MUTED)
-	for region in [Rect2(16,98,570,1060),Rect2(600,98,732,1060)]:
+	var header:=label(self,UIText.t("crew.heading"),32,ACCENT)
+	header.position=Vector2(24,18)
+	var subtitle:=label(self,UIText.t("crew.api_only"),18,host.MUTED)
+	subtitle.position=Vector2(24,62)
+	for region in [Rect2(16,112,476,1046),Rect2(508,112,824,1046)]:
 		var frame:=Panel.new()
 		frame.position=region.position
 		frame.size=region.size
 		frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		frame.add_theme_stylebox_override("panel",host.style(host.PANEL,host.LINE))
+		frame.add_theme_stylebox_override("panel",host.style(SURFACE,BORDER))
 		add_child(frame)
+	list_heading=label(self,UIText.t("crew.list_heading"),24,ACCENT)
+	list_heading.position=Vector2(34,130)
 	scroll=ScrollContainer.new()
-	scroll.position=Vector2(24,110)
-	scroll.size=Vector2(550,1036)
+	scroll.position=Vector2(30,178)
+	scroll.size=Vector2(448,962)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 	list=VBoxContainer.new()
 	list.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	list.add_theme_constant_override("separation",12)
+	list.add_theme_constant_override("separation",10)
 	scroll.add_child(list)
 	detail_scroll=ScrollContainer.new()
-	detail_scroll.position=Vector2(610,110)
-	detail_scroll.size=Vector2(710,1036)
+	detail_scroll.position=Vector2(536,140)
+	detail_scroll.size=Vector2(768,990)
 	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(detail_scroll)
-	var detail_body:=Control.new()
-	detail_body.custom_minimum_size=Vector2(690,1020)
+	detail_body=VBoxContainer.new()
+	detail_body.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	detail_body.add_theme_constant_override("separation",28)
 	detail_scroll.add_child(detail_body)
-	title=host.equipment_card_label(detail_body,"",Rect2(10,24,670,40),24,host.CYAN)
-	description=host.equipment_card_label(detail_body,"",Rect2(10,92,670,130),15)
+	var identity:=HBoxContainer.new()
+	identity.add_theme_constant_override("separation",24)
+	detail_body.add_child(identity)
+	portrait=avatar(identity,96)
+	var identity_text:=VBoxContainer.new()
+	identity_text.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	identity_text.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	identity_text.add_theme_constant_override("separation",10)
+	identity.add_child(identity_text)
+	title=label(identity_text,"",30)
+	status=label(identity_text,"",20,ACCENT)
+	effect_section=section(detail_body,"crew.current_effect")
+	var effect_body:=VBoxContainer.new()
+	effect_body.add_theme_constant_override("separation",8)
+	effect_section.add_child(effect_body)
+	effect_title=label(effect_body,"",26)
+	description=label(effect_body,"",22,Color("a8c8df"))
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	description.clip_text=true
-	status=host.equipment_card_label(detail_body,"",Rect2(10,250,670,110),15)
-	status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	job_label=host.equipment_card_label(detail_body,UIText.t("crew.choose_job"),Rect2(10,400,670,24),14,host.MUTED)
-	jobs=picker(Rect2(10,435,670,42),detail_body)
+	assignment_section=section(detail_body,"crew.assignment_settings")
+	var settings:=HBoxContainer.new()
+	settings.add_theme_constant_override("separation",24)
+	assignment_section.add_child(settings)
+	var job_column:=VBoxContainer.new()
+	job_column.add_theme_constant_override("separation",10)
+	job_column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	settings.add_child(job_column)
+	job_label=label(job_column,UIText.t("crew.assign_to"),20,host.MUTED)
+	jobs=picker(job_column)
 	jobs.item_selected.connect(func(_index):refresh_targets();refresh_actions())
-	target_label=host.equipment_card_label(detail_body,UIText.t("crew.choose_target"),Rect2(10,510,670,24),14,host.MUTED)
-	target_picker=picker(Rect2(10,545,670,42),detail_body)
+	parameter_column=VBoxContainer.new()
+	parameter_column.add_theme_constant_override("separation",10)
+	parameter_column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	settings.add_child(parameter_column)
+	target_label=label(parameter_column,"",20,host.MUTED)
+	target_picker=picker(parameter_column)
 	target_picker.item_selected.connect(func(_index):refresh_actions())
-	upgrade_picker=picker(Rect2(10,545,670,42),detail_body)
+	upgrade_picker=picker(parameter_column)
 	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index],job_ids[jobs.selected]))
-	assign_button=action("crew.assign",Rect2(10,630,318,46),func():
+	var buttons:=HBoxContainer.new()
+	buttons.add_theme_constant_override("separation",24)
+	assignment_section.add_child(buttons)
+	assign_button=action("crew.confirm_assign",func():
 		if jobs.selected>=0 and target_picker.selected>=0:
-			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions(),detail_body)
-	release_button=action("crew.release",Rect2(352,630,328,46),func():host.game.crew.assign(host.game,selected,"",""),detail_body)
-	exploration_heading=host.equipment_card_label(detail_body,"",Rect2(10,400,670,32),20,host.CYAN)
-	exploration_hint=host.equipment_card_label(detail_body,UIText.t("crew.exploration_hint"),Rect2(10,450,670,88),15,host.MUTED)
-	exploration_hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	view_planet_button=action("crew.view_planet",Rect2(10,560,318,46),func():host.equipment_tabs.current_tab=6,detail_body)
-	recall_planet_button=action("planet.cancel",Rect2(352,560,328,46),func():
-		var planet_id: String=host.game.crew_exploration(selected)
-		if not planet_id.is_empty():host.game.cancel_planet_exploration(planet_id),detail_body)
-	for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:control.visible=false
-	slots=host.equipment_card_label(detail_body,"",Rect2(10,750,670,56),15,host.MUTED)
-	detail_controls.assign([title,description,status,slots,job_label,jobs,target_label,target_picker,upgrade_picker,assign_button,release_button])
+			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions(),buttons,true)
+	release_button=action("crew.release",func():host.game.crew.assign(host.game,selected,"",""),buttons)
 	locked_preview=Button.new()
-	locked_preview.custom_minimum_size=Vector2(520,116)
+	locked_preview.custom_minimum_size=Vector2(0,74)
 	locked_preview.disabled=true
 	locked_preview.focus_mode=Control.FOCUS_NONE
+	locked_preview.alignment=HORIZONTAL_ALIGNMENT_LEFT
 	locked_preview.icon=preload("res://assets/ui/crew_locked.svg")
-	locked_preview.add_theme_font_size_override("font_size",18)
+	locked_preview.add_theme_constant_override("icon_max_width",42)
+	locked_preview.add_theme_constant_override("h_separation",16)
+	locked_preview.add_theme_font_size_override("font_size",20)
 	locked_preview.add_theme_color_override("font_disabled_color",host.MUTED)
-	locked_preview.add_theme_stylebox_override("disabled",host.style(host.PANEL,host.LINE))
+	var locked_style=host.style(Color("0a1b2b"),Color("153247"))
+	locked_style.content_margin_left=16
+	locked_preview.add_theme_stylebox_override("disabled",locked_style)
 	list.add_child(locked_preview)
 	visibility_changed.connect(func():
 		if is_visible_in_tree():refresh())
 	refresh()
 
-func picker(rect: Rect2, parent: Control) -> OptionButton:
+func picker(parent: Control) -> OptionButton:
 	var control:=OptionButton.new()
-	control.position=rect.position
-	control.size=rect.size
+	control.custom_minimum_size=Vector2(0,56)
+	control.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	control.fit_to_longest_item=false
+	control.add_theme_font_size_override("font_size",22)
+	for state in ["normal","hover","pressed","focus"]:
+		var skin=host.style(Color("0c273d"),ACCENT if state=="focus" else BORDER)
+		skin.content_margin_left=16
+		skin.content_margin_right=38
+		control.add_theme_stylebox_override(state,skin)
+	control.get_popup().add_theme_font_size_override("font_size",22)
 	parent.add_child(control)
 	return control
 
-func action(key: String, rect: Rect2, callback: Callable, parent: Control) -> Button:
-	var control: Button=host.button(UIText.t(key),rect,callback)
+func action(key: String, callback: Callable, parent: Control, primary := false) -> Button:
+	var control: Button=host.button(UIText.t(key),Rect2(0,0,0,60),callback)
+	control.custom_minimum_size=Vector2(0,60)
+	control.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	control.add_theme_font_size_override("font_size",24)
+	if primary:
+		control.add_theme_stylebox_override("normal",host.style(Color("07506c"),ACCENT))
+		control.add_theme_color_override("font_color",Color("c7f9ff"))
 	control.reparent(parent,false)
 	return control
 
@@ -122,7 +215,7 @@ func exploration_remaining(id: String) -> int:
 	return ceili(maxf(0.0,host.game.planet_duration(id)-float(progress.get("elapsed",0))))
 
 func exploration_name(id: String) -> String:
-	return UIText.data_text("planet",id)
+	return UIText.data_text("planet",id,"name",str(host.game.planet_row(id).get("name",id)))
 
 func refresh_exploration_sample() -> void:
 	if not is_visible_in_tree():return
@@ -144,20 +237,17 @@ func refresh_row(item: Dictionary) -> void:
 	var id: String=item.crewId
 	var definition: Dictionary=g.crew.definitions(g)[id]
 	var planet_id: String=g.crew_exploration(id)
-	var role: String
-	var target: String
-	var effect: String
-	if not planet_id.is_empty():
-		role=UIText.t("crew.exploring")
-		target=exploration_name(planet_id)
-		effect=UIText.t("crew.exploration_remaining",{"remaining":exploration_remaining(planet_id),"experience":host.number(float(g.planet_row(planet_id).get("baseExp",0))*g.planet_exp_multiplier())})
-	else:
-		var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
-		role=job_title(job) if not job.is_empty() else UIText.t("crew.idle")
-		target=g.crew.target_name(g,item)
-		effect=g.crew.effect_text(g,item)
-	host.set_ui_value(rows[id],"text",UIText.t("crew.row",{"name":definition.name,"level":item.level,"job":role,"target":target,"effect":effect}))
-	host.set_ui_value(rows[id],"tooltip_text",str(definition.description))
+	var assigned:=not str(item.assignmentType).is_empty()
+	var fields: Dictionary=row_fields[id]
+	host.set_ui_value(fields.name,"text",g.crew.display_name(g,item))
+	var role:=UIText.t("crew.free")
+	if not planet_id.is_empty():role=UIText.t("crew.exploring" if str(g.planet_progress(planet_id).crewId)==id else "planet.builder_role")
+	elif assigned:
+		role=job_title(g.crew.assignments(g).get(item.assignmentType,{}))
+	host.set_ui_value(fields.role,"text",role)
+	var state:=UIText.t("crew.paused") if assigned and not g.crew.active(g,item) else ""
+	host.set_ui_value(fields.state,"text",state)
+	host.set_ui_value(rows[id],"tooltip_text","")
 
 func refresh() -> void:
 	if not is_visible_in_tree():
@@ -166,40 +256,56 @@ func refresh() -> void:
 	var g=host.game
 	var ids: Array=[]
 	var next_gate := -1
+	var next_number := 0
+	var ordinal := 0
 	for item in g.profile.crew:
+		ordinal+=1
 		if not g.crew.unlocked(g,item.crewId):
 			var gate: Dictionary=g.db.data.get("unlock",{}).get(str(g.crew.definitions(g)[item.crewId].get("unlockId","")),{})
 			var level := int(gate.get("level",-1))
-			if level>=0 and (next_gate<0 or level<next_gate):next_gate=level
+			if level>=0 and (next_gate<0 or level<next_gate):
+				next_gate=level
+				next_number=ordinal
 			continue
 		var id: String=item.crewId
 		ids.append(id)
 		var definition: Dictionary=g.crew.definitions(g)[id]
 		if not rows.has(id):
 			var button:=Button.new()
-			button.custom_minimum_size=Vector2(520,116)
-			button.alignment=HORIZONTAL_ALIGNMENT_LEFT
-			button.add_theme_font_size_override("font_size",16)
-			button.add_theme_stylebox_override("normal",host.style(host.PANEL,host.LINE))
-			button.add_theme_stylebox_override("focus",host.style(host.PANEL,host.CYAN))
+			button.custom_minimum_size=Vector2(0,108)
+			button.add_theme_stylebox_override("normal",host.style(Color("0b2134"),BORDER))
+			button.add_theme_stylebox_override("hover",host.style(Color("103b50"),ACCENT))
+			button.add_theme_stylebox_override("focus",host.style(Color("103b50"),ACCENT))
 			button.pressed.connect(func():select(id))
 			list.add_child(button)
 			rows[id]=button
-			if ResourceLoader.exists(str(definition.icon)):
-				button.icon=load(str(definition.icon))
+			var image:=avatar(button,64)
+			image.position=Vector2(16,22)
+			image.size=Vector2(64,64)
+			if ResourceLoader.exists(str(definition.icon)):image.texture=load(str(definition.icon))
+			var name_label:=label(button,"",24)
+			name_label.position=Vector2(96,18)
+			var role_label:=label(button,"",21,Color("89dcec"))
+			role_label.position=Vector2(96,57)
+			var state_label:=label(button,"",17,host.MUTED)
+			state_label.position=Vector2(350,62)
+			row_fields[id]={"name":name_label,"role":role_label,"state":state_label}
 		refresh_row(item)
 	for id in rows.keys():
 		if not ids.has(id):
 			rows[id].queue_free()
 			rows.erase(id)
-	if not ids.has(selected):selected=str(ids[0]) if not ids.is_empty() else ""
+			row_fields.erase(id)
+	var changed_selection:=not ids.has(selected)
+	if changed_selection:selected=str(ids[0]) if not ids.is_empty() else ""
 	refresh_selection()
 	host.set_ui_value(locked_preview,"visible",next_gate>=0)
-	host.set_ui_value(locked_preview,"text",UIText.t("crew.unlock_at",{"level":next_gate}) if next_gate>=0 else "")
+	host.set_ui_value(locked_preview,"text",UIText.t("crew.locked_row",{"number":"%02d" % next_number,"level":next_gate}) if next_gate>=0 else "")
 	if locked_preview.get_index()!=list.get_child_count()-1:list.move_child(locked_preview,list.get_child_count()-1)
-	host.set_ui_value(api_hint,"visible",not ids.is_empty())
+
 	refresh_jobs()
-	refresh_detail()
+	if changed_selection and not selected.is_empty():select(selected)
+	else:refresh_detail()
 	dirty=false
 
 func select(id: String) -> void:
@@ -220,14 +326,14 @@ func refresh_selection() -> void:
 		var active: bool=id==selected
 		if button.get_meta("selected",false)==active:continue
 		button.set_meta("selected",active)
-		button.add_theme_stylebox_override("normal",host.style(host.PANEL,host.CYAN if active else host.LINE))
+		button.add_theme_stylebox_override("normal",host.style(Color("0d3b50") if active else Color("0b2134"),ACCENT if active else BORDER))
 
 func job_title(row: Dictionary) -> String:
 	return UIText.t(str(row.titleTextId)) if not str(row.get("titleTextId","")).is_empty() else str(row.get("description",""))
 
 func refresh_jobs() -> void:
 	var definitions: Dictionary=host.game.crew.assignments(host.game)
-	var ids: Array=definitions.keys()
+	var ids: Array=definitions.keys().filter(func(id):return definitions[id].targetType!="galaxy" or host.game.galaxy.available())
 	if ids != job_ids:
 		var old: String=job_ids[jobs.selected] if jobs.selected>=0 else ""
 		job_ids=ids
@@ -250,65 +356,115 @@ func refresh_targets() -> void:
 	target_picker.set_meta("names",names)
 	if ids.has(old):target_picker.select(ids.find(old))
 
+func refresh_job_availability() -> void:
+	# Crew selection/assignment changes only option flags and an invalidated draft.
+	# The owner may keep its own system; other crew must choose a free target.
+	var g=host.game
+	for index in job_ids.size():
+		var job: String=job_ids[index]
+		var available: bool=g.crew.available_targets(g,job).any(func(target):return g.crew.can_assign(g,selected,job,str(target.id)))
+		if jobs.is_item_disabled(index)==available:jobs.set_item_disabled(index,not available)
+	if jobs.selected<0 or jobs.is_item_disabled(jobs.selected):
+		var next := -1
+		for index in job_ids.size():
+			if not jobs.is_item_disabled(index):
+				next=index
+				break
+		if jobs.selected!=next:jobs.select(next)
+		if next<0:host.set_ui_value(jobs,"text",UIText.t("crew.no_available_system"))
+	refresh_targets()
+
 func refresh_detail() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
-	for control in detail_controls:
-		if item.is_empty() or control not in [target_picker,upgrade_picker]:
-			host.set_ui_value(control,"visible",not item.is_empty())
-	if item.is_empty():
-		host.set_ui_value(title,"text","")
-		for field in [description,status,slots]:host.set_ui_value(field,"text","")
-		for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:host.set_ui_value(control,"visible",false)
-		return
+	host.set_ui_value(detail_body,"visible",not item.is_empty())
+	if item.is_empty():return
 	var row: Dictionary=g.crew.definitions(g)[selected]
-	host.set_ui_value(title,"text",UIText.t("crew.name_level",{"name":row.name,"level":item.level}))
-	host.set_ui_value(description,"text",str(row.description))
-	host.set_ui_value(description,"tooltip_text",str(row.description))
+	host.set_ui_value(title,"text",g.crew.display_name(g,item))
+	if ResourceLoader.exists(str(row.icon)):host.set_ui_value(portrait,"texture",load(str(row.icon)))
 	refresh_detail_status(item)
-	host.set_ui_value(slots,"text",UIText.t("crew.equipment_reserved",{"count":item.equipmentSlots.size()}))
 	refresh_actions()
 
 func refresh_detail_status(item: Dictionary) -> void:
 	var g=host.game
-	var row: Dictionary=g.crew.definitions(g)[str(item.crewId)]
-	var next: Dictionary=g.crew.growth(g,str(item.crewId),int(item.level)+1)
-	var needed: String=host.number(roundf(float(row.get("baseExp",next.get("needExp",0)))*pow(1.0+float(row.get("expGrowth",0)),int(item.level)-1))) if int(item.level)<int(row.maxLevel) else UIText.t("crew.max_level")
+	ensure_level_ui()
+	if g.crew.levels_unlocked(g):
+		var required: float=g.crew.required_exp(g,int(item.level))
+		host.set_ui_value(exp_label,"text",g.crew.format_text(g,"exp_bar",{"exp":NumberFormat.precise(float(item.exp)),"needed":NumberFormat.precise(required)}))
+		host.set_ui_value(experience,"value",clampf(float(item.exp)/required*100.0,0,100))
+		var effects: String=g.crew.level_description(g,item)
+		host.set_ui_value(level_effect_label,"text",effects)
+		host.set_ui_value(level_effect_label,"visible",not effects.is_empty())
 	var planet_id: String=g.crew_exploration(str(item.crewId))
-	if planet_id.is_empty():
-		host.set_ui_value(status,"text",UIText.t("crew.progress",{"exp":host.number(float(item.exp)),"needed":needed,"effect":g.crew.effect_text(g,item)}))
-	else:
-		host.set_ui_value(status,"text",UIText.t("crew.exploration_progress",{"exp":host.number(float(item.exp)),"needed":needed,"planet":exploration_name(planet_id),"remaining":exploration_remaining(planet_id)}))
+	var assigned:=not str(item.assignmentType).is_empty()
+	var state:=UIText.t("crew.assigned") if assigned else UIText.t("crew.free")
+	if not planet_id.is_empty():
+		state=UIText.t("crew.exploring_brief",{"planet":exploration_name(planet_id),"remaining":exploration_remaining(planet_id)}) if str(g.planet_progress(planet_id).crewId)==str(item.crewId) else UIText.t("planet.builder_status",{"planet":exploration_name(planet_id)})
+	elif assigned and not g.crew.active(g,item):state=UIText.t("crew.paused")
+	host.set_ui_value(status,"text",state)
+	host.set_ui_value(effect_section,"visible",assigned and planet_id.is_empty())
+	if not assigned:return
+	var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
+	var kind:=str(job.get("effectType",""))
+	var effect_key: String={"AUTO_UPGRADE":"equipment","AUTO_SCIENTIST":"scientist","AUTO_COMBINE":"jewel","AUTO_REACTOR":"reactor","OUTPUT":"output"}.get(kind,"")
+	host.set_ui_value(effect_title,"text",UIText.t("crew.core_title."+effect_key) if not effect_key.is_empty() else job_title(job))
+	var text: String=g.crew.effect_text(g,item)
+	if g.crew.active(g,item) and not effect_key.is_empty():
+		var value: float=g.crew.effect_value(g,item)
+		var interval: String="%.1f" % (float(job.interval)/value if value>0 else 0.0)
+		var mode: String=str(item.get("upgradeMode","1"))
+		if kind=="AUTO_UPGRADE":
+			text=UIText.t("crew.core_equipment",{"interval":interval,"amount":UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})})
+		elif kind=="AUTO_SCIENTIST":text=UIText.t("crew.core_scientist",{"interval":interval,"amount":g.crew.upgrade_mode_text(mode,kind)})
+		elif kind=="AUTO_COMBINE":text=UIText.t("crew.core_jewel",{"interval":interval})
+		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":"%.1f" % (value*100)})
+	host.set_ui_value(description,"text",text)
 
 func refresh_actions() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
-	var planet_id: String=g.crew_exploration(selected)
-	var exploring:=not planet_id.is_empty()
-	for control in [exploration_heading,exploration_hint,view_planet_button,recall_planet_button]:host.set_ui_value(control,"visible",exploring)
-	for control in [job_label,jobs,target_label,assign_button,release_button]:host.set_ui_value(control,"visible",not exploring and not item.is_empty())
-	if exploring:
-		host.set_ui_value(exploration_heading,"text",UIText.t("crew.exploration_heading",{"planet":exploration_name(planet_id)}))
-		host.set_ui_value(target_picker,"visible",false)
-		host.set_ui_value(upgrade_picker,"visible",false)
-		return
+	refresh_job_availability()
+	var exploring: bool=not g.crew_exploration(selected).is_empty()
+	host.set_ui_value(assignment_section,"visible",not exploring and not item.is_empty())
+	if exploring or item.is_empty():return
 	var row: Dictionary=g.crew.assignments(g).get(job_ids[jobs.selected],{}) if jobs.selected>=0 else {}
 	var equipment: bool=row.get("targetType")=="equipment" and row.get("effectType")=="AUTO_UPGRADE"
 	var scientist: bool=row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_SCIENTIST"
-	var automatic := equipment or scientist
-	host.set_ui_value(target_label,"text",UIText.t("crew.upgrade_amount" if equipment else "crew.scientist_amount" if scientist else "crew.choose_target"))
-	host.set_ui_value(target_picker,"visible",not automatic)
+	var automatic:=equipment or scientist
+	var choose_target: bool=not automatic and target_ids.size()>1
+	host.set_ui_value(target_label,"text",UIText.t("crew.amount_label" if equipment else "crew.ai_amount_label" if scientist else "crew.choose_target"))
+	host.set_ui_value(parameter_column,"visible",automatic or choose_target)
+	host.set_ui_value(target_picker,"visible",choose_target)
 	host.set_ui_value(upgrade_picker,"visible",automatic)
-	var modes: Array[String]=g.crew.upgrade_modes(g,job_ids[jobs.selected]) if jobs.selected>=0 else []
+	var modes: Array[String]=[]
+	if jobs.selected>=0:modes=g.crew.upgrade_modes(g,job_ids[jobs.selected])
 	if modes!=mode_ids or upgrade_picker.get_meta("effect_type","")!=str(row.get("effectType","")):
 		mode_ids=modes
 		upgrade_picker.clear()
-		for mode in modes:upgrade_picker.add_item(g.crew.upgrade_mode_text(mode,str(row.effectType)))
+		for mode in modes:
+			upgrade_picker.add_item((UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})) if equipment else g.crew.upgrade_mode_text(mode,str(row.effectType)))
 		upgrade_picker.set_meta("effect_type",str(row.get("effectType","")))
 	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(str(item.get("upgradeMode",""))))
 	host.set_ui_value(upgrade_picker,"disabled",item.is_empty())
 	var valid:=jobs.selected>=0 and target_picker.selected>=0
 	host.set_ui_value(assign_button,"disabled",not valid or not g.crew.can_assign(g,selected,job_ids[jobs.selected] if valid else "",target_ids[target_picker.selected] if valid else ""))
-	host.set_ui_value(release_button,"disabled",item.is_empty() or str(item.get("assignmentType","")).is_empty())
-	if jobs.selected>=0:
-		host.set_ui_value(jobs,"tooltip_text",str(row.description) if g.crew.supported(row) else UIText.t("crew.unsupported"))
+	var assigned:=not str(item.get("assignmentType","")).is_empty()
+	host.set_ui_value(assign_button,"text",UIText.t("crew.confirm_change" if assigned else "crew.confirm_assign"))
+	host.set_ui_value(release_button,"visible",assigned)
+	host.set_ui_value(release_button,"disabled",not assigned)
+
+func ensure_level_ui() -> void:
+	if not host.game.crew.levels_unlocked(host.game) or is_instance_valid(experience):return
+	var progress:=VBoxContainer.new()
+	progress.add_theme_constant_override("separation",10)
+	detail_body.add_child(progress)
+	exp_label=label(progress,"",22,Color("9fd9ed"))
+	experience=ProgressBar.new()
+	experience.custom_minimum_size=Vector2(0,14)
+	experience.show_percentage=false
+	experience.add_theme_stylebox_override("background",host.style(Color("0b253a"),BORDER))
+	experience.add_theme_stylebox_override("fill",host.style(Color("159db8"),ACCENT))
+	progress.add_child(experience)
+	detail_body.move_child(progress,1)
+	level_effect_label=label(progress,"",20,Color("a8c8df"))
+	level_effect_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

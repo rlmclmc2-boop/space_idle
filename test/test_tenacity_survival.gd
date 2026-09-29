@@ -18,7 +18,7 @@ func _initialize() -> void:
 			g.spawn_group()
 			g.profile.unlocked = ["armour","shield"]
 			g.profile.loadout.defence = [{"key":"shield","level":1},{"key":"armour","level":1}]
-			g.profile.loadout.defence[target_slot].sockets = [g.new_jewel("10",1)]
+			g.profile.loadout.defence[target_slot].sockets = [g.new_jewel("6",1)]
 			g.reset_player()
 			for i in 100:
 				g.hit_player(capacity*0.0123,1)
@@ -42,7 +42,7 @@ func _initialize() -> void:
 	live.start(1,false)
 	live.spawn_group()
 	live.profile.unlocked = ["armour","shield"]
-	live.profile.loadout.defence = [{"key":"shield","level":1,"sockets":[live.new_jewel("10",1)]},{"key":"armour","level":1}]
+	live.profile.loadout.defence = [{"key":"shield","level":1,"sockets":[live.new_jewel("6",1)]},{"key":"armour","level":1}]
 	live.reset_player()
 	live.player.shield = 0
 	live.since_hit = 0

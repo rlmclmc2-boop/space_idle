@@ -20,7 +20,7 @@ func fixture(gem: bool, reduction := 0.0) -> BattleGame:
 	g.profile.unlocked = ["armour","shield"]
 	g.profile.loadout.defence = [{"key":"shield","level":1},{"key":"armour","level":1}]
 	if gem:
-		g.profile.loadout.defence[0].sockets = [g.new_jewel("10",1)]
+		g.profile.loadout.defence[0].sockets = [g.new_jewel("6",1)]
 	g.reset_player()
 	return g
 func _initialize() -> void:

@@ -67,7 +67,7 @@ func run() -> void:
 					for gem in entry.get("sockets",[]):
 						if not gem.is_empty():gem.level = int(gem.level)+1
 					subject.profile.hightechLevels[BattleGame.DENSE_ARMOUR] = phase+1
-					subject.charge_job("防御充能").level = phase+1
+					subject.profile.reactorAllocation.defence = (phase+1)*10.0
 				subject.db.config.equipmentSocket = 0 if phase == 3 else 20
 				subject.player.armour *= 0.7
 				subject.player.shield *= 0.6
@@ -92,19 +92,15 @@ func run() -> void:
 		check(research_live.profile == research_lab.profile and research_live.drops == research_lab.drops,"research/furnace boundaries and bulk match original phase "+str(phase))
 		check(research_live.rng.state == research_lab.rng.state,"research reuse preserves RNG")
 		check(not research_lab.research_scope and research_lab.research_rates.is_empty() and research_lab.research_active.is_empty(),"research scope released")
-	# Charge counts and payments cross several real requirement boundaries.
+	# Reactor metrics use the same cumulative purchase as the game.
 	var db := ShipDatabase.new()
-	var key: String = db.data.charge.keys()[0]
-	db.data.charge[key].merge({"para_1":2,"para_2":2,"para_4":1,"para_5":1,"para_6":2,"para_7":1},true)
-	db.unlock_row("charge",key).level=0
 	var game = LabGame.new(db)
 	var metrics = attach(game)
-	game.profile.resources["2"] = 100
-	game.toggle_charge(key)
-	game.advance_charge(8)
-	check(metrics.uses.charge_cycles == 8 and metrics.uses.charge_levels == 3,"charge cycles count across levels without changing jobs")
-	check(metrics.spending["2"] == 58 and game.profile.resources["2"] == 42,"charge actual paid resources")
-	check(game.charge_required(key,0) == 1 and game.charge_job(key).level == 3,"historical requirement query is read only")
+	game.profile.cleared = [1]
+	game.profile.resources["2"] = 436
+	check(game.upgrade_reactor(3),"Reactor batch counted")
+	check(metrics.uses.reactor_levels == 3,"Reactor levels counted")
+	check(absf(float(metrics.spending["2"])-436.0)<0.00001 and absf(float(game.profile.resources["2"]))<0.00001,"Reactor paid resources recorded")
 	# Generate, combine and socket through the same policy used by the runner.
 	game = LabGame.new(ShipDatabase.new())
 	metrics = attach(game)

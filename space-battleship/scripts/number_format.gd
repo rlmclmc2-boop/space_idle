@@ -1,12 +1,13 @@
 class_name NumberFormat
 extends RefCounted
 
-static func plain(value: float) -> String:
+static func plain(value) -> String:
+	if value is Dictionary:return GrowthNumber.text(value)
 	if not is_finite(value):
 		return str(value)
 	if absf(value) >= 1e20:
 		var exponent := floori(log(absf(value))/log(10.0))
-		var mantissa := value/pow(10.0,exponent)
+		var mantissa: float = value/pow(10.0,exponent)
 		if absf(mantissa) >= 9.995:
 			mantissa /= 10.0
 			exponent += 1
@@ -15,12 +16,14 @@ static func plain(value: float) -> String:
 		return "%.0f" % value
 	return str(int(value)) if is_equal_approx(value,roundf(value)) else "%.1f" % value
 
-static func precise(value: float) -> String:
+static func precise(value) -> String:
+	if value is Dictionary:return GrowthNumber.text(value)
 	if not is_finite(value) or absf(value) >= 9e18:
 		return plain(value)
 	return ("%.8f" % value).rstrip("0").trim_suffix(".") if value != roundf(value) else str(int(value))
 
-static func compact(value: float) -> String:
+static func compact(value) -> String:
+	if value is Dictionary:return GrowthNumber.text(value)
 	if not is_finite(value) or value >= 1e20:
 		return plain(value)
 	value = maxf(0.0,value)
@@ -38,11 +41,13 @@ static func compact(value: float) -> String:
 		unit += 1
 	return plain(truncated / divisor) + suffixes[unit]
 
-static func rate(value: float) -> String:
+static func rate(value) -> String:
+	if value is Dictionary:return GrowthNumber.text(value)
 	return "%.2f" % value if value < 1000.0 else compact(value)
 
 # Damage presentation only; no rounding is applied to combat values.
-static func damage(value: float) -> String:
+static func damage(value) -> String:
+	if value is Dictionary:return GrowthNumber.text(value)
 	value = absf(value)
 	if not is_finite(value):return str(value)
 	if value==0:return "0"

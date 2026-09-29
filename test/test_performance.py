@@ -17,11 +17,11 @@ WORKSPACE = Path(__file__).resolve().parent.parent
 SOURCE = WORKSPACE / 'space-battleship'
 FUNCTIONS = {
     'main': ['_process', 'build_ui', 'on_event', 'refresh_scientists', 'refresh_hightech_progress',
-             'refresh_charge_card', 'prune_resource_samples'],
+             'prune_resource_samples'],
     'game': ['tick', 'tick_projectiles', 'targets', 'missile_target', 'weapon_entries', 'stat',
              'scientist_purchase', 'scientist_cost', 'can_generate_scientist', 'max_upgrade_amount_slot',
-             'can_upgrade_slot', 'hightech_description', 'charge_description', 'resource_minute_total',
-             'prune_resource_samples', 'save_progress', 'advance_charge', 'advance_hightech',
+             'can_upgrade_slot', 'hightech_description', 'reactor_energy', 'resource_minute_total',
+             'prune_resource_samples', 'save_progress', 'upgrade_reactor', 'advance_hightech',
              'settle_offline_resources'],
     'database': ['equip', 'ship', 'max_equipment_level', 'enemy_weapon'],
 }

@@ -49,12 +49,17 @@ func run() -> void:
 	panel.select_item("weapons_0")
 	await click(panel.detail.upgrade)
 	check(scene.game.slot_entry("weapons",0).level==2,"Actual upgrade button upgrades selected module")
+	check(scene.message=="W01 "+scene.NAMES["laser"]+" · 升级完成","Weapon upgrade notice uses card number and equipment name")
 	panel.change_equipment("cannon")
 	check(scene.game.slot_entry("weapons",0).key=="cannon" and scene.game.slot_entry("weapons",0).level==2,"Direct equipment replacement inherits module level")
 	panel.act("remove")
 	check(scene.game.slot_entry("weapons",0).key=="" and scene.game.slot_entry("weapons",0).level==2,"Unload keeps module growth")
 	panel.act("upgrade")
 	check(scene.game.slot_entry("weapons",0).level==3,"Empty module can upgrade")
+	check(scene.message=="W01 "+UIText.t("equipment.vacant")+" · 升级完成","Empty module upgrade notice uses card number")
+	scene.game.equip_slot("defence",1,"shield")
+	scene.game.upgrade_slot("defence",1)
+	check(scene.message=="D02 "+scene.NAMES[str(scene.game.slot_entry("defence",1).key)]+" · 升级完成","Defence upgrade notice uses card number and equipment name")
 	panel.change_equipment("longLaser")
 	panel.sort_mode=1
 	panel.category_filter=1

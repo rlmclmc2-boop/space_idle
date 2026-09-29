@@ -55,7 +55,7 @@ func verify() -> void:
 	main.beep(440.0)
 	check(main.audio.stream is AudioStreamWAV and main.audio.stream.data.size() == 1100, "Procedural audio unavailable")
 	main.sound_on = false
-	check(main.PROJECTILE_TEXTURES.size() == 3 and main.SHIP_TEXTURES.size() == 5, "Missing bundled textures")
+	check(main.visual_config.get("ships",{}).size() == 11 and main.visual_config.get("weapons",{}).size() == 4, "Missing bundled visual profiles")
 	for id in main.db.data.get("jewel", {}):
 		var path = str(main.db.jewel(str(id)).get("image", "res://assets/jewels/%s.svg" % id))
 		check(ResourceLoader.exists(path) and load(path) is Texture2D, "Missing jewel texture: " + path)

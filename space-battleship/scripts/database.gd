@@ -1,5 +1,6 @@
 class_name ShipDatabase
 extends RefCounted
+const MonGroupXlsx := preload("res://scripts/mon_group_xlsx.gd")
 
 var data: Dictionary
 var equipment: Dictionary
@@ -9,9 +10,17 @@ var levels: Array
 var config: Dictionary
 var defaults: Dictionary
 var ships: Dictionary
+var mon_source_error := ""
 
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
+	if FileAccess.file_exists("res://analyzer-package.json"):
+		var mon_table: Dictionary=MonGroupXlsx.read_mon_enemies()
+		if mon_table.has("error"):
+			mon_source_error=str(mon_table.error)
+			data.enemies={}
+		else:
+			data.enemies=mon_table.enemies
 	equipment = data.equipment
 	enemies = data.enemies
 	groups = data.groups
@@ -122,6 +131,8 @@ func unlock_id(kind: String, key: String) -> String:
 func unlock_row(kind: String, key: String) -> Dictionary:
 	return data.get("unlock", {}).get(unlock_id(kind, key), {})
 
-func ratio(level: int, progress: float, kind: String) -> float:
+func ratio(level: int, battle_point_index: int, kind: String) -> float:
 	var previous := 1.0 if level == 1 else float(levels[level - 2][kind])
-	return lerpf(previous, float(levels[level - 1][kind]), clampf(progress, 0, 1))
+	var point_count: int = levels[level - 1].groups.size()
+	var progress: float = 1.0 if point_count <= 1 else clampf(float(battle_point_index) / float(point_count - 1), 0.0, 1.0)
+	return lerpf(previous, float(levels[level - 1][kind]), progress)

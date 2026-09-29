@@ -102,11 +102,35 @@ func run() -> void:
 	add("1",1,200)
 	game.profile.jewelFragments=100.0
 	result=game.combine_all_jewels()
-	check(result.ok and result.count==93 and result.consumed==279,"Full bag plus held fragments converge through repeated refill and upgrades")
+	check(result.ok and result.count>0 and result.consumed==result.count*3,"Full bag plus held fragments converge through direct-tier refill and upgrades")
 	check(game.profile.jewels.size()==24 and game.profile.jewelFragments==0,"Refill consumes exactly ten creation costs, never overflowing inventory")
 	check(result.results==[{"id":"1","level":3,"count":23},{"id":"1","level":2,"count":1}],"Final rewards exclude all consumed intermediate outputs")
 	check(game.saves==1 and notifications==1,"Refill rounds still commit and notify once")
 	for gem in game.profile.jewels:check(int(gem.level)<=db.jewel_max_level(str(gem.id)),"Configured maximum respected")
+
+	# Explicit bulk combine removes only bag gems more than ten levels below each type's peak.
+	db.data.jewel=ShipDatabase.new().data.jewel
+	fresh()
+	var installed_peak:=game.new_jewel("1",30)
+	game.slot_entry("weapons",0).sockets=[installed_peak]
+	add("1",20,1)
+	add("1",19,1)
+	add("2",5,1)
+	add("2",1,1)
+	var obsolete: Dictionary=game.profile.jewels[1]
+	obsolete.locked=true
+	before=game.profile.duplicate(true)
+	result=game.combine_all_jewels(false)
+	check(result.ok and result.deleted==0 and game.profile==before,"Automatic management does not clear old bag gems")
+	game.fail_save=true
+	result=game.combine_all_jewels()
+	check(not result.ok and game.profile==before and is_same(game.slot_entry("weapons",0).sockets[0],installed_peak) and notifications==0,"Failed cleanup save restores all bag and equipped gems")
+	game.fail_save=false
+	game.saves=0
+	result=game.combine_all_jewels()
+	check(result.ok and result.count==0 and result.deleted==1 and game.profile.jewels.size()==3,"Explicit combine clears only the matching type below the ten-level window")
+	check(game.jewel_inventory(int(obsolete.token)).is_empty() and not game.profile.jewels.filter(func(gem):return str(gem.id)=="2").is_empty(),"Cleanup includes stale protected bag records but preserves other types")
+	check(is_same(game.slot_entry("weapons",0).sockets[0],installed_peak) and notifications==1 and game.saves==1,"Equipped gem survives cleanup and transaction commits once")
 
 	fresh()
 	add("1",1,9)

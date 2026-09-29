@@ -13,28 +13,36 @@ class CrewImportTests(unittest.TestCase):
         self.data=json.loads((ROOT/'data/game_data.json').read_text(encoding='utf-8'))
 
     def test_sources(self):
-        for name in ('crew','crew_level','crew_assignment'):
+        self.assertFalse((ROOT/'config_excel/crew_level.xlsx').exists())
+        self.assertNotIn('crew_level',self.data)
+        self.assertEqual(self.data['crew_config']['base_exp']['value'],100)
+        self.assertEqual(self.data['crew_config']['exp_multiplier']['value'],1.2)
+        for name in ('crew','crew_assignment','crew_config'):
             path=ROOT/'config_excel'/f'{name}.xlsx'
             self.assertEqual(read_changed_file(path,name,path.read_bytes()),self.data[name])
 
     def test_invalid_rows(self):
         row=self.data['crew']['navigator']
         with self.assertRaises(ValueError):convert_sheet('crew',[row,row])
-        level=self.data['crew_level']['normal']['1']
-        with self.assertRaises(ValueError):convert_sheet('crew_level',[level,level])
-        for section,id,field,value in [('crew','navigator','maxLevel',4),('crew','navigator','expGroup','missing'),('crew','navigator','basePower',float('nan')),('crew','navigator','unlockId','missing'),('crew_assignment','equipment_upgrade','interval',0),('crew_assignment','jewel_auto','interval',0),('crew_assignment','equipment_upgrade','maxCrew',1.5)]:
+        for section,id,field,value in [('crew','navigator','basePower',float('nan')),('crew','navigator','unlockId','missing'),('crew_assignment','equipment_upgrade','interval',0),('crew_assignment','jewel_auto','interval',0),('crew_assignment','reactor_upgrade','interval',0),('crew_assignment','reactor_upgrade','baseValue',0),('crew_assignment','equipment_upgrade','maxCrew',1.5)]:
             data=copy.deepcopy(self.data);data[section][id][field]=value
             with self.assertRaises(ValueError):validate_crew(data)
-        data=copy.deepcopy(self.data);data['crew_level']['normal']['2']['needExp']=0
-        with self.assertRaises(ValueError):validate_crew(data)
+        for field,value in [('base_exp',0),('base_exp',float('nan')),('exp_multiplier',0.9),('exp_multiplier',float('inf'))]:
+            data=copy.deepcopy(self.data);data['crew_config'][field]['value']=value
+            with self.assertRaises(ValueError):validate_crew(data)
+        legacy=dict(row,baseLevel=1,maxLevel=3,expGroup='normal',baseExp=999,expGrowth=9)
+        self.assertEqual(convert_sheet('crew',[legacy]),{row['id']:row})
 
     def test_incremental_and_optional_discovery(self):
         target=ROOT/'.runtime/crew-import.json'
-        target.write_text(json.dumps(self.data,ensure_ascii=False),encoding='utf-8')
+        previous=copy.deepcopy(self.data);previous['crew_level']={'normal':{}}
+        target.write_text(json.dumps(previous,ensure_ascii=False),encoding='utf-8')
         result=incremental_import(ROOT/'config_excel',target)
-        self.assertTrue(set(('crew','crew_level','crew_assignment')).issubset(result['parsed']))
+        self.assertTrue(set(('crew','crew_assignment','crew_config')).issubset(result['parsed']))
         projected=json.loads(target.read_text(encoding='utf-8'))
-        for name in ('crew','crew_level','crew_assignment'):self.assertEqual(projected[name],self.data[name])
+        self.assertNotIn('crew_level',projected)
+        self.assertNotIn('crew_level',SECTIONS)
+        for name in ('crew','crew_assignment','crew_config'):self.assertEqual(projected[name],self.data[name])
         raw=target.read_bytes()
         self.assertEqual(incremental_import(ROOT/'config_excel',target)['changed'],[])
         self.assertEqual(target.read_bytes(),raw)
@@ -44,14 +52,16 @@ class CrewImportTests(unittest.TestCase):
         # has known unrelated missing fields and is not a valid rule baseline.
         books={name:openpyxl.load_workbook(ROOT/'config_excel'/f'{name}.xlsx',read_only=True,data_only=True) for name in SECTIONS if not name.startswith('crew')}
         class View:
-            sheetnames=list(books)
+            sheetnames=list(books)+["crew_level"]
             def __getitem__(self,name):return books[name][name]
             def close(self):pass
-        target=ROOT/'.runtime/crew-full.json';target.write_text(json.dumps(self.data),encoding='utf-8')
+        previous=copy.deepcopy(self.data);previous['crew_level']={'normal':{}}
+        target=ROOT/'.runtime/crew-full.json';target.write_text(json.dumps(previous),encoding='utf-8')
         try:
             with patch('import_workbook.openpyxl.load_workbook',return_value=View()):
                 result=full_import(Path('current-legacy-view.xlsx'),target)
-            for name in ('crew','crew_level','crew_assignment'):self.assertEqual(result[name],self.data[name])
+            self.assertNotIn('crew_level',result)
+            for name in ('crew','crew_assignment','crew_config'):self.assertEqual(result[name],self.data[name])
         finally:
             for book in books.values():book.close()
 

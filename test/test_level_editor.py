@@ -63,6 +63,36 @@ class EditorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '修改'): self.store.execute(self.request, True)
         self.assertEqual(p.read_bytes(), changed)
 
+    def test_save_level_without_dimension(self):
+        from lxml import etree as ET
+        from config_workbooks import Q, sheet_parts
+        from openpyxl.utils import get_column_letter
+        import io
+
+        path = self.store.paths['level']
+        with zipfile.ZipFile(path) as archive:
+            part = dict(sheet_parts(archive))['level']
+            tree = ET.fromstring(archive.read(part))
+            dimension = tree.find(Q + 'dimension')
+            if dimension is not None:
+                tree.remove(dimension)
+            output = io.BytesIO()
+            with zipfile.ZipFile(output, 'w') as target:
+                for item in archive.infolist():
+                    target.writestr(item, ET.tostring(tree) if item.filename == part else archive.read(item.filename))
+        path.write_bytes(output.getvalue())
+
+        request = self.store.load()
+        request['tables']['level']['rows'][0]['length'] = 1234
+        self.store.execute(request, True)
+        with zipfile.ZipFile(path) as archive:
+            tree = ET.fromstring(archive.read(part))
+            dimension = tree.find(Q + 'dimension')
+            self.assertIsNotNone(dimension)
+            last_column = get_column_letter(len(request['tables']['level']['headers']))
+            last_row = len(request['tables']['level']['rows']) + 3
+            self.assertEqual(dimension.get('ref'), f'A1:{last_column}{last_row}')
+
     def test_ratios_are_preserved_without_validation(self):
         from lxml import etree as ET
         from config_workbooks import Q, sheet_parts

@@ -64,6 +64,7 @@ func run() -> void:
 	check(loaded.profile.scientists==10 and loaded.assigned_scientists(E)==10 and loaded.hightech_level(E)==1,"Save reload restores new system")
 	var offline: Dictionary = g.profile.duplicate(true)
 	offline.hightechSavedAt=Time.get_unix_time_from_system()-20
+	offline.chronoSavedAt=Time.get_unix_time_from_system()-20
 	offline.hightechLevels={}
 	offline.techPoints={}
 	offline.scientistAssignments={E:1}
@@ -73,7 +74,8 @@ func run() -> void:
 	file.close()
 	var resumed := BattleGame.new(db)
 	resumed.save_enabled=false
-	check(resumed.hightech_level(E)==1 and absf(float(resumed.profile.techPoints[E])-10)<0.5,"Offline advances assigned research at real one-times rate")
+	check(resumed.hightech_level(E)==0 and float(resumed.profile.techPoints[E])==0,"Offline time no longer advances assigned research")
+	check(float(resumed.profile.chronoParticles)>=19 and float(resumed.profile.chronoParticles)<=21,"Offline time awards configured particles")
 	var legacy := g.profile.duplicate(true)
 	legacy.erase("hightechVersion")
 	legacy.hightechResearch={F:{"remaining":1,"duration":60}}
@@ -105,20 +107,21 @@ func run() -> void:
 	capped.profile.scientistAssignments={E:1}
 	var capped_raw := capped.profile.duplicate(true)
 	capped_raw.hightechSavedAt=Time.get_unix_time_from_system()-1000
+	capped_raw.chronoSavedAt=Time.get_unix_time_from_system()-1000
 	db.config.offlineMax=0.01
 	file=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify(capped_raw))
 	file.close()
 	capped=BattleGame.new(db)
-	check(capped.hightech_level(E)==3 and absf(float(capped.profile.techPoints[E]))<0.001,"Offline cap crosses exact research completion boundaries")
+	check(capped.hightech_level(E)==0 and float(capped.profile.techPoints[E])==0 and float(capped.profile.chronoParticles)==36,"Offline cap awards particles without research progress")
 	var capped_again := BattleGame.new(db)
-	check(capped_again.hightech_level(E)==3 and float(capped_again.profile.techPoints[E])<0.5,"Reload cannot claim the offline interval twice")
+	check(capped_again.hightech_level(E)==0 and float(capped_again.profile.techPoints[E])==0 and float(capped_again.profile.chronoParticles)==36,"Reload cannot claim the offline interval twice")
 	db.config.offlineMax=0
 	file=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify(capped_raw))
 	file.close()
 	capped=BattleGame.new(db)
-	check(capped.hightech_level(E)==0 and float(capped.profile.techPoints.get(E,0))==0,"Zero offline cap disables research")
+	check(capped.hightech_level(E)==0 and float(capped.profile.techPoints.get(E,0))==0 and float(capped.profile.chronoParticles)==0,"Zero offline cap disables particle gain")
 	var bulk := BattleGame.new(db,false)
 	bulk.profile.cleared=g.profile.cleared.duplicate()
 	bulk.profile.resources={"1":100000.0,"2":10000.0}
@@ -199,7 +202,8 @@ func run() -> void:
 	check(scene.scientist_distribute_button.get_rect().end.y<=scene.scientist_cost_label.position.y and scene.scientist_cost_label.get_rect().end.y<=scene.scientist_generate_button.position.y,"Visible cost fits between distribution and generation buttons")
 	scene.game.event.emit("hightech_complete",{"key":F})
 	check(scene.message==F+"研发完成","Completion event retains its toast")
-	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://scientists.png")
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://scientists.png")
 	print("Scientists: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

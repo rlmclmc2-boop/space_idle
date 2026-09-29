@@ -6,6 +6,7 @@ uniform sampler2D assembly_order : filter_linear, repeat_disable;
 uniform float progress = 0.0;
 uniform float part_count = 1.0;
 uniform float energy_phase = 0.0;
+uniform bool working = false;
 // Start progress, acceptance fade-in, acceptance weight. Explicitly sampled
 // by the owner so paused/hidden cards retain an identical image.
 uniform vec3 completion_state = vec3(0.0,1.0,0.0);
@@ -26,12 +27,22 @@ void fragment() {
 		installed = mix(installed, mix(previous,1.0,completion_state.y),completion_state.z);
 	}
 	float brightness = max(ink.r, max(ink.g, ink.b));
-	vec3 blueprint = vec3(0.16,0.36,0.49) * (0.35 + brightness * 0.65);
+	// All recipes retain their complete silhouette at zero progress. The
+	// blueprint is neutral and stationary; progress only adds material/light.
+	vec3 blueprint = vec3(0.22,0.40,0.53) * (0.65 + brightness * 0.35);
 	// The moving highlight is gated by existing bright ink, so energy follows
 	// the artist's filaments, facets and seams instead of drawing new geometry.
 	float energy = smoothstep(0.55,0.95,brightness);
 	float pulse = pow(0.5 + 0.5 * sin(UV.y * 26.0 + UV.x * 9.0 + energy_phase * 2.4), 5.0);
-	vec3 live = ink.rgb * (1.0 + 0.24 * pulse * energy);
-	float ghost_alpha = ink.a * (0.12 + 0.16 * brightness);
+	float luminance = dot(ink.rgb,vec3(0.2126,0.7152,0.0722));
+	vec3 balanced = mix(ink.rgb,vec3(luminance),0.18);
+	float pulse_strength = (completion_state.z > 0.0 || progress >= 1.0) ? 0.025 : 0.14;
+	vec3 live = balanced * (0.92 + pulse_strength * pulse * energy);
+	live *= min(1.0,0.86 / max(max(live.r,live.g),max(live.b,0.001)));
+	if (!working && completion_state.z <= 0.0 && progress < 1.0) {
+		installed = 0.0;
+		blueprint *= 0.68;
+	}
+	float ghost_alpha = ink.a * (0.54 + 0.22 * brightness);
 	COLOR = vec4(mix(blueprint,live,installed),mix(ghost_alpha,ink.a,installed));
 }

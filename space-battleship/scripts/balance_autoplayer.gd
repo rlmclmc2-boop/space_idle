@@ -99,15 +99,10 @@ func act(game: BattleGame, elapsed: float) -> bool:
 	for key in game.db.data.get("hightech",{}):
 		if game.can_research(key) and game.assigned_scientists(key) == 0:game.assign_scientist(key,1)
 	if game.idle_scientists() > 0:game.distribute_scientists()
-	# Charge only with a 60-second reserve; stop below a 10-second reserve.
-	for key in game.db.data.get("charge",{}):
-		if not game.charge_unlocked(key):continue
-		var row: Dictionary = game.db.data.charge[key]
-		var balance := float(game.profile.resources.get(str(int(row.para_1)),0))
-		var rate := game.charge_resource_rate(key)
-		var job := game.charge_job(key)
-		var reserve := 30.0 if strategy == "ECONOMY_FIRST" else 60.0
-		if (not job.active and balance >= rate*reserve) or (job.active and rate > 0 and balance < rate*10.0):game.toggle_charge(key)
+	if game.reactor_unlocked():
+		var count := game.reactor_max_upgrades()
+		if count > 0:game.upgrade_reactor(count)
+		game.equalize_reactor_allocation()
 	# Gem scans run every ten game seconds, independent of display speed.
 	if int(round(elapsed)) % 10 == 0 and game.jewels_unlocked():
 		game.combine_all_jewels()

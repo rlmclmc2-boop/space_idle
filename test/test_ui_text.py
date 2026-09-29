@@ -14,6 +14,8 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import ui_text
 import ui_text_editor as editor
 
+STATIC_UI_KEY = re.compile(r'UIText\.t\("([^"]+)"(?!\s*\+)')
+
 
 class CatalogTests(unittest.TestCase):
     def setUp(self):
@@ -53,7 +55,7 @@ class CatalogTests(unittest.TestCase):
         for key in keys:
             self.assertRegex(key, r'^[a-z][a-z0-9_.]*$')
         for path in (ROOT / 'scripts').glob('*.gd'):
-            for key in re.findall(r'UIText\.t\("([^"]+)"', path.read_text(encoding='utf-8')):
+            for key in STATIC_UI_KEY.findall(path.read_text(encoding='utf-8')):
                 self.assertIn(key, keys, str(path))
         for row in self.document['rows']:
             if row['params']:
@@ -62,6 +64,10 @@ class CatalogTests(unittest.TestCase):
                 token = re.findall(r'\{[^{}]+\}', row['params'])[0]
                 bad[index]['text'] = row['text'].replace(token, '', 1)
                 self.assertTrue(ui_text.validate(bad), row['key'])
+
+    def test_static_key_scan_skips_concatenated_prefix(self):
+        source = 'UIText.t("equipment.state."+item.status)\nUIText.t("equipment.state.equipped")'
+        self.assertEqual(STATIC_UI_KEY.findall(source), ['equipment.state.equipped'])
 
     def test_save_plain_text_preserves_every_other_column(self):
         request = self.request()

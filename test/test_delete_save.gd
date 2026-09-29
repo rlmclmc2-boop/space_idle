@@ -11,15 +11,14 @@ func check(value: bool, label: String) -> void:
 		failures += 1
 
 func reset_profile_matches(game: BattleGame) -> bool:
-	var expected := game.fresh_profile()
+	var reference := BattleGame.new(game.db,false)
+	var expected := reference.profile.duplicate(true)
 	# Saving and building the UI add metadata absent from fresh_profile().
 	# Check its reset values explicitly; wall-clock timestamps are not progress.
 	expected.hightechSavedAt = game.profile.hightechSavedAt
-	expected.offlineSavedAt = floorf(float(game.profile.hightechSavedAt))
+	expected.chronoSavedAt = float(game.profile.hightechSavedAt)
 	expected.resourceSamples = []
-	expected.offlineRates = {"1":0.0,"2":0.0}
 	expected.hightechDrops = []
-	var reference := BattleGame.new(game.db,false)
 	expected.hightechOrder = reference.hightech_slots()
 	return game.profile == expected
 

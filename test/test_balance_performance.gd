@@ -4,7 +4,7 @@ extends SceneTree
 const Runner = preload("res://scripts/balance_runner.gd")
 const Metrics = preload("res://scripts/balance_metrics.gd")
 class MeasuredGame extends "res://scripts/balance_game.gd":
-	var timings := {"tick":0,"research":0,"charge":0,"projectiles":0,"repair":0,"effects":0,"stat":0,"equipment":0,"hit_player":0,"defence_sync":0}
+	var timings := {"tick":0,"research":0,"projectiles":0,"repair":0,"effects":0,"stat":0,"equipment":0,"hit_player":0,"defence_sync":0}
 	func hit_player(raw: float, type: int) -> void:
 		var start := Time.get_ticks_usec()
 		super.hit_player(raw,type)
@@ -21,10 +21,6 @@ class MeasuredGame extends "res://scripts/balance_game.gd":
 		var start := Time.get_ticks_usec()
 		super.advance_hightech(dt,real_dt,end_time)
 		timings.research += Time.get_ticks_usec()-start
-	func advance_charge(dt: float) -> void:
-		var start := Time.get_ticks_usec()
-		super.advance_charge(dt)
-		timings.charge += Time.get_ticks_usec()-start
 	func tick_projectiles(dt: float) -> void:
 		var start := Time.get_ticks_usec()
 		super.tick_projectiles(dt)

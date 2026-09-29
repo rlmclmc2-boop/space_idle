@@ -1,55 +1,21 @@
-# AI 唯一入口
+# Agent entry
 
-太空战舰是 Godot/GDScript 放置自动战斗游戏：左侧纵向战场、中间系统导航、右侧系统工作区；推进、战斗、收集资源并成长。
+Godot/GDScript idle auto-battle. Read this entry, then search the target and load only task-relevant rules. Preserve unrelated edits. User instructions outrank docs. Do not infer approval for gameplay, numeric, configuration-source, or player-save changes from current implementation. One fact has one authority.
 
-## 读取协议
+## Routes — load only when triggered
 
-- L0：本文件 → [STATUS](docs/STATUS.md)。默认只读这两份。
-- L1：规则含义选 [PROJECT](docs/PROJECT.md)；代码/数据/测试定位选 [ARCHITECTURE](docs/ARCHITECTURE.md)；改变既有结构前选 [DECISIONS](docs/DECISIONS.md)。按任务选择，不默认全读。
-- L2：搜索目标符号，只读最少源码、直接依赖与对应专项测试。
-- 标准流程：Search → Minimum Read → Change → Verify → Handoff。
-- 禁止默认全仓扫描、读取全部文档、整份game_data.json或旧综合测试来理解单个规则。排除缓存、引擎二进制、玩家目录及test/work；专项审计只读明确范围。
+| Task | Read |
+|---|---|
+| Locate code/data | [ARCHITECTURE](docs/ARCHITECTURE.md) |
+| Stable gameplay | [PROJECT](docs/PROJECT.md) |
+| Open issue / long-term decision | [STATUS](docs/STATUS.md) / [DECISIONS](docs/DECISIONS.md) |
+| Combat / weapon / buff / gem | [BATTLE](docs/BATTLE.md) |
+| UI / rendering / input / text | [UI](docs/UI.md) / [UI_TEXT](docs/UI_TEXT.md) when editing player text |
+| Tests | [TEST](docs/TEST.md); commands in [test README](../test/README.md) |
+| Balance / simulation / performance | [BALANCE_LAB](docs/BALANCE_LAB.md); [BALANCE_PERFORMANCE](docs/BALANCE_PERFORMANCE.md) for sim speed |
+| Crew / art / level editor | [CREW](docs/CREW.md) / [ART_GUIDELINES](docs/ART_GUIDELINES.md) / [LEVEL_EDITOR](docs/LEVEL_EDITOR.md) |
+| Task token budget | [token-opt](.agents/skills/token-opt/SKILL.md) |
+| Long context / handoff | [ctx-compress](.agents/skills/ctx-compress/SKILL.md) |
+| Any persistent rule or doc write | [doc-compact](.agents/skills/doc-compact/SKILL.md) |
 
-## 表达与上下文压缩
-
-- 默认使用 `caveman` skill（`ultra`）：首次使用读取当前环境提供的 `SKILL.md`；本机路径为 `C:/Users/Administrator/.codex/skills/caveman/SKILL.md`。使用中文简洁表达，保留技术事实、否定、条件、数字、单位与必要证据；用户指定级别、要求详细解释或关闭时遵从用户要求。代码、注释和持久文档使用正常清晰的文字，不套用口语压缩。
-- 大段工具输出、日志、搜索结果或文件内容需要保留上下文时，优先使用 Headroom MCP 的 `headroom_compress`，保存压缩结果及返回的 hash；仍先遵守最小读取原则，不为压缩而扩大读取范围。
-- 压缩摘要不能替代精确依据。涉及代码修改、完整规则、错误原文或边界判断时，使用 `headroom_retrieve` 按 hash 回取原文，或重读对应源文件；不得根据摘要猜测被省略内容。仅需检查压缩效果时调用 `headroom_stats`，不必每轮调用。
-- skill 或 MCP 不可用时简短说明，继续按最小读取和简洁表达规则完成任务，不声称已调用工具；Headroom hash 仅用于当前工具可检索的上下文，不能替代仓库中的持久交接文档。
-
-## 执行约束
-
-- 先明确GOAL / SCOPE / DO_NOT_TOUCH / DONE_WHEN；用户已明确时不重复询问。保护已有修改，不顺手改无关区域。
-- 正确性优先；小步修改→对应测试→检查diff→确认行为不变。验证失败先定位或回退，不带失败叠加修改；不改正确断言迁就实现。
-- 禁止擅自改变游戏数值、规则、未决规则或恢复废弃机制。代码事实不等于策划批准；未决项只在STATUS保留ID。
-- 来源标注区分原表/用户确认、当前实现、推导（写明前提）；冲突先记录，不静默选择一方。一个事实一个权威来源。
-- 禁止擅自修改正式Excel/JSON；已编辑分表不能被旧总表覆盖。经授权的配置任务仍须先核对来源与影响范围，操作查项目README。
-- 禁止操作正式玩家存档，不用玩家目录复现问题；测试必须复制项目和用户目录，仅改隔离副本。
-- 不为重构新增Manager / Service / Framework、ECS或通用策略层；没有明确净收益则保持原实现，不机械拆长文件。
-- 不凭无引用搜索就删除代码/资源/入口；先证明实际用途及消费者。性能修改遵循DECISIONS的测量门槛。
-
-## 战斗机制兼容性约束（新增与修改均须遵守）
-
-- 新增或修改武器、宝石、BUFF、词条等战斗机制时，必须检查与现有战斗系统的兼容性，禁止特殊分支绕过通用效果。所有攻击尽量复用统一流程：攻击触发 → 通用修饰 → 伤害结算 → 命中/击杀触发；特殊攻击的表现、目标与计时差异不能成为跳过通用效果的理由。
-- 动手前定位公共攻击/伤害入口及新机制的调用路径，逐项核对双发/追加攻击、暴击、增伤、CD、宝石、BUFF、词条、命中与击杀效果。新增持续、蓄力、范围等特殊攻击类型时，明确一次攻击/一次命中的边界、修饰应用时机、触发次数及来源归属，防止漏触发、重复触发或递归触发。
-- 优先在公共攻击/伤害入口解决兼容问题，不为每种武器分别复制效果或打补丁；复用现有体系，不以统一流程为由新增无必要的Manager / Service / Framework或开展无关重构。
-- 某效果明确不支持时，必须有原表或用户确认的规则依据，在PROJECT定义适用范围与实际行为，并在必要的配置校验或用户说明中显式体现。不得将实现遗漏当作“不支持”的规则，禁止静默失效；语义未决时在STATUS记录ID，不擅自裁决。
-- 修改完成后必须检查新机制与现有武器/宝石的组合遗漏，按“攻击类型 × 通用效果”列出适用项、明确不适用项及验证证据，覆盖受影响组合与原有武器回归。测试同时验证效果正常生效及不重复触发；涉及计时/持续攻击时覆盖蓄力、周期命中、中断、换目标与击杀边界。交接说明已验证组合、显式限制与未解决问题，不能仅凭单武器测试通过宣称兼容完成。
-
-## UI更新约束（新增与修改均须遵守）
-
-- 玩家可见文字优先登记 `data/ui_text.json`，通过稳定英文 KEY 和 `{参数名}` 取用；初始化与刷新必须共用对应 KEY，不新增硬编码中文 UI。参数名属于代码接口，日常改字不得删除、改名或增加参数；独立 `ui_text_contract.json` 校验，文案不得参与逻辑判断。新增配置实体同时登记显示绑定；操作与边界见 [UI_TEXT](docs/UI_TEXT.md)。
-- 控件只负责自身及有明确数据依赖的关联部分。动手前列出“触发事件 → 变化数据 → 受影响控件/绘制层”；不能因共享父节点、同页签或实现方便扩大范围。交互规则见[PROJECT](docs/PROJECT.md)，现有局部刷新入口见[ARCHITECTURE](docs/ARCHITECTURE.md)。
-- 普通数值/状态变化必须复用控件，只写变化的属性；禁止以`build_ui`、场景重载、清空父容器再创建子树等方式代替局部刷新。事件携带slot/key时必须利用该身份限定目标；共享资源、人数、增益仅更新实际依赖它们的控件。
-- 结构变化只新增、移除或替换发生变化的最小区域；排序优先移动原控件。保留无关控件实例、焦点、草稿、页签及滚动位置，拖拽期间不得销毁被操作节点。完整构建仅用于初始化、显式重置/配置重载等整体状态确实失效的场景，并说明必要性；不得当作刷新失败的兜底。
-- 禁止在根节点/共同祖先上逐帧`queue_redraw()`带动静态UI。静态背景、资源、覆盖层与连续动画应按独立绘制职责隔离；仅数据/显示结果变化的层重绘，连续动画只重绘所属层。隐藏页签停止逐帧控件刷新，显示时补齐；暂停且显示无变化时不得重复写属性或请求重绘。
-- 刷新只读取业务状态，不复制业务权威状态或借刷新修改游戏数据。确需UI依赖快照时明确所属控件、依赖键、失效条件及释放时机；不得引入全局刷新框架或用全量缓存掩盖过大刷新范围。
-- UI验证必须覆盖“目标更新正确、关联反馈正确、无关控件实例不变且无额外写入/重绘”；适用时补测隐藏页恢复、静止暂停、焦点/滚动/拖拽。优先扩展`../test/test_local_ui.gd`及对应专项，并核对真实交互/画面；区分属性写入、节点重建、CanvasItem重绘，不将其中一种统计冒充其他指标。交接说明刷新范围及保留的大范围操作理由。
-
-## 验证与交接
-
-- [测试入口](../test/README.md)提供隔离runner与专项路由；产物只放`../test/work/`，不在工作区根生成验证目录。
-- 只跑修改及直接影响范围的必要检查；仅文档改动检查事实、链接、未决ID和diff，不运行游戏测试。UI改动另核对实际交互/画面。
-- 完成后覆盖STATUS当前状态，不追加Done流水账；稳定规则改PROJECT，定位改ARCHITECTURE，长期取舍才改DECISIONS。
-- HANDOFF：DONE / CHANGED / VERIFY / NEXT；存在阻塞才加BLOCKERS，新长期决策才加DECISION。用户指定检查点格式时按其格式，不复述项目背景。
-- 跨AI/IDE协作以仓库文档为准，不依赖聊天或私有记忆；其他入口仅链接本文件。
+Use `caveman` skill at ultra level for chat; read its SKILL.md on first use. User preference overrides. Keep code and documents in normal, clear prose. Apply doc-compact to future rule writes.

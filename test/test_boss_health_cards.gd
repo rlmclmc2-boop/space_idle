@@ -51,9 +51,10 @@ func run() -> void:
 		var cards: Array = scene.boss_health_cards()
 		check(cards.size() == count, "%d ships have independent health cards" % count)
 		var valid := true
+		var battle_area: Rect2 = scene.battle_clip.get_global_rect().intersection(scene.get_viewport_rect())
 		for i in range(cards.size()):
 			var rect: Rect2 = cards[i].rect
-			valid = valid and Rect2(470,211,500,320).encloses(rect)
+			valid = valid and battle_area.encloses(rect)
 			for j in range(i): valid = valid and not rect.intersects(cards[j].rect)
 		check(valid, "%d cards fit battle area without overlap" % count)
 		if count == 10: await capture(scene, "boss-health-ten")

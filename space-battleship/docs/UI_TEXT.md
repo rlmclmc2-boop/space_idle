@@ -1,47 +1,7 @@
-# UI 文案表
-
-## 日常改字
-
-双击项目目录的 [UI文案表.bat](../UI文案表.bat)，浏览器会打开本机文案表。使用现有 Python 即可，不需要额外安装库，也不联网。
-
-1. 搜索目前显示的文字，或按所属界面筛选。
-2. 只修改 **UI文字**。KEY、参数、分类及备注均只读；蓝色标签展示必须保留的参数。
-3. 点击“保存文案”。保存会检查整张表，缺少、改名、增加、重复参数及不完整括号均禁止保存。
-4. 重启游戏生效。游戏的 QA“重启游戏”也会重新读取文案；QA 窗口自身及关卡编辑器的文字在重新启动对应工具后更新。
-
-例如 `battle.hp` 可以从 `生命 {current_hp} / {max_hp}` 改为 `耐久：{current_hp}/{max_hp}`。可以调整参数的位置，但不能改 `{current_hp}` 或 `{max_hp}` 的名字，也不能删除它们。参数内容由程序提供，不需要填写数值。
-
-表格是 [data/ui_text.json](../data/ui_text.json) 的可视化编辑入口，游戏直接读取这个文件，无需导入 Excel。参数列由程序生成；不要手工修改接口文件 `ui_text_contract.json`。保存前的上一版保留在 `.runtime/ui_text.backup.json`，需要恢复时先关闭编辑器，将它复制回 `data/ui_text.json`。多个窗口修改同一文件时，旧窗口会拒绝覆盖新版本。
-
-发布的单 EXE 内嵌文案表；修改源项目后需重新打包才能更新已有 EXE。
-
-## 删除与恢复
-
-点击行右侧“删除”会立即保存并移出正常列表，不需要再点“保存文案”。重启游戏后，该 KEY 对应的整条文字不再显示，动态参数值也不会残留。删除只隐藏文字，不删除按钮、装备或游戏功能；共用 KEY 的显示位置都会隐藏。
-
-在“显示范围”选择“已删除”，点击“恢复”即可恢复原文并立即保存。删除只提交选中行，不保存其他行的草稿；选中行尚未保存的文字会舍弃，恢复使用其最后保存版本。
-
-内部保留原文、KEY 和参数契约，并记录 `deleted: true`；请勿手工删除 JSON 行或参数。隐藏的原文依然接受参数检查，后续普通保存不会取消删除状态。编辑器自身的管理标签与校验诊断保留可读内容，确保删除操作不会让恢复入口消失。
-
-## 覆盖与边界
-
-- 2026-09-22 用户指定船员配置例外：`crew.name/description/icon` 直接由 Excel 提供；岗位文案优先使用 crew_assignment 的 titleTextId/descTextId，留空时使用 Excel description 与通用实际效果模板，避免新增岗位必须改代码。详见 [CREW](CREW.md)。通用按钮/经验/槽位文字仍在文案表，模板参数仍按独立契约校验。现有装备名称补登记 equipment 显示绑定，不复制文字。
-
-- 2026-09-21 用户指定例外：关卡解锁项的标题和描述统一维护在 `config_excel/unlock.xlsx` 的 `title/desc`，经配置导入生效；不在本 UI 文案表重复维护。旧装备解锁描述已迁入，历史 KEY 留存兼容但不再供解锁弹窗读取。弹窗通用操作文字及剩余数量仍由本表管理。
-
-- 主界面、战斗、舰船、武器、防御、背包/宝石、合成/分解、升级/科技/充能、设置、帮助、提示、确认框、错误、DEBUG/QA、关卡编辑器，以及配置工具返回给这些窗口的校验信息。
-- 配置提供的资源、舰船、敌舰、宝石、科技、充能名称与效果说明也有显示映射。改文案表不会修改装备 ID、科技键、配置公式、分表或存档。配置重新导入不会覆盖文案表。
-- `shop` 是预留筛选分类：当前项目没有独立商店或“开始游戏”主菜单，不为分类新建功能。
-- 保留的中文代码字符串仅为旧配置键、宝石行为识别规则、公式语法和历史总表文件路径，专项测试有精确白名单。系统生成的路径/异常、编辑器中的用户草稿、数字格式与资源图形符号属于动态内容；引擎自带文件对话框等系统控件的文字不由项目文案表管理。
-- `project.godot` 的应用标识保留以维持用户目录兼容；实际游戏窗口标题读取 `main.window_title`。文案表损坏时的最低限度启动诊断不依赖损坏的文案表。
-
-## 新增 UI 的开发约定
-
-1. 新建稳定英文 KEY，不根据显示文字生成或重新编号已有 KEY。先查是否已有同一控件/同一语义的文案，初始化和刷新必须共用 KEY。不同语义即使排版相同也保留各自参数接口。
-2. 在 `data/ui_text.json` 添加 `key/text/params/category/note`；在 `data/ui_text_contract.json` 登记参数接口。`params` 是展示列，真正的必需参数由独立接口校验；普通改字仅写 `text`，删除/恢复操作仅设置或移除 `deleted` 标记。
-3. GDScript 使用 `UIText.t(key, {参数名: 已格式化的值})`；Python 配置工具使用 `ui_text.t(key, 参数名=值)`。替换只进行一遍，动态值中的花括号不会被再次解析。文案不交给 Expression 执行。
-4. 配置实体通过 contract 的 `bindings` 按原始 ID 查显示 KEY；新增实体时同步增加显示条目和绑定。效果说明的 `effect_1` 等参数由受保护的 `formulas` 提供，沿用原求值、取整与数值格式。更改效果公式属于配置/程序任务，需要同步检查接口，不是日常改字。
-5. 禁止依据显示文字决定操作、禁用状态或颜色。宝石校验使用 `jewel_socket_error_key/socket_error_key` 的稳定错误键，显示时再取文案；即使错误文字改为空，也不能允许原本禁止的镶嵌。
-6. 修改文案不增加逐帧文件读取、控件重建或全局刷新。表在启动/显式场景重启读取，正常更新沿用原局部刷新；纯文案变更无需修改游戏数值。
-
-检查入口：`python tools/ui_text_editor.py --check`；隔离运行 `../test/test_ui_text.py`、`test_ui_text.gd`，以及改动涉及的 UI 专项，运行方式见[测试入口](../../test/README.md)。独立发布验证 `python test/test_ui_text_release.py` 从工作区根运行，只在 `test/work` 内生成 EXE，不替换正式 release。
+# UI_TEXT: display contract
+SRC: data/ui_text.json=text; data/ui_text_contract.json=protected params/bindings. Text never drives business logic.
+- Daily edit via UI文案表.bat: change UI文字 only; KEY/params/category/note read-only. {params} reorderable, not add/remove/rename. Save validates whole table. Restart game/QA/editor separately to reload; exported EXE requires rebuild.
+- Editor writes JSON, not Excel; backup .runtime/ui_text.backup.json; stale concurrent window cannot overwrite. Delete=mark key deleted and hide all uses, not remove row/control; restore last saved text via 已删除. Delete/restore commits one row and drops its unsaved draft. Diagnostic/management text remains readable.
+- Exceptions: unlock title/desc from unlock.xlsx; crew name/description/icon from crew.xlsx; crew level/XP/effect text from crew_config.des; planet conquest effects from planet_buff.des ordered by order; assignment titleTextId/descTextId may override cfg description+template. For other cfg entity names/effects determine source first; contract.bindings map stable raw ID -> display KEY. Text edits never change ID/formula/save/cfg. Engine dialogs, user drafts, system errors outside table; reserved shop category is not a shop rule.
+- New UI: stable English KEY shared by init+refresh. JSON stores text/display metadata; contract owns required params/bindings (JSON params column is display only). GDScript UIText.t / Python ui_text.t substitute once, never evaluate text. NO branch/color/permission decision from displayed or blank text; update dependent controls only.
+CHECK: python tools/ui_text_editor.py --check.

@@ -10,9 +10,13 @@ func _init() -> void:
 	register_target("production", production_targets)
 	register_target("smelting", smelting_targets)
 	register_target("jewel", jewel_targets)
+	register_target("reactor", reactor_targets)
+	register_target("galaxy", galaxy_targets)
+	register_handler("galaxy", "EXPLORE", passive)
 	register_handler("equipment", "AUTO_UPGRADE", auto_upgrade)
 	register_handler("hightech", "AUTO_SCIENTIST", auto_scientists)
 	register_handler("jewel", "AUTO_COMBINE", auto_jewels)
+	register_handler("reactor", "AUTO_REACTOR", auto_reactor)
 	for target in ["production", "smelting"]:
 		for effect in ["OUTPUT", "SPEED", "EFFICIENCY"]:
 			register_handler(target, effect, passive)
@@ -32,9 +36,8 @@ func definitions(g) -> Dictionary:
 func assignments(g) -> Dictionary:
 	return g.db.data.get("crew_assignment", {})
 
-func growth(g, id: String, level: int) -> Dictionary:
-	var definition: Dictionary = definitions(g).get(id, {})
-	return g.db.data.get("crew_level", {}).get(str(definition.get("expGroup", "")), {}).get(str(level), {})
+func required_exp(g, level: int) -> float:
+	return maxf(1.0,roundf(config_value(g,"base_exp")*pow(config_value(g,"exp_multiplier"),maxi(0,level))))
 
 func unlocked(g, id: String) -> bool:
 	var definition: Dictionary = definitions(g).get(id, {})
@@ -58,7 +61,7 @@ func load_state(g, raw) -> void:
 		var item: Dictionary = incoming.get(id, {})
 		var slots: Array = []
 		slots.resize(int(row.equipmentSlotCount))
-		var entry := {"crewId":id,"level":int(clampf(number(item.get("level"),float(row.baseLevel)),float(row.baseLevel),float(row.maxLevel))),"exp":maxf(0,number(item.get("exp"),0)),"assignmentType":"","targetId":"","equipmentSlots":slots}
+		var entry := {"crewId":id,"level":int(clampf(number(item.get("level"),0.0),0.0,9e18)),"exp":roundf(maxf(0,number(item.get("exp"),0))),"assignmentType":"","targetId":"","equipmentSlots":slots}
 		var modes := upgrade_modes(g)
 		var mode := str(item.get("upgradeMode",""))
 		entry.upgradeMode = mode if modes.has(mode) else (modes[0] if not modes.is_empty() else "")
@@ -89,18 +92,25 @@ func entry(g, id: String) -> Dictionary:
 func gain_exp(g, id: String, amount: float, notify := true) -> bool:
 	var item := entry(g,id)
 	if item.is_empty() or not is_finite(amount) or amount < 0:return false
-	var definition: Dictionary = definitions(g)[id]
+	if not levels_unlocked(g) or not unlocked(g,id):return false
+	g.capture_refit_health()
+	var previous := item.duplicate(true)
 	var before := [item.level,item.exp]
-	item.exp = minf(float(item.exp)+amount,1e308)
-	while int(item.level) < int(definition.maxLevel):
-		var next := growth(g,id,int(item.level)+1)
-		var needed := roundf(float(definition.get("baseExp", next.get("needExp", 0))) * pow(1.0 + float(definition.get("expGrowth", 0)), int(item.level)-1))
-		if next.is_empty() or needed<=0 or float(item.exp)<needed:break
-		item.exp -= needed
-		item.level += 1
-	if int(item.level)>=int(definition.maxLevel):item.exp=0.0
+	item.exp = minf(roundf(float(item.exp))+roundf(amount),1e308)
+	var multiplier: float=config_value(g,"exp_multiplier")
+	if multiplier==1.0:
+		var needed:=required_exp(g,int(item.level))
+		var levels:=int(minf(floor(float(item.exp)/needed),9e18-float(item.level)))
+		item.level+=levels
+		item.exp=maxf(0.0,float(item.exp)-float(levels)*needed)
+	else:
+		while true:
+			var needed:=required_exp(g,int(item.level))
+			if not is_finite(needed) or needed<=0 or float(item.exp)<needed:break
+			item.exp-=needed
+			item.level+=1
 	if notify and before != [item.level,item.exp]:
-		changed(g,item,item.duplicate())
+		changed(g,item,previous)
 	return true
 
 func available_targets(g, assignment: String, include_inactive := false) -> Array:
@@ -116,8 +126,7 @@ func valid_target(g, assignment: String, id: String, include_inactive := false) 
 func can_assign(g, id: String, assignment: String, target: String, restoring := false) -> bool:
 	if entry(g,id).is_empty() or (not restoring and not unlocked(g,id)):return false
 	if not assignment.is_empty() and not restoring:
-		for progress in g.profile.get("planets", {}).values():
-			if str(progress.get("crewId", "")) == id:return false
+		if not g.crew_exploration(id).is_empty():return false
 	if assignment.is_empty():return target.is_empty()
 	if not valid_target(g,assignment,target,restoring):return false
 	var count := 0
@@ -130,14 +139,17 @@ func assign(g, id: String, assignment: String, target: String) -> bool:
 	if not can_assign(g,id,assignment,target):return false
 	var item := entry(g,id)
 	if item.assignmentType==assignment and item.targetId==target:return true
+	g.capture_refit_health()
 	var previous := item.duplicate(true)
 	item.assignmentType=assignment
 	item.targetId=target
+	if assignment=="galaxy_explore":g.galaxy.start(g,target)
 	timers.erase(id)
 	changed(g,item,previous)
 	return true
 
 func changed(g, item: Dictionary, previous: Dictionary) -> void:
+	g.refresh_crew_level_effects(previous,item)
 	g.save_progress()
 	g.event.emit("crew_changed",{"crewId":item.crewId,"previous":previous,"current":item.duplicate(true)})
 
@@ -168,9 +180,8 @@ func upgrade_mode_text(mode: String, effect_type := "AUTO_UPGRADE") -> String:
 func effect_value(g, item: Dictionary) -> float:
 	var row: Dictionary = assignments(g).get(str(item.get("assignmentType","")),{})
 	var definition: Dictionary = definitions(g).get(str(item.get("crewId","")),{})
-	var level := growth(g,str(item.get("crewId","")),int(item.get("level",0)))
-	if row.is_empty() or definition.is_empty() or level.is_empty():return 0.0
-	return float(row.baseValue)*pow(float(definition.basePower),float(row.powerScale))*pow(float(level.powerMultiplier),float(row.levelScale))
+	if row.is_empty() or definition.is_empty():return 0.0
+	return float(row.baseValue)*pow(float(definition.basePower),float(row.powerScale))
 
 func active(g, item: Dictionary) -> bool:
 	return unlocked(g,item.crewId) and not str(item.assignmentType).is_empty() and valid_target(g,item.assignmentType,item.targetId)
@@ -218,6 +229,17 @@ func auto_scientists(g, item: Dictionary) -> void:
 
 func auto_jewels(g, _item: Dictionary) -> void:
 	g.auto_manage_jewels()
+
+func auto_reactor(g, _item: Dictionary) -> void:
+	# Both actions run at every deadline, including when uranium cannot fund an upgrade.
+	g.upgrade_reactor(1)
+	g.equalize_reactor_allocation()
+
+func reactor_targets(g) -> Array:
+	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g.reactor_unlocked()}]
+
+func galaxy_targets(g) -> Array:
+	return g.galaxy.targets(g)
 
 func equipment_targets(g) -> Array:
 	return [{"id":"equipment","name":UIText.t("crew.all_equipment"),"active":not g.loadout_entries("weapons").is_empty() or not g.loadout_entries("defence").is_empty()}]
@@ -268,7 +290,10 @@ func tab_badge(g, target_types: Array) -> Dictionary:
 	for item in g.profile.get("crew",[]):
 		var row: Dictionary=assignments(g).get(str(item.assignmentType),{})
 		if target_types.has(str(row.get("targetType",""))) and active(g,item):
-			lines.append(UIText.t("crew.badge_tip",{"name":str(definitions(g)[item.crewId].name),"level":item.level,"effect":effect_text(g,item)}))
+			var effects := effect_text(g,item)
+			var level_bonus := level_description(g,item)
+			if not level_bonus.is_empty():effects += "\n" + level_bonus
+			lines.append(format_text(g,"badge_tip",{"name":str(definitions(g)[item.crewId].name),"level":item.level,"effect":effects}) if levels_unlocked(g) else str(definitions(g)[item.crewId].name)+"\n"+effects)
 	return {"text":UIText.t("crew.badge") if not lines.is_empty() else "","tooltip":"\n".join(lines)}
 
 func equipment_slots(g, id: String) -> Array:
@@ -276,3 +301,49 @@ func equipment_slots(g, id: String) -> Array:
 
 func crew_equipment(_g, _equipment_id: String) -> Dictionary:
 	return {} # Reserved lookup API. Drops, inventory and stats are deliberately absent.
+
+func levels_unlocked(g) -> bool:
+	return g.content_unlocked("feature", "crew_level")
+
+func config_value(g, key: String) -> float:
+	return float(g.db.data.crew_config[key].value)
+
+func format_text(g, key: String, values: Dictionary) -> String:
+	var result := str(g.db.data.crew_config[key].des)
+	# Unknown placeholders remain literal; descriptions never drive calculations.
+	for token in values:result=result.replace("{"+str(token)+"}",str(values[token]))
+	return result
+
+func level_effect(g, key: String, level: int) -> float:
+	var value := config_value(g,key)
+	if key=="tech_ai_per_level":return level*value
+	if key=="equip_bonus":return pow(1.0+value,level)
+	return 1.0+value*level
+
+func system_level(g, key: String) -> int:
+	if not levels_unlocked(g):return 0
+	var target_type := str(g.db.data.crew_config[key].targetType)
+	for item in g.profile.get("crew",[]):
+		var job: Dictionary=assignments(g).get(item.assignmentType,{})
+		if job.get("targetType")==target_type and active(g,item):return int(item.level)
+	return 0
+
+func system_effect(g, key: String) -> float:
+	return level_effect(g,key,system_level(g,key))
+
+func level_description(g, item: Dictionary) -> String:
+	if not levels_unlocked(g) or not active(g,item):return ""
+	var kind := str(assignments(g).get(item.assignmentType,{}).get("targetType",""))
+	var lines: Array[String]=[]
+	for key in g.db.data.crew_config:
+		var row: Dictionary=g.db.data.crew_config[key]
+		if str(row.get("targetType",""))!=kind or kind.is_empty():continue
+		var effect := level_effect(g,key,int(item.level))
+		# Multipliers show the bonus above baseline; Lv0 (x1) means +0.00%.
+		var effect_text := str(int(effect)) if key == "tech_ai_per_level" else "%+.2f%%" % ((effect - 1.0) * 100.0)
+		lines.append(format_text(g,key,{"level":item.level,"value":str(row.value),"effect":effect_text,"ai":int(effect)}))
+	return "\n".join(lines)
+
+func display_name(g, item: Dictionary) -> String:
+	var member_name := str(definitions(g)[item.crewId].name)
+	return format_text(g,"name_level",{"name":member_name,"level":item.level}) if levels_unlocked(g) else member_name

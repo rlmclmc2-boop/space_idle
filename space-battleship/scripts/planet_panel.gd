@@ -1,20 +1,29 @@
 extends Control
 
+const Feedback := preload("res://scripts/planet_feedback.gd")
+const Art := preload("res://scripts/planet_art.gd")
+
 var host: Node
 var cards: Dictionary = {}
 var samples: Dictionary = {}
 var selected_planet_id := ""
 var dirty := true
 var list_content: VBoxContainer
+var bonus_dialog: AcceptDialog
+var bonus_label: Label
+var bonus_planet_id := ""
+var facility_dialog: AcceptDialog
+var facility_renderer = preload("res://scripts/orbital_facilities.gd").new()
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
+	add_child(facility_renderer)
 	add_theme_font_override("font", host.font)
-	var list_frame := _panel(Rect2(16, 20, 258, 1138), Color("0d1d2b"), Color("2b5268"))
-	host.equipment_card_label(list_frame, UIText.t("planet.list_heading"), Rect2(16, 12, 225, 34), 21, host.CYAN)
+	var list_frame := _panel(Rect2(16, 20, 194, 1138), Color("0b1925"), Color("172c3a"))
+	host.equipment_card_label(list_frame, UIText.t("planet.list_heading"), Rect2(14, 12, 166, 34), 21, host.CYAN)
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(10, 56)
-	scroll.size = Vector2(238, 1068)
+	scroll.size = Vector2(174, 1068)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	list_frame.add_child(scroll)
 	list_content = VBoxContainer.new()
@@ -22,8 +31,73 @@ func setup(owner_ui: Node) -> void:
 	list_content.add_theme_constant_override("separation", 8)
 	scroll.add_child(list_content)
 	visibility_changed.connect(func():
-		if is_visible_in_tree():refresh())
+		if is_visible_in_tree():
+			refresh()
+			for id in cards:_clear_feedback(cards[id])
+		else:
+			for id in cards:_clear_feedback(cards[id]))
 	refresh()
+	host.game.event.connect(_on_log_event)
+
+func _on_log_event(kind: String, info: Dictionary) -> void:
+	if kind != "planet_changed" and kind != "planet_reforged":return
+	var id := str(info.get("id", ""))
+	if not cards.has(id):return
+	var card: Dictionary = cards[id]
+	if info.has("reward"):
+		_append_log_phases(id, 4)
+		card.log_phase = -1
+		card.log_crew = ""
+	_observe_log_buildings(id)
+	_refresh_log_progress(id)
+	if str(host.game.planet_progress(id).get("crewId", "")).is_empty():
+		card.log_phase = -1
+		card.log_crew = ""
+
+func _append_log(id: String, text: String) -> void:
+	var card: Dictionary = cards[id]
+	card.log_entries.push_front(text)
+	if card.log_entries.size() > 24:card.log_entries.pop_back()
+	card.log_dirty = true
+	_render_log(id)
+
+func _render_log(id: String) -> void:
+	var card: Dictionary = cards[id]
+	if not card.log_dirty or id != selected_planet_id or not is_visible_in_tree():return
+	host.set_ui_value(card.log_label, "text", "\n\n".join(card.log_entries))
+	card.log_dirty = false
+
+func _append_log_phases(id: String, phase: int) -> void:
+	var card: Dictionary = cards[id]
+	for index in range(int(card.log_phase) + 1, phase + 1):
+		_append_log(id, UIText.t("planet.log.phase_" + str(index)))
+	card.log_phase = maxi(int(card.log_phase), phase)
+
+func _refresh_log_progress(id: String) -> void:
+	var card: Dictionary = cards[id]
+	var progress: Dictionary = host.game.planet_progress(id)
+	var crew_id := str(progress.get("crewId", ""))
+	if crew_id.is_empty():
+		return
+	if card.log_crew != crew_id:
+		card.log_phase = -1
+		card.log_crew = crew_id
+	var ratio := float(progress.get("elapsed", 0)) / maxf(0.001, host.game.planet_duration(id))
+	_append_log_phases(id, mini(3, int(clampf(ratio, 0.0, 1.0) * 4.0)))
+
+func _observe_log_buildings(id: String) -> void:
+	var card: Dictionary = cards[id]
+	for row in host.game.planet_buildings.rows(host.game, id):
+		var building_id := str(row.id)
+		var status := str(host.game.planet_buildings.state(host.game, id, building_id).get("status", "locked"))
+		var previous := str(card.log_buildings.get(building_id, status))
+		if previous == "locked" and status != "locked":
+			_append_log(id, UIText.t("planet.log.unlocked", {"name":str(row.name)}))
+		if previous not in ["ready", "built"] and status == "ready":
+			_append_log(id, UIText.t("planet.log.built", {"name":str(row.name)}))
+		if previous == "ready" and status == "built":
+			_append_log(id, UIText.t("planet.log.activated", {"name":str(row.name)}))
+		card.log_buildings[building_id] = status
 
 func _panel(rect: Rect2, fill: Color, edge: Color) -> Panel:
 	var panel := Panel.new()
@@ -45,15 +119,47 @@ func refresh_sample(dt: float) -> void:
 	if cards.has(selected_planet_id):
 		var visual = cards[selected_planet_id].visual
 		visual.advance(dt, host.game.paused)
-		var feedback: Label = cards[selected_planet_id].feedback
-		var showing: bool = visual.completion_age < 1.5
-		if feedback.visible != showing:feedback.visible = showing
-	for id in cards:
-		var progress: Dictionary = host.game.planet_progress(str(id))
-		var sample := [progress.get("degree", 0), int(float(progress.get("elapsed", 0))), progress.get("crewId", ""), host.game.paused]
+		_advance_feedback(cards[selected_planet_id], dt)
+	if cards.has(selected_planet_id):
+		var id := selected_planet_id
+		var progress: Dictionary = host.game.planet_progress(id)
+		var sample := [int(float(progress.get("elapsed", 0))), progress.get("crewId", ""), host.game.paused, cards[id].visual.work_state_key()]
 		if samples.get(id) != sample:
 			samples[id] = sample
-			refresh_card(str(id))
+			_refresh_task(id, false)
+
+func _add_feedback(parent: Control) -> Control:
+	var overlay := Feedback.new()
+	parent.add_child(overlay)
+	return overlay
+
+func _clear_feedback(card: Dictionary) -> void:
+	card.visual.clear_transients()
+	card.visual.select_facility("")
+	card.task_fx.clear()
+	host.set_ui_value(card.feedback, "visible", false)
+	host.set_ui_value(card.feedback, "modulate", Color.WHITE)
+	host.set_ui_value(card.list_degree, "modulate", Color.WHITE)
+	for controls in card.facility_buttons.values():controls.fx.clear()
+
+func _advance_feedback(card: Dictionary, dt: float) -> void:
+	if host.game.paused or dt <= 0.0:return
+	card.task_fx.advance(dt, false)
+	for controls in card.facility_buttons.values():controls.fx.advance(dt, false)
+	var age: float = card.visual.completion_age
+	var showing := age >= 0.18 and age < 3.2
+	host.set_ui_value(card.feedback, "visible", showing)
+	if showing:
+		var alpha := smoothstep(0.18, 0.42, age) * (1.0 - smoothstep(2.6, 3.2, age))
+		host.set_ui_value(card.feedback, "modulate", Color(1, 1, 1, alpha))
+	var pulse := maxf(0.0, 1.0 - age / 0.85)
+	host.set_ui_value(card.list_degree, "modulate", Color(1.0 + pulse * 0.6, 1.0 + pulse * 0.6, 1.0 + pulse * 0.6))
+	# Follow authoritative elapsed time smoothly; no tween owns a second progress value.
+	var progress: Dictionary = host.game.planet_progress(card.visual.planet_id)
+	var active := not str(progress.get("crewId", "")).is_empty()
+	var duration: float = host.game.planet_duration(card.visual.planet_id)
+	var value := clampf(float(progress.get("elapsed", 0)) / maxf(1.0, duration) * 100.0, 0.0, 100.0) if active else 0.0
+	host.set_ui_value(card.bar, "value", 100.0 if age < 0.18 else value)
 
 func refresh() -> void:
 	if not is_visible_in_tree():
@@ -64,7 +170,6 @@ func refresh() -> void:
 		if not host.game.planet_unlocked(str(id)):continue
 		ids.append(str(id))
 		if not cards.has(str(id)):add_card(str(id))
-		refresh_card(str(id))
 	for id in cards.keys():
 		if not ids.has(id):
 			cards[id].root.queue_free()
@@ -72,103 +177,248 @@ func refresh() -> void:
 			cards[id].rail.queue_free()
 			cards[id].list_button.queue_free()
 			cards.erase(id)
+			samples.erase(id)
 	if not ids.has(selected_planet_id):selected_planet_id = str(ids[0]) if not ids.is_empty() else ""
+	for id in ids:refresh_card(str(id))
 	_apply_selection()
 	dirty = false
 
+# Stage-one layout uses the existing controls and event ownership. Build once per
+# unlocked planet; refresh only writes changed values and facility state styles.
+func _section(parent: Control, rect: Rect2) -> Panel:
+	var panel := Panel.new()
+	panel.position = rect.position
+	panel.size = rect.size
+	panel.add_theme_stylebox_override("panel", host.style(Color("0e2130"), Color("203b4b")))
+	parent.add_child(panel)
+	return panel
+
+func _wrap(label: Label) -> Label:
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	return label
+
 func add_card(id: String) -> void:
 	var list_button := Button.new()
-	list_button.custom_minimum_size = Vector2(222, 74)
-	list_button.add_theme_font_override("font", host.font)
-	list_button.add_theme_font_size_override("font_size", 17)
-	list_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	list_button.custom_minimum_size = Vector2(170, 84)
+	list_button.clip_text = true
 	list_button.pressed.connect(func():select_planet(id))
 	list_content.add_child(list_button)
-	var stage := _panel(Rect2(284, 20, 724, 972), Color("081827"), Color("2b5268"))
+	var list_name: Label = host.equipment_card_label(list_button, "", Rect2(66, 27, 98, 30), 21)
+	list_name.max_lines_visible = 1
+	list_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	list_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var list_degree: Label = host.equipment_card_label(list_button, "", Rect2(12, 98, 146, 28), 21, host.MUTED)
+	list_degree.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	list_degree.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	list_degree.hide()
+	var icon := preload("res://scripts/planet_visual.gd").new()
+	icon.icon_mode = true
+	icon.position = Vector2(4, 10)
+	icon.size = Vector2(60, 60)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	list_button.add_child(icon)
+	icon.configure(id, host.game.planet_row(id))
+	var stage := _panel(Rect2(224, 20, 764, 944), Color("081827"), Color("203b4b"))
 	var visual := preload("res://scripts/planet_visual.gd").new()
-	visual.position = Vector2(0, 36)
-	visual.size = Vector2(724, 936)
+	visual.facility_renderer = facility_renderer
+	visual.position = Vector2(0, 60)
+	visual.size = Vector2(764, 884)
 	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visual.clip_contents = true
 	stage.add_child(visual)
-	var stage_title: Label = host.equipment_card_label(stage, "", Rect2(18, 7, 688, 34), 23, host.CYAN)
-	stage_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var rail := _panel(Rect2(284, 1002, 724, 156), Color("0d1d2b"), Color("2b5268"))
-	host.equipment_card_label(rail, UIText.t("planet.facility_heading"), Rect2(16, 8, 680, 26), 17, host.CYAN)
-	var empty_facilities: Label = host.equipment_card_label(rail, UIText.t("planet.facility_empty"), Rect2(18, 60, 670, 54), 15, host.MUTED)
+	var stage_title: Label = host.equipment_card_label(stage, "", Rect2(24, 18, 716, 38), 27)
+	stage_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	var rail := _panel(Rect2(224, 980, 1114, 178), Color("0b1b29"), Color("203b4b"))
+	host.equipment_card_label(rail, UIText.t("planet.facility_heading"), Rect2(18, 12, 1078, 30), 22)
+	var empty_facilities: Label = _wrap(host.equipment_card_label(rail, UIText.t("planet.facility_empty"), Rect2(20, 70, 1074, 54), 18, host.MUTED))
 	var rail_scroll := ScrollContainer.new()
-	rail_scroll.position = Vector2(12, 36)
-	rail_scroll.size = Vector2(700, 108)
+	rail_scroll.position = Vector2(16, 54)
+	rail_scroll.size = Vector2(1082, 120)
 	rail_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	rail.add_child(rail_scroll)
 	var rail_content := HBoxContainer.new()
-	rail_content.add_theme_constant_override("separation", 10)
+	rail_content.add_theme_constant_override("separation", 12)
 	rail_scroll.add_child(rail_content)
-	var root := _panel(Rect2(1018, 20, 320, 1138), Color("0d1d2b"), Color("2b5268"))
-	var title: Label = host.equipment_card_label(root, "", Rect2(19, 18, 282, 42), 24, host.CYAN)
-	host.equipment_card_label(root, UIText.t("planet.info_heading"), Rect2(20, 68, 280, 32), 18, host.MUTED)
-	var detail_scroll:=ScrollContainer.new()
-	detail_scroll.position=Vector2(20,106)
-	detail_scroll.size=Vector2(280,392)
-	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	root.add_child(detail_scroll)
-	var detail: Label = host.equipment_card_label(detail_scroll, "", Rect2(0, 0, 270, 360), 16)
-	detail.custom_minimum_size=Vector2(270,360)
-	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	detail.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-	var progress: Label = host.equipment_card_label(root, "", Rect2(20, 548, 280, 90), 17, host.CYAN)
-	progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var root := _panel(Rect2(1002, 20, 336, 944), Color(0, 0, 0, 0), Color(0, 0, 0, 0))
+	var task := _section(root, Rect2(0, 0, 336, 434))
+	var summary := _section(root, Rect2(0, 450, 336, 238))
+	var title: Label = host.equipment_card_label(task, UIText.t("planet.task_heading"), Rect2(20, 18, 296, 36), 25)
+	var task_state: Label = host.equipment_card_label(task, "", Rect2(20, 62, 296, 28), 18)
+	var progress: Label = _wrap(host.equipment_card_label(task, "", Rect2(20, 100, 296, 78), 20))
+	progress.add_theme_constant_override("line_spacing", 2)
+	progress.max_lines_visible = 3
+	progress.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	var bar := ProgressBar.new()
-	bar.position = Vector2(20, 648)
-	bar.size = Vector2(280, 12)
+	bar.position = Vector2(20, 178)
+	bar.size = Vector2(296, 12)
 	bar.show_percentage = false
-	bar.add_theme_stylebox_override("background", host.style(Color("152838"), Color("2b5268")))
+	bar.add_theme_stylebox_override("background", host.style(Color("081522"), Color("203b4b")))
 	bar.add_theme_stylebox_override("fill", host.style(Color("4bc7e9"), Color("4bc7e9")))
-	root.add_child(bar)
+	task.add_child(bar)
 	var picker := OptionButton.new()
-	picker.position = Vector2(20, 808)
-	picker.size = Vector2(280, 42)
+	picker.position = Vector2(20, 142)
+	picker.size = Vector2(296, 44)
 	picker.add_theme_font_override("font", host.font)
-	picker.add_theme_font_size_override("font_size", 16)
-	root.add_child(picker)
-	var start: Button = host.button(UIText.t("planet.start"), Rect2(20, 878, 280, 53), func():_start_exploration(id, picker), true)
-	start.reparent(root, false)
-	var cancel: Button = host.button(UIText.t("planet.cancel"), Rect2(20, 878, 280, 53), func():host.game.cancel_planet_exploration(id))
-	cancel.reparent(root, false)
-	var feedback: Label = host.equipment_card_label(root, "", Rect2(20, 970, 280, 72), 18, host.CYAN)
+	picker.add_theme_font_size_override("font_size", 19)
+	task.add_child(picker)
+	var no_crew := _wrap(host.equipment_card_label(task, UIText.t("planet.no_idle_crew"), Rect2(20, 142, 296, 66), 21, host.MUTED))
+	# Initial text can expand a Label before autowrap is enabled; restore its column.
+	no_crew.size = Vector2(296, 66)
+	var auto := CheckButton.new()
+	auto.text = UIText.t("planet.auto")
+	auto.position = Vector2(20, 228)
+	auto.size = Vector2(296, 36)
+	auto.add_theme_font_size_override("font_size", 19)
+	task.add_child(auto)
+	auto.toggled.connect(func(enabled):host.game.set_planet_auto(id,enabled))
+	var start: Button = host.button(UIText.t("planet.start"), Rect2(20, 280, 296, 52), func():_start_exploration(id, picker), true)
+	start.reparent(task, false)
+	var cancel: Button = host.button(UIText.t("planet.cancel"), Rect2(20, 280, 296, 52), func():host.game.cancel_planet_exploration(id))
+	cancel.reparent(task, false)
+	for action in [start, cancel]:action.add_theme_font_size_override("font_size", 20)
+	var feedback: Label = _wrap(host.equipment_card_label(task, "", Rect2(20, 344, 296, 70), 21, host.CYAN))
 	feedback.visible = false
-	cards[id] = {"root":root, "stage":stage, "rail":rail, "rail_content":rail_content, "list_button":list_button, "title":title, "stage_title":stage_title, "detail":detail, "progress":progress, "bar":bar, "picker":picker, "start":start, "cancel":cancel, "feedback":feedback, "empty_facilities":empty_facilities, "facility_buttons":{}, "visual":visual, "crew_ids":[], "selected":null}
+	host.equipment_card_label(summary, UIText.t("planet.rewards_heading"), Rect2(20, 16, 296, 32), 22)
+	var detail_scroll := ScrollContainer.new()
+	detail_scroll.position = Vector2(20, 62)
+	detail_scroll.size = Vector2(296, 60)
+	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	summary.add_child(detail_scroll)
+	var detail: Label = _wrap(host.equipment_card_label(detail_scroll, "", Rect2(0, 0, 278, 54), 19))
+	detail.custom_minimum_size = Vector2(0, 54)
+	detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	detail.clip_text = false
+	var bonuses: Button = host.button(UIText.t("planet.bonuses"), Rect2(20, 132, 296, 40), func():show_bonuses(id))
+	bonuses.reparent(summary, false)
+	bonuses.add_theme_font_size_override("font_size", 19)
+	var reforge: Button = host.button(UIText.t("planet.reforge"), Rect2(20, 184, 296, 40), func():_confirm_reforge(id))
+	reforge.reparent(summary, false)
+	var conquered: Label = host.equipment_card_label(summary, UIText.t("planet.conquered"), Rect2(20, 184, 296, 40), 18, host.CYAN)
+	var task_fx := _add_feedback(task)
+	var log_panel := _section(root, Rect2(0, 704, 336, 240))
+	host.equipment_card_label(log_panel, UIText.t("planet.log.heading"), Rect2(20, 14, 296, 32), 22)
+	var log_scroll := ScrollContainer.new()
+	log_scroll.position = Vector2(20, 54)
+	log_scroll.size = Vector2(296, 170)
+	log_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	log_panel.add_child(log_scroll)
+	var log_label := Label.new()
+	log_label.text = UIText.t("planet.log.empty")
+	log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	log_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	log_label.add_theme_font_size_override("font_size", 18)
+	log_label.add_theme_color_override("font_color", host.MUTED)
+	log_label.add_theme_constant_override("line_spacing", 4)
+	log_scroll.add_child(log_label)
+	cards[id] = {"icon":icon,"task_fx":task_fx,"task":task,"summary":summary,"task_state":task_state,"no_crew":no_crew,"list_name":list_name,"list_degree":list_degree,"rail_scroll":rail_scroll,"detail_scroll":detail_scroll,"auto":auto,"reforge":reforge,"conquered":conquered,"root":root,"stage":stage,"rail":rail,"rail_content":rail_content,"list_button":list_button,"title":title,"stage_title":stage_title,"detail":detail,"progress":progress,"bar":bar,"picker":picker,"start":start,"cancel":cancel,"feedback":feedback,"empty_facilities":empty_facilities,"facility_buttons":{},"visual":visual,"crew_ids":[],"selected":null,"bonuses":bonuses}
+
+	# Session-only presentation history; lifecycle follows this planet card.
+	cards[id].merge({"log_label":log_label,"log_entries":[],"log_phase":-1,"log_crew":"","log_buildings":{},"log_dirty":false})
+	_observe_log_buildings(id)
+
+func bonus_text(id: String) -> String:
+	var g = host.game
+	var lines: PackedStringArray = []
+	for row in g.planet_buildings.rows(g,id):
+		if g.planet_buildings.state(g,id,str(row.id)).get("status") != "built":continue
+		var description := str(row.name) + "\n" + str(row.des)
+		if str(row.type) in ["refinery", "equipment"]:
+			description += "\n" + UIText.t("planet.build_effect", {"mult":GrowthNumber.text(g.planet_buildings.building_multiplier(g,id,row))})
+		lines.append(description)
+	for row in g.planet_buffs.rows(g,id):lines.append(str(row.des))
+	return "\n\n".join(lines) if not lines.is_empty() else UIText.t("planet.bonuses_empty")
+
+func show_bonuses(id: String) -> void:
+	if not is_instance_valid(bonus_dialog):
+		bonus_dialog = AcceptDialog.new()
+		bonus_dialog.add_theme_font_override("font",host.font)
+		bonus_dialog.min_size = Vector2i(660, 500)
+		add_child(bonus_dialog)
+		var scroll := ScrollContainer.new()
+		scroll.custom_minimum_size = Vector2(620, 400)
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		bonus_dialog.add_child(scroll)
+		bonus_label = Label.new()
+		bonus_label.custom_minimum_size.x = 580
+		bonus_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bonus_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		bonus_label.add_theme_font_size_override("font_size",20)
+		scroll.add_child(bonus_label)
+	bonus_planet_id = id
+	bonus_dialog.title = UIText.t("planet.bonuses_title", {"planet":UIText.data_text("planet",id,"name",str(host.game.planet_row(id).get("name",id)))})
+	bonus_label.text = bonus_text(id)
+	bonus_dialog.popup_centered()
 
 func _start_exploration(id: String, picker: OptionButton) -> void:
 	var ids: Array = cards[id].crew_ids
 	if picker.selected >= 0 and picker.selected < ids.size():
-		host.game.start_planet_exploration(id, str(ids[picker.selected]))
+		var chosen_id := str(ids[picker.selected])
+		host.game.start_planet_exploration(id, chosen_id)
+		if str(host.game.planet_progress(id).get("crewId", "")) == chosen_id:
+			cards[id].task_fx.trigger(host.CYAN, 0.55)
+
+func exploration_count_text(value) -> String:
+	# Counts never show decimal places; retain compact big-number support.
+	if value is Dictionary or GrowthNumber.compare(value,1e20)>=0:
+		var parts := GrowthNumber.parts(value)
+		return "%.0fe+%.0f" % [parts[0]*100.0,parts[1]-2.0]
+	return "%.0f" % float(value)
 
 func refresh_card(id: String) -> void:
 	var card: Dictionary = cards[id]
+	if is_instance_valid(bonus_dialog) and bonus_dialog.visible and bonus_planet_id == id:
+		host.set_ui_value(bonus_label, "text", bonus_text(id))
 	var row: Dictionary = host.game.planet_row(id)
 	var progress: Dictionary = host.game.planet_progress(id)
-	card.visual.configure(id, row)
-	card.visual.set_exploration(not str(progress.get("crewId", "")).is_empty(), int(progress.get("degree", 0)))
+	var degree = progress.get("degree", 0)
+	var name := UIText.data_text("planet", id, "name", str(row.get("name", id)))
+	host.set_ui_value(card.list_name, "text", name.get_slice("-", 0))
+	host.set_ui_value(card.list_degree, "text", UIText.t("planet.degree", {"degree":exploration_count_text(degree)}))
+	host.set_ui_value(card.list_button, "tooltip_text", UIText.t("planet.list_entry", {"planet":name, "degree":exploration_count_text(degree)}))
+	if not selected_planet_id.is_empty() and id != selected_planet_id:return
+	host.set_ui_value(card.title, "text", UIText.t("planet.task_heading"))
+	host.set_ui_value(card.stage_title, "text", name + "  ·  " + UIText.t("planet.degree", {"degree":exploration_count_text(degree)}))
+	host.set_ui_value(card.stage_title, "tooltip_text", name)
+	var visual_row := row.duplicate(true)
+	visual_row.visualFacilities=[]
+	for building in host.game.planet_buildings.rows(host.game,id):
+		if host.game.planet_buildings.state(host.game,id,str(building.id)).get("status", "") in ["ready", "built"]:
+			visual_row.visualFacilities.append({"id":str(building.id),"type":str(building.type),"owned":true})
+	card.visual.configure(id, visual_row)
+	card.visual.set_exploration(not str(progress.get("crewId", "")).is_empty(), progress.get("degree", 0), float(progress.get("elapsed", 0)))
 	_sync_facility_buttons(id)
-	var degree := int(progress.get("degree", 0))
+	var reward: float = host.game.planet_exp_reward(id)
+	var detail_text := UIText.t("planet.trip_gain")
+	if reward > 0 and host.game.crew.levels_unlocked(host.game):detail_text += "\n" + crew_reward_text(reward)
+	host.set_ui_value(card.detail,"text",detail_text)
+	_refresh_task(id)
+
+func _refresh_task(id: String, refresh_roster := true) -> void:
+	_refresh_log_progress(id)
+	_render_log(id)
+	var card: Dictionary = cards[id]
+	var progress: Dictionary = host.game.planet_progress(id)
 	var duration: float = host.game.planet_duration(id)
-	var reward: float = float(row.get("baseExp", 0)) * host.game.planet_exp_multiplier()
-	var name := UIText.data_text("planet", id)
-	host.set_ui_value(card.title, "text", name)
-	host.set_ui_value(card.stage_title, "text", name)
-	host.set_ui_value(card.list_button, "text", UIText.t("planet.list_entry", {"planet":name, "degree":degree}))
-	host.set_ui_value(card.detail, "text", UIText.t("planet.detail", {"degree":degree, "bonus":"%.2f" % host.game.planet_equipment_multiplier(), "experience":"%.2f" % reward}))
-	host.set_ui_value(card.detail,"custom_minimum_size",Vector2(270,maxf(360.0,card.detail.get_line_count()*26.0)))
 	var crew_id := str(progress.get("crewId", ""))
 	var active := not crew_id.is_empty()
 	var member: Dictionary = host.game.crew.definitions(host.game).get(crew_id, {})
-	host.set_ui_value(card.progress, "text", UIText.t("planet.exploring", {"crew":str(member.get("name", crew_id)), "remaining":"%.1f" % maxf(0, duration-float(progress.get("elapsed", 0)))}) if active else UIText.t("planet.ready", {"seconds":"%.1f" % duration}))
-	host.set_ui_value(card.bar, "value", clampf(float(progress.get("elapsed", 0)) / maxf(1.0, duration) * 100.0, 0.0, 100.0) if active else 0.0)
+	var progress_text := UIText.t("planet.exploring", {"crew":str(member.get("name", crew_id)), "remaining":"%.1f" % maxf(0, duration-float(progress.get("elapsed", 0)))}) + "\n" + UIText.t(card.visual.work_state_key()) if active else UIText.t("planet.duration_compact", {"seconds":"%.1f" % duration})
+	host.set_ui_value(card.progress, "text", progress_text)
+	host.set_ui_value(card.progress, "tooltip_text", progress_text)
+	var state_key := "planet.task_paused" if host.game.paused else ("planet.task_active" if active else "planet.task_idle")
+	host.set_ui_value(card.task_state, "text", UIText.t(state_key))
+	host.set_ui_value(card.task_state, "visible", active or host.game.paused)
+	host.set_ui_value(card.progress, "position", Vector2(20, 100 if active or host.game.paused else 66))
+	host.set_ui_value(card.bar, "visible", active)
+	host.set_ui_value(card.task_state, "modulate", Color("e8bc7a") if host.game.paused else (host.CYAN if active else host.MUTED))
+	var bar_value := clampf(float(progress.get("elapsed", 0)) / maxf(1.0, duration) * 100.0, 0.0, 100.0) if active else 0.0
+	host.set_ui_value(card.bar, "value", 100.0 if card.visual.completion_age < 0.18 else bar_value)
+	if not refresh_roster:return
 	var available: Array = []
 	for item in host.game.profile.crew:
 		if not host.game.crew.unlocked(host.game, item.crewId) or not str(item.assignmentType).is_empty():continue
-		if host.game.profile.planets.values().any(func(other):return other.crewId == item.crewId):continue
+		if not host.game.crew_exploration(str(item.crewId)).is_empty():continue
 		available.append(item.crewId)
 	if card.crew_ids != available:
 		var previous := str(card.crew_ids[card.picker.selected]) if card.picker.selected >= 0 and card.picker.selected < card.crew_ids.size() else ""
@@ -176,45 +426,209 @@ func refresh_card(id: String) -> void:
 		card.crew_ids = available
 		for member_id in available:card.picker.add_item(str(host.game.crew.definitions(host.game)[member_id].name))
 		if not available.is_empty():card.picker.select(maxi(0, available.find(previous)))
-	host.set_ui_value(card.picker, "visible", not active)
+	host.set_ui_value(card.picker, "visible", not active and not available.is_empty())
+	host.set_ui_value(card.no_crew, "visible", not active and available.is_empty())
 	host.set_ui_value(card.start, "visible", not active)
 	host.set_ui_value(card.start, "disabled", available.is_empty())
 	host.set_ui_value(card.cancel, "visible", active)
 
 func _sync_facility_buttons(id: String) -> void:
-	var card: Dictionary = cards[id]
-	var wanted: Dictionary = {}
-	for index in card.visual.facilities.size():
-		var entry: Dictionary = card.visual.facilities[index]
-		var facility_id := str(entry.get("id", "%s-%d" % [entry.get("type", ""), index]))
-		wanted[facility_id] = true
-		if not card.facility_buttons.has(facility_id):
-			var button: Button = host.button("", Rect2(0, 0, 106, 49), func():select_facility(id, facility_id))
-			button.custom_minimum_size = Vector2(106, 49)
-			button.reparent(card.rail_content, false)
-			card.facility_buttons[facility_id] = button
-		var item: Button = card.facility_buttons[facility_id]
-		host.set_ui_value(item, "text", UIText.t("planet.facility_item", {"name":_facility_name(str(entry.get("type", ""))), "level":int(entry.get("level", 1))}))
-	for facility_id in card.facility_buttons.keys():
-		if not wanted.has(facility_id):
-			card.facility_buttons[facility_id].queue_free()
-			card.facility_buttons.erase(facility_id)
-	host.set_ui_value(card.empty_facilities, "visible", wanted.is_empty())
+	var card: Dictionary=cards[id]
+	var g=host.game
+	var wanted := {}
+	var preview: Dictionary=g.planet_buildings.preview(g,id)
+	for row in g.planet_buildings.rows(g,id):
+		var building_id := str(row.id)
+		var state: Dictionary=g.planet_buildings.state(g,id,building_id)
+		var locked: bool=state.get("status","locked")=="locked"
+		if locked and str(preview.get("id",""))!=building_id:continue
+		wanted[building_id]=true
+		if not card.facility_buttons.has(building_id):
+			var box := Panel.new()
+			box.custom_minimum_size = Vector2(160, 118)
+			card.rail_content.add_child(box)
+			box.mouse_entered.connect(func():box.self_modulate = Color(1.12, 1.12, 1.12);card.visual.select_facility(building_id))
+			box.gui_input.connect(func(event):
+				if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:_show_facility(id, building_id))
+			box.mouse_exited.connect(func():box.self_modulate = Color.WHITE;card.visual.select_facility(""))
+			var silhouette := Control.new()
+			silhouette.position = Vector2(8, 6)
+			silhouette.size = Vector2(76, 64)
+			silhouette.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			silhouette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			box.add_child(silhouette)
+			silhouette.draw.connect(func():_draw_building_silhouette(silhouette,str(row.type)))
+			var label := _wrap(host.equipment_card_label(box, "", Rect2(92, 10, 150, 62), 21))
+			var status: Label = host.equipment_card_label(box, "", Rect2(16, 76, 226, 26), 17)
+			var metric := _wrap(host.equipment_card_label(box, "", Rect2(16, 105, 226, 48), 21, host.MUTED))
+			var assign: Button = host.button("", Rect2(88, 78, 156, 36), func():_toggle_builder(id,building_id))
+			assign.reparent(box, false)
+			assign.clip_text = true
+			assign.add_theme_font_size_override("font_size", 15)
+			card.facility_buttons[building_id] = {"root":box,"label":label,"status":status,"metric":metric,"assign":assign,"silhouette":silhouette,"presentation_state":"","fx":_add_feedback(box)}
+		var controls: Dictionary = card.facility_buttons[building_id]
+		var built: bool = state.get("status") == "built"
+		var ready: bool = state.get("status") == "ready"
+		# Only the next applicable preview reveals its name and remaining trips.
+		var remaining = GrowthNumber.ceiling(GrowthNumber.subtract(row.unlock_explore,g.planet_progress(id).degree))
+		var presentation := "locked" if locked else ("built" if built else "ready" if ready else "building")
+		var tint: Color = host.MUTED if locked else (Color("83d5c4") if built else Color("e8bc7a"))
+		if controls.presentation_state != presentation:
+			if not str(controls.presentation_state).is_empty() and id == selected_planet_id and is_visible_in_tree():
+				controls.fx.trigger(tint, 1.4)
+				
+			controls.root.add_theme_stylebox_override("panel", host.style(Color("0e1b27") if locked else Color("112735"), Color("263b49") if locked else Color("315666")))
+			controls.presentation_state = presentation
+		host.set_ui_value(controls.silhouette, "modulate", Color(0.30, 0.40, 0.48, 0.65) if locked else Color.WHITE)
+		host.set_ui_value(controls.label, "text", str(row.name))
+		host.set_ui_value(controls.label, "modulate", host.MUTED if locked else Color.WHITE)
+		host.set_ui_value(controls.status, "text", UIText.t("planet.facility_status_" + presentation))
+		host.set_ui_value(controls.status, "visible", false)
+		host.set_ui_value(controls.status, "modulate", tint)
+		var metric_text := UIText.t("planet.facility_remaining", {"count":exploration_count_text(remaining)}) if locked else "" if built else UIText.t("planet.facility_status_ready") if ready else UIText.t("planet.facility_progress", {"progress":exploration_count_text(state.get("build_progress",0)),"total":exploration_count_text(row.build_explore)})
+		host.set_ui_value(controls.metric, "text", metric_text)
+		host.set_ui_value(controls.metric, "visible", not built)
+		host.set_ui_value(controls.root, "custom_minimum_size", Vector2(160 if built else 252, 118))
+		host.set_ui_value(controls.silhouette, "position", Vector2(42, 4) if built else Vector2(8, 8))
+		host.set_ui_value(controls.label, "position", Vector2(8, 78) if built else Vector2(88, 8))
+		host.set_ui_value(controls.label, "size", Vector2(144 if built else 156, 30))
+		host.set_ui_value(controls.label, "horizontal_alignment", HORIZONTAL_ALIGNMENT_CENTER if built else HORIZONTAL_ALIGNMENT_LEFT)
+		host.set_ui_value(controls.metric, "position", Vector2(8, 82) if locked else Vector2(88, 42))
+		host.set_ui_value(controls.metric, "size", Vector2(236 if locked else 156, 32))
+		var description := str(row.name) + "\n" + (metric_text if locked else str(row.des))
+		if ready:description += "\n" + UIText.t("planet.facility_status_ready")
+		if not locked and str(row.type) in ["refinery","equipment"]:
+			var mult=g.planet_buildings.building_multiplier(g,id,row)
+			description+="\n"+UIText.t("planet.build_effect",{"mult":GrowthNumber.text(mult)})
+		host.set_ui_value(controls.root,"tooltip_text",description)
+		var needs_crew: bool=not locked and not built and not ready and int(row.extra_crew)>0
+		host.set_ui_value(controls.assign,"visible",needs_crew or ready)
+		if ready:host.set_ui_value(controls.assign, "text", UIText.t("planet.activate"))
+		if needs_crew:
+			var builders: Array=state.get("crew",[])
+			host.set_ui_value(controls.assign,"text",UIText.t("planet.builder_compact", {"count":builders.size(),"required":exploration_count_text(row.extra_crew)}))
+		host.set_ui_value(controls.assign, "tooltip_text", controls.assign.text)
+		if controls.root.get_index() != wanted.size()-1:card.rail_content.move_child(controls.root,wanted.size()-1)
+	for building_id in card.facility_buttons.keys():
+		if not wanted.has(building_id):
+			card.facility_buttons[building_id].root.queue_free()
+			card.facility_buttons.erase(building_id)
+	host.set_ui_value(card.empty_facilities,"visible",wanted.is_empty())
+	host.set_ui_value(card.auto,"visible",g.planet_buildings.built(g,id,"auto_explore"))
+	var auto_enabled: bool = g.planet_progress(id).get("auto_explore",false)
+	if card.auto.button_pressed != auto_enabled:card.auto.set_pressed_no_signal(auto_enabled)
+	host.set_ui_value(card.reforge,"visible",g.can_reforge_planet(id))
+	host.set_ui_value(card.conquered,"visible",g.planet_progress(id).get("conquered",false))
 
-func _facility_name(kind: String) -> String:
+func _draw_building_silhouette(control: Control, kind: String) -> void:
+	var artwork: Texture2D = Art.facility(kind)
+	if artwork != null:
+		Art.draw_fitted(control, artwork, Rect2(Vector2.ZERO, control.size))
+		return
+	var tint := Color.WHITE
 	match kind:
-		"scout_satellite":return UIText.t("planet.facility.scout_satellite")
-		"space_station":return UIText.t("planet.facility.space_station")
-		"mining_platform":return UIText.t("planet.facility.mining_platform")
-		"research_facility":return UIText.t("planet.facility.research_facility")
-		"defense_platform":return UIText.t("planet.facility.defense_platform")
-		"orbital_factory":return UIText.t("planet.facility.orbital_factory")
-	return ""
+		"auto_explore":
+			control.draw_circle(Vector2(28,14),10,tint)
+			control.draw_rect(Rect2(4,10,48,8),tint)
+			control.draw_rect(Rect2(25,0,6,28),tint)
+		"refinery":
+			control.draw_colored_polygon(PackedVector2Array([Vector2(8,10),Vector2(44,10),Vector2(38,27),Vector2(14,27)]),tint)
+			control.draw_rect(Rect2(16,1,6,12),tint)
+			control.draw_rect(Rect2(32,4,6,9),tint)
+		"equipment":
+			control.draw_rect(Rect2(8,10,40,18),tint)
+			control.draw_colored_polygon(PackedVector2Array([Vector2(8,10),Vector2(20,1),Vector2(20,10),Vector2(33,1),Vector2(33,10)]),tint)
+		_:
+			control.draw_rect(Rect2(7,5,5,23),tint)
+			control.draw_rect(Rect2(44,5,5,23),tint)
+			control.draw_rect(Rect2(7,3,42,5),tint)
+			control.draw_rect(Rect2(15,20,26,6),tint)
+
+func _show_facility(id: String, building_id: String) -> void:
+	if not cards[id].facility_buttons.has(building_id):return
+	var controls: Dictionary = cards[id].facility_buttons[building_id]
+	if not is_instance_valid(facility_dialog):
+		facility_dialog = AcceptDialog.new()
+		facility_dialog.add_theme_font_override("font", host.font)
+		facility_dialog.add_theme_font_size_override("font_size", 22)
+		facility_dialog.min_size = Vector2i(520, 220)
+		add_child(facility_dialog)
+	facility_dialog.title = controls.label.text
+	facility_dialog.dialog_text = controls.root.tooltip_text
+	facility_dialog.popup_centered()
+
+func _toggle_builder(id: String, building_id: String) -> void:
+	var g=host.game
+	var state: Dictionary=g.planet_buildings.state(g,id,building_id)
+	if state.get("status", "") == "ready":
+		g.planet_buildings.activate(g, id, building_id)
+		return
+	var builders: Array=state.get("crew",[])
+	var row: Dictionary=g.db.data.planet_build[building_id]
+	if builders.size()>=int(row.extra_crew):
+		g.planet_buildings.assign(g,id,building_id,str(builders.back()))
+		return
+	# Explicit selection; never silently occupy the first available crew member.
+	var anchor: Button = cards[id].facility_buttons[building_id].assign
+	var popup := PopupMenu.new()
+	anchor.add_child(popup)
+	popup.add_theme_font_override("font", host.font)
+	popup.add_theme_font_size_override("font_size", 20)
+	popup.add_theme_stylebox_override("panel", host.style(Color("112735"), Color("315666")))
+	var ids: Array=[]
+	var five_rows_height := 0.0
+	for member in g.profile.crew:
+		if g.idle_planet_crew(str(member.crewId)):
+			ids.append(str(member.crewId))
+			popup.add_item(str(g.crew.definitions(g)[member.crewId].name))
+			if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
+	for member_id in builders:
+		ids.append(str(member_id))
+		popup.add_item(UIText.t("planet.recall_builder",{"name":g.crew.definitions(g)[member_id].name}))
+		if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
+	popup.id_pressed.connect(func(index):g.planet_buildings.assign(g,id,building_id,ids[index]))
+	popup.popup_hide.connect(popup.queue_free)
+	anchor.visibility_changed.connect(popup.hide)
+	# Use the same screen transform for the button and playable viewport, including
+	# window offset, canvas scaling and letterboxing. Never use logical mouse coordinates.
+	var screen_transform := anchor.get_screen_transform()
+	var anchor_rect := screen_transform * Rect2(Vector2.ZERO, anchor.size)
+	var viewport_transform := screen_transform * anchor.get_global_transform_with_canvas().affine_inverse()
+	var bounds := (viewport_transform * anchor.get_viewport_rect()).grow(-8.0)
+	# Measure five real rows, including theme padding, before adding overflow items.
+	var height_limit := bounds.size.y
+	if five_rows_height > 0.0:
+		var menu_scale := screen_transform.get_scale().abs()
+		height_limit = minf(height_limit, ceilf(five_rows_height * minf(menu_scale.x, menu_scale.y)))
+	popup.max_size = Vector2i(int(bounds.size.x), int(height_limit))
+	popup.min_size = Vector2i(ceili(anchor_rect.size.x), 0)
+	popup.popup()
+	var menu_size := Vector2(popup.size)
+	var menu_position := Vector2(anchor_rect.position.x, anchor_rect.position.y - menu_size.y - 4.0)
+	menu_position.x = clampf(menu_position.x, bounds.position.x, maxf(bounds.position.x, bounds.end.x - menu_size.x))
+	menu_position.y = clampf(menu_position.y, bounds.position.y, maxf(bounds.position.y, bounds.end.y - menu_size.y))
+	popup.position = Vector2i(menu_position)
+
+func _confirm_reforge(id: String) -> void:
+	if not host.game.can_reforge_planet(id):return
+	var dialog := ConfirmationDialog.new()
+	dialog.title=UIText.t("planet.reforge")
+	dialog.dialog_text=UIText.t("planet.reforge_confirm", {"level":host.game.planet_reforge_start(id)})
+	dialog.min_size=Vector2i(650,340)
+	dialog.add_theme_font_override("font",host.font)
+	add_child(dialog)
+	dialog.confirmed.connect(func():host.game.reforge_planet(id);dialog.queue_free())
+	dialog.canceled.connect(dialog.queue_free)
+	dialog.popup_centered()
 
 func select_planet(id: String) -> void:
 	if not cards.has(id) or selected_planet_id == id:return
+	if cards.has(selected_planet_id):_clear_feedback(cards[selected_planet_id])
+	_clear_feedback(cards[id])
 	selected_planet_id = id
 	_apply_selection()
+	refresh_card(id)
+	_clear_feedback(cards[id])
 
 func _apply_selection() -> void:
 	for id in cards:
@@ -230,12 +644,17 @@ func _apply_selection() -> void:
 func show_completion(id: String, reward: float = -1.0) -> void:
 	if not cards.has(id):return
 	var card: Dictionary = cards[id]
-	if id != selected_planet_id:return
+	if id != selected_planet_id or not is_visible_in_tree():return
 	card.visual.complete()
-	var degree := int(host.game.planet_progress(id).get("degree", 0))
-	var shown_reward: float = reward if reward >= 0.0 else float(host.game.planet_row(id).get("baseExp", 0)) * host.game.planet_exp_multiplier()
-	host.set_ui_value(card.feedback, "text", UIText.t("planet.complete_feedback", {"degree":degree, "experience":"%.2f" % shown_reward}))
-	card.feedback.visible = true
+	card.task_fx.trigger(host.CYAN, 0.85)
+	var shown_reward: float = reward if reward >= 0.0 else host.game.planet_exp_reward(id)
+	host.set_ui_value(card.feedback, "text", UIText.t("planet.trip_gain") + ("  " + crew_reward_text(shown_reward) if shown_reward > 0 else ""))
+	host.set_ui_value(card.feedback, "visible", false)
+	host.set_ui_value(card.feedback, "modulate", Color(1, 1, 1, 0))
 
 func select_facility(planet_id: String, facility_id: String) -> void:
 	if cards.has(planet_id):cards[planet_id].visual.select_facility(facility_id)
+
+func crew_reward_text(amount: float) -> String:
+	var g=host.game
+	return g.crew.format_text(g,"planet_exp",{"exp":"%.0f" % amount}) if g.crew.levels_unlocked(g) else ""

@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "max_loadouts": 8,
+  "pass_winrate": 0.6,
+  "max_level": 10,
+  "max_total_battles": 3000,
+  "max_per_level": 9,
+  "coarse_runs": 3,
+  "max_seconds": 120,
+  "seed": 12345,
+  "similarity": 0.08,
+  "group_position": 0.9,
+  "final_wave": {
+    "max_ship_count": 3,
+    "min_ship_size": 4,
+    "max_waves_per_level": 9
+  }
+}

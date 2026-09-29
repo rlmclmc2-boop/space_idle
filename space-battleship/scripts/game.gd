@@ -1,11 +1,18 @@
 class_name BattleGame
 extends RefCounted
 
+const CLEAR_ADVANCE_DELAY := 3.0
+
 signal event(kind: String, payload: Dictionary)
 
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
+const SAVE_VERSION := 3
+const N = preload("res://scripts/growth_number.gd")
+var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
+var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
+var galaxy := preload("res://scripts/galaxy_system.gd").new()
 const JEWEL_CAPACITY := 200
 const FURNACE := "超时空炼铁炉"
 const JEWEL_FURNACE := "宝石熔炼炉"
@@ -18,6 +25,12 @@ const WEAPON_KEYS := ["laser", "missile", "cannon", "longLaser"]
 const DEFENSE_KEYS := ["armour", "shield"]
 const BATTLE_SIZE := Vector2(572,696)
 const PLAYER_POSITION := Vector2(286,520)
+const ENEMY_LINE_LEFT := 66.0
+const ENEMY_LINE_SPACING := 440.0 / 9.0
+const ENEMY_LINE_Y := 140.0
+
+static func enemy_slot_position(slot: int) -> Vector2:
+	return Vector2(ENEMY_LINE_LEFT + float(slot) * ENEMY_LINE_SPACING,ENEMY_LINE_Y)
 var db: ShipDatabase
 var profile: Dictionary
 var crew := preload("res://scripts/crew_system.gd").new()
@@ -47,6 +60,10 @@ var run_resources := {"1": 0.0, "2": 0.0}
 var uid := 0
 var projectile_serial := 0
 var save_enabled := true
+var stat_cache_enabled := false
+var stat_cache: Dictionary = {}
+var jewel_defence_capacity_cache: Dictionary = {}
+var login_chrono_particles := 0.0
 var pending_unlocks: Array[String] = []
 var retreat_from := 0.0
 var retreat_target := 0.0
@@ -55,9 +72,7 @@ var retreat_boss_pending := false
 var rng := RandomNumberGenerator.new()
 var hightech_save_elapsed := 0.0
 var resource_samples: Array[Dictionary] = []
-var offline_rewards: Dictionary = {}
 var auto_gen_elapsed := 0.0
-var charge_resources_dirty := false
 var save_dirty := false
 var jewel_repeats: Array[Dictionary] = []
 var jewel_defence_times: Dictionary = {}
@@ -74,33 +89,37 @@ func economy_time() -> float:
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
+	speed = default_speed()
 	save_enabled = persist
+	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	galaxy.load_state(self,{})
 	crew.load_state(self, [])
 	load_planets({})
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
-		advance_charge(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
-		advance_hightech(minf(float(db.config.get("offlineMax", 0)) * 3600.0, maxf(0, Time.get_unix_time_from_system() - float(profile.hightechSavedAt))))
 		save_progress()
 	reset_player()
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":1, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":SAVE_VERSION, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
 	profile.jewels = []
+	profile.lifetime_max_stage = 1
+	profile.seenUnlocks = []
 	profile.jewelFragments = 0.0
 	profile.jewelFurnaceElapsed = 0.0
 	profile.jewelFurnaceIncomePeak = 0.0
-	profile.charge = {}
-	for key in db.data.get("charge", {}):
-		profile.charge[key] = {"level":0,"count":0.0,"elapsed":0.0,"active":false,"credit":0.0,"started":0}
+	profile.chronoParticles = 0.0
+	profile.reactorLevel = int(db.config.reactorInitialLevel)
+	profile.reactorAllocation = {}
+	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	return profile
 
 func first_ship() -> String:
@@ -111,8 +130,16 @@ func ship_unlocked(key: String) -> bool:
 
 func unlock_available(id: String) -> bool:
 	var row: Dictionary = db.data.get("unlock", {}).get(id, {})
+	if row.get("type", "") == "planet" and not planet_buffs.allows_planet(self, str(row.target)):return false
+	return unlock_condition_available(id)
+
+func unlock_condition_available(id: String) -> bool:
+	var row: Dictionary = db.data.get("unlock", {}).get(id, {})
 	if row.is_empty():return false
 	if profile.get("grantedUnlocks", []).has(id):return true
+	if row.get("type")=="feature" and row.get("target")=="galaxy":
+		var definitions: Array=db.data.get("galaxy",{}).values()
+		if definitions.is_empty() or not definitions.any(func(definition):return definition.unlock_type=="conquered_planet_count" and galaxy.conquered(self)>=int(definition.unlock_value)):return false
 	var gate := int(row.level)
 	if gate == 0:return true
 	# Reached-mode preserves the former highestLevel semantics, including gaps.
@@ -122,6 +149,13 @@ func unlock_available(id: String) -> bool:
 
 func content_unlocked(kind: String, key: String) -> bool:
 	return unlock_available(db.unlock_id(kind, key))
+
+func granted_unlocks() -> Array[String]:
+	# Keep earned level conditions through reforge even while conquest is pending.
+	var result: Array[String] = []
+	for id in db.data.get("unlock", {}):
+		if unlock_condition_available(str(id)):result.append(str(id))
+	return result
 
 func available_unlocks() -> Array[String]:
 	var result: Array[String] = []
@@ -155,11 +189,17 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
+	invalidate_stat_cache()
+	login_chrono_particles = 0.0
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 	var raw = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
-	if not raw is Dictionary or raw.get("version") != 1:
+	if not raw is Dictionary or int(raw.get("version",0)) not in [2,SAVE_VERSION]:
 		return
+	# Legacy identities are accepted only at the save migration boundary.
+	if int(raw.get("version",0))<3:
+		raw = migrate_planet_ids(raw)
+	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
 			if (n is float or n is int) and n == int(n) and n >= 1 and n <= db.levels.size() and not profile.cleared.has(int(n)):
@@ -171,8 +211,8 @@ func load_progress() -> void:
 				profile.bossSeen.append(int(n))
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
-		if (value is float or value is int) and is_finite(float(value)):
-			profile.resources[id] = ceilf(maxf(0, float(value)))
+		if N.valid(value):
+			profile.resources[id] = N.ceiling(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -189,6 +229,14 @@ func load_progress() -> void:
 				if not id.is_empty() and not profile.grantedUnlocks.has(id):profile.grantedUnlocks.append(id)
 	rebuild_unlocks()
 	load_journey(raw.get("journey", {}))
+	# Old saves knew ownership but not notification history. Preserve their pending
+	# pages; all other previously owned unlocks have already been experienced.
+	var seen_source = raw.get("seenUnlocks", available_unlocks().filter(func(key):return not profile.get("journey",{}).get("pendingUnlocks",[]).has(key)))
+	if seen_source is Array:
+		for key in seen_source:
+			if key is String and not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
+	if profile.has("journey"):
+		profile.journey.pendingUnlocks = profile.journey.get("pendingUnlocks",[]).filter(func(key):return not profile.seenUnlocks.has(key))
 	var selected = raw.get("loopLevel", 0)
 	profile.loopLevel = int(selected) if (selected is int or selected is float) and profile.cleared.has(int(selected)) else 0
 	var guard_stage = raw.get("guardStage", 0)
@@ -217,10 +265,14 @@ func load_progress() -> void:
 	load_jewels(raw)
 	load_hightech(raw)
 	profile.hightechOrder = hightech_slots()
-	load_charge(raw)
+	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
 	crew.load_state(self, raw.get("crew", []))
+	load_reactor(raw)
 	load_planets(raw.get("planets", {}))
-	settle_offline_resources(raw, floorf(Time.get_unix_time_from_system()))
+	galaxy.refresh_unlocks(self)
+	var particles = raw.get("chronoParticles", 0)
+	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
+	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
 	generate_jewels()
 
 func load_journey(value) -> void:
@@ -259,30 +311,63 @@ func resume_progress() -> void:
 			resume_guard()
 			save_progress()
 
-func settle_offline_resources(raw: Dictionary, now: float) -> void:
-	offline_rewards.clear()
-	if not nonnegative_number(raw.get("offlineSavedAt")) or not raw.get("offlineRates") is Dictionary:
-		return
-	var seconds := clampf(floorf(now) - float(raw.offlineSavedAt), 0, float(db.config.get("offlineMax", 0)) * 3600.0)
-	for id in profile.resources:
-		var rate = raw.offlineRates.get(id, 0)
-		if not nonnegative_number(rate):
+func chrono_options() -> Array[Dictionary]:
+	var options: Array[Dictionary] = []
+	for item in str(db.config.chronoSpeeds).split(","):
+		var fields := item.split("|")
+		if fields.size() != 2 or not fields[0].is_valid_float() or not fields[1].is_valid_float():
 			continue
-		var amount := ceilf(float(rate) * seconds)
-		if is_finite(amount) and amount > 0:
-			profile.resources[id] += amount
-			offline_rewards[id] = amount
-	var jewel_rate = raw.offlineRates.get("jewel", 0)
-	if jewels_unlocked() and nonnegative_number(jewel_rate):
-		# Saved actual income already includes its level multiplier.
-		var amount := settle_jewel_fragments(float(jewel_rate) * seconds, "offline", 1.0)
-		if amount > 0:
-			offline_rewards["jewel"] = amount
+		var multiplier := float(fields[0])
+		var cost := float(fields[1])
+		if is_finite(multiplier) and multiplier > 0 and is_finite(cost) and cost >= 0:
+			options.append({"multiplier":multiplier,"cost":cost})
+	return options
+
+func default_speed() -> float:
+	return float(db.config.chronoDefaultSpeed)
+
+func chrono_cost(multiplier: float) -> float:
+	for option in chrono_options():
+		if is_equal_approx(float(option.multiplier), multiplier):
+			return float(option.cost)
+	return -1.0
+
+func set_speed(multiplier: float) -> bool:
+	var cost := chrono_cost(multiplier)
+	if cost < 0 or (cost > 0 and float(profile.chronoParticles) <= 0):
+		return false
+	speed = multiplier
+	return true
+
+func chrono_capacity() -> float:
+	return float(db.config.offlineMax) * 3600.0 * float(db.config.chronoParticlesPerSecond)
+
+func accrue_chrono_particles(saved_at: Variant, now: float) -> float:
+	if not nonnegative_number(saved_at):
+		return 0.0
+	var seconds := clampf(floorf(now - float(saved_at)), 0.0, float(db.config.offlineMax) * 3600.0)
+	var earned := maxf(0.0, floorf(seconds * float(db.config.chronoParticlesPerSecond)))
+	var available := maxf(0.0, floorf(chrono_capacity() - float(profile.chronoParticles)))
+	var gained := minf(earned, available)
+	profile.chronoParticles = minf(chrono_capacity(), float(profile.chronoParticles) + gained)
+	return gained
+
+func chrono_affordable_seconds(real_dt: float) -> float:
+	var cost := chrono_cost(speed)
+	if cost < 0:
+		speed = default_speed()
+		return real_dt
+	if cost == 0:
+		return real_dt
+	var affordable := minf(real_dt, float(profile.chronoParticles) / cost)
+	profile.chronoParticles = maxf(0.0, float(profile.chronoParticles) - affordable * cost)
+	return affordable
 
 func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
 
 func load_hightech(raw: Dictionary) -> void:
+	invalidate_stat_cache()
 	raw = raw.duplicate(true)
 	if int(raw.get("hightechVersion",0)) != 2:
 		for field in ["hightechLevels","hightechResearch","scientists","scientistAssignments","techPoints","furnaceElapsed","jewelFurnaceElapsed","hightechDrops"]:
@@ -310,10 +395,10 @@ func load_hightech(raw: Dictionary) -> void:
 			profile.techPoints[key] = float(points)
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
-			if sample is Dictionary and nonnegative_number(sample.get("time")) and nonnegative_number(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
+			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
 				# Legacy samples have no reliable source; keep totals but exclude them
 				# from furnace input until this short rolling window expires.
-				resource_samples.append({"time":float(sample.time), "amount":float(sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
+				resource_samples.append({"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
 	profile.furnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt))
 	profile.jewelFurnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt),true)
 	if raw.get("hightechDrops") is Array:
@@ -339,7 +424,8 @@ func rebuild_unlocks() -> void:
 	profile.highestLevel = 1
 	for n in profile.cleared:
 		profile.highestLevel = mini(db.levels.size(), maxi(profile.highestLevel, int(n) + 1))
-	profile.grantedUnlocks = available_unlocks()
+	profile.lifetime_max_stage = maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
+	profile.grantedUnlocks = granted_unlocks()
 	for key in EQUIPMENT:
 		if content_unlocked("equipment", key) and not profile.unlocked.has(key):
 			profile.unlocked.append(key)
@@ -349,6 +435,7 @@ func rebuild_unlocks() -> void:
 	profile.hightechOrder = hightech_slots()
 
 func ensure_loadout() -> void:
+	invalidate_stat_cache()
 	var row := db.ship(str(profile.get("selectedShip", first_ship())))
 	if row.is_empty():
 		profile.selectedShip = first_ship()
@@ -381,11 +468,7 @@ func save_progress() -> void:
 	profile.hightechSavedAt = Time.get_unix_time_from_system()
 	prune_resource_samples(float(profile.hightechSavedAt))
 	profile.resourceSamples = resource_samples
-	profile.offlineSavedAt = floorf(float(profile.hightechSavedAt))
-	profile.offlineRates = {}
-	for id in profile.resources:
-		profile.offlineRates[id] = resource_minute_total(id, float(profile.hightechSavedAt)) / 60.0
-	profile.offlineRates["jewel"] = resource_minute_total("jewel", float(profile.hightechSavedAt)) / 60.0
+	profile.chronoSavedAt = float(profile.hightechSavedAt)
 	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
 	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
 	if file == null:
@@ -393,7 +476,8 @@ func save_progress() -> void:
 		return
 	# Compatibility projection only; never install name-based levels in runtime.
 	var saved := profile.duplicate()
-	saved.grantedUnlocks = available_unlocks()
+	saved.galaxies=galaxy.save_data()
+	saved.grantedUnlocks = granted_unlocks()
 	if state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
 		# Retreat resumes at its destination, never at the defeated encounter.
 		saved.journey = {"stage":stage, "distance":retreat_target if state == State.RETREAT else distance, "groupIndex":group_index, "state":int(state), "guardArrived":guard_arrived, "retreatBossPending":retreat_boss_pending}
@@ -414,7 +498,6 @@ func save_progress() -> void:
 		event.emit("save_error", {})
 	else:
 		save_dirty = false
-		charge_resources_dirty = false
 
 func first_equipment_entry(key: String) -> Dictionary:
 	for category in ["weapons", "defence"]:
@@ -448,13 +531,21 @@ func weapon_entries() -> Array:
 func defense_entries() -> Array:
 	return loadout_entries("defence")
 
-func stat(key: String) -> float:
-	var total := 0.0
+func stat(key: String) -> Variant:
+	if stat_cache_enabled and stat_cache.has(key):
+		return stat_cache[key]
+	var total = 0.0
 	for category in ["weapons", "defence"]:
 		for entry in loadout_entries(category):
 			if str(entry.get("key", "")) == key:
-				total += jewel_equipment_stat(entry)
+				total = N.add(total,jewel_equipment_stat(entry))
+	if stat_cache_enabled:
+		stat_cache[key] = total
 	return total
+
+func invalidate_stat_cache() -> void:
+	stat_cache.clear()
+	jewel_defence_capacity_cache.clear()
 
 func ship_movement() -> float:
 	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
@@ -497,14 +588,14 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if costs.is_empty():
 		return false
 	for id in costs:
-		if not is_finite(float(costs[id])) or float(profile.resources.get(id, 0)) < float(costs[id]):
+		if not is_finite(float(costs[id])) or N.compare(profile.resources.get(id,0),costs[id])<0:
 			return false
 	return true
 
 func refund_equipment(key: String, level: int) -> void:
 	for target_level in range(2, level + 1):
 		for id in upgrade_cost_for_level(key, target_level):
-			profile.resources[id] = float(profile.resources.get(id, 0)) + float(upgrade_cost_for_level(key, target_level)[id])
+			profile.resources[id] = N.add(profile.resources.get(id,0),upgrade_cost_for_level(key,target_level)[id])
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -541,13 +632,13 @@ func valid_loadout(key: String, loadout: Dictionary) -> bool:
 
 func capture_refit_health() -> void:
 	for key in ["armour","shield"]:
-		var maximum := stat(key)
-		if maximum>0 and player.has(key):
-			refit_health_ratios[key] = clampf(float(player[key])/maximum,0,1)
+		var maximum = stat(key)
+		if N.compare(maximum,0)>0 and player.has(key):
+			refit_health_ratios[key] = clampf(N.ratio(player[key],maximum),0,1)
 
 func apply_refit_health() -> void:
 	for key in ["armour","shield"]:
-		if player.has(key):player[key] = stat(key)*float(refit_health_ratios[key])
+		if player.has(key):player[key] = N.multiply(stat(key),float(refit_health_ratios[key]))
 	jewel_defence_damage.clear()
 	sync_jewel_defence_damage()
 
@@ -573,6 +664,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	var module := entry.duplicate(true)
 	module.key = key
 	profile.loadout[category][index] = module
+	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
 	save_progress()
@@ -586,6 +678,7 @@ func unequip_slot(category: String, index: int) -> bool:
 	var module := entry.duplicate(true)
 	module.key = ""
 	profile.loadout[category][index] = module
+	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
 	save_progress()
@@ -604,6 +697,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	capture_refit_health()
 	var old_weapon_count := active_slot_count("weapons")
 	profile.selectedShip = key
+	invalidate_stat_cache()
 	for category in ["weapons","defence"]:
 		var entries := module_entries(category)
 		while entries.size()<active_slot_count(category):entries.append({"key":"","level":1})
@@ -620,156 +714,161 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	event.emit("ship_changed",{"key":key})
 	return true
 
+func permanent_modifiers() -> Dictionary:
+	return planet_buffs.totals(self)
+
+func equipment_level_bonus() -> int:
+	return int(permanent_modifiers().equipment_level_bonus)
+
+func hightech_level_bonus() -> int:
+	return int(permanent_modifiers().hightech_level_bonus)
+
+func charge_free_ratio() -> float:
+	return float(permanent_modifiers().charge_free_ratio)
+
+func gem_drop_level_bonus() -> int:
+	return int(permanent_modifiers().gem_drop_level_bonus)
+
+func effective_equipment_level(actual: int) -> int:
+	return actual+equipment_level_bonus()
+
+func effective_hightech_level(key: String) -> int:
+	return hightech_level(key)+hightech_level_bonus() if hightech_unlocked(key) else 0
+
+func permanent_level_text(actual: int, target: String) -> String:
+	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	return UIText.t("planet.level_with_bonus",{"actual":actual,"bonus":bonus}) if bonus!=0 else str(actual)
+
+func permanent_level_tooltip(actual: int, target: String) -> String:
+	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
+
 func equipment_stat(key: String, level: int) -> float:
-	var row := db.equip(key, level)
+	# Only the ordinary damage/capacity projection reads the effective level.
+	var row := db.equip(key, effective_equipment_level(level))
 	var value := float(row.para1 if key in ["armour", "shield"] else row.dmg)
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
-	if hightech_level(tech) > 0:
-		value = ceilf(value * pow(1.0 + float(db.data.hightech[tech].para1),hightech_level(tech)))
-	var charge_bonus := charge_multiplier("防御充能" if key in ["armour", "shield"] else "攻击充能")
-	if charge_bonus != 1.0:
-		value = ceilf(value * charge_bonus)
+	if effective_hightech_level(tech) > 0:
+		value = ceilf(value * pow(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech)))
+	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons")
+	if reactor_bonus != 1.0:
+		value = ceilf(value * reactor_bonus)
 	return value
 
-func charge_job(key: String) -> Dictionary:
-	return profile.charge[key]
+func reactor_modules() -> PackedStringArray:
+	return str(db.config.reactorModules).split(",",false)
 
-func charge_unlocked(key: String) -> bool:
-	if not db.data.get("charge",{}).has(key):
-		return false
-	return content_unlocked("charge", key)
+func reactor_module_unlocked(key: String) -> bool:
+	if not reactor_modules().has(key):return false
+	var gate := db.unlock_id("reactor_module",key)
+	return gate.is_empty() or unlock_available(gate)
 
-func charge_required(key: String, at_level := -1) -> float:
-	var row: Dictionary = db.data.charge[key]
-	var level := int(charge_job(key).level) if at_level < 0 else at_level
-	return roundf(float(row.para_5) * pow(float(row.para_6),level))
+func reactor_available_modules() -> PackedStringArray:
+	return PackedStringArray(Array(reactor_modules()).filter(func(key):return reactor_module_unlocked(key)))
 
-func charge_multiplier(key: String) -> float:
-	if not db.data.get("charge",{}).has(key):
-		return 1.0
-	return pow(1.0 + float(db.data.charge[key].para_3),int(charge_job(key).level))
+func reactor_unlocked() -> bool:
+	return content_unlocked("feature", "reactor")
 
-func charge_resource_rate(key: String) -> float:
-	var row: Dictionary = db.data.charge[key]
-	return roundf(float(row.para_2) * pow(1.0 + float(row.get("para_7",0)),int(charge_job(key).level)))
+func reactor_energy(level := -1) -> float:
+	var actual := int(profile.reactorLevel) if level < 0 else level
+	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max")
 
-func charge_description(key: String) -> String:
-	var row: Dictionary = db.data.charge[key].duplicate()
-	for i in range(1,8):
-		row["para"+str(i)] = row.get("para_"+str(i),0)
-	return ui_description(UIText.data_key("charge",key,"des"),row,int(charge_job(key).level))
+func reactor_capacity() -> int:
+	return maxi(0, int(floor(reactor_energy())))
 
-func toggle_charge(key: String) -> bool:
-	if not charge_unlocked(key):
-		return false
-	var job := charge_job(key)
-	job.active = not job.active
-	if job.active:
-		var latest := 0
-		for existing in profile.charge.values():
-			latest = maxi(latest,int(existing.get("started",0)))
-		job.started = latest + 1
+func reactor_upgrade_cost(level := -1) -> float:
+	var actual := int(profile.reactorLevel) if level < 0 else level
+	return float(db.config.reactorUpgradeBase) * pow(float(db.config.reactorUpgradeGrowth), actual - 1)
+
+func reactor_allocated() -> int:
+	var total := 0
+	for key in reactor_modules():total += int(profile.reactorAllocation.get(key,0))
+	return total
+
+func reactor_effective_ratio(key: String) -> float:
+	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
+	return float(profile.reactorAllocation.get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
+
+func reactor_multiplier(key: String) -> float:
+	if not reactor_module_unlocked(key):return 1.0
+	var allocation := float(profile.reactorAllocation.get(key,0))
+	if reactor_unlocked():allocation+=float(reactor_capacity())*charge_free_ratio()
+	return 1.0 + pow(float(allocation),float(db.config.reactorBoostExponent)) / float(db.config.reactorPercentScale) if allocation > 0 else 1.0
+
+func reactor_max_upgrades() -> int:
+	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
+	var level := int(profile.reactorLevel)
+	var count := 0
+	while true:
+		var cost := reactor_upgrade_cost(level)
+		if not is_finite(cost) or cost <= 0 or N.compare(cost,budget)>0:break
+		budget = N.subtract(budget,cost)
+		level += 1
+		count += 1
+	return count
+
+func upgrade_reactor(amount: int) -> bool:
+	if not reactor_unlocked() or amount <= 0:return false
+	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
+	var total := 0.0
+	for offset in amount:
+		var cost := reactor_upgrade_cost(int(profile.reactorLevel)+offset)
+		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
+		total += cost
+	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
+	profile.reactorLevel += amount
 	save_progress()
+	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
 	return true
 
-func load_charge(raw: Dictionary) -> void:
-	if raw.get("charge") is Dictionary:
-		for key in db.data.get("charge",{}):
-			var saved = raw.charge.get(key)
-			if not saved is Dictionary:
-				continue
-			if not nonnegative_number(saved.get("level")) or float(saved.level) != floorf(float(saved.level)):
-				continue
-			var job := charge_job(key)
-			job.level = int(saved.level)
-			if nonnegative_number(saved.get("count")) and float(saved.count) == floorf(float(saved.count)) and float(saved.count) < charge_required(key):
-				job.count = float(saved.count)
-			if nonnegative_number(saved.get("elapsed")) and float(saved.elapsed) < float(db.data.charge[key].para_4):
-				job.elapsed = float(saved.elapsed)
-			job.active = saved.get("active",false) == true
-			if nonnegative_number(saved.get("credit")) and float(saved.credit) < 1.0:
-				job.credit = float(saved.credit)
-			if nonnegative_number(saved.get("started")) and float(saved.started) == floorf(float(saved.started)):
-				job.started = int(saved.started)
+func set_reactor_allocation(key: String, value: float) -> bool:
+	if not reactor_unlocked() or not reactor_module_unlocked(key) or not is_finite(value):return false
+	var allowed := maxi(0,reactor_capacity() - reactor_allocated() + int(profile.reactorAllocation.get(key,0)))
+	var next := clampi(int(floor(value)),0,allowed)
+	if next == int(profile.reactorAllocation.get(key,0)):return false
+	profile.reactorAllocation[key] = next
+	invalidate_stat_cache()
+	if key == "defence":
+		player.armour = N.minimum(player.armour,stat("armour"))
+		player.shield = N.minimum(player.shield,stat("shield"))
+		event.emit("equipment_stats",{"category":"defence"})
+	elif key == "weapons":event.emit("equipment_stats",{"category":"weapons"})
+	save_progress()
+	event.emit("reactor_changed", {"module":key})
+	return true
 
-func advance_charge(dt: float) -> void:
-	# A level changes the rate immediately, including within a long offline step.
-	while dt > 0.000000001:
-		var step := dt
-		var funded := false
-		for key in db.data.get("charge",{}):
-			var job := charge_job(key)
-			var row: Dictionary = db.data.charge[key]
-			if not charge_unlocked(key) or not job.active:
-				continue
-			if charge_resource_rate(key) > 0 and float(profile.resources.get(str(int(row.para_1)),0)) <= 0 and float(job.credit) <= 0:
-				continue
-			funded = true
-			if float(row.get("para_7",0)) > 0:
-				step = minf(step,(charge_required(key)-float(job.count))*float(row.para_4)-float(job.elapsed))
-		if not funded:
-			return
-		advance_charge_step(step)
-		dt -= step
+func equalize_reactor_allocation() -> bool:
+	if not reactor_unlocked():return false
+	var modules := reactor_available_modules()
+	if modules.is_empty():return false
+	var share := reactor_capacity()/modules.size()
+	var remainder := reactor_capacity()%modules.size()
+	var changed := false
+	for index in modules.size():
+		var key := modules[index]
+		var allocation := share + (1 if index < remainder else 0)
+		if int(profile.reactorAllocation.get(key,0)) != allocation:changed = true
+		profile.reactorAllocation[key] = allocation
+	if not changed:return false
+	invalidate_stat_cache()
+	player.armour = N.minimum(player.armour,stat("armour"))
+	player.shield = N.minimum(player.shield,stat("shield"))
+	save_progress()
+	event.emit("equipment_stats",{"category":"weapons"})
+	event.emit("equipment_stats",{"category":"defence"})
+	event.emit("reactor_changed", {"equalized":true})
+	return true
 
-func advance_charge_step(dt: float) -> void:
-	if dt <= 0:
-		return
-	var groups := {}
-	for key in db.data.get("charge",{}):
-		if charge_unlocked(key) and charge_job(key).active:
-			var id := str(int(db.data.charge[key].para_1))
-			if not groups.has(id):
-				groups[id] = []
-			groups[id].append(key)
-	for id in groups:
-		var balance := floorf(maxf(0,float(profile.resources.get(id,0))))
-		var waiting: Array = groups[id].duplicate()
-		waiting.sort_custom(func(a,b):return int(charge_job(a).started) < int(charge_job(b).started))
-		var allocations := {}
-		var demands := {}
-		for key in waiting:
-			# Buy whole resources; retain their unused charging time across frames
-			# and saves, rather than rounding up a separate cost every frame.
-			demands[key] = ceilf(maxf(0,charge_resource_rate(key)*dt-float(charge_job(key).credit)-0.000000001))
-		while not waiting.is_empty():
-			var share := floorf(balance / waiting.size())
-			var satisfied := []
-			for key in waiting:
-				var demand := float(demands[key])
-				if demand <= share:
-					allocations[key] = demand
-					balance -= demand
-					satisfied.append(key)
-			if satisfied.is_empty():
-				var remainder := int(balance - share * waiting.size())
-				for key in waiting:
-					allocations[key] = share + (1.0 if remainder > 0 else 0.0)
-					remainder -= 1
-				balance = 0.0
-				break
-			for key in satisfied:
-				waiting.erase(key)
-		var previous_balance := float(profile.resources.get(id,0))
-		profile.resources[id] = maxf(0,balance)
-		if not is_equal_approx(previous_balance,float(profile.resources[id])):
-			charge_resources_dirty = true
-		for key in allocations:
-			var row: Dictionary = db.data.charge[key]
-			var job := charge_job(key)
-			job.credit += float(allocations[key])
-			var rate := charge_resource_rate(key)
-			var seconds := minf(dt,float(job.credit)/rate) if rate > 0 else dt
-			job.credit = maxf(0,float(job.credit)-seconds*rate)
-			var elapsed := float(job.elapsed) + seconds
-			var completed := floorf((elapsed + 0.000000001) / float(row.para_4))
-			job.elapsed = maxf(0,elapsed - completed * float(row.para_4))
-			job.count += completed
-			while float(job.count) >= charge_required(key):
-				job.count -= charge_required(key)
-				job.level += 1
-				if key in ["攻击充能","防御充能"]:
-					event.emit("equipment_stats",{"category":"weapons" if key=="攻击充能" else "defence"})
+func load_reactor(raw: Dictionary) -> void:
+	invalidate_stat_cache()
+	var level = raw.get("reactorLevel")
+	if nonnegative_number(level) and level == floorf(float(level)) and level >= int(db.config.reactorInitialLevel):profile.reactorLevel = int(level)
+	var saved = raw.get("reactorAllocation")
+	if not saved is Dictionary:return
+	for key in reactor_modules():profile.reactorAllocation[key] = 0
+	for key in reactor_modules():
+		var value = saved.get(key)
+		if reactor_module_unlocked(key) and nonnegative_number(value):profile.reactorAllocation[key] = mini(int(floor(float(value))),maxi(0,reactor_capacity()-reactor_allocated()))
 
 func hightech_level(key: String) -> int:
 	return int(profile.get("hightechLevels", {}).get(key, 0))
@@ -812,26 +911,28 @@ func hightech_required(key: String) -> float:
 	# D2 gives a linear series: 10, 12, 14, ...; target level is current + 1.
 	return roundf(float(row.tpCostBase) * (1.0 + float(row.tpCostMutiple) * hightech_level(key)))
 
-func description_number(value: float) -> String:
-	return NUMBER_FORMAT.precise(value)
+func description_number(value) -> String:
+	if value is Dictionary:return N.text(value)
+	# Formula literals must retain float precision; compact notation is for the final text only.
+	return "%.1f" % value if absf(value)>=9e18 else NUMBER_FORMAT.precise(value)
 
 func hightech_description(key: String, now := -1.0) -> String:
-	if hightech_level(key)==0:
+	if effective_hightech_level(key)==0:
 		return UIText.t("system.hightech_description.text_01")
 	var row: Dictionary = db.data.hightech[key]
 	if key == JEWEL_FURNACE:
 		var peak := furnace_income_peak(now,true)
-		return ui_description(UIText.data_key("hightech",key,"description"),row,hightech_level(key),peak,peak)
-	return ui_description(UIText.data_key("hightech",key,"description"),row,hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
+		return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),peak,peak)
+	return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
 
-func ui_description(text_key: String, row: Dictionary, level: int, minute_income := 0.0, excluded_income := 0.0) -> String:
+func ui_description(text_key: String, row: Dictionary, level: int, minute_income = 0.0, excluded_income = 0.0) -> String:
 	var values := {}
 	var formulas := UIText.formulas(text_key)
 	for i in formulas.size():
 		values["effect_%d" % (i+1)] = format_description(row,str(formulas[i]),level,minute_income,excluded_income)
 	return UIText.t(text_key,values)
 
-func format_description(row: Dictionary, template: String, level: int, minute_income := 0.0, excluded_income := 0.0) -> String:
+func format_description(row: Dictionary, template: String, level: int, minute_income = 0.0, excluded_income = 0.0) -> String:
 	var result := template
 	var tokens := RegEx.new()
 	tokens.compile("para[0-9]+")
@@ -842,7 +943,8 @@ func format_description(row: Dictionary, template: String, level: int, minute_in
 	var allowed := RegEx.new()
 	allowed.compile("^[0-9. +*/()^\\-]+$")
 	var numbers := RegEx.new()
-	numbers.compile("[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+")
+	var numeric_literal := "(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
+	numbers.compile(numeric_literal)
 	for block in matches:
 		var parts := block.get_string(1).replace("，",",").split(",")
 		var options: Array = Array(parts).slice(1).map(func(option):return str(option).strip_edges())
@@ -862,11 +964,12 @@ func format_description(row: Dictionary, template: String, level: int, minute_in
 		var literals := numbers.search_all(formula)
 		literals.reverse()
 		for literal in literals:
-			if not literal.get_string().contains("."):
+			if not literal.get_string().contains(".") and not literal.get_string().to_lower().contains("e"):
 				formula = formula.substr(0,literal.get_end()) + ".0" + formula.substr(literal.get_end())
-		var numeric_only := allowed.search(formula) != null
+		# Remove complete numeric tokens before checking operators; arbitrary identifiers remain rejected.
+		var numeric_only := allowed.search(numbers.sub(formula,"0",true)) != null
 		var power := RegEx.new()
-		power.compile("(\\([^()^]*\\)|[0-9.]+)\\s*\\^\\s*([0-9.]+)")
+		power.compile("(\\([^()^]*\\)|"+numeric_literal+")\\s*\\^\\s*("+numeric_literal+")")
 		formula = power.sub(formula,"pow($1,$2)",true)
 		if numeric_only and not formula.contains("^") and options.all(func(option):return option in ["向上取整","不含自身","百分比显示","保留两位小数","即100.3%展示为100%","百分比","四舍五入保留整数百分比部分"]) and expression.parse(formula) == OK:
 			var value = expression.execute([],null,false,true)
@@ -911,7 +1014,7 @@ func scientist_purchase(amount := 1) -> Dictionary:
 		var paid := false
 		for id in costs:
 			paid = paid or float(costs[id]) > 0
-			if not is_finite(float(costs[id])) or float(total.get(id,0))+float(costs[id]) > float(profile.resources.get(id,0)):
+			if not is_finite(float(costs[id])) or N.compare(N.add(total.get(id,0),costs[id]),profile.resources.get(id,0))>0:
 				return {"count":count if amount < 0 else 0,"costs":total}
 		# An unbounded free tail has no finite MAX purchase.
 		if amount < 0 and not paid:
@@ -933,7 +1036,7 @@ func generate_scientist(amount := 1) -> bool:
 	if int(purchase.count)<=0:
 		return false
 	for id in purchase.costs:
-		profile.resources[id] -= purchase.costs[id]
+		profile.resources[id] = N.subtract(profile.resources[id],purchase.costs[id])
 	profile.scientists += int(purchase.count)
 	save_progress()
 	event.emit("scientists_changed", {})
@@ -979,57 +1082,176 @@ func planet_row(id: String) -> Dictionary:
 
 func planet_unlocked(id: String) -> bool:
 	var row := planet_row(id)
-	return not row.is_empty() and unlock_available(str(row.get("unlockId", "")))
+	return not row.is_empty() and planet_buffs.allows_planet(self, id) and unlock_available(str(row.get("unlockId", "")))
 
 func planet_progress(id: String) -> Dictionary:
 	return profile.get("planets", {}).get(id, {})
 
 func crew_exploration(crew_id: String) -> String:
-	for id in profile.get("planets", {}):
-		if str(profile.planets[id].get("crewId", "")) == crew_id:return str(id)
-	return ""
+	return planet_buildings.occupied(self,crew_id)
 
 func planet_duration(id: String) -> float:
-	return planet_duration_from(planet_row(id), int(planet_progress(id).get("degree", 0)))
+	return planet_duration_from(planet_row(id), planet_progress(id).get("degree", 0))
 
 func planet_exp_multiplier() -> float:
-	var level := clampi(int(profile.highestLevel), 1, db.levels.size())
+	var level := clampi(maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel)), 1, db.levels.size())
 	return float(db.levels[level - 1].get("planetExpRatio", 0)) if level > 0 else 0.0
 
-func planet_equipment_multiplier() -> float:
-	var result := 1.0
-	for id in db.data.get("planet", {}):
-		var row := planet_row(str(id))
-		if row.get("effectType") == "equipment":
-			var degree := int(planet_progress(str(id)).get("degree", 0))
-			result *= pow(1.0 + float(row.get("effectValue", 0)), pow(float(degree), float(db.config.planetExplorePower)))
-	return result
+func planet_exp_reward(id: String) -> float:
+	if not crew.levels_unlocked(self):return 0.0
+	return roundf(float(planet_row(id).get("baseExp", 0)) * planet_exp_multiplier() * galaxy.multiplier("crew_exp"))
+
+func planet_equipment_multiplier() -> Variant:
+	return planet_buildings.multiplier(self,"equipment")
+
+func planet_resource_multiplier() -> Variant:
+	return planet_buildings.multiplier(self,"refinery")
+
+func migrate_planet_ids(raw: Dictionary) -> Dictionary:
+	var migrated := raw.duplicate(true)
+	var aliases := {"first":"1"}
+	var planets: Dictionary = migrated.get("planets",{}) if migrated.get("planets") is Dictionary else {}
+	for old in aliases:
+		if planets.has(old):
+			if not planets.has(aliases[old]):planets[aliases[old]]=planets[old]
+			planets.erase(old)
+	for field in ["grantedUnlocks"]:
+		if migrated.get(field) is Array:
+			for i in migrated[field].size():
+				if migrated[field][i]=="planet/first":migrated[field][i]="planet/1"
+	if migrated.get("journey") is Dictionary and migrated.journey.get("pendingUnlocks") is Array:
+		for i in migrated.journey.pendingUnlocks.size():
+			if migrated.journey.pendingUnlocks[i]=="planet/first":migrated.journey.pendingUnlocks[i]="planet/1"
+	migrated.planets=planets
+	migrated.version=SAVE_VERSION
+	return migrated
 
 func load_planets(raw) -> void:
+	invalidate_stat_cache()
 	profile.planets = {}
+	var pending := {}
 	for id in db.data.get("planet", {}):
 		var item = raw.get(id, {}) if raw is Dictionary else {}
 		if not item is Dictionary:item = {}
-		var degree = item.get("degree", 0)
-		var elapsed = item.get("elapsed", 0.0)
-		var crew_id := str(item.get("crewId", ""))
-		var valid_degree: bool = (degree is int or degree is float) and is_finite(float(degree)) and degree >= 0 and degree <= 2147483647
-		var progress := {"degree":int(degree) if valid_degree else 0, "elapsed":maxf(0.0, float(elapsed)) if (elapsed is int or elapsed is float) and is_finite(float(elapsed)) else 0.0, "crewId":""}
-		if planet_unlocked(str(id)) and not crew.entry(self, crew_id).is_empty() and crew.unlocked(self, crew_id) and str(crew.entry(self, crew_id).assignmentType).is_empty() and not profile.planets.values().any(func(other):return other.crewId == crew_id):
-			progress.crewId = crew_id
-		progress.elapsed = minf(progress.elapsed, planet_duration_from(planet_row(str(id)), int(progress.degree))) if not progress.crewId.is_empty() else 0.0
+		var progress: Dictionary = item.duplicate(true)
+		progress.degree = item.get("degree",0) if N.valid(item.get("degree",0)) else 0.0
+		progress.unlocked = item.get("unlocked",false)==true or unlock_available(str(planet_row(str(id)).get("unlockId","")))
+		progress.conquered = item.get("conquered",false)==true
+		progress.auto_explore = item.get("auto_explore",false)==true
+		progress.crewId = ""
+		progress.elapsed = 0.0
+		progress.buildings = item.get("buildings",{}).duplicate(true) if item.get("buildings") is Dictionary else {}
+		for key in progress.buildings.keys():
+			var building = progress.buildings[key]
+			if not building is Dictionary:
+				progress.buildings.erase(key)
+				continue
+			building.status = str(building.get("status","locked"))
+			if building.status not in ["locked","building","ready","built"]:building.status="locked"
+			building.build_progress = building.get("build_progress",0) if N.valid(building.get("build_progress",0)) else 0
+			building.crew = []
 		profile.planets[id] = progress
+		pending[id] = item
+		planet_buildings.sync(self,str(id))
+	# Restore all occupation through a single capacity check; duplicates stay idle.
+	for id in pending:
+		var item: Dictionary=pending[id]
+		var progress: Dictionary=profile.planets[id]
+		var crew_id := str(item.get("crewId",""))
+		if planet_unlocked(str(id)) and idle_planet_crew(crew_id):
+			progress.crewId=crew_id
+			progress.elapsed=minf(float(item.get("elapsed",0)),planet_duration(str(id))) if nonnegative_number(item.get("elapsed")) else 0.0
+		for row in planet_buildings.rows(self,str(id)):
+			var building: Dictionary=progress.buildings[str(row.id)]
+			var old = item.get("buildings",{}).get(str(row.id),{}) if item.get("buildings") is Dictionary else {}
+			if building.status!="building" or not old is Dictionary or not old.get("crew") is Array:continue
+			for member_id in old.crew:
+				if building.crew.size()<int(row.extra_crew) and idle_planet_crew(str(member_id)):building.crew.append(str(member_id))
+		# Missing preference inherits the unlocked default; explicit false is a choice.
+		if not item.has("auto_explore"):progress.auto_explore = planet_buildings.built(self,str(id),"auto_explore")
+		# Keep the player's preference even when no crew/facility is available.
+		# Actual continuation checks facility availability in advance_planets.
 
-func planet_duration_from(row: Dictionary, degree: int) -> float:
-	var base := float(row.get("baseTime", 0))
-	return maxf(1.0, base * base / (base + degree)) if base > 0 else 0.0
+func idle_planet_crew(id: String) -> bool:
+	var member := crew.entry(self,id)
+	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty()
+
+func planet_duration_from(row: Dictionary, degree) -> float:
+	var base := float(row.get("baseTime",0))
+	var minimum := float(row.get("minTime",5.0))
+	if not is_finite(minimum) or minimum <= 0.0:minimum = 5.0
+	return maxf(minimum,N.ratio(base*base,N.add(base,degree))) if base>0 else 0.0
+
+func set_planet_auto(id: String, enabled: bool) -> bool:
+	if not planet_buildings.built(self,id,"auto_explore"):return false
+	profile.planets[id].auto_explore=enabled
+	save_progress()
+	event.emit("planet_changed",{"id":id})
+	return true
+
+func can_reforge_planet(id: String) -> bool:
+	return planet_unlocked(id) and not planet_progress(id).get("conquered",false) and planet_buildings.built(self,id,"shipyard")
+
+func planet_reforge_start(id: String) -> int:
+	return clampi(int(planet_row(id).get("reforgeStartLevel",1)),1,maxi(1,db.levels.size()))
+
+func reforge_planet(id: String) -> bool:
+	if not can_reforge_planet(id):return false
+	var start_level := planet_reforge_start(id)
+	# Prepare the complete replacement before changing any authoritative state.
+	var next := fresh_profile()
+	next.crew = profile.crew.duplicate(true)
+	next.crewEquipment = profile.get("crewEquipment",{}).duplicate(true)
+	next.planets = profile.planets.duplicate(true)
+	next.galaxies = profile.get("galaxies",{})
+	next.grantedUnlocks = []
+	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
+	for gate_id in available_unlocks():
+		var gate: Dictionary = db.data.unlock[gate_id]
+		if not next.seenUnlocks.has(gate_id):next.seenUnlocks.append(gate_id)
+		if int(gate.level)<=start_level or gate.type in ["crew","planet"] or (gate.type=="feature" and gate.target in ["crew_level","galaxy"]):next.grantedUnlocks.append(gate_id)
+	for gate_id in granted_unlocks():
+		if db.data.unlock[gate_id].type == "planet" and not next.grantedUnlocks.has(gate_id):next.grantedUnlocks.append(gate_id)
+	# Skip earlier stages without granting combat income. Existing unlock rules
+	# derive their availability from this new run's progression as usual.
+	next.cleared = range(1,start_level)
+	next.bossSeen = next.cleared.duplicate()
+	for planet_id in next.planets:
+		next.planets[planet_id].unlocked = planet_unlocked(str(planet_id))
+		# Reforge keeps the planet's current exploration assignment and elapsed work.
+		# The crew and planet progress are permanent state, so an in-flight trip
+		# must continue after the run is rebuilt.
+	next.planets[id].conquered=true
+	next.lifetime_max_stage=maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
+	# Resources are not listed for deletion; preserve their balances.
+	next.resources=profile.resources.duplicate(true)
+	# Chrono particles are a persistent reserve, independent of run progress.
+	next.chronoParticles=profile.chronoParticles
+	profile=next
+	crew.timers.clear()
+	pending_unlocks.clear()
+	resource_samples.clear()
+	drops.clear()
+	projectiles.clear()
+	enemies.clear()
+	speed=default_speed()
+	auto_gen_elapsed=0.0
+	hightech_save_elapsed=0.0
+	rebuild_unlocks()
+	reset_player()
+	var persist := save_enabled
+	save_enabled=false
+	start(start_level,false)
+	save_enabled=persist
+	save_progress()
+	event.emit("planet_reforged",{"id":id})
+	return true
 
 func start_planet_exploration(id: String, crew_id: String) -> bool:
 	if not planet_unlocked(id) or planet_progress(id).is_empty() or not planet_progress(id).crewId.is_empty():return false
-	var member := crew.entry(self, crew_id)
-	if member.is_empty() or not crew.unlocked(self, crew_id) or not str(member.assignmentType).is_empty():return false
-	for progress in profile.planets.values():
-		if progress.crewId == crew_id:return false
+	if not idle_planet_crew(crew_id):return false
+	planet_buildings.sync(self,id)
+	profile.planets[id].unlocked=true
 	profile.planets[id].crewId = crew_id
 	profile.planets[id].elapsed = 0.0
 	save_progress()
@@ -1052,11 +1274,19 @@ func advance_planets(dt: float) -> void:
 		progress.elapsed += dt
 		if progress.elapsed < planet_duration(str(id)):continue
 		var member_id := str(progress.crewId)
-		progress.crewId = ""
+		planet_buildings.complete(self,str(id))
+		progress.crewId = member_id if progress.get("auto_explore",false) and planet_buildings.built(self,str(id),"auto_explore") else ""
 		progress.elapsed = 0.0
-		progress.degree += 1
-		var reward := float(planet_row(str(id)).get("baseExp", 0)) * planet_exp_multiplier()
-		if reward > 0:add_crew_exp(member_id, reward)
+		invalidate_stat_cache()
+		var reward := planet_exp_reward(str(id))
+		# Persist the completed trip and its entire crew payout together.
+		var persist := save_enabled
+		save_enabled = false
+		if reward > 0:
+			if planet_buffs.shares_experience(self,str(id)):
+				for member in profile.crew:add_crew_exp(str(member.crewId), reward)
+			else:add_crew_exp(member_id, reward)
+		save_enabled = persist
 		save_progress()
 		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
 
@@ -1066,15 +1296,29 @@ func assign_crew(crew_id: String, assignment_type: String, target_id: String) ->
 func get_crew_modifier(target_type: String, target_id: String, effect_type: String) -> float:
 	return crew.get_modifier(self,target_type,target_id,effect_type)
 
-func research_rate(key: String) -> float:
-	var count := assigned_scientists(key)
-	if count <= 0 or not hightech_unlocked(key):
-		return 0.0
-	var base := float(db.config.techPointGet)*count
-	return roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base
+func dedicated_scientists(key: String) -> int:
+	return int(crew.system_effect(self,"tech_ai_per_level")) if hightech_unlocked(key) else 0
 
-func active_research() -> Array:
-	return db.data.hightech.keys().filter(func(key):return research_rate(key)>0)
+func research_rate(key: String, crew_effects: Dictionary = {}) -> float:
+	if not hightech_unlocked(key):return 0.0
+	# The caller may share these two read-only crew projections while collecting
+	# rates. The dictionary never crosses a research event or a simulation step.
+	if not crew_effects.has("tech_ai_per_level"):crew_effects.tech_ai_per_level=crew.system_effect(self,"tech_ai_per_level")
+	var count := assigned_scientists(key)+int(crew_effects.tech_ai_per_level)
+	if count <= 0:return 0.0
+	var base := float(db.config.techPointGet)*count
+	if not crew_effects.has("tech_speed"):crew_effects.tech_speed=crew.system_effect(self,"tech_speed")
+	return (roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base) * float(crew_effects.tech_speed)
+
+func active_research(rates: Dictionary = {}) -> Array:
+	var active: Array = []
+	var crew_effects: Dictionary = {}
+	for key in db.data.hightech:
+		var rate := research_rate(key,crew_effects)
+		if not rate > 0:continue
+		active.append(key)
+		rates[key]=rate
+	return active
 
 func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if real_dt < 0:
@@ -1082,11 +1326,13 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if end_time < 0:
 		end_time = economy_time()
 	var wall_per_step := real_dt / dt if dt > 0 else 1.0
+	var rates := {}
+	var active := active_research(rates)
 	# Huge point budgets cannot be settled one level/event at a time.
 	# Ignore per-level rounding and use the linear cost series in this regime.
-	var bulk := active_research().any(func(key):return float(profile.techPoints.get(key,0))+research_rate(key)*dt >= 1e20)
+	var bulk := active.any(func(key):return float(profile.techPoints.get(key,0))+float(rates[key])*dt >= 1e20)
 	if bulk:
-		for key in active_research():
+		for key in active:
 			advance_hightech_bulk(key,dt)
 		# At this scale furnace output uses the end-of-step level (approximate).
 		advance_furnace(dt,end_time,wall_per_step)
@@ -1095,16 +1341,17 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	var remaining := maxf(dt,0)
 	while remaining > 0:
 		var step := remaining
-		for key in active_research():
-			step = minf(step,maxf(0,hightech_required(key)-float(profile.techPoints.get(key,0)))/research_rate(key))
+		for key in active:
+			step = minf(step,maxf(0,hightech_required(key)-float(profile.techPoints.get(key,0)))/float(rates[key]))
 		advance_furnace(step,end_time-(remaining-step)*wall_per_step,wall_per_step)
 		remaining -= step
-		for key in active_research():
-			profile.techPoints[key] = float(profile.techPoints.get(key,0))+research_rate(key)*step
+		for key in active:
+			profile.techPoints[key] = float(profile.techPoints.get(key,0))+float(rates[key])*step
 			var required := hightech_required(key)
 			if float(profile.techPoints[key])+0.00000001 >= required:
 				profile.techPoints[key] = maxf(0,float(profile.techPoints[key])-required)
 				profile.hightechLevels[key] = hightech_level(key)+1
+				if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
 				event.emit("hightech_complete", {"key":key})
 
 func advance_hightech_bulk(key: String, dt: float) -> void:
@@ -1124,24 +1371,25 @@ func advance_hightech_bulk(key: String, dt: float) -> void:
 	profile.techPoints[key] = maxf(0,points-spent)
 	if count > 0:
 		profile.hightechLevels[key] = level+int(count)
+		if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
 		event.emit("hightech_complete", {"key":key})
 
 func prune_resource_samples(now: float) -> void:
 	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
 
-func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> float:
+func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
 	if now < 0:
 		now = economy_time()
-	var total := 0.0
+	var total = 0.0
 	for sample in resource_samples:
 		if exclude_furnace and sample.get("origin", "drop") != "drop":
 			continue
 		if sample.id == id and float(sample.time) > now - 60.0 and float(sample.time) <= now:
-			total += float(sample.amount)
+			total = N.add(total,sample.get("production_base",sample.amount) if exclude_furnace else sample.amount)
 	return total
 
 func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),resource_minute_total("jewel" if jewel else "1",now,true))
+	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(resource_minute_total("jewel" if jewel else "1",now,true)))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -1190,7 +1438,7 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			if float(drop.age) >= 10.0:
 				collect(drop, false)
 	for key in [FURNACE,JEWEL_FURNACE]:
-		if hightech_level(key) <= 0 or not db.data.get("hightech", {}).has(key):
+		if effective_hightech_level(key) <= 0 or not db.data.get("hightech", {}).has(key):
 			continue
 		var jewel_furnace: bool = key == JEWEL_FURNACE
 		var elapsed_field := "jewelFurnaceElapsed" if jewel_furnace else "furnaceElapsed"
@@ -1202,7 +1450,7 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 		var elapsed := float(profile.get(elapsed_field,0.0)) + dt
 		var count := floorf(elapsed / interval)
 		profile[elapsed_field] = fposmod(elapsed, interval)
-		# Skip expired offline blocks, with work bounded by the 10-second visible window.
+		# Skip expired blocks, with work bounded by the 10-second visible window.
 		var visible := mini(int(count), int(ceilf(10.0 / interval)))
 		for i in range(visible):
 			var age := float(profile[elapsed_field]) + i * interval
@@ -1212,17 +1460,18 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			var produced_at := end_time - age * wall_per_step
 			var income := furnace_income_peak(produced_at,jewel_furnace)
 			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
-			var amount := ceilf(income * float(row.para2) * hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")))
+			var amount := ceilf(income * float(row.para2) * effective_hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")))
 			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
 			if jewel_furnace:
 				block.jewel = true
 				block.jewelRatio = 1.0
 			drops.append(block)
 
-func max_shield() -> float:
+func max_shield() -> Variant:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
 
 func reset_player() -> void:
+	invalidate_stat_cache()
 	refit_health_ratios = {"armour":1.0,"shield":1.0}
 	jewel_repeats.clear()
 	jewel_defence_times.clear()
@@ -1338,7 +1587,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 		retreat_boss_pending = bool(checkpoint.retreatBossPending)
 		if int(checkpoint.state) == State.LEVEL_CLEAR:
 			guard_arrived = profile.loop and checkpoint.guardArrived and stage == int(profile.guardStage)
-			clear_timer = guard_interval() if guarding_here() else float(db.defaults.loopDelay)
+			clear_timer = guard_interval() if guarding_here() else CLEAR_ADVANCE_DELAY
 			pending_unlocks.assign(checkpoint.get("pendingUnlocks", []))
 			change_state(State.LEVEL_CLEAR)
 		elif profile.loop and checkpoint.guardArrived and stage == int(profile.guardStage):
@@ -1358,7 +1607,7 @@ func is_active() -> bool:
 	return state in [State.TRAVEL, State.COMBAT]
 
 func ratio(kind: String) -> float:
-	return db.ratio(stage, distance / float(db.levels[stage - 1].length), kind)
+	return db.ratio(stage, maxi(0, group_index - 1), kind)
 
 func is_boss_encounter() -> bool:
 	# group_index points to the next encounter after spawn_group increments it.
@@ -1384,8 +1633,9 @@ func spawn_group(keep_distance := false) -> void:
 		uid += 1
 		enemy.uid = uid
 		enemy.slot = slot
-		enemy.x = 66.0 + float(slot % 5) * 110.0
-		enemy.y = 140.0 + float(int(slot / 5)) * 95.0
+		var slot_position := enemy_slot_position(slot)
+		enemy.x = slot_position.x
+		enemy.y = slot_position.y
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
 		enemy.max_hp = enemy.hp
 		enemy.res_ratio = ratio("resRatio")
@@ -1440,8 +1690,8 @@ func has_alive_enemy() -> bool:
 			return true
 	return false
 
-func reduced_damage(raw: float, type: int, resistance: int) -> float:
-	return maxf(1, ceilf(raw * (1.0 - float(db.config.dmgReduce) if type == resistance else 1.0)))
+func reduced_damage(raw, type: int, resistance: int) -> Variant:
+	return N.maximum(1, N.ceiling(N.multiply(raw,1.0 - float(db.config.dmgReduce) if type == resistance else 1.0)))
 
 func enemy_weapon_offset(enemy: Dictionary, equipment_index: int) -> Vector2:
 	var key: String = enemy.equipment[equipment_index].name
@@ -1466,7 +1716,7 @@ func player_weapon_offset(index: int) -> Vector2:
 	var visuals = preload("res://scripts/ship_visuals.gd")
 	return visuals.muzzle(str(profile.selectedShip), index).rotated(-PI/2) * visuals.scale_for(db.ship(str(profile.selectedShip)))
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
 	projectiles.append({"x":float(source.x) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*float(db.defaults.projectilePixelsPerUnit),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
@@ -1480,8 +1730,8 @@ func long_laser_valid(shot: Dictionary) -> bool:
 	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
 		return false
 	if shot.hostile:
-		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and player.armour > 0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
-	return is_same(shot.source, player) and player.armour > 0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, slot_entry("weapons", shot.mount)) and shot.entry.key == "longLaser"
+		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and N.compare(player.armour,0)>0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
+	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, slot_entry("weapons", shot.mount)) and shot.entry.key == "longLaser"
 
 func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0) -> void:
 	for shot in projectiles:
@@ -1535,6 +1785,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			hit_player(raw * multiplier, int(weapon.dmgtype))
 		else:
 			shot.entry.attacks = int(shot.entry.get("attacks", 0)) + 1
+			invalidate_stat_cache()
 			event.emit("equipment_stats",{"slot":slot_id("weapons",shot.mount)})
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
 			if not shot.repeated and int(shot.ticks)==1:
@@ -1560,28 +1811,29 @@ func missile_target(candidates: Array[Dictionary]) -> Dictionary:
 			return candidate
 	return candidates[0] if not candidates.is_empty() else {}
 
-func hit_player(raw: float, type: int) -> void:
+func hit_player(raw, type: int) -> void:
 	if has_defence_jewels():
 		jewel_hit_player(raw, type)
 		return
 	since_hit = 0
-	var rest := raw
-	var shield_loss := 0.0
-	var armour_loss := 0.0
-	if player.shield > 0:
-		var factor := 1.0 - float(db.config.dmgReduce) if type == int(db.equip("shield", 1).dmgtype) else 1.0
-		shield_loss = minf(player.shield, reduced_damage(raw, type, int(db.equip("shield", 1).dmgtype)))
-		player.shield = maxf(0, player.shield - shield_loss)
-		rest = maxf(0, raw - shield_loss / factor)
-	if rest > 0:
+	var rest = raw
+	var shield_loss = 0.0
+	var armour_loss = 0.0
+	if N.compare(player.shield,0)>0:
+		var factor = 1.0 - float(db.config.dmgReduce) if type == int(db.equip("shield", 1).dmgtype) else 1.0
+		shield_loss = N.minimum(player.shield, reduced_damage(raw, type, int(db.equip("shield", 1).dmgtype)))
+		player.shield = N.subtract(player.shield,shield_loss)
+		rest = N.subtract(raw,N.divide(shield_loss,factor))
+	if N.compare(rest,0)>0:
 		armour_loss = reduced_damage(rest, type, int(db.equip("armour", 1).dmgtype))
-		player.armour = maxf(0, player.armour - armour_loss)
+		player.armour = N.subtract(player.armour,armour_loss)
 	for entry in defense_entries():
-		if (entry.key == "shield" and shield_loss > 0) or (entry.key == "armour" and armour_loss > 0):
+		if (entry.key == "shield" and N.compare(shield_loss,0)>0) or (entry.key == "armour" and N.compare(armour_loss,0)>0):
 			entry.hits = int(entry.get("hits", 0)) + 1
+			invalidate_stat_cache()
 			event.emit("equipment_stats",{"category":"defence"})
-	event.emit("hit", {"x":player.x,"y":player.y,"amount":ceilf(shield_loss + armour_loss),"player":true,"type":type})
-	if player.armour <= 0:
+	event.emit("hit", {"x":player.x,"y":player.y,"amount":N.ceiling(N.add(shield_loss,armour_loss)),"player":true,"type":type})
+	if N.compare(player.armour,0)<=0:
 		event.emit("explode", {"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
 
@@ -1617,16 +1869,18 @@ func begin_retreat() -> void:
 
 func acknowledge_unlocks() -> void:
 	# One page per item keeps simultaneous unlocks readable without dropping any.
-	if not pending_unlocks.is_empty():pending_unlocks.pop_front()
+	if not pending_unlocks.is_empty():
+		var key: String = pending_unlocks.pop_front()
+		if not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
 	save_progress()
 	event.emit("state", {"state":state})
 
-func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], critical: bool = false) -> void:
+func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false) -> void:
 	if enemy.hp <= 0:
 		return
 	jewel_on_hit(enemy, effects)
-	var amount := reduced_damage(raw * (1.0 + float(enemy.get("interference", 0))), type, int(enemy.armourType))
-	enemy.hp = maxf(0, enemy.hp - amount)
+	var amount = reduced_damage(N.multiply(raw,1.0 + float(enemy.get("interference", 0))), type, int(enemy.armourType))
+	enemy.hp = N.subtract(enemy.hp,amount)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
 		if is_boss_encounter() and targets().is_empty():
@@ -1636,8 +1890,10 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], cr
 		for drop in enemy.drops:
 			if rng.randf() < float(drop.chance):
 				uid += 1
-				var multiplier := charge_multiplier("熔炼器充能") if int(drop.resourceId) == 1 else 1.0
-				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"age":0.0,"id":str(int(drop.resourceId)),"amount":ceilf(float(drop.amount)*float(enemy.res_ratio)*multiplier*(1.0 + float(enemy.get("jewelIron", 0)) if int(drop.resourceId) == 1 else 1.0))})
+				var multiplier = reactor_multiplier("smelting") if int(drop.resourceId) == 1 else 1.0
+				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,float(enemy.res_ratio)*multiplier),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
+				var drop_amount = N.ceiling(N.multiply(base_amount,planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base_amount
+				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(int(drop.resourceId)),"amount":drop_amount,"production_base":base_amount})
 
 		if float(enemy.get("jewelExplosion", 0)) > 0:
 			for adjacent in enemies.duplicate():
@@ -1665,11 +1921,11 @@ func collect(drop: Dictionary, manual: bool) -> void:
 		return
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
-	var amount := ceilf(float(drop.amount) * (1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
-	profile.resources[drop.id] += amount
-	resource_samples.append({"time":economy_time(),"id":str(drop.id),"amount":amount,"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
+	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
+	resource_samples.append({"time":economy_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	profile.furnaceIncomePeak = furnace_income_peak()
-	run_resources[drop.id] += amount
+	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
 	info.amount = amount
 	info.manual = manual
@@ -1680,14 +1936,15 @@ func settle_drops() -> void:
 	for drop in drops.duplicate():
 		collect(drop, false)
 
-func collect_near(pos: Vector2, clicked := false) -> void:
+func collect_near(pos: Vector2, clicked := false, position_overrides: Dictionary = {}) -> void:
 	if paused:
 		return
 	for drop in drops.duplicate():
 		var core: bool = drop.get("hightech",false) and drop.has("jewel")
 		if (drop.get("hightech", false) or drop.has("jewel")) and not clicked and not core:
 			continue
-		if Vector2(drop.x, drop.y).distance_to(pos) < 55:
+		var drop_pos: Vector2 = position_overrides.get(int(drop.uid),Vector2(drop.x,drop.y))
+		if drop_pos.distance_to(pos) < 55:
 			collect(drop, true)
 
 func clear_level() -> void:
@@ -1697,9 +1954,9 @@ func clear_level() -> void:
 		profile.cleared.append(stage)
 	rebuild_unlocks()
 	for key in available_unlocks():
-		if not previous.has(key) and not pending_unlocks.has(key):
+		if not previous.has(key) and not profile.get("seenUnlocks",[]).has(key) and not pending_unlocks.has(key):
 			pending_unlocks.append(key)
-	clear_timer = float(db.defaults.loopDelay)
+	clear_timer = CLEAR_ADVANCE_DELAY
 	change_state(State.LEVEL_CLEAR)
 	save_progress()
 	if not pending_unlocks.is_empty():
@@ -1752,13 +2009,13 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 		var costs := upgrade_cost_for_level(key, level)
 		var affordable := true
 		for id in costs:
-			if not is_finite(float(costs[id])) or float(available.get(id, 0)) < float(costs[id]):
+			if not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
 				affordable = false
 				break
 		if not affordable:
 			break
 		for id in costs:
-			available[id] = float(available.get(id, 0)) - float(costs[id])
+			available[id] = N.subtract(available.get(id,0),costs[id])
 		amount += 1
 		level += 1
 	return amount
@@ -1776,19 +2033,20 @@ func upgrade(key: String, levels := 1) -> bool:
 func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if not can_upgrade_slot(category, index, levels):
 		return false
-	var entry := slot_entry(category, index)
-	var key := str(entry.key)
-	var costs := slot_upgrade_cost(category, index, levels)
+	var entry = slot_entry(category, index)
+	var key = str(entry.key)
+	var costs = slot_upgrade_cost(category, index, levels)
 	for id in costs:
-		profile.resources[id] -= costs[id]
-	var before := jewel_equipment_stat(entry)
+		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
+	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
-	var after := jewel_equipment_stat(entry)
+	invalidate_stat_cache()
+	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if key == "armour" and state != State.RETREAT:
-		player.armour += after - before
+		player.armour = N.add(player.armour,N.subtract(after,before))
 	elif key == "shield" and state != State.RETREAT:
-		player.shield += after - before
+		player.shield = N.add(player.shield,N.subtract(after,before))
 	if _upgrade_batch:
 		_upgrade_slots.append(slot_id(category,index))
 	else:
@@ -1822,16 +2080,21 @@ func leave(next: State) -> void:
 	paused = false
 	change_state(next)
 
+func weapon_cooldown_after_shot(remaining_before: float, dt: float, interval: float) -> float:
+	if speed < 3.0 or interval <= 0:
+		return interval
+	# Coarse accelerated ticks retain the fraction elapsed after a scheduled shot.
+	var overrun := maxf(0.0,dt-remaining_before)
+	var remainder := fposmod(overrun,interval)
+	return interval if remainder <= 0.000000001 else interval-remainder
+
 func tick(dt: float) -> void:
 	if paused:
 		return
 	advance_planets(dt)
+	galaxy.advance(self,dt)
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
-	advance_charge(dt)
-	if charge_resources_dirty:
-		charge_resources_dirty = false
-		save_dirty = true
 	advance_hightech(dt, dt / maxf(speed, 0.001))
 	hightech_save_elapsed += dt / maxf(speed, 0.001)
 	if hightech_save_elapsed >= 5.0:
@@ -1876,12 +2139,12 @@ func tick(dt: float) -> void:
 	if not is_active():
 		return
 	since_hit += dt
-	advance_jewel_repair(dt)
+	var defence_jewels := advance_jewel_repair(dt)
 	advance_jewel_repeats(dt)
 	var shield_entry := first_equipment_entry("shield")
 	var shield := db.equip("shield", int(shield_entry.level)) if not shield_entry.is_empty() else db.equip("shield", 1)
-	if not has_defence_jewels() and since_hit >= float(shield.para3):
-		player.shield = minf(max_shield(), player.shield + max_shield() * float(shield.para2) * dt)
+	if not defence_jewels and since_hit >= float(shield.para3):
+		player.shield = N.minimum(max_shield(),N.add(player.shield,N.multiply(max_shield(),float(shield.para2)*dt)))
 	if state == State.TRAVEL:
 		tick_projectiles(dt)
 		if state != State.TRAVEL:
@@ -1909,12 +2172,14 @@ func tick(dt: float) -> void:
 			continue
 		var id := slot_id("weapons", index)
 		var remaining := float(cooldowns.get(id, float(weapon.cd)))
-		cooldowns[id] = maxf(0, remaining - dt)
+		var cooldown_after_step := remaining-dt
+		cooldowns[id] = maxf(0, cooldown_after_step)
 		if cooldowns[id] <= 0:
 			var candidates := targets(int(weapon.dmgtype))
 			var count := int(weapon.para1) if key == "missile" else 1
 			if not candidates.is_empty():
 				entry.attacks = int(entry.get("attacks", 0)) + 1
+				invalidate_stat_cache()
 				event.emit("equipment_stats",{"slot":id})
 			var charged := float(jewel_charged.get(id, 1.0))
 			if count > 0 and not candidates.is_empty():
@@ -1925,7 +2190,7 @@ func tick(dt: float) -> void:
 				var target := candidates[i % candidates.size()] if key == "missile" else candidates[0]
 				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0)
 			if count > 0 and not candidates.is_empty():
-				cooldowns[id] = float(weapon.cd)
+				cooldowns[id] = weapon_cooldown_after_shot(remaining,dt,float(weapon.cd))
 				queue_jewel_repeats(index, charged)
 	for enemy in enemies:
 		if enemy.hp <= 0:
@@ -1934,13 +2199,14 @@ func tick(dt: float) -> void:
 			if str(enemy.equipment[i].name).replace("_mon", "").replace("-mon", "") == "longLaser":
 				lock_long_laser(enemy, db.enemy_weapon(enemy.equipment[i].name), true, i, enemy.equipment[i])
 				continue
-			enemy.cooldowns[i] -= dt
+			var cooldown_before := float(enemy.cooldowns[i])
+			enemy.cooldowns[i] = maxf(0.0,cooldown_before-dt)
 			if enemy.cooldowns[i] <= 0:
 				var entry: Dictionary = enemy.equipment[i]
 				var weapon := db.enemy_weapon(entry.name)
 				var raw := ceilf(float(weapon.dmg) * float(enemy.dmgMultiple) * ratio("atkRatio"))
 				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
-				enemy.cooldowns[i] = float(weapon.cd)
+				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)
 	if state == State.COMBAT and not has_alive_enemy():
 		if guarding_here():
@@ -1964,14 +2230,20 @@ func tick(dt: float) -> void:
 		guard_elapsed = 0
 
 func tick_projectiles(dt: float) -> void:
-	for shot in projectiles.duplicate():
-		if not projectiles.has(shot):
+	var pending := projectiles.duplicate()
+	for index in pending.size():
+		var shot: Dictionary = pending[index]
+		# Usually the live array retains its order for the whole step. Identity at
+		# the snapshot index avoids a full membership scan for every flying shot.
+		# Hits/signals may clear, replace or reorder it; retain the original check
+		# whenever that position no longer holds this exact projectile.
+		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):
 			continue
 		if shot.get("beam", false):
 			tick_long_laser(shot, dt)
 			continue
 		if not shot.target.is_empty():
-			var target_dead: bool = shot.target.armour <= 0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
+			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
 				var candidates: Array[Dictionary] = []
 				if not shot.hostile and shot.key == "missile":
@@ -1981,8 +2253,13 @@ func tick_projectiles(dt: float) -> void:
 					shot.target = {}
 		if not shot.target.is_empty():
 			var delta := Vector2(shot.target.x - shot.x, shot.target.y - shot.y)
-			shot.direction = delta.normalized()
-			if delta.length() <= shot.speed*dt:
+			var homing: bool = str(shot.key).replace("_mon", "").replace("-mon", "") == "missile"
+			if homing:shot.direction = delta.normalized()
+			# Ordinary rounds keep their launch direction. A moving target must
+			# intersect this step's segment; proximity alone must not bend the shot.
+			var along: float = delta.dot(shot.direction)
+			var intersects := along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
+			if (delta.length() <= shot.speed*dt) if homing else intersects:
 				shot.dead = true
 				event.emit("projectile_impact", {"shot":shot,"pos":Vector2(shot.target.x,shot.target.y)})
 				if shot.hostile:
@@ -2007,13 +2284,14 @@ func jewels_unlocked() -> bool:
 	return content_unlocked("feature", "jewels")
 
 func jewel_valid(value: Variant) -> bool:
-	return value is Dictionary and db.jewel_max_level(str(value.get("id", ""))) > 0 and nonnegative_number(value.get("level")) and int(value.level) == float(value.level) and int(value.level) >= 1 and int(value.level) <= db.jewel_max_level(str(value.id))
+	return value is Dictionary and db.jewel_max_level(str(value.get("id", ""))) > 0 and nonnegative_number(value.get("level")) and int(value.level) == float(value.level) and int(value.level) >= 1
 
 func new_jewel(id: String, level := 1) -> Dictionary:
 	jewel_serial += 1
 	return {"id":id, "level":level, "token":jewel_serial}
 
 func load_jewels(raw: Dictionary) -> void:
+	invalidate_stat_cache()
 	profile.jewels = []
 	profile.jewelFragments = 0.0
 	if raw.get("jewels") is Array:
@@ -2062,9 +2340,9 @@ func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
 	return snappedf(result,0.01) if nonnegative_number(result) else 0.0
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
-	var earned := jewel_fragment_amount(amount,ratio)
+	var earned := jewel_fragment_amount(amount * (crew.system_effect(self,"gem_bonus") * reactor_multiplier("condensation") * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0),ratio)
 	profile.jewelFragments = snappedf(float(profile.jewelFragments) + earned,0.01)
-	# Production only: refunds and offline settlement must not inflate future income.
+	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and earned > 0:
 		resource_samples.append({"time":economy_time(),"id":"jewel","amount":earned,"origin":source})
 		profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
@@ -2081,13 +2359,31 @@ func generate_jewels_into(inventory: Array, fragments: float, serial: int, rando
 	if cost <= 0 or not jewels_unlocked():
 		return {"fragments":fragments,"serial":serial}
 	var ids: Array = db.data.get("jewel",{}).keys().filter(func(id):return db.jewel_max_level(str(id)) > 0)
-	if ids.is_empty():
+	var required := jewel_combine_count()
+	if ids.is_empty() or required<2 or fragments<cost or inventory.size()>=JEWEL_CAPACITY:
 		return {"fragments":fragments,"serial":serial}
-	var count := int(minf(floorf((fragments+0.000001)/cost),maxi(0,JEWEL_CAPACITY-inventory.size())))
-	for i in count:
+	var highest: int=ids.map(func(id):return db.jewel_max_level(str(id))).max()
+	var level:=1
+	while level<highest and cost*pow(float(required),level)<=fragments:
+		level+=1
+	var threshold:=cost*pow(float(required),level-1)
+	# Fragment value is represented by base-recipe digits. Keep only the three
+	# highest occupied levels; discard smaller digits after the whole batch fits.
+	var planned: Array=[]
+	var remaining:=fragments
+	for tier in range(level,maxi(0,level-3),-1):
+		if tier<level:threshold=cost*pow(float(required),tier-1)
+		var count:=mini(required-1,int(minf(floorf(remaining/threshold),float(required-1))))
+		for i in count:planned.append(tier)
+		remaining=maxf(0.0,remaining-count*threshold)
+	if inventory.size()+planned.size()>JEWEL_CAPACITY:
+		return {"fragments":fragments,"serial":serial}
+	for tier in planned:
+		var eligible: Array=ids.filter(func(id):return db.jewel_max_level(str(id))>=tier)
+		if eligible.is_empty():return {"fragments":fragments,"serial":serial}
 		serial+=1
-		inventory.append({"id":str(ids[random.randi_range(0,ids.size()-1)]),"level":1,"token":serial})
-	return {"fragments":snappedf(fragments-count*cost,0.01),"serial":serial}
+		inventory.append({"id":str(eligible[random.randi_range(0,eligible.size()-1)]),"level":tier+gem_drop_level_bonus(),"token":serial})
+	return {"fragments":0.0,"serial":serial}
 
 func pickup_jewel_fragment(_legacy_id := "") -> bool:
 	if not jewels_unlocked():
@@ -2161,16 +2457,20 @@ func combine_jewels(tokens: Array) -> bool:
 	jewels_changed()
 	return true
 
-func combine_all_jewels() -> Dictionary:
+func combine_all_jewels(clean_obsolete := true) -> Dictionary:
 	var failure := {"ok":false,"message":UIText.t("gem.combine_all_jewels.text_01")}
 	var required := jewel_combine_count()
 	if jewel_bulk_combining or not jewels_unlocked() or required<2 or not nonnegative_number(profile.jewelFragments):return failure
 	var tokens := {}
 	var installed := {}
+	var highest := {}
 	for category in ["weapons","defence"]:
 		for entry in module_entries(category):
 			for gem in entry.get("sockets",[]):
-				if not gem.is_empty():installed[int(gem.token)]=true
+				if not gem.is_empty():
+					installed[int(gem.token)]=true
+					var id:=str(gem.id)
+					highest[id]=maxi(int(highest.get(id,0)),int(gem.level))
 	for gem in profile.jewels:
 		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or int(gem.token)>jewel_serial or tokens.has(gem.token):return failure
 		tokens[gem.token]=true
@@ -2208,7 +2508,15 @@ func combine_all_jewels() -> Dictionary:
 		var refill := generate_jewels_into(working,fragments,serial,random)
 		fragments=refill.fragments
 		serial=refill.serial
-	if count==0:return {"ok":true,"count":0,"consumed":0,"results":[],"tokens":[]}
+	var deleted:=0
+	if clean_obsolete:
+		for gem in working:
+			var id:=str(gem.id)
+			highest[id]=maxi(int(highest.get(id,0)),int(gem.level))
+		var before_cleanup:=working.size()
+		working=working.filter(func(gem):return int(gem.level)>=int(highest[str(gem.id)])-10)
+		deleted=before_cleanup-working.size()
+	if count==0 and deleted==0:return {"ok":true,"count":0,"consumed":0,"deleted":0,"results":[],"tokens":[]}
 	var rewards := {}
 	var result_tokens: Array=[]
 	for gem in working:
@@ -2241,7 +2549,7 @@ func combine_all_jewels() -> Dictionary:
 	rng.state=random.state
 	event.emit("jewels_changed",{"slot":""})
 	jewel_bulk_combining=false
-	return {"ok":true,"count":count,"consumed":count*required,"results":results,"tokens":result_tokens}
+	return {"ok":true,"count":count,"consumed":count*required,"deleted":deleted,"results":results,"tokens":result_tokens}
 
 func jewel_auto_stock() -> Dictionary:
 	var groups := {}
@@ -2262,7 +2570,7 @@ func auto_manage_jewels() -> Dictionary:
 	var stock := jewel_auto_stock()
 	# The common no-material case must not enter the full staged combine/save path.
 	if required>=2 and stock.groups.values().any(func(count):return int(count)>=required):
-		var combined := combine_all_jewels()
+		var combined := combine_all_jewels(false)
 		if not combined.ok:return result
 		result.combined=int(combined.count)
 		stock=jewel_auto_stock()
@@ -2288,25 +2596,6 @@ func auto_manage_jewels() -> Dictionary:
 					stock=jewel_auto_stock()
 	if not changed_slots.is_empty():jewels_changed("",changed_slots.keys())
 	return result
-
-func jewel_compose_reward(gem: Dictionary) -> float:
-	if gem.is_empty() or jewel_create_cost() <= 0:
-		return 0.0
-	var combine_cost := int(db.config.get("jewelCombine",0))
-	if combine_cost < 2:
-		return 0.0
-	# A level N gem consumes combine^(N-1) level-one gems. Existing refunds ceil.
-	return ceilf(jewel_create_cost()*pow(combine_cost,int(gem.level)-1)*0.5)
-
-func decompose_jewel(token: int) -> bool:
-	var gem := jewel_inventory(token)
-	var reward := jewel_compose_reward(gem)
-	if gem.is_empty() or int(gem.level) != db.jewel_max_level(str(gem.id)) or reward <= 0:
-		return false
-	profile.jewels.erase(gem)
-	settle_jewel_fragments(reward,"decompose")
-	jewels_changed()
-	return true
 
 func equipment_socket_count(entry: Dictionary) -> int:
 	if str(entry.get("key", "")).is_empty():
@@ -2364,6 +2653,7 @@ func socket_jewel(category: String, index: int, socket: int, token: int, notify 
 	if not previous.is_empty():
 		profile.jewels.append(previous)
 	entry.sockets = sockets
+	invalidate_stat_cache()
 	if notify:jewels_changed(slot_id(category, index))
 	return true
 
@@ -2374,6 +2664,7 @@ func unsocket_jewel(category: String, index: int, socket: int, expected_token: i
 		return false
 	profile.jewels.append(sockets[socket])
 	sockets[socket] = {}
+	invalidate_stat_cache()
 	jewels_changed(slot_id(category, index))
 	return true
 
@@ -2406,6 +2697,7 @@ func upgrade_socket_jewel(category: String, index: int, socket: int, expected_to
 		if tokens.has(int(profile.jewels[i].token)):profile.jewels.remove_at(i)
 	jewel_serial+=1
 	entry.sockets[socket]=ingredients[0]
+	invalidate_stat_cache()
 	if notify:jewels_changed(slot_id(category,index))
 	return true
 
@@ -2421,13 +2713,15 @@ func return_socket_jewels(entries: Array) -> bool:
 	profile.jewels.append_array(gems)
 	for entry in entries:
 		entry.sockets = []
+	invalidate_stat_cache()
 	return true
 
 func jewels_changed(slot := "", slots: Array = []) -> void:
+	invalidate_stat_cache()
 	generate_jewels()
 	if player.has("armour"):
-		player.armour = minf(player.armour, stat("armour"))
-		player.shield = minf(player.shield, max_shield())
+		player.armour = N.minimum(player.armour,stat("armour"))
+		player.shield = N.minimum(player.shield,max_shield())
 	save_progress()
 	event.emit("jewels_changed", {"slot":slot,"slots":slots})
 
@@ -2445,16 +2739,16 @@ func jewel_effects(entry: Dictionary) -> Array:
 		result.append(effect)
 	return result
 
-func jewel_equipment_stat(entry: Dictionary, level := -1) -> float:
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
 	var value := equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
-	for effect in jewel_effects(entry):
+	for effect in (jewel_effects(entry) if effects == null else effects):
 		if effect.kind in ["proficiency", "adaptation"]:
 			var count := maxi(1, int(entry.get("attacks" if effect.kind == "proficiency" else "hits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(10.0) * 100.0) / 100.0
 			value = ceilf(value * (1.0 + bonus))
-	return value * planet_equipment_multiplier()
+	return N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew.system_effect(self,"equip_bonus")),galaxy.multiplier("equipment_value"))
 
 func jewel_critical(entry: Dictionary) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
@@ -2470,10 +2764,10 @@ func jewel_critical(entry: Dictionary) -> Vector2:
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var entry := slot_entry("weapons",index)
 	var critical := jewel_critical(entry)
-	var raw := jewel_equipment_stat(entry) * multiplier
+	var raw = N.multiply(jewel_equipment_stat(entry),multiplier)
 	var is_critical := rng.randf() < critical.x
 	if is_critical:
-		raw *= critical.y
+		raw = N.multiply(raw,critical.y)
 	var effects := jewel_effects(entry)
 	for effect in effects:
 		effect.source = index
@@ -2528,6 +2822,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		if candidates.is_empty():
 			continue
 		entry.attacks = int(entry.get("attacks", 0)) + 1
+		invalidate_stat_cache()
 		event.emit("equipment_stats",{"slot":slot_id("weapons",int(pending.index))})
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
 			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
@@ -2548,11 +2843,20 @@ func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 			enemy.jewelExplosion = maxf(float(enemy.get("jewelExplosion", 0)), float(effect.p5) * int(effect.level))
 
 func has_defence_jewels() -> bool:
-	return defense_entries().any(func(entry):return not jewel_effects(entry).is_empty())
+	for entry in defense_entries():
+		if str(entry.get("key", "")).is_empty():
+			continue
+		var sockets: Array = entry.get("sockets", [])
+		for index in mini(sockets.size(), equipment_socket_count(entry)):
+			var gem: Dictionary = sockets[index]
+			if not gem.is_empty():
+				return true
+	return false
 
 func jewel_defence_hit(index: int) -> void:
 	var entry := slot_entry("defence", index)
 	entry.hits = int(entry.get("hits", 0)) + 1
+	invalidate_stat_cache()
 	event.emit("equipment_stats",{"slot":slot_id("defence",index)})
 	jewel_defence_times[index] = 0.0
 	for effect in jewel_effects(entry):
@@ -2580,110 +2884,150 @@ func apply_jewel_charge(index: int, multiplier: float) -> void:
 		cooldowns[id] = 0.0
 	jewel_charged[id] = maxf(float(jewel_charged.get(id,1.0)),multiplier)
 
-func jewel_hit_player(raw: float, type: int) -> void:
+func jewel_hit_player(raw, type: int) -> void:
 	sync_jewel_defence_damage()
 	since_hit = 0
-	var rest := raw
-	var loss := 0.0
+	var rest = raw
+	var loss = 0.0
 	for key in ["shield", "armour"]:
-		if rest <= 0 or float(player[key]) <= 0:
+		if N.compare(rest,0)<=0 or N.compare(player[key],0)<=0:
 			continue
-		var current := float(player[key])
-		var incoming := rest
-		var spent := 0.0
-		var damage := 0.0
+		var current = player[key]
+		var incoming = rest
+		var spent = 0.0
+		var damage = 0.0
 		# The aggregate remains authoritative. At huge capacities, capacity-loss
 		# can round to zero while a small, real amount of health still survives.
-		var module_remaining := 0.0
-		var module_capacity := 0.0
+		var module_remaining = 0.0
+		var module_capacity = 0.0
 		for index in defense_entries().size():
-			var entry := slot_entry("defence",index)
+			var entry = slot_entry("defence",index)
 			if entry.key == key:
-				var maximum := jewel_equipment_stat(entry)
-				module_capacity += maximum
-				module_remaining += maxf(0,maximum-float(jewel_defence_damage.get(index,0)))
+				var maximum = jewel_equipment_stat(entry)
+				module_capacity = N.add(module_capacity,maximum)
+				module_remaining = N.add(module_remaining,N.subtract(maximum,jewel_defence_damage.get(index,0)))
 		for index in defense_entries().size():
-			var entry := slot_entry("defence", index)
+			var entry = slot_entry("defence", index)
 			if entry.key != key:
 				continue
-			var maximum := jewel_equipment_stat(entry)
-			var tracked := maxf(0, maximum - float(jewel_defence_damage.get(index, 0)))
-			var weight := tracked / module_remaining if module_remaining > 0 else maximum / module_capacity
-			var remaining := current * weight
-			if remaining <= 0:
+			var maximum = jewel_equipment_stat(entry)
+			var tracked = N.subtract(maximum,jewel_defence_damage.get(index,0))
+			var weight = N.ratio(tracked,module_remaining) if N.compare(module_remaining,0)>0 else N.ratio(maximum,module_capacity)
+			var remaining = N.multiply(current,weight)
+			if N.compare(remaining,0)<=0:
 				continue
-			var share := remaining / current
-			var row := db.equip(key, int(entry.level))
-			var factor := 1.0 - float(db.config.dmgReduce) if type == int(row.dmgtype) else 1.0
-			var reduction := 0.0
+			var share = N.ratio(remaining,current)
+			var row = db.equip(key, int(entry.level))
+			var factor = 1.0 - float(db.config.dmgReduce) if type == int(row.dmgtype) else 1.0
+			var reduction = 0.0
 			for effect in jewel_effects(entry):
 				if effect.kind == "resistance":
-					reduction += maximum * float(effect.p2) * int(effect.level)
-			var part := maxf(0, incoming * share * factor - reduction)
-			var taken := minf(remaining, part)
-			damage += taken
-			jewel_defence_damage[index] = float(jewel_defence_damage.get(index, 0)) + taken
-			spent += minf(incoming * share, (taken + reduction) / maxf(0.001, factor))
-			if taken > 0:
+					reduction = N.add(reduction,N.multiply(maximum,float(effect.p2)*int(effect.level)))
+			var part = N.subtract(N.multiply(incoming,share*factor),reduction)
+			var taken = N.minimum(remaining,part)
+			damage = N.add(damage,taken)
+			jewel_defence_damage[index] = N.add(jewel_defence_damage.get(index,0),taken)
+			spent = N.add(spent,N.minimum(N.multiply(incoming,share),N.divide(N.add(taken,reduction),maxf(0.001,factor))))
+			if N.compare(taken,0)>0:
 				jewel_defence_hit(index)
-		var rounded := minf(current, ceilf(damage))
-		player[key] = maxf(0, current - rounded)
-		loss += rounded
-		rest = maxf(0, incoming - spent)
+		var rounded = N.minimum(current,N.ceiling(damage))
+		player[key] = N.subtract(current,rounded)
+		loss = N.add(loss,rounded)
+		rest = N.subtract(incoming,spent)
 	event.emit("hit", {"x":player.x,"y":player.y,"amount":loss,"player":true,"type":type})
-	if player.armour <= 0:
+	if N.compare(player.armour,0)<=0:
 		event.emit("explode", {"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
 
-func advance_jewel_repair(dt: float) -> void:
+func advance_jewel_repair(dt: float) -> bool:
 	if not has_defence_jewels():
-		return
-	sync_jewel_defence_damage()
+		return false
+	var capacities = sync_jewel_defence_damage()
 	for index in defense_entries().size():
-		var entry := slot_entry("defence", index)
-		var key := str(entry.key)
+		var entry = slot_entry("defence", index)
+		var key = str(entry.key)
 		if key.is_empty():
 			continue
-		var elapsed := float(jewel_defence_times.get(index, since_hit - dt)) + dt
+		var elapsed = float(jewel_defence_times.get(index, since_hit - dt)) + dt
 		jewel_defence_times[index] = elapsed
-		var effects := jewel_effects(entry)
-		var tenacity := 0.0
+		var effects: Array = capacities[key].effects[index]
+		var tenacity = 0.0
 		for effect in effects:
 			if effect.kind == "tenacity":
 				tenacity = float(effect.p2) * int(effect.level)
-		var rate := 0.0
+		var rate = 0.0
 		if key == "shield":
-			var row := db.equip(key, int(entry.level))
+			var row = db.equip(key, int(entry.level))
 			rate += float(row.para2) * (1.0 if elapsed >= float(row.para3) else tenacity)
 		for effect in effects:
 			if effect.kind == "repair":
 				rate += float(effect.p2) * int(effect.level) * (1.0 if elapsed >= float(effect.p4) else tenacity)
-		var recovered := minf(float(jewel_defence_damage.get(index, 0)), jewel_equipment_stat(entry) * rate * dt)
-		jewel_defence_damage[index] = maxf(0, float(jewel_defence_damage.get(index, 0)) - recovered)
-		player[key] = minf(stat(key), float(player[key]) + recovered)
+		var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(capacities[key].maxima[index],rate*dt))
+		jewel_defence_damage[index] = N.subtract(jewel_defence_damage.get(index,0),recovered)
+		player[key] = N.minimum(capacities[key].total,N.add(player[key],recovered))
+	return true
 
-func sync_jewel_defence_damage() -> void:
+func sync_jewel_defence_damage() -> Dictionary:
 	# The aggregate player health stays authoritative. This transient allocation
 	# records which module is damaged so its repair cannot heal another module.
 	# External capacity/health changes reconcile only their delta, preserving
 	# existing per-module losses; nothing is persisted as a second health balance.
+	var capacities = {}
 	for key in ["shield", "armour"]:
-		var indices: Array = []
-		var maxima := {}
-		var total := 0.0
-		var missing := 0.0
-		for index in defense_entries().size():
-			var entry := slot_entry("defence", index)
-			if entry.key != key:
-				continue
-			indices.append(index)
-			var maximum := jewel_equipment_stat(entry)
-			maxima[index] = maximum
-			total += maximum
-			jewel_defence_damage[index] = clampf(float(jewel_defence_damage.get(index, 0)), 0, maximum)
-			missing += float(jewel_defence_damage[index])
-		var delta := clampf(total - float(player[key]), 0, total) - missing
+		var capacity: Dictionary = jewel_defence_capacity_cache.get(key, {}) if stat_cache_enabled else {}
+		if capacity.is_empty():
+			var indices: Array = []
+			var maxima = {}
+			var effects_by_index = {}
+			var total = 0.0
+			for index in defense_entries().size():
+				var entry = slot_entry("defence", index)
+				if entry.key != key:
+					continue
+				indices.append(index)
+				var effects = jewel_effects(entry)
+				var maximum = jewel_equipment_stat(entry, -1, effects)
+				maxima[index] = maximum
+				effects_by_index[index] = effects
+				total = N.add(total,maximum)
+			capacity = {"indices":indices,"maxima":maxima,"effects":effects_by_index,"total":total}
+			if stat_cache_enabled:
+				jewel_defence_capacity_cache[key] = capacity
+		var indices: Array = capacity.indices
+		var maxima: Dictionary = capacity.maxima
+		var total = capacity.total
+		var missing = 0.0
 		for index in indices:
-			var previous := float(jewel_defence_damage[index])
-			var weight := (float(maxima[index]) - previous) / maxf(0.001, total - missing) if delta > 0 else previous / maxf(0.001, missing)
-			jewel_defence_damage[index] = clampf(previous + delta * weight, 0, float(maxima[index]))
+			jewel_defence_damage[index] = N.minimum(jewel_defence_damage.get(index,0),maxima[index])
+			missing = N.add(missing,jewel_defence_damage[index])
+		var expected = N.subtract(total,player[key])
+		var increased = N.compare(expected,missing)>0
+		var delta = N.subtract(N.maximum(expected,missing),N.minimum(expected,missing))
+		for index in indices:
+			var previous = jewel_defence_damage[index]
+			var weight = N.ratio(N.subtract(maxima[index],previous),N.maximum(0.001,N.subtract(total,missing))) if increased else N.ratio(previous,N.maximum(0.001,missing))
+			jewel_defence_damage[index]=N.minimum(maxima[index],N.add(previous,N.multiply(delta,weight)) if increased else N.subtract(previous,N.multiply(delta,weight)))
+		capacities[key] = capacity
+	return capacities
+
+func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> void:
+	if not crew.levels_unlocked(self):return
+	if previous.get("level")==current.get("level") and previous.get("assignmentType")==current.get("assignmentType") and previous.get("targetId")==current.get("targetId"):return
+	var kinds := {}
+	for member in [previous,current]:
+		var job: Dictionary=crew.assignments(self).get(str(member.get("assignmentType","")),{})
+		kinds[str(job.get("targetType",""))]=true
+	if kinds.has("equipment"):
+		invalidate_stat_cache()
+		apply_refit_health()
+		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	if kinds.has("hightech"):event.emit("scientists_changed",{})
+	if kinds.has("reactor"):
+		var remaining := reactor_capacity()
+		for key in reactor_modules():
+			profile.reactorAllocation[key]=mini(int(profile.reactorAllocation.get(key,0)),remaining)
+			remaining-=int(profile.reactorAllocation[key])
+		invalidate_stat_cache()
+		apply_refit_health()
+		event.emit("reactor_changed",{})
+		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})

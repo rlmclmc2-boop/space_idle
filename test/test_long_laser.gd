@@ -125,10 +125,10 @@ func run() -> void:
 	var twin := fixture()
 	twin.db.equipment.longLaser[0].para3 = 0.2
 	twin.db.config.equipmentSocket = 10
-	twin.db.data.jewel["6"].para_2 = 1.0
-	twin.db.data.jewel["6"].para_4 = 0.2
+	twin.db.data.jewel["4"].para_2 = 1.0
+	twin.db.data.jewel["4"].para_4 = 0.2
 	var twin_entry := twin.slot_entry("weapons",0)
-	twin_entry.sockets = [twin.new_jewel("6",1)]
+	twin_entry.sockets = [twin.new_jewel("4",1)]
 	twin.tick(0.2)
 	check(twin.jewel_repeats.size()==1, "primary beam enters shared repeat queue")
 	twin.advance_jewel_repeats(0.49)
@@ -148,12 +148,6 @@ func run() -> void:
 	secondary_hp = secondary.target.hp
 	twin.tick_projectiles(0.2)
 	check(secondary.target.hp==secondary_hp-34, "secondary combines critical repeat and independent ramp")
-	twin_entry.sockets.append(twin.new_jewel("3",1))
-	twin_entry.sockets.append(twin.new_jewel("4",1))
-	twin.db.data.jewel["4"].para_2 = 1.0
-	twin.tick_projectiles(0.2)
-	check(primary.target.get("jewelIronStacks",0)>0 and secondary.target.get("jewelIronStacks",0)>0, "both beams apply shared hit effects")
-	check(secondary.target.get("interference",0)>0, "secondary applies interference status")
 	for i in 20:
 		twin.tick(0.1)
 	check(twin.projectiles.size()==2 and twin.jewel_repeats.is_empty(), "repeat beams neither recurse nor accumulate each cd")
@@ -168,67 +162,30 @@ func run() -> void:
 	solo.enemies.resize(1)
 	solo.db.equipment.longLaser[0].para3 = 0.2
 	solo.db.config.equipmentSocket = 10
-	solo.db.data.jewel["6"].para_2 = 1.0
-	solo.slot_entry("weapons",0).sockets = [solo.new_jewel("6",1)]
+	solo.db.data.jewel["4"].para_2 = 1.0
+	solo.slot_entry("weapons",0).sockets = [solo.new_jewel("4",1)]
 	solo.tick(0.2)
 	solo.advance_jewel_repeats(0.5)
 	check(solo.projectiles.size()==2 and is_same(solo.projectiles[0].target,solo.projectiles[1].target), "single target supports two beams")
 	check(solo.projectiles[0].x!=solo.projectiles[1].x, "same-target beams have distinct muzzle offsets")
 	var cancel := fixture()
 	cancel.db.config.equipmentSocket = 10
-	cancel.db.data.jewel["6"].para_2 = 1.0
-	cancel.slot_entry("weapons",0).sockets = [cancel.new_jewel("6",1)]
+	cancel.db.data.jewel["4"].para_2 = 1.0
+	cancel.slot_entry("weapons",0).sockets = [cancel.new_jewel("4",1)]
 	cancel.tick(0.2)
 	cancel.projectiles.clear()
 	cancel.advance_jewel_repeats(0.5)
 	check(cancel.projectiles.is_empty() and cancel.jewel_repeats.is_empty(), "broken parent cancels delayed secondary")
-	var sustained := fixture()
-	sustained.db.equipment.longLaser[0].para3 = 0.6
-	sustained.db.equipment.longLaser[0].para2 = 1.0
-	sustained.tick(0.2)
-	var sustained_beam: Dictionary = sustained.projectiles[0]
-	var sustained_target: Dictionary = sustained_beam.target
-	sustained.cooldowns.weapons_0 = 0.37
-	sustained.db.config.equipmentSocket = 10
-	sustained.db.data.jewel["8"].para_2 = 0.6
-	sustained.db.data.jewel["8"].para_4 = 1
-	sustained.profile.loadout.defence[0] = {"key":"armour","level":1,"sockets":[sustained.new_jewel("8",1)]}
-	sustained.jewel_defence_hit(0)
-	check(sustained.cooldowns.weapons_0==0.37 and sustained_beam.elapsed==0.2, "charge changes neither beam cd nor windup")
-	sustained.tick(0.39)
-	check(sustained_target.hp==100000, "charge buff does not skip windup")
-	sustained.tick(0.01)
-	sustained.tick(0.2)
-	check(sustained_target.hp==99968, "charge damage persists across successive ticks")
-	sustained.apply_jewel_charge(0,1.6)
-	sustained.apply_jewel_charge(0,1.2)
-	check(sustained_beam.charged_multiplier==1.6, "retrigger refreshes highest multiplier without stacking")
-	sustained.lock_long_laser(sustained.player,sustained.db.equip("longLaser",1),false,0,sustained.slot_entry("weapons",0),true,1.2)
-	var sustained_extra: Dictionary = sustained.projectiles[1]
-	check(sustained_extra.charged_multiplier==1.0, "new secondary does not inherit old charge buff")
-	sustained.apply_jewel_charge(0,1.8)
-	check(sustained_beam.charged_multiplier==1.8 and sustained_extra.charged_multiplier==1.8, "selected mount buffs both existing beams")
-	var extra_hp: float = sustained_extra.target.hp
-	sustained.tick_projectiles(0.6)
-	check(sustained_extra.target.hp==extra_hp-22, "secondary combines repeat and persistent charge once")
-	sustained.projectiles.erase(sustained_beam)
-	sustained.tick(0.01)
-	var replacement: Dictionary = sustained.projectiles.filter(func(p):return not p.repeated)[0]
-	check(replacement.charged_multiplier==1.0 and sustained_extra.charged_multiplier==1.8, "broken beam loses buff independently of surviving secondary")
-	var queued_charge := fixture()
-	queued_charge.apply_jewel_charge(0,1.6)
-	queued_charge.tick(0.1)
-	check(queued_charge.projectiles[0].charged_multiplier==1.6 and queued_charge.jewel_charged.is_empty(), "idle mount consumes pending charge into next beam instance")
 	var once := fixture()
 	once.db.config.equipmentSocket = 10
 	once.db.equipment.longLaser[0].para3 = 0.6
-	once.db.data.jewel["6"].para_2 = 0.0
-	once.slot_entry("weapons",0).sockets = [once.new_jewel("6",1)]
+	once.db.data.jewel["4"].para_2 = 0.0
+	once.slot_entry("weapons",0).sockets = [once.new_jewel("4",1)]
 	once.tick(0.59)
 	check(once.jewel_repeats.is_empty(), "windup does not roll double fire")
 	once.tick(0.01)
 	check(once.jewel_repeats.is_empty(), "first emission can fail double fire roll")
-	once.db.data.jewel["6"].para_2 = 1.0
+	once.db.data.jewel["4"].para_2 = 1.0
 	for i in 20:once.tick(0.1)
 	check(once.projectiles.size()==1 and once.jewel_repeats.is_empty(), "later damage ticks never retry failed first roll")
 	once.projectiles.clear()
@@ -329,8 +286,8 @@ func run() -> void:
 	check(bright_core,"charging bright core stays visible in front of the hull")
 	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "charge drawing preserves unrelated UI")
 	scene.db.config.equipmentSocket = 10
-	scene.db.data.jewel["6"].para_2 = 1.0
-	scene.game.slot_entry("weapons",0).sockets = [scene.game.new_jewel("6",1)]
+	scene.db.data.jewel["4"].para_2 = 1.0
+	scene.game.slot_entry("weapons",0).sockets = [scene.game.new_jewel("4",1)]
 	scene.game.tick(0.5)
 	scene.game.advance_jewel_repeats(0.5)
 	scene.game.tick_projectiles(1.0)

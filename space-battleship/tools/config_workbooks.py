@@ -25,7 +25,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 6
+CACHE_VERSION = 7
 
 
 def sha(value):
@@ -156,7 +156,7 @@ def sync_workbooks(source, directory):
     manifest = read_json(directory / MANIFEST)
     files, mapping, created, updated, unchanged = {}, {}, [], [], []
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-        names = [name for name, _ in sheet_parts(archive) if name.strip() != "总览"]
+        names = [name for name, _ in sheet_parts(archive) if name.strip() not in ("总览", "crew_level")]
         used = set()
         for name in names:
             filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).rstrip(". ") + ".xlsx"
@@ -219,7 +219,7 @@ def incremental_import(directory, target):
     snapshot, paths, changed = {}, {}, []
     for name, section in SECTIONS.items():
         filename = manifest.get("sheets", {}).get(name)
-        if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment','planet') and not filename:
+        if name in ('ship','jewel','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','galaxy','galaxy_build','galaxy_config') and not filename:
             filename = f'{name}.xlsx'
             if not (directory / filename).is_file():
                 if current.get(SECTIONS[name]):

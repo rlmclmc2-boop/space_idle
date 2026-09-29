@@ -10,10 +10,12 @@ import pathlib
 import re
 import sys
 import openpyxl
+from galaxy_config import validate as validate_galaxy
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "charge":"charge", "jewel":"jewel", "unlock":"unlock", "crew":"crew", "crew_level":"crew_level", "crew_assignment":"crew_assignment", "planet":"planet"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "jewel":"jewel", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
+SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config')})
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
 def clean(value):
@@ -22,30 +24,39 @@ def clean(value):
 def read_rows(sheet):
     values=sheet.iter_rows(values_only=True)
     header=next(values)
+    # Rows 2–3 are human column descriptions and types, never configuration data.
     next(values,None)
     next(values,None)
     return [{key:value for key,value in zip(header,row) if key is not None} for row in values if row and row[0] is not None]
 
 def convert_sheet(name, rows):
-    if name in ('crew', 'crew_assignment', 'crew_level', 'planet'):
+    if name in ('galaxy','galaxy_build','galaxy_config'):
+        result = {}
+        for source in rows:
+            row = {key:('' if value is None else value) for key,value in source.items()}
+            key = row.get('key')
+            if not isinstance(key,str) or not key.strip() or key in result:
+                raise ValueError(f'{name}: missing or duplicate key {key}')
+            result[key] = row
+        return result
+    if name in ('crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff'):
         result = {}
         for source in rows:
             row = {k: ('' if v is None else v) for k, v in source.items()}
-            key = row.get('group') if name == 'crew_level' else row.get('id')
+            if name == 'crew':
+                for retired in ('baseLevel', 'maxLevel', 'expGroup', 'baseExp', 'expGrowth'):
+                    row.pop(retired, None)
+            key = row.get('id')
+            if name in ('planet', 'planet_buff'):
+                if type(key) not in (int,float) or not math.isfinite(key) or key < 1 or key != int(key):
+                    raise ValueError(f'{name}: expected positive numeric ID')
+                row['id'] = int(key)
+                key = str(int(key))
             if not isinstance(key, str) or not key.strip():
-                raise ValueError(f'{name}: missing string ID/group')
-            if name == 'crew_level':
-                positive(row.get('level'), 'crew_level level')
-                if row['level'] != int(row['level']):
-                    raise ValueError('crew_level: level must be an integer')
-                level = str(int(row['level']))
-                if level in result.setdefault(key, {}):
-                    raise ValueError(f'crew_level: duplicate {key}/{level}')
-                result[key][level] = row
-            else:
-                if key in result:
-                    raise ValueError(f'{name}: duplicate {key}')
-                result[key] = row
+                raise ValueError(f'{name}: missing string ID')
+            if key in result:
+                raise ValueError(f'{name}: duplicate {key}')
+            result[key] = row
         return result
     if name in ('mon', 'monGroup', 'res', 'level', 'jewel'):
         ids = [row.get('id') for row in rows]
@@ -62,7 +73,7 @@ def convert_sheet(name, rows):
         keys = [row.get('name') for row in rows]
         if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
             raise ValueError(ui_text('debug.import_workbook.message_03'))
-    if name in ("hightech", "charge", "unlock"):
+    if name in ("hightech", "unlock"):
         result={}
         for row in rows:
             key=row.get("name")
@@ -130,6 +141,13 @@ def convert_sheet(name, rows):
 
 def projection_base(previous, source):
     data=copy.deepcopy(previous or {})
+    data.pop('crew_level', None)
+    data.get('source_files', {}).pop('crew_level', None)
+    for row in data.get('crew', {}).values():
+        for retired in ('baseLevel', 'maxLevel', 'expGroup', 'baseExp', 'expGrowth'):
+            row.pop(retired, None)
+    data.pop('charge', None)
+    data.get('source_files', {}).pop('charge', None)
     data["source"]=source
     data["defaults"]={**DEFAULTS,**data.get("defaults",{})}
     data.setdefault("fallbacks",dict(FALLBACKS))
@@ -166,6 +184,7 @@ def validate_description(row, field='description', section='hightech'):
 
 
 def validate_projection(data, *, check_level_ratios=True):
+    validate_galaxy(data)
     validate_crew(data)
     validate_unlocks(data)
     validate_planets(data)
@@ -244,10 +263,34 @@ def validate_projection(data, *, check_level_ratios=True):
             if not 0<=drop['chance']<=1: raise ValueError(ui_text('debug.import_workbook.message_133'))
     for key in ('dmgReduce','autoCollectReduce'):
         if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(ui_text('debug.import_workbook.message_111', key=key))
-    positive(config.get('planetExplorePower'), 'planetExplorePower')
     positive(config['movement'],'movement')
     positive(config['backRange'],'backRange',True)
     positive(config.get('offlineMax'),'offlineMax (hours)',True)
+    positive(config.get('chronoParticlesPerSecond'),'chronoParticlesPerSecond')
+    positive(config.get('chronoDefaultSpeed'),'chronoDefaultSpeed')
+    for ship_key in data['ship']:
+        key = 'playerVisualScale' + ship_key
+        positive(config.get(key), key)
+    for size in range(1, 7):
+        key = f'enemyVisualScaleSize{size}'
+        positive(config.get(key), key)
+    speeds = config.get('chronoSpeeds')
+    if not isinstance(speeds,str) or not speeds.strip():
+        raise ValueError(ui_text('debug.import_workbook.chrono_speeds_format'))
+    parsed_speeds = {}
+    for entry in speeds.split(','):
+        fields = entry.strip().split('|')
+        if len(fields) != 2:
+            raise ValueError(ui_text('debug.import_workbook.chrono_speeds_format'))
+        try:
+            multiplier, cost = map(float, fields)
+        except ValueError as error:
+            raise ValueError(ui_text('debug.import_workbook.chrono_speeds_number')) from error
+        if not math.isfinite(multiplier) or multiplier <= 0 or not math.isfinite(cost) or cost < 0 or multiplier in parsed_speeds:
+            raise ValueError(ui_text('debug.import_workbook.chrono_speeds_values'))
+        parsed_speeds[multiplier] = cost
+    if config['chronoDefaultSpeed'] not in parsed_speeds or parsed_speeds[config['chronoDefaultSpeed']] != 0:
+        raise ValueError(ui_text('debug.import_workbook.chrono_default'))
     auto_gen = config.get('autoGenRes')
     if auto_gen is not None:
         if not isinstance(auto_gen, str):
@@ -294,20 +337,18 @@ def validate_projection(data, *, check_level_ratios=True):
             positive(row.get('para1'),f'hightech {key} interval')
             positive(row.get('para2'),f'hightech {key} para2',True)
 
-    for key,row in data.get('charge',{}).items():
-        if key not in ('攻击充能','防御充能','熔炼器充能'):
-            raise ValueError(ui_text('debug.import_workbook.message_119', key=key))
-        if not isinstance(row.get('func'),str) or not row['func'].strip():
-            raise ValueError(ui_text('debug.import_workbook.message_120', key=key))
-        validate_description(row,'des','charge')
-        for field in ('para_1','para_2','para_4','para_5','para_6'):
-            positive(row.get(field),f'charge {key} {field}')
-        positive(row.get('para_3'),f'charge {key} para_3',True)
-        positive(row.get('para_7',0),f'charge {key} para_7',True)
-        if row['para_1'] != int(row['para_1']) or str(int(row['para_1'])) not in data['resources']:
-            raise ValueError(ui_text('debug.import_workbook.message_121', key=key))
-        if math.floor(row['para_5'] + 0.5) < 1 or row['para_6'] < 1:
-            raise ValueError(ui_text('debug.import_workbook.message_122', key=key))
+    for field in ('reactorEnergyBase','reactorEnergyGrowth','reactorUpgradeBase','reactorUpgradeGrowth','reactorBoostExponent','reactorInitialLevel','reactorPercentScale','reactorAllocationStep'):
+        positive(data['config'].get(field),field)
+    if data['config']['reactorEnergyGrowth'] <= 1 or data['config']['reactorUpgradeGrowth'] <= 1 or data['config']['reactorInitialLevel'] != int(data['config']['reactorInitialLevel']):
+        raise ValueError('Invalid reactor growth or initial level')
+    if data['config']['reactorAllocationStep'] != int(data['config']['reactorAllocationStep']):
+        raise ValueError('reactorAllocationStep must be an integer')
+    uranium = data['config'].get('reactorUraniumId')
+    if type(uranium) not in (int,float) or uranium != int(uranium) or str(int(uranium)) not in data['resources']:
+        raise ValueError('Invalid reactorUraniumId')
+    modules = data['config'].get('reactorModules')
+    if not isinstance(modules,str) or set(modules.split(',')) != {'weapons','defence','smelting','condensation'}:
+        raise ValueError('Invalid reactorModules')
 
     data["defaults"].pop("maxEquipmentLevel", None)
 
@@ -316,9 +357,10 @@ def validate_unlocks(data):
     if not isinstance(rows, dict) or not rows:
         raise ValueError('Missing unlock table; import unlock.xlsx first')
     targets = set()
-    allowed = {kind: set(data.get(kind, {})) for kind in ('equipment', 'ship', 'charge', 'hightech')}
+    allowed = {kind: set(data.get(kind, {})) for kind in ('equipment', 'ship', 'hightech')}
     allowed['equipment'] = {key for key in allowed['equipment'] if not key.endswith(('_mon', '-mon'))}
-    allowed['feature'] = {'jewels'}
+    allowed['feature'] = {'jewels','reactor','crew_level'} | ({'galaxy'} if data.get('galaxy') else set())
+    allowed['reactor_module'] = {'condensation'}
     allowed['crew'] = set(data.get('crew', {}))
     allowed['planet'] = set(data.get('planet', {}))
     for name, row in rows.items():
@@ -339,7 +381,7 @@ def validate_unlocks(data):
     if missing:
         raise ValueError(f'Missing unlock targets: {sorted(missing)}')
     # Legacy columns may arrive from an old master. Never restore a second gate source.
-    for kind in ('ship', 'charge', 'hightech'):
+    for kind in ('ship', 'hightech'):
         for row in data.get(kind, {}).values(): row.pop('unlock', None)
     for items in data.get('equipment', {}).values():
         for row in items: row.pop('unlock', None)
@@ -352,25 +394,40 @@ def validate_crew(data):
         positive(value, label, zero)
         if isinstance(value, bool) or value != int(value):
             raise ValueError(f'{label}: expected integer')
-    groups = data.get('crew_level', {})
+    if data.get('crew'):
+        settings = data.get('crew_config', {})
+        positive(settings.get('base_exp', {}).get('value'), 'crew_config base_exp')
+        multiplier = settings.get('exp_multiplier', {}).get('value')
+        for key in ('equip_bonus', 'tech_ai_per_level', 'tech_speed', 'gem_bonus', 'charge_bonus'):
+            row = settings.get(key, {})
+            positive(row.get('value'), 'crew_config ' + key, True)
+            if not isinstance(row.get('des'), str) or not row['des'].strip():
+                raise ValueError('crew_config ' + key + ': missing des')
+        integer(settings['tech_ai_per_level']['value'], 'tech_ai_per_level', True)
+        for key in ('name_level', 'exp_bar', 'badge_tip', 'planet_exp', 'dedicated_ai'):
+            if not isinstance(settings.get(key, {}).get('des'), str) or not settings[key]['des'].strip():
+                raise ValueError('crew_config ' + key + ': missing des')
+        for key, target in {'equip_bonus':'equipment', 'tech_ai_per_level':'hightech', 'tech_speed':'hightech', 'gem_bonus':'jewel', 'charge_bonus':'reactor'}.items():
+            if settings[key].get('targetType') != target:
+                raise ValueError('crew_config ' + key + ': invalid targetType')
+        positive(multiplier, 'crew_config exp_multiplier')
+        if multiplier < 1:
+            raise ValueError('crew_config exp_multiplier must be at least 1')
     jobs = data.get('crew_assignment', {})
     contracts = json.loads((ROOT/'data/ui_text_contract.json').read_text(encoding='utf-8'))['entries'] if jobs else {}
-    for group, levels in groups.items():
-        for level, row in levels.items():
-            integer(row.get('level'), f'{group} level')
-            positive(row.get('needExp'), f'{group}/{level} needExp', int(level) == 1)
-            positive(row.get('powerMultiplier'), f'{group}/{level} powerMultiplier')
     for id, row in jobs.items():
         for field in ('targetType', 'effectType', 'description'):
             if not isinstance(row.get(field), str) or not row[field].strip():
                 raise ValueError(f'crew_assignment {id}: missing {field}')
         for field in ('baseValue', 'powerScale', 'levelScale', 'interval'):
             positive(row.get(field), f'crew_assignment {id} {field}', True)
+        if row.get('levelScale', 0) != 0:
+            raise ValueError(f'{id}: crew level effect scaling is retired; levelScale must be 0')
         integer(row.get('maxCrew'), f'crew_assignment {id} maxCrew')
-        if row['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE'):
+        if row['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE','AUTO_REACTOR'):
             positive(row['baseValue'], f'{id} baseValue')
             positive(row['interval'], f'{id} interval')
-            if row['effectType'] != 'AUTO_COMBINE':
+            if row['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST'):
                 modes = [mode.strip() for mode in str(row.get('upgradeModes','')).split(',')]
                 if not modes or len(set(modes))!=len(modes) or any(mode!='max' and (not mode.isdigit() or not 0<int(mode)<=2147483647) for mode in modes):
                     raise ValueError(f'{id}: upgradeModes requires positive integers or max')
@@ -381,23 +438,16 @@ def validate_crew(data):
             if key and (key not in contracts or not set(contracts[key]['params']).issubset(set() if field=='titleTextId' else {'value','interval','description','mode'})):
                 raise ValueError(f'{id}: unknown or incompatible {field}: {key}')
     for id, row in data.get('crew', {}).items():
-        for field in ('name', 'description', 'icon', 'expGroup'):
+        for field in ('name', 'description', 'icon'):
             if not isinstance(row.get(field), str) or not row[field].strip():
                 raise ValueError(f'crew {id}: missing {field}')
-        for field in ('baseLevel', 'maxLevel', 'equipmentSlotCount'):
+        for field in ('equipmentSlotCount',):
             integer(row.get(field), f'crew {id} {field}', field == 'equipmentSlotCount')
         positive(row.get('basePower'), f'crew {id} basePower')
-        positive(row.get('baseExp'), f'crew {id} baseExp')
-        positive(row.get('expGrowth'), f'crew {id} expGrowth', True)
-        if row['baseLevel'] > row['maxLevel']:
-            raise ValueError(f'crew {id}: baseLevel exceeds maxLevel')
-        levels = groups.get(row['expGroup'], {})
-        if row['maxLevel']-row['baseLevel']+1 > len(levels) or any(str(n) not in levels for n in range(int(row['baseLevel']),int(row['maxLevel'])+1)):
-            raise ValueError(f'crew {id}: missing growth levels')
         for job in jobs.values():
             try:
-                values = [float(job['baseValue'])*float(row['basePower'])**float(job['powerScale'])*float(levels[str(level)]['powerMultiplier'])**float(job['levelScale']) for level in range(int(row['baseLevel']),int(row['maxLevel'])+1)]
-                if any(not math.isfinite(value) or (job['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE') and (value<=0 or not math.isfinite(float(job['interval'])/value))) for value in values):
+                value = float(job['baseValue'])*float(row['basePower'])**float(job['powerScale'])
+                if not math.isfinite(value) or (job['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE','AUTO_REACTOR') and (value<=0 or not math.isfinite(float(job['interval'])/value))):
                     raise ValueError(f'crew {id}: nonfinite effective power or interval')
             except OverflowError as error:
                 raise ValueError(f'crew {id}: effect power overflow') from error
@@ -410,17 +460,92 @@ def validate_crew(data):
 
 
 def validate_planets(data):
+    unlock_edges = {}
+    for id, row in data.get('planet_buff', {}).items():
+        target = row.get('value', 0) if row.get('buff_type') == 'planet_unlock' else 0
+        if type(target) not in (int, float) or not math.isfinite(target) or target < 0 or target != int(target):
+            raise ValueError(f'planet_buff {id}: invalid planet_unlock value')
+        if row.get('buff_type') == 'planet_unlock':
+            if not target or row.get('stack') != 'max' or row.get('target') != 'planet':
+                raise ValueError(f'planet_buff {id}: planet_unlock requires planet/max and a positive ID')
+            target = str(int(target))
+            source = str(int(row['planet_id']))
+            if target not in data.get('planet', {}) or target == source:
+                raise ValueError(f'planet_buff {id}: unknown or self unlock target')
+            if row.get('source') != 'conquer' or row.get('condition') != 'conquered':
+                raise ValueError(f'planet_buff {id}: planet unlock requires conquest')
+            if target in unlock_edges and unlock_edges[target] != source:
+                raise ValueError(f'planet_buff {id}: conflicting unlock sources')
+            unlock_edges[target] = source
+
+        required = 'id planet_id source source_id condition buff_type target value stack order des'.split()
+        if any(key not in row for key in required):
+            raise ValueError(f'planet_buff {id}: missing field')
+        if type(row['id']) is not int or row['id'] < 1 or str(row['id']) != id:
+            raise ValueError(f'planet_buff {id}: invalid numeric ID')
+        if type(row['planet_id']) is not int or str(row['planet_id']) not in data.get('planet', {}):
+            raise ValueError(f'planet_buff {id}: unknown planet')
+        if row['source'] not in ('conquer','planet','building','event') or row['condition'] not in ('always','conquered','building_complete'):
+            raise ValueError(f'planet_buff {id}: unsupported source or condition')
+        if row['condition']=='building_complete' and str(row['source_id']) not in data.get('planet_build', {}):
+            raise ValueError(f'planet_buff {id}: unknown building')
+        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('drop_level','gem'),('crew_exp_share','all'),('planet_unlock','planet')):
+            raise ValueError(f'planet_buff {id}: unsupported buff target')
+        if row['stack'] not in ('add','mul','max'):
+            raise ValueError(f'planet_buff {id}: unsupported stack')
+        if row['buff_type']=='crew_exp_share' and (row['stack']!='max' or row['value'] not in (0,1)):
+            raise ValueError(f'planet_buff {id}: crew_exp_share requires max and 0/1')
+        for key in ('value','order'):positive(row[key],f'planet_buff {id} {key}',True)
+        if row['order'] != int(row['order']) or (row['buff_type'] != 'free_charge' and row['stack'] != 'mul' and row['value'] != int(row['value'])):
+            raise ValueError(f'planet_buff {id}: expected integer level/order')
+        if not isinstance(row['des'], str) or not row['des'].strip():
+            raise ValueError(f'planet_buff {id}: missing description')
+    if any(row.get('buff_type') == 'planet_unlock' for row in data.get('planet_buff', {}).values()):
+        first = min(data.get('planet', {}), key=int)
+        if first in unlock_edges:raise ValueError('planet_buff: first planet must not require conquest')
+        for planet_id in data['planet']:
+            seen = set()
+            current = planet_id
+            while current != first:
+                if current in seen or current not in unlock_edges:
+                    raise ValueError(f'planet_buff: missing or cyclic unlock path for {planet_id}')
+                seen.add(current)
+                current = unlock_edges[current]
     for id, row in data.get('planet', {}).items():
-        if row.get('id') != id or not isinstance(row.get('name'), str) or not row['name'].strip():
+        start = row.get('reforgeStartLevel', 1)
+        if type(start) not in (int,float) or not math.isfinite(start) or start != int(start) or not 1 <= start <= len(data.get('levels',[])):
+            raise ValueError(f'planet {id}: invalid reforgeStartLevel')
+        if str(row.get('id')) != id or not isinstance(row.get('name'), str) or not row['name'].strip():
             raise ValueError(f'planet {id}: invalid identity or name')
         positive(row.get('baseTime'), f'planet {id} baseTime')
+        minimum = row.get('minTime', 5)
+        if type(minimum) not in (int, float):
+            raise ValueError(f'planet {id}: invalid minTime')
+        positive(minimum, f'planet {id} minTime')
         positive(row.get('baseExp'), f'planet {id} baseExp')
-        positive(row.get('effectValue'), f'planet {id} effectValue', True)
-        if row.get('effectType') != 'equipment':
-            raise ValueError(f'planet {id}: unsupported effectType')
+        if type(row.get('id')) is not int or row['id']<1 or not isinstance(row.get('tags',''),str):
+            raise ValueError(f'planet {id}: invalid numeric ID or tags')
         gate = data.get('unlock', {}).get(row.get('unlockId'), {})
         if gate.get('type') != 'planet' or gate.get('target') != id:
             raise ValueError(f'planet {id}: invalid unlockId')
+
+    for id, row in data.get('planet_build', {}).items():
+        required = 'id name des min_planet planet_rule planet_value order unlock_explore build_explore extra_crew type config1 config2'.split()
+        if any(key not in row for key in required):
+            raise ValueError(f'planet_build {id}: missing field')
+        for key in ('min_planet','order','unlock_explore','build_explore','extra_crew'):
+            positive(row[key], f'planet_build {id} {key}',key not in ('min_planet','build_explore'))
+            if row[key]!=int(row[key]):raise ValueError(f'planet_build {id}: {key} must be integer')
+        if row['planet_rule'] not in ('all','only','exclude','tag'):
+            raise ValueError(f'planet_build {id}: unsupported rule')
+        if row['planet_rule'] in ('only','exclude'):
+            values=str(row['planet_value']).split(',')
+            if any(not x.isdigit() or int(x)<1 for x in values):raise ValueError(f'planet_build {id}: invalid planet IDs')
+        if row['planet_rule']=='tag' and (not row['planet_value'] or ',' in row['planet_value']):
+            raise ValueError(f'planet_build {id}: expected one tag')
+        if row['type'] not in ('auto_explore','refinery','equipment','shipyard'):
+            raise ValueError(f'planet_build {id}: unsupported effect handler')
+        for key in ('config1','config2'):positive(row[key], f'planet_build {id} {key}',True)
 
 
 def encode(data):
@@ -434,7 +559,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('charge','ship','jewel','unlock','crew','crew_level','crew_assignment','planet'):
+                if name in ('ship','jewel','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))

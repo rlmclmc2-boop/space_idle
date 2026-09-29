@@ -1,146 +1,23 @@
-# PROJECT — 领域规则
+# PROJECT: stable gameplay contracts
+NUMERIC SRC: authorized Excel sheets + user-approved rules.
 
-## 船员
+PROGRESSION
+- Loop: cruise -> encounter -> auto-combat -> resources/growth -> unlock. May hold/replay or jump to cleared/current level. Normal clear waits 3 game-seconds; immediate clear available.
+- unlock.xlsx is sole threshold source: cleared=specified level cleared; reached=highest enterable level exceeds threshold; gems retain level-8 availability. Granted unlocks persist across threshold edits; notices acknowledged individually, no replay duplicates.
+- Level atkRatio/lifeRatio/resRatio interpolate by battle-point index: the first point inherits the previous level's final value (level 1 starts at 1), and the last point reaches the current level value.
 
-六名船员依次通关10、20、25、30、35、40关解锁，门槛统一在unlock.xlsx，crew.unlockId引用。第一名船员解锁前隐藏整个船员页签。开放后，未解锁部分仅展示下一名通用剪影及通关层数，不显示其身份或效果；后续成员隐藏，全部解锁后无剪影。现有三名存档身份保留，新增三名使用crew_04～crew_06。
+EQUIPMENT
+- Module owns level/gems/history. Equipment swaps free, inherits module growth, identical items unlimited. Unequip: no refund/reset. Only enabled+equipped modules fight; ship controls enabled range. Swapping ship keeps combat and disabled tail modules. Preserve HP/shield remaining ratios on gear changes.
+- Level-1 equipment row is base; target-level stats/cost use base × target multipliers, never iterate rounded previous level. x10 requires all 10 costs; MAX stops at affordable level. Entering cruise resets player weapon CD to full; countdown begins at encounter.
+- Save journey level/node/cruise distance/hold destination, not enemy HP/projectiles/CD. Old module level migrates only on load; old charge fields ignored. Gem save v1 discarded; new bag/sockets empty.
 
-2026-09-22 用户要求的第一版已实现，权威字段、公式、岗位语义与边界见 [CREW](CREW.md)。船员静态定义/成长/岗位沿用 Excel，存档只存动态字段；默认待命，每个系统目标最多一名船员。船员无固定职务。装备按整个系统分配，每1游戏秒遍历全部启用武器/防御模块，按玩家保存的1级/10级/最大值选择复用统一升级入口，等级不加快此周期；高科技自动购买AI，炼铁炉通过统一船员修饰查询读取效果，不改基础配置。2026-09-23 星球探索成为首个自然经验来源；船员装备仍只预留。新模块扩展通过目标/行为注册，船员核心不分支识别岗位 ID。
+COMBAT/ECONOMY
+- Enemy 10 slots: config order left->right, one rear row; empty slots retain position; hull overlap not resolved. Only final-group wipe clears level. Laser/cannon projectiles fly fixed heading; missiles track in flight. Beams lock/charge/hit periodically; lost target/interruption resets. Normal wave preserves in-flight shots; final wipe clears them. Shield overflow hits HP in same attack.
+- Resource identity=ID. Drop multiplier and auto-pickup loss calculated in separate stages. Killed ship drops render/pick at explosion position; logical amount/position unchanged. Furnace drops separate: orange iron/purple gem core with timer ring; no battlefield name/count. Income rate=actual receipts in last 60 real seconds; spending excluded.
+- Background app remains online at default multiplier. After exit, only full offline seconds grant chrono particles; awards are whole particles, with no partial particle credited at storage capacity. No other resource/research/exploration is granted offline. Each launch reports actual particles gained, including 0.
+- Each furnace produces from its own non-furnace historical income peak (no self-feed); production/lifetime use game time, no offline catch-up. Scientist construction is visual only: no new resource or timer.
+- Reactor level costs uranium and derives energy capacity; integer allocations sum <= floor(capacity). Weapon/defense/smelting use own allocation. Apply chrono multiplier once when real time becomes game time; charge particles by real time; insufficient balance leaves rest at default speed. Pause freezes game time.
 
-## 星球探索
-
-2026-09-23 用户确认：首颗星球在通关30关后解锁，独立页签显示。只能派遣空闲船员；派遣期间该船员不能分配岗位，探索完成或召回后恢复空闲。首颗星球基础时间100秒、基础经验100。每次完成后探索度加1，船员获得 `星球基础经验 × 最高关卡经验系数`；经验系数在 level 表逐关配置，30关为1、之前为0、之后每关乘1.2并保留两位小数。船员从1级升2级的基础所需经验为100，此后每级乘1.2并取整数。首颗星球每次探索时长为 `max(1秒, 基础时间² / (基础时间 + 当前探索度))`。装备最终数值乘以 `(1 + 星球效果值)^(探索度^探索指数)`；首颗星球效果值0.1，探索指数在 config 表为0.5。武器对应伤害，防御装备对应防御数值。探索进度与探索度存档；暂停不推进，离线不补探索。
-
-## 定位与来源
-
-目标是横版即时自动战斗：推进→遭遇停船→击落敌群→收集资源与成长→通关解锁/驻守重刷。
-
-### 关卡解锁配置（2026-09-21 用户确认）
-
-关卡解锁唯一配置源是 `config_excel/unlock.xlsx`，运行投影为 `data/game_data.json.unlock`。当前26项包括6种装备、5艘舰体、3项充能、4项科技（含双炉）、宝石系统、6名船员和首颗星球。每项只配置一次，页签、科学家入口、宝石碎片/合成/分解/镶嵌沿用对应内容的开放结果，不重复配置门槛。当前无独立商店、配方或额外关卡资源入口；普通铁/钛资源不受关卡解锁控制。
-
-字段为 `name`（持久稳定ID）、`type`、`target`（原配置键）、`level`（通关门槛，0初始开放）、`mode`、`title`、`desc`。`cleared` 要求指定关卡已通关；`reached` 要求最高可进入关卡大于 `level`，保留旧宝石达到第8关开放的行为（level=7），包括非连续通关存档。装备ID保留旧装备键，其余使用类型/原键；日常改门槛或文字不得改ID。
-
-所有新获得项按表顺序进入同一提示队列，标题/描述直接读取 `unlock.title/desc`，此处按本次用户要求优先于一般 UI 文案表约定。原装备名称与提示描述迁入表；通用“继续”及剩余项数仍走 UI 文案表。每次确认一项，全部确认后恢复自动前进；旧装备待确认ID和新混合队列均可恢复，重刷不重复通知。`grantedUnlocks` 记录已获得项，后续改门槛不重锁；旧档依据原通关记录恢复，同时保留原 `unlocked` 装备所有权，不补弹历史通知。
-
-原 equipment/charge/hightech.unlock、ship.para_4 与 config.jewelDropLevel 已从现行分表移除。导入旧总表时其旧字段不参与解锁，不能覆盖已存在的 unlock 投影；缺 unlock 的全新目标明确拒绝导入。初始装配仍由 startEquip 定义。关卡推进、跃迁/驻守列表、BOSS遭遇记录是通关状态本身，不属于功能解锁配置，继续使用 cleared/highestLevel。
-来源口径：原始总览!A3:A10、A16:D19、A28:C30与equipment/mon/monGroup/level/res/config字段说明；现行舰船/科技/充能以对应独立分表及2026-09-13～15用户修订为依据。具体数值只读当前授权配置，不在本文维护曲线或旧行号。
-以下区分“确认规则”和“现行边界”：用户修订覆盖旧稿；标有U-ID的现行行为尚不能视为完整策划批准，问题详情只在[STATUS](STATUS.md)。
-术语：armour=玩家生命/装甲；shield=先受击的护盾；装备等级不同于关卡编号；mon=敌机；monGroup=十槽编队；BOSS战指最后遭遇，和大型舰外观无关。
-
-UI 文案（2026-09-20 用户确认）：玩家可见文字由独立 UI 文案表管理，英文 KEY 稳定，花括号内参数为不可改名/删除的代码接口。只改显示文字不得改变数值、存档键、配置 ID、宝石适用条件或操作结果。显示名称与旧配置键分离；错误/禁用判断使用状态或稳定错误键，不依赖可编辑文案。日常操作见 [UI_TEXT](UI_TEXT.md)。
-
-## 舰船与装备
-
-- 2026-09-21 用户确认：武器槽/防御槽各为独立模块，等级、宝石、熟练/适应累计绑定模块。同类装备可以直接免费替换并继承模块等级；同种装备数量上限取消，仍受舰体启用槽数和装备解锁条件约束。正式配置中的 sameEquipmentLimit 不再参与装配判定。
-- 卸下装备仅清空模块装备，不退款、不退回宝石、不清除累计；空模块可升级。只有当前舰体启用且装有装备的模块参与战斗、属性和宝石效果。
-- 换舰仅改变舰体及启用模块数，不重开航程或战斗。少槽舰体容纳不下的模块保留等级与配置并停用，换大舰恢复；首次新增模块为一级空模块。换装/换舰前后生命、护盾保持各自剩余比例，暂时零容量也保留该比例，防止反复切换回血。普通在途弹体保留发射快照；被替换/停用模块的光束、未触发追加攻击和蓄能中断，重新启用武器从完整冷却开始。
-- 装备成长（2026-09-16用户确认）：仅一级行提供基础值，高等级旧行与旧表等级上限作废。装甲para1按para2、护盾para1按para4、武器dmg按dmgMulti，以基础值×(1+倍率)^(目标等级−1)计算；各cost_x按对应costMulti_x（兼容cost_multi_x）同式计算。一级保持原值；升级结果≥100四舍五入保留两位有效数字，0保持0，0到100之间取最近的个位为5的数，中点向上（60/62/68均为65）。其他字段沿用一级值，不迭代已取整的上级结果。
-- 模块升级费用按目标等级计算，10连必须完整负担连续十级，MAX升到可负担等级。当前六种装备费用曲线相同；武器模块沿用 laser、 防御模块沿用 armour 的现有费用曲线，换装不改变模块费用。旧表不再决定上限；实现仅保留整数等级安全边界2147483647，非有限费用不可购买。
-- 现行保损边界（U-005）：装备防御升级只补容量差，后退中不补；科技/充能提升上限不补当前生命或护盾。武器升级不回血、不重置冷却，已发射弹体保留旧伤害。
-- 确认冷却语义：进入前进状态时玩家武器剩余冷却重置完整CD，前进期间不倒计时；遭遇后才推进，暂停保留。发射计时“清零”不等于立即开火。
-- 护盾受击后重新等待配置延迟，再按最大容量比例恢复，不超过上限；死亡后退结束恢复生命与护盾。
-
-## 战斗与关卡
-
-- 持续锁定光束（2026-09-18用户确认）：longLaser / longLaser-mon每条光束锁定一个目标并持续连接炮口；para3非空时锁定后先蓄力para3秒，蓄满立即首击（1倍），之后每cd结算一次；蓄力不计入连续命中时长，显式0表示无需蓄力，留空兼容原等待cd的首击。倍率=min(1+(para2−1)×连续锁定秒数/para1, para2)，原始伤害=dmg×倍率，再走既有增益/抗性流程。目标死亡、丢失、切换或光束中断重置时长与蓄力/首击等待；暂停冻结。存活锁定不随索敌排序变化切换。
-- 激光/火炮单发；导弹始终按配置数量齐射，先分给不同活敌，目标不足循环复用。目标优先不抵抗该伤害类型；同组按前后位置、距中线、槽位排序，全抵抗仍攻击。
-- 普通弹失锁后保持方向不换靶；导弹优先重选未被其他玩家导弹占用的活敌，无目标也直飞出屏。下一次开火重新索敌。
-- 普通敌死亡/普通波结束保留在途弹体。最后遭遇全灭立即清空敌我弹体并停止处理旧快照，不能让同帧残弹造成玩家后退而跳过通关；前置大型舰不触发此规则。
-- 敌方装备表达“名称×数量”，没有装备等级；每件独立冷却、每次单发，不能套玩家导弹齐射。敌武器使用基础行，缺行/空字段按现有玩家基础行补全，不改变来源行。
-- 护盾溢出（2026-09-18用户确认）：单次攻击超过护盾可吸收的伤害时，未吸收部分必须在同次攻击内继续结算生命，不得丢弃；刚好吸收全部伤害时不扣生命。普通弹体、持续光束及防御宝石受击路径均适用，保留既有护盾/生命抗性与宝石减伤计算；无减伤时例如20护盾承受35伤害，护盾归零、生命扣15。
-- 现行伤害边界（U-006）：能量/物理匹配抗性时减伤，最终ceil且最小1；护盾消耗反算剩余原始伤害，再由装甲减伤；抗性读一级行。零原始伤害、逐级抗性等适用范围仍待裁决。
-- 编队十槽、每敌一格，size只控制外观；2026-09-16用户要求放大敌舰，显示高度按size 1～6取48/64/80/96/112/128像素（超出范围沿用端点），炮口与血条跟随显示尺寸，槽位中心及战斗数值不变；最后遭遇全灭才通关，不以到达关长或大型舰死亡判胜。关内倍率在上一关与本关间线性插值，首关起点用1；生命/攻击取整，原表示例歧义见U-012。
-- 回退距离跨关逐段扣除，到首关起点截断；落点在目的关最后遭遇之后时原地重放最后遭遇，不能无限空驶。已收集资源保留。
-- 驻守：战斗中守当前遭遇，前进中先到下一波；清敌后才计时，间隔=相邻遭遇距离/舰船速度（首波从起点），原点刷新。关闭后继续推进；死亡可取消、返回原点或退后就地驻守。
-- 跃迁（2026-09-20 用户确认）只列已通关关卡和当前正在玩的关卡；允许点击当前所在关卡从头开始，不开放其他没打过的关卡。每次主动跃迁均结束驻守并从目标关卡起点开始，重复选择同一目标仍执行。选择列表最多同时显示 10 行，其余选项滚动访问。末波驻守重复该波，“立即过关”可离开。新内容解锁弹窗阻止换关计时，但掉落计时仍执行；确认后继续，重复通关不重复通知，没有额外通关奖金。
-
-## 资源与收入
-
-- 资源以ID识别，名称由配置显示。确认的资源规则：一次计算末尾ceil，中间保留精度；掉落倍率取整与自动拾取损耗是两个独立阶段，提示与实际入账一致。
-- 击杀逐项按概率生成掉落；鼠标划过全额收取，超时/离开结算应用自动损耗。初始/旧档余额向上取整；拾取半径及部分默认等待为实现补充（U-005/U-006）。
-- 自动生成资源按配置间隔从右侧进入，关卡倍率后ceil，向左飞行；划过全取，越过飞船按损耗收取，不走普通掉落超时路径。
-- 收入窗口取现实最近60秒实际入账，各资源独立；不足一分钟也除以60，暂停仍过期，倍速不缩短窗口。支出与初始余额不算收入；顶部显示可在余额/每秒速率之间切换。
-- 离线资源=ceil(保存的完整精度每秒速率×有效整秒时间)，受offlineMax小时上限约束；零上限关闭、时钟倒退取零、缺旧字段不追发。离线奖励不再次扣损耗、不进入在线收入或本局累计，不能放大下次离线收益。
-
-## 科学家、科技与炼铁炉
-
-- 2026-09-22 用户确认科研人员改为 AI 包装；页面展开遮住战场，以 AI 建造科技原型表达研究进度。蓝图、骨架、装配、调试随当前研究点推进，完成时短暂验收并进入下一等级；这些只属于表现，不新增建筑资源、前置科技、独立建造计时或并发限制。内部科学家字段及费用、速率、分配、存档规则保持兼容。页面按已解锁配置自动生成建造舱，超出首屏横向滚动。用户后续明确取消拖拽换位：只显示已有科技，不显示空舱；旧存档顺序仍可读取，显示时跳过空位置，不改研究数据。
-- 用户后续确认：采用第二版悬浮结构与第三版能量表现的合成概念图（[确认稿与提示词](../assets/hightech/README.md)），保持轻盈细线、透明材质与留白；炼铁炉的开放感应弧/低位球形炉心、聚焦装置的倾斜轨道/相向透镜、蜂窝装甲与一大两小悬浮晶体各自可识别。此前厚重方块、封闭炉腔、正面靶盘和菱形外笼方案已被用户否定。能量沿已有结构流动；蓝图按组件推进，装甲片和晶体保留整体分组。用户后续要求未完成结构避免整齐矩形缺口：组件内部以不规则细碎前沿凝聚，能量收尾沿真实细丝点亮；原型完整造型不变。施工光束对准当前组件正在显现的真实结构像素。这些只是表现约束，不改变研究过程。
-- 首个科技解锁后可生成科学家；第n人各资源费用round(基础费用×倍率^(n−1))，全部资源足够才扣款。×10累加十人的逐人round费用，必须整体可负担；MAX按既有可购买边界逐人购买，免费首人特殊语义见[DECISIONS](DECISIONS.md)。
-- 船员“高科技”岗位每1游戏秒按船员页x1/x10/MAX选项尝试调用原科学家购买接口，购买成功才接着调用原“平均分配”；周期和可选数量在 crew_assignment.xlsx 配置。原高科技研究效率岗位已移除，科研速率不再受船员效率倍率影响。
-- 用户确认每个系统目标最多分配一名船员；不同岗位也不能重复占用同一目标。已分配标记只显示在对应的装备/高科技/宝石系统页签，以无人数的 `👤` 表示，悬浮提示保留船员身份、等级和效果；模块内部不显示该标记。
-- 宝石系统岗位每1游戏秒先判断背包是否有可合成组；有则复用一键合成，再为已镶嵌宝石换入同类型更高级的背包宝石，或按原位配方升级。锁定/停用宝石与空孔不自动处理；多孔位变更合并保存、通知并按槽位刷新。周期来自 crew_assignment.xlsx；原宝石熔炼速度岗位不再配置。
-- 同时研究不限制项目数；人数可分配/撤回，撤回保留点数，无人不产点。单人速率techPointGet，多人速率round((techPointGet×人数)^hightechLimit)，再乘时间，不逐帧舍入；hightechLimit不是旧并发名额。
-- 下一等级需要round(tpCostBase×(1+tpCostMutiple×当前等级))，余点进入下级；平均分配全部人数，余数按卡槽顺序，研究点不变。大数近似只按DECISIONS D008的已批准范围。
-- 科技0级无效果；聚焦装置对全部玩家武器、简并态装甲对生命与护盾上限按配置幂次乘算再ceil。敌方伤害不受影响。
-- 炼铁炉按周期生成ceil(一分钟非炉铁实际入账的历史峰值×系数×等级)；不因当前收入下降而降峰，排除自身防止递归放大。旧样本无来源只进总收入，不猜作炉基数；旧档缺峰值只能由可信存量样本重建。
-- 炉铁块接受点击全额领取，不接受悬停；2026-09-21用户确认：屏幕铁块持续10秒后自动拾取，入账为ceil(铁块整数数量×(1−autoCollectReduce))，沿用资源自动拾取折损比例及收入来源统计，不计入炉自身生产基数。未到期不因离开结算提前拾取；首次研究到1级后才生产。周期和寿命在线用模拟时间，暂停冻结；离线研究仍按原上限推进、仅保留未过期铁块，不额外补发离线期间已过期铁块，以免与现有离线资源结算重复。
-
-宝石熔炼炉基础参数来自 `config_excel/hightech.xlsx` 同名行：通关12关解锁，科研达到1级后每20秒生成核心，科研需求 `round(60 × (1 + 0.05 × 当前等级))`。2026-09-21用户后续确认优先于原表 des：产量改为 `ceil(历史最高一分钟普通来源碎片实际入账 × 0.1 × 等级)`；历史峰值持久保存，不因样本过期下降。划过仍全额领取；核心10秒后自动拾取，入账 `ceil(核心整数数量 × (1 − autoCollectReduce))`，与铁炉共用折损配置。普通入账已含关卡倍率，核心领取不再乘倍率；炉产出、分解、离线和未知来源不进入生产基数。复用碎片累计和自动生成宝石；实际核心收入进入总速率及既有离线速率，离线结算不回灌基数。周期/寿命/暂停/科研边界和离线可见窗口沿用铁炉，不补发离线已过期核心。旧档缺峰值默认0，并可从可信普通收入样本重建。正式Excel及原始des未改，历史峰值与自动拾取以本条用户确认规则为准。
-
-## 充能与时间
-
-- 攻击/防御/熔炼器充能可并行，0级起步、按通关门槛解锁。升级次数round(para_5×para_6^等级)，每秒费用round(para_2×(1+para_7)^等级)，均先算完整表达式再round。
-- 跨级立即用新费率；舍入为零时免费推进到需付费等级。短缺时同资源均分整数，未用份额再分配，余数按启动顺序；无资源不丢进度或关闭活动项，补充后继续，重新启用重新排队。
-- 攻击/防御按配置幂次增益，在科技效果后再ceil；熔炼器只乘击杀掉落铁的生成量，不乘自动资源、炉产出或拾取后统计；掉落和拾取损耗仍分阶段。
-- 充能预付未耗量跨帧/跨级保留，防止逐帧重复扣整数；资源扣除后即时保存，进度另随周期保存，不能退化为仅定时保存扣费。
-- 暂停冻结模拟与拾取；在线研究/充能跟随暂停与倍速，离线按现实1X及配置上限。加载结算顺序见ARCHITECTURE，不从UI显示精度反推结算。
-
-## 宝石（2026-09-16用户任务与当前分表）
-
-- 解锁门槛取unlock中feature/jewels行，mode=reached保留与highestLevel比较的原语义；击杀入口每个敌实例最多判定一次jewelDrop，掉落统一宝石碎片。碎片只接受点击，生成2秒后自动拾取；暂停/倍速沿用模拟时间，满包仍累计碎片。
-- 实际宝石背包容量200。2026-09-22用户授权整体重做并扩大页面：候选区使用五列实际宝石大图卡片，不再绘制占位空格；显示图片、名称、等级、可用/冲突原因，悬停或选中查看效果。不显示容量数字。统一碎片按config.jewelCreat正整数成本批量等概率生成1级宝石，数量为floor(碎片/成本)且受剩余容量限制；余数及满包溢出保留，腾出位置后自动生成。旧jewelFragments字典所有合法数量1:1求和（含已移除类型ID），新档保存统一数值，已有有效宝石不截断。排序仅改变展示顺序，保留实例、焦点、选择及滚动位置，不写业务背包。
-- 2026-09-22用户进一步简化：界面只提供一键合成，不再提供单颗合成或分解入口。底层每组仍原子消耗jewelCombine颗同ID同等级宝石并生成等级+1；maxLevel来自jewel。原满级分解接口暂留供既有规则/测试使用，不再从玩家界面调用。按各级均消耗jewelCombine颗上一级宝石推导累计成本为jewelCreat × jewelCombine^(等级-1)，返还50%的统一碎片，先沿用整数ceil，再经过统一关卡倍率结算；不再使用jewelCompose资源奖励。缺失/无效合成成本不销毁宝石。
-- 一键合成（用户新增要求）：自动配组并重复使用同一合成校验/升级实现，合成产物及腾位后按原规则补位的碎片生成宝石继续参与，直到无组可合成。只处理背包，跳过已镶嵌及可选运行态locked/disabled标记；本轮未新增锁定界面或存档字段。异常校验或已报告save_error时不提交临时结果；成功仅保存/通知一次。结果按ID+等级合并，只统计最终留在背包的新高等级产物；“累计消耗”包含后续被再合成的中间产物。无可合成时提示“当前没有可合成宝石”，不保存、不刷新背包。
-- 插槽按equipmentSocket的装备等级|数量分段开放；para_1限制武器/防御/全部，同装备禁止重复ID，不同装备允许。镶嵌移出背包，卸下先检查空格。卸装备/换舰时宝石随模块保留，不占用背包空间、不受满包阻止；单独卸下宝石仍检查背包空格。
-- 2026-09-22整体重做取代旧点击即替换及满包拒绝规则：先选模块、孔位，再选候选；点击孔位/候选均只预览，悬停不改变目标，必须点击「镶嵌/替换」执行。满包允许等量原子替换，新宝石离包、旧宝石回包后统一结算，不产生临时空位补入新宝石。同ID可替换目标自身，仍禁止与其他孔重复；「卸下」独立执行，仍需空位。停用及空模块可查看、取回保留宝石；有装备的停用模块可配装，但不参与战斗。空模块仍不能接收新镶嵌。
-- 2026-09-22新增原位升级：当前已镶嵌宝石作为一颗材料，从背包自动选择jewelCombine−1颗同ID同等级可用宝石；复用原合成校验/产物逻辑，升级结果留在原孔。满级、保护标记、无效成本、材料不足、过期token均拒绝且不扣材料；成功只保存并通知一次，腾位碎片按原规则补入。无需新存档字段。
-- func是原表中文功能定义，代码以声明的行为适配10种效果，不执行任意文本、不在战斗处判断宝石ID。熟练/适应使用所属装备历史攻击/受伤次数；log10输入至少1，显示和增益按整数百分比round。吸铁按武器来源累计至para_4上限；电子干扰增加受伤并死亡爆炸；连发延后0.5秒且不递归触发；维修、抗性、坚韧仅作用所属防御；蓄能选中普通武器时结束CD并增益下次齐射；选中持续光束时不清CD，改为当前不断束期间持续增伤（详见下述光束蓄能规则）。
-- 暴击宝石先加para_2暴击率，再乘(1+para_4×宝石等级)，最终夹取0～1；基础暴伤读取baseCriDmg。发射时只判定一次，倍率进入原弹体伤害和抗性结算，已发出的弹体保留发射时效果。装卸/读档重新派生，不能累积写回基础属性。
-- 当前架构适配口径：防御共用原生命/护盾总量，运行时记录模块受损分配以防维修跨模块；受击按各模块剩余数值比例分配，再各自减免。外部升级/容量变化只协调分配差量；不保存战斗现场。爆炸作用上下各两格，沿用触发弹体伤害类型与既有抗性流程。
-- 所有新碎片来源经settle_jewel_fragments结算：基础数量乘level.jewelRatio，四舍五入至小数后2位；旧配置缺列按1，0倍率有效。掉落记录生成关卡的倍率，避免跨关拾取套错倍率；迁移存量不再乘倍率。
-- 每分钟获取量复用resource_samples的最近60秒实际掉落收入（已含倍率）；分解属于返还、离线属于补结算，均不回灌生产统计。离线沿用offlineMax上限，以保存的实际每秒产量 × 离线秒数进入统一结算，倍率取1避免重复乘，随后批量生成并保留余数；无旧碎片费率的旧档不虚构离线收入。
-- 宝石图片走Godot资源加载。2026-09-22用户要求提升视觉品质：10种默认宝石使用assets/jewels/premium/crystal-atlas.png透明切面图集，保留各ID的形状/颜色识别；jewel.image中的默认assets/jewels/<id>.svg路径由展示层映射到图集，其他自定义路径仍优先，正式配置不改。jewel旧para_3保留为原表字段，已不参与碎片需求与校验。
-- 持久数据为背包id/level、碎片、装备sockets及攻击/受伤历史；运行时宝石token防过期点击，保存时不写入；旧档缺字段初始化为空。宝石面板按token复用滚动网格控件，结构变化只增减对应格子、排序移动原格子，合成/排序/拾取只写变化属性；镶嵌额外更新对应装备卡。插槽数变化只增减插槽按钮，隐藏面板停刷，静止时无属性写入/额外重绘。
-- 宝石中心（2026-09-22）：点击「宝石」页签直接显示现有中心，取消工坊按钮中转页；页签导航移至面板上方，可直接切换其他页面。顶部通用「返回战场」负责退出宝石页，宝石面板不再提供独立关闭按钮；Esc从宝石页返回战场。从装备镶嵌入口打开仍定位对应模块，Esc关闭后保留装备页。2026-09-23按参考图收至1340×648，左上(50,127)、底边775；宝石页签导航从y96开始，最上排标题/资源/通用返回维持原位，面板不覆盖底部音效按钮。打开不暂停战斗；视觉采用分层深色金属面板、切面宝石大图、右侧晶体展示台。取消模式页签及独立合成/分解页，顶部直接提供「一键合成」，处理整个背包且不受搜索/可镶嵌筛选影响；结果在右栏显示，选择模块/孔位/宝石后恢复镶嵌详情。保持左模块列表、中孔位与五列候选、右详情和明确操作。支持模块内切换、名称/等级搜索、等级/类型排序，默认只显示当前孔可镶嵌的宝石；显示全部时给出类型/重复冲突原因。未开放孔显示等级条件。格子以边框/底色区分选择、可合成、MAX、新获得及不兼容；直接属性降低用橙色及文字提示，触发效果列出新旧说明。涉及历史累计的效果按当前选择模块预览。模块、搜索、排序及滚动在关闭重开时保留；从装备入口打开定位对应模块。预览仅对装备副本调用既有伤害/容量/暴击计算，其他触发效果对比已有说明，不推导虚构DPS。0.16～0.3秒动画仅作用相关图标/数值，不延迟业务结算；音效遵守原开关。
-
-## 存档与交互边界
-
-- 2026-09-17用户确认：宝石背包仅由显式打开操作（宝石页签/装备镶嵌按钮）显示，默认创建时隐藏，重建UI时仅在当前已选宝石页签时恢复显示；碎片拾取、战点/关卡切换和普通刷新不得打开。战斗与巡航切换的星空拖尾平滑过渡，避免整批瞬时开关导致背景亮度跳变；暂停冻结该视觉过渡。
-
-- 2026-09-21 装备信息架构：底部统一「装备」页按模块逐一展示，包括空模块和停用模块；卡片含模块编号、装备名、图标、等级、核心属性和状态。保持左总览/筛选、中网格、右详情；右侧装备选择器直接换装，模块升级和卸下原位执行。默认紧凑，200ms 展开至约 81% 屏高；卡片保持 235×43，网格三列变四列并增加可见行，背景仅变暗且战斗继续。Esc 收起；筛选、排序、模块选择、详情状态及各模式滚动位置保留。概览显示核心信息和操作；详细信息在右栏显示 CD、完整机制参数、条件、宝石和费用。战舰页复用已有舰体图与挂点坐标，候选预览只读；明确显示启用/停用模块数量，点击确认切舰。当前舰体挂点可跳转至对应装备模块。
-- UI刷新职责（2026-09-16用户确认）：卡片与其他UI只更新自身变化及有明确依赖的关联部分；普通状态变化不销毁重建无关页签。隐藏页签停止逐帧刷新，显示时补齐当前状态；资源、空闲科学家和科技/充能增益的关联反馈保留。初始化、显式配置重载及确实变化的结构区域允许必要构建，持续动画限于其绘制区域。
-
-- 关卡编辑器（2026-09-16用户确认）不提供atkRatio/lifeRatio/resRatio编辑，不检查三项数值或公式缓存；已有关卡按ID保留对应分表单元格及缓存，不重算。新增ID沿用编辑器原默认1。普通Excel导入仍保持完整校验；长度、遭遇位置及引用等编辑器检查不变。
-
-- 现行存档兼容旧装备等级、缺槽位/充能字段。2026-09-20 用户确认：退出游戏或 QA 重启后恢复当前关卡及节点进度，巡航保留距离和已完成节点，战斗重新生成当前节点敌人，不重打前面的节点；不持久化敌人血量、弹体及冷却。通关待切换状态及未确认的装备解锁保留，等待计时重新开始。死亡回退期间保存回退目的地，恢复后继续原驻守死亡处理。已到达的驻守地点恢复但不恢复旧战斗计时；未到达则保留前往驻守点的进度。旧档缺节点进度或字段无效时沿用最高可进入关卡/有效驻守点恢复，旧loop无有效驻守地点时关闭。
-- 旧科技计时体系已弃用；缺新版科技标识时重置旧科技/科学家/点数及炉周期/铁块，其他进度保留。不重复领取同一离线区间；异常退出仅能用最近成功保存记录（U-008）。
-- 页签未解锁不展示，新页出现保留选择；当前页重锁回退首个可见页。2026-09-22 用户确认将「战场」页签改为界面顶部的「返回战场」按钮，下方默认选中首个可见功能页（通常为装备）。返回关闭宝石覆盖面板、收起装备大页并选择首个可见页，恢复战场与底部装备区域；全部功能未解锁时不选功能页，顶部返回仍可用。入口不改变战斗、进度或镜头状态。战舰页在第二艘舰解锁后显示，只列已解锁舰。2026-09-21 用户要求充能页改为能源核心、能源总线、配置驱动的模块节点与右侧详情。页内显示全部配置模块，未解锁节点可查看但不能操作，替代此前隐藏未解锁卡片的表现；整个充能页仍按既有解锁门槛显示。状态统一为 charging / paused / insufficient / available / locked；资源不足优先于活动状态，禁用操作并显示橙色警告，预付资源仍可使用，补充资源后沿用原活动状态自动恢复。少量模块自适应宽度，多模块一屏约六个并支持横向滚动/翻页；添加系统槽位说明配置扩展，不创建未定义的游戏机制。资源核心展示真实可用余额、当前可运行充能系统每秒消耗（按倍速折算）、近一分钟平均产出及其净变化，按资源分组，不虚构容量或独立能源；净变化不包含其他游戏开支。视觉增强沿用现有布局，环形仪表直接显示充能比例；选中为细青边，运行另有亮边/微光与流动，暂停为蓝灰、断料为橙黄、待机为普通青色、锁定为深灰。分页每屏最多约六个槽位，页码包含尾部扩展槽；离屏/隐藏/暂停模块停动画，可见流动上限 30 Hz。
-- 科研不再提供拖拽换位；列表兼容旧排序并过滤空位，配置变化局部增减，普通刷新保留页签、焦点和滚动。换舰通过启用舰体按钮提交；自由换装和卸下直接执行，模块资产保留。
-- 科学家MAX状态随资源/锁定即时更新，暂停亦然。充能/研究进度暂停或断料保留。伤害显示按2026-09-16用户要求：同一受击目标的数字存续期间，新伤害累加到原数字，消失后重新计数；敌我均适用，不同敌舰按实例独立累计。保留原0.9秒显示寿命，不因累加延长，实际伤害逐次结算不变；BOSS卡只显示当前末场活敌，死亡后其余位置不跳。
-- BOSS信息按关发现，末场首次生成才揭示并持久化，前置大型舰不泄漏末场内容；旧已通关档视为已发现。
-- 关卡编号、装备/充能/高科技等级及批量升级级数显示完整整数（2026-09-17用户确认），不截断、不使用K/M/B/T；其余数量沿用统一格式化，敌生命显示截断前两位有效数字，不改真实生命/血条。描述是受限算术/幂模板，失败显示“？”而非执行调用；科技百分比截断，充能百分比round，不能强制统一。像素/颜色/炮口坐标由现有实现与专项保护。
-
-- 持续光束表现（2026-09-18用户确认）：视觉强度随连续命中倍率同步成长；每CD结算有小型灼烧短闪，首次满功率小亮核反馈（2026-09-18本轮降噪要求替代原命中环/大爆闪），中断后短暂残光收缩。反馈不参与伤害结算，暂停冻结。
-
-- 光束蓄力表现：炮口聚光、向内收拢的光环与旋转短射线，目标之间保留弱瞄准线；蓄满进入现有首击闪光。蓄力不显示增伤/满功率反馈，中断仅在炮口消散，暂停冻结。
-
-- 光束双发（2026-09-18用户要求第二条光束且尽可能不同目标；实现细化）：主光束每次新锁定蓄力完成后的首次发射仅判定一次既有双发概率，触发后沿用0.5秒延迟；后续周期伤害不再判定，同挂载点最多一个待发/存活副光束，副光束不递归双发。副光束优先锁定同挂载点尚未占用的敌人，无其他敌人则同目标；独立蓄力与增伤，应用追加攻击倍率。副光束死亡/丢失不使仍持续的主光束重新判定；只有主光束断束后重新锁定并首次发射才重新判定；主光束中断取消尚未发出的副光束，已发副光束按自身目标/挂载生命周期运行，卸装清理两者。
-
-- 光束蓄能（2026-09-18用户确认）：蓄能宝石判定到持续光束时，增伤保留到该光束中断，不清CD、不跳过蓄力。按既有规则同类增益取较高倍率而非叠乘。挂载点已有主/副光束均绑定各自实例，断束/换目标后各自失效；后续新生副光束不继承旧实例增益。无有效光束时沿用待发增益，下一主光束创建时消费并绑定该实例。普通武器仍清CD且仅增强下次齐射。
-
-- 导弹炮口（2026-09-18用户确认）：同一武器的单发/双发/三发/多发及宝石追加齐射共用当前真实炮口出生位置，多发只增加数量，不生成额外发射点。显示轨迹仅在发射后展开，初始方向跟随炮口朝向；伤害/CD/锁敌/宝石规则不变。
-
-- 战斗视觉降噪（2026-09-18用户确认）：普通敌只常驻血条；同目标普通/持续伤害按200ms固定窗口合并，实际暴击独立合并；每目标同时最多2条，超额最旧条80ms内淡出后再显示新条。默认精简；全部保留伤害类型分组但仍合并、限量和避让；关闭仅隐藏伤害。普通15px浅灰白、暴击19px金色，取消负号、统一K/M/B/T等约三位有效数字，设置详情保留最近40次完整事件数值。每条600ms、轻微上浮，目标上方固定候选区域避让数字/舰船/血条，无安全位置的提示最多等待300ms后省略；不无限向上堆叠。选项和详情仅属于本次UI会话。弹体/尾焰/拖尾/命中分开缩放；普通接触闪光80ms、短促明亮的定向火花，无范围圈；暴击沿用实际判定强化亮核并带短小冲击环；击杀碎片/消散约0.55秒，掉落仅延后显示，不延后业务生成/拾取。拾取提示按资源短窗口合并至战场底部。密集区域优先裁减烟雾/环/长尾迹/装饰粒子，保留弹体与接触亮核；舰船血条清晰优先。中央短提示承接波次，不改敌实际槽位、射程或任何战斗结果。
-
-- 武器反馈增强（2026-09-18用户本轮确认）：保留小弹体及信息精简，按武器单独增强瞬间反馈，不统一压低大小/亮度。导弹增强明亮锥形尾焰、短渐隐尾迹和命中爆闪；火炮强化局部后坐、亮弹头和定向火花；持续光束常态低辉光，发射/伤害脉冲短增强，命中点清晰可见。击杀显示舰体分裂与碎片消散。通过缩短烟雾、拖尾和冲击环寿命控拥挤，不恢复方块尾焰、矩形辉光或覆盖舰体的大圆盘；战斗数值与判定不变。
-
-- 我方舰船显示（2026-09-18用户确认）：默认整体放大25%，倍率可配置，敌舰不变；炮台/挂点/舰体装饰同步缩放，三类炮台以长炮管/发射箱/能量核心和深色衬底亮边区分。弹体及闪光从放大后的可见炮口出现，实际战斗坐标与飞行结算保持原逻辑，武器特效尺寸独立。舰名随大型舰体下移避让，血条/操作区保留。当前实现仍为单我方舰，多舰仅做布局预览；炮台已有独立显示旋转，未新增舰队机制。
-
-- 炮台旋转（2026-09-18用户要求）：我方每个炮台围绕真实挂点独立旋转，朝当前目标平滑追踪，失去目标后回正、暂停冻结；可见炮口、闪光、光束及蓄能同步旋转。默认显示实现为左右85度、240度/秒，可配置；导弹一轮齐射同炮口同朝向，离膛后展开，主光束目标决定本挂点朝向。转向不作为发射门槛，不改变原伤害/CD/射程/实际弹道或宝石触发。
-
-- 未解锁舰体展示（2026-09-21 用户确认）：舰体列表与选中预览仅显示剪影和预计解锁关卡，不显示名称、槽位数、挂点、属性或操作；解锁后恢复完整展示，门槛读取 unlock 中对应 ship 行。
-
-- 模块卡片状态优先级：可升级时以高亮「可升级」覆盖装配/空模块文案；不可升级时显示实际装配状态，停用模块始终显示停用。筛选仍保留装配与可升级两个独立条件。
-
-- Debug 数值实验室（2026-09-21 用户要求）：独立新局实例复用原战斗、升级、换装、宝石、充能与经济规则，固定随机种子，以 1/60 秒步长支持 1x/10x/100x/1000x 目标速度；不读取、修改或覆盖正式存档。自动策略、指标、参数扫描仅属实验工具，不改变正常游戏规则或正式配置。F8 打开，关闭窗口恢复正常游戏；发行版禁用，Debug 总开关为 `debug/balance_lab/enabled`。第二版支持单参数队列扫描、独立 JSON Baseline、配对五策略、时间轴、决策密度和带证据的分级诊断，不提供模糊总评分；诊断不是自动改数值或证明设计失衡。策略与统计口径、操作说明见 [BALANCE_LAB](BALANCE_LAB.md)。
+GEMS/CREW/UI
+- Current gem types: weapon 1/4/5; defense 2/3/6. No old types. Fragments pooled; bag cap 200. Threshold/base from config. Convert into highest tier and at most 2 lower tiers, discard smaller remainder; if entire batch cannot fit, retain fragments. One-click chain combine then remove bag gems >10 levels below each type's highest (socketed gems count for highest but are never removed). Socketed upgrade in place; no disassembly. Equal-size replacement works when bag full; standalone unsocket needs free space. Disabled module keeps gem but disables effect.
+- First planet unlocks on level 30 clear. Only idle crew explores; exploration/building crew cannot take another job. Exploration gives degree+XP, never a direct stat bonus. Pause freezes; offline does not catch up. `planet_build` owns applicability/order/construction/effects; threshold-crossing trips do not count toward construction. Buildings finish in a pending-activation state and release builders; effects require explicit activation. Existing built saves remain active. Pending activation persists across load and shows a planet navigation badge. Station activation defaults automatic normal trips on; the setting survives recall, crew replacement, reforge and load. Only the player toggle changes this preference after unlocking; an enabled setting without a crew does not dispatch anyone. Old saves without a preference default on only for a built station. Refinery affects direct iron/uranium drops only (production uses pre-refinery receipts); workshop uses the shared equipment stat layer. Shipyard reforge starts at planet.reforgeStartLevel (default 1), restores previously obtained unlocks through that stage via the existing unlock system, and retains crew/planet permanent progress. Earlier stages grant no skipped combat income. Seen unlock notices persist across reforge and load; only unseen unlocks prompt again. `planet_buff` derives permanent modifiers from that progress: conquest activates only after reforge; equipment/hightech bonuses change effect levels, not actual levels or costs; free charge consumes no allocation and can exceed 100% (visuals stop at full); newly generated gems receive a real level bonus once, never on load or combination. Buff descriptions come from ordered table rows; dynamic building formulas remain in `planet_build`.

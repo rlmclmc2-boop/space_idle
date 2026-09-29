@@ -93,9 +93,9 @@ static func data_key(section: String, id: String, field := "name") -> String:
 	if not loaded: reload_catalog()
 	return str(bindings.get(section, {}).get(id, {}).get(field, ""))
 
-static func data_text(section: String, id: String, field := "name") -> String:
+static func data_text(section: String, id: String, field := "name", fallback := "") -> String:
 	var key := data_key(section,id,field)
-	return t(key) if not key.is_empty() else id
+	return t(key) if not key.is_empty() else (fallback if not fallback.is_empty() else id)
 
 static func formulas(key: String) -> Array:
 	if not loaded: reload_catalog()

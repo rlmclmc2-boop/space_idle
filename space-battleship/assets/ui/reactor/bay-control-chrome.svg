@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1364" height="220" viewBox="0 0 1364 220">
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#17374a"/>
+      <stop offset=".16" stop-color="#091b2b"/>
+      <stop offset=".82" stop-color="#061522"/>
+      <stop offset="1" stop-color="#102d3e"/>
+    </linearGradient>
+  </defs>
+  <path d="M416 133H1297L1318 141V199L1303 205H415L402 199V142Z" fill="url(#steel)" stroke="#4a7586" stroke-width="2"/>
+  <path d="M418 136H1296M410 204H1306M411 171H1306" fill="none" stroke="#20485d" stroke-width="2"/>
+  <g fill="#03121f" stroke="#39758a" stroke-width="1">
+    <rect x="412" y="137" width="39" height="34" rx="2"/>
+    <rect x="457" y="137" width="156" height="34" rx="2"/>
+    <rect x="618" y="137" width="677" height="34" rx="2"/>
+    <rect x="422" y="171" width="754" height="34" rx="2"/>
+    <rect x="1185" y="171" width="123" height="34" rx="2"/>
+  </g>
+  <path d="M408 146V196M1311 146V196M420 134H470M1239 134H1290M419 204H468M1240 204H1290" fill="none" stroke="#69d8ef" stroke-opacity=".46" stroke-width="2"/>
+  <g fill="#b4752f" opacity=".85">
+    <rect x="406" y="147" width="3" height="12"/>
+    <rect x="1310" y="147" width="3" height="12"/>
+  </g>
+</svg>

@@ -1,0 +1,285 @@
+{
+  "config": {
+    "directory": "G:/放置/space-battleship/results/level-weak-fixture/generated_levels",
+    "focus_stable_stop": true,
+    "max_per_pair": 3,
+    "max_seconds": 30,
+    "max_total": 3,
+    "mode": "fast",
+    "module_delta": 1,
+    "runs": 3,
+    "samples_per_tag": 1,
+    "seed": 1000045
+  },
+  "data_sha256": "cc351c4ee85817046e27b275ae8d436de396c42c2bc8a5291cb3216bfccc1359",
+  "display_names": {
+    "enemies": {
+      "1": "激光飞船",
+      "10": "巨型-6武器-抵抗物理",
+      "11": "旗舰-8武器-抵抗能量",
+      "12": "旗舰-8武器-抵抗物理",
+      "2": "火炮飞船",
+      "3": "激光飞船-弱",
+      "4": "火炮飞船-弱",
+      "5": "中型-抵抗物理",
+      "6": "中型-抵抗能量",
+      "7": "大型-双武器-抵抗能量",
+      "8": "大型-双武器-抵抗物理",
+      "9": "巨型-6武器-抵抗能量"
+    },
+    "equipment": {
+      "armour": "复合装甲",
+      "cannon": "磁轨火炮",
+      "cannon-mon": "cannon-mon",
+      "laser": "脉冲激光",
+      "laser_mon": "laser_mon",
+      "longLaser": "持续锁定光束",
+      "longLaser-mon": "longLaser-mon",
+      "missile": "追踪导弹",
+      "missile-mon": "missile-mon",
+      "shield": "偏转护盾"
+    }
+  },
+  "enemy_fleets": [
+    {
+      "analysis_version": 2.0,
+      "batch_seed": 71.0,
+      "composition": {
+        "1": 1.0
+      },
+      "config_fingerprint": "d337a6cf9a49a5be1857d988e2c6d6986b8dc1d338a738d1589f7c20329adb4f",
+      "count": 1.0,
+      "description": "",
+      "feature_notes": {
+        "aoe": "hostile_single_target",
+        "armor": "matching_type_reduction",
+        "mobility": "stationary_enemies",
+        "range": "no_range_stat",
+        "shield": "no_enemy_shield",
+        "sustained": "peak_uninterrupted_base_dps"
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "armor": 0.5,
+        "burst": 0.0208333333333333,
+        "durability": 0.0833333333333333,
+        "fleet_size": 0.1,
+        "mobility": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "single_target": 1.0,
+        "sustained": 0.0416666666666667
+      },
+      "fleet_power": 9.0,
+      "formation": "symmetric",
+      "formation_metrics": {
+        "grouping": 1.0,
+        "layering": 0.75,
+        "spacing": 1.0,
+        "symmetry": 1.0
+      },
+      "formation_positions": [
+        {
+          "id": 1.0,
+          "pair": -1.0,
+          "role": "core",
+          "slot": 5.0,
+          "x": 0.0,
+          "y": 1.0
+        }
+      ],
+      "formation_score": 0.97,
+      "formation_tags": [
+        "symmetric"
+      ],
+      "formation_type": "symmetric",
+      "generation_options": {
+        "available_enemies": [
+          "1"
+        ],
+        "count": 1.0,
+        "max_count": 1.0,
+        "max_strength": 1000000.0,
+        "min_count": 1.0,
+        "min_strength": 0.0,
+        "seed": 71.0
+      },
+      "hull_score": 0.333333333333333,
+      "max_ship_power": 9.0,
+      "mixed_score": 0.0,
+      "primary_tags": [
+        "fragile",
+        "light"
+      ],
+      "raw_totals": {
+        "armor": 0.5,
+        "burst": 20.0,
+        "durability": 500.0,
+        "hull": 2.0,
+        "single_target": 1.0,
+        "strength": 9.0,
+        "sustained": 40.0
+      },
+      "scale": "small",
+      "secondary_tags": [
+        "single_target"
+      ],
+      "seed": 837329523.0,
+      "ship_count": 1.0,
+      "ship_power": {
+        "1": 9.0
+      },
+      "signature": "[1]",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "strength": 18.0,
+      "tags": [
+        "fragile",
+        "light",
+        "single_target",
+        "symmetric"
+      ],
+      "type_count": 1.0
+    }
+  ],
+  "engine": "4.7.2-stable (official)",
+  "player_loadouts": [
+    {
+      "analysis_version": 1.0,
+      "batch_seed": 42,
+      "config_fingerprint": "d11ca69486a01b5f44c8a9ff5fc42d6ef0b5ecc2abf71ec68503133eb54f11cb",
+      "equipment": {
+        "defence": [
+          {
+            "key": "armour",
+            "level": 1
+          },
+          {
+            "key": "shield",
+            "level": 1
+          }
+        ],
+        "weapons": [
+          {
+            "key": "cannon",
+            "level": 1
+          },
+          {
+            "key": "cannon",
+            "level": 1
+          },
+          {
+            "key": "cannon",
+            "level": 1
+          }
+        ]
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "attack_rate": 0.2,
+        "balanced": 0.0,
+        "burst": 1.0,
+        "multi_target": 0.0,
+        "single_target": 1.0,
+        "survival": 0.75,
+        "sustained": 0.333333333333333
+      },
+      "generation_options": {
+        "available_ships": [
+          "Frigate"
+        ],
+        "cleared_through": 70.0,
+        "count": 1,
+        "module_level": 1.0,
+        "seed": 42
+      },
+      "generation_type": "canonical_mono",
+      "loadout_id": "player_6c291108bc5717f1a7b0d6d905624962dea55addef556477894acf61b71c65f0",
+      "notes": [
+        "baseline_modifiers",
+        "theoretical_firepower",
+        "no_range_or_aoe",
+        "mount_order"
+      ],
+      "seed": 42,
+      "ship": "Frigate",
+      "signature": "6c291108bc5717f1a7b0d6d905624962dea55addef556477894acf61b71c65f0",
+      "stats": {
+        "aoe": 0.0,
+        "armour": 1000.0,
+        "attack_rate": 3.0,
+        "burst": 600.0,
+        "movement": 50.0,
+        "multi_target": 0.0,
+        "range": 0.0,
+        "shield": 500.0,
+        "sustained": 600.0
+      },
+      "tags": [
+        "high_burst",
+        "single_target"
+      ],
+      "weapons": [
+        {
+          "key": "cannon",
+          "level": 1
+        },
+        {
+          "key": "cannon",
+          "level": 1
+        },
+        {
+          "key": "cannon",
+          "level": 1
+        }
+      ]
+    }
+  ],
+  "sampling": {
+    "covered_tags": [],
+    "quota_skipped": 0,
+    "representatives": {
+      "enemy": [
+        0
+      ],
+      "player": [
+        0
+      ]
+    },
+    "sampled_pairs": 1,
+    "similar_skipped": 0,
+    "stable_stopped": 0,
+    "tested_pairs": 0,
+    "theoretical_pairs": 1
+  },
+  "sampling_policy": {
+    "boundary_high": 0.7,
+    "boundary_low": 0.3,
+    "candidate_attempts": 20.0,
+    "long_seconds": 45.0,
+    "max_pairs": 512.0,
+    "max_samples_per_tag": 20.0,
+    "short_seconds": 0.5,
+    "similarity": 0.08,
+    "stable_high": 0.9,
+    "stable_hp": 0.65,
+    "stable_low": 0.1,
+    "stable_streak": 3.0,
+    "stable_time_cv": 0.1,
+    "stat_similarity": 0.15,
+    "tag_difference": 0.4,
+    "time_cv": 0.35,
+    "variance": 0.16
+  },
+  "step_seconds": 0.0166666666666667
+}

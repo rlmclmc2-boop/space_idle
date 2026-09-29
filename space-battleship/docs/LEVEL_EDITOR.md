@@ -1,19 +1,6 @@
-# 关卡编辑器
-
-双击项目内 `关卡编辑器.cmd`，或游戏 F1 的 QA 窗口点击「关卡编辑器」。这是独立 Godot 场景，不启动战斗、不读取玩家进度。Windows 引擎放入 `engine/`，也可通过 `SPACE_BATTLESHIP_GODOT` 指定；Python 与 QA 共用 `SPACE_BATTLESHIP_PYTHON` 及现有依赖 openpyxl/lxml。
-
-1. 在「敌方飞行器 / 敌方飞行器组 / 关卡配置」切换数据。左侧搜索所有字段，支持新增、复制、删除；右侧编辑当前记录。切换记录自动保留内存草稿。
-2. 敌机可编辑 ID、描述、武器、生命、伤害倍率、抗性、掉落及外观尺寸等级size（正整数）。武器和掉落使用原分表格式。
-3. 编队用十个下拉框按从上到下选择敌机。关卡逐条添加/移除遭遇，选择编队及位置比例（0.1 表示10%），按位置升序排列；单格与末场通关含义见[PROJECT](PROJECT.md)。
-4. 点击「更新预览 / 保留本条草稿」查看引用和遭遇顺序；「校验草稿」检查完整分表投影，尚不写入。「保存并导入」也会自动保留当前输入，然后校验、备份并提交。
-5. 保存成功后在 QA「重启游戏」使用新配置。配置同步操作见[README](../README.md)，不要重复执行总表同步。
-
-保存来源是 `config_excel/mon.xlsx`、`monGroup.xlsx`、`level.xlsx`，同时更新 `data/game_data.json` 和导入指纹。未改分表保留原始字节，修改分表只更新工作表数据 XML，保留头部、包内样式及对应单元格样式。三表以外来源仅参与跨表校验；总表不回写。
-
-关卡 atkRatio、lifeRatio、resRatio 不显示编辑框，也不校验数值、公式及缓存。已有ID对应的单元格原样保留，不重算；新增ID沿用默认1，需要调整时在分表中维护。其他数字字段支持本表单元格引用、四则运算和 ROUND，仍校验并更新公式缓存。关卡ID必须从1连续；增删记录后原公式地址保持原样，需要在分表中核对引用。普通Excel读取的完整校验保持不变。
-
-被编队引用的敌机、被关卡引用的编队需先解除引用再删除。修改 ID 后需同步修改引用；保存时禁止悬空引用、重复 ID、非法数值/武器/资源。编队/通关规则由PROJECT维护，不在本页另设一套校验标准。
-
-编辑期间如果分表、清单或运行 JSON 被外部修改，拒绝覆盖并提示重新加载。每次保存前将受影响文件的旧版本保存到 `.runtime/level-editor-backups/<批次>/`，写入失败尝试批量回滚；回滚自身失败仍可能半提交或丢失备份，限制见[STATUS](STATUS.md) U-019/U-020，不保证任意故障可恢复。恢复时关闭编辑器，将同批次文件按相对路径复制回项目，再重新加载。不要混用不同批次的文件。
-
-校验和图形测试入口见[test/README](../../test/README.md)，隔离要求遵循[AGENTS](../AGENTS.md)。
+# LEVEL_EDITOR: editor-only rules
+OPEN: 关卡编辑器.cmd or F1 QA; independent scene, no battle/player progress. Runtime setup: [README](../README.md).
+- Edit enemies, 10-slot groups, level encounters; switching record keeps draft. Validate draft=no write. Save/import includes current input -> validate -> backup -> commit; QA restart loads result.
+- WRITE ONLY config_excel/{mon,monGroup,level}.xlsx + data/game_data.json + import fingerprints. Other sheets=reference validation; no legacy workbook write. Unchanged sheets byte-identical; changed sheet updates data XML, keeps style. External source/manifest/target JSON change -> reject overwrite.
+- Level atkRatio/lifeRatio/resRatio: no editor UI/formula/cache validation; existing IDs preserve cells/cache, new IDs=1 then maintain in sheet. Other numeric fields support same-sheet refs,+,-,*,/,ROUND and cached-value checks. Level IDs contiguous from 1; add/delete does not relocate old formula refs. Standard import still full-validates.
+- Referenced enemy/group: unlink before delete; ID change updates refs. Reject dangling refs, duplicate IDs, invalid number/weapon/resource. Backup per batch at .runtime/level-editor-backups/; failed commit attempts rollback, which can also fail. Restore only while editor closed, same batch+relative paths; see STATUS U-019/U-020.

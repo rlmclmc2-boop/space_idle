@@ -1,5 +1,9 @@
 # 高科技原型美术：第二版结构 + 第三版能量
 
+## 战场炉产物
+
+`furnace-iron-cache.png` 与 `furnace-jewel-core.png` 是 1254×1254 RGBA 透明素材，分别表现橙色铁矿块、紫色三晶宝石核心。2026-09-26 使用内置 `image_gen.imagegen` 生成，原件为 `exec-a17709f2-b5c6-47dc-8e9b-e8d443c6569d.png` 与 `exec-d6be6016-339f-4d55-9ada-805b76fc2132.png`。提示词分别要求单个熔炉产出的深色含铁矿石、细小熔融纹理，以及一大两小紫晶和金属托架；两者均要求透明背景、居中、缩至 32–40 像素可辨、无文字/背景/UI。`scripts/main.gd` 的 `draw_furnace_drop` 以 56×56 绘制图像，叠加色环与寿命进度；不显示资源文字，不改变拾取或产量。普通资源继续用原有图形。
+
 用户确认：沿用第二版悬浮结构、细线与留白，叠加第三版沿结构生长的能量；不再用简单几何替代确认稿。内部科研规则、AI 费用/分配与进度不变。
 
 - `approved-concept.png`：用户确认的 B+C 概念图，作为视觉参考，不在运行时加载。
@@ -27,8 +31,12 @@ All four are fully assembled versions of the approved reference, with no missing
 
 ## 接入与扩展
 
+共享大厅使用 `hall-background-v2.png`（1536×1024），由内置 imagegen 生成并接入 `scripts/hightech_hall.gd`；不包含 UI、建筑或平台。它替代程序绘制的重复吊架、网格和大圆底座。完整生成提示词及来源见 [hall-background-v2.prompt.md](hall-background-v2.prompt.md)。
+
 图集、顺序图在所有建造舱之间共享；每舱只持有独立进度/能量参数。首个实例一次性从素材提取四项施工分区与真实亮部落点，随后释放CPU图集像素。分区按底座、支撑、环弧、核心推进；蜂窝片与每颗晶体作为完整组件。同一分区内三架AI对准真实结构像素，并跟随12档局部生长前沿。组件内部使用固定不规则阈值逐点凝聚、柔化边缘；暂停时阈值不变。炉的收尾仅补齐真实能量丝亮点，避免中央矩形缺口。能量只增强已有亮线，时钟由可见动画采样驱动，不使用自动TIME。
 
-新增配置自动使用通用线框原型。新增专属美术时按同一提示词制作素材，并在 `scripts/hightech_construction.gd` 的 PROFILES 登记稳定科技ID、shape、color、texture、grid、cell；现有四项texture/grid默认指向本图集/2×2。单张新图可设置texture=preload(...), grid=Vector2i(1,1), cell=Vector2i(0,0)。可在assembly_region中按shape定制组件分区；无专用配方使用通用分区。不以中文名称判断、不修改研究业务，不需要调整页面结构。
+未登记美术的配置暂用现有炉体图集作为蓝图占位，不再生成几何建筑。新增专属美术时在 `scripts/hightech_construction.gd` 的 PROFILES 登记稳定科技ID、shape、color、texture、grid、cell；单张图用 grid=Vector2i(1,1)、cell=Vector2i(0,0)。不以中文名称判断、不修改研究业务或页面结构。
+
+平台、底部一体控制台和按钮采用参考图生成的 PNG，来源、提示词、尺寸与消费者见 [reference-v2.prompt.md](reference-v2.prompt.md)。标题、页面外沿和选中标记保留既有纹理。`unrevealed-bay.svg` 是共用的无身份蓝图，不使用未解锁项目的轮廓或类型色。扫描与施工效果仍由动态层绘制。
 
 运行时分区图属于程序生成的建造遮罩，不修改生成的原始PNG。不同材料共用原图坐标，因此最终造型始终来自确认美术，而非独立拼装的近似几何。

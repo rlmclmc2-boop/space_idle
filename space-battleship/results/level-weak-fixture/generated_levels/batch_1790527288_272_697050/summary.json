@@ -1,0 +1,55 @@
+{
+  "aggregate": {
+    "attempted_count": 3,
+    "avg_battle_time": 1.33333333333333,
+    "avg_enemy_hp_ratio": 0.0,
+    "avg_player_hp_ratio": 1.0,
+    "battle_count": 3,
+    "errors": 0,
+    "stopped": 0,
+    "timeouts": 0,
+    "win_rate": 1.0,
+    "wins": 3
+  },
+  "budget": 3,
+  "completed_count": 3,
+  "config": {
+    "directory": "G:/放置/space-battleship/results/level-weak-fixture/generated_levels",
+    "focus_stable_stop": true,
+    "max_per_pair": 3,
+    "max_seconds": 30,
+    "max_total": 3,
+    "mode": "fast",
+    "module_delta": 1,
+    "runs": 3,
+    "samples_per_tag": 1,
+    "seed": 1000045
+  },
+  "remaining_budget": 0,
+  "sampling": {
+    "covered_tags": [
+      "enemy:fragile",
+      "enemy:light",
+      "player:high_burst",
+      "player:single_target",
+      "player:type:canonical_mono",
+      "player:weapons:cannon",
+      "pair:[[\"fragile\",\"light\"],[\"high_burst\",\"single_target\",\"type:canonical_mono\",\"weapons:cannon\"]]"
+    ],
+    "quota_skipped": 0,
+    "representatives": {
+      "enemy": [
+        0
+      ],
+      "player": [
+        0
+      ]
+    },
+    "sampled_pairs": 1,
+    "similar_skipped": 0,
+    "stable_stopped": 1,
+    "tested_pairs": 1,
+    "theoretical_pairs": 1
+  },
+  "status": "budget_reached"
+}

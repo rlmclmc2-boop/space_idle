@@ -50,7 +50,7 @@ func setup(owner_ui: Node) -> void:
 		var thumbnail := TextureRect.new()
 		thumbnail.position = Vector2(8,6)
 		thumbnail.size = Vector2(80,58)
-		thumbnail.texture = host.SHIP_TEXTURES[key]
+		thumbnail.texture = host.ship_hull_texture(key)
 		thumbnail.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		thumbnail.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		thumbnail.material = silhouette
@@ -76,10 +76,6 @@ func setup(owner_ui: Node) -> void:
 	information.append(host.equipment_card_label(self,UIText.t("ship.refit.mounts"),Rect2(1080,120,240,52),13,host.MUTED))
 	result = host.equipment_card_label(self,"",Rect2(1080,770,240,74),16,host.CYAN)
 	result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	var hint: Label = host.equipment_card_label(self,UIText.t("ship.refit.keep"),Rect2(1080,865,240,105),13,host.MUTED)
-	hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	hint.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	information.append(hint)
 	confirm = Button.new()
 	confirm.position = Vector2(1080,1032)
 	confirm.size = Vector2(240,56)
@@ -115,7 +111,11 @@ func refresh() -> void:
 		host.set_ui_value(choices[key],"text",text)
 		if host.ui_state_changed(choices[key],[candidate==key,current==key]):
 			choices[key].add_theme_stylebox_override("normal",host.style(Color("183341") if candidate==key else Color("0c1c2b"),host.CYAN if candidate==key else Color("87caa8") if current==key else host.LINE))
-	host.set_ui_value(picture,"texture",host.SHIP_TEXTURES[candidate])
+	host.set_ui_value(picture,"texture",host.ship_hull_texture(candidate))
+	var preview_scale: float = host.player_art_scale_for(candidate)/0.36*1.3
+	var preview_size := Vector2(760,500)*preview_scale
+	host.set_ui_value(picture,"size",preview_size)
+	host.set_ui_value(picture,"position",Vector2(380,410)-preview_size*0.5)
 	var locked: bool = not host.game.ship_unlocked(candidate)
 	host.set_ui_value(picture,"material",silhouette if locked else null)
 	host.set_ui_value(heading,"text",unlock_hint(candidate) if locked else UIText.data_text("ship",candidate,"des"))
@@ -151,7 +151,7 @@ func refresh() -> void:
 			var text: String = prefix+" · Lv."+str(entry.get("level",1))
 			var enabled := index<capacity
 			if category=="weapons" and enabled:
-				var center: Vector2 = host.SHIP_VISUALS.center(candidate,index)*760.0/1774.0+Vector2(380,410)
+				var center: Vector2 = host.player_mount_center(candidate,index).rotated(-PI/2)*preview_size.y/(1774.0*float(host.battle_visual.player_core_scale))+Vector2(380,410)
 				host.set_ui_value(button,"position",center-Vector2(36,16))
 				host.set_ui_value(button,"size",Vector2(72,32))
 			else:

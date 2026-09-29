@@ -42,6 +42,14 @@ var sample := 0.0
 var built := -1
 var parts: Array[PackedVector2Array] = []
 var effects: Control
+var unknown_art: TextureRect
+var research_pending := false:
+	set(value):
+		if research_pending==value:return
+		research_pending=value
+		if is_instance_valid(art):art.visible=not value
+		if is_instance_valid(unknown_art):unknown_art.visible=value
+		if is_instance_valid(effects):effects.queue_redraw()
 
 class Effects extends Control:
 	var construction: Control
@@ -50,15 +58,24 @@ class Effects extends Control:
 
 func setup(key: String) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var profile: Dictionary = PROFILES.get(key,{"shape":"prototype","color":Color("74dad4")})
+	var profile: Dictionary = PROFILES.get(key,PROFILES[BattleGame.FURNACE])
 	shape = profile.shape
 	accent = profile.color
+	# Equal peak intensity for every construction hue, including violet.
+	accent = accent.lerp(Color(accent.get_luminance(),accent.get_luminance(),accent.get_luminance()),0.18)
+	accent *= 0.86/maxf(accent.r,maxf(accent.g,accent.b))
 	if profile.has("cell"):
 		atlas_cell = profile.cell
-		setup_art(key,profile)
+		setup_art(key if PROFILES.has(key) else BattleGame.FURNACE,profile)
 	else:
 		make_parts()
 	effects = Effects.new()
+	unknown_art=TextureRect.new()
+	unknown_art.texture=preload("res://assets/hightech/unrevealed-bay.svg")
+	unknown_art.size=ART_SIZE
+	unknown_art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	unknown_art.visible=research_pending
+	add_child(unknown_art)
 	effects.construction = self
 	effects.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(effects)
@@ -105,6 +122,7 @@ func set_workers(value: int) -> void:
 		worker_targets[i]=Vector2.ZERO
 		worker_settled[i]=0
 	assigned = value
+	if art_material!=null:art_material.set_shader_parameter("working",assigned>0)
 	effects.queue_redraw()
 
 func celebrate() -> void:
@@ -118,6 +136,13 @@ func celebrate() -> void:
 
 func advance(delta: float, paused: bool) -> void:
 	if paused or not active_in_view():return
+	if research_pending:
+		sample+=delta
+		if sample>=1.0/24.0:
+			phase+=sample
+			sample=0.0
+			effects.queue_redraw()
+		return
 	if assigned<=0 and completed<=0 and completion_cooldown<=0:return
 	completion_cooldown = maxf(0,completion_cooldown-delta)
 	# Acceptance fades are brief, image-wide changes. Interpolate their uniforms
@@ -369,28 +394,6 @@ func rebuild_mesh() -> void:
 			batch.outline(poly,accent.darkened(0.27),1.1)
 	mesh = batch.finish()
 
-func _draw() -> void:
-	if art==null:rebuild_mesh()
-	draw_rect(Rect2(0,0,296,304),Color("07121f"))
-	var grid := PackedVector2Array()
-	for i in 9:
-		var x := 16.0+i*33
-		grid.append_array(PackedVector2Array([Vector2(x,290),Vector2(148+(x-148)*0.55,226)]))
-	for y in [240.0,253.0,268.0,287.0]:
-		grid.append_array(PackedVector2Array([Vector2(17,y),Vector2(279,y)]))
-	draw_multiline(grid,Color("142a3c"),1)
-	if art!=null:return
-	var deck := PackedVector2Array([Vector2(28,260),Vector2(91,237),Vector2(242,241),Vector2(274,265),Vector2(218,290),Vector2(74,286)])
-	draw_colored_polygon(deck,Color("102435"))
-	draw_polyline(closed(deck),Color("355468"),1.5,true)
-	var ticks := PackedVector2Array()
-	for y in range(24,251,15):
-		ticks.append_array(PackedVector2Array([Vector2(12,y),Vector2(18 if y%3==0 else 15,y)]))
-	draw_multiline(ticks,Color("375066"),1)
-	draw_mesh(mesh,null)
-	draw_multiline(PackedVector2Array([Vector2(31,56),Vector2(31,255),Vector2(264,56),Vector2(264,255)]),Color("243b4c"),3)
-	draw_multiline(PackedVector2Array([Vector2(31,65),Vector2(31,104),Vector2(264,65),Vector2(264,104)]),accent.darkened(0.5),2)
-
 func closed(poly: PackedVector2Array) -> PackedVector2Array:
 	var result := poly.duplicate()
 	result.append(poly[0])
@@ -446,11 +449,26 @@ func worker_welding(worker: int) -> bool:
 	return target!=Vector2.ZERO and target==worker_targets[worker] and worker_settled[worker]>=0.12 and worker_positions[worker].distance_to(worker_destination(worker,target))<=2.0
 
 func draw_effects(layer: Control) -> void:
-	if completed>0:
-		var y := 270.0-(1.25-completed)/1.25*220
-		var fade := smoothstep(0.0,0.16,1.25-completed)*smoothstep(0.0,0.3,completed)
-		layer.draw_line(Vector2(38,y),Vector2(258,y),Color(accent,0.22*fade),8,true)
-		layer.draw_line(Vector2(38,y),Vector2(258,y),Color(accent,0.85*fade),1.5,true)
+	if research_pending:
+		draw_scan_ring(layer,256.0-fposmod(phase*30.0,225.0),0.32,phase*0.4)
+		return
+	# A completed construction only keeps a quiet platform halo; no welding/scanning.
+	if completed>0 or fraction>=1:
+		draw_scan_ring(layer,268,0.25,phase*0.1)
+		return
+	if assigned>0 and fraction<1:
+		var scan_y := 256.0-fposmod(phase*44.0,225.0)
+		draw_scan_ring(layer,scan_y,0.8,phase)
+		draw_scan_ring(layer,267,0.6,-phase*0.7)
+		draw_scan_ring(layer,44,0.38,phase*0.45)
+		for i in 5:
+			var x := 76.0+float(i)*36.0
+			layer.draw_line(Vector2(x,260),Vector2(x,26),Color(accent,0.075),10,true)
+			layer.draw_line(Vector2(x,260),Vector2(x,26),Color(accent,0.25),1,true)
+		for i in 26:
+			var x := 52.0+fposmod(float(i)*53.0,194.0)
+			var y := 265.0-fposmod(phase*(18.0+float(i%4)*8.0)+float(i)*17.0,238.0)
+			layer.draw_line(Vector2(x,y),Vector2(x,y+4),Color(accent,0.32+0.3*sin(phase+i)),1.4,true)
 	if assigned<=0:return
 	var count := mini(3,assigned)
 	if art==null and built>=0 and built<parts.size():layer.draw_polyline(closed(parts[built]),Color(accent,0.58),1.3,true)
@@ -466,3 +484,15 @@ func draw_effects(layer: Control) -> void:
 		if welding and sin(phase*11+i)>0:
 			layer.draw_line(target-Vector2(3,0),target+Vector2(3,0),Color("ffe3aa"),1,true)
 			layer.draw_line(target-Vector2(0,3),target+Vector2(0,3),Color("ffe3aa"),1,true)
+
+func draw_scan_ring(layer: Control, y: float, opacity: float, rotation: float) -> void:
+	var color := Color("607d89") if research_pending else accent
+	var ring := PackedVector2Array()
+	for i in 65:
+		var angle := TAU*i/64
+		ring.append(Vector2(148+cos(angle)*113,y+sin(angle)*20))
+	layer.draw_polyline(ring,Color(color,opacity*0.12),8,true)
+	layer.draw_polyline(ring,Color(color,opacity),1.2,true)
+	for i in 4:
+		var angle := rotation+TAU*i/4
+		layer.draw_circle(Vector2(148+cos(angle)*113,y+sin(angle)*20),2.3,Color(color,opacity))

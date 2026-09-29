@@ -59,7 +59,7 @@ func wire_cards() -> void:
 		if c.construction.art!=null:c.construction.art.draw.connect(count_draw.bind("art",c.construction))
 		c.construction.effects.draw.connect(count_draw.bind("fx",c.construction))
 		scene.hightech_titles[key].get_parent().draw.connect(count_draw.bind("cards"))
-		for field in ["label","state","percent","workers"]:c[field].draw.connect(count_draw.bind("labels"))
+		for field in ["label","state"]:c[field].draw.connect(count_draw.bind("labels"))
 
 func count_nodes(node: Node) -> int:
 	var result := 1

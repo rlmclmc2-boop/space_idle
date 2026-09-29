@@ -13,7 +13,7 @@ func _initialize() -> void:
 	call_deferred("run")
 
 func click(control: Control) -> void:
-	var point := control.get_global_rect().get_center()*Vector2(root.size)/Vector2(2048,1280)
+	var point := control.get_global_rect().get_center()*Vector2(root.size)/root.get_visible_rect().size
 	for pressed in [true,false]:
 		var event := InputEventMouseButton.new()
 		event.position = point
@@ -37,10 +37,19 @@ func run() -> void:
 	var tabs := scene.equipment_tabs
 	var pages := tabs.get_children().filter(func(child):return child is Control and child!=tabs.get_tab_bar())
 	var page_identity := pages.duplicate()
-	check(not tabs.tabs_visible and scene.system_nav_buttons.size()==7,"Vertical navigation replaces the visible tab strip")
+	check(not tabs.tabs_visible and scene.system_nav_buttons.size()==8,"Vertical navigation includes the final chrono page")
 	check(scene.battle_clip.position.x<scene.system_nav.get_global_rect().position.x and scene.system_nav.get_global_rect().end.x<scene.workspace_frame.get_global_rect().position.x,"Battle, navigation, workspace are three separate columns")
 	check(scene.workspace_frame.size.x>scene.system_nav.size.x*6,"Workspace owns the remaining width")
 	check(scene.global_status_label.text.contains("1") and scene.global_status_label.get_global_rect().end.y<78,"Global status is in the header")
+	var header_controls: Array[Control] = [scene.global_status_label,scene.resource_mode_button,scene.music_button,scene.loop_select,scene.loop_button,scene.guard_settings,scene.sound_button,scene.help_button]
+	for left in header_controls.size():
+		for right in range(left+1,header_controls.size()):
+			check(not header_controls[left].get_global_rect().intersects(header_controls[right].get_global_rect()),"Header controls do not overlap: %d/%d" % [left,right])
+	var resource_columns := [Rect2(Vector2(scene.RIGHT_UI_OFFSET+scene.position.x+65,18),Vector2(205,48)),Rect2(Vector2(scene.RIGHT_UI_OFFSET+scene.position.x+280,18),Vector2(205,48))]
+	for column in resource_columns:
+		for control in header_controls:
+			check(not column.intersects(control.get_global_rect()),"Resource text stays clear of "+control.name)
+	check(not resource_columns[0].intersects(resource_columns[1]),"Resource columns stay separate")
 	scene.game.paused=true
 	scene.refresh_draw_layers(0)
 	check(scene.global_status_label.text==UIText.t("battle.stage",{"stage":str(scene.game.stage)})+" · "+UIText.t("hud.state.paused"),"Paused status updates without rebuilding the header")

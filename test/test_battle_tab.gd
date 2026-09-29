@@ -53,8 +53,8 @@ func run() -> void:
 	var battle: Node = scene.battle_layer
 	var resources: Node = scene.resource_layer
 	var card: Node = scene.equipment_panel.cards.weapons_0
-	var unrelated: Array = [scene.loop_select,scene.loop_button,scene.guard_settings,scene.resource_mode_button,scene.hightech_inventory,scene.charge_cards.values()[0].title]
-	check(not tabs.tabs_visible and scene.system_nav_buttons.size()==7,"System navigation is vertical")
+	var unrelated: Array = [scene.loop_select,scene.loop_button,scene.guard_settings,scene.resource_mode_button,scene.hightech_inventory,scene.reactor_panel.level_label]
+	check(not tabs.tabs_visible and scene.system_nav_buttons.size()==8,"System navigation is vertical")
 	check(not scene.has_method("toggle_battle_focus"),"Main screen has no battle focus mode")
 	var baseline := snapshot(scene)
 	for index in range(5):
@@ -64,7 +64,7 @@ func run() -> void:
 		if index==4:check(scene.jewel_panel.visible,"Jewel navigation opens the center")
 		check(snapshot(scene)==baseline,"Navigation does not change combat state: "+str(index))
 		check(scene.battle_layer==battle and scene.resource_layer==resources and scene.equipment_panel.cards.weapons_0==card,"Controls survive navigation: "+str(index))
-		check(unrelated.all(func(control):return not scene.writes.has(control)),"Navigation leaves unrelated controls untouched: "+str(index))
+		check(unrelated.all(func(control):return (index==2 and control==scene.reactor_panel.level_label) or not scene.writes.has(control)),"Navigation leaves unrelated controls untouched: "+str(index))
 		check(battle.visible and resources.visible and scene.battle_clip.position==scene.BATTLE_ORIGIN,"Battle stays fixed beside workspace: "+str(index))
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/workspace-navigation.png")

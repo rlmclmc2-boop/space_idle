@@ -1,122 +1,31 @@
-# 数值实验室 / Balance Lab
+# BALANCE_LAB: F8/F9 simulation contracts
+SRC: actual thresholds/budgets in data/*analysis*.json, data/auto_level_generation.json, relevant scripts. Performance/FAST details: [PERF](BALANCE_PERFORMANCE.md).
 
-## 打开与运行
+ISOLATION: F8 Lab and F9 fleet/auto-level use private cfg, rule objects, RNG; no game save/formal cfg/main-game write. In-game outputs: ../test/work/; portable tool: own results/. Portable tool from tools/build_result_analyzer.py bundles same rule+cfg snapshot; rebuild after rule/cfg change. Repro requires same cfg/strategy/engine RNG version/seed; mismatched old-batch fingerprint rejects retest. F9 2D formation is DEBUG preview/scoring, not battle position; real combat uses original ten-slot row.
 
-使用项目的 Debug 引擎启动游戏，在主游戏窗口按 **F8**。发行版不会打开或加载实验室。`project.godot` 的 `debug/balance_lab/enabled=false` 可以整体关闭入口和运行器。
+FLEET GENERATOR
+- Select structure template -> fill paired positions using existing ship attributes; reject out-of-range count/strength/formation without relaxing bounds. Composition signature=sorted nonempty ship IDs including multiplicity, independent of slot/order; bounded attempt exhaustion -> partial+attempt_limit, not proof search space exhausted.
+- Strength is static filter, not difficulty/win rate. Missing mobility/shield/range/AOE -> score 0; NO inference from ID/name/projectile speed/armor/visual. Burst=base volley without startup CD; sustained=theoretical damage/CD without hit/path loss; armor=matching original resistance, not universal effective HP. Labels from cfg thresholds+priority and actual properties.
+- Whole batch seed and record seed differ; replay checks cfg fingerprint. UI filter changes visibility only; regenerate/clear may replace dataset.
 
-运行一次 100 倍、1 小时实验：
+PLAYER LOADOUT
+- Use original BattleGame unlock/loadout/stat interfaces and profile.loadout schema, independent test progress+module level; no player save, assumed economy, gems, tech, planets or reactor. Sampling fills usable defense, >=1 armor for positive HP; test restriction, not gameplay rule. Same equipment may repeat. Multitarget missile != AOE; absent range cannot imply near/far.
+- Bounded sample types: all-one weapon, exactly two types, >=3 balanced types, random legal. Unavailable type reported, never force-unlocked. Signature includes ship+full ordered slots+levels; seed/tags excluded. pair() deep-copies; pair_by_index stops at shorter side, no cartesian product. create_battle verifies fingerprints, replay and full input, then private original-rule battle without advancing time.
 
-1. 速度选择 **100x**，时长选择 **1 小时**。
-2. 次数填写 **1**，种子填写整数，例如 **12345**。
-3. 留在“快速模拟”页，策略选 BALANCED，点击“开始”。
-4. 完成后查看报告；JSON、完整 CSV 和扫描汇总 CSV 自动保存。“保存 JSON / CSV”可以再次保存到修改后的目录。
+BATCH
+- Both-side "all"=sampling pool, not full cross product. Sample representatives per tag; remove same-signature/near duplicates within stratum; cover both sides then bounded fill. Manual focus highest priority but still capped. Selected inputs replay-validated; out-of-range/stale focus rejected. Schedule coarse -> targeted extra tests for boundary, outcome/time variance, tag difference, manual focus; stable early stop except manual. Dynamic sampling biases counts; sampled stats != population-unbiased win rate.
+- Each match new private BalanceGame, original combat chain, fixed 1/60 game-second. EXACT/FAST selected; first clear=win, first death=loss; timeout/stop/error -> win=null, excluded from valid win rate. Error continues other pairs; file-write failure stops batch. Free game per match; bound in-memory UI/history.
+- inputs.json records inputs/strategy/fingerprint; battles.jsonl streams matches; pairs.jsonl+summary.json retain partial results on stop/budget exhaustion. No fabricated untested-pair stats. Battle seed=batch seed+actual sequence; same input order/seed/strategy/cfg/engine needed to reproduce.
+- battle_time=fixed-step game time; player_hp_ratio=remaining armor/initial armor (shield excluded); enemy_hp_ratio=whole fleet remaining/initial HP; weapon damage=actual enemy HP removed (no overkill). Means only valid win/loss matches; zero valid -> null. Similarity/limit skip counts are input instances, not theoretical skipped pairs.
 
-四档目标速度为 1x / 10x / 100x / 1000x。时长预设为 10 分钟、1 小时、10 小时，也可填写自定义秒数。每组重复 1～100 次。种子范围为 ±2147483647。
+ANALYSIS / AUTO-LEVEL
+- Analyze ended batch inputs/pairs/summary only; NO battle replay. Reject missing/corrupt/duplicate/inconsistent records; unknown old time M2 -> time_cv=null, never invented. Output analysis_summary.json + enemy/player/weapon/pair/level_candidates.csv. All win_rate=player wins; tests=valid outcomes; excluded statuses separate. Overlapping tag/mixed-weapon groups cannot be summed as total.
+- Reliability uses sample size, Wilson descriptive interval, excluded share, time variation per cfg. Adaptive stopping forbids strict frequency-coverage claim. Low reliability -> no strong conclusion. Weapon/combination findings are observed full-loadout associations, confounded by ship/level/defense; NO intrinsic weapon counter or general population inference.
+- All generated fleets remain level candidates, including untested fleets. Auto-level can take current generated fleets directly or import an old batch to reuse compatible +0 pairs. Prior +0 outcomes never decide level viability. Auto-level uses a bounded canonical weapon archetype set and searches each fleet/loadout from +0 upward; +N calls the original upgrade_slot on every equipped weapon/defense module in a private save-disabled profile, not stat multipliers. Each level stops at the configured pass win rate or cap; budgets retain partial/unbeatable records. Level waves include every tested fleet; the last wave must satisfy configurable large-hull and ship-count limits. Order levels by required module progress and separate similar fleets. Whole-level difficulty is estimated from individually tested waves, not a combined replay. Export proposal + evidence; no formal level write.
+- Legacy batch/result/retest backends remain available for saved data; their standalone tabs are no longer part of the direct fleet-to-level workflow. Retest validates saved inputs against current combat data and never invents untested pairs or merges incompatible combat configs.
+- Default cards show composition, Chinese labels, observed results, purpose, reliability; technical IDs/details in detail/CSV. No mechanism/counter claim inferred from ship name.
 
-“暂停/继续”保留当前进度；“停止”保存明确标为 partial 的当前结果及此前已完成结果，不运行剩余任务；“重置”清除内存任务与报告，不删除已导出的文件。关闭窗口暂停实验、恢复正常游戏；再次按 F8 可以继续。实验窗口可见时主游戏停止推进，原有暂停标记和游戏状态不会被实验实例覆盖。
-
-默认导出目录为项目旁的 **`test/work/balance_lab/`**，即本工作区的 `D:\放置\test\work\balance_lab\`。面板可修改目录。文件名包括日期、时间及进程时钟后缀，每次保存新文件：
-
-- `balance_*.json`：完整配置、配置数据 SHA-256、引擎版本、各轮数据、异常和聚合统计。
-- `balance_*.csv`：`path,value` 长表，包含所有嵌套数据与空统计项，便于透视和比较。
-- `balance_*_scan.csv`：参数、平均最终关卡、平均 TTK、首次死亡时间、平均升级间隔、资源盈余，并包含策略、Boss TTK、死亡、DPS 增长与决策指标。
-
-导出失败会在报告区显示错误；内存报告仍保留，可修改目录后重新保存。
-
-## 自动玩家 v2
-
-策略只调用现有业务接口，没有另写战斗或成长规则。默认从真实初始新局开始，不导入玩家存档，不赠送资源或解锁。
-
-- 每 1 个游戏秒作一次决策：确认解锁、继续关卡，选择武器及防御槽位都不减少的已解锁舰体。
-- 所有策略每秒通过原业务接口决策，每次最多 12 次有效模块升级；升级比较相对属性收益与成本占余额的比例。无收益或不可支付选项不参与。
-- BALANCED：槽位分散配置已解锁武器，优先让新类型参与；装甲/护盾交替，攻防权重均为 2，危险时防御权重为 4。
-- DAMAGE_FIRST：优先理论收益最高的武器，攻击权重 6，防御权重 1（危险时 2）。
-- DEFENSE_FIRST：同样比较武器收益，防御权重 6，攻击权重 1，交替配置装甲与护盾。
-- ECONOMY_FIRST：先购买费用不超过余额 50% 的科学家，优先把空闲科学家投入已解锁炼铁炉，模块权重均为 1。其他非随机策略科学家预算为余额 10%。
-- RANDOM_VALID：每 60 秒或新武器解锁时随机合法换装，第一防御槽保留装甲；随机选择有效可支付升级。策略随机数独立于战斗随机数，使用同一个输入种子派生。
-- 武器估值包含导弹齐射和持续激光的原有增伤查询；持续激光按 6 秒目标存活期估计蓄力与爬升。收益型策略超过当前估值 15% 才换装，不代表实战最优。
-- 科研优先补足已解锁而无人研究的项目，再调用原分配逻辑。充能在资源覆盖 60 秒费率时开启（经济策略为 30 秒），低于 10 秒储备时关闭；实际扣费与升级仍由原系统执行。
-- 每 10 秒调用现有一键合成；按等级从高到低装备合法宝石，仅以更高级宝石替换已有镶嵌。不会拆下已装宝石专门合成，不主动分解。
-- 保留游戏原有自动拾取和拾取损耗，不模拟鼠标主动拾取。
-
-替换 `balance_autoplayer.gd`，或给运行器的 `policy` 提供相同 `act(game, elapsed)` 接口，即可实验另一策略。统计模块不依赖策略内部实现。
-
-## 参数扫描与敏感度
-
-在“参数扫描”页选择实际字段，填写起始值、结束值、步长。上方“次数”是每档、每策略重复数，“时长”是每次游戏时长。例如 `levels/0/lifeRatio`，1.08 → 1.20、步长 0.02、20 次、1 小时，单策略共 140 次。
-
-点击“加入/替换扫描”可排入多个参数；不加队列时直接运行当前选择。最多 20 个不同字段、每参数 101 个点、总计 10000 次。队列逐个参数独立扫描，其他字段恢复原值，**不是多参数笛卡尔积**。选择“全部策略”会在每个参数点分别跑五种策略。各点、各策略使用相同的 `base_seed + repeat_index`。暂停或停止可中断批量任务；停止报告标记 partial。
-
-表格按参数路径、数值、策略排序，输出最终关卡、TTK、Boss TTK、首次死亡、升级间隔、盈余、死亡及 DPS 增长。下方敏感度按各指标分别列出端点斜率和弹性（指标相对变化 / 参数相对变化），不合成总评分。端点相同可能掩盖中间非单调变化，应同时查看各档结果；零基数弹性为空。
-
-路径数组编号从 0 开始。`levels/0/lifeRatio` 仅改变第一关实际生命倍率，不虚构“全局 HP 成长”。目录还包括关卡 atkRatio/resRatio/jewelRatio、装备伤害/CD/成长/费用/防御参数、宝石、充能、科研、敌人以及 config/defaults 数值字段。取值通过基础合法性限制，极端值仍可能超出原公式有效范围。
-
-每轮只覆盖私有数据库原字段，直接调用原游戏公式；正式 Excel、game_data.json、主游戏数据库和存档不变。增加参数：在 `balance_scan.gd:parameters` 对应字段列表登记真实数值路径，按需要补 `valid_value` 边界，并在 `test_balance_v2.gd` 验证实际覆盖与非法值。不要复制战斗公式。
-
-## Baseline 与版本比较
-
-1. 完成一次实验，在“版本对比”页点击“保存当前为 Baseline”。生成独立 `baseline_*.json`，不会覆盖同名文件或正式存档。
-2. 调整数值版本后，用完全相同的策略、种子、时长、扫描范围、重复数和采样设置再次实验。
-3. 同一窗口自动保留 Baseline；重启后把独立 JSON 的完整路径填入该页，点击“加载 Baseline”。加载也会立即比较当前报告。
-4. 表格显示 Baseline、Current、相对百分比；武器贡献使用百分点 pp。基数为零不制造无穷百分比，原值和绝对差仍在 JSON 中。
-
-数据配置 SHA-256 可以不同，这是版本比较目标。实验条件或策略版本不匹配时明确标记不可直接比较，并关闭自动变化诊断；不把样本差异解释成数值修改效果。不完整报告不能保存为 Baseline。多策略/扫描报告以匹配实验集合的聚合均值比较，各组详情保留在原报告。
-
-## 时间轴、决策与诊断
-
-“时间轴”页选择结果轮次，查看快照和事件。“诊断”页按 HIGH / MEDIUM / LOW 展示具体规则、检测时刻、起始时刻、关卡及证据；不会生成总评分。
-
-默认每 30 游戏秒采样，可修改。每轮最多 1200 个快照、5000 个事件；批量共享预算为 20000 个快照、100000 个事件，自动扩大采样间隔并缩减每轮上限。保留起点和最终快照。事件明细截断会提示，累计事件/决策计数继续精确累计。面板每张表最多显示 2000 行，完整保留的数据在 JSON/长表 CSV。
-
-快照包含窗口 DPS、新生成敌人平均 HP、击杀 TTK、每分钟收入、余额、升级间隔、存活比例/受伤速率、武器贡献和系统次数。事件包括 NEW_WEAPON、UNLOCK_SYSTEM、UPGRADE、PURCHASE、EQUIP、GEM_MERGE、GEM_EQUIP、CHARGE_USED、DEATH、BOSS、RESOURCE_BLOCKED。阻塞事件指连续 30 秒无法承担有效模块升级，不代表所有系统都没有可买内容。
-
-决策只统计成功购买、升级、换装、合成、镶嵌、开启充能及新选择解锁。同一时刻的批量动作算一个决策时点，动作总数另外保留；失败操作、重复空点击不计。输出平均决策间隔、含首尾的最长空窗、每 10 分钟决策次数（含零次区间）。最长成长空窗按成功成长事件计算，另有基于 DPS 时间序列的成长停滞诊断。
-
-第二版规则与阈值集中在 `balance_analyzer.gd:THRESHOLDS`，包括：70% 武器垄断、已使用武器贡献低于 3%、普通敌人 TTK 低于 0.5 秒或持续高于 8 秒、防御低价值、死亡突增、成长停滞、升级过密、囤积/资源为零、系统支出集中、DPS 突破/停滞、连续阶段缺少新选择及系统长期停止参与。未尝试武器单独提示，不当作已证实无效。变化告警默认 DPS/升级间隔超过 30%、武器贡献上升超过 20pp。策略明显领先是描述性提示，非统计显著性结论。
-
-## 指标口径
-
-| 指标 | 口径 |
-|---|---|
-| DPS | 实际扣除敌方 HP / 总游戏秒数；另给出只除战斗时间的 combat_dps。过量伤害不计入。 |
-| 武器伤害 | 普通弹体读取原 shot.key，光束读取原 entry.key；命中引发的宝石连锁爆炸归属触发武器。未使用武器也输出零值。 |
-| 敌人 TTK | 本轮出生到击杀的游戏时间；仅统计成功击杀，不把未击杀/撤退清除的敌人当作零秒。 |
-| Boss TTK | 现有末组 encounter 的生成到全部敌人被击杀，按关卡 Boss 战定义，不依赖美术大舰标记。 |
-| 防御 | 实际护盾吸收、实际生命损失、两者合计、绝对最低护盾/生命、死亡次数及首次死亡前的时间/关卡/波次。 |
-| 收入/支出 | 已实际到账资源与已实际扣费；初始余额单独列出。包含宝石碎片生成与花费。充能含购买预付信用的资源，不把尚未消耗的信用退款。 |
-| 升级间隔 | 相邻成功模块升级事件的平均游戏时间；同一决策内多次升级间隔可以为零。另给最长空窗；不足两次升级时为 null。科研完成另记系统次数。 |
-| 装备使用率 | 每秒采样的“至少一个启用模块装配此装备”时间 / 总时间，各装备之和不要求为 100%。不是攻击次数占比。 |
-| 充能使用 | charge 是开启次数，charge_cycles 是完成充能周期数，charge_levels 是升级数，扣费按资源另列。 |
-| 资源盈余 | 扫描表为各资源余额的未加权总和，不代表资源之间有相同价值；详细报告保留各资源余额。 |
-| 重复统计 | mean / min / max / stddev（总体标准差）与有效样本数 count；缺失 TTK、尚未死亡等 null 不参与均值，不替换为零。首次死亡均值仅代表发生死亡的样本。 |
-
-`summary` 提供主要对比指标；`metrics_summary` 覆盖战斗、防御、经济、系统和装备等数值字段。停止的 partial 样本会参与该份报告的统计，比较时应筛掉或单独分组。
-
-第一版兼容告警阈值保留在 `balance_metrics.gd:THRESHOLDS`：单武器占比 70%、低使用率 1%、TTK 0.25～60 秒、升级/支付能力/资源过剩持续 300 秒、资源过剩线为平均每分钟收入的 30 倍。系统未参与和装备未使用可能只是尚未解锁，属于调查提示，不是自动判定设计错误。报告同时保留各系统及装备距最近使用的时间。
-
-## 一致性、性能与限制
-
-- 各档速度都以固定 **1/60 秒**调用原 `BattleGame.tick`；倍率仅改变每个显示帧执行多少步，不放大单次 delta。最后一步按目标时长截断。
-- Lab 使用独立 `RandomNumberGenerator` 和虚拟经济时钟，保证掉落、宝石、暴击及炼铁炉收入窗口不依赖执行机器的墙钟。正常游戏的时钟仍是原有系统时间。
-- Lab 没有战场节点、粒子、拖尾、声音或装备页面。存档函数直接返回；每秒采样装备，事件累加战斗/交易，约每 0.25 秒只更新面板状态。报告只在结束/停止/手动保存时构建和序列化。
-- 防御宝石参与后恢复逻辑的重复属性计算会降低高速模拟倍率。Lab 在单次 `advance_jewel_repair` 调用内按模块对象身份复用宝石效果与属性，结束即释放；不跨步保留，不改变原恢复/受伤公式。空插槽直接返回无效果。正式游戏不启用这项复用。
-- 每轮固定配置通过 `balance_database.gd` 复用原公式生成的装备/敌武器行和宝石效果名称；数值参数先覆盖再创建游戏。行缓存有上限，返回独立副本，不缓存受击/攻击次数、科研/充能等动态战斗增益。单步宝石效果在 tick 结束或换装事件清除，攻击效果副本互不污染。
-- 1x/10x 每帧计算预算约 12ms，100x/1000x 为 48ms，避免低帧率窗口把高速模拟限制在很小的工作片内。预算按完整逻辑步让出控制，单步/结束报告及系统调度可让实际调用略超时；暂停、停止在下一次处理输入时响应。目标 1000x 不能保证达到 1000 倍墙钟速度。面板显示实际平均倍率，CPU 不够时不会通过省略逻辑步来追赶。
-- 正常 1x 游戏使用不超过 1/60 秒的可变尾步，Lab 使用固定步长，发射/碰撞边界可能有小幅量化差异。对比普通游戏 QA 的 2x/5x 墙钟收益不是本工具的一致性目标；Lab 对齐正常 1x 的游戏秒。
-- 自动玩家估值不预测敌抗性、弹道旅行与宝石协同；光束按固定目标存活期估计，Balanced 的混装也不保证覆盖所有装备。相同种子下不同策略会改变战斗随机数的实际调用顺序，不保证遇到完全相同的随机事件。它们不是最优策略，也不代表真实玩家操作。
-- 初始新局可能在解锁宝石/科研之前长期卡关；此时报告中的零参与是有效观测，不通过额外赠送或改规则掩盖。
-- 游戏原有大数科研近似仍然保留。极端扫描值可能导致原有计算溢出；首版不承诺任意数学范围内的配置都有效。
-
-## 文件与验证入口
-
-长期性能诊断默认每约 5 秒真实时间写入输出目录的 `performance_*.jsonl`，不保留内存日志历史。长模拟决策分桶也受每轮采样预算约束，超过预算时输出更宽的 `window_seconds/per_window`，不误标为每十分钟；均值/方差使用在线累计。科研列表与速率仅在一次同步结算内复用，退出清空。容器审计、缓存边界、长时基准及 100 次连续运行测试见 [BALANCE_PERFORMANCE](BALANCE_PERFORMANCE.md)。
-
-第一版代码按职责分为 `balance_runner`、`balance_game`、`balance_autoplayer`、`balance_metrics`、`balance_scan`、`balance_report`、`balance_panel` 七个脚本。第二版新增 `balance_timeline`、`balance_baseline`、`balance_analyzer`、`balance_views`，分别负责有界时间序列、独立基线、诊断和复用表格控件；高关卡性能优化新增 `balance_database`，仅缓存每轮固定配置的原公式投影。`main.gd` 只增加 F8 入口与可见时主场景冻结；`game.gd` 增加可覆写经济时钟及充能历史等级需求查询；Debug 开关在 `project.godot`。新增界面文字及参数登记在既有两份 UI 文案 JSON 中。
-
-专项测试位于项目外 `test/test_balance_lab.gd`、`test/test_balance_metrics.gd`、`test/test_balance_lab_ui.gd`，通过 `python test/run.py <文件名>` 运行。运行器复制项目并隔离用户目录。覆盖跨倍率确定性、真实一小时新局、暂停/停止/重置、扫描与导出、收支守恒、四武器及适用宝石的原实现对照、充能跨级、过量伤害与死亡、F8 和原生窗口键盘操作、冻结恢复、控件身份及截图。
-
-第二版专项 `test/test_balance_v2.gd` 覆盖真实字段队列、配对策略/种子、跨倍率随机策略复现、Baseline 往返与无效输入、快照/事件边界、决策去重及诊断证据；界面专项增加五页签、隐藏页延迟填充、无关行实例保留、Baseline 保存/加载与扫描实际按钮操作。
-
-## 模拟模式
-
-默认 EXACT；策略行可选 FAST（弹体近似），快速测试和 Parameter Sweep 都使用所选模式。FAST 仅移除普通激光/火炮飞行步，导弹和持续光束保留原实现；结果记录 simulation_mode。配对精度与性能测试入口、近似边界见 [BALANCE_PERFORMANCE](BALANCE_PERFORMANCE.md#fast--exactprojectile-第一版)。长时间结论必须以该时长配对实测为准。
+F8 SWEEP/METRICS
+- F8 private new game/economy; visible window pauses main game, close pauses experiment. 1x/10x/100x/1000x change display-frame work count, never skip fixed 1/60 logical step; achieved speed load-dependent. Auto-player strategy != optimal player; no manual pickup.
+- Sweep one whitelisted cfg field at a time in private DB, restore others; paired seeds do not ensure identical RNG consumption across strategies. Baseline comparison requires matched strategy/seed/duration/sweep/repeats/sampling/sim mode; cfg fingerprint may differ. Partial != complete baseline; zero denominator -> absolute diff only.
+- DPS=actual enemy HP removed/total game time; combat_dps uses battle time. Weapon attribution by source, chained effect to trigger weapon; unused != weak. TTK only successful kill. Revenue/cost=actual transactions, initial balance separate. Same-time upgrade interval may be 0; decisions count successful actions. Equipment-use percentages overlap. Missing event=null, not 0. Timeline budgets may widen windows/truncate detail while preserving totals; diagnosis is hint, not design proof. Locked system zero participation is not balance finding.

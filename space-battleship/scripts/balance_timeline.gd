@@ -59,8 +59,7 @@ func discover(game: BattleGame, time: float, initial := false) -> void:
 	var now := {}
 	for key in game.profile.unlocked:now["equipment/"+str(key)] = true
 	if game.jewels_unlocked():now["jewels"] = true
-	for key in game.db.data.get("charge",{}):
-		if game.charge_unlocked(key):now["charge/"+str(key)] = true
+	if game.reactor_unlocked():now["reactor"] = true
 	for key in game.db.data.get("hightech",{}):
 		if game.hightech_unlocked(key):now["research/"+str(key)] = true
 	for key in game.db.ships:

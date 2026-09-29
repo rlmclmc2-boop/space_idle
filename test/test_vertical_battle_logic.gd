@@ -91,7 +91,7 @@ func run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	check(simulation.player==scene.game.player and simulation.enemies==scene.game.enemies,"Visual remapping never mutates combat entities")
-	check(scene.battle_point(Vector2(scene.game.player.x,scene.game.player.y)).y+scene.SHIP_VISUALS.CANVAS.x*scene.player_art_scale()/2<scene.BATTLE_VIEW_SIZE.y,"Largest player hull fits above bottom HUD")
+	check(scene.player_render_position().y+scene.player_visible_tail()+float(scene.battle_visual.player_hud_gap)<=1132.0-scene.BATTLE_ORIGIN.y,"Largest rendered player hull fits above bottom HUD")
 	scene.get_viewport().get_texture().get_image().save_png("res://.runtime/vertical-boss-hud.png")
 	print("Vertical combat logic: ",checks," checks, ",failures," failures")
 	scene.queue_free()

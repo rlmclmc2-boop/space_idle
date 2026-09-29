@@ -39,7 +39,7 @@ func run() -> void:
 	g.assign_scientist(J,-1)
 	# Existing fragment settlement supplies the already multiplied production amount.
 	g.settle_jewel_fragments(12.5,"drop",2.0)
-	g.settle_jewel_fragments(100,"decompose",1.0)
+	g.settle_jewel_fragments(100,"other",1.0)
 	g.settle_jewel_fragments(100,"offline",1.0)
 	check(g.resource_minute_total("jewel",g.now,true)==25,"Only ordinary production enters base, with multiplier once")
 	g.advance_hightech(19.9)

@@ -28,7 +28,7 @@ func _initialize() -> void:
 	var cost := game.slot_upgrade_cost("weapons",0)
 	var before: Dictionary=game.profile.resources.duplicate()
 	var module := game.slot_entry("weapons",0)
-	module.sockets=[game.new_jewel("7")]
+	module.sockets=[game.new_jewel("5")]
 	module.attacks=45
 	module.hits=12
 	for key in BattleGame.WEAPON_KEYS:
@@ -55,7 +55,7 @@ func _initialize() -> void:
 	check(game.weapon_entries().size()==8 and game.defense_entries().size()==4,"Ship only changes active capacity")
 	for i in 8:check(game.equip_slot("weapons",i,"laser"),"Unlimited duplicates fill slot "+str(i))
 	game.upgrade_slot("weapons",7,4)
-	game.slot_entry("weapons",7).sockets=[game.new_jewel("7")]
+	game.slot_entry("weapons",7).sockets=[game.new_jewel("5")]
 	game.slot_entry("weapons",7).attacks=789
 	game.cooldowns.weapons_7=0.2
 	var dormant: Dictionary=game.slot_entry("weapons",7)

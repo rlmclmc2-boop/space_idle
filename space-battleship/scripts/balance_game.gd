@@ -7,6 +7,8 @@ var source_weapon := "unknown"
 # Only known stationary-target, single-hit projectiles are eligible. The original
 # fire caller retains its shot until tick_projectiles, so jewel metadata is intact.
 var simulation_mode := "exact"
+var skip_empty_batch_research := false
+var player_power_multiplier := 1.0
 var pending_hits: Array[Dictionary] = []
 var fresh_shots: Array[Dictionary] = []
 var projectile_tick := 0
@@ -33,6 +35,15 @@ var tick_effect_values: Array = []
 var research_scope := false
 var research_rates := {}
 var research_active: Array = []
+
+func stat(key: String) -> float:
+	var value: Variant = super.stat(key)
+	return value * player_power_multiplier if key in ["armour", "shield"] else value
+
+func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
+	var attack := super.jewel_attack(index, multiplier)
+	attack.damage *= player_power_multiplier
+	return attack
 
 func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	super.fire(source,target,weapon,raw,hostile,key,offset,visual_spread)
@@ -123,29 +134,35 @@ func tick_projectiles(dt: float) -> void:
 	# Reuse impact events, hit functions, death clearing, AOE and gem triggers.
 	super.tick_projectiles(dt)
 
-func research_rate(key: String) -> float:
-	if not research_scope:return super.research_rate(key)
-	if not research_rates.has(key):research_rates[key] = super.research_rate(key)
+func research_rate(key: String, crew_effects: Dictionary = {}) -> float:
+	if not research_scope:return super.research_rate(key,crew_effects)
+	if not research_rates.has(key):research_rates[key] = super.research_rate(key,crew_effects)
 	return float(research_rates[key])
 
-func active_research() -> Array:
-	return research_active if research_scope else super.active_research()
+func active_research(rates: Dictionary = {}) -> Array:
+	if not research_scope:return super.active_research(rates)
+	rates.assign(research_rates)
+	return research_active
 
 func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-	research_active = super.active_research()
+	# Batch loadouts have no scientists, research or furnaces. The guard keeps
+	# the original path for any profile that can advance either system.
+	if skip_empty_batch_research and profile.hightechLevels.is_empty() and profile.scientistAssignments.is_empty() and profile.techPoints.is_empty():return
+	research_active = super.active_research(research_rates)
 	research_scope = true
 	super.advance_hightech(dt,real_dt,end_time)
 	research_scope = false
 	research_rates.clear()
 	research_active.clear()
 
-func advance_jewel_repair(dt: float) -> void:
+func advance_jewel_repair(dt: float) -> bool:
 	repair_cache_active = true
-	super.advance_jewel_repair(dt)
+	var repaired := super.advance_jewel_repair(dt)
 	repair_cache_active = false
 	repair_entries.clear()
 	repair_effects.clear()
 	repair_stats.clear()
+	return repaired
 
 func repair_entry_index(entry: Dictionary) -> int:
 	for index in repair_entries.size():
@@ -174,11 +191,11 @@ func clear_tick_effects() -> void:
 	tick_effect_entries.clear()
 	tick_effect_values.clear()
 
-func jewel_equipment_stat(entry: Dictionary, level := -1) -> float:
-	if not repair_cache_active or level >= 0:return super.jewel_equipment_stat(entry,level)
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
+	if not repair_cache_active or level >= 0 or effects != null:return super.jewel_equipment_stat(entry,level,effects)
 	var index := repair_entry_index(entry)
 	if not repair_stats.has(index):repair_stats[index] = super.jewel_equipment_stat(entry,level)
-	return float(repair_stats[index])
+	return repair_stats[index]
 
 func _init(database: ShipDatabase) -> void:
 	super(database,false)
@@ -264,30 +281,6 @@ func begin_retreat() -> void:
 		metrics.born.clear()
 	super.begin_retreat()
 
-func advance_charge(dt: float) -> void:
-	var before: Dictionary = profile.resources.duplicate()
-	var cycles := {}
-	for key in profile.charge:
-		var job := charge_job(key)
-		if job.active:cycles[key] = {"count":float(job.count),"level":int(job.level)}
-	super.advance_charge(dt)
-	if metrics == null:return
-	var costs := {}
-	for id in before:
-		var paid := float(before[id])-float(profile.resources[id])
-		if paid > 0:costs[id] = paid
-	if not costs.is_empty():metrics.spend("charge",costs)
-	for key in cycles:
-		var job := charge_job(key)
-		var previous: Dictionary = cycles[key]
-		var completed := float(job.count)-float(previous.count)
-		# Normal 1/60 steps cross at most a few levels. Reuse the actual requirement API.
-		var final_level := int(job.level)
-		for level in range(int(previous.level),final_level):
-			completed += charge_required(key,level)
-		if completed > 0:metrics.use("charge_cycles",int(completed))
-		if final_level > int(previous.level):metrics.use("charge_levels",final_level-int(previous.level))
-
 func generate_scientist(amount := 1) -> bool:
 	var before: Dictionary = profile.resources.duplicate()
 	var result := super.generate_scientist(amount)
@@ -297,9 +290,12 @@ func generate_scientist(amount := 1) -> bool:
 		metrics.use("scientists",amount)
 	return result
 
-func toggle_charge(key: String) -> bool:
-	var result := super.toggle_charge(key)
-	if result and metrics != null and charge_job(key).active:metrics.use("charge")
+func upgrade_reactor(amount: int) -> bool:
+	var before := float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))
+	var result := super.upgrade_reactor(amount)
+	if result and metrics != null:
+		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))})
+		metrics.use("reactor_levels",amount)
 	return result
 
 func generate_jewels_into(inventory: Array, fragments: float, serial: int, random: RandomNumberGenerator) -> Dictionary:
@@ -314,8 +310,8 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> flo
 	if metrics != null:metrics.add(metrics.income,"jewel_fragments",result)
 	return result
 
-func combine_all_jewels() -> Dictionary:
-	var result := super.combine_all_jewels()
+func combine_all_jewels(clean_obsolete := true) -> Dictionary:
+	var result := super.combine_all_jewels(clean_obsolete)
 	if metrics != null and result.get("ok",false) and result.get("count",0) > 0:metrics.use("jewel_combine",int(result.count))
 	return result
 

@@ -1,19 +1,13 @@
-# DECISIONS
-
-只记录不知道就容易错误重设计的取舍。旧D-001/D-002归并为D001/D002；规则说明见PROJECT，字段位置见ARCHITECTURE，执行禁令见AGENTS。
-
-| ID | 决定 | 原因 |
-|---|---|---|
-| D001 | 五份文档按执行/领域/结构/现状/取舍分工；按需读取，历史归Git。 | 跨AI共享记忆须小而可定位，不能用长交接替代代码。 |
-| D002 | 保持Godot/GDScript主干和现有目录；不引入ECS、Service层，不机械拆main/game；不同用途入口保留。 | 现有游戏/QA/编辑器边界有实际职责，增加层级会增加跳转。 |
-| D003 | 当前编辑来源是Excel分表，旧总表不是自动覆盖源；JSON仅为投影，缓存可重建。 | 两处编辑无法自动合并；手工平衡两份数据会破坏唯一事实源。操作与结构分别查README/ARCHITECTURE。 |
-| D004 | 装备等级及玩家冷却以槽位为权威；旧名称levels只走兼容边界。普通读取不隐式归一化或修复状态。 | 同名多实例必须独立；迁移只能在明确加载/写入边界发生，不能持续双向同步。细节见ARCHITECTURE。 |
-| D005 | 保留具有不同语义的派生/持久状态：run_resources是本局拾取累计，furnaceIncomePeak是历史窗口峰值，charge.credit是预付未耗资源。 | 它们分别保留统计、历史和连续时间，不能当作余额/loadout重复副本删除或自动同步。 |
-| D006 | incremental_import与Store保持各自接受范围、错误/校验时机及事务模型；仅共享已证明完全等价的小项，不为DRY加入mode/policy层。 | 表面重复不等于相同语义；更严格的Store校验不能悄悄加入普通导入。故障观察通过不证明安全。 |
-| D007 | 性能优化先测量排序，只改可重复获益热点，行为回归后同场景复测；无净收益撤回。优先局部复用，跨帧缓存须明确OWNER/KEY/失效事件/读写者。 | 测量波动和失效同步复杂度可能吞掉收益；不新增全局缓存框架。 |
-| D008 | 保留已授权的大数研究近似：任一活动项可用点≥1e20时所有活动项批量求和，忽略逐级round、每项合并升级事件，炉按末等级估算；等级安全界9e18、无穷预算按1e308，余点保留。 | 这是2026-09-15用户授权的精度取舍，不能误修为精确逐级循环或无意扩展到低数值区间。定位advance_hightech_bulk/test_large_numbers。 |
-| D009 | 科学家MAX可购买性使用首人成本判定，实际MAX购买仍走原购买算法；免费首人不能让MAX布尔判断变成可买。 | 保留免费、多资源、递减、大数和锁定边界，避免布尔刷新枚举全部购买。等价性由test_scientist_affordability保护。 |
-| D010 | Windows x64 使用匹配版本的 Godot release 模板并内嵌 PCK；完整验证后才发布唯一 EXE。 | 原生引擎支持真正单文件，无需启动器/自解压或开发环境。发布版资源内嵌、user:// 独立存档、禁用 QA；构建失败隔离旧包并删除未验证 EXE，不自动降级或改配置。 |
-| D011 | UI 显示以 `data/ui_text.json` 为一般文案源，通过本机表格窗口编辑；参数/公式/配置 ID 映射单独保存在受保护契约中。2026-09-21 用户指定关卡解锁例外：提示标题/描述只读 unlock.title/desc。 | 用户要求只改文字列且不得改参数接口；避免修改数值分表中的名称破坏旧配置键、宝石行为识别与存档。解锁文字随唯一解锁分表导入，稳定ID不随文案变化。其余文字游戏直接读取，发布时内嵌；不引入新的 Manager。 |
-| D012 | 2026-09-21 用户确认模块承载成长，舰体决定启用范围，装备为可自由替换配置；同种装配上限取消。 | 换装不丢投入，少槽舰体保留停用模块，换舰不重开战斗；替代旧换舰草稿、退款和一级重装语义。正式数值配置未改。 |
-| D013 | 2026-09-22宝石中心以模块/孔位为操作目标，候选点击只预览；按后续用户要求取消独立合成/分解页，主界面直接一键合成。满包允许等量替换，已装宝石可原位升级，继续复用原合成和效果入口。 | 用户授权整体重做、允许大页遮挡战场。消除选择状态切换点击语义及满包操作死角，保留成本/效果/归属和存档；不增加通用管理层。 |
+# DECISIONS: long-term constraints only
+| ID | Decision |
+|---|---|
+| D002 | Keep Godot/GDScript and existing game/QA/editor boundaries. No ECS/Service/Manager or mechanical main/game split merely for tidiness. |
+| D003 | Excel sheets are edit source; legacy workbook cannot auto-overwrite; JSON is rebuildable projection. No automatic merge of two editable sources. |
+| D004 | Module slot owns equipment level/player CD; legacy name-based levels only at compatibility boundary. Reads cannot silently normalize/write back. |
+| D005 | run_resources=run pickup total; furnaceIncomePeak=historical peak. Neither is redundant balance. |
+| D006 | incremental_import and Store retain distinct acceptance/validation/transaction semantics; share only proven-equivalent parts, no mode/policy abstraction for dedupe. |
+| D007 | Perf change: measure repeatable hotspot -> preserve behavior -> same-scene remeasure; revert absent net gain. Cross-frame cache needs owner/key/invalidation/readers/writers; no global cache framework. |
+| D008 | IF any active research item has >=1e20 available points: authorized batch approximation applies to all active items; combine per-level events, skip per-level rounding, estimate furnace at final level. Level cap 9e18; unbounded budget 1e308; preserve remainder. Never extend to lower range. |
+| D009 | Scientist MAX availability tests first-person cost; actual buy uses original algorithm. Free first person cannot make MAX falsely available. |
+| D010 | Windows x64 single EXE: matching Godot release template + embedded PCK; publish only after full validation, no silent fallback/unverified artifact. |
+| D014 | True screen reflow requires system-page redesign. |

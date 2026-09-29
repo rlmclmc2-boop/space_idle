@@ -40,12 +40,11 @@ func check_reads(game: BattleGame, label: String) -> void:
 			readers["cost/"+id]=game.slot_upgrade_cost.bind(category,index,10)
 			readers["can/"+id]=game.can_upgrade_slot.bind(category,index,10)
 			readers["max/"+id]=game.max_upgrade_amount_slot.bind(category,index)
-	for key in game.db.data.get("charge",{}):
-		readers["charge/"+key]=game.charge_job.bind(key)
-		readers["required/"+key]=game.charge_required.bind(key)
-		readers["multiplier/"+key]=game.charge_multiplier.bind(key)
-		readers["rate/"+key]=game.charge_resource_rate.bind(key)
-		readers["description/"+key]=game.charge_description.bind(key)
+	readers["reactor/energy"]=game.reactor_energy
+	readers["reactor/cost"]=game.reactor_upgrade_cost
+	readers["reactor/max"]=game.reactor_max_upgrades
+	readers["reactor/allocated"]=game.reactor_allocated
+	for key in game.reactor_modules():readers["reactor/multiplier/"+key]=game.reactor_multiplier.bind(key)
 	for name in readers:
 		var before := snapshot(game)
 		var weapons: Array = game.profile.loadout.weapons
@@ -119,7 +118,7 @@ func _initialize() -> void:
 	check(game.switch_ship("Destroyer"),"Switch unlocked ship")
 	check(game.slot_entry("weapons",1).level==2 and game.slot_entry("defence",1).level==2,"Switch preserves module levels")
 	record(game,"switch ship")
-	var saved := {"version":1,"levels":{"laser":3,"armour":2},"resources":{"1":123,"2":7}}
+	var saved := {"version":BattleGame.SAVE_VERSION,"levels":{"laser":3,"armour":2},"resources":{"1":123,"2":7}}
 	write_save(saved)
 	var restored := BattleGame.new(db)
 	restored.save_enabled=false
@@ -138,7 +137,7 @@ func _initialize() -> void:
 	restored.save_enabled=true
 	restored.save_progress()
 	var exported = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(exported.version==1 and exported.levels.laser==3 and exported.loadout.weapons[1].level==5,"Version one exports derived first level and independent duplicate")
+	check(exported.version==BattleGame.SAVE_VERSION and exported.levels.laser==3 and exported.loadout.weapons[1].level==5,"Current version exports derived first level and independent duplicate")
 	restored=BattleGame.new(db)
 	restored.save_enabled=false
 	restored.start(1,false)
@@ -190,7 +189,7 @@ func _initialize() -> void:
 	before=snapshot(reads)
 	reads.stat("laser")
 	evidence.fresh_stat_mutates=snapshot(reads)!=before
-	check(snapshot(reads)==before,"Fresh stat read cannot create charge state")
+	check(snapshot(reads)==before,"Fresh stat read cannot create reactor state")
 	reads.profile["levels"]={"laser":4}
 	before=snapshot(reads)
 	reads.weapon_entries()

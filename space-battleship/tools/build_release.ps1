@@ -129,7 +129,7 @@ try {
     foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
     foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
     New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
-    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json')) {
+    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json')) {
         Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
     }
     $presetPath = Join-Path $project 'export_presets.cfg'
@@ -229,11 +229,17 @@ try {
     Remove-Item -LiteralPath (Assert-InWork $savePath)
     $frames = Join-Path $run 'final-exe-frames'
     New-Item -ItemType Directory -Path $frames | Out-Null
-    $null = Run $candidate @('--write-movie',(Join-Path $frames 'frame.png'),'--fixed-fps','30','--quit-after','3') (Join-Path $run 'empty-cwd') 'normal-launch' 60 -isolated
+    # Movie Maker retains active Ogg playback on shutdown. Capture visuals with
+    # music off only in the isolated user directory; test default audio below.
+    $musicSettings = Assert-InWork (Join-Path $run 'user/roaming/SpaceBattleship/music_settings.cfg')
+    [IO.File]::WriteAllText($musicSettings, "[audio]`r`nmusic_on=false`r`n", $utf8)
+    try {
+        $null = Run $candidate @('--write-movie',(Join-Path $frames 'frame.png'),'--fixed-fps','30','--quit-after','3') (Join-Path $run 'empty-cwd') 'normal-launch' 60 -isolated
+    } finally { Remove-Item -LiteralPath $musicSettings -Force }
     if (!(Test-Path -LiteralPath $savePath) -or @(Get-ChildItem -LiteralPath $frames -Filter '*.png').Count -eq 0) {
         throw "Final EXE failed to create its own save or rendered frames: $savePath ; $frames"
     }
-    $null = Run $candidate @('--quit-after','90') (Join-Path $run 'empty-cwd') 'normal-relaunch' 60 -isolated
+    $null = Run $candidate @('--verbose','--quit-after','90') (Join-Path $run 'empty-cwd') 'normal-relaunch' 60 -isolated
     Stage 'Publish verified release'
     $hashStream = [IO.File]::OpenRead($candidate)
     $sha256 = [Security.Cryptography.SHA256]::Create()

@@ -16,6 +16,8 @@ finally:
     book.close()
 data = json.loads((root / "data/game_data.json").read_text(encoding="utf-8"))
 assert config["offlineMax"] == data["config"]["offlineMax"]
+for key in ("chronoParticlesPerSecond", "chronoDefaultSpeed", "chronoSpeeds"):
+    assert config[key] == data["config"][key]
 validate_projection(data)
 for value in (0, 0.5, 4):
     probe = copy.deepcopy(data)
@@ -30,4 +32,14 @@ for value in (-1, "bad", float("inf")):
         pass
     else:
         raise AssertionError(value)
-print("Offline config: 7 checks passed")
+for key, value in (("chronoParticlesPerSecond", 0), ("chronoDefaultSpeed", 11),
+                   ("chronoSpeeds", "1|0,2|-1"), ("chronoSpeeds", "1|1,2|0")):
+    probe = copy.deepcopy(data)
+    probe["config"][key] = value
+    try:
+        validate_projection(probe)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError((key, value))
+print("Chrono config: workbook projection and validation passed")

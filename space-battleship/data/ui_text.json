@@ -1,4 +1,2852 @@
 [
+  {"key":"planet.activate","text":"启用","params":"","category":"planet"},
+  {"key":"planet.facility_status_ready","text":"待启用","params":"","category":"planet"},
+  {"key":"planet.log.activated","text":"设施启用：{name}，已投入使用。","params":"{name}","category":"planet"},
+  {"key":"planet.log.heading","text":"探索日志","params":"","category":"planet"},
+  {"key":"planet.log.empty","text":"尚无探索记录。","params":"","category":"planet"},
+  {"key":"planet.log.phase_0","text":"探测船离舰，正在接近目标天体。","params":"","category":"planet"},
+  {"key":"planet.log.phase_1","text":"抵达观测航线，开始扫描周边环境。","params":"","category":"planet"},
+  {"key":"planet.log.phase_2","text":"传感器采样中，逐步补全区域星图。","params":"","category":"planet"},
+  {"key":"planet.log.phase_3","text":"正在复核观测信号，整理本次探测数据。","params":"","category":"planet"},
+  {"key":"planet.log.phase_4","text":"数据回传完成，本次探索结束。","params":"","category":"planet"},
+  {"key":"planet.log.unlocked","text":"设施解锁：{name}，已开放建设。","params":"{name}","category":"planet"},
+  {"key":"planet.log.built","text":"建造完成：{name}，等待启用。","params":"{name}","category":"planet"},
+  {"key": "planet.rewards_heading", "text": "每次收益", "params": "", "category": "planet", "note": "精简探索界面"},
+  {"key": "planet.trip_gain", "text": "探索度 +1", "params": "", "category": "planet", "note": "精简探索界面"},
+  {"key": "planet.duration_compact", "text": "预计 {seconds} 秒", "params": "{seconds}", "category": "planet", "note": "精简探索界面"},
+  {"key": "planet.builder_compact", "text": "船员 {count}/{required}", "params": "{count},{required}", "category": "planet", "note": "精简探索界面"},
+
+  {"key": "planet.work.spectrum", "text": "光谱分析", "params": "", "category": "planet", "note": "恒星探索表现状态"},
+  {"key": "planet.work.radiation", "text": "辐射测绘", "params": "", "category": "planet", "note": "恒星探索表现状态"},
+  {"key": "planet.work.magnetic", "text": "磁场采样", "params": "", "category": "planet", "note": "恒星探索表现状态"},
+
+  {"key": "galaxy.tab", "text": "星系", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.assignment", "text": "星系探索", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.assignment_desc", "text": "派遣船员增加探索工程量；探索完成后增加建筑升级工程量。", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.start", "text": "开始殖民", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.map_hint", "text": "拖动平移 · 滚轮缩放 · 点击建筑查看详情　青色星云表示已探索范围", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.assign", "text": "派遣 {name}", "params": "{name}", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.recall", "text": "召回 {name}", "params": "{name}", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.summary", "text": "{name} · {state}\n探索 {owned}/{total}（{percent}%）　船员 {crew} · 探索船 {ships}\n建筑 {buildings}/{slots}　满级 {max}", "params": "{name},{state},{owned},{total},{percent},{crew},{ships},{buildings},{slots},{max}", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.effects", "text": "本星系：经验 ×{crew}　装备 ×{equipment}\n容量 ×{charge}　碎片 ×{gem}　铁 {iron}/秒　铀 {uranium}/秒", "params": "{crew},{equipment},{charge},{gem},{iron},{uranium}", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.state_locked", "text": "未解锁", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.state_available", "text": "可探索", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.state_exploring", "text": "探索中", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.state_complete", "text": "已完成", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.building_tip", "text": "{name} · Lv{level} · {state}", "params": "{name},{level},{state}", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.constructing", "text": "施工中", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key": "galaxy.built", "text": "已建成", "params": "", "category": "galaxy", "note": "星系系统"},
+  {"key":"planet.work.arriving","text":"正在接近星球 · 准备入轨","params":"","category":"planet","note":"探索艇入轨阶段"},
+  {"key": "planet.task_heading", "text": "探索任务", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.summary_heading", "text": "星球概况", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.task_idle", "text": "待命", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.task_active", "text": "探索中", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.task_paused", "text": "已暂停", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.no_idle_crew", "text": "暂无空闲船员。请解除岗位或召回探索船员。", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.degree", "text": "探索度 {degree}", "params": "{degree}", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_status_locked", "text": "未解锁", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_status_building", "text": "建设中", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_status_built", "text": "已建成", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_remaining", "text": "再探索 {count} 次解锁", "params": "{count}", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_progress", "text": "建设进度 {progress}/{total}", "params": "{progress},{total}", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key": "planet.facility_hint", "text": "悬停查看设施效果", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
+  {"key":"planet.bonuses","text":"星球加成","params":"","category":"planet","note":"当前星球已生效加成入口"},
+  {"key":"planet.bonuses_title","text":"{planet} · 当前加成","params":"{planet}","category":"planet","note":"加成弹窗标题"},
+  {"key":"planet.bonuses_empty","text":"当前星球暂无已生效的加成。","params":"","category":"planet","note":"无已生效加成"},
+  {
+    "key": "planet.work.mapping",
+    "text": "轨道测绘",
+    "params": "",
+    "category": "planet",
+    "note": "探索表现状态，仅展示"
+  },
+  {
+    "key": "planet.work.surface",
+    "text": "表层扫描",
+    "params": "",
+    "category": "planet",
+    "note": "探索表现状态，仅展示"
+  },
+  {
+    "key": "planet.work.signal",
+    "text": "信号分析",
+    "params": "",
+    "category": "planet",
+    "note": "探索表现状态，仅展示"
+  },
+  {
+    "key": "planet.work.deep",
+    "text": "深层扫描",
+    "params": "",
+    "category": "planet",
+    "note": "探索表现状态，仅展示"
+  },
+  {
+    "key": "reactor.allocation_tiny",
+    "text": "<1%",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.allocation_share",
+    "text": "{percent}%",
+    "params": "{percent}",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.control_heading",
+    "text": "能源控制中心",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.control_subtitle",
+    "text": "ENERGY CONTROL",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.expansion",
+    "text": "待扩展",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.expansion_hint",
+    "text": "预留能源接口 · 支持更多模块",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "research.pending",
+    "text": "未研发",
+    "params": "",
+    "category": "research",
+    "note": "research_pending 工位状态"
+  },
+  {
+    "key": "research.unrevealed",
+    "text": "未知",
+    "params": "",
+    "category": "research",
+    "note": "未揭示项目"
+  },
+  {
+    "key": "research.effect.iron",
+    "text": "铁块产量  {value} / {time} 秒",
+    "params": "value,time",
+    "category": "research",
+    "note": "固定高度效果模板"
+  },
+  {
+    "key": "research.effect.jewel",
+    "text": "宝石碎片  {value} / {time} 秒",
+    "params": "value,time",
+    "category": "research",
+    "note": "固定高度效果模板"
+  },
+  {
+    "key": "research.effect.damage",
+    "text": "武器伤害  +{value}",
+    "params": "value",
+    "category": "research",
+    "note": "效果类型与数值"
+  },
+  {
+    "key": "research.effect.health",
+    "text": "生命提升  +{value}",
+    "params": "value",
+    "category": "research",
+    "note": "效果类型与数值"
+  },
+  {
+    "key": "research.effect.generic",
+    "text": "研究增益  {value}",
+    "params": "value",
+    "category": "research",
+    "note": "配置扩展的通用效果模板"
+  },
+  {
+    "key": "formation.summary",
+    "text": "阵型：{type} · 结构评分 {score}",
+    "params": "type,score",
+    "category": "fleet"
+  },
+  {
+    "key": "formation.row.back",
+    "text": "后排",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "formation.row.middle",
+    "text": "中排",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "formation.row.front",
+    "text": "前排",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.symmetric",
+    "text": "左右对称",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.core_wings",
+    "text": "中心核心与两翼",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.front_back",
+    "text": "前后分层",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.double_wings",
+    "text": "双翼展开",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.heavy_guard",
+    "text": "重舰核心与护卫",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.paired",
+    "text": "成对编组",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.formation_rows",
+    "text": "多排阵列",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "fleet.tag.loose_symmetric",
+    "text": "松散对称",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.title",
+    "text": "自动关卡",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.title",
+    "text": "周期关卡",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.notice",
+    "text": "选取已有分析结果，设置周期，生成后筛选预览并导出 Excel。只分配现有敌群；原关卡倍率保留，新关卡倍率列留空。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.source",
+    "text": "选择 generated_levels.json 分析文件",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.browse",
+    "text": "选择分析文件",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.level_count",
+    "text": "关卡数",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.battle_points_per_level",
+    "text": "每关战点",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.small_cycle",
+    "text": "小周期",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.large_cycle",
+    "text": "大周期",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.strength_tolerance",
+    "text": "强度容差",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.fleet_reuse_limit",
+    "text": "复用目标上限",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.recent_fleet_window",
+    "text": "近期敌群窗口",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.similarity_window",
+    "text": "阵容相似窗口",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.seed",
+    "text": "种子",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.strength_pattern",
+    "text": "强度周期（如 0000100002）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.weapon_pattern",
+    "text": "武器周期（P/E/M 或全名）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.battle_point_offsets",
+    "text": "战点偏移（如 0,0,0）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.generate",
+    "text": "生成并预览",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.export",
+    "text": "导出 Excel",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.ready",
+    "text": "请选择分析文件并设置周期。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.generated",
+    "text": "已生成。可筛选预览或导出。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.error",
+    "text": "生成失败：{reason}",
+    "params": "reason",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.exported",
+    "text": "已导出：{path}",
+    "params": "path",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.stats",
+    "text": "关卡 {levels} · 战点 {points} · 使用敌群 {unique} · 精确匹配 {exact} · 回退 {fallback}",
+    "params": "levels,points,unique,exact,fallback",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.filter_level",
+    "text": "关卡（0=全部）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.filter_strength",
+    "text": "强度（空=全部）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.filter_fleet",
+    "text": "敌群 ID / monGroup ID",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.filter_fallback",
+    "text": "回退（-1=全部）",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.all",
+    "text": "全部武器",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.physical",
+    "text": "物理",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.energy",
+    "text": "能量",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.mixed",
+    "text": "混合",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.level",
+    "text": "关卡",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.weapon",
+    "text": "武器",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.strength",
+    "text": "强度",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.point",
+    "text": "战点",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.fleet",
+    "text": "enemy_fleet_id",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.group",
+    "text": "monGroup ID",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "cycle_level.column.fallback",
+    "text": "回退",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.notice",
+    "text": "使用当前敌舰群直接生成关卡；自动创建少量典型配装并逐级测试模块。也可填写旧战斗批次目录复用结果。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.path",
+    "text": "可选：旧战斗批次目录；留空则使用当前敌舰群",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.current",
+    "text": "使用当前敌舰群",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.choose",
+    "text": "选择目录",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.max_candidates",
+    "text": "最多初筛候选",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.max_loadouts",
+    "text": "典型配装上限",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.max_level",
+    "text": "最大升级级数",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.base_module_level",
+    "text": "基准模块等级",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.cleared_through",
+    "text": "已通关进度",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.ships",
+    "text": "测试船型（至少一种）：",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.select_ship",
+    "text": "请至少选择一种船型。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.max_total_battles",
+    "text": "补测总预算",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.seed",
+    "text": "补测种子",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.start",
+    "text": "逐级测试并生成",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.stop",
+    "text": "停止并保留结果",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.clear",
+    "text": "清空页面",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.invalid_path",
+    "text": "请先生成敌舰群，或选择已有批次目录。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.running_batch",
+    "text": "批次仍在战斗中，请结束后再生成关卡。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.failed",
+    "text": "生成失败：{reason}",
+    "params": "reason",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.error.missing_mon_table",
+    "text": "找不到原始 mon.xlsx，请确认 space-battleship/config_excel/mon.xlsx 存在。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.error.invalid_mon_table",
+    "text": "原始 mon.xlsx 的 id/des 数据无效或与敌舰配置不匹配。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.error.no_final_wave_candidate",
+    "text": "没有符合末波数量和船体大小限制的大船舰群；请调整生成结果或末波配置。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.error.generation_policy_changed",
+    "text": "该批次使用旧阵型生成策略，请重新生成敌舰群和战斗批次。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.error.config_mismatch",
+    "text": "该批次使用不同的战斗配置，请用对应工具版本补测。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.ready",
+    "text": "等待选择批次。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.progress",
+    "text": "敌舰群 {screened} 组 · 已处理 {done} 组 · 补测 {battles}/{budget} 场 · 已生成 {levels} 关。结果：{path}",
+    "params": "screened,done,battles,budget,levels,path",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.type.normal",
+    "text": "普通关卡",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.type.boss",
+    "text": "BOSS候选",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.item",
+    "text": "{name} · 建议进度 {type} · 配装差 {rate} 级",
+    "params": "name,type,rate",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.loadout_result",
+    "text": "{weapons}：所需 +{level} · 达标胜率 {rate} · {tests} 场 · 平均 {time} 秒",
+    "params": "weapons,level,rate,tests,time",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.no_difference",
+    "text": "各典型配装所需等级相同。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.unknown_difference",
+    "text": "尚无可比较的达标等级。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.difference",
+    "text": "典型配装所需等级相差 {spread} 级。",
+    "params": "spread",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.power_result",
+    "text": "{power}：胜率 {rate} · {tests} 场 · 平均 {time} 秒",
+    "params": "power,rate,tests,time",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.power_skipped",
+    "text": "{power}：已达到判定条件，未补测",
+    "params": "power",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.configuration",
+    "text": "{ship} · 组合#{number} · {weapons} · {rate}（{tests} 场）",
+    "params": "ship,number,weapons,rate,tests",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.normal_reason",
+    "text": "基准属性已有合理胜率，适合按当前配装做普通关卡。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.boss_reason",
+    "text": "基准属性难以击败，成长后出现可重复的突破点。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.card",
+    "text": "{name}\n关卡波次：\n{waves}\n\n末波敌舰：\n{composition}\n特点：{tags}\n\n末波典型配装所需模块升级：\n{powers}\n\n建议进度：{recommended_power}\n较容易：\n{recommended}\n较困难：\n{weak}\n\n末波配装区分：{reason}\n建议进度依据各波单独测试估算，整关未联合补测。",
+    "params": "name,composition,tags,powers,recommended_power,recommended,weak,reason,waves",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.wave",
+    "text": "第 {number} 波：{name}",
+    "params": "number,name",
+    "category": "fleet"
+  },
+  {
+    "key": "auto_level.wave_final",
+    "text": "末波：{name}",
+    "params": "name",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.technical",
+    "text": "详细信息",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "analysis.design",
+    "text": "返回关卡卡片",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.all",
+    "text": "全部敌舰群",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.recommended",
+    "text": "值得做关卡",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.ordinary",
+    "text": "普通组合",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.strong",
+    "text": "偏强",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.weak",
+    "text": "偏弱",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.insufficient",
+    "text": "数据不足",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.category.anomaly",
+    "text": "异常结果",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.order.recommended",
+    "text": "按敌舰群编号",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.order.win",
+    "text": "我方胜率从低到高",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.order.difference",
+    "text": "配装区分度从高到低",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.order.tests",
+    "text": "样本量从多到少",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.order.time",
+    "text": "战斗时间从短到长",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.previous",
+    "text": "上一页",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.next",
+    "text": "下一页",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.details",
+    "text": "详细信息",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.unknown_name",
+    "text": "未命名舰船或装备",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.unknown_tag",
+    "text": "未命名标签",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.no_tags",
+    "text": "暂无标签",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.no_composition",
+    "text": "组成缺失，请查看详情",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.enemy_count",
+    "text": "{name} ×{count}",
+    "params": "name,count",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.single_weapon",
+    "text": "纯{weapon}",
+    "params": "weapon",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.configuration",
+    "text": "{weapons} · 配置 #{number} · {rate}（{tests}场）",
+    "params": "weapons,number,rate,tests",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.no_ranking",
+    "text": "暂无可区分的可靠排名，需补测或查看详情",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.no_recommendation",
+    "text": "逐级关卡页显示推荐顺序",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.overview",
+    "text": "本轮测试 · 总战斗 {total}（有效 {tests}）· 敌舰群 {enemies}（全部进入逐级关卡分析）\n已有数据 {ordinary} / 样本不足 {insufficient} / 战斗异常 {anomaly}\n关卡顺序与武器差异请看自动关卡页。",
+    "params": "total,tests,enemies,ordinary,insufficient,anomaly",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.page",
+    "text": "第 {page}/{pages} 页 · {count} 组",
+    "params": "page,pages,count",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.title",
+    "text": "敌舰群 #{number}  ·  {category}",
+    "params": "number,category",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.composition",
+    "text": "敌人\n{enemies}",
+    "params": "enemies",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.tags",
+    "text": "标签：{tags}",
+    "params": "tags",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.performance",
+    "text": "综合表现：我方胜率 {rate} · 平均战斗 {time} 秒\n难度：{difficulty}",
+    "params": "rate,time,difficulty",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.difficulty.unknown",
+    "text": "暂不能判断",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.difficulty.strong",
+    "text": "偏强（已测配置）",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.difficulty.weak",
+    "text": "偏弱（已测配置）",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.difficulty.moderate",
+    "text": "中等（已测范围）",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.best",
+    "text": "最有效配置（已测样本）\n{configurations}",
+    "params": "configurations",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.worst",
+    "text": "最差配置（已测样本）\n{configurations}",
+    "params": "configurations",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.conclusion",
+    "text": "关卡特点：{conclusion}",
+    "params": "conclusion",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.usage",
+    "text": "建议用途：{usage}",
+    "params": "usage",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.confidence",
+    "text": "数据可信度：{confidence} · 测试 {tests} 场",
+    "params": "confidence,tests",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.insufficient",
+    "text": "样本或配置覆盖不足，暂不判断难度和武器优势。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.anomaly",
+    "text": "战斗时长或结果稳定性异常，先复核数据。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.strong",
+    "text": "多数有足够样本的已测配置胜率偏低，整体偏难。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.weak",
+    "text": "多数有足够样本的已测配置胜率偏高，挑战不足。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.different",
+    "text": "已测配装表现差异明显，适合检验配装选择；不能归因于单一武器。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.general",
+    "text": "已测配置表现接近，可作为普通综合关的测试对象。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.sentence.ordinary",
+    "text": "已测结果尚未形成明确配装差异，可保留观察。",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.loadout",
+    "text": "配装选择 / 装备检测关，沿用已测等级继续验证",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.general",
+    "text": "普通综合关；仍需验证未覆盖的配置",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.observe",
+    "text": "普通备选，增加不同配置的对照测试",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.insufficient",
+    "text": "优先补测，暂不作为正式关卡依据",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.anomaly",
+    "text": "异常复核，暂缓采用",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.strong",
+    "text": "高难度候选，先确认目标玩家配置能够应对",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "design.use.weak",
+    "text": "暂不作为正式挑战关；可进一步检验入门用途",
+    "params": "",
+    "category": "fleet",
+    "note": "关卡设计卡片"
+  },
+  {
+    "key": "analysis.title",
+    "text": "结果分析",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.notice",
+    "text": "读取已结束批次；可在本页定向补测数据不足的配对。胜率均为我方胜率；武器优势是已测装配中的关联，不等于独立武器克制。低样本不下结论。",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.path",
+    "text": "粘贴已完成批次的结果文件夹路径",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.choose",
+    "text": "选择结果文件夹",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.load",
+    "text": "读取并导出分析",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.latest",
+    "text": "分析当前批次",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.pairs",
+    "text": "查看关联 pair",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.all_pairs",
+    "text": "全部 pair",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.invalid_path",
+    "text": "请填写批次目录",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.running",
+    "text": "请先停止或完成当前批次",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.failed",
+    "text": "分析失败：{reason}",
+    "params": "reason",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.loaded",
+    "text": "已分析 {tests} 场、{pairs} 个配对；六个分析文件已写入：{path}",
+    "params": "tests,pairs,path",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.retest_target",
+    "text": "每配对目标场数",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_budget",
+    "text": "本轮预算",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_seed",
+    "text": "Seed",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_insufficient",
+    "text": "补测数据不足",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_card",
+    "text": "复测此敌舰群",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_stop",
+    "text": "停止复测",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_load_first",
+    "text": "请先读取一轮分析结果。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_running",
+    "text": "复测进行中，请等待或停止。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_stale",
+    "text": "该批次的配置与当前工具不一致，无法安全复测。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_none",
+    "text": "当前没有低于目标场数的可复测配对；可调高目标场数。",
+    "params": "",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_progress",
+    "text": "复测中：{done}/{total} 场，{pairs} 个配对；预算外跳过 {skipped} 个。",
+    "params": "done,total,pairs,skipped",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.retest_done",
+    "text": "复测完成：新增 {battles} 场，覆盖 {pairs} 个配对；预算外跳过 {skipped} 个。已合并并刷新分析。",
+    "params": "battles,pairs,skipped",
+    "category": "fleet"
+  },
+  {
+    "key": "analysis.all_tags",
+    "text": "全部标签",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.all_weapons",
+    "text": "全部武器",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.enemy_number",
+    "text": "敌舰群 #{number}",
+    "params": "number",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.details",
+    "text": "样本：{tests} · 我方胜率：{rate} · 可信度：{confidence}\n观察：{findings}",
+    "params": "tests,rate,confidence,findings",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.candidate_details",
+    "text": "关卡候选：{candidate}\n配置区分度：{difference} · 已测配置：{coverage}\n检验方向（已有标签）：{focus}",
+    "params": "candidate,difference,coverage,focus",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.candidate_yes",
+    "text": "优先测试",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.candidate_no",
+    "text": "暂不推荐／需补样",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.strengths",
+    "text": "优势配置（观察到的表现）",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.weaknesses",
+    "text": "劣势配置（观察到的表现）",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.level_candidates",
+    "text": "敌舰群候选表",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.enemy_analysis",
+    "text": "敌舰群",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.player_analysis",
+    "text": "我方组合",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.weapon_analysis",
+    "text": "武器／组合及敌方条件",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.pair_analysis",
+    "text": "配对详情",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.enemy_tags",
+    "text": "敌方标签",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.dataset.player_tags",
+    "text": "我方标签",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.min_tests",
+    "text": "最少样本",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.min_win",
+    "text": "最低胜率 %",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.max_win",
+    "text": "最高胜率 %",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.min_time",
+    "text": "最短时间 s",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.max_time",
+    "text": "最长时间 s",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.filter.min_discrimination",
+    "text": "最低区分度 %",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.id",
+    "text": "对象（点击列头排序）",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.tests",
+    "text": "样本",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.win_rate",
+    "text": "我方胜率",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.avg_battle_time",
+    "text": "平均时间",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.discrimination",
+    "text": "区分度",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.column.confidence",
+    "text": "可信度",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.confidence.low",
+    "text": "低",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.confidence.medium",
+    "text": "中",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.confidence.high",
+    "text": "高",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.difference.insufficient",
+    "text": "数据不足",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.difference.high",
+    "text": "高",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.difference.medium",
+    "text": "中",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.difference.general",
+    "text": "已测配置接近",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.insufficient",
+    "text": "样本不足或统计不稳定，需补测",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.good",
+    "text": "表现明显较好",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.bad",
+    "text": "表现明显较差",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.boundary",
+    "text": "胜率接近50%，值得测试",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.dominant",
+    "text": "我方明显占优",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.hopeless",
+    "text": "我方明显困难",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.outcome_variation",
+    "text": "胜负混合、结果波动",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.time_variation",
+    "text": "战斗时间波动较大",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.short",
+    "text": "战斗时间异常短",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.long",
+    "text": "战斗时间异常长",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "analysis.finding.excluded_results",
+    "text": "无效／未决结果比例偏高",
+    "params": "",
+    "category": "fleet",
+    "note": "战斗结果分析"
+  },
+  {
+    "key": "batch.max_total",
+    "text": "最大总场次",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.max_per_pair",
+    "text": "单组合上限",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.samples_per_tag",
+    "text": "每标签组样本上限",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.mark_focus",
+    "text": "标记生成页选中配对",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.clear_focus",
+    "text": "清除重点",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.focus_count",
+    "text": "下批重点：{count}",
+    "params": "count",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.focus_outside",
+    "text": "重点配对已不在所选范围，请调整范围或清除重点。",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.state.budget_reached",
+    "text": "预算耗尽",
+    "params": "",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "batch.sampling_status",
+    "text": "理论组合 {theoretical_pairs} · 抽样 {sampled_pairs} · 已测组合 {tested_pairs} · 剩余场次 {remaining}\n稳定停测 {stable_stopped} · 相似跳过实例 {similar_skipped} · 标签限额跳过实例 {quota_skipped}",
+    "params": "theoretical_pairs,sampled_pairs,tested_pairs,remaining,stable_stopped,similar_skipped,quota_skipped",
+    "category": "fleet",
+    "note": "分层抽样与动态加测"
+  },
+  {
+    "key": "player_loadout.column.defence",
+    "text": "防御搭配",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合防御槽装备"
+  },
+  {
+    "key": "batch.title",
+    "text": "批量战斗",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.notice",
+    "text": "所选范围作为抽样池，按标签分层抽样并动态加测；不执行全量交叉。范围编号从1开始，含两端。进度条表示预算使用量；关闭窗口停止，超时/错误不计胜率。",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.enemy",
+    "text": "敌方组合范围",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.player",
+    "text": "我方组合范围",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.scope.all",
+    "text": "全部",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.scope.selected",
+    "text": "生成页选中项",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.scope.range",
+    "text": "编号范围",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.runs",
+    "text": "第一轮次数",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.seed",
+    "text": "战斗 seed",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.max_seconds",
+    "text": "单场时限（秒）",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.start",
+    "text": "开始",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.stop",
+    "text": "停止",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.clear",
+    "text": "清空",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.column.pair",
+    "text": "敌方 × 我方 · 次数",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.column.result",
+    "text": "结果",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.column.time",
+    "text": "战斗时间",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.column.hp",
+    "text": "我方 / 敌方剩余装甲",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.status",
+    "text": "{state} · 已完成 {done}/{total} · 有效 {valid} · 胜率 {rate} · 错误 {errors} · 超时 {timeouts}\n结果目录：{path}",
+    "params": "state,done,total,valid,rate,errors,timeouts,path",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.idle",
+    "text": "待开始",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.validating",
+    "text": "校验输入",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.running",
+    "text": "执行中",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.completed",
+    "text": "已完成",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.stopped",
+    "text": "已停止",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.error",
+    "text": "错误",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.win",
+    "text": "胜利",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.loss",
+    "text": "失败",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.state.timeout",
+    "text": "超时",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.error.already_running",
+    "text": "当前批次仍在执行",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.error.invalid_input",
+    "text": "请检查次数、seed 和时限",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.error.empty_selection",
+    "text": "请先生成并选择有效范围",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.error.too_many_battles",
+    "text": "总场次超出配置上限，请缩小范围",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "batch.error.output_error",
+    "text": "结果文件写入失败，批次已停止",
+    "params": "",
+    "category": "fleet",
+    "note": "批量战斗"
+  },
+  {
+    "key": "player_loadout.available_ships",
+    "text": "可用船型（至少选择1种；仍须满足测试进度的解锁条件）",
+    "params": "",
+    "category": "fleet",
+    "note": "我方船型选择"
+  },
+  {
+    "key": "player_loadout.require_ship",
+    "text": "至少保留1种船型",
+    "params": "",
+    "category": "fleet",
+    "note": "我方船型选择"
+  },
+  {
+    "key": "fleet.enemy_tab",
+    "text": "敌方舰群",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.title",
+    "text": "我方测试组合",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.notice",
+    "text": "独立测试进度（非当前存档） · 解锁遵循原规则；统一模块等级，无宝石/科技/星球加成，反应炉未分配。随机生成四类搭配，保留至少一份装甲。无射程/AOE 时不猜标签；不运行战斗统计。",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.input.count",
+    "text": "生成数量",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.input.seed",
+    "text": "批次 seed",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.input.cleared_through",
+    "text": "测试通关至",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.input.module_level",
+    "text": "统一模块等级",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.pair",
+    "text": "与选中敌舰群配对",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.all_weapons",
+    "text": "全部武器",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.column.ship",
+    "text": "战舰",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.column.type",
+    "text": "组合类型",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.column.weapons",
+    "text": "武器搭配",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.column.tags",
+    "text": "特征标签",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.type.mono",
+    "text": "单一武器",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.type.dual",
+    "text": "双武器混合",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.type.balanced",
+    "text": "多武器均衡",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.type.random",
+    "text": "随机合法",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.no_legal_loadouts",
+    "text": "当前解锁与配置下无可用组合",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.unavailable",
+    "text": " · 当前条件无法覆盖：{types}",
+    "params": "types",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.select_pair",
+    "text": "请先在敌方页选中一组，再选中我方组合",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.note.baseline_modifiers",
+    "text": "测试进度只决定解锁，模块统一等级；无宝石、攻击历史、科研、星球成长与反应炉分配，不读取正式存档。",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.note.theoretical_firepower",
+    "text": "火力为基础理论期望值，使用原属性/暴击入口；burst 为各武器一次齐射，sustained 为持续命中满增幅上限，不含起手、弹道与命中损失。导弹按当前正式循环齐射。",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.note.no_range_or_aoe",
+    "text": "现有武器无射程和范围伤害机制；不生成远程/近程/AOE标签。导弹齐射可攻击多个目标，以多目标标签表示。",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.note.mount_order",
+    "text": "equipment 保留原 weapons/defence 槽位与等级。槽位影响炮口位置，因此签名保留槽位顺序。",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.high_burst",
+    "text": "高爆发",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.sustained",
+    "text": "持续输出",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.aoe",
+    "text": "AOE",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.single_target",
+    "text": "单体",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.multi_target",
+    "text": "多目标",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.long_range",
+    "text": "远程",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.short_range",
+    "text": "近程",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.high_attack_speed",
+    "text": "高攻速",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.high_survival",
+    "text": "高生存",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "player_loadout.tag.balanced",
+    "text": "均衡",
+    "params": "",
+    "category": "fleet",
+    "note": "我方测试组合"
+  },
+  {
+    "key": "fleet.title",
+    "text": "敌方舰队模拟器 · DEBUG",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.notice",
+    "text": "先按阵型生成并评分，再填入现有敌舰。前后排只作预览，正式战斗仍使用单排十槽。机动/护盾/射程/AOE 当前为 0；强度是静态估值，不代表胜率。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.available",
+    "text": "可用敌舰（勾选参与随机生成）",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.generate",
+    "text": "生成",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.clear",
+    "text": "清空",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.all_tags",
+    "text": "全部标签",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.count",
+    "text": "生成数量",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.min_count",
+    "text": "最少敌舰",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.max_count",
+    "text": "最多敌舰",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.seed",
+    "text": "批次 seed",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.min_strength",
+    "text": "最低强度",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.input.max_strength",
+    "text": "最高强度",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.column.number",
+    "text": "怪物群",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.column.count",
+    "text": "数量",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.column.strength",
+    "text": "强度",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.column.tags",
+    "text": "主标签 / 次标签",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.status",
+    "text": "显示 {visible}/{total} 组 · 采样 {attempts} 次 · 计算 {ms} ms · {state}",
+    "params": "visible,total,attempts,ms,state",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.empty",
+    "text": "暂无结果",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.complete",
+    "text": "完成",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.attempt_limit",
+    "text": "已到采样上限；可放宽条件或更换 seed",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.infeasible",
+    "text": "强度与数量范围无可行交集",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.invalid_input",
+    "text": "参数无效，请核对范围",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.empty_pool",
+    "text": "请至少选择一种敌舰",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.invalid_enemy",
+    "text": "敌舰不存在",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.state.invalid_weapon",
+    "text": "武器配置不完整",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.stationary_enemies",
+    "text": "敌舰无移动机制，记 0；视觉摆动不代表机动。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.no_enemy_shield",
+    "text": "敌舰无独立护盾量，记 0；能量抗性不代表护盾。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.no_range_stat",
+    "text": "武器无射程属性，记 0；弹速不等于射程。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.hostile_single_target",
+    "text": "敌方攻击均为单体；导弹不套用玩家齐射，AOE 为 0。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.matching_type_reduction",
+    "text": "平均匹配类型减伤比例，读取 armourType 与 config.dmgReduce；不是任意攻击下的有效生命。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.note.peak_uninterrupted_base_dps",
+    "text": "每武器 ceil(dmg × dmgMultiple) / cd；持续光束取不间断满增幅，不含起手蓄力、弹道与命中率。",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.high_mobility",
+    "text": "高机动",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.high_armor",
+    "text": "高护甲",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.high_shield",
+    "text": "高护盾",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.durable",
+    "text": "高耐久",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.fragile",
+    "text": "脆弱",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.long_range",
+    "text": "远程火力",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.high_burst",
+    "text": "高爆发",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.sustained",
+    "text": "持续输出",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.aoe",
+    "text": "AOE",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.single_target",
+    "text": "单体",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.numerous",
+    "text": "数量优势",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.elite",
+    "text": "少量精英",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.light",
+    "text": "轻型舰群",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.heavy",
+    "text": "重型舰队",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "fleet.tag.mixed",
+    "text": "混合舰队",
+    "params": "",
+    "category": "fleet",
+    "note": "敌方舰队 DEBUG 分析"
+  },
+  {
+    "key": "crew.no_available_system",
+    "text": "暂无可分配系统",
+    "params": "",
+    "category": "crew",
+    "note": "所有岗位不可分配时显示"
+  },
+  {
+    "key": "crew.job.reactor",
+    "text": "反应炉",
+    "params": "",
+    "category": "crew",
+    "note": "船员反应炉岗位"
+  },
+  {
+    "key": "crew.core_title.reactor",
+    "text": "反应炉自动升级",
+    "params": "",
+    "category": "crew",
+    "note": "船员反应炉岗位"
+  },
+  {
+    "key": "crew.effect.reactor_auto",
+    "text": "每{interval}秒 · 尝试升级1级并平均分配",
+    "params": "interval",
+    "category": "crew",
+    "note": "船员反应炉岗位"
+  },
+  {
+    "key": "crew.list_heading",
+    "text": "船员列表",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.current_effect",
+    "text": "当前效果",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.assignment_settings",
+    "text": "分配设置",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.assign_to",
+    "text": "分配至",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.confirm_assign",
+    "text": "确认分配",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.confirm_change",
+    "text": "确认更换",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.assigned",
+    "text": "已分配",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.free",
+    "text": "空闲",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.locked_row",
+    "text": "船员{number} / {level}层解锁",
+    "params": "number,level",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.exploring_brief",
+    "text": "探索中 · {planet} · 剩余 {remaining}秒",
+    "params": "planet,remaining",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_title.equipment",
+    "text": "装备自动升级",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_title.scientist",
+    "text": "AI 自动建造",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_title.jewel",
+    "text": "宝石自动管理",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_title.output",
+    "text": "炼铁产出提升",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_equipment",
+    "text": "每{interval}秒 · 全部装备{amount}",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_scientist",
+    "text": "每{interval}秒 · 建造{amount}并平均分配",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.core_jewel",
+    "text": "每{interval}秒 · 自动合成、同类替换与升级",
+    "params": "interval",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.amount_label",
+    "text": "单次升级量",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.ai_amount_label",
+    "text": "单次建造量",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.amount_max",
+    "text": "MAX",
+    "params": "",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "crew.amount_levels",
+    "text": "+{count}级",
+    "params": "count",
+    "category": "crew",
+    "note": "船员紧凑布局"
+  },
+  {
+    "key": "research.percent",
+    "text": "研究进度 {percent}%",
+    "params": "percent",
+    "category": "research",
+    "note": "真实研究进度，不附加建造状态"
+  },
+  {
+    "key": "research.no_ai",
+    "text": "未分配 AI",
+    "params": "",
+    "category": "research",
+    "note": "无研究速度时的辅助信息"
+  },
+  {
+    "key": "research.overview_hint",
+    "text": "点击工位查看详情",
+    "params": "",
+    "category": "research",
+    "note": "未选中态"
+  },
+  {
+    "key": "research.detail_close",
+    "text": "×",
+    "params": "",
+    "category": "research",
+    "note": "取消选择"
+  },
+  {
+    "key": "research.detail_progress",
+    "text": "{percent}% · {points} / {required} 点",
+    "params": "percent,points,required",
+    "category": "research",
+    "note": "选中项目进度"
+  },
+  {
+    "key": "research.detail_assigned",
+    "text": "当前分配 AI  {count}",
+    "params": "count",
+    "category": "research",
+    "note": "选中项目 AI"
+  },
+  {
+    "key": "research.dock_remaining",
+    "text": "剩余 {time}",
+    "params": "{time}",
+    "category": "research",
+    "note": "建造唯一辅助信息，游戏时间"
+  },
+  {
+    "key": "research.dock_points",
+    "text": "{points} / {required} 点",
+    "params": "{points},{required}",
+    "category": "research",
+    "note": "待建造或总览页唯一辅助信息"
+  },
+  {
+    "key": "research.dock_accepted",
+    "text": "本轮建造完成",
+    "params": "",
+    "category": "research",
+    "note": "成品验收阶段辅助信息"
+  },
+  {
+    "key": "research.dock_building",
+    "text": "建造中",
+    "params": "",
+    "category": "research",
+    "note": "施工主状态"
+  },
+  {
+    "key": "research.dock_pending",
+    "text": "待建造",
+    "params": "",
+    "category": "research",
+    "note": "未部署 AI 的工位"
+  },
+  {
+    "key": "research.dock_ai_one",
+    "text": "生成 ×1",
+    "params": "",
+    "category": "research",
+    "note": "创建一个 AI；费用直接显示"
+  },
+  {
+    "key": "research.dock_ai_ten",
+    "text": "生成 ×10",
+    "params": "",
+    "category": "research",
+    "note": "创建十个 AI"
+  },
+  {
+    "key": "research.dock_ai_max",
+    "text": "生成 MAX",
+    "params": "",
+    "category": "research",
+    "note": "创建可负担的最大数量 AI"
+  },
+  {
+    "key": "research.dock_status",
+    "text": "{state} · {percent}%",
+    "params": "{state},{percent}",
+    "category": "research",
+    "note": "船坞合并状态与进度"
+  },
+  {
+    "key": "research.dock_distribute",
+    "text": "均分 AI",
+    "params": "",
+    "category": "research",
+    "note": "船坞紧凑 HUD 操作"
+  },
+  {
+    "key": "research.dock_resources",
+    "text": "铁  {iron}    /    铀  {uranium}",
+    "params": "iron,uranium",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_capacity",
+    "text": "同时建造  {active} / {limit}",
+    "params": "active,limit",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_time",
+    "text": "剩余 {time} · 游戏时间",
+    "params": "time",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_wait",
+    "text": "待建造 · 部署 AI 后开始",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_start",
+    "text": "开始建造",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_bay",
+    "text": "施工工位",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_all",
+    "text": "高科技船坞",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_overview",
+    "text": "科技总览",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_queue",
+    "text": "建设队列",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_filter_all",
+    "text": "筛选 · 全部工位",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_filter_active",
+    "text": "筛选 · 建造中",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_filter_idle",
+    "text": "筛选 · 待建造",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_sort",
+    "text": "排序 · 默认",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
+  {
+    "key": "research.dock_sort_level",
+    "text": "排序 · 等级优先",
+    "params": "",
+    "category": "research",
+    "note": "高科技船坞"
+  },
   {
     "key": "hud.state.travel",
     "text": "航行中",
@@ -33,6 +2881,13 @@
     "params": "",
     "category": "main",
     "note": "顶部全局栏的暂停状态"
+  },
+  {
+    "key": "hud.fps",
+    "text": "FPS: {fps}",
+    "params": "{fps}",
+    "category": "main",
+    "note": "顶部全局栏显示当前帧率"
   },
   {
     "key": "battle.tab",
@@ -338,6 +3193,14 @@
     "source": "main.gd:build_ui"
   },
   {
+    "key": "battle.clear_countdown",
+    "text": "{seconds}秒后自动过关",
+    "params": "seconds",
+    "category": "battle",
+    "note": "普通通关倒计时",
+    "source": "main.gd:refresh_navigation"
+  },
+  {
     "key": "main.refresh_structure.text_01",
     "text": "空槽",
     "params": "",
@@ -483,11 +3346,11 @@
   },
   {
     "key": "battle.draw_battle.text_02",
-    "text": "BOSS战 · 当前存活 {targets} / {enemies} 艘",
-    "params": "{targets},{enemies}",
+    "text": "BOSS战",
+    "params": "",
     "category": "battle",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "main.gd:draw_battle · targets = number(game.targets().size())；enemies = number(game.enemies.size())"
+    "note": "BOSS战状态标记",
+    "source": "main.gd:draw_vertical_battle_hud"
   },
   {
     "key": "battle.draw_battle.text_03",
@@ -786,14 +3649,6 @@
     "source": "main.gd:build_equipment_tabs"
   },
   {
-    "key": "weapon.build_equipment_tabs.text_02",
-    "text": "打开宝石工坊 · 背包 / 合成 / 分解",
-    "params": "",
-    "category": "weapon",
-    "note": "固定文字",
-    "source": "main.gd:build_equipment_tabs"
-  },
-  {
     "key": "weapon.build_equipment_tabs.text_03",
     "text": "装备镶嵌请点击武器或防御卡上的「镶嵌」",
     "params": "",
@@ -960,110 +3815,6 @@
     "category": "upgrade",
     "note": "动态显示；蓝色参数由程序填入",
     "source": "main.gd:refresh_hightech_progress · key = number(game.assigned_scientists(key))；key_2 = number(game.research_rate(key))；points = number(points)；required = number(required)；fraction = floorf(fraction*100)"
-  },
-  {
-    "key": "upgrade.charge_tab",
-    "text": "充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:build_charge_tab"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_02",
-    "text": "本次充能  {elapsed}/{para_4}秒",
-    "params": "{elapsed},{para_4}",
-    "category": "upgrade",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "main.gd:refresh_charge_card · elapsed = number(job.elapsed)；para_4 = number(row.para_4)"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_03",
-    "text": "升级进度  {count}/{key}次",
-    "params": "{count},{key}",
-    "category": "upgrade",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "main.gd:refresh_charge_card · count = number(job.count)；key = number(game.charge_required(key))"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_04",
-    "text": "{para_1} {key}/秒",
-    "params": "{para_1},{key}",
-    "category": "upgrade",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "main.gd:refresh_charge_card · para_1 = db.data.resources[str(int(row.para_1))]；key = number(game.charge_resource_rate(key))"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_05",
-    "text": "未解锁",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_06",
-    "text": "第{unlock}关解锁",
-    "params": "{unlock}",
-    "category": "upgrade",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "main.gd:refresh_charge_card · unlock = str(int(row.unlock))"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_07",
-    "text": "资源不足",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_08",
-    "text": "充能中",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_09",
-    "text": "暂停",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_10",
-    "text": "已暂停",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_11",
-    "text": "未启动",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_12",
-    "text": "继续充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
-  },
-  {
-    "key": "upgrade.refresh_charge_card.text_13",
-    "text": "启动充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "固定文字",
-    "source": "main.gd:refresh_charge_card"
   },
   {
     "key": "main.confirm_unequip.text_01",
@@ -1275,7 +4026,7 @@
   },
   {
     "key": "gem.setup.text_08",
-    "text": "自动连续合成背包宝石；跳过已镶嵌、锁定、禁用及满级宝石",
+    "text": "自动连续合成背包宝石，并清理每种宝石低于自身最高等级 10 级以上的背包宝石；已镶嵌宝石保留",
     "params": "",
     "category": "tooltip",
     "note": "鼠标悬停说明",
@@ -1306,14 +4057,6 @@
     "source": "jewel_panel.gd:setup"
   },
   {
-    "key": "gem.setup.text_12",
-    "text": "分解宝石",
-    "params": "",
-    "category": "gem",
-    "note": "固定文字",
-    "source": "jewel_panel.gd:setup"
-  },
-  {
     "key": "gem.setup.text_13",
     "text": "镶嵌",
     "params": "",
@@ -1324,22 +4067,6 @@
   {
     "key": "gem.setup.text_14",
     "text": "选择宝石开始强化",
-    "params": "",
-    "category": "gem",
-    "note": "固定文字",
-    "source": "jewel_panel.gd:setup"
-  },
-  {
-    "key": "gem.setup.text_15",
-    "text": "分解满级宝石",
-    "params": "",
-    "category": "gem",
-    "note": "固定文字",
-    "source": "jewel_panel.gd:setup"
-  },
-  {
-    "key": "gem.setup.text_16",
-    "text": "确认分解",
     "params": "",
     "category": "gem",
     "note": "固定文字",
@@ -1650,14 +4377,6 @@
     "source": "jewel_panel.gd:refresh_detail"
   },
   {
-    "key": "gem.refresh_detail.text_10",
-    "text": "\n分解返还：宝石碎片 +{first}",
-    "params": "{first}",
-    "category": "gem",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "jewel_panel.gd:refresh_detail · first = game.jewel_fragment_amount(game.jewel_compose_reward(first))"
-  },
-  {
     "key": "gem.refresh_detail.text_11",
     "text": "下一等级 · Lv.{level}\n{next}\n\n合成需求 {required}颗 · 已选 {selected}颗",
     "params": "{level},{next},{required},{selected}",
@@ -1772,14 +4491,6 @@
   {
     "key": "gem.refresh_detail.text_25",
     "text": "永久消耗此宝石，返还详情中所示碎片；需要确认",
-    "params": "",
-    "category": "gem",
-    "note": "固定文字",
-    "source": "jewel_panel.gd:refresh_detail"
-  },
-  {
-    "key": "gem.refresh_detail.text_26",
-    "text": "请选择一颗可分解的满级宝石",
     "params": "",
     "category": "gem",
     "note": "固定文字",
@@ -1984,30 +4695,6 @@
     "category": "merge",
     "note": "动态显示；蓝色参数由程序填入",
     "source": "jewel_panel.gd:combine_all_selected · count = int(result.count)；consumed = int(result.consumed)；slice = \"、\".join(lines.slice(1))"
-  },
-  {
-    "key": "merge.request_compose.text_01",
-    "text": "永久分解 {gem}？\n返还宝石碎片 +{gem_2}\n满足数量的碎片会自动生成新宝石。",
-    "params": "{gem},{gem_2}",
-    "category": "merge",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "jewel_panel.gd:request_compose · gem = gem_name(gem)；gem_2 = game.jewel_fragment_amount(game.jewel_compose_reward(gem))"
-  },
-  {
-    "key": "merge.compose_selected.text_01",
-    "text": "分解条件已变化，宝石保留",
-    "params": "",
-    "category": "merge",
-    "note": "固定文字",
-    "source": "jewel_panel.gd:compose_selected"
-  },
-  {
-    "key": "merge.compose_selected.text_02",
-    "text": "分解成功 · 碎片 +{reward}{else}",
-    "params": "{reward},{else}",
-    "category": "merge",
-    "note": "动态显示；蓝色参数由程序填入",
-    "source": "jewel_panel.gd:compose_selected · reward = reward；else = \" · 生成%d颗宝石\" % generated_count if generated_count>0 else \"\""
   },
   {
     "key": "merge.compose_selected.text_03",
@@ -3104,115 +5791,59 @@
   },
   {
     "key": "gem.jewel.3.name",
-    "text": "吸铁宝石",
+    "text": "自动维修宝石",
     "params": "",
     "category": "gem",
     "note": "配置显示覆盖；ID 3 / name"
   },
   {
     "key": "gem.jewel.3.des",
-    "text": "镶嵌到对应武器时,该武器命中敌人后使该敌人被击杀时额外掉落{effect_1}的铁,每次命中叠加一次该效果,最多{effect_2}次",
+    "text": "镶嵌到对应的防御上时,若连续{effect_1}秒没受到伤害,则每秒恢复{effect_2}的最大值,直到受到伤害为止",
     "params": "{effect_1},{effect_2}",
     "category": "gem",
     "note": "配置显示覆盖；ID 3 / des"
   },
   {
     "key": "gem.jewel.4.name",
-    "text": "电子战宝石",
+    "text": "连发宝石",
     "params": "",
     "category": "gem",
     "note": "配置显示覆盖；ID 4 / name"
   },
   {
     "key": "gem.jewel.4.des",
-    "text": "镶嵌到对应武器时,武器命中有{effect_1}的概率使该敌人进入电子干扰状态,电子干扰状态的敌人受到的伤害提高{effect_2},并且死亡时会爆炸,对上下两格的敌人造成自身最大生命{effect_3}的伤害",
+    "text": "镶嵌到对应的武器上时,攻击时有{effect_1}的概率额外发射一次,额外发射的武器伤害提高{effect_2}",
     "params": "{effect_1},{effect_2},{effect_3}",
     "category": "gem",
     "note": "配置显示覆盖；ID 4 / des"
   },
   {
     "key": "gem.jewel.5.name",
-    "text": "自动维修宝石",
+    "text": "暴击宝石",
     "params": "",
     "category": "gem",
     "note": "配置显示覆盖；ID 5 / name"
   },
   {
     "key": "gem.jewel.5.des",
-    "text": "镶嵌到对应的防御上时,若连续{effect_1}秒没受到伤害,则每秒恢复{effect_2}的最大值,直到受到伤害为止",
+    "text": "镶嵌到对应的武器上时,该武器固定增加{effect_1}暴击,并使该武器来自所有来源的暴击率提升{effect_2}",
     "params": "{effect_1},{effect_2}",
     "category": "gem",
     "note": "配置显示覆盖；ID 5 / des"
   },
   {
     "key": "gem.jewel.6.name",
-    "text": "连发宝石",
+    "text": "坚韧宝石",
     "params": "",
     "category": "gem",
     "note": "配置显示覆盖；ID 6 / name"
   },
   {
     "key": "gem.jewel.6.des",
-    "text": "镶嵌到对应的武器上时,攻击时有{effect_1}的概率额外发射一次,额外发射的武器伤害提高{effect_2}",
+    "text": "镶嵌到对应的防御上时,该防御若有持续恢复效果,则该效果不会因受到伤害而打断,但是恢复效果降低{effect_1}",
     "params": "{effect_1},{effect_2}",
     "category": "gem",
     "note": "配置显示覆盖；ID 6 / des"
-  },
-  {
-    "key": "gem.jewel.7.name",
-    "text": "暴击宝石",
-    "params": "",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 7 / name"
-  },
-  {
-    "key": "gem.jewel.7.des",
-    "text": "镶嵌到对应的武器上时,该武器固定增加{effect_1}暴击,并使该武器来自所有来源的暴击率提升{effect_2}",
-    "params": "{effect_1},{effect_2}",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 7 / des"
-  },
-  {
-    "key": "gem.jewel.8.name",
-    "text": "蓄能宝石",
-    "params": "",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 8 / name"
-  },
-  {
-    "key": "gem.jewel.8.des",
-    "text": "镶嵌到对应的防御上时,该防御每受到{effect_1}次伤害,便立即使一个随机武器的CD立即结束,且这次武器的伤害提高{effect_2}",
-    "params": "{effect_1},{effect_2}",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 8 / des"
-  },
-  {
-    "key": "gem.jewel.9.name",
-    "text": "抗性宝石",
-    "params": "",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 9 / name"
-  },
-  {
-    "key": "gem.jewel.9.des",
-    "text": "镶嵌到对应的防御上时,该防御受到伤害时,固定减免其最大值的{effect_1}",
-    "params": "{effect_1}",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 9 / des"
-  },
-  {
-    "key": "gem.jewel.10.name",
-    "text": "坚韧宝石",
-    "params": "",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 10 / name"
-  },
-  {
-    "key": "gem.jewel.10.des",
-    "text": "镶嵌到对应的防御上时,该防御若有持续恢复效果,则该效果不会因受到伤害而打断,但是恢复效果降低{effect_1}",
-    "params": "{effect_1}",
-    "category": "gem",
-    "note": "配置显示覆盖；ID 10 / des"
   },
   {
     "key": "upgrade.hightech.item_01.description",
@@ -3255,48 +5886,6 @@
     "params": "",
     "category": "upgrade",
     "note": "配置显示覆盖；ID 简并态装甲 / name"
-  },
-  {
-    "key": "upgrade.charge.item_01.des",
-    "text": "所有武器伤害提高{effect_1}",
-    "params": "{effect_1}",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 攻击充能 / des"
-  },
-  {
-    "key": "upgrade.charge.item_01.name",
-    "text": "攻击充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 攻击充能 / name"
-  },
-  {
-    "key": "upgrade.charge.item_02.des",
-    "text": "所有防御强度提高{effect_1}",
-    "params": "{effect_1}",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 防御充能 / des"
-  },
-  {
-    "key": "upgrade.charge.item_02.name",
-    "text": "防御充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 防御充能 / name"
-  },
-  {
-    "key": "upgrade.charge.item_03.des",
-    "text": "掉落的铁矿量提高{effect_1}",
-    "params": "{effect_1}",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 熔炼器充能 / des"
-  },
-  {
-    "key": "upgrade.charge.item_03.name",
-    "text": "熔炼器充能",
-    "params": "",
-    "category": "upgrade",
-    "note": "配置显示覆盖；ID 熔炼器充能 / name"
   },
   {
     "key": "main.window_title",
@@ -3931,14 +6520,7 @@
   },
   {
     "key": "system.category.upgrade",
-    "text": "升级 / 研究 / 充能",
-    "params": "",
-    "category": "system",
-    "note": "文案表界面分类"
-  },
-  {
-    "key": "system.category.merge",
-    "text": "合成 / 分解",
+    "text": "升级 / 研究 / 反应炉",
     "params": "",
     "category": "system",
     "note": "文案表界面分类"
@@ -4139,46 +6721,6 @@
     "source": "import_workbook.py:270"
   },
   {
-    "key": "debug.import_workbook.message_119",
-    "text": "charge {key}: unsupported effect",
-    "params": "{key}",
-    "category": "debug",
-    "note": "配置工具校验提示",
-    "source": "import_workbook.py:280"
-  },
-  {
-    "key": "debug.import_workbook.message_120",
-    "text": "charge {key}: func must not be empty",
-    "params": "{key}",
-    "category": "debug",
-    "note": "配置工具校验提示",
-    "source": "import_workbook.py:282"
-  },
-  {
-    "key": "debug.import_workbook.message_121",
-    "text": "charge {key}: unknown resource",
-    "params": "{key}",
-    "category": "debug",
-    "note": "配置工具校验提示",
-    "source": "import_workbook.py:289"
-  },
-  {
-    "key": "debug.import_workbook.message_122",
-    "text": "charge {key}: rounded charge count must stay positive; growth multiplier must be at least 1",
-    "params": "{key}",
-    "category": "debug",
-    "note": "配置工具校验提示",
-    "source": "import_workbook.py:291"
-  },
-  {
-    "key": "debug.import_workbook.message_123",
-    "text": "charge {key}: invalid unlock level",
-    "params": "{key}",
-    "category": "debug",
-    "note": "配置工具校验提示",
-    "source": "import_workbook.py:294"
-  },
-  {
     "key": "debug.import_workbook.message_124",
     "text": "{label}: invalid expression",
     "params": "{label}",
@@ -4338,6 +6880,13 @@
     "note": "音效开关"
   },
   {
+    "key": "settings.music",
+    "text": "音乐：{state}",
+    "params": "{state}",
+    "category": "settings",
+    "note": "背景音乐开关"
+  },
+  {
     "key": "upgrade.cost_one",
     "text": "升1级，消耗：{cost}",
     "params": "{cost}",
@@ -4360,7 +6909,7 @@
   },
   {
     "key": "upgrade.completed",
-    "text": "{name}{result}",
+    "text": "{name} {result}",
     "params": "{name},{result}",
     "category": "upgrade",
     "note": "升级完成通知"
@@ -4508,222 +7057,6 @@
     "note": "文案表删除与恢复"
   },
   {
-    "key": "charge.heading",
-    "text": "能源充能系统",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.core",
-    "text": "能源核心",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.core_note",
-    "text": "充能负载 · 实时收支 / 产出为近一分钟均值",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.bus",
-    "text": "能源总线  /  选择模块分配能源",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.detail",
-    "text": "模块详情  /  CHARGE CONTROL",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.effect",
-    "text": "增益效果",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.add",
-    "text": "+\n添加系统",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.extension_hint",
-    "text": "扩展接口已就绪：新增充能配置后自动接入；系统功能由游戏配置定义。",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.navigation",
-    "text": "点击节点查看详情 · 向下滚动或翻页浏览更多系统",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.system_count",
-    "text": "系统列表  {count} / ∞",
-    "params": "{count}",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.resource",
-    "text": "{name}   {amount}    |    产出 +{rate} / 秒",
-    "params": "{name},{amount},{rate}",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.state.charging",
-    "text": "充能中",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.state.paused",
-    "text": "已暂停",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.state.insufficient",
-    "text": "资源不足",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.state.available",
-    "text": "待机中",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.state.locked",
-    "text": "未解锁",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.eyebrow",
-    "text": "POWER DISTRIBUTION / STARSHIP SYSTEMS",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能页面",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy.available",
-    "text": "可用能源",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy.consumption",
-    "text": "充能消耗 / 秒",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy.production",
-    "text": "能源产出 / 秒",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy.net",
-    "text": "净变化 / 秒",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy_amount",
-    "text": "{name} {amount}",
-    "params": "{name},{amount}",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.energy_basis",
-    "text": "按资源分别统计。消耗为可运行充能模块费率×当前倍速（含预付量的消耗），暂停时为零；产出为近一分钟真实平均值。净变化=产出−充能消耗，不含其他开支，不等于本帧整数扣款。",
-    "params": "",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.page",
-    "text": "{current} / {total}",
-    "params": "{current},{total}",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.time",
-    "text": "{elapsed} / {para_4} 秒",
-    "params": "{elapsed},{para_4}",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.upgrades",
-    "text": "升级 {count}/{key}",
-    "params": "{count},{key}",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
-    "key": "charge.cost",
-    "text": "{para_1} ×{key}/秒",
-    "params": "{para_1},{key}",
-    "category": "upgrade",
-    "note": "充能仪表及分页",
-    "source": "charge_panel.gd"
-  },
-  {
     "key": "equipment.tab",
     "text": "装备",
     "params": "",
@@ -4760,7 +7093,7 @@
   },
   {
     "key": "equipment.catalog",
-    "text": "模块阵列 · 选择模块后自由换装",
+    "text": "模块总览",
     "params": "",
     "category": "weapon",
     "note": "统一装备管理界面"
@@ -5159,7 +7492,7 @@
   },
   {
     "key": "module.upgrade_name",
-    "text": "模块 {slot}",
+    "text": "{slot} ·",
     "params": "{slot}",
     "category": "module",
     "note": "模块成长与自由换装"
@@ -5173,7 +7506,7 @@
   },
   {
     "key": "ship.refit.hint",
-    "text": "舰体决定启用槽位，模块保留全部成长。换舰延续当前战斗。",
+    "text": "选择舰体查看挂点；换舰保留模块成长。",
     "params": "",
     "category": "ship",
     "note": "模块成长与自由换装"
@@ -5208,7 +7541,7 @@
   },
   {
     "key": "ship.refit.result",
-    "text": "启用 {active} 个模块 · 保留停用 {dormant} 个模块",
+    "text": "启用 {active} · 停用 {dormant}",
     "params": "{active},{dormant}",
     "category": "ship",
     "note": "模块成长与自由换装"
@@ -5222,7 +7555,7 @@
   },
   {
     "key": "ship.refit.mounts",
-    "text": "挂载预览 · 点击当前舰体挂点管理模块",
+    "text": "挂点预览",
     "params": "",
     "category": "ship",
     "note": "模块成长与自由换装"
@@ -5236,7 +7569,7 @@
   },
   {
     "key": "ship.refit.unlock_estimate",
-    "text": "预计通关第 {level} 关解锁",
+    "text": "{level}关解锁",
     "params": "{level}",
     "category": "ship",
     "note": "未解锁舰体仅显示剪影和预计解锁关卡"
@@ -6162,7 +8495,7 @@
   },
   {
     "key": "research.heading",
-    "text": "AI 原型建造舱",
+    "text": "高科技建造中心",
     "params": "",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
@@ -6176,7 +8509,7 @@
   },
   {
     "key": "research.ai_summary",
-    "text": "AI 总量 {total}    已部署 {assigned}    待命 {idle}",
+    "text": "AI {total} · 部署 {assigned} · 待命 {idle}",
     "params": "{total},{assigned},{idle}",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
@@ -6287,50 +8620,8 @@
     "note": "宝石中心重做"
   },
   {
-    "key": "gem.center.manage_tab",
-    "text": "合成 / 分解",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
     "key": "gem.center.modules",
     "text": "模块列表",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.manage_help",
-    "text": "选择一颗宝石即可查看效果。\n\n合成会自动选取同类型、同等级的背包材料。\n\n一键合成只处理背包，已镶嵌宝石保持原位。\n\n仅满级宝石可分解，分解前会确认。",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.search",
-    "text": "搜索宝石名称 / 等级",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.usable",
-    "text": "仅可镶嵌",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.sort_level",
-    "text": "等级优先",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.sort_type",
-    "text": "类型优先",
     "params": "",
     "category": "gem",
     "note": "宝石中心重做"
@@ -6385,6 +8676,13 @@
     "note": "宝石中心重做"
   },
   {
+    "key": "gem.center.choose_empty_socket",
+    "text": "当前模块没有可用空孔位",
+    "params": "",
+    "category": "gem",
+    "note": "宝石中心重做"
+  },
+  {
     "key": "gem.center.choose_gem",
     "text": "请选择一颗宝石",
     "params": "",
@@ -6406,11 +8704,18 @@
     "note": "宝石中心重做"
   },
   {
-    "key": "gem.center.no_match",
-    "text": "没有符合条件的宝石\n可修改搜索，或关闭“仅可镶嵌”。",
+    "key": "gem.center.no_category",
+    "text": "当前模块没有对应类别的背包宝石",
     "params": "",
     "category": "gem",
     "note": "宝石中心重做"
+  },
+  {
+    "key": "gem.center.cleaned",
+    "text": "清理过低等级宝石 {count} 颗",
+    "params": "{count}",
+    "category": "gem",
+    "note": "宝石中心批量清理"
   },
   {
     "key": "gem.center.results",
@@ -6421,7 +8726,7 @@
   },
   {
     "key": "gem.center.socket_hint",
-    "text": " · 选择只预览，按钮才执行",
+    "text": " · 单击预览，双击自动镶嵌到空孔位",
     "params": "",
     "category": "gem",
     "note": "宝石中心重做"
@@ -6441,6 +8746,13 @@
     "note": "宝石中心重做"
   },
   {
+    "key": "gem.center.socket_level",
+    "text": "Lv.{level}",
+    "params": "{level}",
+    "category": "gem",
+    "note": "已镶嵌孔位仅显示等级"
+  },
+  {
     "key": "gem.center.locked_socket",
     "text": "模块 {level} 级解锁",
     "params": "{level}",
@@ -6450,13 +8762,6 @@
   {
     "key": "gem.center.installed",
     "text": "已镶嵌",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.manage_title",
-    "text": "背包宝石 · 合成与分解",
     "params": "",
     "category": "gem",
     "note": "宝石中心重做"
@@ -6514,13 +8819,6 @@
     "key": "gem.center.next",
     "text": "下一等级效果\n{effect}\n\n合成需要 {required} 颗；可用 {have} 颗。",
     "params": "{effect},{required},{have}",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
-    "key": "gem.center.max",
-    "text": "已满级\n分解返还 {refund} 碎片。",
-    "params": "{refund}",
     "category": "gem",
     "note": "宝石中心重做"
   },
@@ -6623,13 +8921,6 @@
     "note": "宝石中心重做"
   },
   {
-    "key": "gem.center.manage_heading",
-    "text": "合成与分解说明",
-    "params": "",
-    "category": "gem",
-    "note": "宝石中心重做"
-  },
-  {
     "key": "gem.center.wrong_category",
     "text": "类型不适用",
     "params": "",
@@ -6722,7 +9013,7 @@
   },
   {
     "key": "crew.api_only",
-    "text": "船员无固定职务，可自由分配到各系统。空闲船员可探索星球并获得经验；装备槽位预留。",
+    "text": "选择船员分配职务；空闲船员可探索星球。",
     "params": "",
     "category": "crew",
     "note": "船员系统"
@@ -6798,27 +9089,6 @@
     "note": "船员系统"
   },
   {
-    "key": "crew.row",
-    "text": "{name}  Lv.{level}\n{job}  {target}\n{effect}",
-    "params": "{name},{level},{job},{target},{effect}",
-    "category": "crew",
-    "note": "船员系统"
-  },
-  {
-    "key": "crew.name_level",
-    "text": "{name}  Lv.{level}",
-    "params": "{name},{level}",
-    "category": "crew",
-    "note": "船员系统"
-  },
-  {
-    "key": "crew.progress",
-    "text": "经验 {exp} / {needed}\n当前效果：{effect}",
-    "params": "{exp},{needed},{effect}",
-    "category": "crew",
-    "note": "船员系统"
-  },
-  {
     "key": "crew.equipment_reserved",
     "text": "船员装备：{count} 个预留槽位（未开放）",
     "params": "{count}",
@@ -6836,13 +9106,6 @@
     "key": "crew.badge",
     "text": "👤",
     "params": "",
-    "category": "crew",
-    "note": "船员系统"
-  },
-  {
-    "key": "crew.badge_tip",
-    "text": "{name} Lv.{level} · {effect}",
-    "params": "{name},{level},{effect}",
     "category": "crew",
     "note": "船员系统"
   },
@@ -7029,7 +9292,7 @@
     "note": "星球探索"
   },
   {
-    "key": "planet.first.name",
+    "key": "planet.1.name",
     "text": "始源星",
     "params": "",
     "category": "planet",
@@ -7037,14 +9300,14 @@
   },
   {
     "key": "planet.detail",
-    "text": "探索度 {degree}  ·  装备数值倍率 ×{bonus}  ·  本次经验 {experience}",
-    "params": "{degree},{bonus},{experience}",
+    "text": "探索度：{degree}\n\n每次探索获得探索度与船员经验。\n{crew_reward}",
+    "params": "{degree},{crew_reward}",
     "category": "planet",
     "note": "星球探索"
   },
   {
     "key": "planet.exploring",
-    "text": "{crew} 探索中 · 剩余 {remaining} 秒",
+    "text": "{crew} · 剩余 {remaining} 秒",
     "params": "{crew},{remaining}",
     "category": "planet",
     "note": "星球探索"
@@ -7074,20 +9337,6 @@
     "key": "crew.exploring",
     "text": "探索中",
     "params": "",
-    "category": "crew",
-    "note": "探索中的船员状态"
-  },
-  {
-    "key": "crew.exploration_remaining",
-    "text": "剩余 {remaining} 秒 · 完成经验 {experience}",
-    "params": "{remaining},{experience}",
-    "category": "crew",
-    "note": "探索中的船员状态"
-  },
-  {
-    "key": "crew.exploration_progress",
-    "text": "经验 {exp} / {needed}\n探索：{planet} · 剩余 {remaining} 秒",
-    "params": "{exp},{needed},{planet},{remaining}",
     "category": "crew",
     "note": "探索中的船员状态"
   },
@@ -7198,9 +9447,530 @@
   },
   {
     "key": "planet.complete_feedback",
-    "text": "探索度 {degree} · 船员经验 +{experience}",
-    "params": "{degree},{experience}",
+    "text": "探索度 {degree}  {crew_reward}",
+    "params": "{degree},{crew_reward}",
     "category": "planet",
     "note": "探索完成的短暂视觉反馈"
-  }
+  },
+  {
+    "key": "chrono.tab",
+    "text": "超时空加速",
+    "params": "",
+    "category": "chrono",
+    "note": "系统页签"
+  },
+  {
+    "key": "chrono.balance",
+    "text": "{amount}",
+    "params": "{amount}",
+    "category": "chrono",
+    "note": "微粒余额"
+  },
+  {
+    "key": "chrono.current",
+    "text": "x{multiplier}  -{cost}/s",
+    "params": "{multiplier},{cost}",
+    "category": "chrono",
+    "note": "当前倍率和每秒微粒消耗"
+  },
+  {
+    "key": "chrono.option",
+    "text": "x{multiplier}  -{cost}/s",
+    "params": "{multiplier},{cost}",
+    "category": "chrono",
+    "note": "倍率按钮"
+  },
+  {
+    "key": "chrono.limit",
+    "text": "最多储存{hours}小时离线微粒",
+    "params": "{hours}",
+    "category": "chrono",
+    "note": "离线累计上限提示"
+  },
+  {
+    "key": "chrono.login_title",
+    "text": "超时空微粒结算",
+    "params": "",
+    "category": "chrono",
+    "note": "每次启动时的微粒报告标题"
+  },
+  {
+    "key": "chrono.login_report",
+    "text": "本次离线收集了 {amount} 个超时空微粒",
+    "params": "{amount}",
+    "category": "chrono",
+    "note": "每次启动时报告实际新增的微粒"
+  },
+  {
+    "key": "chrono.engine",
+    "text": "超时空引擎控制面板",
+    "params": "",
+    "category": "chrono",
+    "note": "面板标题"
+  },
+  {
+    "key": "chrono.reserve",
+    "text": "微粒储量",
+    "params": "",
+    "category": "chrono",
+    "note": "储量分区标题"
+  },
+  {
+    "key": "chrono.speed",
+    "text": "当前游戏倍率",
+    "params": "",
+    "category": "chrono",
+    "note": "倍率分区标题"
+  },
+  {
+    "key": "chrono.slider",
+    "text": "时流倍率",
+    "params": "",
+    "category": "chrono",
+    "note": "横向滑杆标题"
+  },
+  {
+    "key": "chrono.multiplier",
+    "text": "x{multiplier}",
+    "params": "{multiplier}",
+    "category": "chrono",
+    "note": "当前倍率和滑杆档位"
+  },
+  {
+    "key": "chrono.endurance",
+    "text": "当前储量预计可维持 {time}",
+    "params": "{time}",
+    "category": "chrono",
+    "note": "当前消耗下的预计时长"
+  },
+  {
+    "key": "chrono.endurance_free",
+    "text": "当前档位无需消耗微粒",
+    "params": "",
+    "category": "chrono",
+    "note": "零消耗档位时长提示"
+  },
+  {
+    "key": "debug.import_workbook.chrono_speeds_format",
+    "text": "chronoSpeeds 须按“倍率|每秒微粒消耗”填写，多个选项用逗号分隔",
+    "params": "",
+    "category": "debug",
+    "note": "超时空倍率配置格式错误"
+  },
+  {
+    "key": "debug.import_workbook.chrono_speeds_number",
+    "text": "chronoSpeeds 的倍率和消耗必须是数字",
+    "params": "",
+    "category": "debug",
+    "note": "超时空倍率配置数字错误"
+  },
+  {
+    "key": "debug.import_workbook.chrono_speeds_values",
+    "text": "chronoSpeeds 的倍率须大于0且不重复，消耗须不小于0",
+    "params": "",
+    "category": "debug",
+    "note": "超时空倍率配置取值错误"
+  },
+  {
+    "key": "debug.import_workbook.chrono_default",
+    "text": "chronoDefaultSpeed 必须在倍率列表中，且每秒消耗为0",
+    "params": "",
+    "category": "debug",
+    "note": "超时空默认倍率配置错误"
+  },
+  {
+    "key": "reactor.tab",
+    "text": "反应炉",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.heading",
+    "text": "反应炉",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.level",
+    "text": "等级  {level}",
+    "params": "{level}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.energy",
+    "text": "总能源  {energy}",
+    "params": "{energy}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.uranium",
+    "text": "铀  {uranium}",
+    "params": "{uranium}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.cost",
+    "text": "下一级消耗  {cost} 铀",
+    "params": "{cost}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.upgrade.x1",
+    "text": "升级 x1",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.upgrade.x10",
+    "text": "升级 x10",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.upgrade.max",
+    "text": "升级 MAX ({count})",
+    "params": "{count}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.modules",
+    "text": "能源分配",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.equalize",
+    "text": "均分",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.clear",
+    "text": "清零",
+    "params": "",
+    "category": "reactor",
+    "note": "单个模块能源清零",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.weapons",
+    "text": "武器",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.defence",
+    "text": "防御",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.smelting",
+    "text": "熔炼",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.effect",
+    "text": "{energy} 能源  +{percent}%",
+    "params": "{energy},{percent}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.allocated",
+    "text": "已分配 {allocated}/{total}",
+    "params": "{allocated},{total}",
+    "category": "reactor",
+    "note": "反应炉页面",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.core_caption",
+    "text": "战舰能源核心 · 稳定运行",
+    "params": "",
+    "category": "reactor",
+    "note": "反应炉核心视觉",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.next_level",
+    "text": "下一等级  {level}",
+    "params": "{level}",
+    "category": "reactor",
+    "note": "反应炉升级信息",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.remaining",
+    "text": "剩余能源  {energy}",
+    "params": "{energy}",
+    "category": "reactor",
+    "note": "能源网络汇总",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.energy",
+    "text": "{energy} 能源",
+    "params": "{energy}",
+    "category": "reactor",
+    "note": "模块整数能源",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.boost",
+    "text": "+{percent}%",
+    "params": "{percent}",
+    "category": "reactor",
+    "note": "模块显著提升数值",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.weapons.desc",
+    "text": "能源供给武器系统",
+    "params": "",
+    "category": "reactor",
+    "note": "武器能源管线说明",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.defence.desc",
+    "text": "能源供给装甲与护盾",
+    "params": "",
+    "category": "reactor",
+    "note": "防御能源管线说明",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.smelting.desc",
+    "text": "能源供给战利品熔炼",
+    "params": "",
+    "category": "reactor",
+    "note": "熔炼能源管线说明",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.weapons.effect",
+    "text": "武器伤害",
+    "params": "",
+    "category": "reactor",
+    "note": "武器实际效果",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.defence.effect",
+    "text": "护盾效果",
+    "params": "",
+    "category": "reactor",
+    "note": "防御实际效果",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.smelting.effect",
+    "text": "铁产量",
+    "params": "",
+    "category": "reactor",
+    "note": "熔炼实际效果",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.condensation",
+    "text": "宝石凝聚",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.condensation.effect",
+    "text": "掉落碎片",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.condensation.desc",
+    "text": "提升直接掉落的宝石碎片数量，不对宝石熔炼炉产出再次加成。",
+    "params": "",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.module.locked",
+    "text": "通关第 {level} 关解锁",
+    "params": "{level}",
+    "category": "reactor",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "planet.built",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "{name} · 已建成",
+    "params": "{name}"
+  },
+  {
+    "key": "planet.building",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "{name}\n施工 {progress}/{total}",
+    "params": "{name},{progress},{total}"
+  },
+  {
+    "key": "planet.auto",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "自动探索",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "重铸新船",
+    "params": ""
+  },
+  {
+    "key": "planet.conquered",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "星球征服",
+    "params": ""
+  },
+  {
+    "key": "planet.extra",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "施工船员 {count}/{required}",
+    "params": "{count},{required}"
+  },
+  {
+    "key": "planet.assign_builder",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "分配施工船员",
+    "params": ""
+  },
+  {
+    "key": "planet.recall_builder",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "撤回 {name}",
+    "params": "{name}"
+  },
+  {
+    "key": "planet.reforge_confirm",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "确认重铸新船？\n\n将永久清除装备、高科技、宝石、充能（反应炉与时空粒子）、战舰系统成长进度。新一轮从第{level}关开始，并恢复该关及此前已获得的解锁项目。\n\n保留所有船员及等级、星球永久进度、自动探索设置和历史最高关卡经验倍率。当前探索停止。已经历的解锁提示不再重复。\n\n该星球仅能重铸一次。征服后，该星球每次探索经验同步给予所有船员。",
+    "params": "{level}"
+  },
+  {
+    "key": "planet.preview",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "{name}\n再探索 {count} 次解锁",
+    "params": "{name},{count}"
+  },
+  {
+    "key": "planet.builder_role",
+    "text": "参与建设",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "params": ""
+  },
+  {
+    "key": "planet.builder_status",
+    "text": "{planet} · 参与建设",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "params": "{planet}"
+  },
+  {
+    "key": "planet.build_effect",
+    "text": "当前效果 ×{mult}",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "params": "{mult}"
+  },
+  {
+    "key": "planet.level_with_bonus",
+    "text": "{actual} (+{bonus})",
+    "params": "{actual},{bonus}",
+    "category": "planet",
+    "source": "game.gd"
+  },
+  {
+    "key": "planet.level_tooltip",
+    "text": "实际等级：{actual}\n传承等级修正：+{bonus}\n效果等级：{effective}",
+    "params": "{actual},{bonus},{effective}",
+    "category": "planet",
+    "source": "game.gd"
+  },
+  {
+    "key": "planet.charge_with_bonus",
+    "text": "{allocation} (+{bonus}%)",
+    "params": "{allocation},{bonus}",
+    "category": "planet",
+    "source": "game.gd"
+  },
+  {
+    "key": "planet.conquer_effects",
+    "text": "征服效果",
+    "params": "",
+    "category": "planet",
+    "source": "game.gd"
+  },
+  {"key": "galaxy.state_developing", "text": "发展中", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.slot_constructing", "text": "建造中", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.slot_active", "text": "运行中", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.slot_upgrading", "text": "升级中", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.rate", "text": "{amount}/秒", "params": "{amount}", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.detail", "text": "{name} · Lv{level}　{effect} +{value}　{state} {progress}%", "params": "{name},{level},{effect},{value},{state},{progress}", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_exploration", "text": "探索进度", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_buildings", "text": "功能建筑", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_max_level", "text": "满级建筑", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_crew", "text": "派遣船员", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_explorers", "text": "探索船", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_traffic", "text": "交通艇", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_crew_exp", "text": "船员经验", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_equipment_value", "text": "装备属性", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_charge_max", "text": "充能容量", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_gem_fragment", "text": "宝石碎片", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_iron", "text": "自动铁", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.card_uranium", "text": "自动铀", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_crew_exp", "text": "船员经验", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_equipment_value", "text": "装备属性", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_charge_max", "text": "充能容量", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_gem_fragment", "text": "宝石碎片", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_iron_auto_ratio", "text": "有效铁收入比例", "params": "", "category": "galaxy", "note": "星系殖民"},
+  {"key": "galaxy.effect_uranium_auto_ratio", "text": "有效铀收入比例", "params": "", "category": "galaxy", "note": "星系殖民"}
 ]

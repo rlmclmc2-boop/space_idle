@@ -47,14 +47,13 @@ func run() -> void:
 	check(not panel.items.weapons_0.upgradeable and panel.detail.upgrade.disabled,"Resource change updates affordability while paused")
 	check(scene.details_built==details and is_same(item,panel.items.weapons_0),"Resource-only update does not rebuild stats or detail")
 	var entry: Dictionary = scene.game.module_entry("weapons",0)
-	var charge_key := "攻击充能"
-	scene.game.profile.charge[charge_key].level += 1
+	scene.game.set_reactor_allocation("weapons",10)
 	scene.game.event.emit("equipment_stats",{"category":"weapons"})
 	scene.refresh_visible_cards()
-	check(panel.items.weapons_0.mainStatNumber==scene.game.jewel_equipment_stat(entry),"Charge stat event refreshes affected value")
+	check(panel.items.weapons_0.mainStatNumber==scene.game.jewel_equipment_stat(entry),"Reactor stat event refreshes affected value")
 	check(panel.stats_dirty.is_empty() and not panel.sort_dirty,"Local dirty flags clear after refresh")
-	scene.return_to_battle()
-	scene.game.profile.charge[charge_key].level += 1
+	scene.equipment_tabs.current_tab=2
+	scene.game.set_reactor_allocation("weapons",20)
 	scene.game.event.emit("equipment_stats",{"category":"weapons"})
 	check(panel.dirty,"Hidden stat event defers work")
 	scene.equipment_tabs.current_tab = 0

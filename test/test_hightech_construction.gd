@@ -94,6 +94,10 @@ func run() -> void:
 	await frames()
 	scene.refresh_visible_cards(0.1)
 	await frames()
+	check(scene.hightech_selected.is_empty() and scene.hightech_inspector.overview.visible,"Entry shows overview without selecting a building")
+	check(scene.scientist_summary.text.contains("待命 5") and scene.scientist_generate_button.is_visible_in_tree(),"AI total and creation actions are directly visible on entry")
+	check(scene.hightech_page.find_children("*","Button",true,false).filter(func(b):return b.text==UIText.t("research.dock_distribute")).size()==1,"The entire page contains exactly one distribute AI action")
+	check(scene.hightech_inspector.details.values().all(func(d):return not d.panel.visible),"Unselected entry hides all building details")
 	check(keys.size()==4 and scene.hightech_progress.size()==4,"All four configured technologies have construction bays")
 	check(scene.equipment_tabs.position==scene.WORK_CONTENT_RECT.position and scene.hightech_page.size.y>600,"Research stays inside the shared workspace")
 	var identities: Array=[]
@@ -104,6 +108,7 @@ func run() -> void:
 		identities.append(scene.hightech_titles[keys[i]].get_parent())
 		shapes.append(building.shape)
 		check(building.active_in_view(),"All four bays initially visible")
+		check(not controls.has("bar") and not controls.has("workers") and controls.state.text.contains("%"),"Station retains merged state and one auxiliary label without redundant bars or AI counts")
 		check(is_equal_approx(building.fraction,fractions[i]) and building.built>0 and building.built<building.parts.size(),"Partial building follows real points")
 		check(scene.hightech_scroll.get_global_rect().encloses(identities[i].get_global_rect()),"Whole bay and controls fit viewport")
 	check(shapes==["furnace","focus","armour","crystal"],"Four distinct silhouettes include jewel furnace")
@@ -182,6 +187,33 @@ func run() -> void:
 		c.set_fraction(1)
 		check(c.work_target(0)==Vector2.ZERO,"Finished geometry has no speculative construction target")
 		c.set_fraction(fractions[i])
+	# Compact instrument plates keep descriptions below each building.
+	var idle_key: String=keys[-1]
+	scene.game.profile.scientistAssignments[idle_key]=0
+	scene.refresh_scientists()
+	scene.refresh_hightech_progress(idle_key)
+	check(scene.hightech_buttons[idle_key].text==UIText.t("upgrade.build_hightech_card.text_04"),"Unified local control allocates one AI to start construction")
+	for key in keys:scene.hightech_progress[key].construction.advance(0.6,false)
+	await capture("hightech-dock-mixed")
+	for key in keys:
+		var overlay: Label=scene.hightech_descriptions[key]
+		check(overlay.visible and overlay.text==preload("res://scripts/hightech_presentation.gd").effect_text(scene.game,key),"Effect shows its technology's value template")
+		check(overlay.size==Vector2(344,40) and overlay.max_lines_visible==2 and overlay.clip_text,"Effect stays within its fixed compact area")
+		check(overlay.get_parent()==scene.hightech_titles[key].get_parent() and overlay.position.y>=scene.hightech_progress[key].construction.get_rect().end.y,"Effect stays below its building without an opaque overlay")
+	check(scene.hightech_page.find_children("*","Button",true,false).all(func(b):return b.text!="效果展示"),"Effect preview action is removed")
+	await capture("hightech-nameplates")
+	check(scene.hightech_page.find_children("*","OptionButton",true,false).is_empty(),"Filter and sort controls are removed")
+	check(scene.hightech_management.visible and scene.scientist_summary.is_visible_in_tree(),"Global AI controls remain visible without an extra popup")
+	check(not scene.hightech_buttons[idle_key].visible,"Idle unselected station also hides allocation controls")
+	await click(scene.hightech_progress[idle_key].construction)
+	await frames()
+	await click(scene.hightech_buttons[idle_key])
+	check(scene.game.assigned_scientists(idle_key)==1,"Selected idle station starts through real AI assignment")
+	scene.select_hightech_bay("")
+	for i in keys.size():check(scene.hightech_titles[keys[i]].get_parent()==identities[i],"Effect toggle preserves station identity")
+	scene.game.profile.scientistAssignments[idle_key]=11
+	scene.refresh_scientists()
+	scene.refresh_hightech_progress(idle_key)
 	await capture("hightech-four-bays")
 	check(scene.battle_layer.visible,"Battlefield remains visible beside research")
 	scene.refresh_scientists()
@@ -235,15 +267,41 @@ func run() -> void:
 	var building=scene.hightech_progress[first].construction
 	var builds: int=scene.builds
 	var assignments: int=scene.game.assigned_scientists(first)
+	check(scene.hightech_buttons.values().all(func(b):return not b.visible),"Active unselected bays hide allocation controls")
+	await click(building)
+	check(scene.hightech_selected==first and scene.hightech_buttons[first].visible and scene.scientist_remove_buttons[first].visible,"Click building selects station and reveals allocation")
+	check(not scene.hightech_buttons[keys[1]].visible,"Other station controls stay hidden")
+	check(scene.hightech_buttons[first].get_parent()==scene.hightech_inspector.details[first].panel and scene.hightech_management.get_parent()==scene.hightech_page,"Local allocation belongs to selected detail while global management remains independent")
+	check(not scene.hightech_inspector.overview.visible and scene.hightech_inspector.details[first].effect.text==preload("res://scripts/hightech_presentation.gd").effect_text(scene.game,first),"Selected detail shows the effect template")
+	await capture("hightech-dock-selected")
+	await click(building)
+	check(scene.hightech_selected.is_empty() and scene.hightech_inspector.overview.visible,"Click selected building returns to overview")
+	check(scene.hightech_management.visible and scene.scientist_bulk_buttons[10].is_visible_in_tree() and scene.scientist_bulk_buttons[-1].is_visible_in_tree(),"All global AI creation quantities stay visible after deselection")
+	await click(building)
+	await motion(scene.hightech_page.global_position+Vector2(4,4))
+	await press(true)
+	await press(false)
+	check(scene.hightech_selected.is_empty() and scene.hightech_inspector.overview.visible,"Click blank header cancels selection")
+	await click(building)
+	var left_bay: Rect2=scene.hightech_titles[first].get_parent().get_global_rect()
+	var right_bay: Rect2=scene.hightech_titles[keys[1]].get_parent().get_global_rect()
+	await motion(Vector2((left_bay.end.x+right_bay.position.x)/2,left_bay.get_center().y))
+	await press(true)
+	await press(false)
+	check(scene.hightech_selected.is_empty(),"Shared floor between stations cancels selection")
+	await click(building)
 	await click(scene.hightech_buttons[first])
 	check(scene.game.assigned_scientists(first)==assignments+1,"Real mouse assigns AI")
 	check(building.assigned==assignments+1 and scene.scientist_summary.text.contains("待命 4"),"Assignment updates construction and shared idle count")
 	await click(scene.scientist_remove_buttons[first])
 	check(scene.game.assigned_scientists(first)==assignments,"Real mouse recalls AI")
+	check(scene.hightech_management.visible and scene.scientist_generate_button.is_visible_in_tree(),"Selection never hides global AI controls")
+	await capture("hightech-ai-management")
 	await click(scene.scientist_generate_button)
 	check(scene.game.profile.scientists==50,"Real mouse creates AI")
 	await click(scene.scientist_distribute_button)
 	check(scene.game.idle_scientists()==0 and scene.hightech_buttons.values().all(func(b):return b.disabled),"Average distribution updates all dependent buttons")
+	check(scene.hightech_management.visible and scene.hightech_selected==first,"Global operations preserve selected building and remain visible")
 	check(scene.builds==builds,"AI operations never rebuild UI")
 	for i in keys.size():check(scene.hightech_titles[keys[i]].get_parent()==identities[i],"Unrelated bay identity retained")
 	var draws := {"geometry":0,"fx":0,"card":0,"other":0,"background":0}
@@ -326,7 +384,7 @@ func run() -> void:
 	scene.refresh_scientists()
 	await frames()
 	check(scene.hightech_progress.has(extra) and scene.hightech_progress[extra].construction.shape=="prototype","Fifth configuration row receives generic construction automatically")
-	check(scene.hightech_titles[first].get_parent()==identities[0] and scene.hightech_inventory.text.contains("5"),"Expansion preserves original bays and updates project count")
+	check(scene.hightech_titles[first].get_parent()==identities[0] and scene.hightech_container.get_child_count()==5,"Expansion preserves original bays and adds exactly one station")
 	scene.hightech_scroll.scroll_vertical=672
 	await frames()
 	check(not building.active_in_view() and scene.hightech_progress[extra].construction.active_in_view(),"Scrolling exposes new bay and culls offscreen construction")
@@ -363,12 +421,59 @@ func run() -> void:
 	scene.sync_hightech_slots()
 	scene.refresh_scientists()
 	await frames()
+	check(scene.hightech_inspector.details.size()==12,"New configured projects receive detail controls without hardcoded slots")
 	check(scene.hightech_buttons.size()==12 and scene.hightech_container.get_child_count()==12,"Twelve technologies expand without empty drag slots")
+	var fixed_ai_rect: Rect2=scene.hightech_management.get_global_rect()
+	await capture("hightech-twelve-top")
 	scene.hightech_scroll.scroll_vertical=100000
 	await frames()
 	var scroll: int=scene.hightech_scroll.scroll_vertical
 	scene.refresh_scientists()
-	check(scroll>2000 and scene.hightech_scroll.scroll_vertical==scroll,"Later research pages remain reachable and resource refresh retains scrolling")
+	check(scroll>0 and scene.hightech_scroll.get_global_rect().encloses(scene.hightech_container.get_child(-1).get_global_rect()) and scene.hightech_scroll.scroll_vertical==scroll,"Last construction bay remains fully reachable and resource refresh retains scrolling")
+	check(scene.hightech_container.columns==2 and scene.hightech_scroll.scroll_horizontal==0,"Twelve projects remain in two columns without horizontal scrolling")
+	check(scene.hightech_management.get_global_rect()==fixed_ai_rect and not fixed_ai_rect.intersects(scene.hightech_container.get_child(-1).get_global_rect()),"Global AI controls stay fixed without covering the final row")
+	var last_key: String=scene.hightech_container.get_child(-1).get_meta("tech_key")
+	await click(scene.hightech_progress[last_key].construction)
+	check(scene.hightech_selected==last_key and scene.hightech_inspector.details[last_key].panel.is_visible_in_tree(),"Final row selects its own persistent detail")
+	var last_workers: int=scene.game.assigned_scientists(last_key)
+	scene.game.profile.scientists+=1
+	scene.refresh_scientists()
+	await click(scene.hightech_buttons[last_key])
+	check(scene.game.assigned_scientists(last_key)==last_workers+1 and scene.hightech_scroll.scroll_vertical==scroll,"Real allocation on final row changes the right project without resetting scroll")
+	await capture("hightech-twelve-bottom-selected")
+	await click(scene.scientist_remove_buttons[last_key])
+	scene.game.profile.scientists-=1
+	scene.refresh_scientists()
+	scene.select_hightech_bay("")
+	scene.hightech_scroll.scroll_vertical=scroll/2
+	await frames()
+	await capture("hightech-twelve-middle")
+	var middle_scroll: int=scene.hightech_scroll.scroll_vertical
+	await motion(scene.hightech_scroll.get_global_rect().get_center())
+	var wheel := InputEventMouseButton.new()
+	wheel.position=mouse
+	wheel.global_position=mouse
+	wheel.button_index=MOUSE_BUTTON_WHEEL_DOWN
+	wheel.pressed=true
+	view.push_input(wheel,true)
+	await frames()
+	var row_stride: int=int(scene.HIGHTECH_CARD_SIZE.y)+scene.hightech_container.get_theme_constant("v_separation")
+	check(scene.hightech_scroll.scroll_vertical==middle_scroll+row_stride and scene.hightech_management.get_global_rect()==fixed_ai_rect,"Mouse wheel moves exactly one two-station row while AI controls remain fixed")
+	wheel.button_index=MOUSE_BUTTON_WHEEL_UP
+	view.push_input(wheel,true)
+	await frames()
+	check(scene.hightech_scroll.scroll_vertical==middle_scroll,"Reverse wheel returns to the previous complete row")
+	scene.hightech_scroll.get_v_scroll_bar().value=middle_scroll+row_stride*0.7
+	await frames()
+	check(scene.hightech_scroll.scroll_vertical==middle_scroll+row_stride,"Scrollbar intermediate position snaps to a complete row")
+	var visible_rect: Rect2=scene.hightech_scroll.get_global_rect()
+	var complete_visible := 0
+	var partial_visible := 0
+	for bay in scene.hightech_container.get_children():
+		if visible_rect.encloses(bay.get_global_rect()):complete_visible+=1
+		elif visible_rect.intersects(bay.get_global_rect()):partial_visible+=1
+	check(complete_visible==4 and partial_visible==0,"Snapped viewport contains four complete stations and no partial station")
+	await capture("hightech-twelve-row-snapped")
 	scene.hightech_scroll.scroll_vertical=0
 	await frames()
 	scene.game.profile.techPoints[first]=0
@@ -387,6 +492,14 @@ func run() -> void:
 		await process_frame
 	check(draws.fx==0 and building.completion_cooldown<0.6,"Cooldown without workers has no empty effect redraws")
 	await verify_worker_motion(keys)
+	var furnace_key: String=BattleGame.FURNACE
+	scene.game.profile.hightechLevels[furnace_key]=185
+	scene.game.profile.furnaceIncomePeak=2.612345e25
+	scene.refresh_hightech_card(furnace_key)
+	scene.select_hightech_bay(furnace_key)
+	check(not scene.hightech_descriptions[furnace_key].text.contains("？") and scene.hightech_descriptions[furnace_key].text.contains("e+"),"Large furnace yield is readable in the station nameplate")
+	check(scene.hightech_inspector.details[furnace_key].effect.text==preload("res://scripts/hightech_presentation.gd").effect_text(scene.game,furnace_key),"Selected detail and station use the same large-number effect")
+	await capture("hightech-large-yield")
 	print("Hightech construction: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)
 

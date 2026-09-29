@@ -14,7 +14,7 @@ func _initialize() -> void:
 func run() -> void:
 	var db := ShipDatabase.new()
 	db.config.offlineMax = 0
-	check(db.data.unlock.size()==26,"All 26 unique entities including six crew and one planet registered")
+	check(db.data.unlock.size()==24,"All 24 unique entities including reactor, six crew and one planet registered")
 	db.unlock_row("equipment","laser").level=1
 	var initial := BattleGame.new(db,false)
 	check(not initial.profile.unlocked.has("laser"),"startEquip cannot bypass an authored stage gate")
@@ -45,17 +45,16 @@ func run() -> void:
 	game.profile.cleared=[10]
 	game.rebuild_unlocks()
 	check(game.jewels_unlocked() and game.ship_unlocked("Destroyer") and not game.profile.unlocked.has("shield"),"Gapped saves preserve reached-vs-exact gate semantics")
-	var charge: String = db.data.charge.keys()[0]
-	db.unlock_row("charge",charge).level=9
-	check(not game.charge_unlocked(charge),"Only unlock table sets gate")
+	db.unlock_row("feature","reactor").level=9
+	check(not game.reactor_unlocked(),"Only unlock table sets gate")
 	game.profile.cleared.append(9)
 	game.rebuild_unlocks()
-	check(game.charge_unlocked(charge),"Edited gate triggers")
-	db.unlock_row("charge",charge).level=40
+	check(game.reactor_unlocked(),"Edited gate triggers")
+	db.unlock_row("feature","reactor").level=40
 	game.rebuild_unlocks()
-	check(game.charge_unlocked(charge),"Earned content cannot relock after config change")
+	check(game.reactor_unlocked(),"Earned content cannot relock after config change")
 	# Old save without new fields; use isolated user:// supplied by run.py.
-	var raw := {"version":1,"cleared":[1,2,3,7,10,12],"unlocked":["laser","armour","longLaser"],"selectedShip":"Destroyer"}
+	var raw := {"version":BattleGame.SAVE_VERSION,"cleared":[1,2,3,7,10,12],"unlocked":["laser","armour","longLaser"],"selectedShip":"Destroyer"}
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	file.store_string(JSON.stringify(raw));file.close()
 	var loaded := BattleGame.new(db,true)

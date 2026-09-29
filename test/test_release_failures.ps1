@@ -37,7 +37,7 @@ Copy-Item -LiteralPath "$root/space-battleship/engine/templates/4.7.2.stable/win
 Copy-Item -LiteralPath "$root/space-battleship/export_presets.cfg" -Destination $project
 Copy-Item -LiteralPath "$root/space-battleship/project.godot" -Destination $project
 Copy-Item -LiteralPath "$root/space-battleship/main.tscn" -Destination $project
-foreach ($name in @('game_data.json','ui_text.json','ui_text_contract.json')) {
+foreach ($name in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json')) {
     Set-Content -LiteralPath "$project/data/$name" -Value '{}'
 }
 Set-Content -LiteralPath "$project/scripts/main.gd" -Value "extends Node2D`nTHIS IS NOT VALID GDSCRIPT"

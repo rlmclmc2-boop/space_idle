@@ -91,7 +91,7 @@ static func analyze_timeline(points: Array) -> Array:
 			result.append(issue("few_new_choices","MEDIUM",time,point.stage,{"stages":int(point.highest_stage)-int(choice_anchor.highest_stage),"choice_count":point.choice_count},choice_anchor.game_time))
 			choice_anchor = point
 		# A participating system that subsequently goes idle gets an onset interval.
-		for system in ["upgrade","research","charge_cycles","jewel_combine","jewel_equip"]:
+		for system in ["upgrade","research","reactor_levels","jewel_combine","jewel_equip"]:
 			var count := int(point.system_uses.get(system,0))
 			var prior := int(previous.get("system_uses",{}).get(system,0))
 			sustained(tracker,result,"system_inactive",count > 0 and count == prior,point,{"system":system,"count":count},"LOW",THRESHOLDS.idle_seconds,system)

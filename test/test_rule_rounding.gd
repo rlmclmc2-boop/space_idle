@@ -57,9 +57,13 @@ func _initialize() -> void:
 	check(resources.fresh_profile().resources["1"]==2,"Starting resources round up")
 	db.levels[0].lifeRatio = 1.1
 	db.levels[1].lifeRatio = 1.3
-	check(is_equal_approx(db.ratio(2,0.5,"lifeRatio"),1.2),"Within-stage interpolation between adjacent endpoints")
-	check(db.ratio(1,0,"lifeRatio")==1.0,"First stage starts at base ratio one")
-	check(db.ratio(2,-1,"lifeRatio")==1.1 and db.ratio(2,2,"lifeRatio")==1.3,"Interpolation clamps progress at both endpoints")
+	var point_count: int = db.levels[1].groups.size()
+	var middle_point: int = int((point_count - 1) / 2)
+	var middle_progress := float(middle_point) / float(point_count - 1)
+	check(is_equal_approx(db.ratio(2,0,"lifeRatio"),1.1),"First battle point inherits previous level multiplier")
+	check(is_equal_approx(db.ratio(2,middle_point,"lifeRatio"),lerpf(1.1,1.3,middle_progress)),"Battle-point multipliers interpolate linearly")
+	check(is_equal_approx(db.ratio(1,0,"lifeRatio"),1.0),"First level starts at base multiplier one")
+	check(is_equal_approx(db.ratio(2,-1,"lifeRatio"),1.1) and is_equal_approx(db.ratio(2,point_count,"lifeRatio"),1.3),"Battle-point interpolation clamps at both endpoints")
 	db.equipment.cannon[0].dmg = 20
 	db.equipment["cannon-mon"][0].dmg = null
 	db.equipment.laser_mon[0].dmg = 7

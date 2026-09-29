@@ -28,6 +28,10 @@ func run() -> void:
 	for enemy in scene.game.enemies:
 		enemy.hp = 100000
 		enemy.equipment = []
+	# Slot scatter is presentation-only: place the visible targets at opposite
+	# edges so this still checks independent left/right aiming after repacking.
+	top.x += 80.0-scene.enemy_render_position(top).x
+	bottom.x += 500.0-scene.enemy_render_position(bottom).x
 	for i in 8:scene.turret_pose(i).target = top if i<4 else bottom
 	var enemies: Array = scene.game.enemies.duplicate(true)
 	var cooldowns: Dictionary = scene.game.cooldowns.duplicate(true)
@@ -46,7 +50,7 @@ func run() -> void:
 	var muzzle: Vector2 = scene.turret_muzzle(1)
 	for n in 3:scene.game.jewel_fire(1,top,scene.db.equip("missile",1),scene.game.player_weapon_offset(1),1.0,scene.game.missile_visual_spread(n,3))
 	check(scene.projectile_visuals.all(func(v):return v.origin.is_equal_approx(muzzle)),"all volley shots share rotated muzzle")
-	check(scene.projectile_visuals.all(func(v):return is_equal_approx(v.angle,scene.turret_angle(1))),"missiles initially face rotated barrel")
+	check(scene.projectile_visuals.all(func(v):return is_equal_approx(v.angle,-PI/2+scene.player_idle_angle()+scene.turret_angle(1))),"missiles initially face the upright rotated barrel")
 	check(scene.game.projectiles.all(func(p):return p.direction==Vector2.UP),"logical missile direction points toward enemy line")
 	var logical: Array = scene.game.projectiles.duplicate(true)
 	scene.advance_projectile_visuals(0.03)

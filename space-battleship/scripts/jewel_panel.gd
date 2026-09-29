@@ -44,9 +44,6 @@ var metric_state: Array = []
 var module_buttons: Dictionary = {}
 var module_list: VBoxContainer
 var module_scroll: ScrollContainer
-var search: LineEdit
-var usable_only: CheckButton
-var sort_order: OptionButton
 var inventory_scroll: ScrollContainer
 var remove_action: Button
 var upgrade_action: Button
@@ -84,8 +81,6 @@ func setup(owner_node: Node) -> void:
 		add_child(frame)
 	add_theme_font_override("font",host.font)
 	label(UIText.t("gem.center.title"),Rect2(28,21,280,32),26)
-	var subtitle:=label(UIText.t("gem.visual.subtitle"),Rect2(28,55,370,22),12)
-	subtitle.add_theme_color_override("font_color",Color("8198b1"))
 	combine_all=add_button(UIText.t("gem.setup.text_07"),Rect2(1016,26,198,38),combine_all_selected)
 	combine_all.tooltip_text=UIText.t("gem.setup.text_08")
 	module_heading=label(UIText.t("gem.center.modules"),Rect2(36,116,190,26),17)
@@ -104,30 +99,10 @@ func setup(owner_node: Node) -> void:
 	socket_row.size=Vector2(586,74)
 	socket_row.add_theme_constant_override("separation",8)
 	add_child(socket_row)
-	search=LineEdit.new()
-	search.position=Vector2(268,246)
-	search.size=Vector2(246,32)
-	search.placeholder_text=UIText.t("gem.center.search")
-	search.text_changed.connect(func(_value):refresh_inventory();refresh_detail())
-	add_child(search)
-	usable_only=CheckButton.new()
-	usable_only.position=Vector2(526,242)
-	usable_only.size=Vector2(160,40)
-	usable_only.text=UIText.t("gem.center.usable")
-	usable_only.button_pressed=true
-	usable_only.toggled.connect(func(_value):refresh_inventory();refresh_detail())
-	add_child(usable_only)
-	sort_order=OptionButton.new()
-	sort_order.position=Vector2(704,246)
-	sort_order.size=Vector2(144,32)
-	sort_order.add_item(UIText.t("gem.center.sort_level"))
-	sort_order.add_item(UIText.t("gem.center.sort_type"))
-	sort_order.item_selected.connect(func(_index):refresh_inventory())
-	add_child(sort_order)
-	summary=label("",Rect2(268,284,580,25),14)
+	summary=label("",Rect2(268,246,580,32),14)
 	inventory_scroll=ScrollContainer.new()
-	inventory_scroll.position=Vector2(266,320)
-	inventory_scroll.size=Vector2(588,778)
+	inventory_scroll.position=Vector2(266,286)
+	inventory_scroll.size=Vector2(588,812)
 	inventory_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(inventory_scroll)
 	inventory_list=GridContainer.new()
@@ -252,6 +227,32 @@ func select_cell(index: int) -> void:
 	refresh_detail()
 	pulse(gem_buttons.get(token),host.CYAN)
 
+func quick_socket(token: int) -> void:
+	var gem:=game.jewel_inventory(token)
+	if gem.is_empty():return
+	var entry:=game.module_entry(category,equipment_index)
+	if not is_same(entry,equipment_identity):refresh();return
+	var destination:=target_socket
+	if destination<0 or destination>=game.equipment_socket_count(entry) or not socket_gem(destination).is_empty():
+		destination=-1
+		for index in game.equipment_socket_count(entry):
+			if socket_gem(index).is_empty():
+				destination=index
+				break
+	if destination<0:
+		show_feedback(UIText.t("gem.center.choose_empty_socket"),false)
+		return
+	var error:=game.jewel_socket_error_key(category,equipment_index,token,destination)
+	if not error.is_empty():
+		show_feedback(UIText.t(error),false)
+		return
+	bulk_summary=""
+	result_token=-1
+	new_tokens.erase(token)
+	target_socket=destination
+	selected=[token]
+	operate_socket(destination)
+
 func gem_name(gem: Dictionary) -> String:
 	return UIText.t("gem.name_level", {"item_name":"%s" % (UIText.data_text("jewel",str(gem.id))), "level":"%d" % (int(gem.level))})
 
@@ -347,9 +348,8 @@ func refresh_inventory() -> void:
 	var live: Dictionary={}
 	var ordered: Array=game.profile.jewels.duplicate()
 	ordered.sort_custom(func(a,b):
-		if sort_order.selected==0 and int(a.level)!=int(b.level):return int(a.level)>int(b.level)
-		if str(a.id)!=str(b.id):return int(a.id)<int(b.id)
 		if int(a.level)!=int(b.level):return int(a.level)>int(b.level)
+		if str(a.id)!=str(b.id):return int(a.id)<int(b.id)
 		return int(a.token)<int(b.token))
 	cells.clear()
 	for gem in ordered:
@@ -359,6 +359,9 @@ func refresh_inventory() -> void:
 			var button:=add_button("",Rect2(0,0,108,151),func():
 				var current:=game.jewel_inventory(token)
 				if not current.is_empty():select_cell(game.profile.jewels.find(current)))
+			button.gui_input.connect(func(event):
+				if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed and event.double_click:
+					quick_socket(token))
 			button.custom_minimum_size=Vector2(108,151)
 			button.clip_text=true
 			button.add_theme_font_size_override("font_size",12)
@@ -371,7 +374,7 @@ func refresh_inventory() -> void:
 			gem_buttons[token]=button
 		var cell: Button=gem_buttons[token]
 		var error:=candidate_error(gem)
-		var shown: bool=(not usable_only.button_pressed or error.is_empty()) and (search.text.strip_edges().is_empty() or gem_name(gem).to_lower().contains(search.text.strip_edges().to_lower()))
+		var shown:=game.jewel_allowed(str(gem.id),category)
 		host.set_ui_value(cell,"visible",shown)
 		if shown:
 			if cell.get_index()!=cells.size():inventory_list.move_child(cell,cells.size())
@@ -392,7 +395,7 @@ func refresh_inventory() -> void:
 			removed.queue_free()
 			gem_buttons.erase(token)
 	host.set_ui_value(empty_hint,"visible",cells.is_empty())
-	host.set_ui_value(empty_hint,"text",UIText.t("gem.center.empty" if game.profile.jewels.is_empty() else "gem.center.no_match"))
+	host.set_ui_value(empty_hint,"text",UIText.t("gem.center.empty" if game.profile.jewels.is_empty() else "gem.center.no_category"))
 	host.set_ui_value(summary,"text",UIText.t("gem.center.results",{"count":str(cells.size())})+UIText.t("gem.center.socket_hint"))
 
 func refresh_sockets() -> void:
@@ -423,13 +426,12 @@ func refresh_sockets() -> void:
 	for i in total:
 		var gem:=socket_gem(i)
 		var unlocked: bool=i<count
-		var text:=UIText.t("gem.center.empty_socket",{"index":str(i+1)}) if gem.is_empty() else gem_name(gem)
+		var text:=UIText.t("gem.center.empty_socket",{"index":str(i+1)}) if gem.is_empty() else UIText.t("gem.center.socket_level",{"level":str(gem.level)})
 		if not unlocked and gem.is_empty():text=UIText.t("gem.center.locked_socket",{"level":str(levels[i]) if i<levels.size() else "—"})
-		if not gem.is_empty():text+="\n"+UIText.t("gem.center.installed")
 		host.set_ui_value(socket_buttons[i],"text",text)
 		host.set_ui_value(socket_buttons[i],"icon",null if gem.is_empty() else gem_texture(str(gem.id)))
 		host.set_ui_value(socket_buttons[i],"disabled",not unlocked and gem.is_empty())
-		host.set_ui_value(socket_buttons[i],"tooltip_text",text if gem.is_empty() else gem_description(gem))
+		host.set_ui_value(socket_buttons[i],"tooltip_text",text if gem.is_empty() else gem_name(gem)+"\n"+gem_description(gem))
 		apply_palette(socket_buttons[i],"selected" if target_socket==i else "installed" if not gem.is_empty() else "empty")
 	var title:=UIText.t("gem.center.target",{"kind":UIText.t("weapon.tab" if category=="weapons" else "defense.tab"),"index":str(equipment_index+1),"name":host.NAMES.get(str(entry.get("key","")),UIText.t("equipment.vacant")),"level":str(entry.get("level",1))})
 	host.set_ui_value(equipment_title,"text",title)
@@ -526,7 +528,7 @@ func refresh_detail(_counts: Dictionary = {}) -> void:
 			while slots.size()<=target_socket:slots.append({})
 			slots[target_socket]=candidate.duplicate()
 			after.sockets=slots
-			decreases=game.jewel_equipment_stat(after)<game.jewel_equipment_stat(before) or (category=="weapons" and game.jewel_critical(after).x<game.jewel_critical(before).x)
+			decreases=GrowthNumber.compare(game.jewel_equipment_stat(after),game.jewel_equipment_stat(before))<0 or (category=="weapons" and game.jewel_critical(after).x<game.jewel_critical(before).x)
 			if decreases:reason="gem.center.decrease"
 	elif not installed.is_empty():
 		description=UIText.t("gem.center.installed")+"\n\n"+description
@@ -577,11 +579,11 @@ func preview_socket(gem: Dictionary, index: int) -> String:
 	return stat_comparison(entry,copy)
 
 func stat_comparison(before: Dictionary, after: Dictionary) -> String:
-	var old := game.jewel_equipment_stat(before)
-	var value := game.jewel_equipment_stat(after)
+	var old = game.jewel_equipment_stat(before)
+	var value = game.jewel_equipment_stat(after)
 	var lines: PackedStringArray=[]
-	if not is_equal_approx(old,value):
-		lines.append(UIText.t("gem.stat_comparison.text_01", {"else":"%s" % (UIText.t("gem.stat_comparison.text_02") if category=="defence" else UIText.t("gem.stat_comparison.text_03")), "old":"%s" % (host.number(old)), "value":"%s" % (host.number(value)), "old_4":"%+.0f" % (value-old)}))
+	if GrowthNumber.compare(old,value)!=0:
+		lines.append(UIText.t("gem.stat_comparison.text_01", {"else":"%s" % (UIText.t("gem.stat_comparison.text_02") if category=="defence" else UIText.t("gem.stat_comparison.text_03")), "old":"%s" % (host.number(old)), "value":"%s" % (host.number(value)), "old_4":GrowthNumber.signed_difference(value,old)}))
 	if category=="weapons":
 		var old_crit := game.jewel_critical(before)
 		var new_crit := game.jewel_critical(after)
@@ -610,12 +612,13 @@ func gem_texture(id: String) -> Texture2D:
 		var authored:=str(game.db.jewel(id).get("image",""))
 		if not authored.is_empty() and authored!="res://assets/jewels/%s.svg" % id and ResourceLoader.exists(authored):
 			textures[id]=load(authored)
-		elif id.is_valid_int() and int(id)>=1 and int(id)<=10:
+		elif id.is_valid_int() and int(id)>=1 and int(id)<=6:
 			var atlas: Texture2D=preload("res://assets/jewels/premium/crystal-atlas.png")
 			var item:=AtlasTexture.new()
 			item.atlas=atlas
 			var cell:=Vector2(atlas.get_width()/5.0,atlas.get_height()/2.0)
-			var index:=int(id)-1
+			# New IDs 3–6 retain the visual identity of their original effects.
+			var index: int=[0,1,4,5,6,9][int(id)-1]
 			item.region=Rect2(Vector2(index%5,floori(index/5.0))*cell,cell)
 			item.filter_clip=true
 			textures[id]=item
@@ -661,16 +664,6 @@ func apply_palette(control: Button, key: String) -> void:
 	control.add_theme_color_override("icon_hover_color",Color(0.8,0.85,0.9,0.7) if key=="blocked" else Color.WHITE)
 
 func skin_controls() -> void:
-	search.add_theme_stylebox_override("normal",surface(Color("0c1929"),Color("30485f")))
-	search.add_theme_stylebox_override("focus",surface(Color("101f30"),Color("80bfc8")))
-	search.add_theme_color_override("font_placeholder_color",Color("6e849c"))
-	for control in [search,sort_order,usable_only]:
-		control.add_theme_font_override("font",host.font)
-		control.add_theme_font_size_override("font_size",13)
-		control.add_theme_color_override("font_color",Color("aabed0"))
-	apply_palette(sort_order,"normal")
-	usable_only.add_theme_icon_override("checked",preload("res://assets/jewels/premium/toggle-on.svg"))
-	usable_only.add_theme_icon_override("unchecked",preload("res://assets/jewels/premium/toggle-off.svg"))
 	for scroll in [module_scroll,inventory_scroll,detail_scroll]:
 		var bar: VScrollBar=scroll.get_v_scroll_bar()
 		for state in ["scroll","grabber","grabber_highlight","grabber_pressed"]:
@@ -713,12 +706,12 @@ func fly(texture: Texture2D, origin: Vector2, destination: Vector2) -> void:
 	var old: Tween=icon.get_meta("flight") if icon.has_meta("flight") else null
 	if old!=null:old.kill()
 	icon.texture=texture
-	icon.position=origin-Vector2(16,16)
+	icon.global_position=origin-Vector2(16,16)
 	icon.modulate=Color.WHITE
 	icon.show()
 	var tween:=icon.create_tween()
 	icon.set_meta("flight",tween)
-	tween.tween_property(icon,"position",destination-Vector2(16,16),0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(icon,"global_position",destination-Vector2(16,16),0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(icon,"modulate:a",0.0,0.1).set_delay(0.18)
 	tween.tween_callback(icon.hide)
 
@@ -786,7 +779,7 @@ func inventory_changed() -> void:
 func pickup_feedback(info: Dictionary) -> void:
 	var tab_bar: TabBar=host.equipment_tabs.get_tab_bar()
 	var target: Vector2 = control_center(fragments) if visible else tab_bar.global_position+tab_bar.get_tab_rect(4).get_center()
-	fly(gem_texture("1"),Vector2(info.x,info.y),target)
+	fly(gem_texture("1"),host.battle_layer.to_global(host.drop_render_position(info)),target)
 	var text := UIText.t("gem.pickup_feedback.text_01", {"amount":"%.2f" % (float(info.amount))})
 	if generated_count>0:text+=UIText.t("gem.pickup_feedback.text_02", {"generated_count":"%d" % (generated_count)})
 	if game.profile.jewels.size()>=BattleGame.JEWEL_CAPACITY:text+=UIText.t("gem.pickup_feedback.text_03")
@@ -809,15 +802,17 @@ func combine_all_selected() -> void:
 	if not result.ok:
 		show_feedback(str(result.message),false)
 		return
-	if int(result.count)==0:
+	if int(result.count)==0 and int(result.deleted)==0:
 		show_feedback(UIText.t("merge.combine_all_selected.text_01"),false)
 		return
 	selected.clear()
-	bulk_summary=UIText.t("merge.combine_all_selected.text_02", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed))})
+	var cleaned:=UIText.t("gem.center.cleaned",{"count":str(result.deleted)}) if int(result.deleted)>0 else ""
+	bulk_summary=UIText.t("merge.combine_all_selected.text_02", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed))}) if int(result.count)>0 else ""
+	if not cleaned.is_empty():bulk_summary+=("\n" if not bulk_summary.is_empty() else "")+cleaned
 	var lines: PackedStringArray=[UIText.t("merge.combine_all_selected.text_03")]
 	for reward in result.results:
 		lines.append(UIText.t("merge.combine_all_selected.text_04", {"reward":"%s" % (gem_name(reward)), "count":"%d" % (int(reward.count))}))
-	bulk_rewards="\n".join(lines)
+	bulk_rewards="\n".join(lines) if int(result.count)>0 else ""
 	result_token=-1
 	for token in result.tokens:
 		var gem := game.jewel_inventory(int(token))
@@ -825,5 +820,6 @@ func combine_all_selected() -> void:
 		pulse(gem_buttons.get(token),host.ORANGE)
 	refresh_detail()
 	detail_scroll.scroll_vertical=0
-	show_feedback(UIText.t("merge.combine_all_selected.text_05", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed)), "slice":"%s" % ("、".join(lines.slice(1)))}))
+	var message:=UIText.t("merge.combine_all_selected.text_05", {"count":"%d" % (int(result.count)), "consumed":"%d" % (int(result.consumed)), "slice":"%s" % ("、".join(lines.slice(1)))}) if int(result.count)>0 else ""
+	show_feedback(message+("\n" if not message.is_empty() and not cleaned.is_empty() else "")+cleaned)
 	pulse(detail_icon,host.ORANGE)

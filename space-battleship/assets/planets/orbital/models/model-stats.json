@@ -1,0 +1,26 @@
+[
+  {
+    "kind": "auto_explore",
+    "triangles": 11306,
+    "mesh_objects": 2,
+    "material_surfaces": 9
+  },
+  {
+    "kind": "refinery",
+    "triangles": 22044,
+    "mesh_objects": 2,
+    "material_surfaces": 7
+  },
+  {
+    "kind": "equipment",
+    "triangles": 17510,
+    "mesh_objects": 2,
+    "material_surfaces": 9
+  },
+  {
+    "kind": "shipyard",
+    "triangles": 21006,
+    "mesh_objects": 2,
+    "material_surfaces": 7
+  }
+]

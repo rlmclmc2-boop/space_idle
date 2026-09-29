@@ -1,0 +1,14 @@
+{
+  "level_count": 200,
+  "battle_points_per_level": 3,
+  "small_cycle": 5,
+  "large_cycle": 10,
+  "strength_pattern": [0, 0, 0, 0, 1, 0, 0, 0, 0, 2],
+  "weapon_pattern": ["physical", "energy", "physical", "energy", "mixed"],
+  "battle_point_offsets": [0, 0, 0],
+  "strength_tolerance": 1,
+  "fleet_reuse_limit": 8,
+  "recent_fleet_window": 6,
+  "similarity_window": 6,
+  "seed": 12345
+}

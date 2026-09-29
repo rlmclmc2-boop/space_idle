@@ -57,8 +57,8 @@ func run() -> void:
 	var defence: Label = scene.equipment_panel.cards.defence_0.fields.title
 	var tech: String = scene.hightech_buttons.keys()[0]
 	var tech_panel: Node = scene.hightech_buttons[tech].get_parent()
-	var charge: String = scene.charge_cards.keys()[0]
-	var charge_title: Label = scene.charge_cards[charge].title
+	var tech_bay: Node = scene.hightech_titles[tech].get_parent()
+	var reactor_level: Label = scene.reactor_panel.level_label
 	var draws := {"background":0,"resources":0,"battle":0,"stars":0}
 	scene.background_layer.draw.connect(func():draws.background+=1)
 	scene.resource_layer.draw.connect(func():draws.resources+=1)
@@ -74,7 +74,7 @@ func run() -> void:
 	var before := int(scene.game.slot_entry("weapons",0).level)
 	await click(scene.equipment_panel.detail.upgrade)
 	check(int(scene.game.slot_entry("weapons",0).level)==before+1,"Real click upgrades equipment")
-	check(not scene.writes.has(defence) and not scene.writes.has(charge_title),"Upgrade does not write unrelated card titles")
+	check(not scene.writes.has(defence) and not scene.writes.has(reactor_level),"Upgrade does not write unrelated reactor label")
 	check(scene.equipment_tabs==tabs and scene.builds==builds,"Upgrade keeps complete UI tree")
 	check(scene.hightech_buttons[tech].get_parent()==tech_panel,"Upgrade preserves research card")
 	scene._process(0)
@@ -87,7 +87,7 @@ func run() -> void:
 	scene.game.upgrade_equipment_batch("10")
 	check(scene.equipment_tabs.get_tab_title(0)==crew_tab_title and preserved_cards.values().all(func(card):return not card.fields.has("crew")),"Equipment upgrade keeps tab marker and module cards have no crew marker")
 	check(scene.equipment_panel.cards==preserved_cards and scene.builds==builds,"Batch upgrade preserves all equipment controls")
-	check(not scene.writes.has(charge_title) and scene.hightech_buttons[tech].get_parent()==tech_panel,"Batch upgrade preserves unrelated UI")
+	check(not scene.writes.has(reactor_level) and scene.hightech_buttons[tech].get_parent()==tech_panel,"Batch upgrade preserves unrelated UI")
 	for id in scene.equipment_panel.items:
 		var item: Dictionary=scene.equipment_panel.items[id]
 		check(item.level==scene.game.module_entry(item.category,item.index).level,"Batch refresh catches up module "+id)
@@ -102,7 +102,10 @@ func run() -> void:
 	check(not scene.equipment_panel.dirty and scene.equipment_panel.cards==preserved_cards,"Showing equipment applies batch changes without replacing cards")
 	scene.equipment_tabs.current_tab=1
 	await process_frame
+	await click(scene.hightech_management_button)
 	await click(scene.scientist_generate_button)
+	await click(scene.hightech_management_button)
+	await click(scene.hightech_progress[tech].construction)
 	await click(scene.hightech_buttons[tech])
 	check(scene.game.assigned_scientists(tech)==1,"Real mouse generates and assigns scientist")
 	check(scene.builds==builds and scene.hightech_buttons[tech].get_parent()==tech_panel,"Scientific actions retain all UI instances")
@@ -113,19 +116,20 @@ func run() -> void:
 	scene.on_event("state",{})
 	check(scene.builds==builds and scene.equipment_tabs==tabs,"Battle state preserves UI")
 	scene.sync_hightech_slots()
-	check(scene.hightech_titles[tech].get_parent()==tech_panel and scene.builds==builds,"Research list synchronization retains existing bays")
+	check(scene.hightech_titles[tech].get_parent()==tech_bay and scene.hightech_buttons[tech].get_parent()==tech_panel and scene.builds==builds,"Research list synchronization retains existing bays and inspector controls")
 	scene.equipment_tabs.current_tab=2
 	await process_frame
-	await click(scene.charge_panel.detail.button)
-	check(scene.game.charge_job(charge).active and scene.charge_panel.detail.button.text=="暂停","Real charge click refreshes owning card and selected details")
-	check(scene.builds==builds,"Charge action does not rebuild UI")
+	var reactor_before := int(scene.game.profile.reactorLevel)
+	await click(scene.reactor_panel.upgrade_buttons.x1)
+	check(scene.game.profile.reactorLevel==reactor_before+1 and scene.reactor_panel.level_label.text.contains(str(reactor_before+1)),"Real reactor click refreshes level")
+	check(scene.builds==builds,"Reactor action does not rebuild UI")
 	scene.equipment_tabs.current_tab=0
-	var hidden_text: String=scene.charge_cards[charge].progress.text
-	scene.game.charge_job(charge).elapsed=1
+	var hidden_text: String=scene.reactor_panel.level_label.text
+	scene.game.profile.reactorLevel += 1
 	scene._process(0)
-	check(scene.charge_cards[charge].progress.text==hidden_text,"Hidden charge page is not refreshed each frame")
+	check(scene.reactor_panel.level_label.text==hidden_text,"Hidden reactor page is not refreshed each frame")
 	scene.equipment_tabs.current_tab=2
-	check(scene.charge_cards[charge].progress.text!=hidden_text,"Showing charge page catches up immediately")
+	check(scene.reactor_panel.level_label.text!=hidden_text,"Showing reactor page catches up immediately")
 	await click(scene.help_button)
 	scene._process(0)
 	check(scene.help_open and not tabs.visible and scene.builds==builds,"Help toggles visibility without rebuilding")
@@ -155,7 +159,7 @@ func run() -> void:
 	check(ship.mounts.weapons_0==mount and scene.builds==builds,"Candidate refresh preserves mount controls")
 	await click(ship.confirm)
 	check(scene.game.profile.selectedShip==ship.candidate and scene.builds==builds,"Ship confirmation preserves UI")
-	check(scene.charge_cards[charge].title==charge_title and scene.hightech_buttons[tech].get_parent()==tech_panel,"Ship change preserves charge and research controls")
+	check(scene.reactor_panel.level_label==reactor_level and scene.hightech_buttons[tech].get_parent()==tech_panel,"Ship change preserves reactor and research controls")
 	scene.equipment_tabs.current_tab=0
 	var defence_panel: Button=scene.equipment_panel.cards.defence_0
 	check(scene.game.unequip_slot("weapons",0),"Isolated fixture can empty a weapon slot")
@@ -173,7 +177,7 @@ func run() -> void:
 	scene.db.unlock_row("hightech",tech).level=99
 	scene.game.profile.cleared.erase(1)
 	scene.refresh_structure()
-	check(not scene.hightech_buttons.has(tech) and scene.hightech_buttons[other_tech].get_parent()==other_panel,"Relocking one technology preserves unrelated research cards")
+	check(scene.hightech_buttons.has(tech) and scene.hightech_buttons[tech].disabled and scene.hightech_buttons[other_tech].get_parent()==other_panel,"Relocking retains its disabled station and preserves unrelated stations")
 	scene.game.profile.cleared.append(99)
 	scene.refresh_structure()
 	check(scene.hightech_buttons.has(tech) and scene.hightech_buttons[other_tech].get_parent()==other_panel and scene.builds==builds,"Unlocking one technology adds only affected slot content")
@@ -230,7 +234,12 @@ func check_navigation_scope(scene: TrackedUI) -> void:
 	scene.property_checks.clear()
 	scene.game.state=BattleGame.State.LEVEL_CLEAR
 	scene.refresh_navigation()
-	check(scene.property_checks==[scene.advance_button] and scene.advance_button.visible,"Level clear updates only advance visibility")
+	check(scene.property_checks.all(func(control):return control in [scene.advance_button,scene.advance_countdown_label,scene.advance_progress]) and scene.advance_button.visible and scene.advance_countdown_label.visible and scene.advance_progress.visible,"Level clear updates only advance controls")
+	check(scene.advance_button.get_global_rect().get_center().distance_to(scene.battle_clip.get_global_rect().get_center())<1.0,"Advance button stays at battle window center")
+	check(scene.advance_button.get_index()>scene.jewel_panel.get_index(),"Advance button stays above system panels")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://.runtime/local-advance.png")
 	var picker := scene.loop_select
 	var sentinel := RefCounted.new()
 	picker.set_item_metadata(1,sentinel)
@@ -258,7 +267,7 @@ func check_exact_levels(scene: TrackedUI) -> void:
 	scene.equipment_tabs.current_tab=0
 	var title: Label = scene.equipment_panel.cards.weapons_0.fields.level
 	var tech: String = scene.hightech_titles.keys()[0]
-	var charge: String = scene.charge_cards.keys()[0]
+	var reactor: Control = scene.reactor_panel
 	for level in [99, 100, 101, 109, 119, 999, 1234]:
 		scene.game.slot_entry("weapons",0).level=level
 		scene.refresh_equipment_cards("weapons_0")
@@ -266,9 +275,11 @@ func check_exact_levels(scene: TrackedUI) -> void:
 		scene.game.profile.hightechLevels[tech]=level
 		scene.refresh_hightech_card(tech)
 		check(scene.hightech_titles[tech].text.ends_with("Lv.%d" % level),"Research shows exact level %d" % level)
-		scene.game.charge_job(charge).level=level
-		scene.refresh_charge_card(charge)
-		check(scene.charge_cards[charge].title.text.ends_with("Lv.%d" % level),"Charge shows exact level %d" % level)
+		scene.game.profile.reactorLevel=level
+		scene.equipment_tabs.current_tab=2
+		reactor.refresh()
+		check(reactor.level_label.text.ends_with(str(level)),"Reactor shows exact level %d" % level)
+		scene.equipment_tabs.current_tab=0
 	while scene.db.levels.size()<110:
 		scene.db.levels.append(scene.db.levels[-1].duplicate(true))
 	scene.game.stage=109

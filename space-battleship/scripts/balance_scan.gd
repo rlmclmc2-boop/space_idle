@@ -19,9 +19,9 @@ static func parameters(data: Dictionary) -> Array:
 			if int(data.equipment[key][index].get("level",0)) != 1:continue
 			for field in EQUIPMENT_FIELDS:
 				if data.equipment[key][index].get(field) is float or data.equipment[key][index].get(field) is int:result.append(["equipment",key,index,field])
-	for section in ["charge","jewel","hightech","enemies"]:
+	for section in ["jewel","hightech","enemies"]:
 		for key in data.get(section,{}):
-			var fields: Array = ["para_2","para_3","para_4","para_5","para_6","para_7"] if section in ["charge","jewel"] else ["para1","para2","para3"] if section == "hightech" else ["health","dmgMultiple"]
+			var fields: Array = ["para_2","para_3","para_4","para_5","para_6","para_7"] if section == "jewel" else ["para1","para2","para3"] if section == "hightech" else ["health","dmgMultiple"]
 			for field in fields:
 				var value: Variant = data[section][key].get(field)
 				if value is int or value is float:result.append([section,str(key),field])
@@ -41,7 +41,7 @@ static func valid_value(path: Array, value: float) -> bool:
 	# Beam para1 is a ramp duration, not a flight speed, and may still be zero.
 	if path[0] == "defaults" and field == "projectilePixelsPerUnit":return value > 0
 	if path[0] == "equipment" and ((path[1] in ["laser","cannon"] and field == "para1") or (path[1] == "missile" and field == "para2")):return value > 0
-	if path[0] == "charge" and field in ["para_4","para_5","para_6"]:return value >= 1
+	if path[0] == "config" and field.begins_with("reactor") and field != "reactorUraniumId":return value > 0
 	if path[0] == "hightech" and field == "para1":return value > 0
 	if field == "dmgReduce":return value < 1
 	if field == "autoCollectReduce":return value <= 1
