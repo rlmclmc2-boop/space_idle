@@ -5,3 +5,6 @@ engine/
 *.tmp
 preview*.png
 data/.import_state.json
+
+tools/node_modules/
+
