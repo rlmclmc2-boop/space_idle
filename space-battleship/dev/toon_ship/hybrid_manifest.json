@@ -67,7 +67,7 @@
     "Destroyer": {
       "path": "res://dev/toon_ship/hulls/destroyer.glb",
       "source": "hulls/source/destroyer.blend",
-      "triangles": 4104,
+      "triangles": 5320,
       "mesh_nodes": 3,
       "godot_aabb_min": [
         -2.4901394844055176,
@@ -76,7 +76,7 @@
       ],
       "godot_aabb_max": [
         2.4901394844055176,
-        0.6915000081062317,
+        0.8100000023841858,
         2.930000066757202
       ],
       "model_span": 5.723601,
@@ -130,7 +130,7 @@
     "Cruiser": {
       "path": "res://dev/toon_ship/hulls/cruiser.glb",
       "source": "hulls/source/cruiser.blend",
-      "triangles": 5152,
+      "triangles": 6576,
       "mesh_nodes": 4,
       "godot_aabb_min": [
         -3.2902276515960693,
@@ -139,7 +139,7 @@
       ],
       "godot_aabb_max": [
         3.2902276515960693,
-        0.8714999556541443,
+        0.9199999570846558,
         3.0339999198913574
       ],
       "model_span": 6.304464,
@@ -204,7 +204,7 @@
     "Battleship": {
       "path": "res://dev/toon_ship/hulls/battleship.glb",
       "source": "hulls/source/battleship.blend",
-      "triangles": 5092,
+      "triangles": 6240,
       "mesh_nodes": 4,
       "godot_aabb_min": [
         -2.9600000381469727,
@@ -213,7 +213,7 @@
       ],
       "godot_aabb_max": [
         2.9600000381469727,
-        0.9314999580383301,
+        1.0549999475479126,
         3.1440000534057617
       ],
       "model_span": 6.334,
@@ -283,12 +283,12 @@
     "Heavy_Battleship": {
       "path": "res://dev/toon_ship/hulls/heavy_battleship.glb",
       "source": "hulls/source/heavy_battleship.blend",
-      "triangles": 9044,
+      "triangles": 8612,
       "mesh_nodes": 5,
       "godot_aabb_min": [
         -3.0151138305664062,
         -0.7999999523162842,
-        -3.4801573753356934
+        -3.4801571369171143
       ],
       "godot_aabb_max": [
         3.0151138305664062,
