@@ -113,6 +113,7 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
 	profile.jewels = []
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
@@ -202,6 +203,11 @@ func load_progress() -> void:
 	# Legacy identities are accepted only at the save migration boundary.
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
+	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false}
+	if raw.get("onboarding") is Dictionary:
+		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
+			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:

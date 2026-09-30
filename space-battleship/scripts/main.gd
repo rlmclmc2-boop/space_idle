@@ -195,6 +195,7 @@ var battle_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
 var jewel_panel: Panel
+var beginner_guide: Control
 var chrono_login_dialog: AcceptDialog
 
 func _ready() -> void:
@@ -1632,6 +1633,9 @@ func build_ui() -> void:
 	advance_countdown_label.move_to_front()
 	advance_progress.move_to_front()
 	apply_readable_fonts(ui)
+	beginner_guide = preload("res://scripts/beginner_guide.gd").new()
+	ui.add_child(beginner_guide)
+	beginner_guide.setup(self)
 	refresh_draw_layers(0)
 
 func apply_readable_fonts(node: Node) -> void:
