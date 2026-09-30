@@ -41,8 +41,6 @@ func run()->void:
 	check(scene.game.profile.loadout.weapons.size()==8,"Full persisted capacity")
 	var enemies_before:Array=[]
 	for enemy in scene.game.enemies:enemies_before.append({"id":enemy.id,"hp":enemy.hp,"max_hp":enemy.max_hp,"size":enemy.size})
-	var damage_before=scene.game.player.armour
-	var shots:=0
 	scene.game.event.connect(func(kind,info):
 		if kind=="fire":records.append({"hostile":bool(info.shot.hostile),"key":info.shot.key}))
 	for frame in 150:
@@ -54,6 +52,25 @@ func run()->void:
 	check(records.any(func(e):return not e.hostile),"Real player fires")
 	check(records.any(func(e):return e.hostile),"Real enemies fire")
 	check(scene.missile_fire_count>0 and scene.pulse_fire_count>0 and scene.rail_fire_count>0,"Missile pulse and rail all use shared renderer")
+	# Configured boss survives long enough for the approved full-power beam cue.
+	scene.game.start(8,false)
+	scene.game.group_index=scene.db.levels[7].groups.size()-1
+	scene.game.spawn_group()
+	var configured_boss_hp:float=scene.game.enemies[0].max_hp
+	for i in 360:
+		scene._process(1.0/30.0)
+		if i%15==0:await process_frame
+		if scene.beam_full_cue_count>0:break
+	check(scene.beam_full_cue_count>0,"Configured boss permits full-power beam")
+	await capture("beam-full-power")
+	scene.game.paused=true
+	scene._process(0.0)
+	var before_refit:String=scene.paused_presentation_signature
+	check(scene.game.equip_slot("weapons",0,"missile"),"Paused refit accepted")
+	scene._process(0.0)
+	check(scene.paused_presentation_signature!=before_refit and scene.ship_view.modules[0].key=="missile","Paused refit updates rendered pose and module")
+	scene.game.equip_slot("weapons",0,"laser")
+	scene._process(0.0)
 	var tab=scene.equipment_tabs
 	var capacities:={}
 	for key in ["Frigate","Destroyer","Cruiser","Battleship","Heavy_Battleship"]:
@@ -82,7 +99,7 @@ func run()->void:
 		scene._process(0.0)
 		await capture("enemy-size-"+str(size))
 		check(scene.game.enemies.any(func(e):return int(e.size)==int(size)),"Configured encounter includes size "+str(size))
-	var facts:={"passed":failures.is_empty(),"failures":failures,"fixture":"isolated full-loadout save, no enemy durability edits","production_entry":"main.tscn","save_enabled":scene.game.save_enabled,"capacities":capacities,"shots":records.size(),"missile_fires":scene.missile_fire_count,"pulse_fires":scene.pulse_fire_count,"rail_fires":scene.rail_fire_count,"beam_full_cues":scene.beam_full_cue_count,"enemies_before":enemies_before,"video_fps":30,"video_frames":150,"window":str(root.size)}
+	var facts:={"passed":failures.is_empty(),"failures":failures,"fixture":"isolated full-loadout save, no enemy durability edits","production_entry":"main.tscn","save_enabled":scene.game.save_enabled,"capacities":capacities,"shots":records.size(),"missile_fires":scene.missile_fire_count,"pulse_fires":scene.pulse_fire_count,"rail_fires":scene.rail_fire_count,"beam_full_cues":scene.beam_full_cue_count,"configured_boss_hp":configured_boss_hp,"enemies_before":enemies_before,"video_fps":30,"video_frames":150,"window":str(root.size)}
 	var file:=FileAccess.open(output.path_join("facts.json"),FileAccess.WRITE);file.store_string(JSON.stringify(facts,"\t"));file.close()
 	print("BATTLEFIELD_FLEET_CHECK ",JSON.stringify(facts))
 	scene.game.launch_provider=Callable();scene.game.target_provider=Callable()

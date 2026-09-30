@@ -1,0 +1,103 @@
+{
+  "beam_full_cues": 2,
+  "capacities": {
+    "Battleship": {
+      "active": 6,
+      "drone": 2,
+      "hull": 4
+    },
+    "Cruiser": {
+      "active": 5,
+      "drone": 1,
+      "hull": 4
+    },
+    "Destroyer": {
+      "active": 4,
+      "drone": 1,
+      "hull": 3
+    },
+    "Frigate": {
+      "active": 3,
+      "drone": 0,
+      "hull": 3
+    },
+    "Heavy_Battleship": {
+      "active": 8,
+      "drone": 3,
+      "hull": 5
+    }
+  },
+  "configured_boss_hp": 106301.0,
+  "enemies_before": [
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    },
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    },
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    },
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    },
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    },
+    {
+      "hp": 2362.0,
+      "id": 4.0,
+      "max_hp": 2362.0,
+      "size": 1.0
+    }
+  ],
+  "failures": [],
+  "fixture": "isolated full-loadout save, no enemy durability edits",
+  "missile_fires": 27,
+  "passed": true,
+  "production_entry": "main.tscn",
+  "pulse_fires": 14,
+  "rail_fires": 16,
+  "save_enabled": true,
+  "shots": 101,
+  "video_fps": 30,
+  "video_frames": 150,
+  "window": "(1373, 883)",
+  "friendly_asset_commit": "1e405edd476e79e60345a4833c0d9f19c549c043",
+  "enemy_asset_commit": "777a5dc82e782076f5e8c45c4d1d1287b09ee178",
+  "normal_new_player_check": {
+    "passed": true,
+    "combat_frames": 480,
+    "save_enabled": true,
+    "fresh_ship": "Frigate",
+    "modules": 1
+  },
+  "battle_transition_check": {
+    "checks": 13,
+    "failures": 0
+  },
+  "enemy_isolation_check": true,
+  "missile_retirement_check": true,
+  "five_hull_mapping_check": true,
+  "rendering_note": "Native game-rendered frames at 1/30 simulation seconds per frame; software-rendering wall-clock FPS is not a player performance measure. The full-loadout input is an isolated QA save, not a user save. No enemy HP overrides.",
+  "limitations": [
+    "Windows single EXE not built on this Linux runner.",
+    "Baseline rear-facing Cruiser diagnostic overlap is outside normal front-facing play; no new camera added.",
+    "Some Godot 4.6.3 graphical test exits intermittently report one resource still in use; verbose beam repeat exited cleanly. No runtime script/shader errors observed."
+  ]
+}

@@ -157,6 +157,15 @@ func _sync_parameters() -> void:
 
 
 func _process(delta: float) -> void:
+	if is_instance_valid(ship_view):
+		if current_hull != str(game.profile.selectedShip):
+			current_hull = str(game.profile.selectedShip)
+			if not ship_view.set_hull(current_hull):
+				prototype_enabled = false
+				ship_view.set_rendering(false)
+				return
+			_set_reference_dimensions()
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	# Update the canonical carrier pose before simulation asks for release points.
 	if is_instance_valid(ship_view) and not game.paused:
 		demo_time+=delta
@@ -185,14 +194,6 @@ func _process(delta: float) -> void:
 	pulse_events = pulse_events.filter(func(e):return fx_time-float(e.born)<0.14)
 	prototype_frames += 1
 	_sync_parameters()
-	if current_hull != str(game.profile.selectedShip):
-		current_hull = str(game.profile.selectedShip)
-		if not ship_view.set_hull(current_hull):
-			prototype_enabled = false
-			ship_view.set_rendering(false)
-			return
-		_set_reference_dimensions()
-	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	var anchor := _stable_player_anchor()
 	if not stable_center_ready:
 		stable_center=anchor
@@ -201,8 +202,7 @@ func _process(delta: float) -> void:
 		stable_center=stable_center.lerp(anchor,1.0-exp(-3.0*minf(delta,0.1)))
 	var target := player_render_position()+Vector2(0,-450)
 	if not game.enemies.is_empty(): target = enemy_render_position(game.enemies[0])
-	var pose_signature := str([parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
-	
+	var pose_signature := str([current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
 	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
