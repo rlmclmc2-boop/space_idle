@@ -1,0 +1,9 @@
+Godot 4.6.3 stable, isolated temporary project, headless gl_compatibility.
+All six GLBs imported and instantiated as PackedScene; exit code 0.
+GLB_OK enemy-scout-1slot children=12
+GLB_OK enemy-medium-1slot children=15
+GLB_OK enemy-medium-2slot children=14
+GLB_OK enemy-large-4slot children=17
+GLB_OK enemy-large-6slot children=22
+GLB_OK enemy-super-8slot children=23
+Initial editor attempt could not write default user directories; retry with XDG config/data/cache in /tmp succeeded without errors. No game project import files or shared code changed.

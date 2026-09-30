@@ -1,0 +1,395 @@
+{
+  "base_commit": "5fd7473d81f7340dc7e075c6c51d62e1c8478b4a",
+  "canvas": [
+    887,
+    1774
+  ],
+  "pivot": [
+    0.5,
+    0.5
+  ],
+  "sprite_bow": "up",
+  "runtime_rotation_radians": 3.141592653589793,
+  "blender_bow": "+Y",
+  "glb_godot_bow": "-Z",
+  "units": "meters",
+  "camera_vertical_span": 10.8,
+  "ships": [
+    {
+      "id": "enemy_1",
+      "size": 1,
+      "silhouette": "compact wedge / single drive",
+      "glb": "enemy-scout-1slot.glb",
+      "sprite": "enemy-scout-1slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-scout-1slot.png",
+      "slot_map": [
+        0
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            0,
+            -0.05
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        }
+      ],
+      "configured_enemy_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "enemy_2",
+      "size": 2,
+      "silhouette": "forked twin hull / twin drive",
+      "glb": "enemy-medium-1slot.glb",
+      "sprite": "enemy-medium-1slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-medium-1slot.png",
+      "slot_map": [
+        0,
+        1
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            -0.11,
+            -0.04
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 45,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0.11,
+            -0.04
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 45,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        }
+      ],
+      "configured_enemy_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "enemy_3",
+      "size": 3,
+      "silhouette": "wide swept shoulders / twin drive",
+      "glb": "enemy-medium-2slot.glb",
+      "sprite": "enemy-medium-2slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-medium-2slot.png",
+      "slot_map": [
+        0,
+        1,
+        0
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            -0.14,
+            -0.03
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 50,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0.14,
+            -0.03
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 50,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        }
+      ],
+      "configured_enemy_ids": [
+        5,
+        6
+      ]
+    },
+    {
+      "id": "enemy_4",
+      "size": 4,
+      "silhouette": "hammerhead / twin drive",
+      "glb": "enemy-large-4slot.glb",
+      "sprite": "enemy-large-4slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-large-4slot.png",
+      "slot_map": [
+        0,
+        1,
+        2,
+        2
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            -0.16,
+            -0.06
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 55,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0.16,
+            -0.06
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 55,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0,
+            0.08
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        }
+      ],
+      "configured_enemy_ids": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "enemy_5",
+      "size": 5,
+      "silhouette": "long armored outriggers / triple drive",
+      "glb": "enemy-large-6slot.glb",
+      "sprite": "enemy-large-6slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-large-6slot.png",
+      "slot_map": [
+        0,
+        1,
+        2,
+        3,
+        0,
+        1
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            -0.18,
+            -0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 55,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0.18,
+            -0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 55,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            -0.15,
+            0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        },
+        {
+          "pos": [
+            0.15,
+            0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "small",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        }
+      ],
+      "configured_enemy_ids": [
+        9,
+        10
+      ]
+    },
+    {
+      "id": "enemy_6",
+      "size": 6,
+      "silhouette": "citadel / four drive",
+      "glb": "enemy-super-8slot.glb",
+      "sprite": "enemy-super-8slot.png",
+      "original_texture": "res://assets/ships/enemy/enemy-super-8slot.png",
+      "slot_map": [
+        0,
+        1,
+        2,
+        3,
+        0,
+        1,
+        2,
+        3
+      ],
+      "hardpoints": [
+        {
+          "pos": [
+            -0.18,
+            -0.08
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 60,
+          "visual_size_class": "large",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            0.18,
+            -0.08
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 60,
+          "visual_size_class": "large",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "main"
+        },
+        {
+          "pos": [
+            -0.18,
+            0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        },
+        {
+          "pos": [
+            0.18,
+            0.07
+          ],
+          "z": 1,
+          "base_rotation": 0,
+          "rotation_limit": 0,
+          "visual_size_class": "medium",
+          "allowed_weapon_visual_class": [
+            "gun",
+            "energy",
+            "missile"
+          ],
+          "mode": "embedded"
+        }
+      ],
+      "configured_enemy_ids": [
+        11,
+        12
+      ]
+    }
+  ]
+}
