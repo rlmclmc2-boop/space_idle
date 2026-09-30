@@ -1,0 +1,27 @@
+防御卡排版修复 / 父任务交接
+
+分支：codex/equipment-large-number-audit
+修复提交：5572fb565f44aa78b40bfb6668c2403a3fdede52
+根基：b0eed6fbfc6a62f1bea27d2f89e8b68dd6ebc5c4
+分支包含先前测试检查点f32796c；未推送或合并main。
+
+生产变更仅 space-battleship/scripts/equipment_card.gd。
+已装备的紧凑防御卡保留176逻辑像素高度：图标36x36与名称在顶部；等级y=54、属性y=84，分别占28像素独立行；升级按钮保持y=118。空槽原有操作布局保留，非紧凑卡恢复原行高。
+增加 test/defence_card_layout_check.gd，复用先前 test/large_number_ui_audit.gd 的隔离夹具。
+没有更改格式器、999999T→990000T规则、数值、购买算法、战场/脉冲/导弹生命周期代码或用户存档。
+
+本次验证限定四个场景：满载8武器+4防御；普通等级1/正式属性，以及等级10000000/极端数值；各测1373x883与960x540。
+极端输入：模块属性与单级费用9.99999e19（显示99000000T），资源铁9.99999e19、铀{m:1.23456,e:350}（显示1.23e+350）。×1展示，不执行购买。前后采用相同槽位、等级、主属性、费用、余额和窗口；旧截图战场冻结状态不同，不用于比较战场表现。
+
+结果：Godot4.6.3 / Xorg dummy / Mesa llvmpipe真实GUI；4张新原生窗口截图；120/120布局断言通过；进程退出码0。检查图标/名称间隔、标题/等级/属性/按钮区域不交叠、等级文本完整、四防御卡均位于滚动视口内、12槽数量及无新增滚动。人工查看确认普通与极端卡均清楚分行。
+960x540仍沿用整体缩小+黑边，字体偏小是现有行为，本次没有扩大修改范围。退出时仍有先前同类ObjectDB/资源未释放警告，无脚本异常；不作为性能或Windows字体结论。
+
+交接截图（未缩放、未合成、未生成像素）：
+1. defence-before-1373x883.png：修复前，千万级等级与防御属性重叠。
+2. defence-after-1373x883.png：同条件修复后，等级和属性清楚分行。
+3. defence-after-960x540.png：相同极端数据的最窄窗口，12槽完整。
+原修复前窄窗口截图和全部本次检查日志在隔离测试目录保留；仅交接这三张关键截图与本报告，未上传全量62张或ZIP。
+
+复现：依照先前隔离工程流程复制当前分支的项目文件，将test/large_number_ui_audit.gd及test/defence_card_layout_check.gd置于隔离project的上一级，隔离XDG_DATA_HOME/XDG_CONFIG_HOME/XDG_CACHE_HOME后导入素材；在图形环境运行 godot --path <隔离project> --audio-driver Dummy --script ../defence_card_layout_check.gd。截图使用ImageMagick import抓取原生X11窗口。
+
+文件传递状态：Library规定上传流程在hosted apps tools/list阶段连续两次报network错误，未到准备/传输/创建步骤，无library_file_id。改用已获授权的独立Git分支传递三张原生PNG与本报告；文件位置test/work/defence-card-fix/review/，父任务可通过GitHub连接器fetch/download或git fetch读取真实文件字节。没有用本地路径冒充附件。
