@@ -21,6 +21,82 @@
 			"pass": true
 		},
 		{
+			"message": "type-normal false resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false action fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-normal dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-normal false title fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false level fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false num fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false action fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal common button size",
+			"pass": true
+		},
+		{
+			"message": "type-normal common button right margin",
+			"pass": true
+		},
+		{
+			"message": "type-normal amount/resource spacing",
+			"pass": true
+		},
+		{
+			"message": "type-normal action/amount spacing",
+			"pass": true
+		},
+		{
+			"message": "type-normal resource/amount same size",
+			"pass": true
+		},
+		{
+			"message": "type-normal resource/amount same contrast",
+			"pass": true
+		},
+		{
 			"message": "type-normal level/number do not overlap",
 			"pass": true
 		},
@@ -54,6 +130,82 @@
 		},
 		{
 			"message": "type-normal true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true action fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-normal dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-normal true title fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true level fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true num fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true action fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal common button size",
+			"pass": true
+		},
+		{
+			"message": "type-normal common button right margin",
+			"pass": true
+		},
+		{
+			"message": "type-normal amount/resource spacing",
+			"pass": true
+		},
+		{
+			"message": "type-normal action/amount spacing",
+			"pass": true
+		},
+		{
+			"message": "type-normal resource/amount same size",
+			"pass": true
+		},
+		{
+			"message": "type-normal resource/amount same contrast",
 			"pass": true
 		},
 		{
@@ -93,6 +245,82 @@
 			"pass": true
 		},
 		{
+			"message": "type-extreme false resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false action fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-extreme dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false title fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false level fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false num fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false action fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme common button size",
+			"pass": true
+		},
+		{
+			"message": "type-extreme common button right margin",
+			"pass": true
+		},
+		{
+			"message": "type-extreme amount/resource spacing",
+			"pass": true
+		},
+		{
+			"message": "type-extreme action/amount spacing",
+			"pass": true
+		},
+		{
+			"message": "type-extreme resource/amount same size",
+			"pass": true
+		},
+		{
+			"message": "type-extreme resource/amount same contrast",
+			"pass": true
+		},
+		{
 			"message": "type-extreme level/number do not overlap",
 			"pass": true
 		},
@@ -126,6 +354,82 @@
 		},
 		{
 			"message": "type-extreme true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true action fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-extreme dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true title fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true level fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true num fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true resource fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true action fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme common button size",
+			"pass": true
+		},
+		{
+			"message": "type-extreme common button right margin",
+			"pass": true
+		},
+		{
+			"message": "type-extreme amount/resource spacing",
+			"pass": true
+		},
+		{
+			"message": "type-extreme action/amount spacing",
+			"pass": true
+		},
+		{
+			"message": "type-extreme resource/amount same size",
+			"pass": true
+		},
+		{
+			"message": "type-extreme resource/amount same contrast",
 			"pass": true
 		},
 		{
@@ -398,6 +702,16 @@
 			"cost": "65",
 			"level": "Lv.1",
 			"number": "100",
+			"revised": false,
+			"scenario": "type-normal",
+			"unit": ""
+		},
+		{
+			"compact": false,
+			"cost": "65",
+			"level": "Lv.1",
+			"number": "100",
+			"revised": true,
 			"scenario": "type-normal",
 			"unit": ""
 		},
@@ -406,24 +720,54 @@
 			"cost": "65",
 			"level": "Lv.1",
 			"number": "1",
+			"revised": false,
 			"scenario": "type-normal",
 			"unit": "K"
+		},
+		{
+			"compact": true,
+			"cost": "65",
+			"level": "Lv.1",
+			"number": "1K",
+			"revised": true,
+			"scenario": "type-normal",
+			"unit": ""
 		},
 		{
 			"compact": false,
 			"cost": "99000000T",
 			"level": "Lv.10000000",
 			"number": "99000000",
+			"revised": false,
 			"scenario": "type-extreme",
 			"unit": "T"
+		},
+		{
+			"compact": false,
+			"cost": "99Qi",
+			"level": "Lv.10000000",
+			"number": "99Qi",
+			"revised": true,
+			"scenario": "type-extreme",
+			"unit": ""
 		},
 		{
 			"compact": true,
 			"cost": "99000000T",
 			"level": "Lv.10000000",
 			"number": "99000000",
+			"revised": false,
 			"scenario": "type-extreme",
 			"unit": "T"
+		},
+		{
+			"compact": true,
+			"cost": "99Qi",
+			"level": "Lv.10000000",
+			"number": "99Qi",
+			"revised": true,
+			"scenario": "type-extreme",
+			"unit": ""
 		}
 	]
 }

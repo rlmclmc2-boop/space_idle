@@ -1,34 +1,34 @@
-装备两卡字体/信息层级样稿（仅评审）
-基线：61e46f4100a2ba7edb8657bff75e75db3bee4fe5
-独立分支：codex/equipment-type-study
-正式代码零修改，仅新增test/equipment_type_study.gd及精选预览。未更新统一分支/main；最新五发导弹等代码原样保留。
+两卡样稿修订：完整量级、显眼资源、统一按钮、共享数量阶梯
 
-参考图访问：已用当前Library prepare_materialize解析libfile_0c14c03e66848191916a4f2851325dda/image(10).png，获准下载；官方传输助手download failed，本环境目标文件不存在，未看过用户原图。依据已验证的现有面板实机像素和当前实际组件制作，不假称消费原图。
+范围与状态
+独立分支 codex/equipment-type-study，续接0ed803893937b788e145df2a0fb4fd822ce16b6b；不更新统一分支/main，不覆盖后续敌我隔离/炮口修复。字体/按钮仍为测试样稿，未铺开正式卡片。生产代码仅修改scripts/number_format.gd；内部数值、存档、成长、购买、战场逻辑及图标底板均不改。
 
-字体事实（不是截图猜测）
-- main.gd开发版设置SystemFont候选：Microsoft YaHei UI、Microsoft YaHei、Noto Sans CJK SC、sans-serif。本Linux环境TextServer对“装甲”和0123456789实际解析均为Noto Sans CJK SC/Regular/400。不能据此断言用户Windows的实际字体。
-- 发布版使用仓库assets/fonts/NotoSansSC.ttf可变字体及NotoSansSC-Regular.tres固定wght=400。中文和数字共用字体；原资源family/style元数据带Thin，实际变体由数字轴2003265652控制，不能只看名称误认成字重100。
-- 字体来源/许可已有assets/fonts/README.md与OFL.txt；本次不下载或增加任何字体资源、依赖。
-- 原武器字号：名称24、等级20、属性20、升级按钮最终21。紧凑防御：名称20、等级18、属性18、按钮21。apply_readable_fonts先设置下限，card.layout_contents又覆写部分字号。
-- 原面板工作区缩放0.875，正常1373x883还乘约883/1256；有效系数约0.615。原防御属性18实际约11.1像素。样稿不通过继续缩字塞内容。
+图像（两个真实Godot渲染，1480x710、逻辑尺寸1:1）
+- type-normal.png：左上一版样稿，右本次修订；65铁、1K属性、Lv.1。
+- type-extreme.png：左上一版样稿，右本次修订；同一实际输入9.9e19，从99000000T变为99Qi；Lv.10000000。
+左图长T文字是固定的旧版显示证据，右图调用真实共享NumberFormat.compact，不在样稿中实现独立数量阶梯。
 
-样稿变化
-- 完全复用原equipment_card.gd底板、图标、升级按钮皮肤及原卡片尺寸。武器652x156、防御319x176，保持12槽布局容量的尺寸约束；只做两张卡，不改全局主题。
-- 名称650字重：武器26、防御23；等级500字重20，放在名称下并左对齐，图标属于同一识别区。
-- 核心数字650字重：武器36、防御30，右对齐；属性标签18、数量后缀20使用500字重和较弱颜色。K/M/B/T从既有显示字符串拆成相邻文本控件，数字值和格式算法不变。
-- 升级按钮保留原位置与外框：左侧“升级”20/500，右侧费用24/650，资源名18/500；统一16逻辑像素内边距。
-- 名称/数字的650字重已用TextServer实际variation_coordinates验证；次级文字配置wght=500。tnum特性设置；0至9逐字测宽，在字号32时均19逻辑像素。
-- 换算现有正常窗口：核心数字武器约22.1像素、防御约18.5像素；名称约16.0/14.2像素。窄窗口仍会整体缩小，本轮未改变窗口适配。
+排版修订
+- 属性完整数值放入同一文本控件，K/M/B/T及Qa/Qi等后缀与数字同字号、同650字重、同深色；武器36号、防御30号。原弱化尾缀方案作废。
+- 费用及资源“铁”均24号、650字重、同对比度；相隔10逻辑像素明确分组，不靠缩小/淡化区分。
+- 样稿两类按钮统一调用layout_upgrade_button：246x56、卡片右边距4；左右内容内边距16；动作x16宽40、金额x66宽130右对齐、资源x206宽24。防御按钮不再撑满291宽。
+- 卡片占地仍为武器652x156、防御319x176，名称/等级分组保留，12槽容量对应的尺寸约束不变。本轮不跑全屏矩阵。
+- 字体复用仓库Noto Sans SC可变字体/OFL许可证，无新字体依赖。数字/资源650、等级/标签500；实际字重沿用已验证数值轴2003265652。
 
-两张真实Godot对比图
-1. type-normal.png：同图左侧当前、右侧样稿；武器Lv.1/伤害100，防御Lv.1/装甲1K，升级65铁。
-2. type-extreme.png：同图左侧当前、右侧样稿；Lv.10000000，属性和费用输入9.99999e19，经原格式器显示99000000T。
-两图均1480x710，由Godot直接渲染，无AI改图、无截图缩放或后期合成。此为逻辑尺寸1:1两卡样稿，非正常窗口全屏截图，图内已注明。
+共享显示规则（此次已获用户授权）
+NumberFormat.compact采用K(1e3),M(1e6),B(1e9),T(1e12),Qa(1e15),Qi(1e18),Sx(1e21),Sp(1e24),Oc(1e27),No(1e30)。1e33及以上使用科学计数法。最多3位有效数字，去除无意义小数末尾零，显示舍入后先进位再选后缀。
+示例：1234->1.23K；1200->1.2K；999.5T->1Qa；9.9e19->99Qi；1e20->100Qi；1e33->1e+33；1.23456e100->1.23e+100；-999.5->-1K；0->0。
+GrowthNumber的{m,e}直接读取两个显示分量，不将整体大数强制转换为float、不改字典；{m:1.23456,e:350}->1.23e+350，保留读取兼容。
+影响范围：所有既有compact调用方（含主UI数量/费用/余额）；damage委托同一阶梯，保留伤害显示绝对值的原约定；rate的大数量/字典同用阶梯，rate不足千仍保留原两位小数。plain/precise和GrowthNumber自身文本接口不改，精确详情/诊断用途不强行套单位。战场源文件不改，但伤害数字格式会经共享入口采用新阶梯；此为纯显示变化。
 
-验证：Godot4.6.3 + Xorg/llvmpipe真实渲染，2种数据、36项针对性检查通过、进程退出码0。检查名称/等级/数字/费用文本测宽、主次区域无交叠、数字不占按钮、卡片尺寸保持。未重跑全量矩阵、未验证购买算法、不写玩家存档。退出存在先前同类ObjectDB资源清理警告，不影响图像及检查结果。
+验证
+- test/test_quantity_format.gd：49个代表性用例通过，包括每个千进位边界、999.49/999.5进位、3位有效数字、负数、零、小数、科学阈值、超浮点字典；另断言字典不变及damage/rate委托。
+- test/equipment_type_study.gd：仅正常/大数两种输入，112项文本测宽、无交叠、按钮统一几何/间距、资源字号/对比、卡片尺寸检查通过；进程退出码0。
+- 仅更新test_large_numbers.gd/test_damage_numbers.gd/test_resource_display.gd中明确受新显示规则影响的旧断言，没有运行这些专项中的无关游戏场景，也未扩成全项目测试。
+- Godot4.6.3/Xorg/llvmpipe真实渲染；退出仍有此前同类ObjectDB清理警告，无脚本异常。未评价Windows字体或性能。
 
-建议评审重点：是否认可名称/等级成组、粗体数字的强弱比例及左右对齐；确认后再考虑逐卡应用及发布字体实测。本轮不自动全量替换。
+参考与Library传递
+用户按钮图libfile_df7f472b61048191b88c605680379844经当前prepare_materialize解析成功，但官方传输助手download failed，本环境未读取其像素。采用父任务已确认的按钮形状描述，并检查本环境真实样稿，不声称看过用户原图。
+仅尝试替换既有正常libfile_5a5c1f97a6b88191a0b0c780bc42db58 v0、极端libfile_bc7fb415baac8191966e7b3621faf767 v0；助手在tools/list阶段报network，未开始文件写入，无版本变更或重复Library创建。父任务应从独立分支取两张最新PNG，替换上述相同Library身份。
 
-复现：隔离复制项目并导入；将test/equipment_type_study.gd置于隔离project上一级，隔离XDG目录，在GUI运行godot --path <project> --audio-driver Dummy --script ../equipment_type_study.gd。生成两张PNG及type-study-results.json。
-
-传递状态：Library上传助手在hosted apps tools/list阶段报network错误，无创建结果或library_file_id。按授权回退到独立分支的原始PNG和报告，父任务可通过GitHub连接器或git fetch读取；没有以本地路径冒充附件。
+新增/修改代码：space-battleship/scripts/number_format.gd；test/equipment_type_study.gd；test/test_quantity_format.gd；三个既有测试的显示预期。样稿与格式规则仍待父任务/用户评审，不合并统一分支。
