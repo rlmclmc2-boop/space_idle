@@ -41,6 +41,22 @@ func run() -> void:
 	scene.game.switch_ship("Heavy_Battleship")
 	panel.refresh()
 	check(panel.cards.size()==12,"Heavy hull exposes 12 slots")
+	var original_card = panel.cards.weapons_0
+	for hull in ["Frigate","Destroyer","Cruiser","Battleship","Heavy_Battleship"]:
+		scene.game.switch_ship(hull)
+		panel.refresh()
+		var active := 0
+		for item in panel.items.values():active+=int(not item.locked)
+		check(active==scene.game.active_slot_count("weapons")+scene.game.active_slot_count("defence"),"Capacity projects live hull: "+hull)
+	check(is_same(original_card,panel.cards.weapons_0),"Hull changes reuse slot cards")
+	scene.game.profile.resources={"1":0.0,"2":0.0}
+	panel.refresh_affordability()
+	check(panel.cards.weapons_1.upgrade_button.disabled,"No-resource upgrade disabled")
+	scene.game.profile.resources={"1":1e20,"2":1e20}
+	panel.set_upgrade_amount(10)
+	panel.refresh_affordability()
+	check(not panel.cards.weapons_1.upgrade_button.disabled,"Batch affordability refreshes")
+	panel.set_upgrade_amount(1)
 	scene.game.switch_ship("Frigate")
 	panel.refresh()
 	panel.open_picker("weapons_7")
@@ -49,4 +65,6 @@ func run() -> void:
 	check(panel.get_action_anchor("empty_module","weapons_2")!=null,"Semantic empty anchor")
 	check(panel.detail_frame.position.x+panel.detail_frame.size.x<=panel.size.x,"Inspector stays in equipment workspace")
 	print("RESULT failures=",failures)
+	scene.free()
+	await process_frame
 	quit(failures)

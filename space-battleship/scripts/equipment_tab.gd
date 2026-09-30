@@ -65,7 +65,7 @@ func select_box(parent: Control, rect: Rect2, keys: Array, callback: Callable) -
 	for key in keys:
 		box.add_item(UIText.t(str(key)))
 	box.item_selected.connect(func(index):
-		box.add_theme_color_override("font_color",host.CYAN if index>0 else host.INK)
+		box.add_theme_color_override("font_color",NAVY)
 		callback.call(index))
 	parent.add_child(box)
 	return box
@@ -94,8 +94,9 @@ func skin_button(button: Button, primary := false) -> void:
 	button.add_theme_stylebox_override("focus",panel_style(Color.TRANSPARENT,TEAL,14))
 	button.add_theme_color_override("font_color",NAVY)
 	button.add_theme_color_override("font_hover_color",NAVY)
+	button.add_theme_color_override("font_focus_color",NAVY)
 	button.add_theme_color_override("font_pressed_color",NAVY)
-	button.add_theme_color_override("font_disabled_color",Color("4e626f"))
+	button.add_theme_color_override("font_disabled_color",NAVY)
 
 func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false) -> Button:
 	var button := Button.new()
@@ -215,7 +216,7 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove","gems"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
-	detail.more = action_button(detail_body,"equipment.details.close","toggle_stats",toggle_details)
+	detail.more = action_button(detail_body,"equipment.attributes.hide","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
 	detail.more.size = Vector2(535,48)
 	detail.stats = label(detail_body,"",Rect2(18,608,535,300),20,NAVY)
@@ -234,7 +235,12 @@ func layout_contents() -> void:
 	footer.get_child(1).position.x = maxf(340,width-470)
 	footer_title.size.x = maxf(280,width-520)
 	var card_width := (width-78)/2
-	for card in cards.values():card.custom_minimum_size.x=card_width
+	grid_defence.columns = 4 if width>=1100 and grid_defence.get_child_count()>=4 else 2
+	for id in cards:
+		var is_defence: bool = items[id].category=="defence"
+		cards[id].compact = is_defence and grid_defence.columns==4
+		cards[id].custom_minimum_size = Vector2((width-106)/4,176) if cards[id].compact else Vector2(card_width,156)
+		cards[id].layout_contents()
 	detail_frame.position = Vector2(width-612,96)
 	detail_frame.size = Vector2(590,height-190)
 	detail_scroll.position = Vector2(8,76)
@@ -244,7 +250,6 @@ func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
 	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount)
 	for id in items:
-		update_card_cost(items[id])
 		update_card_cost(items[id])
 		cards[id].refresh(items[id],selected==id)
 
@@ -276,6 +281,7 @@ func open_picker(id: String) -> void:
 func refresh_confirm() -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
+	host.set_ui_value(detail.equip,"text",UIText.t("equipment.action.remove" if pending_key.is_empty() and not item.key.is_empty() else "equipment.confirm_free"))
 	host.set_ui_value(detail.equip,"disabled",item.locked or pending_key==item.key or (not pending_key.is_empty() and not host.game.profile.unlocked.has(pending_key)))
 
 func confirm_equipment() -> void:
@@ -290,14 +296,14 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 		"upgrade_action":return cards[id].upgrade_button if cards.has(id) else null
 		"module_detail":return footer_buttons.details
 		"swap_module":return footer_buttons.swap
-		"equip_confirm":return detail.equip if detail_frame.visible else null
+		"equip_confirm":return detail.equip if detail_frame.visible and picker_open and selected==id and detail.equip.visible else null
 		"gems":return footer_buttons.gems
 	return null
 
 func toggle_details() -> void:
 	details_open = not details_open
 	host.set_ui_value(detail.stats,"visible",details_open)
-	host.set_ui_value(detail.more,"text",UIText.t("equipment.details.close" if details_open else "equipment.details.open"))
+	host.set_ui_value(detail.more,"text",UIText.t("equipment.attributes.hide" if details_open else "equipment.attributes.show"))
 	update_detail_height()
 
 func update_detail_height() -> void:
@@ -307,15 +313,8 @@ func update_detail_height() -> void:
 
 func icon_for(key: String) -> Texture2D:
 	if not icons.has(key):
-		var sprite_path := str(host.weapon_visual_profile(key).get("rotating_sprite",""))
-		if not sprite_path.is_empty():
-			var atlas := AtlasTexture.new()
-			atlas.atlas = host.visual_texture(sprite_path)
-			atlas.region = host.visual_region(sprite_path)
-			icons[key] = atlas
-		else:
-			var path := "res://assets/ui/equipment/%s.svg" % key
-			icons[key] = load(path) if ResourceLoader.exists(path) else null
+		var path := "res://assets/ui/equipment/%s.svg" % (("cartoon_"+key) if key in BattleGame.WEAPON_KEYS else key)
+		icons[key] = load(path) if ResourceLoader.exists(path) else null
 	return icons[key]
 
 func equipment_item(category: String, index: int) -> Dictionary:
@@ -343,6 +342,7 @@ func refresh_slots(changed: Array) -> void:
 		dirty = true
 		return
 	var detail_changed := dirty or changed.is_empty() or changed.has(selected)
+	var structure_changed := false
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
 			var id: String = host.game.slot_id(category,index)
@@ -351,6 +351,7 @@ func refresh_slots(changed: Array) -> void:
 				stats_dirty.erase(id)
 				sort_dirty = true
 			if not cards.has(id):
+				structure_changed = true
 				var card := Card.new()
 				(grid if category=="weapons" else grid_defence).add_child(card)
 				card.setup(host,self)
@@ -367,7 +368,7 @@ func refresh_slots(changed: Array) -> void:
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
 	refresh_total()
-	layout_contents()
+	if structure_changed:layout_contents()
 	apply_filters()
 	if detail_changed:refresh_detail()
 	else:refresh_affordability_detail()
@@ -416,11 +417,11 @@ func refresh_affordability() -> void:
 	for id in items:
 		var item: Dictionary = items[id]
 		var available: bool = host.game.can_upgrade_slot(item.category,item.index)
-		if item.upgradeable==available:continue
-		item.upgradeable = available
+		if item.upgradeable!=available:
+			item.upgradeable = available
+			changed = true
 		update_card_cost(item)
 		cards[id].refresh(item,selected==id)
-		changed = true
 	if changed:
 		sort_dirty = sort_dirty or sort_mode==3
 		if sort_mode==3 or status_filter in [2,3]:apply_filters()
@@ -440,7 +441,7 @@ func refresh_total() -> void:
 		var heading: String = UIText.t("weapon.tab" if category=="weapons" else "defense.tab")+"  "+counts[category]
 		if overflow>0:heading+=" · "+UIText.t("equipment.overflow",{"count":str(overflow)})
 		host.set_ui_value(section_labels[category],"text",heading)
-	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.profile.selectedShip))+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
+	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.profile.selectedShip),"des")+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
 
 func select_item(key: String) -> void:
 	if not items.has(key):return

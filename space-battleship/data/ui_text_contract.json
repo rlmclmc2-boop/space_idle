@@ -1,5 +1,7 @@
 {
   "entries": {
+    "equipment.attributes.show": {"params": []},
+    "equipment.attributes.hide": {"params": []},
     "equipment.refit_hint": {"params": []},
     "equipment.upgrade_amount": {"params": []},
     "equipment.amount.1": {"params": []},

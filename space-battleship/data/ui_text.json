@@ -1,5 +1,7 @@
 [
-  {"key": "equipment.refit_hint", "text": "免费装配 · 升级保留在槽位 · 战斗持续进行", "params": "", "category": "equipment"},
+  {"key": "equipment.attributes.show", "text": "展开完整属性", "params": "", "category": "equipment"},
+  {"key": "equipment.attributes.hide", "text": "收起完整属性", "params": "", "category": "equipment"},
+  {"key": "equipment.refit_hint", "text": "免费装配 · 等级随槽位保留 · 点选槽位后在下方操作", "params": "", "category": "equipment"},
   {"key": "equipment.upgrade_amount", "text": "升级数量", "params": "", "category": "equipment"},
   {"key": "equipment.amount.1", "text": "×1", "params": "", "category": "equipment"},
   {"key": "equipment.amount.10", "text": "×10", "params": "", "category": "equipment"},
