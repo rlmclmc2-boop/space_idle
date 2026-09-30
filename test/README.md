@@ -12,7 +12,8 @@
 | 伤害、取整与弹体 | `test_rule_rounding.gd`、`test_target_resistance.gd`、`test_projectile_lifecycle.gd`；命中回调中的删除/重排/清场新增用 `test_projectile_iteration.gd --headless`；持续光束用 `test_long_laser.gd`，溢出/坚韧用 `test_shield_overflow.gd` / `test_tenacity_survival.gd` |
 | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
 | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |
-| UI 刷新、导航与弹层 | `test_local_ui.gd`、`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项 |
+| UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
+| 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
 | 战场表现 | `test_weapon_fx.gd`、`test_turret_rotation.gd`、`test_player_visual_scale.gd`、`test_muzzle_visibility.gd`、`test_damage_numbers.gd`、`test_battle_transition_ui.gd`；含长模拟的 `test_portrait_presentation.gd` 仅按 `full` 选择 |
 | 船员 | `test_crew.gd`；等级改造用 `test_crew_levels.gd` / `test_crew_levels_ui.gd`；装备/科研/宝石/反应炉岗位分别用 `test_crew_equipment.gd` / `test_crew_scientists.gd` / `test_crew_jewels.gd` / `test_crew_reactor.gd`；解锁用 `test_crew_unlock.gd`，界面用 `test_crew_ui.gd` |
 | 星系殖民 | `test_galaxy.gd --headless` 覆盖60关+六星球解锁、独立工程量、非重叠宏观槽、抽签、施工、并行升级、效果、防递归和存档迁移；`test_galaxy_ui.gd` 覆盖真实派遣/缩放/拖动/点选、暂停、隐藏3D停绘与在线批处理；`test_galaxy_assets.gd` 检查GLB、殖民环五级、独立核心和缺模型回退；`test_galaxy_config.py` 检查三表及废弃字段。仅短小规则夹具，不做时间校准模拟。 |
@@ -23,7 +24,7 @@
 | 宝石 | `test_jewels.gd`、`test_jewel_redesign.gd`、`test_jewel_fragments.gd`；合成用 `test_jewel_combine_all.gd`，镶嵌用 `test_jewel_center.gd`，界面用 `test_jewel_center_ui.gd` |
 | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；页签显隐用 `test_tab_unlocks.gd` |
 | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
-| 存档与重启 | `test_save_boundaries.gd`、`test_journey_resume.gd`；删除存档用 `test_delete_save.gd`，重启故障用 `test_restart_save_failure.gd` / `test_full_restart.py` |
+| 存档与重启 | `test_save_boundaries.gd`、`test_frame_save_batch.gd`、`test_journey_resume.gd`；删除存档用 `test_delete_save.gd`，重启故障用 `test_restart_save_failure.gd` / `test_full_restart.py` |
 | 音乐与开关偏好 | `test_bgm.gd` |
 | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
 | 配置导入 | 按所改分表选择 `test_crew_import.py`、`test_jewel_import.py`、`test_unlock_import.py`、`test_equipment_growth_import.py`、`test_jewel_furnace_import.py`、`test_reactor_config.py`、`test_scientist_config.py` 或 `test_offline_config.py` |
@@ -64,6 +65,7 @@ python test/run.py test_rule_rounding.gd
 | 船员升级测量 | `python test/run.py test_crew_performance.gd --timeout 300`；定位单级热点才用 `test_crew_single_probe.gd` |
 | UI/科研渲染测量 | 经 `run.py` 选择 `test_upgrade_ui_probe.gd`、`test_hightech_render_audit.gd` 或 `test_render_budget.gd` |
 | 整体性能 | `python test/test_performance.py --label <证据名>`；脚本自建隔离副本，不单独运行内部探针 |
+| 当前存档帧耗时 | `python test/saved_game_perf.py --label <证据名>` 复制开发存档及工程，测量已解锁页面；`--snapshot <先前的input-save.json>` 保持前后同一输入，`--fps 60` 验证限帧表现，`--speed 2` 测倍速。`--instrument` 只定位热点，不用于最终帧率比较；`--reuse <该脚本生成的隔离目录>` 复用素材导入。 |
 | Balance Lab 长模拟/压力 | 按 [性能协议](../space-battleship/docs/BALANCE_PERFORMANCE.md) 选择场景、夹具与超时；FAST 是玩法模式名，不等于日常 `fast` 层 |
 | Windows 单 EXE | `build_release.bat --no-pause`；构建器自动运行 `verify_release.gd`，后者不经 `run.py`、不进入最终 EXE |
 | 构建失败保护 | `powershell -NoProfile -ExecutionPolicy Bypass -File test/test_release_failures.ps1` |

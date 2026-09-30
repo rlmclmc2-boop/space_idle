@@ -307,6 +307,10 @@ def validate_projection(data, *, check_level_ratios=True):
         positive(interval, 'autoGenRes interval')
         positive(amount, 'autoGenRes amount', True)
         positive(speed, 'autoGenRes speed')
+    threshold=config.get('hightechCostGrowthLevel')
+    positive(threshold,'hightechCostGrowthLevel',True)
+    if threshold != int(threshold):
+        raise ValueError('hightechCostGrowthLevel must be an integer')
     limit=config.get('hightechLimit')
     positive(limit,'hightechLimit')
     positive(config.get('techPointGet'),'techPointGet')
@@ -330,6 +334,7 @@ def validate_projection(data, *, check_level_ratios=True):
         if math.floor(row['tpCostBase']+0.5)<1:
             raise ValueError(ui_text('debug.import_workbook.message_117', key=key))
         positive(row.get('tpCostMutiple'),f'hightech {key} tpCostMutiple',True)
+        positive(row.get('tpCostMutiple2'),f'hightech {key} tpCostMutiple2',True)
         positive(row.get('para1'),f'hightech {key} para1',True)
         if row.get('para2') is not None:
             positive(row['para2'],f'hightech {key} para2',True)

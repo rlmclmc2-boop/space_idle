@@ -139,15 +139,21 @@ func run() -> void:
 	var live: Array=game.profile.jewels
 	serial=game.jewel_serial
 	rng_state=game.rng.state
+	game.begin_frame_save_batch()
 	game.fail_save=true
 	result=game.combine_all_jewels()
+	game.end_frame_save_batch()
 	check(not result.ok and game.profile==before and is_same(game.profile.jewels,live),"Injected save failure leaves original profile and inventory unchanged")
 	check(game.jewel_serial==serial and game.rng.state==rng_state and notifications==0 and not game.jewel_bulk_combining,"Failed transaction consumes no serials/RNG and emits no inventory refresh")
 	game.fail_save=false
 	game.save_enabled=true
+	game.begin_frame_save_batch()
 	result=game.combine_all_jewels()
+	var transaction_saved: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	game.end_frame_save_batch()
 	game.save_enabled=false
 	check(result.ok,"Retry after save failure succeeds")
+	check(transaction_saved.jewels.size()==game.profile.jewels.size(),"Jewel transaction saves synchronously inside frame batch")
 	var saved: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
 	check(saved.jewels.size()==game.profile.jewels.size() and saved.jewelFragments==game.profile.jewelFragments,"Committed result is persisted as the final inventory")
 	var restored := BattleGame.new(db,false)

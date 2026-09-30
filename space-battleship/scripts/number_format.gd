@@ -51,7 +51,7 @@ static func damage(value) -> String:
 	value = absf(value)
 	if not is_finite(value):return str(value)
 	if value==0:return "0"
-	if value>=1e36:return "%.2e" % value
+	if value>=1e36:return plain(value)
 	var suffixes := ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
 	var unit := 0
 	while value>=1000 and unit<suffixes.size()-1:

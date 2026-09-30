@@ -8,11 +8,42 @@
 !/test/
 !/build_release.bat
 
+# Dependencies and language caches
+**/node_modules/
 **/__pycache__/
 *.py[cod]
-~$*
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local environment and credentials
 .env
 .env.*
+!.env.example
+!.env.sample
+!.env.template
+.aws/
+.ssh/
 *.pem
 *.key
-space-battleship/assets/ui/crew_locked.svg.import
+
+# Logs, temporary files, editor locks and backups
+*.log
+*.tmp
+*.temp
+*.codex-temp
+*.bak
+*.blend[0-9]
+*.swp
+*.swo
+*.orig
+*.rej
+~$*
+.DS_Store
+Thumbs.db
+desktop.ini

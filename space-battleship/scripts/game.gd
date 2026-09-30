@@ -74,6 +74,9 @@ var hightech_save_elapsed := 0.0
 var resource_samples: Array[Dictionary] = []
 var auto_gen_elapsed := 0.0
 var save_dirty := false
+var planet_crew_payout_active := false
+var frame_save_batch_active := false
+var frame_save_requested := false
 var jewel_repeats: Array[Dictionary] = []
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
@@ -460,9 +463,21 @@ func ensure_loadout() -> void:
 			normalized.append(normalized_entry)
 		profile.loadout[category] = normalized
 
+func begin_frame_save_batch() -> void:
+	frame_save_batch_active = true
+
+func end_frame_save_batch() -> void:
+	frame_save_batch_active = false
+	if frame_save_requested:
+		frame_save_requested = false
+		save_progress()
+
 func save_progress() -> void:
 	save_dirty = true
 	if not save_enabled:
+		return
+	if frame_save_batch_active and not jewel_bulk_combining:
+		frame_save_requested = true
 		return
 	profile.hightechOrder = hightech_slots()
 	profile.hightechSavedAt = Time.get_unix_time_from_system()
@@ -498,6 +513,7 @@ func save_progress() -> void:
 		event.emit("save_error", {})
 	else:
 		save_dirty = false
+		if frame_save_batch_active:frame_save_requested = false
 
 func first_equipment_entry(key: String) -> Dictionary:
 	for category in ["weapons", "defence"]:
@@ -546,6 +562,12 @@ func stat(key: String) -> Variant:
 func invalidate_stat_cache() -> void:
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
+
+func invalidate_equipment_counter(key: String) -> void:
+	# Attack/hit counters change only this equipment type's proficiency/adaptation.
+	# They do not alter planets, research, crew or the other defence capacity.
+	stat_cache.erase(key)
+	jewel_defence_capacity_cache.erase(key)
 
 func ship_movement() -> float:
 	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
@@ -715,7 +737,12 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	return true
 
 func permanent_modifiers() -> Dictionary:
-	return planet_buffs.totals(self)
+	# Same lifetime as the other stat projections: refits, unlocks, research,
+	# planet progress and crew changes invalidate them before dependent reads.
+	if not stat_cache_enabled:return planet_buffs.totals(self)
+	if not stat_cache.has("planet_modifiers"):
+		stat_cache.planet_modifiers = planet_buffs.totals(self)
+	return stat_cache.planet_modifiers
 
 func equipment_level_bonus() -> int:
 	return int(permanent_modifiers().equipment_level_bonus)
@@ -744,6 +771,11 @@ func permanent_level_tooltip(actual: int, target: String) -> String:
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
 func equipment_stat(key: String, level: int) -> float:
+	# Base equipment values exclude attack/hit counters. Retain their projection
+	# across volleys; full stat invalidation covers every modifier/level change.
+	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled else {}
+	var levels: Dictionary = bases.get(key,{})
+	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
 	var row := db.equip(key, effective_equipment_level(level))
 	var value := float(row.para1 if key in ["armour", "shield"] else row.dmg)
@@ -753,6 +785,12 @@ func equipment_stat(key: String, level: int) -> float:
 	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons")
 	if reactor_bonus != 1.0:
 		value = ceilf(value * reactor_bonus)
+	if stat_cache_enabled:
+		# Bound previews as well as equipped modules; reads never retain entries.
+		if levels.size()>=32:levels.clear()
+		levels[level]=value
+		bases[key]=levels
+		stat_cache.equipment_bases=bases
 	return value
 
 func reactor_modules() -> PackedStringArray:
@@ -908,8 +946,12 @@ func swap_hightech_slots(source: int, target: int) -> bool:
 
 func hightech_required(key: String) -> float:
 	var row: Dictionary = db.data.hightech[key]
-	# D2 gives a linear series: 10, 12, 14, ...; target level is current + 1.
-	return roundf(float(row.tpCostBase) * (1.0 + float(row.tpCostMutiple) * hightech_level(key)))
+	var level := hightech_level(key)
+	var cost := float(row.tpCostBase) * (1.0 + float(row.tpCostMutiple) * level)
+	var threshold := int(db.config.hightechCostGrowthLevel)
+	if level > threshold:
+		cost *= pow(1.0 + float(row.tpCostMutiple2), level - threshold)
+	return roundf(cost)
 
 func description_number(value) -> String:
 	if value is Dictionary:return N.text(value)
@@ -1102,10 +1144,16 @@ func planet_exp_reward(id: String) -> float:
 	return roundf(float(planet_row(id).get("baseExp", 0)) * planet_exp_multiplier() * galaxy.multiplier("crew_exp"))
 
 func planet_equipment_multiplier() -> Variant:
-	return planet_buildings.multiplier(self,"equipment")
+	if not stat_cache_enabled:return planet_buildings.multiplier(self,"equipment")
+	if not stat_cache.has("planet_equipment"):
+		stat_cache.planet_equipment = planet_buildings.multiplier(self,"equipment")
+	return stat_cache.planet_equipment
 
 func planet_resource_multiplier() -> Variant:
-	return planet_buildings.multiplier(self,"refinery")
+	if not stat_cache_enabled:return planet_buildings.multiplier(self,"refinery")
+	if not stat_cache.has("planet_refinery"):
+		stat_cache.planet_refinery = planet_buildings.multiplier(self,"refinery")
+	return stat_cache.planet_refinery
 
 func migrate_planet_ids(raw: Dictionary) -> Dictionary:
 	var migrated := raw.duplicate(true)
@@ -1283,9 +1331,11 @@ func advance_planets(dt: float) -> void:
 		var persist := save_enabled
 		save_enabled = false
 		if reward > 0:
+			planet_crew_payout_active = true
 			if planet_buffs.shares_experience(self,str(id)):
 				for member in profile.crew:add_crew_exp(str(member.crewId), reward)
 			else:add_crew_exp(member_id, reward)
+			planet_crew_payout_active = false
 		save_enabled = persist
 		save_progress()
 		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
@@ -1329,7 +1379,7 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	var rates := {}
 	var active := active_research(rates)
 	# Huge point budgets cannot be settled one level/event at a time.
-	# Ignore per-level rounding and use the linear cost series in this regime.
+	# Ignore per-level rounding and use the configured cost series in this regime.
 	var bulk := active.any(func(key):return float(profile.techPoints.get(key,0))+float(rates[key])*dt >= 1e20)
 	if bulk:
 		for key in active:
@@ -1368,11 +1418,57 @@ func advance_hightech_bulk(key: String, dt: float) -> void:
 	# Leave headroom for integer conversion and subsequent level increments.
 	count = clampf(count,0,maxf(0,9e18-float(level)))
 	var spent := count*(first+growth*(count-1)*0.5) if growth > 0 else count*maxf(1,roundf(first))
+	if float(row.tpCostMutiple2) > 0:
+		# Binary search the monotone series, including ranges crossing the threshold.
+		var low := 0
+		var high := int(count)
+		while low < high:
+			var mid := low + ((high-low+1) >> 1)
+			if hightech_bulk_cost(key,level,mid) <= points:
+				low = mid
+			else:
+				high = mid-1
+		count = float(low)
+		spent = hightech_bulk_cost(key,level,low)
 	profile.techPoints[key] = maxf(0,points-spent)
 	if count > 0:
 		profile.hightechLevels[key] = level+int(count)
 		if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
 		event.emit("hightech_complete", {"key":key})
+
+func hightech_bulk_cost(key: String, level: int, count: int) -> float:
+	# Bulk settlement retains the existing unrounded approximation at huge budgets.
+	if count <= 0:return 0.0
+	var row: Dictionary = db.data.hightech[key]
+	var growth := float(row.tpCostBase)*float(row.tpCostMutiple)
+	var threshold := int(db.config.hightechCostGrowthLevel)
+	var linear_count := mini(count,maxi(0,threshold-level+1))
+	var total := float(linear_count)*(float(row.tpCostBase)+growth*level+growth*(linear_count-1)*0.5)
+	count -= linear_count
+	level += linear_count
+	if count == 0:return total
+	var ratio := 1.0+float(row.tpCostMutiple2)
+	var multiplier := pow(ratio,level-threshold)
+	var block_cost := float(row.tpCostBase)+growth*level
+	var block_growth := growth
+	var block_length := 1.0
+	var factor := ratio
+	var offset := 0.0
+	# Sum arithmetic-geometric blocks in O(log count), without cancellation near ratio=1.
+	while count > 0:
+		if not is_finite(multiplier) or not is_finite(block_cost):return INF
+		if count & 1:
+			total += multiplier*(block_cost+offset*block_growth)
+			if not is_finite(total):return INF
+			multiplier *= factor
+			offset += block_length
+		count >>= 1
+		if count == 0:break
+		block_cost = (1.0+factor)*block_cost+factor*block_length*block_growth
+		block_growth *= 1.0+factor
+		block_length *= 2.0
+		factor *= factor
+	return total
 
 func prune_resource_samples(now: float) -> void:
 	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
@@ -1785,7 +1881,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			hit_player(raw * multiplier, int(weapon.dmgtype))
 		else:
 			shot.entry.attacks = int(shot.entry.get("attacks", 0)) + 1
-			invalidate_stat_cache()
+			invalidate_equipment_counter(str(shot.entry.key))
 			event.emit("equipment_stats",{"slot":slot_id("weapons",shot.mount)})
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
 			if not shot.repeated and int(shot.ticks)==1:
@@ -1817,7 +1913,7 @@ func hit_player(raw, type: int) -> void:
 	for entry in defense_entries():
 		if (entry.key == "shield" and N.compare(shield_loss,0)>0) or (entry.key == "armour" and N.compare(armour_loss,0)>0):
 			entry.hits = int(entry.get("hits", 0)) + 1
-			invalidate_stat_cache()
+			invalidate_equipment_counter(str(entry.key))
 			event.emit("equipment_stats",{"category":"defence"})
 	event.emit("hit", {"x":player.x,"y":player.y,"amount":N.ceiling(N.add(shield_loss,armour_loss)),"player":true,"type":type})
 	if N.compare(player.armour,0)<=0:
@@ -2166,7 +2262,7 @@ func tick(dt: float) -> void:
 			var count := int(weapon.para1) if key == "missile" else 1
 			if not candidates.is_empty():
 				entry.attacks = int(entry.get("attacks", 0)) + 1
-				invalidate_stat_cache()
+				invalidate_equipment_counter(key)
 				event.emit("equipment_stats",{"slot":id})
 			var charged := float(jewel_charged.get(id, 1.0))
 			if count > 0 and not candidates.is_empty():
@@ -2730,6 +2826,12 @@ func jewels_changed(slot := "", slots: Array = []) -> void:
 	event.emit("jewels_changed", {"slot":slot,"slots":slots})
 
 func jewel_effects(entry: Dictionary) -> Array:
+	var cached: Array = stat_cache.get("jewel_effects",[]) if stat_cache_enabled else []
+	for item in cached:
+		if is_same(item.entry,entry):
+			# Attack callers attach their source mount; never expose the cached
+			# dictionaries to that mutation or to in-flight projectile effects.
+			return item.effects.duplicate(true)
 	var result: Array = []
 	if str(entry.get("key", "")).is_empty():return result
 	var sockets: Array = entry.get("sockets", [])
@@ -2741,6 +2843,10 @@ func jewel_effects(entry: Dictionary) -> Array:
 		for n in [2, 4, 5]:
 			effect["p%d" % n] = db.jewel_parameter(str(gem.id), n)
 		result.append(effect)
+	if stat_cache_enabled:
+		if cached.size()>=32:cached.clear()
+		cached.append({"entry":entry,"effects":result.duplicate(true)})
+		stat_cache.jewel_effects=cached
 	return result
 
 func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
@@ -2752,7 +2858,13 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 			var count := maxi(1, int(entry.get("attacks" if effect.kind == "proficiency" else "hits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(10.0) * 100.0) / 100.0
 			value = ceilf(value * (1.0 + bonus))
-	return N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew.system_effect(self,"equip_bonus")),galaxy.multiplier("equipment_value"))
+	var crew_bonus: float
+	if stat_cache_enabled and stat_cache.has("crew_equipment"):
+		crew_bonus=stat_cache.crew_equipment
+	else:
+		crew_bonus=crew.system_effect(self,"equip_bonus")
+		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
+	return N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value"))
 
 func jewel_critical(entry: Dictionary) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
@@ -2826,7 +2938,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		if candidates.is_empty():
 			continue
 		entry.attacks = int(entry.get("attacks", 0)) + 1
-		invalidate_stat_cache()
+		invalidate_equipment_counter(str(entry.key))
 		event.emit("equipment_stats",{"slot":slot_id("weapons",int(pending.index))})
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
 			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
@@ -2860,7 +2972,7 @@ func has_defence_jewels() -> bool:
 func jewel_defence_hit(index: int) -> void:
 	var entry := slot_entry("defence", index)
 	entry.hits = int(entry.get("hits", 0)) + 1
-	invalidate_stat_cache()
+	invalidate_equipment_counter(str(entry.key))
 	event.emit("equipment_stats",{"slot":slot_id("defence",index)})
 	jewel_defence_times[index] = 0.0
 	for effect in jewel_effects(entry):

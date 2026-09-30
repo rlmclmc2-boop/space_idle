@@ -13,6 +13,7 @@ func _initialize() -> void:
 	g.profile.cleared = db.data.hightech.keys().map(func(key):return int(db.unlock_row("hightech",key).level))
 	g.profile.scientistAssignments[key] = 1
 	db.config.techPointGet = 1e20
+	db.data.hightech[key].tpCostMutiple2 = 0.0
 	db.data.hightech[key].tpCostBase = 10.0
 	db.data.hightech[key].tpCostMutiple = 0.2
 	var start := Time.get_ticks_usec()

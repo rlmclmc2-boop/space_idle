@@ -1,3 +1,2 @@
+# Isolated test workspaces, saved-game snapshots and test output
 work/
-__pycache__/
-*.pyc

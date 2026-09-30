@@ -32,6 +32,18 @@ class ScientistConfig(unittest.TestCase):
         row = next(iter(bad['hightech'].values()))
         row['tpCostBase'] = 0.1
         with self.assertRaises(ValueError): cw.validate_projection(bad)
+    def test_hightech_growth_parameters(self):
+        for value in (-1, 1.5, None, float('nan')):
+            bad = copy.deepcopy(self.data)
+            bad['config']['hightechCostGrowthLevel'] = value
+            with self.assertRaises(ValueError): cw.validate_projection(bad)
+        for value in (-0.1, None, float('inf')):
+            bad = copy.deepcopy(self.data)
+            next(iter(bad['hightech'].values()))['tpCostMutiple2'] = value
+            with self.assertRaises(ValueError): cw.validate_projection(bad)
+        self.data['config']['hightechCostGrowthLevel'] = 12
+        for row in self.data['hightech'].values(): row['tpCostMutiple2'] = 0
+        cw.validate_projection(self.data)
     def test_old_time_fields_not_used(self):
         for row in self.data['hightech'].values():
             row['timeCostBase'] = -999

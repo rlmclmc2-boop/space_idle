@@ -15,7 +15,7 @@ CURRENT: Release needs clean Windows acceptance; deep-space BGM musicality/loop 
 | U-012 | Legacy workbook multiplier example vs linear 1.9 unresolved; no inferred rounding change. |
 | U-013 | In-memory fixture/max-level clear does not establish natural new-game balance. |
 | U-017 | Historical test_game assumes old install/loop/cfg; not comprehensive rule baseline. |
-| U-018 | Old workbook lacks current fields; old fixtures fail; no guessed defaults. Legacy test_scientists also uses incomplete profiles and removed hightech UI fields; use current research/UI specialty tests. |
+| U-018 | Legacy fixtures drift: test_scientists uses incomplete profiles/removed UI, test_local_ui references removed hightech_management_button, and test_planet_buffs fixes editable reward values. Use current specialty tests and test_stat_cache for cached/direct comparisons; old fixture failures are not rule acceptance. Old workbook lacks current fields; no guessed defaults. |
 | U-019 | Cfg rollback can fail and leave partial commit; backups may also be cleaned. |
 | U-020 | Incremental import concurrent target/manifest not fully rechecked; may overwrite external edits. |
 | U-026 | BOSS card auxiliary coordinates used only in specialty test; main UI has no render entry. Verify actual requirement. |

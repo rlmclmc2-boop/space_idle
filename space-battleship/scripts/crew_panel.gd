@@ -210,6 +210,18 @@ func invalidate() -> void:
 	dirty=true
 	if is_visible_in_tree():refresh()
 
+func refresh_member(item: Dictionary) -> void:
+	# Experience payouts can update every crew member in one simulation step.
+	# Only the changed row and selected inspector depend on this member's level.
+	if not is_visible_in_tree():
+		dirty=true
+		return
+	if dirty or not rows.has(str(item.crewId)):
+		refresh()
+		return
+	refresh_row(item)
+	if selected==str(item.crewId):refresh_detail()
+
 func exploration_remaining(id: String) -> int:
 	var progress: Dictionary=host.game.planet_progress(id)
 	return ceili(maxf(0.0,host.game.planet_duration(id)-float(progress.get("elapsed",0))))

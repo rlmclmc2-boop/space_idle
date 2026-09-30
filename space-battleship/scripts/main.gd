@@ -387,6 +387,7 @@ func _process(delta: float) -> void:
 		ui_rebuild_pending = false
 		build_ui()
 	sync_accelerated_visual_mode()
+	game.begin_frame_save_batch()
 	var dt := maxf(0,delta) if background_unfocused else minf(delta,0.1)
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
@@ -427,6 +428,7 @@ func _process(delta: float) -> void:
 	if fps_refresh_elapsed >= 0.5:
 		fps_refresh_elapsed = fmod(fps_refresh_elapsed,0.5)
 		refresh_fps_label()
+	game.end_frame_save_batch()
 	if automation_args.has("--capture"):
 		capture_frame += 1
 		if capture_frame == 45:
@@ -508,9 +510,20 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"galaxy_income":
 			if is_instance_valid(galaxy_panel):galaxy_panel.refresh()
 		"crew_changed":
-			if is_instance_valid(galaxy_panel):galaxy_panel.refresh()
-			if is_instance_valid(crew_panel):crew_panel.invalidate()
-			if is_instance_valid(planet_panel):planet_panel.invalidate()
+			var assignment_changed: bool = info.previous.get("assignmentType")!=info.current.get("assignmentType") or info.previous.get("targetId")!=info.current.get("targetId")
+			if assignment_changed:
+				if is_instance_valid(galaxy_panel):galaxy_panel.refresh()
+				if is_instance_valid(crew_panel):crew_panel.invalidate()
+				if is_instance_valid(planet_panel):planet_panel.invalidate()
+			else:
+				if is_instance_valid(crew_panel):
+					if game.planet_crew_payout_active:
+						# planet_changed refreshes the complete panel after this payout.
+						crew_panel.dirty=true
+					else:crew_panel.refresh_member(info.current)
+				# Picker captions catch up once after a shared exploration payout.
+				if is_instance_valid(planet_panel):planet_panel.dirty=true
+			if not assignment_changed and info.previous.get("level")==info.current.get("level") and info.previous.get("upgradeMode")==info.current.get("upgradeMode"):return
 			var tabs_changed: Dictionary = {}
 			for item in [info.previous,info.current]:
 				var row: Dictionary=game.crew.assignments(game).get(str(item.get("assignmentType","")),{})
@@ -527,8 +540,9 @@ func on_event(kind: String, info: Dictionary) -> void:
 				if info.has("reward"):planet_panel.show_completion(str(info.get("id", "")), float(info.reward))
 			if is_instance_valid(crew_panel):crew_panel.invalidate()
 			if info.has("reward") or info.has("activated"):
-				for category in ["weapons", "defence"]:
-					for index in game.active_slot_count(category):refresh_equipment_cards(game.slot_id(category,index))
+				# A shared modifier changes all module projections together. Refresh
+				# that dependency once, instead of repeating filtering/detail work per slot.
+				if is_instance_valid(equipment_panel):equipment_panel.refresh()
 		"equipment_stats":
 			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
 		"jewels_changed":
@@ -1351,16 +1365,20 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 		return angle
 	if not visual.is_empty():
 		var color := Color("ffc879") if key=="missile" else ORANGE if key=="cannon" else CYAN
-		for i in range(1,mini(int(visual.samples),14 if key=="missile" else 4)):
+		var trail_end := mini(int(visual.samples),14 if key=="missile" else 4)
+		if core:trail_end=mini(trail_end,4)
+		var head := int(visual.head)
+		var shot_age := float(visual.age)
+		var trail_scale := float(battle_visual.missile_trail_scale) if key=="missile" else float(battle_visual.bullet_trail_scale)
+		for i in range(1 if core else 4,trail_end):
 			# The short fresh trail shares the bullet layer; only older exhaust sits behind hulls.
-			if (i<=3)!=core:continue
 			if i>4 and trail_budget==0:break
-			var a: Vector2 = battle_point(visual.trail[(int(visual.head)-i+14)%14])+offset
-			var b: Vector2 = battle_point(visual.trail[(int(visual.head)-i+1+14)%14])+offset
-			var age: float = float(visual.age)-float(visual.trail_times[(int(visual.head)-i+14)%14])
+			var trail_index := (head-i+14)%14
+			var a: Vector2 = battle_point(visual.trail[trail_index])+offset
+			var b: Vector2 = battle_point(visual.trail[(trail_index+1)%14])+offset
+			var age: float = shot_age-float(visual.trail_times[trail_index])
 			var fade := maxf(0,1.0-age/(0.18 if key=="missile" else 0.075))
 			if fade<=0:break
-			var trail_scale := float(battle_visual.missile_trail_scale) if key=="missile" else float(battle_visual.bullet_trail_scale)
 			draw_surface.draw_line(a,b,Color(color,fade*0.8),(3.5 if key=="missile" else 2.2)*fade*trail_scale,true)
 	if not core:return angle
 	if not visual.is_empty():
@@ -1785,8 +1803,10 @@ func refresh_equipment_effects(tech: String) -> void:
 	if tech not in [BattleGame.ENERGY_FOCUS,BattleGame.DENSE_ARMOUR]:
 		return
 	var category := "weapons" if tech == BattleGame.ENERGY_FOCUS else "defence"
+	var slots: Array = []
 	for index in game.profile.loadout[category].size():
-		refresh_equipment_cards(game.slot_id(category,index))
+		slots.append(game.slot_id(category,index))
+	if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(slots)
 
 func refresh_crew_tab_badge(index: int) -> void:
 	if not is_instance_valid(equipment_tabs) or index>=equipment_tabs.get_tab_count():return
@@ -2045,7 +2065,9 @@ func refresh_draw_layers(dt: float) -> void:
 		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
 		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
 			battle_layer.queue_redraw()
-	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.enemies]):
+	# The HUD reads encounter identity and player health, never enemy cooldowns
+	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
+	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter()]):
 		battle_hud_layer.queue_redraw()
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
