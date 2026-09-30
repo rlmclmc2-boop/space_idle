@@ -58,3 +58,11 @@ blender --background --factory-startup --python-exit-code 1 --python dev/toon_sh
 `run_orbit_review.py`运行隔离20秒/600帧连续表现检查，包含完整一圈、模型旋转包络、视口边界、暂停、炮口与状态/RNG检查。录像按显式30Hz表现步长逐帧编码，不能当成实时性能证明。旧`motion_review.gd`记录的是91f56d5驻留版验证条件，不是当前环绕版验收入口。
 
 所有轨道避开母舰，不通过穿模制造前后层次；同一3D视口有正常模型深度，但原有二维武器特效的深度边界未改。
+
+## 脉冲激光单武器特效试样
+
+`python dev/toon_ship/preview.py --godot /path/to/godot --fixture Heavy_Battleship --pulse-fixture --interactive` 使用明确标记的八槽纯脉冲激光合成配装，便于同时看母舰和环绕无人机发射；不是玩家存档。默认混合夹具保持不变。
+
+本轮只替换己方非光束laser的绘制：有限长度亮芯/短暗尾、75毫秒定向炮口闪光、130毫秒紧凑接触形状。原飞行位置投影、开火/命中事件、伤害、CD、速度与RNG保留；旧laser轨迹与通用发射闪光不再叠加。其他武器与敌方效果沿用原实现。每次发射取实际显示炮口，离膛后沿原逻辑行程投影，不跟着移动无人机拖动已发射弹体。
+
+`run_pulse_review.py`捕获同种子、同配装的前后真实战斗过程，逐帧比较BattleGame非对象状态及战斗RNG，并验证绘制只读和暂停。顺序运行产生的资源收据`resource_samples.time`来自Unix墙钟，仅该时间字段在比较时归一化，收据金额与其他内容仍比较。录像是连续30Hz战斗步长捕获，不是实时帧率测量；没有更改弹速来延长可见时间。

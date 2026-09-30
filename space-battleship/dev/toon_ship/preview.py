@@ -20,9 +20,12 @@ def main():
     source.add_argument("--fixture", choices=HULLS + ("all",), help="Explicit synthetic full-loadout fixture; no player save")
     parser.add_argument("--reuse", type=Path, help="Reuse a directory previously created by this launcher")
     parser.add_argument("--interactive", action="store_true")
+    parser.add_argument("--pulse-fixture", action="store_true", help="Synthetic same-hull all-pulse loadout for visual review")
     args = parser.parse_args()
     if not args.godot or not Path(args.godot).is_file():
         parser.error("Supply --godot PATH to a Godot 4 executable, or put godot in PATH")
+    if args.pulse_fixture and not args.fixture:
+        parser.error("--pulse-fixture requires an explicit synthetic --fixture")
     if args.interactive and args.fixture == "all":
         parser.error("Choose one hull for interactive preview")
     if args.snapshot:
@@ -76,6 +79,7 @@ def main():
         run += ["--script", "res://dev/toon_ship/full_loadout_check.gd"] if checked else ["res://dev/toon_ship_test.tscn"]
         run += ["--", "--output=" + str(output)] if checked else ["--", "--prototype-capture=" + str(output)]
         run += ["--prototype-fixture=" + hull] if args.fixture else ["--prototype-saved-loadout"]
+        if args.pulse_fixture: run += ["--prototype-pulse-fixture"]
         if not args.interactive: run += ["--prototype-exit"]
         flags = {"smooth": "smooth", "close": "close", "no-rim": "no-rim", "original": "original"}
         if args.mode in flags: run += ["--prototype-" + flags[args.mode]]
