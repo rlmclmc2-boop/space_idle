@@ -53,15 +53,18 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 func layout_contents() -> void:
 	if compact:
 		picture.position = Vector2(14,10)
-		picture.size = Vector2(42,42)
-		fields.title.position = Vector2(64,12)
-		fields.title.size.x = size.x-78
+		picture.size = Vector2(36,36) if is_equipped else Vector2(42,42)
+		fields.title.position = Vector2(60 if is_equipped else 64,12)
+		fields.title.size.x = size.x-fields.title.position.x-14
 		fields.title.add_theme_font_size_override("font_size",20)
-		fields.level.position = Vector2(14,38)
+		# Keep equipped defence headings, exact levels and capacities on separate rows.
+		fields.level.position = Vector2(14,54 if is_equipped else 38)
 		fields.level.add_theme_font_size_override("font_size",18)
-		fields.stat.position = Vector2(110,38)
-		fields.stat.size.x = size.x-124
+		fields.level.size.y = 28 if is_equipped else 32
+		fields.stat.position = Vector2(14,84)
+		fields.stat.size.x = size.x-28
 		fields.stat.add_theme_font_size_override("font_size",18)
+		fields.stat.size.y = 28
 		fields.status.position = Vector2(14,79)
 		fields.status.add_theme_font_size_override("font_size",15)
 		upgrade_button.position = Vector2(14,118)
@@ -79,8 +82,10 @@ func layout_contents() -> void:
 	fields.title.add_theme_font_size_override("font_size",24)
 	fields.level.position = Vector2(106,52)
 	fields.level.add_theme_font_size_override("font_size",20)
+	fields.level.size.y = 32
 	fields.stat.position.y = 52
 	fields.stat.add_theme_font_size_override("font_size",20)
+	fields.stat.size.y = 32
 	fields.stat.visible = true
 	fields.status.position = Vector2(18,101)
 	fields.status.add_theme_font_size_override("font_size",18)
@@ -123,4 +128,3 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
 	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 	layout_contents()
-
