@@ -2441,25 +2441,7 @@ func draw_battle() -> void:
 	for enemy in game.enemies:
 		if enemy.hp <= 0:
 			continue
-		var pos := enemy_render_position(enemy)+offset
-		var dimensions := Vector2(enemy_render_width(enemy),enemy_render_width(enemy)*2.0)
-		var pose := enemy_pose(enemy)
-		var depth := enemy_depth(enemy)
-		var angle := float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
-		var light := lerpf(0.63,1.0,depth)
-		draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
-		draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
-		draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
-		draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
-		draw_surface.draw_set_transform(Vector2.ZERO)
-		draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
-		var w := dimensions.y * 0.8
-		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
-		if boss_battle:
-			var marker := pos + Vector2(dimensions.y/2+4,-10)
-			marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
-			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
-			text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
+		draw_enemy_hull_and_status(enemy,offset,boss_battle)
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	for flight in flights:
 		var p: Dictionary = flight.shot
@@ -2514,6 +2496,27 @@ func draw_battle() -> void:
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+
+func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle: bool) -> void:
+	var pos := enemy_render_position(enemy)+offset
+	var dimensions := Vector2(enemy_render_width(enemy),enemy_render_width(enemy)*2.0)
+	var pose := enemy_pose(enemy)
+	var depth := enemy_depth(enemy)
+	var angle := float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+	var light := lerpf(0.63,1.0,depth)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
+	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
+	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
+	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	draw_surface.draw_set_transform(Vector2.ZERO)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
+	var w := dimensions.y * 0.8
+	bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+	if boss_battle:
+		var marker := pos + Vector2(dimensions.y/2+4,-10)
+		marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
+		box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
+		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
 
 func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float) -> bool:
 	# Optional presentation override; default retains the existing projectile sprite.
