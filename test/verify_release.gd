@@ -30,6 +30,9 @@ func verify() -> void:
 	get_tree().current_scene = main
 	for frame in range(90):
 		await get_tree().process_frame
+	check(FileAccess.file_exists("res://dev/toon_ship/hybrid_manifest.json"), "Missing runtime hull manifest")
+	check(not ResourceLoader.exists("res://dev/toon_ship/toon_ship_test.gd"), "Development battle fixture leaked into pack")
+	check(is_instance_valid(main.ship_view) and main.ship_view.modules.size()>0, "Live 3D battlefield missing in release")
 	check(main.db.levels.size() > 0 and main.db.equipment.size() > 0, "Missing embedded game data")
 	check(main.font is FontVariation and main.font.base_font is FontFile, "Release must use embedded font")
 	var text_server := TextServerManager.get_primary_interface()

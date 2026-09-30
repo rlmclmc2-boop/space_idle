@@ -128,6 +128,23 @@ try {
     }
     foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
     foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
+    # Ship only runtime presentation dependencies, never the developer fixture harness.
+    $toonRuntime = Join-Path $staging 'dev/toon_ship'
+    foreach ($folder in @($toonRuntime, (Join-Path $toonRuntime 'hulls'), (Join-Path $toonRuntime 'weapons'), (Join-Path $staging 'addons/flexible_toon_shader'))) {
+        New-Item -ItemType Directory -Force -Path $folder | Out-Null
+    }
+    foreach ($file in @('ship_view.gd','hybrid_layout.gd','hybrid_manifest.json','shield.gdshader','exhaust.gdshader','missile_vfx.gd','continuous_beam_vfx.gd','rail_vfx.gd','pulse_vfx.gd','enemy_weapon_vfx.gd')) {
+        Copy-Item -LiteralPath (Join-Path $project "dev/toon_ship/$file") -Destination $toonRuntime
+    }
+    Copy-Item -Path (Join-Path $project 'dev/toon_ship/hulls/*.glb') -Destination (Join-Path $toonRuntime 'hulls')
+    foreach ($pattern in @('*.glb','*.tscn')) {
+        Copy-Item -Path (Join-Path $project "dev/toon_ship/weapons/$pattern") -Destination (Join-Path $toonRuntime 'weapons')
+    }
+    foreach ($file in @('flexible_toon.gdshader','LICENSE')) {
+        Copy-Item -LiteralPath (Join-Path $project "addons/flexible_toon_shader/$file") -Destination (Join-Path $staging 'addons/flexible_toon_shader')
+    }
+    # Editable art sources are not runtime imports; staging them would require Blender.
+    Get-ChildItem -LiteralPath (Join-Path $staging 'assets') -Recurse -File -Include '*.blend','*.blend1' | Remove-Item -Force
     New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
     foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json')) {
         Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
