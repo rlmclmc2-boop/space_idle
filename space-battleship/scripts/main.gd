@@ -233,7 +233,7 @@ func _ready() -> void:
 	visual_config = parsed_visuals
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
-	game = BattleGame.new(db, not automation_args.has("--capture"))
+	game = create_battle_game(not automation_args.has("--capture"))
 	if game.save_enabled:
 		load_music_setting()
 	game.event.connect(on_event)
@@ -2012,6 +2012,9 @@ func refresh_navigation() -> void:
 			var checked := mode==int(game.profile.get("guardDeath",0))
 			if menu.is_item_checked(mode) != checked:
 				menu.set_item_checked(mode,checked)
+
+func create_battle_game(persist: bool) -> BattleGame:
+	return BattleGame.new(db,persist)
 
 func create_draw_layers() -> void:
 	background_layer = Node2D.new()

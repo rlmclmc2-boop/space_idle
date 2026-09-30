@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--prepare-only", action="store_true", help="Prepare/import without graphical execution")
     parser.add_argument("--single", action="store_true")
     parser.add_argument("--check-only", action="store_true")
+    parser.add_argument("--after-only", action="store_true")
     args = parser.parse_args()
     if not args.godot:
         parser.error("Supply a Godot 4 executable")
@@ -55,7 +56,7 @@ def main():
     if args.prepare_only:
         return
     output = area / "Heavy_Battleship-rail"
-    flags = (["--prototype-rail-single"] if args.single else ["--prototype-rail-fixture"]) + (["--rail-check-only"] if args.check_only else [])
+    flags = (["--prototype-rail-single"] if args.single else ["--prototype-rail-fixture"]) + (["--rail-check-only"] if args.check_only else []) + (["--rail-after-only"] if args.after_only else [])
     print(run_checked(command + (["--headless"] if args.check_only else []) + ["--resolution", "1335x859", "--script", "res://dev/toon_ship/rail_review.gd", "--", "--output=" + str(output), "--prototype-fixture=Heavy_Battleship", *flags], area / "rail.log"), flush=True)
 
 
