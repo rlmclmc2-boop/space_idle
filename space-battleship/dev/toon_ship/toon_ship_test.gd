@@ -2,6 +2,10 @@ extends "res://scripts/main.gd"
 ## Development-only subclass. Production code, values, UI and assets are untouched.
 
 const PROTOTYPE_GAME := preload("res://dev/toon_ship/prototype_battle_game.gd")
+const ENEMY_VFX := preload("res://dev/toon_ship/enemy_weapon_vfx.gd")
+var enemy_vfx_enabled:=true
+var enemy_launch_context:=false
+var enemy_impacts:Array[Dictionary]=[]
 const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
@@ -72,6 +76,7 @@ var stable_center_ready := false
 
 func create_battle_game(_persist:bool)->BattleGame:
 	var prototype=PROTOTYPE_GAME.new(db,false)
+	db=prototype.db
 	prototype.launch_provider=_prototype_launch_pose
 	prototype.target_provider=_prototype_target_point
 	return prototype
@@ -81,14 +86,14 @@ func _prototype_target_point(target:Dictionary)->Vector2:
 	return battle_logical_point(entity_render_position(target))
 
 
-func _prototype_launch_pose(slot:int,aim:Vector2,_ordinal:int)->Dictionary:
+func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	if not is_instance_valid(ship_view):
 		var fallback:=Vector2(game.player.x,game.player.y)+game.player_weapon_offset(slot)
 		return {"position":fallback,"direction":(aim-fallback).normalized()}
 	var angles:Array=[]
 	for index in game.weapon_entries().size():angles.append(turret_angle(index))
 	ship_view.set_slot_angles(angles)
-	var point:Vector2=ship_view.screen_muzzle_for_slot(slot)
+	var point:Vector2=ship_view.screen_muzzle_for_slot(slot,ordinal)
 	# Canonical battlefield coordinates are independent of viewport pixels and
 	# paused close-up inspection magnification.
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
@@ -200,6 +205,8 @@ func _process(delta: float) -> void:
 	if accelerated_visual_mode:missile_events.clear()
 	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<0.31)
 	if accelerated_visual_mode:rail_events.clear()
+	enemy_impacts=enemy_impacts.filter(func(e):return fx_time-float(e.born)<0.12)
+	if accelerated_visual_mode:enemy_impacts.clear()
 	pulse_events = pulse_events.filter(func(e):return fx_time-float(e.born)<0.14)
 	prototype_frames += 1
 	_sync_parameters()
@@ -259,6 +266,8 @@ func _draw_muzzle_cues() -> void:
 		pulse_layer.draw_line(point,point+direction*(9.0+6.0*fade),color,2.0,true)
 		pulse_layer.draw_line(point+direction*3.0-across*3.0*fade,point+direction*3.0+across*3.0*fade,Color(1,1,1,fade),1.5,true)
 
+	for event in enemy_impacts:
+		ENEMY_VFX.impact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),event.key)
 	if pulse_vfx_enabled:
 		for event in pulse_events:
 			var age:=fx_time-float(event.born)
@@ -407,7 +416,12 @@ func _is_own_pulse(shot:Dictionary)->bool:
 	return prototype_enabled and pulse_vfx_enabled and not bool(shot.get("hostile",false)) and weapon_key(shot)=="laser" and not bool(shot.get("beam",false))
 
 
+func _is_simple_enemy(shot:Dictionary)->bool:
+	return prototype_enabled and enemy_vfx_enabled and bool(shot.get("hostile",false)) and weapon_key(shot) in ["laser","cannon"] and not bool(shot.get("beam",false))
+
+
 func weapon_launch(shot:Dictionary,spread:=0.0)->void:
+	enemy_launch_context=_is_simple_enemy(shot)
 	missile_launch_context=_is_own_missile(shot)
 	rail_launch_context=_is_own_rail(shot)
 	pulse_launch_context=_is_own_pulse(shot)
@@ -439,20 +453,24 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 		visual.missile_range=Vector2(shot.x,shot.y).distance_to(Vector2(shot.target.x,shot.target.y)) if not shot.target.is_empty() else 160.0
 		visual.last_render_point=visual.get("origin",visual_muzzle(shot))
 		visual.last_logical_point=Vector2(shot.x,shot.y)
+	enemy_launch_context=false
 	pulse_launch_context=false
 	rail_launch_context=false
 	missile_launch_context=false
 
 
 func weapon_flash(pos:Vector2,color:Color,radius:float,duration:float)->void:
-	if not pulse_launch_context and not rail_launch_context and not missile_launch_context:super.weapon_flash(pos,color,radius,duration)
+	if not enemy_launch_context and not pulse_launch_context and not rail_launch_context and not missile_launch_context:super.weapon_flash(pos,color,radius,duration)
 
 
 func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:float)->void:
-	if not pulse_launch_context and not rail_launch_context and not missile_launch_context:super.weapon_smoke(pos,color,count,duration,size_value)
+	if not enemy_launch_context and not pulse_launch_context and not rail_launch_context and not missile_launch_context:super.weapon_smoke(pos,color,count,duration,size_value)
 
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
+	if _is_simple_enemy(shot):
+		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":shot.direction,"key":weapon_key(shot),"born":fx_time})
+		return
 	if _is_own_missile(shot):
 		if fast_mode_enabled():return
 		var visual:=projectile_visual(shot)
@@ -479,6 +497,10 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 
 
 func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
+	if _is_simple_enemy(shot):
+		var angle:float=visual.get("angle",Vector2(shot.direction).angle())
+		if core:ENEMY_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),weapon_key(shot))
+		return angle
 	if _is_own_missile(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
 		var budget:=0.5 if trail_budget==0 else 1.0

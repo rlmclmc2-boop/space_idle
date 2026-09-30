@@ -221,7 +221,12 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 		node.transform = Transform3D.IDENTITY
 		if item.carrier=="drone":node.scale=Vector3.ONE*CARRIER_WEAPON_SCALE
 		modules.append({"slot":item.slot,"key":item.key,"carrier":item.carrier,"mount_index":item.mount,"node":node,"mount":mount,
-			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false)})
+			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false),
+			"muzzle2":node.find_child("Muzzle02",true,false)})
+		if item.key=="missile":
+			# Visible LaunchOpening front face in polish_weapons.py, Blender Y -> -Z.
+			for socket in [modules.back().muzzle,modules.back().muzzle2]:
+				if socket!=null:socket.position.z=-0.495
 		_install_materials(node,"weapon")
 	loadout_signature = signature
 	weapon = modules[0].node if not modules.is_empty() else null
@@ -244,9 +249,11 @@ func set_slot_angles(angles: Array) -> void:
 		if int(module.slot)<angles.size(): module.pivot.rotation.y = -float(angles[module.slot])-module.mount.global_rotation.y
 
 
-func screen_muzzle_for_slot(slot: int) -> Vector2:
+func screen_muzzle_for_slot(slot: int, ordinal:int=0) -> Vector2:
 	for module in modules:
-		if int(module.slot)==slot: return camera.unproject_position(module.muzzle.global_position)
+		if int(module.slot)==slot:
+			var socket:Node3D=module.muzzle2 if ordinal%2==1 and module.muzzle2!=null else module.muzzle
+			return camera.unproject_position(socket.global_position)
 	return Vector2.ZERO
 
 

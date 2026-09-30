@@ -23,14 +23,12 @@ var cancelled_ejections:=0
 var missile_retirements:Array[Dictionary]=[]
 
 func _init(database:ShipDatabase,persist:=false)->void:
-	# Prototype-owned in-memory parameters, visible to its equipment panel.
-	# The source tables and ordinary BattleGame instances are not rewritten.
-	if not database.has_meta("heavy_rocket_prototype_v2"):
-		database.set_meta("heavy_rocket_prototype_v2",true)
-		for row in database.equipment.get("missile",[]):
-			row.para1=5;row.cd=2.4;row.dmg=float(row.dmg)*2.0
-			row.para2=MISSILE_CRUISE_SPEED/float(database.defaults.projectilePixelsPerUnit)
-	super(database,persist)
+	# Keep player equipment/UI projection separate from every hostile fallback.
+	var player_database=preload("res://dev/toon_ship/player_weapon_database.gd").new(database)
+	for row in player_database.equipment.get("missile",[]):
+		row.para1=5;row.cd=2.4;row.dmg=float(row.dmg)*2.0
+		row.para2=MISSILE_CRUISE_SPEED/float(player_database.defaults.projectilePixelsPerUnit)
+	super(player_database,persist)
 
 func tick(dt:float)->void:
 	if paused:return
@@ -93,7 +91,7 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	var origin:Vector2=pose.position
 	var direction:Vector2=pose.direction
 	var side:float=-1.0 if int(packet.ordinal)%2==0 else 1.0
-	origin+=direction.orthogonal()*side*4.0
+	# The sampled visible tube is the launch point; departure changes direction only.
 	var departure_angle:=50.0
 	var trial:=direction.rotated(side*deg_to_rad(departure_angle))
 	if (origin.x<85.0 and trial.x<0.0) or (origin.x>BATTLE_SIZE.x-85.0 and trial.x>0.0):departure_angle=18.0
@@ -109,7 +107,7 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	launch_records.append({"time":motion_clock,"serial":int(shot.serial),"mount":int(shot.mount),"ordinal":int(packet.ordinal),"position":origin,"target_alive":target_alive,"damage":shot.damage})
 
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
-	if not bool(shot.get("prototype_missile",false)):return false
+	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
 	shot.motion_age=float(shot.motion_age)+dt
 	if float(shot.motion_age)>4.5:
 		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
