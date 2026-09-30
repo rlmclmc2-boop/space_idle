@@ -1,0 +1,1658 @@
+{
+  "base_commit": "5fd7473d81f7340dc7e075c6c51d62e1c8478b4a",
+  "asset_commit": "1e405edd476e79e60345a4833c0d9f19c549c043",
+  "blender": "4.3.2",
+  "godot": "4.6.3",
+  "renderer": "gl_compatibility / Mesa llvmpipe",
+  "battle_physical_pixels": [
+    391.1988,
+    656.5574
+  ],
+  "window": [
+    1335,
+    859
+  ],
+  "fixture": "isolated synthetic full loadout; no player saves",
+  "hulls": {
+    "Frigate": {
+      "triangles": 4428,
+      "mesh_nodes": 3,
+      "materials": 6,
+      "textures": 0,
+      "glb_bytes": 179324,
+      "glb_sha256": "0b73a239bc7891da538e546984d89628eced02d25da7a176b9d7704513ecf40b",
+      "hull_height_physical_px": 66.281,
+      "facts": {
+        "all_empty_removes_carriers": true,
+        "battle_logical": "(572.0, 960.0)",
+        "battle_physical": "(391.1988, 656.5574)",
+        "combined_footprint_front": "[P: (243.9279, 844.1135), S: (84.14415, 96.91486)]",
+        "diagnostic_aim_override": true,
+        "directions": {
+          "front": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 13.7350988388062,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (243.9279, 844.1135), S: (84.14415, 96.91486)]",
+            "muzzles": [
+              {
+                "angle": 0.0,
+                "muzzle": "(286.0, 860.2787)",
+                "slot": 0
+              },
+              {
+                "angle": -0.0365983806550503,
+                "muzzle": "(257.9383, 905.1131)",
+                "slot": 1
+              },
+              {
+                "angle": 0.0365983806550503,
+                "muzzle": "(307.8692, 894.8203)",
+                "slot": 2
+              }
+            ]
+          },
+          "left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 16.1114196777344,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (243.9279, 844.1135), S: (84.14415, 96.91486)]",
+            "muzzles": [
+              {
+                "angle": 1.6095222234726,
+                "muzzle": "(271.9938, 874.8381)",
+                "slot": 0
+              },
+              {
+                "angle": 1.54268145561218,
+                "muzzle": "(254.8153, 919.353)",
+                "slot": 1
+              },
+              {
+                "angle": 1.54471850395203,
+                "muzzle": "(289.5961, 913.2866)",
+                "slot": 2
+              }
+            ]
+          },
+          "rear-left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 8.2615966796875,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (243.9279, 844.1135), S: (84.14415, 96.91486)]",
+            "muzzles": [
+              {
+                "angle": 2.38136887550354,
+                "muzzle": "(276.3413, 884.453)",
+                "slot": 0
+              },
+              {
+                "angle": 2.36353826522827,
+                "muzzle": "(261.6373, 923.8875)",
+                "slot": 1
+              },
+              {
+                "angle": 2.31340789794922,
+                "muzzle": "(294.5853, 926.6117)",
+                "slot": 2
+              }
+            ]
+          },
+          "rear-right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 8.23504638671875,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (243.9279, 844.1135), S: (84.54155, 96.91486)]",
+            "muzzles": [
+              {
+                "angle": -2.38136887550354,
+                "muzzle": "(295.6587, 884.453)",
+                "slot": 0
+              },
+              {
+                "angle": -2.31340789794922,
+                "muzzle": "(273.6001, 915.2214)",
+                "slot": 1
+              },
+              {
+                "angle": -2.36353826522827,
+                "muzzle": "(321.881, 927.296)",
+                "slot": 2
+              }
+            ]
+          },
+          "right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 18.9971752166748,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (243.9279, 844.1135), S: (84.14415, 96.91486)]",
+            "muzzles": [
+              {
+                "angle": -1.6095222234726,
+                "muzzle": "(300.0062, 874.8381)",
+                "slot": 0
+              },
+              {
+                "angle": -1.54471850395203,
+                "muzzle": "(271.7434, 907.7509)",
+                "slot": 1
+              },
+              {
+                "angle": -1.54268145561218,
+                "muzzle": "(327.5297, 913.248)",
+                "slot": 2
+              }
+            ]
+          }
+        },
+        "drone_modules": 0,
+        "effect_order_preserves_state": true,
+        "empty_slot_absent": true,
+        "fixture": "synthetic-full-loadout",
+        "formation_inside_battle": true,
+        "hull_modules": 3,
+        "live_aim_limit_unchanged": true,
+        "live_projectile_keys": [
+          "laser",
+          "missile",
+          "cannon"
+        ],
+        "presentation_edit_preserves_state": true,
+        "presentation_preserves_rng": true,
+        "presentation_preserves_state": true,
+        "reference_height": 96.914909,
+        "render_surface": "(1335, 859)",
+        "restored_count": 3,
+        "save_enabled": false,
+        "ship": "Frigate",
+        "silhouette_protection": false,
+        "slots": [
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "laser",
+            "mount": "(0.0, 0.55, -1.36)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 0
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(-1.32, 0.55, 0.95)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 1
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "cannon",
+            "mount": "(1.32, 0.55, 0.95)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 2
+          }
+        ],
+        "switch_roundtrip": true,
+        "turn_minimum_gap": 7.2373046875,
+        "turn_overlaps": [],
+        "unchanged_loadout_preserves_nodes": true,
+        "window": "(1335, 859)"
+      }
+    },
+    "Destroyer": {
+      "triangles": 5320,
+      "mesh_nodes": 3,
+      "materials": 6,
+      "textures": 0,
+      "glb_bytes": 259536,
+      "glb_sha256": "b19d55b43851aeb26efa4e4c982ba1de5dd2e694e2397e5afd0568707f816638",
+      "hull_height_physical_px": 67.724,
+      "facts": {
+        "all_empty_removes_carriers": true,
+        "battle_logical": "(572.0, 960.0)",
+        "battle_physical": "(391.1988, 656.5574)",
+        "combined_footprint_front": "[P: (242.918, 844.3458), S: (123.0371, 99.02435)]",
+        "diagnostic_aim_override": true,
+        "directions": {
+          "front": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 11.6032304763794,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (242.918, 844.3458), S: (123.0371, 99.02435)]",
+            "muzzles": [
+              {
+                "angle": -0.0388840660452843,
+                "muzzle": "(263.7141, 865.5261)",
+                "slot": 0
+              },
+              {
+                "angle": 0.0388840660452843,
+                "muzzle": "(302.6266, 871.3733)",
+                "slot": 1
+              },
+              {
+                "angle": 0.0,
+                "muzzle": "(286.0, 901.1555)",
+                "slot": 2
+              },
+              {
+                "angle": 0.108745776116848,
+                "muzzle": "(353.1404, 907.6498)",
+                "slot": 3
+              }
+            ]
+          },
+          "left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 19.4258251190186,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (242.918, 844.3458), S: (123.0371, 99.02435)]",
+            "muzzles": [
+              {
+                "angle": 1.59327459335327,
+                "muzzle": "(248.9793, 880.0211)",
+                "slot": 0
+              },
+              {
+                "angle": 1.59162676334381,
+                "muzzle": "(300.3978, 885.7617)",
+                "slot": 1
+              },
+              {
+                "angle": 1.52469289302826,
+                "muzzle": "(266.8162, 919.4746)",
+                "slot": 2
+              },
+              {
+                "angle": 1.5319858789444,
+                "muzzle": "(343.3025, 918.201)",
+                "slot": 3
+              }
+            ]
+          },
+          "rear-left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 10.0067749023438,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (242.918, 844.3458), S: (123.9473, 99.02435)]",
+            "muzzles": [
+              {
+                "angle": 2.39640593528748,
+                "muzzle": "(253.5424, 890.129)",
+                "slot": 0
+              },
+              {
+                "angle": 2.34565687179565,
+                "muzzle": "(306.8336, 889.8968)",
+                "slot": 1
+              },
+              {
+                "angle": 2.32447147369385,
+                "muzzle": "(271.9967, 933.5015)",
+                "slot": 2
+              },
+              {
+                "angle": 2.25647115707397,
+                "muzzle": "(345.7904, 925.6232)",
+                "slot": 3
+              }
+            ]
+          },
+          "rear-right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 10.1314086914062,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (242.918, 844.3458), S: (124.9241, 99.02435)]",
+            "muzzles": [
+              {
+                "angle": -2.34565687179565,
+                "muzzle": "(273.2994, 889.6276)",
+                "slot": 0
+              },
+              {
+                "angle": -2.39640593528748,
+                "muzzle": "(318.968, 882.0076)",
+                "slot": 1
+              },
+              {
+                "angle": -2.32447147369385,
+                "muzzle": "(300.0033, 933.5015)",
+                "slot": 2
+              },
+              {
+                "angle": -2.40875506401062,
+                "muzzle": "(361.7281, 926.8391)",
+                "slot": 3
+              }
+            ]
+          },
+          "right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 19.167236328125,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (242.918, 844.3458), S: (123.4093, 99.02435)]",
+            "muzzles": [
+              {
+                "angle": -1.59162676334381,
+                "muzzle": "(277.3464, 879.9977)",
+                "slot": 0
+              },
+              {
+                "angle": -1.59327459335327,
+                "muzzle": "(317.5315, 874.0138)",
+                "slot": 1
+              },
+              {
+                "angle": -1.52469289302826,
+                "muzzle": "(305.1838, 919.4746)",
+                "slot": 2
+              },
+              {
+                "angle": -1.5220228433609,
+                "muzzle": "(365.371, 918.0911)",
+                "slot": 3
+              }
+            ]
+          }
+        },
+        "drone_modules": 1,
+        "effect_order_preserves_state": true,
+        "empty_slot_absent": true,
+        "fixture": "synthetic-full-loadout",
+        "formation_inside_battle": true,
+        "hull_modules": 3,
+        "live_aim_limit_unchanged": true,
+        "live_projectile_keys": [
+          "longLaser",
+          "laser",
+          "missile"
+        ],
+        "presentation_edit_preserves_state": true,
+        "presentation_preserves_rng": true,
+        "presentation_preserves_state": true,
+        "reference_height": 99.024354,
+        "render_surface": "(1335, 859)",
+        "restored_count": 4,
+        "save_enabled": false,
+        "ship": "Destroyer",
+        "silhouette_protection": false,
+        "slots": [
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "laser",
+            "mount": "(-1.32, 0.56, -0.75)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 0
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(1.32, 0.56, -0.75)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 1
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "cannon",
+            "mount": "(0.0, 0.56, 1.6)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 2
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 3
+          }
+        ],
+        "switch_roundtrip": true,
+        "turn_minimum_gap": 5.1368408203125,
+        "turn_overlaps": [],
+        "unchanged_loadout_preserves_nodes": true,
+        "window": "(1335, 859)"
+      }
+    },
+    "Cruiser": {
+      "triangles": 6576,
+      "mesh_nodes": 4,
+      "materials": 6,
+      "textures": 0,
+      "glb_bytes": 245288,
+      "glb_sha256": "9fde8b38ea99bf4f84886afb603def670301f635242e109b7b899f78bb75d4a3",
+      "hull_height_physical_px": 97.697,
+      "facts": {
+        "all_empty_removes_carriers": true,
+        "battle_logical": "(572.0, 960.0)",
+        "battle_physical": "(391.1988, 656.5574)",
+        "combined_footprint_front": "[P: (211.4482, 800.471), S: (189.4622, 142.85)]",
+        "diagnostic_aim_override": true,
+        "directions": {
+          "front": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 16.5090179443359,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (211.4482, 800.471), S: (189.4622, 142.85)]",
+            "muzzles": [
+              {
+                "angle": 0.0,
+                "muzzle": "(286.0, 813.8501)",
+                "slot": 0
+              },
+              {
+                "angle": -0.0701263099908829,
+                "muzzle": "(236.956, 862.8467)",
+                "slot": 1
+              },
+              {
+                "angle": 0.0701263099908829,
+                "muzzle": "(326.3826, 849.4858)",
+                "slot": 2
+              },
+              {
+                "angle": 0.0,
+                "muzzle": "(286.0, 899.4994)",
+                "slot": 3
+              },
+              {
+                "angle": 0.156804442405701,
+                "muzzle": "(377.8344, 896.8688)",
+                "slot": 4
+              }
+            ]
+          },
+          "left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 16.4626865386963,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (211.4482, 800.471), S: (189.4622, 142.85)]",
+            "muzzles": [
+              {
+                "angle": 1.64092266559601,
+                "muzzle": "(267.4657, 833.7319)",
+                "slot": 0
+              },
+              {
+                "angle": 1.57079637050629,
+                "muzzle": "(232.6391, 882.2789)",
+                "slot": 1
+              },
+              {
+                "angle": 1.57079637050629,
+                "muzzle": "(302.9939, 874.575)",
+                "slot": 2
+              },
+              {
+                "angle": 1.50067007541656,
+                "muzzle": "(268.8218, 915.5132)",
+                "slot": 3
+              },
+              {
+                "angle": 1.52710664272308,
+                "muzzle": "(376.0025, 911.2176)",
+                "slot": 4
+              }
+            ]
+          },
+          "rear-left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 0.0,
+              "projected_bounds_overlaps": [
+                [
+                  2,
+                  3
+                ]
+              ]
+            },
+            "combined_footprint": "[P: (211.4482, 800.471), S: (190.0723, 142.85)]",
+            "muzzles": [
+              {
+                "angle": 2.40089750289917,
+                "muzzle": "(273.4622, 846.1422)",
+                "slot": 0
+              },
+              {
+                "angle": 2.40528321266174,
+                "muzzle": "(242.0312, 888.0591)",
+                "slot": 1
+              },
+              {
+                "angle": 2.31149125099182,
+                "muzzle": "(309.5835, 891.5469)",
+                "slot": 2
+              },
+              {
+                "angle": 2.30710577964783,
+                "muzzle": "(273.2404, 928.2844)",
+                "slot": 3
+              },
+              {
+                "angle": 2.22255611419678,
+                "muzzle": "(382.1328, 916.0237)",
+                "slot": 4
+              }
+            ]
+          },
+          "rear-right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 2.81777954101562,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (211.4482, 800.471), S: (190.0411, 142.85)]",
+            "muzzles": [
+              {
+                "angle": -2.40089750289917,
+                "muzzle": "(298.5378, 846.1422)",
+                "slot": 0
+              },
+              {
+                "angle": -2.31149125099182,
+                "muzzle": "(257.3311, 876.4581)",
+                "slot": 1
+              },
+              {
+                "angle": -2.40528321266174,
+                "muzzle": "(345.0352, 893.2106)",
+                "slot": 2
+              },
+              {
+                "angle": -2.30710577964783,
+                "muzzle": "(298.7596, 928.2844)",
+                "slot": 3
+              },
+              {
+                "angle": -2.44573926925659,
+                "muzzle": "(396.7039, 908.2466)",
+                "slot": 4
+              }
+            ]
+          },
+          "right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 18.4102153778076,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (211.4482, 800.471), S: (189.4622, 142.85)]",
+            "muzzles": [
+              {
+                "angle": -1.64092266559601,
+                "muzzle": "(304.5343, 833.7319)",
+                "slot": 0
+              },
+              {
+                "angle": -1.57079637050629,
+                "muzzle": "(255.0711, 866.8711)",
+                "slot": 1
+              },
+              {
+                "angle": -1.57079637050629,
+                "muzzle": "(353.2959, 874.575)",
+                "slot": 2
+              },
+              {
+                "angle": -1.50067007541656,
+                "muzzle": "(303.1782, 915.5132)",
+                "slot": 3
+              },
+              {
+                "angle": -1.50973129272461,
+                "muzzle": "(394.7065, 898.1298)",
+                "slot": 4
+              }
+            ]
+          }
+        },
+        "drone_modules": 1,
+        "effect_order_preserves_state": true,
+        "empty_slot_absent": true,
+        "fixture": "synthetic-full-loadout",
+        "formation_inside_battle": true,
+        "hull_modules": 4,
+        "live_aim_limit_unchanged": true,
+        "live_projectile_keys": [
+          "longLaser",
+          "laser",
+          "cannon",
+          "missile"
+        ],
+        "presentation_edit_preserves_state": true,
+        "presentation_preserves_rng": true,
+        "presentation_preserves_state": true,
+        "reference_height": 142.84998,
+        "render_surface": "(1335, 859)",
+        "restored_count": 5,
+        "save_enabled": false,
+        "ship": "Cruiser",
+        "silhouette_protection": false,
+        "slots": [
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "laser",
+            "mount": "(0.0, 0.56, -1.86)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 0
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(-1.86, 0.56, 0.0)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 1
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "cannon",
+            "mount": "(1.86, 0.56, 0.0)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 2
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(0.0, 0.56, 1.86)",
+            "mount_index": 3,
+            "muzzle_child_of_pivot": true,
+            "slot": 3
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 4
+          }
+        ],
+        "switch_roundtrip": true,
+        "turn_minimum_gap": 0.0,
+        "turn_overlaps": [
+          {
+            "frame": 104,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 105,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 106,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 107,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 108,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 109,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 110,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 111,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 112,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 113,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 114,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 115,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 116,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "frame": 117,
+            "slots": [
+              [
+                2,
+                3
+              ]
+            ]
+          }
+        ],
+        "unchanged_loadout_preserves_nodes": true,
+        "window": "(1335, 859)"
+      }
+    },
+    "Battleship": {
+      "triangles": 6240,
+      "mesh_nodes": 4,
+      "materials": 6,
+      "textures": 0,
+      "glb_bytes": 236836,
+      "glb_sha256": "609a0e151b46a13ce295c110f75508bef5ece58f692b37d01ee5be295fb84ae5",
+      "hull_height_physical_px": 108.339,
+      "facts": {
+        "all_empty_removes_carriers": true,
+        "battle_logical": "(572.0, 960.0)",
+        "battle_physical": "(391.1988, 656.5574)",
+        "combined_footprint_front": "[P: (152.915, 787.0151), S: (266.17, 158.4097)]",
+        "diagnostic_aim_override": true,
+        "directions": {
+          "front": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 27.7066040039062,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (152.915, 787.0151), S: (266.17, 158.4097)]",
+            "muzzles": [
+              {
+                "angle": -0.0590637661516666,
+                "muzzle": "(253.6979, 813.0607)",
+                "slot": 0
+              },
+              {
+                "angle": 0.0590637661516666,
+                "muzzle": "(310.2935, 821.6765)",
+                "slot": 1
+              },
+              {
+                "angle": -0.0528712719678879,
+                "muzzle": "(253.9544, 872.3359)",
+                "slot": 2
+              },
+              {
+                "angle": 0.0528712719678879,
+                "muzzle": "(318.5081, 881.077)",
+                "slot": 3
+              },
+              {
+                "angle": -0.189904272556305,
+                "muzzle": "(164.6549, 860.2368)",
+                "slot": 4
+              },
+              {
+                "angle": 0.189904272556305,
+                "muzzle": "(399.28, 856.118)",
+                "slot": 5
+              }
+            ]
+          },
+          "left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 31.4379272460938,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (152.915, 787.0151), S: (266.17, 158.4097)]",
+            "muzzles": [
+              {
+                "angle": 1.62944614887238,
+                "muzzle": "(232.0149, 834.7347)",
+                "slot": 0
+              },
+              {
+                "angle": 1.62325298786163,
+                "muzzle": "(307.5958, 842.6732)",
+                "slot": 1
+              },
+              {
+                "angle": 1.51214647293091,
+                "muzzle": "(224.7746, 898.4304)",
+                "slot": 2
+              },
+              {
+                "angle": 1.51833951473236,
+                "muzzle": "(300.5316, 899.0611)",
+                "slot": 3
+              },
+              {
+                "angle": 1.56045603752136,
+                "muzzle": "(159.234, 878.8318)",
+                "slot": 4
+              },
+              {
+                "angle": 1.56381344795227,
+                "muzzle": "(386.3282, 871.6855)",
+                "slot": 5
+              }
+            ]
+          },
+          "rear-left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 22.1146240234375,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (152.3117, 787.0151), S: (268.0939, 158.4097)]",
+            "muzzles": [
+              {
+                "angle": 2.43027400970459,
+                "muzzle": "(239.0992, 849.0673)",
+                "slot": 0
+              },
+              {
+                "angle": 2.35593581199646,
+                "muzzle": "(316.7677, 848.2983)",
+                "slot": 1
+              },
+              {
+                "angle": 2.35649466514587,
+                "muzzle": "(232.8637, 919.6932)",
+                "slot": 2
+              },
+              {
+                "angle": 2.28215622901917,
+                "muzzle": "(305.1152, 912.4667)",
+                "slot": 3
+              },
+              {
+                "angle": 2.49815273284912,
+                "muzzle": "(169.1818, 884.4018)",
+                "slot": 4
+              },
+              {
+                "angle": 2.23682355880737,
+                "muzzle": "(389.74, 881.6619)",
+                "slot": 5
+              }
+            ]
+          },
+          "rear-right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 15.7904052734375,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (152.196, 787.0151), S: (269.0886, 158.4097)]",
+            "muzzles": [
+              {
+                "angle": -2.35593581199646,
+                "muzzle": "(266.9923, 848.03)",
+                "slot": 0
+              },
+              {
+                "angle": -2.43027400970459,
+                "muzzle": "(334.0357, 837.3591)",
+                "slot": 1
+              },
+              {
+                "angle": -2.28215622901917,
+                "muzzle": "(273.5152, 918.1815)",
+                "slot": 2
+              },
+              {
+                "angle": -2.35649466514587,
+                "muzzle": "(332.9487, 913.5018)",
+                "slot": 3
+              },
+              {
+                "angle": -2.23682355880737,
+                "muzzle": "(182.2959, 872.606)",
+                "slot": 4
+              },
+              {
+                "angle": -2.49815273284912,
+                "muzzle": "(411.8727, 884.5704)",
+                "slot": 5
+              }
+            ]
+          },
+          "right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 21.0524291992188,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (152.915, 787.0151), S: (266.2994, 158.4097)]",
+            "muzzles": [
+              {
+                "angle": -1.62325298786163,
+                "muzzle": "(272.9669, 834.6079)",
+                "slot": 0
+              },
+              {
+                "angle": -1.62944614887238,
+                "muzzle": "(332.3694, 825.7697)",
+                "slot": 1
+              },
+              {
+                "angle": -1.51833951473236,
+                "muzzle": "(280.2097, 898.6021)",
+                "slot": 2
+              },
+              {
+                "angle": -1.51214647293091,
+                "muzzle": "(338.4871, 898.9435)",
+                "slot": 3
+              },
+              {
+                "angle": -1.56381344795227,
+                "muzzle": "(180.055, 864.5819)",
+                "slot": 4
+              },
+              {
+                "angle": -1.56045603752136,
+                "muzzle": "(418.259, 871.6319)",
+                "slot": 5
+              }
+            ]
+          }
+        },
+        "drone_modules": 2,
+        "effect_order_preserves_state": true,
+        "empty_slot_absent": true,
+        "fixture": "synthetic-full-loadout",
+        "formation_inside_battle": true,
+        "hull_modules": 4,
+        "live_aim_limit_unchanged": true,
+        "live_projectile_keys": [
+          "longLaser",
+          "laser",
+          "cannon",
+          "missile"
+        ],
+        "presentation_edit_preserves_state": true,
+        "presentation_preserves_rng": true,
+        "presentation_preserves_state": true,
+        "reference_height": 158.409678375,
+        "render_surface": "(1335, 859)",
+        "restored_count": 6,
+        "save_enabled": false,
+        "ship": "Battleship",
+        "silhouette_protection": false,
+        "slots": [
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "laser",
+            "mount": "(-1.34, 0.6, -1.33)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 0
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(1.34, 0.6, -1.33)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 1
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "cannon",
+            "mount": "(-1.34, 0.6, 1.33)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 2
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(1.34, 0.6, 1.33)",
+            "mount_index": 3,
+            "muzzle_child_of_pivot": true,
+            "slot": 3
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 4
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 5
+          }
+        ],
+        "switch_roundtrip": true,
+        "turn_minimum_gap": 14.8058166503906,
+        "turn_overlaps": [],
+        "unchanged_loadout_preserves_nodes": true,
+        "window": "(1335, 859)"
+      }
+    },
+    "Heavy_Battleship": {
+      "triangles": 8612,
+      "mesh_nodes": 5,
+      "materials": 6,
+      "textures": 0,
+      "glb_bytes": 311452,
+      "glb_sha256": "db0fb37147f254436ff503eff83bb8e33c97d409231151c0d3b908e1d33aaab2",
+      "hull_height_physical_px": 145.759,
+      "facts": {
+        "all_empty_removes_carriers": true,
+        "battle_logical": "(572.0, 960.0)",
+        "battle_physical": "(391.1988, 656.5574)",
+        "combined_footprint_front": "[P: (102.3284, 429.6123), S: (365.7842, 333.1968)]",
+        "diagnostic_aim_override": true,
+        "directions": {
+          "front": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 33.5655975341797,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (102.3284, 429.6123), S: (365.7842, 333.1968)]",
+            "muzzles": [
+              {
+                "angle": 0.0,
+                "muzzle": "(286.0, 536.3289)",
+                "slot": 0
+              },
+              {
+                "angle": -0.117337621748447,
+                "muzzle": "(209.133, 594.8464)",
+                "slot": 1
+              },
+              {
+                "angle": 0.117337621748447,
+                "muzzle": "(341.745, 597.3362)",
+                "slot": 2
+              },
+              {
+                "angle": -0.0638992562890053,
+                "muzzle": "(234.2767, 675.4155)",
+                "slot": 3
+              },
+              {
+                "angle": 0.0638992562890053,
+                "muzzle": "(316.4985, 676.7736)",
+                "slot": 4
+              },
+              {
+                "angle": 1.57079637050629,
+                "muzzle": "(286.0, 430.6632)",
+                "slot": 5
+              },
+              {
+                "angle": -2.37171983718872,
+                "muzzle": "(430.8869, 701.6879)",
+                "slot": 6
+              },
+              {
+                "angle": -0.781750321388245,
+                "muzzle": "(137.6251, 709.6841)",
+                "slot": 7
+              }
+            ]
+          },
+          "left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 23.9565029144287,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (102.3284, 429.6313), S: (365.7842, 333.1779)]",
+            "muzzles": [
+              {
+                "angle": 1.68960738182068,
+                "muzzle": "(260.5338, 565.0159)",
+                "slot": 0
+              },
+              {
+                "angle": 1.61238503456116,
+                "muzzle": "(202.855, 622.7355)",
+                "slot": 1
+              },
+              {
+                "angle": 1.60391163825989,
+                "muzzle": "(338.997, 622.6078)",
+                "slot": 2
+              },
+              {
+                "angle": 1.46730470657349,
+                "muzzle": "(227.4027, 700.5228)",
+                "slot": 3
+              },
+              {
+                "angle": 1.48079705238342,
+                "muzzle": "(311.7244, 700.7446)",
+                "slot": 4
+              },
+              {
+                "angle": -2.84560132026672,
+                "muzzle": "(266.9012, 456.4546)",
+                "slot": 5
+              },
+              {
+                "angle": -1.14238357543945,
+                "muzzle": "(408.1433, 726.4683)",
+                "slot": 6
+              },
+              {
+                "angle": 0.794572353363037,
+                "muzzle": "(113.8186, 725.0148)",
+                "slot": 7
+              }
+            ]
+          },
+          "rear-left": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 11.5257110595703,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (102.3284, 428.0015), S: (365.7842, 334.8076)]",
+            "muzzles": [
+              {
+                "angle": 2.42977714538574,
+                "muzzle": "(269.2471, 581.3953)",
+                "slot": 0
+              },
+              {
+                "angle": 2.46148276329041,
+                "muzzle": "(216.4133, 630.1918)",
+                "slot": 1
+              },
+              {
+                "angle": 2.30978965759277,
+                "muzzle": "(349.8375, 629.7549)",
+                "slot": 2
+              },
+              {
+                "angle": 2.33638906478882,
+                "muzzle": "(240.1075, 709.9404)",
+                "slot": 3
+              },
+              {
+                "angle": 2.24352097511292,
+                "muzzle": "(322.6169, 709.5093)",
+                "slot": 4
+              },
+              {
+                "angle": -2.18882322311401,
+                "muzzle": "(274.4305, 466.9041)",
+                "slot": 5
+              },
+              {
+                "angle": -0.482955008745193,
+                "muzzle": "(411.9286, 744.9691)",
+                "slot": 6
+              },
+              {
+                "angle": 1.87781870365143,
+                "muzzle": "(120.5114, 744.4837)",
+                "slot": 7
+              }
+            ]
+          },
+          "rear-right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 11.5256958007812,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (102.3284, 428.0015), S: (365.7842, 334.8076)]",
+            "muzzles": [
+              {
+                "angle": -2.42977714538574,
+                "muzzle": "(302.7529, 581.3953)",
+                "slot": 0
+              },
+              {
+                "angle": -2.30978965759277,
+                "muzzle": "(236.4876, 614.0345)",
+                "slot": 1
+              },
+              {
+                "angle": -2.46148276329041,
+                "muzzle": "(372.1228, 616.8167)",
+                "slot": 2
+              },
+              {
+                "angle": -2.24352097511292,
+                "muzzle": "(262.6357, 692.8749)",
+                "slot": 3
+              },
+              {
+                "angle": -2.33638906478882,
+                "muzzle": "(346.6307, 694.6065)",
+                "slot": 4
+              },
+              {
+                "angle": -0.95276927947998,
+                "muzzle": "(297.5695, 466.9041)",
+                "slot": 5
+              },
+              {
+                "angle": 1.25838959217072,
+                "muzzle": "(455.901, 752.4536)",
+                "slot": 6
+              },
+              {
+                "angle": -2.66812229156494,
+                "muzzle": "(150.5564, 739.3089)",
+                "slot": 7
+              }
+            ]
+          },
+          "right": {
+            "clearance": {
+              "minimum_gap_logical_pixels": 23.9565162658691,
+              "projected_bounds_overlaps": []
+            },
+            "combined_footprint": "[P: (102.3284, 429.6313), S: (366.0576, 333.1779)]",
+            "muzzles": [
+              {
+                "angle": -1.68960738182068,
+                "muzzle": "(311.4662, 565.0159)",
+                "slot": 0
+              },
+              {
+                "angle": -1.60391163825989,
+                "muzzle": "(233.7072, 601.3512)",
+                "slot": 1
+              },
+              {
+                "angle": -1.61238503456116,
+                "muzzle": "(370.0292, 601.4857)",
+                "slot": 2
+              },
+              {
+                "angle": -1.48079705238342,
+                "muzzle": "(258.3641, 679.5624)",
+                "slot": 3
+              },
+              {
+                "angle": -1.46730470657349,
+                "muzzle": "(342.4001, 679.3683)",
+                "slot": 4
+              },
+              {
+                "angle": -0.295991122722626,
+                "muzzle": "(305.0988, 456.4546)",
+                "slot": 5
+              },
+              {
+                "angle": 2.33902812004089,
+                "muzzle": "(465.5778, 724.054)",
+                "slot": 6
+              },
+              {
+                "angle": -2.01018571853638,
+                "muzzle": "(153.153, 726.6714)",
+                "slot": 7
+              }
+            ]
+          }
+        },
+        "drone_modules": 3,
+        "effect_order_preserves_state": true,
+        "empty_slot_absent": true,
+        "fixture": "synthetic-full-loadout",
+        "formation_inside_battle": true,
+        "hull_modules": 5,
+        "live_aim_limit_unchanged": true,
+        "live_projectile_keys": [
+          "longLaser",
+          "laser",
+          "missile"
+        ],
+        "presentation_edit_preserves_state": true,
+        "presentation_preserves_rng": true,
+        "presentation_preserves_state": true,
+        "reference_height": 213.125347903448,
+        "render_surface": "(1335, 859)",
+        "restored_count": 8,
+        "save_enabled": false,
+        "ship": "Heavy_Battleship",
+        "silhouette_protection": false,
+        "slots": [
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "laser",
+            "mount": "(0.0, 0.61, -2.29)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 0
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(-2.177919, 0.61, -0.707649)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 1
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(2.177919, 0.61, -0.707649)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 2
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(-1.346028, 0.61, 1.852649)",
+            "mount_index": 3,
+            "muzzle_child_of_pivot": true,
+            "slot": 3
+          },
+          {
+            "carrier": "hull",
+            "identity_transform": true,
+            "independent_aim_geometry": true,
+            "key": "missile",
+            "mount": "(1.346028, 0.61, 1.852649)",
+            "mount_index": 4,
+            "muzzle_child_of_pivot": true,
+            "slot": 4
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 0,
+            "muzzle_child_of_pivot": true,
+            "slot": 5
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "cannon",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 1,
+            "muzzle_child_of_pivot": true,
+            "slot": 6
+          },
+          {
+            "carrier": "drone",
+            "identity_transform": false,
+            "independent_aim_geometry": true,
+            "key": "longLaser",
+            "mount": "(0.0, 0.46, 0.0)",
+            "mount_index": 2,
+            "muzzle_child_of_pivot": true,
+            "slot": 7
+          }
+        ],
+        "switch_roundtrip": true,
+        "turn_minimum_gap": 10.843804359436,
+        "turn_overlaps": [],
+        "unchanged_loadout_preserves_nodes": true,
+        "window": "(1335, 859)"
+      }
+    }
+  },
+  "baseline_cruiser_projected_overlap": {
+    "minimum_gap": 0.0,
+    "overlaps": [
+      {
+        "frame": 104,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 105,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 106,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 107,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 108,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 109,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 110,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 111,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 112,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 113,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 114,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 115,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 116,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "frame": 117,
+        "slots": [
+          [
+            2,
+            3
+          ]
+        ]
+      }
+    ]
+  },
+  "contracts_verified_unchanged": [
+    "all five WeaponMount names and transforms",
+    "all Engine and ExhaustSocket names and transforms",
+    "all five model_span values",
+    "drone offsets and display budgets",
+    "weapon_assets and weapon_contract metadata",
+    "drone GLB and source",
+    "all weapons including true twin missile Muzzle/Muzzle02 and TurretPivot",
+    "all shared main/game/ship_view scripts and VFX"
+  ]
+}
