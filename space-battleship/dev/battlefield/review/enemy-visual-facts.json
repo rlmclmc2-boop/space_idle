@@ -1,0 +1,348 @@
+{
+  "aliases": [
+    {
+      "canonical": "laser",
+      "key": "laser_mon",
+      "mode": "embedded",
+      "port": "(-0.118403, 7.406759)",
+      "table_row": true
+    },
+    {
+      "canonical": "cannon",
+      "key": "cannon-mon",
+      "mode": "embedded",
+      "port": "(-0.375714, 8.198998)",
+      "table_row": true
+    },
+    {
+      "canonical": "missile",
+      "key": "missile-mon",
+      "mode": "bay",
+      "port": "(0.098644, 6.344965)",
+      "table_row": true
+    },
+    {
+      "canonical": "longLaser",
+      "key": "longLaser-mon",
+      "mode": "embedded",
+      "port": "(0.406043, 8.531586)",
+      "table_row": true
+    },
+    {
+      "canonical": "missile",
+      "key": "missile_mon",
+      "mode": "bay",
+      "port": "(-0.028235, 6.257232)",
+      "table_row": false
+    }
+  ],
+  "failures": [],
+  "launches": [
+    {
+      "canonical": "laser",
+      "damage": 7.0,
+      "key": "laser_mon",
+      "muzzle_error": 0.000107895932160318,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 34.0,
+      "key": "laser_mon",
+      "muzzle_error": 0.000111085661046673,
+      "size": 2.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 68.0,
+      "key": "cannon-mon",
+      "muzzle_error": 0.000111085661046673,
+      "size": 2.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 14.0,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 7.0,
+      "key": "laser_mon",
+      "muzzle_error": 9.1552734375e-05,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 34.0,
+      "key": "laser_mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 2.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 1.75e+32,
+      "key": "laser_mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 1.75e+32,
+      "key": "laser_mon",
+      "muzzle_error": 0.000111085661046673,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 1,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 2,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 9.1552734375e-05,
+      "size": 6.0,
+      "slot": 3,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 4,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 5,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 6.0,
+      "slot": 6,
+      "speed": 560.0
+    },
+    {
+      "canonical": "cannon",
+      "damage": 1.75e+33,
+      "key": "cannon-mon",
+      "muzzle_error": 9.1552734375e-05,
+      "size": 6.0,
+      "slot": 7,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 1.75e+32,
+      "key": "laser_mon",
+      "muzzle_error": 9.1552734375e-05,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "laser",
+      "damage": 1.75e+32,
+      "key": "laser_mon",
+      "muzzle_error": 0.000111085661046673,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "missile",
+      "damage": 5.0,
+      "key": "missile-mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    },
+    {
+      "canonical": "missile",
+      "damage": 60.0,
+      "key": "missile_mon",
+      "muzzle_error": 0.0001068115234375,
+      "size": 1.0,
+      "slot": 0,
+      "speed": 560.0
+    }
+  ],
+  "max_flash_error_pixels": 0.000111085661046673,
+  "max_muzzle_error_pixels": 0.000111085661046673,
+  "passed": true,
+  "rows": [
+    {
+      "id": "1",
+      "logical_slots": 1,
+      "size": 2.0,
+      "visible_components": 1
+    },
+    {
+      "id": "2",
+      "logical_slots": 1,
+      "size": 2.0,
+      "visible_components": 1
+    },
+    {
+      "id": "3",
+      "logical_slots": 1,
+      "size": 1.0,
+      "visible_components": 1
+    },
+    {
+      "id": "4",
+      "logical_slots": 1,
+      "size": 1.0,
+      "visible_components": 1
+    },
+    {
+      "id": "5",
+      "logical_slots": 2,
+      "size": 3.0,
+      "visible_components": 2
+    },
+    {
+      "id": "6",
+      "logical_slots": 2,
+      "size": 3.0,
+      "visible_components": 2
+    },
+    {
+      "id": "7",
+      "logical_slots": 4,
+      "size": 4.0,
+      "visible_components": 3
+    },
+    {
+      "id": "8",
+      "logical_slots": 4,
+      "size": 4.0,
+      "visible_components": 3
+    },
+    {
+      "id": "9",
+      "logical_slots": 6,
+      "size": 5.0,
+      "visible_components": 4
+    },
+    {
+      "id": "10",
+      "logical_slots": 6,
+      "size": 5.0,
+      "visible_components": 4
+    },
+    {
+      "id": "11",
+      "logical_slots": 8,
+      "size": 6.0,
+      "visible_components": 4
+    },
+    {
+      "id": "12",
+      "logical_slots": 8,
+      "size": 6.0,
+      "visible_components": 4
+    }
+  ],
+  "enemy_attack_isolation_passed": true,
+  "base_attack_comparison": {
+    "cannon-mon": {
+      "shots_in_360_frames": 6,
+      "cd": 1.0,
+      "damage": 40.0,
+      "projectile_speed": 560.0
+    },
+    "laser_mon": {
+      "shots_in_360_frames": 11,
+      "cd": 0.5,
+      "damage": 20.0,
+      "projectile_speed": 560.0
+    },
+    "missile-mon": {
+      "shots_in_360_frames": 6,
+      "cd": 1.0,
+      "damage": 5.0,
+      "projectile_speed": 560.0
+    },
+    "missile_mon": {
+      "shots_in_360_frames": 6,
+      "cd": 1.0,
+      "damage": 60.0,
+      "projectile_speed": 560.0
+    }
+  },
+  "scope": "Visual-only explicit aliases, shared component/aperture pose and compact enemy launch cues. No game/database/table or player weapon changes.",
+  "screenshots": {
+    "small": {
+      "stage": 3,
+      "group_index": 3,
+      "configured_group": 3,
+      "sizes": [
+        1,
+        2
+      ]
+    },
+    "large": {
+      "stage": 42,
+      "group_index": 4,
+      "configured_group": 127,
+      "sizes": [
+        1,
+        6
+      ]
+    }
+  },
+  "fixture_note": "Screenshots use an isolated unlocked QA player profile. Large-case player armour module level is 230. Enemy equipment/HP/attack fields are unchanged configured values. Current mon rows equip laser_mon and cannon-mon only. Missile aliases are separately exercised through their actual equipment rows/legacy fallback, not inserted in production enemies."
+}

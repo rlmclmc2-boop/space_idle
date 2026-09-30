@@ -793,8 +793,14 @@ func beep(frequency: float) -> void:
 	audio.stream = wav
 	audio.play()
 
+# Exact equipment-table IDs, plus missile_mon's existing legacy fallback contract.
+const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
+
+func weapon_visual_key(key:String)->String:
+	return str(ENEMY_VISUAL_ALIASES.get(key,key))
+
 func weapon_key(shot: Dictionary) -> String:
-	return str(shot.key).replace("_mon", "").replace("-mon", "")
+	return weapon_visual_key(str(shot.key))
 
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
@@ -838,7 +844,7 @@ func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
 
 func weapon_visual_profile(key: String) -> Dictionary:
-	return visual_config.get("weapons",{}).get(key,{})
+	return visual_config.get("weapons",{}).get(weapon_visual_key(key),{})
 
 func weapon_visual_glow(key: String, hostile: bool) -> Color:
 	var faction := "enemy" if hostile else "ally"
@@ -960,26 +966,41 @@ func shot_mount(shot: Dictionary) -> int:
 			closest = index
 	return closest
 
+func enemy_render_angle(enemy:Dictionary)->float:
+	var pose:=enemy_pose(enemy)
+	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+
+func enemy_component_pose(enemy:Dictionary,component)->Dictionary:
+	var point:Dictionary=component.hardpoint
+	var width:=enemy_render_width(enemy)
+	var hull_angle:=enemy_render_angle(enemy)
+	var normalized:Array=point.pos
+	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
+	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
+	var module_width:=width*0.42*class_scale
+	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(point.get("base_rotation",0)))
+	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
+	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
+	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
+
 func enemy_port_offset(enemy: Dictionary, index: int) -> Vector2:
-	var component = enemy_component_for_slot(enemy,index)
-	var point: Dictionary = component.hardpoint if component!=null else hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
+	var component=enemy_component_for_slot(enemy,index)
+	if component!=null:return enemy_component_pose(enemy,component).muzzle
+	# Unknown external configurations keep the previous logical mount fallback.
+	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
 	if point.is_empty():return Vector2.ZERO
-	var width := enemy_render_width(enemy)
-	var normalized: Array = point.pos
-	var hull_angle := PI+float(enemy_pose(enemy).rotation)
-	var origin := Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(hull_angle)
-	var profile: Dictionary = component.profile if component!=null else {}
-	var muzzle: Array = profile.get("muzzle",[[0.22,0]])
-	var class_scale := float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-	var reach := width*0.42*class_scale*float(muzzle[0][0])
-	return origin+Vector2(reach,0).rotated(PI/2+float(enemy_pose(enemy).rotation)+enemy_weapon_angle(enemy,index))
+	var width:=enemy_render_width(enemy)
+	var angle:=float(enemy_pose(enemy).rotation)
+	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
+	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
+	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
 
 func enemy_weapon_angle(enemy: Dictionary, index: int) -> float:
 	var component = enemy_component_for_slot(enemy,index)
 	if component==null:return 0.0
 	var role: String = component.mode()
 	if role!="main" and role!="secondary":return 0.0
-	var pose_angle := float(enemy_pose(enemy).rotation)
+	var pose_angle := enemy_render_angle(enemy)
 	var desired := wrapf((player_render_position()-enemy_render_position(enemy)).angle()-PI/2-pose_angle,-PI,PI)
 	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
 	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
@@ -2681,17 +2702,25 @@ func draw_player_weapon_components(ship_key: String, pos: Vector2, scale_value: 
 			recoil=maxf(recoil,8.0*clampf(float(pose.get("recoil",0.0))/0.13,0,1)/scale_value)
 		draw_weapon_component(component,pos+point.rotated(hull_angle)*scale_value,angle,width,scale_value,pulse,recoil if component.mode()=="main" else 0.0,railgun_component_charge(component))
 
-func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, hull_angle: float, hull_width: float, under_hull: bool) -> void:
+func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
 		if (int(component.hardpoint.get("z",1))<=0)!=under_hull:continue
-		var normalized: Array = component.hardpoint.pos
-		var point := Vector2(float(normalized[0])*hull_width,float(normalized[1])*hull_width*2.0).rotated(PI+hull_angle)
-		var class_scale := float({"small":0.7,"medium":0.9,"large":1.1}.get(str(component.hardpoint.get("visual_size_class","small")),0.7))
-		var angle := PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(component.hardpoint.get("base_rotation",0)))
-		var pulse := 0.0
-		for slot in component.slots:
-			pulse=maxf(pulse,clampf(1.0-(fx_time-float(enemy_pose(enemy).get("rail_fired_"+str(slot),-100.0)))/0.12,0.0,1.0))
-		draw_weapon_component(component,pos+point,angle,hull_width*0.42*class_scale,1.0,pulse,0.0,railgun_component_charge(component,enemy))
+		var pose:=enemy_component_pose(enemy,component)
+		draw_surface.draw_set_transform(pos+Vector2(pose.origin),float(pose.angle))
+		var width:float=pose.width
+		var port:Vector2=pose.port
+		var tint:=Color("b29b86")
+		# Compact warm armor and an explicit aperture, including embedded/bay mounts.
+		# Geometry terminates at the same local port sampled by projectile launches.
+		if component.mode()=="bay":
+			draw_surface.draw_rect(Rect2(-width*0.26,-width*0.21,width*0.52,width*0.42),Color("292f34"))
+			draw_surface.draw_line(Vector2(-width*0.13,-width*0.12),port,tint,maxf(1.0,width*0.10),true)
+		else:
+			var thickness:=width*(0.18 if component.mode()=="embedded" else 0.29)
+			draw_surface.draw_rect(Rect2(-width*0.22,-thickness*0.5,width*0.40,thickness),Color("485159"))
+			draw_surface.draw_line(Vector2(-width*0.10,0),port,tint,maxf(1.0,width*0.12),true)
+		draw_surface.draw_circle(port,maxf(0.65,width*0.06),Color("e2a36b"))
+		draw_surface.draw_set_transform(Vector2.ZERO)
 
 func draw_engine_wake(position: Vector2) -> void:
 	var tail := position.y+player_visible_tail()

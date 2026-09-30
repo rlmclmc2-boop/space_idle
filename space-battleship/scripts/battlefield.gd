@@ -258,6 +258,11 @@ func _draw_muzzle_cues() -> void:
 		pulse_layer.draw_circle(point,radius*(0.3+progress),Color(Color("d9a477"),maxf(0.0,0.28-age*1.5)))
 		if age<0.22:pulse_layer.draw_circle(point,radius*(0.5-age*1.5),Color(Color("f5e4bd"),1.0-age/0.22))
 	for event in enemy_impacts:
+		if event.get("kind","")=="fire":
+			var age:=fx_time-float(event.born)
+			var point:=battle_point(event.position)
+			pulse_layer.draw_line(point,point+Vector2(event.direction)*4.0,Color(Color("e2a36b"),maxf(0.0,1.0-age/0.12)),2.0,true)
+			continue
 		ENEMY_VFX.impact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),event.key)
 	if pulse_vfx_enabled:
 		for event in pulse_events:
@@ -434,6 +439,9 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 	# Preserve the original launch projection/target/age/trail bookkeeping.
 	# Only the legacy flash/smoke calls are suppressed inside this visual context.
 	super.weapon_launch(shot,spread)
+	if enemy_launch_context and not fast_mode_enabled():
+		var visual:=projectile_visual(shot)
+		enemy_impacts.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"key":weapon_key(shot),"born":fx_time})
 	if pulse_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
@@ -634,8 +642,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
 	var dimensions:=Vector2(width,width*2.0)
-	var pose:=enemy_pose(enemy)
-	var angle:=float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+	var angle:=enemy_render_angle(enemy)
 	var light:=enemy_hull_light(enemy)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
