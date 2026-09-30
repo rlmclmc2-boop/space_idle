@@ -1,6 +1,7 @@
 {
   "scope": "asset-only; original gameplay and render sizes unchanged",
   "source_mon_xlsx_matches_runtime_sizes": true,
+  "refinement": "normal winding; broad sloped armor; recessed command wells; prototype key pre-rotated for runtime PI; camera and manifest unchanged",
   "ships": [
     {
       "id": "enemy_1",
@@ -20,67 +21,67 @@
         0.949999988079071,
         2.640000104904175
       ],
-      "meshes": 12
+      "meshes": 14
     },
     {
       "id": "enemy_2",
       "alpha_bbox": [
         122,
-        446,
+        444,
         765,
         1392
       ],
       "glb_bounds_min": [
         -1.9500000476837158,
         -0.25,
-        -2.6807327270507812
+        -2.690255641937256
       ],
       "glb_bounds_max": [
         1.9500000476837158,
         0.949999988079071,
         3.069999933242798
       ],
-      "meshes": 15
+      "meshes": 18
     },
     {
       "id": "enemy_3",
       "alpha_bbox": [
         65,
         483,
-        821,
+        822,
         1324
       ],
       "glb_bounds_min": [
-        -2.2957334518432617,
+        -2.2984774112701416,
         -0.30000001192092896,
         -2.450000047683716
       ],
       "glb_bounds_max": [
-        2.2957334518432617,
+        2.2984774112701416,
         0.949999988079071,
         2.6500000953674316
       ],
-      "meshes": 14
+      "meshes": 18
     },
     {
       "id": "enemy_4",
       "alpha_bbox": [
         64,
-        393,
+        392,
         823,
         1381
       ],
       "glb_bounds_min": [
         -2.299999952316284,
         -0.30000001192092896,
-        -3
+        -3.005000114440918
       ],
       "glb_bounds_max": [
         2.299999952316284,
         0.949999988079071,
         3
       ],
-      "meshes": 17
+      "meshes": 21
     },
     {
       "id": "enemy_5",
@@ -100,7 +101,7 @@
         0.949999988079071,
         3.740000009536743
       ],
-      "meshes": 22
+      "meshes": 27
     },
     {
       "id": "enemy_6",
@@ -120,7 +121,7 @@
         0.949999988079071,
         3.869999885559082
       ],
-      "meshes": 23
+      "meshes": 30
     }
   ]
 }

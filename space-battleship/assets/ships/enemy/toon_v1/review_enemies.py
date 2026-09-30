@@ -20,12 +20,17 @@ for i,s in enumerate(M['ships']):
    ac=g['accessors'][pr['attributes']['POSITION']];mins.append(ac['min']);maxs.append(ac['max'])
  qa.append({'id':s['id'],'alpha_bbox':bb,'glb_bounds_min':[min(v[k] for v in mins) for k in range(3)],'glb_bounds_max':[max(v[k] for v in maxs) for k in range(3)],'meshes':len(g['meshes'])})
 board.save(Q/'six-ships-same-scale.png')
-# Real baseline screenshot: 390px battlefield. Composite ONLY into empty upper battlefield.
-bg=Image.open(project/'dev/toon_ship/review/full-window-front-clean.png').convert('RGBA');battle=bg.crop((0,0,390,bg.height))
+# Neutral background only: no obsolete player hull or inferred live integration.
+comparison=Image.new('RGB',(1020,690),'#101d29');dd=ImageDraw.Draw(comparison)
+dd.text((20,16),'ENEMY FLEET / unchanged top-down projection / neutral background',font=font,fill='#dfdfd9')
+dd.text((20,52),'3x display size - geometry, directional light, broad armor steps',font=font,fill='#a6b1ba')
 for i,s in enumerate(M['ships']):
- width=[40,44,48,55,58,62][i];im=Image.open(P/s['sprite']).resize((width,width*2),Image.Resampling.LANCZOS).transpose(Image.Transpose.ROTATE_180)
- x=[80,190,305,80,190,305][i];y=[205,205,205,365,365,365][i]
- battle.alpha_composite(im,(x-width//2,y-width));dd=ImageDraw.Draw(battle);dd.text((x-22,y+width+4),s['id'],font=font,fill='#daaf82')
-battle.save(Q/'battlefield-390px-composite.png')
-combined=Image.new('RGB',(1410,860),'#101d29');combined.paste(board,(0,100));combined.paste(battle,(1020,0));ImageDraw.Draw(combined).text((20,620),'Right: baseline game background + sprite composite, not a live integration capture.',font=font,fill='#b5c1ca');combined.save(Q/'enemy-fleet-review.png')
-(Q/'checks.json').write_text(json.dumps({'scope':'asset-only; original gameplay and render sizes unchanged','source_mon_xlsx_matches_runtime_sizes':True,'ships':qa},indent=2)+'\n')
+ width=[40,44,48,55,58,62][i]
+ source=Image.open(P/s['sprite']).transpose(Image.Transpose.ROTATE_180)
+ for scale,center_y in [(3,280),(1,555)]:
+  im=source.resize((width*scale,width*2*scale),Image.Resampling.LANCZOS)
+  comparison.paste(im,(i*170+85-im.width//2,center_y-im.height//2),im)
+ dd.text((i*170+20,650),s['id']+' / '+str(width)+'px',font=font,fill='#f7aa65')
+dd.text((20,450),'1x display size - 40 / 44 / 48 / 55 / 58 / 62px full canvas widths',font=font,fill='#a6b1ba')
+comparison.save(Q/'enemy-fleet-review.png')
+(Q/'checks.json').write_text(json.dumps({'scope':'asset-only; original gameplay and render sizes unchanged','source_mon_xlsx_matches_runtime_sizes':True,'refinement':'normal winding; broad sloped armor; recessed command wells; prototype key pre-rotated for runtime PI; camera and manifest unchanged','ships':qa},indent=2)+'\n')

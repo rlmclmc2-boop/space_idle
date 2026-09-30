@@ -1,3 +1,4 @@
+Baseline asset import check (c70c588); retained as history, not rerun for the bounded visual refinement.
 Godot 4.6.3 stable, isolated temporary project, headless gl_compatibility.
 All six GLBs imported and instantiated as PackedScene; exit code 0.
 GLB_OK enemy-scout-1slot children=12
