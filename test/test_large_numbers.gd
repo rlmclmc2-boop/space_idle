@@ -40,10 +40,10 @@ func _initialize() -> void:
 	db.data.hightech[key].tpCostBase=100
 	g.advance_hightech(1.0)
 	check(g.hightech_level(key)==1000000000000000000,"Flat cost bulk division")
-	check(NumberFormat.compact(1e20)=="1.00e+20","Threshold uses scientific notation")
+	check(NumberFormat.compact(1e20)=="100Qi","Shared ladder retains quantities below scientific threshold")
 	check(NumberFormat.precise(1e30)=="1.00e+30","Large precise display avoids int overflow")
 	check(not NumberFormat.compact(INF).is_empty(),"Infinity terminates")
-	check(NumberFormat.compact(1234)=="1.2K","Small formatting preserved")
+	check(NumberFormat.compact(1234)=="1.23K","Three significant digits")
 	for income in [9e19,1e20,2.612345e25,1e100]:
 		var row := {"para1":0.02}
 		var actual := g.format_description(row,"{过去一分钟的铁生成量*para1*lv,向上取整,不含自身}",185,0,income)
