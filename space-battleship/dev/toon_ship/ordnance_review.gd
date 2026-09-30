@@ -10,6 +10,9 @@ var after_only:=false
 var capture_mode:=""
 var first_difference:Dictionary={}
 var kind:="missile"
+var single_source:=false
+var durable_hp:=0.0
+var interrupt_target:=false
 var scene
 func _initialize()->void:call_deferred("run")
 func check(ok:bool,text:String)->void:
@@ -37,12 +40,16 @@ func capture(path:String)->void:
 func run()->void:
 	for arg in OS.get_cmdline_user_args():
 		if arg=="--prototype-beam-fixture":kind="beam"
+		if arg=="--prototype-mixed-fixture":kind="mixed"
+		if arg.begins_with("--prototype-single-weapon="):single_source=true
+		if arg.begins_with("--durable-target="):durable_hp=float(arg.trim_prefix("--durable-target="))
+		if arg=="--interrupt-target":interrupt_target=true
 		if arg=="--ordnance-after-only":after_only=true
 		if arg=="--ordnance-check-only":check_only=true
 		if arg.begins_with("--output="):output=arg.trim_prefix("--output=")
 	if output.is_empty():quit(1);return
 	root.size=Vector2i(1335,859)
-	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":"Heavy, eight "+kind+" weapons; no player save","gameplay":"ordinary deterministic combat progression; no altered CD/speed/hit/damage","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
+	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":"Heavy, "+("one module" if single_source else "eight modules")+" "+kind+"; initial target HP="+str(durable_hp)+" when nonzero; no player save","gameplay":"Both runs use current prototype mechanics; renderer-only comparison, not equivalence to old gameplay","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
 	var shared_profile:Dictionary={}
 	for mode in ["before","after"]:
 		capture_mode=mode
@@ -51,16 +58,25 @@ func run()->void:
 		if shared_profile.is_empty():shared_profile=scene.game.profile.duplicate(true)
 		# Fresh ordinary BattleGame per pass; shared profile and seed are explicit
 		# test inputs, never a player's save or altered balance configuration.
-		scene.game=BattleGame.new(scene.db,false)
+		scene.game=scene.create_battle_game(false)
 		scene.game.profile=shared_profile.duplicate(true)
 		scene.game.rng.seed=90317
 		scene.game.event.connect(scene.on_event)
 		scene.game.start(1,false);scene.game.distance=99.8
+		var fixture_target:Dictionary={}
+		if durable_hp>0:
+			scene.game.spawn_group()
+			if kind=="mixed":
+				for enemy in scene.game.enemies:enemy.hp=durable_hp;enemy.max_hp=durable_hp
+			else:
+				fixture_target=scene.game.targets()[0]
+				fixture_target.hp=durable_hp;fixture_target.max_hp=durable_hp
+				scene.game.enemies.clear();scene.game.enemies.append(fixture_target)
 		scene.fx_time=0.0;scene.demo_time=0.0;scene.clock=0.0
 		scene.game.paused=false;scene.build_ui()
 		scene.missile_vfx_enabled=(mode=="after")
 		scene.continuous_beam_enabled=(mode=="after")
-		var label:=Label.new();label.text=mode.to_upper()+" | MISSILE / CONTINUOUS BEAM | SYNTHETIC LOADOUT | REAL COMBAT, 30 Hz CAPTURE"
+		var label:=Label.new();label.text=mode.to_upper()+" | "+kind.to_upper()+" | SYNTHETIC "+("1 MODULE" if single_source else "8 MODULES")+" | TARGET HP "+str(durable_hp)+" | REAL TIMING"
 		label.position=Vector2(10,10);label.add_theme_font_size_override("font_size",18);scene.add_child(label)
 		var directory:=output.path_join(mode);DirAccess.make_dir_recursive_absolute(directory.path_join("frames"))
 		var peak:=0
@@ -77,10 +93,31 @@ func run()->void:
 		var prior:Dictionary={}
 		var tangent_error:=0.0
 		var previous_active:Dictionary={}
+		var beam_cycles:Dictionary={}
 		var first_beam_end:=-1
 		var maximum_end_particles:=0
+		var max_power:=0.0
+		var peak_power_samples:=0
+		var initial_target_death:=-1
+		var captured_frames:=0
+		var interrupted:=false
+		var viewport_origin_error:=0.0
 		for frame_index in FRAMES:
 			scene._process(DT)
+			if interrupt_target and not interrupted and not scene.game.missile_queue.is_empty():
+				scene.game.paused=true
+				var frozen_queue:=fingerprint(scene.game)
+				scene.game.tick(0.5)
+				check(frozen_queue==fingerprint(scene.game),"Pause must freeze pending ejection delays and projectile steering")
+				var origin_before:Vector2=scene._prototype_launch_pose(0,Vector2(286,120),0).position
+				root.size=Vector2i(1040,720);await process_frame
+				var origin_after:Vector2=scene._prototype_launch_pose(0,Vector2(286,120),0).position
+				viewport_origin_error=origin_before.distance_to(origin_after)
+				check(viewport_origin_error<0.001,"Viewport resize must not change canonical launch origin")
+				root.size=Vector2i(1335,859);await process_frame
+				scene.game.paused=false
+				for enemy in scene.game.enemies:enemy.hp=0
+				interrupted=true
 			for visual in scene.projectile_visuals:
 				if bool(visual.shot.hostile) or str(visual.shot.key)!="missile":continue
 				var serial:=int(visual.shot.get("serial",0))
@@ -98,9 +135,15 @@ func run()->void:
 					if movement.length_squared()>0.001:tangent_error=maxf(tangent_error,absf(angle_difference(float(visual.angle),movement.angle())))
 			var active:Dictionary={}
 			for shot in scene.game.projectiles:
-				if bool(shot.get("beam",false)) and not bool(shot.hostile) and scene.game.long_laser_valid(shot) and int(shot.ticks)>0:active[int(shot.serial)]=true
+				if bool(shot.get("beam",false)) and not bool(shot.hostile) and scene.game.long_laser_valid(shot) and int(shot.ticks)>0:
+					var serial:=int(shot.serial)
+					active[serial]=true
+					if not beam_cycles.has(serial):beam_cycles[serial]={"serial":serial,"first_active_frame":frame_index,"initial_power":float(scene.beam_style(shot).power),"full_frame":-1,"end_frame":-1}
+					if float(scene.beam_style(shot).power)>=0.999999 and int(beam_cycles[serial].full_frame)<0:beam_cycles[serial].full_frame=frame_index
 			for serial in previous_active:
-				if not active.has(serial) and first_beam_end<0:first_beam_end=frame_index
+				if not active.has(serial):
+					if first_beam_end<0:first_beam_end=frame_index
+					if beam_cycles.has(serial):beam_cycles[serial].end_frame=frame_index
 			previous_active=active
 			maximum_end_particles=maxi(maximum_end_particles,scene.particles.filter(func(p):return p.has("beam_end")).size())
 			var before_render:=fingerprint(scene.game)
@@ -113,37 +156,62 @@ func run()->void:
 				check(before_render==baseline[frame_index],"Gameplay differs from baseline at frame %d"%frame_index)
 			var shots:=0
 			for shot in scene.game.projectiles:
-				if not bool(shot.hostile) and str(shot.key)==("missile" if kind=="missile" else "longLaser"):
+				if not bool(shot.hostile) and (kind=="mixed" or str(shot.key)==("missile" if kind=="missile" else "longLaser")):
 					shots+=1
-					observed_slots[int(shot.get("mount",-1)) if kind=="beam" else int(scene.projectile_visual(shot).get("mount",-1))]=true
-					if kind=="beam":
+					observed_slots[int(shot.get("mount",-1)) if bool(shot.get("beam",false)) else int(scene.projectile_visual(shot).get("mount",-1))]=true
+					if bool(shot.get("beam",false)):
 						if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):beam_charge_frames+=1
 						elif int(shot.ticks)>0:
+							var power:float=scene.beam_style(shot).power
+							max_power=maxf(max_power,power)
+							if power>=0.999:peak_power_samples+=1
 							beam_active_frames+=1
 							if first_active_frame<0:first_active_frame=frame_index
 			if shots>peak:peak=shots;peak_frame=frame_index
 			if scene.missile_hit_count>0 and first_hit_frame<0:first_hit_frame=frame_index
 			await capture(directory.path_join("frames/frame-%04d.png"%frame_index))
 			readonly_ok=readonly_ok and before_render==fingerprint(scene.game)
+			captured_frames=frame_index+1
+			if not fixture_target.is_empty() and float(fixture_target.hp)<=0:
+				if initial_target_death<0:initial_target_death=frame_index
+				if frame_index>=initial_target_death+(36 if interrupt_target else 24):break
 		check(readonly_ok,"Drawing must not mutate gameplay")
-		check(observed_slots.has(0) and observed_slots.has(5),"Capture must contain both hull and moving-drone rail fire")
+		check(observed_slots.has(0) and (single_source or observed_slots.has(5)),"Capture must contain both hull and moving-drone rail fire")
 		if mode=="after" and kind=="missile":
-			check(scene.missile_fire_count>0 and scene.missile_hit_count>0,"Pulse launch and real impact events must both occur")
+			check(scene.missile_fire_count>0 and (interrupt_target or scene.missile_hit_count>0),"Missile launches and expected real impacts must occur")
 			check(scene.missile_origin_max_error<0.00001,"Launch origin must match actual projected moving-carrier muzzle")
 		if mode=="after" and kind=="missile":
 			check(tangent_error<0.00001,"Missile body follows actual rendered motion tangent")
-			check(baseline_losses>0,"Real combat must include missile target death while a missile remains in flight")
+			if not single_source:check(baseline_losses>0,"Real combat must include missile target death while a missile remains in flight")
 			check(baseline_loss_jump<0.001,"Target-loss presentation must not jump or fake retarget")
 		if kind=="beam":
 			check(beam_active_frames>0 and first_beam_end>=0,"Existing beams must start and end")
 			if mode=="after":check(maximum_end_particles==0,"Own sustained beams must disappear without legacy end fragments")
+			if durable_hp>0:check(max_power>=0.999 and peak_power_samples>=15,"Durable fixture must show actual complete ramp and hold peak")
+		if kind=="mixed" and mode=="after":
+			check(scene.missile_fire_count>0 and scene.rail_fire_count>0 and scene.pulse_fire_count>0 and beam_active_frames>0,"Mixed fixture must exercise all four actual weapon families")
+		if kind in ["missile","mixed"]:
+			check(scene.game.maximum_turn_step_error<0.00001,"Actual missile steering respects its turn-rate bound")
+			check(scene.game.hit_records.all(func(hit):return bool(hit.target_alive)),"No missile may damage an already dead target")
+			if single_source:
+				var entry:Dictionary=scene.game.slot_entry("weapons",0)
+				var expected:=int(entry.get("attacks",0))*int(scene.db.equip("missile",int(entry.level)).para1)
+				check(scene.game.launch_records.size()+scene.game.missile_queue.size()+scene.game.cancelled_ejections==expected,"Every committed salvo round is launched, queued or explicitly cancelled")
+				for index in range(1,scene.game.launch_records.size()):
+					var shot:Dictionary=scene.game.launch_records[index]
+					var previous:Dictionary=scene.game.launch_records[index-1]
+					if int(shot.ordinal)>0:check(float(shot.time)-float(previous.time)>=0.0999,"Actual ejections must be staggered, not simultaneous")
+		if interrupt_target:
+			check(interrupted and scene.game.missile_queue.is_empty(),"Pending-target-loss fixture must finish committed ejections")
+			check(scene.game.launch_records.any(func(record):return not bool(record.target_alive)),"Queued rounds must explicitly handle a dead target at ejection")
+			check(scene.game.hit_records.is_empty(),"No ghost hit after forced target loss")
 		# Pause retains event lifetime and position without new simulation updates.
 		scene.game.paused=true
 		var frozen:=fingerprint(scene.game)
 		var old_time:float=scene.fx_time
 		scene._process(DT)
 		check(frozen==fingerprint(scene.game) and is_equal_approx(old_time,scene.fx_time),"Pause must freeze gameplay and effect clock")
-		report.runs.append({"mode":mode,"kind":kind,"first_target_loss_frame":first_loss_frame,"first_beam_active_frame":first_active_frame,"first_beam_end_frame":first_beam_end,"maximum_beam_end_particles":maximum_end_particles,"target_loss_events":baseline_losses,"target_loss_max_jump":baseline_loss_jump,"maximum_tangent_error":tangent_error,"beam_charge_samples":beam_charge_frames,"beam_active_samples":beam_active_frames,"peak_projectiles":peak,"peak_frame":peak_frame,"first_hit_frame":first_hit_frame,"fire_slots":observed_slots.keys(),"missile_fire_events":scene.missile_fire_count,"missile_hit_events":scene.missile_hit_count,"maximum_launch_muzzle_error":scene.missile_origin_max_error,"draw_preserves_state":readonly_ok,"save_enabled":scene.game.save_enabled})
+		report.runs.append({"mode":mode,"kind":kind,"forced_target_loss":interrupt_target,"viewport_origin_error":viewport_origin_error,"beam_full_cues":scene.beam_full_cue_count,"beam_cycles":beam_cycles.values(),"first_missile_launches":scene.game.launch_records.slice(0,8),"first_missile_hits":scene.game.hit_records.slice(0,8),"pulse_fire_events":scene.pulse_fire_count,"rail_fire_events":scene.rail_fire_count,"pending_missile_ejections":scene.game.missile_queue.size(),"actual_missile_launches":scene.game.launch_records.size(),"actual_missile_hits":scene.game.hit_records.size(),"orphan_expirations":scene.game.orphan_expirations,"turn_bound_error":scene.game.maximum_turn_step_error,"frames_run":captured_frames,"maximum_actual_beam_power":max_power,"peak_power_samples":peak_power_samples,"initial_durable_target_death_frame":initial_target_death,"first_target_loss_frame":first_loss_frame,"first_beam_active_frame":first_active_frame,"first_beam_end_frame":first_beam_end,"maximum_beam_end_particles":maximum_end_particles,"target_loss_events":baseline_losses,"target_loss_max_jump":baseline_loss_jump,"maximum_tangent_error":tangent_error,"beam_charge_samples":beam_charge_frames,"beam_active_samples":beam_active_frames,"peak_projectiles":peak,"peak_frame":peak_frame,"first_hit_frame":first_hit_frame,"fire_slots":observed_slots.keys(),"missile_fire_events":scene.missile_fire_count,"missile_hit_events":scene.missile_hit_count,"maximum_launch_muzzle_error":scene.missile_origin_max_error,"draw_preserves_state":readonly_ok,"save_enabled":scene.game.save_enabled})
 		scene.free();await process_frame
 	report.errors=errors;report.passed=errors.is_empty();report.first_difference=first_difference
 	FileAccess.open(output.path_join("facts.json"),FileAccess.WRITE).store_string(JSON.stringify(report,"\t"))

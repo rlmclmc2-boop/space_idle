@@ -15,10 +15,15 @@ def main():
     parser.add_argument("--godot", default=shutil.which("godot") or shutil.which("godot4"))
     parser.add_argument("--reuse", type=Path, help="Directory previously created by this ordnance launcher")
     parser.add_argument("--prepare-only", action="store_true", help="Prepare/import without graphical execution")
-    parser.add_argument("--kind", choices=("missile","beam"), default="missile")
+    parser.add_argument("--kind", choices=("missile","beam","mixed"), default="missile")
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--after-only", action="store_true", help="Capture only new visuals; retain both paired simulation runs")
+    parser.add_argument("--single-source", action="store_true")
+    parser.add_argument("--durable-target", type=float, default=0.0, help="Explicit synthetic initial enemy HP; no production configuration changes")
+    parser.add_argument("--interrupt-target", action="store_true", help="Headless lifecycle fixture: force target loss while missiles are queued")
     args = parser.parse_args()
+    if args.interrupt_target and (not args.check_only or not args.single_source or args.kind != "missile"):
+        parser.error("--interrupt-target requires --check-only --single-source --kind missile")
     if not args.godot:
         parser.error("Supply a Godot 4 executable")
     work = PROJECT.parent / "test/work"
@@ -57,6 +62,9 @@ def main():
         return
     output = area / ("Heavy_Battleship-" + args.kind)
     flags = ["--prototype-" + args.kind + "-fixture"] + (["--ordnance-check-only"] if args.check_only else []) + (["--ordnance-after-only"] if args.after_only else [])
+    if args.interrupt_target: flags += ["--interrupt-target"]
+    if args.single_source: flags += ["--prototype-single-weapon=" + ("longLaser" if args.kind == "beam" else "missile")]
+    if args.durable_target > 0: flags += ["--durable-target=" + str(args.durable_target)]
     print(run_checked(command + (["--headless"] if args.check_only else []) + ["--resolution", "1335x859", "--script", "res://dev/toon_ship/ordnance_review.gd", "--", "--output=" + str(output), "--prototype-fixture=Heavy_Battleship", *flags], area / "ordnance.log"), flush=True)
 
 

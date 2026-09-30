@@ -1,6 +1,7 @@
 extends "res://scripts/main.gd"
 ## Development-only subclass. Production code, values, UI and assets are untouched.
 
+const PROTOTYPE_GAME := preload("res://dev/toon_ship/prototype_battle_game.gd")
 const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
@@ -63,8 +64,41 @@ var pulse_fire_count := 0
 var pulse_hit_count := 0
 var pulse_origin_max_error := 0.0
 var pulse_fire_slots: Dictionary = {}
+var beam_full_started:Dictionary={}
+var beam_full_cue_count:=0
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
+
+
+func create_battle_game(_persist:bool)->BattleGame:
+	var prototype=PROTOTYPE_GAME.new(db,false)
+	prototype.launch_provider=_prototype_launch_pose
+	prototype.target_provider=_prototype_target_point
+	return prototype
+
+
+func _prototype_target_point(target:Dictionary)->Vector2:
+	return battle_logical_point(entity_render_position(target))
+
+
+func _prototype_launch_pose(slot:int,aim:Vector2,_ordinal:int)->Dictionary:
+	if not is_instance_valid(ship_view):
+		var fallback:=Vector2(game.player.x,game.player.y)+game.player_weapon_offset(slot)
+		return {"position":fallback,"direction":(aim-fallback).normalized()}
+	var angles:Array=[]
+	for index in game.weapon_entries().size():angles.append(turret_angle(index))
+	ship_view.set_slot_angles(angles)
+	var point:Vector2=ship_view.screen_muzzle_for_slot(slot)
+	# Canonical battlefield coordinates are independent of viewport pixels and
+	# paused close-up inspection magnification.
+	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
+	var logical:=battle_logical_point(point)
+	return {"position":logical,"direction":(aim-logical).normalized()}
+
+
+func visual_muzzle(shot:Dictionary)->Vector2:
+	if bool(shot.get("prototype_missile",false)):return Vector2(shot.launch_point)
+	return super.visual_muzzle(shot)
 
 
 func _ready() -> void:
@@ -145,7 +179,22 @@ func _sync_parameters() -> void:
 
 
 func _process(delta: float) -> void:
+	# Update the canonical carrier pose before simulation asks for release points.
+	if is_instance_valid(ship_view) and not game.paused:
+		demo_time+=delta
+		var aim:Vector2=player_render_position()+Vector2(0,-450)
+		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
+		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,delta)
 	super._process(delta)
+	var valid_beams:Dictionary={}
+	for shot in game.projectiles:
+		if not bool(shot.get("beam",false)) or bool(shot.hostile) or not game.long_laser_valid(shot):continue
+		var serial:=int(shot.serial)
+		valid_beams[serial]=true
+		if int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999 and not beam_full_started.has(serial):
+			beam_full_started[serial]=fx_time;beam_full_cue_count+=1
+	for serial in beam_full_started.keys():
+		if not valid_beams.has(serial):beam_full_started.erase(serial)
 	if not is_instance_valid(ship_view): return
 	missile_events = missile_events.filter(func(e):return fx_time-float(e.born)<0.25)
 	if accelerated_visual_mode:missile_events.clear()
@@ -153,7 +202,6 @@ func _process(delta: float) -> void:
 	if accelerated_visual_mode:rail_events.clear()
 	pulse_events = pulse_events.filter(func(e):return fx_time-float(e.born)<0.14)
 	prototype_frames += 1
-	if not game.paused: demo_time += delta
 	_sync_parameters()
 	if current_hull != str(game.profile.selectedShip):
 		current_hull = str(game.profile.selectedShip)
@@ -175,7 +223,7 @@ func _process(delta: float) -> void:
 	if capture_directory!="" and prototype_frames==150: _capture()
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0 if game.paused or not battle_layer.visible else delta)
+	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
 	var angles: Array = []
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
 	ship_view.set_slot_angles(angles)
@@ -239,6 +287,8 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="projectile_impact" and bool(info.shot.get("prototype_missile",false)):
+		weapon_impact(info.shot,Vector2(info.pos));return
 	if prototype_enabled and continuous_beam_enabled and kind in ["beam_started","beam_hit"] and info.has("shot") and not bool(info.shot.hostile):
 		# The active beam draws its own emitter/contact. Do not enqueue legacy
 		# endpoint flashes or a cache that creates a shrinking tail on shutdown.
@@ -272,6 +322,8 @@ func draw_beam_override(shot:Dictionary,offset:Vector2,core:bool=true)->bool:
 	elif int(shot.ticks)>0:
 		var style:=beam_style(shot)
 		CONTINUOUS_BEAM_VFX.active(draw_surface,muzzle,target,fx_time,float(style.width),float(style.power),float(style.pulse))
+		if beam_full_started.has(int(shot.serial)):
+			CONTINUOUS_BEAM_VFX.full_cue(draw_surface,target,fx_time-float(beam_full_started[int(shot.serial)]))
 	return true
 
 
@@ -280,6 +332,7 @@ func _is_own_missile(shot:Dictionary)->bool:
 
 
 func missile_visual_position(shot:Dictionary,spread:float,origin:Vector2,visual:Dictionary={})->Vector2:
+	if bool(shot.get("prototype_missile",false)):return Vector2(shot.x,shot.y)
 	if not _is_own_missile(shot):return super.missile_visual_position(shot,spread,origin,visual)
 	if visual.is_empty():visual=projectile_visual(shot)
 	var logical:=Vector2(shot.x,shot.y)
@@ -303,7 +356,7 @@ func advance_projectile_visuals(dt:float)->void:
 	# Preserve the final rendered offset when the authoritative target disappears.
 	# The orphan continues its existing logical velocity, never retargets visually.
 	for visual in projectile_visuals:
-		if not _is_own_missile(visual.shot):continue
+		if not _is_own_missile(visual.shot) or bool(visual.shot.get("prototype_missile",false)):continue
 		if bool(visual.get("had_target",false)) and visual.shot.target.is_empty() and not visual.has("orphan_offset"):
 			visual.orphan_offset=Vector2(visual.get("last_render_point",visual.origin))-Vector2(visual.get("last_logical_point",visual.logical_origin))
 			missile_loss_count+=1
@@ -417,11 +470,11 @@ func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,vi
 	if _is_own_missile(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
 		var budget:=0.5 if trail_budget==0 else 1.0
-		if missile_density<=6 and not shot.target.is_empty():MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
+		if not shot.target.is_empty():MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
 		return angle
 	if _is_own_rail(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
-		if core:RAIL_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time)
+		if core:RAIL_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",Vector2(shot.x,shot.y)))))
 		return angle
 	if not _is_own_pulse(shot):return super.draw_projectile_fx(shot,pos,offset,core,visual,trail_budget)
 	var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
@@ -553,6 +606,9 @@ func _apply_fixture(key: String) -> void:
 		pattern.fill("");pattern[0]="cannon"
 	if OS.get_cmdline_user_args().has("--prototype-missile-fixture"):pattern.fill("missile")
 	if OS.get_cmdline_user_args().has("--prototype-beam-fixture"):pattern.fill("longLaser")
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--prototype-single-weapon="):
+			pattern.fill("");pattern[0]=arg.trim_prefix("--prototype-single-weapon=")
 	for index in game.profile.loadout.weapons.size():
 		game.profile.loadout.weapons[index].key = pattern[index]
 	game.profile.loadout.defence[0].key = "armour"

@@ -6,6 +6,8 @@ var output:=""
 var errors:Array[String]=[]
 var baseline:Array[String]=[]
 var check_only:=false
+var after_only:=false
+var capture_mode:=""
 var first_difference:Dictionary={}
 var single:=false
 var scene
@@ -27,6 +29,7 @@ func fingerprint(game)->String:
 	state["combat_rng_state"]=game.rng.state
 	return JSON.stringify(state)
 func capture(path:String)->void:
+	if after_only and capture_mode=="before":return
 	await process_frame
 	if check_only:return
 	await RenderingServer.frame_post_draw
@@ -34,19 +37,21 @@ func capture(path:String)->void:
 func run()->void:
 	for arg in OS.get_cmdline_user_args():
 		if arg=="--prototype-rail-single":single=true
+		if arg=="--rail-after-only":after_only=true
 		if arg=="--rail-check-only":check_only=true
 		if arg.begins_with("--output="):output=arg.trim_prefix("--output=")
 	if output.is_empty():quit(1);return
 	root.size=Vector2i(1335,859)
-	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":("Heavy, one rail cannon; no player save" if single else "Heavy, eight rail cannons; no player save"),"gameplay":"ordinary deterministic combat progression; no altered CD/speed/hit/damage","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
+	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":("Heavy, one rail cannon; no player save" if single else "Heavy, eight rail cannons; no player save"),"gameplay":"Current prototype rail speed is 12x original; only renderer differs between these runs","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
 	var shared_profile:Dictionary={}
 	for mode in ["before","after"]:
+		capture_mode=mode
 		seed(5927)
 		scene=load("res://dev/toon_ship_test.tscn").instantiate();root.add_child(scene);scene.set_process(false)
 		if shared_profile.is_empty():shared_profile=scene.game.profile.duplicate(true)
 		# Fresh ordinary BattleGame per pass; shared profile and seed are explicit
 		# test inputs, never a player's save or altered balance configuration.
-		scene.game=BattleGame.new(scene.db,false)
+		scene.game=scene.create_battle_game(false)
 		scene.game.profile=shared_profile.duplicate(true)
 		scene.game.rng.seed=90317
 		scene.game.event.connect(scene.on_event)
@@ -72,6 +77,10 @@ func run()->void:
 					for key in a:
 						if a[key]!=b.get(key):first_difference[key]={"before":a[key],"after":b.get(key)}
 				check(before_render==baseline[frame_index],"Gameplay differs from baseline at frame %d"%frame_index)
+			# Very fast rounds can launch and hit between rendered frames. Use the
+			# real launch pose timestamp for coverage, not surviving projectile count.
+			for slot in scene.turret_visuals:
+				if str(scene.game.slot_entry("weapons",int(slot)).get("key",""))=="cannon" and float(scene.turret_visuals[slot].get("fired_at",-1.0))>0.0:observed_slots[int(slot)]=true
 			var shots:=0
 			for shot in scene.game.projectiles:
 				if not bool(shot.hostile) and str(shot.key)=="cannon":

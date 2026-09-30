@@ -113,6 +113,7 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
 	profile.jewels = []
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
@@ -202,6 +203,11 @@ func load_progress() -> void:
 	# Legacy identities are accepted only at the save migration boundary.
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
+	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false}
+	if raw.get("onboarding") is Dictionary:
+		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
+			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -1819,7 +1825,11 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	projectile_serial += 1
 	shot.serial = projectile_serial
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
+	prepare_projectile(shot,source,weapon,visual_spread)
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
+
+func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Dictionary, _spread: float) -> void:
+	pass
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
 func long_laser_valid(shot: Dictionary) -> bool:
@@ -2271,7 +2281,7 @@ func tick(dt: float) -> void:
 				if candidates.is_empty():
 					break
 				var target := candidates[i % candidates.size()] if key == "missile" else candidates[0]
-				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0)
+				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0,i,count)
 			if count > 0 and not candidates.is_empty():
 				cooldowns[id] = weapon_cooldown_after_shot(remaining,dt,float(weapon.cd))
 				queue_jewel_repeats(index, charged)
@@ -2322,6 +2332,7 @@ func tick_projectiles(dt: float) -> void:
 		# whenever that position no longer holds this exact projectile.
 		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):
 			continue
+		if advance_custom_projectile(shot,dt):continue
 		if shot.get("beam", false):
 			tick_long_laser(shot, dt)
 			continue
@@ -2356,6 +2367,9 @@ func tick_projectiles(dt: float) -> void:
 		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
 			shot.dead = true
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
+
+func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
+	return false
 
 # Jewel ownership lives in profile.jewels or one loadout entry, never both.
 # Stable instance tokens make stale UI callbacks harmless after sorting/moving.
@@ -2892,11 +2906,14 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 func missile_visual_spread(index: int, count: int) -> float:
 	return (float(index)/float(count-1)-0.5)*minf(88.0,float(count-1)*24.0) if count>1 else 0.0
 
-func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0, visual_spread := 0.0) -> void:
+func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0, visual_spread := 0.0, salvo_index := 0, salvo_count := 1) -> void:
 	# Every player missile path resolves its live mount here, including repeats.
 	if str(slot_entry("weapons",index).key)=="missile":
 		offset = player_weapon_offset(index)
 	var attack := jewel_attack(index,multiplier)
+	launch_player_attack(index,target,weapon,attack,offset,visual_spread,salvo_index,salvo_count)
+
+func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
 	fire(player,target,weapon,attack.damage,false,str(slot_entry("weapons",index).key),offset,visual_spread)
 	projectiles.back().jewelEffects = attack.effects
 	projectiles.back().critical = attack.critical
@@ -2941,7 +2958,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		invalidate_equipment_counter(str(entry.key))
 		event.emit("equipment_stats",{"slot":slot_id("weapons",int(pending.index))})
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
-			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
+			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0,n,int(weapon.para1) if entry.key=="missile" else 1)
 
 func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 	for effect in effects:
