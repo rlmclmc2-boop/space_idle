@@ -26,6 +26,20 @@ var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
 var selected_next_stat = 0.0
 var details_open := true
+var footer: Panel
+var footer_title: Label
+var footer_buttons: Dictionary = {}
+var upgrade_amount := 1
+var amount_buttons: Array[Button] = []
+var picker_open := false
+var pending_key := ""
+var summary: Label
+var grid_defence: GridContainer
+var slot_list: VBoxContainer
+var section_labels: Dictionary = {}
+const NAVY := Color("243d50")
+const PAPER := Color("ecebdc")
+const TEAL := Color("83cfcb")
 var filters: Control
 var toolbar: Control
 var sort_picker: OptionButton
@@ -56,39 +70,105 @@ func select_box(parent: Control, rect: Rect2, keys: Array, callback: Callable) -
 	parent.add_child(box)
 	return box
 
+func panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = fill
+	box.border_color = edge
+	box.set_border_width_all(3)
+	box.set_corner_radius_all(radius)
+	box.shadow_color = Color(0.02,0.05,0.08,0.35)
+	box.shadow_size = 3
+	box.shadow_offset = Vector2(0,3)
+	box.set_content_margin_all(12)
+	return box
+
+func skin_button(button: Button, primary := false) -> void:
+	button.add_theme_font_override("font",host.font)
+	button.add_theme_font_size_override("font_size",20)
+	for state in ["normal","hover","pressed","disabled"]:
+		var fill := TEAL if primary else PAPER
+		if state=="hover":fill=fill.lightened(0.13)
+		if state=="pressed":fill=fill.darkened(0.12)
+		if state=="disabled":fill=Color("8b9a9e")
+		button.add_theme_stylebox_override(state,panel_style(fill))
+	button.add_theme_stylebox_override("focus",panel_style(Color.TRANSPARENT,TEAL,14))
+	button.add_theme_color_override("font_color",NAVY)
+	button.add_theme_color_override("font_hover_color",NAVY)
+	button.add_theme_color_override("font_pressed_color",NAVY)
+	button.add_theme_color_override("font_disabled_color",Color("4e626f"))
+
+func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false) -> Button:
+	var button := Button.new()
+	button.text = UIText.t(text_key)
+	button.set_meta("action_id",action_id)
+	button.custom_minimum_size = Vector2(120,48)
+	skin_button(button,primary)
+	button.pressed.connect(callback)
+	parent.add_child(button)
+	return button
+
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
-	var overview := Control.new()
-	overview.name = "EquipmentOverviewPanel"
-	add_child(overview)
-	total = label(overview,"",Rect2(18,14,48,40),30,host.CYAN)
-	label(overview,UIText.t("equipment.total"),Rect2(70,17,130,26),15,host.INK)
-	filters = Control.new()
-	filters.name = "EquipmentFilterPanel"
-	add_child(filters)
-	select_box(filters,Rect2(210,18,168,38),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
-	var subtype_keys: Array = []
-	for subtype in subtypes:
-		subtype_keys.append("equipment.type."+subtype)
-	select_box(filters,Rect2(390,18,168,38),subtype_keys,func(i):subtype_filter=i; apply_filters())
-	select_box(filters,Rect2(570,18,206,38),["equipment.any_state","equipment.state.equipped","equipment.state.upgradeable","equipment.state.unequipped","equipment.state.locked"],func(i):status_filter=i; apply_filters())
+	var backdrop := Panel.new()
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backdrop.add_theme_stylebox_override("panel",panel_style(Color("304c60")))
+	add_child(backdrop)
+	total = label(self,"",Rect2(24,16,1250,42),27,PAPER)
+	summary = label(self,UIText.t("equipment.refit_hint"),Rect2(24,58,1230,32),20,Color("bedbdc"))
 	toolbar = Control.new()
-	toolbar.name = "EquipmentToolbar"
+	toolbar.position = Vector2(24,101)
 	add_child(toolbar)
-	label(toolbar,UIText.t("equipment.catalog"),Rect2(18,94,300,24),14,host.CYAN)
-	sort_picker = select_box(toolbar,Rect2(790,18,220,38),["equipment.sort.type","equipment.sort.level","equipment.sort.stat","equipment.sort.state"],func(i):sort_mode=i; apply_filters())
+	label(toolbar,UIText.t("equipment.upgrade_amount"),Rect2(0,0,170,46),20,PAPER)
+	for i in 3:
+		var amount: int = [1,10,0][i]
+		var button := action_button(toolbar,"equipment.amount."+str(amount),"upgrade_amount",func():set_upgrade_amount(amount),amount==1)
+		button.position = Vector2(174+i*100,0)
+		button.custom_minimum_size.x = 90
+		button.size = Vector2(90,48)
+		amount_buttons.append(button)
+	filters = Control.new()
+	filters.position = Vector2(0,0)
+	toolbar.add_child(filters)
+	var category_box := select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
+	skin_button(category_box)
 	grid_scroll = ScrollContainer.new()
 	grid_scroll.name = "EquipmentGrid"
-	grid_scroll.position = Vector2(14,130)
-	grid_scroll.size = Vector2(892,90)
+	grid_scroll.position = Vector2(22,165)
 	grid_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(grid_scroll)
-	grid = GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation",12)
-	grid.add_theme_constant_override("v_separation",12)
-	grid_scroll.add_child(grid)
-	empty = label(self,UIText.t("equipment.empty"),Rect2(32,150,840,32),16,host.MUTED)
+	slot_list = VBoxContainer.new()
+	slot_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slot_list.add_theme_constant_override("separation",10)
+	grid_scroll.add_child(slot_list)
+	for category in ["weapons","defence"]:
+		var heading := Label.new()
+		heading.add_theme_font_override("font",host.font)
+		heading.add_theme_font_size_override("font_size",22)
+		heading.add_theme_color_override("font_color",PAPER)
+		heading.custom_minimum_size.y = 34
+		slot_list.add_child(heading)
+		section_labels[category] = heading
+		var category_grid := GridContainer.new()
+		category_grid.columns = 2
+		category_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		category_grid.add_theme_constant_override("h_separation",14)
+		category_grid.add_theme_constant_override("v_separation",12)
+		slot_list.add_child(category_grid)
+		if category=="weapons":grid=category_grid
+		else:grid_defence=category_grid
+	empty = label(self,UIText.t("equipment.empty"),Rect2(40,220,840,32),20,PAPER)
+	footer = Panel.new()
+	footer.add_theme_stylebox_override("panel",panel_style(Color("dae4df")))
+	add_child(footer)
+	footer_title = label(footer,"",Rect2(18,14,560,42),22,NAVY)
+	var footer_actions := HBoxContainer.new()
+	footer_actions.position = Vector2(610,10)
+	footer_actions.add_theme_constant_override("separation",10)
+	footer.add_child(footer_actions)
+	footer_buttons.swap = action_button(footer_actions,"equipment.swap","swap_module",func():open_picker(selected),true)
+	footer_buttons.gems = action_button(footer_actions,"equipment.action.gems","gems",func():act("gems"))
+	footer_buttons.details = action_button(footer_actions,"equipment.inspect","module_detail",show_inspector)
 	build_detail()
 	resized.connect(layout_contents)
 	layout_contents()
@@ -97,72 +177,122 @@ func setup(owner_ui: Node) -> void:
 func build_detail() -> void:
 	detail_frame = Panel.new()
 	detail_frame.name = "EquipmentInspectorFrame"
-	detail_frame.position = Vector2(920,118)
-	detail_frame.add_theme_stylebox_override("panel",host.style(Color("101e2c"),host.LINE))
+	detail_frame.add_theme_stylebox_override("panel",panel_style(PAPER))
 	add_child(detail_frame)
-	var scroll := ScrollContainer.new()
-	detail_scroll = scroll
-	scroll.name = "EquipmentDetailPanel"
-	scroll.position = Vector2(932,130)
-	scroll.size = Vector2(406,114)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(scroll)
-	var body := Control.new()
-	detail_body = body
-	body.custom_minimum_size = Vector2(388,1030)
-	scroll.add_child(body)
+	detail_scroll = ScrollContainer.new()
+	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	detail_frame.add_child(detail_scroll)
+	detail_body = Control.new()
+	detail_body.custom_minimum_size = Vector2(570,830)
+	detail_scroll.add_child(detail_body)
+	var close_button := action_button(detail_frame,"equipment.close","close_detail",func():detail_frame.hide())
+	close_button.position = Vector2(458,14)
+	close_button.size = Vector2(120,48)
 	detail.icon = TextureRect.new()
-	detail.icon.position = Vector2(18,12)
-	detail.icon.size = Vector2(80,80)
+	detail.icon.position = Vector2(16,8)
+	detail.icon.size = Vector2(84,84)
 	detail.icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	detail.icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	body.add_child(detail.icon)
-	detail.title = label(body,"",Rect2(112,15,268,35),22,host.CYAN)
-	detail.meta = label(body,"",Rect2(112,52,270,50),14,host.MUTED)
-	detail.meta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	detail.primary = label(body,"",Rect2(18,125,366,32),18,host.INK)
-	detail.status = label(body,"",Rect2(18,164,366,30),14,host.CYAN)
-	detail.description = label(body,"",Rect2(18,211,365,115),14,host.INK)
+	detail_body.add_child(detail.icon)
+	detail.title = label(detail_body,"",Rect2(116,8,440,36),25,NAVY)
+	detail.meta = label(detail_body,"",Rect2(116,50,440,34),20,NAVY)
+	detail.primary = label(detail_body,"",Rect2(18,104,540,36),24,NAVY)
+	detail.status = label(detail_body,"",Rect2(18,145,540,30),19,NAVY)
+	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],func(i):pending_key=str(slot_options[i]);refresh_confirm())
+	skin_button(detail.slots,true)
+	detail.equip = action_button(detail_body,"equipment.confirm_free","equip_confirm",confirm_equipment,true)
+	detail.equip.position = Vector2(18,254)
+	detail.equip.size = Vector2(535,52)
+	detail.description = label(detail_body,"",Rect2(18,326,535,70),20,NAVY)
 	detail.description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.description.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	detail.slots = select_box(body,Rect2(18,756,365,38),[],func(i):change_equipment(str(slot_options[i])))
-	var actions := GridContainer.new()
-	detail_actions = actions
-	actions.columns = 3
-	actions.position = Vector2(18,810)
-	actions.add_theme_constant_override("h_separation",8)
-	actions.add_theme_constant_override("v_separation",8)
-	body.add_child(actions)
-	for action in ["upgrade","ten","max","equip","remove","gems"]:
-		var button := Button.new()
-		button.text = equipment_text("action."+action)
-		button.custom_minimum_size = Vector2(115,42)
-		button.add_theme_font_override("font",host.font)
-		button.add_theme_font_size_override("font_size",13)
-		host.skin_equipment_button(button,action=="upgrade")
-		button.pressed.connect(func():act(action))
-		actions.add_child(button)
-		detail[action] = button
-	detail.more = Button.new()
-	detail.more.position = Vector2(18,339)
-	detail.more.size = Vector2(365,36)
-	detail.more.text = UIText.t("equipment.details.open")
-	detail.more.add_theme_font_override("font",host.font)
-	detail.more.add_theme_font_size_override("font_size",11)
-	detail.more.pressed.connect(toggle_details)
-	body.add_child(detail.more)
-	detail.stats = label(body,"",Rect2(18,391,365,345),16,host.INK)
+	detail_actions = GridContainer.new()
+	detail_actions.columns = 3
+	detail_actions.position = Vector2(18,414)
+	detail_actions.add_theme_constant_override("h_separation",10)
+	detail_actions.add_theme_constant_override("v_separation",10)
+	detail_body.add_child(detail_actions)
+	for action in ["upgrade","ten","max","remove","gems"]:
+		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
+		detail[action].custom_minimum_size.x = 171
+	detail.more = action_button(detail_body,"equipment.details.close","toggle_stats",toggle_details)
+	detail.more.position = Vector2(18,542)
+	detail.more.size = Vector2(535,48)
+	detail.stats = label(detail_body,"",Rect2(18,608,535,300),20,NAVY)
 	detail.stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.stats.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	detail.stats.visible = true
 	detail.stats.resized.connect(update_detail_height)
+	detail_frame.hide()
 
 func layout_contents() -> void:
 	if not is_instance_valid(detail_body):return
-	var height := maxf(440,size.y)
-	grid_scroll.size.y = height-142
-	detail_frame.size = Vector2(430,height-130)
-	detail_scroll.size.y = height-154
+	var width := maxf(740,size.x)
+	var height := maxf(600,size.y)
+	grid_scroll.size = Vector2(width-44,height-260)
+	footer.position = Vector2(22,height-80)
+	footer.size = Vector2(width-44,70)
+	footer.get_child(1).position.x = maxf(340,width-470)
+	footer_title.size.x = maxf(280,width-520)
+	var card_width := (width-78)/2
+	for card in cards.values():card.custom_minimum_size.x=card_width
+	detail_frame.position = Vector2(width-612,96)
+	detail_frame.size = Vector2(590,height-190)
+	detail_scroll.position = Vector2(8,76)
+	detail_scroll.size = Vector2(574,height-278)
+
+func set_upgrade_amount(amount: int) -> void:
+	upgrade_amount = amount
+	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount)
+	for id in items:
+		update_card_cost(items[id])
+		update_card_cost(items[id])
+		cards[id].refresh(items[id],selected==id)
+
+func update_card_cost(item: Dictionary) -> void:
+	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
+	item.cost = host.cost_text(host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))) if not item.locked else "—"
+	item.direct_upgradeable = not item.locked and count>0 and host.game.can_upgrade_slot(item.category,item.index,count)
+
+func upgrade_card(id: String) -> void:
+	if not items.has(id):return
+	var item: Dictionary = items[id]
+	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
+	if count>0:host.game.upgrade_slot(item.category,item.index,count)
+	refresh(id)
+
+func show_inspector() -> void:
+	picker_open = false
+	refresh_detail()
+	detail_frame.show()
+
+func open_picker(id: String) -> void:
+	select_item(id)
+	picker_open = true
+	refresh_detail()
+	detail_frame.show()
+	detail_scroll.scroll_vertical = 0
+	detail.slots.grab_focus()
+
+func refresh_confirm() -> void:
+	if not items.has(selected):return
+	var item: Dictionary = items[selected]
+	host.set_ui_value(detail.equip,"disabled",item.locked or pending_key==item.key or (not pending_key.is_empty() and not host.game.profile.unlocked.has(pending_key)))
+
+func confirm_equipment() -> void:
+	if detail.equip.disabled:return
+	change_equipment(pending_key)
+	detail_frame.hide()
+
+func get_action_anchor(action: String, slot_id := "") -> Control:
+	var id := selected if slot_id.is_empty() else slot_id
+	match action:
+		"empty_module":return cards[id].equip_button if cards.has(id) else null
+		"upgrade_action":return cards[id].upgrade_button if cards.has(id) else null
+		"module_detail":return footer_buttons.details
+		"swap_module":return footer_buttons.swap
+		"equip_confirm":return detail.equip if detail_frame.visible else null
+		"gems":return footer_buttons.gems
+	return null
 
 func toggle_details() -> void:
 	details_open = not details_open
@@ -172,12 +302,8 @@ func toggle_details() -> void:
 
 func update_detail_height() -> void:
 	if not is_instance_valid(detail_body):return
-	var stats_bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y)
-	var slots_y: float = maxf(756,stats_bottom+20) if details_open else 405.0
-	host.set_ui_value(detail.slots,"position",Vector2(18,slots_y))
-	host.set_ui_value(detail_actions,"position",Vector2(18,slots_y+54))
-	var bottom: float = detail_actions.position.y+maxf(100,detail_actions.get_minimum_size().y)
-	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(detail_body.custom_minimum_size.x,maxf(600,bottom+16)))
+	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else 604.0
+	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(570,bottom+24))
 
 func icon_for(key: String) -> Texture2D:
 	if not icons.has(key):
@@ -226,18 +352,22 @@ func refresh_slots(changed: Array) -> void:
 				sort_dirty = true
 			if not cards.has(id):
 				var card := Card.new()
-				grid.add_child(card)
-				card.setup(host)
+				(grid if category=="weapons" else grid_defence).add_child(card)
+				card.setup(host,self)
+				card.equip_requested.connect(func():open_picker(id))
+				card.upgrade_requested.connect(func():upgrade_card(id))
 				card.pressed.connect(func():select_item(id))
 				cards[id] = card
 			if selected.is_empty():selected = id
 			# Spending resources changes affordability on other modules, but not their stats.
 			if not (changed.is_empty() or dirty or changed.has(id)):
 				items[id].upgradeable = host.game.can_upgrade_slot(category,index)
+			update_card_cost(items[id])
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
 	refresh_total()
+	layout_contents()
 	apply_filters()
 	if detail_changed:refresh_detail()
 	else:refresh_affordability_detail()
@@ -272,6 +402,7 @@ func refresh_stats() -> void:
 		if GrowthNumber.compare(value,item.mainStatNumber)==0:continue
 		item.mainStatNumber = value
 		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
+		update_card_cost(item)
 		cards[id].refresh(item,selected==id)
 		sort_dirty = sort_dirty or sort_mode==2
 		selected_changed = selected_changed or selected==id
@@ -287,6 +418,7 @@ func refresh_affordability() -> void:
 		var available: bool = host.game.can_upgrade_slot(item.category,item.index)
 		if item.upgradeable==available:continue
 		item.upgradeable = available
+		update_card_cost(item)
 		cards[id].refresh(item,selected==id)
 		changed = true
 	if changed:
@@ -295,7 +427,20 @@ func refresh_affordability() -> void:
 	refresh_affordability_detail()
 
 func refresh_total() -> void:
-	host.set_ui_value(total,"text",str(items.size()))
+	var counts: Dictionary = {}
+	for category in ["weapons","defence"]:
+		var active: int = host.game.active_slot_count(category)
+		var used := 0
+		var overflow := 0
+		for item in items.values():
+			if item.category!=category:continue
+			if item.locked:overflow+=1
+			elif item.equipped:used+=1
+		counts[category] = str(used)+"/"+str(active)
+		var heading: String = UIText.t("weapon.tab" if category=="weapons" else "defense.tab")+"  "+counts[category]
+		if overflow>0:heading+=" · "+UIText.t("equipment.overflow",{"count":str(overflow)})
+		host.set_ui_value(section_labels[category],"text",heading)
+	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.profile.selectedShip))+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
 
 func select_item(key: String) -> void:
 	if not items.has(key):return
@@ -318,10 +463,11 @@ func apply_filters() -> void:
 				var sx := int(x.locked)*4+int(not x.equipped)*2-int(x.upgradeable)
 				var sy := int(y.locked)*4+int(not y.equipped)*2-int(y.upgradeable)
 				if sx!=sy:return sx<sy
-			return str(x.category)+str(x.subType)+str(a)<str(y.category)+str(y.subType)+str(b))
+			return int(x.index)<int(y.index))
 		sort_dirty = false
 		last_sort_mode = sort_mode
 	var visible_count := 0
+	var positions := {"weapons":0,"defence":0}
 	for i in sorted_ids.size():
 		var key: String = sorted_ids[i]
 		var item: Dictionary = items[key]
@@ -329,9 +475,14 @@ func apply_filters() -> void:
 		show = show and (status_filter==0 or (status_filter==1 and item.equipped) or (status_filter==2 and item.upgradeable) or (status_filter==3 and not item.equipped and not item.locked) or (status_filter==4 and item.locked))
 		host.set_ui_value(cards[key],"visible",show)
 		visible_count += int(show)
-		if cards[key].get_index()!=i:
-			grid.move_child(cards[key],i)
+		var parent_grid: GridContainer = grid if item.category=="weapons" else grid_defence
+		var position_in_group: int = positions[item.category]
+		if cards[key].get_index()!=position_in_group:
+			parent_grid.move_child(cards[key],position_in_group)
+		positions[item.category]+=1
 	host.set_ui_value(empty,"visible",visible_count==0)
+	host.set_ui_value(section_labels.weapons,"visible",category_filter!=2)
+	host.set_ui_value(section_labels.defence,"visible",category_filter!=1)
 
 func refresh_affordability_detail() -> void:
 	if not items.has(selected):return
@@ -356,6 +507,12 @@ func refresh_detail() -> void:
 			detail.slots.set_item_disabled(detail.slots.item_count-1,not str(option).is_empty() and not host.game.profile.unlocked.has(option))
 		slot_options = options
 	if detail.slots.selected!=options.find(key):detail.slots.select(options.find(key))
+	pending_key = key
+	refresh_confirm()
+	host.set_ui_value(footer_title,"text",item.name)
+	host.set_ui_value(footer_buttons.gems,"visible",host.game.jewels_unlocked())
+	host.set_ui_value(footer_buttons.gems,"disabled",item.locked)
+	host.set_ui_value(footer_buttons.swap,"disabled",item.locked)
 	host.set_ui_value(detail.slots,"disabled",item.locked)
 	host.set_ui_value(detail.icon,"texture",item.icon)
 	host.set_ui_value(detail.title,"text",item.name)
@@ -363,15 +520,15 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
-	host.set_ui_value(detail.status,"modulate",host.MUTED if item.locked else host.ORANGE if item.upgradeable else host.CYAN)
+	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(category,selected_slot,10 if action=="ten" else 1))
-	host.set_ui_value(detail.equip,"visible",false)
+	host.set_ui_value(detail.equip,"visible",true)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
 	host.set_ui_value(detail.remove,"disabled",item.locked)
 	host.set_ui_value(detail.gems,"visible",host.game.jewels_unlocked())
-	host.set_ui_value(detail.gems,"disabled",false)
+	host.set_ui_value(detail.gems,"disabled",item.locked)
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
