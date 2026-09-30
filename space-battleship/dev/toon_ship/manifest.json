@@ -19,40 +19,40 @@
     "pulse_laser": {
       "path": "res://dev/toon_ship/weapons/pulse_laser.glb",
       "source": "source/pulse_laser.blend",
-      "triangles": 1038,
-      "mesh_nodes": 7,
+      "triangles": 1304,
+      "mesh_nodes": 2,
       "godot_aabb_min": [
-        -0.6015698313713074,
+        -0.5811960697174072,
         0.0,
         -0.8025000095367432
       ],
       "godot_aabb_max": [
-        0.6015698313713074,
-        0.7000000476837158,
+        0.5811960697174072,
+        0.6896935701370239,
         0.4000000059604645
       ]
     },
     "missile": {
       "path": "res://dev/toon_ship/weapons/missile.glb",
       "source": "source/missile.blend",
-      "triangles": 1004,
-      "mesh_nodes": 9,
+      "triangles": 1328,
+      "mesh_nodes": 2,
       "godot_aabb_min": [
         -0.6299999952316284,
         0.0,
-        -0.550000011920929
+        -0.5400000214576721
       ],
       "godot_aabb_max": [
         0.6299999952316284,
-        0.6704999804496765,
-        0.574999988079071
+        0.6674999594688416,
+        0.5649999976158142
       ]
     },
     "cannon": {
       "path": "res://dev/toon_ship/weapons/cannon.glb",
       "source": "source/cannon.blend",
-      "triangles": 788,
-      "mesh_nodes": 7,
+      "triangles": 1112,
+      "mesh_nodes": 2,
       "godot_aabb_min": [
         -0.550000011920929,
         0.0,
@@ -60,22 +60,22 @@
       ],
       "godot_aabb_max": [
         0.550000011920929,
-        0.6599999666213989,
+        0.6704999804496765,
         0.5649999976158142
       ]
     },
     "long_laser": {
       "path": "res://dev/toon_ship/weapons/long_laser.glb",
       "source": "source/long_laser.blend",
-      "triangles": 896,
-      "mesh_nodes": 8,
+      "triangles": 1112,
+      "mesh_nodes": 2,
       "godot_aabb_min": [
-        -0.5349999666213989,
+        -0.5299999713897705,
         0.0,
         -0.800000011920929
       ],
       "godot_aabb_max": [
-        0.5349999666213989,
+        0.5299999713897705,
         0.6549999713897705,
         0.6800000071525574
       ]

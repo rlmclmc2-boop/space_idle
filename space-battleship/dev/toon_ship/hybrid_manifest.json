@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "scope": "presentation assets and authored visual socket budgets only",
+  "forward": "-Z",
+  "up": "+Y",
+  "units": "meters",
+  "pivot": "hull center",
+  "model_span_axis": "Z",
+  "hulls": {
+    "Frigate": {
+      "path": "res://dev/toon_ship/hulls/frigate.glb",
+      "source": "hulls/source/frigate.blend",
+      "triangles": 4428,
+      "mesh_nodes": 3,
+      "godot_aabb_min": [
+        -2.4612913131713867,
+        -0.4899999499320984,
+        -3.12569522857666
+      ],
+      "godot_aabb_max": [
+        2.4612913131713867,
+        0.8299999833106995,
+        2.5439999103546143
+      ],
+      "model_span": 5.669695,
+      "weapon_mounts": [
+        {
+          "node": "WeaponMount01",
+          "slot": 0,
+          "position": [
+            0,
+            0.55,
+            -1.36
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount02",
+          "slot": 1,
+          "position": [
+            -1.32,
+            0.55,
+            0.95
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount03",
+          "slot": 2,
+          "position": [
+            1.32,
+            0.55,
+            0.95
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        }
+      ],
+      "hull_mount_budget": 3,
+      "silhouette": "pointed dart with swept aft shoulders",
+      "drone_offsets": [],
+      "minimum_mount_center_distance": 2.64,
+      "minimum_rotation_envelope_gap": 0.16
+    },
+    "Destroyer": {
+      "path": "res://dev/toon_ship/hulls/destroyer.glb",
+      "source": "hulls/source/destroyer.blend",
+      "triangles": 4104,
+      "mesh_nodes": 3,
+      "godot_aabb_min": [
+        -2.4901394844055176,
+        -0.5299999713897705,
+        -2.7936010360717773
+      ],
+      "godot_aabb_max": [
+        2.4901394844055176,
+        0.6915000081062317,
+        2.930000066757202
+      ],
+      "model_span": 5.723601,
+      "weapon_mounts": [
+        {
+          "node": "WeaponMount01",
+          "slot": 0,
+          "position": [
+            -1.32,
+            0.56,
+            -0.75
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount02",
+          "slot": 1,
+          "position": [
+            1.32,
+            0.56,
+            -0.75
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount03",
+          "slot": 2,
+          "position": [
+            0,
+            0.56,
+            1.6
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        }
+      ],
+      "hull_mount_budget": 3,
+      "silhouette": "split prow and twin long nacelles",
+      "drone_offsets": [
+        [
+          3.95,
+          0.1,
+          1.5
+        ]
+      ],
+      "minimum_mount_center_distance": 2.64,
+      "minimum_rotation_envelope_gap": 0.16
+    },
+    "Cruiser": {
+      "path": "res://dev/toon_ship/hulls/cruiser.glb",
+      "source": "hulls/source/cruiser.blend",
+      "triangles": 5152,
+      "mesh_nodes": 4,
+      "godot_aabb_min": [
+        -3.2902276515960693,
+        -0.4699999988079071,
+        -3.2704644203186035
+      ],
+      "godot_aabb_max": [
+        3.2902276515960693,
+        0.8714999556541443,
+        3.0339999198913574
+      ],
+      "model_span": 6.304464,
+      "weapon_mounts": [
+        {
+          "node": "WeaponMount01",
+          "slot": 0,
+          "position": [
+            0,
+            0.56,
+            -1.86
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount02",
+          "slot": 1,
+          "position": [
+            -1.86,
+            0.56,
+            0
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount03",
+          "slot": 2,
+          "position": [
+            1.86,
+            0.56,
+            0
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount04",
+          "slot": 3,
+          "position": [
+            0,
+            0.56,
+            1.86
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        }
+      ],
+      "hull_mount_budget": 4,
+      "silhouette": "swept diamond with four radial hardpoints",
+      "drone_offsets": [
+        [
+          4.4,
+          0.1,
+          1.35
+        ]
+      ],
+      "minimum_mount_center_distance": 2.630437,
+      "minimum_rotation_envelope_gap": 0.150437
+    },
+    "Battleship": {
+      "path": "res://dev/toon_ship/hulls/battleship.glb",
+      "source": "hulls/source/battleship.blend",
+      "triangles": 5092,
+      "mesh_nodes": 4,
+      "godot_aabb_min": [
+        -2.9600000381469727,
+        -0.6200000047683716,
+        -3.190000057220459
+      ],
+      "godot_aabb_max": [
+        2.9600000381469727,
+        0.9314999580383301,
+        3.1440000534057617
+      ],
+      "model_span": 6.334,
+      "weapon_mounts": [
+        {
+          "node": "WeaponMount01",
+          "slot": 0,
+          "position": [
+            -1.34,
+            0.6,
+            -1.33
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount02",
+          "slot": 1,
+          "position": [
+            1.34,
+            0.6,
+            -1.33
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount03",
+          "slot": 2,
+          "position": [
+            -1.34,
+            0.6,
+            1.33
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount04",
+          "slot": 3,
+          "position": [
+            1.34,
+            0.6,
+            1.33
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        }
+      ],
+      "hull_mount_budget": 4,
+      "silhouette": "blunt armored bow and broad parallel shoulders",
+      "drone_offsets": [
+        [
+          -4.65,
+          0.1,
+          0.2
+        ],
+        [
+          4.65,
+          0.1,
+          0.2
+        ]
+      ],
+      "minimum_mount_center_distance": 2.66,
+      "minimum_rotation_envelope_gap": 0.18
+    },
+    "Heavy_Battleship": {
+      "path": "res://dev/toon_ship/hulls/heavy_battleship.glb",
+      "source": "hulls/source/heavy_battleship.blend",
+      "triangles": 9044,
+      "mesh_nodes": 5,
+      "godot_aabb_min": [
+        -3.0151138305664062,
+        -0.7999999523162842,
+        -3.4801573753356934
+      ],
+      "godot_aabb_max": [
+        3.0151138305664062,
+        1.059999942779541,
+        3.3339998722076416
+      ],
+      "model_span": 6.814157,
+      "weapon_mounts": [
+        {
+          "node": "WeaponMount01",
+          "slot": 0,
+          "position": [
+            0.0,
+            0.61,
+            -2.29
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount02",
+          "slot": 1,
+          "position": [
+            -2.177919,
+            0.61,
+            -0.707649
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount03",
+          "slot": 2,
+          "position": [
+            2.177919,
+            0.61,
+            -0.707649
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount04",
+          "slot": 3,
+          "position": [
+            -1.346028,
+            0.61,
+            1.852649
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        },
+        {
+          "node": "WeaponMount05",
+          "slot": 4,
+          "position": [
+            1.346028,
+            0.61,
+            1.852649
+          ],
+          "rotation_axis": "Y",
+          "forward": "-Z"
+        }
+      ],
+      "hull_mount_budget": 5,
+      "silhouette": "five-point armored crown with twin stern lobes",
+      "drone_offsets": [
+        [
+          -4.85,
+          0.1,
+          0.65
+        ],
+        [
+          4.85,
+          0.1,
+          0.65
+        ],
+        [
+          0,
+          0.15,
+          -5.25
+        ]
+      ],
+      "minimum_mount_center_distance": 2.692056,
+      "minimum_rotation_envelope_gap": 0.212056
+    }
+  },
+  "drone": {
+    "path": "res://dev/toon_ship/hulls/weapon_drone.glb",
+    "source": "hulls/source/weapon_drone.blend",
+    "triangles": 1978,
+    "mesh_nodes": 3,
+    "godot_aabb_min": [
+      -0.9591353535652161,
+      -0.3100000023841858,
+      -1.132370948791504
+    ],
+    "godot_aabb_max": [
+      0.9591353535652161,
+      0.4599999785423279,
+      1.2540000677108765
+    ],
+    "model_span": 2.386371,
+    "weapon_mounts": [
+      {
+        "node": "WeaponMount01",
+        "slot": 0,
+        "position": [
+          0,
+          0.46,
+          0
+        ],
+        "rotation_axis": "Y",
+        "forward": "-Z"
+      }
+    ],
+    "hull_mount_budget": 1,
+    "carrier_scale": 1.0,
+    "weapon_scale": 1.0,
+    "purpose": "independently instantiated presentation carrier"
+  },
+  "weapon_assets": {
+    "pulse_laser": {
+      "path": "res://dev/toon_ship/weapons/pulse_laser.glb",
+      "source": "source/pulse_laser.blend",
+      "triangles": 1304,
+      "mesh_nodes": 2,
+      "godot_aabb_min": [
+        -0.5811960697174072,
+        0.0,
+        -0.8025000095367432
+      ],
+      "godot_aabb_max": [
+        0.5811960697174072,
+        0.6896935701370239,
+        0.4000000059604645
+      ]
+    },
+    "missile": {
+      "path": "res://dev/toon_ship/weapons/missile.glb",
+      "source": "source/missile.blend",
+      "triangles": 1328,
+      "mesh_nodes": 2,
+      "godot_aabb_min": [
+        -0.6299999952316284,
+        0.0,
+        -0.5400000214576721
+      ],
+      "godot_aabb_max": [
+        0.6299999952316284,
+        0.6674999594688416,
+        0.5649999976158142
+      ]
+    },
+    "cannon": {
+      "path": "res://dev/toon_ship/weapons/cannon.glb",
+      "source": "source/cannon.blend",
+      "triangles": 1112,
+      "mesh_nodes": 2,
+      "godot_aabb_min": [
+        -0.550000011920929,
+        0.0,
+        -1.1009999513626099
+      ],
+      "godot_aabb_max": [
+        0.550000011920929,
+        0.6704999804496765,
+        0.5649999976158142
+      ]
+    },
+    "long_laser": {
+      "path": "res://dev/toon_ship/weapons/long_laser.glb",
+      "source": "source/long_laser.blend",
+      "triangles": 1112,
+      "mesh_nodes": 2,
+      "godot_aabb_min": [
+        -0.5299999713897705,
+        0.0,
+        -0.800000011920929
+      ],
+      "godot_aabb_max": [
+        0.5299999713897705,
+        0.6549999713897705,
+        0.6800000071525574
+      ]
+    }
+  },
+  "weapon_contract": {
+    "pivot": "mount origin",
+    "aim_node": "TurretPivot",
+    "muzzle_node": "Muzzle",
+    "uniform_scale": 1.0,
+    "conservative_xz_rotation_radius": 1.24,
+    "minimum_mount_center_distance": 2.6
+  }
+}

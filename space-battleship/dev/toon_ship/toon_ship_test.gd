@@ -31,6 +31,11 @@ var prototype_frames := 0
 var capture_directory := ""
 var parameters_signature := ""
 var paused_presentation_signature := ""
+var fixture_name := ""
+var current_hull := ""
+var protect_silhouette := false
+var stable_center := Vector2.ZERO
+var stable_center_ready := false
 
 
 func _ready() -> void:
@@ -44,21 +49,26 @@ func _ready() -> void:
 		game.load_progress()
 		game.resume_progress()
 		build_ui()
-	if str(game.profile.selectedShip)!="Heavy_Battleship":
-		push_error("Run preview.py with the eight-slot Heavy_Battleship snapshot")
-		get_tree().quit(1)
-		return
+	for arg in args:
+		if arg.begins_with("--prototype-fixture="):
+			fixture_name = arg.trim_prefix("--prototype-fixture=")
+			_apply_fixture(fixture_name)
 	ship_view = SHIP_VIEW.new()
 	ship_view.name = "ToonShipView"
 	ship_view.size = BATTLE_VIEW_SIZE
 	ship_view.z_index = 0
 	battle_clip.add_child(ship_view)
+	# Default preserves foreground projectile visibility. O toggles an experimental opaque mask.
+	# Neither order changes shot positions, damage, timing or RNG.
 	battle_clip.move_child(ship_view,battle_layer.get_index())
-	ship_view.set_loadout(game.weapon_entries())
+	ship_view.set_hull(str(game.profile.selectedShip))
+	current_hull = str(game.profile.selectedShip)
+	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	pulse_layer = Node2D.new()
 	pulse_layer.name = "PrototypePulse"
 	pulse_layer.z_index = 2
 	battle_clip.add_child(pulse_layer)
+	pulse_layer.draw.connect(_draw_muzzle_cues)
 
 	_set_reference_dimensions()
 	for arg in args:
@@ -81,6 +91,12 @@ func _set_reference_dimensions() -> void:
 	var rect := image.get_used_rect()
 	var factor: float = float(battle_visual.player_core_scale)*player_art_scale()
 	reference_height = float(rect.size.y)*factor
+	# Frame the combined formation at battle scale, never enlarge the original hull footprint.
+	# Reserve 10% side margin for ordinary idle yaw; diagnostic rear angles do not widen gameplay aim.
+	reference_height = minf(reference_height,BATTLE_VIEW_SIZE.x*0.90*ship_view.model_span/ship_view.formation_width)
+	# Reduce only the large own-ship classes; tiny frigates keep their legibility.
+	reference_height *= 0.74 if str(game.profile.selectedShip)=="Heavy_Battleship" else 0.85 if str(game.profile.selectedShip)=="Battleship" else 1.0
+	stable_center_ready=false
 	reference_offset = Vector2.ZERO # The modular hull origin is its own center, not the PNG canvas center.
 
 
@@ -101,28 +117,56 @@ func _process(delta: float) -> void:
 	prototype_frames += 1
 	if not game.paused: demo_time += delta
 	_sync_parameters()
-	if game.weapon_entries().size()!=8:
-		prototype_enabled = false
-		ship_view.set_rendering(false)
-		return
-	ship_view.set_loadout(game.weapon_entries())
-	var target := player_render_position()+Vector2(sin(demo_time*0.7)*180,-450)
+	if current_hull != str(game.profile.selectedShip):
+		current_hull = str(game.profile.selectedShip)
+		if not ship_view.set_hull(current_hull):
+			prototype_enabled = false
+			ship_view.set_rendering(false)
+			return
+		_set_reference_dimensions()
+	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+	var anchor := _stable_player_anchor()
+	if not stable_center_ready:
+		stable_center=anchor
+		stable_center_ready=true
+	elif not game.paused and battle_layer.visible:
+		stable_center=stable_center.lerp(anchor,1.0-exp(-3.0*minf(delta,0.1)))
+	var target := player_render_position()+Vector2(0,-450)
 	if not game.enemies.is_empty(): target = enemy_render_position(game.enemies[0])
 	var pose_signature := str([parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
+	if capture_directory!="" and prototype_frames==150: _capture()
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	var shake_offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
-	ship_view.set_pose(player_render_position()+reference_offset+shake_offset,reference_height,player_idle_angle(),target,demo_time,shield_enabled,close_up)
+	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0 if game.paused or not battle_layer.visible else delta)
 	var angles: Array = []
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
 	ship_view.set_slot_angles(angles)
 	for plume in ship_view.exhaust_nodes: plume.visible = effects_enabled
 	var alive: bool = GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT
 	ship_view.set_rendering(prototype_enabled and alive and battle_layer.visible,game.paused)
-	pulse_layer.visible = ship_view.visible
+	pulse_layer.visible = ship_view.visible and effects_enabled
 	pulse_layer.queue_redraw()
-	if capture_directory!="" and prototype_frames==150:
-		_capture()
+
+
+func _draw_muzzle_cues() -> void:
+	# Read existing presentation fire timestamps only. No synthetic shots, recoil,
+	# RNG, hit timing or combat events are generated by this small foreground cue.
+	if not effects_enabled or not prototype_enabled: return
+	for module in ship_view.modules:
+		var pose: Dictionary = turret_visuals.get(int(module.slot),{})
+		var age := fx_time-float(pose.get("fired_at",-100.0))
+		if age<0.0 or age>0.12: continue
+		var fade := 1.0-age/0.12
+		var point: Vector2 = ship_view.screen_muzzle_for_slot(int(module.slot))
+		var ahead: Vector2 = ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
+		var direction := (ahead-point).normalized()
+		var across := Vector2(-direction.y,direction.x)
+		var color := Color("ffbf75") if str(module.key) in ["missile","cannon"] else Color("96f6ff")
+		color.a = fade
+		# Short directional stroke keeps the precise exit visible without covering
+		# the turret with a broad bloom disk. It is intentionally a 2D overlay.
+		pulse_layer.draw_line(point,point+direction*(9.0+6.0*fade),color,2.0,true)
+		pulse_layer.draw_line(point+direction*3.0-across*3.0*fade,point+direction*3.0+across*3.0*fade,Color(1,1,1,fade),1.5,true)
 
 
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield_active: bool) -> void:
@@ -174,6 +218,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			battle_layer.queue_redraw()
 		KEY_C: close_up = not close_up
 		KEY_V: set_effects(not effects_enabled)
+		KEY_O:
+			protect_silhouette = not protect_silhouette
+			battle_clip.move_child(ship_view,battle_layer.get_index()+1 if protect_silhouette else battle_layer.get_index())
 		KEY_P: game.paused = not game.paused
 		_: return
 	_sync_parameters()
@@ -182,7 +229,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _update_title() -> void:
-	get_window().title = "模块战舰原型 | T Toon %s · R Rim %s · S 护盾 · B 原图 · C 近看 · V 特效 · P 暂停 | %s" % ["开" if toon_enabled else "关","开" if rim_enabled else "关","近看" if close_up else "实战尺寸"]
+	get_window().title = "五舰混合原型 | %s | %s | C 近看 · V 特效 · O 遮挡保护 · P 暂停" % [str(game.profile.selectedShip),"合成满载夹具（非玩家存档）" if not fixture_name.is_empty() else "隔离预览"]
 
 
 func _capture() -> void:
@@ -201,13 +248,52 @@ func _capture() -> void:
 	if requested_exit: get_tree().quit()
 
 
-func player_render_position() -> Vector2:
+func player_idle_angle() -> float:
+	return 0.0 if prototype_enabled else super.player_idle_angle()
+
+
+func _stable_player_anchor() -> Vector2:
 	var point := super.player_render_position()
-	if prototype_enabled and reference_height>0:
-		# Reserve the existing HUD gap for the new hull's actual opaque bounds.
-		point.y = minf(point.y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-reference_height*0.5)
+	# The inherited renderer adds perpetual sine bob. Remove it only in this
+	# developer view; real game.player.x movement, if any, remains the input.
+	point-=Vector2(sin(fx_time*TAU/5.7)*float(battle_visual.player_idle_x),sin(fx_time*TAU/4.3)*float(battle_visual.player_idle_y))
+	if reference_height>0:
+		point.y=minf(point.y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-reference_height*0.5)
+	if str(game.profile.selectedShip)=="Heavy_Battleship":
+		# Reserve an orbit below the mother ship without enlarging the hull itself.
+		point.y=minf(point.y,BATTLE_VIEW_SIZE.y*0.66)
 	return point
+
+
+func player_render_position() -> Vector2:
+	if not prototype_enabled:return super.player_render_position()
+	if battle_draw_active:return battle_draw_player_position
+	return stable_center if stable_center_ready else _stable_player_anchor()
 
 
 func draw_battle() -> void:
 	if effects_enabled: super.draw_battle()
+
+
+func _apply_fixture(key: String) -> void:
+	# Explicit in-memory synthetic fixture, never represented as a player save.
+	if db.ship(key).is_empty():
+		push_error("Unknown synthetic fixture hull: "+key)
+		get_tree().quit(1)
+		return
+	game.profile.selectedShip = key
+	game.profile.loadout = game.empty_loadout(key)
+	var pattern := ["laser","missile","cannon","longLaser","missile","longLaser","cannon","missile"]
+	# Preserve the earlier heavy repeated-weapon review as its dedicated fixture.
+	if key == "Heavy_Battleship": pattern = ["laser","missile","missile","missile","missile","longLaser","cannon","longLaser"]
+	for index in game.profile.loadout.weapons.size():
+		game.profile.loadout.weapons[index].key = pattern[index]
+	game.profile.loadout.defence[0].key = "armour"
+	game.invalidate_stat_cache()
+	game.reset_player()
+	game.projectiles.clear()
+	projectile_visuals.clear()
+	beam_visuals.clear()
+	turret_visuals.clear()
+	game.paused = true
+	build_ui()
