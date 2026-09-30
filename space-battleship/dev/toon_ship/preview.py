@@ -20,12 +20,16 @@ def main():
     source.add_argument("--fixture", choices=HULLS + ("all",), help="Explicit synthetic full-loadout fixture; no player save")
     parser.add_argument("--reuse", type=Path, help="Reuse a directory previously created by this launcher")
     parser.add_argument("--interactive", action="store_true")
-    parser.add_argument("--pulse-fixture", action="store_true", help="Synthetic same-hull all-pulse loadout for visual review")
+    weapon_fixture = parser.add_mutually_exclusive_group()
+    weapon_fixture.add_argument("--pulse-fixture", action="store_true", help="Synthetic same-hull all-pulse loadout for visual review")
+    weapon_fixture.add_argument("--rail-fixture", action="store_true", help="Synthetic all-cannon loadout")
+    weapon_fixture.add_argument("--missile-fixture", action="store_true", help="Synthetic all-missile loadout")
+    weapon_fixture.add_argument("--beam-fixture", action="store_true", help="Synthetic all-continuous-beam loadout")
     args = parser.parse_args()
     if not args.godot or not Path(args.godot).is_file():
         parser.error("Supply --godot PATH to a Godot 4 executable, or put godot in PATH")
-    if args.pulse_fixture and not args.fixture:
-        parser.error("--pulse-fixture requires an explicit synthetic --fixture")
+    if (args.pulse_fixture or args.rail_fixture or args.missile_fixture or args.beam_fixture) and not args.fixture:
+        parser.error("Weapon fixture flags require an explicit synthetic --fixture")
     if args.interactive and args.fixture == "all":
         parser.error("Choose one hull for interactive preview")
     if args.snapshot:
@@ -79,6 +83,9 @@ def main():
         run += ["--script", "res://dev/toon_ship/full_loadout_check.gd"] if checked else ["res://dev/toon_ship_test.tscn"]
         run += ["--", "--output=" + str(output)] if checked else ["--", "--prototype-capture=" + str(output)]
         run += ["--prototype-fixture=" + hull] if args.fixture else ["--prototype-saved-loadout"]
+        if args.missile_fixture: run += ["--prototype-missile-fixture"]
+        if args.beam_fixture: run += ["--prototype-beam-fixture"]
+        if args.rail_fixture: run += ["--prototype-rail-fixture"]
         if args.pulse_fixture: run += ["--prototype-pulse-fixture"]
         if not args.interactive: run += ["--prototype-exit"]
         flags = {"smooth": "smooth", "close": "close", "no-rim": "no-rim", "original": "original"}

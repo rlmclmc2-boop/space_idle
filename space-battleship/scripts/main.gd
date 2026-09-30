@@ -2411,6 +2411,7 @@ func draw_battle() -> void:
 	for p in visible_projectiles:
 		var pos := battle_point(Vector2(p.x,p.y))+offset
 		if p.get("beam", false):
+			if game.long_laser_valid(p) and draw_beam_override(p,offset,false):continue
 			pos = battle_point(visual_muzzle(p))+offset
 			if game.long_laser_valid(p):
 				var end := entity_render_position(p.target) + offset
@@ -2459,6 +2460,7 @@ func draw_battle() -> void:
 		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
 		var key := str(p.key).replace("_mon", "").replace("-mon", "")
 		if key in ["laser","cannon"]:continue
+		if draw_projectile_body_override(p,pos,angle):continue
 		var texture := visual_texture(str(weapon_visual_profile(key).get("projectile_vfx","")))
 		if texture==null:continue
 		var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
@@ -2468,6 +2470,7 @@ func draw_battle() -> void:
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
 	for shot in visible_projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
+		if draw_beam_override(shot,offset):continue
 		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
 			var pos := battle_point(visual_muzzle(shot))+offset
 			var color := ORANGE if shot.hostile else CYAN
@@ -2504,6 +2507,14 @@ func draw_battle() -> void:
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+
+func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float) -> bool:
+	# Optional presentation override; default retains the existing projectile sprite.
+	return false
+
+func draw_beam_override(_shot: Dictionary, _offset: Vector2, _core: bool = true) -> bool:
+	# Optional presentation override; default preserves the original draw commands.
+	return false
 
 func draw_furnace_drop(drop: Dictionary, pos: Vector2, core: bool, bob: float) -> void:
 	var accent := PURPLE if core else ORANGE
