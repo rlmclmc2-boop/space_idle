@@ -48,7 +48,7 @@ func setup(owner: Node) -> void:
 	action = make_button(row,"next",activate)
 	make_button(row,"dismiss",dismiss)
 	reopen = make_button(self,"reopen",open_guide)
-	reopen.position = host.BATTLE_ORIGIN - host.ui.position + Vector2(16,990)
+	reopen.position = host.BATTLE_ORIGIN - host.ui.position + Vector2(16,570)
 	outline = Panel.new()
 	outline.mouse_filter = MOUSE_FILTER_IGNORE
 	var border: StyleBoxFlat = host.style(Color(0,0,0,0),host.CYAN)
@@ -136,26 +136,37 @@ func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
 	var playing: bool = host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT]
 	var blocked: bool = host.help_open or (is_instance_valid(host.chrono_login_dialog) and host.chrono_login_dialog.visible) or (is_instance_valid(host.balance_lab) and host.balance_lab.visible)
-	host.set_ui_value(reopen,"visible",playing and not blocked)
 	var visible_now: bool = playing and not blocked and not flags().dismissed and (not flags().completed or review)
+	host.set_ui_value(reopen,"visible",playing and not blocked and not visible_now)
 	host.set_ui_value(panel,"visible",visible_now)
 	if not visible_now:
 		host.set_ui_value(outline,"visible",false)
 		return
 	var step := decide()
 	phase = step.phase
+	host.set_ui_value(panel,"position",host.BATTLE_ORIGIN-host.ui.position+Vector2(16,16 if phase=="unlock" else 570))
 	target_slot = step.get("slot","")
 	host.set_ui_value(body,"text",UIText.t("onboarding."+phase,{"cost":step.cost} if step.has("cost") else {}))
 	host.set_ui_value(action,"visible",step.has("action"))
 	if step.has("action"):host.set_ui_value(action,"text",UIText.t("onboarding."+str(step.action)))
 	target = resolve_anchor(str(step.get("anchor","")),target_slot)
 	if phase=="unlock":target = host.continue_button
-	var show_target := is_instance_valid(target) and target.is_visible_in_tree()
+	var target_rect := visible_anchor_rect(target)
+	var show_target := target_rect.has_area()
 	host.set_ui_value(outline,"visible",show_target)
 	if show_target:
-		var rect := get_global_transform().affine_inverse()*target.get_global_rect()
+		var rect := get_global_transform().affine_inverse()*target_rect
 		host.set_ui_value(outline,"position",rect.position-Vector2(3,3))
 		host.set_ui_value(outline,"size",rect.size+Vector2(6,6))
+
+func visible_anchor_rect(control: Control) -> Rect2:
+	if not is_instance_valid(control) or not control.is_visible_in_tree():return Rect2()
+	var rect := control.get_global_rect()
+	var ancestor := control.get_parent()
+	while ancestor != null:
+		if ancestor is Control and ancestor.clip_contents:rect = rect.intersection(ancestor.get_global_rect())
+		ancestor = ancestor.get_parent()
+	return rect
 
 func resolve_anchor(id: String, slot: String) -> Control:
 	if id.is_empty():return null
@@ -174,11 +185,13 @@ func activate() -> void:
 		"intro":flags().intro = true
 		"clear":flags().completed = true
 		"unlock":
-			# Navigation only: the player explicitly acknowledges the existing notice.
-			host.continue_button.grab_focus()
+			# Reuse the existing explicit acknowledgement action.
+			host.continue_button.pressed.emit()
 		_:
 			host.select_system(0)
 			if not target_slot.is_empty():
 				host.equipment_panel.select_item(target_slot)
+				if phase in ["upgrade","waiting"] and host.equipment_panel.has_method("set_upgrade_amount"):host.equipment_panel.set_upgrade_amount(1)
+				if host.equipment_panel.cards.has(target_slot):host.equipment_panel.grid_scroll.ensure_control_visible(host.equipment_panel.cards[target_slot])
 				if phase=="equip" and host.equipment_panel.has_method("open_picker"):host.equipment_panel.open_picker(target_slot)
 	refresh()

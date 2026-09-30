@@ -17,7 +17,7 @@
 {"key": "onboarding.unlock", "text": "新内容已解锁。先阅读提示并点击「继续」，战斗才会继续；装备面板仍可操作。", "params": "", "category": "onboarding"},
 {"key": "onboarding.paused", "text": "战斗已暂停。你仍可查看和管理装备，取消暂停后继续自动战斗。", "params": "", "category": "onboarding"},
 {"key": "onboarding.review", "text": "自动战斗获得资源 → 免费装配已解锁武器 → 花资源升级模块 → 通关解锁新内容。撤退会修复战舰，装备与升级保留。", "params": "", "category": "onboarding"},
-{"key": "onboarding.continue", "text": "查看解锁提示", "params": "", "category": "onboarding"},
+{"key": "onboarding.continue", "text": "继续战斗", "params": "", "category": "onboarding"},
 {"key": "onboarding.no_upgrade", "text": "当前已装配模块已达可升级上限。继续战斗推进，后续可检查新模块与解锁内容。", "params": "", "category": "onboarding"},
   {"key":"planet.activate","text":"启用","params":"","category":"planet"},
   {"key":"planet.facility_status_ready","text":"待启用","params":"","category":"planet"},
