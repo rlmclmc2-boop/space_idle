@@ -28,7 +28,7 @@ func _init(database:ShipDatabase,persist:=false)->void:
 	if not database.has_meta("heavy_rocket_prototype_v2"):
 		database.set_meta("heavy_rocket_prototype_v2",true)
 		for row in database.equipment.get("missile",[]):
-			row.para1=2;row.cd=2.4;row.dmg=float(row.dmg)*2.0
+			row.para1=5;row.cd=2.4;row.dmg=float(row.dmg)*2.0
 			row.para2=MISSILE_CRUISE_SPEED/float(database.defaults.projectilePixelsPerUnit)
 	super(database,persist)
 
