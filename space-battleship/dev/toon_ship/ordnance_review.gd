@@ -178,7 +178,7 @@ func run()->void:
 			captured_frames=frame_index+1
 			if not fixture_target.is_empty() and float(fixture_target.hp)<=0:
 				if initial_target_death<0:initial_target_death=frame_index
-				if frame_index>=initial_target_death+(36 if interrupt_target else 24):break
+				if frame_index>=initial_target_death+(105 if interrupt_target else 24):break
 		check(readonly_ok,"Drawing must not mutate gameplay")
 		check(observed_slots.has(source_slot) and (single_source or observed_slots.has(5)),"Capture must contain both hull and moving-drone rail fire")
 		if mode=="after" and kind=="missile":

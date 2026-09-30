@@ -5,7 +5,7 @@ const RAIL_SPEED_FACTOR := 12.0
 const MISSILE_LAUNCH_SPEED := 120.0
 const MISSILE_CRUISE_SPEED := 420.0
 const MISSILE_TURN_RATE := 4.0
-const ORPHAN_LIFETIME := 0.80
+const ORPHAN_LIFETIME := 2.20
 const MISSILE_IGNITION := 0.22
 const MISSILE_SEEK_START := 0.40
 const MISSILE_CRUISE_AT := 0.65
@@ -20,6 +20,7 @@ var lifetime_expirations:=0
 var maximum_turn_step_error:=0.0
 var orphan_expirations:=0
 var cancelled_ejections:=0
+var missile_retirements:Array[Dictionary]=[]
 
 func _init(database:ShipDatabase,persist:=false)->void:
 	# Prototype-owned in-memory parameters, visible to its equipment panel.
@@ -40,10 +41,15 @@ func tick(dt:float)->void:
 			var until:=float(packet.due)-motion_clock
 			if until>0.000000001:step=minf(step,until)
 		motion_clock+=step
+		var boss_survivors:Array=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead)) if state==State.COMBAT and is_boss_encounter() else []
 		super.tick(step)
+		if state==State.LEVEL_CLEAR:
+			for shot in boss_survivors:
+				if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
 		remaining-=step
 
 func reset_player()->void:
+	event.emit("prototype_missile_reset",{})
 	cancelled_ejections+=missile_queue.size();missile_queue.clear()
 	super.reset_player()
 
@@ -105,7 +111,8 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if not bool(shot.get("prototype_missile",false)):return false
 	shot.motion_age=float(shot.motion_age)+dt
-	if float(shot.motion_age)>4.5:shot.dead=true;lifetime_expirations+=1;return true
+	if float(shot.motion_age)>4.5:
+		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
 	if not shot.target.is_empty() and (not enemies.has(shot.target) or float(shot.target.hp)<=0):shot.target={}
 	var position:=Vector2(shot.x,shot.y)
 	var old_angle:float=Vector2(shot.direction).angle()
@@ -132,8 +139,18 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		elif float(shot.closest_range)<90.0 and range_now>float(shot.closest_range)+12.0:shot.target={}
 	else:
 		shot.orphan_age=float(shot.orphan_age)+dt
-		if float(shot.orphan_age)>=ORPHAN_LIFETIME:shot.dead=true;orphan_expirations+=1
+		if float(shot.orphan_age)>=ORPHAN_LIFETIME+float(posmod(int(shot.serial)*37,7))*0.09:
+			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
 	var movement:=Vector2(shot.direction)*float(shot.speed)*dt
 	shot.x+=movement.x;shot.y+=movement.y
 	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+80:shot.dead=true
 	return true
+
+func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
+	if bool(shot.get("retirement_emitted",false)):return
+	shot.retirement_emitted=true;shot.dead=true
+	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast}
+	missile_retirements.append(record)
+	if missile_retirements.size()>128:missile_retirements.pop_front()
+	# Presentation-only notification, never a projectile impact or damage event.
+	event.emit("prototype_missile_retired",record)

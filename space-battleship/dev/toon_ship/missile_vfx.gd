@@ -110,3 +110,12 @@ static func impact(surface: CanvasItem, point: Vector2, direction: Vector2, age:
 		surface.draw_line(end-radial*3.0,end,Color(AMBER,fade*0.6),1.3,true)
 	var hot := clampf(1.0 - age / 0.065, 0.0, 1.0)
 	surface.draw_circle(point, (4.0 + 1.0 * t) * scale_value, Color(HOT, hot * decoration))
+
+
+static func retire(surface:CanvasItem,point:Vector2,direction:Vector2,age:float)->void:
+	# Neutral casing breakup: no warhead flash, hit ring, damage cue or shake.
+	var t:=clampf(age/0.18,0.0,1.0)
+	for index in 3:
+		var axis:=direction.rotated(float(index-1)*1.4)
+		var center:=point+axis*(2.0+7.0*t)
+		surface.draw_line(center-axis*1.5,center+axis*1.5,Color(SHADOW,(1.0-t)*0.8),1.4,true)

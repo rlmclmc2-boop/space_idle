@@ -196,7 +196,7 @@ func _process(delta: float) -> void:
 	for serial in beam_full_started.keys():
 		if not valid_beams.has(serial):beam_full_started.erase(serial)
 	if not is_instance_valid(ship_view): return
-	missile_events = missile_events.filter(func(e):return fx_time-float(e.born)<0.25)
+	missile_events = missile_events.filter(func(e):return fx_time-float(e.born)<float(e.get("duration",0.25)))
 	if accelerated_visual_mode:missile_events.clear()
 	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<0.31)
 	if accelerated_visual_mode:rail_events.clear()
@@ -282,11 +282,23 @@ func _draw_muzzle_cues() -> void:
 		for event in missile_events:
 			var age:=fx_time-float(event.born)
 			var point:=battle_point(Vector2(event.position))
-			if event.kind=="fire":MISSILE_VFX.flash(pulse_layer,point,event.direction,age,budget)
+			if event.kind=="retired":
+				var coast_time:float=minf(age,float(event.coast_time))
+				point=battle_point(Vector2(event.position)+Vector2(event.direction)*float(event.speed)*coast_time)
+				if age<float(event.coast_time):MISSILE_VFX.flight(pulse_layer,point,event.direction,1.0,int(event.serial),1.0,true,false)
+				else:MISSILE_VFX.retire(pulse_layer,point,event.direction,age-float(event.coast_time))
+			elif event.kind=="fire":MISSILE_VFX.flash(pulse_layer,point,event.direction,age,budget)
 			else:MISSILE_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget,int(event.serial))
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="prototype_missile_reset":
+		missile_events.clear();return
+	if kind=="prototype_missile_retired":
+		if not missile_vfx_enabled:return
+		var coast_time:=1.20+float(posmod(int(info.serial)*13,5))*0.08 if bool(info.coast) else 0.0
+		missile_events.append({"kind":"retired","position":info.position,"direction":info.direction,"speed":info.speed,"serial":info.serial,"born":fx_time,"coast_time":coast_time,"duration":coast_time+0.18})
+		return
 	if kind=="projectile_impact" and bool(info.shot.get("prototype_missile",false)):
 		weapon_impact(info.shot,Vector2(info.pos));return
 	if prototype_enabled and continuous_beam_enabled and kind in ["beam_started","beam_hit"] and info.has("shot") and not bool(info.shot.hostile):

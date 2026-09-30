@@ -8,6 +8,9 @@ var baseline:Array[String]=[]
 var check_only:=false
 var first_difference:Dictionary={}
 var scene
+var single:=false
+var after_only:=false
+var capture_mode:=""
 func _initialize()->void:call_deferred("run")
 func check(ok:bool,text:String)->void:
 	if not ok and not errors.has(text):errors.append(text);printerr("FAIL: ",text)
@@ -26,19 +29,23 @@ func fingerprint(game)->String:
 	state["combat_rng_state"]=game.rng.state
 	return JSON.stringify(state)
 func capture(path:String)->void:
+	if after_only and capture_mode=="before":return
 	await process_frame
 	if check_only:return
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png(path)
 func run()->void:
 	for arg in OS.get_cmdline_user_args():
+		if arg=="--pulse-after-only":after_only=true
 		if arg=="--pulse-check-only":check_only=true
+		if arg=="--prototype-single-weapon=laser":single=true
 		if arg.begins_with("--output="):output=arg.trim_prefix("--output=")
 	if output.is_empty():quit(1);return
 	root.size=Vector2i(1335,859)
-	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":"Heavy, eight pulse lasers; no player save","gameplay":"ordinary deterministic combat progression; no altered CD/speed/hit/damage","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
+	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":("Heavy, one pulse laser; no player save" if single else "Heavy, eight pulse lasers; no player save"),"gameplay":"ordinary deterministic combat progression; no altered CD/speed/hit/damage","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
 	var shared_profile:Dictionary={}
 	for mode in ["before","after"]:
+		capture_mode=mode
 		seed(5927)
 		scene=load("res://dev/toon_ship_test.tscn").instantiate();root.add_child(scene);scene.set_process(false)
 		if shared_profile.is_empty():shared_profile=scene.game.profile.duplicate(true)
@@ -51,8 +58,9 @@ func run()->void:
 		scene.game.start(1,false);scene.game.distance=99.8
 		scene.fx_time=0.0;scene.demo_time=0.0;scene.clock=0.0
 		scene.game.paused=false;scene.build_ui()
+		if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide();scene.beginner_guide.set_process(false)
 		scene.pulse_vfx_enabled=(mode=="after")
-		var label:=Label.new();label.text=mode.to_upper()+" | PULSE LASER | SYNTHETIC 8-SLOT LOADOUT | REAL COMBAT, 30 Hz CAPTURE"
+		var label:=Label.new();label.text=mode.to_upper()+" | PULSE LASER | SYNTHETIC "+("1 SOURCE" if single else "8 SOURCES")+" | REAL COMBAT, 30 Hz CAPTURE"
 		label.position=Vector2(10,10);label.add_theme_font_size_override("font_size",18);scene.add_child(label)
 		var directory:=output.path_join(mode);DirAccess.make_dir_recursive_absolute(directory.path_join("frames"))
 		var peak:=0
@@ -79,7 +87,7 @@ func run()->void:
 			await capture(directory.path_join("frames/frame-%04d.png"%frame_index))
 			readonly_ok=readonly_ok and before_render==fingerprint(scene.game)
 		check(readonly_ok,"Drawing must not mutate gameplay")
-		check(observed_slots.has(0) and observed_slots.has(5),"Capture must contain both hull and moving-drone pulse fire")
+		check(observed_slots.has(0) and (single or observed_slots.has(5)),"Capture must contain both hull and moving-drone pulse fire")
 		if mode=="after":
 			check(scene.pulse_fire_count>0 and scene.pulse_hit_count>0,"Pulse launch and real impact events must both occur")
 			check(scene.pulse_origin_max_error<0.00001,"Launch origin must match actual projected moving-carrier muzzle")

@@ -25,8 +25,8 @@ def main():
     args = parser.parse_args()
     if args.offcenter_source and (not args.single_source or args.kind != "missile"):
         parser.error("--offcenter-source requires --single-source --kind missile")
-    if args.interrupt_target and (not args.check_only or not args.single_source or args.kind != "missile"):
-        parser.error("--interrupt-target requires --check-only --single-source --kind missile")
+    if args.interrupt_target and (not args.single_source or args.kind != "missile"):
+        parser.error("--interrupt-target requires --single-source --kind missile")
     if not args.godot:
         parser.error("Supply a Godot 4 executable")
     work = PROJECT.parent / "test/work"

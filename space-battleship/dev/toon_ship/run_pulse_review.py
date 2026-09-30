@@ -15,6 +15,9 @@ def main():
     parser.add_argument("--godot", default=shutil.which("godot") or shutil.which("godot4"))
     parser.add_argument("--reuse", type=Path, help="Directory previously created by this pulse launcher")
     parser.add_argument("--prepare-only", action="store_true", help="Prepare/import without graphical execution")
+    parser.add_argument("--after-only", action="store_true")
+    parser.add_argument("--single", action="store_true")
+    parser.add_argument("--check-only", action="store_true")
     args = parser.parse_args()
     if not args.godot:
         parser.error("Supply a Godot 4 executable")
@@ -53,7 +56,7 @@ def main():
     if args.prepare_only:
         return
     output = area / "Heavy_Battleship-pulse"
-    print(run_checked(command + ["--resolution", "1335x859", "--script", "res://dev/toon_ship/pulse_review.gd", "--", "--output=" + str(output), "--prototype-fixture=Heavy_Battleship", "--prototype-pulse-fixture"], area / "pulse.log"), flush=True)
+    print(run_checked(command + (["--headless"] if args.check_only else []) + ["--resolution", "1335x859", "--script", "res://dev/toon_ship/pulse_review.gd", "--", "--output=" + str(output), "--prototype-fixture=Heavy_Battleship", "--prototype-pulse-fixture"] + (["--prototype-single-weapon=laser"] if args.single else []) + (["--pulse-check-only"] if args.check_only else []) + (["--pulse-after-only"] if args.after_only else []), area / "pulse.log"), flush=True)
 
 
 
