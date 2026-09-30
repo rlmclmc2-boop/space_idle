@@ -1,0 +1,429 @@
+{
+	"checks": [
+		{
+			"message": "type-normal false title fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false level fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false num fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal false cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-normal dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-normal true title fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true level fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true num fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-normal level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-normal number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-normal dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false title fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false level fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false num fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme false cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-extreme dimensions retained",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true title fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true level fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true num fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true unit fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme true cost fits",
+			"pass": true
+		},
+		{
+			"message": "type-extreme level/number do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme title/level do not overlap",
+			"pass": true
+		},
+		{
+			"message": "type-extreme number clears button",
+			"pass": true
+		},
+		{
+			"message": "type-extreme dimensions retained",
+			"pass": true
+		}
+	],
+	"fonts": {
+		"developer_chinese": {
+			"fonts": [
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				}
+			],
+			"glyph": "装甲"
+		},
+		"developer_digits": {
+			"fonts": [
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				},
+				{
+					"family": "Noto Sans CJK SC",
+					"style": "Regular",
+					"variation": {
+
+					},
+					"weight": 400
+				}
+			],
+			"glyph": "0123456789"
+		},
+		"digit_widths_32": [
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0,
+			19.0
+		],
+		"proposal_chinese": {
+			"fonts": [
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				}
+			],
+			"glyph": "装甲"
+		},
+		"proposal_digits": {
+			"fonts": [
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 650.0
+					},
+					"weight": 100
+				}
+			],
+			"glyph": "0123456789"
+		},
+		"release_chinese": {
+			"fonts": [
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 400.0
+					},
+					"weight": 100
+				},
+				{
+					"family": "Noto Sans SC Thin",
+					"style": "Thin",
+					"variation": {
+						"2003265652": 400.0
+					},
+					"weight": 100
+				}
+			],
+			"glyph": "装甲"
+		}
+	},
+	"samples": [
+		{
+			"compact": false,
+			"cost": "65",
+			"level": "Lv.1",
+			"number": "100",
+			"scenario": "type-normal",
+			"unit": ""
+		},
+		{
+			"compact": true,
+			"cost": "65",
+			"level": "Lv.1",
+			"number": "1",
+			"scenario": "type-normal",
+			"unit": "K"
+		},
+		{
+			"compact": false,
+			"cost": "99000000T",
+			"level": "Lv.10000000",
+			"number": "99000000",
+			"scenario": "type-extreme",
+			"unit": "T"
+		},
+		{
+			"compact": true,
+			"cost": "99000000T",
+			"level": "Lv.10000000",
+			"number": "99000000",
+			"scenario": "type-extreme",
+			"unit": "T"
+		}
+	]
+}

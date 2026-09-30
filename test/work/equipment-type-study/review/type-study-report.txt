@@ -1,0 +1,34 @@
+装备两卡字体/信息层级样稿（仅评审）
+基线：61e46f4100a2ba7edb8657bff75e75db3bee4fe5
+独立分支：codex/equipment-type-study
+正式代码零修改，仅新增test/equipment_type_study.gd及精选预览。未更新统一分支/main；最新五发导弹等代码原样保留。
+
+参考图访问：已用当前Library prepare_materialize解析libfile_0c14c03e66848191916a4f2851325dda/image(10).png，获准下载；官方传输助手download failed，本环境目标文件不存在，未看过用户原图。依据已验证的现有面板实机像素和当前实际组件制作，不假称消费原图。
+
+字体事实（不是截图猜测）
+- main.gd开发版设置SystemFont候选：Microsoft YaHei UI、Microsoft YaHei、Noto Sans CJK SC、sans-serif。本Linux环境TextServer对“装甲”和0123456789实际解析均为Noto Sans CJK SC/Regular/400。不能据此断言用户Windows的实际字体。
+- 发布版使用仓库assets/fonts/NotoSansSC.ttf可变字体及NotoSansSC-Regular.tres固定wght=400。中文和数字共用字体；原资源family/style元数据带Thin，实际变体由数字轴2003265652控制，不能只看名称误认成字重100。
+- 字体来源/许可已有assets/fonts/README.md与OFL.txt；本次不下载或增加任何字体资源、依赖。
+- 原武器字号：名称24、等级20、属性20、升级按钮最终21。紧凑防御：名称20、等级18、属性18、按钮21。apply_readable_fonts先设置下限，card.layout_contents又覆写部分字号。
+- 原面板工作区缩放0.875，正常1373x883还乘约883/1256；有效系数约0.615。原防御属性18实际约11.1像素。样稿不通过继续缩字塞内容。
+
+样稿变化
+- 完全复用原equipment_card.gd底板、图标、升级按钮皮肤及原卡片尺寸。武器652x156、防御319x176，保持12槽布局容量的尺寸约束；只做两张卡，不改全局主题。
+- 名称650字重：武器26、防御23；等级500字重20，放在名称下并左对齐，图标属于同一识别区。
+- 核心数字650字重：武器36、防御30，右对齐；属性标签18、数量后缀20使用500字重和较弱颜色。K/M/B/T从既有显示字符串拆成相邻文本控件，数字值和格式算法不变。
+- 升级按钮保留原位置与外框：左侧“升级”20/500，右侧费用24/650，资源名18/500；统一16逻辑像素内边距。
+- 名称/数字的650字重已用TextServer实际variation_coordinates验证；次级文字配置wght=500。tnum特性设置；0至9逐字测宽，在字号32时均19逻辑像素。
+- 换算现有正常窗口：核心数字武器约22.1像素、防御约18.5像素；名称约16.0/14.2像素。窄窗口仍会整体缩小，本轮未改变窗口适配。
+
+两张真实Godot对比图
+1. type-normal.png：同图左侧当前、右侧样稿；武器Lv.1/伤害100，防御Lv.1/装甲1K，升级65铁。
+2. type-extreme.png：同图左侧当前、右侧样稿；Lv.10000000，属性和费用输入9.99999e19，经原格式器显示99000000T。
+两图均1480x710，由Godot直接渲染，无AI改图、无截图缩放或后期合成。此为逻辑尺寸1:1两卡样稿，非正常窗口全屏截图，图内已注明。
+
+验证：Godot4.6.3 + Xorg/llvmpipe真实渲染，2种数据、36项针对性检查通过、进程退出码0。检查名称/等级/数字/费用文本测宽、主次区域无交叠、数字不占按钮、卡片尺寸保持。未重跑全量矩阵、未验证购买算法、不写玩家存档。退出存在先前同类ObjectDB资源清理警告，不影响图像及检查结果。
+
+建议评审重点：是否认可名称/等级成组、粗体数字的强弱比例及左右对齐；确认后再考虑逐卡应用及发布字体实测。本轮不自动全量替换。
+
+复现：隔离复制项目并导入；将test/equipment_type_study.gd置于隔离project上一级，隔离XDG目录，在GUI运行godot --path <project> --audio-driver Dummy --script ../equipment_type_study.gd。生成两张PNG及type-study-results.json。
+
+传递状态：Library上传助手在hosted apps tools/list阶段报network错误，无创建结果或library_file_id。按授权回退到独立分支的原始PNG和报告，父任务可通过GitHub连接器或git fetch读取；没有以本地路径冒充附件。
