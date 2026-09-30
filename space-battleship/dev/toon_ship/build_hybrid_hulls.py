@@ -5,6 +5,7 @@ Rebuild with Blender:
     --python dev/toon_ship/build_hybrid_hulls.py
 
 Plain Python --describe validates the authored layout without starting Blender.
+Use --hulls-only to preserve the independent drone and weapon assets verbatim.
 The four existing weapon files are read-only inputs. No gameplay data is emitted.
 Coordinates in SPECS are Godot coordinates: +Y up, -Z forward, meters.
 """
@@ -172,8 +173,8 @@ def frigate(root, hull):
     for side in (-1, 1):
         g.box("SternEngineArmor", (side * 0.87, -2.04, 0.43), (0.56, 0.62, 0.25),
               "ProtoIvory", hull, 0.08)
-        g.box("ShoulderPaint", (side * 1.95, -1.03, 0.57), (0.16, 0.34, 0.055),
-              "ProtoHullBlue", hull, 0.02)
+        armor("ShoulderPaint", mirror([(1.94,-1.43),(2.23,-1.09),(2.12,-0.81),
+              (1.84,-1.15)], side), 0.43, 0.575, hull, "ProtoHullBlue", 0.025)
 
 
 def destroyer(root, hull):
@@ -190,7 +191,17 @@ def destroyer(root, hull):
         g.box("ForkLight", (side * 1.94, 2.11, 0.57), (0.14, 0.58, 0.06),
               "ProtoCyan", hull, 0.02)
         engine(root, 1 if side < 0 else 2, side * 1.75, -2.20, radius=0.31)
-    canopy(hull, -0.12, width=0.66, length=0.72, roof=0.66)
+    # A low escort bridge and long engine housings make the twin-boom silhouette
+    # legible without adding fine panel lines or moving any weapon seat.
+    spine("EscortCommandFairing", [(-0.91,0.19,0.42,0.55),(-0.51,0.43,0.42,0.78),
+          (0.27,0.36,0.42,0.76),(1.13,0.17,0.42,0.57)], hull, "ProtoIvory", 0.055)
+    g.box("EscortBridgeGlass", (0,0.13,0.79), (0.44,0.19,0.04), "ProtoCyan", hull,0.02)
+    for side in (-1,1):
+        spine("EngineBoomArmor", [(-2.32,0.26,0.24,0.56),(-1.91,0.44,0.24,0.70),
+              (-0.95,0.36,0.26,0.66),(-0.44,0.17,0.29,0.51)],
+              hull,"ProtoIvory",0.06,x=side*1.77)
+        armor("BoomBlueBand",mirror([(1.49,-1.82),(2.10,-1.72),(2.03,-1.42),
+              (1.49,-1.52)],side),0.54,0.71,hull,"ProtoHullBlue",0.025)
     armor("AftCap", [(-0.90, -2.54), (0.90, -2.54), (0.58, -2.93), (-0.58, -2.93)],
           -0.12, 0.50, hull)
 
@@ -211,7 +222,19 @@ def cruiser(root, hull):
               "ProtoCyan", hull, 0.02)
         engine(root, 1 if side < 0 else 3, side * 1.18, -1.83, radius=0.25)
     engine(root, 2, 0, -2.77, radius=0.27)
-    canopy(hull, 0, width=0.67, length=0.94, roof=0.84)
+    # Broad swept collars connect the outriggers to a raised navigation core.
+    # All additions stay within the old footprint and below the gun decks nearby.
+    for side in (-1,1):
+        armor("ForwardWingCollar",mirror([(0.54,0.51),(1.09,1.10),(1.55,1.12),
+              (2.77,0.46),(2.55,0.16),(1.33,0.61),(0.73,0.24)],side),
+              0.16,0.61,hull,bevel=0.065)
+        armor("WingBlueBand",mirror([(2.70,-0.90),(3.00,-0.71),(2.72,-0.45),
+              (2.46,-0.66)],side),0.42,0.615,hull,"ProtoHullBlue",0.025)
+        armor("AftDriveFairing",mirror([(0.57,-1.12),(1.26,-1.18),(1.54,-1.58),
+              (1.24,-1.91),(0.93,-1.84)],side),0.08,0.55,hull,bevel=0.055)
+    spine("NavigatorCitadel",[(-0.74,0.22,0.42,0.62),(-0.37,0.44,0.42,0.87),
+          (0.39,0.35,0.42,0.87),(0.76,0.17,0.42,0.65)],hull,"ProtoIvory",0.06)
+    g.box("NavigatorGlass",(0,0.28,0.90),(0.49,0.20,0.04),"ProtoCyan",hull,0.025)
     armor("AftFin", [(-0.37, -2.53), (0.37, -2.53), (0.21, -3.03), (-0.21, -3.03)],
           -0.09, 0.57, hull, bevel=0.045)
 
@@ -231,7 +254,17 @@ def battleship(root, hull):
               "ProtoCyan", hull, 0.02)
         engine(root, 1 if side < 0 else 3, side * 1.13, -2.73, radius=0.33)
     engine(root, 2, 0, -2.88, radius=0.37)
-    canopy(hull, -0.11, width=0.79, length=1.04, roof=0.90)
+    spine("ArmoredCommandTower",[(-1.00,0.32,0.46,0.67),(-0.52,0.52,0.46,1.00),
+          (0.40,0.47,0.46,0.96),(1.13,0.28,0.46,0.67)],hull,"ProtoIvory",0.075)
+    g.box("CommandRoof",(0,-0.30,1.01),(0.55,0.47,0.09),"ProtoHullBlue",hull,0.045)
+    g.box("CommandGlass",(0,0.29,0.99),(0.59,0.21,0.045),"ProtoCyan",hull,0.025)
+    for side in (-1,1):
+        armor("ShoulderBlueBand",mirror([(2.32,0.31),(2.83,0.38),(2.77,-0.11),
+              (2.29,-0.16)],side),0.52,0.705,hull,"ProtoHullBlue",0.03)
+        armor("MidshipBelt",mirror([(0.65,0.35),(1.97,0.35),(2.11,-0.21),
+              (0.65,-0.27)],side),0.32,0.57,hull,bevel=0.06)
+        g.box("ArmoredDriveCowl",(side*1.13,-2.52,0.43),(0.70,0.55,0.27),
+              "ProtoIvory",hull,0.07)
 
 
 def heavy_battleship(root, hull):
@@ -262,9 +295,8 @@ def heavy_battleship(root, hull):
               (1.24, 0.47), (0.67, 0.88), (0.82, -0.15)], side),
               0.32, 0.59, hull, bevel=0.065)
         # Rear exposed radiators visually separate the engine room from the gun deck.
-        for y in (-2.19, -2.39, -2.59):
-            g.box("AftRadiator", (side * 0.27, y, 0.49), (0.26, 0.09, 0.08),
-                  "ProtoGraphite", hull, 0.02)
+        g.box("AftRadiator", (side * 0.27, -2.39, 0.49), (0.26, 0.48, 0.08),
+              "ProtoGraphite", hull, 0.035)
     spine("RaisedCitadel", [(-1.10, 0.56, 0.40, 0.67), (-0.64, 0.67, 0.42, 0.95),
                           (0.54, 0.48, 0.42, 0.89), (1.21, 0.23, 0.42, 0.65)],
           hull, "ProtoIvory", 0.08)
@@ -348,7 +380,8 @@ def build():
     (HULL_OUT / "source").mkdir(parents=True, exist_ok=True)
     bpy.context.preferences.filepaths.save_version = 0
     hulls = {name: build_hull(name, spec, checks[name]) for name, spec in SPECS.items()}
-    drone = build_drone()
+    drone = (json.loads(MANIFEST.read_text(encoding="utf-8"))["drone"]
+             if "--hulls-only" in sys.argv else build_drone())
     base_manifest = json.loads((OUT / "manifest.json").read_text(encoding="utf-8"))
     weapon_assets = {name: meta for name, meta in base_manifest["assets"].items() if name != "hull"}
     result = {
