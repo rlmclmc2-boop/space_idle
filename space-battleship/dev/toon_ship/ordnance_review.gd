@@ -13,6 +13,7 @@ var kind:="missile"
 var single_source:=false
 var durable_hp:=0.0
 var interrupt_target:=false
+var source_slot:=0
 var scene
 func _initialize()->void:call_deferred("run")
 func check(ok:bool,text:String)->void:
@@ -43,13 +44,14 @@ func run()->void:
 		if arg=="--prototype-mixed-fixture":kind="mixed"
 		if arg.begins_with("--prototype-single-weapon="):single_source=true
 		if arg.begins_with("--durable-target="):durable_hp=float(arg.trim_prefix("--durable-target="))
+		if arg=="--prototype-offcenter-source":source_slot=1
 		if arg=="--interrupt-target":interrupt_target=true
 		if arg=="--ordnance-after-only":after_only=true
 		if arg=="--ordnance-check-only":check_only=true
 		if arg.begins_with("--output="):output=arg.trim_prefix("--output=")
 	if output.is_empty():quit(1);return
 	root.size=Vector2i(1335,859)
-	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"synthetic":"Heavy, "+("one module" if single_source else "eight modules")+" "+kind+"; initial target HP="+str(durable_hp)+" when nonzero; no player save","gameplay":"Both runs use current prototype mechanics; renderer-only comparison, not equivalence to old gameplay","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
+	var report:Dictionary={"frames_each":FRAMES,"step_seconds":DT,"active_source_slot":source_slot,"synthetic":"Heavy, "+("one active port pod + inert center mount" if source_slot==1 else ("one module" if single_source else "eight modules"))+" "+kind+"; initial target HP="+str(durable_hp)+" when nonzero; no player save","gameplay":"Both runs use current prototype mechanics; renderer-only comparison, not equivalence to old gameplay","runs":[],"normalization":"resource_samples.time wall-clock receipt timestamp only"}
 	var shared_profile:Dictionary={}
 	for mode in ["before","after"]:
 		capture_mode=mode
@@ -72,11 +74,13 @@ func run()->void:
 				fixture_target=scene.game.targets()[0]
 				fixture_target.hp=durable_hp;fixture_target.max_hp=durable_hp
 				scene.game.enemies.clear();scene.game.enemies.append(fixture_target)
+		if source_slot==1:scene.game.cooldowns[scene.game.slot_id("weapons",0)]=1e9
 		scene.fx_time=0.0;scene.demo_time=0.0;scene.clock=0.0
 		scene.game.paused=false;scene.build_ui()
+		if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide();scene.beginner_guide.set_process(false)
 		scene.missile_vfx_enabled=(mode=="after")
 		scene.continuous_beam_enabled=(mode=="after")
-		var label:=Label.new();label.text=mode.to_upper()+" | "+kind.to_upper()+" | SYNTHETIC "+("1 MODULE" if single_source else "8 MODULES")+" | TARGET HP "+str(durable_hp)+" | REAL TIMING"
+		var label:=Label.new();label.text=mode.to_upper()+" | "+kind.to_upper()+" | SYNTHETIC "+("1 ACTIVE PORT POD" if source_slot==1 else ("1 MODULE" if single_source else "8 MODULES"))+" | TARGET HP "+str(durable_hp)+" | REAL TIMING"
 		label.position=Vector2(10,10);label.add_theme_font_size_override("font_size",18);scene.add_child(label)
 		var directory:=output.path_join(mode);DirAccess.make_dir_recursive_absolute(directory.path_join("frames"))
 		var peak:=0
@@ -109,9 +113,9 @@ func run()->void:
 				var frozen_queue:=fingerprint(scene.game)
 				scene.game.tick(0.5)
 				check(frozen_queue==fingerprint(scene.game),"Pause must freeze pending ejection delays and projectile steering")
-				var origin_before:Vector2=scene._prototype_launch_pose(0,Vector2(286,120),0).position
+				var origin_before:Vector2=scene._prototype_launch_pose(source_slot,Vector2(286,120),0).position
 				root.size=Vector2i(1040,720);await process_frame
-				var origin_after:Vector2=scene._prototype_launch_pose(0,Vector2(286,120),0).position
+				var origin_after:Vector2=scene._prototype_launch_pose(source_slot,Vector2(286,120),0).position
 				viewport_origin_error=origin_before.distance_to(origin_after)
 				check(viewport_origin_error<0.001,"Viewport resize must not change canonical launch origin")
 				root.size=Vector2i(1335,859);await process_frame
@@ -176,7 +180,7 @@ func run()->void:
 				if initial_target_death<0:initial_target_death=frame_index
 				if frame_index>=initial_target_death+(36 if interrupt_target else 24):break
 		check(readonly_ok,"Drawing must not mutate gameplay")
-		check(observed_slots.has(0) and (single_source or observed_slots.has(5)),"Capture must contain both hull and moving-drone rail fire")
+		check(observed_slots.has(source_slot) and (single_source or observed_slots.has(5)),"Capture must contain both hull and moving-drone rail fire")
 		if mode=="after" and kind=="missile":
 			check(scene.missile_fire_count>0 and (interrupt_target or scene.missile_hit_count>0),"Missile launches and expected real impacts must occur")
 			check(scene.missile_origin_max_error<0.00001,"Launch origin must match actual projected moving-carrier muzzle")
@@ -194,13 +198,13 @@ func run()->void:
 			check(scene.game.maximum_turn_step_error<0.00001,"Actual missile steering respects its turn-rate bound")
 			check(scene.game.hit_records.all(func(hit):return bool(hit.target_alive)),"No missile may damage an already dead target")
 			if single_source:
-				var entry:Dictionary=scene.game.slot_entry("weapons",0)
+				var entry:Dictionary=scene.game.slot_entry("weapons",source_slot)
 				var expected:=int(entry.get("attacks",0))*int(scene.db.equip("missile",int(entry.level)).para1)
 				check(scene.game.launch_records.size()+scene.game.missile_queue.size()+scene.game.cancelled_ejections==expected,"Every committed salvo round is launched, queued or explicitly cancelled")
 				for index in range(1,scene.game.launch_records.size()):
 					var shot:Dictionary=scene.game.launch_records[index]
 					var previous:Dictionary=scene.game.launch_records[index-1]
-					if int(shot.ordinal)>0:check(float(shot.time)-float(previous.time)>=0.0999,"Actual ejections must be staggered, not simultaneous")
+					if int(shot.ordinal)>0:check(float(shot.time)-float(previous.time)>=scene.game.EJECTION_GAP-0.0001,"Actual ejections must be staggered, not simultaneous")
 		if interrupt_target:
 			check(interrupted and scene.game.missile_queue.is_empty(),"Pending-target-loss fixture must finish committed ejections")
 			check(scene.game.launch_records.any(func(record):return not bool(record.target_alive)),"Queued rounds must explicitly handle a dead target at ejection")

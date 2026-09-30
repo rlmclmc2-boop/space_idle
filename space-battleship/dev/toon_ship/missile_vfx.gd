@@ -9,7 +9,7 @@ extends RefCounted
 ## Keep draw_body=false when the legacy 29 px missile texture is still drawn.
 ## Otherwise suppress that texture in the scoped consumer to avoid duplicate bodies.
 const FLASH_DURATION := 0.10
-const IMPACT_DURATION := 0.12
+const IMPACT_DURATION := 0.22
 const SMOKE_DURATION := 0.09
 const ARMOR := Color("f2eee3")
 const SHADOW := Color("87949e")
@@ -29,19 +29,32 @@ static func _axis(direction: Vector2) -> Vector2:
 	return direction.normalized() if direction.length_squared() > 0.0001 else Vector2.UP
 
 
-static func flight(surface: CanvasItem, point: Vector2, direction: Vector2, _age: float, _seed: int = 0, budget: float = 1.0, draw_body: bool = true, powered: bool = true) -> void:
+static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true)->void:
 	var axis:=_axis(direction)
 	var side:=axis.orthogonal()
-	var nozzle:=point-axis*7.0
-	if powered:
-		surface.draw_line(nozzle,nozzle-axis*8.0,Color(AMBER,0.60+clampf(budget,0.0,1.0)*0.16),1.3,true)
+	var nozzle:=point-axis*23.0
+	var thrust:=smoothstep(0.22,0.65,age) if powered else 0.0
+	if powered and age>=0.22:
+		var length:=lerpf(5.0,18.0,thrust)
+		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*2.4,nozzle-axis*length,nozzle+side*2.4]),Color(AMBER,0.82))
+		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*1.1,nozzle-axis*length*0.55,nozzle+side*1.1]),HOT)
+		var ignition:=clampf(1.0-(age-0.22)/0.07,0.0,1.0)
+		if ignition>0:surface.draw_circle(nozzle,3.5*ignition,Color(HOT,ignition))
+	elif age<0.22:
+		surface.draw_circle(nozzle-axis*3.0,2.5,Color(SMOKE,(1.0-age/0.22)*0.30))
 	if not draw_body:return
-	# Sixteen logical pixels long, with a red nose and steady short exhaust. Every live shot stays
-	# visible, but thirty-two simultaneous rockets must not become white confetti.
-	var body:=PackedVector2Array([point+axis*9.0,point+axis*3.5-side*2.2,point-axis*7.0-side*2.2,point-axis*7.0+side*2.2,point+axis*3.5+side*2.2])
-	surface.draw_colored_polygon(body,Color("d2d8d6"))
-	surface.draw_colored_polygon(PackedVector2Array([point+axis*9.0,point+axis*3.5-side*2.2,point+axis*3.5+side*2.2]),RED)
-	surface.draw_line(point-axis*3.0-side*1.0,point+axis*2.5-side*1.0,Color("e1e5df"),0.8,true)
+	# The simulation point is the nose; the substantial rocket body trails it.
+	for sign_value in [-1.0,1.0]:
+		var fin:=PackedVector2Array([point-axis*16.0+side*sign_value*2.8,point-axis*24.0+side*sign_value*6.2,point-axis*22.0+side*sign_value*2.8])
+		surface.draw_colored_polygon(fin,OUTLINE)
+		surface.draw_line(point-axis*19.0+side*sign_value*3.4,point-axis*23.0+side*sign_value*5.0,RED,1.5,true)
+	var body:=PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*23.0-side*3.1,point-axis*25.0,point-axis*23.0+side*3.1,point-axis*7.0+side*3.1])
+	surface.draw_colored_polygon(body,ARMOR)
+	var edge:=PackedVector2Array(body);edge.append(body[0])
+	surface.draw_polyline(edge,OUTLINE,1.0,true)
+	surface.draw_colored_polygon(PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*7.0+side*3.1]),RED)
+	surface.draw_line(point-axis*9.0+side*1.5,point-axis*21.0+side*1.5,SHADOW,1.5,true)
+	surface.draw_line(point-axis*9.0-side*1.7,point-axis*20.0-side*1.7,Color.WHITE,0.9,true)
 
 
 static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, offset: Vector2, core: bool, _seed: int = 0, budget: float = 1.0) -> void:
@@ -51,9 +64,10 @@ static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, of
 	var count:=mini(int(visual.get("samples",0)),4)
 	if count<2:return
 	var ribbon:=PackedVector2Array()
-	var newest:Vector2=project.call(points[head])
+	var axis:=Vector2.from_angle(float(visual.get("angle",0.0)))
+	var newest:Vector2=project.call(points[head])-axis*23.0
 	for index in count:
-		var point:Vector2=project.call(points[(head-index+14)%14])
+		var point:Vector2=project.call(points[(head-index+14)%14])-axis*23.0
 		var displacement:=point-newest
 		if displacement.length()>28.0:
 			ribbon.append(newest+displacement.normalized()*28.0+offset);break
@@ -81,11 +95,18 @@ static func impact(surface: CanvasItem, point: Vector2, direction: Vector2, age:
 	var decoration := lerpf(0.45, 1.0, clampf(budget, 0.0, 1.0))
 	var fade := (1.0 - t) * (1.0 - t) * decoration
 	var scale_value := 1.12 if critical else 1.0
-	# One compact contact glint, with only two short fragments. No smoke lobes.
-	for index in 2:
-		var radial:=axis.rotated(PI*0.5+PI*float(index))
-		var reach:float=(3.0+7.0*t)*scale_value
+	# A compact warhead burst distinguishes each heavy rocket from a bullet.
+	for index in 3:
+		var radial:=axis.rotated(float(index)*TAU/3.0+0.4)
+		var center:=point+radial*(2.0+6.0*t)
+		var radius:=4.0+3.0*t
+		surface.draw_circle(center,radius,Color(SMOKE,fade*0.32))
+		var fire:=clampf(1.0-age/0.13,0.0,1.0)
+		surface.draw_circle(center,radius*0.8,Color(AMBER,fire*decoration))
+	for index in 3:
+		var radial:=axis.rotated(float(index)*TAU/3.0)
+		var reach:float=(4.0+14.0*t)*scale_value
 		var end:=point+radial*reach
-		surface.draw_line(end-radial*2.0,end,Color(AMBER,fade*0.55),1.0,true)
+		surface.draw_line(end-radial*3.0,end,Color(AMBER,fade*0.6),1.3,true)
 	var hot := clampf(1.0 - age / 0.065, 0.0, 1.0)
-	surface.draw_circle(point, (2.5 + 1.0 * t) * scale_value, Color(HOT, hot * decoration))
+	surface.draw_circle(point, (4.0 + 1.0 * t) * scale_value, Color(HOT, hot * decoration))

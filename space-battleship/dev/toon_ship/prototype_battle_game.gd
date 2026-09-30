@@ -1,11 +1,14 @@
 extends "res://scripts/game.gd"
 ## Authorized prototype mechanics only. Shared attack/hit paths remain authoritative.
-const EJECTION_GAP := 0.10
+const EJECTION_GAP := 0.28
 const RAIL_SPEED_FACTOR := 12.0
-const MISSILE_LAUNCH_SPEED := 180.0
-const MISSILE_CRUISE_SPEED := 620.0
-const MISSILE_TURN_RATE := 4.5
-const ORPHAN_LIFETIME := 0.55
+const MISSILE_LAUNCH_SPEED := 120.0
+const MISSILE_CRUISE_SPEED := 420.0
+const MISSILE_TURN_RATE := 4.0
+const ORPHAN_LIFETIME := 0.80
+const MISSILE_IGNITION := 0.22
+const MISSILE_SEEK_START := 0.40
+const MISSILE_CRUISE_AT := 0.65
 var launch_provider:Callable
 var target_provider:Callable
 var missile_queue:Array[Dictionary]=[]
@@ -18,7 +21,15 @@ var maximum_turn_step_error:=0.0
 var orphan_expirations:=0
 var cancelled_ejections:=0
 
-func _init(database:ShipDatabase,persist:=false)->void:super(database,persist)
+func _init(database:ShipDatabase,persist:=false)->void:
+	# Prototype-owned in-memory parameters, visible to its equipment panel.
+	# The source tables and ordinary BattleGame instances are not rewritten.
+	if not database.has_meta("heavy_rocket_prototype_v2"):
+		database.set_meta("heavy_rocket_prototype_v2",true)
+		for row in database.equipment.get("missile",[]):
+			row.para1=2;row.cd=2.4;row.dmg=float(row.dmg)*2.0
+			row.para2=MISSILE_CRUISE_SPEED/float(database.defaults.projectilePixelsPerUnit)
+	super(database,persist)
 
 func tick(dt:float)->void:
 	if paused:return
@@ -76,13 +87,17 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	var origin:Vector2=pose.position
 	var direction:Vector2=pose.direction
 	var side:float=-1.0 if int(packet.ordinal)%2==0 else 1.0
-	origin+=direction.orthogonal()*side*3.0
-	direction=direction.rotated(side*deg_to_rad(14.0))
+	origin+=direction.orthogonal()*side*4.0
+	var departure_angle:=50.0
+	var trial:=direction.rotated(side*deg_to_rad(departure_angle))
+	if (origin.x<85.0 and trial.x<0.0) or (origin.x>BATTLE_SIZE.x-85.0 and trial.x>0.0):departure_angle=18.0
+	direction=direction.rotated(side*deg_to_rad(departure_angle))
 	shot.x=origin.x;shot.y=origin.y;shot.direction=direction.normalized()
 	shot.speed=MISSILE_LAUNCH_SPEED
 	shot.mount=int(packet.mount);shot.prototype_missile=true
 	shot.launch_point=origin;shot.motion_age=0.0;shot.orphan_age=0.0
 	shot.last_target_point=aim;shot.closest_range=INF
+	shot.ignition_at=MISSILE_IGNITION;shot.seek_at=MISSILE_SEEK_START;shot.cruise_at=MISSILE_CRUISE_AT
 	if not target_alive:shot.target={}
 	if launch_records.size()>=2048:launch_records.pop_front()
 	launch_records.append({"time":motion_clock,"serial":int(shot.serial),"mount":int(shot.mount),"ordinal":int(packet.ordinal),"position":origin,"target_alive":target_alive,"damage":shot.damage})
@@ -90,15 +105,15 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if not bool(shot.get("prototype_missile",false)):return false
 	shot.motion_age=float(shot.motion_age)+dt
-	if float(shot.motion_age)>3.0:shot.dead=true;lifetime_expirations+=1;return true
+	if float(shot.motion_age)>4.5:shot.dead=true;lifetime_expirations+=1;return true
 	if not shot.target.is_empty() and (not enemies.has(shot.target) or float(shot.target.hp)<=0):shot.target={}
 	var position:=Vector2(shot.x,shot.y)
 	var old_angle:float=Vector2(shot.direction).angle()
-	shot.speed=lerpf(MISSILE_LAUNCH_SPEED,MISSILE_CRUISE_SPEED,smoothstep(0.04,0.28,float(shot.motion_age)))
+	shot.speed=lerpf(MISSILE_LAUNCH_SPEED,MISSILE_CRUISE_SPEED,smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
 	if not shot.target.is_empty():
 		var aim:=target_point(shot.target)
 		shot.last_target_point=aim
-		if float(shot.motion_age)>0.06:
+		if float(shot.motion_age)>=MISSILE_SEEK_START:
 			var angle:=rotate_toward(old_angle,(aim-position).angle(),MISSILE_TURN_RATE*dt)
 			maximum_turn_step_error=maxf(maximum_turn_step_error,absf(angle_difference(old_angle,angle))-MISSILE_TURN_RATE*dt)
 			shot.direction=Vector2.from_angle(angle)

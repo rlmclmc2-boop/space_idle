@@ -308,7 +308,7 @@ func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float)->boo
 	if not _is_own_missile(shot):return false
 	var visual:=projectile_visual(shot)
 	# Every real missile, including an orphan, retains one physical body.
-	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(visual.get("age",0.0)),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
+	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
 	return true
 
 
@@ -470,7 +470,7 @@ func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,vi
 	if _is_own_missile(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
 		var budget:=0.5 if trail_budget==0 else 1.0
-		if not shot.target.is_empty():MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
+		if not shot.target.is_empty() and float(shot.get("motion_age",1.0))>=0.22:MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
 		return angle
 	if _is_own_rail(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
@@ -609,6 +609,8 @@ func _apply_fixture(key: String) -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--prototype-single-weapon="):
 			pattern.fill("");pattern[0]=arg.trim_prefix("--prototype-single-weapon=")
+	if OS.get_cmdline_user_args().has("--prototype-offcenter-source"):
+		pattern.fill("");pattern[0]="laser";pattern[1]="missile"
 	for index in game.profile.loadout.weapons.size():
 		game.profile.loadout.weapons[index].key = pattern[index]
 	game.profile.loadout.defence[0].key = "armour"

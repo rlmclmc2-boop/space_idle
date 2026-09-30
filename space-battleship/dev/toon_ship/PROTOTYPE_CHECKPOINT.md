@@ -37,3 +37,13 @@ Run from `space-battleship` with Python 3 and Godot 4:
 - `python dev/toon_ship/preview.py --godot /path/to/godot --fixture Heavy_Battleship --interactive` opens the mixed fixture without player-save writes
 
 Use the launchers' returned isolated work directory with `--reuse` to avoid repeated asset imports. Rendered clips use explicit 30 Hz simulation steps and are not real-time performance measurements. Windows remains untested.
+
+## Electric / heavy-rocket identity revision
+
+The accepted pulse and cyan→violet continuous beam are unchanged. Rail retains its real 12× speed but now uses cross-rail charge bridges, one irregular blue-white electrical discharge, and broken corona lasting 0.18 s; its straight core exists only for 0.022 s. No additional penetration damage is introduced.
+
+Only the developer BattleGame instance changes missile database rows in memory: 2 rockets per 2.4 s cycle, 0.28 s ejection spacing, doubled per-rocket damage, 120→420 logical px/s acceleration from 0.22–0.65 s, seeking after 0.40 s at at most 4 rad/s. Real tube offsets and ±50° departure create separate curved routes. The near-edge departure bound remains. Body/fins and ignition exhaust accompany actual motion; no fake lateral spread is used. Queued dead-target shots coast without ghost hits and expire after 0.8 s; all missiles have a 4.5 s lifetime ceiling.
+
+Sparse off-center fixture uses one active port missile pod and an inert center module. It passes with 6 launches, 5 impacts and one target-loss shot. Forced queued-target loss passes with 2 launches, 0 impacts, 2 orphan expirations; queue, pause and viewport-origin checks pass. These are synthetic fixtures, not a player save. The 2.5 rad/s initial tuning missed and was rejected; 4 rad/s produces the demonstrated bounded curve and real contact. User visual review is pending.
+
+The 15 s representative mixed fixture (4 missile pods, 2 continuous beams, 1 pulse, 1 rail; synthetic initial enemy HP 4500) passes with 40 missile launches / 32 impacts, 7 orphan expirations, maximum 12 active projectiles, 12 rail fires, 24 pulse fires and 6 actual full-beam cues. Real target sharing still makes rockets converge near enemies. This is intentional targeting, not a rendered merge. Fresh starter guide capture keeps the intro panel above the frigate; the raised Heavy synthetic fixture was the source of overlap. Weapon diagnostics hide the guide only in their test harnesses.

@@ -58,6 +58,7 @@ func run()->void:
 		scene.game.start(1,false);scene.game.distance=99.8
 		scene.fx_time=0.0;scene.demo_time=0.0;scene.clock=0.0
 		scene.game.paused=false;scene.build_ui()
+		if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide();scene.beginner_guide.set_process(false)
 		scene.rail_vfx_enabled=(mode=="after")
 		var label:=Label.new();label.text=mode.to_upper()+" | RAIL CANNON | SYNTHETIC LOADOUT | REAL COMBAT, 30 Hz CAPTURE"
 		label.position=Vector2(10,10);label.add_theme_font_size_override("font_size",18);scene.add_child(label)

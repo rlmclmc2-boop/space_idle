@@ -21,7 +21,10 @@ def main():
     parser.add_argument("--single-source", action="store_true")
     parser.add_argument("--durable-target", type=float, default=0.0, help="Explicit synthetic initial enemy HP; no production configuration changes")
     parser.add_argument("--interrupt-target", action="store_true", help="Headless lifecycle fixture: force target loss while missiles are queued")
+    parser.add_argument("--offcenter-source", action="store_true", help="One active port missile pod, with an inert center mount")
     args = parser.parse_args()
+    if args.offcenter_source and (not args.single_source or args.kind != "missile"):
+        parser.error("--offcenter-source requires --single-source --kind missile")
     if args.interrupt_target and (not args.check_only or not args.single_source or args.kind != "missile"):
         parser.error("--interrupt-target requires --check-only --single-source --kind missile")
     if not args.godot:
@@ -62,6 +65,7 @@ def main():
         return
     output = area / ("Heavy_Battleship-" + args.kind)
     flags = ["--prototype-" + args.kind + "-fixture"] + (["--ordnance-check-only"] if args.check_only else []) + (["--ordnance-after-only"] if args.after_only else [])
+    if args.offcenter_source: flags += ["--prototype-offcenter-source"]
     if args.interrupt_target: flags += ["--interrupt-target"]
     if args.single_source: flags += ["--prototype-single-weapon=" + ("longLaser" if args.kind == "beam" else "missile")]
     if args.durable_target > 0: flags += ["--durable-target=" + str(args.durable_target)]
