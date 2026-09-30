@@ -1,0 +1,2760 @@
+{
+	"checks": [
+		{
+			"label": "01-initial-slots: native window screenshot",
+			"pass": true
+		},
+		{
+			"label": "initial: every owned module has a card",
+			"pass": true
+		},
+		{
+			"label": "initial: same category grid density",
+			"pass": true
+		},
+		{
+			"label": "initial: shared card footprint weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: common icon box weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: common upgrade button weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: centered upgrade weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: semantic slots weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: stable anchors weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: title/level separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: attribute/button separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_0 title",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_0 level",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_0 stat",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_0 cost",
+			"pass": true
+		},
+		{
+			"label": "initial: shared card footprint weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: common icon box weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: common upgrade button weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: centered upgrade weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: semantic slots weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: stable anchors weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: title/level separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: empty slot actions do not overlap weapons_1",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_1 title",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_1 level",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_1 cost",
+			"pass": true
+		},
+		{
+			"label": "initial: shared card footprint weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: common icon box weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: common upgrade button weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: centered upgrade weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: semantic slots weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: stable anchors weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: title/level separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: empty slot actions do not overlap weapons_2",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_2 title",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_2 level",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text weapons_2 cost",
+			"pass": true
+		},
+		{
+			"label": "initial: shared card footprint defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: common icon box defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: common upgrade button defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: centered upgrade defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: semantic slots defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: stable anchors defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: title/level separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: attribute/button separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_0 title",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_0 level",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_0 stat",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_0 cost",
+			"pass": true
+		},
+		{
+			"label": "initial: shared card footprint defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: common icon box defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: common upgrade button defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: centered upgrade defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: semantic slots defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: stable anchors defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: title/level separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: empty slot actions do not overlap defence_1",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_1 title",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_1 level",
+			"pass": true
+		},
+		{
+			"label": "initial: complete text defence_1 cost",
+			"pass": true
+		},
+		{
+			"label": "free equip opens selection panel",
+			"pass": true
+		},
+		{
+			"label": "confirm equips without resource cost",
+			"pass": true
+		},
+		{
+			"label": "card upgrade pointer applies exactly once",
+			"pass": true
+		},
+		{
+			"label": "card selection and inspector remain accessible",
+			"pass": true
+		},
+		{
+			"label": "refit confirmation preserves action routing",
+			"pass": true
+		},
+		{
+			"label": "quantity button routing 1",
+			"pass": true
+		},
+		{
+			"label": "quantity button routing 2",
+			"pass": true
+		},
+		{
+			"label": "quantity button routing 0",
+			"pass": true
+		},
+		{
+			"label": "gem overlay opens the selected module",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Heavy_Battleship weapons_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Heavy_Battleship weapons_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Heavy_Battleship weapons_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Heavy_Battleship defence_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship defence_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Heavy_Battleship defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_4",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_5",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_6",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship weapons_7",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship defence_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Heavy_Battleship defence_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship defence_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship defence_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship defence_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_4",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_4",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_5",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_5",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_6",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Battleship weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Battleship weapons_6",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship weapons_7",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Battleship weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Battleship weapons_7",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship defence_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship defence_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Battleship defence_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Battleship defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Battleship defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Battleship defence_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser defence_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser defence_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser defence_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_4",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_4",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_5",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Cruiser weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Cruiser weapons_5",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_6",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Cruiser weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Cruiser weapons_6",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser weapons_7",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Cruiser weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Cruiser weapons_7",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser defence_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser defence_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Cruiser defence_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Cruiser defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Cruiser defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Cruiser defence_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer defence_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer defence_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer defence_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_4",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_4",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer weapons_4",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer weapons_4",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_5",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer weapons_5",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_6",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer weapons_6",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer weapons_7",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer weapons_7",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer defence_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer defence_2",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer defence_2",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer defence_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Destroyer defence_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Destroyer defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Destroyer defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Destroyer defence_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate defence_0",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate defence_0",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate defence_1",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate defence_1",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_3",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate weapons_3",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate weapons_3",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_4",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_4",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate weapons_4",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate weapons_4",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_5",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate weapons_5",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate weapons_5",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_6",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate weapons_6",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate weapons_6",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate weapons_7",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate weapons_7",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate weapons_7",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate defence_2",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate defence_2",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate defence_2",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate defence_2",
+			"pass": true
+		},
+		{
+			"label": "card retained across hull change Frigate defence_3",
+			"pass": true
+		},
+		{
+			"label": "capacity lock Frigate defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant actions disabled Frigate defence_3",
+			"pass": true
+		},
+		{
+			"label": "dormant status has its own row Frigate defence_3",
+			"pass": true
+		},
+		{
+			"label": "02-heavy-normal: native window screenshot",
+			"pass": true
+		},
+		{
+			"label": "full: every owned module has a card",
+			"pass": true
+		},
+		{
+			"label": "full: same category grid density",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_0 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_0 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_0 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_0 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_1 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_1 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_1 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_1 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_2 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_2 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_2 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_2 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_0 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_0 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_0 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_0 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_1 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_1 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_1 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_1 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_3 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_3 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_3 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_3 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_4 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_4 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_4 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_4 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_5 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_5 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_5 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_5 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_6 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_6 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_6 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_6 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_7 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_7 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_7 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text weapons_7 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_2 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_2 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_2 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_2 cost",
+			"pass": true
+		},
+		{
+			"label": "full: shared card footprint defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: common icon box defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: common upgrade button defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: centered upgrade defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: semantic slots defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: stable anchors defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: title/level separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: attribute/button separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_3 title",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_3 level",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_3 stat",
+			"pass": true
+		},
+		{
+			"label": "full: complete text defence_3 cost",
+			"pass": true
+		},
+		{
+			"label": "full heavy hull exposes all 12 slots",
+			"pass": true
+		},
+		{
+			"label": "unchanged panel refresh performs no set_ui_value writes",
+			"pass": true
+		},
+		{
+			"label": "03-heavy-large: native window screenshot",
+			"pass": true
+		},
+		{
+			"label": "large: every owned module has a card",
+			"pass": true
+		},
+		{
+			"label": "large: same category grid density",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_0 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_0 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_0 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_0 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_1 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_1 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_1 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_1 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_2 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_2 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_2 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_2 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_0 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_0 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_0 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_0 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_1 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_1 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_1 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_1 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_3 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_3 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_3 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_3 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_4 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_4 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_4 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_4 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_5 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_5 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_5 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_5 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_6 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_6 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_6 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_6 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_7 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_7 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_7 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text weapons_7 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_2 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_2 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_2 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_2 cost",
+			"pass": true
+		},
+		{
+			"label": "large: shared card footprint defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: common icon box defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: common upgrade button defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: centered upgrade defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: semantic slots defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: stable anchors defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: title/level separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: attribute/button separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_3 title",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_3 level",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_3 stat",
+			"pass": true
+		},
+		{
+			"label": "large: complete text defence_3 cost",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_0",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_1",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_2",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format defence_0",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format defence_1",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_3",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_4",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_5",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_6",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format weapons_7",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format defence_2",
+			"pass": true
+		},
+		{
+			"label": "shared quantity format defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow viewport reduces both category columns",
+			"pass": true
+		},
+		{
+			"label": "04-narrow-top: native window screenshot",
+			"pass": true
+		},
+		{
+			"label": "narrow: every owned module has a card",
+			"pass": true
+		},
+		{
+			"label": "narrow: same category grid density",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_0 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_0 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_0 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_0 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_1 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_1 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_1 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_1 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_2 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_2 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_2 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_2 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated defence_0",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_0 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_0 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_0 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_0 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated defence_1",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_1 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_1 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_1 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_1 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_3 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_3 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_3 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_3 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_4",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_4 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_4 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_4 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_4 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_5",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_5 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_5 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_5 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_5 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_6",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_6 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_6 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_6 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_6 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated weapons_7",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_7 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_7 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_7 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text weapons_7 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated defence_2",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_2 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_2 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_2 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_2 cost",
+			"pass": true
+		},
+		{
+			"label": "narrow: shared card footprint defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: common icon box defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: common upgrade button defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: centered upgrade defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: semantic slots defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: stable anchors defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: title/level separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: attribute/button separated defence_3",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_3 title",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_3 level",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_3 stat",
+			"pass": true
+		},
+		{
+			"label": "narrow: complete text defence_3 cost",
+			"pass": true
+		},
+		{
+			"label": "last defence slot reachable by scrolling",
+			"pass": true
+		},
+		{
+			"label": "last slot remains clickable after scrolling",
+			"pass": true
+		},
+		{
+			"label": "05-narrow-bottom: native window screenshot",
+			"pass": true
+		}
+	],
+	"evidence": [
+		{
+			"columns": 4,
+			"scroll": 0,
+			"tag": "01-initial-slots",
+			"window": "(1373, 883)"
+		},
+		{
+			"columns": 4,
+			"scroll": 0,
+			"tag": "02-heavy-normal",
+			"window": "(1373, 883)"
+		},
+		{
+			"columns": 4,
+			"scroll": 0,
+			"tag": "03-heavy-large",
+			"window": "(1373, 883)"
+		},
+		{
+			"columns": 2,
+			"scroll": 0,
+			"tag": "04-narrow-top",
+			"window": "(960, 540)"
+		},
+		{
+			"columns": 2,
+			"scroll": 264,
+			"tag": "05-narrow-bottom",
+			"window": "(960, 540)"
+		}
+	]
+}
