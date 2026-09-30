@@ -49,6 +49,8 @@ const NAV_RECT := Rect2(4,96,144,1160)
 const WORK_RECT := Rect2(160,96,1204,1160)
 const WORK_CONTENT_RECT := Rect2(168,150,1364,1200)
 const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
+const RESOURCE_STRIP_PRESENTATION := preload("res://scripts/resource_strip_presentation.gd")
+const SHELL_PRESENTATION := preload("res://scripts/shell_presentation.gd")
 const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎","◷","✧"]
 const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","gem.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab"]
 var NAMES: Dictionary = {}
@@ -1643,6 +1645,8 @@ func build_ui() -> void:
 	advance_progress.add_theme_stylebox_override("fill",style(CYAN,CYAN))
 	ui.add_child(advance_progress)
 	sound_button = button("",Rect2(1060,20,118,40),func():sound_on=not sound_on;refresh_navigation())
+	for header_button in [help_button,resource_mode_button,music_button,loop_select,loop_button,guard_settings,sound_button]:
+		SHELL_PRESENTATION.skin_header(header_button)
 	refresh_navigation()
 	jewel_panel = preload("res://scripts/jewel_panel.gd").new()
 	ui.add_child(jewel_panel)
@@ -1683,7 +1687,7 @@ func build_workspace_shell() -> void:
 	system_nav.name = "SystemNavigation"
 	system_nav.position = NAV_RECT.position
 	system_nav.size = NAV_RECT.size
-	system_nav.add_theme_stylebox_override("panel",style(Color("101c2b"),LINE))
+	system_nav.add_theme_stylebox_override("panel",SHELL_PRESENTATION.surface(SHELL_PRESENTATION.STRUCTURE))
 	ui.add_child(system_nav)
 	var navigation_scroll := ScrollContainer.new()
 	navigation_scroll.name = "SystemNavigationScroll"
@@ -1699,16 +1703,17 @@ func build_workspace_shell() -> void:
 	workspace_frame.name = "SystemWorkspace"
 	workspace_frame.position = WORK_RECT.position
 	workspace_frame.size = WORK_RECT.size
-	workspace_frame.add_theme_stylebox_override("panel",style(Color("0c1522"),LINE))
+	workspace_frame.add_theme_stylebox_override("panel",SHELL_PRESENTATION.surface(Color("0c1522")))
 	ui.add_child(workspace_frame)
 	workspace_title = equipment_card_label(ui,"",Rect2(180,108,1100,36),24,INK)
 	workspace_title.name = "SystemWorkspaceTitle"
+	workspace_title.add_theme_color_override("font_color",SHELL_PRESENTATION.PAPER)
 	for index in SYSTEM_TITLES.size():
 		var navigation := Button.new()
 		navigation.name = "SystemNav%d" % index
 		navigation.custom_minimum_size = Vector2(124,68)
 		navigation.add_theme_font_override("font",font)
-		navigation.add_theme_font_size_override("font_size",15)
+		SHELL_PRESENTATION.setup_navigation(navigation,index)
 		navigation.pressed.connect(select_system.bind(index))
 		navigation_list.add_child(navigation)
 		system_nav_buttons.append(navigation)
@@ -1747,17 +1752,11 @@ func refresh_system_nav() -> void:
 		set_ui_value(navigation,"visible",available)
 		if not available:continue
 		var caption := UIText.t(SYSTEM_TITLES[index])
-		set_ui_value(navigation,"text",SYSTEM_ICONS[index]+"  "+caption)
+		set_ui_value(navigation,"text",caption)
 		set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
 		if not navigation.has_meta("selected") or bool(navigation.get_meta("selected"))!=(index==selected):
 			navigation.set_meta("selected",index==selected)
-			var normal_style := style(Color("153443") if index==selected else Color("101c2b"),CYAN if index==selected else LINE)
-			var hover_style := style(Color("1b4150") if index==selected else Color("172638"),CYAN if index==selected else LINE)
-			navigation.add_theme_stylebox_override("normal",normal_style)
-			navigation.add_theme_stylebox_override("hover",hover_style)
-			navigation.add_theme_stylebox_override("pressed",hover_style)
-			navigation.add_theme_color_override("font_color",CYAN if index==selected else INK)
-			navigation.add_theme_color_override("font_hover_color",CYAN if index==selected else INK)
+			SHELL_PRESENTATION.skin_navigation(navigation,index==selected)
 	set_ui_value(workspace_title,"text",UIText.t(SYSTEM_TITLES[selected]) if selected>=0 else "")
 
 func layout_jewel_workspace() -> void:
@@ -2228,10 +2227,10 @@ func draw_background() -> void:
 
 func draw_chrome() -> void:
 	var viewport := get_viewport_rect()
-	draw_surface.draw_rect(Rect2(0,0,viewport.size.x,CHROME_HEIGHT),Color("101c2b"))
-	draw_surface.draw_line(Vector2(0,CHROME_HEIGHT-1),Vector2(viewport.end.x,CHROME_HEIGHT-1),LINE,2)
-	text_at("◈",Vector2(24,53),30,CYAN)
-	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22)
+	draw_surface.draw_rect(Rect2(0,0,viewport.size.x,CHROME_HEIGHT),SHELL_PRESENTATION.STRUCTURE)
+	draw_surface.draw_line(Vector2(0,CHROME_HEIGHT-1),Vector2(viewport.end.x,CHROME_HEIGHT-1),SHELL_PRESENTATION.NAVY,3)
+	text_at("◈",Vector2(24,53),30,SHELL_PRESENTATION.TEAL)
+	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22,SHELL_PRESENTATION.PAPER)
 	draw_surface.draw_line(Vector2(599,96),Vector2(599,viewport.end.y-24),LINE,2)
 
 func draw_vertical_battle_hud() -> void:
@@ -2295,10 +2294,8 @@ func draw_stars() -> void:
 	draw_surface.draw_mesh(stars_mesh,null)
 
 func draw_resources() -> void:
-	text_at(str(UIText.data_text("resources",str("1"))),Vector2(65,32),11,MUTED)
-	text_at(resource_display("1"),Vector2(65,56),21,INK)
-	text_at(str(UIText.data_text("resources",str("2"))),Vector2(280,32),11,MUTED)
-	text_at(resource_display("2"),Vector2(280,56),21,PURPLE)
+	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,0,str(UIText.data_text("resources","1")),resource_display("1"))
+	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,1,str(UIText.data_text("resources","2")),resource_display("2"))
 
 func battle_notices() -> Array[Dictionary]:
 	var notices: Array[Dictionary] = []
