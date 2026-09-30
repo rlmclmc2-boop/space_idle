@@ -1,0 +1,105 @@
+[
+  {
+    "poses": [
+      {
+        "ports": [
+          "(212.1358, 128.3166)"
+        ],
+        "position": "(207.4131, 122.2694)",
+        "size": 2.0,
+        "weapon_components": 0,
+        "width": 42.2167073673333
+      },
+      {
+        "ports": [
+          "(272.8887, 129.8684)"
+        ],
+        "position": "(268.1538, 124.2467)",
+        "size": 2.0,
+        "weapon_components": 0,
+        "width": 40.4408890413361
+      },
+      {
+        "ports": [
+          "(307.9628, 126.3929)"
+        ],
+        "position": "(303.6194, 120.6612)",
+        "size": 2.0,
+        "weapon_components": 0,
+        "width": 39.5685730167906
+      }
+    ],
+    "same_battle_state": true,
+    "same_rng": true,
+    "size": 2,
+    "native_capture_size": [
+      390,
+      650
+    ]
+  },
+  {
+    "poses": [
+      {
+        "ports": [
+          "(168.7063, 149.4205)"
+        ],
+        "position": "(168.4526, 142.6573)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 41.0976774180251
+      },
+      {
+        "ports": [
+          "(218.5636, 127.5455)"
+        ],
+        "position": "(218.2793, 120.974)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 39.942039538911
+      },
+      {
+        "ports": [
+          "(254.5888, 129.8371)"
+        ],
+        "position": "(254.1717, 123.7179)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 37.244094397372
+      },
+      {
+        "ports": [
+          "(318.8145, 142.4703)"
+        ],
+        "position": "(318.4151, 136.2987)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 37.554784791494
+      },
+      {
+        "ports": [
+          "(360.4919, 142.1948)"
+        ],
+        "position": "(360.4068, 136.0987)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 37.0211009743361
+      },
+      {
+        "ports": [
+          "(410.9823, 134.2089)"
+        ],
+        "position": "(411.313, 128.4177)",
+        "size": 1.0,
+        "weapon_components": 0,
+        "width": 35.2235821077613
+      }
+    ],
+    "same_battle_state": true,
+    "same_rng": true,
+    "size": 1,
+    "native_capture_size": [
+      390,
+      650
+    ]
+  }
+]

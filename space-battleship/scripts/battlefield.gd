@@ -624,14 +624,19 @@ func draw_vertical_battle_hud()->void:
 		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(48,1208),17,BATTLE_TEAL)
 		battle_meter(Rect2(48,1220,516,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),BATTLE_TEAL)
 
+func enemy_hull_light(enemy:Dictionary)->float:
+	# Small silhouettes need readable armor at the native ~390 px battlefield.
+	# Raise texture contrast only: keep alpha, footprint, mounts and depth order.
+	var depth:=enemy_depth(enemy)
+	return lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
+
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
 	var dimensions:=Vector2(width,width*2.0)
 	var pose:=enemy_pose(enemy)
-	var depth:=enemy_depth(enemy)
 	var angle:=float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
-	var light:=lerpf(0.76,1.0,depth)
+	var light:=enemy_hull_light(enemy)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
