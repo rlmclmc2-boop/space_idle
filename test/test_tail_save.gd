@@ -13,11 +13,10 @@ class FailingWriter extends "res://scripts/progress_writer.gd":
 		if fail_restore and from.ends_with(".bak"):return ERR_FILE_CANT_WRITE
 		return super._rename(from, to)
 class PartialWriter extends "res://scripts/progress_writer.gd":
-	func _write_payload(bytes: PackedByteArray) -> Dictionary:
-		var file := FileAccess.open(path+".tmp",FileAccess.WRITE)
+	func _store_buffer(file: FileAccess, bytes: PackedByteArray) -> bool:
 		file.store_buffer(bytes.slice(0,bytes.size()/2))
-		file.close()
-		return {"error":ERR_FILE_CANT_WRITE}
+		# Simulate a backend accepting a truncated write. Base readback must catch it.
+		return true
 class OnceFailedWriter extends "res://scripts/progress_writer.gd":
 	var attempts := 0
 	func _write_payload(data: PackedByteArray) -> Dictionary:
@@ -195,6 +194,10 @@ func run() -> void:
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
 	closing._notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
 	check(closing.quit_committed and value(BattleGame.SAVE_PATH)==403 and not closing.game.save_dirty,"Close request commits synchronously before allowing exit")
+	closing.quit_committed=false
+	closing.game.save_enabled=false
+	closing._notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	check(closing.quit_committed,"Intentionally save-disabled scene can still close")
 	closing.free()
 	loaded.progress_writer.clear_files()
 	print("Tail save: %d checks, %d failures" % [checks,failures])

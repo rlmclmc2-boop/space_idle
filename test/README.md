@@ -24,7 +24,7 @@
 | 宝石 | `test_jewels.gd`、`test_jewel_redesign.gd`、`test_jewel_fragments.gd`；合成用 `test_jewel_combine_all.gd`，镶嵌用 `test_jewel_center.gd`，界面用 `test_jewel_center_ui.gd` |
 | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；页签显隐用 `test_tab_unlocks.gd` |
 | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
-| 存档与重启 | `test_save_boundaries.gd`、`test_frame_save_batch.gd`、`test_journey_resume.gd`；删除存档用 `test_delete_save.gd`，重启故障用 `test_restart_save_failure.gd` / `test_full_restart.py` |
+| 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
 | 音乐与开关偏好 | `test_bgm.gd` |
 | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
 | 配置导入 | 按所改分表选择 `test_crew_import.py`、`test_jewel_import.py`、`test_unlock_import.py`、`test_equipment_growth_import.py`、`test_jewel_furnace_import.py`、`test_reactor_config.py`、`test_scientist_config.py` 或 `test_offline_config.py` |
@@ -66,6 +66,7 @@ python test/run.py test_rule_rounding.gd
 | UI/科研渲染测量 | 经 `run.py` 选择 `test_upgrade_ui_probe.gd`、`test_hightech_render_audit.gd` 或 `test_render_budget.gd` |
 | 整体性能 | `python test/test_performance.py --label <证据名>`；脚本自建隔离副本，不单独运行内部探针 |
 | 当前存档帧耗时 | `python test/saved_game_perf.py --label <证据名>` 复制开发存档及工程，测量已解锁页面；`--snapshot <先前的input-save.json>` 保持前后同一输入，`--fps 60` 验证限帧表现，`--speed 2` 测倍速。`--instrument` 只定位热点，不用于最终帧率比较；`--reuse <该脚本生成的隔离目录>` 复用素材导入。 |
+| 第二轮历史保存阶段与尾帧 | `saved_game_tail.py` / `tail_save_candidate.py` / `verify_tail_candidate.py` 依赖旧触发和异步接口，只用于对应冻结副本；不要对当前定时/手动机制安装旧候选。历史证据和分析入口见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
 | Balance Lab 长模拟/压力 | 按 [性能协议](../space-battleship/docs/BALANCE_PERFORMANCE.md) 选择场景、夹具与超时；FAST 是玩法模式名，不等于日常 `fast` 层 |
 | Windows 单 EXE | `build_release.bat --no-pause`；构建器自动运行 `verify_release.gd`，后者不经 `run.py`、不进入最终 EXE |
 | 构建失败保护 | `powershell -NoProfile -ExecutionPolicy Bypass -File test/test_release_failures.ps1` |

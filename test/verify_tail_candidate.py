@@ -26,7 +26,7 @@ def main():
     env["LOCALAPPDATA"] = str(area / "userdata/local")
     for key in ["APPDATA", "LOCALAPPDATA"]:Path(env[key]).mkdir(parents=True, exist_ok=True)
     engine = SOURCE / "engine/Godot_v4.7.2-stable_win64.exe"
-    for name in ["test_tail_save.gd", "test_frame_save_batch.gd", "test_jewel_combine_all.gd", "test_journey_resume.gd", "test_restart_save_failure.gd", "test_delete_save.gd"]:
+    for name in ["test_tail_save.gd", "test_frame_save_batch.gd", "test_jewel_combine_all.gd", "test_journey_resume.gd", "test_restart_save_failure.gd", "test_delete_save.gd", "test_tail_verify_probe.gd"]:
         shutil.copy2(ROOT / "test" / name, game / name)
     # Screenshot output is irrelevant to this IO/rollback verification and has
     # no texture in a headless viewport; preserve all behavioral assertions.

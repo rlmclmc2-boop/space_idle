@@ -150,7 +150,7 @@ func assign(g, id: String, assignment: String, target: String) -> bool:
 
 func changed(g, item: Dictionary, previous: Dictionary) -> void:
 	g.refresh_crew_level_effects(previous,item)
-	g.save_progress()
+	g.save_dirty = true
 	g.event.emit("crew_changed",{"crewId":item.crewId,"previous":previous,"current":item.duplicate(true)})
 
 func upgrade_modes(g, assignment := "") -> Array[String]:

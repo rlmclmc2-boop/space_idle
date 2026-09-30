@@ -1,5 +1,17 @@
 {
   "entries": {
+    "save.settings": {"params": []},
+    "save.interval": {"params": []},
+    "save.apply_interval": {"params": []},
+    "save.invalid_interval": {"params": []},
+    "save.interval_hint": {"params": []},
+    "save.interval_applied": {"params": ["minutes"]},
+    "save.manual": {"params": []},
+    "save.last_success": {"params": ["time"]},
+    "save.never": {"params": []},
+    "save.success": {"params": []},
+    "save.failed": {"params": ["error"]},
+    "save.warning": {"params": []},
     "planet.activate": {"params": []},
     "planet.facility_status_ready": {"params": []},
     "planet.log.activated": {"params": ["name"]},

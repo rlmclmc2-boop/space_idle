@@ -55,7 +55,7 @@ func run() -> void:
 			check(scene.accelerated_visual_mode==(speed>=3.0),"Accelerated presentation starts at 3x: %s/%s" % [speed,delta])
 			check(is_equal_approx(game.distance,game.ship_movement()*expected_real*speed),"Travel follows simulated time: %s/%s" % [speed,delta])
 			check(is_equal_approx(game.planet_seconds,expected_real*speed) and is_equal_approx(game.research_seconds,expected_real*speed) and is_equal_approx(game.production_seconds,expected_real*speed),"Exploration, research and production share game time: %s/%s" % [speed,delta])
-			check(is_equal_approx(game.hightech_save_elapsed,expected_real),"Online save interval follows real time: %s/%s" % [speed,delta])
+			check(is_equal_approx(game.resource_prune_elapsed,expected_real),"Resource history pruning interval follows online real time: %s/%s" % [speed,delta])
 			check(is_equal_approx(float(game.profile.chronoParticles),game.chrono_capacity()-expected_real*game.chrono_cost(speed)),"Particle cost follows real time once: %s/%s" % [speed,delta])
 			check(is_equal_approx(scene.clock-clock_before,expected_real),"UI clock uses clamped real time: %s/%s" % [speed,delta])
 			game.state = BattleGame.State.LEVEL_CLEAR
@@ -63,11 +63,11 @@ func run() -> void:
 			scene._process(delta)
 			check(is_equal_approx(100.0-game.clear_timer,expected_real*speed),"Countdown follows the same game time: %s/%s" % [speed,delta])
 			game.paused = true
-			var before := {"profile":game.profile.duplicate(true),"player":game.player.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"distance":game.distance,"save_elapsed":game.hightech_save_elapsed}
+			var before := {"profile":game.profile.duplicate(true),"player":game.player.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"distance":game.distance,"prune_elapsed":game.resource_prune_elapsed}
 			game.steps.clear()
 			scene._process(delta)
 			check(game.steps.is_empty(),"Paused main invokes no simulation ticks: %s/%s" % [speed,delta])
-			check(before=={"profile":game.profile,"player":game.player,"cooldowns":game.cooldowns,"distance":game.distance,"save_elapsed":game.hightech_save_elapsed},"Pause preserves state and online save timer: %s/%s" % [speed,delta])
+			check(before=={"profile":game.profile,"player":game.player,"cooldowns":game.cooldowns,"distance":game.distance,"prune_elapsed":game.resource_prune_elapsed},"Pause preserves simulation state and resource pruning timer: %s/%s" % [speed,delta])
 	var exact_steps := ObservedGame.new(scene.db,false)
 	scene.game = exact_steps
 	scene.advance_game_time(10.0/60.0)

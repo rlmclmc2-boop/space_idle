@@ -303,16 +303,6 @@ func full_restart() -> void:
 	if scene == null:
 		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
-	var failed := [false]
-	var on_event := func(kind, _info):
-		if kind == "save_error": failed[0] = true
-	scene.game.event.connect(on_event)
-	scene.game.settle_drops()
-	scene.game.save_progress()
-	scene.game.event.disconnect(on_event)
-	if failed[0]:
-		status_label.text = UIText.t("debug.full_restart.text_02")
-		return
 	if settings.save("user://qa_settings.cfg") != OK:
 		status_label.text = UIText.t("debug.full_restart.text_03")
 		return
@@ -338,25 +328,13 @@ func restart_game(clear_save: bool = false) -> void:
 		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
 	if clear_save:
-		if FileAccess.file_exists(BattleGame.SAVE_PATH):
-			var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(BattleGame.SAVE_PATH))
-			if error != OK:
-				status_label.text = UIText.t("debug.restart_game.text_01") + error_string(error)
-				return
+		var error: Error = scene.game.progress_writer.clear_files()
+		if error != OK:
+			status_label.text = UIText.t("debug.restart_game.text_01") + error_string(error)
+			return
 		# Prevent the outgoing scene from writing its old progress back.
 		scene.game.save_enabled = false
 		scene.set_process(false)
-	else:
-		var failed := [false]
-		var on_event := func(kind, _info):
-			if kind == "save_error": failed[0] = true
-		scene.game.event.connect(on_event)
-		scene.game.settle_drops()
-		scene.game.save_progress()
-		scene.game.event.disconnect(on_event)
-		if failed[0]:
-			status_label.text = UIText.t("debug.restart_game.text_02")
-			return
 	deleting_save = clear_save
 	restarting = true
 	import_button.disabled = true

@@ -34,7 +34,7 @@ func run() -> void:
 	var loaded := restore(g)
 	check(loaded.stage == 2 and loaded.group_index == 1 and loaded.distance == 220 and loaded.state == BattleGame.State.TRAVEL, "Cruise restores selected stage, completed nodes and distance instead of highest stage")
 	loaded = restore(loaded)
-	check(loaded.distance == 220 and loaded.group_index == 1, "Repeated startup preserves checkpoint through initialization save")
+	check(loaded.distance == 220 and loaded.group_index == 1, "Repeated manual save preserves checkpoint")
 	g.spawn_group()
 	g.enemies[0].hp = 1
 	g.cooldowns["weapons_0"] = 123
@@ -119,10 +119,13 @@ func run() -> void:
 	current_scene.game.spawn_group()
 	current_scene.game.paused = true
 	var saved_distance: float = current_scene.game.distance
+	current_scene.manual_save()
+	var saved_bytes := FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+	current_scene.game.start(1,false)
 	current_scene._notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
 	var exited := BattleGame.new(current_scene.db, true)
 	exited.resume_progress()
-	check(exited.stage == 2 and exited.group_index == 2 and exited.distance == saved_distance, "Window-close handler saves current node")
+	check(FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==saved_bytes and exited.stage == 2 and exited.group_index == 2 and exited.distance == saved_distance, "Window close leaves the last manually saved node unchanged")
 	current_scene.show_qa_tools()
 	var panel := root.get_node("QATools")
 	var previous := current_scene.get_instance_id()
@@ -131,6 +134,6 @@ func run() -> void:
 	while panel.restarting and Time.get_ticks_msec() < deadline:
 		await process_frame
 	current_scene.set_process(false)
-	check(current_scene.get_instance_id() != previous and current_scene.game.stage == 2 and current_scene.game.group_index == 2 and current_scene.game.distance == saved_distance, "Actual QA restart preserves stage and combat node")
+	check(FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==saved_bytes and current_scene.get_instance_id() != previous and current_scene.game.stage == 2 and current_scene.game.group_index == 2 and current_scene.game.distance == saved_distance, "Actual QA restart reads the previous manual checkpoint without saving unsaved progress")
 	print("Journey resume: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)

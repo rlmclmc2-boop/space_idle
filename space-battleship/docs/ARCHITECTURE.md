@@ -5,6 +5,7 @@ Paths relative to project root. Operations: [README](../README.md).
 |---|---|
 | boot, scene, event->UI | project.godot -> main.tscn -> scripts/main.gd |
 | gameplay/state/combat/save | scripts/game.gd: BattleGame |
+| real-time/manual save / safe storage / settings | scripts/game.gd: check_timed_save/save_progress; scripts/progress_writer.gd; scripts/main.gd: show_save_settings |
 | ship hulls / weapon presentation | assets/ships/*, data/ship_weapon_visuals.json -> scripts/weapon_visual.gd -> scripts/main.gd draw/muzzle; logic remains in scripts/game.gd |
 | cfg/stat projection | scripts/database.gd: ShipDatabase |
 | equipment/ships/gems | scripts/equipment_tab.gd, equipment_card.gd, ship_panel.gd, jewel_panel.gd |

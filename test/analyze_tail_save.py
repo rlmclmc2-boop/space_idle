@@ -18,7 +18,7 @@ def summarize(report):
     saves=[row for row in requests if row.get("written", True)]
     keys=sorted({key for row in saves for key in row["stages_us"]})
     result={"requests":len(requests),"writes":len(saves),"successes":sum(row["success"] for row in saves),"bytes":distribution([row["bytes"] for row in saves]),"total_ms":distribution([row["total_us"]/1000 for row in saves]),"stages_ms":{key:distribution([row["stages_us"].get(key,0)/1000 for row in saves]) for key in keys}}
-    result["cpu_ms"]=distribution([sum(row["stages_us"].get(key,0) for key in ["build","copy_transform","serialize_stringify","encode"])/1000 for row in saves])
+    result["cpu_ms"]=distribution([sum(row["stages_us"].get(key,0) for key in ["build","copy_transform","serialize_stringify","encode","verify_compare"])/1000 for row in saves])
     result["io_ms"]=distribution([sum(row["stages_us"].get(key,0) for key in ["open","write","flush_close","verify_read","replace"])/1000 for row in saves])
     result["over10_saves"]=sum(row["total_us"]>10000 for row in saves)
     result["over20_saves"]=sum(row["total_us"]>20000 for row in saves)

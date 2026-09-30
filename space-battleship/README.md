@@ -14,7 +14,7 @@ AI 入口：[AGENTS](AGENTS.md)。本页只列操作；规则、定位和测试�
 
 脚本默认使用 `engine/Godot_v4.7.2-stable_win64.exe`。关卡编辑器可通过 `SPACE_BATTLESHIP_GODOT`、`SPACE_BATTLESHIP_PYTHON` 指定程序；游戏运行不需 Python。
 
-首启、缓存缺失或新素材缺 `.import` 时自动导入；失败查 `.runtime/startup-import.log`。替换素材或修改代码后，用 QA「大重启」保存、退出旧进程、重新导入并启动；失败查 `.runtime/full-restart.log`、`full-restart-import.log`，忙碌时勿重复触发。「重启游戏」仅在同进程重载场景。两者均不读取 Excel。
+首启、缓存缺失或新素材缺 `.import` 时自动导入；失败查 `.runtime/startup-import.log`。替换素材或修改代码后，用 QA「大重启」退出旧进程、重新导入并启动；失败查 `.runtime/full-restart.log`、`full-restart-import.log`，忙碌时勿重复触发。「重启游戏」仅在同进程重载场景。两者均不读取 Excel，也不保存进度；需要保留进度时先在顶部「设置 → 保存设置」手动保存。保存规则见 [PROJECT](docs/PROJECT.md)。
 
 「删除存档」会清空进度，保留 QA 偏好和配置；仅在人明确选择时使用。
 

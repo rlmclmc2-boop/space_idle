@@ -196,6 +196,11 @@ var resource_layer: Node2D
 var overlay_layer: Node2D
 var jewel_panel: Panel
 var chrono_login_dialog: AcceptDialog
+var save_settings_dialog: AcceptDialog
+var save_interval_input: LineEdit
+var save_interval_feedback: Label
+var last_save_label: Label
+var save_status_label: Label
 
 func _ready() -> void:
 	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
@@ -365,17 +370,13 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not background_unfocused:
 		background_unfocused = true
 		game.speed = game.default_speed()
-		game.save_progress()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and background_unfocused:
 		background_unfocused = false
 		game.speed = game.default_speed()
-		game.save_progress()
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
-	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
-		game.settle_drops()
-		game.save_progress()
 
 func _process(delta: float) -> void:
+	game.check_timed_save()
 	if fast_mode_enabled():
 		for voice in railgun_audio.values():
 			if is_instance_valid(voice) and voice.playing:voice.stop()
@@ -387,7 +388,6 @@ func _process(delta: float) -> void:
 		ui_rebuild_pending = false
 		build_ui()
 	sync_accelerated_visual_mode()
-	game.begin_frame_save_batch()
 	var dt := maxf(0,delta) if background_unfocused else minf(delta,0.1)
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
@@ -428,7 +428,6 @@ func _process(delta: float) -> void:
 	if fps_refresh_elapsed >= 0.5:
 		fps_refresh_elapsed = fmod(fps_refresh_elapsed,0.5)
 		refresh_fps_label()
-	game.end_frame_save_batch()
 	if automation_args.has("--capture"):
 		capture_frame += 1
 		if capture_frame == 45:
@@ -677,7 +676,12 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"retreat":
 			toast(UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
 		"save_error":
-			toast(UIText.t("main.on_event.text_06"))
+			var error: Error = info.get("error", ERR_FILE_CANT_WRITE)
+			toast(UIText.t("save.failed", {"error":error_string(error)}))
+			refresh_save_status()
+		"save_success":
+			toast(UIText.t("save.success"))
+			refresh_save_status()
 
 func number(value) -> String:
 	# Quantities use K/M/B/T; stage identifiers and levels use exact integers.
@@ -720,6 +724,82 @@ func load_music_setting() -> void:
 	var saved: Variant = config.get_value("audio", "music_on", true)
 	if saved is bool:
 		music_on = saved
+
+func show_save_settings() -> void:
+	if not is_instance_valid(save_settings_dialog):
+		save_settings_dialog = AcceptDialog.new()
+		save_settings_dialog.name = "SaveSettings"
+		save_settings_dialog.title = UIText.t("save.settings")
+		save_settings_dialog.ok_button_text = UIText.t("system.confirm")
+		save_settings_dialog.theme = Theme.new()
+		save_settings_dialog.theme.default_font = font
+		save_settings_dialog.theme.default_font_size = 18
+		add_child(save_settings_dialog)
+		var content := VBoxContainer.new()
+		content.custom_minimum_size = Vector2(580,280)
+		content.size = content.custom_minimum_size
+		content.add_theme_constant_override("separation",12)
+		save_settings_dialog.add_child(content)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation",12)
+		content.add_child(row)
+		var interval_label := Label.new()
+		interval_label.text = UIText.t("save.interval")
+		row.add_child(interval_label)
+		save_interval_input = LineEdit.new()
+		save_interval_input.name = "SaveIntervalMinutes"
+		save_interval_input.custom_minimum_size.x = 100
+		save_interval_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(save_interval_input)
+		var apply := Button.new()
+		apply.name = "ApplySaveInterval"
+		apply.text = UIText.t("save.apply_interval")
+		apply.pressed.connect(apply_save_interval)
+		row.add_child(apply)
+		save_interval_input.text_submitted.connect(func(_text):apply_save_interval())
+		save_interval_feedback = Label.new()
+		last_save_label = Label.new()
+		save_status_label = Label.new()
+		for label in [save_interval_feedback,last_save_label,save_status_label]:
+			label.custom_minimum_size.x = 580
+			label.size.x = 580
+			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			content.add_child(label)
+		var manual := Button.new()
+		manual.name = "ManualSave"
+		manual.text = UIText.t("save.manual")
+		manual.disabled = not game.save_enabled
+		manual.pressed.connect(manual_save)
+		content.add_child(manual)
+		var warning := Label.new()
+		warning.custom_minimum_size.x = 580
+		warning.size.x = 580
+		warning.text = UIText.t("save.warning")
+		warning.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		content.add_child(warning)
+	save_interval_input.text = str(game.save_interval_minutes)
+	save_interval_feedback.text = UIText.t("save.interval_hint")
+	refresh_save_status()
+	save_settings_dialog.popup_centered(Vector2i(620,360))
+
+func apply_save_interval() -> void:
+	if not game.set_save_interval(save_interval_input.text):
+		save_interval_feedback.text = UIText.t("save.invalid_interval")
+		return
+	save_interval_input.text = str(game.save_interval_minutes)
+	save_interval_feedback.text = UIText.t("save.interval_applied", {"minutes":str(game.save_interval_minutes)})
+
+func manual_save() -> void:
+	game.save_progress()
+
+func refresh_save_status() -> void:
+	if not is_instance_valid(last_save_label):return
+	var display := UIText.t("save.never")
+	if game.last_successful_save_at > 0:
+		var bias := int(Time.get_time_zone_from_system().get("bias",0))
+		display = Time.get_datetime_string_from_unix_time(int(game.last_successful_save_at)+bias*60,true)
+	last_save_label.text = UIText.t("save.last_success", {"time":display})
+	save_status_label.text = UIText.t("save.failed", {"error":error_string(game.last_save_error)}) if game.last_save_error != OK else ""
 
 func save_music_setting() -> void:
 	var config := ConfigFile.new()
@@ -1584,8 +1664,12 @@ func build_ui() -> void:
 	for mode in 3:
 		death_menu.add_radio_check_item([UIText.t("main.build_ui.text_19"), UIText.t("main.build_ui.text_20"), UIText.t("gem.setup.text_03")][mode],10+mode)
 		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
+	death_menu.add_separator()
+	death_menu.add_item(UIText.t("save.settings"),30)
 	death_menu.id_pressed.connect(func(mode):
-		if mode==20:
+		if mode==30:
+			show_save_settings()
+		elif mode==20:
 			var details := AcceptDialog.new()
 			details.ok_button_text = UIText.t("system.confirm")
 			details.title = UIText.t("main.build_ui.text_21")

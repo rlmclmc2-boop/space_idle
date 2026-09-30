@@ -49,10 +49,10 @@ func run() -> void:
 	check(result.ok and result.count==9 and result.consumed==27,"Chained outputs keep combining; cumulative consumption includes intermediates")
 	check(result.results==[{"id":"1","level":3,"count":2},{"id":"2","level":2,"count":1}],"Rewards group only final newly produced high-level gems")
 	check(game.profile.jewels.size()==4 and is_same(game.jewel_inventory(int(old_max.token)),old_max),"Existing maximum-level gem survives without being counted as a reward")
-	check(notifications==1 and game.saves==1,"Whole operation emits and saves exactly once")
+	check(notifications==1 and game.saves==0,"Whole operation commits in memory and emits once without saving")
 	var before := game.profile.duplicate(true)
 	result=game.combine_all_jewels()
-	check(result.ok and result.count==0 and game.profile==before and notifications==1 and game.saves==1,"Repeated click at fixed point changes nothing")
+	check(result.ok and result.count==0 and game.profile==before and notifications==1 and game.saves==0,"Repeated click at fixed point changes nothing")
 
 	fresh()
 	add("1",1,5)
@@ -105,7 +105,7 @@ func run() -> void:
 	check(result.ok and result.count>0 and result.consumed==result.count*3,"Full bag plus held fragments converge through direct-tier refill and upgrades")
 	check(game.profile.jewels.size()==24 and game.profile.jewelFragments==0,"Refill consumes exactly ten creation costs, never overflowing inventory")
 	check(result.results==[{"id":"1","level":3,"count":23},{"id":"1","level":2,"count":1}],"Final rewards exclude all consumed intermediate outputs")
-	check(game.saves==1 and notifications==1,"Refill rounds still commit and notify once")
+	check(game.saves==0 and notifications==1,"Refill rounds commit in memory and notify once without saving")
 	for gem in game.profile.jewels:check(int(gem.level)<=db.jewel_max_level(str(gem.id)),"Configured maximum respected")
 
 	# Explicit bulk combine removes only bag gems more than ten levels below each type's peak.
@@ -124,13 +124,13 @@ func run() -> void:
 	check(result.ok and result.deleted==0 and game.profile==before,"Automatic management does not clear old bag gems")
 	game.fail_save=true
 	result=game.combine_all_jewels()
-	check(not result.ok and game.profile==before and is_same(game.slot_entry("weapons",0).sockets[0],installed_peak) and notifications==0,"Failed cleanup save restores all bag and equipped gems")
+	check(result.ok and result.deleted==1 and game.profile.jewels.size()==3 and game.saves==0,"Unavailable storage cannot roll back a valid cleanup operation")
 	game.fail_save=false
 	game.saves=0
 	result=game.combine_all_jewels()
-	check(result.ok and result.count==0 and result.deleted==1 and game.profile.jewels.size()==3,"Explicit combine clears only the matching type below the ten-level window")
+	check(result.ok and result.count==0 and result.deleted==0 and game.profile.jewels.size()==3,"Repeated cleanup is a fixed point")
 	check(game.jewel_inventory(int(obsolete.token)).is_empty() and not game.profile.jewels.filter(func(gem):return str(gem.id)=="2").is_empty(),"Cleanup includes stale protected bag records but preserves other types")
-	check(is_same(game.slot_entry("weapons",0).sockets[0],installed_peak) and notifications==1 and game.saves==1,"Equipped gem survives cleanup and transaction commits once")
+	check(is_same(game.slot_entry("weapons",0).sockets[0],installed_peak) and notifications==1 and game.saves==0,"Equipped gem survives cleanup and memory operation commits once")
 
 	fresh()
 	add("1",1,9)
@@ -139,21 +139,17 @@ func run() -> void:
 	var live: Array=game.profile.jewels
 	serial=game.jewel_serial
 	rng_state=game.rng.state
-	game.begin_frame_save_batch()
 	game.fail_save=true
 	result=game.combine_all_jewels()
-	game.end_frame_save_batch()
-	check(not result.ok and game.profile==before and is_same(game.profile.jewels,live),"Injected save failure leaves original profile and inventory unchanged")
-	check(game.jewel_serial==serial and game.rng.state==rng_state and notifications==0 and not game.jewel_bulk_combining,"Failed transaction consumes no serials/RNG and emits no inventory refresh")
+	check(result.ok and result.count>0 and game.profile!=before and not is_same(game.profile.jewels,live) and game.saves==0,"Unavailable writer does not prevent valid combination and refill")
+	check(game.jewel_serial>serial and game.rng.state!=rng_state and notifications==1 and not game.jewel_bulk_combining,"Memory commit advances serials/RNG and emits inventory refresh once")
 	game.fail_save=false
 	game.save_enabled=true
-	game.begin_frame_save_batch()
-	result=game.combine_all_jewels()
+	game.save_progress()
 	var transaction_saved: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	game.end_frame_save_batch()
 	game.save_enabled=false
-	check(result.ok,"Retry after save failure succeeds")
-	check(transaction_saved.jewels.size()==game.profile.jewels.size(),"Jewel transaction saves synchronously inside frame batch")
+	check(game.saves==1,"Only the later explicit manual save writes")
+	check(transaction_saved.jewels.size()==game.profile.jewels.size(),"Manual save persists the already committed inventory")
 	var saved: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
 	check(saved.jewels.size()==game.profile.jewels.size() and saved.jewelFragments==game.profile.jewelFragments,"Committed result is persisted as the final inventory")
 	var restored := BattleGame.new(db,false)

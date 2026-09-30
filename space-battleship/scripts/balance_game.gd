@@ -218,7 +218,6 @@ func tick(dt: float) -> void:
 	super.tick(dt)
 	tick_effects_active = false
 	clear_tick_effects()
-	if hightech_save_elapsed == 0:prune_resource_samples(simulated_time)
 
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind in ["module_changed","ship_changed","jewels_changed","upgrade"]:clear_tick_effects()

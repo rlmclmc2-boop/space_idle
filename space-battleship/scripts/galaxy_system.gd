@@ -60,7 +60,7 @@ func available() -> bool:
 func start(g, key: String) -> bool:
 	if not regions.has(key) or regions[key].state.status!="available":return false
 	regions[key].state.status="exploring"
-	g.save_progress()
+	g.save_dirty = true
 	g.event.emit("galaxy_changed",{"key":key})
 	return true
 

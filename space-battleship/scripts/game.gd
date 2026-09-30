@@ -70,13 +70,16 @@ var retreat_target := 0.0
 var retreat_elapsed := 0.0
 var retreat_boss_pending := false
 var rng := RandomNumberGenerator.new()
-var hightech_save_elapsed := 0.0
+var resource_prune_elapsed := 0.0
 var resource_samples: Array[Dictionary] = []
 var auto_gen_elapsed := 0.0
 var save_dirty := false
 var planet_crew_payout_active := false
-var frame_save_batch_active := false
-var frame_save_requested := false
+var save_interval_minutes := 1
+var next_timed_save_at := 0.0
+var last_successful_save_at := 0.0
+var last_save_error: Error = OK
+var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
@@ -103,8 +106,9 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
-		save_progress()
+		save_dirty = true
 	reset_player()
+	reset_save_timer()
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
@@ -194,11 +198,16 @@ func empty_loadout(key: String) -> Dictionary:
 func load_progress() -> void:
 	invalidate_stat_cache()
 	login_chrono_particles = 0.0
-	if not FileAccess.file_exists(SAVE_PATH):
-		return
-	var raw = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	var raw = progress_writer.read_progress(SAVE_PATH)
 	if not raw is Dictionary or int(raw.get("version",0)) not in [2,SAVE_VERSION]:
 		return
+	var interval_value = raw.get("saveIntervalMinutes", 1)
+	var interval := parse_save_interval(str(interval_value))
+	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
+	if interval > 0:save_interval_minutes = interval
+	var saved_at = raw.get("hightechSavedAt", 0.0)
+	if (saved_at is int or saved_at is float) and is_finite(float(saved_at)) and saved_at > 0:
+		last_successful_save_at = float(saved_at)
 	# Legacy identities are accepted only at the save migration boundary.
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
@@ -312,7 +321,7 @@ func resume_progress() -> void:
 		start(int(profile.guardStage) if profile.loop else int(profile.highestLevel), bool(profile.loop))
 		if profile.loop:
 			resume_guard()
-			save_progress()
+			save_dirty = true
 
 func chrono_options() -> Array[Dictionary]:
 	var options: Array[Dictionary] = []
@@ -463,34 +472,60 @@ func ensure_loadout() -> void:
 			normalized.append(normalized_entry)
 		profile.loadout[category] = normalized
 
-func begin_frame_save_batch() -> void:
-	frame_save_batch_active = true
+func save_clock_seconds() -> float:
+	# Monotonic elapsed time, independent of game speed, pause and wall-clock edits.
+	return float(Time.get_ticks_msec()) / 1000.0
 
-func end_frame_save_batch() -> void:
-	frame_save_batch_active = false
-	if frame_save_requested:
-		frame_save_requested = false
-		save_progress()
+func reset_save_timer() -> void:
+	next_timed_save_at = save_clock_seconds() + float(save_interval_minutes) * 60.0
+
+static func parse_save_interval(text: String) -> int:
+	var value := text.strip_edges()
+	if not value.is_valid_int():return 0
+	while value.length() > 1 and value.begins_with("0"):value = value.substr(1)
+	if value.length() > 19 or (value.length() == 19 and value > "9223372036854775807"):return 0
+	var minutes := value.to_int()
+	return minutes if minutes > 0 and str(minutes) == value else 0
+
+func set_save_interval(text: String) -> bool:
+	var minutes := parse_save_interval(text)
+	if minutes <= 0:return false
+	if save_interval_minutes != minutes:
+		save_interval_minutes = minutes
+		save_dirty = true
+		reset_save_timer()
+	return true
+
+func check_timed_save() -> void:
+	if not save_enabled or save_clock_seconds() < next_timed_save_at:return
+	# Schedule from now before trying. Never replay missed periods or retry failure
+	# every frame. Manual saves leave this periodic deadline unchanged.
+	reset_save_timer()
+	save_progress()
 
 func save_progress() -> void:
+	# Called only by the real-time deadline or explicit manual save.
+	if not save_enabled:return
 	save_dirty = true
-	if not save_enabled:
+	var saved := _build_save_data()
+	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t").to_utf8_buffer())
+	if last_save_error != OK:
+		event.emit("save_error", {"error":last_save_error})
 		return
-	if frame_save_batch_active and not jewel_bulk_combining:
-		frame_save_requested = true
-		return
+	save_dirty = false
+	last_successful_save_at = float(saved.hightechSavedAt)
+	event.emit("save_success", {"at":last_successful_save_at})
+
+func _build_save_data() -> Dictionary:
 	profile.hightechOrder = hightech_slots()
 	profile.hightechSavedAt = Time.get_unix_time_from_system()
 	prune_resource_samples(float(profile.hightechSavedAt))
 	profile.resourceSamples = resource_samples
 	profile.chronoSavedAt = float(profile.hightechSavedAt)
 	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
-	var file := FileAccess.open(SAVE_PATH + ".tmp", FileAccess.WRITE)
-	if file == null:
-		event.emit("save_error", {})
-		return
 	# Compatibility projection only; never install name-based levels in runtime.
 	var saved := profile.duplicate()
+	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
 	if state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
@@ -506,14 +541,7 @@ func save_progress() -> void:
 	saved.levels = {}
 	for key in EQUIPMENT:
 		saved.levels[key] = int(first_equipment_entry(key).get("level", 1))
-	file.store_string(JSON.stringify(saved, "\t"))
-	file.close()
-	var err := DirAccess.rename_absolute(SAVE_PATH + ".tmp", SAVE_PATH)
-	if err != OK:
-		event.emit("save_error", {})
-	else:
-		save_dirty = false
-		if frame_save_batch_active:frame_save_requested = false
+	return saved
 
 func first_equipment_entry(key: String) -> Dictionary:
 	for category in ["weapons", "defence"]:
@@ -689,7 +717,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
-	save_progress()
+	save_dirty = true
 	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
@@ -703,7 +731,7 @@ func unequip_slot(category: String, index: int) -> bool:
 	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
-	save_progress()
+	save_dirty = true
 	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
@@ -732,7 +760,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 					if category=="weapons":invalidate_module_attack(index)
 	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
 	apply_refit_health()
-	save_progress()
+	save_dirty = true
 	event.emit("ship_changed",{"key":key})
 	return true
 
@@ -855,7 +883,7 @@ func upgrade_reactor(amount: int) -> bool:
 		total += cost
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
-	save_progress()
+	save_dirty = true
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
 	return true
 
@@ -871,7 +899,7 @@ func set_reactor_allocation(key: String, value: float) -> bool:
 		player.shield = N.minimum(player.shield,stat("shield"))
 		event.emit("equipment_stats",{"category":"defence"})
 	elif key == "weapons":event.emit("equipment_stats",{"category":"weapons"})
-	save_progress()
+	save_dirty = true
 	event.emit("reactor_changed", {"module":key})
 	return true
 
@@ -891,7 +919,7 @@ func equalize_reactor_allocation() -> bool:
 	invalidate_stat_cache()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))
-	save_progress()
+	save_dirty = true
 	event.emit("equipment_stats",{"category":"weapons"})
 	event.emit("equipment_stats",{"category":"defence"})
 	event.emit("reactor_changed", {"equalized":true})
@@ -941,7 +969,7 @@ func swap_hightech_slots(source: int, target: int) -> bool:
 	slots[source] = slots[target]
 	slots[target] = key
 	profile.hightechOrder = slots
-	save_progress()
+	save_dirty = true
 	return true
 
 func hightech_required(key: String) -> float:
@@ -1080,7 +1108,7 @@ func generate_scientist(amount := 1) -> bool:
 	for id in purchase.costs:
 		profile.resources[id] = N.subtract(profile.resources[id],purchase.costs[id])
 	profile.scientists += int(purchase.count)
-	save_progress()
+	save_dirty = true
 	event.emit("scientists_changed", {})
 	return true
 
@@ -1092,7 +1120,7 @@ func distribute_scientists() -> bool:
 	var total := int(profile.scientists)
 	for i in range(keys.size()):
 		profile.scientistAssignments[keys[i]] = total/keys.size() + (1 if i < total%keys.size() else 0)
-	save_progress()
+	save_dirty = true
 	event.emit("scientists_changed", {})
 	return true
 
@@ -1112,7 +1140,7 @@ func assign_scientist(key: String, delta: int) -> bool:
 	if not hightech_unlocked(key) or delta == 0 or (delta > 0 and idle_scientists() <= 0) or (delta < 0 and assigned_scientists(key) <= 0):
 		return false
 	profile.scientistAssignments[key] = assigned_scientists(key)+clampi(delta,-assigned_scientists(key),idle_scientists())
-	save_progress()
+	save_dirty = true
 	event.emit("scientists_changed", {})
 	return true
 
@@ -1233,7 +1261,7 @@ func planet_duration_from(row: Dictionary, degree) -> float:
 func set_planet_auto(id: String, enabled: bool) -> bool:
 	if not planet_buildings.built(self,id,"auto_explore"):return false
 	profile.planets[id].auto_explore=enabled
-	save_progress()
+	save_dirty = true
 	event.emit("planet_changed",{"id":id})
 	return true
 
@@ -1284,14 +1312,14 @@ func reforge_planet(id: String) -> bool:
 	enemies.clear()
 	speed=default_speed()
 	auto_gen_elapsed=0.0
-	hightech_save_elapsed=0.0
+	resource_prune_elapsed=0.0
 	rebuild_unlocks()
 	reset_player()
 	var persist := save_enabled
 	save_enabled=false
 	start(start_level,false)
 	save_enabled=persist
-	save_progress()
+	save_dirty = true
 	event.emit("planet_reforged",{"id":id})
 	return true
 
@@ -1302,7 +1330,7 @@ func start_planet_exploration(id: String, crew_id: String) -> bool:
 	profile.planets[id].unlocked=true
 	profile.planets[id].crewId = crew_id
 	profile.planets[id].elapsed = 0.0
-	save_progress()
+	save_dirty = true
 	event.emit("planet_changed", {"id":id, "crewId":crew_id})
 	return true
 
@@ -1310,7 +1338,7 @@ func cancel_planet_exploration(id: String) -> bool:
 	if planet_progress(id).is_empty() or str(planet_progress(id).crewId).is_empty():return false
 	profile.planets[id].crewId = ""
 	profile.planets[id].elapsed = 0.0
-	save_progress()
+	save_dirty = true
 	event.emit("planet_changed", {"id":id})
 	return true
 
@@ -1337,7 +1365,7 @@ func advance_planets(dt: float) -> void:
 			else:add_crew_exp(member_id, reward)
 			planet_crew_payout_active = false
 		save_enabled = persist
-		save_progress()
+		save_dirty = true
 		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
 
 func assign_crew(crew_id: String, assignment_type: String, target_id: String) -> bool:
@@ -1603,7 +1631,7 @@ func toggle_loop() -> void:
 		profile.loop = false
 		guard_elapsed = 0
 		guard_arrived = false
-		save_progress()
+		save_dirty = true
 	elif state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR] and not db.levels[stage-1].groups.is_empty():
 		guard_index = clampi(group_index if state == State.TRAVEL else group_index-1, 0, db.levels[stage-1].groups.size()-1)
 		profile.loop = true
@@ -1615,7 +1643,7 @@ func toggle_loop() -> void:
 		profile.guardDistance = distance if guard_arrived else float(db.levels[stage-1].groups[guard_index].position) * float(db.levels[stage-1].length)
 		if state == State.LEVEL_CLEAR:
 			clear_timer = guard_interval()
-		save_progress()
+		save_dirty = true
 
 func guarding_here() -> bool:
 	return profile.loop and guard_arrived
@@ -1623,7 +1651,7 @@ func guarding_here() -> bool:
 func set_guard_death(mode: int) -> void:
 	if mode in [0,1,2]:
 		profile.guardDeath = mode
-		save_progress()
+		save_dirty = true
 
 func guard_interval() -> float:
 	var encounters: Array = db.levels[stage-1].groups
@@ -1696,7 +1724,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 			retreat_target = distance
 			retreat_elapsed = 0
 			change_state(State.RETREAT)
-	save_progress()
+	save_dirty = true
 	return true
 
 func is_active() -> bool:
@@ -1743,7 +1771,7 @@ func spawn_group(keep_distance := false) -> void:
 		enemies.append(enemy)
 	if is_boss_encounter() and not profile.bossSeen.has(stage):
 		profile.bossSeen.append(stage)
-		save_progress()
+		save_dirty = true
 	change_state(State.COMBAT)
 	event.emit("encounter", {"boss":is_boss_encounter()})
 
@@ -1948,14 +1976,14 @@ func begin_retreat() -> void:
 		retreat_boss_pending = true
 	change_state(State.RETREAT)
 	event.emit("retreat", {"from":retreat_from,"to":retreat_target})
-	save_progress()
+	save_dirty = true
 
 func acknowledge_unlocks() -> void:
 	# One page per item keeps simultaneous unlocks readable without dropping any.
 	if not pending_unlocks.is_empty():
 		var key: String = pending_unlocks.pop_front()
 		if not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
-	save_progress()
+	save_dirty = true
 	event.emit("state", {"state":state})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false) -> void:
@@ -2013,7 +2041,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	info.amount = amount
 	info.manual = manual
 	event.emit("collect", info)
-	save_progress()
+	save_dirty = true
 
 func settle_drops() -> void:
 	for drop in drops.duplicate():
@@ -2041,7 +2069,7 @@ func clear_level() -> void:
 			pending_unlocks.append(key)
 	clear_timer = CLEAR_ADVANCE_DELAY
 	change_state(State.LEVEL_CLEAR)
-	save_progress()
+	save_dirty = true
 	if not pending_unlocks.is_empty():
 		event.emit("unlock", {"items":pending_unlocks.duplicate(), "equipment":pending_unlocks.filter(func(id):return db.data.unlock[id].type == "equipment")})
 
@@ -2133,7 +2161,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if _upgrade_batch:
 		_upgrade_slots.append(slot_id(category,index))
 	else:
-		save_progress()
+		save_dirty = true
 	event.emit("upgrade", {"key":key,"slot":slot_id(category,index),"levels":levels,"cost":costs,"batch":_upgrade_batch})
 	return true
 
@@ -2149,7 +2177,7 @@ func upgrade_equipment_batch(mode: String) -> void:
 	var changed := _upgrade_slots
 	_upgrade_slots=[]
 	if not changed.is_empty():
-		save_progress()
+		save_dirty = true
 		event.emit("upgrades_completed",{"slots":changed})
 
 func upgrade_max(key: String) -> bool:
@@ -2179,10 +2207,10 @@ func tick(dt: float) -> void:
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
 	advance_hightech(dt, dt / maxf(speed, 0.001))
-	hightech_save_elapsed += dt / maxf(speed, 0.001)
-	if hightech_save_elapsed >= 5.0:
-		hightech_save_elapsed = 0
-		save_progress()
+	resource_prune_elapsed += dt / maxf(speed, 0.001)
+	if resource_prune_elapsed >= 5.0:
+		resource_prune_elapsed = 0
+		prune_resource_samples(economy_time())
 	for drop in drops.duplicate():
 		if drop.get("hightech", false) or drop.get("auto_gen", false):
 			continue
@@ -2217,7 +2245,7 @@ func tick(dt: float) -> void:
 				profile.guardIndex = guard_index
 				profile.guardDistance = distance
 				resume_guard()
-				save_progress()
+				save_dirty = true
 		return
 	if not is_active():
 		return
@@ -2606,26 +2634,14 @@ func combine_all_jewels(clean_obsolete := true) -> Dictionary:
 		result_tokens.append(gem.token)
 	var results: Array=rewards.values()
 	results.sort_custom(func(a,b):return int(a.level)>int(b.level) if a.level!=b.level else str(a.id)<str(b.id))
-	# Save the staged profile once. Failed writes restore the live inventory unchanged.
-	var original := profile
-	profile=profile.duplicate()
+	# Validate and calculate privately, then commit the in-memory operation once.
+	# Persistence is independent: a later failed save never undoes this result.
+	jewel_bulk_combining=true
 	profile.jewels=working
 	profile.jewelFragments=fragments
-	var failed := [false]
-	var on_save := func(kind: String,_info: Dictionary):
-		if kind=="save_error":failed[0]=true
-	jewel_bulk_combining=true
-	event.connect(on_save)
-	save_progress()
-	event.disconnect(on_save)
-	if failed[0]:
-		profile=original
-		jewel_bulk_combining=false
-		return failure
-	original.merge(profile,true)
-	profile=original
 	jewel_serial=serial
 	rng.state=random.state
+	save_dirty=true
 	event.emit("jewels_changed",{"slot":""})
 	jewel_bulk_combining=false
 	return {"ok":true,"count":count,"consumed":count*required,"deleted":deleted,"results":results,"tokens":result_tokens}
@@ -2822,7 +2838,7 @@ func jewels_changed(slot := "", slots: Array = []) -> void:
 	if player.has("armour"):
 		player.armour = N.minimum(player.armour,stat("armour"))
 		player.shield = N.minimum(player.shield,max_shield())
-	save_progress()
+	save_dirty = true
 	event.emit("jewels_changed", {"slot":slot,"slots":slots})
 
 func jewel_effects(entry: Dictionary) -> Array:

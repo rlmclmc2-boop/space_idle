@@ -99,7 +99,7 @@ func _planet_building_statuses(progress: Dictionary) -> Array:
     source = path.read_text(encoding="utf-8")
     source = source.replace('\tgame = BattleGame.new(db, not automation_args.has("--capture"))', '\tgame = BattleGame.new(db, not automation_args.has("--capture"))\n\tgame.ordinary_save_async_enabled = true\n\tget_tree().auto_accept_quit = false')
     source = source.replace('func _notification(what: int) -> void:\n\tif game == null:\n\t\treturn', 'func _notification(what: int) -> void:\n\tif game == null:\n\t\tif what == NOTIFICATION_WM_CLOSE_REQUEST:_quit_after_save()\n\t\treturn')
-    source = source.replace('elif what == NOTIFICATION_WM_CLOSE_REQUEST:\n\t\tgame.settle_drops()\n\t\tgame.save_progress()', 'elif what == NOTIFICATION_WM_CLOSE_REQUEST:\n\t\tgame.settle_drops()\n\t\tgame.save_progress()\n\t\tif not game.save_dirty:_quit_after_save()')
+    source = source.replace('elif what == NOTIFICATION_WM_CLOSE_REQUEST:\n\t\tgame.settle_drops()\n\t\tgame.save_progress()', 'elif what == NOTIFICATION_WM_CLOSE_REQUEST:\n\t\tif not game.save_enabled:\n\t\t\t_quit_after_save()\n\t\t\treturn\n\t\tgame.settle_drops()\n\t\tgame.save_progress()\n\t\tif not game.save_dirty:_quit_after_save()')
     source += '''
 func _exit_tree() -> void:
 	if game == null:return

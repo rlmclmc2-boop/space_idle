@@ -43,7 +43,7 @@ func activate(g, planet_id: String, building_id: String) -> bool:
 		item.status = "built"
 		if str(row.type) == "auto_explore":g.planet_progress(planet_id).auto_explore = true
 		g.invalidate_stat_cache()
-		g.save_progress()
+		g.save_dirty = true
 		g.event.emit("planet_changed", {"id":planet_id, "activated":building_id})
 		return true
 	return false
@@ -109,6 +109,6 @@ func assign(g, planet_id: String, building_id: String, crew_id: String) -> bool:
 		var member: Dictionary = g.crew.entry(g,crew_id)
 		if item.crew.size()>=int(row.extra_crew) or member.is_empty() or not g.crew.unlocked(g,crew_id) or not str(member.assignmentType).is_empty() or not occupied(g,crew_id).is_empty():return false
 		item.crew.append(crew_id)
-	g.save_progress()
+	g.save_dirty = true
 	g.event.emit("planet_changed",{"id":planet_id})
 	return true

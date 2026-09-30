@@ -50,14 +50,43 @@ def instrument_writer(source):
     source = source.replace('\trevision += 1', '\trevision += 1\n\tEngine.get_meta("diag_meter").register_revision(revision)')
     source = source.replace('\tvar result := _write_payload(bytes)', '\tvar result := _write_payload(bytes)\n\tEngine.get_meta("diag_meter").io_completed(revision,result)')
     source = source.replace('\tvar result: Dictionary = worker.wait_to_finish()', '\tvar result: Dictionary = worker.wait_to_finish()\n\tEngine.get_meta("diag_meter").io_completed(active_revision,result)')
-    source = source.replace('func _write_payload(bytes: PackedByteArray) -> Dictionary:\n', 'func _write_payload(bytes: PackedByteArray) -> Dictionary:\n\tvar _tail_begin := Time.get_ticks_usec()\n\tvar _tail_clock := _tail_begin\n\tvar _tail_stages := {}\n')
-    source = source.replace('\tif file == null:', '\t_tail_stages.open=Time.get_ticks_usec()-_tail_clock\n\t_tail_clock=Time.get_ticks_usec()\n\tif file == null:', 1)
-    source = source.replace('\tfile.flush()', '\t_tail_stages.write=Time.get_ticks_usec()-_tail_clock\n\t_tail_clock=Time.get_ticks_usec()\n\tfile.flush()', 1)
-    source = source.replace('\tfile.close()', '\tfile.close()\n\t_tail_stages.flush_close=Time.get_ticks_usec()-_tail_clock\n\t_tail_clock=Time.get_ticks_usec()', 1)
-    source = source.replace('if FileAccess.get_file_as_bytes(path + ".tmp") != bytes:', 'var _tail_verified := FileAccess.get_file_as_bytes(path + ".tmp") == bytes\n\t_tail_stages.verify_read=Time.get_ticks_usec()-_tail_clock\n\t_tail_clock=Time.get_ticks_usec()\n\tif not _tail_verified:')
-    source = source.replace('\treturn {"error":_commit_temp()}', '\tvar _tail_error := _commit_temp()\n\t_tail_stages.replace=Time.get_ticks_usec()-_tail_clock\n\treturn _tail_io_result(_tail_error,_tail_stages,_tail_begin)')
-    source = source.replace('return {"error":FileAccess.get_open_error()}', 'return _tail_io_result(FileAccess.get_open_error(),_tail_stages,_tail_begin)')
-    source = source.replace('return {"error":ERR_FILE_CANT_WRITE}', 'return _tail_io_result(ERR_FILE_CANT_WRITE,_tail_stages,_tail_begin)')
+    start=source.index('func _write_payload(')
+    end=source.index('\nfunc _store_buffer',start)
+    measured='''func _write_payload(bytes: PackedByteArray) -> Dictionary:
+	var _tail_begin := Time.get_ticks_usec()
+	var _tail_clock := _tail_begin
+	var _tail_stages := {}
+	var file := FileAccess.open(path + ".tmp", FileAccess.WRITE_READ)
+	_tail_stages.open=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	if file == null:return _tail_io_result(FileAccess.get_open_error(),_tail_stages,_tail_begin)
+	var written := _store_buffer(file,bytes)
+	_tail_stages.write=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	file.flush()
+	var error := file.get_error()
+	_tail_stages.flush_close=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	if not written or error != OK:
+		file.close()
+		_tail_stages.flush_close+=Time.get_ticks_usec()-_tail_clock
+		return _tail_io_result(ERR_FILE_CANT_WRITE,_tail_stages,_tail_begin)
+	file.seek(0)
+	var verified := file.get_buffer(bytes.size())
+	_tail_stages.verify_read=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	var complete := verified == bytes and file.get_length() == bytes.size() and file.get_error() == OK
+	_tail_stages.verify_compare=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	file.close()
+	_tail_stages.flush_close+=Time.get_ticks_usec()-_tail_clock
+	_tail_clock=Time.get_ticks_usec()
+	if not complete:return _tail_io_result(ERR_FILE_CANT_WRITE,_tail_stages,_tail_begin)
+	var _tail_error := _commit_temp()
+	_tail_stages.replace=Time.get_ticks_usec()-_tail_clock
+	return _tail_io_result(_tail_error,_tail_stages,_tail_begin)
+'''
+    source=source[:start]+measured+source[end:]
     source += '''
 func _tail_io_result(error: Error, stages: Dictionary, started: int) -> Dictionary:
 	var end := Time.get_ticks_usec()

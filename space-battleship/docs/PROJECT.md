@@ -1,6 +1,11 @@
 # PROJECT: stable gameplay contracts
 NUMERIC SRC: authorized Excel sheets + user-approved rules.
 
+SAVING
+- Only timed and manual progress saves. Default interval is 1 positive integer minute, editable in Save settings. Use monotonic real elapsed time regardless of game speed, pause or focused state; late frames save once and schedule from now, never replay missed periods. Changing the interval resets the deadline without writing; manual saves leave the deadline unchanged. The interval persists with the next successful progress save.
+- Business operations commit validated costs, rewards and state in memory without building/serializing a save or depending on disk success. Combat, settlement, pickup, upgrades, gems, navigation, startup, restart and exit do not save. Unsaved progress may be lost; settings show this warning and the last successful local save time.
+- Timed/manual saves synchronously validate a flushed temporary file before safe replacement, preserve the previous file on failure and accept its backup on load. Failure reports explicitly without reverting business results or advancing the successful-save timestamp; retry only at the next deadline or a manual save. No asynchronous candidate is enabled.
+
 PROGRESSION
 - Loop: cruise -> encounter -> auto-combat -> resources/growth -> unlock. May hold/replay or jump to cleared/current level. Normal clear waits 3 game-seconds; immediate clear available.
 - unlock.xlsx is sole threshold source: cleared=specified level cleared; reached=highest enterable level exceeds threshold; gems retain level-8 availability. Granted unlocks persist across threshold edits; notices acknowledged individually, no replay duplicates.
