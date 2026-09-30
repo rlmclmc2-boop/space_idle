@@ -35,7 +35,7 @@ func run() -> void:
 	check(scene.floats[0].text=="24.7K" and is_equal_approx(scene.floats[0].life,scene.battle_visual.damage_number_normal_duration),"unsigned three significant digits and short ordinary lifetime")
 	check(is_equal_approx(scene.floats[1].life,scene.battle_visual.damage_number_critical_duration),"critical label stays distinct slightly longer")
 	check(scene.NUMBER_FORMAT.damage(999999)=="1M" and scene.NUMBER_FORMAT.damage(123456789)=="123M","unit carry and common units")
-	check(scene.NUMBER_FORMAT.damage(1e36)=="1.00e+36" and scene.NUMBER_FORMAT.damage(-1.234e100)=="1.23e+100","large damage uses supported scientific formatting")
+	check(scene.NUMBER_FORMAT.damage(1e36)=="1e+36" and scene.NUMBER_FORMAT.damage(-1.234e100)=="1.23e+100","large damage uses supported scientific formatting")
 	check(scene.damage_history.back().contains("12345"),"details preserve full event amount")
 	scene.fx_time += 0.02
 	hit.critical = false

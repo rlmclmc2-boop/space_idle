@@ -172,6 +172,7 @@ func setup(owner_ui: Node) -> void:
 	footer_buttons.details = action_button(footer_actions,"equipment.inspect","module_detail",show_inspector)
 	build_detail()
 	resized.connect(layout_contents)
+	get_viewport().size_changed.connect(layout_contents)
 	layout_contents()
 	refresh()
 
@@ -234,12 +235,18 @@ func layout_contents() -> void:
 	footer.size = Vector2(width-44,70)
 	footer.get_child(1).position.x = maxf(340,width-470)
 	footer_title.size.x = maxf(280,width-520)
-	var card_width := (width-78)/2
-	grid_defence.columns = 4 if width>=1100 and grid_defence.get_child_count()>=4 else 2
+	# Both categories share one grid density. Narrow physical windows reduce columns.
+	var logical_columns := floori((grid_scroll.size.x+14.0)/(Card.MIN_SIZE.x+14.0))
+	var logical_view := get_viewport().get_visible_rect().size
+	var window_size := Vector2(get_window().size)
+	var window_scale := minf(window_size.x/logical_view.x,window_size.y/logical_view.y)
+	var screen_scale := get_global_transform().get_scale().x*window_scale
+	var physical_columns := floori((grid_scroll.size.x*screen_scale+14.0*screen_scale)/(180.0+14.0*screen_scale))
+	var columns := clampi(mini(logical_columns,physical_columns),1,4)
+	grid.columns = columns
+	grid_defence.columns = columns
 	for id in cards:
-		var is_defence: bool = items[id].category=="defence"
-		cards[id].compact = is_defence and grid_defence.columns==4
-		cards[id].custom_minimum_size = Vector2((width-106)/4,176) if cards[id].compact else Vector2(card_width,156)
+		cards[id].custom_minimum_size = Card.MIN_SIZE
 		cards[id].layout_contents()
 	detail_frame.position = Vector2(width-612,96)
 	detail_frame.size = Vector2(590,height-190)
@@ -313,7 +320,7 @@ func update_detail_height() -> void:
 
 func icon_for(key: String) -> Texture2D:
 	if not icons.has(key):
-		var path := "res://assets/ui/equipment/%s.svg" % (("cartoon_"+key) if key in BattleGame.WEAPON_KEYS else key)
+		var path := "res://assets/ui/equipment/%s.svg" % (("cartoon_"+key) if key in BattleGame.EQUIPMENT else key)
 		icons[key] = load(path) if ResourceLoader.exists(path) else null
 	return icons[key]
 
