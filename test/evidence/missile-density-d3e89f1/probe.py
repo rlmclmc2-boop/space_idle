@@ -7,7 +7,7 @@ from pathlib import Path
 ap=argparse.ArgumentParser();ap.add_argument('--repo',type=Path,required=True);ap.add_argument('--ref',required=True);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--godot',default='godot');ap.add_argument('--mode',choices=['simulation','render150'],default='simulation');args=ap.parse_args()
 area=args.out.resolve();area.mkdir(parents=True,exist_ok=True);project=area/'space-battleship'
 if project.exists():raise SystemExit('Use a new output directory; no existing project is overwritten.')
-paths=['space-battleship/'+x for x in ['scripts','data','dev','assets','main.tscn','project.godot']]
+paths=['space-battleship/'+x for x in ['scripts','data','dev','assets','addons','main.tscn','project.godot']]
 archive=subprocess.check_output(['git','-C',str(args.repo),'archive',args.ref,*paths])
 with tarfile.open(fileobj=io.BytesIO(archive)) as tf:tf.extractall(area,filter='data')
 modules={'main':['advance_game_time','refresh_visible_cards','refresh_draw_layers','draw_battle','advance_projectile_visuals','projectile_visual','weapon_key','projectile_visual_index','decoration_budget'], 'battlefield':['draw_projectile_body_override','draw_projectile_fx','missile_visual_position'], 'game':['tick','tick_projectiles','advance_jewel_repair','jewel_attack','advance_jewel_repeats'], 'presented_battle_game':['tick_projectiles','advance_custom_projectile','target_point']}
