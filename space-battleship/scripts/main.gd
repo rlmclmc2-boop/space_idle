@@ -104,6 +104,7 @@ var fx_time := 0.0
 var accelerated_visual_mode := false
 var floats: Array[Dictionary] = []
 var pickup_effects: Array[Dictionary] = []
+var resource_hover_feedback: Array[Dictionary] = []
 var clock := 0.0
 var star_travel := 0.0
 var star_streak := 0.0
@@ -2077,8 +2078,8 @@ func refresh_draw_layers(dt: float) -> void:
 			battle_layer.queue_redraw()
 	if drop_layer.visible!=battle_layer.visible:drop_layer.visible=battle_layer.visible
 	if drop_layer.visible:
-		var drops_changed := ui_state_changed(drop_layer,[game.drops,death_drop_positions,pickup_effects])
-		if drops_changed or (dt>0 and not game.paused and (not game.drops.is_empty() or not pickup_effects.is_empty())):
+		var drops_changed := ui_state_changed(drop_layer,[game.drops,death_drop_positions])
+		if drops_changed or (dt>0 and not game.paused and not game.drops.is_empty()):
 			drop_layer.queue_redraw()
 	# The HUD reads encounter identity and player health, never enemy cooldowns
 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
@@ -2086,7 +2087,9 @@ func refresh_draw_layers(dt: float) -> void:
 		battle_hud_layer.queue_redraw()
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
-	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,battle_notices(),pickup_effects]):
+	# Derived foreground feedback, refreshed even while the simulation is paused.
+	resource_hover_feedback = resource_hover_notices()
+	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,battle_notices(),pickup_effects,resource_hover_feedback]):
 		overlay_layer.queue_redraw()
 
 func refresh_fps_label(force := false) -> void:
@@ -2406,6 +2409,14 @@ func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
 	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color,"resource":"jewel" if drop.has("jewel") else str(drop.get("id","1"))})
 
 func draw_overlay() -> void:
+	for entry in resource_hover_feedback:
+		text_at(fit_battle_text(str(entry.text),170,17),entry.position,17,entry.color)
+	for effect in pickup_effects:
+		var progress := 1.0-float(effect.life)/float(effect.duration)
+		var point: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-progress,3))
+		var tail: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-maxf(0,progress-0.09),3))
+		draw_surface.draw_line(tail,point,Color(effect.color,0.55*(1.0-progress)),3.0,true)
+		RESOURCE_ART.draw_icon(draw_surface,str(effect.resource),point,lerpf(22.0,14.0,progress),1.0-progress)
 	var notices := battle_notices()
 	for index in notices.size():
 		var notice := battle_notice_rect(index)
@@ -2466,24 +2477,25 @@ func draw_environment_event(offset: Vector2) -> void:
 	draw_surface.draw_line(point+trail*0.55,point,Color(1.0,0.91,0.77,0.42*fade),1.0,true)
 	draw_surface.draw_circle(point,2.0,Color.WHITE,0.55*fade)
 
-func draw_battle_resources() -> void:
+func resource_hover_notices() -> Array[Dictionary]:
+	var notices: Array[Dictionary] = []
+	if game.drops.is_empty() or not battle_layer.visible or help_open or not game.pending_unlocks.is_empty():return notices
 	var mouse_pos := drop_layer.to_local(get_global_mouse_position())
+	if not Rect2(Vector2.ZERO,BATTLE_VIEW_SIZE).has_point(mouse_pos):return notices
 	for drop in game.drops:
 		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
 		var pos := drop_render_position(drop)
-		var id := "jewel" if drop.has("jewel") else str(drop.id)
-		var color := RESOURCE_ART.accent(id)
-		RESOURCE_ART.draw_drop(draw_surface,drop,pos,clock)
 		if pos.distance_to(mouse_pos)<40:
+			var id := "jewel" if drop.has("jewel") else str(drop.id)
 			var caption := UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
 			var caption_pos := Vector2(clampf(pos.x-85.0,12.0,BATTLE_VIEW_SIZE.x-182.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
-			text_at(fit_battle_text(caption,170,17),caption_pos,17,color)
-	for effect in pickup_effects:
-		var progress := 1.0-float(effect.life)/float(effect.duration)
-		var point: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-progress,3))-BATTLE_ORIGIN
-		var tail: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-maxf(0,progress-0.09),3))-BATTLE_ORIGIN
-		draw_surface.draw_line(tail,point,Color(effect.color,0.55*(1.0-progress)),3.0,true)
-		RESOURCE_ART.draw_icon(draw_surface,str(effect.resource),point,lerpf(22.0,14.0,progress),1.0-progress)
+			notices.append({"text":caption,"position":BATTLE_ORIGIN+caption_pos,"color":RESOURCE_ART.accent(id)})
+	return notices
+
+func draw_battle_resources() -> void:
+	for drop in game.drops:
+		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
+		RESOURCE_ART.draw_drop(draw_surface,drop,drop_render_position(drop),clock)
 
 func draw_battle() -> void:
 	player_weapon_components()

@@ -118,6 +118,48 @@ func run() -> void:
 	check(scene.pickup_effects==pickups_before,"Pause freezes pickup flights")
 	await process_frame
 	check(redraws[0]==0,"Paused resources retain draw commands without a redraw")
+	# Foreground feedback must follow the pointer even while gameplay is paused.
+	scene.pickup_effects.clear()
+	scene.floats.clear()
+	scene.game.drops.clear()
+	var covered := fixture(2,scene.player_render_position(),7.0)
+	scene.game.drops.append(covered)
+	root.warp_mouse(scene.battle_layer.to_global(Vector2(20,260)))
+	scene.refresh_draw_layers(0.016)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var overlay_redraws := [0]
+	scene.overlay_layer.draw.connect(func():overlay_redraws[0]+=1)
+	root.warp_mouse(scene.battle_layer.to_global(scene.drop_render_position(covered)))
+	await process_frame
+	scene.refresh_draw_layers(0.016)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	check(overlay_redraws[0]>0,"Paused hover enters with foreground feedback above the ship")
+	if not evidence.is_empty():root.get_texture().get_image().save_png(evidence.path_join("paused-hull-hover.png"))
+	overlay_redraws[0]=0
+	root.warp_mouse(scene.battle_layer.to_global(Vector2(20,260)))
+	await process_frame
+	scene.refresh_draw_layers(0.016)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	check(overlay_redraws[0]>0,"Paused hover clears when the pointer leaves")
+	overlay_redraws[0]=0
+	scene.refresh_draw_layers(0.016)
+	await process_frame
+	check(overlay_redraws[0]==0,"Stationary paused hover does not continuously redraw")
+	scene.game.paused=false
+	scene.game.profile.resources["1"]=100.0
+	var amount_before: Variant=scene.game.profile.resources["1"]
+	for pressed in [true,false]:
+		var event := InputEventMouseButton.new()
+		event.position=scene.battle_layer.to_global(scene.drop_render_position(covered))
+		event.button_index=MOUSE_BUTTON_LEFT
+		event.pressed=pressed
+		root.push_input(event,true)
+		await process_frame
+	check(not scene.game.drops.has(covered),"Actual viewport click collects a resource behind the ship")
+	check(GrowthNumber.compare(scene.game.profile.resources["1"],GrowthNumber.add(amount_before,7.0))==0,"Covered pickup preserves its full manual credit")
 	print("RESOURCE ART: ",checks," checks, ",failures," failures")
 	scene.queue_free()
 	await process_frame
