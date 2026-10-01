@@ -33,14 +33,14 @@ func run() -> void:
   check(distinct,"secondarytarget differs "+key)
  var g:=fixture("missile");g.set_enhancement_branch("weapons","repeat",2,"B");g.db.data.enhance_config.repeat_probability.value=1
  g.cooldowns[g.slot_id("weapons",0)]=0;g.tick(.001)
- check(g.jewel_repeats.size()==1,"normalattack schedulesordinaryrepeat")
+ check(g.jewel_repeats.size()==2,"primary preplans both bounded repeat generations")
  var original_repeat_multiplier=float(g.jewel_repeats[0].multiplier)
  check(original_repeat_multiplier==7,"ordinaryrepeat derivesconfigured7xsource")
  g.advance_jewel_repeats(.5)
  check(g.profile.enhancementAttacks==2 and g.jewel_repeats.size()==1 and int(g.jewel_repeats[0].depth)==2,"ordinaryextra schedulesoneadditionalrepeat")
  check(g.jewel_repeats[0].multiplier==original_repeat_multiplier,"secondrepeat usesoriginalsource7x not49x")
  g.advance_jewel_repeats(.5)
- check(g.profile.enhancementAttacks==3 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==0,"secondextra stopsrecursion andconsumesthirdcharge")
+ check(g.profile.enhancementAttacks==3 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==2,"second extra counts attack but inherits root charge without consuming again")
  for key in ["laser","cannon","missile","longLaser"]:
   g=fixture(key);g.set_enhancement_branch("weapons","repeat",1,"B")
   var primary=g.enemies[0];var secondary=g.enemies[1]
@@ -63,7 +63,7 @@ func run() -> void:
  g.lock_long_laser(g.player,g.player_weapon_row(g.slot_entry("weapons",0)),false,0,g.slot_entry("weapons",0))
  g.tick_long_laser(g.projectiles[0],.2);g.advance_jewel_repeats(.5)
  check(g.projectiles.size()==2,"ordinaryrepeatbeam independentinstance")
- g.tick_long_laser(g.projectiles[1],.2);g.advance_jewel_repeats(.5)
+ g.tick_long_laser(g.projectiles[1],.2);g.advance_jewel_repeats(.7)
  check(g.projectiles.size()==3,"repeatB20allowsoneadditionalbeamgeneration")
  check(g.projectiles[1].repeat_multiplier==7 and g.projectiles[2].repeat_multiplier==7,"beamsecondrepeat doesnotcompoundoriginal7x")
  g.tick_long_laser(g.projectiles[2],.2)
@@ -73,6 +73,6 @@ func run() -> void:
  g.tick_long_laser(g.projectiles[0],.2)
  g.set_enhancement_branch("weapons","proficiency",2,"A")
  g.tick_long_laser(g.projectiles[0],.14)
- check(g.profile.enhancementAttacks==2,"branchswitchdoesnotretimepastbeamticks")
+ check(g.profile.enhancementAttacks==1 and g.projectiles[0].ticks==2,"branch switch keeps frozen beam interval and periodic damage does not count attacks")
  print("BRANCH ATTACKS: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)

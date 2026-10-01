@@ -82,6 +82,7 @@ var last_successful_save_at := 0.0
 var last_save_error: Error = OK
 var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
+var main_attack_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
@@ -1891,7 +1892,7 @@ func long_laser_valid(shot: Dictionary) -> bool:
 		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and N.compare(player.armour,0)>0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
 	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, slot_entry("weapons", shot.mount)) and shot.entry.key == "longLaser"
 
-func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0) -> void:
+func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0, inherited_snapshot: Dictionary = {}) -> void:
 	for shot in projectiles:
 		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and long_laser_valid(shot):
 			return
@@ -1915,6 +1916,18 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		shot.charged_multiplier = float(jewel_charged.get(id,1.0))
 		shot.repeat_origin_multiplier=shot.charged_multiplier
 		jewel_charged.erase(id)
+	if not hostile:
+		if repeated:
+			shot.attack_snapshot=inherited_snapshot
+			record_enhancement_attack()
+		else:
+			begin_enhancement_attack(mount,target)
+			record_enhancement_attack()
+			jewel_attack(mount)
+			shot.attack_snapshot=enhancement_attack_contexts[mount].snapshot
+			finish_enhancement_attack(mount)
+		shot.main_attack_id=shot.attack_snapshot.id
+
 	event.emit("beam_started", {"shot":shot})
 
 func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
@@ -1930,7 +1943,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 	shot.x = float(shot.source.x) + offset.x
 	shot.y = float(shot.source.y) + offset.y
 	shot.elapsed += dt
-	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else player_weapon_row(shot.entry)
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	# Use scheduled hit times, not frame end time, including when a step spans several hits.
 	var interval := float(weapon.cd)
 	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
@@ -1946,17 +1959,16 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
 			hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
 		else:
-			begin_enhancement_attack(int(shot.mount),shot.target,false,not shot.repeated)
-			record_enhancement_attack()
+			enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot}
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
-			if int(shot.ticks)==1:
-				queue_jewel_repeats(shot.mount,boost,shot,int(shot.get("repeat_depth",0)),float(shot.get("repeat_origin_multiplier",1.0)))
+			if int(shot.ticks)==1 and not shot.repeated:
+				queue_jewel_repeats(shot.mount,boost,shot)
 			var attack := jewel_attack(shot.mount, multiplier * boost)
 			if attack.critical:
 				event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
 			hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
 			launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
-			finish_enhancement_attack(int(shot.mount))
+			enhancement_attack_contexts.erase(int(shot.mount))
 		if not projectiles.has(shot) or not long_laser_valid(shot):
 			shot.dead = true
 			break
@@ -2331,8 +2343,8 @@ func tick(dt: float) -> void:
 			if count > 0 and not candidates.is_empty():
 				cooldowns[id] = weapon_cooldown_after_shot(remaining,dt,float(weapon.cd))
 				launch_enhancement_secondary(index,candidates[0],weapon,charged)
-				finish_enhancement_attack(index)
 				queue_jewel_repeats(index, charged)
+				finish_enhancement_attack(index)
 	for enemy in enemies:
 		if enemy.hp <= 0:
 			continue
@@ -2817,25 +2829,59 @@ func player_weapon_row(entry: Dictionary) -> Dictionary:
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var entry := slot_entry("weapons",index)
-	# One attack owns its payload; reuse its read-only effects for the two
-	# projections before attaching source metadata. Each shot still rolls below.
-	var effects := jewel_effects(entry)
-	var critical := jewel_critical(entry,effects)
 	var context: Dictionary=enhancement_attack_contexts.get(index,{})
-	var raw = N.multiply(N.multiply(jewel_equipment_stat(entry,-1,effects),multiplier),float(context.get("next_multiplier",1.0)))
-	var is_critical := rng.randf() < critical.x
-	var critical_bonus_applied := is_critical
-	if is_critical:
-		if enhancement_branches.active(self,entry,"critical",3,"B"):
-			critical_bonus_applied=rng.randf()<enhancement_branches.underlying_critical_rate(self,entry)
-		if critical_bonus_applied:raw=N.multiply(raw,critical.y)
-		if not context.is_empty() and not context.get("derived",false):context.critical=true
-	for effect in effects:
-		effect.source = index
-		effect.weapon_key=str(entry.key)
-		if enhancement_branches.active(self,entry,"proficiency",3,"B"):effect.enemy_resistance=enhancement_parameter("proficiency_b3_resistance")
-		if effect.kind=="repeat" and enhancement_branches.active(self,entry,"repeat",1,"B") and not context.get("derived",false):effect.chain=true
-	return {"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied}
+	if not context.has("snapshot"):
+		var effects := jewel_effects(entry)
+		var critical := jewel_critical(entry,effects)
+		var raw = N.multiply(jewel_equipment_stat(entry,-1,effects),float(context.get("next_multiplier",1.0)))
+		var is_critical := rng.randf() < critical.x
+		var critical_bonus_applied := is_critical
+		if is_critical:
+			if enhancement_branches.active(self,entry,"critical",3,"B"):
+				critical_bonus_applied=rng.randf()<enhancement_branches.underlying_critical_rate(self,entry)
+			if critical_bonus_applied:raw=N.multiply(raw,critical.y)
+			if not context.get("derived",false):context.critical=true
+		main_attack_serial+=1
+		for effect in effects:
+			effect.source=index;effect.weapon_key=str(entry.key);effect.main_attack_id=main_attack_serial
+			if enhancement_branches.active(self,entry,"proficiency",3,"B"):effect.enemy_resistance=enhancement_parameter("proficiency_b3_resistance")
+			if effect.kind=="repeat" and enhancement_branches.active(self,entry,"repeat",1,"B"):
+				effect.chain=true;effect.chain_targets=int(enhancement_parameter("repeat_b1_targets"))
+		var secondary := enhancement_branches.active(self,entry,"repeat",3,"B") and rng.randf()<enhancement_parameter("repeat_b3_probability")
+		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":plan_attack_repeats(entry,effects),"weapon":player_weapon_row(entry).duplicate(true)}
+	return attack_from_snapshot(context.snapshot,multiplier)
+
+func attack_from_snapshot(snapshot: Dictionary, multiplier: float) -> Dictionary:
+	# Each damage carrier owns its chain allowance; only the result is shared.
+	var effects: Array=[]
+	for source in snapshot.effects:
+		var effect: Dictionary=source.duplicate(true)
+		effects.append(effect)
+	return {"main_attack_id":snapshot.id,"damage":N.multiply(snapshot.damage,multiplier),"effects":effects,"critical":snapshot.critical,"critical_bonus_applied":snapshot.critical_bonus_applied}
+
+func plan_attack_repeats(entry: Dictionary, effects: Array) -> Array:
+	# All bounded generations roll now; delayed execution never rolls again.
+	var plan: Array=[]
+	var beam_charge := 0.0
+	if str(entry.key)=="longLaser":
+		var row := player_weapon_row(entry)
+		beam_charge=maxf(0,float(row.para3)) if row.get("para3")!=null else float(row.cd)
+	var frontier: Array=[{"depth":0,"delay":0.0,"plan_index":-1}]
+	var allowed := int(enhancement_parameter("repeat_b2_repeats")) if enhancement_branches.active(self,entry,"repeat",2,"B") else 0
+	while not frontier.is_empty():
+		var parent: Dictionary=frontier.pop_front()
+		if int(parent.depth)>allowed:continue
+		var pending: Array=[]
+		for effect in effects:
+			if effect.kind=="repeat" and rng.randf()<enhancement_branches.repeat_probability(self,entry):
+				pending.append(1.0+float(effect.p4)*int(effect.level))
+		for i in pending.size():
+			var choice := rng.randi_range(i,pending.size()-1)
+			var value: float=pending[choice];pending[choice]=pending[i];pending[i]=value
+			var node := {"depth":int(parent.depth)+1,"delay":float(parent.delay)+(beam_charge if int(parent.depth)>0 else 0.0)+enhancement_parameter("repeat_delay")*(i+1),"factor":value,"parent":int(parent.plan_index),"plan_index":plan.size()}
+			plan.append(node);frontier.append(node)
+			if str(entry.key)=="longLaser":break
+	return plan
 
 func missile_visual_spread(index: int, count: int) -> float:
 	return (float(index)/float(count-1)-0.5)*minf(88.0,float(count-1)*24.0) if count>1 else 0.0
@@ -2849,6 +2895,7 @@ func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vect
 
 func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
 	fire(player,target,weapon,attack.damage,false,str(slot_entry("weapons",index).key),offset,visual_spread)
+	projectiles.back().main_attack_id = attack.get("main_attack_id",0)
 	projectiles.back().jewelEffects = attack.effects
 	projectiles.back().critical = attack.critical
 	projectiles.back().critical_bonus_applied=attack.get("critical_bonus_applied",attack.critical)
@@ -2856,7 +2903,10 @@ func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, at
 func launch_enhancement_secondary(index: int, primary: Dictionary, weapon: Dictionary, multiplier: float, beam_tick := false) -> void:
 	var entry := slot_entry("weapons",index)
 	var context: Dictionary=enhancement_attack_contexts.get(index,{})
-	if context.is_empty() or context.get("derived",false) or not enhancement_branches.active(self,entry,"repeat",3,"B") or rng.randf()>=enhancement_parameter("repeat_b3_probability"):return
+	if context.is_empty() or context.get("derived",false) or not context.has("snapshot"):return
+	var snapshot: Dictionary=context.snapshot
+	if not snapshot.secondary or snapshot.secondary_used:return
+	snapshot.secondary_used=true
 	var candidates: Array=targets(int(weapon.dmgtype)).filter(func(enemy):return not is_same(enemy,primary))
 	if candidates.is_empty():return
 	var target: Dictionary=candidates[0]
@@ -2878,7 +2928,7 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 	chain.chain_used=true
 	var candidates: Array=targets(type).filter(func(target):return not is_same(target,enemy))
 	var visited := {int(enemy.uid):true}
-	for target in candidates.slice(0,int(enhancement_parameter("repeat_b1_targets"))):
+	for target in candidates.slice(0,int(chain.get("chain_targets",enhancement_parameter("repeat_b1_targets")))):
 		if visited.has(int(target.uid)):continue
 		visited[int(target.uid)]=true
 		var continued: Array=effects.duplicate(true)
@@ -2886,27 +2936,21 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 		event.emit("enhancement_chain",{"source":Vector2(enemy.x,enemy.y),"target":Vector2(target.x,target.y),"weapon":str(chain.get("weapon_key",""))})
 		hit_enemy(target,raw,type,continued,critical)
 
-func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}, source_depth := 0, origin_multiplier := -1.0) -> void:
-	if not beam.is_empty():
-		if projectiles.any(func(p):return p.get("beam",false) and not p.hostile and p.mount==index and int(p.get("repeat_depth",0))==source_depth+1 and long_laser_valid(p)) or jewel_repeats.any(func(p):return p.index==index and p.has("beam") and int(p.get("depth",1))==source_depth+1):
-			return
-	var entry := slot_entry("weapons", index)
-	var allowed := int(enhancement_parameter("repeat_b2_repeats")) if enhancement_branches.active(self,entry,"repeat",2,"B") else 0
-	if source_depth>allowed:return
-	if origin_multiplier<0:origin_multiplier=multiplier
-	var pending: Array = []
-	for effect in jewel_effects(entry):
-		if effect.kind == "repeat" and rng.randf() < enhancement_branches.repeat_probability(self,entry):
-			pending.append(origin_multiplier * (1.0 + float(effect.p4) * int(effect.level)))
-	for i in pending.size():
-		var choice := rng.randi_range(i, pending.size()-1)
-		var value = pending[choice]
-		pending[choice] = pending[i]
-		pending[i] = value
-		jewel_repeats.append({"index":index, "entry":entry, "remaining":enhancement_parameter("repeat_delay") * (i+1), "multiplier":value,"depth":source_depth+1,"origin_multiplier":origin_multiplier})
-		if not beam.is_empty():
-			jewel_repeats.back().beam = beam
-			break
+func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}) -> void:
+	var context: Dictionary=enhancement_attack_contexts.get(index,{})
+	if not context.has("snapshot"):return
+	var snapshot: Dictionary=context.snapshot
+	if snapshot.repeats_queued:return
+	snapshot.repeats_queued=true
+	var entry := slot_entry("weapons",index)
+	var executions: Array=[]
+	for node in snapshot.repeat_plan:
+		var execution := {"launched":false}
+		var parent: Dictionary=executions[int(node.parent)] if int(node.parent)>=0 else {}
+		executions.append(execution)
+		var pending := {"index":index,"entry":entry,"remaining":node.delay,"multiplier":multiplier*float(node.factor),"depth":node.depth,"origin_multiplier":multiplier,"snapshot":snapshot,"execution":execution,"parent_execution":parent}
+		if not beam.is_empty():pending.beam=beam
+		jewel_repeats.append(pending)
 
 func advance_jewel_repeats(dt: float) -> void:
 	for pending in jewel_repeats.duplicate():
@@ -2914,24 +2958,30 @@ func advance_jewel_repeats(dt: float) -> void:
 		if pending.remaining > 0.000000001:
 			continue
 		jewel_repeats.erase(pending)
+		if not pending.parent_execution.is_empty() and not pending.parent_execution.launched:continue
 		var entry := slot_entry("weapons", int(pending.index))
 		if state != State.COMBAT or not is_same(entry, pending.entry) or str(entry.key).is_empty():
 			continue
-		var weapon := player_weapon_row(entry)
+		var weapon: Dictionary=pending.snapshot.weapon
 		if pending.has("beam"):
-			if projectiles.has(pending.beam) and long_laser_valid(pending.beam):
-				lock_long_laser(player,weapon,false,int(pending.index),entry,true,float(pending.multiplier),int(pending.get("depth",1)),float(pending.get("origin_multiplier",1.0)))
+			var source_beam: Dictionary=pending.parent_execution.get("beam",pending.beam)
+			if projectiles.has(source_beam) and long_laser_valid(source_beam):
+				var serial_before := projectile_serial
+				lock_long_laser(player,weapon,false,int(pending.index),entry,true,float(pending.multiplier),int(pending.get("depth",1)),float(pending.get("origin_multiplier",1.0)),pending.snapshot)
+				pending.execution.launched=projectile_serial>serial_before
+				if pending.execution.launched:pending.execution.beam=projectiles.back()
 			continue
 		var candidates := targets(int(weapon.dmgtype))
 		if candidates.is_empty():
 			continue
-		begin_enhancement_attack(int(pending.index),candidates[0],false,false)
+		pending.execution.launched=true
+		# A derived salvo counts as an attack, but never rerolls or consumes root buffs.
 		record_enhancement_attack()
+		enhancement_attack_contexts[int(pending.index)]={"derived":true,"snapshot":pending.snapshot}
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
 			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0,n,int(weapon.para1) if entry.key=="missile" else 1)
 		launch_enhancement_secondary(int(pending.index),candidates[0],weapon,float(pending.multiplier))
 		finish_enhancement_attack(int(pending.index))
-		queue_jewel_repeats(int(pending.index),float(pending.multiplier),{},int(pending.get("depth",1)),float(pending.get("origin_multiplier",1.0)))
 
 func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 	for effect in effects:
@@ -2954,19 +3004,10 @@ func has_defence_jewels() -> bool:
 func jewel_defence_hit(index: int) -> void:
 	jewel_defence_times[index]=0.0
 
-# Charge selects a mount; continuous attacks retain the modifier on existing instances.
+# Charge affects the next attack; an active beam retains its launch snapshot.
 func apply_jewel_charge(index: int, multiplier: float) -> void:
 	var id := slot_id("weapons",index)
-	if str(slot_entry("weapons",index).get("key","")) == "longLaser":
-		var applied := false
-		for shot in projectiles:
-			if shot.get("beam",false) and not shot.hostile and shot.mount==index and long_laser_valid(shot):
-				shot.charged_multiplier = maxf(float(shot.charged_multiplier),multiplier)
-				applied = true
-		if applied:
-			jewel_charged.erase(id)
-			return
-	else:
+	if str(slot_entry("weapons",index).get("key","")) != "longLaser":
 		cooldowns[id] = 0.0
 	jewel_charged[id] = maxf(float(jewel_charged.get(id,1.0)),multiplier)
 
