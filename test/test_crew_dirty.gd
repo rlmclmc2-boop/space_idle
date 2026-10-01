@@ -170,5 +170,15 @@ func _initialize() -> void:
 	refund.assign_crew(str(refund.profile.crew[0].crewId),"","")
 	refund.crew.advance(refund,2)
 	check(not refund.crew.timers.has(refund.profile.crew[0].crewId),"unassign cancels pending work")
+	# A shared exploration payout that adds XP only changes no purchase dependency.
+	var xp_only := fixture()
+	xp_only.crew.advance(xp_only,1)
+	var xp_attempts: Dictionary=xp_only.attempts.duplicate()
+	var xp_member: Dictionary=xp_only.profile.crew[0]
+	var xp_level: int=xp_member.level
+	xp_only.add_crew_exp(str(xp_member.crewId),1)
+	check(xp_member.level==xp_level,"XP fixture stays below next level")
+	xp_only.crew.advance(xp_only,1)
+	check(xp_only.attempts==xp_attempts,"XP-only change never wakes failed purchase")
 	print("CREW DIRTY: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

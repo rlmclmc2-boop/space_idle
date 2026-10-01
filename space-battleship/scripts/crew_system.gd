@@ -126,7 +126,10 @@ func on_event(kind: String, payload: Dictionary) -> void:
 			if payload.has("reward") or payload.has("activated"):invalidate_reactor_allocation(g)
 		"crew_changed":
 			var item := entry(g,str(payload.crewId))
-			invalidate_member(g,item)
+			var previous: Dictionary=payload.previous
+			# XP-only payouts leave purchase eligibility, costs and cadence unchanged.
+			if [item.get("assignmentType"),item.get("targetId"),item.get("upgradeMode"),item.get("level")] != [previous.get("assignmentType"),previous.get("targetId"),previous.get("upgradeMode"),previous.get("level")]:
+				invalidate_member(g,item)
 			if item.get("assignmentType")=="reactor_upgrade" or payload.previous.get("assignmentType")=="reactor_upgrade":invalidate_reactor_allocation(g)
 
 func register_target(target_type: String, provider: Callable) -> void:
