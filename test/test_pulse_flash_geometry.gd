@@ -10,6 +10,9 @@ class FlashCanvas extends Node2D:
   # Event lifetime extends beyond the visual lifetime. These must be transparent.
   for age in [0.075,0.10,0.139]:fx.flash(self,Vector2(80,260),Vector2.RIGHT,age)
   fx.flash(self,Vector2(180,260),Vector2.ZERO,0.0)
+  for age in [NAN,INF,-INF]:fx.flash(self,Vector2(180,260),Vector2.RIGHT,age)
+  fx.flash(self,Vector2(INF,260),Vector2.RIGHT,0.0)
+  fx.flash(self,Vector2(180,260),Vector2(NAN,0),0.0)
   # Just-before-expiry rounding, at representative and large screen coordinates.
   for point in [Vector2(320,260),Vector2(2048,1280),Vector2(65536,65536)]:
    for angle in [0.0,0.1,PI/4.0,PI/2.0,PI]:

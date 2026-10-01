@@ -18,7 +18,7 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2)->void:
 	surface.draw_line(point+direction*2.0-across*5.0,point+direction*2.0+across*5.0,Color(CYAN,0.8),1.2,true)
 static func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float)->void:
 	# Fire events live for 0.14 s, but this flash is already transparent at 0.075 s.
-	if age>=0.075 or not point.is_finite() or not direction.is_finite() or direction.is_zero_approx():return
+	if not is_finite(age) or age>=0.075 or not point.is_finite() or not direction.is_finite() or direction.is_zero_approx():return
 	var t:=clampf(age/0.075,0.0,1.0)
 	var fade:=1.0-t
 	var across:=direction.orthogonal()
