@@ -198,16 +198,14 @@ func refresh() -> void:
 		return
 	for id in mounts:
 		var category: String = str(id).get_slice("_",0)
-		var count: int = maxi(host.game.active_slot_count(category,candidate),host.game.module_entries(category).size())
+		var count: int = host.game.active_slot_count(category,candidate)
 		host.set_ui_value(mounts[id],"visible",int(str(id).get_slice("_",1))<count)
 	var active := 0
-	var dormant := 0
 	for category in ["weapons","defence"]:
 		var capacity: int = host.game.active_slot_count(category,candidate)
 		active+=capacity
-		dormant+=maxi(0,host.game.module_entries(category).size()-capacity)
 		var list_index := 0
-		for index in maxi(capacity,host.game.module_entries(category).size()):
+		for index in capacity:
 			var id: String = host.game.slot_id(category,index)
 			if not mounts.has(id):
 				var mount := Button.new()
@@ -223,9 +221,8 @@ func refresh() -> void:
 			var key := str(entry.get("key",""))
 			var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 			var text: String = prefix+" · Lv."+str(entry.get("level",1))
-			var enabled := index<capacity
 			var assignment: Dictionary = assignments.get(index,{}) if category=="weapons" else {}
-			var on_hull: bool = enabled and assignment.get("carrier","")=="hull"
+			var on_hull: bool = assignment.get("carrier","")=="hull"
 			var target_parent: Control = preview if on_hull else mount_lists[category]
 			if button.get_parent()!=target_parent:button.reparent(target_parent,false)
 			host.set_ui_value(button,"autowrap_mode",TextServer.AUTOWRAP_OFF if on_hull else TextServer.AUTOWRAP_WORD_SMART)
@@ -242,15 +239,14 @@ func refresh() -> void:
 			else:
 				if button.get_index()!=list_index:mount_lists[category].move_child(button,list_index)
 				list_index+=1
-				# Carrier, empty and dormant logical slots keep their exact IDs in a bounded list.
+				# Active carrier and empty logical slots retain their exact IDs.
 				text+="\n"+host.NAMES.get(key,UIText.t("equipment.vacant"))
 				if assignment.get("carrier","")=="drone":text+=" · "+UIText.t("ship.refit.carrier")
-			if not enabled:text+=" · "+UIText.t("equipment.state.locked")
 			host.set_ui_value(button,"text",text)
 			host.set_ui_value(button,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":host.NAMES.get(key,UIText.t("equipment.vacant")),"level":str(entry.get("level",1))}))
 			host.set_ui_value(button,"disabled",candidate!=current)
-			if host.ui_state_changed(button,[enabled,key]):button.add_theme_stylebox_override("normal",host.equipment_panel.panel_style(TEAL if enabled else Color("b9c5c4")))
-	host.set_ui_value(result,"text",UIText.t("ship.refit.result",{"active":str(active),"dormant":str(dormant)}))
+			if host.ui_state_changed(button,[key]):button.add_theme_stylebox_override("normal",host.equipment_panel.panel_style(TEAL))
+	host.set_ui_value(result,"text",UIText.t("ship.refit.active_count",{"active":str(active)}))
 	host.set_ui_value(confirm,"text",UIText.t("ship.refit.current" if candidate==current else ("ship.refit.apply" if host.game.ship_unlocked(candidate) else "ship.refit.locked")))
 	host.set_ui_value(confirm,"tooltip_text",confirm.text)
 	host.set_ui_value(confirm,"disabled",not host.game.ship_unlocked(candidate))

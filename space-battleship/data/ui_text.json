@@ -9047,7 +9047,7 @@
   },
   {
     "key": "ship.refit.static_hint",
-    "text": "槽号对应舰体上的实际武器挂点；无人机、空槽与停用模块见右侧列表。",
+    "text": "槽号对应实际武器挂点；右侧仅展示该舰体可用槽位。",
     "params": "",
     "category": "ship",
     "note": "舰体静态预览与真实槽位显示"
@@ -12107,5 +12107,12 @@
     "params": "points,required",
     "category": "research",
     "note": "完成展示期间明确数字来自下一轮研发"
+  },
+  {
+    "key": "ship.refit.active_count",
+    "text": "启用 {active}",
+    "params": "{active}",
+    "category": "ship",
+    "note": "候选舰体实际启用槽位数量"
   }
 ]

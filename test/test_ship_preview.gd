@@ -69,6 +69,11 @@ func run() -> void:
 				check(button.get_parent()==panel.preview,"Hull slot follows live assignment: "+id)
 				check(panel.picture.get_rect().has_point(button.position+button.size/2),"Hull label stays inside preview: "+id)
 			else:check(button.get_parent()==panel.mount_lists.weapons and button.text.contains(UIText.t("ship.refit.carrier")),"Carrier slot stays in bounded list: "+id)
+		for id in panel.mounts:
+			var category: String = str(id).get_slice("_",0)
+			var expected_visible: bool = int(str(id).get_slice("_",1)) < scene.game.active_slot_count(category,key)
+			check(panel.mounts[id].visible == expected_visible,"Only candidate capacity is visible: "+str(key)+" "+str(id))
+		check(not panel.result.text.contains(UIText.t("equipment.state.locked")),"No dormant summary: "+str(key))
 		check(hull_slots.size()==mini(assignment.size(),PANEL.preview_data.hulls[key].mounts.size()),"No capacity invented: "+str(key))
 		check(panel.confirm.text==UIText.t("ship.refit.current" if key=="Heavy_Battleship" else "ship.refit.apply"),"Explicit activation: "+str(key))
 		await capture(str(key)+("-current" if key=="Heavy_Battleship" else "-candidate"))
@@ -87,7 +92,7 @@ func run() -> void:
 	await process_frame
 	panel.mount_scroll.scroll_vertical=9999
 	await process_frame
-	check(panel.mount_scroll.scroll_vertical>0,"Dormant rows remain scrollable")
+	check(panel.mount_scroll.scroll_vertical==0,"Unavailable rows take no space in the compact list")
 	var scroll:int=panel.mount_scroll.scroll_vertical
 	var mounts:Dictionary=panel.mounts.duplicate()
 	panel.refresh()
@@ -96,7 +101,7 @@ func run() -> void:
 	check(scene.writes.is_empty(),"Unchanged ship refresh performs no property writes")
 	check(panel.mount_scroll.scroll_vertical==scroll,"Unchanged refresh preserves scroll")
 	for id in mounts:check(is_same(mounts[id],panel.mounts[id]),"Unchanged refresh retains button "+id)
-	await capture("Frigate-candidate-dormant-bottom")
+	await capture("Frigate-candidate-compact")
 	panel.confirm.pressed.emit()
 	check(scene.game.profile.selectedShip=="Frigate","Only explicit activation switches hull")
 	panel.mounts.weapons_1.pressed.emit()

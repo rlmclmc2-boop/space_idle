@@ -6427,6 +6427,11 @@
         "points",
         "required"
       ]
+    },
+    "ship.refit.active_count": {
+      "params": [
+        "active"
+      ]
     }
   },
   "bindings": {
