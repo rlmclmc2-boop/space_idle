@@ -16,7 +16,8 @@ func run() -> void:
  view.set_pose(Vector2(286,520),180,0,Vector2(286,100),1,false,false,0)
  view.set_rendering(true)
  var points: Array = []
- for i in 8: points.append(view.screen_muzzle_for_slot(i))
+ for i in 8:
+  for ordinal in 5:points.append(view.screen_muzzle_for_slot(i,ordinal))
  var original_size = view.viewport.size
  for accelerated in [true,false,true,false]:
   view.set_accelerated_quality(accelerated)
@@ -24,7 +25,8 @@ func run() -> void:
   check(view.world.get_node("KeyLight").shadow_enabled == not accelerated,"quality transitions restore live shadows")
   check(view.visible and view.viewport.render_target_update_mode == SubViewport.UPDATE_ALWAYS,"battlefield continues rendering every frame")
   check(view.viewport.size == original_size,"canonical viewport resolution unchanged")
-  for i in 8: check(view.screen_muzzle_for_slot(i) == points[i],"slot launch coordinate unchanged")
+  for i in 8:
+   for ordinal in 5:check(view.screen_muzzle_for_slot(i,ordinal) == points[i*5+ordinal],"every slot/tube launch coordinate unchanged")
  view.set_rendering(true,true)
  view.set_accelerated_quality(true)
  check(view.viewport.render_target_update_mode == SubViewport.UPDATE_ONCE,"paused redraw policy preserved")

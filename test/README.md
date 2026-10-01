@@ -13,6 +13,7 @@
 | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
 | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |
 | 战舰静态预览 | `test_ship_preview.gd --headless` 检查五舰实际模型来源、真实槽位映射、候选/当前/锁定、空槽/无人机/停用、显式启用与局部复用；图形运行捕获五舰和特殊状态。运行隔离工程须包含 `dev`/`addons`，步骤见 [预览资产说明](../space-battleship/assets/ui/ships/README.md)。 |
+| 战场X10舰船画质 | `test_accelerated_ship_quality.gd --headless` 检查高倍画质切换与X1恢复、全部槽位/发射管的规范坐标、持续渲染及暂停/隐藏策略；实际画质与性能须另做可见场景配对。 |
 | 入门指引 | `test_beginner_guide.gd` 检查首次引导、自动完成、关闭不复弹、帮助入口回看及正常存读档；图形运行核对入口和交互 |
 | UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
 | 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
