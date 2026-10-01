@@ -9,6 +9,7 @@ const LINE:=Color("34505e")
 const SHELL=preload("res://scripts/shell_presentation.gd")
 const PRESENTATION=preload("res://scripts/hightech_presentation.gd")
 const NUMBER=preload("res://scripts/number_format.gd")
+const ROOM=preload("res://scripts/hightech_workshop_room.gd")
 const CONSTRUCTION=preload("res://scripts/hightech_workshop_construction.gd")
 var game: BattleGame
 var selected: String=""
@@ -139,7 +140,7 @@ func setup(source: BattleGame) -> void:
 	stage.position=Vector2(24,192)
 	stage.size=Vector2(854,730)
 	add_child(stage)
-	room=preload("res://scripts/hightech_workshop_room.gd").new()
+	room=ROOM.new()
 	room.size=stage.size
 	room.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	stage.add_child(room)
@@ -249,11 +250,13 @@ func sync_projects() -> void:
 		var status_label:=label(b,"",Rect2(18,105,341,25),18,MUTED)
 		rows[key]={"button":b,"name":name_label,"level":level_label,"workers":workers_label,"bar":progress_bar,"percent":percent_label,"status":status_label}
 		var c:=CONSTRUCTION.new()
-		c.position=Vector2(176,118)
 		c.size=Vector2(296,304)
-		c.scale=Vector2.ONE*1.68
 		stage.add_child(c)
 		c.setup(key)
+		rows[key].grounding=ROOM.add_grounding(c,c.shape)
+		var placement: Dictionary=ROOM.layout(c.shape,not game.hightech_unlocked(key))
+		c.position=placement.position
+		c.scale=placement.scale
 		c.hide()
 		machines[key]=c
 	for index in ordered.size():worklist.move_child(rows[ordered[index]].button,index)
@@ -315,6 +318,10 @@ func refresh() -> void:
 		var c=machines[key]
 		var pending:=not game.hightech_unlocked(key)
 		c.research_pending=pending
+		put(row.grounding,"visible",not pending)
+		var placement: Dictionary=ROOM.layout(c.shape,pending)
+		put(c,"position",placement.position)
+		put(c,"scale",placement.scale)
 		if key==selected:
 			c.set_workers(0 if pending else workers+dedicated_ai)
 			c.set_fraction(0 if pending else fraction)
