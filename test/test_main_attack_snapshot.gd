@@ -155,5 +155,61 @@ func run()->void:
  for key in ["laser","cannon"]:
   g=fixture(key);var root=salvo(g)
   check(g.projectiles.size()==1 and g.projectiles[0].main_attack_id==root.id,"single-shot weapon uses shared snapshot "+key)
+ check_snapshot_boundaries()
  print("MAIN ATTACK SNAPSHOT: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
+
+func check_snapshot_boundaries()->void:
+ # Use real growth with fixed critical outcome, so the level change is observable.
+ var g=fixture("longLaser")
+ g.db.equipment.longLaser[0].dmgMulti=ShipDatabase.new().equipment.longLaser[0].dmgMulti
+ g.db.data.enhance_config.base_critical_rate.value=0
+ for enemy in g.enemies:enemy.hp=1e100;enemy.max_hp=1e100
+ var entry=g.slot_entry("weapons",0)
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ var beam=g.projectiles.back();var frozen=beam.attack_snapshot
+ entry.level+=10000;g.invalidate_stat_cache()
+ var grown=g.jewel_equipment_stat(entry)
+ check(N.valid(grown) and grown is Dictionary and N.compare(grown,frozen.damage)>0,"real level growth changes the next attack projection without float overflow")
+ g.stat_cache_enabled=false
+ check(g.jewel_equipment_stat(entry)==grown,"large combat projection agrees with and without stat cache")
+ g.stat_cache_enabled=true
+ g.tick_long_laser(beam,.4)
+ check(not beam.dead and is_same(beam.attack_snapshot,frozen) and not frozen.critical,"active beam retains fixed noncritical snapshot after 10000 levels")
+ beam.dead=true
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ check(not g.projectiles.back().attack_snapshot.critical and N.compare(g.projectiles.back().attack_snapshot.damage,frozen.damage)>0,"new noncritical beam reads real upgraded damage")
+ # Interruption cancels damage and pending derived runtime.
+ g=fixture("longLaser");choose(g,"repeat",2)
+ g.db.data.enhance_config.repeat_probability.value=1
+ entry=g.slot_entry("weapons",0)
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ beam=g.projectiles.back();g.tick_long_laser(beam,.2)
+ check(not g.jewel_repeats.is_empty(),"interruption fixture has planned derived beams")
+ check(g.unequip_slot("weapons",0),"actual unequip succeeds")
+ check(beam.dead and g.jewel_repeats.is_empty(),"unequip cancels beam and its planned derived runtime")
+ for cause in ["target","player"]:
+  g=fixture("longLaser");entry=g.slot_entry("weapons",0)
+  g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+  beam=g.projectiles.back();var before=beam.ticks
+  if cause=="target":beam.target.hp=0
+  else:g.player.armour=0
+  g.tick_long_laser(beam,.4)
+  check(beam.dead and beam.ticks==before,cause+" loss prevents further periodic damage")
+ # A real saved profile restores progression, never in-flight snapshots/queues.
+ g=fixture("longLaser");choose(g,"repeat",2)
+ g.db.data.enhance_config.repeat_probability.value=1
+ entry=g.slot_entry("weapons",0)
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ beam=g.projectiles.back();g.tick_long_laser(beam,.2)
+ var history=g.profile.enhancementAttacks
+ g.save_enabled=true;g.save_progress();g.save_enabled=false
+ check(g.last_save_error==OK,"isolated profile save succeeds with active snapshot")
+ var restored=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),true)
+ restored.save_enabled=false
+ check(restored.profile.enhancementAttacks==history and restored.slot_entry("weapons",0).key=="longLaser","saved attack history and loadout survive reopening")
+ check(restored.projectiles.is_empty() and restored.missile_queue.is_empty() and restored.jewel_repeats.is_empty() and restored.enhancement_attack_contexts.is_empty(),"reopening rebuilds empty attack runtime")
+ restored.start(1,false);restored.spawn_group()
+ entry=restored.slot_entry("weapons",0)
+ restored.lock_long_laser(restored.player,restored.player_weapon_row(entry),false,0,entry)
+ check(restored.projectiles.size()==1 and restored.profile.enhancementAttacks==history+1 and not is_same(restored.projectiles[0].attack_snapshot,beam.attack_snapshot),"reopened game starts a fresh beam snapshot once")

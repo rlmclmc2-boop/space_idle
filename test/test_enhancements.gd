@@ -68,22 +68,23 @@ func run() -> void:
  g.tick(.01)
  check(g.profile.enhancementAttacks==2 and g.projectiles.size()-old==int(g.db.equip("missile",150).para1),"missile salvo counts one attack")
  g.db.data.enhance_config.repeat_probability.value=1
- g.queue_jewel_repeats(1,1)
+ g.cooldowns[g.slot_id("weapons",1)]=0
+ g.tick(.01)
  check(g.jewel_repeats.size()==1,"eligible repeat queued")
  g.advance_jewel_repeats(g.enhancement_parameter("repeat_delay"))
- check(g.profile.enhancementAttacks==3 and g.jewel_repeats.is_empty(),"extra salvo counts once without recursion")
+ check(g.profile.enhancementAttacks==4 and g.jewel_repeats.is_empty(),"new primary and inherited extra salvo each count once without recursion")
  g.profile.loadout.weapons[0]={"key":"longLaser","level":150}
  g.db.equipment.longLaser[0].para3=.2
  g.lock_long_laser(g.player,g.db.equip("longLaser",150),false,0,g.slot_entry("weapons",0))
  var shot=g.projectiles.back()
  g.tick_long_laser(shot,.4)
- check(g.profile.enhancementAttacks==5,"beam damage ticks count independently")
+ check(g.profile.enhancementAttacks==5,"beam startup counts once and periodic damage does not count attacks")
  check(g.jewel_repeats.size()==1,"beam repeat schedules once from normal source")
  g.advance_jewel_repeats(g.enhancement_parameter("repeat_delay"))
  var repeated_beam=g.projectiles.back()
  check(repeated_beam.get("repeated",false),"beam repeat locks independent continuous source")
  g.tick_long_laser(repeated_beam,.2)
- check(g.profile.enhancementAttacks==6 and g.jewel_repeats.is_empty(),"repeat beam tick counts without recursive repeat")
+ check(g.profile.enhancementAttacks==6 and g.jewel_repeats.is_empty(),"repeat beam startup counts once without periodic attack counts or recursion")
  g=fixture();g.profile.enhancementAttacks=1000
  var one=g.jewel_equipment_stat(g.slot_entry("weapons",0));var two=g.jewel_equipment_stat(g.slot_entry("weapons",1))
  check(one==ceilf(g.equipment_stat("laser",150)*1.3) and two==ceilf(g.equipment_stat("missile",150)*1.3),"all weapons use same log10 history")

@@ -819,7 +819,7 @@ func permanent_level_tooltip(actual: int, target: String) -> String:
 	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
-func equipment_stat(key: String, level: int) -> float:
+func equipment_stat(key: String, level: int) -> Variant:
 	# Base equipment values exclude attack/hit counters. Retain their projection
 	# across volleys; full stat invalidation covers every modifier/level change.
 	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled else {}
@@ -827,13 +827,13 @@ func equipment_stat(key: String, level: int) -> float:
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
 	var row := db.equip(key, effective_equipment_level(level))
-	var value := float(row.para1 if key in ["armour", "shield"] else row.dmg)
+	var value = row.para1 if key in ["armour", "shield"] else row.dmg
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
-		value = ceilf(value * pow(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech)))
+		value = N.ceiling(N.multiply(value,N.power(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech))))
 	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons")
 	if reactor_bonus != 1.0:
-		value = ceilf(value * reactor_bonus)
+		value = N.ceiling(N.multiply(value,reactor_bonus))
 	if stat_cache_enabled:
 		# Bound previews as well as equipped modules; reads never retain entries.
 		if levels.size()>=32:levels.clear()
@@ -2785,7 +2785,7 @@ func jewel_effects(entry: Dictionary) -> Array:
 func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
-	var value := equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
+	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
 	var projected := entry
 	if level>=0:
 		projected=entry.duplicate()
@@ -2794,7 +2794,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if effect.kind in ["proficiency", "adaptation"]:
 			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
-			value = ceilf(value * (1.0 + bonus))
+			value = N.ceiling(N.multiply(value,1.0+bonus))
 	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
 	var crew_bonus: float
 	if stat_cache_enabled and stat_cache.has("crew_equipment"):

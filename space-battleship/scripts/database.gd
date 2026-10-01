@@ -1,6 +1,7 @@
 class_name ShipDatabase
 extends RefCounted
 const MonGroupXlsx := preload("res://scripts/mon_group_xlsx.gd")
+const N := preload("res://scripts/growth_number.gd")
 
 var data: Dictionary
 var equipment: Dictionary
@@ -39,9 +40,9 @@ func equip(key: String, level: int) -> Dictionary:
 			if level == 1:
 				return result
 			if key in ["armour", "shield"]:
-				result.para1 = equipment_growth(float(row.para1), float(row.get("para2" if key == "armour" else "para4", 0)), level)
+				result.para1 = equipment_combat_growth(float(row.para1), float(row.get("para2" if key == "armour" else "para4", 0)), level)
 			elif row.get("dmgMulti") != null and row.get("dmg") != null:
-				result.dmg = equipment_growth(float(row.dmg), float(row.dmgMulti), level)
+				result.dmg = equipment_combat_growth(float(row.dmg), float(row.dmgMulti), level)
 			for field in row:
 				var suffix := str(field).trim_prefix("cost_")
 				if str(field).begins_with("cost_") and suffix.is_valid_int() and row[field] != null:
@@ -80,6 +81,15 @@ func equipment_growth(base: float, multiplier: float, level: int) -> float:
 		return floorf(value / 10.0) * 10.0 + 5.0
 	var step := pow(10.0, floorf(log(value) / log(10.0) + 1e-12) - 1.0)
 	return floorf(value / step + 0.5) * step
+
+func equipment_combat_growth(base: float, multiplier: float, level: int) -> Variant:
+	# Preserve the ordinary authored rounding exactly; only overflowing combat
+	# values use the existing mantissa/exponent representation. Costs are separate.
+	var ordinary := equipment_growth(base,multiplier,level)
+	if is_finite(ordinary) or base<=0 or multiplier<=-1:return ordinary
+	var large = N.multiply(base,N.power(1.0+multiplier,level-1))
+	var parts := N.parts(large)
+	return N.make(floorf(float(parts[0])*10.0+0.5)/10.0,float(parts[1]))
 
 func max_equipment_level(key: String) -> int:
 	# Integer storage boundary only; legacy row count is not a gameplay cap.

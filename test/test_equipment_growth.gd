@@ -24,12 +24,17 @@ func _initialize() -> void:
 	check(db.equip("shield", 3).para1 == 720, "Shield uses para4")
 	check(db.equip("laser", 3).dmg == 140, "Weapon damage growth")
 	check(db.equip("laser", 2).cost_1 == 65, "Cost 60 rounds to 65")
+	# Explicit rounding fixture; the authored base damage may change independently.
+	db.equipment.missile[0].dmg = 30
 	check(db.equip("missile", 1).dmg == 30, "Level one is unchanged")
 	check(db.equip("missile", 2).dmg == 35, "Small damage ends in five")
 	for value in [60.0, 62.0, 68.0]:
 		check(db.equipment_growth(value, 0, 2) == 65, "Confirmed low rounding %s" % value)
 	check(db.equipment_growth(0, 0.2, 2) == 0, "Zero remains zero")
 	check(db.equipment_growth(995, 0, 2) == 1000, "Rounding carries into next magnitude")
+	var large = db.equipment_combat_growth(1.0,1.0,1025)
+	check(GrowthNumber.valid(large) and large=={"m":1.8,"e":308.0}, "Overflowing 2^1024 retains two significant digits")
+	check(db.equipment_combat_growth(9.96,9.0,310)=={"m":1.0,"e":310.0}, "Large combat rounding carries into next exponent")
 	var original: Dictionary = db.equipment.shield[0].duplicate(true)
 	var derived := db.equip("shield", 150)
 	for field in ["para2", "para3", "cd", "dmgtype", "des"]:
