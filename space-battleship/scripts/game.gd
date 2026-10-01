@@ -3122,7 +3122,13 @@ func jewel_hit_player(raw, type: int) -> void:
 	since_hit=0.0
 	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,raw),type,false)
 	var loss = 0.0
-	for key in ["shield","armour"]:
+	# A capped module can leave raw overflow while other shield modules still
+	# have room (different resistance/deferral). Redistribute within the shield
+	# before touching HP; each non-final pass exhausts at least one module.
+	var layers: Array=[]
+	for _index in capacities.shield.indices:layers.append("shield")
+	layers.append("armour")
+	for key in layers:
 		if N.compare(rest,0)<=0:break
 		var total = 0.0
 		var available := {}
@@ -3141,13 +3147,20 @@ func jewel_hit_player(raw, type: int) -> void:
 			var factor := 1.0-enhancement_branches.resistance(self,entry,float(db.config.dmgReduce)) if type==int(row.dmgtype) else 1.0
 			# Only raw damage surviving neutral protection receives body resistance.
 			var part = N.multiply(incoming,N.ratio(available[index],total)*factor)
-			var taken = part if key=="armour" else N.minimum(available[index],part) # Final body incurs overkill before deferral.
-			var delayed = 0.0
+			var delayed_fraction := 0.0
 			for effect in enhancement_effects(entry):
-				if effect.kind=="delayed_damage":delayed=N.multiply(taken,float(effect.p2))
+				if effect.kind=="delayed_damage":delayed_fraction=float(effect.p2)
+			# Capacity constrains the amount actually paid now, not the amount
+			# before deferral. Final HP still incurs full overkill before clamping.
+			var payable_capacity = N.divide(available[index],1.0-delayed_fraction)
+			var taken = part if key=="armour" else N.minimum(payable_capacity,part)
+			var delayed = N.multiply(taken,delayed_fraction)
+			var immediate = N.subtract(taken,delayed)
+			if key=="shield" and N.compare(taken,payable_capacity)>=0:
+				immediate=available[index]
+				delayed=N.subtract(taken,immediate)
 			deferred_any=deferred_any or N.compare(delayed,0)>0
 			queue_enhancement_deferred(key,delayed)
-			var immediate = N.subtract(taken,delayed)
 			var body = immediate
 			jewel_defence_damage[index]=N.add(jewel_defence_damage.get(index,0),body)
 			damage=N.add(damage,body)
@@ -3192,12 +3205,12 @@ func queue_enhancement_deferred(key: String, amount) -> void:
 		due[key]=N.add(due[key],part)
 		enhancement_deferred[first+i]=due
 
-func apply_enhancement_deferred(key: String, amount) -> void:
+func apply_enhancement_deferred(_key: String, amount) -> void:
 	# This debt was already mitigated at the incoming event; protection and body
 	# consume it 1:1 with no new resistance, deferral or incoming-history event.
 	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,amount))
 	var loss = 0.0
-	var layers := ["shield","armour"] if key=="shield" else ["armour"]
+	var layers := ["shield","armour"] # Origin is accounting metadata, not a bypass of current shields.
 	for layer in layers:
 		if N.compare(rest,0)<=0:break
 		var capacities := sync_jewel_defence_damage()
