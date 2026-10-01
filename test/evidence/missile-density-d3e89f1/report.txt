@@ -1,0 +1,38 @@
+Missile visual-age lookup: focused CPU draw fix
+
+Base: dbc0379 (published main fetched successfully); independent branch perf/missile-body-geometry-dbc0379.
+Change: battlefield.gd draw_projectile_body_override now reads shot.motion_age directly when present. Only legacy shots missing that key call projectile_visual for the fallback age. The old implementation unconditionally scanned projectile_visuals before using Dictionary.get's fallback. Prototype missiles carry motion_age, so drawing N bodies repeated an unnecessary O(N) lookup N times.
+Scope: one production file, 3 insertions / 2 deletions including a comment. No geometry, particles, draw ordering, projectile count, cadence, simulation, attacks, RNG, repair, saves, UI controls, or diagnostics switches changed. Legacy missing-age and missing-visual fallback remain unchanged.
+
+Validation environment: Godot 4.6.3, Linux Compatibility renderer, llvmpipe; NOT the user's Windows / RTX3090 / Godot4.7.2 environment. All probes have stat_cache_enabled=true, speed=1, equipment upgrade amount=1. No MAX/high-speed tests. Fixed 1/60 simulation steps and actual RenderingServer.frame_post_draw. Synthetic save-disabled fixture: Heavy_Battleship, eight level150 missiles, four level150 defenses, enhancement30, BBB branches, crew103/hightech303, seed1701. This is not a recovered user loadout; user's fourth sample did not record branch/loadout metadata. Ordinary target-identity loss is injected at fixed frames, retaining actual projectile processing. No user raw samples are included or uploaded to GitHub.
+
+Current-main controlled comparison (300 frames, first30 excluded from timing):
+                              before P50 / P95     after P50 / P95 (milliseconds)
+  battle draw callback          3.556 / 6.464         3.294 / 5.696
+  missile body callback         1.506 / 3.084         1.451 / 2.499
+  projectile_visual lookups     0.208 / 0.551         0.041 / 0.152
+Battle draw mean: 3.323 -> 2.950 ms. Density averaged42.16 / peak91 projectiles.
+All300 frames match exactly for: RNG state, attack count, total/own/hostile/orphan projectile counts, pending missile queue, repeat count, player dictionary, cumulative hits, cumulative launches. Both runs have166 launches /46 hits. Logs have no script or parse errors. These are bounded trace checks, not a claim of full gameplay coverage.
+
+Fixed150-body draw replay to isolate scaling (d138855 code, the same unchanged body function;120 frames, first10 excluded):
+                              before P50 / P95     after P50 / P95 (milliseconds)
+  battle draw callback         12.089 /16.547        10.649 /16.796
+  missile body callback         5.708 / 7.262         4.298 / 5.902
+  projectile_visual lookups     1.311 / 1.886         0.112 / 0.188
+Battle draw mean:12.520 ->11.287 ms. This replays150 presentation entries cloned from actual 1x simulated shots, holding simulation fixed; it is NOT a150-shot combat throughput test. Each frame still draws all150; no reduced fidelity or update frequency. RNG/attack count remain unchanged during replay. Median draw benefit1.44ms (~11.9%); battle-draw P95 does NOT improve in this replay. No claim of fixed overall Windows frame spikes or GPU gain.
+
+Other useful measured findings:
+- Controlled d138855 vs ce41e35 orphan-acceleration replay:166 launches/70 hits and per-frame RNG/attack counts match; peak projectiles75 ->67, orphan residency sum2218 ->1857 frame-counts. Draw median2.823 ->2.870ms: no measured draw-time benefit. This is prior merged work, not in the patch.
+- Reusing local body geometry with draw transforms was tried only in the isolated project: body callback mean1.130 ->1.075ms; battle draw did not improve. Rejected, not committed.
+- Initial inherited instrumentation renamed superclass/subclass originals identically and recursed; invalid run discarded. Fixed per-module wrapper names. A candidate packed-array constant parse error and an initial fresh-asset import failure were also rejected, never used as evidence. Included JSON/logs are only successful runs.
+
+Reproduction:
+- probe.py, density.gd and render150.gd are bundled together. The fixture is fully contained in density.gd; it reads no player save.
+- Example: python probe.py --repo /path/to/space_idle --ref dbc0379 --out /tmp/density-before --mode simulation
+- Repeat with the delivered commit and a separate new --out directory; optional --godot selects the executable. A GUI display is required. The script imports and runs an isolated project and fails on script/parse errors. On Linux supply an existing dummy display if necessary; on Windows use the normal GUI session.
+- --mode render150 runs the separate fixed-density draw replay. Do not interpret rendering-wait time as GPU time or sum nested phase durations.
+- The portable setup helper is syntax-checked; recorded runs used the equivalent local runner. Re-running it is optional, not extra unreported evidence.
+
+Delivery: complete git-format patch + this report + synthetic measurements/replay scripts. No direct main push. Windows acceptance remains outstanding.
+
+Commit: d3e89f11692c7069b8c4cf13fb6f2f6f404c3317
