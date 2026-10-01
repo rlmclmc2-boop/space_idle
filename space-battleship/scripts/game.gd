@@ -109,6 +109,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	crew.attach(self)
 	galaxy.load_state(self,{})
 	crew.load_state(self, [])
 	load_planets({})
@@ -465,6 +466,7 @@ func rebuild_unlocks() -> void:
 		profile.selectedShip = first_ship()
 	ensure_loadout()
 	profile.hightechOrder = hightech_slots()
+	event.emit("unlocks_changed",{})
 
 func ensure_loadout() -> void:
 	invalidate_stat_cache()
@@ -661,10 +663,16 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 			return false
 	return true
 
+func resources_changed(ids: Array) -> void:
+	event.emit("resources_changed",{"ids":ids})
+
 func refund_equipment(key: String, level: int) -> void:
+	var refunded := {}
 	for target_level in range(2, level + 1):
 		for id in upgrade_cost_for_level(key, target_level):
 			profile.resources[id] = N.add(profile.resources.get(id,0),upgrade_cost_for_level(key,target_level)[id])
+			refunded[id]=true
+	if not refunded.is_empty():resources_changed(refunded.keys())
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -904,6 +912,7 @@ func upgrade_reactor(amount: int) -> bool:
 		total += cost
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
+	resources_changed([str(int(db.config.reactorUraniumId))])
 	save_dirty = true
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
 	return true
@@ -1129,8 +1138,9 @@ func generate_scientist(amount := 1) -> bool:
 	for id in purchase.costs:
 		profile.resources[id] = N.subtract(profile.resources[id],purchase.costs[id])
 	profile.scientists += int(purchase.count)
+	resources_changed(purchase.costs.keys())
 	save_dirty = true
-	event.emit("scientists_changed", {})
+	event.emit("scientists_changed", {"purchased":int(purchase.count)})
 	return true
 
 func distribute_scientists() -> bool:
@@ -1325,7 +1335,7 @@ func reforge_planet(id: String) -> bool:
 	# Chrono particles are a persistent reserve, independent of run progress.
 	next.chronoParticles=profile.chronoParticles
 	profile=next
-	crew.timers.clear()
+	crew.reset_schedule(self)
 	pending_unlocks.clear()
 	resource_samples.clear()
 	drops.clear()
@@ -2187,6 +2197,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
+	resources_changed(costs.keys())
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
@@ -2201,8 +2212,8 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	event.emit("upgrade", {"key":key,"slot":slot_id(category,index),"levels":levels,"cost":costs,"batch":_upgrade_batch})
 	return true
 
-func upgrade_equipment_batch(mode: String) -> void:
-	if _upgrade_batch:return
+func upgrade_equipment_batch(mode: String) -> bool:
+	if _upgrade_batch:return false
 	_upgrade_batch=true
 	for category in ["weapons","defence"]:
 		for index in loadout_entries(category).size():
@@ -2215,6 +2226,7 @@ func upgrade_equipment_batch(mode: String) -> void:
 	if not changed.is_empty():
 		save_dirty = true
 		event.emit("upgrades_completed",{"slots":changed})
+	return not changed.is_empty()
 
 func upgrade_max(key: String) -> bool:
 	var levels := max_upgrade_amount(key)

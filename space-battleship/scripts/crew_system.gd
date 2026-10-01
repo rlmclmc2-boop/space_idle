@@ -3,6 +3,9 @@ extends RefCounted
 var handlers: Dictionary = {}
 var targets: Dictionary = {}
 var timers: Dictionary = {}
+var intervals: Dictionary = {}
+var game_ref: WeakRef
+const PURCHASE_JOBS := ["equipment_upgrade","hightech_scientists","jewel_auto","reactor_upgrade"]
 
 func _init() -> void:
 	register_target("equipment", equipment_targets)
@@ -20,6 +23,61 @@ func _init() -> void:
 	for target in ["production", "smelting"]:
 		for effect in ["OUTPUT", "SPEED", "EFFICIENCY"]:
 			register_handler(target, effect, passive)
+
+func attach(g) -> void:
+	game_ref = weakref(g)
+	g.event.connect(on_event)
+
+func reset_schedule(g) -> void:
+	timers.clear()
+	intervals.clear()
+	invalidate_jobs(g,PURCHASE_JOBS)
+
+func invalidate_jobs(g, jobs: Array) -> void:
+	for item in g.profile.get("crew",[]):
+		if jobs.has(str(item.assignmentType)):invalidate_member(g,item)
+
+func invalidate_member(g, item: Dictionary) -> void:
+	if not PURCHASE_JOBS.has(str(item.assignmentType)):return
+	# First change fixes the deadline. Later changes merge without postponing it.
+	if timers.has(item.crewId):return
+	var row: Dictionary = assignments(g).get(item.assignmentType,{})
+	var value := effect_value(g,item)
+	var interval := float(row.get("interval",0))/value if value>0 else 0.0
+	if not supported(row) or interval<=0 or not is_finite(interval):return
+	intervals[item.crewId]=interval
+	timers[item.crewId]=0.0
+
+func invalidate_resources(g, ids: Array) -> void:
+	var jobs: Array = []
+	for category in ["weapons","defence"]:
+		var cost_key: String = g.module_cost_key(category)
+		for row in g.db.equipment.get(cost_key,[]):
+			for field in row:
+				if str(field).begins_with("res_") and row[field]!=null and ids.has(str(int(row[field]))):
+					if not jobs.has("equipment_upgrade"):jobs.append("equipment_upgrade")
+	for part in Array(str(g.db.config.scientistCost).split(",")).slice(1):
+		if ids.has(str(part).get_slice("|",0)):
+			jobs.append("hightech_scientists")
+			break
+	if ids.has(str(int(g.db.config.reactorUraniumId))):jobs.append("reactor_upgrade")
+	invalidate_jobs(g,jobs)
+
+func on_event(kind: String, payload: Dictionary) -> void:
+	var g = game_ref.get_ref()
+	if g==null:return
+	match kind:
+		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
+		"resources_changed":invalidate_resources(g,payload.ids)
+		"upgrade","upgrades_completed","module_changed","ship_changed":invalidate_jobs(g,["equipment_upgrade"])
+		"scientists_changed":
+			if payload.has("purchased"):invalidate_jobs(g,["hightech_scientists"])
+		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
+		"reactor_changed":invalidate_jobs(g,["reactor_upgrade"])
+		"unlocks_changed","planet_reforged":invalidate_jobs(g,PURCHASE_JOBS)
+		"crew_changed":
+			var item := entry(g,str(payload.crewId))
+			invalidate_member(g,item)
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider
@@ -84,6 +142,8 @@ func load_state(g, raw) -> void:
 			entry.assignmentType = assignment
 			entry.targetId = target
 
+	reset_schedule(g)
+
 func entry(g, id: String) -> Dictionary:
 	for item in g.profile.get("crew", []):
 		if item.crewId == id:return item
@@ -147,6 +207,7 @@ func assign(g, id: String, assignment: String, target: String) -> bool:
 	item.targetId=target
 	if assignment=="galaxy_explore":g.galaxy.start(g,target)
 	timers.erase(id)
+	intervals.erase(id)
 	changed(g,item,previous)
 	return true
 
@@ -197,45 +258,48 @@ func get_modifier(g, target_type: String, target_id: String, effect_type: String
 	return total
 
 func advance(g, dt: float) -> void:
-	if dt<=0 or not is_finite(dt):return
+	if g.paused or dt<=0 or not is_finite(dt):return
+	# Only pending work advances; passive jobs have no scheduler work.
+	var due: Array = []
+	for id in timers:
+		var elapsed := float(timers[id])+dt
+		if elapsed+0.000000001 < float(intervals[id]):timers[id]=elapsed
+		else:due.append(id)
+	if due.is_empty():return
+	# Preserve configuration crew order when jobs share a resource balance.
 	for item in g.profile.get("crew",[]):
-		var row: Dictionary = assignments(g).get(item.assignmentType,{})
-		if not supported(row) or float(row.interval)<=0:continue
-		# Only the clock runs per tick. Target/rule checks happen at the configured deadline.
-		var value := effect_value(g,item)
-		if value<=0 or not is_finite(value):continue
-		var interval := float(row.interval)/value
-		if interval<=0 or not is_finite(interval):continue
-		var elapsed := float(timers.get(item.crewId,0))+dt
-		if elapsed < interval:
-			timers[item.crewId]=elapsed
-			continue
-		timers[item.crewId]=fposmod(elapsed,interval)
-		# At most one action per tick; missed deadlines never create a spending burst.
-		if active(g,item):handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item)
+		var id: String = item.crewId
+		if not due.has(id):continue
+		# Clear before acting: synchronous changes can queue the following second.
+		# Large steps make one attempt, with no replay or retained overrun.
+		timers.erase(id)
+		intervals.erase(id)
+		var row: Dictionary = assignments(g).get(item.get("assignmentType",""),{})
+		if supported(row) and active(g,item) and handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item):
+			invalidate_member(g,item)
 
-func passive(_g, _item: Dictionary) -> void:
-	pass
+func passive(_g, _item: Dictionary) -> bool:
+	return false
 
-func auto_upgrade(g, item: Dictionary) -> void:
+func auto_upgrade(g, item: Dictionary) -> bool:
 	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g).has(mode):return
+	if not upgrade_modes(g).has(mode):return false
 	# Match manual module upgrades. Each later module sees the remaining resources.
-	g.upgrade_equipment_batch(mode)
+	return g.upgrade_equipment_batch(mode)
 
-func auto_scientists(g, item: Dictionary) -> void:
+func auto_scientists(g, item: Dictionary) -> bool:
 	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g,item.assignmentType).has(mode):return
-	if g.generate_scientist(-1 if mode=="max" else int(mode)):
-		g.distribute_scientists()
+	if not upgrade_modes(g,item.assignmentType).has(mode):return false
+	if not g.generate_scientist(-1 if mode=="max" else int(mode)):return false
+	g.distribute_scientists()
+	return true
 
-func auto_jewels(g, _item: Dictionary) -> void:
-	g.upgrade_enhancement(1)
+func auto_jewels(g, _item: Dictionary) -> bool:
+	return g.upgrade_enhancement(1)>0
 
-func auto_reactor(g, _item: Dictionary) -> void:
-	# Both actions run at every deadline, including when uranium cannot fund an upgrade.
-	g.upgrade_reactor(1)
-	g.equalize_reactor_allocation()
+func auto_reactor(g, _item: Dictionary) -> bool:
+	var purchased: bool = g.upgrade_reactor(1)
+	return g.equalize_reactor_allocation() or purchased
 
 func reactor_targets(g) -> Array:
 	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g.reactor_unlocked()}]
