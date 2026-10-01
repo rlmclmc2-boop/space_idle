@@ -11925,5 +11925,187 @@
     "params": "{base},{trigger},{bonus},{multiplier},{expected}",
     "category": "weapon",
     "note": "仅展示，不消费随机数或改变战斗伤害"
+  },
+  {
+    "key": "research.workshop.title",
+    "text": "AI 工厂",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.subtitle",
+    "text": "组装 · 校准 · 持续研发",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.overview",
+    "text": "工位总览",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.independent",
+    "text": "各工位独立研发",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.active",
+    "text": "当前施工",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.built",
+    "text": "已装配 {count} / {total} 阶",
+    "params": "count,total",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.crew",
+    "text": "{count} AI",
+    "params": "count",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.idle",
+    "text": "待命 {count} AI",
+    "params": "count",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.total",
+    "text": "共 {count} AI",
+    "params": "count",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.rate",
+    "text": "{rate} 科研点 / 秒",
+    "params": "rate",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.percent",
+    "text": "{value}%",
+    "params": "value",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.points",
+    "text": "{points} / {required} 科研点",
+    "params": "points,required",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.remaining",
+    "text": "预计 {time}",
+    "params": "time",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.waiting",
+    "text": "等待 AI",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.working",
+    "text": "施工中",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.complete",
+    "text": "组装完成 · Lv.{level}",
+    "params": "level",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.console",
+    "text": "工位控制",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.allocation",
+    "text": "分配 AI",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.dedicated",
+    "text": "另有专属 {count} AI",
+    "params": "count",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.help",
+    "text": "设备按当前研发进度逐步组装。完成研发后等级提升，再进入下一轮。各工位互不消耗对方产物；此处 AI 数量与原分配规则一致。",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.details",
+    "text": "规则",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.cost",
+    "text": "生产 1 AI：{cost}",
+    "params": "cost",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.dock",
+    "text": "AI 停靠区",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.empty",
+    "text": "尚无可用工位",
+    "params": "",
+    "category": "research",
+    "note": "AI 工厂布局样稿"
+  },
+  {
+    "key": "research.workshop.next_points",
+    "text": "下一轮：{points} / {required} 科研点",
+    "params": "points,required",
+    "category": "research",
+    "note": "完成展示期间明确数字来自下一轮研发"
   }
 ]

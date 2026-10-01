@@ -3,9 +3,9 @@ extends Control
 ## No research state or independent construction clock is stored here.
 const PROFILES := {
 	BattleGame.FURNACE: {"shape":"furnace", "cell":Vector2i.ZERO, "grid":Vector2i.ONE, "texture":preload("res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png"), "assembly_recipe":"furnace_cartoon", "warm_energy_only":true, "color":Color("ffb865")},
-	BattleGame.ENERGY_FOCUS: {"shape":"focus", "cell":Vector2i(1,0), "color":Color("67dcec")},
-	BattleGame.DENSE_ARMOUR: {"shape":"armour", "cell":Vector2i(0,1), "color":Color("86b5ff")},
-	BattleGame.JEWEL_FURNACE: {"shape":"crystal", "cell":Vector2i(1,1), "color":Color("bf9aff")}
+	BattleGame.ENERGY_FOCUS: {"shape":"focus", "cell":Vector2i.ZERO, "grid":Vector2i.ONE, "texture":preload("res://assets/hightech/machines/energy-focus-cartoon.png"), "assembly_recipe":"focus_cartoon", "warm_energy_only":true, "machine_motion":1, "color":Color("67dcec")},
+	BattleGame.DENSE_ARMOUR: {"shape":"armour", "cell":Vector2i.ZERO, "grid":Vector2i.ONE, "texture":preload("res://assets/hightech/machines/armour-press-cartoon.png"), "assembly_recipe":"armour_cartoon", "warm_energy_only":true, "machine_motion":2, "color":Color("67dcec")},
+	BattleGame.JEWEL_FURNACE: {"shape":"crystal", "cell":Vector2i.ZERO, "grid":Vector2i.ONE, "texture":preload("res://assets/hightech/machines/jewel-synthesizer-cartoon.png"), "assembly_recipe":"crystal_cartoon", "warm_energy_only":true, "machine_motion":3, "color":Color("67dcec")}
 }
 const FALLBACK_PROFILE := {"shape":"furnace", "cell":Vector2i.ZERO, "color":Color("ffb865")}
 const ART := preload("res://assets/hightech/orbital-atlas.png")
@@ -33,6 +33,7 @@ var shown_progress := -1.0
 var completion_start_progress := 0.0
 var shown_completion := Vector3(0,1,0)
 var shape := "prototype"
+var machine_motion := 0
 var accent := Color("74dad4")
 var fraction := 0.0
 var assigned := 0
@@ -61,6 +62,7 @@ func setup(key: String) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var profile: Dictionary = PROFILES.get(key,FALLBACK_PROFILE)
 	shape = profile.shape
+	machine_motion = profile.get("machine_motion",0)
 	accent = profile.color
 	# Equal peak intensity for every construction hue, including violet.
 	accent = accent.lerp(Color(accent.get_luminance(),accent.get_luminance(),accent.get_luminance()),0.18)
@@ -144,7 +146,7 @@ func advance(delta: float, paused: bool) -> void:
 			sample=0.0
 			effects.queue_redraw()
 		return
-	if assigned<=0 and completed<=0 and completion_cooldown<=0:return
+	if assigned<=0 and completed<=0 and completion_cooldown<=0 and not (machine_motion>0 and fraction>=1):return
 	completion_cooldown = maxf(0,completion_cooldown-delta)
 	# Acceptance fades are brief, image-wide changes. Interpolate their uniforms
 	# each visible frame; keep ordinary energy/workers at the existing 24 Hz cap.
@@ -153,7 +155,7 @@ func advance(delta: float, paused: bool) -> void:
 		completed=maxf(0,completed-delta)
 		set_fraction(fraction)
 		if completed<=0:effects.queue_redraw()
-	if (assigned<=0 or built>=parts.size()) and completed<=0:return
+	if (assigned<=0 or built>=parts.size()) and completed<=0 and not (machine_motion>0 and fraction>=1):return
 	sample += delta
 	if sample < 1.0/24.0:return
 	phase += sample
@@ -199,6 +201,7 @@ func setup_art(key: String,profile: Dictionary) -> void:
 	art_material.set_shader_parameter("assembly_order",plan.texture)
 	art_material.set_shader_parameter("part_count",float(parts.size()))
 	art_material.set_shader_parameter("warm_energy_only",profile.get("warm_energy_only",false))
+	art_material.set_shader_parameter("machine_motion",machine_motion)
 	art=TextureRect.new()
 	art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	art.texture=profile.get("texture",ART)
@@ -216,6 +219,29 @@ func assembly_region(uv: Vector2,recipe: String) -> int:
 	var y := uv.y
 	var half := 0 if x<0.5 else 1
 	match recipe:
+		"focus_cartoon":
+			# 23 component stages: feet, pedestal, crescent supports, lenses, core.
+			if y>0.76:return mini(7,int(x*8))
+			if x>0.405 and x<0.64 and y>0.32 and y<0.60:return 22
+			if y>0.62:return 8+half*2+(0 if y>0.70 else 1)
+			if y>0.40:return 12+half*2+(0 if y>0.51 else 1)
+			if y>0.21:return 16+half*2+(0 if y>0.31 else 1)
+			return 20+(0 if x<0.34 else 1)
+		"armour_cartoon":
+			if y>0.76:return clampi(int(x*6),0,5)
+			if x<0.30 or x>0.70:
+				if y>0.29:return 6+half*3+clampi(int((0.76-y)/0.16),0,2)
+			if y<0.29:return 12+clampi(int(x*4),0,3)
+			if y>0.48:return 16+clampi(int((0.76-y)/0.09),0,2)
+			if y>0.43 and x>0.42 and x<0.57:return 22
+			return 19+clampi(int((0.48-y)/0.06),0,2)
+		"crystal_cartoon":
+			# Each crystal is one complete component, assembled after its socket.
+			if y<0.46:
+				return 22 if x>0.41 and x<0.59 else 20 if x<0.41 else 21
+			if y>0.79:return clampi(int((x-0.16)/0.115),0,5)
+			if y>0.65:return 6+clampi(int((x-0.05)/0.15),0,5)
+			return 12+clampi(int((x-0.05)/0.113),0,7)
 		"armour":
 			if y>=0.825:return mini(7,int(x*8))
 			if x<0.17 or x>0.86:return 8+half*2+(0 if y>0.6 else 1)
@@ -291,7 +317,7 @@ func bake_plan(pixels: Image,cell: Vector2i,grid: Vector2i,recipe: String) -> Di
 				region=22
 			raw.append(region)
 			grain.append(local_phase)
-			if ink.a>0.55 and maxf(ink.r,maxf(ink.g,ink.b))>0.5:
+			if ink.a>0.55 and maxf(ink.r,maxf(ink.g,ink.b))>(0.25 if recipe in ["focus_cartoon","armour_cartoon","crystal_cartoon"] else 0.5):
 				if not candidates.has(region):candidates[region]=PackedVector2Array()
 				candidates[region].append(uv*ART_SIZE)
 	var keys := candidates.keys()
@@ -462,11 +488,11 @@ func draw_effects(layer: Control) -> void:
 	if research_pending:
 		draw_scan_ring(layer,256.0-fposmod(phase*30.0,225.0),0.32,phase*0.4)
 		return
-	# A completed construction only keeps a quiet platform halo; no welding/scanning.
+	# Completed new machines run their own mechanical shader; legacy keeps its halo.
 	if completed>0 or fraction>=1:
-		draw_scan_ring(layer,268,0.25,phase*0.1)
+		if machine_motion==0:draw_scan_ring(layer,268,0.25,phase*0.1)
 		return
-	if assigned>0 and fraction<1:
+	if assigned>0 and fraction<1 and machine_motion==0:
 		var scan_y := 256.0-fposmod(phase*44.0,225.0)
 		draw_scan_ring(layer,scan_y,0.8,phase)
 		draw_scan_ring(layer,267,0.6,-phase*0.7)
@@ -479,6 +505,9 @@ func draw_effects(layer: Control) -> void:
 			var x := 52.0+fposmod(float(i)*53.0,194.0)
 			var y := 265.0-fposmod(phase*(18.0+float(i%4)*8.0)+float(i)*17.0,238.0)
 			layer.draw_line(Vector2(x,y),Vector2(x,y+4),Color(accent,0.32+0.3*sin(phase+i)),1.4,true)
+	if assigned>0 and fraction<1 and machine_motion>0:
+		# New solid machines keep their silhouette readable; welding stays local.
+		draw_scan_ring(layer,276,0.22,phase*0.25)
 	if assigned<=0:return
 	var count := mini(3,assigned)
 	if art==null and built>=0 and built<parts.size():layer.draw_polyline(closed(parts[built]),Color(accent,0.58),1.3,true)

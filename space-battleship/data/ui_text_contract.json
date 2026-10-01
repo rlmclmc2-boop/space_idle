@@ -6322,6 +6322,111 @@
         "multiplier",
         "expected"
       ]
+    },
+    "research.workshop.title": {
+      "params": []
+    },
+    "research.workshop.subtitle": {
+      "params": []
+    },
+    "research.workshop.overview": {
+      "params": []
+    },
+    "research.workshop.independent": {
+      "params": []
+    },
+    "research.workshop.active": {
+      "params": []
+    },
+    "research.workshop.built": {
+      "params": [
+        "count",
+        "total"
+      ]
+    },
+    "research.workshop.crew": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.workshop.idle": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.workshop.total": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.workshop.rate": {
+      "params": [
+        "rate"
+      ]
+    },
+    "research.workshop.percent": {
+      "params": [
+        "value"
+      ]
+    },
+    "research.workshop.points": {
+      "params": [
+        "points",
+        "required"
+      ]
+    },
+    "research.workshop.remaining": {
+      "params": [
+        "time"
+      ]
+    },
+    "research.workshop.waiting": {
+      "params": []
+    },
+    "research.workshop.paused": {
+      "params": []
+    },
+    "research.workshop.working": {
+      "params": []
+    },
+    "research.workshop.complete": {
+      "params": [
+        "level"
+      ]
+    },
+    "research.workshop.console": {
+      "params": []
+    },
+    "research.workshop.allocation": {
+      "params": []
+    },
+    "research.workshop.dedicated": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.workshop.help": {
+      "params": []
+    },
+    "research.workshop.details": {
+      "params": []
+    },
+    "research.workshop.cost": {
+      "params": [
+        "cost"
+      ]
+    },
+    "research.workshop.dock": {
+      "params": []
+    },
+    "research.workshop.empty": {
+      "params": []
+    },
+    "research.workshop.next_points": {
+      "params": [
+        "points",
+        "required"
+      ]
     }
   },
   "bindings": {
