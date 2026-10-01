@@ -70,7 +70,7 @@ func advance_weapons(g,dt: float) -> void:
   else:data.target={};data.dwell=0.0
   if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):
    g.invalidate_equipment_counter(str(data.entry.get("key","")))
-   g.event.emit("equipment_stats",{"slot":g.slot_id("weapons",index)})
+   # Timed bonuses remain combat-only; module presentation has no dependency.
 
 func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary := true) -> Dictionary:
  var data:=weapon(g,index)
@@ -83,16 +83,16 @@ func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary
 func finish_attack(g,context: Dictionary) -> void:
  if context.get("derived",false) or not context.get("critical",false):return
  var data:=weapon(g,int(context.index))
- var before_stacks:=int(data.stacks)
  if active(g,data.entry,"critical",1,"B"):data.next=int(g.enhancement_parameter("critical_b1_attacks"))
  if active(g,data.entry,"critical",2,"B"):
   data.stacks=mini(int(g.enhancement_parameter("critical_b2_stacks")),int(data.stacks)+1)
   data.stack_time=g.enhancement_parameter("critical_b2_duration")
  g.invalidate_equipment_counter(str(data.entry.get("key","")))
- if before_stacks!=int(data.stacks):g.event.emit("equipment_stats",{"slot":g.slot_id("weapons",int(context.index))})
 
-func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={}) -> Variant:
+
+func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include_timed_buffs := true) -> Variant:
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
+ if not include_timed_buffs:return result
  var owner: Dictionary=entry if original_entry.is_empty() else original_entry
  var index: int=g.weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
  if index<0:return result
@@ -112,11 +112,11 @@ func cooldown_multiplier(g,entry: Dictionary) -> float:
 func repeat_probability(g,entry: Dictionary) -> float:
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability"),0,1)
 
-func underlying_critical_rate(g,entry: Dictionary) -> float:
+func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -> float:
  var row: Dictionary=g.db.equip(str(entry.key),int(entry.level))
  var rate: float=g.enhancement_parameter("base_critical_rate")+float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
  var index: int=g.weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
- if index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
+ if include_timed_buffs and index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
  return clampf(rate,0,1)
 
 func resistance(g,entry: Dictionary,base: float) -> float:

@@ -37,7 +37,7 @@ func click(control: Control) -> void:
 		root.push_input(event,true)
 		await frames()
 func verify_expected(g, entry: Dictionary, probability: float, multiplier: float, label: String) -> void:
-	var base=g.jewel_equipment_stat(entry)
+	var base=g.jewel_equipment_stat(entry,-1,null,false)
 	var rng_state=g.rng.state
 	var profile: Dictionary=g.profile.duplicate(true)
 	var values: Dictionary=DISPLAY.snapshot(g,entry)
@@ -82,12 +82,14 @@ func run() -> void:
 	var live: Dictionary=g.enhancement_branches.weapon(g,0)
 	live.stacks=3;live.stack_time=1.0
 	var stacked_probability: float=clampf(float(original_rate)+3.0*float(cfg.critical_b2_probability.value),0,1)
-	verify_expected(g,entry,float(cfg.critical_b3_guaranteed_rate.value)*stacked_probability,critical_multiplier,"Current stacked 30B")
+	verify_expected(g,entry,float(cfg.critical_b3_guaranteed_rate.value)*float(original_rate),critical_multiplier,"Timed stacks excluded from 30B display")
+	check(is_equal_approx(g.enhancement_branches.underlying_critical_rate(g,entry),stacked_probability),"Timed critical chance remains active in combat")
 	var snapshot: Dictionary=DISPLAY.snapshot(g,entry)
 	var plain_base=g.equipment_stat("laser",150)
-	check(equal(snapshot.base,N.multiply(plain_base,1.0+3.0*float(cfg.critical_b2_damage_bonus.value))),"Stacked base contains its damage bonus exactly once")
+	check(equal(snapshot.base,plain_base),"Displayed base excludes timed damage stacks")
+	check(equal(g.jewel_equipment_stat(entry),N.multiply(plain_base,1.0+3.0*float(cfg.critical_b2_damage_bonus.value))),"Combat retains timed damage stacks")
 	var projected: Dictionary=DISPLAY.snapshot(g,entry,151)
-	check(is_equal_approx(projected.bonus_probability,stacked_probability*float(cfg.critical_b3_guaranteed_rate.value)),"Next-level preview preserves current stack identity")
+	check(is_equal_approx(projected.bonus_probability,float(original_rate)*float(cfg.critical_b3_guaranteed_rate.value)),"Next-level preview excludes timed critical stacks")
 	entry.level=149
 	verify_expected(g,entry,float(original_rate),float(cfg.base_critical_multiplier.value),"Globally selected critical is not active below module threshold")
 	entry.level=150
@@ -124,9 +126,9 @@ func run() -> void:
 	var panel=scene.equipment_panel
 	await click(panel.cards.weapons_0)
 	check(panel.items.weapons_0.mainStatLabel==UIText.t("weapon.expected_damage") and equal(panel.items.weapons_0.mainStatNumber,DISPLAY.snapshot(g,entry).expected),"Module card labels and displays expected damage")
-	check(panel.items.weapons_0.tooltip.contains("伤害比例生效概率") and panel.detail.primary.tooltip_text.contains("期望伤害"),"Precise detail exposes base, trigger, multiplier and expectation")
 	await capture("modules")
 	panel.show_inspector()
+	check(panel.items.weapons_0.tooltip.contains("伤害比例生效概率") and panel.detail.primary.tooltip_text.contains("期望伤害"),"Precise detail exposes base, trigger, multiplier and expectation")
 	if not panel.details_open:await click(panel.detail.more)
 	await capture("detail")
 	check(panel.detail.stats.visible and panel.detail.stats.text.contains("期望伤害") and panel.detail.stats.text.contains("单次基础伤害"),"Expanded inspector and next-level preview share expectation")
@@ -148,22 +150,37 @@ func run() -> void:
 	scene.writes.clear()
 	scene.projections.clear()
 	var context: Dictionary=g.begin_enhancement_attack(0,{},false,false);context.critical=true;g.finish_enhancement_attack(0)
-	check(panel.stats_dirty.keys()==["weapons_0"],"Critical stack notification invalidates exactly its module")
+	check(panel.stats_dirty.is_empty(),"Timed stack activation does not invalidate module UI")
 	panel.refresh_pending()
-	check(scene.projections.size()==2 and is_same(scene.projections[0][0],entry) and is_same(scene.projections[1][0],entry),"One slot event projects only current and selected-next values once each")
-	check(N.compare(panel.items.weapons_0.mainStatNumber,before)>0 and panel.cards.weapons_0==card and root.gui_get_focus_owner()==card,"Dynamic stacks update expectation locally and preserve focus")
-	check(not scene.writes.has(other),"Stack change leaves unrelated module card untouched")
-	check(DISPLAY.snapshot(g,entry,151).bonus_probability==g.jewel_critical(entry).x,"Ordinary stacked preview matches actual engine probability precision")
-	var with_stacks=panel.items.weapons_0.mainStatNumber
+	check(scene.projections.is_empty() and scene.writes.is_empty(),"Timed stack activation performs no module projection or property write")
+	check(equal(panel.items.weapons_0.mainStatNumber,before) and panel.cards.weapons_0==card and root.gui_get_focus_owner()==card,"Stable presentation preserves card and focus")
+	check(not scene.writes.has(other),"Timed stack change leaves unrelated module untouched")
+	var combat_before=g.jewel_equipment_stat(entry)
 	live.stack_time=0.1;g.enhancement_branches.advance_weapons(g,0.1);panel.refresh_pending()
-	check(N.compare(panel.items.weapons_0.mainStatNumber,with_stacks)<0,"Stack expiry catches up without waiting for another attack")
-	for i in 2:
-		context=g.begin_enhancement_attack(0,{},false,false);context.critical=true;g.finish_enhancement_attack(0)
+	check(equal(panel.items.weapons_0.mainStatNumber,before) and N.compare(g.jewel_equipment_stat(entry),combat_before)<0,"Timed stack expiry changes combat only")
+	check(scene.projections.is_empty() and scene.writes.is_empty(),"Timed expiry performs no panel work")
+	g.set_enhancement_branch("weapons","proficiency",1,"B")
+	g.spawn_group();g.state=BattleGame.State.COMBAT
+	live=g.enhancement_branches.weapon(g,0);live.target=g.enemies[0]
+	panel.refresh();scene.projections.clear();scene.writes.clear()
+	var stable=DISPLAY.snapshot(g,entry)
+	var stable_next=DISPLAY.snapshot(g,entry,151)
+	combat_before=g.jewel_equipment_stat(entry)
+	g.enhancement_branches.advance_weapons(g,float(cfg.proficiency_b1_interval.value))
 	panel.refresh_pending()
+	check(DISPLAY.snapshot(g,entry)==stable and DISPLAY.snapshot(g,entry,151)==stable_next,"Dwell interval affects neither current nor next-level display")
+	check(N.compare(g.jewel_equipment_stat(entry),combat_before)>0,"Dwell interval still raises combat damage")
+	check(scene.projections.is_empty() and scene.writes.is_empty(),"Dwell interval generates no equipment UI refresh")
 	scene.select_system(4);await frames();scene.writes.clear();scene.projections.clear()
-	g.enhancement_branches.advance_weapons(g,float(cfg.critical_b2_duration.value));panel.refresh_pending()
-	check(panel.dirty and scene.writes.is_empty() and scene.projections.is_empty(),"Hidden stack expiry only defers refresh")
+	live.stacks=2;live.stack_time=.1
+	g.enhancement_branches.advance_weapons(g,.1);panel.refresh_pending()
+	check(scene.writes.is_empty() and scene.projections.is_empty(),"Hidden timed changes perform no equipment UI work")
 	scene.select_system(0);await frames();panel.refresh_pending()
-	check(equal(panel.items.weapons_0.mainStatNumber,DISPLAY.snapshot(g,entry).expected) and panel.cards.weapons_0==card,"Reveal catches up expired stacks without rebuilding card")
+	check(equal(panel.items.weapons_0.mainStatNumber,DISPLAY.snapshot(g,entry).expected) and panel.cards.weapons_0==card,"Reveal retains stable projection without rebuilding card")
+	# Persisted attack history remains a display dependency, unlike timed buffs.
+	before=panel.items.weapons_0.mainStatNumber
+	g.profile.enhancementAttacks=1000000;g.event.emit("equipment_stats",{"category":"weapons"});panel.refresh_pending()
+	check(N.compare(panel.items.weapons_0.mainStatNumber,before)>0,"Event-based attack history still refreshes displayed damage")
+	check(scene.equipment_detail_text(entry).contains(scene.number(float(g.db.equip("laser",int(entry.level)).cd))),"Static attack interval remains in equipment detail")
 	print("PERCENTAGE EXPECTED DAMAGE: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

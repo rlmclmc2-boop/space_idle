@@ -2794,7 +2794,7 @@ func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 func jewel_effects(entry: Dictionary) -> Array:
 	return enhancement_effects(entry)
 
-func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
 	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
@@ -2807,7 +2807,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
 			value = N.ceiling(N.multiply(value,1.0+bonus))
-	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
+	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry,include_timed_buffs) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
 	var crew_bonus: float
 	if stat_cache_enabled and stat_cache.has("crew_equipment"):
 		crew_bonus=stat_cache.crew_equipment
@@ -2816,9 +2816,9 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
 	return N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value"))
 
-func jewel_critical(entry: Dictionary, effects: Variant = null) -> Vector2:
+func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
-	var rate := enhancement_branches.underlying_critical_rate(self,entry)
+	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
 	for effect in (jewel_effects(entry) if effects == null else effects):
