@@ -10,7 +10,7 @@ Paths relative to project root. Operations: [README](../README.md).
 | cfg/stat projection | scripts/database.gd: ShipDatabase |
 | equipment/ships/enhancement | scripts/equipment_tab.gd, equipment_card.gd, ship_panel.gd, enhancement_panel.gd |
 | crew/planet/reactor/chrono | scripts/crew_system.gd, crew_panel.gd, planet_buildings.gd, planet_buffs.gd, planet_panel.gd, reactor_panel.gd, chrono_panel.gd; growth_number.gd extends quantities beyond float range |
-| hightech | scripts/main.gd, hightech_scroll.gd, hightech_inspector.gd, hightech_hall.gd, hightech_dock_bay.gd, hightech_construction.gd |
+| hightech | scripts/hightech_workshop.gd (page owner), hightech_workshop_room.gd, hightech_workshop_construction.gd, hightech_construction.gd; main.gd (tab entry) |
 | galaxy | scripts/galaxy_system.gd owns profile.galaxies and online scheduling; galaxy_region.gd work/compact frontier/macro slots; galaxy_effect_aggregator.gd sole effect cache; galaxy_panel.gd Control cards + galaxy_map.gd independent 3D viewport; config_excel/galaxy*.xlsx; [rules](GALAXY.md), [GLB pipeline](../assets/galaxy/v3/README.md) |
 | UI text | data/ui_text.json, ui_text_contract.json; scripts/ui_text.gd |
 | cfg split/import/editor | tools/config_workbooks.py, import_workbook.py, level_editor_store.py; level_editor.tscn, scripts/level_editor.gd |

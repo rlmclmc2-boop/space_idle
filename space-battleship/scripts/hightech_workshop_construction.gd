@@ -1,5 +1,5 @@
 extends "res://scripts/hightech_construction.gd"
-## Lightweight workshop trial: existing 23-stage art, only local welding FX.
+## Workshop construction renderer: existing 23-stage art, only local welding FX.
 ## No room redraw, full-screen scan, particles, or independent progress clock.
 func setup(key: String) -> void:
 	super.setup(key)

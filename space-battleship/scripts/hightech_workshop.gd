@@ -1,5 +1,5 @@
 extends Control
-## Standalone layout trial. The game owns research, costs, AI, unlocks and saves.
+## Production factory page. The game owns research, costs, AI, unlocks and saves.
 ## One visible machine, static room, 5 Hz changed-value readouts. No extra viewport.
 const INK:=Color("e2e9e8")
 const MUTED:=Color("90a7b2")
@@ -9,7 +9,7 @@ const LINE:=Color("34505e")
 const SHELL=preload("res://scripts/shell_presentation.gd")
 const PRESENTATION=preload("res://scripts/hightech_presentation.gd")
 const NUMBER=preload("res://scripts/number_format.gd")
-const CONSTRUCTION=preload("res://dev/factory_workshop/construction.gd")
+const CONSTRUCTION=preload("res://scripts/hightech_workshop_construction.gd")
 var game: BattleGame
 var selected: String=""
 var rows: Dictionary={}
@@ -40,6 +40,11 @@ var worklist: VBoxContainer
 var refresh_elapsed:=0.0
 var writes:=0
 var factory_events:=0
+var refresh_count:=0
+var refresh_usec:=0
+var quote_evaluations:=0
+var quote_snapshot: Array=[]
+var effect_snapshot: Array=[]
 var dirty:=true
 var projects_dirty:=false
 var shown_paused:=false
@@ -134,7 +139,7 @@ func setup(source: BattleGame) -> void:
 	stage.position=Vector2(24,192)
 	stage.size=Vector2(854,730)
 	add_child(stage)
-	room=preload("res://dev/factory_workshop/room.gd").new()
+	room=preload("res://scripts/hightech_workshop_room.gd").new()
 	room.size=stage.size
 	room.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	stage.add_child(room)
@@ -204,8 +209,19 @@ func setup(source: BattleGame) -> void:
 	console_title.mouse_filter=Control.MOUSE_FILTER_PASS
 	console_title.tooltip_text=t("help")
 	game.event.connect(on_game_event)
-	sync_projects()
-	refresh()
+	projects_dirty=true
+	set_process(is_visible_in_tree())
+	if is_visible_in_tree():
+		projects_dirty=false
+		sync_projects()
+		refresh()
+
+func invalidate(structure:=false) -> void:
+	dirty=true
+	projects_dirty=projects_dirty or structure
+
+func _exit_tree() -> void:
+	if game!=null and game.event.is_connected(on_game_event):game.event.disconnect(on_game_event)
 
 func sync_projects() -> void:
 	var ordered: Array=[]
@@ -261,7 +277,7 @@ func select_project(key: String) -> void:
 	refresh()
 
 func on_game_event(kind: String, payload: Dictionary) -> void:
-	if kind=="unlock":projects_dirty=true
+	if kind=="unlock":invalidate(true)
 	if kind=="hightech_complete":
 		factory_events+=1
 		var key:=str(payload.key)
@@ -269,17 +285,25 @@ func on_game_event(kind: String, payload: Dictionary) -> void:
 		if key==selected:
 			completion_key=key
 			completion_level=game.hightech_level(key)
-	if kind in ["scientists_changed","hightech_complete","crew_changed","resources_changed"]:dirty=true
+	if kind in ["scientists_changed","hightech_complete","crew_changed"]:dirty=true
 
 func refresh() -> void:
 	if not is_visible_in_tree():return
+	var started:=Time.get_ticks_usec()
+	refresh_count+=1
 	put(total,"text",t("total",{"count":NUMBER.compact(game.profile.scientists)}))
 	put(idle,"text",t("idle",{"count":NUMBER.compact(game.idle_scientists())}))
-	var costs: Array[String]=[]
-	var current_cost:=game.scientist_cost()
-	for id in current_cost:costs.append("[color=#efb976]"+NUMBER.compact(current_cost[id])+" "+PRESENTATION.PARAMETERS.escape(UIText.data_text("resources",str(id)))+"[/color]")
-	put(cost,"text",t("cost",{"cost":" / ".join(costs)}))
-	for amount in generate_actions:put(generate_actions[amount],"disabled",not game.can_generate_scientist(amount))
+	# Quotes depend on the ordinary AI pool/resources/config, never research points.
+	# MAX availability asks the existing bounded predicate, not a MAX purchase quote.
+	var next_quote: Array=[game.profile.scientists,game.profile.resources,game.db.config.scientistCost,rows.keys()]
+	if next_quote!=quote_snapshot:
+		quote_snapshot=next_quote.duplicate(true)
+		quote_evaluations+=1
+		var costs: Array[String]=[]
+		var current_cost:=game.scientist_cost()
+		for id in current_cost:costs.append("[color=#efb976]"+NUMBER.compact(current_cost[id])+" "+PRESENTATION.PARAMETERS.escape(UIText.data_text("resources",str(id)))+"[/color]")
+		put(cost,"text",t("cost",{"cost":" / ".join(costs)}))
+		for amount in generate_actions:put(generate_actions[amount],"disabled",not game.can_generate_scientist(amount))
 	put(distribute,"disabled",rows.is_empty() or int(game.profile.scientists)<=0)
 	for key in rows:
 		var row: Dictionary=rows[key]
@@ -291,8 +315,9 @@ func refresh() -> void:
 		var c=machines[key]
 		var pending:=not game.hightech_unlocked(key)
 		c.research_pending=pending
-		c.set_workers(0 if pending else workers+dedicated_ai)
-		c.set_fraction(0 if pending else fraction)
+		if key==selected:
+			c.set_workers(0 if pending else workers+dedicated_ai)
+			c.set_fraction(0 if pending else fraction)
 		put(row.name,"text",UIText.t("research.unrevealed") if pending else UIText.data_text("hightech",key))
 		put(row.level,"text","" if pending else "Lv."+game.permanent_level_text(game.hightech_level(key),"hightech"))
 		put(row.workers,"text","" if pending else t("crew",{"count":NUMBER.compact(workers+dedicated_ai)}))
@@ -311,16 +336,23 @@ func refresh() -> void:
 		put(stage_eta,"text",t("remaining",{"time":"%02d:%02d" % [seconds/60,seconds%60]}) if research_rate>0 else t("waiting"))
 		for i in stage_steps.size():put(stage_steps[i],"color",CYAN if i<c.built else LINE)
 		put(console_title,"text",row.name.text)
-		put(effect,"text",PRESENTATION.effect_markup(game,key).replace("#005449","#8ad5d0").replace("#214663","#efb976").replace("#243b50","#d9e9e5"))
+		var income: float=game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
+		var next_effect: Array=[key,game.effective_hightech_level(key),income,game.db.data.hightech[key],pending]
+		if next_effect!=effect_snapshot:
+			effect_snapshot=next_effect.duplicate(true)
+			put(effect,"text",PRESENTATION.effect_markup(game,key).replace("#005449","#8ad5d0").replace("#214663","#efb976").replace("#243b50","#d9e9e5"))
 		put(allocation,"text",t("allocation")+"  "+t("crew",{"count":NUMBER.compact(workers)}))
 		put(dedicated,"text",t("dedicated",{"count":dedicated_ai}) if dedicated_ai>0 else "")
 		put(rate,"text",t("rate",{"rate":NUMBER.compact(research_rate)}))
 		for i in actions:put(actions[i],"disabled",pending or (workers<=0 if i==0 else game.idle_scientists()<=0))
 	put(console,"visible",not selected.is_empty())
 	dirty=false
+	refresh_usec+=Time.get_ticks_usec()-started
 
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_VISIBILITY_CHANGED and game!=null and is_visible_in_tree():dirty=true
+	if what==NOTIFICATION_VISIBILITY_CHANGED and game!=null:
+		set_process(is_visible_in_tree())
+		if is_visible_in_tree():dirty=true
 
 func _process(delta: float) -> void:
 	if not is_visible_in_tree() or game==null:return
@@ -331,10 +363,8 @@ func _process(delta: float) -> void:
 		projects_dirty=false
 		sync_projects()
 		dirty=true
-	if dirty:refresh()
-	if game.paused:return
-	if machines.has(selected):machines[selected].advance(delta,false)
-	refresh_elapsed+=delta
-	if refresh_elapsed>=0.2:
+	refresh_elapsed+=delta if not game.paused else 0.0
+	if dirty or refresh_elapsed>=0.2:
 		refresh_elapsed=0
 		refresh()
+	if not game.paused and machines.has(selected):machines[selected].advance(delta,false)

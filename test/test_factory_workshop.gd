@@ -37,7 +37,7 @@ func run() -> void:
 		game.profile.hightechLevels[key]=2
 		game.profile.scientistAssignments[key]=[11,9,8,0][i]
 		game.profile.techPoints[key]=game.hightech_required(key)*[0.32,0.28,0.48,0.1][i]
-	workshop=load("res://dev/factory_workshop/workshop.gd").new()
+	workshop=load("res://scripts/hightech_workshop.gd").new()
 	root.add_child(workshop)
 	workshop.scale=Vector2.ONE*0.875
 	workshop.setup(game)
