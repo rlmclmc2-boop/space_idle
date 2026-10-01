@@ -437,7 +437,7 @@ func _refresh_bonus_dialog() -> void:
 		var mult = g.planet_buildings.building_multiplier(g, id, row) if numeric else 1
 		entries.append({"key":"building:" + str(row.id), "group":"production" if numeric else "exploration", "title":UIText.t("planet.effect." + kind) if numeric else str(row.name), "metric":_multiplier_percent(mult) if numeric else UIText.t("planet.effect.active"), "kind":kind, "detail":str(row.des) + ("\n" + UIText.t("planet.build_effect", {"mult":GrowthNumber.text(mult)}) if numeric else "")})
 	for row in g.planet_buffs.rows(g, id):
-		var display := _description_metric(str(row.des))
+		var display := _description_metric(str(row.des)) if str(row.buff_type) in ["level_bonus", "free_charge"] else [str(row.des), ""]
 		entries.append({"key":"buff:" + str(int(row.id)), "group":"permanent" if str(row.buff_type) in ["level_bonus", "free_charge"] else "exploration", "title":display[0], "metric":display[1], "kind":"", "detail":str(row.des)})
 	var wanted := {}
 	var groups := {}

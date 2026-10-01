@@ -89,6 +89,13 @@ func run() -> void:
 	check(float(buff.value) == business_value, "Rendering description never changes business value")
 	buff.des = authored_description
 	panel._refresh_bonus_dialog()
+	var unlock_buff: Dictionary = g.db.data.planet_buff["31"]
+	var unlock_description: String = unlock_buff.des
+	unlock_buff.des = "能够探索新星球：脉冲星-PSR T46+38"
+	panel._refresh_bonus_dialog()
+	check(panel.bonus_rows["buff:31"].label.text == unlock_buff.des and panel.bonus_rows["buff:31"].metric.text.is_empty(), "Signed suffix in unlocked planet name is not a numeric bonus")
+	unlock_buff.des = unlock_description
+	panel._refresh_bonus_dialog()
 	var metric = panel.bonus_rows["building:refinery"].metric
 	var identity: int = metric.get_instance_id()
 	g.profile.planets["1"].degree += 10
@@ -190,6 +197,19 @@ func run() -> void:
 	check(panel.bonus_empty.visible and not panel.bonus_details.visible, "Empty planet has no earned bonus rows or details action")
 	for controls in panel.bonus_rows.values():check(not controls.root.visible, "Previous earned rows hidden on empty planet")
 	panel.bonus_dialog.hide()
+	for dimensions in [Vector2i(1280,720), Vector2i(1024,768)]:
+		viewport.size = dimensions
+		await settle()
+		panel.show_bonuses("1")
+		await settle()
+		check(panel.bonus_dialog.position.x >= 0 and panel.bonus_dialog.position.y >= 0 and panel.bonus_dialog.position.x + panel.bonus_dialog.size.x <= dimensions.x and panel.bonus_dialog.position.y + panel.bonus_dialog.size.y <= dimensions.y, "Bonus modal stays inside small viewport")
+		panel.bonus_dialog.hide()
+		panel._show_facility("1", "refinery")
+		await settle()
+		check(panel.facility_dialog.position.x >= 0 and panel.facility_dialog.position.y >= 0 and panel.facility_dialog.position.x + panel.facility_dialog.size.x <= dimensions.x and panel.facility_dialog.position.y + panel.facility_dialog.size.y <= dimensions.y, "Long facility modal stays inside small viewport")
+		await capture("facility-small-%d" % dimensions.x)
+		panel.facility_dialog.hide()
+
 	scene.queue_free()
 	viewport.queue_free()
 	scene = null
