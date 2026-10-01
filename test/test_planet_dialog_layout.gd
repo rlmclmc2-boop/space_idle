@@ -79,7 +79,8 @@ func run() -> void:
 	check(panel._description_metric("所有充能模块免费充能 +10%") == ["所有充能模块免费充能", "+10%"], "Percentage unit remains with highlighted value")
 	await click(panel.cards["1"].bonuses)
 	check(panel.bonus_dialog.visible, "Real bonus button opens grouped modal")
-	check(not panel.bonus_label.visible, "Secondary explanations collapsed initially")
+	var details_buttons: Array = panel.bonus_dialog.find_children("*", "Button", true, false).filter(func(button):return button.text == UIText.t("planet.bonus_details"))
+	check(details_buttons.is_empty(), "Planet bonus modal has no details entry")
 	var buff: Dictionary = g.db.data.planet_buff["2"]
 	var authored_description: String = buff.des
 	var business_value: float = buff.value
@@ -110,9 +111,8 @@ func run() -> void:
 	panel._refresh_bonus_dialog()
 	check(scene.writes == 0, "Stable dialog refresh writes no properties")
 	await capture("planet-bonus-groups")
-	await click(panel.bonus_details)
-	check(panel.bonus_label.visible, "Real details action reveals secondary descriptions")
-	check(panel.bonus_label.text.contains(g.db.data.planet_buff["2"].des), "Full authoritative description available in details")
+	check(panel.bonus_rows["buff:2"].root.tooltip_text == g.db.data.planet_buff["2"].des, "Authoritative description remains available on effect card")
+	check(panel.bonus_label.text.contains(g.db.data.planet_buff["2"].des), "Full authoritative description retained")
 	panel.bonus_dialog.hide()
 	panel.show_bonuses("2")
 	check(not panel.bonus_label.visible, "Explicit reopening starts with primary effects")
@@ -194,7 +194,7 @@ func run() -> void:
 	for state in g.profile.planets["6"].buildings.values():state.status = "locked"
 	g.profile.planets["6"].conquered = false
 	panel.show_bonuses("6")
-	check(panel.bonus_empty.visible and not panel.bonus_details.visible, "Empty planet has no earned bonus rows or details action")
+	check(panel.bonus_empty.visible, "Empty planet has no earned bonus rows")
 	for controls in panel.bonus_rows.values():check(not controls.root.visible, "Previous earned rows hidden on empty planet")
 	panel.bonus_dialog.hide()
 	for dimensions in [Vector2i(1280,720), Vector2i(1024,768)]:
