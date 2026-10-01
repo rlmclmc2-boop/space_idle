@@ -80,6 +80,10 @@ var stable_center_ready := false
 
 func _ready() -> void:
 	super._ready()
+	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
+	# encounter never loads a hull or reads its pixels inside the draw callback.
+	for size_class in range(1,7):
+		enemy_hull_bounds(ship_hull_texture("enemy_"+str(size_class)))
 	ship_view = SHIP_VIEW.new()
 	ship_view.name = "BattleShipView"
 	ship_view.size = BATTLE_VIEW_SIZE
@@ -694,6 +698,13 @@ func enemy_hull_light(enemy:Dictionary)->float:
 	var depth:=enemy_depth(enemy)
 	return lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
 
+func enemy_hull_bounds(texture: Texture2D) -> Rect2:
+	var texture_key:=texture.get_instance_id()
+	if not hull_opaque_bounds.has(texture_key):
+		var pixels:=texture.get_image().get_used_rect()
+		hull_opaque_bounds[texture_key]=Rect2(Vector2(pixels.position)/texture.get_size()-Vector2(0.5,0.5),Vector2(pixels.size)/texture.get_size())
+	return hull_opaque_bounds[texture_key]
+
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
@@ -707,11 +718,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
 	# Track the actual opaque silhouette instead of using the transverse width as height.
 	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
-	var texture_key:=texture.get_instance_id()
-	if not hull_opaque_bounds.has(texture_key):
-		var pixels:=texture.get_image().get_used_rect()
-		hull_opaque_bounds[texture_key]=Rect2(Vector2(pixels.position)/texture.get_size()-Vector2(0.5,0.5),Vector2(pixels.size)/texture.get_size())
-	var used:Rect2=hull_opaque_bounds[texture_key]
+	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
 	for corner in [used.position,Vector2(used.end.x,used.position.y),used.end,Vector2(used.position.x,used.end.y)]:
 		top=minf(top,pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y)
