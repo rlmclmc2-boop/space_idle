@@ -316,7 +316,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		missile_events.clear();return
 	if kind=="prototype_missile_retired":
 		if not missile_vfx_enabled:return
-		var coast_time:=1.20+float(posmod(int(info.serial)*13,5))*0.08 if bool(info.coast) else 0.0
+		var coast_time:=0.12 if bool(info.coast) else 0.0
 		missile_events.append({"kind":"retired","position":info.position,"direction":info.direction,"speed":info.speed,"serial":info.serial,"born":fx_time,"coast_time":coast_time,"duration":coast_time+0.18})
 		return
 	if kind=="projectile_impact" and bool(info.shot.get("prototype_missile",false)):
