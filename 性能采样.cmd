@@ -16,7 +16,8 @@ if not exist "%GAME_ROOT%\.godot\global_script_class_cache.cfg" (
  exit /b 1
 )
 if not exist "%GAME_ROOT%\.runtime" mkdir "%GAME_ROOT%\.runtime"
-echo 请先关闭其他游戏实例。进入目标页，关闭弹窗，保持 1 倍速和 +1。
+echo 请先关闭其他游戏实例。进入目标页并点击游戏窗口，保持未暂停、1 倍速和 +1。
+echo 画面左上角会显示实际等待原因；条件满足后暖机 2 秒，再自动开始。
 echo 自动记录 20 秒；完成后可按 F7 再记录另一页。关闭游戏后提交 .runtime 中的 frame-sample JSON 和 frame-sample.log。
 echo 本入口使用正常存档、定时保存、帧率和画面设置，不会自动切页或改变战斗速度。
 start "Space Battleship Performance Sample" "%GAME_ENGINE%" --path "%GAME_ROOT%" --script res://dev/diagnostics/frame_sample.gd --log-file "%GAME_ROOT%\.runtime\frame-sample.log"
