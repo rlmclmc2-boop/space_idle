@@ -31,4 +31,17 @@ class GalaxyConfigTests(unittest.TestCase):
         rows=[{'key':'a'},{'key':'a'}]
         with self.assertRaises(ValueError):convert_sheet('galaxy',rows)
 
+    def test_transport_display_parameters(self):
+        data=json.loads((ROOT/'data/game_data.json').read_text(encoding='utf-8'))
+        sheet=openpyxl.load_workbook(ROOT/'config_excel/galaxy_config.xlsx',data_only=True).active
+        self.assertEqual(convert_sheet('galaxy_config',read_rows(sheet)),data['galaxy_config'])
+        validate_projection(data)
+        for key,value in [('transport_buildings_per_ship',0),('transport_buildings_per_ship',-1),('transport_initial_delay',-1),('transport_departure_interval',float('nan'))]:
+            broken=copy.deepcopy(data)
+            broken['galaxy_config'][key]['value']=value
+            with self.assertRaises(ValueError):validate_projection(broken)
+        data['galaxy_config']['transport_initial_delay']['value']=0
+        data['galaxy_config']['transport_departure_interval']['value']=0
+        validate_projection(data)
+
 if __name__=='__main__':unittest.main()

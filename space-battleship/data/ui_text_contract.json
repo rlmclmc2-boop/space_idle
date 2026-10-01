@@ -6208,6 +6208,52 @@
       "params": [
         "name"
       ]
+    },
+    "galaxy.close": {
+      "params": []
+    },
+    "galaxy.help": {
+      "params": []
+    },
+    "galaxy.help_title": {
+      "params": []
+    },
+    "galaxy.crew_rule": {
+      "params": []
+    },
+    "galaxy.manage_crew": {
+      "params": []
+    },
+    "galaxy.manage_crew_title": {
+      "params": []
+    },
+    "galaxy.crew_count": {
+      "params": [
+        "count"
+      ]
+    },
+    "galaxy.crew_assigned": {
+      "params": [
+        "count"
+      ]
+    },
+    "galaxy.crew_empty": {
+      "params": []
+    },
+    "galaxy.crew_selected": {
+      "params": []
+    },
+    "galaxy.crew_idle": {
+      "params": []
+    },
+    "galaxy.crew_busy": {
+      "params": []
+    },
+    "galaxy.crew_assign_action": {
+      "params": []
+    },
+    "galaxy.crew_recall_action": {
+      "params": []
     }
   },
   "bindings": {

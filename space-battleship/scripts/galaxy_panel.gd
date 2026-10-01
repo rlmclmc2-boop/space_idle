@@ -9,6 +9,16 @@ var state_label := Label.new()
 var start_button := Button.new()
 var map := preload("res://scripts/galaxy_map.gd").new()
 var crew_rows := {}
+var crew_status := {}
+var crew_row_nodes := {}
+var manage_button := Button.new()
+var help_button := Button.new()
+var crew_dialog := AcceptDialog.new()
+var help_dialog := AcceptDialog.new()
+var crew_summary := Label.new()
+var crew_empty := Label.new()
+var crew_scroll := ScrollContainer.new()
+var detail_frame := PanelContainer.new()
 var cards := {}
 var details := RichTextLabel.new()
 var detail_slot := -1
@@ -47,6 +57,12 @@ func setup(owner) -> void:
 	state_label.add_theme_color_override("font_color",CHROME.MUTED)
 	state_label.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	heading.add_child(state_label)
+	help_button.text=UIText.t("galaxy.help")
+	help_button.tooltip_text=UIText.t("galaxy.help_title")
+	help_button.add_theme_font_size_override("font_size",21)
+	CHROME.button_skin(help_button)
+	heading.add_child(help_button)
+	help_button.pressed.connect(show_help)
 	CHROME.button_skin(start_button,true)
 	heading.add_child(start_button)
 	start_button.text=UIText.t("galaxy.start")
@@ -57,24 +73,7 @@ func setup(owner) -> void:
 	summary.add_theme_constant_override("h_separation",8)
 	box.add_child(summary)
 	for key in ["exploration","buildings","max_level","crew"]:make_card(summary,key,true)
-	var crew_box := HFlowContainer.new()
-	crew_box.add_theme_constant_override("h_separation",6)
-	crew_box.add_theme_constant_override("v_separation",4)
-	box.add_child(crew_box)
-	for member in game.profile.crew:
-		var button := Button.new()
-		button.name="GalaxyCrew_"+str(member.crewId)
-		button.toggle_mode=true
-		button.custom_minimum_size.y=38
-		button.add_theme_font_size_override("font_size",20)
-		CHROME.button_skin(button)
-		crew_box.add_child(button)
-		crew_rows[member.crewId]=button
-		button.pressed.connect(func():
-			var current: Dictionary=game.crew.entry(game,member.crewId)
-			var assigned: bool=current.assignmentType=="galaxy_explore" and current.targetId==selected
-			game.assign_crew(member.crewId,"" if assigned else "galaxy_explore","" if assigned else selected)
-			refresh())
+	setup_crew_dialog()
 	var map_frame := PanelContainer.new()
 	map_frame.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	map_frame.add_theme_stylebox_override("panel",CHROME.surface(CHROME.NAVY,CHROME.NAVY,3))
@@ -110,7 +109,13 @@ func setup(owner) -> void:
 	effect_grid.add_theme_constant_override("h_separation",8)
 	box.add_child(effect_grid)
 	for key in ["crew_exp","equipment_value","charge_max","gem_fragment","iron","uranium"]:make_card(effect_grid,key,false)
-	details.custom_minimum_size.y=54
+	detail_frame.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	detail_frame.offset_left=10;detail_frame.offset_right=-10
+	detail_frame.offset_top=-54;detail_frame.offset_bottom=-10
+	detail_frame.add_theme_stylebox_override("panel",CHROME.surface(CHROME.PAPER,CHROME.NAVY,7))
+	detail_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	map_stack.add_child(detail_frame)
+	details.custom_minimum_size.y=32
 	details.bbcode_enabled=true
 	details.scroll_active=false
 	details.fit_content=true
@@ -118,8 +123,14 @@ func setup(owner) -> void:
 	details.add_theme_font_size_override("normal_font_size",20)
 	details.add_theme_color_override("default_color",CHROME.NAVY)
 	details.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	details.text=PARAMETERS.escape(UIText.t("galaxy.map_hint"))
-	box.add_child(details)
+	detail_frame.add_child(details)
+	detail_frame.visible=false
+	help_dialog.transient=true;help_dialog.exclusive=true
+	help_dialog.title=UIText.t("galaxy.help_title")
+	help_dialog.dialog_text=UIText.t("galaxy.map_hint")+"\n"+UIText.t("galaxy.crew_rule")
+	help_dialog.ok_button_text=UIText.t("galaxy.close")
+	CHROME.dialog(help_dialog)
+	add_child(help_dialog)
 	visibility_changed.connect(sync_visibility)
 	set_process(false)
 	sync_visibility()
@@ -144,7 +155,18 @@ func make_card(parent: Node, key: String, primary: bool) -> void:
 	value.add_theme_font_override("font",CHROME.SHELL.face(600 if primary else 500))
 	value.add_theme_font_size_override("font_size",30 if primary else 22)
 	value.add_theme_color_override("font_color",CHROME.NAVY if primary else Color("005449"))
-	column.add_child(value)
+	if key=="crew":
+		var row := HBoxContainer.new()
+		column.add_child(row)
+		value.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		row.add_child(value)
+		manage_button.text=UIText.t("galaxy.manage_crew")
+		manage_button.add_theme_font_size_override("font_size",21)
+		manage_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+		CHROME.button_skin(manage_button,true)
+		row.add_child(manage_button)
+		manage_button.pressed.connect(show_crew_dialog)
+	else:column.add_child(value)
 	cards[key]=value
 
 func sync_visibility() -> void:
@@ -158,7 +180,9 @@ func sync_visibility() -> void:
 			host.battle_layer.modulate=battle_modulate
 			battle_dimmed=false
 	if is_visible_in_tree():refresh();game.galaxy.set_visible(selected)
-	else:game.galaxy.set_visible("")
+	else:
+		game.galaxy.set_visible("")
+		crew_dialog.hide();help_dialog.hide()
 	map.sync_visibility()
 func set_text(control: Control, value: String) -> void:
 	if control.text!=value:control.text=value
@@ -191,7 +215,7 @@ func refresh() -> void:
 	set_text(cards.exploration,"%.1f%%"%(region.progress()*100))
 	set_text(cards.buildings,"%d / %d"%[region.occupied_count,region.slots.size()])
 	set_text(cards.max_level,str(region.max_level_count))
-	set_text(cards.crew,str(map.crew_count))
+	set_text(cards.crew,UIText.t("galaxy.crew_count",{"count":map.crew_count}))
 	set_text(cards.explorers,str(map.explorers.size()))
 	set_text(cards.traffic,str(map.transports.filter(func(item):return item.node.visible).size()))
 	game.galaxy.effects.refresh(game.galaxy)
@@ -200,19 +224,14 @@ func refresh() -> void:
 	for key in ["crew_exp","equipment_value","charge_max","gem_fragment"]:set_text(cards[key],"×%.2f"%float(effect[key]))
 	for key in ["iron","uranium"]:set_text(cards[key],UIText.t("galaxy.rate",{"amount":NumberFormat.compact(rates[key])}))
 	host.set_ui_value(start_button,"visible",region.state.status=="available")
-	for id in crew_rows:
-		var member: Dictionary=game.crew.entry(game,id)
-		var assigned: bool=member.assignmentType=="galaxy_explore" and member.targetId==selected
-		var button: Button=crew_rows[id]
-		host.set_ui_value(button,"visible",game.crew.unlocked(game,id))
-		set_text(button,str(game.db.data.crew[id].name))
-		if button.button_pressed!=assigned:button.set_pressed_no_signal(assigned)
-		host.set_ui_value(button,"tooltip_text",UIText.t("galaxy.recall" if assigned else "galaxy.assign",{"name":game.db.data.crew[id].name}))
-		host.set_ui_value(button,"disabled",not assigned and (not game.idle_planet_crew(id) or not game.crew.can_assign(game,id,"galaxy_explore",selected)))
+	if crew_dialog.visible:refresh_crew_dialog()
 	refresh_detail()
+
 func refresh_detail() -> void:
 	if selected.is_empty() or detail_slot<0:
-		set_text(details,PARAMETERS.escape(UIText.t("galaxy.map_hint")));return
+		if detail_frame.visible:detail_frame.visible=false
+		set_text(details,"");return
+	if not detail_frame.visible:detail_frame.visible=true
 	var region=game.galaxy.regions[selected]
 	var slot: Dictionary=region.slots[detail_slot]
 	if slot.status=="empty":
@@ -224,3 +243,79 @@ func refresh_detail() -> void:
 	if slot.status=="constructing":progress=region.node_progress(slot)
 	elif slot.status=="upgrading":progress=float(slot.upgrade_progress)/region.upgrade_cost(slot)
 	set_text(details,PARAMETERS.render("galaxy.detail",{"name":region.builds[slot.type].name,"level":slot.level,"effect":UIText.t("galaxy.effect_"+str(info.type)),"value":"+%.0f%%"%(float(info.amount)*100),"state":phase,"progress":"%.0f"%(progress*100)},{"value":{"role":"effect"},"progress":{"role":"time","unit":"%"}}))
+
+func setup_crew_dialog() -> void:
+	crew_dialog.transient=true;crew_dialog.exclusive=true
+	crew_dialog.title=UIText.t("galaxy.manage_crew_title")
+	crew_dialog.ok_button_text=UIText.t("galaxy.close")
+	CHROME.dialog(crew_dialog)
+	add_child(crew_dialog)
+	var content := VBoxContainer.new()
+	content.custom_minimum_size=Vector2(460,330)
+	content.add_theme_constant_override("separation",10)
+	crew_dialog.add_child(content)
+	crew_summary.add_theme_font_size_override("font_size",24)
+	content.add_child(crew_summary)
+	crew_scroll.custom_minimum_size.y=280
+	crew_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	crew_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	content.add_child(crew_scroll)
+	var rows := VBoxContainer.new()
+	rows.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	rows.add_theme_constant_override("separation",6)
+	crew_scroll.add_child(rows)
+	crew_empty.text=UIText.t("galaxy.crew_empty")
+	rows.add_child(crew_empty)
+	for member in game.profile.crew:
+		var id := str(member.crewId)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation",12)
+		rows.add_child(row)
+		crew_row_nodes[id]=row
+		var name_label := Label.new()
+		name_label.text=str(game.db.data.crew[id].name)
+		name_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		row.add_child(name_label)
+		var status := Label.new()
+		status.custom_minimum_size.x=90
+		row.add_child(status)
+		crew_status[id]=status
+		var button := Button.new()
+		button.name="GalaxyCrew_"+id
+		button.toggle_mode=true
+		button.custom_minimum_size=Vector2(90,38)
+		CHROME.button_skin(button)
+		row.add_child(button)
+		crew_rows[id]=button
+		button.pressed.connect(func():
+			var current: Dictionary=game.crew.entry(game,id)
+			var assigned: bool=current.assignmentType=="galaxy_explore" and current.targetId==selected
+			game.assign_crew(id,"" if assigned else "galaxy_explore","" if assigned else selected)
+			refresh())
+func show_crew_dialog() -> void:
+	if selected.is_empty():return
+	help_dialog.hide()
+	refresh_crew_dialog()
+	crew_dialog.popup_centered(Vector2i(520,410))
+func refresh_crew_dialog() -> void:
+	set_text(crew_summary,UIText.t("galaxy.crew_assigned",{"count":game.galaxy.crew_count(game,selected)}))
+	var visible_rows := 0
+	for id in crew_rows:
+		var member: Dictionary=game.crew.entry(game,id)
+		var assigned: bool=member.assignmentType=="galaxy_explore" and member.targetId==selected
+		var unlocked: bool=game.crew.unlocked(game,id)
+		var available: bool=game.idle_planet_crew(id) and game.crew.can_assign(game,id,"galaxy_explore",selected)
+		var button: Button=crew_rows[id]
+		host.set_ui_value(crew_row_nodes[id],"visible",unlocked)
+		if not unlocked:continue
+		visible_rows+=1
+		set_text(button,UIText.t("galaxy.crew_recall_action" if assigned else "galaxy.crew_assign_action"))
+		set_text(crew_status[id],UIText.t("galaxy.crew_selected" if assigned else "galaxy.crew_idle" if available else "galaxy.crew_busy"))
+		host.set_ui_value(crew_status[id],"modulate",Color("005449") if assigned else CHROME.MUTED)
+		if button.button_pressed!=assigned:button.set_pressed_no_signal(assigned)
+		host.set_ui_value(button,"tooltip_text",UIText.t("galaxy.recall" if assigned else "galaxy.assign",{"name":game.db.data.crew[id].name}))
+		host.set_ui_value(button,"disabled",not assigned and not available)
+	host.set_ui_value(crew_empty,"visible",visible_rows==0)
+func show_help() -> void:
+	crew_dialog.hide()
+	help_dialog.popup_centered()

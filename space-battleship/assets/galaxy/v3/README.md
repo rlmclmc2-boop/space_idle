@@ -4,7 +4,7 @@ GLB is the runtime authority. The separate central headquarters anchors 30 funct
 
 ## Rebuild and provenance
 
-All geometry is original, procedural repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The core's selected rounded concept is modeled by [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py) with [baked shading](../../../tools/galaxy_core_detail.py). It remains a separate headquarters, never a functional slot.
+All geometry and the static [space field](galaxy_field.svg) are original, repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The core's selected rounded concept is modeled by [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py) with [baked shading](../../../tools/galaxy_core_detail.py). It remains a separate headquarters, never a functional slot.
 
 All six functional families have five unique progressive levels: habitat rings, open-rail shipyards, solar paddles, orbital alloy foundries, clamped crystal processing rigs and heavy-element pressure vessels. Broad ivory armor, navy hulls, teal glazing and restrained amber service lamps match the accepted ship world. Floating hulls, cargo berths and service collars keep the stations orbital; no ground stairs, smoke or terrain are baked into them.
 
@@ -20,11 +20,13 @@ Add `--family colony_ring interstellar_refinery --levels 1 5` for a filtered reb
 
 ## Runtime contract
 
-- Godot Y-up; one Blender unit equals one Godot unit. Root is true planar center and bottom center. Apply blueprint `rotation_y`; the current renderer scale is 1.2. Model and dock extensions must remain inside the complete 14×14 functional footprint (core 32×32)
+- Godot Y-up; one Blender unit equals one Godot unit. Root is true planar center and bottom center. Apply blueprint `rotation_y`; functional renderer scale is `galaxy_map.gd::BUILDING_SCALE`, while the core stays at 1.2. Model and dock extensions must remain inside the complete 14×14 functional footprint (core 32×32)
 - `Structure` is merged static geometry. `DockSocket` is a child transform; find it recursively beneath the imported root. The shuttle nose points toward Godot -Z
 - `Core*` and `GalaxyToon*` materials use white albedo with baked tint/shading in `COLOR_0`; enable vertex-color albedo after import. Preserve this attribute on re-export. Material names are shared cache keys
-- Opaque meshes only. No per-building lights, cameras, physics, embedded animation, live viewports or transparency stacks. The entire Galaxy uses one independent orthographic viewport
-- Planned footprints and static transit corridors are renderer geometry. Corridors and traffic consume exact blueprint edge paths, never a second inferred graph. A building under construction reveals its real model using full `node_progress`, with a restrained gantry; upgrading retains the current-level model
-- Visible sampling updates affected model/state nodes only. Cached assets/materials/static routes are reused; hidden and paused pages stop viewport rendering, shader clock, traffic and construction motion
+- Opaque meshes only. No per-building lights, cameras, physics, embedded animation, live viewports or transparency stacks. The entire Galaxy uses one independent orthographic viewport and one opaque imported backdrop texture
+- Planned footprints and static transit corridors are renderer geometry. Corridors consume exact blueprint edge paths. Normal traffic uses only completed parent/child connections; construction vessels are separate. A building under construction reveals its real model using full `node_progress`, with a restrained gantry; upgrading retains the current-level model
+- Visible sampling updates affected model/state nodes only. Cached assets/materials/static routes are reused; hidden and paused pages stop viewport rendering, traffic and construction motion. The backdrop is static, with no shader clock. Small UI-scaled windows bound viewport fill cost while retaining 4× edge AA
+
+Display traffic is tuned in `config_excel/galaxy_config.xlsx`: `transport_buildings_per_ship` (completed buildings/boat), `max_transport_ships` (upper bound), `transport_initial_delay` and `transport_departure_interval` (seconds). These never affect work or income. The pool grows with completed buildings, reuses scenes/materials and departs in staggered batches.
 
 Use the logic-owned [complete fixture](../../../../test/fixtures/galaxy_1_complete.json) for normal-UI full-build QA. `test_galaxy_assets.gd` verifies all level imports, vertex tint and scaled footprint; `test_galaxy_ui.gd` verifies exact plan consumption, normal UI captures, picking, pan/zoom, construction/upgrade states and stopping/reuse behavior.

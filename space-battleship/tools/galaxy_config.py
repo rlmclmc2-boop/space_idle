@@ -10,6 +10,9 @@ def validate(data):
     cfg=data.get('galaxy_config',{})
     for key in ('visible_tick','hidden_tick','chunk_size','disable_hidden_visual','income_interval','iron_resource_id','max_transport_ships','max_visual_pulses','camera_zoom_min','camera_zoom_max'):
         num(cfg.get(key,{}).get('value'),key,integer=key in ('chunk_size','disable_hidden_visual','iron_resource_id','max_transport_ships','max_visual_pulses'))
+    # Presentation-only traffic parameters never enter construction/crew work.
+    for key in ('transport_buildings_per_ship','transport_initial_delay','transport_departure_interval'):
+        num(cfg.get(key,{}).get('value'),key,zero=key!='transport_buildings_per_ship')
     if cfg['disable_hidden_visual']['value']!=1 or cfg['camera_zoom_min']['value']>cfg['camera_zoom_max']['value']:raise ValueError('galaxy: invalid visibility/camera settings')
     if str(int(cfg['iron_resource_id']['value'])) not in data['resources']:raise ValueError('galaxy: unknown iron resource')
     retired={'colony_grid_w','colony_grid_h','core_grid_w','core_grid_h','upgrade_interval','base_attempt_full','attempt_per_crew_full','hidden_steps_per_paint','wander_chance','visible_tick','hidden_tick'}

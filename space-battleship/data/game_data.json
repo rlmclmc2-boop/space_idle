@@ -17019,6 +17019,24 @@
       "value": 2.8,
       "type": "float",
       "des": "最大相机缩放"
+    },
+    "transport_buildings_per_ship": {
+      "key": "transport_buildings_per_ship",
+      "value": 3,
+      "type": "float",
+      "des": "每艇对应已建成功能建筑（座/艇）"
+    },
+    "transport_initial_delay": {
+      "key": "transport_initial_delay",
+      "value": 1.4,
+      "type": "float",
+      "des": "展示艇首次启程延迟（秒）"
+    },
+    "transport_departure_interval": {
+      "key": "transport_departure_interval",
+      "value": 0.8,
+      "type": "float",
+      "des": "展示艇错峰启程间隔（秒）"
     }
   },
   "enhance_config": {

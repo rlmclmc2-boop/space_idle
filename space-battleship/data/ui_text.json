@@ -11562,7 +11562,7 @@
   },
   {
     "key": "galaxy.card_crew",
-    "text": "派遣船员",
+    "text": "已派遣",
     "params": "",
     "category": "galaxy",
     "note": "星系殖民"
@@ -11750,5 +11750,103 @@
     "params": "{name}",
     "category": "galaxy",
     "note": "预规划建筑详情"
+  },
+  {
+    "key": "galaxy.close",
+    "text": "关闭",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.help",
+    "text": "帮助",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.help_title",
+    "text": "星系操作",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_rule",
+    "text": "无人派遣时，建设和升级暂停",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.manage_crew",
+    "text": "管理",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.manage_crew_title",
+    "text": "派遣船员",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_count",
+    "text": "{count} 人",
+    "params": "{count}",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_assigned",
+    "text": "已派遣 {count} 人",
+    "params": "{count}",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_empty",
+    "text": "暂无已解锁船员",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_selected",
+    "text": "已派遣",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_idle",
+    "text": "空闲",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_busy",
+    "text": "其他岗位",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_assign_action",
+    "text": "派遣",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
+  },
+  {
+    "key": "galaxy.crew_recall_action",
+    "text": "召回",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系管理"
   }
 ]

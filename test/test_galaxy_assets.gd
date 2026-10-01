@@ -11,7 +11,7 @@ func run() -> void:
 	var manifest=JSON.parse_string(FileAccess.get_file_as_string("res://assets/galaxy/v3/manifest.json"))
 	for record in manifest.assets:
 		if record.key in db.data.galaxy_build:
-			check(maxf(float(record.bounds_godot_xyz[0]),float(record.bounds_godot_xyz[2]))*1.2<=14.0,"Model including runtime scale fits reserved footprint")
+			check(maxf(float(record.bounds_godot_xyz[0]),float(record.bounds_godot_xyz[2]))*map.BUILDING_SCALE<=14.0,"Model including runtime scale fits reserved footprint")
 			check(int(record.triangles)<25000,"Bounded functional model geometry")
 	for definition in db.data.galaxy_build.values():
 		var family_paths := {}

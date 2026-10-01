@@ -1,6 +1,7 @@
 extends Control
 ## Independent, bounded 3D presentation. No gameplay mutation or saved visual state.
 signal slot_selected(id: int)
+const BUILDING_SCALE := 1.4
 var region
 var settings := {}
 var view := SubViewport.new()
@@ -20,6 +21,7 @@ var asset_bounds := {}
 var transit := preload("res://scripts/galaxy_transit.gd").new()
 var route_revision := -1
 var frame_size := 120.0
+var frame_origin := Vector2.ZERO
 var construction := {}
 var activity: Array[Node3D] = []
 var transports: Array = []
@@ -73,23 +75,23 @@ func _ready() -> void:
 	var environment := WorldEnvironment.new()
 	var env := Environment.new()
 	env.background_mode=Environment.BG_COLOR
-	env.background_color=Color("040a15")
+	env.background_color=Color("0c1d2b")
 	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color=Color("9ebcdb")
-	env.ambient_light_energy=0.55
+	env.ambient_light_color=Color("adc2cb")
+	env.ambient_light_energy=0.65
 	environment.environment=env
 	world.add_child(environment)
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees=Vector3(-38,-38,0)
 	light.light_color=Color("fff1df")
-	light.light_energy=1.2
+	light.light_energy=1.1
 	light.shadow_enabled=false
 	light.directional_shadow_max_distance=260
 	world.add_child(light)
 	var rim := DirectionalLight3D.new()
 	rim.rotation_degrees=Vector3(-25,140,0)
-	rim.light_color=Color("81bfff")
-	rim.light_energy=0.45
+	rim.light_color=Color("9acbc9")
+	rim.light_energy=0.4
 	world.add_child(rim)
 	cyan=material(Color("83cfcb"))
 	amber=material(Color("d8aa68"))
@@ -99,6 +101,7 @@ func _ready() -> void:
 	if manifest is Dictionary:
 		for row in manifest.get("assets",[]):asset_bounds[str(row.path)]=row.bounds_godot_xyz
 	space_material.shader=preload("res://scripts/galaxy_space.gdshader")
+	space_material.set_shader_parameter("field",preload("res://assets/galaxy/v3/galaxy_field.svg"))
 	var backdrop := MeshInstance3D.new()
 	var plane := PlaneMesh.new()
 	plane.size=Vector2(1200,1200)
@@ -106,7 +109,7 @@ func _ready() -> void:
 	backdrop.material_override=space_material
 	backdrop.position.y=-5
 	world.add_child(backdrop)
-	highlight=ring(6.4,cyan)
+	highlight=ring(6.8,cyan)
 	world.add_child(highlight)
 	highlight.visible=false
 	resized.connect(layout)
@@ -221,10 +224,10 @@ func select(value) -> void:
 		var scaffold := Node3D.new()
 		scaffold.name="Scaffold"
 		node.add_child(scaffold)
-		var foundation := ring(5.3,amber)
+		var foundation := ring(6.7,amber)
 		foundation.position.y=0.2
 		scaffold.add_child(foundation)
-		var upper := ring(5.3,frame_material)
+		var upper := ring(6.7,frame_material)
 		scaffold.add_child(upper)
 		var posts: Array[MeshInstance3D]=[]
 		for corner in 4:
@@ -233,18 +236,13 @@ func select(value) -> void:
 			beam.size=Vector3(0.14,1,0.14)
 			post.mesh=beam
 			post.material_override=frame_material
-			post.position=Vector3(cos(corner*PI/2+PI/4)*5.3,0.5,sin(corner*PI/2+PI/4)*5.3)
+			post.position=Vector3(cos(corner*PI/2+PI/4)*6.7,0.5,sin(corner*PI/2+PI/4)*6.7)
 			scaffold.add_child(post)
 			posts.append(post)
 		var drone := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
 		drone.scale=Vector3.ONE*0.46
 		scaffold.add_child(drone)
 		construction[int(slot.id)]={"ring":scaffold,"drone":drone,"upper":upper,"posts":posts,"height":-1.0,"flash":0.0,"level":int(slot.level)}
-	for _i in int(setting("max_transport_ships",12)):
-		var ship := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
-		ship.visible=false
-		world.add_child(ship)
-		transports.append({"node":ship,"curve":Curve3D.new(),"phase":1.0,"duration":1.0,"reverse":false})
 	for _i in int(setting("max_visual_pulses",4)):
 		var pulse := MeshInstance3D.new()
 		var mesh := SphereMesh.new()
@@ -271,25 +269,42 @@ func sync_visibility() -> void:
 	if active:refresh()
 func layout() -> void:
 	if not is_inside_tree():return
+	# UI scaling otherwise supersamples this viewport at nearly twice native pixels.
+	# Keep 4x edge AA while bounding small-window fill cost; high-resolution views stay full.
+	var screen_scale := (get_viewport().get_final_transform()*get_screen_transform()).get_scale().abs()
+	var shrink := 2 if minf(screen_scale.x,screen_scale.y)<=0.6 else 1
+	if container.stretch_shrink!=shrink:container.stretch_shrink=shrink
 	frame_size=fit_size()
 	camera.size=frame_size/zoom
 	# Fixed isometric framing: 45-degree azimuth, 35.26-degree downward pitch.
-	camera.position=Vector3(pan.x+130,130,pan.y+130)
-	camera.look_at(Vector3(pan.x,0,pan.y),Vector3.UP)
+	var target := Vector3(frame_origin.x+pan.x,0,frame_origin.y+pan.y)
+	camera.position=target+Vector3(130,130,130)
+	camera.look_at(target,Vector3.UP)
 func fit_size() -> float:
-	if region==null:return 120.0
-	var extent := Vector2.ZERO
+	if region==null:frame_origin=Vector2.ZERO;return 120.0
+	var low := Vector2(INF,INF)
+	var high := Vector2(-INF,-INF)
 	for plan in [region.blueprint.core]+region.blueprint.nodes:
 		var position := Vector2(float(plan.world_pos[0]),float(plan.world_pos[1]))
 		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
+		var core_bounds: Array=asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])
+		var height := float(core_bounds[1])*1.2
+		if int(plan.id)>=0:
+			var definition: Dictionary=region.builds[str(plan.planned_type)]
+			var bounds: Array=asset_bounds.get(str(definition.asset_lv5),[10.0,6.0,10.0])
+			height=float(bounds[1])*BUILDING_SCALE
 		for x in [-half.x,half.x]:
 			for z in [-half.y,half.y]:
 				var point := position+Vector2(x,z)
-				var projected := Vector2((point.x-point.y)*0.707107,(point.x+point.y)*0.408248)
-				extent.x=maxf(extent.x,absf(projected.x))
-				extent.y=maxf(extent.y,absf(projected.y)+13)
+				for y in [0.0,height]:
+					var projected := Vector2((point.x-point.y)*0.707107,(point.x+point.y)*0.408248-y*0.816497)
+					low=low.min(projected);high=high.max(projected)
+	# Center the actual asymmetric saved plan, including upper model bounds.
+	var center := (low+high)*0.5
+	frame_origin=Vector2(center.x*0.707107+center.y*1.224745,-center.x*0.707107+center.y*1.224745)
+	var half_extent := (high-low)*0.5+Vector2(5,6)
 	var aspect := maxf(0.5,size.x/maxf(1,size.y))
-	return maxf(95,2.08*maxf(extent.y,extent.x/aspect))
+	return maxf(95,2.0*maxf(half_extent.y,half_extent.x/aspect))
 
 func visual_path(slot: Dictionary) -> String:
 	var key := str(slot.get("type",""))
@@ -332,7 +347,7 @@ func refresh_construction() -> void:
 		var path := visual_path(slot)
 		var bounds: Array=asset_bounds.get(path,[10.0,6.0,10.0])
 		var progress: float=region.node_progress(slot)
-		var height := float(bounds[1])*1.2*clampf(progress,0.07,1.0)
+		var height := float(bounds[1])*BUILDING_SCALE*clampf(progress,0.07,1.0)
 		if is_equal_approx(height,float(item.height)):continue
 		item.height=height
 		item.upper.position.y=height+0.3
@@ -372,7 +387,7 @@ func refresh() -> void:
 				if path!="empty":
 					var model := asset(path)
 					model.name="Building"
-					model.scale=Vector3.ONE*1.2
+					model.scale=Vector3.ONE*BUILDING_SCALE
 					node.add_child(model)
 				model_paths[id]=path
 			var building=node.get_node_or_null("Building")
@@ -395,7 +410,21 @@ func refresh() -> void:
 			transit.rebuild(region.layout_snapshot())
 			lane_states=next_lane_states
 			route_revision=building_revision
+	sync_transports()
 	refresh_construction()
+func desired_transport_count(built_count: int) -> int:
+	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
+func sync_transports() -> void:
+	var built_count: int=region.slots.filter(func(slot):return slot.status in ["active","upgrading"]).size()
+	var count := desired_transport_count(built_count) if not transit.active_edges.is_empty() else 0
+	while transports.size()>count:transports.pop_back().node.free()
+	var first := transports.size()
+	while transports.size()<count:
+		var ship := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
+		ship.visible=false
+		world.add_child(ship)
+		var delay := maxf(0,setting("transport_initial_delay",1.4))+(transports.size()-first)*maxf(0,setting("transport_departure_interval",0.8))
+		transports.append({"node":ship,"curve":Curve3D.new(),"phase":1.0,"duration":1.0,"reverse":false,"depart_at":visual_clock+delay})
 func dock(id: int) -> Vector3:
 	var node: Node3D=core if id<0 else slot_nodes[id]
 	var socket=node.find_child("DockSocket",true,false)
@@ -431,7 +460,6 @@ func _process(dt: float) -> void:
 	if not running or not is_visible_in_tree() or region==null:return
 	visual_ticks+=1
 	visual_clock+=dt
-	space_material.set_shader_parameter("drift",visual_clock)
 	for i in activity.size():
 		if i%3==0:activity[i].rotate_y(dt*0.08)
 	for slot in region.slots:
@@ -445,6 +473,7 @@ func _process(dt: float) -> void:
 			item.drone.position=Vector3(cos(visual_clock*0.7+slot.id)*5,2.5+sin(visual_clock)*0.4,sin(visual_clock*0.7+slot.id)*5)
 	for i in transports.size():
 		var item: Dictionary=transports[i]
+		if visual_clock<float(item.depart_at):continue
 		item.phase+=dt/float(item.duration)
 		if item.phase>=1:new_route(item)
 		if not item.node.visible:continue
@@ -472,13 +501,12 @@ func pick(position_in_control: Vector2) -> int:
 	if region==null:return -1
 	var hit=ground_at(position_in_control)
 	if hit==null:return -1
-	var nearest := 6.0
-	var result := -1
-	for slot in region.slots:
-		var node: Node3D=slot_nodes[int(slot.id)]
-		var distance: float=Vector2(hit.x,hit.z).distance_to(Vector2(node.position.x,node.position.z))
-		if distance<nearest:nearest=distance;result=int(slot.id)
-	return result
+	for plan in region.blueprint.nodes:
+		var node: Node3D=slot_nodes[int(plan.id)]
+		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
+		if absf(hit.x-node.position.x)<=half.x and absf(hit.z-node.position.z)<=half.y:return int(plan.id)
+	return -1
+
 func update_highlight() -> void:
 	var id := hover_slot if hover_slot>=0 else selected_slot
 	highlight.visible=id>=0
