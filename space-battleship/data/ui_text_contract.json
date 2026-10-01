@@ -6427,6 +6427,48 @@
         "points",
         "required"
       ]
+    },
+    "planet.dialog.close": {
+      "params": []
+    },
+    "planet.bonuses_scope": {
+      "params": []
+    },
+    "planet.bonus_group.production": {
+      "params": []
+    },
+    "planet.bonus_group.permanent": {
+      "params": []
+    },
+    "planet.bonus_group.exploration": {
+      "params": []
+    },
+    "planet.bonus_details": {
+      "params": []
+    },
+    "planet.effect.refinery": {
+      "params": []
+    },
+    "planet.effect.equipment": {
+      "params": []
+    },
+    "planet.effect.current": {
+      "params": []
+    },
+    "planet.effect.after_build": {
+      "params": []
+    },
+    "planet.effect.active": {
+      "params": []
+    },
+    "planet.effect.pending": {
+      "params": []
+    },
+    "planet.auto.enable": {
+      "params": []
+    },
+    "planet.auto.disable": {
+      "params": []
     }
   },
   "bindings": {

@@ -12107,5 +12107,103 @@
     "params": "points,required",
     "category": "research",
     "note": "完成展示期间明确数字来自下一轮研发"
+  },
+  {
+    "key": "planet.dialog.close",
+    "text": "关闭",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.bonuses_scope",
+    "text": "当前星球 · 仅显示已生效效果",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.bonus_group.production",
+    "text": "产出与装备",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.bonus_group.permanent",
+    "text": "永久加成",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.bonus_group.exploration",
+    "text": "探索与解锁",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.bonus_details",
+    "text": "说明详情",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.refinery",
+    "text": "铁与铀直接掉落",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.equipment",
+    "text": "装备普通数值",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.current",
+    "text": "当前效果",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.after_build",
+    "text": "建成并启用后效果",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.active",
+    "text": "已生效",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.effect.pending",
+    "text": "待启用",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.auto.enable",
+    "text": "开启自动探索",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "planet.auto.disable",
+    "text": "关闭自动探索",
+    "params": "",
+    "category": "planet",
+    "note": "星球弹窗信息层级"
   }
 ]

@@ -14,6 +14,19 @@ var list_content: VBoxContainer
 var bonus_dialog: AcceptDialog
 var bonus_label: Label
 var bonus_planet_id := ""
+var bonus_groups: Dictionary = {}
+var bonus_rows: Dictionary = {}
+var bonus_empty: Label
+var bonus_details: Button
+var facility_planet_id := ""
+var facility_building_id := ""
+var facility_icon: TextureRect
+var facility_title: Label
+var facility_description: Label
+var facility_effect_heading: Label
+var facility_effect: Dictionary = {}
+var facility_status: Label
+var facility_action: Button
 var facility_dialog: AcceptDialog
 var facility_renderer = preload("res://scripts/orbital_facilities.gd").new()
 
@@ -346,25 +359,136 @@ func bonus_text(id: String) -> String:
 	for row in g.planet_buffs.rows(g,id):lines.append(str(row.des))
 	return "\n\n".join(lines) if not lines.is_empty() else UIText.t("planet.bonuses_empty")
 
+# Dialog controls are created once; keyed effect rows survive refresh and planet switches.
+func _dialog_label(parent: Node, text := "", font_size := 20, color := Chrome.NAVY) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.add_theme_font_override("font", Chrome.SHELL.face(500))
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	parent.add_child(label)
+	return label
+
+func _dialog_body(dialog: AcceptDialog, dimensions: Vector2) -> VBoxContainer:
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = dimensions
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	dialog.add_child(scroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 14)
+	scroll.add_child(body)
+	return body
+
+func _effect_row(parent: Node) -> Dictionary:
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", Chrome.surface(Color("e5eee5"), Color("b3c4c0"), 14))
+	parent.add_child(frame)
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override("separation", 14)
+	frame.add_child(line)
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = Vector2(56, 56)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	line.add_child(icon)
+	var text := _dialog_label(line)
+	var metric := _dialog_label(line, "", 26, Color(Parameters.COLORS.effect))
+	metric.custom_minimum_size.x = 180
+	metric.size_flags_horizontal = Control.SIZE_SHRINK_END
+	metric.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	metric.add_theme_font_override("font", Chrome.SHELL.face(600))
+	return {"root":frame, "icon":icon, "label":text, "metric":metric}
+
+func _set_effect(controls: Dictionary, title: String, metric: String, kind := "", detail := "") -> void:
+	host.set_ui_value(controls.label, "text", title)
+	host.set_ui_value(controls.metric, "text", metric)
+	host.set_ui_value(controls.icon, "texture", Art.facility(kind) if not kind.is_empty() else null)
+	host.set_ui_value(controls.icon, "visible", not kind.is_empty())
+	host.set_ui_value(controls.root, "tooltip_text", detail)
+
+func _multiplier_percent(multiplier) -> String:
+	return "+" + NumberFormat.percentage(GrowthNumber.multiply(GrowthNumber.subtract(multiplier, 1), 100)) + "%"
+
+# Split a trailing display number from the authoritative description only.
+# A missing/unrecognized suffix remains intact; gameplay never reads this text.
+func _description_metric(description: String) -> Array:
+	var pattern := RegEx.new()
+	pattern.compile("^(.*?)([+-]\\s*[0-9]+(?:\\.[0-9]+)?)(%)?$")
+	var found := pattern.search(description.strip_edges())
+	if found == null:return [description, ""]
+	var points := found.get_string(2).replace(" ", "").to_float()
+	var unit := found.get_string(3)
+	var number := NumberFormat.percentage(points) if unit == "%" else NumberFormat.compact(points)
+	return [found.get_string(1).strip_edges(), ("+" if points >= 0 else "") + number + unit]
+
+func _refresh_bonus_dialog() -> void:
+	var id := bonus_planet_id
+	var g = host.game
+	host.set_ui_value(bonus_label, "text", bonus_text(id))
+	var entries: Array = []
+	for row in g.planet_buildings.rows(g, id):
+		if g.planet_buildings.state(g, id, str(row.id)).get("status") != "built":continue
+		var kind := str(row.type)
+		var numeric := kind in ["refinery", "equipment"]
+		var mult = g.planet_buildings.building_multiplier(g, id, row) if numeric else 1
+		entries.append({"key":"building:" + str(row.id), "group":"production" if numeric else "exploration", "title":UIText.t("planet.effect." + kind) if numeric else str(row.name), "metric":_multiplier_percent(mult) if numeric else UIText.t("planet.effect.active"), "kind":kind, "detail":str(row.des) + ("\n" + UIText.t("planet.build_effect", {"mult":GrowthNumber.text(mult)}) if numeric else "")})
+	for row in g.planet_buffs.rows(g, id):
+		var display := _description_metric(str(row.des))
+		entries.append({"key":"buff:" + str(int(row.id)), "group":"permanent" if str(row.buff_type) in ["level_bonus", "free_charge"] else "exploration", "title":display[0], "metric":display[1], "kind":"", "detail":str(row.des)})
+	var wanted := {}
+	var groups := {}
+	for entry in entries:
+		wanted[entry.key] = true
+		groups[entry.group] = true
+		if not bonus_rows.has(entry.key):bonus_rows[entry.key] = _effect_row(bonus_groups[entry.group].body)
+		var controls: Dictionary = bonus_rows[entry.key]
+		var parent: VBoxContainer = bonus_groups[entry.group].body
+		if controls.root.get_parent() != parent:controls.root.reparent(parent)
+		_set_effect(controls, entry.title, entry.metric, entry.kind, entry.detail)
+		host.set_ui_value(controls.root, "visible", true)
+	for key in bonus_rows:
+		if not wanted.has(key):host.set_ui_value(bonus_rows[key].root, "visible", false)
+	for key in bonus_groups:host.set_ui_value(bonus_groups[key].body, "visible", groups.has(key))
+	host.set_ui_value(bonus_empty, "visible", entries.is_empty())
+	host.set_ui_value(bonus_details, "visible", not entries.is_empty())
+	host.set_ui_value(bonus_label, "visible", bonus_details.button_pressed and not entries.is_empty())
+
 func show_bonuses(id: String) -> void:
 	if not is_instance_valid(bonus_dialog):
 		bonus_dialog = AcceptDialog.new()
-		preload("res://scripts/dialog_presentation.gd").dialog(bonus_dialog)
-		bonus_dialog.min_size = Vector2i(660, 500)
+		Chrome.dialog(bonus_dialog)
+		bonus_dialog.ok_button_text = UIText.t("planet.dialog.close")
+		bonus_dialog.min_size = Vector2i(760, 650)
 		add_child(bonus_dialog)
-		var scroll := ScrollContainer.new()
-		scroll.custom_minimum_size = Vector2(620, 400)
-		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		bonus_dialog.add_child(scroll)
-		bonus_label = Label.new()
-		bonus_label.custom_minimum_size.x = 580
-		bonus_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		bonus_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		bonus_label.add_theme_font_size_override("font_size",20)
-		scroll.add_child(bonus_label)
+		var body := _dialog_body(bonus_dialog, Vector2(720, 550))
+		_dialog_label(body, UIText.t("planet.bonuses_scope"), 18, Chrome.MUTED)
+		bonus_empty = _dialog_label(body, UIText.t("planet.bonuses_empty"))
+		for key in ["production", "permanent", "exploration"]:
+			var group := VBoxContainer.new()
+			group.add_theme_constant_override("separation", 8)
+			body.add_child(group)
+			_dialog_label(group, UIText.t("planet.bonus_group." + key), 21)
+			bonus_groups[key] = {"body":group}
+		bonus_details = bonus_dialog.add_button(UIText.t("planet.bonus_details"), false, "details")
+		bonus_details.custom_minimum_size = Vector2(140, 44)
+		bonus_details.toggle_mode = true
+		Chrome.button_skin(bonus_details)
+		bonus_label = _dialog_label(body, "", 18, Chrome.MUTED)
+		bonus_label.hide()
+		bonus_details.toggled.connect(func(expanded):
+			bonus_label.visible = expanded
+			if expanded:
+				await get_tree().process_frame
+				(body.get_parent() as ScrollContainer).ensure_control_visible(bonus_label))
+	bonus_details.set_pressed_no_signal(false)
+	(bonus_label.get_parent().get_parent() as ScrollContainer).scroll_vertical = 0
 	bonus_planet_id = id
 	bonus_dialog.title = UIText.t("planet.bonuses_title", {"planet":UIText.data_text("planet",id,"name",str(host.game.planet_row(id).get("name",id)))})
-	bonus_label.text = bonus_text(id)
+	_refresh_bonus_dialog()
 	bonus_dialog.popup_centered()
 
 func _start_exploration(id: String, picker: OptionButton) -> void:
@@ -385,7 +509,9 @@ func exploration_count_text(value) -> String:
 func refresh_card(id: String) -> void:
 	var card: Dictionary = cards[id]
 	if is_instance_valid(bonus_dialog) and bonus_dialog.visible and bonus_planet_id == id:
-		host.set_ui_value(bonus_label, "text", bonus_text(id))
+		_refresh_bonus_dialog()
+	if is_instance_valid(facility_dialog) and facility_dialog.visible and facility_planet_id == id:
+		_refresh_facility_dialog()
 	var row: Dictionary = host.game.planet_row(id)
 	var progress: Dictionary = host.game.planet_progress(id)
 	var degree = progress.get("degree", 0)
@@ -569,18 +695,101 @@ func _draw_building_silhouette(control: Control, kind: String) -> void:
 
 func _show_facility(id: String, building_id: String) -> void:
 	if not cards[id].facility_buttons.has(building_id):return
-	var controls: Dictionary = cards[id].facility_buttons[building_id]
 	if not is_instance_valid(facility_dialog):
 		facility_dialog = AcceptDialog.new()
-		preload("res://scripts/dialog_presentation.gd").dialog(facility_dialog)
-		facility_dialog.add_theme_font_size_override("font_size", 22)
-		facility_dialog.min_size = Vector2i(520, 220)
+		Chrome.dialog(facility_dialog)
+		facility_dialog.ok_button_text = UIText.t("planet.dialog.close")
+		facility_dialog.min_size = Vector2i(720, 510)
 		add_child(facility_dialog)
-	facility_dialog.title = controls.label.text
-	facility_dialog.dialog_text = controls.root.tooltip_text
+		var body := _dialog_body(facility_dialog, Vector2(680, 390))
+		var header := HBoxContainer.new()
+		header.add_theme_constant_override("separation", 18)
+		body.add_child(header)
+		facility_icon = TextureRect.new()
+		facility_icon.custom_minimum_size = Vector2(132, 132)
+		facility_icon.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		facility_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		facility_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		facility_icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		header.add_child(facility_icon)
+		var introduction := VBoxContainer.new()
+		introduction.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		introduction.add_theme_constant_override("separation", 10)
+		header.add_child(introduction)
+		facility_title = _dialog_label(introduction, "", 28)
+		facility_title.add_theme_font_override("font", Chrome.SHELL.face(600))
+		facility_description = _dialog_label(introduction, "", 19, Chrome.MUTED)
+		facility_effect_heading = _dialog_label(body, "", 21)
+		facility_effect = _effect_row(body)
+		facility_status = _dialog_label(body, "", 18, Chrome.MUTED)
+		facility_action = facility_dialog.add_button("", false, "facility")
+		facility_action.custom_minimum_size = Vector2(180, 44)
+		Chrome.button_skin(facility_action, true)
+		facility_dialog.custom_action.connect(func(action):
+			if action == &"facility":_facility_operation())
+	(facility_effect_heading.get_parent().get_parent() as ScrollContainer).scroll_vertical = 0
+	facility_planet_id = id
+	facility_building_id = building_id
+	_refresh_facility_dialog()
 	facility_dialog.popup_centered()
 
-func _toggle_builder(id: String, building_id: String) -> void:
+func _refresh_facility_dialog() -> void:
+	var g = host.game
+	var id := facility_planet_id
+	var row: Dictionary = {}
+	for candidate in g.planet_buildings.rows(g, id):
+		if str(candidate.id) == facility_building_id:row = candidate
+	if row.is_empty():facility_dialog.hide();return
+	var state: Dictionary = g.planet_buildings.state(g, id, facility_building_id)
+	var status := str(state.get("status", "locked"))
+	var kind := str(row.type)
+	var built := status == "built"
+	var numeric := kind in ["refinery", "equipment"]
+	host.set_ui_value(facility_dialog, "title", str(row.name))
+	host.set_ui_value(facility_title, "text", str(row.name))
+	host.set_ui_value(facility_description, "text", str(row.des))
+	host.set_ui_value(facility_icon, "texture", Art.facility(kind))
+	host.set_ui_value(facility_effect_heading, "text", UIText.t("planet.effect.current" if built else "planet.effect.after_build"))
+	if numeric:
+		var mult = g.planet_buildings.building_multiplier(g, id, row)
+		_set_effect(facility_effect, UIText.t("planet.effect." + kind), _multiplier_percent(mult), "", UIText.t("planet.build_effect", {"mult":GrowthNumber.text(mult)}))
+	else:
+		_set_effect(facility_effect, UIText.t("planet.auto" if kind == "auto_explore" else "planet.reforge"), UIText.t("planet.effect.active" if built else "planet.effect.pending"))
+	var status_text := UIText.t("planet.facility_status_" + status)
+	if status == "locked":
+		status_text += " · " + UIText.t("planet.facility_remaining", {"count":exploration_count_text(GrowthNumber.ceiling(GrowthNumber.subtract(row.unlock_explore, g.planet_progress(id).degree)))})
+	elif status == "building":
+		status_text += " · " + UIText.t("planet.facility_progress", {"progress":exploration_count_text(state.get("build_progress", 0)), "total":exploration_count_text(row.build_explore)})
+		if int(row.extra_crew) > 0:status_text += "\n" + UIText.t("planet.extra", {"count":state.get("crew", []).size(), "required":exploration_count_text(row.extra_crew)})
+	host.set_ui_value(facility_status, "text", status_text)
+	var can_build := status == "building" and int(row.extra_crew) > 0
+	var can_auto := built and kind == "auto_explore"
+	var can_reforge: bool = built and kind == "shipyard" and g.can_reforge_planet(id)
+	host.set_ui_value(facility_action, "visible", status == "ready" or can_build or can_auto or can_reforge)
+	var action_text := UIText.t("planet.activate")
+	if can_build:
+		var builders: Array = state.get("crew", [])
+		action_text = UIText.t("planet.recall_builder", {"name":g.crew.definitions(g)[str(builders.back())].name}) if builders.size() >= int(row.extra_crew) else UIText.t("planet.assign_builder")
+	if can_auto:action_text = UIText.t("planet.auto.disable" if g.planet_progress(id).get("auto_explore", false) else "planet.auto.enable")
+	if can_reforge:action_text = UIText.t("planet.reforge")
+	host.set_ui_value(facility_action, "text", action_text)
+
+func _facility_operation() -> void:
+	var g = host.game
+	var id := facility_planet_id
+	var building_id := facility_building_id
+	var state: Dictionary = g.planet_buildings.state(g, id, building_id)
+	var row: Dictionary = g.db.data.planet_build.get(building_id, {})
+	if state.get("status") in ["ready", "building"]:
+		_toggle_builder(id, building_id, facility_action)
+	elif state.get("status") == "built" and str(row.get("type")) == "auto_explore":
+		g.set_planet_auto(id, not g.planet_progress(id).get("auto_explore", false))
+	elif state.get("status") == "built" and str(row.get("type")) == "shipyard" and g.can_reforge_planet(id):
+		facility_dialog.hide()
+		_confirm_reforge(id)
+	_refresh_facility_dialog()
+
+func _toggle_builder(id: String, building_id: String, anchor_override: Button = null) -> void:
 	var g=host.game
 	var state: Dictionary=g.planet_buildings.state(g,id,building_id)
 	if state.get("status", "") == "ready":
@@ -592,7 +801,7 @@ func _toggle_builder(id: String, building_id: String) -> void:
 		g.planet_buildings.assign(g,id,building_id,str(builders.back()))
 		return
 	# Explicit selection; never silently occupy the first available crew member.
-	var anchor: Button = cards[id].facility_buttons[building_id].assign
+	var anchor: Button = anchor_override if anchor_override != null else cards[id].facility_buttons[building_id].assign
 	var popup := PopupMenu.new()
 	anchor.add_child(popup)
 	preload("res://scripts/dialog_presentation.gd").popup(popup)
