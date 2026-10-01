@@ -7,6 +7,8 @@ uniform float progress = 0.0;
 uniform float part_count = 1.0;
 uniform float energy_phase = 0.0;
 uniform bool working = false;
+// Opt-in for cream-plated iron prototype; other assets keep brightness gating.
+uniform bool warm_energy_only = false;
 // Start progress, acceptance fade-in, acceptance weight. Explicitly sampled
 // by the owner so paused/hidden cards retain an identical image.
 uniform vec3 completion_state = vec3(0.0,1.0,0.0);
@@ -32,7 +34,7 @@ void fragment() {
 	vec3 blueprint = vec3(0.22,0.40,0.53) * (0.65 + brightness * 0.35);
 	// The moving highlight is gated by existing bright ink, so energy follows
 	// the artist's filaments, facets and seams instead of drawing new geometry.
-	float energy = smoothstep(0.55,0.95,brightness);
+	float energy = warm_energy_only ? smoothstep(0.25,0.55,ink.r-ink.b)*smoothstep(0.55,0.85,ink.g) : smoothstep(0.55,0.95,brightness);
 	float pulse = pow(0.5 + 0.5 * sin(UV.y * 26.0 + UV.x * 9.0 + energy_phase * 2.4), 5.0);
 	float luminance = dot(ink.rgb,vec3(0.2126,0.7152,0.0722));
 	vec3 balanced = mix(ink.rgb,vec3(luminance),0.18);

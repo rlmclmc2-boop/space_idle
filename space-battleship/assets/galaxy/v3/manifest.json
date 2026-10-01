@@ -1,5 +1,5 @@
 {
-  "generator": "tools/galaxy_assets_blender.py",
+  "generator": "tools/galaxy_toon_buildings.py (buildings/shuttle); tools/galaxy_assets_blender.py (core)",
   "up_axis": "Y",
   "anchor": "bottom center",
   "assets": [
@@ -20,132 +20,372 @@
       "level": 1,
       "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv1.glb",
       "bounds_godot_xyz": [
-        7.635,
-        4.304,
-        7.635
+        8.118,
+        3.071,
+        8.118
       ],
-      "triangles": 7968,
-      "bytes": 529692
+      "triangles": 9456,
+      "bytes": 313100
     },
     {
       "key": "colony_ring",
       "level": 2,
       "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv2.glb",
       "bounds_godot_xyz": [
-        7.935,
-        4.841,
-        7.935
+        8.426,
+        3.386,
+        8.86
       ],
-      "triangles": 13476,
-      "bytes": 894068
+      "triangles": 10704,
+      "bytes": 357280
     },
     {
       "key": "colony_ring",
       "level": 3,
       "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv3.glb",
       "bounds_godot_xyz": [
-        8.235,
-        5.379,
-        8.235
+        8.735,
+        3.701,
+        9.1
       ],
-      "triangles": 14736,
-      "bytes": 973584
+      "triangles": 13460,
+      "bytes": 456924
     },
     {
       "key": "colony_ring",
       "level": 4,
       "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv4.glb",
       "bounds_godot_xyz": [
-        10.234,
-        6.011,
-        10.234
+        9.043,
+        4.016,
+        9.34
       ],
-      "triangles": 22908,
-      "bytes": 1521128
+      "triangles": 20528,
+      "bytes": 690200
     },
     {
       "key": "colony_ring",
       "level": 5,
       "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv5.glb",
       "bounds_godot_xyz": [
-        10.234,
-        6.549,
-        10.234
+        9.351,
+        4.331,
+        9.58
       ],
-      "triangles": 24424,
-      "bytes": 1625716
+      "triangles": 21656,
+      "bytes": 722844
     },
     {
       "key": "orbital_shipyard",
       "level": 1,
       "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
       "bounds_godot_xyz": [
-        9.4,
-        3.676,
-        9.5
+        7.502,
+        3.284,
+        7.826
       ],
-      "triangles": 2584,
-      "bytes": 194952
+      "triangles": 10724,
+      "bytes": 407860
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 2,
+      "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv2.glb",
+      "bounds_godot_xyz": [
+        7.836,
+        3.485,
+        8.105
+      ],
+      "triangles": 12980,
+      "bytes": 489524
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 3,
+      "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv3.glb",
+      "bounds_godot_xyz": [
+        8.171,
+        3.687,
+        8.384
+      ],
+      "triangles": 13356,
+      "bytes": 503124
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 4,
+      "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv4.glb",
+      "bounds_godot_xyz": [
+        8.54,
+        3.888,
+        8.663
+      ],
+      "triangles": 15612,
+      "bytes": 584776
+    },
+    {
+      "key": "orbital_shipyard",
+      "level": 5,
+      "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv5.glb",
+      "bounds_godot_xyz": [
+        8.92,
+        4.09,
+        8.942
+      ],
+      "triangles": 15988,
+      "bytes": 598380
     },
     {
       "key": "stellar_energy_array",
       "level": 1,
       "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
       "bounds_godot_xyz": [
-        10.277,
-        3.592,
-        10.277
+        7.898,
+        3.096,
+        7.312
       ],
-      "triangles": 12308,
-      "bytes": 847156
+      "triangles": 5292,
+      "bytes": 197720
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 2,
+      "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv2.glb",
+      "bounds_godot_xyz": [
+        8.429,
+        3.26,
+        8.429
+      ],
+      "triangles": 6180,
+      "bytes": 229784
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 3,
+      "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv3.glb",
+      "bounds_godot_xyz": [
+        8.833,
+        3.424,
+        8.859
+      ],
+      "triangles": 7428,
+      "bytes": 272584
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 4,
+      "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv4.glb",
+      "bounds_godot_xyz": [
+        9.184,
+        3.587,
+        9.338
+      ],
+      "triangles": 8316,
+      "bytes": 304652
+    },
+    {
+      "key": "stellar_energy_array",
+      "level": 5,
+      "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv5.glb",
+      "bounds_godot_xyz": [
+        9.562,
+        3.751,
+        9.562
+      ],
+      "triangles": 10332,
+      "bytes": 376168
     },
     {
       "key": "interstellar_refinery",
       "level": 1,
       "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
       "bounds_godot_xyz": [
-        8.6,
-        3.668,
-        6.5
+        6.268,
+        3.741,
+        5.676
       ],
-      "triangles": 7316,
-      "bytes": 472244
+      "triangles": 9680,
+      "bytes": 441872
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 2,
+      "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv2.glb",
+      "bounds_godot_xyz": [
+        6.743,
+        3.759,
+        5.825
+      ],
+      "triangles": 10912,
+      "bytes": 494140
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 3,
+      "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv3.glb",
+      "bounds_godot_xyz": [
+        7.218,
+        3.776,
+        5.974
+      ],
+      "triangles": 12524,
+      "bytes": 549192
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 4,
+      "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv4.glb",
+      "bounds_godot_xyz": [
+        7.694,
+        3.793,
+        6.124
+      ],
+      "triangles": 13464,
+      "bytes": 583296
+    },
+    {
+      "key": "interstellar_refinery",
+      "level": 5,
+      "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv5.glb",
+      "bounds_godot_xyz": [
+        8.169,
+        3.871,
+        6.407
+      ],
+      "triangles": 14240,
+      "bytes": 600720
     },
     {
       "key": "crystal_refinery",
       "level": 1,
       "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
       "bounds_godot_xyz": [
-        7.935,
-        6.1,
-        7.935
+        6.07,
+        3.9,
+        5.286
       ],
-      "triangles": 11836,
-      "bytes": 792880
+      "triangles": 8816,
+      "bytes": 427276
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 2,
+      "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv2.glb",
+      "bounds_godot_xyz": [
+        6.486,
+        4.17,
+        5.549
+      ],
+      "triangles": 9352,
+      "bytes": 443292
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 3,
+      "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv3.glb",
+      "bounds_godot_xyz": [
+        6.902,
+        4.44,
+        5.887
+      ],
+      "triangles": 10016,
+      "bytes": 471756
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 4,
+      "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv4.glb",
+      "bounds_godot_xyz": [
+        7.317,
+        4.71,
+        6.226
+      ],
+      "triangles": 10680,
+      "bytes": 500192
+    },
+    {
+      "key": "crystal_refinery",
+      "level": 5,
+      "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv5.glb",
+      "bounds_godot_xyz": [
+        7.733,
+        4.98,
+        6.564
+      ],
+      "triangles": 10928,
+      "bytes": 501420
     },
     {
       "key": "heavy_element_refinery",
       "level": 1,
       "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
       "bounds_godot_xyz": [
-        8.5,
-        6.68,
-        6.8
+        6.367,
+        4.75,
+        5.41
       ],
-      "triangles": 5388,
-      "bytes": 346632
+      "triangles": 11844,
+      "bytes": 513376
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 2,
+      "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv2.glb",
+      "bounds_godot_xyz": [
+        6.773,
+        4.95,
+        5.708
+      ],
+      "triangles": 14416,
+      "bytes": 603948
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 3,
+      "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv3.glb",
+      "bounds_godot_xyz": [
+        7.179,
+        5.15,
+        6.007
+      ],
+      "triangles": 15168,
+      "bytes": 631160
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 4,
+      "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv4.glb",
+      "bounds_godot_xyz": [
+        7.585,
+        5.35,
+        6.306
+      ],
+      "triangles": 17660,
+      "bytes": 710644
+    },
+    {
+      "key": "heavy_element_refinery",
+      "level": 5,
+      "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv5.glb",
+      "bounds_godot_xyz": [
+        7.991,
+        5.55,
+        6.605
+      ],
+      "triangles": 18232,
+      "bytes": 729672
     },
     {
       "key": "transport_shuttle",
       "level": 0,
       "path": "assets/galaxy/v3/ships/transport_shuttle.glb",
       "bounds_godot_xyz": [
-        1.32,
-        0.72,
-        1.65
+        1.26,
+        0.56,
+        1.619
       ],
-      "triangles": 308,
-      "bytes": 26700
+      "triangles": 3088,
+      "bytes": 134544
     }
   ]
 }

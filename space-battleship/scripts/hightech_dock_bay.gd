@@ -1,37 +1,39 @@
 extends Control
-## Open station selection only; architecture comes from the shared hall asset.
+## Persistent workstation chrome; machine art and assembly geometry stay independent.
+const PRESENTATION := preload("res://scripts/hightech_presentation.gd")
 var accent := Color("67dcec")
 var selected := false
-var selection: TextureRect
-var platform: TextureRect
 var pending := false
+var frame: StyleBoxFlat
+var readout: StyleBoxFlat
 
 func _ready() -> void:
-	for path in ["res://assets/hightech/platform-reference-v2.tres","res://assets/hightech/bay-selected.svg"]:
-		var layer := TextureRect.new()
-		layer.texture=load(path)
-		layer.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-		layer.size=Vector2(644,443)
-		if path.ends_with(".tres"):
-			platform=layer
-			layer.position=Vector2(0,163)
-			layer.size=Vector2(644,280)
-		layer.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		add_child(layer)
-		if path.ends_with("bay-selected.svg"):
-			selection=layer
-			selection.z_index=1
-			selection.visible=selected
-		else:move_child(layer,0)
+	frame=PRESENTATION.station_surface()
+	readout=PRESENTATION.surface("readout")
+
+func _draw() -> void:
+	if frame==null:return
+	draw_style_box(frame,Rect2(Vector2(4,4),size-Vector2(8,8)))
+	draw_style_box(readout,Rect2(16,304,size.x-32,136))
+	if has_focus():draw_rect(Rect2(Vector2(9,9),size-Vector2(18,18)),PRESENTATION.TEAL,false,2)
+
+func update_frame() -> void:
+	if frame==null:return
+	frame.bg_color=Color("203442") if pending else Color("304c60")
+	frame.border_color=PRESENTATION.TEAL if selected else PRESENTATION.NAVY
+	frame.set_border_width_all(5 if selected else 3)
+	queue_redraw()
 
 func set_pending(value: bool) -> void:
 	if pending==value:return
 	pending=value
-	platform.modulate=Color(0.38,0.46,0.53) if pending else Color.WHITE
+	update_frame()
 
 func set_selected(value: bool) -> void:
 	if selected==value:return
 	selected=value
-	if is_instance_valid(selection):
-		selection.modulate=accent.lerp(Color.WHITE,0.45)
-		selection.visible=selected
+	update_frame()
+
+func _notification(what: int) -> void:
+	if what==NOTIFICATION_FOCUS_ENTER or what==NOTIFICATION_FOCUS_EXIT:
+		queue_redraw()

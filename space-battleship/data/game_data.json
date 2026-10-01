@@ -15345,10 +15345,6 @@
     "techPointGet": 1,
     "hightechCostGrowthLevel": 400,
     "jewelDrop": 0.2,
-    "jewelCombine": 3,
-    "jewelCreat": 100,
-    "baseCriDmg": 2,
-    "equipmentSocket": "1|1,70|2,150|3",
     "chronoParticlesPerSecond": 1,
     "chronoDefaultSpeed": 1,
     "chronoSpeeds": "1|0,2|1,3|2,4|3,5|4,6|5,7|6,8|7,9|8,10|9",
@@ -15388,25 +15384,25 @@
     "enemyCannonMissingDamageAndCooldown": "Use player cannon row 1 for missing fields."
   },
   "source_files": {
-    "level": "G:\\放置\\space-battleship\\config_excel\\level.xlsx",
-    "equipment": "G:\\放置\\space-battleship\\config_excel\\equipment.xlsx",
-    "mon": "G:\\放置\\space-battleship\\config_excel\\mon.xlsx",
-    "monGroup": "G:\\放置\\space-battleship\\config_excel\\monGroup.xlsx",
-    "res": "G:\\放置\\space-battleship\\config_excel\\res.xlsx",
-    "config": "G:\\放置\\space-battleship\\config_excel\\config.xlsx",
-    "ship": "G:\\放置\\space-battleship\\config_excel\\ship.xlsx",
-    "hightech": "G:\\放置\\space-battleship\\config_excel\\hightech.xlsx",
-    "jewel": "G:\\放置\\space-battleship\\config_excel\\jewel.xlsx",
-    "unlock": "G:\\放置\\space-battleship\\config_excel\\unlock.xlsx",
-    "crew": "G:\\放置\\space-battleship\\config_excel\\crew.xlsx",
-    "crew_assignment": "G:\\放置\\space-battleship\\config_excel\\crew_assignment.xlsx",
-    "crew_config": "G:\\放置\\space-battleship\\config_excel\\crew_config.xlsx",
-    "planet": "G:\\放置\\space-battleship\\config_excel\\planet.xlsx",
-    "planet_build": "G:\\放置\\space-battleship\\config_excel\\planet_build.xlsx",
-    "planet_buff": "G:\\放置\\space-battleship\\config_excel\\planet_buff.xlsx",
-    "galaxy": "G:\\放置\\space-battleship\\config_excel\\galaxy.xlsx",
-    "galaxy_build": "G:\\放置\\space-battleship\\config_excel\\galaxy_build.xlsx",
-    "galaxy_config": "G:\\放置\\space-battleship\\config_excel\\galaxy_config.xlsx"
+    "level": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/level.xlsx",
+    "equipment": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/equipment.xlsx",
+    "mon": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/mon.xlsx",
+    "monGroup": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/monGroup.xlsx",
+    "res": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/res.xlsx",
+    "config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/config.xlsx",
+    "ship": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/ship.xlsx",
+    "hightech": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/hightech.xlsx",
+    "unlock": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/unlock.xlsx",
+    "crew": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew.xlsx",
+    "crew_assignment": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew_assignment.xlsx",
+    "crew_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew_config.xlsx",
+    "planet": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet.xlsx",
+    "planet_build": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet_build.xlsx",
+    "planet_buff": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet_buff.xlsx",
+    "enhance_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/enhance_config.xlsx",
+    "galaxy": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy.xlsx",
+    "galaxy_build": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy_build.xlsx",
+    "galaxy_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy_config.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -15441,99 +15437,13 @@
     },
     "宝石熔炼炉": {
       "name": "宝石熔炼炉",
-      "des": "每para1秒在屏幕中生成一个宝石核心，总共含有根据过去一分钟的宝石碎片生成量*para2*等级的碎片，向上取整，鼠标划过获取，10秒后消失",
-      "description": "每para1秒在屏幕中生成一个含有{过去一分钟的宝石碎片生成量*para2*等级,向上取整,不含自身}的宝石碎片的宝石核心块",
+      "des": "每para1秒在屏幕中生成一个强化核心，总共含有根据过去一分钟的强化碎片生成量*para2*等级的碎片，向上取整，鼠标划过获取，10秒后消失",
+      "description": "每para1秒在屏幕中生成一个含有{过去一分钟的宝石碎片生成量*para2*等级,向上取整,不含自身}的强化核心块",
       "tpCostBase": 60,
       "tpCostMutiple": 2,
       "tpCostMutiple2": 0.1,
       "para1": 20,
       "para2": 0.02
-    }
-  },
-  "jewel": {
-    "1": {
-      "id": 1,
-      "name": "熟练宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到武器上时,镶嵌的武器伤害根据武器历史攻击次数提高,算法为para2*等级*log10(武器攻击次数),四舍五入取整,参数3为获取完整宝石需要的碎片数",
-      "des": "镶嵌到对应武器时,使该武器伤害提高{para2*等级*log10(武器攻击次数),整数百分比}",
-      "maxLevel": 1000,
-      "para_1": 1,
-      "para_2": 0.1,
-      "para_3": 1000,
-      "para_4": null,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/1.svg"
-    },
-    "2": {
-      "id": 2,
-      "name": "适应宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到防御上时,镶嵌的防御的防御属性(护盾,生命)根据该防御模块受到过的伤害次数提升,算法为para2*等级*log10(受到攻击次数),四舍五入取整,参数3为获取完整宝石需要的碎片数",
-      "des": "镶嵌到对应防御时,使该防御的效果(护盾,生命)提高{para2*等级*log10(承受攻击次数),整数百分比}",
-      "maxLevel": 1000,
-      "para_1": 2,
-      "para_2": 0.1,
-      "para_3": 1000,
-      "para_4": null,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/2.svg"
-    },
-    "3": {
-      "id": 3,
-      "name": "自动维修宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到对应的防御上时,若连续para4秒没受到伤害,则每秒恢复最大值*para2*等级,直到受到伤害为止,para3为合成需要的宝石碎片数",
-      "des": "镶嵌到对应的防御上时,若连续{para4}秒没受到伤害,则每秒恢复{para2*等级,百分比}的最大值,直到受到伤害为止",
-      "maxLevel": 1000,
-      "para_1": 2,
-      "para_2": 0.05,
-      "para_3": 1000,
-      "para_4": 2,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/3.svg"
-    },
-    "4": {
-      "id": 4,
-      "name": "连发宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,攻击时有para2的概率额外发射一次,额外发射的武器伤害*(1+para4*等级).额外发射会在正常发射0.5秒后发射,若有多个额外发射来源则随机顺序发射,para3为合成需要的宝石碎片数",
-      "des": "镶嵌到对应的武器上时,攻击时有{para2,百分比}的概率额外发射一次,额外发射的武器伤害提高{para4*等级,百分比}",
-      "maxLevel": 1000,
-      "para_1": 1,
-      "para_2": 0.5,
-      "para_3": 1000,
-      "para_4": 0.2,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/4.svg"
-    },
-    "5": {
-      "id": 5,
-      "name": "暴击宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到对应的武器上时,固定增加该武器para2暴击,并使该武器暴击率(包括这颗宝石附加的)*(1+para4*等级)",
-      "des": "镶嵌到对应的武器上时,该武器固定增加{para2,百分比}暴击,并使该武器来自所有来源的暴击率提升{para4*等级,百分比}",
-      "maxLevel": 1000,
-      "para_1": 1,
-      "para_2": 0.1,
-      "para_3": 1000,
-      "para_4": 0.05,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/5.svg"
-    },
-    "6": {
-      "id": 6,
-      "name": "坚韧宝石",
-      "func": "para1表示可用的装备,0为全部,1为武器,2为防御,镶嵌到对应的防御上时,该防御若有持续恢复效果(无论来源,例如装备自带恢复,或是宝石或其他系统的恢复),则该效果不会因受到伤害而打断,但在本不该恢复防御值的期间,恢复效果*para2*等级",
-      "des": "镶嵌到对应的防御上时,该防御若有持续恢复效果,则该效果不会因受到伤害而打断,但是恢复效果降低{1-para2*等级,百分比}",
-      "maxLevel": 1000,
-      "para_1": 2,
-      "para_2": 0.05,
-      "para_3": 1000,
-      "para_4": null,
-      "para_5": null,
-      "para_6": null,
-      "image": "res://assets/jewels/6.svg"
     }
   },
   "unlock": {
@@ -15678,8 +15588,8 @@
       "target": "宝石熔炼炉",
       "level": 12,
       "mode": "cleared",
-      "title": "宝石熔炼炉",
-      "desc": "这下我们终于有办法进一步从无用的残骸里回收更多的宝石碎片了,真是非常感谢!"
+      "title": "强化碎片熔炼炉",
+      "desc": "这下我们终于有办法进一步从无用的残骸里回收更多的强化碎片了,真是非常感谢!"
     },
     "feature/jewels": {
       "name": "feature/jewels",
@@ -15687,8 +15597,8 @@
       "target": "jewels",
       "level": 7,
       "mode": "reached",
-      "title": "宝石工坊",
-      "desc": "嗯,你看看这些闪亮亮的小玩意,那些不知来历的飞船爆炸时非常偶然的会留下这些东西.让我们看看它们有什么用..."
+      "title": "装备强化",
+      "desc": "敌舰残骸中可回收强化碎片，用于提升全局装备强化等级。"
     },
     "crew/navigator": {
       "name": "crew/navigator",
@@ -15768,8 +15678,8 @@
       "target": "condensation",
       "level": 15,
       "mode": "cleared",
-      "title": "宝石凝聚",
-      "desc": "已经找到如何使用充能提升宝石效果的办法,可以通过充能获取更多宝石了!"
+      "title": "强化凝聚",
+      "desc": "反应炉充能可以提升强化碎片产出，让装备强化继续成长。"
     },
     "planet/2": {
       "name": "planet/2",
@@ -16214,7 +16124,7 @@
       "powerScale": 0,
       "interval": 1,
       "maxCrew": 1,
-      "description": "自动合成背包宝石，并用同类型更高级宝石替换已镶嵌宝石。",
+      "description": "每个配置周期尝试购买1级全局装备强化，正常消耗碎片。",
       "titleTextId": "crew.job.jewel",
       "descTextId": "crew.effect.jewel_auto",
       "targetCategory": "",
@@ -16329,19 +16239,19 @@
     "tech_ai_per_level": {
       "id": "tech_ai_per_level",
       "value": 2,
-      "des": "每个科技获得 {ai} 个专属AI",
+      "des": "每个工厂项目获得 {ai} 个专属AI",
       "targetType": "hightech"
     },
     "tech_speed": {
       "id": "tech_speed",
       "value": 0.2,
-      "des": "科技研发速度 {effect}",
+      "des": "AI工厂生产速度 {effect}",
       "targetType": "hightech"
     },
     "gem_bonus": {
       "id": "gem_bonus",
       "value": 0.1,
-      "des": "直接掉落宝石碎片 {effect}",
+      "des": "直接掉落强化碎片 {effect}",
       "targetType": "jewel"
     },
     "charge_bonus": {
@@ -16480,7 +16390,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "3": {
       "id": 3,
@@ -16501,12 +16411,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "5": {
       "id": 5,
@@ -16610,7 +16520,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "13": {
       "id": 13,
@@ -16631,12 +16541,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "15": {
       "id": 15,
@@ -16662,7 +16572,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "17": {
       "id": 17,
@@ -16683,12 +16593,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "19": {
       "id": 19,
@@ -16714,7 +16624,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "21": {
       "id": 21,
@@ -16735,12 +16645,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "23": {
       "id": 23,
@@ -16766,7 +16676,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "25": {
       "id": 25,
@@ -16787,12 +16697,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "27": {
       "id": 27,
@@ -16818,7 +16728,7 @@
       "value": 5,
       "stack": "add",
       "order": 2,
-      "des": "高科技效果等级 +20"
+      "des": "AI工厂效果等级 +20"
     },
     "29": {
       "id": 29,
@@ -16839,12 +16749,12 @@
       "source": "conquer",
       "source_id": 0,
       "condition": "conquered",
-      "buff_type": "drop_level",
-      "target": "gem",
+      "buff_type": "level_bonus",
+      "target": "enhancement",
       "value": 1,
       "stack": "add",
       "order": 4,
-      "des": "宝石掉落等级 +2"
+      "des": "强化附加等级 +1"
     },
     "31": {
       "id": 31,
@@ -16973,10 +16883,10 @@
       "effect_type": "equipment_value",
       "base_effect": 0.1,
       "asset_lv1": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
-      "asset_lv2": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
-      "asset_lv3": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
-      "asset_lv4": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
-      "asset_lv5": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb",
+      "asset_lv2": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv2.glb",
+      "asset_lv3": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv3.glb",
+      "asset_lv4": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv4.glb",
+      "asset_lv5": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv5.glb",
       "visual_category": "orbital_shipyard",
       "des": "轨道船坞：每级贡献由 base_effect 决定；施工完成后生效。"
     },
@@ -16990,10 +16900,10 @@
       "effect_type": "charge_max",
       "base_effect": 0.1,
       "asset_lv1": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
-      "asset_lv2": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
-      "asset_lv3": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
-      "asset_lv4": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
-      "asset_lv5": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb",
+      "asset_lv2": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv2.glb",
+      "asset_lv3": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv3.glb",
+      "asset_lv4": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv4.glb",
+      "asset_lv5": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv5.glb",
       "visual_category": "stellar_energy_array",
       "des": "恒星能源阵列：每级贡献由 base_effect 决定；施工完成后生效。"
     },
@@ -17007,10 +16917,10 @@
       "effect_type": "iron_auto_ratio",
       "base_effect": 0.05,
       "asset_lv1": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
-      "asset_lv2": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
-      "asset_lv3": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
-      "asset_lv4": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
-      "asset_lv5": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb",
+      "asset_lv2": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv2.glb",
+      "asset_lv3": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv3.glb",
+      "asset_lv4": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv4.glb",
+      "asset_lv5": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv5.glb",
       "visual_category": "interstellar_refinery",
       "des": "星际炼铁厂：每级贡献由 base_effect 决定；施工完成后生效。"
     },
@@ -17024,10 +16934,10 @@
       "effect_type": "gem_fragment",
       "base_effect": 0.1,
       "asset_lv1": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
-      "asset_lv2": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
-      "asset_lv3": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
-      "asset_lv4": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
-      "asset_lv5": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb",
+      "asset_lv2": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv2.glb",
+      "asset_lv3": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv3.glb",
+      "asset_lv4": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv4.glb",
+      "asset_lv5": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv5.glb",
       "visual_category": "crystal_refinery",
       "des": "晶体精炼厂：每级贡献由 base_effect 决定；施工完成后生效。"
     },
@@ -17041,10 +16951,10 @@
       "effect_type": "uranium_auto_ratio",
       "base_effect": 0.05,
       "asset_lv1": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
-      "asset_lv2": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
-      "asset_lv3": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
-      "asset_lv4": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
-      "asset_lv5": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb",
+      "asset_lv2": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv2.glb",
+      "asset_lv3": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv3.glb",
+      "asset_lv4": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv4.glb",
+      "asset_lv5": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv5.glb",
       "visual_category": "heavy_element_refinery",
       "des": "重元素精炼厂：每级贡献由 base_effect 决定；施工完成后生效。"
     }
@@ -17109,6 +17019,398 @@
       "value": 2.8,
       "type": "float",
       "des": "最大相机缩放"
+    }
+  },
+  "enhance_config": {
+    "cost_base": {
+      "id": "cost_base",
+      "value": 100,
+      "unit": "碎片",
+      "des": "费用系数；正整数碎片数"
+    },
+    "cost_exponent": {
+      "id": "cost_exponent",
+      "value": 3,
+      "unit": "次方",
+      "des": "整数0..16；费用＝系数×目标实际等级^指数"
+    },
+    "threshold_1": {
+      "id": "threshold_1",
+      "value": 50,
+      "unit": "装备级",
+      "des": "第一顺位生效的实际装备等级"
+    },
+    "threshold_2": {
+      "id": "threshold_2",
+      "value": 100,
+      "unit": "装备级",
+      "des": "第二顺位生效的实际装备等级"
+    },
+    "threshold_3": {
+      "id": "threshold_3",
+      "value": 150,
+      "unit": "装备级",
+      "des": "第三顺位生效的实际装备等级"
+    },
+    "base_critical_rate": {
+      "id": "base_critical_rate",
+      "value": 0.25,
+      "unit": "概率",
+      "des": "所有我方武器基础暴击率；0.25＝25%"
+    },
+    "base_critical_multiplier": {
+      "id": "base_critical_multiplier",
+      "value": 2,
+      "unit": "倍率",
+      "des": "基础暴击伤害倍率"
+    },
+    "critical_growth": {
+      "id": "critical_growth",
+      "value": 0.3,
+      "unit": "倍率/级",
+      "des": "暴击效果每有效强化级增加的暴伤倍率"
+    },
+    "proficiency_growth": {
+      "id": "proficiency_growth",
+      "value": 0.1,
+      "unit": "比例/级",
+      "des": "武器熟练加成＝系数×有效等级×log(全局攻击数)"
+    },
+    "adaptation_growth": {
+      "id": "adaptation_growth",
+      "value": 0.1,
+      "unit": "比例/级",
+      "des": "适应加成＝系数×有效等级×log(全局受击数)"
+    },
+    "counter_log_base": {
+      "id": "counter_log_base",
+      "value": 10,
+      "unit": "底数",
+      "des": "熟练与适应的历史计数对数底数"
+    },
+    "bonus_round_scale": {
+      "id": "bonus_round_scale",
+      "value": 100,
+      "unit": "精度",
+      "des": "属性加成四舍五入；100＝保留两位小数"
+    },
+    "repeat_probability": {
+      "id": "repeat_probability",
+      "value": 0.5,
+      "unit": "概率",
+      "des": "普通攻击触发一次额外攻击概率；额外攻击不递归"
+    },
+    "repeat_growth": {
+      "id": "repeat_growth",
+      "value": 0.2,
+      "unit": "比例/级",
+      "des": "额外攻击伤害倍率＝1＋系数×有效等级"
+    },
+    "repeat_delay": {
+      "id": "repeat_delay",
+      "value": 0.5,
+      "unit": "秒",
+      "des": "额外攻击的游戏时间延迟"
+    },
+    "memory_interval": {
+      "id": "memory_interval",
+      "value": 0.2,
+      "unit": "秒",
+      "des": "记忆材料按游戏时间回复的间隔"
+    },
+    "memory_heal_fraction": {
+      "id": "memory_heal_fraction",
+      "value": 0.01,
+      "unit": "比例/级/次",
+      "des": "每次回复自身最大防御×系数×有效等级"
+    },
+    "memory_buffer_fraction": {
+      "id": "memory_buffer_fraction",
+      "value": 0.1,
+      "unit": "比例/级",
+      "des": "保护上限＝自身最大防御×系数×有效等级；无衰减"
+    },
+    "deferred_duration": {
+      "id": "deferred_duration",
+      "value": 2,
+      "unit": "秒",
+      "des": "每次延迟伤害分期结算的游戏时间"
+    },
+    "deferred_interval": {
+      "id": "deferred_interval",
+      "value": 0.2,
+      "unit": "秒",
+      "des": "全局延迟伤害扣除与清除判定间隔"
+    },
+    "deferred_curve_coefficient": {
+      "id": "deferred_curve_coefficient",
+      "value": 1,
+      "unit": "系数",
+      "des": "延迟比例＝1−1/(1＋系数×有效等级)"
+    },
+    "deferred_percent_scale": {
+      "id": "deferred_percent_scale",
+      "value": 100,
+      "unit": "精度",
+      "des": "延迟比例向下取整；100＝整数百分比"
+    },
+    "deferred_clear_probability": {
+      "id": "deferred_clear_probability",
+      "value": 0.25,
+      "unit": "概率/跳",
+      "des": "每跳扣除当期后，一次判定清除全部剩余伤害"
+    },
+    "branch_threshold_1": {
+      "id": "branch_threshold_1",
+      "value": 10,
+      "unit": "有效强化级",
+      "des": "每种效果第一分支节点的解锁等级"
+    },
+    "branch_threshold_2": {
+      "id": "branch_threshold_2",
+      "value": 20,
+      "unit": "有效强化级",
+      "des": "每种效果第二分支节点的解锁等级"
+    },
+    "branch_threshold_3": {
+      "id": "branch_threshold_3",
+      "value": 30,
+      "unit": "有效强化级",
+      "des": "每种效果第三分支节点的解锁等级"
+    },
+    "proficiency_a_damage_bonus": {
+      "id": "proficiency_a_damage_bonus",
+      "value": 0.5,
+      "unit": "比例/节点",
+      "des": "熟练A节点伤害加成；多个节点相加"
+    },
+    "proficiency_b1_interval": {
+      "id": "proficiency_b1_interval",
+      "value": 1,
+      "unit": "秒",
+      "des": "同一主目标蓄力的完整游戏时间间隔"
+    },
+    "proficiency_b1_growth": {
+      "id": "proficiency_b1_growth",
+      "value": 0.2,
+      "unit": "比例/跳",
+      "des": "同目标每跳独立乘以1＋此比例"
+    },
+    "proficiency_b2_interval_multiplier": {
+      "id": "proficiency_b2_interval_multiplier",
+      "value": 0.7,
+      "unit": "倍率",
+      "des": "快速发射的攻击间隔倍率"
+    },
+    "proficiency_b3_resistance": {
+      "id": "proficiency_b3_resistance",
+      "value": 0.3,
+      "unit": "减伤比例",
+      "des": "穿透后匹配敌人抗性的减伤比例"
+    },
+    "repeat_a_probability": {
+      "id": "repeat_a_probability",
+      "value": 0.1,
+      "unit": "百分点比例/节点",
+      "des": "连发A节点增加的概率；0.1＝10个百分点"
+    },
+    "repeat_b1_targets": {
+      "id": "repeat_b1_targets",
+      "value": 1,
+      "unit": "目标",
+      "des": "单次连锁的额外目标数量"
+    },
+    "repeat_b2_repeats": {
+      "id": "repeat_b2_repeats",
+      "value": 1,
+      "unit": "次数",
+      "des": "普通连发后允许额外再触发的连发次数"
+    },
+    "repeat_b3_probability": {
+      "id": "repeat_b3_probability",
+      "value": 0.2,
+      "unit": "概率/攻击",
+      "des": "正常攻击额外锁定另一目标的概率"
+    },
+    "critical_a_probability": {
+      "id": "critical_a_probability",
+      "value": 0.15,
+      "unit": "百分点比例/节点",
+      "des": "暴击A节点增加的概率"
+    },
+    "critical_b1_attacks": {
+      "id": "critical_b1_attacks",
+      "value": 3,
+      "unit": "攻击事件",
+      "des": "暴击余势影响的后续规范攻击次数"
+    },
+    "critical_b1_damage_bonus": {
+      "id": "critical_b1_damage_bonus",
+      "value": 0.5,
+      "unit": "比例",
+      "des": "暴击余势伤害加成"
+    },
+    "critical_b2_probability": {
+      "id": "critical_b2_probability",
+      "value": 0.05,
+      "unit": "百分点比例/层",
+      "des": "暴击连势每层增加暴击率"
+    },
+    "critical_b2_damage_bonus": {
+      "id": "critical_b2_damage_bonus",
+      "value": 0.1,
+      "unit": "比例/层",
+      "des": "暴击连势每层增加伤害"
+    },
+    "critical_b2_stacks": {
+      "id": "critical_b2_stacks",
+      "value": 3,
+      "unit": "层",
+      "des": "暴击连势的最大层数"
+    },
+    "critical_b2_duration": {
+      "id": "critical_b2_duration",
+      "value": 2,
+      "unit": "秒",
+      "des": "整组暴击连势持续时间；新暴击刷新"
+    },
+    "critical_b3_guaranteed_rate": {
+      "id": "critical_b3_guaranteed_rate",
+      "value": 1,
+      "unit": "概率",
+      "des": "保底暴击的实际暴击概率；默认必定"
+    },
+    "adaptation_a_capacity_bonus": {
+      "id": "adaptation_a_capacity_bonus",
+      "value": 0.5,
+      "unit": "比例/节点",
+      "des": "适应A节点防御最大值加成；多个节点相加"
+    },
+    "adaptation_b1_reduction": {
+      "id": "adaptation_b1_reduction",
+      "value": 0.2,
+      "unit": "比例/层",
+      "des": "同源攻击后续原始伤害每层减免"
+    },
+    "adaptation_b1_stacks": {
+      "id": "adaptation_b1_stacks",
+      "value": 3,
+      "unit": "层",
+      "des": "同源攻击减伤的最大层数"
+    },
+    "adaptation_b2_interval": {
+      "id": "adaptation_b2_interval",
+      "value": 2,
+      "unit": "秒",
+      "des": "对应模块周期护罩生成间隔"
+    },
+    "adaptation_b2_duration": {
+      "id": "adaptation_b2_duration",
+      "value": 1,
+      "unit": "秒",
+      "des": "无抗性周期护罩的持续时间"
+    },
+    "adaptation_b2_capacity_multiplier": {
+      "id": "adaptation_b2_capacity_multiplier",
+      "value": 1,
+      "unit": "倍率",
+      "des": "周期护罩容量乘以真实防御最大值＋自身记忆上限"
+    },
+    "adaptation_b3_resistance_bonus": {
+      "id": "adaptation_b3_resistance_bonus",
+      "value": 0.25,
+      "unit": "百分点比例",
+      "des": "强化已存在抗性所增加的减伤比例"
+    },
+    "memory_a_bonus": {
+      "id": "memory_a_bonus",
+      "value": 0.2,
+      "unit": "比例/节点",
+      "des": "记忆A节点恢复与保护上限加成；节点相加"
+    },
+    "memory_b1_probability": {
+      "id": "memory_b1_probability",
+      "value": 0.1,
+      "unit": "概率/恢复跳",
+      "des": "实际全局恢复跳触发共享减伤的概率"
+    },
+    "memory_b1_reduction": {
+      "id": "memory_b1_reduction",
+      "value": 0.5,
+      "unit": "比例",
+      "des": "恢复触发的共享原始伤害减免"
+    },
+    "memory_b1_duration": {
+      "id": "memory_b1_duration",
+      "value": 1,
+      "unit": "秒",
+      "des": "恢复触发的共享减伤持续时间"
+    },
+    "memory_b2_resistance": {
+      "id": "memory_b2_resistance",
+      "value": 0.5,
+      "unit": "减伤比例",
+      "des": "记忆保护授予匹配物理或能量抗性"
+    },
+    "memory_b2_duration": {
+      "id": "memory_b2_duration",
+      "value": 2,
+      "unit": "秒",
+      "des": "记忆保护匹配抗性的持续时间"
+    },
+    "memory_b2_lockout": {
+      "id": "memory_b2_lockout",
+      "value": 2,
+      "unit": "秒",
+      "des": "异类来袭清除后禁止重获抗性的时间"
+    },
+    "memory_b3_shield_charge_bonus": {
+      "id": "memory_b3_shield_charge_bonus",
+      "value": 0.4,
+      "unit": "比例/件",
+      "des": "每件启用能量护盾增加记忆充能"
+    },
+    "memory_b3_armour_capacity_bonus": {
+      "id": "memory_b3_armour_capacity_bonus",
+      "value": 0.4,
+      "unit": "比例/件",
+      "des": "每件启用复合装甲增加记忆上限"
+    },
+    "deferred_a_clear_probability": {
+      "id": "deferred_a_clear_probability",
+      "value": 0.1,
+      "unit": "百分点比例/节点",
+      "des": "延迟A节点增加全局清除概率；每节点只计一次"
+    },
+    "deferred_b1_reduction": {
+      "id": "deferred_b1_reduction",
+      "value": 0.2,
+      "unit": "比例",
+      "des": "清除队列触发的共享原始伤害减免"
+    },
+    "deferred_b1_duration": {
+      "id": "deferred_b1_duration",
+      "value": 1,
+      "unit": "秒",
+      "des": "清除队列触发的共享减伤持续时间"
+    },
+    "deferred_b2_probability_conversion": {
+      "id": "deferred_b2_probability_conversion",
+      "value": 0.5,
+      "unit": "倍率",
+      "des": "未强制的清除概率转化为减伤的比例"
+    },
+    "deferred_b3_forced_probability": {
+      "id": "deferred_b3_forced_probability",
+      "value": 1,
+      "unit": "概率",
+      "des": "必然消散的实际清除概率；默认必定"
+    },
+    "deferred_b3_damage_scale": {
+      "id": "deferred_b3_damage_scale",
+      "value": 1,
+      "unit": "倍率",
+      "des": "未强制清除概率缺口转化为伤害增加的系数"
     }
   }
 }

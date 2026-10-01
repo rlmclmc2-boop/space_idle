@@ -26,9 +26,17 @@ var locked_preview: Button
 var job_label: Label
 var exploration_samples: Dictionary = {}
 
-const SURFACE := Color("071b2c")
-const ACCENT := Color("27dff4")
-const BORDER := Color("184861")
+const SKIN := preload("res://scripts/dialog_presentation.gd")
+const SURFACE := Color("ecebdc")
+const ACCENT := Color("83cfcb")
+const BORDER := Color("243d50")
+const INK := Color("243d50")
+const MUTED := Color("506878")
+const GENERIC_PORTRAIT := "res://assets/ui/crew.svg"
+const JOB_ICONS := {"equipment":preload("res://assets/ui/shell/equipment.svg"),"hightech":preload("res://assets/ui/shell/research.svg"),"reactor":preload("res://assets/ui/shell/reactor.svg"),"jewel":preload("res://assets/ui/shell/jewel.svg"),"galaxy":preload("res://assets/ui/shell/galaxy.svg")}
+const ENHANCEMENT_BADGE := "res://assets/ui/shell/enhancement.svg"
+const IDLE_ICON := preload("res://assets/ui/shell/crew.svg")
+const EXPLORATION_ICON := preload("res://assets/ui/shell/planet.svg")
 var row_fields: Dictionary = {}
 var portrait: TextureRect
 var experience: ProgressBar
@@ -40,11 +48,15 @@ var assignment_section: VBoxContainer
 var detail_body: VBoxContainer
 var level_effect_label: Label
 var parameter_column: VBoxContainer
+var empty_label: Label
+var level_section: VBoxContainer
+var assignment_badge: TextureRect
 
-func label(parent: Node, value: String, font_size := 22, color := Color("dceefa")) -> Label:
+func label(parent: Node, value: String, font_size := 22, color := INK) -> Label:
 	var control:=Label.new()
 	control.text=value
 	control.add_theme_font_size_override("font_size",font_size)
+	control.add_theme_font_override("font",SKIN.SHELL.face(600 if font_size>=24 else 500))
 	control.add_theme_color_override("font_color",color)
 	control.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	parent.add_child(control)
@@ -62,11 +74,11 @@ func section(parent: Node, key: String) -> VBoxContainer:
 	marker.custom_minimum_size=Vector2(4,24)
 	marker.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	heading.add_child(marker)
-	label(heading,UIText.t(key),24,ACCENT)
+	label(heading,UIText.t(key),24,INK)
 	var line:=HSeparator.new()
 	var divider:=StyleBoxLine.new()
 	divider.color=BORDER
-	divider.thickness=1
+	divider.thickness=2
 	line.add_theme_stylebox_override("separator",divider)
 	line.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	line.size_flags_vertical=Control.SIZE_SHRINK_CENTER
@@ -75,7 +87,7 @@ func section(parent: Node, key: String) -> VBoxContainer:
 
 func avatar(parent: Node, extent: float) -> TextureRect:
 	var image:=TextureRect.new()
-	image.texture=preload("res://assets/ui/crew.svg")
+	image.texture=IDLE_ICON
 	image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	image.custom_minimum_size=Vector2.ONE*extent
@@ -85,23 +97,24 @@ func avatar(parent: Node, extent: float) -> TextureRect:
 
 func setup(owner_ui: Node) -> void:
 	host=owner_ui
-	add_theme_font_override("font",host.font)
+	add_theme_font_override("font",SKIN.SHELL.face(500))
+	theme=SKIN.theme()
 	var header:=label(self,UIText.t("crew.heading"),32,ACCENT)
 	header.position=Vector2(24,18)
-	var subtitle:=label(self,UIText.t("crew.api_only"),18,host.MUTED)
+	var subtitle:=label(self,UIText.t("crew.page_hint"),18,SURFACE)
 	subtitle.position=Vector2(24,62)
 	for region in [Rect2(16,112,476,1046),Rect2(508,112,824,1046)]:
 		var frame:=Panel.new()
 		frame.position=region.position
 		frame.size=region.size
 		frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		frame.add_theme_stylebox_override("panel",host.style(SURFACE,BORDER))
+		frame.add_theme_stylebox_override("panel",SKIN.surface(SURFACE,BORDER,0))
 		add_child(frame)
-	list_heading=label(self,UIText.t("crew.list_heading"),24,ACCENT)
+	list_heading=label(self,UIText.t("crew.list_heading"),24,INK)
 	list_heading.position=Vector2(34,130)
 	scroll=ScrollContainer.new()
 	scroll.position=Vector2(30,178)
-	scroll.size=Vector2(448,962)
+	scroll.size=Vector2(448,954)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 	list=VBoxContainer.new()
@@ -111,6 +124,10 @@ func setup(owner_ui: Node) -> void:
 	detail_scroll=ScrollContainer.new()
 	detail_scroll.position=Vector2(536,140)
 	detail_scroll.size=Vector2(768,990)
+	empty_label=label(self,UIText.t("crew.empty"),24,MUTED)
+	empty_label.position=Vector2(560,180)
+	empty_label.size=Vector2(712,120)
+	empty_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(detail_scroll)
 	detail_body=VBoxContainer.new()
@@ -127,13 +144,20 @@ func setup(owner_ui: Node) -> void:
 	identity_text.add_theme_constant_override("separation",10)
 	identity.add_child(identity_text)
 	title=label(identity_text,"",30)
-	status=label(identity_text,"",20,ACCENT)
+	title.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var status_row:=HBoxContainer.new()
+	status_row.add_theme_constant_override("separation",10)
+	identity_text.add_child(status_row)
+	assignment_badge=avatar(status_row,28)
+	status=label(status_row,"",20,MUTED)
+	status.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	effect_section=section(detail_body,"crew.current_effect")
 	var effect_body:=VBoxContainer.new()
 	effect_body.add_theme_constant_override("separation",8)
 	effect_section.add_child(effect_body)
 	effect_title=label(effect_body,"",26)
-	description=label(effect_body,"",22,Color("a8c8df"))
+	description=label(effect_body,"",22,MUTED)
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	assignment_section=section(detail_body,"crew.assignment_settings")
 	var settings:=HBoxContainer.new()
@@ -143,14 +167,14 @@ func setup(owner_ui: Node) -> void:
 	job_column.add_theme_constant_override("separation",10)
 	job_column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	settings.add_child(job_column)
-	job_label=label(job_column,UIText.t("crew.assign_to"),20,host.MUTED)
+	job_label=label(job_column,UIText.t("crew.assign_to"),20,MUTED)
 	jobs=picker(job_column)
 	jobs.item_selected.connect(func(_index):refresh_targets();refresh_actions())
 	parameter_column=VBoxContainer.new()
 	parameter_column.add_theme_constant_override("separation",10)
 	parameter_column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	settings.add_child(parameter_column)
-	target_label=label(parameter_column,"",20,host.MUTED)
+	target_label=label(parameter_column,"",20,MUTED)
 	target_picker=picker(parameter_column)
 	target_picker.item_selected.connect(func(_index):refresh_actions())
 	upgrade_picker=picker(parameter_column)
@@ -167,12 +191,12 @@ func setup(owner_ui: Node) -> void:
 	locked_preview.disabled=true
 	locked_preview.focus_mode=Control.FOCUS_NONE
 	locked_preview.alignment=HORIZONTAL_ALIGNMENT_LEFT
-	locked_preview.icon=preload("res://assets/ui/crew_locked.svg")
+	locked_preview.icon=preload("res://assets/ui/crew/locked.svg")
 	locked_preview.add_theme_constant_override("icon_max_width",42)
 	locked_preview.add_theme_constant_override("h_separation",16)
 	locked_preview.add_theme_font_size_override("font_size",20)
-	locked_preview.add_theme_color_override("font_disabled_color",host.MUTED)
-	var locked_style=host.style(Color("0a1b2b"),Color("153247"))
+	locked_preview.add_theme_color_override("font_disabled_color",MUTED)
+	var locked_style=SKIN.surface(Color("d6ded4"),Color("80949a"),16)
 	locked_style.content_margin_left=16
 	locked_preview.add_theme_stylebox_override("disabled",locked_style)
 	list.add_child(locked_preview)
@@ -186,12 +210,12 @@ func picker(parent: Control) -> OptionButton:
 	control.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	control.fit_to_longest_item=false
 	control.add_theme_font_size_override("font_size",22)
-	for state in ["normal","hover","pressed","focus"]:
-		var skin=host.style(Color("0c273d"),ACCENT if state=="focus" else BORDER)
+	SKIN.option(control)
+	for state in ["normal","hover","pressed","disabled","focus"]:
+		var skin: StyleBoxFlat=control.get_theme_stylebox(state).duplicate()
 		skin.content_margin_left=16
 		skin.content_margin_right=38
 		control.add_theme_stylebox_override(state,skin)
-	control.get_popup().add_theme_font_size_override("font_size",22)
 	parent.add_child(control)
 	return control
 
@@ -200,9 +224,7 @@ func action(key: String, callback: Callable, parent: Control, primary := false) 
 	control.custom_minimum_size=Vector2(0,60)
 	control.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	control.add_theme_font_size_override("font_size",24)
-	if primary:
-		control.add_theme_stylebox_override("normal",host.style(Color("07506c"),ACCENT))
-		control.add_theme_color_override("font_color",Color("c7f9ff"))
+	SKIN.button_skin(control,primary)
 	control.reparent(parent,false)
 	return control
 
@@ -259,7 +281,9 @@ func refresh_row(item: Dictionary) -> void:
 	host.set_ui_value(fields.role,"text",role)
 	var state:=UIText.t("crew.paused") if assigned and not g.crew.active(g,item) else ""
 	host.set_ui_value(fields.state,"text",state)
-	host.set_ui_value(rows[id],"tooltip_text","")
+	host.set_ui_value(fields.avatar,"texture",member_portrait(item))
+	host.set_ui_value(fields.badge,"texture",job_icon(item))
+	host.set_ui_value(rows[id],"tooltip_text",g.crew.display_name(g,item)+"\n"+role+(" · "+state if not state.is_empty() else ""))
 
 func refresh() -> void:
 	if not is_visible_in_tree():
@@ -284,24 +308,40 @@ func refresh() -> void:
 		var definition: Dictionary=g.crew.definitions(g)[id]
 		if not rows.has(id):
 			var button:=Button.new()
-			button.custom_minimum_size=Vector2(0,108)
-			button.add_theme_stylebox_override("normal",host.style(Color("0b2134"),BORDER))
-			button.add_theme_stylebox_override("hover",host.style(Color("103b50"),ACCENT))
-			button.add_theme_stylebox_override("focus",host.style(Color("103b50"),ACCENT))
+			button.custom_minimum_size=Vector2(0,116)
+			SKIN.button_skin(button)
+			button.add_theme_stylebox_override("hover",SKIN.surface(Color("d6e9df"),BORDER,4))
 			button.pressed.connect(func():select(id))
 			list.add_child(button)
 			rows[id]=button
+			var marker:=ColorRect.new()
+			marker.color=Color.TRANSPARENT
+			marker.position=Vector2(7,18)
+			marker.size=Vector2(6,80)
+			marker.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			button.add_child(marker)
 			var image:=avatar(button,64)
-			image.position=Vector2(16,22)
+			image.position=Vector2(22,22)
 			image.size=Vector2(64,64)
-			if ResourceLoader.exists(str(definition.icon)):image.texture=load(str(definition.icon))
 			var name_label:=label(button,"",24)
-			name_label.position=Vector2(96,18)
-			var role_label:=label(button,"",21,Color("89dcec"))
-			role_label.position=Vector2(96,57)
-			var state_label:=label(button,"",17,host.MUTED)
-			state_label.position=Vector2(350,62)
-			row_fields[id]={"name":name_label,"role":role_label,"state":state_label}
+			name_label.position=Vector2(104,16)
+			name_label.size=Vector2(312,36)
+			name_label.clip_text=true
+			name_label.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+			var badge:=avatar(button,26)
+			badge.position=Vector2(104,65)
+			badge.size=Vector2(26,26)
+			var role_label:=label(button,"",21,MUTED)
+			role_label.position=Vector2(138,59)
+			role_label.size=Vector2(182,40)
+			role_label.clip_text=true
+			role_label.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+			var state_label:=label(button,"",18,MUTED)
+			state_label.position=Vector2(324,61)
+			state_label.size=Vector2(96,36)
+			state_label.clip_text=true
+			state_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+			row_fields[id]={"name":name_label,"role":role_label,"state":state_label,"avatar":image,"badge":badge,"marker":marker}
 		refresh_row(item)
 	for id in rows.keys():
 		if not ids.has(id):
@@ -338,7 +378,8 @@ func refresh_selection() -> void:
 		var active: bool=id==selected
 		if button.get_meta("selected",false)==active:continue
 		button.set_meta("selected",active)
-		button.add_theme_stylebox_override("normal",host.style(Color("0d3b50") if active else Color("0b2134"),ACCENT if active else BORDER))
+		button.add_theme_stylebox_override("normal",SKIN.surface(Color("b7ddd2") if active else Color("f7f4e6"),BORDER,4))
+		row_fields[id].marker.color=INK if active else Color.TRANSPARENT
 
 func job_title(row: Dictionary) -> String:
 	return UIText.t(str(row.titleTextId)) if not str(row.get("titleTextId","")).is_empty() else str(row.get("description",""))
@@ -390,16 +431,19 @@ func refresh_detail() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
 	host.set_ui_value(detail_body,"visible",not item.is_empty())
+	host.set_ui_value(empty_label,"visible",item.is_empty())
 	if item.is_empty():return
 	var row: Dictionary=g.crew.definitions(g)[selected]
 	host.set_ui_value(title,"text",g.crew.display_name(g,item))
-	if ResourceLoader.exists(str(row.icon)):host.set_ui_value(portrait,"texture",load(str(row.icon)))
+	host.set_ui_value(portrait,"texture",member_portrait(item))
+	host.set_ui_value(assignment_badge,"texture",job_icon(item))
 	refresh_detail_status(item)
 	refresh_actions()
 
 func refresh_detail_status(item: Dictionary) -> void:
 	var g=host.game
 	ensure_level_ui()
+	if is_instance_valid(level_section):host.set_ui_value(level_section,"visible",g.crew.levels_unlocked(g))
 	if g.crew.levels_unlocked(g):
 		var required: float=g.crew.required_exp(g,int(item.level))
 		host.set_ui_value(exp_label,"text",g.crew.format_text(g,"exp_bar",{"exp":NumberFormat.precise(float(item.exp)),"needed":NumberFormat.precise(required)}))
@@ -468,15 +512,34 @@ func refresh_actions() -> void:
 func ensure_level_ui() -> void:
 	if not host.game.crew.levels_unlocked(host.game) or is_instance_valid(experience):return
 	var progress:=VBoxContainer.new()
+	level_section=progress
 	progress.add_theme_constant_override("separation",10)
 	detail_body.add_child(progress)
-	exp_label=label(progress,"",22,Color("9fd9ed"))
+	exp_label=label(progress,"",22,INK)
+	exp_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	experience=ProgressBar.new()
-	experience.custom_minimum_size=Vector2(0,14)
+	experience.custom_minimum_size=Vector2(0,20)
 	experience.show_percentage=false
-	experience.add_theme_stylebox_override("background",host.style(Color("0b253a"),BORDER))
-	experience.add_theme_stylebox_override("fill",host.style(Color("159db8"),ACCENT))
+	experience.add_theme_stylebox_override("background",SKIN.surface(Color("d4ded6"),BORDER,0))
+	experience.add_theme_stylebox_override("fill",SKIN.surface(ACCENT,BORDER,0))
 	progress.add_child(experience)
 	detail_body.move_child(progress,1)
-	level_effect_label=label(progress,"",20,Color("a8c8df"))
+	level_effect_label=label(progress,"",20,MUTED)
 	level_effect_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+
+func job_icon(item: Dictionary) -> Texture2D:
+	if not host.game.crew_exploration(str(item.crewId)).is_empty():return EXPLORATION_ICON
+	var job: Dictionary=host.game.crew.assignments(host.game).get(str(item.assignmentType),{})
+	var target_type:=str(job.get("targetType",""))
+	# The enhancement rollout retains the legacy jewel assignment identity.
+	# Its UI owns this icon; prefer it once that independently landed asset exists.
+	if target_type=="jewel" and ResourceLoader.exists(ENHANCEMENT_BADGE):return load(ENHANCEMENT_BADGE)
+	return JOB_ICONS.get(target_type,IDLE_ICON)
+
+func member_portrait(item: Dictionary) -> Texture2D:
+	var definition: Dictionary=host.game.crew.definitions(host.game)[str(item.crewId)]
+	var path:=str(definition.get("icon",""))
+	# The shipped generic silhouette has no character identity. Show the current
+	# job badge for that fallback only; a configured custom portrait always wins.
+	if not path.is_empty() and path!=GENERIC_PORTRAIT and ResourceLoader.exists(path):return load(path)
+	return job_icon(item)

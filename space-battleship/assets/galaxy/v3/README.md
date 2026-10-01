@@ -1,29 +1,30 @@
-# Galaxy 3D assets
+# Galaxy orbital assets
 
-Runtime source is GLB. Rebuild with the installed Blender executable:
+GLB is the runtime authority. The separate central headquarters anchors 30 functional nodes in the first Galaxy; placement, rotation, connectivity and counts come only from the saved construction blueprint documented in [GALAXY](../../../docs/GALAXY.md).
 
-```powershell
-& 'I:/Program Files/Blender Foundation/Blender 5.2/blender.exe' --background --python tools/galaxy_assets_blender.py
+## Rebuild and provenance
+
+All geometry is original, procedural repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The core's selected rounded concept is modeled by [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py) with [baked shading](../../../tools/galaxy_core_detail.py). It remains a separate headquarters, never a functional slot.
+
+All six functional families have five unique progressive levels: habitat rings, open-rail shipyards, solar paddles, orbital alloy foundries, clamped crystal processing rigs and heavy-element pressure vessels. Broad ivory armor, navy hulls, teal glazing and restrained amber service lamps match the accepted ship world. Floating hulls, cargo berths and service collars keep the stations orbital; no ground stairs, smoke or terrain are baked into them.
+
+From the project directory with Blender 4.3 or newer:
+
+```
+blender --background --python tools/galaxy_toon_buildings.py -- --shuttle
 ```
 
-Run from the project directory. Optional `-- --preview-dir <directory>` renders an inspection lineup. No add-ons, textures, downloaded assets, or `.blend` runtime dependency. Geometry and materials are authored procedurally in [the generator](../../../tools/galaxy_assets_blender.py); [manifest.json](manifest.json) records exact paths, dimensions and triangle counts.
+Add `--family colony_ring interstellar_refinery --levels 1 5` for a filtered rebuild. Add `--preview-dir PATH` to render a level lineup; `--preview-only` avoids re-exporting. Disable Cycles denoising where OpenImageDenoise is unavailable (the generator does this). To rebuild only the preserved headquarters, use `tools/galaxy_assets_blender.py -- --core-only`.
 
-Use `-- --core-only` to rebuild only the central station and its manifest entry. Its current geometry lives in [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py): a thick rounded ring, six soft armor clasps, three curved bridges, a squat panoramic command tower and two landing pads. [galaxy_core_detail.py](../../../tools/galaxy_core_detail.py) supplies baked local ambient occlusion. Vertex colors carry tint and shading; preserve `COLOR_0` when re-exporting. The core uses baked occlusion instead of casting hard runtime shadows.
+[manifest.json](manifest.json) records exact paths, bounds, triangle counts and bytes. Geometry is bounded per model; levels change the silhouette without exceeding the plan's reserved footprint. There is no runtime Blender dependency.
 
-## Scope and art brief
+## Runtime contract
 
-The central core now trials the subsequently selected rounded cartoon 3D direction. The other assets remain from the earlier C-direction trial: five colony levels, a shuttle, and one model for each of the other five families. Those families still share their first model across gameplay levels; this is not the completed 30-model set. Previous static PNGs are not the final 3D presentation.
+- Godot Y-up; one Blender unit equals one Godot unit. Root is true planar center and bottom center. Apply blueprint `rotation_y`; the current renderer scale is 1.2. Model and dock extensions must remain inside the complete 14×14 functional footprint (core 32×32)
+- `Structure` is merged static geometry. `DockSocket` is a child transform; find it recursively beneath the imported root. The shuttle nose points toward Godot -Z
+- `Core*` and `GalaxyToon*` materials use white albedo with baked tint/shading in `COLOR_0`; enable vertex-color albedo after import. Preserve this attribute on re-export. Material names are shared cache keys
+- Opaque meshes only. No per-building lights, cameras, physics, embedded animation, live viewports or transparency stacks. The entire Galaxy uses one independent orthographic viewport
+- Planned footprints and static transit corridors are renderer geometry. Corridors and traffic consume exact blueprint edge paths, never a second inferred graph. A building under construction reveals its real model using full `node_progress`, with a restrained gantry; upgrading retains the current-level model
+- Visible sampling updates affected model/state nodes only. Cached assets/materials/static routes are reused; hidden and paused pages stop viewport rendering, shader clock, traffic and construction motion
 
-Current core brief: broad ivory armor, deep navy recesses, large teal glazing and a few warm amber lamps. Rounded silhouettes and restrained surface detail must read at normal gameplay size. Geometry follows the selected imagegen concept; no concept image is used as a runtime background. Other buildings retain their earlier silhouettes until this sample is accepted.
-
-## Integration contract
-
-- Godot Y-up; one Blender unit equals one Godot unit. Root origin is bottom center. Runtime does not need axis correction.
-- Use manifest dimensions to check slot clearance when changing geometry. Visual framing does not change saved slot positions or gameplay progress.
-- `Structure` is merged static geometry. `DockSocket` is a child transform for route endpoints. Find nodes recursively beneath the imported root.
-- Optional `ActivityRing` is separate geometry centered on its rotation axis; animate low-frequency rotation about Godot Y. Stop presentation processing when hidden.
-- Shuttle nose points toward Godot -Z. Its runtime footprint is approximately 1.3 × 1.7 units.
-- Materials use stable `Galaxy*` names across the initial families and separate `Core*` names for the detailed station, with opaque surfaces, metallic roughness and emission. The renderer may cache materials by name across imported models. No per-building lights, cameras, physics, embedded animation or transparency layers.
-- Use fixed isometric orthographic projection (45-degree azimuth, approximately 35-degree downward pitch) to expose both sides and the top. Dragging must follow screen-space pointer motion under this camera orientation.
-
-Preview lineup order: core, colony Lv1, Lv2, Lv3; colony Lv4, Lv5, shipyard, energy; iron refinery, crystal refinery, heavy refinery, shuttle. Preview scales core to 45% and shuttle to 300% for inspection only; exported GLBs retain real scale.
+Use the logic-owned [complete fixture](../../../../test/fixtures/galaxy_1_complete.json) for normal-UI full-build QA. `test_galaxy_assets.gd` verifies all level imports, vertex tint and scaled footprint; `test_galaxy_ui.gd` verifies exact plan consumption, normal UI captures, picking, pan/zoom, construction/upgrade states and stopping/reuse behavior.

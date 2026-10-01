@@ -1,0 +1,149 @@
+{
+  "canvas": [
+    768,
+    768
+  ],
+  "hulls": {
+    "Battleship": {
+      "height": 600.0,
+      "model": "res://dev/toon_ship/hulls/battleship.glb",
+      "mounts": [
+        [
+          257.066009521484,
+          258.013214111328
+        ],
+        [
+          510.933990478516,
+          258.013214111328
+        ],
+        [
+          257.066009521484,
+          509.986694335938
+        ],
+        [
+          510.933990478516,
+          509.986694335938
+        ]
+      ],
+      "texture": "res://assets/ui/ships/Battleship.png"
+    },
+    "Cruiser": {
+      "height": 574.835361037259,
+      "model": "res://dev/toon_ship/hulls/cruiser.glb",
+      "mounts": [
+        [
+          384.0,
+          214.406799316406
+        ],
+        [
+          214.406860351562,
+          383.999938964844
+        ],
+        [
+          553.593139648438,
+          383.999938964844
+        ],
+        [
+          384.0,
+          553.593078613281
+        ]
+      ],
+      "texture": "res://assets/ui/ships/Cruiser.png"
+    },
+    "Destroyer": {
+      "height": 600.0,
+      "model": "res://dev/toon_ship/hulls/destroyer.glb",
+      "mounts": [
+        [
+          245.625579833984,
+          305.378112792969
+        ],
+        [
+          522.374450683594,
+          305.378112792969
+        ],
+        [
+          384.0,
+          551.726501464844
+        ]
+      ],
+      "texture": "res://assets/ui/ships/Destroyer.png"
+    },
+    "Frigate": {
+      "height": 600.0,
+      "model": "res://dev/toon_ship/hulls/frigate.glb",
+      "mounts": [
+        [
+          384.0,
+          240.076873779297
+        ],
+        [
+          244.309951782227,
+          484.534454345703
+        ],
+        [
+          523.690063476562,
+          484.534454345703
+        ]
+      ],
+      "texture": "res://assets/ui/ships/Frigate.png"
+    },
+    "Heavy_Battleship": {
+      "height": 600.0,
+      "model": "res://dev/toon_ship/hulls/heavy_battleship.glb",
+      "mounts": [
+        [
+          384.0,
+          182.360916137695
+        ],
+        [
+          192.229949951172,
+          321.690063476562
+        ],
+        [
+          575.770080566406,
+          321.690063476562
+        ],
+        [
+          265.479583740234,
+          547.129333496094
+        ],
+        [
+          502.520416259766,
+          547.129333496094
+        ]
+      ],
+      "texture": "res://assets/ui/ships/Heavy_Battleship.png"
+    }
+  },
+  "renderer": "res://scripts/presented_ship_view.gd",
+  "settings": {
+    "emission_strength": 1.0,
+    "engine_emission": 1.4,
+    "outline_strength": 0.0,
+    "rim_power": 4.5,
+    "rim_strength": 0.22,
+    "shield_opacity": 0.12,
+    "specular_strength": 0.04,
+    "toon_shadow_threshold": 0.6,
+    "toon_steps": 3
+  },
+  "source_manifest": "res://dev/toon_ship/hybrid_manifest.json",
+  "source_sha256": {
+    "res://dev/toon_ship/hybrid_manifest.json": "57ad665790cc8cfedc223d86da36b93dc52a0f3159bf2ea30e8461e8236055bf",
+    "res://addons/flexible_toon_shader/flexible_toon.gdshader": "58e2b528ed66de6c1c09f3e41b21605bd155b84d504422e5f4f671732a8dd985",
+    "res://scripts/battlefield.gd": "41a08aefc19f1c4d9920edc67cb3c1be790ddd26ad43d35b9e4669da33259855",
+    "res://dev/toon_ship/hulls/battleship.glb": "609a0e151b46a13ce295c110f75508bef5ece58f692b37d01ee5be295fb84ae5",
+    "res://dev/toon_ship/hulls/cruiser.glb": "9fde8b38ea99bf4f84886afb603def670301f635242e109b7b899f78bb75d4a3",
+    "res://dev/toon_ship/hulls/destroyer.glb": "b19d55b43851aeb26efa4e4c982ba1de5dd2e694e2397e5afd0568707f816638",
+    "res://dev/toon_ship/hulls/frigate.glb": "0b73a239bc7891da538e546984d89628eced02d25da7a176b9d7704513ecf40b",
+    "res://dev/toon_ship/hulls/heavy_battleship.glb": "db0fb37147f254436ff503eff83bb8e33c97d409231151c0d3b908e1d33aaab2",
+    "res://scripts/presented_ship_view.gd": "352bbc1c1589cc8c66466c4f2976d2a0f52e64148875598e70489422b8840fc8"
+  },
+  "baked_renderer_source": {
+    "commit": "23fa12c6a74c5dfcea6df238a1d0b4e77f589b1c",
+    "path": "res://dev/toon_ship/ship_view.gd",
+    "sha256": "1da07ab055d70cf5e2a8841df2146b6fde0b83191b966ff1ad766bdb9bc1cc39",
+    "relocation": "Reviewed implementation preserved; only weapon resource paths relocated to retain main8-slot dev prototype"
+  }
+}

@@ -103,18 +103,9 @@ func act(game: BattleGame, elapsed: float) -> bool:
 		var count := game.reactor_max_upgrades()
 		if count > 0:game.upgrade_reactor(count)
 		game.equalize_reactor_allocation()
-	# Gem scans run every ten game seconds, independent of display speed.
-	if int(round(elapsed)) % 10 == 0 and game.jewels_unlocked():
-		game.combine_all_jewels()
-		game.sort_jewels(true)
-		for category in ["weapons","defence"]:
-			for index in game.loadout_entries(category).size():
-				var entry := game.slot_entry(category,index)
-				for socket in game.equipment_socket_count(entry):
-					var installed: Array = entry.get("sockets",[])
-					var level := int(installed[socket].get("level",0)) if socket < installed.size() else 0
-					for gem in game.profile.jewels.duplicate():
-						if int(gem.level) > level and game.socket_jewel(category,index,socket,int(gem.token)):break
+	# Shared enhancement purchase cadence remains ten game seconds.
+	if int(round(elapsed)) % 10 == 0 and game.enhancement_unlocked():
+		game.upgrade_enhancement(-1)
 	return affordable
 
 func buy_scientist(game: BattleGame, fraction: float) -> void:

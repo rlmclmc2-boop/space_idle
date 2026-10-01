@@ -13,7 +13,7 @@ import openpyxl
 from galaxy_config import validate as validate_galaxy
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "jewel":"jewel", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff"}
+SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff", "enhance_config":"enhance_config"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
 SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config')})
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
@@ -39,7 +39,7 @@ def convert_sheet(name, rows):
                 raise ValueError(f'{name}: missing or duplicate key {key}')
             result[key] = row
         return result
-    if name in ('crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff'):
+    if name in ('crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff', 'enhance_config'):
         result = {}
         for source in rows:
             row = {k: ('' if v is None else v) for k, v in source.items()}
@@ -58,18 +58,12 @@ def convert_sheet(name, rows):
                 raise ValueError(f'{name}: duplicate {key}')
             result[key] = row
         return result
-    if name in ('mon', 'monGroup', 'res', 'level', 'jewel'):
+    if name in ('mon', 'monGroup', 'res', 'level'):
         ids = [row.get('id') for row in rows]
         if any(type(i) not in (int, float) or not math.isfinite(i) or i < 1 or i != int(i) for i in ids) or len(set(ids)) != len(ids):
             raise ValueError(ui_text('debug.import_workbook.message_02', name=name))
-    if name == 'jewel':
-        for row in rows:
-            positive(row.get('maxLevel'), 'jewel maxLevel')
-            if row['maxLevel'] != int(row['maxLevel']):
-                raise ValueError(ui_text('debug.import_workbook.message_07'))
-            row["image"] = row.get("image") or f"res://assets/jewels/{int(row['id'])}.svg"
-        return {str(int(row['id'])): row for row in rows}
     if name == 'config':
+        rows=[row for row in rows if row.get('name') not in ('jewelCreat','jewelCombine','equipmentSocket','baseCriDmg')]
         keys = [row.get('name') for row in rows]
         if any(not isinstance(key, str) or not key.strip() for key in keys) or len(set(keys)) != len(keys):
             raise ValueError(ui_text('debug.import_workbook.message_03'))
@@ -123,11 +117,6 @@ def convert_sheet(name, rows):
     if name=="res":
         return {str(r["id"]):r["name"] for r in rows}
     if name=="config":
-        for row in rows:
-            if row["name"] == "jewelCreat":
-                positive(row["para_1"], "config jewelCreat")
-                if row["para_1"] != int(row["para_1"]):
-                    raise ValueError(ui_text('debug.import_workbook.message_17'))
         return {r["name"]:r["para_1"] for r in rows}
     if name=="ship":
         result={}
@@ -141,6 +130,9 @@ def convert_sheet(name, rows):
 
 def projection_base(previous, source):
     data=copy.deepcopy(previous or {})
+    data.pop('jewel', None)
+    data.get('source_files', {}).pop('jewel', None)
+    for retired in ('jewelCreat','jewelCombine','equipmentSocket','baseCriDmg'):data.get('config',{}).pop(retired,None)
     data.pop('crew_level', None)
     data.get('source_files', {}).pop('crew_level', None)
     for row in data.get('crew', {}).values():
@@ -494,7 +486,7 @@ def validate_planets(data):
             raise ValueError(f'planet_buff {id}: unsupported source or condition')
         if row['condition']=='building_complete' and str(row['source_id']) not in data.get('planet_build', {}):
             raise ValueError(f'planet_buff {id}: unknown building')
-        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('drop_level','gem'),('crew_exp_share','all'),('planet_unlock','planet')):
+        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('level_bonus','enhancement'),('crew_exp_share','all'),('planet_unlock','planet')):
             raise ValueError(f'planet_buff {id}: unsupported buff target')
         if row['stack'] not in ('add','mul','max'):
             raise ValueError(f'planet_buff {id}: unsupported stack')
@@ -534,6 +526,39 @@ def validate_planets(data):
         if gate.get('type') != 'planet' or gate.get('target') != id:
             raise ValueError(f'planet {id}: invalid unlockId')
 
+    settings = data.get('enhance_config', {})
+    if settings:
+        required = 'cost_base cost_exponent threshold_1 threshold_2 threshold_3 base_critical_rate base_critical_multiplier critical_growth proficiency_growth adaptation_growth counter_log_base bonus_round_scale repeat_probability repeat_growth repeat_delay memory_interval memory_heal_fraction memory_buffer_fraction deferred_duration deferred_interval deferred_curve_coefficient deferred_percent_scale deferred_clear_probability branch_threshold_1 branch_threshold_2 branch_threshold_3'.split()
+        for key in required:
+            row = settings.get(key, {})
+            positive(row.get('value'), 'enhance_config ' + key, key in ('base_critical_rate','cost_exponent','critical_growth','proficiency_growth','adaptation_growth','repeat_probability','repeat_growth','memory_heal_fraction','memory_buffer_fraction','deferred_clear_probability'))
+            if not isinstance(row.get('des'), str) or not row['des'].strip() or not isinstance(row.get('unit'),str) or not row['unit'].strip():
+                raise ValueError('enhance_config ' + key + ': missing unit or description')
+        for key in ('base_critical_rate','repeat_probability','deferred_clear_probability'):
+            if settings[key]['value'] > 1:raise ValueError('enhance_config ' + key + ': probability exceeds one')
+        thresholds = [settings['threshold_' + str(i)]['value'] for i in (1,2,3)]
+        if any(n != int(n) for n in thresholds) or not thresholds[0] < thresholds[1] < thresholds[2]:
+            raise ValueError('enhance_config: expected ascending integer thresholds')
+        if settings['counter_log_base']['value'] <= 1:raise ValueError('enhance_config: logarithm base must exceed one')
+        if settings['cost_base']['value'] != int(settings['cost_base']['value']):raise ValueError('enhance_config: cost_base must be positive integer fragments')
+        exponent=settings['cost_exponent']['value']
+        if exponent != int(exponent) or not 0 <= exponent <= 16:raise ValueError('enhance_config: cost_exponent must be integer 0..16')
+        branch_thresholds=[settings['branch_threshold_'+str(i)]['value'] for i in (1,2,3)]
+        if any(n != int(n) for n in branch_thresholds) or not branch_thresholds[0] < branch_thresholds[1] < branch_thresholds[2]:raise ValueError('enhance_config: expected ascending integer branch thresholds')
+        precision=settings['deferred_percent_scale']['value']
+        if precision != int(precision):raise ValueError('enhance_config: deferred_percent_scale must be positive integer')
+
+    if settings:
+        for key in ['proficiency_a_damage_bonus', 'proficiency_b1_interval', 'proficiency_b1_growth', 'proficiency_b2_interval_multiplier', 'proficiency_b3_resistance', 'repeat_a_probability', 'repeat_b1_targets', 'repeat_b2_repeats', 'repeat_b3_probability', 'critical_a_probability', 'critical_b1_attacks', 'critical_b1_damage_bonus', 'critical_b2_probability', 'critical_b2_damage_bonus', 'critical_b2_stacks', 'critical_b2_duration', 'critical_b3_guaranteed_rate', 'adaptation_a_capacity_bonus', 'adaptation_b1_reduction', 'adaptation_b1_stacks', 'adaptation_b2_interval', 'adaptation_b2_duration', 'adaptation_b2_capacity_multiplier', 'adaptation_b3_resistance_bonus', 'memory_a_bonus', 'memory_b1_probability', 'memory_b1_reduction', 'memory_b1_duration', 'memory_b2_resistance', 'memory_b2_duration', 'memory_b2_lockout', 'memory_b3_shield_charge_bonus', 'memory_b3_armour_capacity_bonus', 'deferred_a_clear_probability', 'deferred_b1_reduction', 'deferred_b1_duration', 'deferred_b2_probability_conversion', 'deferred_b3_forced_probability', 'deferred_b3_damage_scale']:
+            row=settings.get(key,{})
+            positive(row.get('value'),'enhance_config '+key,key not in ['proficiency_b1_interval', 'proficiency_b2_interval_multiplier', 'critical_b2_duration', 'adaptation_b2_interval', 'adaptation_b2_duration', 'memory_b1_duration', 'memory_b2_duration', 'memory_b2_lockout', 'deferred_b1_duration'])
+            if not isinstance(row.get('des'),str) or not row['des'].strip() or not isinstance(row.get('unit'),str) or not row['unit'].strip():raise ValueError('enhance_config '+key+': missing unit or description')
+        for key in ['critical_b3_guaranteed_rate','memory_b1_reduction','adaptation_b1_reduction','deferred_b1_reduction','deferred_b2_probability_conversion','proficiency_b3_resistance', 'repeat_a_probability', 'repeat_b3_probability', 'critical_a_probability', 'critical_b2_probability', 'memory_b1_probability', 'memory_b2_resistance', 'deferred_a_clear_probability', 'deferred_b2_probability_conversion', 'deferred_b3_forced_probability']:
+            if settings[key]['value']>1:raise ValueError('enhance_config '+key+': fraction exceeds one')
+        for key in ['repeat_b1_targets', 'repeat_b2_repeats', 'critical_b1_attacks', 'critical_b2_stacks', 'adaptation_b1_stacks']:
+            if settings[key]['value']!=int(settings[key]['value']):raise ValueError('enhance_config '+key+': count must be integer')
+        if settings['repeat_b1_targets']['value']>10 or settings['repeat_b2_repeats']['value']>10:raise ValueError('enhance_config: derived attack count exceeds bounded budget 10')
+
     for id, row in data.get('planet_build', {}).items():
         required = 'id name des min_planet planet_rule planet_value order unlock_explore build_explore extra_crew type config1 config2'.split()
         if any(key not in row for key in required):
@@ -564,7 +589,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('ship','jewel','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff'):
+                if name in ('ship','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','enhance_config'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))

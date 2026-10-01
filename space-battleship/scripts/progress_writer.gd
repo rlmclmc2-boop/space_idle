@@ -69,5 +69,5 @@ static func _read_progress_file(path: String) -> Variant:
 	var data = parser.data
 	if data is Dictionary:
 		var version = data.get("version",0)
-		if (version is int or version is float) and (version == 2 or version == 3):return data
+		if (version is int or version is float) and (version == 2 or version == 3 or version == 4):return data
 	return null

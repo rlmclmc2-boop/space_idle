@@ -119,20 +119,32 @@ func run() -> void:
 	check(business.upgrade_slot(category,0,1) and int(entry.level)==level+1,"Upgrade remains successful with unavailable storage")
 	for id in cost:
 		check(business.profile.resources[id]==resources[id]-cost[id],"Upgrade debits configured cost once: "+str(id))
-	business.db.config.jewelCombine = 3
-	business.db.data.jewel["1"].maxLevel = 3
-	business.profile.jewels.clear()
-	for i in 3:business.profile.jewels.append(business.new_jewel("1",1))
-	var serial := business.jewel_serial
-	var combo := business.combine_all_jewels()
-	check(combo.ok and combo.count==1 and business.profile.jewels.size()==1 and business.profile.jewels[0].level==2 and business.jewel_serial==serial+1,"Gem operation commits rewards and serial without consulting disk")
+	business.profile.grantedUnlocks = business.granted_unlocks()
+	business.profile.grantedUnlocks.append(db.unlock_id("feature","jewels"))
+	business.profile.enhancementLevel = 30
+	business.profile.jewelFragments = 1.0e9
+	var fragment_cost = business.enhancement_cost()
+	check(business.upgrade_enhancement(1)==1 and business.enhancement_level()==31 and business.profile.jewelFragments==1.0e9-fragment_cost,"Enhancement upgrade commits one debit without consulting disk")
+	check(business.attempts==0 and business.builds==0,"Enhancement purchase is dirty-only")
+	check(business.set_enhancement_branch("weapons","critical",3,"B") and business.attempts==0,"Free branch selection is dirty-only")
+	check(business.set_enhancement_order("weapons",["critical","repeat","proficiency"]) and business.attempts==0,"Effect reorder is dirty-only")
+	business.enhancement_currency_changed()
+	check(business.attempts==0 and business.builds==0 and business.save_dirty,"Currency notification is dirty-only")
 	business.clear_level()
 	business.acknowledge_unlocks()
 	business.set_guard_death(1)
 	business.tick(6.0)
 	business.check_timed_save()
-	check(business.attempts==0 and business.builds==0,"Combat/state/settlement/upgrade/gem operations never build or write a save")
+	check(business.attempts==0 and business.builds==0,"Combat/state/settlement/upgrade/enhancement operations never build or write a save")
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
+	business.elapsed = 59.999
+	business.check_timed_save()
+	check(business.attempts==0,"Enhancement changes wait until the real-minute deadline")
+	business.elapsed = 60
+	business.check_timed_save()
+	var saved_business = PolicyGame.new(db,false)
+	saved_business.load_progress()
+	check(business.attempts==1 and saved_business.enhancement_level()==31 and saved_business.enhancement_branch_choice("weapons","critical",3)=="B" and saved_business.enhancement_order("weapons")==["critical","repeat","proficiency"],"Timed save reloads purchased level, branch and order together")
 
 	# Actual safe-write failures retain committed bytes and live business results.
 	g.paused = false

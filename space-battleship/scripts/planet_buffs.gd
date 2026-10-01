@@ -4,7 +4,7 @@ const FIELDS := {
 	"level_bonus:equipment":"equipment_level_bonus",
 	"level_bonus:hightech":"hightech_level_bonus",
 	"free_charge:all":"charge_free_ratio",
-	"drop_level:gem":"gem_drop_level_bonus",
+	"level_bonus:enhancement":"gem_drop_level_bonus",
 }
 
 func active(g, row: Dictionary) -> bool:

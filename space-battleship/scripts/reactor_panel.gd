@@ -1,8 +1,10 @@
 extends Panel
 
-const CYAN := Color("35e6fa")
-const MUTED := Color("82a7bd")
-const INK := Color("ddf7ff")
+const SKIN := preload("res://scripts/dialog_presentation.gd")
+const ACCENT := Color("83cfcb")
+const CYAN := Color("286b73")
+const MUTED := Color("506878")
+const INK := Color("243d50")
 const MODULE_COLORS := {"weapons":Color("ffab4d"),"defence":Color("53bbff"),"smelting":Color("3ff0bd"),"condensation":Color("c998ff")}
 const MODULE_ICONS := {"weapons":preload("res://assets/ui/reactor/weapon.svg"),"defence":preload("res://assets/ui/reactor/defence.svg"),"smelting":preload("res://assets/ui/reactor/smelting.svg"),"condensation":preload("res://assets/ui/reactor/condensation.svg")}
 const HEADER_ART := preload("res://assets/ui/reactor/reactor-header.png")
@@ -25,6 +27,7 @@ var capacity_label: Label
 var uranium_label: Label
 var next_label: Label
 var cost_label: Label
+var scroll_hint: Label
 var allocation_label: Label
 var remaining_label: Label
 var total_track: Control
@@ -36,7 +39,7 @@ var refreshing := false
 func make_label(parent: Control, key: String, at: Vector2, width: float, font_size := 18, color := INK, height := 42.0) -> Label:
 	var result: Label = host.equipment_card_label(parent,"" if key.is_empty() else UIText.t(key),Rect2(at,Vector2(width,height)),font_size,color)
 	result.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if font_size >= 24 and strong_font != null:result.add_theme_font_override("font",strong_font)
+	if font_size >= 18:result.add_theme_font_override("font",SKIN.SHELL.face(600))
 	return result
 
 func clipped_readout(parent: Control, at: Vector2, dimensions: Vector2, color: Color) -> Label:
@@ -57,8 +60,8 @@ func set_readout(label: Label, value: String) -> void:
 	if label.text == value:return
 	host.set_ui_value(label,"text",value)
 	var font: Font = label.get_theme_font("font")
-	var selected := 13
-	for font_size in range(25 if label.size.y > 40.0 else 17,12,-1):
+	var selected := 17
+	for font_size in range(33 if label.size.y > 40.0 else 23,16,-1):
 		if font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x <= label.size.x-8.0:
 			selected = font_size
 			break
@@ -94,14 +97,23 @@ func static_chrome(parent: Control, texture: Texture2D, at: Vector2, dimensions:
 	parent.add_child(chrome)
 	return chrome
 
-func button_style(button: Button, accent: Color, primary := false) -> void:
+func button_style(button: Button, _accent: Color, primary := false) -> void:
+	SKIN.button_skin(button,primary)
 	button.add_theme_font_size_override("font_size",21)
-	button.add_theme_color_override("font_color",INK)
-	button.add_theme_color_override("font_hover_color",Color.WHITE)
-	button.add_theme_stylebox_override("normal",host.style(Color(accent.r,accent.g,accent.b,0.2 if primary else 0.07),accent.darkened(0.2)))
-	button.add_theme_stylebox_override("hover",host.style(Color(accent.r,accent.g,accent.b,0.33),accent))
-	button.add_theme_stylebox_override("pressed",host.style(Color(accent.r,accent.g,accent.b,0.5),accent.lightened(0.3)))
-	button.add_theme_stylebox_override("disabled",host.style(Color("0b1b28"),Color("264051")))
+
+func readout_plate(parent: Control, at: Vector2, dimensions: Vector2) -> Panel:
+	var plate := card(parent,at,dimensions,INK)
+	plate.add_theme_stylebox_override("panel",SKIN.surface())
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return plate
+
+func update_scroll_hint() -> void:
+	if not is_instance_valid(scroll_hint):return
+	var count := module_controls.size()
+	var first: int = module_scroll.current_slot()+1
+	var last := mini(count,first+2)
+	var direction := UIText.t("reactor.scroll_more") if last<count else UIText.t("reactor.scroll_back") if first>1 else ""
+	host.set_ui_value(scroll_hint,"text",UIText.t("reactor.scroll_range",{"first":first,"last":last,"total":count})+direction)
 
 func image_region(parent: Control, texture: Texture2D, region: Rect2, at: Vector2, dimensions: Vector2) -> TextureRect:
 	var atlas := AtlasTexture.new()
@@ -109,7 +121,7 @@ func image_region(parent: Control, texture: Texture2D, region: Rect2, at: Vector
 	atlas.region = region
 	return static_chrome(parent,atlas,at,dimensions)
 
-func visual(parent: Control, mode: String, at: Vector2, dimensions: Vector2, accent := CYAN) -> Control:
+func visual(parent: Control, mode: String, at: Vector2, dimensions: Vector2, accent := ACCENT) -> Control:
 	var layer := preload("res://scripts/reactor_visual.gd").new()
 	layer.mode = mode
 	layer.accent = accent
@@ -135,9 +147,10 @@ func setup(owner_ui: Node) -> void:
 		var trim := 45 if section == 0 else 0
 		image_region(self,MODULE_BAY_FRAME,Rect2(397,trim*230.0/220.0,145,230-trim*230.0/220.0),Vector2(630,420+section*220+trim),Vector2(70,220-trim))
 	core = visual(self,"core",Vector2(187,70),Vector2(350,350))
-	var core_caption := make_label(self,"reactor.core_caption",Vector2(179,457),354,18,CYAN)
+	var core_caption := make_label(self,"reactor.core_caption",Vector2(179,457),354,18,SKIN.PAPER)
 	core_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	network = visual(self,"network",Vector2(345,315),Vector2(337,155))
+	readout_plate(self,Vector2(745,55),Vector2(580,295))
 	level_label = make_label(self,"",Vector2(766,72),530,44,CYAN,60)
 	energy_label = make_label(self,"",Vector2(766,153),272,28,CYAN)
 	uranium_label = make_label(self,"",Vector2(1055,153),250,26,INK)
@@ -157,6 +170,7 @@ func setup(owner_ui: Node) -> void:
 		button.pressed.connect(upgrade.bind(mode))
 		upgrade_group.add_child(button)
 		upgrade_buttons[mode] = button
+	readout_plate(self,Vector2(48,536),Vector2(546,196))
 	make_label(self,"reactor.control_heading",Vector2(59,552),380,29,INK)
 	make_label(self,"reactor.control_subtitle",Vector2(60,593),380,13,MUTED,24)
 	equalize_button = Button.new()
@@ -167,18 +181,19 @@ func setup(owner_ui: Node) -> void:
 	equalize_button.pressed.connect(func():host.game.equalize_reactor_allocation();refresh())
 	add_child(equalize_button)
 	capacity_label = clipped_readout(self,Vector2(66,653),Vector2(246,65),CYAN)
-	allocation_label = clipped_readout(self,Vector2(66,1085),Vector2(510,22),MUTED)
-	remaining_label = clipped_readout(self,Vector2(338,653),Vector2(244,65),MODULE_COLORS.weapons)
+	allocation_label = clipped_readout(self,Vector2(66,1083),Vector2(510,38),MUTED)
+	remaining_label = clipped_readout(self,Vector2(338,653),Vector2(244,65),INK)
 	var count: int = host.game.reactor_modules().size()
 	module_scroll = preload("res://scripts/reactor_module_scroll.gd").new()
 	module_scroll.position = Vector2(648,420)
 	module_scroll.size = Vector2(692,660)
 	module_scroll.module_count = count
 	module_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	module_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	module_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+	module_scroll.theme = SKIN.theme()
 	add_child(module_scroll)
 	module_content = Control.new()
-	module_content.custom_minimum_size = Vector2(692,maxi(3,count)*BAY_HEIGHT)
+	module_content.custom_minimum_size = Vector2(670,maxi(3,count)*BAY_HEIGHT)
 	module_scroll.add_child(module_content)
 	allocation_scroll = preload("res://scripts/reactor_module_scroll.gd").new()
 	allocation_scroll.position = Vector2(48,744)
@@ -186,14 +201,16 @@ func setup(owner_ui: Node) -> void:
 	allocation_scroll.module_count = count
 	allocation_scroll.bay_height = 110
 	allocation_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	allocation_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	allocation_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+	allocation_scroll.theme = SKIN.theme()
 	add_child(allocation_scroll)
 	var allocation_content := Control.new()
 	allocation_content.custom_minimum_size = Vector2(546,maxi(3,count)*110)
 	allocation_scroll.add_child(allocation_content)
 	module_scroll.get_v_scroll_bar().value_changed.connect(func(_value):
 		allocation_scroll.go_to_slot(module_scroll.current_slot())
-		update_module_animation_visibility())
+		update_module_animation_visibility()
+		update_scroll_hint())
 	allocation_scroll.get_v_scroll_bar().value_changed.connect(func(_value):module_scroll.go_to_slot(allocation_scroll.current_slot()))
 	var index := 0
 	for key in host.game.reactor_modules():
@@ -223,8 +240,9 @@ func setup(owner_ui: Node) -> void:
 		dimmer.size = equipment_view.size
 		dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(dimmer)
+		readout_plate(row,Vector2(312,16),Vector2(358,180))
 		var icon := module_icon(row,key,Vector2(323,25),Vector2(34,34))
-		var name_label := make_label(row,"",Vector2(369,24),190,29,accent)
+		var name_label := make_label(row,"",Vector2(369,24),190,29,INK)
 		name_label.text = UIText.data_text("reactor",key)
 		var boost := make_label(row,"",Vector2(324,83),348,27,CYAN)
 		var clear_button := Button.new()
@@ -237,9 +255,9 @@ func setup(owner_ui: Node) -> void:
 		var bay_energy := make_label(row,"",Vector2(327,144),170,18,INK,34)
 		var bay_track := visual(row,"segments",Vector2(500,151),Vector2(159,20),accent)
 		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(546,100),accent)
-		static_chrome(allocation_row,preload("res://assets/ui/reactor/allocation-console.svg"),Vector2.ZERO,Vector2(546,100))
+		allocation_row.add_theme_stylebox_override("panel",SKIN.surface())
 		module_icon(allocation_row,key,Vector2(14,28),Vector2(42,42))
-		var allocation_name := make_label(allocation_row,"",Vector2(76,6),180,22,accent,32)
+		var allocation_name := make_label(allocation_row,"",Vector2(76,6),180,22,INK,32)
 		allocation_name.text = UIText.data_text("reactor",key)
 		var share := make_label(allocation_row,"",Vector2(278,6),207,19,INK,32)
 		share.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -276,9 +294,12 @@ func setup(owner_ui: Node) -> void:
 			steps.append(step_button)
 		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps}
 		index += 1
+	move_child(readout_plate(self,Vector2(48,1080),Vector2(546,62)),allocation_label.get_parent().get_index())
 	total_track = visual(self,"busbar",Vector2(63,1114),Vector2(523,8))
 	footer_flow = visual(self,"footer_conduit",Vector2(648,1080),Vector2(110,90))
-	make_label(self,"reactor.expansion",Vector2(807,1114),480,23,MUTED)
+	readout_plate(self,Vector2(760,1094),Vector2(578,68))
+	scroll_hint = make_label(self,"",Vector2(780,1106),540,20,INK,42)
+	update_scroll_hint()
 	visibility_changed.connect(refresh)
 	refresh()
 

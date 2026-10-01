@@ -37,6 +37,8 @@ All four are fully assembled versions of the approved reference, with no missing
 
 未登记美术的配置暂用现有炉体图集作为蓝图占位，不再生成几何建筑。新增专属美术时在 `scripts/hightech_construction.gd` 的 PROFILES 登记稳定科技ID、shape、color、texture、grid、cell；单张图用 grid=Vector2i(1,1)、cell=Vector2i(0,0)。不以中文名称判断、不修改研究业务或页面结构。
 
-平台、底部一体控制台和按钮采用参考图生成的 PNG，来源、提示词、尺寸与消费者见 [reference-v2.prompt.md](reference-v2.prompt.md)。标题、页面外沿和选中标记保留既有纹理。`unrevealed-bay.svg` 是共用的无身份蓝图，不使用未解锁项目的轮廓或类型色。扫描与施工效果仍由动态层绘制。
+当前工位读数、AI 管理、详情和按钮使用 `hightech_presentation.gd` / `hightech_dock_bay.gd` 的奶油白、海军蓝和青色组件。机器图集、大厅与施工遮罩尚未进行卡通资产替换；原写实平台/控制台 PNG 的来源记录仍见 [reference-v2.prompt.md](reference-v2.prompt.md)。`unrevealed-bay.svg` 继续提供无身份蓝图，不使用未解锁项目的轮廓或类型色。扫描与施工效果仍由独立动态层绘制。
+
+单个炼铁工位的卡通资产试作与成本/遮罩契约见 [AI工厂原型说明](prototypes/README.md)，尚未扩展到其余工位。
 
 运行时分区图属于程序生成的建造遮罩，不修改生成的原始PNG。不同材料共用原图坐标，因此最终造型始终来自确认美术，而非独立拼装的近似几何。

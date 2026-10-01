@@ -171,8 +171,6 @@ func repair_entry_index(entry: Dictionary) -> int:
 	return repair_entries.size()-1
 
 func jewel_effects(entry: Dictionary) -> Array:
-	# Empty sockets have no effects, regardless of capacity or equipment level.
-	if entry.get("sockets",[]).is_empty():return []
 	if not repair_cache_active:return tick_jewel_effects(entry)
 	var index := repair_entry_index(entry)
 	if not repair_effects.has(index):repair_effects[index] = tick_jewel_effects(entry)
@@ -220,7 +218,7 @@ func tick(dt: float) -> void:
 	clear_tick_effects()
 
 func observe(kind: String, payload: Dictionary) -> void:
-	if kind in ["module_changed","ship_changed","jewels_changed","upgrade"]:clear_tick_effects()
+	if kind in ["module_changed","ship_changed","jewels_changed","enhancement_changed","upgrade"]:clear_tick_effects()
 	if kind in ["projectile_impact","beam_hit"]:
 		var shot: Dictionary = payload.shot
 		if not shot.hostile:source_weapon = str(shot.entry.key) if shot.get("beam",false) else str(shot.key)
@@ -259,10 +257,10 @@ func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], cr
 			metrics.boss_kills += 1
 			metrics.boss_ttk_sum += simulated_time-metrics.encounter_start
 
-func hit_player(raw: float, type: int) -> void:
+func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	var armour := float(player.armour)
 	var shield := float(player.shield)
-	super.hit_player(raw,type)
+	super.hit_player(raw,type,context)
 	if metrics == null:return
 	metrics.health_lost += maxf(0,armour-float(player.armour))
 	metrics.shield_absorbed += maxf(0,shield-float(player.shield))
@@ -297,24 +295,15 @@ func upgrade_reactor(amount: int) -> bool:
 		metrics.use("reactor_levels",amount)
 	return result
 
-func generate_jewels_into(inventory: Array, fragments: float, serial: int, random: RandomNumberGenerator) -> Dictionary:
-	var result := super.generate_jewels_into(inventory,fragments,serial,random)
-	if metrics != null and int(result.serial) > serial:
-		metrics.use("jewel_acquired",int(result.serial)-serial)
-		metrics.spend("jewels",{"jewel_fragments":fragments-float(result.fragments)})
-	return result
+func upgrade_enhancement(count := 1) -> int:
+	var before := float(profile.jewelFragments)
+	var purchased := super.upgrade_enhancement(count)
+	if metrics!=null and purchased>0:
+		metrics.use("enhancement_levels",purchased)
+		metrics.spend("enhancements",{"jewel_fragments":before-float(profile.jewelFragments)})
+	return purchased
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
 	var result := super.settle_jewel_fragments(amount,source,ratio)
 	if metrics != null:metrics.add(metrics.income,"jewel_fragments",result)
-	return result
-
-func combine_all_jewels(clean_obsolete := true) -> Dictionary:
-	var result := super.combine_all_jewels(clean_obsolete)
-	if metrics != null and result.get("ok",false) and result.get("count",0) > 0:metrics.use("jewel_combine",int(result.count))
-	return result
-
-func socket_jewel(category: String, index: int, socket: int, token: int, notify := true) -> bool:
-	var result := super.socket_jewel(category,index,socket,token,notify)
-	if result and metrics != null:metrics.use("jewel_equip")
 	return result

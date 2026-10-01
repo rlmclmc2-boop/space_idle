@@ -1,70 +1,1557 @@
 [
-  {"key":"save.settings","text":"保存设置","params":"","category":"settings"},
-  {"key":"save.interval","text":"定时保存间隔（分钟）","params":"","category":"settings"},
-  {"key":"save.apply_interval","text":"应用间隔","params":"","category":"settings"},
-  {"key":"save.invalid_interval","text":"请输入正整数分钟，间隔未更改。","params":"","category":"settings"},
-  {"key":"save.interval_hint","text":"间隔将在下次定时或手动保存时存入存档。","params":"","category":"settings"},
-  {"key":"save.interval_applied","text":"已设为每 {minutes} 分钟保存一次；间隔将在下次保存时存入存档。","params":"{minutes}","category":"settings"},
-  {"key":"save.manual","text":"手动保存","params":"","category":"settings"},
-  {"key":"save.last_success","text":"上次成功保存：{time}","params":"{time}","category":"settings"},
-  {"key":"save.never","text":"尚无成功存档","params":"","category":"settings"},
-  {"key":"save.success","text":"保存成功。","params":"","category":"settings"},
-  {"key":"save.failed","text":"保存失败（{error}）。旧档仍可恢复，等待下次定时或手动保存再试。","params":"{error}","category":"settings"},
-  {"key":"save.warning","text":"游戏只在定时或手动保存时写入存档。关闭、重启不会保存，未保存进度可能丢失。","params":"","category":"settings"},
-  {"key":"planet.activate","text":"启用","params":"","category":"planet"},
-  {"key":"planet.facility_status_ready","text":"待启用","params":"","category":"planet"},
-  {"key":"planet.log.activated","text":"设施启用：{name}，已投入使用。","params":"{name}","category":"planet"},
-  {"key":"planet.log.heading","text":"探索日志","params":"","category":"planet"},
-  {"key":"planet.log.empty","text":"尚无探索记录。","params":"","category":"planet"},
-  {"key":"planet.log.phase_0","text":"探测船离舰，正在接近目标天体。","params":"","category":"planet"},
-  {"key":"planet.log.phase_1","text":"抵达观测航线，开始扫描周边环境。","params":"","category":"planet"},
-  {"key":"planet.log.phase_2","text":"传感器采样中，逐步补全区域星图。","params":"","category":"planet"},
-  {"key":"planet.log.phase_3","text":"正在复核观测信号，整理本次探测数据。","params":"","category":"planet"},
-  {"key":"planet.log.phase_4","text":"数据回传完成，本次探索结束。","params":"","category":"planet"},
-  {"key":"planet.log.unlocked","text":"设施解锁：{name}，已开放建设。","params":"{name}","category":"planet"},
-  {"key":"planet.log.built","text":"建造完成：{name}，等待启用。","params":"{name}","category":"planet"},
-  {"key": "planet.rewards_heading", "text": "每次收益", "params": "", "category": "planet", "note": "精简探索界面"},
-  {"key": "planet.trip_gain", "text": "探索度 +1", "params": "", "category": "planet", "note": "精简探索界面"},
-  {"key": "planet.duration_compact", "text": "预计 {seconds} 秒", "params": "{seconds}", "category": "planet", "note": "精简探索界面"},
-  {"key": "planet.builder_compact", "text": "船员 {count}/{required}", "params": "{count},{required}", "category": "planet", "note": "精简探索界面"},
-
-  {"key": "planet.work.spectrum", "text": "光谱分析", "params": "", "category": "planet", "note": "恒星探索表现状态"},
-  {"key": "planet.work.radiation", "text": "辐射测绘", "params": "", "category": "planet", "note": "恒星探索表现状态"},
-  {"key": "planet.work.magnetic", "text": "磁场采样", "params": "", "category": "planet", "note": "恒星探索表现状态"},
-
-  {"key": "galaxy.tab", "text": "星系", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.assignment", "text": "星系探索", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.assignment_desc", "text": "派遣船员增加探索工程量；探索完成后增加建筑升级工程量。", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.start", "text": "开始殖民", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.map_hint", "text": "拖动平移 · 滚轮缩放 · 点击建筑查看详情　青色星云表示已探索范围", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.assign", "text": "派遣 {name}", "params": "{name}", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.recall", "text": "召回 {name}", "params": "{name}", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.summary", "text": "{name} · {state}\n探索 {owned}/{total}（{percent}%）　船员 {crew} · 探索船 {ships}\n建筑 {buildings}/{slots}　满级 {max}", "params": "{name},{state},{owned},{total},{percent},{crew},{ships},{buildings},{slots},{max}", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.effects", "text": "本星系：经验 ×{crew}　装备 ×{equipment}\n容量 ×{charge}　碎片 ×{gem}　铁 {iron}/秒　铀 {uranium}/秒", "params": "{crew},{equipment},{charge},{gem},{iron},{uranium}", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.state_locked", "text": "未解锁", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.state_available", "text": "可探索", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.state_exploring", "text": "探索中", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.state_complete", "text": "已完成", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.building_tip", "text": "{name} · Lv{level} · {state}", "params": "{name},{level},{state}", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.constructing", "text": "施工中", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key": "galaxy.built", "text": "已建成", "params": "", "category": "galaxy", "note": "星系系统"},
-  {"key":"planet.work.arriving","text":"正在接近星球 · 准备入轨","params":"","category":"planet","note":"探索艇入轨阶段"},
-  {"key": "planet.task_heading", "text": "探索任务", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.summary_heading", "text": "星球概况", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.task_idle", "text": "待命", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.task_active", "text": "探索中", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.task_paused", "text": "已暂停", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.no_idle_crew", "text": "暂无空闲船员。请解除岗位或召回探索船员。", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.degree", "text": "探索度 {degree}", "params": "{degree}", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_status_locked", "text": "未解锁", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_status_building", "text": "建设中", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_status_built", "text": "已建成", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_remaining", "text": "再探索 {count} 次解锁", "params": "{count}", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_progress", "text": "建设进度 {progress}/{total}", "params": "{progress},{total}", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key": "planet.facility_hint", "text": "悬停查看设施效果", "params": "", "category": "planet", "note": "星球探索第一阶段布局"},
-  {"key":"planet.bonuses","text":"星球加成","params":"","category":"planet","note":"当前星球已生效加成入口"},
-  {"key":"planet.bonuses_title","text":"{planet} · 当前加成","params":"{planet}","category":"planet","note":"加成弹窗标题"},
-  {"key":"planet.bonuses_empty","text":"当前星球暂无已生效的加成。","params":"","category":"planet","note":"无已生效加成"},
+  {
+    "key": "crew.page_hint",
+    "text": "标记显示当前岗位 · 点击船员设置分配",
+    "params": "",
+    "category": "crew",
+    "note": "船员页面当前岗位标记说明"
+  },
+  {
+    "key": "enhance.protection_state.range",
+    "text": "{minimum}%–{maximum}%",
+    "params": "{minimum},{maximum}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.range_equal",
+    "text": "{value}%",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.mixed_physical",
+    "text": "物理抗性 {range}",
+    "params": "{range}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.mixed_energy",
+    "text": "能量抗性 {range}",
+    "params": "{range}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.dual",
+    "text": "抗性 · 物理 {physical} / 能量 {energy}",
+    "params": "{physical},{energy}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.partial",
+    "text": "部分防护：{types}",
+    "params": "{types}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.2.B.description_mixed",
+    "text": "受击后临时护盾获得对应物理或能量抗性，当前各防御可获得 {resistance_min_percent}% 至 {resistance_max_percent}% 减伤，持续 {duration} 秒。受到另一类伤害后失去抗性，{lockout} 秒内无法重获。",
+    "category": "enhance",
+    "params": "{resistance_min_percent},{resistance_max_percent},{duration},{lockout}"
+  },
+  {
+    "key": "enhance.overview.state",
+    "text": "生效 {count} 件 · {path}",
+    "params": "{count},{path}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.branch_empty",
+    "text": "○",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.thresholds",
+    "text": "装备等级 {first} / {second} / {third}：开放前 1 / 2 / 3 个强化效果",
+    "params": "{first},{second},{third}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.proficiency",
+    "text": "攻击越多，伤害越高 · 历史增伤 +{value}%",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.adaptation",
+    "text": "受击越多，防御越强 · 历史增幅 +{value}%",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.repeat",
+    "text": "{chance}% 概率追加攻击 · 伤害 {multiplier} 倍",
+    "params": "{chance},{multiplier}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.critical",
+    "text": "暴击伤害 {multiplier} 倍 · 基础暴击率 {chance}%",
+    "params": "{multiplier},{chance}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.critical_guaranteed",
+    "text": "暴击触发 {chance}% · {underlying}% 概率打出 {multiplier} 倍伤害",
+    "params": "{chance},{underlying},{multiplier}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.memory_material",
+    "text": "持续修复并积累护盾 · {value}%/秒",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.delayed_damage",
+    "text": "延后承受 {value}% 伤害 · 余伤免除概率 {chance}%",
+    "params": "{value},{chance}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_component",
+    "text": "防御 {index}：{current} / {capacity} · {state}",
+    "params": "{index},{current},{capacity},{state}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.proficiency.runtime",
+    "text": "攻击越多，伤害越高。累计攻击 {count} 次，历史增伤 {bonus}%；已选分支固定增伤 {branch}%。持续锁定的伤害增长见分支。",
+    "params": "{count},{bonus},{branch}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.adaptation.runtime",
+    "text": "受击越多，防御越强。累计受击 {count} 次，历史增幅 {bonus}%；已选分支固定增幅 {branch}%。其他减伤与护罩见分支。",
+    "params": "{count},{bonus},{branch}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.repeat.runtime",
+    "text": "达标武器有 {chance}% 概率在 {delay} 秒后追加攻击，追加攻击的伤害提高 {bonus}%。其他连发效果见已选分支。",
+    "params": "{chance},{delay},{bonus}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.critical.runtime",
+    "text": "首件达标武器参考：暴击效果触发率为 {chance}%，暴击伤害为 {multiplier} 倍；额外暴击伤害仍按原 {underlying}% 暴击率出现。",
+    "params": "{multiplier},{underlying},{chance}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.critical.runtime_regular",
+    "text": "首件达标武器参考：暴击率 {chance}%，暴击伤害 {multiplier} 倍。暴击后可获得的短时加成见已选分支。",
+    "params": "{chance},{multiplier}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.memory_material.runtime",
+    "text": "持续修复防御，满值后将多余修复转为临时护盾。每 {interval} 秒修复 {recovery}%，临时护盾充能 {charge}%，上限为最大防御的 {cap}%；抗性以战场实时状态为准。",
+    "params": "{interval},{recovery},{charge},{cap}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_hud.runtime",
+    "text": "临时防护 {current} / {capacity}",
+    "params": "{current},{capacity}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.neutral",
+    "text": "无抗性",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.lockout",
+    "text": "无抗性 · 重获锁定 {duration} 秒",
+    "params": "{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.physical",
+    "text": "物理抗性 {resistance}% · {duration} 秒",
+    "params": "{resistance},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.energy",
+    "text": "能量抗性 {resistance}% · {duration} 秒",
+    "params": "{resistance},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.mixed",
+    "text": "部分防护具抗性",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_state.cover",
+    "text": "无抗性护罩 {amount} · {duration} 秒",
+    "params": "{amount},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.1.A.title",
+    "text": "稳定增伤",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.1.A.description",
+    "text": "武器伤害提高 {damage_percent}%，可与其他稳定增伤分支叠加。",
+    "params": "{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.1.A.title",
+    "text": "连发增幅",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.1.A.description",
+    "text": "连发概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.1.A.title",
+    "text": "精准打击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.1.A.description",
+    "text": "暴击率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.1.A.title",
+    "text": "防御加固",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.1.A.description",
+    "text": "防御最大值提高 {defence_percent}%，可与其他防御加固分支叠加。",
+    "params": "{defence_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.1.A.title",
+    "text": "高效修复",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.1.A.description",
+    "text": "修复速度和临时护盾上限各提高 {bonus_percent}%，可与其他高效修复分支叠加。",
+    "params": "{bonus_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.1.A.title",
+    "text": "快速消散",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.1.A.description",
+    "text": "更容易免除剩余延迟伤害：消散概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.2.A.title",
+    "text": "稳定增伤",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.2.A.description",
+    "text": "武器伤害提高 {damage_percent}%，可与其他稳定增伤分支叠加。",
+    "params": "{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.2.A.title",
+    "text": "连发增幅",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.2.A.description",
+    "text": "连发概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.2.A.title",
+    "text": "精准打击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.2.A.description",
+    "text": "暴击率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.2.A.title",
+    "text": "防御加固",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.2.A.description",
+    "text": "防御最大值提高 {defence_percent}%，可与其他防御加固分支叠加。",
+    "params": "{defence_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.2.A.title",
+    "text": "高效修复",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.2.A.description",
+    "text": "修复速度和临时护盾上限各提高 {bonus_percent}%，可与其他高效修复分支叠加。",
+    "params": "{bonus_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.2.A.title",
+    "text": "快速消散",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.2.A.description",
+    "text": "更容易免除剩余延迟伤害：消散概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.3.A.title",
+    "text": "稳定增伤",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.3.A.description",
+    "text": "武器伤害提高 {damage_percent}%，可与其他稳定增伤分支叠加。",
+    "params": "{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.3.A.title",
+    "text": "连发增幅",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.3.A.description",
+    "text": "连发概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.3.A.title",
+    "text": "精准打击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.3.A.description",
+    "text": "暴击率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.3.A.title",
+    "text": "防御加固",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.3.A.description",
+    "text": "防御最大值提高 {defence_percent}%，可与其他防御加固分支叠加。",
+    "params": "{defence_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.3.A.title",
+    "text": "高效修复",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.3.A.description",
+    "text": "修复速度和临时护盾上限各提高 {bonus_percent}%，可与其他高效修复分支叠加。",
+    "params": "{bonus_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.3.A.title",
+    "text": "快速消散",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.3.A.description",
+    "text": "更容易免除剩余延迟伤害：消散概率增加 {probability_percent} 个百分点。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.1.B.title",
+    "text": "持续锁定",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.1.B.description",
+    "text": "持续攻击同一目标，每满 {interval} 秒，在当前伤害基础上提高 {damage_percent}%；武器更换目标后重置。",
+    "params": "{interval},{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.2.B.title",
+    "text": "快速发射",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.2.B.description",
+    "text": "武器发射间隔缩短 {reduction_percent}%。",
+    "params": "{reduction_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.3.B.title",
+    "text": "抗性穿透",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.proficiency.3.B.description",
+    "text": "目标对应抗性仅减免 {resistance_percent}% 的武器伤害。",
+    "params": "{resistance_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.1.B.title",
+    "text": "单次连锁",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.1.B.description",
+    "text": "攻击还会连锁至 {extra_targets} 个不同敌人，不会再命中已经连锁过的目标。",
+    "params": "{extra_targets}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.2.B.title",
+    "text": "追加连发",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.2.B.description",
+    "text": "连发还有机会再发射一次，最多额外连发 {extra_repeats} 次。",
+    "params": "{extra_repeats}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.3.B.title",
+    "text": "双目标锁定",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.repeat.3.B.description",
+    "text": "攻击时有 {probability_percent}% 概率，同时攻击另一个不同目标。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.1.B.title",
+    "text": "暴击余势",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.1.B.description",
+    "text": "暴击之后，接下来的 {attacks} 次攻击伤害提高 {damage_percent}%。",
+    "params": "{attacks},{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.2.B.title",
+    "text": "暴击连势",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.2.B.description",
+    "text": "暴击后短暂提高 {probability_percent} 个百分点暴击率和 {damage_percent}% 伤害，最多叠加 {stacks} 层。持续 {duration} 秒，再次暴击刷新持续时间。",
+    "params": "{probability_percent},{damage_percent},{stacks},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.3.B.title",
+    "text": "保底暴击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.critical.3.B.description",
+    "text": "暴击效果触发率固定为 {probability_percent}%；额外暴击伤害仍按原暴击率出现。",
+    "params": "{probability_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.1.B.title",
+    "text": "同源适应",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.1.B.description",
+    "text": "逐渐适应同一敌人的攻击：每次受击后，该敌人的后续伤害再降低 {reduction_percent}%，最多叠加 {stacks} 次。",
+    "params": "{reduction_percent},{stacks}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.2.B.title",
+    "text": "周期护罩",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.2.B.description",
+    "text": "每 {interval} 秒获得护罩，持续 {duration} 秒。容量相当于对应防御及其临时护盾上限之和的 {capacity_percent}%，护罩始终没有抗性。",
+    "params": "{interval},{duration},{capacity_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.3.B.title",
+    "text": "强化抗性",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.adaptation.3.B.description",
+    "text": "已有的匹配抗性提高至 {resistance_percent}% 减伤，也能强化记忆材料授予的抗性。没有抗性的防护仍然没有抗性。",
+    "params": "{resistance_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.1.B.title",
+    "text": "修复减伤",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.1.B.description",
+    "text": "每次修复有 {probability_percent}% 概率，短暂减少 {reduction_percent}% 受到的伤害，持续 {duration} 秒。",
+    "params": "{probability_percent},{reduction_percent},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.2.B.title",
+    "text": "抗性记忆",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.2.B.description",
+    "text": "受击后临时护盾获得对应物理或能量抗性，减伤 {resistance_percent}%，持续 {duration} 秒。受到另一类伤害会失去抗性，并在 {lockout} 秒内无法重新获得。",
+    "params": "{resistance_percent},{duration},{lockout}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.3.B.title",
+    "text": "复合充能",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.memory_material.3.B.description",
+    "text": "每件能量护盾使临时护盾充能加快 {charge_percent}%；每件复合装甲使临时护盾上限提高 {capacity_percent}%。",
+    "params": "{charge_percent},{capacity_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.1.B.title",
+    "text": "消散余护",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.1.B.description",
+    "text": "免除剩余延迟伤害后，受到的伤害降低 {reduction_percent}%，持续 {duration} 秒。",
+    "params": "{reduction_percent},{duration}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.2.B.title",
+    "text": "稳定缓冲",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.2.B.description",
+    "text": "放弃随机免除伤害，转为稳定减伤，当前可减少 {reduction_percent}% 受到的伤害。若同时选择固定消散，仍可免除剩余延迟伤害。",
+    "params": "{reduction_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.3.B.title",
+    "text": "固定消散",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branch.delayed_damage.3.B.description",
+    "text": "免除剩余延迟伤害的概率固定为 {full_probability_percent}%；作为代价，受到的伤害提高 {damage_percent}%。可与稳定缓冲同时生效。",
+    "params": "{full_probability_percent},{damage_percent}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.implemented",
+    "text": "选定且装备达标后生效 · 可随时切换",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.option_title",
+    "text": "{option} · {title}",
+    "params": "{option},{title}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.protection_hud",
+    "text": "临时防护 {current} / {capacity}（无抗性）",
+    "params": "{current},{capacity}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.limit_reached",
+    "text": "已达当前支持等级上限",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.card_path",
+    "text": "装备达标 {count} 个 · 分支 {path}",
+    "params": "{count},{path}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.open",
+    "text": "分支选择",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.close",
+    "text": "返回总览",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.a",
+    "text": "分支 A · 占位",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.b",
+    "text": "分支 B · 占位",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.placeholder",
+    "text": "效果待配置 · 当前不改变战斗数值",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.note",
+    "text": "各效果分别选择，装备达标后生效。可随时免费切换，未选择仍保留基础效果。",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.unselected",
+    "text": "未选",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.summary",
+    "text": "已选路径：{path}",
+    "params": "{path}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.changed",
+    "text": "分支选择已更新",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.title",
+    "text": "{effect} · 强化分支",
+    "params": "{effect}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.level",
+    "text": "效果等级 {level} ＝ 购买 {purchased} ＋ 星球附赠 {bonus}",
+    "params": "{level},{purchased},{bonus}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.milestone",
+    "text": "分支 {node}  ·  效果等级 Lv.{level} 开放",
+    "params": "{node},{level}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.locked",
+    "text": "未达等级 · 暂未开放",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.awaiting",
+    "text": "已开放 · 等待选择",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.branches.selected",
+    "text": "已选择 {choice} · 可随时切换",
+    "params": "{choice}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.delayed_damage",
+    "text": "伤害缓冲",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.delayed_damage",
+    "text": "将 {fraction}% 伤害延后承受，在 {duration} 秒内分 {ticks} 次扣除。每 {interval} 秒有 {chance}% 概率免除尚未承受的伤害。",
+    "params": "{fraction},{duration},{ticks},{interval},{chance}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.tab",
+    "text": "装备强化",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.shared_heading",
+    "text": "共享强化等级",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.level",
+    "text": "购买等级 Lv.{level}",
+    "params": "{level}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.bonus",
+    "text": "星球附加 +{bonus}  ·  效果等级 {effective}",
+    "params": "{bonus},{effective}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.balance",
+    "text": "强化碎片  {amount}",
+    "params": "{amount}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.cost",
+    "text": "升至 Lv.{level}  ·  {cost} 碎片",
+    "params": "{level},{cost}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.upgrade",
+    "text": "升一级",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.upgrade_max",
+    "text": "最大升级",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.shared_note",
+    "text": "武器与防御共用强化等级；升级只消耗强化碎片。",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.move_up",
+    "text": "↑",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.move_down",
+    "text": "↓",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.move_up_hint",
+    "text": "移到前一个效果位；可随时免费调整",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.move_down_hint",
+    "text": "移到后一个效果位；可随时免费调整",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.upgraded",
+    "text": "强化提升 {count} 级",
+    "params": "{count}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.insufficient",
+    "text": "强化碎片不足",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.reordered",
+    "text": "效果顺序已调整",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.proficiency",
+    "text": "熟练",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.repeat",
+    "text": "连发",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.critical",
+    "text": "暴击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.adaptation",
+    "text": "适应",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.memory_material",
+    "text": "记忆材料",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.pending",
+    "text": "待定效果",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.proficiency",
+    "text": "按全局武器攻击历史提升伤害。当前累计 {count} 次，伤害提高 {bonus}%。",
+    "params": "{count},{bonus}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.adaptation",
+    "text": "按全局承受攻击历史提升最大防御。当前累计 {count} 次，防御提高 {bonus}%。",
+    "params": "{count},{bonus}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.repeat",
+    "text": "攻击有 {chance}% 概率，在 {delay} 秒后额外攻击一次。额外攻击伤害提高 {bonus}%。",
+    "params": "{chance},{delay},{bonus}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.critical",
+    "text": "武器基础暴击率 {chance}%。获得此效果的武器，当前暴击伤害为普通伤害的 {multiplier} 倍。",
+    "params": "{chance},{multiplier}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.memory_material",
+    "text": "每 {interval} 秒回复最大防御的 {recovery}%。溢出积累无抗性临时防护，上限为最大防御的 {cap}%，不随时间衰减。",
+    "params": "{interval},{recovery},{cap}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.description.pending",
+    "text": "该防御效果尚未确定。此位置当前不提供战斗效果。",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.threshold",
+    "text": "装备实际 Lv.{level} 开放此效果",
+    "params": "{level}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.active_modules",
+    "text": "当前 {count} 个已装配模块达到门槛",
+    "params": "{count}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.pending_state",
+    "text": "待定 · 暂无战斗效果",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.rules",
+    "text": "实际装备等级 {first} / {second} / {third} 开放前 1 / 2 / 3 个效果；星球附加等级只提高强度。",
+    "params": "{first},{second},{third}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.history",
+    "text": "全局历史  ·  武器攻击 {attacks} 次  ·  承受攻击 {hits} 次",
+    "params": "{attacks},{hits}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.equipment_slots",
+    "text": "已开放强化效果位：{count}",
+    "params": "{count}",
+    "category": "enhance"
+  },
+  {
+    "key": "reactor.scroll_back",
+    "text": " · 向上滚动查看前序模块",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.scroll_more",
+    "text": " · 向下滚动查看其余模块",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.scroll_range",
+    "text": "模块 {first}–{last} / {total}",
+    "params": "{first},{last},{total}",
+    "category": "reactor"
+  },
+  {
+    "key": "equipment.attributes.show",
+    "text": "展开完整属性",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.attributes.hide",
+    "text": "收起完整属性",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_hint",
+    "text": "免费装配 · 等级随槽位保留 · 点选槽位后在下方操作",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.upgrade_amount",
+    "text": "升级数量",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.amount.1",
+    "text": "×1",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.amount.10",
+    "text": "×10",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.amount.0",
+    "text": "MAX",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.swap",
+    "text": "换装",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.inspect",
+    "text": "详情",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.close",
+    "text": "关闭",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.confirm_free",
+    "text": "确认免费装配",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.free_equip",
+    "text": "+ 免费装配",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.overflow",
+    "text": "{count} 个超出舰体容量的槽位已停用",
+    "params": "{count}",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.dormant",
+    "text": "超出容量 · 停用",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.selected_hint",
+    "text": "已选中 · 下方操作",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.card_hint",
+    "text": "点选查看操作",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.upgrade_cost",
+    "text": "升级  {cost}",
+    "params": "{cost}",
+    "category": "equipment"
+  },
+  {
+    "key": "onboarding.heading",
+    "text": "舰长入门",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.reopen",
+    "text": "入门指引",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.dismiss",
+    "text": "暂时收起",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.next",
+    "text": "知道了",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.show_equipment",
+    "text": "前往装备",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.show_slot",
+    "text": "查看空武器位",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.show_upgrade",
+    "text": "查看升级",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.finish",
+    "text": "完成指引",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.intro",
+    "text": "战舰会自动航行、开火和收集战利品。你可以同时管理装备，不必手动瞄准。先给空武器位装上武器。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.equip",
+    "text": "这个空武器位已经开放。选择已解锁武器后确认装配，装配本身不消耗资源；模块升级才需要资源。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.upgrade",
+    "text": "武器已就位。选择一个已装配模块，点击「升级」增强它；当前资源足够升一级。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.waiting",
+    "text": "升级需要：{cost}。当前资源不足，可继续自动战斗收集资源；不用停在这里等待。",
+    "params": "{cost}",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.progress",
+    "text": "装备与升级会直接影响战斗。击败关卡首领后会自动继续推进；解锁通知需要点击「继续」后继续战斗。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.clear",
+    "text": "已完成一次通关！继续补齐空模块、升级装备，再挑战后续关卡。随时可从「入门指引」回看。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.retreat",
+    "text": "战舰耐久耗尽后会撤退修复，并按驻守设置重新出发。已有装备与升级仍会保留；可趁现在检查空模块和升级费用。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.unlock",
+    "text": "新内容已解锁。先阅读提示并点击「继续」，战斗才会继续；装备面板仍可操作。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.paused",
+    "text": "战斗已暂停。你仍可查看和管理装备，取消暂停后继续自动战斗。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.review",
+    "text": "自动战斗获得资源 → 免费装配已解锁武器 → 花资源升级模块 → 通关解锁新内容。撤退会修复战舰，装备与升级保留。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.continue",
+    "text": "继续战斗",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "onboarding.no_upgrade",
+    "text": "当前已装配模块已达可升级上限。继续战斗推进，后续可检查新模块与解锁内容。",
+    "params": "",
+    "category": "onboarding"
+  },
+  {
+    "key": "planet.activate",
+    "text": "启用",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.facility_status_ready",
+    "text": "待启用",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.activated",
+    "text": "设施启用：{name}，已投入使用。",
+    "params": "{name}",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.heading",
+    "text": "探索日志",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.empty",
+    "text": "尚无探索记录。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.phase_0",
+    "text": "探测船离舰，正在接近目标天体。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.phase_1",
+    "text": "抵达观测航线，开始扫描周边环境。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.phase_2",
+    "text": "传感器采样中，逐步补全区域星图。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.phase_3",
+    "text": "正在复核观测信号，整理本次探测数据。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.phase_4",
+    "text": "数据回传完成，本次探索结束。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.unlocked",
+    "text": "设施解锁：{name}，已开放建设。",
+    "params": "{name}",
+    "category": "planet"
+  },
+  {
+    "key": "planet.log.built",
+    "text": "建造完成：{name}，等待启用。",
+    "params": "{name}",
+    "category": "planet"
+  },
+  {
+    "key": "planet.rewards_heading",
+    "text": "每次收益",
+    "params": "",
+    "category": "planet",
+    "note": "精简探索界面"
+  },
+  {
+    "key": "planet.trip_gain",
+    "text": "探索度 +1",
+    "params": "",
+    "category": "planet",
+    "note": "精简探索界面"
+  },
+  {
+    "key": "planet.duration_compact",
+    "text": "预计 {seconds} 秒",
+    "params": "{seconds}",
+    "category": "planet",
+    "note": "精简探索界面"
+  },
+  {
+    "key": "planet.builder_compact",
+    "text": "船员 {count}/{required}",
+    "params": "{count},{required}",
+    "category": "planet",
+    "note": "精简探索界面"
+  },
+  {
+    "key": "planet.work.spectrum",
+    "text": "光谱分析",
+    "params": "",
+    "category": "planet",
+    "note": "恒星探索表现状态"
+  },
+  {
+    "key": "planet.work.radiation",
+    "text": "辐射测绘",
+    "params": "",
+    "category": "planet",
+    "note": "恒星探索表现状态"
+  },
+  {
+    "key": "planet.work.magnetic",
+    "text": "磁场采样",
+    "params": "",
+    "category": "planet",
+    "note": "恒星探索表现状态"
+  },
+  {
+    "key": "galaxy.tab",
+    "text": "星系",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.assignment",
+    "text": "星系建设",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.assignment_desc",
+    "text": "派遣船员增加建设工程量；建设完成后增加建筑升级工程量。",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.start",
+    "text": "开始殖民",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.map_hint",
+    "text": "拖动平移 · 滚轮缩放 · 点击建筑查看详情",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.assign",
+    "text": "派遣 {name}",
+    "params": "{name}",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.recall",
+    "text": "召回 {name}",
+    "params": "{name}",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.summary",
+    "text": "{name} · {state}\n建设 {owned}/{total}（{percent}%）　船员 {crew} · 建设船 {ships}\n建筑 {buildings}/{slots}　满级 {max}",
+    "params": "{name},{state},{owned},{total},{percent},{crew},{ships},{buildings},{slots},{max}",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.effects",
+    "text": "本星系：经验 ×{crew}　装备 ×{equipment}\n容量 ×{charge}　碎片 ×{gem}　铁 {iron}/秒　铀 {uranium}/秒",
+    "params": "{crew},{equipment},{charge},{gem},{iron},{uranium}",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.state_locked",
+    "text": "未解锁",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.state_available",
+    "text": "可建设",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.state_exploring",
+    "text": "建设中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.state_complete",
+    "text": "已完成",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.building_tip",
+    "text": "{name} · Lv{level} · {state}",
+    "params": "{name},{level},{state}",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.constructing",
+    "text": "施工中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "galaxy.built",
+    "text": "已建成",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系系统"
+  },
+  {
+    "key": "planet.work.arriving",
+    "text": "正在接近星球 · 准备入轨",
+    "params": "",
+    "category": "planet",
+    "note": "探索艇入轨阶段"
+  },
+  {
+    "key": "planet.task_heading",
+    "text": "探索任务",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.summary_heading",
+    "text": "星球概况",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.task_idle",
+    "text": "待命",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.task_active",
+    "text": "探索中",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.task_paused",
+    "text": "已暂停",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.no_idle_crew",
+    "text": "暂无空闲船员。请解除岗位或召回探索船员。",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.degree",
+    "text": "探索度 {degree}",
+    "params": "{degree}",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_status_locked",
+    "text": "未解锁",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_status_building",
+    "text": "建设中",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_status_built",
+    "text": "已建成",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_remaining",
+    "text": "再探索 {count} 次解锁",
+    "params": "{count}",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_progress",
+    "text": "建设进度 {progress}/{total}",
+    "params": "{progress},{total}",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.facility_hint",
+    "text": "悬停查看设施效果",
+    "params": "",
+    "category": "planet",
+    "note": "星球探索第一阶段布局"
+  },
+  {
+    "key": "planet.bonuses",
+    "text": "星球加成",
+    "params": "",
+    "category": "planet",
+    "note": "当前星球已生效加成入口"
+  },
+  {
+    "key": "planet.bonuses_title",
+    "text": "{planet} · 当前加成",
+    "params": "{planet}",
+    "category": "planet",
+    "note": "加成弹窗标题"
+  },
+  {
+    "key": "planet.bonuses_empty",
+    "text": "当前星球暂无已生效的加成。",
+    "params": "",
+    "category": "planet",
+    "note": "无已生效加成"
+  },
   {
     "key": "planet.work.mapping",
     "text": "轨道测绘",
@@ -137,42 +1624,42 @@
   },
   {
     "key": "research.pending",
-    "text": "未研发",
+    "text": "待研发",
     "params": "",
     "category": "research",
     "note": "research_pending 工位状态"
   },
   {
     "key": "research.unrevealed",
-    "text": "未知",
+    "text": "未显示",
     "params": "",
     "category": "research",
     "note": "未揭示项目"
   },
   {
     "key": "research.effect.iron",
-    "text": "铁块产量  {value} / {time} 秒",
+    "text": "每 {time} 秒生成铁块 · 每块含 {value} 铁",
     "params": "value,time",
     "category": "research",
     "note": "固定高度效果模板"
   },
   {
     "key": "research.effect.jewel",
-    "text": "宝石碎片  {value} / {time} 秒",
+    "text": "每 {time} 秒生成核心块 · 每块含 {value} 强化碎片",
     "params": "value,time",
     "category": "research",
     "note": "固定高度效果模板"
   },
   {
     "key": "research.effect.damage",
-    "text": "武器伤害  +{value}",
+    "text": "武器伤害为原来的 {value}",
     "params": "value",
     "category": "research",
     "note": "效果类型与数值"
   },
   {
     "key": "research.effect.health",
-    "text": "生命提升  +{value}",
+    "text": "生命上限为原来的 {value}",
     "params": "value",
     "category": "research",
     "note": "效果类型与数值"
@@ -1923,7 +3410,7 @@
   },
   {
     "key": "player_loadout.notice",
-    "text": "独立测试进度（非当前存档） · 解锁遵循原规则；统一模块等级，无宝石/科技/星球加成，反应炉未分配。随机生成四类搭配，保留至少一份装甲。无射程/AOE 时不猜标签；不运行战斗统计。",
+    "text": "独立测试进度（非当前存档） · 解锁遵循原规则；统一模块等级，无强化/AI工厂/星球加成，反应炉未分配。随机生成四类搭配，保留至少一份装甲。无射程/AOE 时不猜标签；不运行战斗统计。",
     "params": "",
     "category": "fleet",
     "note": "我方测试组合"
@@ -2049,7 +3536,7 @@
   },
   {
     "key": "player_loadout.note.baseline_modifiers",
-    "text": "测试进度只决定解锁，模块统一等级；无宝石、攻击历史、科研、星球成长与反应炉分配，不读取正式存档。",
+    "text": "测试进度只决定解锁，模块统一等级；无强化、攻击历史、科研、星球成长与反应炉分配，不读取正式存档。",
     "params": "",
     "category": "fleet",
     "note": "我方测试组合"
@@ -2588,7 +4075,7 @@
   },
   {
     "key": "crew.core_title.jewel",
-    "text": "宝石自动管理",
+    "text": "自动强化",
     "params": "",
     "category": "crew",
     "note": "船员紧凑布局"
@@ -2616,7 +4103,7 @@
   },
   {
     "key": "crew.core_jewel",
-    "text": "每{interval}秒 · 自动合成、同类替换与升级",
+    "text": "每{interval}秒 · 尝试提升共享强化等级",
     "params": "interval",
     "category": "crew",
     "note": "船员紧凑布局"
@@ -2679,7 +4166,7 @@
   },
   {
     "key": "research.detail_progress",
-    "text": "{percent}% · {points} / {required} 点",
+    "text": "{percent}% · {points} / {required} 研究点",
     "params": "percent,points,required",
     "category": "research",
     "note": "选中项目进度"
@@ -2700,7 +4187,7 @@
   },
   {
     "key": "research.dock_points",
-    "text": "{points} / {required} 点",
+    "text": "{points} / {required} 研究点",
     "params": "{points},{required}",
     "category": "research",
     "note": "待建造或总览页唯一辅助信息"
@@ -2805,14 +4292,14 @@
   },
   {
     "key": "research.dock_all",
-    "text": "高科技船坞",
+    "text": "AI工厂",
     "params": "",
     "category": "research",
     "note": "高科技船坞"
   },
   {
     "key": "research.dock_overview",
-    "text": "科技总览",
+    "text": "工厂总览",
     "params": "",
     "category": "research",
     "note": "高科技船坞"
@@ -2982,7 +4469,7 @@
   },
   {
     "key": "main._ready.text_02",
-    "text": "宝石碎片",
+    "text": "强化碎片",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -3422,7 +4909,7 @@
   },
   {
     "key": "battle.draw_battle.text_10",
-    "text": "宝石碎片 · 点击拾取",
+    "text": "强化碎片 · 自动拾取",
     "params": "",
     "category": "battle",
     "note": "固定文字",
@@ -3654,7 +5141,7 @@
   },
   {
     "key": "gem.tab",
-    "text": "宝石",
+    "text": "装备强化",
     "params": "",
     "category": "gem",
     "note": "固定文字",
@@ -3838,7 +5325,7 @@
   },
   {
     "key": "main.confirm_unequip.text_02",
-    "text": "卸下 {key}？模块 Lv.{level}、宝石及累计将保留。",
+    "text": "卸下 {key}？模块 Lv.{level} 将保留，共享强化与全局历史不受影响。",
     "params": "{key},{level}",
     "category": "inventory",
     "note": "动态显示；蓝色参数由程序填入",
@@ -3862,7 +5349,7 @@
   },
   {
     "key": "upgrade.research_tab",
-    "text": "高科技",
+    "text": "AI工厂",
     "params": "",
     "category": "upgrade",
     "note": "固定文字",
@@ -3878,7 +5365,7 @@
   },
   {
     "key": "upgrade.build_hightech_tab.text_03",
-    "text": "重新均分到已解锁高科技，余数按卡片顺序分配",
+    "text": "重新均分到已解锁工厂项目，余数按卡片顺序分配",
     "params": "",
     "category": "tooltip",
     "note": "鼠标悬停说明",
@@ -5198,7 +6685,7 @@
   },
   {
     "key": "debug.global.text_16",
-    "text": "宝石碎片倍率",
+    "text": "强化碎片倍率",
     "params": "",
     "category": "debug",
     "note": "固定文字",
@@ -6518,7 +8005,7 @@
   },
   {
     "key": "system.category.gem",
-    "text": "宝石",
+    "text": "强化",
     "params": "",
     "category": "system",
     "note": "文案表界面分类"
@@ -7126,7 +8613,7 @@
   },
   {
     "key": "equipment.catalog_basis",
-    "text": "每张卡片对应一个模块；等级、宝石与累计随模块保留。",
+    "text": "每张卡片对应一个模块；模块等级随槽位保留，强化与攻击历史由全船共享。",
     "params": "",
     "category": "weapon",
     "note": "统一装备管理界面"
@@ -7154,7 +8641,7 @@
   },
   {
     "key": "equipment.install_hint",
-    "text": "选择同类装备直接换装，继承模块等级、宝石与累计。",
+    "text": "选择同类装备免费换装，继承模块等级，共享强化不变。",
     "params": "",
     "category": "weapon",
     "note": "统一装备管理界面"
@@ -7483,7 +8970,7 @@
   },
   {
     "key": "module.keep_hint",
-    "text": "换装保留等级、宝石与累计。",
+    "text": "换装保留模块等级，共享强化与全局历史不变。",
     "params": "",
     "category": "module",
     "note": "模块成长与自由换装"
@@ -7508,6 +8995,55 @@
     "params": "{slot}",
     "category": "module",
     "note": "模块成长与自由换装"
+  },
+  {
+    "key": "ship.refit.active_badge",
+    "text": "当前舰体",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.preview_badge",
+    "text": "预览",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.active_preview",
+    "text": "当前舰体 · 点击槽号管理对应模块",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.candidate_preview",
+    "text": "候选预览 · 点击「启用舰体」后生效",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.static_hint",
+    "text": "槽号对应舰体上的实际武器挂点；无人机、空槽与停用模块见右侧列表。",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.carrier",
+    "text": "无人机",
+    "params": "",
+    "category": "ship",
+    "note": "舰体静态预览与真实槽位显示"
+  },
+  {
+    "key": "ship.refit.capacity_summary",
+    "text": "武器 {weapons}\n防御 {defence}",
+    "params": "{weapons},{defence}",
+    "category": "ship",
+    "note": "窄舰体卡的完整容量读数"
   },
   {
     "key": "ship.refit.title",
@@ -7560,7 +9096,7 @@
   },
   {
     "key": "ship.refit.keep",
-    "text": "等级 / 宝石 / 累计全部保留\n新增槽位从 Lv.1 开始；停用模块不参与战斗。\n生命与护盾保持切换前剩余比例。",
+    "text": "模块等级保留 / 共享强化不变\n新增槽位从 Lv.1 开始；停用模块不参与战斗。\n生命与护盾保持切换前剩余比例。",
     "params": "",
     "category": "ship",
     "note": "模块成长与自由换装"
@@ -8449,21 +9985,21 @@
   },
   {
     "key": "upgrade.hightech.jewel_furnace.name",
-    "text": "宝石熔炼炉",
+    "text": "强化碎片熔炼炉",
     "params": "",
     "category": "upgrade",
     "note": "宝石熔炼炉显示；效果来源 hightech.des"
   },
   {
     "key": "upgrade.hightech.jewel_furnace.description",
-    "text": "每{effect_1}秒在屏幕中生成一个含有{effect_2}的宝石碎片的宝石核心块",
+    "text": "每{effect_1}秒在屏幕中生成一个含有{effect_2}的强化碎片的核心块",
     "params": "{effect_1},{effect_2}",
     "category": "upgrade",
     "note": "宝石熔炼炉显示；效果来源 hightech.des"
   },
   {
     "key": "battle.jewel_furnace_core",
-    "text": "宝石核心",
+    "text": "强化碎片核心",
     "params": "",
     "category": "battle",
     "note": "宝石熔炼炉显示；效果来源 hightech.des"
@@ -8507,7 +10043,7 @@
   },
   {
     "key": "research.heading",
-    "text": "高科技建造中心",
+    "text": "AI工厂",
     "params": "",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
@@ -8612,7 +10148,7 @@
   },
   {
     "key": "research.empty",
-    "text": "预留建造舱\n解锁新科技后自动接入，也可拖入已有项目。",
+    "text": "预留建造舱\n解锁新工厂项目后自动接入，也可拖入已有项目。",
     "params": "",
     "category": "upgrade",
     "note": "AI 原型建造舱显示；不改变科研规则"
@@ -9137,14 +10673,14 @@
   },
   {
     "key": "crew.job.hightech",
-    "text": "高科技",
+    "text": "AI工厂",
     "params": "",
     "category": "crew",
     "note": "船员系统"
   },
   {
     "key": "crew.job.smelting",
-    "text": "宝石熔炼 · 生产速度",
+    "text": "碎片熔炼 · 生产速度",
     "params": "",
     "category": "crew",
     "note": "船员系统"
@@ -9242,28 +10778,28 @@
   },
   {
     "key": "crew.hightech_system",
-    "text": "高科技系统",
+    "text": "AI工厂",
     "params": "",
     "category": "crew",
     "note": "自动AI岗位目标"
   },
   {
     "key": "crew.job.jewel",
-    "text": "宝石系统",
+    "text": "装备强化",
     "params": "",
     "category": "crew",
     "note": "船员宝石岗位标题"
   },
   {
     "key": "crew.jewel_system",
-    "text": "宝石系统",
+    "text": "装备强化",
     "params": "",
     "category": "crew",
     "note": "船员宝石岗位目标"
   },
   {
     "key": "crew.effect.jewel_auto",
-    "text": "每 {interval} 秒合成并清理低级背包宝石，随机装入可用宝石，并升级已镶嵌宝石",
+    "text": "每 {interval} 秒尝试提升共享强化等级，正常消耗强化碎片",
     "params": "{interval}",
     "category": "crew",
     "note": "船员宝石岗位效果"
@@ -9816,7 +11352,7 @@
   },
   {
     "key": "reactor.module.condensation",
-    "text": "宝石凝聚",
+    "text": "碎片凝聚",
     "params": "",
     "category": "reactor",
     "source": "reactor_panel.gd"
@@ -9830,7 +11366,7 @@
   },
   {
     "key": "reactor.module.condensation.desc",
-    "text": "提升直接掉落的宝石碎片数量，不对宝石熔炼炉产出再次加成。",
+    "text": "提升直接掉落的强化碎片数量，不对碎片熔炼炉产出再次加成。",
     "params": "",
     "category": "reactor",
     "source": "reactor_panel.gd"
@@ -9902,7 +11438,7 @@
     "key": "planet.reforge_confirm",
     "category": "planet",
     "source": "planet_panel.gd",
-    "text": "确认重铸新船？\n\n将永久清除装备、高科技、宝石、充能（反应炉与时空粒子）、战舰系统成长进度。新一轮从第{level}关开始，并恢复该关及此前已获得的解锁项目。\n\n保留所有船员及等级、星球永久进度、自动探索设置和历史最高关卡经验倍率。当前探索停止。已经历的解锁提示不再重复。\n\n该星球仅能重铸一次。征服后，该星球每次探索经验同步给予所有船员。",
+    "text": "确认重铸新船？\n\n将永久清除装备、AI工厂、装备强化与攻击历史、充能（反应炉与时空粒子）、战舰系统成长进度。新一轮从第{level}关开始，并恢复该关及此前已获得的解锁项目。\n\n保留所有船员及等级、星球永久进度、自动探索设置和历史最高关卡经验倍率。当前探索停止。已经历的解锁提示不再重复。\n\n该星球仅能重铸一次。征服后，该星球每次探索经验同步给予所有船员。",
     "params": "{level}"
   },
   {
@@ -9961,28 +11497,258 @@
     "category": "planet",
     "source": "game.gd"
   },
-  {"key": "galaxy.state_developing", "text": "发展中", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.slot_constructing", "text": "建造中", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.slot_active", "text": "运行中", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.slot_upgrading", "text": "升级中", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.rate", "text": "{amount}/秒", "params": "{amount}", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.detail", "text": "{name} · Lv{level}　{effect} +{value}　{state} {progress}%", "params": "{name},{level},{effect},{value},{state},{progress}", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_exploration", "text": "探索进度", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_buildings", "text": "功能建筑", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_max_level", "text": "满级建筑", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_crew", "text": "派遣船员", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_explorers", "text": "探索船", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_traffic", "text": "交通艇", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_crew_exp", "text": "船员经验", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_equipment_value", "text": "装备属性", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_charge_max", "text": "充能容量", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_gem_fragment", "text": "宝石碎片", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_iron", "text": "自动铁", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.card_uranium", "text": "自动铀", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_crew_exp", "text": "船员经验", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_equipment_value", "text": "装备属性", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_charge_max", "text": "充能容量", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_gem_fragment", "text": "宝石碎片", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_iron_auto_ratio", "text": "有效铁收入比例", "params": "", "category": "galaxy", "note": "星系殖民"},
-  {"key": "galaxy.effect_uranium_auto_ratio", "text": "有效铀收入比例", "params": "", "category": "galaxy", "note": "星系殖民"}
+  {
+    "key": "galaxy.state_developing",
+    "text": "发展中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.slot_constructing",
+    "text": "建造中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.slot_active",
+    "text": "运行中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.slot_upgrading",
+    "text": "升级中",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.rate",
+    "text": "{amount}/秒",
+    "params": "{amount}",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.detail",
+    "text": "{name} · Lv{level}　{effect} {value}　{state} {progress}%",
+    "params": "{name},{level},{effect},{value},{state},{progress}",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_exploration",
+    "text": "建设进度",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_buildings",
+    "text": "功能建筑",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_max_level",
+    "text": "满级建筑",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_crew",
+    "text": "派遣船员",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_explorers",
+    "text": "建设船",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_traffic",
+    "text": "交通艇",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_crew_exp",
+    "text": "船员经验",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_equipment_value",
+    "text": "装备属性",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_charge_max",
+    "text": "充能容量",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_gem_fragment",
+    "text": "强化碎片",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_iron",
+    "text": "自动铁",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.card_uranium",
+    "text": "自动铀",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_crew_exp",
+    "text": "船员经验",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_equipment_value",
+    "text": "装备属性",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_charge_max",
+    "text": "充能容量",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_gem_fragment",
+    "text": "强化碎片",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_iron_auto_ratio",
+    "text": "有效铁收入比例",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "galaxy.effect_uranium_auto_ratio",
+    "text": "有效铀收入比例",
+    "params": "",
+    "category": "galaxy",
+    "note": "星系殖民"
+  },
+  {
+    "key": "save.settings",
+    "text": "保存设置",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.interval",
+    "text": "定时保存间隔（分钟）",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.apply_interval",
+    "text": "应用间隔",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.invalid_interval",
+    "text": "请输入正整数分钟，间隔未更改。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.interval_hint",
+    "text": "间隔将在下次定时或手动保存时存入存档。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.interval_applied",
+    "text": "已设为每 {minutes} 分钟保存一次；间隔将在下次保存时存入存档。",
+    "params": "{minutes}",
+    "category": "settings"
+  },
+  {
+    "key": "save.manual",
+    "text": "手动保存",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.last_success",
+    "text": "上次成功保存：{time}",
+    "params": "{time}",
+    "category": "settings"
+  },
+  {
+    "key": "save.never",
+    "text": "尚无成功存档",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.success",
+    "text": "保存成功。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.failed",
+    "text": "保存失败（{error}）。旧档仍可恢复，等待下次定时或手动保存再试。",
+    "params": "{error}",
+    "category": "settings"
+  },
+  {
+    "key": "save.warning",
+    "text": "游戏只在定时或手动保存时写入存档。关闭、重启不会保存，未保存进度可能丢失。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "galaxy.waiting_crew",
+    "text": "等待派遣",
+    "params": "",
+    "category": "galaxy",
+    "note": "无人时建设暂停"
+  },
+  {
+    "key": "galaxy.plan_detail",
+    "text": "{name} · 已规划",
+    "params": "{name}",
+    "category": "galaxy",
+    "note": "预规划建筑详情"
+  }
 ]

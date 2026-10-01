@@ -1,0 +1,481 @@
+{
+  "baseline_commit": "963f7827ae9fb643829535474fc07c0c1b64456e",
+  "final_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+  "final_tree": "f4224c0e92dab99490e89481dabf6a355817725e",
+  "engine": "Godot4.6.3.stable.official.7d41c59c4",
+  "completed_reported_rows": 1272,
+  "independence_warning": "baseline rows are reused across families; follow-up repeats and paired seeds are not all independent trials; do not sum sample counts across overlapping groups",
+  "no_tuning": true,
+  "stages": [
+    {
+      "stage": "focus",
+      "runtime_commit": "963f7827ae9fb643829535474fc07c0c1b64456e",
+      "rows": 84,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        }
+      }
+    },
+    {
+      "stage": "full",
+      "runtime_commit": "963f7827ae9fb643829535474fc07c0c1b64456e",
+      "rows": 886,
+      "completion": "retained completed per-family rows; process later hit480s cutoff",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        }
+      }
+    },
+    {
+      "stage": "phase",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 96,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        }
+      }
+    },
+    {
+      "stage": "critical_probe",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 32,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        }
+      }
+    },
+    {
+      "stage": "crossover",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 24,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        }
+      }
+    },
+    {
+      "stage": "buffer_probe",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 12,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        },
+        "beam_hooks": {
+          "default_vs_A_pending": [
+            0,
+            1
+          ],
+          "forced_B20_streams": [
+            {
+              "depth": 0,
+              "multiplier": 1.0
+            },
+            {
+              "depth": 1,
+              "multiplier": 7.0
+            },
+            {
+              "depth": 2,
+              "multiplier": 7.0
+            }
+          ],
+          "passed": true,
+          "selected_lottery_seed": 5
+        }
+      }
+    },
+    {
+      "stage": "critical_cadence",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 32,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        },
+        "beam_hooks": {
+          "default_vs_A_pending": [
+            0,
+            1
+          ],
+          "forced_B20_streams": [
+            {
+              "depth": 0,
+              "multiplier": 1.0
+            },
+            {
+              "depth": 1,
+              "multiplier": 7.0
+            },
+            {
+              "depth": 2,
+              "multiplier": 7.0
+            }
+          ],
+          "passed": true,
+          "selected_lottery_seed": 5
+        }
+      }
+    },
+    {
+      "stage": "production",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 38,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        },
+        "beam_hooks": {
+          "default_vs_A_pending": [
+            0,
+            1
+          ],
+          "forced_B20_streams": [
+            {
+              "depth": 0,
+              "multiplier": 1.0
+            },
+            {
+              "depth": 1,
+              "multiplier": 7.0
+            },
+            {
+              "depth": 2,
+              "multiplier": 7.0
+            }
+          ],
+          "passed": true,
+          "selected_lottery_seed": 5
+        }
+      }
+    },
+    {
+      "stage": "delayed_fix",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 36,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        },
+        "beam_hooks": {
+          "default_vs_A_pending": [
+            0,
+            1
+          ],
+          "forced_B20_streams": [
+            {
+              "depth": 0,
+              "multiplier": 1.0
+            },
+            {
+              "depth": 1,
+              "multiplier": 7.0
+            },
+            {
+              "depth": 2,
+              "multiplier": 7.0
+            }
+          ],
+          "passed": true,
+          "selected_lottery_seed": 5
+        }
+      }
+    },
+    {
+      "stage": "joint",
+      "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+      "rows": 32,
+      "completion": "complete",
+      "gates": {
+        "burst_conservation": {
+          "body_before": 2000.0,
+          "cleared": 0,
+          "deferred_queued": 15360.0,
+          "difference": 0.0,
+          "immediate_body_loss": 640.0,
+          "memory_or_cover_before": 0,
+          "passed": true,
+          "raw_untyped": 16000.0
+        },
+        "penetration_scope": {
+          "eligible_damage": 70.0,
+          "enemy_resistance_type_unchanged": true,
+          "expected_eligible": 70.0,
+          "expected_ineligible": 50.0,
+          "ineligible_same_type_damage": 50.0,
+          "passed": true
+        },
+        "repeat_generations": {
+          "expected_each_extra": 1750.0,
+          "launched_damage": [
+            250.0,
+            1750.0,
+            1750.0
+          ],
+          "passed": true,
+          "remaining_repeats": 0
+        },
+        "beam_hooks": {
+          "default_vs_A_pending": [
+            0,
+            1
+          ],
+          "forced_B20_streams": [
+            {
+              "depth": 0,
+              "multiplier": 1.0
+            },
+            {
+              "depth": 1,
+              "multiplier": 7.0
+            },
+            {
+              "depth": 2,
+              "multiplier": 7.0
+            }
+          ],
+          "passed": true,
+          "selected_lottery_seed": 5
+        }
+      }
+    }
+  ]
+}

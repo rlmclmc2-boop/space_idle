@@ -11,7 +11,7 @@ const PURPLE := Color("b3a0ff")
 const FURNACE_IRON_TEXTURE := preload("res://assets/hightech/furnace-iron-cache.png")
 const FURNACE_CORE_TEXTURE := preload("res://assets/hightech/furnace-jewel-core.png")
 const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],2:["reactor"],4:["jewel"],8:["galaxy"]}
-const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",2:"reactor.tab",4:"gem.tab",8:"galaxy.tab"}
+const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",2:"reactor.tab",4:"enhance.tab",8:"galaxy.tab"}
 const RIGHT_UI_OFFSET := 608.0
 const CHROME_HEIGHT := 78.0
 const VIEW_CROP_LEFT := 20.0
@@ -49,8 +49,10 @@ const NAV_RECT := Rect2(4,96,144,1160)
 const WORK_RECT := Rect2(160,96,1204,1160)
 const WORK_CONTENT_RECT := Rect2(168,150,1364,1200)
 const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
+const RESOURCE_STRIP_PRESENTATION := preload("res://scripts/resource_strip_presentation.gd")
+const SHELL_PRESENTATION := preload("res://scripts/shell_presentation.gd")
 const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎","◷","✧"]
-const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","gem.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab"]
+const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab"]
 var NAMES: Dictionary = {}
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
@@ -112,6 +114,7 @@ var shake := 0.0
 var message := ""
 var message_time := 0.0
 var help_open := false
+var help_surface: StyleBoxFlat = preload("res://scripts/dialog_presentation.gd").surface()
 var unlock_scroll: ScrollContainer
 var unlock_title: Label
 var unlock_description: Label
@@ -194,7 +197,8 @@ var stars_layer: Node2D
 var battle_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
-var jewel_panel: Panel
+var enhancement_panel: Panel
+var beginner_guide: Control
 var chrono_login_dialog: AcceptDialog
 var save_settings_dialog: AcceptDialog
 var save_interval_input: LineEdit
@@ -238,7 +242,7 @@ func _ready() -> void:
 	visual_config = parsed_visuals
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
-	game = BattleGame.new(db, not automation_args.has("--capture"))
+	game = create_battle_game(not automation_args.has("--capture"))
 	if game.save_enabled:
 		load_music_setting()
 	game.event.connect(on_event)
@@ -309,10 +313,7 @@ func show_chrono_login_report() -> void:
 	chrono_login_dialog.title = UIText.t("chrono.login_title")
 	chrono_login_dialog.dialog_text = UIText.t("chrono.login_report",{"amount":display})
 	chrono_login_dialog.ok_button_text = UIText.t("system.confirm")
-	var report_theme := Theme.new()
-	report_theme.default_font = font
-	report_theme.default_font_size = 22
-	chrono_login_dialog.theme = report_theme
+	preload("res://scripts/dialog_presentation.gd").dialog(chrono_login_dialog)
 	chrono_login_dialog.transient = true
 	chrono_login_dialog.exclusive = true
 	var close_report := func():
@@ -538,22 +539,26 @@ func on_event(kind: String, info: Dictionary) -> void:
 				planet_panel.invalidate()
 				if info.has("reward"):planet_panel.show_completion(str(info.get("id", "")), float(info.reward))
 			if is_instance_valid(crew_panel):crew_panel.invalidate()
+			if is_instance_valid(enhancement_panel):enhancement_panel.invalidate()
 			if info.has("reward") or info.has("activated"):
 				# A shared modifier changes all module projections together. Refresh
 				# that dependency once, instead of repeating filtering/detail work per slot.
 				if is_instance_valid(equipment_panel):equipment_panel.refresh()
 		"equipment_stats":
 			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
+		"enhancement_changed":
+			if is_instance_valid(enhancement_panel):enhancement_panel.invalidate()
+			if is_instance_valid(equipment_panel):equipment_panel.refresh()
 		"jewels_changed":
-			if is_instance_valid(jewel_panel):
-				jewel_panel.inventory_changed()
+			if is_instance_valid(enhancement_panel):
+				enhancement_panel.inventory_changed()
 			if not str(info.get("slot", "")).is_empty():
 				refresh_equipment_cards(str(info.slot))
 			for slot in info.get("slots",[]):refresh_equipment_cards(str(slot))
 		"jewel_error":
 			toast(str(info.message))
 		"jewel_pickup":
-			if is_instance_valid(jewel_panel):jewel_panel.pickup_feedback(info)
+			if is_instance_valid(enhancement_panel):enhancement_panel.pickup_feedback(info)
 		"state":
 			refresh_structure()
 			refresh_navigation()
@@ -641,20 +646,20 @@ func on_event(kind: String, info: Dictionary) -> void:
 			toast(UIText.t("upgrade.completed",{"name":UIText.t("module.upgrade_name",{"slot":prefix+" "+equipment_name}),"result":UIText.t("main.on_event.text_02") if levels == 1 else UIText.t("main.on_event.text_03", {"levels":"%s" % (str(int(levels)))})}))
 			if bool(info.get("batch",false)):return
 			refresh_equipment_cards(str(info.get("slot","")))
-			if is_instance_valid(jewel_panel) and jewel_panel.visible and str(info.get("slot",""))==game.slot_id(jewel_panel.category,jewel_panel.equipment_index):
-				jewel_panel.refresh()
+			if is_instance_valid(enhancement_panel):
+				enhancement_panel.invalidate()
 		"upgrades_completed":
 			if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(info.slots)
-			if is_instance_valid(jewel_panel) and jewel_panel.visible and info.slots.has(game.slot_id(jewel_panel.category,jewel_panel.equipment_index)):
-				jewel_panel.refresh()
+			if is_instance_valid(enhancement_panel):
+				enhancement_panel.invalidate()
 		"module_changed":
 			if is_instance_valid(crew_panel):crew_panel.invalidate()
-			if is_instance_valid(jewel_panel) and jewel_panel.visible:jewel_panel.refresh()
+			if is_instance_valid(enhancement_panel) and enhancement_panel.visible:enhancement_panel.refresh()
 			refresh_equipment_cards(str(info.slot))
 			refresh_ship_controls()
 		"ship_changed":
 			refresh_structure()
-			if is_instance_valid(jewel_panel) and jewel_panel.visible:jewel_panel.refresh()
+			if is_instance_valid(enhancement_panel) and enhancement_panel.visible:enhancement_panel.refresh()
 		"scientists_changed":
 			refresh_scientists()
 			if is_instance_valid(hightech_inspector):hightech_inspector.refresh()
@@ -872,8 +877,14 @@ func beep(frequency: float) -> void:
 	audio.stream = wav
 	audio.play()
 
+# Exact equipment-table IDs, plus missile_mon's existing legacy fallback contract.
+const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
+
+func weapon_visual_key(key:String)->String:
+	return str(ENEMY_VISUAL_ALIASES.get(key,key))
+
 func weapon_key(shot: Dictionary) -> String:
-	return str(shot.key).replace("_mon", "").replace("-mon", "")
+	return weapon_visual_key(str(shot.key))
 
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
@@ -917,7 +928,7 @@ func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
 
 func weapon_visual_profile(key: String) -> Dictionary:
-	return visual_config.get("weapons",{}).get(key,{})
+	return visual_config.get("weapons",{}).get(weapon_visual_key(key),{})
 
 func weapon_visual_glow(key: String, hostile: bool) -> Color:
 	var faction := "enemy" if hostile else "ally"
@@ -1039,26 +1050,41 @@ func shot_mount(shot: Dictionary) -> int:
 			closest = index
 	return closest
 
+func enemy_render_angle(enemy:Dictionary)->float:
+	var pose:=enemy_pose(enemy)
+	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+
+func enemy_component_pose(enemy:Dictionary,component)->Dictionary:
+	var point:Dictionary=component.hardpoint
+	var width:=enemy_render_width(enemy)
+	var hull_angle:=enemy_render_angle(enemy)
+	var normalized:Array=point.pos
+	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
+	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
+	var module_width:=width*0.42*class_scale
+	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(point.get("base_rotation",0)))
+	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
+	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
+	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
+
 func enemy_port_offset(enemy: Dictionary, index: int) -> Vector2:
-	var component = enemy_component_for_slot(enemy,index)
-	var point: Dictionary = component.hardpoint if component!=null else hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
+	var component=enemy_component_for_slot(enemy,index)
+	if component!=null:return enemy_component_pose(enemy,component).muzzle
+	# Unknown external configurations keep the previous logical mount fallback.
+	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
 	if point.is_empty():return Vector2.ZERO
-	var width := enemy_render_width(enemy)
-	var normalized: Array = point.pos
-	var hull_angle := PI+float(enemy_pose(enemy).rotation)
-	var origin := Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(hull_angle)
-	var profile: Dictionary = component.profile if component!=null else {}
-	var muzzle: Array = profile.get("muzzle",[[0.22,0]])
-	var class_scale := float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-	var reach := width*0.42*class_scale*float(muzzle[0][0])
-	return origin+Vector2(reach,0).rotated(PI/2+float(enemy_pose(enemy).rotation)+enemy_weapon_angle(enemy,index))
+	var width:=enemy_render_width(enemy)
+	var angle:=float(enemy_pose(enemy).rotation)
+	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
+	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
+	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
 
 func enemy_weapon_angle(enemy: Dictionary, index: int) -> float:
 	var component = enemy_component_for_slot(enemy,index)
 	if component==null:return 0.0
 	var role: String = component.mode()
 	if role!="main" and role!="secondary":return 0.0
-	var pose_angle := float(enemy_pose(enemy).rotation)
+	var pose_angle := enemy_render_angle(enemy)
 	var desired := wrapf((player_render_position()-enemy_render_position(enemy)).angle()-PI/2-pose_angle,-PI,PI)
 	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
 	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
@@ -1614,6 +1640,7 @@ func build_ui() -> void:
 	help_close_button = button(UIText.t("main.build_ui.text_06"),Rect2(600,626,240,44),func():help_open=false;refresh_navigation(),true)
 	continue_button.z_index = 2
 	help_close_button.z_index = 2
+	preload("res://scripts/dialog_presentation.gd").button_skin(help_close_button,true)
 	unlock_scroll = ScrollContainer.new()
 	unlock_scroll.z_index = 2
 	unlock_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -1647,6 +1674,7 @@ func build_ui() -> void:
 	loop_select.set_item_disabled(0, true)
 	loop_select.item_selected.connect(func(index):game.select_loop_level(loop_select.get_item_id(index));refresh_navigation())
 	ui.add_child(loop_select)
+	preload("res://scripts/dialog_presentation.gd").option(loop_select,false)
 	loop_select.get_popup().about_to_popup.connect(limit_warp_popup)
 	loop_button = button(UIText.t("settings.guard",{"state":UIText.t("main.build_ui.text_10") if game.profile.loop else UIText.t("gem.setup.text_03")}),Rect2(860,20,130,40),func():game.toggle_loop();refresh_navigation(),false,game.state == BattleGame.State.RETREAT)
 	guard_settings = MenuButton.new()
@@ -1655,6 +1683,7 @@ func build_ui() -> void:
 	guard_settings.size = Vector2(48,40)
 	guard_settings.tooltip_text = UIText.t("main.build_ui.text_13")
 	var death_menu := guard_settings.get_popup()
+	preload("res://scripts/dialog_presentation.gd").popup(death_menu)
 	var death_options := [UIText.t("main.build_ui.text_14"), UIText.t("main.build_ui.text_15"), UIText.t("main.build_ui.text_16")]
 	for mode in range(death_options.size()):
 		death_menu.add_radio_check_item(death_options[mode], mode)
@@ -1671,6 +1700,7 @@ func build_ui() -> void:
 			show_save_settings()
 		elif mode==20:
 			var details := AcceptDialog.new()
+			preload("res://scripts/dialog_presentation.gd").dialog(details)
 			details.ok_button_text = UIText.t("system.confirm")
 			details.title = UIText.t("main.build_ui.text_21")
 			var detail_text := RichTextLabel.new()
@@ -1705,17 +1735,22 @@ func build_ui() -> void:
 	advance_progress.add_theme_stylebox_override("fill",style(CYAN,CYAN))
 	ui.add_child(advance_progress)
 	sound_button = button("",Rect2(1060,20,118,40),func():sound_on=not sound_on;refresh_navigation())
+	for header_button in [help_button,resource_mode_button,music_button,loop_select,loop_button,guard_settings,sound_button]:
+		SHELL_PRESENTATION.skin_header(header_button)
 	refresh_navigation()
-	jewel_panel = preload("res://scripts/jewel_panel.gd").new()
-	ui.add_child(jewel_panel)
-	jewel_panel.setup(self)
-	layout_jewel_workspace()
-	if equipment_tabs.current_tab==4:jewel_panel.open()
+	enhancement_panel = preload("res://scripts/enhancement_panel.gd").new()
+	ui.add_child(enhancement_panel)
+	enhancement_panel.setup(self)
+	layout_enhancement_workspace()
+	if equipment_tabs.current_tab==4:enhancement_panel.open()
 	refresh_system_nav()
 	advance_button.move_to_front()
 	advance_countdown_label.move_to_front()
 	advance_progress.move_to_front()
 	apply_readable_fonts(ui)
+	beginner_guide = preload("res://scripts/beginner_guide.gd").new()
+	ui.add_child(beginner_guide)
+	beginner_guide.setup(self)
 	refresh_draw_layers(0)
 
 func apply_readable_fonts(node: Node) -> void:
@@ -1724,12 +1759,12 @@ func apply_readable_fonts(node: Node) -> void:
 	if node is Control:
 		var control := node as Control
 		if control is Label or control is Button or control is LineEdit or control is TextEdit:
-			var minimum := 21 if (equipment_tabs.is_ancestor_of(control) or jewel_panel.is_ancestor_of(control)) else 19
+			var minimum := 21 if (equipment_tabs.is_ancestor_of(control) or enhancement_panel.is_ancestor_of(control)) else 19
 			if control.has_meta("hightech_compact_text"):minimum=18
 			if control.get_theme_font_size("font_size") < minimum:
 				control.add_theme_font_size_override("font_size",minimum)
 		elif control is RichTextLabel:
-			var minimum := 21 if (equipment_tabs.is_ancestor_of(control) or jewel_panel.is_ancestor_of(control)) else 19
+			var minimum := 21 if (equipment_tabs.is_ancestor_of(control) or enhancement_panel.is_ancestor_of(control)) else 19
 			if control.get_theme_font_size("normal_font_size") < minimum:
 				control.add_theme_font_size_override("normal_font_size",minimum)
 	if not node.child_entered_tree.is_connected(apply_readable_fonts):
@@ -1742,7 +1777,7 @@ func build_workspace_shell() -> void:
 	system_nav.name = "SystemNavigation"
 	system_nav.position = NAV_RECT.position
 	system_nav.size = NAV_RECT.size
-	system_nav.add_theme_stylebox_override("panel",style(Color("101c2b"),LINE))
+	system_nav.add_theme_stylebox_override("panel",SHELL_PRESENTATION.surface(SHELL_PRESENTATION.STRUCTURE))
 	ui.add_child(system_nav)
 	var navigation_scroll := ScrollContainer.new()
 	navigation_scroll.name = "SystemNavigationScroll"
@@ -1758,16 +1793,17 @@ func build_workspace_shell() -> void:
 	workspace_frame.name = "SystemWorkspace"
 	workspace_frame.position = WORK_RECT.position
 	workspace_frame.size = WORK_RECT.size
-	workspace_frame.add_theme_stylebox_override("panel",style(Color("0c1522"),LINE))
+	workspace_frame.add_theme_stylebox_override("panel",SHELL_PRESENTATION.surface(Color("0c1522")))
 	ui.add_child(workspace_frame)
 	workspace_title = equipment_card_label(ui,"",Rect2(180,108,1100,36),24,INK)
 	workspace_title.name = "SystemWorkspaceTitle"
+	workspace_title.add_theme_color_override("font_color",SHELL_PRESENTATION.PAPER)
 	for index in SYSTEM_TITLES.size():
 		var navigation := Button.new()
 		navigation.name = "SystemNav%d" % index
 		navigation.custom_minimum_size = Vector2(124,68)
 		navigation.add_theme_font_override("font",font)
-		navigation.add_theme_font_size_override("font_size",15)
+		SHELL_PRESENTATION.setup_navigation(navigation,index)
 		navigation.pressed.connect(select_system.bind(index))
 		navigation_list.add_child(navigation)
 		system_nav_buttons.append(navigation)
@@ -1798,31 +1834,23 @@ func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
 	refresh_planet_activation_badge()
 	var selected := equipment_tabs.current_tab
-	if ui_state_changed(workspace_title,[selected==1]):
-		workspace_title.add_theme_stylebox_override("normal",preload("res://scripts/hightech_presentation.gd").surface("header-plate") if selected==1 else StyleBoxEmpty.new())
 	for index in system_nav_buttons.size():
 		var navigation := system_nav_buttons[index]
 		var available := index<equipment_tabs.get_tab_count() and not equipment_tabs.is_tab_hidden(index)
 		set_ui_value(navigation,"visible",available)
 		if not available:continue
 		var caption := UIText.t(SYSTEM_TITLES[index])
-		set_ui_value(navigation,"text",SYSTEM_ICONS[index]+"  "+caption)
+		set_ui_value(navigation,"text",caption)
 		set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
 		if not navigation.has_meta("selected") or bool(navigation.get_meta("selected"))!=(index==selected):
 			navigation.set_meta("selected",index==selected)
-			var normal_style := style(Color("153443") if index==selected else Color("101c2b"),CYAN if index==selected else LINE)
-			var hover_style := style(Color("1b4150") if index==selected else Color("172638"),CYAN if index==selected else LINE)
-			navigation.add_theme_stylebox_override("normal",normal_style)
-			navigation.add_theme_stylebox_override("hover",hover_style)
-			navigation.add_theme_stylebox_override("pressed",hover_style)
-			navigation.add_theme_color_override("font_color",CYAN if index==selected else INK)
-			navigation.add_theme_color_override("font_hover_color",CYAN if index==selected else INK)
+			SHELL_PRESENTATION.skin_navigation(navigation,index==selected)
 	set_ui_value(workspace_title,"text",UIText.t(SYSTEM_TITLES[selected]) if selected>=0 else "")
 
-func layout_jewel_workspace() -> void:
-	if not is_instance_valid(jewel_panel):return
-	jewel_panel.position = WORK_CONTENT_RECT.position+Vector2(4,8)
-	jewel_panel.scale = WORK_CONTENT_SCALE
+func layout_enhancement_workspace() -> void:
+	if not is_instance_valid(enhancement_panel):return
+	enhancement_panel.position = WORK_CONTENT_RECT.position+Vector2(4,8)
+	enhancement_panel.scale = WORK_CONTENT_SCALE
 
 func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
 	if control.get(property) != value:
@@ -1879,7 +1907,7 @@ func refresh_hightech_card(key: String) -> void:
 	var income := game.furnace_income_peak(-1,true) if key == BattleGame.JEWEL_FURNACE else game.furnace_income_peak() if key == BattleGame.FURNACE else 0.0
 	if ui_state_changed(hightech_descriptions[key],[game.hightech_level(key),game.hightech_level_bonus(),db.data.hightech[key],income,game.hightech_unlocked(key)]):
 		var description := preload("res://scripts/hightech_presentation.gd").effect_text(game,key)
-		set_ui_value(hightech_descriptions[key],"text",description)
+		set_ui_value(hightech_descriptions[key],"text",preload("res://scripts/hightech_presentation.gd").effect_markup(game,key))
 		set_ui_value(hightech_descriptions[key],"tooltip_text",description)
 	refresh_hightech_progress(key)
 
@@ -1906,7 +1934,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("hightech",{}).keys().any(func(key):return game.hightech_unlocked(str(key))))
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
-	pages.append(game.jewels_unlocked())
+	pages.append(game.enhancement_unlocked())
 	pages.append(game.profile.get("crew",[]).any(func(item):return game.crew.unlocked(game,item.crewId)))
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
@@ -2045,7 +2073,7 @@ func refresh_navigation() -> void:
 	if ui_state_changed(workspace_frame,[workspace_visible]):
 		for control in [system_nav,workspace_frame,equipment_tabs,workspace_title]:
 			if is_instance_valid(control):set_ui_value(control,"visible",workspace_visible)
-		if is_instance_valid(jewel_panel):set_ui_value(jewel_panel,"visible",workspace_visible and equipment_tabs.current_tab==4)
+		if is_instance_valid(enhancement_panel):set_ui_value(enhancement_panel,"visible",workspace_visible and equipment_tabs.current_tab==4)
 	var advance_visible := navigation_visible and game.state==BattleGame.State.LEVEL_CLEAR and game.first_clear
 	if ui_state_changed(advance_button,[advance_visible]):
 		set_ui_value(advance_button,"visible",advance_visible)
@@ -2096,6 +2124,9 @@ func refresh_navigation() -> void:
 			var checked := mode==int(game.profile.get("guardDeath",0))
 			if menu.is_item_checked(mode) != checked:
 				menu.set_item_checked(mode,checked)
+
+func create_battle_game(persist: bool) -> BattleGame:
+	return BattleGame.new(db,persist)
 
 func create_draw_layers() -> void:
 	background_layer = Node2D.new()
@@ -2151,7 +2182,7 @@ func refresh_draw_layers(dt: float) -> void:
 			battle_layer.queue_redraw()
 	# The HUD reads encounter identity and player health, never enemy cooldowns
 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
-	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter()]):
+	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),game.enhancement_protection_current(),game.enhancement_protection_capacity(),enhancement_protection_state_text()]):
 		battle_hud_layer.queue_redraw()
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
@@ -2284,10 +2315,10 @@ func draw_background() -> void:
 
 func draw_chrome() -> void:
 	var viewport := get_viewport_rect()
-	draw_surface.draw_rect(Rect2(0,0,viewport.size.x,CHROME_HEIGHT),Color("101c2b"))
-	draw_surface.draw_line(Vector2(0,CHROME_HEIGHT-1),Vector2(viewport.end.x,CHROME_HEIGHT-1),LINE,2)
-	text_at("◈",Vector2(24,53),30,CYAN)
-	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22)
+	draw_surface.draw_rect(Rect2(0,0,viewport.size.x,CHROME_HEIGHT),SHELL_PRESENTATION.STRUCTURE)
+	draw_surface.draw_line(Vector2(0,CHROME_HEIGHT-1),Vector2(viewport.end.x,CHROME_HEIGHT-1),SHELL_PRESENTATION.NAVY,3)
+	text_at("◈",Vector2(24,53),30,SHELL_PRESENTATION.TEAL)
+	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22,SHELL_PRESENTATION.PAPER)
 	draw_surface.draw_line(Vector2(599,96),Vector2(599,viewport.end.y-24),LINE,2)
 
 func draw_vertical_battle_hud() -> void:
@@ -2299,6 +2330,12 @@ func draw_vertical_battle_hud() -> void:
 	text_at(UIText.t(state_key),Vector2(180,128),13,CYAN)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(446,129),14,MUTED)
 	bar(Rect2(44,190,524,4),game.distance/length,CYAN)
+	var neutral_caption := neutral_protection_hud_text()
+	if not neutral_caption.is_empty():
+		var protection_state := enhancement_protection_state_text()
+		text_at(neutral_caption,Vector2(44,155 if not protection_state.is_empty() else 166),17,SHELL_PRESENTATION.PAPER)
+		if not protection_state.is_empty():text_at(protection_state,Vector2(44,176),15,MUTED)
+		bar(Rect2(44,180 if not protection_state.is_empty() else 174,524,4),GrowthNumber.ratio(game.enhancement_protection_current(),GrowthNumber.maximum(1,game.enhancement_protection_capacity())),Color("b5c1bc"))
 	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
 		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(268,129),14,ORANGE)
 	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
@@ -2307,6 +2344,68 @@ func draw_vertical_battle_hud() -> void:
 	if game.profile.unlocked.has("shield"):
 		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(44,1207),15,CYAN)
 		bar(Rect2(44,1219,524,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),CYAN)
+
+func neutral_protection_hud_text() -> String:
+	var current = game.enhancement_protection_current()
+	var capacity = game.enhancement_protection_capacity()
+	if GrowthNumber.compare(current,0)<=0 and GrowthNumber.compare(capacity,0)<=0:return ""
+	return UIText.t("enhance.protection_hud.runtime" if game.has_method("enhancement_protection_status") else "enhance.protection_hud",{"current":number(current),"capacity":number(capacity)})
+
+func enhancement_protection_state_text() -> String:
+	if not game.has_method("enhancement_protection_status"):return ""
+	var status: Dictionary = game.call("enhancement_protection_status")
+	var mode := str(status.get("mode","neutral"))
+	var key := "enhance.protection_state."+mode
+	var duration := ceili(float(status.get("remaining",0))*10)/10.0
+	if mode=="neutral" and float(status.get("lockout",0))>0:
+		key = "enhance.protection_state.lockout"
+		duration = ceili(float(status.lockout)*10)/10.0
+	var arguments := {}
+	if mode in ["physical","energy"]:arguments.resistance=NUMBER_FORMAT.precise(float(status.get("resistance",0))*100)
+	if mode in ["physical","energy"] or key=="enhance.protection_state.lockout":arguments.duration=NUMBER_FORMAT.precise(duration)
+	var caption := mixed_protection_state_text(status) if mode=="mixed" else UIText.t(key,arguments)
+	if GrowthNumber.compare(status.get("cover_current",0),0)>0:
+		caption += " · "+UIText.t("enhance.protection_state.cover",{"amount":number(status.cover_current),"duration":NUMBER_FORMAT.precise(ceili(float(status.cover_remaining)*10)/10.0)})
+	return caption
+
+func mixed_protection_state_text(status: Dictionary) -> String:
+	var strengths := {"physical":[],"energy":[]}
+	var has_neutral := false
+	for component in status.get("components",[]):
+		if GrowthNumber.compare(component.current,0)<=0:continue
+		var mode := str(component.get("mode","neutral"))
+		if strengths.has(mode):strengths[mode].append(float(component.resistance)*100)
+		else:has_neutral=true
+	var types := {}
+	for mode in strengths:
+		if strengths[mode].is_empty():continue
+		var minimum: float=strengths[mode].min()
+		var maximum: float=strengths[mode].max()
+		types[mode]=UIText.t("enhance.protection_state.range",{"minimum":NUMBER_FORMAT.compact(minimum),"maximum":NUMBER_FORMAT.compact(maximum)}) if minimum!=maximum else UIText.t("enhance.protection_state.range_equal",{"value":NUMBER_FORMAT.compact(minimum)})
+	var caption := ""
+	if types.has("physical") and types.has("energy"):
+		caption=UIText.t("enhance.protection_state.dual",{"physical":types.physical,"energy":types.energy})
+	elif types.has("physical") or types.has("energy"):
+		var mode := "physical" if types.has("physical") else "energy"
+		caption=UIText.t("enhance.protection_state.mixed_"+mode,{"range":types[mode]})
+	else:return UIText.t("enhance.protection_state.neutral")
+	return UIText.t("enhance.protection_state.partial",{"types":caption}) if has_neutral else caption
+
+func enhancement_protection_details() -> String:
+	if not game.has_method("enhancement_protection_status"):return neutral_protection_hud_text()
+	var status: Dictionary = game.call("enhancement_protection_status")
+	var lines: Array[String] = [neutral_protection_hud_text(),enhancement_protection_state_text()]
+	for component in status.get("components",[]):
+		if GrowthNumber.compare(component.current,0)<=0 and float(component.lockout)<=0:continue
+		var mode := str(component.get("mode","neutral"))
+		var key := "enhance.protection_state.lockout" if float(component.lockout)>0 else "enhance.protection_state."+mode
+		var duration: float = component.lockout if float(component.lockout)>0 else component.remaining
+		var arguments := {}
+		if mode in ["physical","energy"] and float(component.lockout)<=0:arguments.resistance=NUMBER_FORMAT.precise(float(component.resistance)*100)
+		if mode in ["physical","energy"] or float(component.lockout)>0:arguments.duration=NUMBER_FORMAT.precise(ceili(duration*10)/10.0)
+		var state := UIText.t(key,arguments)
+		lines.append(UIText.t("enhance.protection_component",{"index":int(component.index)+1,"current":number(component.current),"capacity":number(component.capacity),"state":state}))
+	return "\n".join(lines)
 
 func draw_stars() -> void:
 	if stars_mesh==null:
@@ -2351,10 +2450,8 @@ func draw_stars() -> void:
 	draw_surface.draw_mesh(stars_mesh,null)
 
 func draw_resources() -> void:
-	text_at(str(UIText.data_text("resources",str("1"))),Vector2(65,32),11,MUTED)
-	text_at(resource_display("1"),Vector2(65,56),21,INK)
-	text_at(str(UIText.data_text("resources",str("2"))),Vector2(280,32),11,MUTED)
-	text_at(resource_display("2"),Vector2(280,56),21,PURPLE)
+	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,0,str(UIText.data_text("resources","1")),resource_display("1"))
+	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,1,str(UIText.data_text("resources","2")),resource_display("2"))
 
 func battle_notices() -> Array[Dictionary]:
 	var notices: Array[Dictionary] = []
@@ -2495,6 +2592,7 @@ func draw_battle() -> void:
 	for p in visible_projectiles:
 		var pos := battle_point(Vector2(p.x,p.y))+offset
 		if p.get("beam", false):
+			if game.long_laser_valid(p) and draw_beam_override(p,offset,false):continue
 			pos = battle_point(visual_muzzle(p))+offset
 			if game.long_laser_valid(p):
 				var end := entity_render_position(p.target) + offset
@@ -2517,25 +2615,7 @@ func draw_battle() -> void:
 	for enemy in game.enemies:
 		if enemy.hp <= 0:
 			continue
-		var pos := enemy_render_position(enemy)+offset
-		var dimensions := Vector2(enemy_render_width(enemy),enemy_render_width(enemy)*2.0)
-		var pose := enemy_pose(enemy)
-		var depth := enemy_depth(enemy)
-		var angle := float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
-		var light := lerpf(0.63,1.0,depth)
-		draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
-		draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
-		draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
-		draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
-		draw_surface.draw_set_transform(Vector2.ZERO)
-		draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
-		var w := dimensions.y * 0.8
-		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
-		if boss_battle:
-			var marker := pos + Vector2(dimensions.y/2+4,-10)
-			marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
-			box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
-			text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
+		draw_enemy_hull_and_status(enemy,offset,boss_battle)
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	for flight in flights:
 		var p: Dictionary = flight.shot
@@ -2543,6 +2623,7 @@ func draw_battle() -> void:
 		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
 		var key := str(p.key).replace("_mon", "").replace("-mon", "")
 		if key in ["laser","cannon"]:continue
+		if draw_projectile_body_override(p,pos,angle):continue
 		var texture := visual_texture(str(weapon_visual_profile(key).get("projectile_vfx","")))
 		if texture==null:continue
 		var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
@@ -2552,6 +2633,7 @@ func draw_battle() -> void:
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
 	for shot in visible_projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
+		if draw_beam_override(shot,offset):continue
 		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
 			var pos := battle_point(visual_muzzle(shot))+offset
 			var color := ORANGE if shot.hostile else CYAN
@@ -2588,6 +2670,35 @@ func draw_battle() -> void:
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+
+func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle: bool) -> void:
+	var pos := enemy_render_position(enemy)+offset
+	var dimensions := Vector2(enemy_render_width(enemy),enemy_render_width(enemy)*2.0)
+	var pose := enemy_pose(enemy)
+	var depth := enemy_depth(enemy)
+	var angle := float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+	var light := lerpf(0.63,1.0,depth)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
+	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
+	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
+	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	draw_surface.draw_set_transform(Vector2.ZERO)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
+	var w := dimensions.y * 0.8
+	bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+	if boss_battle:
+		var marker := pos + Vector2(dimensions.y/2+4,-10)
+		marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
+		box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
+		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
+
+func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float) -> bool:
+	# Optional presentation override; default retains the existing projectile sprite.
+	return false
+
+func draw_beam_override(_shot: Dictionary, _offset: Vector2, _core: bool = true) -> bool:
+	# Optional presentation override; default preserves the original draw commands.
+	return false
 
 func draw_furnace_drop(drop: Dictionary, pos: Vector2, core: bool, bob: float) -> void:
 	var accent := PURPLE if core else ORANGE
@@ -2744,17 +2855,25 @@ func draw_player_weapon_components(ship_key: String, pos: Vector2, scale_value: 
 			recoil=maxf(recoil,8.0*clampf(float(pose.get("recoil",0.0))/0.13,0,1)/scale_value)
 		draw_weapon_component(component,pos+point.rotated(hull_angle)*scale_value,angle,width,scale_value,pulse,recoil if component.mode()=="main" else 0.0,railgun_component_charge(component))
 
-func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, hull_angle: float, hull_width: float, under_hull: bool) -> void:
+func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
 		if (int(component.hardpoint.get("z",1))<=0)!=under_hull:continue
-		var normalized: Array = component.hardpoint.pos
-		var point := Vector2(float(normalized[0])*hull_width,float(normalized[1])*hull_width*2.0).rotated(PI+hull_angle)
-		var class_scale := float({"small":0.7,"medium":0.9,"large":1.1}.get(str(component.hardpoint.get("visual_size_class","small")),0.7))
-		var angle := PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(component.hardpoint.get("base_rotation",0)))
-		var pulse := 0.0
-		for slot in component.slots:
-			pulse=maxf(pulse,clampf(1.0-(fx_time-float(enemy_pose(enemy).get("rail_fired_"+str(slot),-100.0)))/0.12,0.0,1.0))
-		draw_weapon_component(component,pos+point,angle,hull_width*0.42*class_scale,1.0,pulse,0.0,railgun_component_charge(component,enemy))
+		var pose:=enemy_component_pose(enemy,component)
+		draw_surface.draw_set_transform(pos+Vector2(pose.origin),float(pose.angle))
+		var width:float=pose.width
+		var port:Vector2=pose.port
+		var tint:=Color("b29b86")
+		# Compact warm armor and an explicit aperture, including embedded/bay mounts.
+		# Geometry terminates at the same local port sampled by projectile launches.
+		if component.mode()=="bay":
+			draw_surface.draw_rect(Rect2(-width*0.26,-width*0.21,width*0.52,width*0.42),Color("292f34"))
+			draw_surface.draw_line(Vector2(-width*0.13,-width*0.12),port,tint,maxf(1.0,width*0.10),true)
+		else:
+			var thickness:=width*(0.18 if component.mode()=="embedded" else 0.29)
+			draw_surface.draw_rect(Rect2(-width*0.22,-thickness*0.5,width*0.40,thickness),Color("485159"))
+			draw_surface.draw_line(Vector2(-width*0.10,0),port,tint,maxf(1.0,width*0.12),true)
+		draw_surface.draw_circle(port,maxf(0.65,width*0.06),Color("e2a36b"))
+		draw_surface.draw_set_transform(Vector2.ZERO)
 
 func draw_engine_wake(position: Vector2) -> void:
 	var tail := position.y+player_visible_tail()
@@ -2801,11 +2920,11 @@ func draw_help() -> void:
 	var panel := overlay_panel_rect(Vector2(820,551))
 	var scale_value := panel.size.x/820.0
 	draw_surface.draw_set_transform(panel.position,0,Vector2.ONE*scale_value)
-	box(Rect2(Vector2.ZERO,Vector2(820,551)))
-	text_at(UIText.t("main.draw_help.text_01"),Vector2(50,60),30,CYAN)
+	draw_surface.draw_style_box(help_surface,Rect2(Vector2.ZERO,Vector2(820,551)))
+	text_at(UIText.t("main.draw_help.text_01"),Vector2(50,60),30,SHELL_PRESENTATION.NAVY)
 	var lines := [UIText.t("main.draw_help.text_02"), UIText.t("main.draw_help.text_03"), UIText.t("main.draw_help.text_04"), UIText.t("main.draw_help.text_05"), UIText.t("main.draw_help.text_06"), UIText.t("main.draw_help.text_07"), UIText.t("main.draw_help.text_08"), UIText.t("main.draw_help.text_09"), UIText.t("main.draw_help.text_10")]
 	for i in range(lines.size()):
-		text_at(lines[i],Vector2(50,107+i*39),16,MUTED if i>5 else INK)
+		text_at(lines[i],Vector2(50,107+i*39),18,SHELL_PRESENTATION.NAVY)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 
 func equipment_label(parent: Control, value: String, pos: Vector2, font_size := 13, color := INK) -> Label:
@@ -2883,10 +3002,10 @@ func build_equipment_tabs() -> void:
 	build_hightech_tab()
 	build_reactor_tab()
 	build_ship_tab()
-	var jewel_tab := Control.new()
-	jewel_tab.name = "Jewels"
-	equipment_tabs.add_child(jewel_tab)
-	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(jewel_tab),UIText.t("gem.tab"))
+	var enhancement_tab := Control.new()
+	enhancement_tab.name = "Enhancement"
+	equipment_tabs.add_child(enhancement_tab)
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(enhancement_tab),UIText.t("enhance.tab"))
 	crew_panel = preload("res://scripts/crew_panel.gd").new()
 	crew_panel.name = "Crew"
 	equipment_tabs.add_child(crew_panel)
@@ -2911,9 +3030,9 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
 		if index==1:select_hightech_bay("")
-		if is_instance_valid(jewel_panel):
-			if index==4:jewel_panel.open()
-			else:set_ui_value(jewel_panel,"visible",false)
+		if is_instance_valid(enhancement_panel):
+			if index==4:enhancement_panel.open()
+			else:set_ui_value(enhancement_panel,"visible",false)
 		layout_reactor_page()
 		refresh_system_nav()
 		sync_battle_visibility()
@@ -2921,8 +3040,8 @@ func build_equipment_tabs() -> void:
 	layout_reactor_page()
 
 func return_to_first_system() -> void:
-	# Existing gem close path returns to the first available system.
-	if is_instance_valid(jewel_panel):set_ui_value(jewel_panel,"visible",false)
+	# Closing enhancement returns to the first available system.
+	if is_instance_valid(enhancement_panel):set_ui_value(enhancement_panel,"visible",false)
 	var first := -1
 	for index in equipment_tabs.get_tab_count():
 		if not equipment_tabs.is_tab_hidden(index):
@@ -2991,7 +3110,7 @@ func refresh_hightech_progress(key: String) -> void:
 	if not ui_state_changed(controls.label,[workers,game.dedicated_scientists(key),game.crew.levels_unlocked(game),game.hightech_level(key),points,required,rate,game.paused,construction.completed>0,pending]):
 		return
 	hightech_titles[key].get_parent().accent=Color("607d89") if pending else construction.accent
-	controls.state.add_theme_color_override("font_color",Color("607d89") if pending else construction.accent)
+	controls.state.add_theme_color_override("font_color",preload("res://scripts/hightech_presentation.gd").MUTED if pending else preload("res://scripts/hightech_presentation.gd").NAVY)
 	var fraction := clampf(points/required,0,1)
 	construction.set_fraction(0.0 if pending else fraction)
 	construction.set_workers(0 if pending else workers)
@@ -2999,6 +3118,7 @@ func refresh_hightech_progress(key: String) -> void:
 	var auxiliary := UIText.t("research.dock_remaining",{"time":"%02d:%02d:%02d" % [seconds/3600,(seconds%3600)/60,seconds%60]}) if rate>0 else UIText.t("research.dock_points",{"points":number(points),"required":number(required)})
 	if game.crew.levels_unlocked(game):auxiliary += "  " + game.crew.format_text(game,"dedicated_ai",{"ai":game.dedicated_scientists(key)})
 	set_ui_value(controls.label,"text","" if pending else auxiliary)
+	set_ui_value(controls.label,"tooltip_text",controls.label.text)
 	if hightech_buttons.has(key):set_ui_value(hightech_buttons[key],"text",UIText.t("upgrade.build_hightech_card.text_04"))
 	set_ui_value(controls.state,"text",UIText.t("research.pending") if pending else UIText.t("research.percent",{"percent":"%.0f" % floorf(fraction*100)}))
 	refresh_hightech_selection(key)
@@ -3024,6 +3144,7 @@ func confirm_unequip(category: String, index: int) -> void:
 	dialog.dialog_text = UIText.t("main.confirm_unequip.text_02", {"key":"%s" % (NAMES[str(entry.key)]), "level":"%d" % (int(entry.level))})
 	dialog.ok_button_text = UIText.t("main.confirm_unequip.text_03")
 	dialog.cancel_button_text = UIText.t("main.confirm_unequip.text_04")
+	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)
 	dialog.confirmed.connect(func():
 		if str(game.profile.selectedShip) == ship_key and game.slot_entry(category,index) == entry:
@@ -3051,26 +3172,28 @@ func build_hightech_tab() -> void:
 	hightech_management.add_theme_stylebox_override("panel",preload("res://scripts/hightech_presentation.gd").surface("global-surface"))
 	hightech_management.z_index=3
 	hightech_page.add_child(hightech_management)
-	scientist_summary = equipment_card_label(hightech_management,"",Rect2(148,20,554,30),22,INK)
+	scientist_summary = equipment_card_label(hightech_management,"",Rect2(24,14,644,32),23,preload("res://scripts/hightech_presentation.gd").NAVY)
 	var actions := [1,10,-1]
 	for i in actions.size():
 		var amount: int = actions[i]
 		var text_key := "research.dock_ai_one" if amount==1 else "research.dock_ai_ten" if amount==10 else "research.dock_ai_max"
-		var action := button(UIText.t(text_key),Rect2(719+i*116,28,106,42),func():game.generate_scientist(amount),false)
+		var action := button(UIText.t(text_key),Rect2(704+i*116,24,108,46),func():game.generate_scientist(amount),false)
 		action.reparent(hightech_management,false)
-		preload("res://scripts/hightech_presentation.gd").button_skin(action)
-		action.add_theme_font_size_override("font_size",18)
+		preload("res://scripts/hightech_presentation.gd").button_skin(action,true)
+		action.add_theme_font_size_override("font_size",21)
 		if amount==1:scientist_generate_button=action
 		else:scientist_bulk_buttons[amount]=action
-	scientist_distribute_button = button(UIText.t("research.dock_distribute"),Rect2(1069,28,124,42),func():game.distribute_scientists())
+	scientist_distribute_button = button(UIText.t("research.dock_distribute"),Rect2(1060,24,232,46),func():game.distribute_scientists())
 	scientist_distribute_button.reparent(hightech_management,false)
 	preload("res://scripts/hightech_presentation.gd").button_skin(scientist_distribute_button)
-	scientist_distribute_button.add_theme_font_size_override("font_size",18)
+	scientist_distribute_button.add_theme_font_size_override("font_size",21)
 	scientist_distribute_button.tooltip_text = UIText.t("upgrade.build_hightech_tab.text_03")
-	scientist_cost_label = equipment_card_label(hightech_management,"",Rect2(148,53,554,28),18,MUTED)
+	scientist_cost_label = equipment_card_label(hightech_management,"",Rect2(24,49,644,28),20,preload("res://scripts/hightech_presentation.gd").MUTED)
+	for readout in [scientist_summary,scientist_cost_label]:preload("res://scripts/hightech_presentation.gd").label_skin(readout,readout==scientist_summary)
 	var scroll := preload("res://scripts/hightech_scroll.gd").new()
 	scroll.row_stride=int(HIGHTECH_CARD_SIZE.y)+18
 	hightech_scroll = scroll
+	preload("res://scripts/hightech_presentation.gd").scroll_skin(scroll)
 	scroll.position = Vector2(12,12)
 	scroll.size = Vector2(1336,904)
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
@@ -3128,57 +3251,47 @@ func build_hightech_card(_index: int, key: String) -> void:
 	card.add_theme_font_override("font",font)
 	hightech_container.add_child(card)
 	var construction := CONSTRUCTION_SCRIPT.new()
-	construction.position = Vector2(149,0)
+	construction.position = Vector2(174,0)
 	construction.size = Vector2(296,304)
-	construction.scale = Vector2.ONE*1.17
+	construction.scale = Vector2.ONE
 	card.add_child(construction)
 	construction.setup(key)
 	card.accent=construction.accent
-	var marker := equipment_label(card,"%02d" % (_index+1),Vector2(24,340),12,Color("344958"))
-	marker.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	marker.scale=Vector2.ONE*0.65
-	var title := equipment_card_label(card,"",Rect2(152,348,344,26),21,INK)
+	var title := equipment_card_label(card,"",Rect2(28,308,588,32),24,preload("res://scripts/hightech_presentation.gd").NAVY)
 	title.text = preload("res://scripts/hightech_presentation.gd").title(game,key)
-	title.tooltip_text = preload("res://scripts/hightech_presentation.gd").effect_text(game,key)
+	title.tooltip_text = title.text
 	hightech_titles[key] = title
-	var state := equipment_card_label(card,"",Rect2(152,375,150,24),18,construction.accent)
-	var description := equipment_card_label(card,preload("res://scripts/hightech_presentation.gd").effect_text(game,key),Rect2(152,397,344,27),18,MUTED)
+	var state := equipment_card_label(card,"",Rect2(28,342,180,28),21,preload("res://scripts/hightech_presentation.gd").NAVY)
+	var description := preload("res://scripts/parameter_text.gd").create_label(card,Rect2(28,372,588,68),21,preload("res://scripts/shell_presentation.gd").face(500),preload("res://scripts/hightech_presentation.gd").MUTED)
+	description.text=preload("res://scripts/hightech_presentation.gd").effect_markup(game,key)
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	description.max_lines_visible=1
-	description.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-	description.clip_text=true
-	description.tooltip_text = description.text
-	description.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	description.size=Vector2(344,27)
+	description.clip_contents=true
+	description.tooltip_text=preload("res://scripts/hightech_presentation.gd").effect_text(game,key)
+	description.mouse_filter=Control.MOUSE_FILTER_PASS
 	hightech_descriptions[key] = description
-	var auxiliary := equipment_card_label(card,"",Rect2(302,375,194,24),18,MUTED)
-	for compact in [state,description,auxiliary]:
-		compact.set_meta("hightech_compact_text",true)
-		compact.add_theme_font_size_override("font_size",18)
+	var auxiliary := equipment_card_label(card,"",Rect2(212,342,404,28),20,preload("res://scripts/hightech_presentation.gd").MUTED)
 	auxiliary.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-	for label in [title,state,description,auxiliary]:
-		label.add_theme_color_override("font_shadow_color",Color(0,0,0,0.95))
-		label.add_theme_constant_override("shadow_offset_x",1)
-		label.add_theme_constant_override("shadow_offset_y",2)
-	for label in [title,state,auxiliary]:label.mouse_filter=Control.MOUSE_FILTER_PASS
+	for label in [title,state,auxiliary]:
+		preload("res://scripts/hightech_presentation.gd").label_skin(label,label in [title,state])
+		label.mouse_filter=Control.MOUSE_FILTER_PASS
 	hightech_progress[key] = {"label":auxiliary,"construction":construction,"state":state,"description":description}
 	var detail: Control=hightech_inspector.add_project(key)
-	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(885,42,64,38),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
+	var remove := button(UIText.t("upgrade.build_hightech_card.text_05"),Rect2(958,64,64,46),func():game.assign_scientist(key,-1),false,game.assigned_scientists(key)<=0)
 	remove.reparent(detail,false)
 	preload("res://scripts/hightech_presentation.gd").button_skin(remove)
-	remove.add_theme_font_size_override("font_size",12)
+	remove.add_theme_font_size_override("font_size",21)
 	scientist_remove_buttons[key] = remove
-	var add := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(957,42,64,38),func():game.assign_scientist(key,1),false,not game.can_research(key))
+	var add := button(UIText.t("upgrade.build_hightech_card.text_04"),Rect2(1030,64,64,46),func():game.assign_scientist(key,1),false,not game.can_research(key))
 	add.reparent(detail,false)
-	preload("res://scripts/hightech_presentation.gd").button_skin(add)
-	add.add_theme_font_size_override("font_size",12)
+	preload("res://scripts/hightech_presentation.gd").button_skin(add,true)
+	add.add_theme_font_size_override("font_size",21)
 	hightech_buttons[key] = add
 	scientist_assignment_buttons[key]=[]
 	for amount in [10,-1]:
-		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(1029 if amount==10 else 1101,42,70,38),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),false,not game.can_research(key))
+		var action := button(UIText.t("upgrade.build_hightech_card.text_06") if amount==10 else UIText.t("weapon.build_equipment_card.text_19"),Rect2(1102 if amount==10 else 1180,64,70,46),func():game.assign_scientist(key,10 if amount==10 else game.idle_scientists()),false,not game.can_research(key))
 		action.reparent(detail,false)
 		preload("res://scripts/hightech_presentation.gd").button_skin(action)
-		action.add_theme_font_size_override("font_size",11)
+		action.add_theme_font_size_override("font_size",21)
 		scientist_assignment_buttons[key].append(action)
 	refresh_hightech_progress(key)
 

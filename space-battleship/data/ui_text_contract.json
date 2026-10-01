@@ -1,99 +1,1155 @@
 {
   "entries": {
-    "save.settings": {"params": []},
-    "save.interval": {"params": []},
-    "save.apply_interval": {"params": []},
-    "save.invalid_interval": {"params": []},
-    "save.interval_hint": {"params": []},
-    "save.interval_applied": {"params": ["minutes"]},
-    "save.manual": {"params": []},
-    "save.last_success": {"params": ["time"]},
-    "save.never": {"params": []},
-    "save.success": {"params": []},
-    "save.failed": {"params": ["error"]},
-    "save.warning": {"params": []},
-    "planet.activate": {"params": []},
-    "planet.facility_status_ready": {"params": []},
-    "planet.log.activated": {"params": ["name"]},
-    "galaxy.state_developing": {"params": []},
-    "galaxy.slot_constructing": {"params": []},
-    "galaxy.slot_active": {"params": []},
-    "galaxy.slot_upgrading": {"params": []},
-    "galaxy.rate": {"params": ["amount"]},
-    "galaxy.detail": {"params": ["name", "level", "effect", "value", "state", "progress"]},
-    "galaxy.card_exploration": {"params": []},
-    "galaxy.card_buildings": {"params": []},
-    "galaxy.card_max_level": {"params": []},
-    "galaxy.card_crew": {"params": []},
-    "galaxy.card_explorers": {"params": []},
-    "galaxy.card_traffic": {"params": []},
-    "galaxy.card_crew_exp": {"params": []},
-    "galaxy.card_equipment_value": {"params": []},
-    "galaxy.card_charge_max": {"params": []},
-    "galaxy.card_gem_fragment": {"params": []},
-    "galaxy.card_iron": {"params": []},
-    "galaxy.card_uranium": {"params": []},
-    "galaxy.effect_crew_exp": {"params": []},
-    "galaxy.effect_equipment_value": {"params": []},
-    "galaxy.effect_charge_max": {"params": []},
-    "galaxy.effect_gem_fragment": {"params": []},
-    "galaxy.effect_iron_auto_ratio": {"params": []},
-    "galaxy.effect_uranium_auto_ratio": {"params": []},
-    "planet.log.heading": {"params": []},
-    "planet.log.empty": {"params": []},
-    "planet.log.phase_0": {"params": []},
-    "planet.log.phase_1": {"params": []},
-    "planet.log.phase_2": {"params": []},
-    "planet.log.phase_3": {"params": []},
-    "planet.log.phase_4": {"params": []},
-    "planet.log.unlocked": {"params": ["name"]},
-    "planet.log.built": {"params": ["name"]},
-    "planet.rewards_heading": {"params": []},
-    "planet.trip_gain": {"params": []},
-    "planet.duration_compact": {"params": ["seconds"]},
-    "planet.builder_compact": {"params": ["count", "required"]},
-
-    "planet.work.spectrum": {"params": []},
-    "planet.work.radiation": {"params": []},
-    "planet.work.magnetic": {"params": []},
-
-    "galaxy.tab": {"params": []},
-    "galaxy.assignment": {"params": []},
-    "galaxy.assignment_desc": {"params": []},
-    "galaxy.start": {"params": []},
-    "galaxy.map_hint": {"params": []},
-    "galaxy.assign": {"params": ["name"]},
-    "galaxy.recall": {"params": ["name"]},
-    "galaxy.summary": {"params": ["name", "state", "owned", "total", "percent", "crew", "ships", "buildings", "slots", "max"]},
-    "galaxy.effects": {"params": ["crew", "equipment", "charge", "gem", "iron", "uranium"]},
-    "galaxy.state_locked": {"params": []},
-    "galaxy.state_available": {"params": []},
-    "galaxy.state_exploring": {"params": []},
-    "galaxy.state_complete": {"params": []},
-    "galaxy.building_tip": {"params": ["name", "level", "state"]},
-    "galaxy.constructing": {"params": []},
-    "galaxy.built": {"params": []},
-    "planet.work.arriving": {"params": []},
-    "planet.task_heading": {"params": []},
-    "planet.summary_heading": {"params": []},
-    "planet.task_idle": {"params": []},
-    "planet.task_active": {"params": []},
-    "planet.task_paused": {"params": []},
-    "planet.no_idle_crew": {"params": []},
-    "planet.degree": {"params": ["degree"]},
-    "planet.facility_status_locked": {"params": []},
-    "planet.facility_status_building": {"params": []},
-    "planet.facility_status_built": {"params": []},
-    "planet.facility_remaining": {"params": ["count"]},
-    "planet.facility_progress": {"params": ["progress", "total"]},
-    "planet.facility_hint": {"params": []},
-    "planet.bonuses": {"params": []},
-    "planet.bonuses_title": {"params": ["planet"]},
-    "planet.bonuses_empty": {"params": []},
-    "planet.work.mapping": {"params": []},
-    "planet.work.surface": {"params": []},
-    "planet.work.signal": {"params": []},
-    "planet.work.deep": {"params": []},
+    "crew.page_hint": {
+      "params": []
+    },
+    "enhance.protection_state.range": {
+      "params": [
+        "minimum",
+        "maximum"
+      ]
+    },
+    "enhance.protection_state.range_equal": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.protection_state.mixed_physical": {
+      "params": [
+        "range"
+      ]
+    },
+    "enhance.protection_state.mixed_energy": {
+      "params": [
+        "range"
+      ]
+    },
+    "enhance.protection_state.dual": {
+      "params": [
+        "physical",
+        "energy"
+      ]
+    },
+    "enhance.protection_state.partial": {
+      "params": [
+        "types"
+      ]
+    },
+    "enhance.branch.memory_material.2.B.description_mixed": {
+      "params": [
+        "resistance_min_percent",
+        "resistance_max_percent",
+        "duration",
+        "lockout"
+      ]
+    },
+    "enhance.overview.state": {
+      "params": [
+        "count",
+        "path"
+      ]
+    },
+    "enhance.overview.branch_empty": {
+      "params": []
+    },
+    "enhance.overview.thresholds": {
+      "params": [
+        "first",
+        "second",
+        "third"
+      ]
+    },
+    "enhance.overview.proficiency": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.overview.adaptation": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.overview.repeat": {
+      "params": [
+        "chance",
+        "multiplier"
+      ]
+    },
+    "enhance.overview.critical": {
+      "params": [
+        "multiplier",
+        "chance"
+      ]
+    },
+    "enhance.overview.critical_guaranteed": {
+      "params": [
+        "chance",
+        "underlying",
+        "multiplier"
+      ]
+    },
+    "enhance.overview.memory_material": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.overview.delayed_damage": {
+      "params": [
+        "value",
+        "chance"
+      ]
+    },
+    "enhance.protection_component": {
+      "params": [
+        "index",
+        "current",
+        "capacity",
+        "state"
+      ]
+    },
+    "enhance.description.proficiency.runtime": {
+      "params": [
+        "count",
+        "bonus",
+        "branch"
+      ]
+    },
+    "enhance.description.adaptation.runtime": {
+      "params": [
+        "count",
+        "bonus",
+        "branch"
+      ]
+    },
+    "enhance.description.repeat.runtime": {
+      "params": [
+        "chance",
+        "delay",
+        "bonus"
+      ]
+    },
+    "enhance.description.critical.runtime": {
+      "params": [
+        "multiplier",
+        "underlying",
+        "chance"
+      ]
+    },
+    "enhance.description.critical.runtime_regular": {
+      "params": [
+        "chance",
+        "multiplier"
+      ]
+    },
+    "enhance.description.memory_material.runtime": {
+      "params": [
+        "interval",
+        "recovery",
+        "charge",
+        "cap"
+      ]
+    },
+    "enhance.protection_hud.runtime": {
+      "params": [
+        "current",
+        "capacity"
+      ]
+    },
+    "enhance.protection_state.neutral": {
+      "params": []
+    },
+    "enhance.protection_state.lockout": {
+      "params": [
+        "duration"
+      ]
+    },
+    "enhance.protection_state.physical": {
+      "params": [
+        "resistance",
+        "duration"
+      ]
+    },
+    "enhance.protection_state.energy": {
+      "params": [
+        "resistance",
+        "duration"
+      ]
+    },
+    "enhance.protection_state.mixed": {
+      "params": []
+    },
+    "enhance.protection_state.cover": {
+      "params": [
+        "amount",
+        "duration"
+      ]
+    },
+    "enhance.branch.proficiency.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.1.A.description": {
+      "params": [
+        "damage_percent"
+      ]
+    },
+    "enhance.branch.repeat.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.1.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.critical.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.critical.1.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.adaptation.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.1.A.description": {
+      "params": [
+        "defence_percent"
+      ]
+    },
+    "enhance.branch.memory_material.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.1.A.description": {
+      "params": [
+        "bonus_percent"
+      ]
+    },
+    "enhance.branch.delayed_damage.1.A.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.1.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.proficiency.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.2.A.description": {
+      "params": [
+        "damage_percent"
+      ]
+    },
+    "enhance.branch.repeat.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.2.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.critical.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.critical.2.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.adaptation.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.2.A.description": {
+      "params": [
+        "defence_percent"
+      ]
+    },
+    "enhance.branch.memory_material.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.2.A.description": {
+      "params": [
+        "bonus_percent"
+      ]
+    },
+    "enhance.branch.delayed_damage.2.A.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.2.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.proficiency.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.3.A.description": {
+      "params": [
+        "damage_percent"
+      ]
+    },
+    "enhance.branch.repeat.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.3.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.critical.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.critical.3.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.adaptation.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.3.A.description": {
+      "params": [
+        "defence_percent"
+      ]
+    },
+    "enhance.branch.memory_material.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.3.A.description": {
+      "params": [
+        "bonus_percent"
+      ]
+    },
+    "enhance.branch.delayed_damage.3.A.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.3.A.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.proficiency.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.1.B.description": {
+      "params": [
+        "interval",
+        "damage_percent"
+      ]
+    },
+    "enhance.branch.proficiency.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.2.B.description": {
+      "params": [
+        "reduction_percent"
+      ]
+    },
+    "enhance.branch.proficiency.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.proficiency.3.B.description": {
+      "params": [
+        "resistance_percent"
+      ]
+    },
+    "enhance.branch.repeat.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.1.B.description": {
+      "params": [
+        "extra_targets"
+      ]
+    },
+    "enhance.branch.repeat.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.2.B.description": {
+      "params": [
+        "extra_repeats"
+      ]
+    },
+    "enhance.branch.repeat.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.repeat.3.B.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.critical.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.critical.1.B.description": {
+      "params": [
+        "attacks",
+        "damage_percent"
+      ]
+    },
+    "enhance.branch.critical.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.critical.2.B.description": {
+      "params": [
+        "probability_percent",
+        "damage_percent",
+        "stacks",
+        "duration"
+      ]
+    },
+    "enhance.branch.critical.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.critical.3.B.description": {
+      "params": [
+        "probability_percent"
+      ]
+    },
+    "enhance.branch.adaptation.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.1.B.description": {
+      "params": [
+        "reduction_percent",
+        "stacks"
+      ]
+    },
+    "enhance.branch.adaptation.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.2.B.description": {
+      "params": [
+        "interval",
+        "duration",
+        "capacity_percent"
+      ]
+    },
+    "enhance.branch.adaptation.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.adaptation.3.B.description": {
+      "params": [
+        "resistance_percent"
+      ]
+    },
+    "enhance.branch.memory_material.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.1.B.description": {
+      "params": [
+        "probability_percent",
+        "reduction_percent",
+        "duration"
+      ]
+    },
+    "enhance.branch.memory_material.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.2.B.description": {
+      "params": [
+        "resistance_percent",
+        "duration",
+        "lockout"
+      ]
+    },
+    "enhance.branch.memory_material.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.memory_material.3.B.description": {
+      "params": [
+        "charge_percent",
+        "capacity_percent"
+      ]
+    },
+    "enhance.branch.delayed_damage.1.B.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.1.B.description": {
+      "params": [
+        "reduction_percent",
+        "duration"
+      ]
+    },
+    "enhance.branch.delayed_damage.2.B.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.2.B.description": {
+      "params": [
+        "reduction_percent"
+      ]
+    },
+    "enhance.branch.delayed_damage.3.B.title": {
+      "params": []
+    },
+    "enhance.branch.delayed_damage.3.B.description": {
+      "params": [
+        "full_probability_percent",
+        "damage_percent"
+      ]
+    },
+    "enhance.branches.implemented": {
+      "params": []
+    },
+    "enhance.branches.option_title": {
+      "params": [
+        "option",
+        "title"
+      ]
+    },
+    "enhance.protection_hud": {
+      "params": [
+        "current",
+        "capacity"
+      ]
+    },
+    "enhance.limit_reached": {
+      "params": []
+    },
+    "enhance.card_path": {
+      "params": [
+        "count",
+        "path"
+      ]
+    },
+    "enhance.branches.open": {
+      "params": []
+    },
+    "enhance.branches.close": {
+      "params": []
+    },
+    "enhance.branches.a": {
+      "params": []
+    },
+    "enhance.branches.b": {
+      "params": []
+    },
+    "enhance.branches.placeholder": {
+      "params": []
+    },
+    "enhance.branches.note": {
+      "params": []
+    },
+    "enhance.branches.unselected": {
+      "params": []
+    },
+    "enhance.branches.summary": {
+      "params": [
+        "path"
+      ]
+    },
+    "enhance.branches.changed": {
+      "params": []
+    },
+    "enhance.branches.title": {
+      "params": [
+        "effect"
+      ]
+    },
+    "enhance.branches.level": {
+      "params": [
+        "level",
+        "purchased",
+        "bonus"
+      ]
+    },
+    "enhance.branches.milestone": {
+      "params": [
+        "node",
+        "level"
+      ]
+    },
+    "enhance.branches.locked": {
+      "params": []
+    },
+    "enhance.branches.awaiting": {
+      "params": []
+    },
+    "enhance.branches.selected": {
+      "params": [
+        "choice"
+      ]
+    },
+    "enhance.effect.delayed_damage": {
+      "params": []
+    },
+    "enhance.description.delayed_damage": {
+      "params": [
+        "fraction",
+        "duration",
+        "ticks",
+        "interval",
+        "chance"
+      ]
+    },
+    "enhance.tab": {
+      "params": []
+    },
+    "enhance.shared_heading": {
+      "params": []
+    },
+    "enhance.level": {
+      "params": [
+        "level"
+      ]
+    },
+    "enhance.bonus": {
+      "params": [
+        "bonus",
+        "effective"
+      ]
+    },
+    "enhance.balance": {
+      "params": [
+        "amount"
+      ]
+    },
+    "enhance.cost": {
+      "params": [
+        "level",
+        "cost"
+      ]
+    },
+    "enhance.upgrade": {
+      "params": []
+    },
+    "enhance.upgrade_max": {
+      "params": []
+    },
+    "enhance.shared_note": {
+      "params": []
+    },
+    "enhance.move_up": {
+      "params": []
+    },
+    "enhance.move_down": {
+      "params": []
+    },
+    "enhance.move_up_hint": {
+      "params": []
+    },
+    "enhance.move_down_hint": {
+      "params": []
+    },
+    "enhance.upgraded": {
+      "params": [
+        "count"
+      ]
+    },
+    "enhance.insufficient": {
+      "params": []
+    },
+    "enhance.reordered": {
+      "params": []
+    },
+    "enhance.effect.proficiency": {
+      "params": []
+    },
+    "enhance.effect.repeat": {
+      "params": []
+    },
+    "enhance.effect.critical": {
+      "params": []
+    },
+    "enhance.effect.adaptation": {
+      "params": []
+    },
+    "enhance.effect.memory_material": {
+      "params": []
+    },
+    "enhance.effect.pending": {
+      "params": []
+    },
+    "enhance.description.proficiency": {
+      "params": [
+        "count",
+        "bonus"
+      ]
+    },
+    "enhance.description.adaptation": {
+      "params": [
+        "count",
+        "bonus"
+      ]
+    },
+    "enhance.description.repeat": {
+      "params": [
+        "chance",
+        "delay",
+        "bonus"
+      ]
+    },
+    "enhance.description.critical": {
+      "params": [
+        "chance",
+        "multiplier"
+      ]
+    },
+    "enhance.description.memory_material": {
+      "params": [
+        "interval",
+        "recovery",
+        "cap"
+      ]
+    },
+    "enhance.description.pending": {
+      "params": []
+    },
+    "enhance.threshold": {
+      "params": [
+        "level"
+      ]
+    },
+    "enhance.active_modules": {
+      "params": [
+        "count"
+      ]
+    },
+    "enhance.pending_state": {
+      "params": []
+    },
+    "enhance.rules": {
+      "params": [
+        "first",
+        "second",
+        "third"
+      ]
+    },
+    "enhance.history": {
+      "params": [
+        "attacks",
+        "hits"
+      ]
+    },
+    "enhance.equipment_slots": {
+      "params": [
+        "count"
+      ]
+    },
+    "reactor.scroll_back": {
+      "params": []
+    },
+    "reactor.scroll_more": {
+      "params": []
+    },
+    "reactor.scroll_range": {
+      "params": [
+        "first",
+        "last",
+        "total"
+      ]
+    },
+    "equipment.attributes.show": {
+      "params": []
+    },
+    "equipment.attributes.hide": {
+      "params": []
+    },
+    "equipment.refit_hint": {
+      "params": []
+    },
+    "equipment.upgrade_amount": {
+      "params": []
+    },
+    "equipment.amount.1": {
+      "params": []
+    },
+    "equipment.amount.10": {
+      "params": []
+    },
+    "equipment.amount.0": {
+      "params": []
+    },
+    "equipment.swap": {
+      "params": []
+    },
+    "equipment.inspect": {
+      "params": []
+    },
+    "equipment.close": {
+      "params": []
+    },
+    "equipment.confirm_free": {
+      "params": []
+    },
+    "equipment.free_equip": {
+      "params": []
+    },
+    "equipment.overflow": {
+      "params": [
+        "count"
+      ]
+    },
+    "equipment.dormant": {
+      "params": []
+    },
+    "equipment.selected_hint": {
+      "params": []
+    },
+    "equipment.card_hint": {
+      "params": []
+    },
+    "equipment.upgrade_cost": {
+      "params": [
+        "cost"
+      ]
+    },
+    "onboarding.heading": {
+      "params": []
+    },
+    "onboarding.reopen": {
+      "params": []
+    },
+    "onboarding.dismiss": {
+      "params": []
+    },
+    "onboarding.next": {
+      "params": []
+    },
+    "onboarding.show_equipment": {
+      "params": []
+    },
+    "onboarding.show_slot": {
+      "params": []
+    },
+    "onboarding.show_upgrade": {
+      "params": []
+    },
+    "onboarding.finish": {
+      "params": []
+    },
+    "onboarding.intro": {
+      "params": []
+    },
+    "onboarding.equip": {
+      "params": []
+    },
+    "onboarding.upgrade": {
+      "params": []
+    },
+    "onboarding.waiting": {
+      "params": [
+        "cost"
+      ]
+    },
+    "onboarding.progress": {
+      "params": []
+    },
+    "onboarding.clear": {
+      "params": []
+    },
+    "onboarding.retreat": {
+      "params": []
+    },
+    "onboarding.unlock": {
+      "params": []
+    },
+    "onboarding.paused": {
+      "params": []
+    },
+    "onboarding.review": {
+      "params": []
+    },
+    "onboarding.continue": {
+      "params": []
+    },
+    "onboarding.no_upgrade": {
+      "params": []
+    },
+    "planet.activate": {
+      "params": []
+    },
+    "planet.facility_status_ready": {
+      "params": []
+    },
+    "planet.log.activated": {
+      "params": [
+        "name"
+      ]
+    },
+    "galaxy.state_developing": {
+      "params": []
+    },
+    "galaxy.slot_constructing": {
+      "params": []
+    },
+    "galaxy.slot_active": {
+      "params": []
+    },
+    "galaxy.slot_upgrading": {
+      "params": []
+    },
+    "galaxy.rate": {
+      "params": [
+        "amount"
+      ]
+    },
+    "galaxy.detail": {
+      "params": [
+        "name",
+        "level",
+        "effect",
+        "value",
+        "state",
+        "progress"
+      ]
+    },
+    "galaxy.card_exploration": {
+      "params": []
+    },
+    "galaxy.card_buildings": {
+      "params": []
+    },
+    "galaxy.card_max_level": {
+      "params": []
+    },
+    "galaxy.card_crew": {
+      "params": []
+    },
+    "galaxy.card_explorers": {
+      "params": []
+    },
+    "galaxy.card_traffic": {
+      "params": []
+    },
+    "galaxy.card_crew_exp": {
+      "params": []
+    },
+    "galaxy.card_equipment_value": {
+      "params": []
+    },
+    "galaxy.card_charge_max": {
+      "params": []
+    },
+    "galaxy.card_gem_fragment": {
+      "params": []
+    },
+    "galaxy.card_iron": {
+      "params": []
+    },
+    "galaxy.card_uranium": {
+      "params": []
+    },
+    "galaxy.effect_crew_exp": {
+      "params": []
+    },
+    "galaxy.effect_equipment_value": {
+      "params": []
+    },
+    "galaxy.effect_charge_max": {
+      "params": []
+    },
+    "galaxy.effect_gem_fragment": {
+      "params": []
+    },
+    "galaxy.effect_iron_auto_ratio": {
+      "params": []
+    },
+    "galaxy.effect_uranium_auto_ratio": {
+      "params": []
+    },
+    "planet.log.heading": {
+      "params": []
+    },
+    "planet.log.empty": {
+      "params": []
+    },
+    "planet.log.phase_0": {
+      "params": []
+    },
+    "planet.log.phase_1": {
+      "params": []
+    },
+    "planet.log.phase_2": {
+      "params": []
+    },
+    "planet.log.phase_3": {
+      "params": []
+    },
+    "planet.log.phase_4": {
+      "params": []
+    },
+    "planet.log.unlocked": {
+      "params": [
+        "name"
+      ]
+    },
+    "planet.log.built": {
+      "params": [
+        "name"
+      ]
+    },
+    "planet.rewards_heading": {
+      "params": []
+    },
+    "planet.trip_gain": {
+      "params": []
+    },
+    "planet.duration_compact": {
+      "params": [
+        "seconds"
+      ]
+    },
+    "planet.builder_compact": {
+      "params": [
+        "count",
+        "required"
+      ]
+    },
+    "planet.work.spectrum": {
+      "params": []
+    },
+    "planet.work.radiation": {
+      "params": []
+    },
+    "planet.work.magnetic": {
+      "params": []
+    },
+    "galaxy.tab": {
+      "params": []
+    },
+    "galaxy.assignment": {
+      "params": []
+    },
+    "galaxy.assignment_desc": {
+      "params": []
+    },
+    "galaxy.start": {
+      "params": []
+    },
+    "galaxy.map_hint": {
+      "params": []
+    },
+    "galaxy.assign": {
+      "params": [
+        "name"
+      ]
+    },
+    "galaxy.recall": {
+      "params": [
+        "name"
+      ]
+    },
+    "galaxy.summary": {
+      "params": [
+        "name",
+        "state",
+        "owned",
+        "total",
+        "percent",
+        "crew",
+        "ships",
+        "buildings",
+        "slots",
+        "max"
+      ]
+    },
+    "galaxy.effects": {
+      "params": [
+        "crew",
+        "equipment",
+        "charge",
+        "gem",
+        "iron",
+        "uranium"
+      ]
+    },
+    "galaxy.state_locked": {
+      "params": []
+    },
+    "galaxy.state_available": {
+      "params": []
+    },
+    "galaxy.state_exploring": {
+      "params": []
+    },
+    "galaxy.state_complete": {
+      "params": []
+    },
+    "galaxy.building_tip": {
+      "params": [
+        "name",
+        "level",
+        "state"
+      ]
+    },
+    "galaxy.constructing": {
+      "params": []
+    },
+    "galaxy.built": {
+      "params": []
+    },
+    "planet.work.arriving": {
+      "params": []
+    },
+    "planet.task_heading": {
+      "params": []
+    },
+    "planet.summary_heading": {
+      "params": []
+    },
+    "planet.task_idle": {
+      "params": []
+    },
+    "planet.task_active": {
+      "params": []
+    },
+    "planet.task_paused": {
+      "params": []
+    },
+    "planet.no_idle_crew": {
+      "params": []
+    },
+    "planet.degree": {
+      "params": [
+        "degree"
+      ]
+    },
+    "planet.facility_status_locked": {
+      "params": []
+    },
+    "planet.facility_status_building": {
+      "params": []
+    },
+    "planet.facility_status_built": {
+      "params": []
+    },
+    "planet.facility_remaining": {
+      "params": [
+        "count"
+      ]
+    },
+    "planet.facility_progress": {
+      "params": [
+        "progress",
+        "total"
+      ]
+    },
+    "planet.facility_hint": {
+      "params": []
+    },
+    "planet.bonuses": {
+      "params": []
+    },
+    "planet.bonuses_title": {
+      "params": [
+        "planet"
+      ]
+    },
+    "planet.bonuses_empty": {
+      "params": []
+    },
+    "planet.work.mapping": {
+      "params": []
+    },
+    "planet.work.surface": {
+      "params": []
+    },
+    "planet.work.signal": {
+      "params": []
+    },
+    "planet.work.deep": {
+      "params": []
+    },
     "reactor.allocation_tiny": {
       "params": []
     },
@@ -3787,6 +4843,30 @@
         "slot"
       ]
     },
+    "ship.refit.active_badge": {
+      "params": []
+    },
+    "ship.refit.preview_badge": {
+      "params": []
+    },
+    "ship.refit.active_preview": {
+      "params": []
+    },
+    "ship.refit.candidate_preview": {
+      "params": []
+    },
+    "ship.refit.static_hint": {
+      "params": []
+    },
+    "ship.refit.carrier": {
+      "params": []
+    },
+    "ship.refit.capacity_summary": {
+      "params": [
+        "weapons",
+        "defence"
+      ]
+    },
     "ship.refit.title": {
       "params": []
     },
@@ -5034,11 +6114,14 @@
       ]
     },
     "planet.reforge_confirm": {
-      "params": ["level"]
+      "params": [
+        "level"
+      ]
     },
     "planet.preview": {
       "params": [
-        "name", "count"
+        "name",
+        "count"
       ]
     },
     "planet.builder_role": {
@@ -5075,6 +6158,56 @@
     },
     "planet.conquer_effects": {
       "params": []
+    },
+    "save.settings": {
+      "params": []
+    },
+    "save.interval": {
+      "params": []
+    },
+    "save.apply_interval": {
+      "params": []
+    },
+    "save.invalid_interval": {
+      "params": []
+    },
+    "save.interval_hint": {
+      "params": []
+    },
+    "save.interval_applied": {
+      "params": [
+        "minutes"
+      ]
+    },
+    "save.manual": {
+      "params": []
+    },
+    "save.last_success": {
+      "params": [
+        "time"
+      ]
+    },
+    "save.never": {
+      "params": []
+    },
+    "save.success": {
+      "params": []
+    },
+    "save.failed": {
+      "params": [
+        "error"
+      ]
+    },
+    "save.warning": {
+      "params": []
+    },
+    "galaxy.waiting_crew": {
+      "params": []
+    },
+    "galaxy.plan_detail": {
+      "params": [
+        "name"
+      ]
     }
   },
   "bindings": {

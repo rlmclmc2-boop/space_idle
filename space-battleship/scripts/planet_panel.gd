@@ -261,6 +261,7 @@ func add_card(id: String) -> void:
 	picker.size = Vector2(296, 44)
 	picker.add_theme_font_override("font", host.font)
 	picker.add_theme_font_size_override("font_size", 19)
+	preload("res://scripts/dialog_presentation.gd").option(picker)
 	task.add_child(picker)
 	var no_crew := _wrap(host.equipment_card_label(task, UIText.t("planet.no_idle_crew"), Rect2(20, 142, 296, 66), 21, host.MUTED))
 	# Initial text can expand a Label before autowrap is enabled; restore its column.
@@ -332,7 +333,7 @@ func bonus_text(id: String) -> String:
 func show_bonuses(id: String) -> void:
 	if not is_instance_valid(bonus_dialog):
 		bonus_dialog = AcceptDialog.new()
-		bonus_dialog.add_theme_font_override("font",host.font)
+		preload("res://scripts/dialog_presentation.gd").dialog(bonus_dialog)
 		bonus_dialog.min_size = Vector2i(660, 500)
 		add_child(bonus_dialog)
 		var scroll := ScrollContainer.new()
@@ -549,7 +550,7 @@ func _show_facility(id: String, building_id: String) -> void:
 	var controls: Dictionary = cards[id].facility_buttons[building_id]
 	if not is_instance_valid(facility_dialog):
 		facility_dialog = AcceptDialog.new()
-		facility_dialog.add_theme_font_override("font", host.font)
+		preload("res://scripts/dialog_presentation.gd").dialog(facility_dialog)
 		facility_dialog.add_theme_font_size_override("font_size", 22)
 		facility_dialog.min_size = Vector2i(520, 220)
 		add_child(facility_dialog)
@@ -572,9 +573,7 @@ func _toggle_builder(id: String, building_id: String) -> void:
 	var anchor: Button = cards[id].facility_buttons[building_id].assign
 	var popup := PopupMenu.new()
 	anchor.add_child(popup)
-	popup.add_theme_font_override("font", host.font)
-	popup.add_theme_font_size_override("font_size", 20)
-	popup.add_theme_stylebox_override("panel", host.style(Color("112735"), Color("315666")))
+	preload("res://scripts/dialog_presentation.gd").popup(popup)
 	var ids: Array=[]
 	var five_rows_height := 0.0
 	for member in g.profile.crew:
@@ -615,7 +614,7 @@ func _confirm_reforge(id: String) -> void:
 	dialog.title=UIText.t("planet.reforge")
 	dialog.dialog_text=UIText.t("planet.reforge_confirm", {"level":host.game.planet_reforge_start(id)})
 	dialog.min_size=Vector2i(650,340)
-	dialog.add_theme_font_override("font",host.font)
+	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)
 	dialog.confirmed.connect(func():host.game.reforge_planet(id);dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)

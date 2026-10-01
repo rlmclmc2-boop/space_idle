@@ -8,12 +8,13 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
+# JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
+const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
-const JEWEL_CAPACITY := 200
 const FURNACE := "超时空炼铁炉"
 const JEWEL_FURNACE := "宝石熔炼炉"
 const ENERGY_FOCUS := "正电子聚焦装置"
@@ -84,8 +85,15 @@ var jewel_repeats: Array[Dictionary] = []
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
-var jewel_serial := 0
-var jewel_bulk_combining := false
+var enhancement_branches := preload("res://scripts/enhancement_branches.gd").new()
+var enhancement_attack_contexts: Dictionary = {}
+var enhancement_buffers: Dictionary = {}
+var enhancement_buffer_owners: Dictionary = {}
+var enhancement_memory_elapsed := 0.0
+var enhancement_defense_time := 0.0
+var enhancement_deferred_elapsed := 0.0
+var enhancement_deferred_tick := 0
+var enhancement_deferred: Dictionary = {}
 # Preserves damage fraction while a capacity temporarily becomes zero during refit.
 var refit_health_ratios := {"armour":1.0,"shield":1.0}
 
@@ -117,7 +125,14 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
-	profile.jewels = []
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
+	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
+	profile.enhancementVersion = 1
+	profile.enhancementLevel = 0
+	profile.enhancementOrder = default_enhancement_order()
+	profile.enhancementBranches = default_enhancement_branches()
+	profile.enhancementAttacks = 0
+	profile.enhancementHits = 0
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
 	profile.jewelFragments = 0.0
@@ -199,7 +214,7 @@ func load_progress() -> void:
 	invalidate_stat_cache()
 	login_chrono_particles = 0.0
 	var raw = progress_writer.read_progress(SAVE_PATH)
-	if not raw is Dictionary or int(raw.get("version",0)) not in [2,SAVE_VERSION]:
+	if not raw is Dictionary or int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:
 		return
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
@@ -211,6 +226,11 @@ func load_progress() -> void:
 	# Legacy identities are accepted only at the save migration boundary.
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
+	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false}
+	if raw.get("onboarding") is Dictionary:
+		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
+			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -285,7 +305,6 @@ func load_progress() -> void:
 	var particles = raw.get("chronoParticles", 0)
 	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
 	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
-	generate_jewels()
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -466,9 +485,6 @@ func ensure_loadout() -> void:
 			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
 				equip_key = ""
 			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, 2147483647)}
-			for field in ["sockets", "attacks", "hits"]:
-				if entry.has(field):
-					normalized_entry[field] = entry[field]
 			normalized.append(normalized_entry)
 		profile.loadout[category] = normalized
 
@@ -532,12 +548,11 @@ func _build_save_data() -> Dictionary:
 		# Retreat resumes at its destination, never at the defeated encounter.
 		saved.journey = {"stage":stage, "distance":retreat_target if state == State.RETREAT else distance, "groupIndex":group_index, "state":int(state), "guardArrived":guard_arrived, "retreatBossPending":retreat_boss_pending}
 		saved.journey.pendingUnlocks = pending_unlocks.duplicate()
-	saved.jewels = profile.jewels.map(func(gem):return {"id":gem.id,"level":gem.level})
+	saved.jewels = [] # Retired field stays empty for old save readers.
 	saved.loadout = profile.loadout.duplicate(true)
 	for category in ["weapons", "defence"]:
 		for entry in saved.loadout[category]:
-			for gem in entry.get("sockets", []):
-				gem.erase("token")
+			for field in ["sockets","attacks","hits"]:entry.erase(field)
 	saved.levels = {}
 	for key in EQUIPMENT:
 		saved.levels[key] = int(first_equipment_entry(key).get("level", 1))
@@ -691,6 +706,8 @@ func apply_refit_health() -> void:
 		if player.has(key):player[key] = N.multiply(stat(key),float(refit_health_ratios[key]))
 	jewel_defence_damage.clear()
 	sync_jewel_defence_damage()
+	sync_enhancement_buffers()
+	enhancement_branches.reconcile(self)
 
 func invalidate_module_attack(index: int) -> void:
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
@@ -1601,6 +1618,15 @@ func reset_player() -> void:
 	jewel_defence_times.clear()
 	jewel_defence_damage.clear()
 	jewel_charged.clear()
+	enhancement_branches.reset()
+	enhancement_attack_contexts.clear()
+	enhancement_buffers.clear()
+	enhancement_buffer_owners.clear()
+	enhancement_memory_elapsed=0.0
+	enhancement_defense_time=0.0
+	enhancement_deferred_elapsed=0.0
+	enhancement_deferred_tick=0
+	enhancement_deferred.clear()
 	player = {"x":PLAYER_POSITION.x, "y":PLAYER_POSITION.y, "armour":stat("armour"), "shield":max_shield()}
 	since_hit = 100
 
@@ -1614,7 +1640,7 @@ func change_state(next: State) -> void:
 			var key := str(entry.key)
 			if key.is_empty():
 				continue
-			var cd := float(db.equip(key,int(entry.level)).cd)
+			var cd := float(player_weapon_row(entry).cd)
 			if cd > 0:
 				cooldowns[slot_id("weapons", index)] = cd
 	state = next
@@ -1846,8 +1872,13 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	var shot: Dictionary = projectiles.back()
 	projectile_serial += 1
 	shot.serial = projectile_serial
+	shot.source_uid=int(source.get("uid",0))
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
+	prepare_projectile(shot,source,weapon,visual_spread)
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
+
+func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Dictionary, _spread: float) -> void:
+	pass
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
 func long_laser_valid(shot: Dictionary) -> bool:
@@ -1857,9 +1888,9 @@ func long_laser_valid(shot: Dictionary) -> bool:
 		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and N.compare(player.armour,0)>0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
 	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, slot_entry("weapons", shot.mount)) and shot.entry.key == "longLaser"
 
-func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0) -> void:
+func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0) -> void:
 	for shot in projectiles:
-		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and long_laser_valid(shot):
+		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and long_laser_valid(shot):
 			return
 	var candidates: Array = targets(int(weapon.dmgtype)) if not hostile else []
 	var target: Dictionary = player if hostile else (candidates[0] if not candidates.is_empty() else {})
@@ -1875,10 +1906,11 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		offset.x += 6.0
 	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
 	var shot: Dictionary = projectiles.back()
-	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
+	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "repeat_depth":repeat_depth, "repeat_origin_multiplier":repeat_origin_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
 	if not hostile and not repeated:
 		var id := slot_id("weapons",mount)
 		shot.charged_multiplier = float(jewel_charged.get(id,1.0))
+		shot.repeat_origin_multiplier=shot.charged_multiplier
 		jewel_charged.erase(id)
 	event.emit("beam_started", {"shot":shot})
 
@@ -1895,58 +1927,42 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 	shot.x = float(shot.source.x) + offset.x
 	shot.y = float(shot.source.y) + offset.y
 	shot.elapsed += dt
-	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else db.equip(shot.entry.key, int(shot.entry.level))
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else player_weapon_row(shot.entry)
 	# Use scheduled hit times, not frame end time, including when a step spans several hits.
-	var interval := float(shot.weapon.cd)
+	var interval := float(weapon.cd)
 	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
-	while first_hit + int(shot.ticks) * interval <= float(shot.elapsed) + 0.000000001:
+	if not shot.has("next_hit_at"):shot.next_hit_at=first_hit
+	while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
+		var due := float(shot.next_hit_at)
+		shot.next_hit_at=due+interval
 		shot.ticks += 1
-		var duration := (int(shot.ticks)-1) * interval if float(shot.charge) >= 0 else int(shot.ticks) * interval
+		var duration := due-first_hit if float(shot.charge)>=0 else due
 		var multiplier := long_laser_multiplier(weapon, duration)
 		event.emit("beam_hit", {"shot":shot})
 		if shot.hostile:
 			var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
-			hit_player(raw * multiplier, int(weapon.dmgtype))
+			hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
 		else:
-			shot.entry.attacks = int(shot.entry.get("attacks", 0)) + 1
-			invalidate_equipment_counter(str(shot.entry.key))
-			event.emit("equipment_stats",{"slot":slot_id("weapons",shot.mount)})
+			begin_enhancement_attack(int(shot.mount),shot.target,false,not shot.repeated)
+			record_enhancement_attack()
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
-			if not shot.repeated and int(shot.ticks)==1:
-				queue_jewel_repeats(shot.mount,1.0,shot)
+			if int(shot.ticks)==1:
+				queue_jewel_repeats(shot.mount,boost,shot,int(shot.get("repeat_depth",0)),float(shot.get("repeat_origin_multiplier",1.0)))
 			var attack := jewel_attack(shot.mount, multiplier * boost)
 			if attack.critical:
 				event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
 			hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
+			launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
+			finish_enhancement_attack(int(shot.mount))
 		if not projectiles.has(shot) or not long_laser_valid(shot):
 			shot.dead = true
 			break
 
-func hit_player(raw, type: int) -> void:
-	if has_defence_jewels():
-		jewel_hit_player(raw, type)
-		return
-	since_hit = 0
-	var rest = raw
-	var shield_loss = 0.0
-	var armour_loss = 0.0
-	if N.compare(player.shield,0)>0:
-		var factor = 1.0 - float(db.config.dmgReduce) if type == int(db.equip("shield", 1).dmgtype) else 1.0
-		shield_loss = N.minimum(player.shield, reduced_damage(raw, type, int(db.equip("shield", 1).dmgtype)))
-		player.shield = N.subtract(player.shield,shield_loss)
-		rest = N.subtract(raw,N.divide(shield_loss,factor))
-	if N.compare(rest,0)>0:
-		armour_loss = reduced_damage(rest, type, int(db.equip("armour", 1).dmgtype))
-		player.armour = N.subtract(player.armour,armour_loss)
-	for entry in defense_entries():
-		if (entry.key == "shield" and N.compare(shield_loss,0)>0) or (entry.key == "armour" and N.compare(armour_loss,0)>0):
-			entry.hits = int(entry.get("hits", 0)) + 1
-			invalidate_equipment_counter(str(entry.key))
-			event.emit("equipment_stats",{"category":"defence"})
-	event.emit("hit", {"x":player.x,"y":player.y,"amount":N.ceiling(N.add(shield_loss,armour_loss)),"player":true,"type":type})
-	if N.compare(player.armour,0)<=0:
-		event.emit("explode", {"x":player.x,"y":player.y,"boss":true})
-		begin_retreat()
+func hit_player(raw, type: int, context: Dictionary = {}) -> void:
+	record_enhancement_hit() # Exactly once per incoming attack, even if protection absorbs it.
+	enhancement_branches.memory_incoming(self,type)
+	var modified=N.multiply(raw,enhancement_branches.incoming_multiplier(self,int(context.get("source_uid",0))))
+	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
 	guard_arrived = false
@@ -1990,7 +2006,10 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	if enemy.hp <= 0:
 		return
 	jewel_on_hit(enemy, effects)
-	var amount = reduced_damage(N.multiply(raw,1.0 + float(enemy.get("interference", 0))), type, int(enemy.armourType))
+	var resistance := float(db.config.dmgReduce)
+	for effect in effects:
+		if effect.has("enemy_resistance"):resistance=float(effect.enemy_resistance);break
+	var amount = N.maximum(1,N.ceiling(N.multiply(N.multiply(raw,1.0+float(enemy.get("interference",0))),1.0-resistance if type==int(enemy.armourType) else 1.0)))
 	enemy.hp = N.subtract(enemy.hp,amount)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
@@ -2011,6 +2030,8 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 				if adjacent.hp > 0 and abs(int(adjacent.slot) - int(enemy.slot)) in [1, 2]:
 					hit_enemy(adjacent, float(enemy.max_hp) * float(enemy.jewelExplosion), type)
 
+	launch_enhancement_chain(enemy,raw,type,effects,critical)
+
 func collect(drop: Dictionary, manual: bool) -> void:
 	if not drops.has(drop):
 		return
@@ -2025,7 +2046,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 		if core and not manual:
 			amount = ceilf(amount * (1.0 - float(db.config.autoCollectReduce)))
 		drop.amount = settle_jewel_fragments(amount, "furnace" if core else "drop", 1.0 if core else float(drop.get("jewelRatio", jewel_ratio())))
-		jewels_changed()
+		enhancement_currency_changed()
 		event.emit("jewel_pickup", drop)
 		return
 	if drop.get("hightech", false) and not manual and float(drop.get("age",0)) < 10.0:
@@ -2202,6 +2223,7 @@ func weapon_cooldown_after_shot(remaining_before: float, dt: float, interval: fl
 func tick(dt: float) -> void:
 	if paused:
 		return
+	enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
 	crew.advance(self,dt)
@@ -2218,6 +2240,9 @@ func tick(dt: float) -> void:
 		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
 			collect(drop, false)
 	if state == State.LEVEL_CLEAR:
+		since_hit+=dt
+		advance_jewel_repair(dt)
+		if state!=State.LEVEL_CLEAR:return
 		tick_projectiles(dt)
 		if state != State.LEVEL_CLEAR:
 			return
@@ -2251,6 +2276,7 @@ func tick(dt: float) -> void:
 		return
 	since_hit += dt
 	var defence_jewels := advance_jewel_repair(dt)
+	if state==State.RETREAT:return
 	advance_jewel_repeats(dt)
 	var shield_entry := first_equipment_entry("shield")
 	var shield := db.equip("shield", int(shield_entry.level)) if not shield_entry.is_empty() else db.equip("shield", 1)
@@ -2275,7 +2301,7 @@ func tick(dt: float) -> void:
 		var key := str(entry.key)
 		if key.is_empty():
 			continue
-		var weapon := db.equip(key, int(entry.level))
+		var weapon := player_weapon_row(entry)
 		if float(weapon.cd) <= 0:
 			continue
 		if key == "longLaser":
@@ -2289,9 +2315,8 @@ func tick(dt: float) -> void:
 			var candidates := targets(int(weapon.dmgtype))
 			var count := int(weapon.para1) if key == "missile" else 1
 			if not candidates.is_empty():
-				entry.attacks = int(entry.get("attacks", 0)) + 1
-				invalidate_equipment_counter(key)
-				event.emit("equipment_stats",{"slot":id})
+				begin_enhancement_attack(index,candidates[0])
+				record_enhancement_attack()
 			var charged := float(jewel_charged.get(id, 1.0))
 			if count > 0 and not candidates.is_empty():
 				jewel_charged.erase(id)
@@ -2299,9 +2324,11 @@ func tick(dt: float) -> void:
 				if candidates.is_empty():
 					break
 				var target := candidates[i % candidates.size()] if key == "missile" else candidates[0]
-				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0)
+				jewel_fire(index, target, weapon, player_weapon_offset(index), charged, missile_visual_spread(i,count) if key=="missile" else 0.0,i,count)
 			if count > 0 and not candidates.is_empty():
 				cooldowns[id] = weapon_cooldown_after_shot(remaining,dt,float(weapon.cd))
+				launch_enhancement_secondary(index,candidates[0],weapon,charged)
+				finish_enhancement_attack(index)
 				queue_jewel_repeats(index, charged)
 	for enemy in enemies:
 		if enemy.hp <= 0:
@@ -2350,6 +2377,7 @@ func tick_projectiles(dt: float) -> void:
 		# whenever that position no longer holds this exact projectile.
 		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):
 			continue
+		if advance_custom_projectile(shot,dt):continue
 		if shot.get("beam", false):
 			tick_long_laser(shot, dt)
 			continue
@@ -2370,7 +2398,7 @@ func tick_projectiles(dt: float) -> void:
 				shot.dead = true
 				event.emit("projectile_impact", {"shot":shot,"pos":Vector2(shot.target.x,shot.target.y)})
 				if shot.hostile:
-					hit_player(shot.damage, shot.type)
+					hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
 				else:
 					hit_enemy(shot.target, shot.damage, shot.type, shot.get("jewelEffects", []),shot.get("critical",false))
 					# Final-group defeat clears the live array; skip its stale snapshot.
@@ -2385,60 +2413,59 @@ func tick_projectiles(dt: float) -> void:
 			shot.dead = true
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
 
-# Jewel ownership lives in profile.jewels or one loadout entry, never both.
-# Stable instance tokens make stale UI callbacks harmless after sorting/moving.
+func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
+	return false
+
+# Existing feature identity and fragment currency remain compatible with unlocks and furnace production.
 func jewels_unlocked() -> bool:
 	return content_unlocked("feature", "jewels")
 
-func jewel_valid(value: Variant) -> bool:
-	return value is Dictionary and db.jewel_max_level(str(value.get("id", ""))) > 0 and nonnegative_number(value.get("level")) and int(value.level) == float(value.level) and int(value.level) >= 1
-
-func new_jewel(id: String, level := 1) -> Dictionary:
-	jewel_serial += 1
-	return {"id":id, "level":level, "token":jewel_serial}
-
 func load_jewels(raw: Dictionary) -> void:
+	# Enhancement schema v1 replaces bag, sockets and per-module history once.
+	# Legacy saves retain only their existing fragment balance, with no refund.
 	invalidate_stat_cache()
 	profile.jewels = []
 	profile.jewelFragments = 0.0
-	if raw.get("jewels") is Array:
-		for gem in raw.jewels:
-			if jewel_valid(gem):
-				profile.jewels.append(new_jewel(str(gem.id), int(gem.level)))
-	if raw.get("jewelFragments") is Dictionary:
+	if N.valid(raw.get("jewelFragments")):
+		profile.jewelFragments=raw.jewelFragments.duplicate(true) if raw.jewelFragments is Dictionary else float(raw.jewelFragments)
+	elif raw.get("jewelFragments") is Dictionary:
 		for id in raw.jewelFragments:
-			if nonnegative_number(raw.jewelFragments[id]):
-				profile.jewelFragments += float(raw.jewelFragments[id])
+			if nonnegative_number(raw.jewelFragments[id]):profile.jewelFragments += float(raw.jewelFragments[id])
 	elif nonnegative_number(raw.get("jewelFragments")):
 		profile.jewelFragments = float(raw.jewelFragments)
-	for category in ["weapons", "defence"]:
-		for entry in module_entries(category):
-			var sockets: Array = []
-			var ids: Array = []
-			if entry.get("sockets") is Array:
-				for gem in entry.sockets:
-					if jewel_valid(gem) and not ids.has(str(gem.id)) and jewel_allowed(str(gem.id), category):
-						sockets.append(new_jewel(str(gem.id), int(gem.level)))
-						ids.append(str(gem.id))
-					else:
-						sockets.append({})
-			entry.sockets = sockets
-			for field in ["attacks", "hits"]:
-				entry[field] = int(entry.get(field, 0)) if nonnegative_number(entry.get(field, 0)) else 0
+	profile.enhancementVersion = 1
+	profile.enhancementLevel = 0
+	profile.enhancementOrder = default_enhancement_order()
+	profile.enhancementBranches = default_enhancement_branches()
+	profile.enhancementAttacks = 0
+	profile.enhancementHits = 0
+	if int(raw.get("enhancementVersion",0)) == 1:
+		for field in ["enhancementLevel", "enhancementAttacks", "enhancementHits"]:
+			var value = raw.get(field,0)
+			if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)<9223372036854775807.0 and (field!="enhancementLevel" or float(value)<=ENHANCEMENT_LEVEL_LIMIT):
+				profile[field] = int(value)
+		var orders = raw.get("enhancementOrder",{})
+		if orders is Dictionary:
+			for category in ["weapons","defence"]:
+				if valid_enhancement_order(category,orders.get(category)):profile.enhancementOrder[category]=orders[category].duplicate()
+		var branches = raw.get("enhancementBranches",{})
+		if branches is Dictionary:
+			for category in default_enhancement_order():
+				var effects = branches.get(category,{})
+				if not effects is Dictionary:continue
+				for effect in default_enhancement_order()[category]:
+					var nodes = effects.get(effect,{})
+					if not nodes is Dictionary:continue
+					for node in ["1","2","3"]:
+						if nodes.get(node,"") in ["A","B"]:profile.enhancementBranches[category][effect][node]=nodes[node]
 
-func jewel_inventory(token: int) -> Dictionary:
-	for gem in profile.jewels:
-		if int(gem.token) == token:
-			return gem
-	return {}
+	for category in ["weapons","defence"]:
+		for entry in module_entries(category):
+			for field in ["sockets","attacks","hits"]:entry.erase(field)
 
 func jewel_ratio() -> float:
 	var value = db.levels[clampi(stage-1,0,db.levels.size()-1)].get("jewelRatio",1.0)
 	return float(value) if nonnegative_number(value) else 1.0
-
-func jewel_create_cost() -> float:
-	var value = db.config.get("jewelCreat",0)
-	return float(value) if nonnegative_number(value) and float(value) == floorf(float(value)) else 0.0
 
 func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
 	if not nonnegative_number(amount):
@@ -2448,55 +2475,20 @@ func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
 	var earned := jewel_fragment_amount(amount * (crew.system_effect(self,"gem_bonus") * reactor_multiplier("condensation") * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0),ratio)
-	profile.jewelFragments = snappedf(float(profile.jewelFragments) + earned,0.01)
+	profile.jewelFragments = N.add(profile.jewelFragments,earned)
+	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and earned > 0:
 		resource_samples.append({"time":economy_time(),"id":"jewel","amount":earned,"origin":source})
 		profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
-	generate_jewels()
+	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
-
-func generate_jewels() -> void:
-	var result := generate_jewels_into(profile.jewels,float(profile.jewelFragments),jewel_serial,rng)
-	profile.jewelFragments=result.fragments
-	jewel_serial=result.serial
-
-func generate_jewels_into(inventory: Array, fragments: float, serial: int, random: RandomNumberGenerator) -> Dictionary:
-	var cost := jewel_create_cost()
-	if cost <= 0 or not jewels_unlocked():
-		return {"fragments":fragments,"serial":serial}
-	var ids: Array = db.data.get("jewel",{}).keys().filter(func(id):return db.jewel_max_level(str(id)) > 0)
-	var required := jewel_combine_count()
-	if ids.is_empty() or required<2 or fragments<cost or inventory.size()>=JEWEL_CAPACITY:
-		return {"fragments":fragments,"serial":serial}
-	var highest: int=ids.map(func(id):return db.jewel_max_level(str(id))).max()
-	var level:=1
-	while level<highest and cost*pow(float(required),level)<=fragments:
-		level+=1
-	var threshold:=cost*pow(float(required),level-1)
-	# Fragment value is represented by base-recipe digits. Keep only the three
-	# highest occupied levels; discard smaller digits after the whole batch fits.
-	var planned: Array=[]
-	var remaining:=fragments
-	for tier in range(level,maxi(0,level-3),-1):
-		if tier<level:threshold=cost*pow(float(required),tier-1)
-		var count:=mini(required-1,int(minf(floorf(remaining/threshold),float(required-1))))
-		for i in count:planned.append(tier)
-		remaining=maxf(0.0,remaining-count*threshold)
-	if inventory.size()+planned.size()>JEWEL_CAPACITY:
-		return {"fragments":fragments,"serial":serial}
-	for tier in planned:
-		var eligible: Array=ids.filter(func(id):return db.jewel_max_level(str(id))>=tier)
-		if eligible.is_empty():return {"fragments":fragments,"serial":serial}
-		serial+=1
-		inventory.append({"id":str(eligible[random.randi_range(0,eligible.size()-1)]),"level":tier+gem_drop_level_bonus(),"token":serial})
-	return {"fragments":0.0,"serial":serial}
 
 func pickup_jewel_fragment(_legacy_id := "") -> bool:
 	if not jewels_unlocked():
 		return false
 	settle_jewel_fragments(1.0,"drop")
-	jewels_changed()
+	enhancement_currency_changed()
 	return true
 
 func jewel_kill_drop(enemy: Dictionary) -> void:
@@ -2508,372 +2500,284 @@ func jewel_kill_drop(enemy: Dictionary) -> void:
 	uid += 1
 	drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
-func sort_jewels(by_level: bool) -> void:
-	profile.jewels.sort_custom(func(a,b):
-		if by_level and int(a.level) != int(b.level):
-			return int(a.level) > int(b.level)
-		if int(a.id) != int(b.id):
-			return int(a.id) < int(b.id)
-		if int(a.level) != int(b.level):
-			return int(a.level) > int(b.level)
-		return int(a.token) < int(b.token))
-	jewels_changed()
+func default_enhancement_order() -> Dictionary:
+	return {"weapons":["proficiency","repeat","critical"],"defence":["adaptation","memory_material","delayed_damage"]}
 
-func jewel_combine_count() -> int:
-	var value = db.config.get("jewelCombine",0)
-	return int(value) if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)>=2 else 0
-
-func jewel_combine_eligible(gem: Dictionary) -> bool:
-	return jewel_valid(gem) and not gem.get("locked",false) and not gem.get("disabled",false) and int(gem.level)<db.jewel_max_level(str(gem.id))
-
-func can_combine_jewels(tokens: Array, inventory: Variant = null) -> bool:
-	var required := jewel_combine_count()
-	if required < 2 or tokens.size() != required:
-		return false
-	var source: Array=profile.jewels if inventory==null else inventory
-	var by_token := {}
-	for gem in source:
-		if not gem is Dictionary or not gem.get("token") is int or by_token.has(gem.token):return false
-		by_token[gem.token]=gem
-	var first: Dictionary={}
-	var seen := {}
-	for token in tokens:
-		if not token is int:
-			return false
-		var gem: Dictionary=by_token.get(token,{})
-		if seen.has(token) or not jewel_combine_eligible(gem):return false
-		if first.is_empty():first=gem
-		if gem.id != first.id or gem.level != first.level:
-			return false
-		seen[token] = true
-	return true
-
-func combine_inventory_jewels(inventory: Array, tokens: Array, next_token: int) -> bool:
-	if not can_combine_jewels(tokens,inventory):
-		return false
-	var first: Dictionary=inventory.filter(func(gem):return int(gem.token)==int(tokens[0]))[0]
-	var result := {"id":str(first.id),"level":int(first.level)+1,"token":next_token}
-	for i in range(inventory.size()-1,-1,-1):
-		if tokens.has(int(inventory[i].token)):inventory.remove_at(i)
-	inventory.append(result)
-	return true
-
-func combine_jewels(tokens: Array) -> bool:
-	if jewel_bulk_combining or not combine_inventory_jewels(profile.jewels,tokens,jewel_serial+1):return false
-	jewel_serial+=1
-	jewels_changed()
-	return true
-
-func combine_all_jewels(clean_obsolete := true) -> Dictionary:
-	var failure := {"ok":false,"message":UIText.t("gem.combine_all_jewels.text_01")}
-	var required := jewel_combine_count()
-	if jewel_bulk_combining or not jewels_unlocked() or required<2 or not nonnegative_number(profile.jewelFragments):return failure
-	var tokens := {}
-	var installed := {}
-	var highest := {}
-	for category in ["weapons","defence"]:
-		for entry in module_entries(category):
-			for gem in entry.get("sockets",[]):
-				if not gem.is_empty():
-					installed[int(gem.token)]=true
-					var id:=str(gem.id)
-					highest[id]=maxi(int(highest.get(id,0)),int(gem.level))
-	for gem in profile.jewels:
-		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or int(gem.token)>jewel_serial or tokens.has(gem.token):return failure
-		tokens[gem.token]=true
-	# Work only on a private array; surviving gem objects retain their identity.
-	var working: Array=profile.jewels.duplicate()
-	var serial := jewel_serial
-	var fragments := float(profile.jewelFragments)
-	var random := RandomNumberGenerator.new()
-	random.seed=rng.seed
-	random.state=rng.state
-	var count := 0
-	while true:
-		var groups := {}
-		for gem in working:
-			if not installed.has(gem.token) and jewel_combine_eligible(gem):
-				var key := "%s:%d" % [gem.id,int(gem.level)]
-				if not groups.has(key):groups[key]=[]
-				groups[key].append(gem)
-		var previous := count
-		var consumed := {}
-		var produced: Array=[]
-		for group in groups.values():
-			for offset in range(0,group.size()-required+1,required):
-				var first: Dictionary=group[offset]
-				# The grouped tokens were validated once above. Settle a whole round
-				# together instead of revalidating and scanning 200 gems per recipe.
-				for i in required:consumed[group[offset+i].token]=true
-				serial+=1
-				produced.append({"id":first.id,"level":int(first.level)+1,"token":serial})
-				count+=1
-		if previous==count:break
-		working=working.filter(func(gem):return not consumed.has(gem.token))
-		working.append_array(produced)
-		# Preserve the existing automatic fragment refill, including its new gems.
-		var refill := generate_jewels_into(working,fragments,serial,random)
-		fragments=refill.fragments
-		serial=refill.serial
-	var deleted:=0
-	if clean_obsolete:
-		for gem in working:
-			var id:=str(gem.id)
-			highest[id]=maxi(int(highest.get(id,0)),int(gem.level))
-		var before_cleanup:=working.size()
-		working=working.filter(func(gem):return int(gem.level)>=int(highest[str(gem.id)])-10)
-		deleted=before_cleanup-working.size()
-	if count==0 and deleted==0:return {"ok":true,"count":0,"consumed":0,"deleted":0,"results":[],"tokens":[]}
-	var rewards := {}
-	var result_tokens: Array=[]
-	for gem in working:
-		if int(gem.token)<=jewel_serial or int(gem.level)<=1:continue
-		var key := "%s:%d" % [gem.id,int(gem.level)]
-		if not rewards.has(key):rewards[key]={"id":gem.id,"level":gem.level,"count":0}
-		rewards[key].count+=1
-		result_tokens.append(gem.token)
-	var results: Array=rewards.values()
-	results.sort_custom(func(a,b):return int(a.level)>int(b.level) if a.level!=b.level else str(a.id)<str(b.id))
-	# Validate and calculate privately, then commit the in-memory operation once.
-	# Persistence is independent: a later failed save never undoes this result.
-	jewel_bulk_combining=true
-	profile.jewels=working
-	profile.jewelFragments=fragments
-	jewel_serial=serial
-	rng.state=random.state
-	save_dirty=true
-	event.emit("jewels_changed",{"slot":""})
-	jewel_bulk_combining=false
-	return {"ok":true,"count":count,"consumed":count*required,"deleted":deleted,"results":results,"tokens":result_tokens}
-
-func jewel_auto_stock() -> Dictionary:
-	var groups := {}
-	var best := {}
-	var available: Array = []
-	for gem in profile.jewels:
-		if not jewel_valid(gem) or not gem.get("token") is int or int(gem.token)<=0 or gem.get("locked",false) or gem.get("disabled",false):continue
-		available.append(gem)
-		var id := str(gem.id)
-		if not best.has(id) or int(gem.level)>int(best[id].level):best[id]=gem
-		if int(gem.level)<db.jewel_max_level(id):
-			var key := "%s:%d" % [id,int(gem.level)]
-			groups[key]=int(groups.get(key,0))+1
-	return {"groups":groups,"best":best,"available":available}
-
-func jewel_auto_candidates(category: String, entry: Dictionary, stock: Dictionary) -> Array:
-	var occupied := {}
-	for installed in entry.get("sockets",[]):
-		if installed is Dictionary and not installed.is_empty():
-			occupied[str(installed.id)]=true
-	var candidates: Array = []
-	for gem in stock.get("available",[]):
-		if not gem is Dictionary or not jewel_allowed(str(gem.id),category) or occupied.has(str(gem.id)):
-			continue
-		candidates.append(gem)
-	return candidates
-
-func auto_manage_jewels() -> Dictionary:
-	var result := {"combined":0,"cleaned":0,"replaced":0,"upgraded":0,"equipped":0}
-	if not jewels_unlocked() or jewel_bulk_combining or profile.jewels.is_empty():return result
-	var required := jewel_combine_count()
-	var stock := jewel_auto_stock()
-	if required>=2:
-		var combined := combine_all_jewels(true)
-		if not combined.ok:return result
-		result.combined=int(combined.count)
-		result.cleaned=int(combined.deleted)
-		stock=jewel_auto_stock()
-	var changed_slots := {}
-	for category in ["weapons","defence"]:
-		for index in loadout_entries(category).size():
-			var entry := module_entry(category,index)
-			if str(entry.get("key","")).is_empty():continue
-			for socket in equipment_socket_count(entry):
-				var sockets: Array=entry.get("sockets",[])
-				var installed: Dictionary=sockets[socket] if socket<sockets.size() and sockets[socket] is Dictionary else {}
-				var changed := false
-				var candidate: Dictionary = {}
-				if installed.is_empty():
-					var candidates := jewel_auto_candidates(category,entry,stock)
-					if not candidates.is_empty():
-						candidate=candidates[rng.randi_range(0,candidates.size()-1)]
-						changed=socket_jewel(category,index,socket,int(candidate.token),false)
-						if changed:result.equipped+=1
-				elif jewel_combine_eligible(installed):
-					candidate=stock.best.get(str(installed.id),{})
-					if not candidate.is_empty() and int(candidate.level)>int(installed.level):
-						changed=socket_jewel(category,index,socket,int(candidate.token),false)
-						if changed:result.replaced+=1
-					if not changed and required>=2 and int(stock.groups.get("%s:%d" % [installed.id,int(installed.level)],0))>=required-1:
-						changed=upgrade_socket_jewel(category,index,socket,int(installed.token),false)
-						if changed:result.upgraded+=1
-				if changed:
-					changed_slots[slot_id(category,index)]=true
-					stock=jewel_auto_stock()
-	if not changed_slots.is_empty():jewels_changed("",changed_slots.keys())
+func default_enhancement_branches() -> Dictionary:
+	var result := {}
+	for category in default_enhancement_order():
+		result[category]={}
+		for effect in default_enhancement_order()[category]:result[category][effect]={}
 	return result
 
-func equipment_socket_count(entry: Dictionary) -> int:
-	if str(entry.get("key", "")).is_empty():
-		return 0
-	var value = db.config.get("equipmentSocket", 0)
-	if value is int or value is float:
-		return maxi(0, int(value))
+func enhancement_branch_threshold(node: int) -> int:
+	return int(enhancement_parameter("branch_threshold_%d" % node)) if node in [1,2,3] else -1
+
+func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
+	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
+
+func enhancement_branch_unlocked(category: String, effect: String, node: int) -> bool:
+	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node)
+
+func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
+	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
+
+func enhancement_branch_choice(category: String, effect: String, node: int) -> String:
+	return str(enhancement_branch_choices(category,effect).get(str(node),""))
+
+func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
+	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
+	if enhancement_branch_choice(category,effect,node)==choice:return true
+	profile.enhancementBranches[category][effect][str(node)]=choice
+	# Selection invalidates projections and only the removed branch's transient buffs.
+	invalidate_stat_cache()
+	enhancement_branches.reconcile(self)
+	sync_enhancement_buffers()
+	if player.has("armour"):
+		player.armour=N.minimum(player.armour,stat("armour"))
+		player.shield=N.minimum(player.shield,max_shield())
+	save_dirty = true
+	event.emit("enhancement_changed",{"category":category,"effect":effect,"node":node,"choice":choice})
+	return true
+
+func enhancement_branch_metadata(category: String, effect: String, node: int, choice: String) -> Dictionary:
+	if not valid_enhancement_branch(category,effect,node) or choice not in ["A","B"]:return {}
+	var prefix := "enhance.branch.%s.%d.%s" % [effect,node,choice]
+	var parameters := {}
+	if choice=="A":
+		match effect:
+			"proficiency":parameters.damage_percent=enhancement_parameter("proficiency_a_damage_bonus")*100.0
+			"repeat":parameters.probability_percent=enhancement_parameter("repeat_a_probability")*100.0
+			"critical":parameters.probability_percent=enhancement_parameter("critical_a_probability")*100.0
+			"adaptation":parameters.defence_percent=enhancement_parameter("adaptation_a_capacity_bonus")*100.0
+			"memory_material":parameters.bonus_percent=enhancement_parameter("memory_a_bonus")*100.0
+			"delayed_damage":parameters.probability_percent=enhancement_parameter("deferred_a_clear_probability")*100.0
+	else:
+		match effect+str(node):
+			"proficiency1":parameters={"interval":enhancement_parameter("proficiency_b1_interval"),"damage_percent":enhancement_parameter("proficiency_b1_growth")*100.0}
+			"proficiency2":parameters.reduction_percent=(1.0-enhancement_parameter("proficiency_b2_interval_multiplier"))*100.0
+			"proficiency3":parameters.resistance_percent=enhancement_parameter("proficiency_b3_resistance")*100.0
+			"repeat1":parameters.extra_targets=int(enhancement_parameter("repeat_b1_targets"))
+			"repeat2":parameters.extra_repeats=int(enhancement_parameter("repeat_b2_repeats"))
+			"repeat3":parameters.probability_percent=enhancement_parameter("repeat_b3_probability")*100.0
+			"critical1":parameters={"attacks":int(enhancement_parameter("critical_b1_attacks")),"damage_percent":enhancement_parameter("critical_b1_damage_bonus")*100.0}
+			"critical2":parameters={"probability_percent":enhancement_parameter("critical_b2_probability")*100.0,"damage_percent":enhancement_parameter("critical_b2_damage_bonus")*100.0,"stacks":int(enhancement_parameter("critical_b2_stacks")),"duration":enhancement_parameter("critical_b2_duration")}
+			"critical3":parameters.probability_percent=enhancement_parameter("critical_b3_guaranteed_rate")*100.0
+			"adaptation1":parameters={"reduction_percent":enhancement_parameter("adaptation_b1_reduction")*100.0,"stacks":int(enhancement_parameter("adaptation_b1_stacks"))}
+			"adaptation2":parameters={"interval":enhancement_parameter("adaptation_b2_interval"),"duration":enhancement_parameter("adaptation_b2_duration"),"capacity_percent":enhancement_parameter("adaptation_b2_capacity_multiplier")*100.0}
+			"adaptation3":parameters.resistance_percent=clampf(float(db.config.dmgReduce)+enhancement_parameter("adaptation_b3_resistance_bonus"),0,1)*100.0
+			"memory_material1":parameters={"probability_percent":enhancement_parameter("memory_b1_probability")*100.0,"reduction_percent":enhancement_parameter("memory_b1_reduction")*100.0,"duration":enhancement_parameter("memory_b1_duration")}
+			"memory_material2":parameters={"resistance_percent":enhancement_parameter("memory_b2_resistance")*100.0,"duration":enhancement_parameter("memory_b2_duration"),"lockout":enhancement_parameter("memory_b2_lockout")}
+			"memory_material3":parameters={"charge_percent":enhancement_parameter("memory_b3_shield_charge_bonus")*100.0,"capacity_percent":enhancement_parameter("memory_b3_armour_capacity_bonus")*100.0}
+			"delayed_damage1":parameters={"reduction_percent":enhancement_parameter("deferred_b1_reduction")*100.0,"duration":enhancement_parameter("deferred_b1_duration")}
+			"delayed_damage2":
+				parameters.conversion_percent=enhancement_parameter("deferred_b2_probability_conversion")*100.0
+				parameters.reduction_percent=enhancement_branches.clear_underlying_probability(self,node,choice)*enhancement_parameter("deferred_b2_probability_conversion")*100.0
+			"delayed_damage3":
+				parameters.full_probability_percent=enhancement_parameter("deferred_b3_forced_probability")*100.0
+				parameters.damage_percent=(1.0-enhancement_branches.clear_underlying_probability(self,node,choice))*enhancement_parameter("deferred_b3_damage_scale")*100.0
+	if effect=="memory_material" and node==2 and choice=="B":
+		var strengths: Array=defense_entries().filter(func(entry):return not memory_effect(entry).is_empty()).map(func(entry):return enhancement_branches.resistance(self,entry,enhancement_parameter("memory_b2_resistance"))*100.0)
+		parameters.resistance_min_percent=strengths.min() if not strengths.is_empty() else parameters.resistance_percent
+		parameters.resistance_max_percent=strengths.max() if not strengths.is_empty() else parameters.resistance_percent
+		parameters.resistance_percent=parameters.resistance_min_percent
+	return {"category":category,"effect":effect,"node":node,"choice":choice,"implemented":true,"selected":enhancement_branch_choice(category,effect,node)==choice,"unlocked":enhancement_branch_unlocked(category,effect,node),"title_text_id":prefix+".title","description_text_id":prefix+".description","parameters":parameters}
+
+func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dictionary:
+	var category := "weapons" if effect in ["proficiency","repeat","critical"] else "defence"
+	var eligible: Array=loadout_entries(category).filter(func(candidate):return enhancement_effects(candidate).any(func(value):return value.kind==effect))
+	var sample: Dictionary=entry if not entry.is_empty() else (eligible[0] if not eligible.is_empty() else {})
+	var result := {"effect":effect,"effective_level":enhancement_effective_level(),"eligible_modules":eligible.size(),"entry_specific":not entry.is_empty()}
+	match effect:
+		"proficiency","adaptation":
+			result.growth=enhancement_parameter(effect+"_growth")
+			result.history=int(profile.enhancementAttacks if effect=="proficiency" else profile.enhancementHits)
+			result.branch_bonus_percent=enhancement_branches.a_count(self,sample,effect)*enhancement_parameter("proficiency_a_damage_bonus" if effect=="proficiency" else "adaptation_a_capacity_bonus")*100.0
+		"repeat":
+			result.probability_percent=enhancement_branches.repeat_probability(self,sample)*100.0
+			result.damage_percent=enhancement_parameter("repeat_growth")*enhancement_effective_level()*100.0
+			result.delay=enhancement_parameter("repeat_delay")
+		"critical":
+			var critical:=jewel_critical(sample) if not sample.is_empty() else Vector2(enhancement_parameter("base_critical_rate"),enhancement_parameter("base_critical_multiplier"))
+			var base_chance:=enhancement_parameter("base_critical_rate")
+			if not sample.is_empty():base_chance+=float(db.equip(str(sample.key),int(sample.level)).get("cri",0))+enhancement_branches.a_count(self,sample,"critical")*enhancement_parameter("critical_a_probability")
+			result.base_probability_percent=clampf(base_chance,0,1)*100.0
+			result.probability_percent=critical.x*100.0;result.damage_multiplier=critical.y
+			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else enhancement_parameter("base_critical_rate")*100.0
+		"memory_material":
+			result.interval=enhancement_parameter("memory_interval")
+			result.heal_percent=enhancement_parameter("memory_heal_fraction")*enhancement_effective_level()*enhancement_branches.memory_heal_multiplier(self,sample)*100.0
+			result.charge_percent=enhancement_parameter("memory_heal_fraction")*enhancement_effective_level()*enhancement_branches.memory_charge_multiplier(self,sample)*100.0
+			result.capacity_percent=enhancement_parameter("memory_buffer_fraction")*enhancement_effective_level()*enhancement_branches.memory_cap_multiplier(self,sample)*100.0
+		"delayed_damage":
+			result.fraction_percent=enhancement_deferred_fraction()*100.0;result.duration=enhancement_parameter("deferred_duration");result.interval=enhancement_parameter("deferred_interval")
+			result.probability_percent=enhancement_branches.clear_probability(self)*100.0;result.underlying_probability_percent=enhancement_branches.clear_underlying_probability(self)*100.0
+	return result
+
+func enhancement_parameter(key: String) -> float:
+	return float(db.data.enhance_config[key].value)
+
+func enhancement_unlocked() -> bool:
+	return jewels_unlocked()
+
+func enhancement_level() -> int:
+	return int(profile.enhancementLevel)
+
+func enhancement_level_bonus() -> int:
+	return gem_drop_level_bonus()
+
+func enhancement_effective_level() -> int:
+	return enhancement_level() + enhancement_level_bonus()
+
+func enhancement_level_limit() -> int:
+	return ENHANCEMENT_LEVEL_LIMIT
+
+func enhancement_at_limit() -> bool:
+	return enhancement_level()>=enhancement_level_limit()
+
+func enhancement_cost(target_level := -1) -> Variant:
+	var target := enhancement_level()+1 if target_level<0 else target_level
+	if target<1:return 0.0
+	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.power(target,enhancement_parameter("cost_exponent"))))
+
+func can_upgrade_enhancement() -> bool:
+	return enhancement_unlocked() and not enhancement_at_limit() and N.compare(profile.jewelFragments,enhancement_cost())>=0
+
+func enhancement_power_sum(target: int) -> Variant:
+	if target<=0:return 0.0
+	var exponent := int(enhancement_parameter("cost_exponent"))
+	# Sum powers by Faulhaber's binomial recurrence. Work depends on authored
+	# exponent, never the number of levels or the magnitude of fragment balance.
+	var sums: Array=[float(target)]
+	for degree in range(1,exponent+1):
+		var value = N.subtract(N.power(target+1,degree+1),1)
+		var choose := 1.0
+		for k in degree:
+			value=N.subtract(value,N.multiply(choose,sums[k]))
+			choose=choose*float(degree+1-k)/float(k+1)
+		sums.append(N.divide(value,degree+1))
+	return sums[exponent]
+
+func enhancement_purchase_cost(count: int) -> Variant:
+	if count<=0:return 0.0
+	if count<=16:
+		var total = 0.0
+		for target in range(enhancement_level()+1,enhancement_level()+count+1):total=N.add(total,enhancement_cost(target))
+		return total
+	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.subtract(enhancement_power_sum(enhancement_level()+count),enhancement_power_sum(enhancement_level()))))
+
+func enhancement_max_upgrades(limit := -1) -> int:
+	if not enhancement_unlocked():return 0
+	var low := 0
+	var high := enhancement_level_limit()-enhancement_level()
+	if limit>=0:high=mini(high,limit)
+	while low<high:
+		var middle := low+int((high-low+1)/2)
+		if N.compare(profile.jewelFragments,enhancement_purchase_cost(middle))>=0:low=middle
+		else:high=middle-1
+	return low
+
+func upgrade_enhancement(count := 1) -> int:
+	if count==0 or not enhancement_unlocked():return 0
+	var purchased := enhancement_max_upgrades(count)
+	if purchased>0:
+		profile.jewelFragments=N.subtract(profile.jewelFragments,enhancement_purchase_cost(purchased))
+		profile.enhancementLevel+=purchased
+		invalidate_stat_cache()
+		sync_enhancement_buffers()
+		save_dirty = true
+		event.emit("enhancement_changed", {"purchased":purchased})
+		event.emit("jewels_changed", {"slot":"","slots":[]})
+		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	return purchased
+
+func enhancement_order(category: String) -> Array:
+	return profile.enhancementOrder.get(category,[]).duplicate()
+
+func valid_enhancement_order(category: String, value: Variant) -> bool:
+	if not value is Array or value.size()!=3 or not default_enhancement_order().has(category):return false
+	var remaining: Array = default_enhancement_order()[category].duplicate()
+	for kind in value:
+		if not kind is String or not remaining.has(kind):return false
+		remaining.erase(kind)
+	return remaining.is_empty()
+
+func set_enhancement_order(category: String, order: Array) -> bool:
+	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
+	if enhancement_order(category)==order:return true
+	profile.enhancementOrder[category]=order.duplicate()
+	invalidate_stat_cache()
+	enhancement_branches.reconcile(self)
+	sync_enhancement_buffers()
+	if player.has("armour"):
+		player.armour=N.minimum(player.armour,stat("armour"))
+		player.shield=N.minimum(player.shield,max_shield())
+	save_dirty = true
+	event.emit("enhancement_changed", {"category":category})
+	event.emit("jewels_changed", {"slot":"","slots":[]})
+	for kind in ["weapons","defence"]:event.emit("equipment_stats",{"category":kind})
+	return true
+
+func available_effect_count(entry: Dictionary) -> int:
+	if str(entry.get("key","")).is_empty():return 0
 	var count := 0
-	var latest := -1
-	for part in str(value).split(","):
-		var pair := part.split("|")
-		if pair.size() == 2 and pair[0].is_valid_int() and pair[1].is_valid_int() and int(pair[0]) <= int(entry.level) and int(pair[0]) > latest:
-			latest = int(pair[0])
-			count = maxi(0, int(pair[1]))
+	for i in [1,2,3]:
+		if int(entry.level)>=int(enhancement_parameter("threshold_%d" % i)):count+=1
 	return count
 
-func jewel_allowed(id: String, category: String) -> bool:
-	var kind := int(db.jewel_parameter(id, 1))
-	return kind == 0 or kind == (1 if category == "weapons" else 2)
+func record_enhancement_attack() -> void:
+	profile.enhancementAttacks += 1
+	for key in WEAPON_KEYS:invalidate_equipment_counter(key)
+	event.emit("equipment_stats",{"category":"weapons"})
 
-func jewel_socket_error(category: String, index: int, token: int, replacing_socket := -1) -> String:
-	var key := jewel_socket_error_key(category,index,token,replacing_socket)
-	return UIText.t(key) if not key.is_empty() else ""
+func record_enhancement_hit() -> void:
+	profile.enhancementHits += 1
+	for key in DEFENSE_KEYS:invalidate_equipment_counter(key)
+	event.emit("equipment_stats",{"category":"defence"})
 
-func jewel_socket_error_key(category: String, index: int, token: int, replacing_socket := -1) -> String:
-	var entry := module_entry(category, index)
-	var gem := jewel_inventory(token)
-	if not jewels_unlocked() or entry.is_empty() or str(entry.key).is_empty() or gem.is_empty():
-		return "gem.jewel_socket_error.text_01"
-	if not jewel_allowed(str(gem.id), category):
-		return "gem.jewel_socket_error.text_02"
-	var sockets: Array = entry.get("sockets", [])
-	for i in sockets.size():
-		if i == replacing_socket:
-			continue
-		var installed: Dictionary = sockets[i]
-		if not installed.is_empty() and str(installed.id) == str(gem.id):
-			return "gem.jewel_socket_error.text_03"
-	return ""
-
-func socket_jewel(category: String, index: int, socket: int, token: int, notify := true) -> bool:
-	if not jewel_socket_error_key(category, index, token, socket).is_empty():
-		return false
-	var entry := module_entry(category, index)
-	if socket < 0 or socket >= equipment_socket_count(entry):
-		return false
-	var sockets: Array = entry.get("sockets", []).duplicate()
-	while sockets.size() < equipment_socket_count(entry):
-		sockets.append({})
-	var previous: Dictionary = sockets[socket]
-	# Replacement exchanges two owners without increasing inventory size.
-	var gem := jewel_inventory(token)
-	sockets[socket] = gem
-	profile.jewels.erase(gem)
-	if not previous.is_empty():
-		profile.jewels.append(previous)
-	entry.sockets = sockets
-	invalidate_stat_cache()
-	if notify:jewels_changed(slot_id(category, index))
-	return true
-
-func unsocket_jewel(category: String, index: int, socket: int, expected_token: int) -> bool:
-	var entry := module_entry(category, index)
-	var sockets: Array = entry.get("sockets", [])
-	if profile.jewels.size() >= JEWEL_CAPACITY or socket < 0 or socket >= sockets.size() or sockets[socket].is_empty() or int(sockets[socket].token) != expected_token:
-		return false
-	profile.jewels.append(sockets[socket])
-	sockets[socket] = {}
-	invalidate_stat_cache()
-	jewels_changed(slot_id(category, index))
-	return true
-
-func socket_upgrade_materials(category: String, index: int, socket: int) -> Array:
-	var sockets: Array=module_entry(category,index).get("sockets",[])
-	if socket<0 or socket>=sockets.size() or not jewel_combine_eligible(sockets[socket]):return []
-	var installed: Dictionary=sockets[socket]
-	var tokens: Array=[]
-	for gem in profile.jewels:
-		if jewel_combine_eligible(gem) and gem.id==installed.id and gem.level==installed.level:tokens.append(int(gem.token))
-	return tokens
-
-func can_upgrade_socket_jewel(category: String, index: int, socket: int) -> bool:
-	var required:=jewel_combine_count()
-	return jewels_unlocked() and not jewel_bulk_combining and required>=2 and socket_upgrade_materials(category,index,socket).size()>=required-1
-
-func upgrade_socket_jewel(category: String, index: int, socket: int, expected_token: int, notify := true) -> bool:
-	if not can_upgrade_socket_jewel(category,index,socket):return false
-	var entry:=module_entry(category,index)
-	var installed: Dictionary=entry.sockets[socket]
-	if int(installed.token)!=expected_token:return false
-	var tokens:=socket_upgrade_materials(category,index,socket).slice(0,jewel_combine_count()-1)
-	var ingredients: Array=[installed.duplicate(true)]
-	for token in tokens:ingredients.append(jewel_inventory(int(token)).duplicate(true))
-	var all_tokens: Array=tokens.duplicate()
-	all_tokens.append(expected_token)
-	# Validate and combine on private ingredients before transferring any real owner.
-	if not combine_inventory_jewels(ingredients,all_tokens,jewel_serial+1):return false
-	for i in range(profile.jewels.size()-1,-1,-1):
-		if tokens.has(int(profile.jewels[i].token)):profile.jewels.remove_at(i)
-	jewel_serial+=1
-	entry.sockets[socket]=ingredients[0]
-	invalidate_stat_cache()
-	if notify:jewels_changed(slot_id(category,index))
-	return true
-
-func return_socket_jewels(entries: Array) -> bool:
-	var gems: Array = []
-	for entry in entries:
-		for gem in entry.get("sockets", []):
-			if not gem.is_empty():
-				gems.append(gem)
-	if gems.size() + profile.jewels.size() > JEWEL_CAPACITY:
-		event.emit("jewel_error", {"message":UIText.t("gem.inventory_full")})
-		return false
-	profile.jewels.append_array(gems)
-	for entry in entries:
-		entry.sockets = []
-	invalidate_stat_cache()
-	return true
-
-func jewels_changed(slot := "", slots: Array = []) -> void:
-	invalidate_stat_cache()
-	generate_jewels()
-	if player.has("armour"):
-		player.armour = N.minimum(player.armour,stat("armour"))
-		player.shield = N.minimum(player.shield,max_shield())
+func enhancement_currency_changed() -> void:
 	save_dirty = true
-	event.emit("jewels_changed", {"slot":slot,"slots":slots})
+	event.emit("jewels_changed", {"slot":"","slots":[]}) # Legacy event name retained for currency consumers.
+
+func enhancement_effects(entry: Dictionary) -> Array:
+	var result: Array = []
+	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return result
+	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
+	var order := enhancement_order(category)
+	for i in available_effect_count(entry):
+		var kind := str(order[i])
+		if kind.is_empty():continue
+		var effect := {"kind":kind,"level":enhancement_effective_level(),"threshold":int(enhancement_parameter("threshold_%d" % (i+1))),"p2":0.0,"p4":0.0,"p5":0.0}
+		match kind:
+			"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
+			"repeat":
+				effect.p2=enhancement_parameter("repeat_probability")
+				effect.p4=enhancement_parameter("repeat_growth")
+			"critical":effect.p4=enhancement_parameter("critical_growth")
+			"delayed_damage":effect.p2=enhancement_deferred_fraction()
+			"memory_material":
+				effect.p2=enhancement_parameter("memory_heal_fraction")
+				effect.p4=enhancement_parameter("memory_buffer_fraction")
+		result.append(effect)
+	return result
 
 func jewel_effects(entry: Dictionary) -> Array:
-	var cached: Array = stat_cache.get("jewel_effects",[]) if stat_cache_enabled else []
-	for item in cached:
-		if is_same(item.entry,entry):
-			# Attack callers attach their source mount; never expose the cached
-			# dictionaries to that mutation or to in-flight projectile effects.
-			return item.effects.duplicate(true)
-	var result: Array = []
-	if str(entry.get("key", "")).is_empty():return result
-	var sockets: Array = entry.get("sockets", [])
-	for i in mini(sockets.size(), equipment_socket_count(entry)):
-		var gem: Dictionary = sockets[i]
-		if gem.is_empty():
-			continue
-		var effect := {"kind":db.jewel_effect(str(gem.id)), "level":int(gem.level)}
-		for n in [2, 4, 5]:
-			effect["p%d" % n] = db.jewel_parameter(str(gem.id), n)
-		result.append(effect)
-	if stat_cache_enabled:
-		if cached.size()>=32:cached.clear()
-		cached.append({"entry":entry,"effects":result.duplicate(true)})
-		stat_cache.jewel_effects=cached
-	return result
+	return enhancement_effects(entry)
 
 func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
 	var value := equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
-	for effect in (jewel_effects(entry) if effects == null else effects):
+	var projected := entry
+	if level>=0:
+		projected=entry.duplicate()
+		projected.level=level
+	for effect in (jewel_effects(projected) if effects == null else effects):
 		if effect.kind in ["proficiency", "adaptation"]:
-			var count := maxi(1, int(entry.get("attacks" if effect.kind == "proficiency" else "hits", 0)))
-			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(10.0) * 100.0) / 100.0
+			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
+			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
 			value = ceilf(value * (1.0 + bonus))
+	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
 	var crew_bonus: float
 	if stat_cache_enabled and stat_cache.has("crew_equipment"):
 		crew_bonus=stat_cache.crew_equipment
@@ -2884,54 +2788,114 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 
 func jewel_critical(entry: Dictionary) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
-	var rate := float(row.get("cri", 0))
-	var damage := float(db.config.get("baseCriDmg", 1)) + float(row.get("criDmg", 0))
-	var multiplier := 1.0
+	var rate := enhancement_branches.underlying_critical_rate(self,entry)
+	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
+	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
 	for effect in jewel_effects(entry):
-		if effect.kind == "critical":
-			rate += float(effect.p2)
-			multiplier *= 1.0 + float(effect.p4) * int(effect.level)
-	return Vector2(clampf(rate * multiplier, 0, 1), maxf(0, damage))
+		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
+	return Vector2(clampf(rate,0,1),maxf(0,damage))
+
+func begin_enhancement_attack(index: int, target: Dictionary, derived := false, track_primary := true) -> Dictionary:
+	var context := enhancement_branches.begin_attack(self,index,target,derived,track_primary)
+	enhancement_attack_contexts[index]=context
+	return context
+
+func finish_enhancement_attack(index: int) -> void:
+	if enhancement_attack_contexts.has(index):enhancement_branches.finish_attack(self,enhancement_attack_contexts[index])
+	enhancement_attack_contexts.erase(index)
+
+func player_weapon_row(entry: Dictionary) -> Dictionary:
+	var weapon := db.equip(str(entry.key),int(entry.level))
+	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)
+	return weapon
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var entry := slot_entry("weapons",index)
 	var critical := jewel_critical(entry)
-	var raw = N.multiply(jewel_equipment_stat(entry),multiplier)
+	var context: Dictionary=enhancement_attack_contexts.get(index,{})
+	var raw = N.multiply(N.multiply(jewel_equipment_stat(entry),multiplier),float(context.get("next_multiplier",1.0)))
 	var is_critical := rng.randf() < critical.x
+	var critical_bonus_applied := is_critical
 	if is_critical:
-		raw = N.multiply(raw,critical.y)
+		if enhancement_branches.active(self,entry,"critical",3,"B"):
+			critical_bonus_applied=rng.randf()<enhancement_branches.underlying_critical_rate(self,entry)
+		if critical_bonus_applied:raw=N.multiply(raw,critical.y)
+		if not context.is_empty() and not context.get("derived",false):context.critical=true
 	var effects := jewel_effects(entry)
 	for effect in effects:
 		effect.source = index
-	return {"damage":raw,"effects":effects,"critical":is_critical}
+		effect.weapon_key=str(entry.key)
+		if enhancement_branches.active(self,entry,"proficiency",3,"B"):effect.enemy_resistance=enhancement_parameter("proficiency_b3_resistance")
+		if effect.kind=="repeat" and enhancement_branches.active(self,entry,"repeat",1,"B") and not context.get("derived",false):effect.chain=true
+	return {"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied}
 
 func missile_visual_spread(index: int, count: int) -> float:
 	return (float(index)/float(count-1)-0.5)*minf(88.0,float(count-1)*24.0) if count>1 else 0.0
 
-func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0, visual_spread := 0.0) -> void:
+func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vector2, multiplier := 1.0, visual_spread := 0.0, salvo_index := 0, salvo_count := 1) -> void:
 	# Every player missile path resolves its live mount here, including repeats.
 	if str(slot_entry("weapons",index).key)=="missile":
 		offset = player_weapon_offset(index)
 	var attack := jewel_attack(index,multiplier)
+	launch_player_attack(index,target,weapon,attack,offset,visual_spread,salvo_index,salvo_count)
+
+func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
 	fire(player,target,weapon,attack.damage,false,str(slot_entry("weapons",index).key),offset,visual_spread)
 	projectiles.back().jewelEffects = attack.effects
 	projectiles.back().critical = attack.critical
+	projectiles.back().critical_bonus_applied=attack.get("critical_bonus_applied",attack.critical)
 
-func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}) -> void:
+func launch_enhancement_secondary(index: int, primary: Dictionary, weapon: Dictionary, multiplier: float, beam_tick := false) -> void:
+	var entry := slot_entry("weapons",index)
+	var context: Dictionary=enhancement_attack_contexts.get(index,{})
+	if context.is_empty() or context.get("derived",false) or not enhancement_branches.active(self,entry,"repeat",3,"B") or rng.randf()>=enhancement_parameter("repeat_b3_probability"):return
+	var candidates: Array=targets(int(weapon.dmgtype)).filter(func(enemy):return not is_same(enemy,primary))
+	if candidates.is_empty():return
+	var target: Dictionary=candidates[0]
+	context.derived=true
+	if beam_tick:
+		var attack := jewel_attack(index,multiplier)
+		hit_enemy(target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
+	else:
+		var count := int(weapon.para1) if str(entry.key)=="missile" else 1
+		for i in count:jewel_fire(index,target,weapon,player_weapon_offset(index),multiplier,missile_visual_spread(i,count) if str(entry.key)=="missile" else 0.0,i,count)
+	context.derived=false
+	event.emit("enhancement_secondary",{"source":Vector2(primary.x,primary.y),"target":Vector2(target.x,target.y),"weapon":str(entry.key),"beam":beam_tick})
+
+func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array, critical: bool) -> void:
+	var chain: Dictionary={}
+	for effect in effects:
+		if effect.get("chain",false) and not effect.get("chain_used",false):chain=effect;break
+	if chain.is_empty():return
+	chain.chain_used=true
+	var candidates: Array=targets(type).filter(func(target):return not is_same(target,enemy))
+	var visited := {int(enemy.uid):true}
+	for target in candidates.slice(0,int(enhancement_parameter("repeat_b1_targets"))):
+		if visited.has(int(target.uid)):continue
+		visited[int(target.uid)]=true
+		var continued: Array=effects.duplicate(true)
+		for effect in continued:effect.chain=false;effect.chain_used=true
+		event.emit("enhancement_chain",{"source":Vector2(enemy.x,enemy.y),"target":Vector2(target.x,target.y),"weapon":str(chain.get("weapon_key",""))})
+		hit_enemy(target,raw,type,continued,critical)
+
+func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}, source_depth := 0, origin_multiplier := -1.0) -> void:
 	if not beam.is_empty():
-		if projectiles.any(func(p):return p.get("beam",false) and not p.hostile and p.mount==index and p.get("repeated",false) and long_laser_valid(p)) or jewel_repeats.any(func(p):return p.index==index and p.has("beam")):
+		if projectiles.any(func(p):return p.get("beam",false) and not p.hostile and p.mount==index and int(p.get("repeat_depth",0))==source_depth+1 and long_laser_valid(p)) or jewel_repeats.any(func(p):return p.index==index and p.has("beam") and int(p.get("depth",1))==source_depth+1):
 			return
 	var entry := slot_entry("weapons", index)
+	var allowed := int(enhancement_parameter("repeat_b2_repeats")) if enhancement_branches.active(self,entry,"repeat",2,"B") else 0
+	if source_depth>allowed:return
+	if origin_multiplier<0:origin_multiplier=multiplier
 	var pending: Array = []
 	for effect in jewel_effects(entry):
-		if effect.kind == "repeat" and rng.randf() < float(effect.p2):
-			pending.append(multiplier * (1.0 + float(effect.p4) * int(effect.level)))
+		if effect.kind == "repeat" and rng.randf() < enhancement_branches.repeat_probability(self,entry):
+			pending.append(origin_multiplier * (1.0 + float(effect.p4) * int(effect.level)))
 	for i in pending.size():
 		var choice := rng.randi_range(i, pending.size()-1)
 		var value = pending[choice]
 		pending[choice] = pending[i]
 		pending[i] = value
-		jewel_repeats.append({"index":index, "entry":entry, "remaining":0.5 * (i+1), "multiplier":value})
+		jewel_repeats.append({"index":index, "entry":entry, "remaining":enhancement_parameter("repeat_delay") * (i+1), "multiplier":value,"depth":source_depth+1,"origin_multiplier":origin_multiplier})
 		if not beam.is_empty():
 			jewel_repeats.back().beam = beam
 			break
@@ -2945,23 +2909,25 @@ func advance_jewel_repeats(dt: float) -> void:
 		var entry := slot_entry("weapons", int(pending.index))
 		if state != State.COMBAT or not is_same(entry, pending.entry) or str(entry.key).is_empty():
 			continue
-		var weapon := db.equip(str(entry.key), int(entry.level))
+		var weapon := player_weapon_row(entry)
 		if pending.has("beam"):
 			if projectiles.has(pending.beam) and long_laser_valid(pending.beam):
-				lock_long_laser(player,weapon,false,int(pending.index),entry,true,float(pending.multiplier))
+				lock_long_laser(player,weapon,false,int(pending.index),entry,true,float(pending.multiplier),int(pending.get("depth",1)),float(pending.get("origin_multiplier",1.0)))
 			continue
 		var candidates := targets(int(weapon.dmgtype))
 		if candidates.is_empty():
 			continue
-		entry.attacks = int(entry.get("attacks", 0)) + 1
-		invalidate_equipment_counter(str(entry.key))
-		event.emit("equipment_stats",{"slot":slot_id("weapons",int(pending.index))})
+		begin_enhancement_attack(int(pending.index),candidates[0],false,false)
+		record_enhancement_attack()
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
-			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0)
+			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0,n,int(weapon.para1) if entry.key=="missile" else 1)
+		launch_enhancement_secondary(int(pending.index),candidates[0],weapon,float(pending.multiplier))
+		finish_enhancement_attack(int(pending.index))
+		queue_jewel_repeats(int(pending.index),float(pending.multiplier),{},int(pending.get("depth",1)),float(pending.get("origin_multiplier",1.0)))
 
 func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 	for effect in effects:
-		if effect.kind == "iron":
+		if effect.get("kind","") == "iron":
 			var source := str(effect.get("source", 0))
 			var sources: Dictionary = enemy.get("jewelIronSources", {})
 			var stacks := int(sources.get(source, 0))
@@ -2970,35 +2936,15 @@ func jewel_on_hit(enemy: Dictionary, effects: Array) -> void:
 				enemy.jewelIronSources = sources
 				enemy.jewelIronStacks = int(enemy.get("jewelIronStacks", 0)) + 1
 				enemy.jewelIron = float(enemy.get("jewelIron", 0)) + float(effect.p2) * int(effect.level)
-		elif effect.kind == "interference" and rng.randf() < float(effect.p2):
+		elif effect.get("kind","") == "interference" and rng.randf() < float(effect.p2):
 			enemy.interference = maxf(float(enemy.get("interference", 0)), float(effect.p4) * int(effect.level))
 			enemy.jewelExplosion = maxf(float(enemy.get("jewelExplosion", 0)), float(effect.p5) * int(effect.level))
 
 func has_defence_jewels() -> bool:
-	for entry in defense_entries():
-		if str(entry.get("key", "")).is_empty():
-			continue
-		var sockets: Array = entry.get("sockets", [])
-		for index in mini(sockets.size(), equipment_socket_count(entry)):
-			var gem: Dictionary = sockets[index]
-			if not gem.is_empty():
-				return true
-	return false
+	return true # Per-module defense owns ordinary regeneration and memory uniformly.
 
 func jewel_defence_hit(index: int) -> void:
-	var entry := slot_entry("defence", index)
-	entry.hits = int(entry.get("hits", 0)) + 1
-	invalidate_equipment_counter(str(entry.key))
-	event.emit("equipment_stats",{"slot":slot_id("defence",index)})
-	jewel_defence_times[index] = 0.0
-	for effect in jewel_effects(entry):
-		if effect.kind == "charge" and int(effect.p4) > 0 and int(entry.hits) % int(effect.p4) == 0:
-			var indices: Array = []
-			for i in weapon_entries().size():
-				if not str(weapon_entries()[i].key).is_empty():
-					indices.append(i)
-			if not indices.is_empty():
-				apply_jewel_charge(int(indices[rng.randi_range(0, indices.size()-1)]),1.0 + float(effect.p2) * int(effect.level))
+	jewel_defence_times[index]=0.0
 
 # Charge selects a mount; continuous attacks retain the modifier on existing instances.
 func apply_jewel_charge(index: int, multiplier: float) -> void:
@@ -3016,88 +2962,276 @@ func apply_jewel_charge(index: int, multiplier: float) -> void:
 		cooldowns[id] = 0.0
 	jewel_charged[id] = maxf(float(jewel_charged.get(id,1.0)),multiplier)
 
+func memory_effect(entry: Dictionary) -> Dictionary:
+	for effect in enhancement_effects(entry):
+		if effect.kind=="memory_material":return effect
+	return {}
+
+func sync_enhancement_buffers() -> void:
+	for index in enhancement_buffers.keys():
+		var entry := slot_entry("defence",int(index))
+		var owner: Dictionary=enhancement_buffer_owners.get(index,{})
+		var effect := memory_effect(entry)
+		if entry.is_empty() or effect.is_empty() or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):
+			enhancement_buffers.erase(index)
+			enhancement_buffer_owners.erase(index)
+		else:
+			enhancement_buffers[index]=N.minimum(enhancement_buffers[index],N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)))
+
+func memory_buffer(index: int) -> Variant:
+	sync_enhancement_buffers()
+	return enhancement_buffers.get(index,0.0)
+
+func enhancement_visible_buffer(index: int) -> Variant:
+	var entry := slot_entry("defence",index)
+	var owner: Dictionary=enhancement_buffer_owners.get(index,{})
+	if entry.is_empty() or memory_effect(entry).is_empty() or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):return 0.0
+	return N.minimum(enhancement_buffers.get(index,0),enhancement_module_protection_capacity(index))
+
+func enhancement_protection_current() -> Variant:
+	var total = 0.0
+	for index in defense_entries().size():total=N.add(total,enhancement_visible_buffer(index))
+	return total
+
+func enhancement_module_protection_capacity(index: int) -> Variant:
+	var entry := slot_entry("defence",index)
+	var effect := memory_effect(entry)
+	return N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)) if not effect.is_empty() else 0.0
+
+func enhancement_protection_capacity() -> Variant:
+	var total = 0.0
+	for entry in defense_entries():
+		var effect := memory_effect(entry)
+		if not effect.is_empty():total=N.add(total,N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)))
+	return total
+
+func enhancement_damage_type_mode(type: int) -> String:
+	return "energy" if type==1 else "physical" if type==2 else "neutral"
+
+func enhancement_protection_status() -> Dictionary:
+	var components: Array=[]
+	var identities := {}
+	var remaining := INF
+	var lockout := 0.0
+	var cover_current = 0.0
+	var cover_remaining := 0.0
+	for index in defense_entries().size():
+		var data: Dictionary=enhancement_branches.defenses.get(index,{"cover":0.0,"cover_time":0.0,"resistance_type":0,"resistance_time":0.0,"lockout":0.0})
+		cover_current=N.add(cover_current,data.cover);cover_remaining=maxf(cover_remaining,float(data.cover_time))
+		var current=enhancement_visible_buffer(index)
+		var type:=int(data.resistance_type) if data.resistance_time>0 and data.lockout<=0 else 0
+		var resistance:=enhancement_branches.resistance(self,slot_entry("defence",index),enhancement_parameter("memory_b2_resistance")) if type>0 and enhancement_branches.active(self,slot_entry("defence",index),"memory_material",2,"B") else 0.0
+		if resistance<=0:type=0
+		components.append({"index":index,"current":current,"capacity":enhancement_module_protection_capacity(index),"type":type,"mode":enhancement_damage_type_mode(type),"resistance":resistance,"remaining":float(data.resistance_time),"lockout":float(data.lockout)})
+		lockout=maxf(lockout,float(data.lockout))
+		if N.compare(current,0)>0:
+			identities["%d:%.6f" % [type,resistance]]={"type":type,"resistance":resistance}
+			remaining=minf(remaining,float(data.resistance_time))
+	var mode := "neutral"
+	var resistance := 0.0
+	if identities.size()>1:mode="mixed"
+	elif identities.size()==1:
+		var identity: Dictionary=identities.values()[0]
+		mode=enhancement_damage_type_mode(int(identity.type))
+		resistance=float(identity.resistance)
+	return {"mode":mode,"current":enhancement_protection_current(),"capacity":enhancement_protection_capacity(),"resistance":resistance,"remaining":remaining if is_finite(remaining) else 0.0,"lockout":lockout,"components":components,"cover_current":cover_current,"cover_remaining":cover_remaining}
+
+func consume_enhancement_protection(amount, type := 0, already_mitigated := true) -> Variant:
+	# Neutral temporary protection absorbs damage 1:1, before any resistance.
+	# Stable module order preserves each contributing module's cap ownership.
+	sync_enhancement_buffers()
+	var rest = amount
+	var indices: Array=enhancement_buffers.keys()
+	indices.sort()
+	for index in indices:
+		if N.compare(rest,0)<=0:break
+		var reduction := enhancement_branches.memory_resistance(self,int(index),type) if not already_mitigated else 0.0
+		var factor := 1.0-reduction
+		if factor<=0 and N.compare(enhancement_buffers[index],0)>0:
+			jewel_defence_hit(int(index))
+			return 0.0
+		var protected = N.minimum(enhancement_buffers[index],N.multiply(rest,factor))
+		enhancement_buffers[index]=N.subtract(enhancement_buffers[index],protected)
+		rest=N.subtract(rest,N.divide(protected,maxf(0.001,factor)))
+		if N.compare(protected,0)>0:jewel_defence_hit(int(index))
+	return rest
+
 func jewel_hit_player(raw, type: int) -> void:
-	sync_jewel_defence_damage()
-	since_hit = 0
-	var rest = raw
+	var capacities := sync_jewel_defence_damage()
+	sync_enhancement_buffers()
+	since_hit=0.0
+	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,raw),type,false)
 	var loss = 0.0
-	for key in ["shield", "armour"]:
-		if N.compare(rest,0)<=0 or N.compare(player[key],0)<=0:
-			continue
-		var current = player[key]
+	for key in ["shield","armour"]:
+		if N.compare(rest,0)<=0:break
+		var total = 0.0
+		var available := {}
+		for index in capacities[key].indices:
+			available[index]=N.subtract(capacities[key].maxima[index],jewel_defence_damage.get(index,0))
+			total=N.add(total,available[index])
+		if N.compare(total,0)<=0:continue
 		var incoming = rest
 		var spent = 0.0
 		var damage = 0.0
-		# The aggregate remains authoritative. At huge capacities, capacity-loss
-		# can round to zero while a small, real amount of health still survives.
-		var module_remaining = 0.0
-		var module_capacity = 0.0
-		for index in defense_entries().size():
-			var entry = slot_entry("defence",index)
-			if entry.key == key:
-				var maximum = jewel_equipment_stat(entry)
-				module_capacity = N.add(module_capacity,maximum)
-				module_remaining = N.add(module_remaining,N.subtract(maximum,jewel_defence_damage.get(index,0)))
-		for index in defense_entries().size():
-			var entry = slot_entry("defence", index)
-			if entry.key != key:
-				continue
-			var maximum = jewel_equipment_stat(entry)
-			var tracked = N.subtract(maximum,jewel_defence_damage.get(index,0))
-			var weight = N.ratio(tracked,module_remaining) if N.compare(module_remaining,0)>0 else N.ratio(maximum,module_capacity)
-			var remaining = N.multiply(current,weight)
-			if N.compare(remaining,0)<=0:
-				continue
-			var share = N.ratio(remaining,current)
-			var row = db.equip(key, int(entry.level))
-			var factor = 1.0 - float(db.config.dmgReduce) if type == int(row.dmgtype) else 1.0
-			var reduction = 0.0
-			for effect in jewel_effects(entry):
-				if effect.kind == "resistance":
-					reduction = N.add(reduction,N.multiply(maximum,float(effect.p2)*int(effect.level)))
-			var part = N.subtract(N.multiply(incoming,share*factor),reduction)
-			var taken = N.minimum(remaining,part)
-			damage = N.add(damage,taken)
-			jewel_defence_damage[index] = N.add(jewel_defence_damage.get(index,0),taken)
-			spent = N.add(spent,N.minimum(N.multiply(incoming,share),N.divide(N.add(taken,reduction),maxf(0.001,factor))))
-			if N.compare(taken,0)>0:
-				jewel_defence_hit(index)
-		var rounded = N.minimum(current,N.ceiling(damage))
-		player[key] = N.subtract(current,rounded)
-		loss = N.add(loss,rounded)
-		rest = N.subtract(incoming,spent)
-	event.emit("hit", {"x":player.x,"y":player.y,"amount":loss,"player":true,"type":type})
+		var deferred_any := false
+		for index in capacities[key].indices:
+			if N.compare(available[index],0)<=0:continue
+			var entry := slot_entry("defence",index)
+			var row := db.equip(key,int(entry.level))
+			var factor := 1.0-enhancement_branches.resistance(self,entry,float(db.config.dmgReduce)) if type==int(row.dmgtype) else 1.0
+			# Only raw damage surviving neutral protection receives body resistance.
+			var part = N.multiply(incoming,N.ratio(available[index],total)*factor)
+			var taken = part if key=="armour" else N.minimum(available[index],part) # Final body incurs overkill before deferral.
+			var delayed = 0.0
+			for effect in enhancement_effects(entry):
+				if effect.kind=="delayed_damage":delayed=N.multiply(taken,float(effect.p2))
+			deferred_any=deferred_any or N.compare(delayed,0)>0
+			queue_enhancement_deferred(key,delayed)
+			var immediate = N.subtract(taken,delayed)
+			var body = immediate
+			jewel_defence_damage[index]=N.add(jewel_defence_damage.get(index,0),body)
+			damage=N.add(damage,body)
+			spent=N.add(spent,N.multiply(incoming,N.ratio(available[index],total)) if factor<=0 else N.divide(taken,factor))
+			if N.compare(taken,0)>0:jewel_defence_hit(index)
+		var rounded = N.minimum(player[key],damage if deferred_any else N.ceiling(damage))
+		player[key]=N.subtract(player[key],rounded)
+		loss=N.add(loss,rounded)
+		rest=N.subtract(incoming,spent)
+	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"player":true,"type":type})
 	if N.compare(player.armour,0)<=0:
-		event.emit("explode", {"x":player.x,"y":player.y,"boss":true})
+		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
 
+func enhancement_deferred_fraction(level := -1) -> float:
+	var current := enhancement_effective_level() if level<0 else level
+	if current<=0:return 0.0
+	var scale := enhancement_parameter("deferred_percent_scale")
+	# Computing the complement with ceil avoids rounding high finite levels to 100%.
+	var remaining := maxf(1.0,ceilf(scale/(1.0+enhancement_parameter("deferred_curve_coefficient")*current)))
+	return maxf(0.0,(scale-remaining)/scale)
+
+func enhancement_deferred_total() -> Variant:
+	var total = 0.0
+	for due in enhancement_deferred.values():
+		for key in ["shield","armour"]:total=N.add(total,due.get(key,0))
+	return total
+
+func queue_enhancement_deferred(key: String, amount) -> void:
+	if N.compare(amount,0)<=0:return
+	var interval := enhancement_parameter("deferred_interval")
+	var portions := maxi(1,int(ceil(enhancement_parameter("deferred_duration")/interval)))
+	# Absolute game-time buckets: first payment >= one interval after this event.
+	# Coalescing shifts each source phase forward by < one interval, never earlier.
+	var first := maxi(enhancement_deferred_tick+1,int(ceil((enhancement_defense_time+interval-0.000000001)/interval)))
+	var unit = N.divide(amount,portions)
+	var remaining = amount
+	for i in portions:
+		var part = remaining if i==portions-1 else N.minimum(unit,remaining)
+		remaining=N.subtract(remaining,part)
+		var due: Dictionary=enhancement_deferred.get(first+i,{"shield":0.0,"armour":0.0})
+		due[key]=N.add(due[key],part)
+		enhancement_deferred[first+i]=due
+
+func apply_enhancement_deferred(key: String, amount) -> void:
+	# This debt was already mitigated at the incoming event; protection and body
+	# consume it 1:1 with no new resistance, deferral or incoming-history event.
+	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,amount))
+	var loss = 0.0
+	var layers := ["shield","armour"] if key=="shield" else ["armour"]
+	for layer in layers:
+		if N.compare(rest,0)<=0:break
+		var capacities := sync_jewel_defence_damage()
+		sync_enhancement_buffers()
+		var available := {}
+		var total = 0.0
+		for index in capacities[layer].indices:
+			available[index]=N.subtract(capacities[layer].maxima[index],jewel_defence_damage.get(index,0))
+			total=N.add(total,available[index])
+		var taken = N.minimum(total,rest)
+		var body_loss = 0.0
+		for index in capacities[layer].indices:
+			if N.compare(total,0)<=0:break
+			var part = N.multiply(taken,N.ratio(available[index],total))
+			var body = part
+			jewel_defence_damage[index]=N.add(jewel_defence_damage.get(index,0),body)
+			body_loss=N.add(body_loss,body)
+			if N.compare(part,0)>0:jewel_defence_hit(index)
+		# Deferred portions remain fractional; round only the displayed hit number.
+		player[layer]=0.0 if N.compare(taken,total)>=0 and N.compare(total,0)>0 else N.subtract(player[layer],body_loss)
+		loss=N.add(loss,body_loss)
+		rest=N.subtract(rest,taken)
+	if N.compare(loss,0)>0:event.emit("hit",{"x":player.x,"y":player.y,"amount":N.ceiling(loss),"player":true,"type":0,"deferred":true})
+	if N.compare(player.armour,0)<=0:
+		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
+		begin_retreat()
+
+func advance_enhancement_deferred_tick() -> void:
+	enhancement_deferred_tick+=1
+	if enhancement_deferred.is_empty():return
+	var due: Dictionary=enhancement_deferred.get(enhancement_deferred_tick,{})
+	if due.is_empty():return # No clearance roll before a source's first settlement.
+	enhancement_deferred.erase(enhancement_deferred_tick)
+	for key in ["shield","armour"]:
+		if due.has(key):apply_enhancement_deferred(key,due[key])
+		if state==State.RETREAT:return
+	# One shared chance per active global tick after payment, independent of hit count.
+	if rng.randf()<enhancement_branches.clear_probability(self):
+		var cleared_amount = enhancement_deferred_total()
+		enhancement_deferred.clear()
+		if N.compare(cleared_amount,0)>0:enhancement_branches.cleared(self)
+
 func advance_jewel_repair(dt: float) -> bool:
-	if not has_defence_jewels():
-		return false
-	var capacities = sync_jewel_defence_damage()
-	for index in defense_entries().size():
-		var entry = slot_entry("defence", index)
-		var key = str(entry.key)
-		if key.is_empty():
-			continue
-		var elapsed = float(jewel_defence_times.get(index, since_hit - dt)) + dt
-		jewel_defence_times[index] = elapsed
-		var effects: Array = capacities[key].effects[index]
-		var tenacity = 0.0
-		for effect in effects:
-			if effect.kind == "tenacity":
-				tenacity = float(effect.p2) * int(effect.level)
-		var rate = 0.0
-		if key == "shield":
-			var row = db.equip(key, int(entry.level))
-			rate += float(row.para2) * (1.0 if elapsed >= float(row.para3) else tenacity)
-		for effect in effects:
-			if effect.kind == "repair":
-				rate += float(effect.p2) * int(effect.level) * (1.0 if elapsed >= float(effect.p4) else tenacity)
-		var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(capacities[key].maxima[index],rate*dt))
-		jewel_defence_damage[index] = N.subtract(jewel_defence_damage.get(index,0),recovered)
-		player[key] = N.minimum(capacities[key].total,N.add(player[key],recovered))
+	if paused or dt<=0:return true
+	var rest := dt
+	while rest>0.000000001:
+		var memory_interval := enhancement_parameter("memory_interval")
+		var deferred_interval := enhancement_parameter("deferred_interval")
+		var step := minf(rest,minf(memory_interval-enhancement_memory_elapsed,deferred_interval-enhancement_deferred_elapsed))
+		enhancement_branches.advance_defense(self,step)
+		enhancement_defense_time+=step
+		enhancement_memory_elapsed+=step
+		enhancement_deferred_elapsed+=step
+		rest=maxf(0.0,rest-step)
+		if enhancement_deferred_elapsed+0.000000001>=deferred_interval:
+			enhancement_deferred_elapsed=maxf(0.0,enhancement_deferred_elapsed-deferred_interval)
+			advance_enhancement_deferred_tick()
+			if state==State.RETREAT:return true
+		var memory_ticks := 0
+		if enhancement_memory_elapsed+0.000000001>=memory_interval:
+			enhancement_memory_elapsed=maxf(0.0,enhancement_memory_elapsed-memory_interval)
+			memory_ticks=1
+		advance_enhancement_repair_step(step,memory_ticks)
 	return true
+
+func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
+	var capacities := sync_jewel_defence_damage()
+	sync_enhancement_buffers()
+	var positive_memory_recovery := false
+	for key in ["shield","armour"]:
+		for index in capacities[key].indices:
+			var entry := slot_entry("defence",index)
+			var maximum = capacities[key].maxima[index]
+			var elapsed := float(jewel_defence_times.get(index,since_hit-dt))+dt
+			jewel_defence_times[index]=elapsed
+			if key=="shield":
+				var row := db.equip(key,int(entry.level))
+				if elapsed>=float(row.para3):
+					var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(maximum,float(row.para2)*dt))
+					jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
+					player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))
+			var effect := memory_effect(entry)
+			if effect.is_empty() or ticks<=0:continue
+			var healing = N.multiply(maximum,float(effect.p2)*int(effect.level)*ticks*enhancement_branches.memory_heal_multiplier(self,entry))
+			var recovered = N.minimum(jewel_defence_damage.get(index,0),healing)
+			jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
+			player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))
+			var overflow = N.multiply(N.subtract(healing,recovered),enhancement_branches.memory_charge_multiplier(self,entry)/enhancement_branches.memory_heal_multiplier(self,entry))
+			var cap = enhancement_module_protection_capacity(index)
+			var previous = enhancement_buffers.get(index,0)
+			enhancement_buffers[index]=N.minimum(cap,N.add(previous,overflow))
+			positive_memory_recovery=positive_memory_recovery or N.compare(recovered,0)>0 or N.compare(enhancement_buffers[index],previous)>0
+			enhancement_buffer_owners[index]={"entry":entry,"key":str(entry.key)}
+	if ticks>0:enhancement_branches.recovery_pulse(self,positive_memory_recovery)
 
 func sync_jewel_defence_damage() -> Dictionary:
 	# The aggregate player health stays authoritative. This transient allocation

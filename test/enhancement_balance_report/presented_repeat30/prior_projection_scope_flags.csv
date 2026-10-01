@@ -1,0 +1,363 @@
+﻿source,csv_line,stage,scenario,tag,seed,projection_not_tested,core_path_evidence_retained,limitation
+completed_rows.csv,98,full,missile_multi,repeat:-,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,99,full,missile_multi,repeat:-,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,100,full,missile_multi,repeat:A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,101,full,missile_multi,repeat:A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,102,full,missile_multi,repeat:B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,103,full,missile_multi,repeat:B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,116,full,heavy,critical:-,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,117,full,heavy,critical:-,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,118,full,heavy,critical:A,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,119,full,heavy,critical:A,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,120,full,heavy,critical:B,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,121,full,heavy,critical:B,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,128,full,missile_multi,critical:-,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,129,full,missile_multi,critical:-,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,130,full,missile_multi,critical:A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,131,full,missile_multi,critical:A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,132,full,missile_multi,critical:B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,133,full,missile_multi,critical:B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,272,full,heavy,proficiency:--,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,273,full,heavy,proficiency:--,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,274,full,heavy,proficiency:-A,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,275,full,heavy,proficiency:-A,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,276,full,heavy,proficiency:-B,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,277,full,heavy,proficiency:-B,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,302,full,missile_multi,repeat:--,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,303,full,missile_multi,repeat:--,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,304,full,missile_multi,repeat:-A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,305,full,missile_multi,repeat:-A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,306,full,missile_multi,repeat:-B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,307,full,missile_multi,repeat:-B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,320,full,heavy,critical:--,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,321,full,heavy,critical:--,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,322,full,heavy,critical:-A,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,323,full,heavy,critical:-A,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,324,full,heavy,critical:-B,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,325,full,heavy,critical:-B,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,332,full,missile_multi,critical:--,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,333,full,missile_multi,critical:--,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,334,full,missile_multi,critical:-A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,335,full,missile_multi,critical:-A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,336,full,missile_multi,critical:-B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,337,full,missile_multi,critical:-B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,492,full,heavy,proficiency:---,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,493,full,heavy,proficiency:---,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,494,full,heavy,proficiency:--A,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,495,full,heavy,proficiency:--A,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,496,full,heavy,proficiency:--B,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,497,full,heavy,proficiency:--B,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,498,full,heavy,proficiency:AAA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,499,full,heavy,proficiency:AAA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,500,full,heavy,proficiency:AAB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,501,full,heavy,proficiency:AAB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,502,full,heavy,proficiency:ABB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,503,full,heavy,proficiency:ABB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,504,full,heavy,proficiency:BBB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,505,full,heavy,proficiency:BBB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,562,full,missile_multi,repeat:---,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,563,full,missile_multi,repeat:---,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,564,full,missile_multi,repeat:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,565,full,missile_multi,repeat:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,566,full,missile_multi,repeat:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,567,full,missile_multi,repeat:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,568,full,missile_multi,repeat:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,569,full,missile_multi,repeat:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,570,full,missile_multi,repeat:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,571,full,missile_multi,repeat:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,572,full,missile_multi,repeat:ABB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,573,full,missile_multi,repeat:ABB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,574,full,missile_multi,repeat:BBB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,575,full,missile_multi,repeat:BBB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,612,full,heavy,critical:---,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,613,full,heavy,critical:---,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,614,full,heavy,critical:--A,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,615,full,heavy,critical:--A,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,616,full,heavy,critical:--B,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,617,full,heavy,critical:--B,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,618,full,heavy,critical:AAA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,619,full,heavy,critical:AAA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,620,full,heavy,critical:AAB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,621,full,heavy,critical:AAB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,622,full,heavy,critical:ABA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,623,full,heavy,critical:ABA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,624,full,heavy,critical:ABB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,625,full,heavy,critical:ABB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,626,full,heavy,critical:BAA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,627,full,heavy,critical:BAA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,628,full,heavy,critical:BAB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,629,full,heavy,critical:BAB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,630,full,heavy,critical:BBA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,631,full,heavy,critical:BBA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,632,full,heavy,critical:BBB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,633,full,heavy,critical:BBB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,656,full,missile_multi,critical:---,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,657,full,missile_multi,critical:---,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,658,full,missile_multi,critical:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,659,full,missile_multi,critical:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,660,full,missile_multi,critical:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,661,full,missile_multi,critical:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,662,full,missile_multi,critical:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,663,full,missile_multi,critical:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,664,full,missile_multi,critical:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,665,full,missile_multi,critical:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,666,full,missile_multi,critical:ABA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,667,full,missile_multi,critical:ABA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,668,full,missile_multi,critical:ABB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,669,full,missile_multi,critical:ABB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,670,full,missile_multi,critical:BAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,671,full,missile_multi,critical:BAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,672,full,missile_multi,critical:BAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,673,full,missile_multi,critical:BAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,674,full,missile_multi,critical:BBA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,675,full,missile_multi,critical:BBA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,676,full,missile_multi,critical:BBB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,677,full,missile_multi,critical:BBB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1084,critical_probe,heavy,critical:BBA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1085,critical_probe,heavy,critical:BBA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1086,critical_probe,heavy,critical:BBA,307,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1087,critical_probe,heavy,critical:BBA,401,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1088,critical_probe,heavy,critical:BBA,503,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1089,critical_probe,heavy,critical:BBA,601,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1090,critical_probe,heavy,critical:BBA,701,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1091,critical_probe,heavy,critical:BBA,809,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1092,critical_probe,heavy,critical:BBB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1093,critical_probe,heavy,critical:BBB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1094,critical_probe,heavy,critical:BBB,307,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1095,critical_probe,heavy,critical:BBB,401,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1096,critical_probe,heavy,critical:BBB,503,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1097,critical_probe,heavy,critical:BBB,601,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1098,critical_probe,heavy,critical:BBB,701,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1099,critical_probe,heavy,critical:BBB,809,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1180,production,production_heavy,proficiency:---,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1181,production,production_heavy,proficiency:---,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1182,production,production_heavy,proficiency:AAA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1183,production,production_heavy,proficiency:AAA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1184,production,production_heavy,proficiency:BBB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1185,production,production_heavy,proficiency:BBB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1192,production,production_missile,proficiency:---,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1193,production,production_missile,proficiency:---,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1194,production,production_missile,proficiency:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1195,production,production_missile,proficiency:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1196,production,production_missile,proficiency:BBB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1197,production,production_missile,proficiency:BBB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+completed_rows.csv,1198,production,production_heavy,critical:BBA,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1199,production,production_heavy,critical:BBA,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1200,production,production_heavy,critical:BBB,107,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+completed_rows.csv,1201,production,production_heavy,critical:BBB,211,True,True,Base cannon omits formal PresentedBattleGame12x projectile speed; startup/flight/TTK may differ
+repeat30_supplement/corrected_rows.csv,130,repeat30,production_missile_1_dps,repeat:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,131,repeat30,production_missile_1_dps,repeat:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,132,repeat30,production_missile_1_dps,repeat:--A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,133,repeat30,production_missile_1_dps,repeat:--A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,134,repeat30,production_missile_1_dps,repeat:--A,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,135,repeat30,production_missile_1_dps,repeat:--A,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,136,repeat30,production_missile_1_dps,repeat:--A,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,137,repeat30,production_missile_1_dps,repeat:--A,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,138,repeat30,production_missile_1_dps,repeat:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,139,repeat30,production_missile_1_dps,repeat:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,140,repeat30,production_missile_1_dps,repeat:--B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,141,repeat30,production_missile_1_dps,repeat:--B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,142,repeat30,production_missile_1_dps,repeat:--B,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,143,repeat30,production_missile_1_dps,repeat:--B,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,144,repeat30,production_missile_1_dps,repeat:--B,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,145,repeat30,production_missile_1_dps,repeat:--B,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,146,repeat30,production_missile_1_dps,repeat:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,147,repeat30,production_missile_1_dps,repeat:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,148,repeat30,production_missile_1_dps,repeat:AAA,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,149,repeat30,production_missile_1_dps,repeat:AAA,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,150,repeat30,production_missile_1_dps,repeat:AAA,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,151,repeat30,production_missile_1_dps,repeat:AAA,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,152,repeat30,production_missile_1_dps,repeat:AAA,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,153,repeat30,production_missile_1_dps,repeat:AAA,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,154,repeat30,production_missile_1_dps,repeat:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,155,repeat30,production_missile_1_dps,repeat:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,156,repeat30,production_missile_1_dps,repeat:AAB,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,157,repeat30,production_missile_1_dps,repeat:AAB,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,158,repeat30,production_missile_1_dps,repeat:AAB,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,159,repeat30,production_missile_1_dps,repeat:AAB,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,160,repeat30,production_missile_1_dps,repeat:AAB,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,161,repeat30,production_missile_1_dps,repeat:AAB,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,162,repeat30,production_missile_1_ttk,repeat:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,163,repeat30,production_missile_1_ttk,repeat:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,164,repeat30,production_missile_1_ttk,repeat:--A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,165,repeat30,production_missile_1_ttk,repeat:--A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,166,repeat30,production_missile_1_ttk,repeat:--A,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,167,repeat30,production_missile_1_ttk,repeat:--A,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,168,repeat30,production_missile_1_ttk,repeat:--A,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,169,repeat30,production_missile_1_ttk,repeat:--A,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,170,repeat30,production_missile_1_ttk,repeat:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,171,repeat30,production_missile_1_ttk,repeat:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,172,repeat30,production_missile_1_ttk,repeat:--B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,173,repeat30,production_missile_1_ttk,repeat:--B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,174,repeat30,production_missile_1_ttk,repeat:--B,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,175,repeat30,production_missile_1_ttk,repeat:--B,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,176,repeat30,production_missile_1_ttk,repeat:--B,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,177,repeat30,production_missile_1_ttk,repeat:--B,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,178,repeat30,production_missile_1_ttk,repeat:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,179,repeat30,production_missile_1_ttk,repeat:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,180,repeat30,production_missile_1_ttk,repeat:AAA,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,181,repeat30,production_missile_1_ttk,repeat:AAA,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,182,repeat30,production_missile_1_ttk,repeat:AAA,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,183,repeat30,production_missile_1_ttk,repeat:AAA,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,184,repeat30,production_missile_1_ttk,repeat:AAA,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,185,repeat30,production_missile_1_ttk,repeat:AAA,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,186,repeat30,production_missile_1_ttk,repeat:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,187,repeat30,production_missile_1_ttk,repeat:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,188,repeat30,production_missile_1_ttk,repeat:AAB,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,189,repeat30,production_missile_1_ttk,repeat:AAB,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,190,repeat30,production_missile_1_ttk,repeat:AAB,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,191,repeat30,production_missile_1_ttk,repeat:AAB,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,192,repeat30,production_missile_1_ttk,repeat:AAB,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,193,repeat30,production_missile_1_ttk,repeat:AAB,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,194,repeat30,production_missile_3_dps,repeat:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,195,repeat30,production_missile_3_dps,repeat:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,196,repeat30,production_missile_3_dps,repeat:--A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,197,repeat30,production_missile_3_dps,repeat:--A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,198,repeat30,production_missile_3_dps,repeat:--A,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,199,repeat30,production_missile_3_dps,repeat:--A,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,200,repeat30,production_missile_3_dps,repeat:--A,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,201,repeat30,production_missile_3_dps,repeat:--A,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,202,repeat30,production_missile_3_dps,repeat:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,203,repeat30,production_missile_3_dps,repeat:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,204,repeat30,production_missile_3_dps,repeat:--B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,205,repeat30,production_missile_3_dps,repeat:--B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,206,repeat30,production_missile_3_dps,repeat:--B,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,207,repeat30,production_missile_3_dps,repeat:--B,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,208,repeat30,production_missile_3_dps,repeat:--B,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,209,repeat30,production_missile_3_dps,repeat:--B,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,210,repeat30,production_missile_3_dps,repeat:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,211,repeat30,production_missile_3_dps,repeat:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,212,repeat30,production_missile_3_dps,repeat:AAA,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,213,repeat30,production_missile_3_dps,repeat:AAA,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,214,repeat30,production_missile_3_dps,repeat:AAA,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,215,repeat30,production_missile_3_dps,repeat:AAA,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,216,repeat30,production_missile_3_dps,repeat:AAA,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,217,repeat30,production_missile_3_dps,repeat:AAA,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,218,repeat30,production_missile_3_dps,repeat:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,219,repeat30,production_missile_3_dps,repeat:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,220,repeat30,production_missile_3_dps,repeat:AAB,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,221,repeat30,production_missile_3_dps,repeat:AAB,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,222,repeat30,production_missile_3_dps,repeat:AAB,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,223,repeat30,production_missile_3_dps,repeat:AAB,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,224,repeat30,production_missile_3_dps,repeat:AAB,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,225,repeat30,production_missile_3_dps,repeat:AAB,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,226,repeat30,production_missile_3_ttk,repeat:--A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,227,repeat30,production_missile_3_ttk,repeat:--A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,228,repeat30,production_missile_3_ttk,repeat:--A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,229,repeat30,production_missile_3_ttk,repeat:--A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,230,repeat30,production_missile_3_ttk,repeat:--A,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,231,repeat30,production_missile_3_ttk,repeat:--A,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,232,repeat30,production_missile_3_ttk,repeat:--A,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,233,repeat30,production_missile_3_ttk,repeat:--A,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,234,repeat30,production_missile_3_ttk,repeat:--B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,235,repeat30,production_missile_3_ttk,repeat:--B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,236,repeat30,production_missile_3_ttk,repeat:--B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,237,repeat30,production_missile_3_ttk,repeat:--B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,238,repeat30,production_missile_3_ttk,repeat:--B,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,239,repeat30,production_missile_3_ttk,repeat:--B,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,240,repeat30,production_missile_3_ttk,repeat:--B,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,241,repeat30,production_missile_3_ttk,repeat:--B,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,242,repeat30,production_missile_3_ttk,repeat:AAA,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,243,repeat30,production_missile_3_ttk,repeat:AAA,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,244,repeat30,production_missile_3_ttk,repeat:AAA,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,245,repeat30,production_missile_3_ttk,repeat:AAA,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,246,repeat30,production_missile_3_ttk,repeat:AAA,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,247,repeat30,production_missile_3_ttk,repeat:AAA,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,248,repeat30,production_missile_3_ttk,repeat:AAA,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,249,repeat30,production_missile_3_ttk,repeat:AAA,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,250,repeat30,production_missile_3_ttk,repeat:AAB,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,251,repeat30,production_missile_3_ttk,repeat:AAB,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,252,repeat30,production_missile_3_ttk,repeat:AAB,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,253,repeat30,production_missile_3_ttk,repeat:AAB,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,254,repeat30,production_missile_3_ttk,repeat:AAB,503,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,255,repeat30,production_missile_3_ttk,repeat:AAB,601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,256,repeat30,production_missile_3_ttk,repeat:AAB,701,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,257,repeat30,production_missile_3_ttk,repeat:AAB,809,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,274,corrected_cited,corrected_repeat10_missile_multi,repeat:A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,275,corrected_cited,corrected_repeat10_missile_multi,repeat:A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,276,corrected_cited,corrected_repeat10_missile_multi,repeat:A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,277,corrected_cited,corrected_repeat10_missile_multi,repeat:A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,278,corrected_cited,corrected_repeat10_missile_multi,repeat:B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,279,corrected_cited,corrected_repeat10_missile_multi,repeat:B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,280,corrected_cited,corrected_repeat10_missile_multi,repeat:B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,281,corrected_cited,corrected_repeat10_missile_multi,repeat:B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,282,corrected_cited,corrected_repeat20_missile_multi,repeat:-A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,283,corrected_cited,corrected_repeat20_missile_multi,repeat:-A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,284,corrected_cited,corrected_repeat20_missile_multi,repeat:-A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,285,corrected_cited,corrected_repeat20_missile_multi,repeat:-A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,286,corrected_cited,corrected_repeat20_missile_multi,repeat:-B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,287,corrected_cited,corrected_repeat20_missile_multi,repeat:-B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,288,corrected_cited,corrected_repeat20_missile_multi,repeat:-B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,289,corrected_cited,corrected_repeat20_missile_multi,repeat:-B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,290,corrected_cited,corrected_critical10_missile_multi,critical:A,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,291,corrected_cited,corrected_critical10_missile_multi,critical:A,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,292,corrected_cited,corrected_critical10_missile_multi,critical:A,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,293,corrected_cited,corrected_critical10_missile_multi,critical:A,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,294,corrected_cited,corrected_critical10_missile_multi,critical:B,107,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,295,corrected_cited,corrected_critical10_missile_multi,critical:B,211,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,296,corrected_cited,corrected_critical10_missile_multi,critical:B,307,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,297,corrected_cited,corrected_critical10_missile_multi,critical:B,401,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,362,repeat30,production_missile_3_dps,repeat:--A,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,363,repeat30,production_missile_3_dps,repeat:--A,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,364,repeat30,production_missile_3_dps,repeat:--A,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,365,repeat30,production_missile_3_dps,repeat:--A,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,366,repeat30,production_missile_3_dps,repeat:--A,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,367,repeat30,production_missile_3_dps,repeat:--A,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,368,repeat30,production_missile_3_dps,repeat:--A,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,369,repeat30,production_missile_3_dps,repeat:--A,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,370,repeat30,production_missile_3_dps,repeat:--B,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,371,repeat30,production_missile_3_dps,repeat:--B,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,372,repeat30,production_missile_3_dps,repeat:--B,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,373,repeat30,production_missile_3_dps,repeat:--B,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,374,repeat30,production_missile_3_dps,repeat:--B,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,375,repeat30,production_missile_3_dps,repeat:--B,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,376,repeat30,production_missile_3_dps,repeat:--B,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,377,repeat30,production_missile_3_dps,repeat:--B,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,378,repeat30,production_missile_3_dps,repeat:AAA,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,379,repeat30,production_missile_3_dps,repeat:AAA,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,380,repeat30,production_missile_3_dps,repeat:AAA,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,381,repeat30,production_missile_3_dps,repeat:AAA,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,382,repeat30,production_missile_3_dps,repeat:AAA,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,383,repeat30,production_missile_3_dps,repeat:AAA,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,384,repeat30,production_missile_3_dps,repeat:AAA,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,385,repeat30,production_missile_3_dps,repeat:AAA,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,386,repeat30,production_missile_3_dps,repeat:AAB,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,387,repeat30,production_missile_3_dps,repeat:AAB,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,388,repeat30,production_missile_3_dps,repeat:AAB,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,389,repeat30,production_missile_3_dps,repeat:AAB,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,390,repeat30,production_missile_3_dps,repeat:AAB,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,391,repeat30,production_missile_3_dps,repeat:AAB,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,392,repeat30,production_missile_3_dps,repeat:AAB,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,393,repeat30,production_missile_3_dps,repeat:AAB,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,394,repeat30,production_missile_3_ttk,repeat:--A,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,395,repeat30,production_missile_3_ttk,repeat:--A,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,396,repeat30,production_missile_3_ttk,repeat:--A,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,397,repeat30,production_missile_3_ttk,repeat:--A,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,398,repeat30,production_missile_3_ttk,repeat:--A,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,399,repeat30,production_missile_3_ttk,repeat:--A,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,400,repeat30,production_missile_3_ttk,repeat:--A,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,401,repeat30,production_missile_3_ttk,repeat:--A,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,402,repeat30,production_missile_3_ttk,repeat:--B,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,403,repeat30,production_missile_3_ttk,repeat:--B,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,404,repeat30,production_missile_3_ttk,repeat:--B,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,405,repeat30,production_missile_3_ttk,repeat:--B,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,406,repeat30,production_missile_3_ttk,repeat:--B,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,407,repeat30,production_missile_3_ttk,repeat:--B,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,408,repeat30,production_missile_3_ttk,repeat:--B,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,409,repeat30,production_missile_3_ttk,repeat:--B,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,410,repeat30,production_missile_3_ttk,repeat:AAA,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,411,repeat30,production_missile_3_ttk,repeat:AAA,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,412,repeat30,production_missile_3_ttk,repeat:AAA,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,413,repeat30,production_missile_3_ttk,repeat:AAA,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,414,repeat30,production_missile_3_ttk,repeat:AAA,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,415,repeat30,production_missile_3_ttk,repeat:AAA,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,416,repeat30,production_missile_3_ttk,repeat:AAA,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,417,repeat30,production_missile_3_ttk,repeat:AAA,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,418,repeat30,production_missile_3_ttk,repeat:AAB,907,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,419,repeat30,production_missile_3_ttk,repeat:AAB,1009,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,420,repeat30,production_missile_3_ttk,repeat:AAB,1103,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,421,repeat30,production_missile_3_ttk,repeat:AAB,1201,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,422,repeat30,production_missile_3_ttk,repeat:AAB,1301,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,423,repeat30,production_missile_3_ttk,repeat:AAB,1409,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,424,repeat30,production_missile_3_ttk,repeat:AAB,1511,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"
+repeat30_supplement/corrected_rows.csv,425,repeat30,production_missile_3_ttk,repeat:AAB,1601,True,True,"Base4-shot/1-second missile omits formal5-shot/2.4-second,2x damage,ejection/flight"

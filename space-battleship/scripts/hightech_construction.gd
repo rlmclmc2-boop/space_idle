@@ -2,11 +2,12 @@ extends Control
 ## Presentation only: shared artwork and assembly maps; per-bay uniforms and FX.
 ## No research state or independent construction clock is stored here.
 const PROFILES := {
-	BattleGame.FURNACE: {"shape":"furnace", "cell":Vector2i(0,0), "color":Color("ffb865")},
+	BattleGame.FURNACE: {"shape":"furnace", "cell":Vector2i.ZERO, "grid":Vector2i.ONE, "texture":preload("res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png"), "assembly_recipe":"furnace_cartoon", "warm_energy_only":true, "color":Color("ffb865")},
 	BattleGame.ENERGY_FOCUS: {"shape":"focus", "cell":Vector2i(1,0), "color":Color("67dcec")},
 	BattleGame.DENSE_ARMOUR: {"shape":"armour", "cell":Vector2i(0,1), "color":Color("86b5ff")},
 	BattleGame.JEWEL_FURNACE: {"shape":"crystal", "cell":Vector2i(1,1), "color":Color("bf9aff")}
 }
+const FALLBACK_PROFILE := {"shape":"furnace", "cell":Vector2i.ZERO, "color":Color("ffb865")}
 const ART := preload("res://assets/hightech/orbital-atlas.png")
 const ASSEMBLY_SHADER := preload("res://scripts/hightech_assembly.gdshader")
 const ART_SIZE := Vector2(296,296)
@@ -58,7 +59,7 @@ class Effects extends Control:
 
 func setup(key: String) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var profile: Dictionary = PROFILES.get(key,PROFILES[BattleGame.FURNACE])
+	var profile: Dictionary = PROFILES.get(key,FALLBACK_PROFILE)
 	shape = profile.shape
 	accent = profile.color
 	# Equal peak intensity for every construction hue, including violet.
@@ -66,7 +67,7 @@ func setup(key: String) -> void:
 	accent *= 0.86/maxf(accent.r,maxf(accent.g,accent.b))
 	if profile.has("cell"):
 		atlas_cell = profile.cell
-		setup_art(key if PROFILES.has(key) else BattleGame.FURNACE,profile)
+		setup_art(key if PROFILES.has(key) else "__unregistered_furnace",profile)
 	else:
 		make_parts()
 	effects = Effects.new()
@@ -182,7 +183,11 @@ func setup_art(key: String,profile: Dictionary) -> void:
 			var entry: Dictionary=PROFILES[profile_key]
 			var texture: Texture2D=entry.get("texture",ART)
 			if not sources.has(texture):sources[texture]=texture.get_image()
-			plans[profile_key]=bake_plan(sources[texture],entry.cell,entry.get("grid",Vector2i(2,2)),entry.shape)
+			plans[profile_key]=bake_plan(sources[texture],entry.cell,entry.get("grid",Vector2i(2,2)),entry.get("assembly_recipe",entry.shape))
+	if not plans.has(key):
+		# Unregistered art keeps the legacy neutral fallback, not the iron trial.
+		var fallback: Texture2D=profile.get("texture",ART)
+		plans[key]=bake_plan(fallback.get_image(),profile.cell,profile.get("grid",Vector2i(2,2)),profile.shape)
 	var plan: Dictionary=plans[key]
 	parts.assign(plan.parts)
 	work_sites=plan.sites
@@ -193,6 +198,7 @@ func setup_art(key: String,profile: Dictionary) -> void:
 	art_material.set_shader_parameter("atlas_grid",Vector2(profile.get("grid",Vector2i(2,2))))
 	art_material.set_shader_parameter("assembly_order",plan.texture)
 	art_material.set_shader_parameter("part_count",float(parts.size()))
+	art_material.set_shader_parameter("warm_energy_only",profile.get("warm_energy_only",false))
 	art=TextureRect.new()
 	art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	art.texture=profile.get("texture",ART)
@@ -225,7 +231,7 @@ func assembly_region(uv: Vector2,recipe: String) -> int:
 						nearest=index
 					index+=1
 			return nearest
-		"furnace":
+		"furnace","furnace_cartoon":
 			if y>0.755:return half*2+(0 if y>0.865 else 1)
 			if y<0.175:return 18+half*2+(0 if y>0.10 else 1)
 			if y>=0.495 and y<0.705 and x>0.29 and x<0.71:
@@ -269,7 +275,7 @@ func bake_plan(pixels: Image,cell: Vector2i,grid: Vector2i,recipe: String) -> Di
 			var uv := (Vector2(x,y)+Vector2(0.5,0.5))/Vector2(MAP_SIZE)
 			var ink := pixels.get_pixelv(cell*cell_size+Vector2i(uv*Vector2(cell_size)))
 			var mask_uv := uv
-			if recipe in ["furnace","focus"]:
+			if recipe in ["furnace","furnace_cartoon","focus"]:
 				# Disturb the assembly mask only, never the source artwork. A
 				# straight logical boundary must not look like a rectangle cutout.
 				mask_uv+=Vector2(sin(uv.y*49+sin(uv.x*31)),sin(uv.x*43+uv.y*17))*0.014
@@ -277,7 +283,11 @@ func bake_plan(pixels: Image,cell: Vector2i,grid: Vector2i,recipe: String) -> Di
 			var local_phase := clampf(0.5+noise.get_noise_2dv(uv*ART_SIZE)*0.8,0.08,0.92)
 			# The furnace's final task ignites scattered filament highlights;
 			# it must never hide an entire rectangular column through the rings.
-			if recipe=="furnace" and uv.y<0.76 and uv.x>0.32 and uv.x<0.68 and ink.a>0.90 and ink.r>0.85 and ink.g>0.55 and local_phase>0.50:
+			var filament := ink.a>0.90 and ink.r>0.85 and ink.g>0.55
+			if recipe=="furnace_cartoon":
+				# Cream plating is bright material, not an energy filament.
+				filament=filament and ink.g>0.80 and ink.b<0.50
+			if recipe in ["furnace","furnace_cartoon"] and uv.y<0.76 and uv.x>0.32 and uv.x<0.68 and filament and local_phase>0.50:
 				region=22
 			raw.append(region)
 			grain.append(local_phase)

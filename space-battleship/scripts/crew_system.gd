@@ -141,6 +141,8 @@ func assign(g, id: String, assignment: String, target: String) -> bool:
 	if item.assignmentType==assignment and item.targetId==target:return true
 	g.capture_refit_health()
 	var previous := item.duplicate(true)
+	if item.assignmentType=="galaxy_explore":g.galaxy.flush_pending(g,str(item.targetId))
+	if assignment=="galaxy_explore":g.galaxy.flush_pending(g,target)
 	item.assignmentType=assignment
 	item.targetId=target
 	if assignment=="galaxy_explore":g.galaxy.start(g,target)
@@ -228,7 +230,7 @@ func auto_scientists(g, item: Dictionary) -> void:
 		g.distribute_scientists()
 
 func auto_jewels(g, _item: Dictionary) -> void:
-	g.auto_manage_jewels()
+	g.upgrade_enhancement(1)
 
 func auto_reactor(g, _item: Dictionary) -> void:
 	# Both actions run at every deadline, including when uranium cannot fund an upgrade.

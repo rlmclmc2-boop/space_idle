@@ -1,0 +1,9 @@
+{
+  "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+  "harness_sha256": "bf88ea20215fd218ec937e874bd967e257c72bb523df276cb9a438d32f2f466d",
+  "data_sha256": "55bb6f15f40a44839505ee801224108085464f073ff83126cbba89f2d1a97f69",
+  "projection_sha256": "2708f7fa199547f479bf66ea2a0e8d8489d234849f5becaa5d6dcb84a6432c09",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "no_production_mutation": true,
+  "seed_set": "initial"
+}

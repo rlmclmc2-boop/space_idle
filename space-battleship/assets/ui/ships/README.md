@@ -1,0 +1,9 @@
+# Static live-hull previews
+
+These five transparent 768×768 PNGs are snapshots of the accepted friendly GLBs in `dev/toon_ship/hybrid_manifest.json`, rendered by the live `ship_view.gd` top-down camera and toon material installer. No hull, weapon, gameplay or capacity redesign. Only the hull is baked; shield, exhaust and installed weapons are omitted so logical module labels stay readable.
+
+`manifest.json` records the live model path, projected socket centers, framing, material settings and source SHA-256 fingerprints. `ship_panel.gd` caches one Texture2D per hull, displays it at 680×680 logical pixels and derives occupied-slot placement through the same `hybrid_layout.assign` as battle. Carrier, empty and dormant logical slots retain their IDs in the bounded mount list. Locked hulls use the same texture with the silhouette shader. No runtime preview viewport or frame update is introduced.
+
+Regenerate in an isolated, imported runtime project that includes `dev` and `addons` but excludes Blender authoring files (or has Blender configured): set `SHIP_PREVIEW_OUTPUT` to the intended asset directory and run Godot with `--path <isolated-project> --script res://dev/toon_ship/bake_panel_previews.gd`. Use the normal graphical renderer; headless rendering does not produce these images. The producer reads the current normal scene's presentation defaults without entering it in the tree.
+
+Focused regression: run `test/test_ship_preview.gd` in an isolated imported runtime with user directories isolated. Headless mode checks mapping, locked/current/candidate states, sparse identities, explicit activation, exact module routing, scroll/control retention and source fingerprints. A graphical run with `SHIP_PREVIEW_EVIDENCE` set captures all five hulls plus sparse, dormant-list and locked states; `-- --interactive` leaves the paused in-memory fixture open for actual input checks. Neither mode reads or writes player saves.

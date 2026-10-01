@@ -29,9 +29,9 @@ def main():
     game = area / "space-battleship"
     game.mkdir()
     source = workspace / "space-battleship"
-    for name in ("scripts", "tools", "data", "config_excel", "assets"):
+    for name in ("scripts", "tools", "data", "config_excel", "assets", "addons", "dev"):
         shutil.copytree(source / name, game / name,
-                        ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*"))
+                        ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
     for name in ("project.godot", "main.tscn", "level_editor.tscn"):
         shutil.copy2(source / name, game / name)
     shutil.copy2(workspace / "太空战舰.xlsx", area / "太空战舰.xlsx")
@@ -40,11 +40,17 @@ def main():
     for path in tests.iterdir():
         if path.is_file() and path.suffix in {".py", ".gd", ".uid"}:
             shutil.copy2(path, isolated_tests / path.name)
+    if args.test == "test_galaxy_ui.gd":
+        shutil.copytree(tests / "fixtures", isolated_tests / "fixtures")
     (game / ".runtime").mkdir()
     env = os.environ.copy()
     env["APPDATA"] = str(area / "userdata/roaming")
     env["LOCALAPPDATA"] = str(area / "userdata/local")
     env["PYTHONPYCACHEPREFIX"] = str(area / "pycache")
+    # Godot uses XDG rather than APPDATA on Linux. Keep every test isolated there too.
+    for key, folder in (("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"), ("XDG_CACHE_HOME", "cache")):
+        env[key] = str(area / "userdata" / folder)
+        Path(env[key]).mkdir(parents=True)
     env["SPACE_BATTLESHIP_PYTHON"] = sys.executable
     for key in ("APPDATA", "LOCALAPPDATA"):
         Path(env[key]).mkdir(parents=True)

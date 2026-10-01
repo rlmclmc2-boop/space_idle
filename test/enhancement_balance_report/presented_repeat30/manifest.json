@@ -1,0 +1,28 @@
+{
+  "engine": "4.6.3-stable (official)",
+  "level": 30,
+  "module_level": 150,
+  "provider": "default logical target/launch points; no renderer/GUI pose callbacks",
+  "runtime_class": "PresentedBattleGame",
+  "runtime_commit": "ef848c50042a0ee326f8a823721204bac7d2eedc",
+  "targets_geometry": [
+    [
+      200,
+      230
+    ],
+    [
+      280,
+      228
+    ],
+    [
+      360,
+      226
+    ]
+  ],
+  "completed_rows": 128,
+  "released_packet_rows": 8890,
+  "max_release_lateness": 0.0,
+  "no_tuning": true,
+  "scope": "repeat30 only; actual formal player projection and projectile queue, default logical providers; no GUI/model pose/population claim",
+  "source_input": "presented-initial.json"
+}
