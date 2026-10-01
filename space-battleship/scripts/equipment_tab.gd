@@ -25,6 +25,7 @@ var last_sort_mode := -1
 var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
 var selected_next_stat = 0.0
+var detail_dirty := true
 var details_open := true
 var footer: Panel
 var footer_title: Label
@@ -291,13 +292,15 @@ func upgrade_card(id: String) -> void:
 
 func show_inspector() -> void:
 	picker_open = false
-	refresh_detail()
+	refresh_pending()
+	refresh_detail({},true)
 	detail_frame.show()
 
 func open_picker(id: String) -> void:
+	refresh_pending()
 	select_item(id)
 	picker_open = true
-	refresh_detail()
+	refresh_detail({},true)
 	detail_frame.show()
 	detail_scroll.scroll_vertical = 0
 	detail.slots.grab_focus()
@@ -330,8 +333,9 @@ func toggle_details() -> void:
 	host.set_ui_value(detail.more,"text",UIText.t("equipment.attributes.hide" if details_open else "equipment.attributes.show"))
 	update_detail_height()
 
-func update_detail_height() -> void:
+func update_detail_height(force := false) -> void:
 	if not is_instance_valid(detail_body):return
+	if not force and not detail_frame.is_visible_in_tree():return
 	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else 604.0
 	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(570,bottom+24))
 
@@ -409,6 +413,7 @@ func refresh_pending() -> void:
 	elif observed_resources!=host.game.profile.resources:
 		refresh_affordability()
 	refresh_stats()
+	if detail_dirty and detail_frame.is_visible_in_tree():refresh_detail()
 func invalidate_stats(info: Dictionary) -> void:
 	if not is_visible_in_tree():
 		dirty = true
@@ -430,8 +435,10 @@ func refresh_stats() -> void:
 		var value = projection.expected
 		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():
-			selected_preview=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
-			selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
+			if detail_frame.is_visible_in_tree():
+				selected_preview=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
+				selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
+			else:detail_dirty=true
 			selected_changed = selected_changed or projection_changed
 		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed:continue
 		item.projection=projection
@@ -523,15 +530,27 @@ func apply_filters() -> void:
 
 func refresh_affordability_detail() -> void:
 	if not items.has(selected):return
+	if not detail_frame.is_visible_in_tree():
+		detail_dirty=true
+		return
 	var item: Dictionary = items[selected]
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
 
-func refresh_detail(next_projection: Dictionary = {}) -> void:
+func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
 	var category: String = item.category
 	selected_slot = int(item.index)
+	# The page footer stays live even while the inspector is closed.
+	host.set_ui_value(footer_title,"text",item.name)
+	host.set_ui_value(footer_buttons.enhancement,"visible",host.game.enhancement_unlocked())
+	host.set_ui_value(footer_buttons.enhancement,"disabled",not host.game.enhancement_unlocked())
+	host.set_ui_value(footer_buttons.swap,"disabled",item.locked)
+	if not force and not detail_frame.is_visible_in_tree():
+		detail_dirty=true
+		return
+	detail_dirty=false
 	var entry: Dictionary = host.game.module_entry(category,selected_slot)
 	var key := str(entry.key)
 	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
@@ -547,10 +566,6 @@ func refresh_detail(next_projection: Dictionary = {}) -> void:
 	if detail.slots.selected!=options.find(key):detail.slots.select(options.find(key))
 	pending_key = key
 	refresh_confirm()
-	host.set_ui_value(footer_title,"text",item.name)
-	host.set_ui_value(footer_buttons.enhancement,"visible",host.game.enhancement_unlocked())
-	host.set_ui_value(footer_buttons.enhancement,"disabled",not host.game.enhancement_unlocked())
-	host.set_ui_value(footer_buttons.swap,"disabled",item.locked)
 	host.set_ui_value(detail.slots,"disabled",item.locked)
 	host.set_ui_value(detail.icon,"texture",item.icon)
 	host.set_ui_value(detail.title,"text",item.name)
@@ -581,7 +596,7 @@ func refresh_detail(next_projection: Dictionary = {}) -> void:
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	update_detail_height()
+	update_detail_height(force)
 
 func change_equipment(key: String) -> void:
 	if not items.has(selected):return

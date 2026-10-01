@@ -86,10 +86,13 @@ class SampleScene extends "res://scripts/battlefield.gd":
  func sampling_window_state(window:Window)->Dictionary:
   if not is_instance_valid(window):return {"present":false}
   return {"present":true,"visible":window.visible,"focused":window.has_focus(),"mode":window.mode,"embedded":window.is_embedded(),"screen":window.current_screen}
+ func sampling_inspector_state()->Dictionary:
+  if not is_instance_valid(equipment_panel):return {"present":false}
+  return {"present":true,"visible":equipment_panel.detail_frame.is_visible_in_tree(),"expanded":equipment_panel.details_open,"stats_visible":equipment_panel.detail.stats.is_visible_in_tree()}
  func sampling_display_state()->Dictionary:
   var main_window=get_window()
   var qa=get_tree().root.get_node_or_null("QATools") as Window
-  return {"main":sampling_window_state(main_window),"qa":sampling_window_state(qa),"screen_refresh_hz":DisplayServer.screen_get_refresh_rate(main_window.current_screen) if DisplayServer.get_name()!="headless" else -1.0}
+  return {"main":sampling_window_state(main_window),"qa":sampling_window_state(qa),"equipment_inspector":sampling_inspector_state(),"screen_refresh_hz":DisplayServer.screen_get_refresh_rate(main_window.current_screen) if DisplayServer.get_name()!="headless" else -1.0}
  func add(key:String,started:int)->void:
   if capture_started>0:phases[key]=int(phases.get(key,0))+Time.get_ticks_usec()-started
  func advance_game_time(seconds:float)->void:
@@ -134,7 +137,7 @@ class SampleScene extends "res://scripts/battlefield.gd":
   super._process(delta)
   var main_us=Time.get_ticks_usec()-started
   if capture_started>0:
-   previous={"elapsed_us":now-capture_started,"delta":delta,"main_us":main_us,"page":equipment_tabs.current_tab,"speed":game.speed,"paused":game.paused,"background":background_unfocused,"upgrade_amount":equipment_panel.upgrade_amount,"condition_valid":not blocked(),"projectiles":game.projectiles.size(),"missile_queue":game.missile_queue.size(),"repeats":game.jewel_repeats.size(),"deferred_buckets":game.enhancement_deferred.size(),"attacks":game.profile.enhancementAttacks,"hits":game.profile.enhancementHits,"pulse_events":pulse_events.size(),"particles":particles.size(),"nodes":get_tree().get_node_count(),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"static_memory":OS.get_static_memory_usage(),"static_memory_peak":OS.get_static_memory_peak_usage(),"engine_process_seconds":Performance.get_monitor(Performance.TIME_PROCESS),"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"primitives":Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),"video_memory":Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED)}
+   previous={"elapsed_us":now-capture_started,"delta":delta,"main_us":main_us,"page":equipment_tabs.current_tab,"speed":game.speed,"paused":game.paused,"background":background_unfocused,"upgrade_amount":equipment_panel.upgrade_amount,"condition_valid":not blocked(),"equipment_inspector":sampling_inspector_state(),"projectiles":game.projectiles.size(),"missile_queue":game.missile_queue.size(),"repeats":game.jewel_repeats.size(),"deferred_buckets":game.enhancement_deferred.size(),"attacks":game.profile.enhancementAttacks,"hits":game.profile.enhancementHits,"pulse_events":pulse_events.size(),"particles":particles.size(),"nodes":get_tree().get_node_count(),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"static_memory":OS.get_static_memory_usage(),"static_memory_peak":OS.get_static_memory_peak_usage(),"engine_process_seconds":Performance.get_monitor(Performance.TIME_PROCESS),"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"primitives":Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),"video_memory":Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED)}
  func viewport_inventory(node:Node,result:Array)->void:
   if node is SubViewport:result.append({"path":str(node.get_path()),"size":node.size,"update_mode":node.render_target_update_mode,"objects":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_OBJECTS_IN_FRAME)})
   for child in node.get_children():viewport_inventory(child,result)

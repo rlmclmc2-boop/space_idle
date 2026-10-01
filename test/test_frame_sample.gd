@@ -17,6 +17,12 @@ func run()->void:
  scene.game.speed=1;scene.game.paused=false;scene.background_unfocused=false
  scene.equipment_panel.set_upgrade_amount(1)
  scene.set_process(false)
+ check(not scene.sampling_inspector_state().visible,"Inspector metadata starts hidden")
+ scene.equipment_panel.show_inspector()
+ check(scene.sampling_inspector_state().visible and scene.sampling_inspector_state().expanded and scene.sampling_inspector_state().stats_visible,"Inspector metadata distinguishes visible expanded details")
+ scene.equipment_panel.toggle_details()
+ check(scene.sampling_inspector_state().visible and not scene.sampling_inspector_state().expanded and not scene.sampling_inspector_state().stats_visible,"Inspector metadata distinguishes collapsed contents")
+ scene.equipment_panel.detail_frame.hide()
  # A visible non-modal QA window must not require closing an invisible "popup".
  var qa=Window.new();qa.name="QATools";qa.transient=true
  root.add_child(qa);qa.show()
@@ -81,6 +87,7 @@ func run()->void:
  if sums<1:
   printerr("FAIL: no real combat steps measured");quit(1);return
  check(scene.metadata.window_state_at_start.main.present and scene.metadata.window_state_at_finish.main.present and scene.metadata.window_state_at_start.has("screen_refresh_hz"),"Report records own-window state and display refresh metadata")
+ check(scene.rows.all(func(row):return row.has("equipment_inspector") and not row.equipment_inspector.visible) and scene.metadata.window_state_at_start.has("equipment_inspector") and scene.metadata.window_state_at_finish.has("equipment_inspector"),"Inspector state is recorded per frame and at capture boundaries")
  check(scene.metadata.started_at==scene.metadata.capture_started_at and scene.metadata.has("app_started_at") and Time.get_unix_time_from_datetime_string(scene.metadata.started_at)>=Time.get_unix_time_from_datetime_string(scene.metadata.app_started_at),"Capture timestamps exclude startup waiting and preserve app start")
  print("PASS automatic sampler rows=",scene.rows.size()," real ticks=",sums," speed=",scene.game.speed," max_fps=",Engine.max_fps)
  scene.set_process(false)
