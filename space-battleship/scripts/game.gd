@@ -2526,7 +2526,7 @@ func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
 	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
 
 func enhancement_branch_choice(category: String, effect: String, node: int) -> String:
-	return str(enhancement_branch_choices(category,effect).get(str(node),""))
+	return str(profile.enhancementBranches.get(category,{}).get(effect,{}).get(str(node),""))
 
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
@@ -2735,22 +2735,37 @@ func enhancement_effects(entry: Dictionary) -> Array:
 	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return result
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
 	var order := enhancement_order(category)
+	var level := enhancement_effective_level()
 	for i in available_effect_count(entry):
 		var kind := str(order[i])
-		if kind.is_empty():continue
-		var effect := {"kind":kind,"level":enhancement_effective_level(),"threshold":int(enhancement_parameter("threshold_%d" % (i+1))),"p2":0.0,"p4":0.0,"p5":0.0}
-		match kind:
-			"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
-			"repeat":
-				effect.p2=enhancement_parameter("repeat_probability")
-				effect.p4=enhancement_parameter("repeat_growth")
-			"critical":effect.p4=enhancement_parameter("critical_growth")
-			"delayed_damage":effect.p2=enhancement_deferred_fraction()
-			"memory_material":
-				effect.p2=enhancement_parameter("memory_heal_fraction")
-				effect.p4=enhancement_parameter("memory_buffer_fraction")
-		result.append(effect)
+		if not kind.is_empty():result.append(_enhancement_effect(kind,i,level))
 	return result
+
+func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
+	var effect := {"kind":kind,"level":level,"threshold":int(enhancement_parameter("threshold_%d" % (i+1))),"p2":0.0,"p4":0.0,"p5":0.0}
+	match kind:
+		"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
+		"repeat":
+			effect.p2=enhancement_parameter("repeat_probability")
+			effect.p4=enhancement_parameter("repeat_growth")
+		"critical":effect.p4=enhancement_parameter("critical_growth")
+		"delayed_damage":effect.p2=enhancement_deferred_fraction()
+		"memory_material":
+			effect.p2=enhancement_parameter("memory_heal_fraction")
+			effect.p4=enhancement_parameter("memory_buffer_fraction")
+	return effect
+
+func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
+	# Scalar membership query; no effect payloads or retained/cross-tick cache.
+	if kind.is_empty() or str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return -1
+	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
+	var order: Array = profile.enhancementOrder.get(category,[])
+	for i in available_effect_count(entry):
+		if str(order[i])==kind:return i
+	return -1
+
+func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
+	return _enhancement_effect_index(entry,kind)>=0
 
 func jewel_effects(entry: Dictionary) -> Array:
 	return enhancement_effects(entry)
@@ -2954,9 +2969,8 @@ func apply_jewel_charge(index: int, multiplier: float) -> void:
 	jewel_charged[id] = maxf(float(jewel_charged.get(id,1.0)),multiplier)
 
 func memory_effect(entry: Dictionary) -> Dictionary:
-	for effect in enhancement_effects(entry):
-		if effect.kind=="memory_material":return effect
-	return {}
+	var index := _enhancement_effect_index(entry,"memory_material")
+	return _enhancement_effect("memory_material",index,enhancement_effective_level()) if index>=0 else {}
 
 func sync_enhancement_buffers() -> void:
 	for index in enhancement_buffers.keys():
@@ -3217,8 +3231,11 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 					var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(maximum,float(row.para2)*dt))
 					jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
 					player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))
+			# Ordinary shield repair still runs every step; memory recovery only reads
+			# its payload at an actual memory settlement, with unchanged timing.
+			if ticks<=0:continue
 			var effect := memory_effect(entry)
-			if effect.is_empty() or ticks<=0:continue
+			if effect.is_empty():continue
 			var healing = N.multiply(maximum,float(effect.p2)*int(effect.level)*ticks*enhancement_branches.memory_heal_multiplier(self,entry))
 			var recovered = N.minimum(jewel_defence_damage.get(index,0),healing)
 			jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)

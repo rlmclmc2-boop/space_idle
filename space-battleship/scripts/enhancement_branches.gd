@@ -14,8 +14,10 @@ func category(effect: String) -> String:
  return "weapons" if effect in ["proficiency","repeat","critical"] else "defence"
 
 func active(g, entry: Dictionary, effect: String, node: int, choice: String) -> bool:
- if entry.is_empty() or not g.enhancement_branch_unlocked(category(effect),effect,node) or g.enhancement_branch_choice(category(effect),effect,node)!=choice:return false
- return g.enhancement_effects(entry).any(func(item):return item.kind==effect)
+ # A missing/different choice cannot be active; avoid resolving unlock tables
+ # and constructing effect dictionaries for that overwhelmingly common case.
+ if entry.is_empty() or g.enhancement_branch_choice(category(effect),effect,node)!=choice or not g.enhancement_branch_unlocked(category(effect),effect,node):return false
+ return g.has_enhancement_effect(entry,effect)
 
 func global_active(g,effect: String,node: int,choice: String) -> bool:
  return g.defense_entries().any(func(entry):return active(g,entry,effect,node,choice))
