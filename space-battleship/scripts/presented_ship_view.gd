@@ -47,6 +47,7 @@ var elapsed := 0.0
 var last_settings: Dictionary = {}
 var last_toon_enabled := true
 var last_rim_enabled := true
+var accelerated_quality := false
 
 
 func _ready() -> void:
@@ -375,6 +376,13 @@ func _update_carriers(scale_value: float, _visual_delta: float) -> void:
 
 func screen_muzzle() -> Vector2:
 	return camera.unproject_position(muzzle.global_position) if muzzle != null else Vector2.ZERO
+
+
+func set_accelerated_quality(enabled: bool) -> void:
+	if accelerated_quality == enabled:return
+	accelerated_quality = enabled
+	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
+	world.get_node("KeyLight").shadow_enabled = not enabled
 
 
 func set_rendering(enabled: bool, paused := false) -> void:
