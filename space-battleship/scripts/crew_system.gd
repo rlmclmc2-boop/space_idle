@@ -4,6 +4,9 @@ var handlers: Dictionary = {}
 var targets: Dictionary = {}
 var timers: Dictionary = {}
 var intervals: Dictionary = {}
+var allocation_timers: Dictionary = {}
+var allocation_intervals: Dictionary = {}
+var allocation_dependencies: Array = []
 var game_ref: WeakRef
 const PURCHASE_JOBS := ["equipment_upgrade","hightech_scientists","jewel_auto","reactor_upgrade"]
 
@@ -31,7 +34,11 @@ func attach(g) -> void:
 func reset_schedule(g) -> void:
 	timers.clear()
 	intervals.clear()
+	allocation_timers.clear()
+	allocation_intervals.clear()
+	allocation_dependencies.clear()
 	invalidate_jobs(g,PURCHASE_JOBS)
+	invalidate_reactor_allocation(g)
 
 func invalidate_jobs(g, jobs: Array) -> void:
 	for item in g.profile.get("crew",[]):
@@ -63,6 +70,40 @@ func invalidate_resources(g, ids: Array) -> void:
 	if ids.has(str(int(g.db.config.reactorUraniumId))):jobs.append("reactor_upgrade")
 	invalidate_jobs(g,jobs)
 
+func reactor_allocation_state(g, id: String) -> Array:
+	# Free charge affects multipliers/UI, never the ordinary energy pool or split.
+	return [id,g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
+
+func invalidate_reactor_allocation(g) -> void:
+	var id := ""
+	for item in g.profile.get("crew",[]):
+		if item.assignmentType=="reactor_upgrade":id=str(item.crewId);break
+	if id.is_empty():
+		allocation_timers.clear()
+		allocation_intervals.clear()
+		allocation_dependencies.clear()
+		return
+	var next := reactor_allocation_state(g,id)
+	if next==allocation_dependencies:return
+	if allocation_dependencies.is_empty() or allocation_dependencies[0]!=id:
+		allocation_timers.clear()
+		allocation_intervals.clear()
+	allocation_dependencies=next
+	if allocation_timers.has(id):return
+	var item := entry(g,id)
+	var row: Dictionary = assignments(g)[item.assignmentType]
+	var value := effect_value(g,item)
+	var interval := float(row.interval)/value if value>0 else 0.0
+	if interval<=0 or not is_finite(interval):return
+	allocation_timers[id]=0.0
+	allocation_intervals[id]=interval
+
+func run_reactor_allocation(g, item: Dictionary) -> void:
+	allocation_timers.erase(item.crewId)
+	allocation_intervals.erase(item.crewId)
+	if active(g,item):g.equalize_reactor_allocation()
+	allocation_dependencies=reactor_allocation_state(g,str(item.crewId))
+
 func on_event(kind: String, payload: Dictionary) -> void:
 	var g = game_ref.get_ref()
 	if g==null:return
@@ -73,11 +114,20 @@ func on_event(kind: String, payload: Dictionary) -> void:
 		"scientists_changed":
 			if payload.has("purchased"):invalidate_jobs(g,["hightech_scientists"])
 		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
-		"reactor_changed":invalidate_jobs(g,["reactor_upgrade"])
-		"unlocks_changed","planet_reforged":invalidate_jobs(g,PURCHASE_JOBS)
+		"reactor_changed":
+			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
+			if payload.get("equalized",false):
+				if not allocation_dependencies.is_empty():allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
+			else:invalidate_reactor_allocation(g)
+		"unlocks_changed","planet_reforged":
+			invalidate_jobs(g,PURCHASE_JOBS)
+			invalidate_reactor_allocation(g)
+		"planet_changed":
+			if payload.has("reward") or payload.has("activated"):invalidate_reactor_allocation(g)
 		"crew_changed":
 			var item := entry(g,str(payload.crewId))
 			invalidate_member(g,item)
+			if item.get("assignmentType")=="reactor_upgrade" or payload.previous.get("assignmentType")=="reactor_upgrade":invalidate_reactor_allocation(g)
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider
@@ -260,12 +310,16 @@ func get_modifier(g, target_type: String, target_id: String, effect_type: String
 func advance(g, dt: float) -> void:
 	if g.paused or dt<=0 or not is_finite(dt):return
 	# Only pending work advances; passive jobs have no scheduler work.
+	var allocation_due: Array = []
+	for id in allocation_timers:
+		allocation_timers[id]+=dt
+		if float(allocation_timers[id])+0.000000001>=float(allocation_intervals[id]):allocation_due.append(id)
 	var due: Array = []
 	for id in timers:
 		var elapsed := float(timers[id])+dt
 		if elapsed+0.000000001 < float(intervals[id]):timers[id]=elapsed
 		else:due.append(id)
-	if due.is_empty():return
+	if due.is_empty() and allocation_due.is_empty():return
 	# Preserve configuration crew order when jobs share a resource balance.
 	for item in g.profile.get("crew",[]):
 		var id: String = item.crewId
@@ -277,6 +331,8 @@ func advance(g, dt: float) -> void:
 		var row: Dictionary = assignments(g).get(item.get("assignmentType",""),{})
 		if supported(row) and active(g,item) and handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item):
 			invalidate_member(g,item)
+	for id in allocation_due:
+		if allocation_timers.has(id):run_reactor_allocation(g,entry(g,str(id)))
 
 func passive(_g, _item: Dictionary) -> bool:
 	return false
@@ -298,8 +354,10 @@ func auto_jewels(g, _item: Dictionary) -> bool:
 	return g.upgrade_enhancement(1)>0
 
 func auto_reactor(g, _item: Dictionary) -> bool:
-	var purchased: bool = g.upgrade_reactor(1)
-	return g.equalize_reactor_allocation() or purchased
+	if not g.upgrade_reactor(1):return false
+	# A paid upgrade changes capacity: preserve the existing buy-then-split order.
+	run_reactor_allocation(g,_item)
+	return true
 
 func reactor_targets(g) -> Array:
 	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g.reactor_unlocked()}]

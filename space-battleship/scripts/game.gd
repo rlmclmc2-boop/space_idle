@@ -939,13 +939,11 @@ func equalize_reactor_allocation() -> bool:
 	if modules.is_empty():return false
 	var share := reactor_capacity()/modules.size()
 	var remainder := reactor_capacity()%modules.size()
-	var changed := false
+	var next: Dictionary = profile.reactorAllocation.duplicate()
 	for index in modules.size():
-		var key := modules[index]
-		var allocation := share + (1 if index < remainder else 0)
-		if int(profile.reactorAllocation.get(key,0)) != allocation:changed = true
-		profile.reactorAllocation[key] = allocation
-	if not changed:return false
+		next[modules[index]] = share + (1 if index < remainder else 0)
+	if next==profile.reactorAllocation:return false
+	profile.reactorAllocation=next
 	invalidate_stat_cache()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))
@@ -1147,10 +1145,12 @@ func distribute_scientists() -> bool:
 	var keys := hightech_slots().filter(func(key):return not str(key).is_empty())
 	if keys.is_empty() or int(profile.scientists)<=0:
 		return false
-	profile.scientistAssignments.clear()
+	var next := {}
 	var total := int(profile.scientists)
 	for i in range(keys.size()):
-		profile.scientistAssignments[keys[i]] = total/keys.size() + (1 if i < total%keys.size() else 0)
+		next[keys[i]] = total/keys.size() + (1 if i < total%keys.size() else 0)
+	if next==profile.scientistAssignments:return false
+	profile.scientistAssignments=next
 	save_dirty = true
 	event.emit("scientists_changed", {})
 	return true

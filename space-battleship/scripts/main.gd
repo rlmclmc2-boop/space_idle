@@ -642,8 +642,6 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"ship_changed":
 			refresh_structure()
 			if is_instance_valid(enhancement_panel) and enhancement_panel.visible:enhancement_panel.refresh()
-		"reactor_changed":
-			if is_instance_valid(reactor_panel):reactor_panel.refresh()
 		"hightech_complete":
 			if game.hightech_level(str(info.key))==1 and is_instance_valid(crew_panel):crew_panel.invalidate()
 			toast(UIText.t("upgrade.research_complete", {"name":UIText.data_text("hightech",str(info.key))}))
@@ -1834,7 +1832,7 @@ func refresh_visible_cards(delta := 0.0) -> void:
 			# The workshop owns visible sampling and animation. Do not double-tick it.
 			if delta<=0 and is_instance_valid(hightech_page):hightech_page.invalidate()
 		2:
-			reactor_panel.refresh()
+			reactor_panel.refresh_pending(delta)
 		5:
 			crew_panel.refresh_exploration_sample()
 		6:
