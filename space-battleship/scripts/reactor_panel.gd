@@ -33,6 +33,9 @@ var upgrade_buttons: Dictionary = {}
 var equalize_button: Button
 var module_controls: Dictionary = {}
 var refreshing := false
+var dirty := true
+var refresh_elapsed := 0.0
+var animation_state: Array = []
 
 func make_label(parent: Control, key: String, at: Vector2, width: float, font_size := 18, color := INK, height := 42.0) -> Label:
 	var result: Label = host.equipment_card_label(parent,"" if key.is_empty() else UIText.t(key),Rect2(at,Vector2(width,height)),font_size,color)
@@ -362,9 +365,38 @@ func setup(owner_ui: Node) -> void:
 	scroll_hint = make_label(self,"",Vector2(780,1106),540,20,INK,42)
 	update_scroll_hint()
 	update_flow_offsets()
+	host.game.event.connect(on_game_event)
 	visibility_changed.connect(refresh)
 	host.equipment_tabs.tab_changed.connect(func(_index: int):refresh())
 	refresh()
+
+func _exit_tree() -> void:
+	if is_instance_valid(host) and host.game.event.is_connected(on_game_event):host.game.event.disconnect(on_game_event)
+
+func invalidate() -> void:
+	if not dirty:refresh_elapsed=0.0
+	dirty=true
+
+func on_game_event(kind: String, payload: Dictionary) -> void:
+	match kind:
+		"collect","galaxy_income":
+			if str(payload.id)==str(int(host.db.config.reactorUraniumId)):invalidate()
+		"resources_changed":
+			if payload.ids.has(str(int(host.db.config.reactorUraniumId))):invalidate()
+		"reactor_changed","unlocks_changed","planet_reforged":invalidate()
+		"planet_changed":
+			if payload.has("reward") or payload.has("activated"):invalidate()
+
+func refresh_pending(delta := 0.0) -> void:
+	if not is_instance_valid(host):return
+	var next := [page_active(),host.game.paused]
+	if next!=animation_state:
+		animation_state=next
+		refresh_animation_state()
+	if not dirty or not next[0]:return
+	refresh_elapsed+=maxf(0.0,delta)
+	# Fixed first-dirty cutoff coalesces income; direct actions/reveal use refresh.
+	if delta<=0.0 or refresh_elapsed>=0.2:refresh()
 
 func step_allocation(key: String, direction: int) -> void:
 	change_allocation(float(host.game.profile.reactorAllocation.get(key,0))+direction*int(host.db.config.reactorAllocationStep),key)
@@ -394,7 +426,7 @@ func update_module_animation_visibility() -> void:
 			var active: bool = in_view and powered
 			if layer.is_processing() != active:layer.set_process(active)
 
-func refresh() -> void:
+func refresh_animation_state() -> void:
 	if not is_instance_valid(host):return
 	var animate: bool = page_active() and not host.game.paused
 	if is_instance_valid(core) and core.is_processing() != (animate and core.ratio > 0.0):core.set_process(animate and core.ratio > 0.0)
@@ -408,8 +440,16 @@ func refresh() -> void:
 	if is_instance_valid(footer_flow):
 		var footer_active: bool = animate and footer_flow.ratio > 0.0
 		if footer_flow.is_processing() != footer_active:footer_flow.set_process(footer_active)
+
+func refresh() -> void:
+	if not is_instance_valid(host):return
+	animation_state=[page_active(),host.game.paused]
+	refresh_animation_state()
 	if not page_active():return
+	dirty=false
+	refresh_elapsed=0.0
 	refreshing = true
+	var animate: bool = not host.game.paused
 	var game = host.game
 	var capacity: int = game.reactor_capacity()
 	var allocated: int = game.reactor_allocated()
