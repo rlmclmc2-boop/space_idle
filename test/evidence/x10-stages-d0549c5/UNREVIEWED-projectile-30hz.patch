@@ -1,0 +1,24 @@
+--- a/space-battleship/scripts/presented_battle_game.gd
++++ b/space-battleship/scripts/presented_battle_game.gd
+@@ -155,6 +155,21 @@
+ 
+ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
+ 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
++	if speed<10.0 and shot.has("x10_pending_dt"):
++		var held:=float(shot.x10_pending_dt)
++		shot.erase("x10_pending_dt")
++		while held>0.000000001:
++			var part:=minf(held,1.0/60.0)
++			advance_custom_projectile(shot,part)
++			if bool(shot.dead):return true
++			held-=part
++	if speed>=10.0:
++		var held:=float(shot.get("x10_pending_dt",0.0))+dt
++		if held+0.000000001<1.0/30.0:
++			shot.x10_pending_dt=held
++			return true
++		dt=held
++		shot.erase("x10_pending_dt")
+ 	shot.motion_age=float(shot.motion_age)+dt
+ 	if not missile_target_live(shot.target):
+ 		# An ejected missile never acquires another target. Pending packets still

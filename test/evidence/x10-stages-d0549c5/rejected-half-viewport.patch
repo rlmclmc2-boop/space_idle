@@ -1,0 +1,81 @@
+diff --git a/space-battleship/scripts/battlefield.gd b/space-battleship/scripts/battlefield.gd
+index 7a79b5b..50da467 100644
+--- a/space-battleship/scripts/battlefield.gd
++++ b/space-battleship/scripts/battlefield.gd
+@@ -238,7 +238,7 @@ func _draw_muzzle_cues() -> void:
+ 		if age<0.0 or age>0.12: continue
+ 		var fade := 1.0-age/0.12
+ 		var point: Vector2 = ship_view.screen_muzzle_for_slot(int(module.slot))
+-		var ahead: Vector2 = ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
++		var ahead: Vector2 = ship_view.screen_point(module.muzzle.to_global(Vector3(0,0,-0.5)))
+ 		var direction := (ahead-point).normalized()
+ 		var across := Vector2(-direction.y,direction.x)
+ 		var color := Color("ffbf75") if str(module.key) in ["missile","cannon"] else Color("96f6ff")
+@@ -427,7 +427,7 @@ func _draw_rail_charge(module:Dictionary)->void:
+ 	var amount:float=railgun_fx.charge(remaining,maxf(0.01,game.speed))
+ 	if amount<=0.0:return
+ 	var point:Vector2=ship_view.screen_muzzle_for_slot(slot)
+-	var ahead:Vector2=ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
++	var ahead:Vector2=ship_view.screen_point(module.muzzle.to_global(Vector3(0,0,-0.5)))
+ 	RAIL_VFX.charge(pulse_layer,point,(ahead-point).normalized(),amount,fx_time)
+ 
+ 
+@@ -564,7 +564,7 @@ func player_mount_center(key: String, index: int) -> Vector2:
+ 	if prototype_enabled and is_instance_valid(ship_view):
+ 		for module in ship_view.modules:
+ 			if int(module.slot)!=index: continue
+-			var point: Vector2 = ship_view.camera.unproject_position(module.mount.global_position)
++			var point: Vector2 = ship_view.screen_point(module.mount.global_position)
+ 			return (point-player_render_position()).rotated(PI/2-player_idle_angle())/player_art_scale()
+ 	return super.player_mount_center(key,index)
+ 
+diff --git a/space-battleship/scripts/presented_ship_view.gd b/space-battleship/scripts/presented_ship_view.gd
+index 953ea27..2da2679 100644
+--- a/space-battleship/scripts/presented_ship_view.gd
++++ b/space-battleship/scripts/presented_ship_view.gd
+@@ -11,6 +11,7 @@ const WORLD_PER_PIXEL := 0.05
+ @export var weapon_scene: PackedScene = DEFAULT_WEAPON
+ 
+ var viewport: SubViewport
++var canonical_viewport_size: Vector2i
+ var camera: Camera3D
+ var ship: Node3D
+ var weapon_mount: Node3D
+@@ -56,6 +57,7 @@ func _ready() -> void:
+ 	viewport = SubViewport.new()
+ 	viewport.name = "ShipViewport"
+ 	viewport.size = Vector2i(size)
++	canonical_viewport_size = viewport.size
+ 	viewport.transparent_bg = true
+ 	viewport.own_world_3d = true
+ 	viewport.msaa_3d = Viewport.MSAA_4X
+@@ -254,7 +256,7 @@ func screen_muzzle_for_slot(slot: int, ordinal:int=0) -> Vector2:
+ 	for module in modules:
+ 		if int(module.slot)==slot:
+ 			var socket:Node3D=module.muzzle2 if ordinal%2==1 and module.muzzle2!=null else module.muzzle
+-			return camera.unproject_position(socket.global_position)
++			return screen_point(socket.global_position)
+ 	return Vector2.ZERO
+ 
+ 
+@@ -375,12 +377,19 @@ func _update_carriers(scale_value: float, _visual_delta: float) -> void:
+ 
+ 
+ func screen_muzzle() -> Vector2:
+-	return camera.unproject_position(muzzle.global_position) if muzzle != null else Vector2.ZERO
++	return screen_point(muzzle.global_position) if muzzle != null else Vector2.ZERO
++
++
++func screen_point(world_position: Vector3) -> Vector2:
++	# Presentation resolution never changes canonical battlefield coordinates.
++	return camera.unproject_position(world_position)*(Vector2(canonical_viewport_size)/Vector2(viewport.size))
+ 
+ 
+ func set_accelerated_quality(enabled: bool) -> void:
+ 	if accelerated_quality == enabled:return
+ 	accelerated_quality = enabled
++	var can_halve := canonical_viewport_size.x%2==0 and canonical_viewport_size.y%2==0
++	viewport.size = canonical_viewport_size/2 if enabled and can_halve else canonical_viewport_size
+ 	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
+ 	world.get_node("KeyLight").shadow_enabled = not enabled
+ 

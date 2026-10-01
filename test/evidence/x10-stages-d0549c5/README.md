@@ -80,3 +80,50 @@ Baseline is d0549c5. Reconcile checkpoint a4d84e2 resolves common branch choice/
 Ship-quality checkpoint3b30189 builds on a4d84e2. At speed>=10 only, disables player viewport4xMSAA and directional shadows; below10 restores both. Same viewport size, camera, launch coordinates, models, every-frame rendering, pause/hidden policies. Quality transition regression51assertions passes. Actual rendered image inspected. Fixed600-frame gameplay trace exactly matches a4d84e2. Live quality run differs in supplied wall deltas and has148.85538 vs149.1667game-sec: damage/hits/RNG/receipts/stage/group/state/player match; fire events4326vs4325. Do not call these different-cadence runs strict trace equivalence. Same-delta replay is being added. Main fixture records zero body damage due enormous high-level defense; its equal survival alone is weak pressure coverage, so an additional isolated hostile-pressure exact pair is being added.
 
 The entire battle remains visible and continuously rendered. These are cloud llvmpipe measurements and do not establish Windows gain. Largest live bottleneck is now simulation feedback under long real deltas (mainP95>200ms), not merely MSAA. Full coarse stepping remains rejected. Further synchronous membership reuse is being measured, not published here as verified yet.
+
+## Final exact production checkpoint / interruption handoff
+
+Formal branch perf/x10-main-path-checkpoint at0b6bd199577d9f837eefe69050ccd759bc92c7da. Incremental source commits after cache: a4d84e2 (common branch eligibility);3b30189 (X10MSAA/shadow reduction, full-resolution every-frame viewport);a4bf9f9 (one scalar membership query per weapon reconciliation);0b6bd19 (all5tubes per8slots transition coverage and test routing). All pushed; main untouched. No diagnostic switches in production. No coarse full-game stepping or half-resolution viewport kept.
+
+Final uninstrumented fixed600 inputs: mainP50/P95/max24.438/36.882/49.174ms; entire frame58.474/74.248/92.433ms; wall36.824122sec.600/600 gameplay traces match d0549c5. This is equal-work evidence, not live full-speed acceptance.
+
+Final live150 inputs: wall24.590494sec,143.44829game-sec, effective5.8335x,10.099161sec foreground-clamp loss. After30warm frames: mainP50/P95/max99.927/190.630/234.628ms; frame136.747/229.310/271.946ms. All120measured frames exceed33.333ms. Battlefield continuously rendered. Different live cadence is not a strict before/after semantic pair.
+
+Same captured live delta replay:150/150 trace rows and every gameplay final field identical, including weapon/defense timers, module damage, memory buffers, deferred buckets/ticks, player health, receipts and RNG. X1 standalone protection:240/240frames/final fields identical. High incoming damage fixture: initial hostile dmgMultiple normalized to100x player armour per weapon via original attack-ratio calculation, all defenseBnodes enabled, original hostile fire path retained.60/60same-input frames/final fields match; incoming9.403056992629715e22,9hostile impacts,1RETREAT. Thus actual death/reset was exercised, not just zero-damage survival. Regular lightweight pressure fixture also240/240equal but zero body damage, and is not used as death proof. Branch regression146assertions and final quality transition179assertions pass.
+
+## Latest complete inclusive phases
+
+Final instrumented same600-frame fixture,480afterwarmup; nested phases cannot be added.
+
+|Phase|ms per measured frame|Calls|
+|---|---:|---:|
+|main.advance_game_time|21.408|480|
+|game.tick|21.323|5163|
+|presented_battle_game.tick_projectiles|8.674|5163|
+|game.tick_projectiles|8.022|5163|
+|presented_battle_game.advance_custom_projectile|6.825|235103|
+|game.advance_jewel_repair|4.165|5163|
+|enhancement_branches.advance_weapons|3.607|5163|
+|enhancement_branches.advance_defense|2.170|5190|
+|game.advance_hightech|1.093|5163|
+|game.sync_enhancement_buffers|1.024|5454|
+|main.refresh_draw_layers|0.577|480|
+|main.draw_battle|0.397|480|
+|game.sync_jewel_defence_damage|0.368|5322|
+|game.jewel_attack|0.298|2420|
+|main.refresh_visible_cards|0.282|480|
+|game.advance_jewel_repeats|0.133|5163|
+|main.on_event|0.073|5206|
+|game.advance_planets|0.053|5163|
+
+Remaining largest identified child is projectiles8.674ms, player missile physics6.825ms. Full-game1/60 and missile packet due-time boundaries remain intact.
+
+## Rejected / unreviewed experiments
+
+Half-resolution X10 viewport with all projection readers compensated:600/600 gameplay matches, but whole-frameP9574.248→75.954ms and wall36.824→36.751sec (no useful gain). Rejected and reverted. Production retains original physical resolution and projection paths.
+
+UNREVIEWED-projectile-30hz.patch is ISOLATED DIAGNOSTIC ONLY, not in formal production branch. It merges only friendly prototype missile kinematics at selected speed>=10 after accumulating~1/30game-sec; individual merged interval may reach1/20due to remaining1/60 packet-bound steps. Keeps full game/attack/recovery stepping exact. A pending interval is flushed with<=1/60pieces after speed falls below10. Speed transition/X1/lifecycle validation for this candidate is NOT complete. Do not apply or publish as accepted.
+
+One rendered same100game-sec seed1701 candidate: mainP9536.882→31.197ms; whole frame74.248→69.237ms; wall36.824→35.337sec. Damage−0.956968%,hits2751→2748,fire3275→3276. Rewards267iron/6uranium,stage1/group9/COMBAT,attack count,health and final RNG equal. Two additional isolated headless same100game-sec pairs:1702damage+0.567841%,hits1994→2002,rewards877/6,stage2/group2/TRAVEL;1703damage+0.111289%,hits1842→1843,rewards877/6,stage2/group2/TRAVEL. Both playerhealth/retreatcount/attackcount/RNG equal. Headless runs are semantic checks only. These three bounded cases do not prove a global<=1% bound or long-run safety. Candidate cannot yet be accepted.
+
+At interruption request executor commands still worked; all tests completed, no process awaiting completion, no new environment created. Next steps require reviewing delivered exact changes and deciding whether to finish this isolated physics candidate's transition/lifecycle/live validation. X10 stable usable target remains unmet; queued UI work remains pending.

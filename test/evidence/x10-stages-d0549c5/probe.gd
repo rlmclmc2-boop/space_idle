@@ -21,6 +21,8 @@ var incoming=0.
 var hit_count=0
 var fires=0
 var receipts={}
+var hostile_impacts=0
+var retreats=0
 func _initialize()->void:
  Engine.set_meta("x10_meter",meter);call_deferred("run")
 func run()->void:
@@ -47,16 +49,18 @@ func run()->void:
  var hp=N.multiply(g.jewel_equipment_stat(g.weapon_entries()[0]),1e6)
  for enemy in g.enemies:enemy.hp=hp;enemy.max_hp=hp
  if mode=="threat10":
-  for enemy in g.enemies:enemy.dmgMultiple=float(g.player.armour)*.001
+  for enemy in g.enemies:enemy.dmgMultiple=float(g.player.armour)*100./maxf(g.ratio("atkRatio"),1e-200)/maxf(float(g.db.enemy_weapon(enemy.equipment[0].name).dmg),1e-200)
   for effect in ["adaptation","memory_material","delayed_damage"]:
    for node in [1,2,3]:g.set_enhancement_branch("defence",effect,node,"B")
- g.refresh_missile_target_registry();g.rng.seed=1701
+ g.refresh_missile_target_registry();g.rng.seed=int(args[2]) if args.size()>2 else 1701
  scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0);scene.equipment_panel.set_upgrade_amount(1)
  scene.background_unfocused=false;g.paused=false
  g.event.connect(func(kind,payload):
   if kind=="hit":
    if payload.player:incoming=N.add(incoming,payload.amount)
    else:damage=N.add(damage,payload.amount);hit_count+=1
+  if kind=="projectile_impact" and payload.shot.hostile:hostile_impacts+=1
+  if kind=="state" and payload.state==g.State.RETREAT:retreats+=1
   if kind=="fire":fires+=1
   if kind=="collect":receipts[str(payload.id)]=N.add(receipts.get(str(payload.id),0),payload.amount))
  if mode in ["x10-noaa","x10-noshadow","x10-scale"]:scene.ship_view.viewport.msaa_3d=Viewport.MSAA_DISABLED
@@ -80,9 +84,13 @@ func run()->void:
   if DisplayServer.get_name()=="headless":await process_frame
   else:await RenderingServer.frame_post_draw
   var frame_us=Time.get_ticks_usec()-began
-  rows.append({"frame":frame,"supplied_delta":actual_delta,"main_us":main_us,"frame_us":frame_us,"phases":meter.rows.duplicate(true),"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"repeats":g.jewel_repeats.size(),"damage":damage,"hits":hit_count,"attacks":g.profile.enhancementAttacks,"rng":str(g.rng.state),"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)})
+  rows.append({"frame":frame,"armour":g.player.armour,"shield":g.player.shield,"deferred_tick":g.enhancement_deferred_tick,"supplied_delta":actual_delta,"main_us":main_us,"frame_us":frame_us,"phases":meter.rows.duplicate(true),"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"repeats":g.jewel_repeats.size(),"damage":damage,"hits":hit_count,"attacks":g.profile.enhancementAttacks,"rng":str(g.rng.state),"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)})
  if DisplayServer.get_name()!="headless":root.get_texture().get_image().save_png("res://../"+mode+".png")
- var result={"mode":mode,"game_seconds":consumed_seconds,"supplied_delta_seconds":supplied_delta,"clamp_loss_seconds":clamp_loss,"cadence":"wall" if mode.begins_with("live") else "fixed","wall_us":Time.get_ticks_usec()-start,"speed":g.speed,"step":1./60. if scene.exact or g.speed==1 else 1./15.,"initial_enemy_hp":hp,"damage":damage,"incoming":incoming,"hits":hit_count,"fires":fires,"attacks":g.profile.enhancementAttacks,"rng":str(g.rng.state),"state":g.state,"stage":g.stage,"group":g.group_index,"motion_clock":g.motion_clock,"defense_time":g.enhancement_defense_time,"receipts":receipts,"resources":g.profile.resources,"player":g.player,"enemy_hp":g.enemies.map(func(e):return e.hp),"rows":rows}
+ var weapon_timers={}
+ for index in g.enhancement_branches.weapons:
+  var entry=g.enhancement_branches.weapons[index]
+  weapon_timers[index]={"dwell":entry.dwell,"next":entry.next,"stacks":entry.stacks,"stack_time":entry.stack_time,"target_uid":entry.target.get("uid",-1)}
+ var result={"weapon_timers":weapon_timers,"defense_timers":g.enhancement_branches.defenses,"buffers":g.enhancement_buffers,"module_damage":g.jewel_defence_damage,"deferred":g.enhancement_deferred,"memory_elapsed":g.enhancement_memory_elapsed,"deferred_elapsed":g.enhancement_deferred_elapsed,"deferred_tick":g.enhancement_deferred_tick,"memory_reduction":g.enhancement_branches.memory_reduction_remaining,"clear_reduction":g.enhancement_branches.clear_reduction_remaining,"hostile_impacts":hostile_impacts,"retreats":retreats,"mode":mode,"game_seconds":consumed_seconds,"supplied_delta_seconds":supplied_delta,"clamp_loss_seconds":clamp_loss,"cadence":"wall" if mode.begins_with("live") else "fixed","wall_us":Time.get_ticks_usec()-start,"speed":g.speed,"step":1./60. if scene.exact or g.speed==1 else 1./15.,"initial_enemy_hp":hp,"damage":damage,"incoming":incoming,"hits":hit_count,"fires":fires,"attacks":g.profile.enhancementAttacks,"rng":str(g.rng.state),"state":g.state,"stage":g.stage,"group":g.group_index,"motion_clock":g.motion_clock,"defense_time":g.enhancement_defense_time,"receipts":receipts,"resources":g.profile.resources,"player":g.player,"enemy_hp":g.enemies.map(func(e):return e.hp),"rows":rows}
  FileAccess.open("res://../"+mode+".json",FileAccess.WRITE).store_string(JSON.stringify(result))
  print("X10 PROBE ",mode," frames=",frames," hits=",hit_count," damage=",damage," peak shots fixture nonempty")
  g.launch_provider=Callable();g.target_provider=Callable();scene.queue_free();await process_frame;await process_frame

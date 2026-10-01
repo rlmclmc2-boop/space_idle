@@ -1,0 +1,167 @@
+diff --git a/space-battleship/scripts/battlefield.gd b/space-battleship/scripts/battlefield.gd
+index 497b645..7a79b5b 100644
+--- a/space-battleship/scripts/battlefield.gd
++++ b/space-battleship/scripts/battlefield.gd
+@@ -162,6 +162,7 @@ func _sync_parameters() -> void:
+ 
+ func _process(delta: float) -> void:
+ 	if is_instance_valid(ship_view):
++		ship_view.set_accelerated_quality(game.speed >= 10.0)
+ 		if current_hull != str(game.profile.selectedShip):
+ 			current_hull = str(game.profile.selectedShip)
+ 			if not ship_view.set_hull(current_hull):
+diff --git a/space-battleship/scripts/enhancement_branches.gd b/space-battleship/scripts/enhancement_branches.gd
+index 4060325..2b9fc40 100644
+--- a/space-battleship/scripts/enhancement_branches.gd
++++ b/space-battleship/scripts/enhancement_branches.gd
+@@ -41,20 +41,35 @@ func defense(g,index: int) -> Dictionary:
+  return defenses[index]
+ 
+ func reconcile(g) -> void:
++ # Eligibility is shared by every module in this synchronous reconciliation.
++ # Resolve common choices/gates once here; retain no state across calls/ticks.
++ var weapon_ready={}
++ var weapon_order: Array=g.profile.enhancementOrder.get("weapons",[])
++ var proficiency_index:=weapon_order.find("proficiency")
++ var critical_index:=weapon_order.find("critical")
++ if not weapons.is_empty():
++  for pair in [["proficiency",1],["critical",1],["critical",2]]:
++   weapon_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("weapons",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("weapons",pair[0],pair[1])
+  for index in weapons.keys():
+   if int(index)>=g.weapon_entries().size():weapons.erase(index);continue
+   var data: Dictionary=weapon(g,int(index));var entry: Dictionary=data.entry
+-  if not active(g,entry,"proficiency",1,"B"):data.target={};data.dwell=0.0
+-  if not active(g,entry,"critical",1,"B"):data.next=0
+-  if not active(g,entry,"critical",2,"B"):data.stacks=0;data.stack_time=0.0
++  var count: int=g.active_enhancement_effect_count(entry) if str(entry.get("key","")) in g.WEAPON_KEYS and (weapon_ready.proficiency1 or weapon_ready.critical1 or weapon_ready.critical2) else 0
++  var proficiency_active:=proficiency_index>=0 and proficiency_index<count
++  var critical_active:=critical_index>=0 and critical_index<count
++  if not weapon_ready.proficiency1 or not proficiency_active:data.target={};data.dwell=0.0
++  if not weapon_ready.critical1 or not critical_active:data.next=0
++  if not weapon_ready.critical2 or not critical_active:data.stacks=0;data.stack_time=0.0
++ var defense_ready={}
++ for pair in [["adaptation",2],["memory_material",2],["memory_material",1],["delayed_damage",1],["adaptation",1]]:
++  defense_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("defence",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("defence",pair[0],pair[1])
+  for index in defenses.keys():
+   if int(index)>=g.defense_entries().size():defenses.erase(index);continue
+   var data: Dictionary=defense(g,int(index));var entry: Dictionary=data.entry
+-  if not active(g,entry,"adaptation",2,"B"):data.cover=0.0;data.cover_time=0.0;data.cover_elapsed=0.0
+-  if not active(g,entry,"memory_material",2,"B"):data.resistance_type=0;data.resistance_time=0.0;data.lockout=0.0
+- if not global_active(g,"memory_material",1,"B"):memory_reduction_remaining=0.0
+- if not global_active(g,"delayed_damage",1,"B"):clear_reduction_remaining=0.0
+- if not global_active(g,"adaptation",1,"B"):incoming_sources.clear()
++  if not defense_ready.adaptation2 or not g.has_enhancement_effect(entry,"adaptation"):data.cover=0.0;data.cover_time=0.0;data.cover_elapsed=0.0
++  if not defense_ready.memory_material2 or not g.has_enhancement_effect(entry,"memory_material"):data.resistance_type=0;data.resistance_time=0.0;data.lockout=0.0
++ if not defense_ready.memory_material1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"memory_material")):memory_reduction_remaining=0.0
++ if not defense_ready.delayed_damage1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"delayed_damage")):clear_reduction_remaining=0.0
++ if not defense_ready.adaptation1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"adaptation")):incoming_sources.clear()
+ 
+ func advance_weapons(g,dt: float) -> void:
+  reconcile(g)
+diff --git a/space-battleship/scripts/game.gd b/space-battleship/scripts/game.gd
+index 6bf4e5b..c7b3f0c 100644
+--- a/space-battleship/scripts/game.gd
++++ b/space-battleship/scripts/game.gd
+@@ -2795,12 +2795,18 @@ func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
+ 			effect.p4=enhancement_parameter("memory_buffer_fraction")
+ 	return effect
+ 
++func active_enhancement_effect_count(entry: Dictionary) -> int:
++	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return 0
++	return available_effect_count(entry)
++
+ func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
+ 	# Scalar membership query; no effect payloads or retained/cross-tick cache.
+-	if kind.is_empty() or str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return -1
++	if kind.is_empty():return -1
++	var count := active_enhancement_effect_count(entry)
++	if count<=0:return -1
+ 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
+ 	var order: Array = profile.enhancementOrder.get(category,[])
+-	for i in available_effect_count(entry):
++	for i in count:
+ 		if str(order[i])==kind:return i
+ 	return -1
+ 
+diff --git a/space-battleship/scripts/presented_ship_view.gd b/space-battleship/scripts/presented_ship_view.gd
+index 5ff9e35..953ea27 100644
+--- a/space-battleship/scripts/presented_ship_view.gd
++++ b/space-battleship/scripts/presented_ship_view.gd
+@@ -47,6 +47,7 @@ var elapsed := 0.0
+ var last_settings: Dictionary = {}
+ var last_toon_enabled := true
+ var last_rim_enabled := true
++var accelerated_quality := false
+ 
+ 
+ func _ready() -> void:
+@@ -377,6 +378,13 @@ func screen_muzzle() -> Vector2:
+ 	return camera.unproject_position(muzzle.global_position) if muzzle != null else Vector2.ZERO
+ 
+ 
++func set_accelerated_quality(enabled: bool) -> void:
++	if accelerated_quality == enabled:return
++	accelerated_quality = enabled
++	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
++	world.get_node("KeyLight").shadow_enabled = not enabled
++
++
+ func set_rendering(enabled: bool, paused := false) -> void:
+ 	visible = enabled
+ 	viewport.render_target_update_mode = (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled else SubViewport.UPDATE_DISABLED
+diff --git a/test/README.md b/test/README.md
+index 681aef3..bb83c65 100644
+--- a/test/README.md
++++ b/test/README.md
+@@ -13,6 +13,7 @@
+ | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
+ | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |
+ | 战舰静态预览 | `test_ship_preview.gd --headless` 检查五舰实际模型来源、真实槽位映射、候选/当前/锁定、空槽/无人机/停用、显式启用与局部复用；图形运行捕获五舰和特殊状态。运行隔离工程须包含 `dev`/`addons`，步骤见 [预览资产说明](../space-battleship/assets/ui/ships/README.md)。 |
++| 战场X10舰船画质 | `test_accelerated_ship_quality.gd --headless` 检查高倍画质切换与X1恢复、全部槽位/发射管的规范坐标、持续渲染及暂停/隐藏策略；实际画质与性能须另做可见场景配对。 |
+ | 入门指引 | `test_beginner_guide.gd` 检查首次引导、自动完成、关闭不复弹、帮助入口回看及正常存读档；图形运行核对入口和交互 |
+ | UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
+ | 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
+diff --git a/test/test_accelerated_ship_quality.gd b/test/test_accelerated_ship_quality.gd
+new file mode 100644
+index 0000000..229b1f4
+--- /dev/null
++++ b/test/test_accelerated_ship_quality.gd
+@@ -0,0 +1,38 @@
++extends SceneTree
++var checks := 0
++var failures := 0
++func check(ok: bool, label: String) -> void:
++ checks += 1
++ if not ok: failures += 1; printerr("FAIL: ", label)
++func _initialize() -> void: call_deferred("run")
++func run() -> void:
++ var view = load("res://scripts/presented_ship_view.gd").new()
++ view.size = BattleGame.BATTLE_SIZE
++ root.add_child(view)
++ check(view.set_hull("Heavy_Battleship"),"live hull exists")
++ var entries: Array = []
++ for i in 8: entries.append({"key":"missile","level":150})
++ view.set_loadout(entries,8)
++ view.set_pose(Vector2(286,520),180,0,Vector2(286,100),1,false,false,0)
++ view.set_rendering(true)
++ var points: Array = []
++ for i in 8:
++  for ordinal in 5:points.append(view.screen_muzzle_for_slot(i,ordinal))
++ var original_size = view.viewport.size
++ for accelerated in [true,false,true,false]:
++  view.set_accelerated_quality(accelerated)
++  check(view.viewport.msaa_3d == (Viewport.MSAA_DISABLED if accelerated else Viewport.MSAA_4X),"quality transitions restore MSAA")
++  check(view.world.get_node("KeyLight").shadow_enabled == not accelerated,"quality transitions restore live shadows")
++  check(view.visible and view.viewport.render_target_update_mode == SubViewport.UPDATE_ALWAYS,"battlefield continues rendering every frame")
++  check(view.viewport.size == original_size,"canonical viewport resolution unchanged")
++  for i in 8:
++   for ordinal in 5:check(view.screen_muzzle_for_slot(i,ordinal) == points[i*5+ordinal],"every slot/tube launch coordinate unchanged")
++ view.set_rendering(true,true)
++ view.set_accelerated_quality(true)
++ check(view.viewport.render_target_update_mode == SubViewport.UPDATE_ONCE,"paused redraw policy preserved")
++ view.set_rendering(false)
++ view.set_accelerated_quality(false)
++ check(not view.visible and view.viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED,"hidden rendering policy preserved")
++ view.free()
++ print("ACCELERATED SHIP QUALITY: ",checks," checks, ",failures," failures")
++ quit(1 if failures else 0)
