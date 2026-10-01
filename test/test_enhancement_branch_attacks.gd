@@ -48,7 +48,9 @@ func run() -> void:
   for effect in effects:
    if effect.kind=="repeat":effect.chain=true;effect.weapon_key=key
   g.hit_enemy(primary,100,0,effects)
-  check(secondary.hp==hp-100,"onechaincontinuation appliesoneextrahit "+key)
+  check(secondary.hp==hp and g.projectiles.size()==1,"chain travels before damage "+key)
+  g.advance_chain_projectile(g.projectiles.back(),1.0)
+  check(secondary.hp==hp-100,"arrival applies one extra hit "+key)
   var after=secondary.hp;g.hit_enemy(primary,100,0,effects)
   check(secondary.hp==after,"sameprojectile/splashcannotchainagain "+key)
   check(g.profile.enhancementAttacks==0 and g.enhancement_branches.weapon(g,0).next==3,"chaindoesnotcountorconsumecrit "+key)

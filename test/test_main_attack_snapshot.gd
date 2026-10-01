@@ -63,11 +63,19 @@ func run()->void:
  for i in 5:
   var attack=g.missile_queue[i].attack
   g.hit_enemy(g.enemies[0],attack.damage,1,attack.effects,attack.critical)
- check(chains.size()==5*int(g.enhancement_parameter("repeat_b1_targets")),"each of five damage carriers chains once with configured target count")
+ check(chains.size()==int(g.enhancement_parameter("repeat_b1_targets")),"five damage carriers share one configured chain fanout")
  var previous=chains.size()
  var same=g.missile_queue[0].attack
  g.hit_enemy(g.enemies[0],same.damage,1,same.effects,same.critical)
  check(chains.size()==previous,"same damage carrier cannot chain twice")
+ for i in range(5,10):
+  var copy=g.missile_queue[i].attack
+  g.hit_enemy(g.enemies[1],copy.damage,1,copy.effects,copy.critical)
+ check(chains.size()==previous,"secondary copies share the spent chain allowance")
+ var repeated=g.missile_queue[10].attack
+ check(repeated.attack_instance_id!=same.attack_instance_id,"repeat salvo owns an independent attack instance")
+ g.hit_enemy(g.enemies[0],repeated.damage,1,repeated.effects,repeated.critical)
+ check(chains.size()==previous*2,"first valid repeat hit can chain independently")
  var other=salvo(g,1);var later=salvo(g,0)
  check(other.id!=snapshot.id and later.id!=other.id,"different mounts and later primary attacks have independent identities")
  # Main attack charges consume once, never per component.

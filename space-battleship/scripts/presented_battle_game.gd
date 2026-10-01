@@ -98,6 +98,9 @@ func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:D
 	var aim:=target_point(target)
 	missile_queue.append({"mount":index,"entry":slot_entry("weapons",index),"source":player,"target":target,"aim":aim,"weapon":weapon.duplicate(true),"attack":attack,"offset":offset,"spread":spread,"ordinal":salvo_index,"count":salvo_count,"due":motion_clock+float(salvo_index)*EJECTION_GAP})
 
+func chain_target_point(target:Dictionary)->Vector2:
+	return target_point(target)
+
 func target_point(target:Dictionary)->Vector2:
 	if target_provider.is_valid():return target_provider.call(target)
 	return Vector2(target.x,target.y)
