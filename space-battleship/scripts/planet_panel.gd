@@ -17,7 +17,6 @@ var bonus_planet_id := ""
 var bonus_groups: Dictionary = {}
 var bonus_rows: Dictionary = {}
 var bonus_empty: Label
-var bonus_details: Button
 var facility_planet_id := ""
 var facility_building_id := ""
 var facility_icon: TextureRect
@@ -454,8 +453,6 @@ func _refresh_bonus_dialog() -> void:
 		if not wanted.has(key):host.set_ui_value(bonus_rows[key].root, "visible", false)
 	for key in bonus_groups:host.set_ui_value(bonus_groups[key].body, "visible", groups.has(key))
 	host.set_ui_value(bonus_empty, "visible", entries.is_empty())
-	host.set_ui_value(bonus_details, "visible", not entries.is_empty())
-	host.set_ui_value(bonus_label, "visible", bonus_details.button_pressed and not entries.is_empty())
 
 func show_bonuses(id: String) -> void:
 	if not is_instance_valid(bonus_dialog):
@@ -473,18 +470,8 @@ func show_bonuses(id: String) -> void:
 			body.add_child(group)
 			_dialog_label(group, UIText.t("planet.bonus_group." + key), 21)
 			bonus_groups[key] = {"body":group}
-		bonus_details = bonus_dialog.add_button(UIText.t("planet.bonus_details"), false, "details")
-		bonus_details.custom_minimum_size = Vector2(140, 44)
-		bonus_details.toggle_mode = true
-		Chrome.button_skin(bonus_details)
 		bonus_label = _dialog_label(body, "", 18, Chrome.MUTED)
 		bonus_label.hide()
-		bonus_details.toggled.connect(func(expanded):
-			bonus_label.visible = expanded
-			if expanded:
-				await get_tree().process_frame
-				(body.get_parent() as ScrollContainer).ensure_control_visible(bonus_label))
-	bonus_details.set_pressed_no_signal(false)
 	(bonus_label.get_parent().get_parent() as ScrollContainer).scroll_vertical = 0
 	bonus_planet_id = id
 	bonus_dialog.title = UIText.t("planet.bonuses_title", {"planet":UIText.data_text("planet",id,"name",str(host.game.planet_row(id).get("name",id)))})
