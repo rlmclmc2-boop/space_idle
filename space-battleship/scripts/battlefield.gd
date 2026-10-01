@@ -341,9 +341,10 @@ func sync_beam_visuals()->void:
 
 func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float)->bool:
 	if not _is_own_missile(shot):return false
-	var visual:=projectile_visual(shot)
+	# Prototype missiles already carry their age; only legacy shots need a visual lookup.
+	var age:float=float(shot.motion_age) if shot.has("motion_age") else float(projectile_visual(shot).get("age",0.0))
 	# Every real missile, including an orphan, retains one physical body.
-	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
+	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),age,int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
 	return true
 
 
