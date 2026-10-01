@@ -283,7 +283,9 @@ func refresh_row(item: Dictionary) -> void:
 	host.set_ui_value(fields.state,"text",state)
 	host.set_ui_value(fields.avatar,"texture",member_portrait(item))
 	host.set_ui_value(fields.badge,"texture",job_icon(item))
-	host.set_ui_value(rows[id],"tooltip_text",g.crew.display_name(g,item)+"\n"+role+(" · "+state if not state.is_empty() else ""))
+	var tooltip: String=g.crew.display_name(g,item)+"\n"+role+(" · "+state if not state.is_empty() else "")
+	if g.crew.levels_unlocked(g):tooltip+="\n"+experience_text(item,true)
+	host.set_ui_value(rows[id],"tooltip_text",tooltip)
 
 func refresh() -> void:
 	if not is_visible_in_tree():
@@ -440,13 +442,26 @@ func refresh_detail() -> void:
 	refresh_detail_status(item)
 	refresh_actions()
 
+func experience_text(item: Dictionary, exact := false) -> String:
+	var g=host.game
+	var required: float=g.crew.required_exp(g,int(item.level))
+	var current: float=float(item.exp)
+	var shown: String=NumberFormat.precise(current) if exact else host.number(current)
+	var needed: String=NumberFormat.precise(required) if exact else host.number(required)
+	# Equal abbreviations must not imply an upgrade before the actual threshold.
+	if not exact and current<required and shown==needed:shown="<"+shown
+	return g.crew.format_text(g,"exp_bar",{"exp":shown,"needed":needed})
+
 func refresh_detail_status(item: Dictionary) -> void:
 	var g=host.game
 	ensure_level_ui()
 	if is_instance_valid(level_section):host.set_ui_value(level_section,"visible",g.crew.levels_unlocked(g))
 	if g.crew.levels_unlocked(g):
 		var required: float=g.crew.required_exp(g,int(item.level))
-		host.set_ui_value(exp_label,"text",g.crew.format_text(g,"exp_bar",{"exp":NumberFormat.precise(float(item.exp)),"needed":NumberFormat.precise(required)}))
+		host.set_ui_value(exp_label,"text",experience_text(item))
+		var exact: String=experience_text(item,true)
+		host.set_ui_value(exp_label,"tooltip_text",exact)
+		host.set_ui_value(experience,"tooltip_text",exact)
 		host.set_ui_value(experience,"value",clampf(float(item.exp)/required*100.0,0,100))
 		var effects: String=g.crew.level_description(g,item)
 		host.set_ui_value(level_effect_label,"text",effects)
@@ -517,7 +532,9 @@ func ensure_level_ui() -> void:
 	detail_body.add_child(progress)
 	exp_label=label(progress,"",22,INK)
 	exp_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	exp_label.mouse_filter=Control.MOUSE_FILTER_PASS
 	experience=ProgressBar.new()
+	experience.step=0.0
 	experience.custom_minimum_size=Vector2(0,20)
 	experience.show_percentage=false
 	experience.add_theme_stylebox_override("background",SKIN.surface(Color("d4ded6"),BORDER,0))

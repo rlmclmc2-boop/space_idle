@@ -393,6 +393,9 @@ func refresh_card(id: String) -> void:
 	var detail_text := UIText.t("planet.trip_gain")
 	if reward > 0 and host.game.crew.levels_unlocked(host.game):detail_text += "\n" + crew_reward_text(reward)
 	host.set_ui_value(card.detail,"text",detail_text)
+	var exact_detail := UIText.t("planet.trip_gain")
+	if reward > 0 and host.game.crew.levels_unlocked(host.game):exact_detail += "\n" + host.game.crew.format_text(host.game,"planet_exp",{"exp":NumberFormat.precise(reward)})
+	host.set_ui_value(card.detail,"tooltip_text",exact_detail)
 	_refresh_task(id)
 
 func _refresh_task(id: String, refresh_roster := true) -> void:
@@ -648,6 +651,7 @@ func show_completion(id: String, reward: float = -1.0) -> void:
 	card.task_fx.trigger(host.CYAN, 0.85)
 	var shown_reward: float = reward if reward >= 0.0 else host.game.planet_exp_reward(id)
 	host.set_ui_value(card.feedback, "text", UIText.t("planet.trip_gain") + ("  " + crew_reward_text(shown_reward) if shown_reward > 0 else ""))
+	host.set_ui_value(card.feedback, "tooltip_text", UIText.t("planet.trip_gain") + ("  " + host.game.crew.format_text(host.game,"planet_exp",{"exp":NumberFormat.precise(shown_reward)}) if shown_reward > 0 else ""))
 	host.set_ui_value(card.feedback, "visible", false)
 	host.set_ui_value(card.feedback, "modulate", Color(1, 1, 1, 0))
 
@@ -656,4 +660,4 @@ func select_facility(planet_id: String, facility_id: String) -> void:
 
 func crew_reward_text(amount: float) -> String:
 	var g=host.game
-	return g.crew.format_text(g,"planet_exp",{"exp":"%.0f" % amount}) if g.crew.levels_unlocked(g) else ""
+	return g.crew.format_text(g,"planet_exp",{"exp":host.number(amount)}) if g.crew.levels_unlocked(g) else ""
