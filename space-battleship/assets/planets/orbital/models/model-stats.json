@@ -7,9 +7,9 @@
   },
   {
     "kind": "refinery",
-    "triangles": 22572,
+    "triangles": 412,
     "mesh_objects": 2,
-    "material_surfaces": 7
+    "material_surfaces": 5
   },
   {
     "kind": "equipment",
