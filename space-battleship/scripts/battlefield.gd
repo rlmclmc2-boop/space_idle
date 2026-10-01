@@ -570,9 +570,6 @@ func _stable_player_anchor() -> Vector2:
 	point-=Vector2(sin(fx_time*TAU/5.7)*float(battle_visual.player_idle_x),sin(fx_time*TAU/4.3)*float(battle_visual.player_idle_y))
 	if reference_height>0:
 		point.y=minf(point.y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-reference_height*0.5)
-	if str(game.profile.selectedShip)=="Heavy_Battleship":
-		# Reserve an orbit below the mother ship without enlarging the hull itself.
-		point.y=minf(point.y,BATTLE_VIEW_SIZE.y*0.66)
 	return point
 
 
