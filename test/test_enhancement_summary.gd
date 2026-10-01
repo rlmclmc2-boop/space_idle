@@ -18,7 +18,7 @@ func run() -> void:
 	var db:=ShipDatabase.new()
 	var game:=BattleGame.new(db,false)
 	game.profile.cleared=range(1,61);game.profile.highestLevel=61;game.rebuild_unlocks()
-	game.profile.enhancementLevel=int(db.data.enhance_config.branch_threshold_3.value)
+	game.profile.enhancementLevel=int(db.data.enhance_config.branch_threshold_3.value)+int(db.data.enhance_config.threshold_3.value)
 	game.profile.loadout={"weapons":[{"key":"laser","level":int(db.data.enhance_config.threshold_3.value)}],"defence":[{"key":"armour","level":int(db.data.enhance_config.threshold_3.value)}]}
 	game.reset_player()
 	var panel:=PANEL.new();panel.game=game

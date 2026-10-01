@@ -91,7 +91,7 @@ func run() -> void:
 	var projected: Dictionary=DISPLAY.snapshot(g,entry,151)
 	check(is_equal_approx(projected.bonus_probability,float(original_rate)*float(cfg.critical_b3_guaranteed_rate.value)),"Next-level preview excludes timed critical stacks")
 	entry.level=149
-	verify_expected(g,entry,float(original_rate),float(cfg.base_critical_multiplier.value),"Globally selected critical is not active below module threshold")
+	verify_expected(g,entry,float(original_rate)*float(cfg.critical_b3_guaranteed_rate.value),critical_multiplier,"Shared critical remains active when module level drops")
 	entry.level=150
 	var projected_profile: Dictionary=g.profile.duplicate(true)
 	var state=g.rng.state

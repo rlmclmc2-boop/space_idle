@@ -16,7 +16,7 @@ func fixture(key := "laser") -> BattleGame:
  db.config.dmgReduce=.5;db.data.enhance_config.repeat_probability.value=0;db.data.enhance_config.deferred_clear_probability.value=0
  var g:=BattleGame.new(db,false)
  g.profile.cleared=range(1,41);g.rebuild_unlocks()
- g.profile.enhancementLevel=30
+ g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150},{"key":key,"level":150}],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
  for enemy in g.enemies:enemy.hp=1e10;enemy.max_hp=1e10;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
@@ -74,7 +74,7 @@ func run() -> void:
  var guaranteed=g.jewel_attack(0)
  check(guaranteed.critical and not guaranteed.critical_bonus_applied and guaranteed.damage==base,"guaranteedcriticalevent no underlyingbonus usesordinarydamage")
  g.db.data.enhance_config.base_critical_rate.value=1;guaranteed=g.jewel_attack(0)
- check(guaranteed.critical and guaranteed.critical_bonus_applied and guaranteed.damage==base*(2+.3*30),"underlyingcritkeepscriticalmultiplier")
+ check(guaranteed.critical and guaranteed.critical_bonus_applied and guaranteed.damage==base*(2+.3*g.enhancement_effective_level()),"underlyingcritkeepscriticalmultiplier")
  g.db.data.enhance_config.critical_b3_guaranteed_rate.value=.8
  check(g.enhancement_branch_metadata("weapons","critical",3,"B").parameters.probability_percent==80,"fixedcritdescription followsdebugprobability")
  g=fixture();var armor=g.stat("armour")
@@ -103,12 +103,12 @@ func run() -> void:
  check(is_equal_approx(g.enhancement_branches.memory_heal_multiplier(g,g.slot_entry("defence",0)),1.6) and is_equal_approx(g.enhancement_branches.memory_cap_multiplier(g,g.slot_entry("defence",0)),1.6),"memoryA nodesadd60%regenandcap")
  g=fixture();choose(g,"memory_material",3)
  check(is_equal_approx(g.enhancement_branches.memory_charge_multiplier(g,g.slot_entry("defence",0)),1.4) and is_equal_approx(g.enhancement_branches.memory_cap_multiplier(g,g.slot_entry("defence",0)),1.4),"memoryB30 usesenabledshieldandarmorcounts")
- g.player.armour=50;g.sync_jewel_defence_damage();g.advance_jewel_repair(.2)
- check(g.player.armour==80 and g.memory_buffer(1)==0,"shieldcountboost doesnotraiseordinarybodyhealing30")
+ g.player.armour=25;g.sync_jewel_defence_damage();g.advance_jewel_repair(.2)
+ check(g.player.armour==75 and g.memory_buffer(1)==0,"shieldcountboost doesnotraiseordinarybody healing50")
  g.advance_jewel_repair(.2)
- check(g.player.armour==100 and is_equal_approx(float(g.memory_buffer(1)),14),"only10overflowcharges14temporaryprotection")
+ check(g.player.armour==100 and is_equal_approx(float(g.memory_buffer(1)),35),"only25overflowcharges35temporaryprotection")
  g.advance_jewel_repair(.2)
- check(is_equal_approx(float(g.memory_buffer(1)),56) and is_equal_approx(float(g.enhancement_module_protection_capacity(1)),420),"full30overflowcharges42 andarmorcountcaps420")
+ check(is_equal_approx(float(g.memory_buffer(1)),105) and is_equal_approx(float(g.enhancement_module_protection_capacity(1)),700),"full50overflowcharges70 andarmorcountcaps700")
  g.profile.loadout.defence.append({"key":"shield","level":150});g.profile.loadout.defence.append({"key":"armour","level":150})
  check(g.equipment_count("shield")==1 and g.equipment_count("armour")==1 and is_equal_approx(g.enhancement_branches.memory_charge_multiplier(g,g.slot_entry("defence",0)),1.4),"inactivehulltail equipmentneverraiseschargeorcap")
  g=fixture();choose(g,"memory_material",2);g.advance_jewel_repair(2)
@@ -151,11 +151,11 @@ func run() -> void:
  g.profile.enhancementOrder.defence=["memory_material","delayed_damage","adaptation"]
  g.profile.loadout.defence[0].level=50;g.invalidate_stat_cache();g.reset_player();g.advance_jewel_repair(2);g.hit_player(20,1)
  var live=g.enhancement_protection_status()
- check(live.mode=="mixed" and live.resistance==0 and live.components[0].resistance==.5 and live.components[1].resistance==.75,"mixedeligiblemodules report50and75 withoutwholepoolclaim")
+ check(live.mode=="energy" and live.resistance==.75 and live.components[0].resistance==.75 and live.components[1].resistance==.75,"shared gates apply75 to both low/high equipment modules")
  check(live.components[0].mode=="energy" and live.components[1].mode=="energy","componentmodes usecore-ownedsemanticmapping")
  check(g.enhancement_damage_type_mode(2)=="physical" and g.enhancement_damage_type_mode(0)=="neutral","physicalandneutralmappingexplicit")
  var metadata=g.enhancement_branch_metadata("defence","memory_material",2,"B")
- check(metadata.parameters.resistance_min_percent==50 and metadata.parameters.resistance_max_percent==75,"memorydescription usescommonresolverrange")
+ check(metadata.parameters.resistance_min_percent==75 and metadata.parameters.resistance_max_percent==75,"memorydescription uses shared common-resolver75")
  var before_states=JSON.stringify(g.enhancement_branches.defenses);var before_buffers=JSON.stringify(g.enhancement_buffers)
  g.enhancement_protection_status();g.enhancement_protection_current();g.enhancement_protection_capacity()
  check(JSON.stringify(g.enhancement_branches.defenses)==before_states and JSON.stringify(g.enhancement_buffers)==before_buffers,"HUDderivedreads donotmutategameplaytimersorpools")

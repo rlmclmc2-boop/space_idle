@@ -2553,14 +2553,20 @@ func default_enhancement_branches() -> Dictionary:
 		for effect in default_enhancement_order()[category]:result[category][effect]={}
 	return result
 
-func enhancement_branch_threshold(node: int) -> int:
-	return int(enhancement_parameter("branch_threshold_%d" % node)) if node in [1,2,3] else -1
+func enhancement_effect_threshold(index: int) -> int:
+	return int(enhancement_parameter("threshold_%d" % (index+1))) if index in [0,1,2] else -1
+
+func enhancement_branch_threshold(node: int, category: String, effect: String) -> int:
+	if node not in [1,2,3]:return -1
+	var index: int=profile.enhancementOrder.get(category,[]).find(effect)
+	if index<0:return -1
+	return int(enhancement_parameter("branch_threshold_%d" % node))+enhancement_effect_threshold(index)
 
 func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
 	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
 
 func enhancement_branch_unlocked(category: String, effect: String, node: int) -> bool:
-	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node)
+	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node,category,effect)
 
 func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
 	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
@@ -2750,10 +2756,12 @@ func set_enhancement_order(category: String, order: Array) -> bool:
 	return true
 
 func available_effect_count(entry: Dictionary) -> int:
-	if str(entry.get("key","")).is_empty():return 0
+	var key := str(entry.get("key",""))
+	if (key not in WEAPON_KEYS and key not in DEFENSE_KEYS) or not enhancement_unlocked():return 0
 	var count := 0
-	for i in [1,2,3]:
-		if int(entry.level)>=int(enhancement_parameter("threshold_%d" % i)):count+=1
+	var shared_level := enhancement_effective_level()
+	for index in 3:
+		if shared_level>=enhancement_effect_threshold(index):count+=1
 	return count
 
 func record_enhancement_attack() -> void:
@@ -2772,7 +2780,7 @@ func enhancement_currency_changed() -> void:
 
 func enhancement_effects(entry: Dictionary) -> Array:
 	var result: Array = []
-	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return result
+	if str(entry.get("key","")).is_empty() or not enhancement_unlocked():return result
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
 	var order := enhancement_order(category)
 	var level := enhancement_effective_level()
@@ -2782,7 +2790,7 @@ func enhancement_effects(entry: Dictionary) -> Array:
 	return result
 
 func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
-	var effect := {"kind":kind,"level":level,"threshold":int(enhancement_parameter("threshold_%d" % (i+1))),"p2":0.0,"p4":0.0,"p5":0.0}
+	var effect := {"kind":kind,"level":level,"threshold":enhancement_effect_threshold(i),"p2":0.0,"p4":0.0,"p5":0.0}
 	match kind:
 		"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
 		"repeat":
@@ -2796,7 +2804,6 @@ func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
 	return effect
 
 func active_enhancement_effect_count(entry: Dictionary) -> int:
-	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return 0
 	return available_effect_count(entry)
 
 func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:

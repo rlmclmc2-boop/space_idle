@@ -6480,6 +6480,18 @@
     },
     "planet.auto.disable": {
       "params": []
+    },
+    "enhance.effect.state": {
+      "params": [
+        "level",
+        "count"
+      ]
+    },
+    "enhance.history.proficiency": {
+      "params": []
+    },
+    "enhance.history.adaptation": {
+      "params": []
     }
   },
   "bindings": {

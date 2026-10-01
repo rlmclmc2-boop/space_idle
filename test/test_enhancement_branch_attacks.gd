@@ -11,7 +11,7 @@ func fixture(key: String) -> BattleGame:
  db.equipment.longLaser[0].para3=.2
  db.data.enhance_config.base_critical_rate.value=0;db.data.enhance_config.repeat_probability.value=0
  var g:=BattleGame.new(db,false)
- g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=30
+ g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
  for enemy in g.enemies:enemy.hp=1e12;enemy.max_hp=1e12;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
@@ -35,10 +35,10 @@ func run() -> void:
  g.cooldowns[g.slot_id("weapons",0)]=0;g.tick(.001)
  check(g.jewel_repeats.size()==2,"primary preplans both bounded repeat generations")
  var original_repeat_multiplier=float(g.jewel_repeats[0].multiplier)
- check(original_repeat_multiplier==7,"ordinaryrepeat derivesconfigured7xsource")
+ check(original_repeat_multiplier==1+g.enhancement_parameter("repeat_growth")*g.enhancement_effective_level(),"ordinaryrepeat derivesconfigured source multiplier")
  g.advance_jewel_repeats(.5)
  check(g.profile.enhancementAttacks==2 and g.jewel_repeats.size()==1 and int(g.jewel_repeats[0].depth)==2,"ordinaryextra schedulesoneadditionalrepeat")
- check(g.jewel_repeats[0].multiplier==original_repeat_multiplier,"secondrepeat usesoriginalsource7x not49x")
+ check(g.jewel_repeats[0].multiplier==original_repeat_multiplier,"secondrepeat usesoriginalsource multiplier without squaring")
  g.advance_jewel_repeats(.5)
  check(g.profile.enhancementAttacks==3 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==2,"second extra counts attack but inherits root charge without consuming again")
  for key in ["laser","cannon","missile","longLaser"]:
@@ -67,7 +67,7 @@ func run() -> void:
  check(g.projectiles.size()==2,"ordinaryrepeatbeam independentinstance")
  g.tick_long_laser(g.projectiles[1],.2);g.advance_jewel_repeats(.7)
  check(g.projectiles.size()==3,"repeatB20allowsoneadditionalbeamgeneration")
- check(g.projectiles[1].repeat_multiplier==7 and g.projectiles[2].repeat_multiplier==7,"beamsecondrepeat doesnotcompoundoriginal7x")
+ check(g.projectiles[1].repeat_multiplier==1+g.enhancement_parameter("repeat_growth")*g.enhancement_effective_level() and g.projectiles[2].repeat_multiplier==1+g.enhancement_parameter("repeat_growth")*g.enhancement_effective_level(),"beamsecondrepeat doesnotcompoundoriginal source multiplier")
  g.tick_long_laser(g.projectiles[2],.2)
  check(g.jewel_repeats.is_empty(),"secondbeamgenerationcannotrecurse")
  g=fixture("longLaser");g.set_enhancement_branch("weapons","proficiency",2,"B")
