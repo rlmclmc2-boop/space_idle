@@ -101,19 +101,19 @@
   },
   {
     "key": "enhance.overview.repeat",
-    "text": "{chance}% 概率追加攻击 · 伤害 {multiplier} 倍",
+    "text": "{chance}% 概率追加攻击 · 原伤害的 {multiplier}%",
     "params": "{chance},{multiplier}",
     "category": "enhance"
   },
   {
     "key": "enhance.overview.critical",
-    "text": "暴击伤害 {multiplier} 倍 · 基础暴击率 {chance}%",
+    "text": "暴伤为原伤害的 {multiplier}% · 当前暴击率 {chance}%",
     "params": "{multiplier},{chance}",
     "category": "enhance"
   },
   {
     "key": "enhance.overview.critical_guaranteed",
-    "text": "暴击触发 {chance}% · {underlying}% 概率打出 {multiplier} 倍伤害",
+    "text": "暴击触发 {chance}% · 触发后 {underlying}% 概率造成原伤害的 {multiplier}%",
     "params": "{chance},{underlying},{multiplier}",
     "category": "enhance"
   },
@@ -155,13 +155,13 @@
   },
   {
     "key": "enhance.description.critical.runtime",
-    "text": "首件达标武器参考：暴击效果触发率为 {chance}%，暴击伤害为 {multiplier} 倍；额外暴击伤害仍按原 {underlying}% 暴击率出现。",
+    "text": "首件达标武器参考：暴击效果触发率为 {chance}%，暴击伤害为普通伤害的 {multiplier}%；触发后仍按原 {underlying}% 暴击率判定是否应用伤害比例。",
     "params": "{multiplier},{underlying},{chance}",
     "category": "enhance"
   },
   {
     "key": "enhance.description.critical.runtime_regular",
-    "text": "首件达标武器参考：暴击率 {chance}%，暴击伤害 {multiplier} 倍。暴击后可获得的短时加成见已选分支。",
+    "text": "首件达标武器参考：暴击率 {chance}%，暴击伤害为普通伤害的 {multiplier}%。暴击后可获得的短时加成见已选分支。",
     "params": "{chance},{multiplier}",
     "category": "enhance"
   },
@@ -929,7 +929,7 @@
   },
   {
     "key": "enhance.description.critical",
-    "text": "武器基础暴击率 {chance}%。获得此效果的武器，当前暴击伤害为普通伤害的 {multiplier} 倍。",
+    "text": "武器基础暴击率 {chance}%。获得此效果的武器，当前暴击伤害为普通伤害的 {multiplier}%。",
     "params": "{chance},{multiplier}",
     "category": "enhance"
   },
@@ -11911,5 +11911,19 @@
     "text": "只提高普通击杀掉落的铁数量，不加成其他获取来源。",
     "params": "",
     "category": "reactor"
+  },
+  {
+    "key": "weapon.expected_damage",
+    "text": "期望伤害",
+    "params": "",
+    "category": "weapon",
+    "note": "模块展示单次攻击的平均伤害，战斗仍按实际概率判定"
+  },
+  {
+    "key": "weapon.expected_damage_details",
+    "text": "单次基础伤害 {base}\n暴击触发率 {trigger}% · 伤害比例生效概率 {bonus}%\n暴击伤害为基础的 {multiplier}%\n当前期望伤害 {expected}\n仅表示暴击概率对应的均值，实际单发仍按战斗规则判定",
+    "params": "{base},{trigger},{bonus},{multiplier},{expected}",
+    "category": "weapon",
+    "note": "仅展示，不消费随机数或改变战斗伤害"
   }
 ]

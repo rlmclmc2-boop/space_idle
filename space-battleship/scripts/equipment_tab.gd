@@ -346,7 +346,8 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var key := str(entry.get("key",""))
 	var active: bool = index<host.game.active_slot_count(category)
 	var equipped := not key.is_empty()
-	var value = host.game.jewel_equipment_stat(entry) if equipped else 0.0
+	var projection: Dictionary=host.equipment_display_snapshot(entry) if equipped else {"base":0.0,"expected":0.0}
+	var value = projection.expected
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
@@ -354,9 +355,12 @@ func equipment_item(category: String, index: int) -> Dictionary:
 		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,
-		"slots":[index],"mainStatLabel":UIText.t("weapon.damage" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
+		"slots":[index],"mainStatLabel":UIText.t("weapon.expected_damage" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
-		"description":description,"tooltip":prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")}
+		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
+
+func module_tooltip(entry: Dictionary, prefix: String, name: String, projection: Dictionary) -> String:
+	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
 
 func refresh(only_slot := "") -> void:
 	refresh_slots([] if only_slot.is_empty() else [only_slot])
@@ -417,25 +421,30 @@ func invalidate_stats(info: Dictionary) -> void:
 
 func refresh_stats() -> void:
 	var selected_changed := false
-	var quotes := {}
+	var selected_preview: Dictionary={}
 	for id in stats_dirty:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
-		var value = host.game.jewel_equipment_stat(entry)
+		var projection: Dictionary=host.equipment_display_snapshot(entry)
+		var value = projection.expected
+		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():
-			var next_value = host.game.jewel_equipment_stat(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
-			selected_changed = selected_changed or GrowthNumber.compare(next_value,selected_next_stat)!=0
-		if GrowthNumber.compare(value,item.mainStatNumber)==0:continue
+			selected_preview=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
+			selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
+			selected_changed = selected_changed or projection_changed
+		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed:continue
+		item.projection=projection
+		item.tooltip=module_tooltip(entry,("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2),host.NAMES.get(item.key,UIText.t("equipment.vacant")),projection)
 		item.mainStatNumber = value
 		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
-		update_card_cost(item,quotes)
+		# A damage/probability-only event leaves its already quoted upgrade cost valid.
 		cards[id].refresh(item,selected==id)
 		sort_dirty = sort_dirty or sort_mode==2
 		selected_changed = selected_changed or selected==id
 	stats_dirty.clear()
 	if sort_dirty:apply_filters()
-	if selected_changed:refresh_detail()
+	if selected_changed:refresh_detail(selected_preview)
 
 func refresh_affordability() -> void:
 	observed_resources = host.game.profile.resources.duplicate()
@@ -518,14 +527,15 @@ func refresh_affordability_detail() -> void:
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
 
-func refresh_detail() -> void:
+func refresh_detail(next_projection: Dictionary = {}) -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
 	var category: String = item.category
 	selected_slot = int(item.index)
 	var entry: Dictionary = host.game.module_entry(category,selected_slot)
 	var key := str(entry.key)
-	selected_next_stat = host.game.jewel_equipment_stat(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else 0.0
+	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
+	selected_next_stat = next_projection.expected
 	var options: Array = [""]
 	options.append_array(BattleGame.WEAPON_KEYS if category=="weapons" else BattleGame.DEFENSE_KEYS)
 	if host.ui_state_changed(detail.slots,[options,host.game.profile.unlocked]):
@@ -547,6 +557,7 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
+	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection))
 	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
@@ -561,7 +572,10 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
 	var description: String = ""
-	if not key.is_empty():description = host.equipment_stat_text(entry)+"\n"+host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
+	if not key.is_empty():
+		description=host.equipment_stat_text(entry,item.projection,next_projection)+"\n"
+		if category=="weapons":description+=host.equipment_expected_details(entry,item.projection)+"\n"
+		description+=host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
 	description += UIText.t("upgrade.cost_one",{"cost":cost})
 	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)

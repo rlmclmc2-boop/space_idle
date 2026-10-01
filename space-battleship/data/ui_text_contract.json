@@ -6310,6 +6310,18 @@
       "params": [
         "amount"
       ]
+    },
+    "weapon.expected_damage": {
+      "params": []
+    },
+    "weapon.expected_damage_details": {
+      "params": [
+        "base",
+        "trigger",
+        "bonus",
+        "multiplier",
+        "expected"
+      ]
     }
   },
   "bindings": {

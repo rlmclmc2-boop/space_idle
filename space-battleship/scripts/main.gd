@@ -16,6 +16,7 @@ const RIGHT_UI_OFFSET := 608.0
 const CHROME_HEIGHT := 78.0
 const VIEW_CROP_LEFT := 20.0
 const MUSIC_SETTINGS_PATH := "user://music_settings.cfg"
+const EQUIPMENT_DISPLAY := preload("res://scripts/equipment_display.gd")
 const BATTLE_ORIGIN := Vector2(20,160)
 const BATTLE_VIEW_SIZE := Vector2(572,960)
 # Defaults share the existing ProjectSettings visuals namespace; presentation only.
@@ -2965,12 +2966,22 @@ func skin_equipment_button(action: Button, primary := false) -> void:
 	action.add_theme_color_override("font_hover_color",Color.WHITE)
 	action.add_theme_color_override("font_disabled_color",Color("728795"))
 
-func equipment_stat_text(entry: Dictionary) -> String:
+func equipment_display_snapshot(entry: Dictionary, level := -1) -> Dictionary:
+	return EQUIPMENT_DISPLAY.snapshot(game,entry,level)
+
+func equipment_expected_details(entry: Dictionary, values: Dictionary = {}) -> String:
+	if not BattleGame.WEAPON_KEYS.has(str(entry.get("key",""))):return ""
+	if values.is_empty():values=equipment_display_snapshot(entry)
+	return UIText.t("weapon.expected_damage_details",{"base":NUMBER_FORMAT.precise(values.base),"trigger":NUMBER_FORMAT.percentage(values.trigger*100.0),"bonus":NUMBER_FORMAT.percentage(values.bonus_probability*100.0),"multiplier":NUMBER_FORMAT.percentage(GrowthNumber.multiply(values.critical_multiplier,100.0)),"expected":NUMBER_FORMAT.precise(values.expected)})
+
+func equipment_stat_text(entry: Dictionary, current: Dictionary = {}, next: Dictionary = {}) -> String:
 	var key := str(entry.key)
 	var lv := int(entry.level)
 	var cap := db.max_equipment_level(key)
-	var label := UIText.t("defense.shield") if key == "shield" else (UIText.t("defense.armour") if key == "armour" else UIText.t("weapon.damage"))
-	return UIText.t("weapon.equipment_stat_text.text_04", {"label":"%s" % (label), "entry":"%s" % (number(game.jewel_equipment_stat(entry))), "cap":"%s" % (number(game.jewel_equipment_stat(entry,mini(lv+1,cap)))), "else":"%s" % (UIText.t("weapon.equipment_stat_text.text_05") if lv >= cap else "")})
+	if current.is_empty():current=equipment_display_snapshot(entry)
+	if next.is_empty():next=equipment_display_snapshot(entry,mini(lv+1,cap))
+	var label := UIText.t("defense.shield") if key == "shield" else (UIText.t("defense.armour") if key == "armour" else UIText.t("weapon.expected_damage"))
+	return UIText.t("weapon.equipment_stat_text.text_04", {"label":"%s" % (label), "entry":"%s" % (number(current.expected)), "cap":"%s" % (number(next.expected)), "else":"%s" % (UIText.t("weapon.equipment_stat_text.text_05") if lv >= cap else "")})
 
 func equipment_detail_text(entry: Dictionary) -> String:
 	var key := str(entry.key)

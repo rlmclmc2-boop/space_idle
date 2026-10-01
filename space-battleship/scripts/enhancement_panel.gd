@@ -220,18 +220,18 @@ func effect_description(kind: String) -> String:
 			var coefficient := parameter("proficiency_growth" if kind=="proficiency" else "adaptation_growth")
 			var round_scale := parameter("bonus_round_scale")
 			var bonus := roundf(coefficient*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*round_scale)/round_scale
-			return UIText.t("enhance.description."+kind,{"bonus":display(bonus*100),"count":FORMAT.compact(count)})
+			return UIText.t("enhance.description."+kind,{"bonus":FORMAT.percentage(bonus*100),"count":FORMAT.compact(count)})
 		"repeat":
-			return UIText.t("enhance.description.repeat",{"chance":display(parameter("repeat_probability")*100),"delay":display(parameter("repeat_delay")),"bonus":display(parameter("repeat_growth")*level*100)})
+			return UIText.t("enhance.description.repeat",{"chance":FORMAT.percentage(parameter("repeat_probability")*100),"delay":display(parameter("repeat_delay")),"bonus":FORMAT.percentage(parameter("repeat_growth")*level*100)})
 		"critical":
-			return UIText.t("enhance.description.critical",{"chance":display(parameter("base_critical_rate")*100),"multiplier":display(parameter("base_critical_multiplier")+parameter("critical_growth")*level)})
+			return UIText.t("enhance.description.critical",{"chance":FORMAT.percentage(parameter("base_critical_rate")*100),"multiplier":FORMAT.percentage(N.multiply(parameter("base_critical_multiplier")+parameter("critical_growth")*level,100.0))})
 		"delayed_damage":
 			var duration := parameter("deferred_duration")
 			var interval := parameter("deferred_interval")
 			var ticks := ceili(duration/interval-0.000000001)
-			return UIText.t("enhance.description.delayed_damage",{"fraction":display(game.enhancement_deferred_fraction()*100),"duration":display(duration),"interval":display(interval),"ticks":ticks,"chance":display(parameter("deferred_clear_probability")*100)})
+			return UIText.t("enhance.description.delayed_damage",{"fraction":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"duration":display(duration),"interval":display(interval),"ticks":ticks,"chance":FORMAT.percentage(parameter("deferred_clear_probability")*100)})
 		"memory_material":
-			return UIText.t("enhance.description.memory_material",{"interval":display(parameter("memory_interval")),"recovery":display(parameter("memory_heal_fraction")*level*100),"cap":display(parameter("memory_buffer_fraction")*level*100)})
+			return UIText.t("enhance.description.memory_material",{"interval":display(parameter("memory_interval")),"recovery":FORMAT.percentage(parameter("memory_heal_fraction")*level*100),"cap":FORMAT.percentage(parameter("memory_buffer_fraction")*level*100)})
 	return UIText.t("enhance.description.pending")
 
 func runtime_effect_description(kind: String) -> String:
@@ -240,20 +240,20 @@ func runtime_effect_description(kind: String) -> String:
 		"proficiency","adaptation":
 			var count := int(values.get("history",0))
 			var bonus := roundf(float(values.growth)*game.enhancement_effective_level()*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
-			return UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(count),"bonus":display(bonus*100),"branch":display(values.branch_bonus_percent)})
+			return UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(count),"bonus":FORMAT.percentage(bonus*100),"branch":FORMAT.percentage(values.branch_bonus_percent)})
 		"repeat":
-			return UIText.t("enhance.description.repeat.runtime",{"chance":display(values.probability_percent),"delay":display(values.delay),"bonus":display(values.damage_percent)})
+			return UIText.t("enhance.description.repeat.runtime",{"chance":FORMAT.percentage(values.probability_percent),"delay":display(values.delay),"bonus":FORMAT.percentage(values.damage_percent)})
 		"critical":
 			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(values.eligible_modules)>0
 			var key := "enhance.description.critical.runtime" if guaranteed else "enhance.description.critical.runtime_regular"
-			var arguments := {"chance":display(values.probability_percent),"multiplier":FORMAT.compact(values.damage_multiplier)}
-			if guaranteed:arguments.underlying=display(values.underlying_probability_percent)
+			var arguments := {"chance":FORMAT.percentage(values.probability_percent),"multiplier":FORMAT.percentage(N.multiply(values.damage_multiplier,100.0))}
+			if guaranteed:arguments.underlying=FORMAT.percentage(values.underlying_probability_percent)
 			return UIText.t(key,arguments)
 		"memory_material":
-			return UIText.t("enhance.description.memory_material.runtime",{"interval":display(values.interval),"recovery":FORMAT.compact(values.heal_percent),"charge":FORMAT.compact(values.charge_percent),"cap":FORMAT.compact(values.capacity_percent)})
+			return UIText.t("enhance.description.memory_material.runtime",{"interval":display(values.interval),"recovery":FORMAT.percentage(values.heal_percent),"charge":FORMAT.percentage(values.charge_percent),"cap":FORMAT.percentage(values.capacity_percent)})
 		"delayed_damage":
 			var ticks := ceili(float(values.duration)/float(values.interval)-0.000000001)
-			return UIText.t("enhance.description.delayed_damage",{"fraction":display(values.fraction_percent),"duration":display(values.duration),"interval":display(values.interval),"ticks":ticks,"chance":display(values.probability_percent)})
+			return UIText.t("enhance.description.delayed_damage",{"fraction":FORMAT.percentage(values.fraction_percent),"duration":display(values.duration),"interval":display(values.interval),"ticks":ticks,"chance":FORMAT.percentage(values.probability_percent)})
 	return UIText.t("enhance.description.pending")
 
 func compact_branch_path(category: String, kind: String) -> String:
@@ -264,7 +264,7 @@ func compact_branch_path(category: String, kind: String) -> String:
 	return " · ".join(choices)
 
 func effect_overview_text(key: String, value: Variant, unit := "%") -> String:
-	return PARAMETER_TEXT.render(key,{"value":FORMAT.compact(value)},{"value":{"role":"effect","unit":unit}})
+	return PARAMETER_TEXT.render(key,{"value":FORMAT.percentage(value)},{"value":{"role":"effect","unit":unit}})
 
 func effect_overview(kind: String) -> String:
 	var runtime: Dictionary = game.call("enhancement_effect_runtime",kind) if game.has_method("enhancement_effect_runtime") else {}
@@ -275,14 +275,14 @@ func effect_overview(kind: String) -> String:
 			var bonus := roundf(parameter(kind+"_growth")*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
 			return effect_overview_text("enhance.overview."+kind,bonus*100)
 		"repeat":
-			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.compact(runtime.get("probability_percent",parameter("repeat_probability")*100)),"multiplier":FORMAT.compact(1.0+float(runtime.get("damage_percent",parameter("repeat_growth")*level*100))/100.0)},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":" 倍"}})
+			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("repeat_probability")*100)),"multiplier":FORMAT.percentage(100.0+float(runtime.get("damage_percent",parameter("repeat_growth")*level*100)))},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"critical":
 			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(runtime.get("eligible_modules",0))>0
-			var values := {"chance":FORMAT.compact(runtime.get("probability_percent" if guaranteed else "base_probability_percent",parameter("base_critical_rate")*100)),"multiplier":FORMAT.compact(runtime.get("damage_multiplier",parameter("base_critical_multiplier")+parameter("critical_growth")*level))}
-			if guaranteed:values.underlying=FORMAT.compact(runtime.get("base_probability_percent",parameter("base_critical_rate")*100))
-			return PARAMETER_TEXT.render("enhance.overview.critical_guaranteed" if guaranteed else "enhance.overview.critical",values,{"chance":{"role":"effect","unit":"%"},"underlying":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":" 倍"}})
+			var values := {"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("base_critical_rate")*100)),"multiplier":FORMAT.percentage(N.multiply(runtime.get("damage_multiplier",parameter("base_critical_multiplier")+parameter("critical_growth")*level),100.0))}
+			if guaranteed:values.underlying=FORMAT.percentage(runtime.get("underlying_probability_percent",parameter("base_critical_rate")*100))
+			return PARAMETER_TEXT.render("enhance.overview.critical_guaranteed" if guaranteed else "enhance.overview.critical",values,{"chance":{"role":"effect","unit":"%"},"underlying":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.get("heal_percent",parameter("memory_heal_fraction")*level*100))/parameter("memory_interval"),"%/秒")
-		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.compact(game.enhancement_deferred_fraction()*100),"chance":FORMAT.compact(runtime.get("probability_percent",parameter("deferred_clear_probability")*100))},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
+		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("deferred_clear_probability")*100))},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
 	return UIText.t("enhance.description.pending")
 
 func eligible_count(category: String, index: int) -> int:
@@ -385,7 +385,7 @@ func branch_option_text(metadata: Dictionary, field: String) -> String:
 	var parameters := {}
 	for key in UIText.contracts.get(text_id,{}).get("params",[]):
 		if not values.has(key):continue
-		parameters[key] = FORMAT.compact(values[key]) if values[key] is float else values[key]
+		parameters[key] = FORMAT.percentage(values[key]) if str(key).ends_with("_percent") else FORMAT.compact(values[key]) if values[key] is float else values[key]
 	return UIText.t(text_id,parameters)
 
 func branch_option_markup(metadata: Dictionary) -> String:
@@ -395,7 +395,7 @@ func branch_option_markup(metadata: Dictionary) -> String:
 	var spans := {}
 	for key in UIText.contracts.get(text_id,{}).get("params",[]):
 		if not values.has(key):continue
-		parameters[key] = FORMAT.compact(values[key]) if values[key] is float else values[key]
+		parameters[key] = FORMAT.percentage(values[key]) if str(key).ends_with("_percent") else FORMAT.compact(values[key]) if values[key] is float else values[key]
 		var unit := "%"
 		var role := "effect"
 		if key in ["interval","duration","lockout"]:unit=" 秒";role="time"

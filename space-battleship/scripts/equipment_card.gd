@@ -17,6 +17,7 @@ var equip_button: Button
 var slot_id := ""
 var is_locked := false
 var is_equipped := false
+var is_weapon := false
 
 static func face(weight: int) -> Font:
 	if not fonts.has(weight):
@@ -90,7 +91,9 @@ func layout_contents() -> void:
 	if not is_instance_valid(upgrade_button):return
 	fields.title.size.x = size.x-102
 	fields.level.size.x = size.x-102
-	fields.stat.size.x = size.x-106
+	host.set_ui_value(fields.caption,"size",Vector2(108 if is_weapon else 76,32))
+	host.set_ui_value(fields.stat,"position",Vector2(126 if is_weapon else 92,74))
+	host.set_ui_value(fields.stat,"size",Vector2(size.x-(140 if is_weapon else 106),44))
 	fields.status.size.x = size.x-28
 	upgrade_button.position = Vector2((size.x-ACTION_SIZE.x)/2,118)
 	upgrade_button.size = ACTION_SIZE
@@ -104,6 +107,9 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	slot_id = item.id
 	is_locked = item.locked
 	is_equipped = item.equipped
+	if is_weapon!=(item.category=="weapons"):
+		is_weapon=item.category=="weapons"
+		layout_contents()
 	set_meta("slot_id",slot_id)
 	set_meta("action_id","module_select")
 	upgrade_button.set_meta("slot_id",slot_id)

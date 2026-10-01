@@ -66,7 +66,9 @@ func advance_weapons(g,dt: float) -> void:
   if g.state==g.State.COMBAT and not data.target.is_empty() and g.enemies.has(data.target) and data.target.hp>0 and active(g,data.entry,"proficiency",1,"B"):
    data.dwell+=dt
   else:data.target={};data.dwell=0.0
-  if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):g.invalidate_equipment_counter(str(data.entry.get("key","")))
+  if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):
+   g.invalidate_equipment_counter(str(data.entry.get("key","")))
+   g.event.emit("equipment_stats",{"slot":g.slot_id("weapons",index)})
 
 func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary := true) -> Dictionary:
  var data:=weapon(g,index)
@@ -79,11 +81,13 @@ func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary
 func finish_attack(g,context: Dictionary) -> void:
  if context.get("derived",false) or not context.get("critical",false):return
  var data:=weapon(g,int(context.index))
+ var before_stacks:=int(data.stacks)
  if active(g,data.entry,"critical",1,"B"):data.next=int(g.enhancement_parameter("critical_b1_attacks"))
  if active(g,data.entry,"critical",2,"B"):
   data.stacks=mini(int(g.enhancement_parameter("critical_b2_stacks")),int(data.stacks)+1)
   data.stack_time=g.enhancement_parameter("critical_b2_duration")
  g.invalidate_equipment_counter(str(data.entry.get("key","")))
+ if before_stacks!=int(data.stacks):g.event.emit("equipment_stats",{"slot":g.slot_id("weapons",int(context.index))})
 
 func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={}) -> Variant:
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
