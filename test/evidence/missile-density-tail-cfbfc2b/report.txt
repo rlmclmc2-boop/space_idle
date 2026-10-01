@@ -1,0 +1,47 @@
+Dynamic missile density follow-up: body mesh reuse
+
+Production base d3e89f11692c7069b8c4cf13fb6f2f6f404c3317.
+Candidate cfbfc2b989df99ee9bbccce264fe9089d3e665f7.
+Production branch perf/missile-density-tail-d3e89f1; one file only, missile_vfx.gd, 28 insertions/12 deletions. Evidence lives on a separate evidence branch and must not be merged into production.
+
+Problem and change
+Every visible missile rebuilt four filled-body polygons and submitted their triangulation/vertex data every draw. The candidate creates four shared immutable ArrayMesh resources once; it retains the same silhouette, colors, native antialiased strokes, command ordering, flame, trail and per-projectile body. Body position/rotation are applied using the existing CanvasItem transform mechanism and reset afterward. The simulation and every effect decision remain unchanged. No drawing cadence, visual budget, projectile count or speed reduction. No production diagnostics or opt-out switch.
+
+Workload and limits
+Godot4.6.3 Linux Compatibility / llvmpipe; native GUI actual draw callbacks. stat_cache_enabled=true; game.speed=1; upgrade amount=1. The same deterministic synthetic configuration from the prior report: eight level150 missiles on Heavy_Battleship; four level150 defenses; enhancement30; weapon proficiency/repeat/critical BBB; crew103/hightech303; RNG1701; immortal enemy targets with no enemy weapons. Target identity replacement occurs at fixed frames. No saved user game is read, copied or written.
+Each run advances the actual main scene with fixed1/60 delta for900 presented frames, then stops. This is15 simulated seconds of controlled dynamic replay, NOT15 seconds of realtime throughput. All native projectile/repeat processing remains active; no frozen clones. It is not the user's recovered build. Actual peak116; after the first60 warmup frames,134 frames exceed100 projectiles. These counts are identical in every accepted run. We did NOT reproduce150 dynamic projectiles, and do not claim Windows FPS gains or final Windows acceptance.
+
+Repeated dynamic timing (milliseconds; >100-projectile slice, n134 per run)
+                                    draw P50 / P95    body P50 / P95     draw CPU P95
+baseline A (wall only)                7.083 / 9.371
+baseline B (wall only)                6.855 / 9.417
+baseline C (precise thread clock)     6.715 / 9.347    3.126 / 4.259       9.360
+candidate A                          5.000 / 7.237    1.645 / 2.535       7.244
+candidate B (final names/comments)    4.935 / 6.285    1.614 / 2.198       6.292
+The repeated P95 reduction is larger than the baseline A/B/C variation. Stages are nested; do not add them. Callbacks use monotonic wall time. CPU columns use CLOCK_THREAD_CPUTIME_ID, not frame-minus-main or a GPU estimate.
+
+Whole840-frame post-warmup slice, baseline C -> candidate A:
+draw P50/P95 5.249/7.779 ->4.076/6.144ms.
+Controlled start-main-to-postdraw wall duration in the >100 slice:
+baseline C P50/P95 84.335/99.523ms; candidate A80.688/97.790; candidate B77.134/96.981. This includes software rendering and waiting and is not a Windows performance prediction.
+Main-process >100 slice P50/P95: baseline C8.718/19.302; candidate A8.726/19.052; candidate B8.679/17.764. No separate simulation improvement is claimed.
+Draw-call P50/P951799/1909 in all three; every one of900 per-frame draw-call counts matches exactly.
+
+State and appearance checks
+For both candidates, every one of900 frames exactly matches baseline C for RNG state, attack count, total/own/hostile/orphan projectile counts, queue, repeats, player dictionary, cumulative hits and launches. Baselines A and B also match each other. These are bounded trace checks, not a substitute for all gameplay tests.
+48 age/direction/powered-orphan visual cases were rendered side-by-side against the original function. At1x,58 of288000 compared pixels differ, by at most1 of255 in any RGB channel; alpha identical. At0.67 scale,39 pixels differ, also at most1/255. Following green sentinel lines match, checking transform restoration. Images were inspected. Native strokes and flame are retained. No script/parse errors in accepted run logs. git diff --check passes.
+
+Remaining tail issue — not solved
+Candidate B frame824 has107 projectiles and draw24.798ms / thread CPU24.809ms. Of the draw callback, the inclusive battlefield.draw_projectile_fx phase consumes18.748ms; body rendering is2.238ms. The same frame/state costs1.312–1.506ms in that FX phase in the other baseline runs and1.354ms in candidate A. This does not establish a deterministic gameplay trigger or a specific native-call cause. The FX phase includes selection, trail geometry and native draw calls; do not label all18.748ms as draw_polyline without finer evidence. Candidate maximum draw time is not improved across all runs. The overall Windows spike problem remains open.
+The user's exact fourth-sample loadout/branches are still unavailable. Fresh Windows sampling after the already-merged orphan/snapshot fixes and this reviewed candidate is needed for acceptance; this local116-projectile synthetic load cannot establish150-projectile Windows behavior.
+
+Timer diagnostics and rejected runs
+/proc/self/schedstat was tried first. Its per-frame CPU values are unsuitable here (some exceed wall time materially). In dynamic-valid-a/b.json, DO NOT use main.draw_cpu, main.draw_runqueue_wait or main.draw_timeslices for attribution. Their wall timings and deterministic gameplay traces are valid and are used only for baseline repetition.
+The precise diagnostic bridge thread_clock.c exposes CLOCK_THREAD_CPUTIME_ID through one named getenv request. All other getenv calls forward to libc. It is test-only LD_PRELOAD code, not in the production commit. Busy-loop check:wall56344us /CPU56372us;30ms sleep:wall30137us /CPU58us. Baseline C's >100 draw off-CPU P95 is15us; the measured local tail is mostly actual CPU execution in this run, not a demonstrated GPU duration.
+Initial proc pseudo-file whole-file reads returned empty, and a fresh isolated archive omitted addons; both failing runs were rejected. The portable helper now includes the rendering addon. Prior measured runs in the original density evidence used a complete isolated project and are unaffected by the helper packaging omission.
+
+Reproduction
+Keep probe.py, dynamic.gd, density.gd, render150.gd, thread_clock.c and draw_clock_wrapper.gd.txt together. Requires Python with tarfile data filter, Git and Godot; for the optional precise CPU clock, Linux plus cc. It extracts tracked scripts/data/dev/assets/addons into a new isolated directory, imports them, isolates userdata and rejects script/parse errors. Use a working GUI display; --godot selects the engine executable.
+  python probe.py --repo /path/to/space_idle --ref d3e89f1 --out /tmp/dynamic-base --mode dynamic --thread-clock
+  python probe.py --repo /path/to/space_idle --ref cfbfc2b --out /tmp/dynamic-mesh --mode dynamic --thread-clock
+On Windows omit --thread-clock. For another repetition choose a new --out. The driver remains game.speed1 / upgrade amount1 with fixed1/60 steps. No MAX/high-speed configuration is used. run_gui.py and xorg.conf capture the exact local Linux invocation for the archived data; these paths are local-run specific. The portable helper's setup and script execution were validated through the equivalent isolated local run; the last CLI extension is syntax-checked, not claimed as an additional measured run.

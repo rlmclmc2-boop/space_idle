@@ -1,0 +1,5 @@
+{
+  "cgroup_before": "usage_usec 3554298066\nuser_usec 3396388233\nsystem_usec 157909832\nnice_usec 133308\nnr_periods 52585\nnr_throttled 1455\nthrottled_usec 1409264\nnr_bursts 0\nburst_usec 0\n",
+  "lp_threads": "default",
+  "cgroup_after": "usage_usec 3767573029\nuser_usec 3605563650\nsystem_usec 162009378\nnice_usec 133308\nnr_periods 53398\nnr_throttled 1455\nthrottled_usec 1409264\nnr_bursts 0\nburst_usec 0\n"
+}
