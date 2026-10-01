@@ -2792,12 +2792,12 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
 	return N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value"))
 
-func jewel_critical(entry: Dictionary) -> Vector2:
+func jewel_critical(entry: Dictionary, effects: Variant = null) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
 	var rate := enhancement_branches.underlying_critical_rate(self,entry)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
-	for effect in jewel_effects(entry):
+	for effect in (jewel_effects(entry) if effects == null else effects):
 		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
 	return Vector2(clampf(rate,0,1),maxf(0,damage))
 
@@ -2817,9 +2817,12 @@ func player_weapon_row(entry: Dictionary) -> Dictionary:
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var entry := slot_entry("weapons",index)
-	var critical := jewel_critical(entry)
+	# One attack owns its payload; reuse its read-only effects for the two
+	# projections before attaching source metadata. Each shot still rolls below.
+	var effects := jewel_effects(entry)
+	var critical := jewel_critical(entry,effects)
 	var context: Dictionary=enhancement_attack_contexts.get(index,{})
-	var raw = N.multiply(N.multiply(jewel_equipment_stat(entry),multiplier),float(context.get("next_multiplier",1.0)))
+	var raw = N.multiply(N.multiply(jewel_equipment_stat(entry,-1,effects),multiplier),float(context.get("next_multiplier",1.0)))
 	var is_critical := rng.randf() < critical.x
 	var critical_bonus_applied := is_critical
 	if is_critical:
@@ -2827,7 +2830,6 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 			critical_bonus_applied=rng.randf()<enhancement_branches.underlying_critical_rate(self,entry)
 		if critical_bonus_applied:raw=N.multiply(raw,critical.y)
 		if not context.is_empty() and not context.get("derived",false):context.critical=true
-	var effects := jewel_effects(entry)
 	for effect in effects:
 		effect.source = index
 		effect.weapon_key=str(entry.key)
