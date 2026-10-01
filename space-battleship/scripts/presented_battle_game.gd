@@ -190,7 +190,9 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		shot.orphan_age=float(shot.orphan_age)+dt
 		if float(shot.orphan_age)>=ORPHAN_LIFETIME:
 			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
-		# Keep the last heading and speed until the ordinary off-screen cleanup.
+		# Losing the lock stops steering, not the launch-to-cruise acceleration.
+		shot.speed=maxf(float(shot.speed),cruise_speed)
+		# Keep the last heading until the ordinary off-screen cleanup.
 		# An empty target also excludes collision and every hit/crit effect above.
 	var movement:=Vector2(shot.direction)*float(shot.speed)*dt
 	shot.x+=movement.x;shot.y+=movement.y

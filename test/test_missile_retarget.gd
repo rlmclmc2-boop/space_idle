@@ -94,8 +94,8 @@ func run()->void:
 	g.change_state(BattleGame.State.TRAVEL)
 	advance(g,2)
 	check(g.launch_records.size()==1 and g.invalid_target_cancellations==4 and g.missile_queue.is_empty(),"No enemies cancels four invalid due packets rather than banking hidden salvos")
-	check(not g.projectiles.is_empty() and g.orphan_expirations==0 and not orphan.dead,"Empty field preserves a visible coasting missile beyond the old fade window")
-	check(Vector2(orphan.x,orphan.y).distance_to(loss_point+loss_velocity*2)<.01,"Empty-field coast keeps its exact velocity")
+	check(g.orphan_expirations==0 and orphan.motion_age>.24,"Empty field does not use the old short fade timeout")
+	check(absf((Vector2(orphan.x,orphan.y)-loss_point).cross(loss_velocity.normalized()))<.01 and orphan.speed==g.MISSILE_CRUISE_SPEED,"Empty-field coast keeps heading and reaches cruise speed")
 	advance(g,10)
 	check(g.projectiles.is_empty() and g.hit_records.is_empty() and g.orphan_expirations==0,"Coasting exits the arena without timeout or ghost hits")
 	g=fixture(2);target=g.enemies[0]
@@ -133,7 +133,7 @@ func run()->void:
 		for frame in 1500:
 			if shot.dead:break
 			step(g,1.0/60.0)
-			straight=straight and shot.direction==direction and shot.speed==60.
+			straight=straight and shot.direction==direction and shot.speed>=60.
 		check(straight and shot.dead and (shot.x < -32 or shot.x > 604 or shot.y < -32 or shot.y > 776),"Orphan leaves arena along unchanged direction "+str(direction))
 		check(g.hit_records.is_empty() and g.missile_retirements.is_empty() and g.orphan_expirations==0 and g.rng.state==state,"Offscreen cleanup has no ghost damage, retirement effect or RNG "+str(direction))
 	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0);g.missile_queue.clear()
