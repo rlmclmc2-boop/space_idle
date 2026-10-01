@@ -80,8 +80,8 @@ func percent_text(value: float) -> String:
 
 func supply_segment(parent: Control, color: Color) -> ColorRect:
 	var segment := ColorRect.new()
-	segment.position = Vector2(112,68)
-	segment.size = Vector2(0,8)
+	segment.position = Vector2(114,40)
+	segment.size = Vector2(0,28)
 	segment.color = color
 	segment.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(segment)
@@ -89,14 +89,14 @@ func supply_segment(parent: Control, color: Color) -> ColorRect:
 
 func update_supply_display(controls: Dictionary, manual_percent: String, power_ratio: float, free_ratio: float) -> void:
 	set_readout(controls.share,UIText.t("reactor.flow.share_free",{"percent":manual_percent,"free":percent_text(free_ratio*100.0)}))
-	# This separate supply strip includes free power; the input remains an integer
+	# Supply colors include free power; the input remains an integer
 	# allocation on the original capacity scale. Above 100%, fit both contributions.
 	var scale := maxf(1.0,power_ratio+free_ratio)
-	var manual_width := 350.0*clampf(power_ratio/scale,0.0,1.0)
-	var free_width := 350.0*clampf(free_ratio/scale,0.0,1.0)
-	host.set_ui_value(controls.manual_segment,"size",Vector2(manual_width,8))
-	host.set_ui_value(controls.free_segment,"position",Vector2(112+manual_width,68))
-	host.set_ui_value(controls.free_segment,"size",Vector2(free_width,8))
+	var manual_width := 346.0*clampf(power_ratio/scale,0.0,1.0)
+	var free_width := 346.0*clampf(free_ratio/scale,0.0,1.0)
+	host.set_ui_value(controls.manual_segment,"size",Vector2(manual_width,28))
+	host.set_ui_value(controls.free_segment,"position",Vector2(114+manual_width,40))
+	host.set_ui_value(controls.free_segment,"size",Vector2(free_width,28))
 
 func glass_style(border: Color) -> StyleBoxFlat:
 	var result := StyleBoxFlat.new()
@@ -315,7 +315,7 @@ func setup(owner_ui: Node) -> void:
 		allocation_name.mouse_filter = Control.MOUSE_FILTER_PASS
 		var share := make_label(allocation_row,"",Vector2(180,6),324,20,INK,32)
 		share.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		var track := visual(allocation_row,"track",Vector2(112,38),Vector2(350,36),accent)
+		var track := visual(allocation_row,"track",Vector2(112,38),Vector2(350,32),accent)
 		var slider := HSlider.new()
 		slider.position = track.position
 		slider.size = track.size
@@ -332,14 +332,15 @@ func setup(owner_ui: Node) -> void:
 		input.slider = slider
 		input.track = track
 		allocation_row.add_child(input)
-		var energy := make_label(allocation_row,"",Vector2(122,40),330,19,SKIN.PAPER,30)
+		var energy := make_label(allocation_row,"",Vector2(70,70),438,19,INK,30)
 		energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var supply_background := supply_segment(allocation_row,INK)
-		supply_background.size.x = 350
+		supply_background.size.x = 346
 		var manual_segment := supply_segment(allocation_row,MODULE_COLORS.weapons)
 		var free_segment := supply_segment(allocation_row,ACCENT)
 		var allocation_boost := make_label(allocation_row,"",Vector2(70,77),438,17,CYAN,25)
 		allocation_boost.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		allocation_boost.hide()
 		var steps: Array[Button] = []
 		for direction in [-1,1]:
 			var step_button := Button.new()

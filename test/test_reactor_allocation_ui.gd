@@ -75,8 +75,8 @@ func run() -> void:
 	for free_ratio in [0.0,0.6,1.5,1000000.0]:
 		panel.update_supply_display(weapons,"25%",0.25,free_ratio)
 		check(weapons.share.text==UIText.t("reactor.flow.share_free",{"percent":"25%","free":panel.percent_text(free_ratio*100.0)}),"Allocation and free percent remain explicit")
-		check(weapons.manual_segment.size.x+weapons.free_segment.size.x<=350.001,"Free supply above 100% stays within its strip")
-		check(weapons.free_segment.position.x==112+weapons.manual_segment.size.x,"Manual and free segments are adjacent")
+		check(weapons.manual_segment.size.x+weapons.free_segment.size.x<=346.001,"Free supply above 100% stays within its strip")
+		check(weapons.free_segment.position.x==114+weapons.manual_segment.size.x,"Manual and free segments are adjacent")
 		check(weapons.share.get_theme_font("font").get_string_size(weapons.share.text,HORIZONTAL_ALIGNMENT_LEFT,-1,weapons.share.get_theme_font_size("font_size")).x<=weapons.share.size.x,"Large free percent remains readable")
 	var before_step: int = scene.game.profile.reactorAllocation.weapons
 	weapons.steps[0].emit_signal("pressed")
@@ -100,7 +100,7 @@ func run() -> void:
 			var controls = panel.module_controls[key]
 			var energy_rect: Rect2 = controls.energy.get_global_rect()
 			var track_rect: Rect2 = controls.track.get_global_rect()
-			check(track_rect.encloses(energy_rect) and controls.energy.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Current / maximum energy stays inside the allocation track without blocking input at "+str(resolution))
+			check(not track_rect.intersects(energy_rect) and controls.energy.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Current / maximum energy stays separate from the two-color supply track at "+str(resolution))
 			check(not track_rect.intersects(controls.clear.get_global_rect()) and not controls.name.get_global_rect().intersects(controls.boost.get_global_rect()),"Row text and clear button do not overlap at "+str(resolution))
 			var expected_prefix: String=UIText.t("reactor.module.%s.effect" % key) if scene.game.reactor_module_unlocked(key) else UIText.t("reactor.module.locked",{"level":str(int(scene.db.unlock_row("reactor_module",key).get("level",0)))})
 			check(controls.boost.text.begins_with(expected_prefix) and controls.boost.get_minimum_size().x <= controls.boost.size.x,"Named effect or locked module label fits at "+str(resolution))
