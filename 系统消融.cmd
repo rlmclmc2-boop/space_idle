@@ -24,3 +24,4 @@ echo 不带参数为全系统对照。其他参数：3d / vfx / ui / enhancement
 echo 请先关闭其他游戏实例；对照和单项应使用相同窗口、帧率及画面设置。
 echo 当前关闭项：[%PERF_OFF%]。结果位于 space-battleship\.runtime\ablation-*.json。
 start "Space Battleship Ablation" /wait "%GAME_ENGINE%" --path "%GAME_ROOT%" --script "%~dp0test\one_times_ablation.gd" --log-file "%GAME_ROOT%\.runtime\ablation-last.log"
+exit /b %errorlevel%

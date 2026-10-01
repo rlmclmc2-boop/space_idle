@@ -40,7 +40,7 @@ def main():
     for path in tests.iterdir():
         if path.is_file() and path.suffix in {".py", ".gd", ".uid"}:
             shutil.copy2(path, isolated_tests / path.name)
-    if args.test == "test_galaxy_ui.gd":
+    if args.test in {"test_galaxy_ui.gd", "one_times_ablation.gd"}:
         shutil.copytree(tests / "fixtures", isolated_tests / "fixtures")
     (game / ".runtime").mkdir()
     env = os.environ.copy()

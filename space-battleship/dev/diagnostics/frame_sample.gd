@@ -45,7 +45,7 @@ class SampleScene extends "res://scripts/battlefield.gd":
   sample_label.add_theme_constant_override("shadow_offset_y",2)
   overlay.add_child(sample_label)
   sample_label.text="性能采样：关闭弹窗，切到目标页，保持 1 倍速 / +1；随后自动记录 20 秒。F7 可重新采样。"
-  metadata={"engine":Engine.get_version_info(),"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"rendering_method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"cpu":OS.get_processor_name(),"logical_cpu_count":OS.get_processor_count(),"max_fps":Engine.max_fps,"vsync":DisplayServer.window_get_vsync_mode(),"window_size":DisplayServer.window_get_size(),"started_at":Time.get_datetime_string_from_system(),"game_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"branches_sha256":FileAccess.get_sha256("res://scripts/enhancement_branches.gd"),"pulse_sha256":FileAccess.get_sha256("res://dev/toon_ship/pulse_vfx.gd"),"timing_note":"frame_us includes rendering/present/VSync/wait; main_us is this main callback only. Nested phases overlap; not GPU time."}
+  metadata={"engine":Engine.get_version_info(),"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"rendering_method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"cpu":OS.get_processor_name(),"logical_cpu_count":OS.get_processor_count(),"max_fps":Engine.max_fps,"vsync":DisplayServer.window_get_vsync_mode(),"window_size":DisplayServer.window_get_size(),"started_at":Time.get_datetime_string_from_system(),"game_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"branches_sha256":FileAccess.get_sha256("res://scripts/enhancement_branches.gd"),"pulse_sha256":FileAccess.get_sha256("res://dev/toon_ship/pulse_vfx.gd"),"timing_note":"frame_us includes rendering/present/VSync/wait; main_us is this main callback only. Nested phases overlap; not GPU time. Engine render counters are the latest available frame, not synchronized GPU measurements."}
  func blocked()->bool:
   if background_unfocused or game.paused or game.speed!=1 or equipment_panel.upgrade_amount!=1:return true
   var qa=get_tree().root.get_node_or_null("QATools")
@@ -70,6 +70,10 @@ class SampleScene extends "res://scripts/battlefield.gd":
   var started=Time.get_ticks_usec();super.draw_battle();add("battle_draw_us",started)
  func _process(delta:float)->void:
   var now=Time.get_ticks_usec()
+  if capture_started>0 and blocked():
+   capture_started=0;game.measure=false;rows.clear();previous={}
+   armed=true;warmup=0.0
+   sample_label.text="采样已中止：请保持当前页、1 倍速 / +1，关闭弹窗并返回游戏后重新采样。"
   if capture_started>0 and not previous.is_empty():
    previous.frame_us=now-frame_started
    previous.phases=phases.duplicate();previous.events=events.duplicate()
@@ -97,11 +101,16 @@ class SampleScene extends "res://scripts/battlefield.gd":
   metadata.finished_at=Time.get_datetime_string_from_system()
   var stamp=Time.get_datetime_string_from_system().replace(":","-")
   var path="res://.runtime/frame-sample-"+stamp+".json"
-  DirAccess.make_dir_recursive_absolute("res://.runtime")
+  var directory_error=DirAccess.make_dir_recursive_absolute("res://.runtime")
+  if directory_error!=OK:
+   sample_label.text="性能报告目录创建失败："+str(directory_error);printerr(sample_label.text);return
   var file=FileAccess.open(path,FileAccess.WRITE)
   if file==null:
    sample_label.text="性能报告写入失败："+str(FileAccess.get_open_error());printerr(sample_label.text);return
-  file.store_string(JSON.stringify({"metadata":metadata,"rows":rows}));file.close()
+  file.store_string(JSON.stringify({"metadata":metadata,"rows":rows}));file.flush()
+  var write_error=file.get_error();file.close()
+  if write_error!=OK:
+   sample_label.text="性能报告写入失败："+str(write_error);printerr(sample_label.text);return
   sample_label.text="性能采样完成：.runtime/frame-sample-"+stamp+".json（F7 再采一页）"
   print("PERFORMANCE SAMPLE: ",ProjectSettings.globalize_path(path))
   previous={}

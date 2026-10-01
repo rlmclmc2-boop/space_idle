@@ -54,7 +54,7 @@ class UI extends "res://scripts/battlefield.gd":
   var now=Time.get_ticks_usec()
   var meter=Engine.get_meta("saved_perf")
   if not previous.is_empty():
-   previous.frame_us=now-began;previous.timings=meter.times.duplicate(true)
+   previous.frame_us=now-began
    if frames>0:rows.append(previous)
   meter.times.clear();began=now;frames+=1
   var start=Time.get_ticks_usec()
@@ -133,10 +133,24 @@ func run():
  var stamp=Time.get_datetime_string_from_system().replace(":","-")
  var path="res://.runtime/ablation-"+(mode if not mode.is_empty() else "control")+"-"+stamp+".json"
  var metadata={"mode":mode,"duration_seconds":6,"seed":1701,"speed":g.speed,"upgrade_amount":scene.equipment_panel.upgrade_amount,"engine":Engine.get_version_info(),"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"rendering_method":RenderingServer.get_current_rendering_method(),"max_fps":Engine.max_fps,"vsync":DisplayServer.window_get_vsync_mode(),"window_size":DisplayServer.window_get_size(),"game_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"branches_sha256":FileAccess.get_sha256("res://scripts/enhancement_branches.gd"),"note":"Synthetic fresh seeded fixture; never loads/saves player progress. Ablation is diagnostic, not an equivalent gameplay result. Enhancement/combat modes change state evolution; frame pacing changes simulated time because production delta clamp remains intact."}
- FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"metadata":metadata,"rows":scene.rows}))
- print("ABLATION REPORT: ",ProjectSettings.globalize_path(path))
- print("DONE rows=",scene.rows.size()," speed=",g.speed," paused=",g.paused)
+ var written=write_report(path,{"metadata":metadata,"rows":scene.rows})
+ if written:
+  print("ABLATION REPORT: ",ProjectSettings.globalize_path(path))
+  print("DONE rows=",scene.rows.size()," speed=",g.speed," paused=",g.paused)
  g.launch_provider=Callable();g.target_provider=Callable()
  scene.queue_free();await process_frame;await process_frame
  Engine.remove_meta("saved_perf")
- quit()
+ quit(0 if written else 1)
+
+func write_report(path:String,payload:Dictionary)->bool:
+ var directory_error=DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+ if directory_error!=OK:
+  printerr("ABLATION REPORT directory failed: ",directory_error);return false
+ var file=FileAccess.open(path,FileAccess.WRITE)
+ if file==null:
+  printerr("ABLATION REPORT open failed: ",FileAccess.get_open_error());return false
+ file.store_string(JSON.stringify(payload));file.flush()
+ var write_error=file.get_error();file.close()
+ if write_error!=OK:
+  printerr("ABLATION REPORT write failed: ",write_error);return false
+ return true

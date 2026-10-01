@@ -9,6 +9,22 @@ func run()->void:
  root.add_child(scene)
  scene.game.speed=1;scene.game.paused=false;scene.background_unfocused=false
  scene.equipment_panel.set_upgrade_amount(1)
+ # Gate checks do not advance the simulation at a disallowed speed/amount.
+ scene.game.speed=2
+ if not scene.blocked() or scene.game.speed!=2:
+  printerr("FAIL: non-1x sampling gate changed player speed");quit(1);return
+ scene.game.speed=1
+ scene.equipment_panel.set_upgrade_amount(10)
+ if not scene.blocked() or scene.equipment_panel.upgrade_amount!=10:
+  printerr("FAIL: non-+1 sampling gate changed selection");quit(1);return
+ scene.equipment_panel.set_upgrade_amount(1)
+ scene.capture_started=Time.get_ticks_usec();scene.game.measure=true
+ scene.rows=[{"discarded":true}];scene.previous={"discarded":true}
+ scene.equipment_panel.set_upgrade_amount(10)
+ scene._process(0.0)
+ if scene.capture_started!=0 or scene.game.measure or not scene.rows.is_empty() or not scene.armed:
+  printerr("FAIL: capture did not discard invalid conditions");quit(1);return
+ scene.equipment_panel.set_upgrade_amount(1)
  scene.duration=2.0
  scene.warmup=0.0
  var started=Time.get_ticks_msec()
