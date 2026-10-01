@@ -12236,5 +12236,17 @@
     "text": "历史按敌方实际来袭攻击计数，临时防护完全吸收的受击也计数；延迟伤害结算不再计数。换装、升级、换关和死亡保留历史；重铸清零。",
     "params": "",
     "category": "enhance"
+  },
+  {
+    "key": "ship.refit.carrier_empty",
+    "text": "没有已装载武器的无人机",
+    "params": "",
+    "category": "ship"
+  },
+  {
+    "key": "ship.refit.carrier_page",
+    "text": "武器无人机 · {page}/{pages} 页 · 共 {count} 架",
+    "params": "{page},{pages},{count}",
+    "category": "ship"
   }
 ]

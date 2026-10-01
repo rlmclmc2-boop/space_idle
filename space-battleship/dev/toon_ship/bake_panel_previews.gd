@@ -12,7 +12,12 @@ func run() -> void:
 		settings[key]=source.get(key)
 	source.free()
 	var mapping := {"renderer":"res://scripts/presented_ship_view.gd","source_manifest":"res://dev/toon_ship/hybrid_manifest.json","canvas":[768,768],"settings":settings,"hulls":{}}
-	for key in view.manifest.hulls:
+	var keys:Array=view.manifest.hulls.keys()
+	var drone:Dictionary=view.manifest.drone.duplicate(true)
+	drone.drone_offsets=[]
+	view.manifest.hulls["WeaponDrone"]=drone
+	keys.append("WeaponDrone")
+	for key in keys:
 		view.set_hull(key)
 		view.apply_parameters(settings,true,true)
 		# Source sockets and hull use the same live model transform and exact top-down camera.
@@ -33,11 +38,14 @@ func run() -> void:
 			var node:Node3D=view.ship.find_child(str(mount.node),true,false)
 			var p:Vector2=view.camera.unproject_position(node.global_position)
 			sockets.append([p.x,p.y])
-		mapping.hulls[key]={"texture":texture_path,"model":view.hull_config.path,"mounts":sockets,"height":height}
+		var baked:Dictionary={"texture":texture_path,"model":view.hull_config.path,"mounts":sockets,"height":height}
+		if key=="WeaponDrone":mapping.drone=baked
+		else:mapping.hulls[key]=baked
 		print("Baked "+str(key))
 	mapping.source_sha256={}
 	var paths:Array=[mapping.renderer,mapping.source_manifest,"res://addons/flexible_toon_shader/flexible_toon.gdshader","res://scripts/battlefield.gd"]
 	for hull in mapping.hulls.values():paths.append(hull.model)
+	paths.append(mapping.drone.model)
 	for path in paths:mapping.source_sha256[path]=FileAccess.get_sha256(path)
 	var file:=FileAccess.open(output+"/manifest.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(mapping,"  ")+"\n")

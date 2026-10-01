@@ -9,6 +9,17 @@ const TEAL := Color("83cfcb")
 const MUTED := Color("546c74")
 static var preview_data: Dictionary = {}
 static var preview_textures: Dictionary = {}
+var drone_texture: Texture2D
+var drone_strip: Control
+var drone_cards: Array[Button] = []
+var drone_titles: Array[Label] = []
+var drone_page_label: Label
+var drone_previous: Button
+var drone_next: Button
+var drone_empty: Label
+var drone_page := 0
+var drone_context := ""
+
 var preview_state: Label
 var choice_titles: Dictionary = {}
 var choice_capacities: Dictionary = {}
@@ -105,18 +116,19 @@ func setup(owner_ui: Node) -> void:
 		locked_labels[key] = gate_label
 	preview = Control.new()
 	preview.position = Vector2(280,170)
-	preview.size = Vector2(760,880)
+	preview.size = Vector2(760,980)
 	add_child(preview)
 	picture = TextureRect.new()
-	picture.position=Vector2(40,70)
+	picture.position=Vector2(40,150)
 	picture.size = Vector2(680,680)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	preview.add_child(picture)
+	setup_drone_strip()
 	heading = label(self,"",Rect2(300,112,730,56),26)
-	preview_state = label(preview,"",Rect2(32,754,700,44),22)
-	var source_hint := label(preview,UIText.t("ship.refit.static_hint"),Rect2(32,806,700,72),21,MUTED)
+	preview_state = label(preview,"",Rect2(32,846,700,44),22)
+	var source_hint := label(preview,UIText.t("ship.refit.static_hint"),Rect2(32,906,700,56),19,MUTED)
 	source_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	information.append(source_hint)
 	information.append(label(self,UIText.t("ship.refit.mounts"),Rect2(1080,120,240,52),21))
@@ -157,8 +169,10 @@ func setup(owner_ui: Node) -> void:
 func open_module(id: String) -> void:
 	if candidate!=str(host.game.profile.selectedShip):return
 	host.equipment_tabs.current_tab=0
-	host.equipment_panel.refresh()
-	host.equipment_panel.select_item(id)
+	# TabContainer visibility is committed after its tab signal/input callback.
+	# Refresh first once visible so a newly expanded slot exists before selection.
+	host.equipment_panel.call_deferred("refresh")
+	host.equipment_panel.call_deferred("select_item",id)
 
 func refresh() -> void:
 	if not is_visible_in_tree():return
@@ -201,6 +215,7 @@ func refresh() -> void:
 	host.set_ui_value(result,"visible",not locked)
 	host.set_ui_value(mount_scroll,"visible",not locked)
 	host.set_ui_value(confirm,"visible",not locked)
+	refresh_drone_strip(assignments,locked,current)
 	if locked:
 		for mount in mounts.values():host.set_ui_value(mount,"visible",false)
 		return
@@ -261,3 +276,79 @@ func refresh() -> void:
 
 func unlock_hint(key: String) -> String:
 	return UIText.t("ship.refit.unlock_estimate",{"level":str(int(host.db.unlock_row("ship",key).get("level",-1)))})
+
+func setup_drone_strip() -> void:
+	drone_strip=Control.new()
+	drone_strip.size=Vector2(760,144)
+	preview.add_child(drone_strip)
+	drone_texture=load(str(preview_data.drone.texture))
+	for index in 3:
+		var card:=Button.new()
+		card.position=Vector2(52+index*220,2)
+		card.size=Vector2(216,114)
+		skin(card)
+		card.pressed.connect(func():open_module(str(card.get_meta("slot_id",""))))
+		drone_strip.add_child(card)
+		var image:=TextureRect.new()
+		image.position=Vector2(54,0)
+		image.size=Vector2(108,84)
+		image.texture=drone_texture
+		image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		image.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		card.add_child(image)
+		drone_cards.append(card)
+		drone_titles.append(label(card,"",Rect2(4,84,208,28),18))
+		drone_titles.back().horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	drone_previous=Button.new()
+	drone_previous.position=Vector2(0,34)
+	drone_previous.size=Vector2(42,44)
+	drone_previous.text="‹"
+	skin(drone_previous)
+	drone_previous.pressed.connect(func():drone_page-=1;refresh())
+	drone_strip.add_child(drone_previous)
+	drone_next=Button.new()
+	drone_next.position=Vector2(718,34)
+	drone_next.size=Vector2(42,44)
+	drone_next.text="›"
+	skin(drone_next)
+	drone_next.pressed.connect(func():drone_page+=1;refresh())
+	drone_strip.add_child(drone_next)
+	drone_page_label=label(drone_strip,"",Rect2(52,118,656,26),18,MUTED)
+	drone_page_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	drone_empty=label(drone_strip,UIText.t("ship.refit.carrier_empty"),Rect2(52,34,656,48),21,MUTED)
+	drone_empty.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+
+func refresh_drone_strip(assignments: Dictionary, locked: bool, current: String) -> void:
+	host.set_ui_value(drone_strip,"visible",not locked)
+	if locked:return
+	if drone_context!=candidate:
+		drone_context=candidate
+		drone_page=0
+	var slots: Array[int]=[]
+	for slot in assignments:
+		if assignments[slot].carrier=="drone":slots.append(int(slot))
+	slots.sort()
+	var pages:=maxi(1,ceili(float(slots.size())/3.0))
+	drone_page=clampi(drone_page,0,pages-1)
+	host.set_ui_value(drone_empty,"visible",slots.is_empty())
+	host.set_ui_value(drone_page_label,"visible",not slots.is_empty())
+	host.set_ui_value(drone_page_label,"text",UIText.t("ship.refit.carrier_page",{"page":str(drone_page+1),"pages":str(pages),"count":str(slots.size())}))
+	host.set_ui_value(drone_previous,"visible",pages>1)
+	host.set_ui_value(drone_next,"visible",pages>1)
+	host.set_ui_value(drone_previous,"disabled",drone_page==0)
+	host.set_ui_value(drone_next,"disabled",drone_page==pages-1)
+	for index in drone_cards.size():
+		var card:=drone_cards[index]
+		var ordinal:=drone_page*3+index
+		host.set_ui_value(card,"visible",ordinal<slots.size())
+		if ordinal>=slots.size():continue
+		var slot:=slots[ordinal]
+		var id:String=host.game.slot_id("weapons",slot)
+		if card.get_meta("slot_id","")!=id:card.set_meta("slot_id",id)
+		var entry:Dictionary=host.game.module_entry("weapons",slot)
+		var prefix:="W"+str(slot+1).pad_zeros(2)
+		var name:String=host.NAMES.get(str(entry.get("key","")),UIText.t("equipment.vacant"))
+		host.set_ui_value(drone_titles[index],"text",prefix+" · "+name)
+		host.set_ui_value(card,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":name,"level":str(entry.get("level",1))}))
+		host.set_ui_value(card,"disabled",candidate!=current)

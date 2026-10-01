@@ -29,6 +29,7 @@ func run() -> void:
 	current_scene=scene
 	scene.automation_args=[]
 	scene.set_process(false)
+	scene.music.stop();scene.music.stream=null
 	scene.game.save_enabled=false
 	scene.game.paused=true
 	scene.game.pending_unlocks.clear()
@@ -105,6 +106,7 @@ func run() -> void:
 	panel.confirm.pressed.emit()
 	check(scene.game.profile.selectedShip=="Frigate","Only explicit activation switches hull")
 	panel.mounts.weapons_1.pressed.emit()
+	await process_frame
 	check(scene.equipment_tabs.current_tab==0 and scene.equipment_panel.selected=="weapons_1","Exact hull slot opens exact equipment module")
 	scene.equipment_tabs.current_tab=3
 	await process_frame

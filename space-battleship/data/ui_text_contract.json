@@ -6492,6 +6492,16 @@
     },
     "enhance.history.adaptation": {
       "params": []
+    },
+    "ship.refit.carrier_empty": {
+      "params": []
+    },
+    "ship.refit.carrier_page": {
+      "params": [
+        "page",
+        "pages",
+        "count"
+      ]
     }
   },
   "bindings": {

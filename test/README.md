@@ -79,3 +79,5 @@ python test/run.py test_rule_rounding.gd
 | 发布字体 | `python test/run.py test_release_font.gd` |
 
 现有缺口与故障统一见 [STATUS](../space-battleship/docs/STATUS.md)。内存夹具通过不代表正式数值平衡验收，故障观察通过不代表事务安全。
+
+Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --headless` for logic; graphical run with `DRONE_PREVIEW_EVIDENCE` captures default, last-page and empty states.
