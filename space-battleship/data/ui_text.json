@@ -83,7 +83,7 @@
   },
   {
     "key": "enhance.overview.thresholds",
-    "text": "装备等级 {first} / {second} / {third}：开放前 1 / 2 / 3 个强化效果",
+    "text": "共享强化（含永久补偿）{first} / {second} / {third} 级：开放前 1 / 2 / 3 个效果；装备等级无关",
     "params": "{first},{second},{third}",
     "category": "enhance"
   },
@@ -137,19 +137,19 @@
   },
   {
     "key": "enhance.description.proficiency.runtime",
-    "text": "攻击越多，伤害越高。累计攻击 {count} 次，历史增伤 {bonus}%；已选分支固定增伤 {branch}%。持续锁定的伤害增长见分支。",
+    "text": "适用武器的历史增伤为 {bonus}%，以本件武器强化前伤害为基准；已启用 A 分支固定增伤 {branch}% 另乘。全局累计主攻击 {count} 次。持续锁定的短时增长见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
   {
     "key": "enhance.description.adaptation.runtime",
-    "text": "受击越多，防御越强。累计受击 {count} 次，历史增幅 {bonus}%；已选分支固定增幅 {branch}%。其他减伤与护罩见分支。",
+    "text": "适用防御模块的历史增幅为 {bonus}%，以本模块强化前最大防御为基准；已启用 A 分支固定增幅 {branch}% 另乘。全局累计受击 {count} 次。其他减伤与护罩见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
   {
     "key": "enhance.description.repeat.runtime",
-    "text": "达标武器有 {chance}% 概率在 {delay} 秒后追加攻击，追加攻击的伤害提高 {bonus}%。其他连发效果见已选分支。",
+    "text": "适用武器每次主攻击有 {chance}% 概率追加一轮攻击，延迟 {delay} 秒；追加伤害为该主攻击伤害的 {bonus}%（已含原本的 100%）。追加批次继承原攻击暴击与加成，不重新抽取；进一步连发见分支。",
     "params": "{chance},{delay},{bonus}",
     "category": "enhance"
   },
@@ -167,7 +167,7 @@
   },
   {
     "key": "enhance.description.memory_material.runtime",
-    "text": "持续修复防御，满值后将多余修复转为临时护盾。每 {interval} 秒修复 {recovery}%，临时护盾充能 {charge}%，上限为最大防御的 {cap}%；抗性以战场实时状态为准。",
+    "text": "首件启用防御模块参考：每 {interval} 秒按该模块当前最大防御修复 {recovery}%；先修复本模块损失，仅多余部分转为中性临时防护。满值时每期充能为该模块最大防御的 {charge}%，容量为其最大防御的 {cap}%。每个模块独立计算、独立容量，不能以全舰总防御作为百分比基准；实时抗性见下方。",
     "params": "{interval},{recovery},{charge},{cap}",
     "category": "enhance"
   },
@@ -647,7 +647,7 @@
   },
   {
     "key": "enhance.branches.implemented",
-    "text": "选定且装备达标后生效 · 可随时切换",
+    "text": "选定且达到当前顺位的共享强化门槛后生效 · 可免费切换",
     "params": "",
     "category": "enhance"
   },
@@ -671,7 +671,7 @@
   },
   {
     "key": "enhance.card_path",
-    "text": "装备达标 {count} 个 · 分支 {path}",
+    "text": "生效模块 {count} 个 · 分支 {path}",
     "params": "{count},{path}",
     "category": "enhance"
   },
@@ -707,7 +707,7 @@
   },
   {
     "key": "enhance.branches.note",
-    "text": "各效果分别选择，装备达标后生效。可随时免费切换，未选择仍保留基础效果。",
+    "text": "各效果独立保存选择，门槛随当前位置变化。低于门槛仅暂停生效，不清除 A/B；可免费切换，未选择仍保留基础效果。",
     "params": "",
     "category": "enhance"
   },
@@ -773,7 +773,7 @@
   },
   {
     "key": "enhance.description.delayed_damage",
-    "text": "将 {fraction}% 伤害延后承受，在 {duration} 秒内分 {ticks} 次扣除。每 {interval} 秒有 {chance}% 概率免除尚未承受的伤害。",
+    "text": "适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，每 {interval} 秒一次；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
     "params": "{fraction},{duration},{ticks},{interval},{chance}",
     "category": "enhance"
   },
@@ -923,7 +923,7 @@
   },
   {
     "key": "enhance.description.repeat",
-    "text": "攻击有 {chance}% 概率，在 {delay} 秒后额外攻击一次。额外攻击伤害提高 {bonus}%。",
+    "text": "达标武器有 {chance}% 概率在 {delay} 秒后追加攻击，伤害为原攻击的 {bonus}%（已含原本的 100%）。",
     "params": "{chance},{delay},{bonus}",
     "category": "enhance"
   },
@@ -965,7 +965,7 @@
   },
   {
     "key": "enhance.rules",
-    "text": "实际装备等级 {first} / {second} / {third} 开放前 1 / 2 / 3 个效果；星球附加等级只提高强度。",
+    "text": "共享强化（含永久补偿）{first} / {second} / {third} 级开放前 1 / 2 / 3 个效果；装备等级不参与。",
     "params": "{first},{second},{third}",
     "category": "enhance"
   },
@@ -12218,5 +12218,23 @@
     "params": "",
     "category": "planet",
     "note": "星球弹窗信息层级"
+  },
+  {
+    "key": "enhance.effect.state",
+    "text": "强化 {level} 级 · 生效 {count} 件",
+    "params": "{level},{count}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.history.proficiency",
+    "text": "历史按全局主攻击计数：普通批次、额外连发批次、每束光束启动各记一次；五连发中的弹体、光束周期、连锁与次级复制不再计数。换装、升级、换关和死亡保留历史；重铸清零。",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.history.adaptation",
+    "text": "历史按敌方实际来袭攻击计数，临时防护完全吸收的受击也计数；延迟伤害结算不再计数。换装、升级、换关和死亡保留历史；重铸清零。",
+    "params": "",
+    "category": "enhance"
   }
 ]

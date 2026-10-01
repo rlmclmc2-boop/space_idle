@@ -17,7 +17,7 @@ func fixture(key := "laser"):
  var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
  g.stat_cache_enabled=true;g.speed=1
  g.profile.cleared=range(1,41);g.rebuild_unlocks()
- g.profile.enhancementLevel=30
+ g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150},{"key":key,"level":150}],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
  for enemy in g.enemies:enemy.hp=1e10;enemy.max_hp=1e10;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)

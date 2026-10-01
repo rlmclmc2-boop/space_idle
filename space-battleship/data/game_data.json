@@ -17054,21 +17054,21 @@
     },
     "threshold_1": {
       "id": "threshold_1",
-      "value": 50,
-      "unit": "装备级",
-      "des": "第一顺位生效的实际装备等级"
+      "value": 0,
+      "unit": "强化级",
+      "des": "第1顺位效果的有效共享强化等级门槛；装备等级无关"
     },
     "threshold_2": {
       "id": "threshold_2",
-      "value": 100,
-      "unit": "装备级",
-      "des": "第二顺位生效的实际装备等级"
+      "value": 10,
+      "unit": "强化级",
+      "des": "第2顺位效果的有效共享强化等级门槛；装备等级无关"
     },
     "threshold_3": {
       "id": "threshold_3",
-      "value": 150,
-      "unit": "装备级",
-      "des": "第三顺位生效的实际装备等级"
+      "value": 20,
+      "unit": "强化级",
+      "des": "第3顺位效果的有效共享强化等级门槛；装备等级无关"
     },
     "base_critical_rate": {
       "id": "base_critical_rate",
@@ -17182,19 +17182,19 @@
       "id": "branch_threshold_1",
       "value": 10,
       "unit": "有效强化级",
-      "des": "每种效果第一分支节点的解锁等级"
+      "des": "第1分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_2": {
       "id": "branch_threshold_2",
       "value": 20,
       "unit": "有效强化级",
-      "des": "每种效果第二分支节点的解锁等级"
+      "des": "第2分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_3": {
       "id": "branch_threshold_3",
       "value": 30,
       "unit": "有效强化级",
-      "des": "每种效果第三分支节点的解锁等级"
+      "des": "第3分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "proficiency_a_damage_bonus": {
       "id": "proficiency_a_damage_bonus",

@@ -41,14 +41,14 @@ func run() -> void:
 	scene.game.profile.highestLevel=61
 	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	scene.game.profile.onboarding.completed=true
-	scene.game.profile.jewelFragments=10000.0
+	scene.game.profile.jewelFragments=scene.db.data.enhance_config.cost_base.value*(1+scene.db.data.enhance_config.cost_growth.value+pow(scene.db.data.enhance_config.cost_growth.value,2))
 	scene.game.profile.enhancementLevel=0
 	scene.game.switch_ship("Heavy_Battleship")
 	for category in ["weapons","defence"]:
 		for index in scene.game.loadout_entries(category).size():
 			var entry: Dictionary=scene.game.module_entry(category,index)
 			entry.key="laser" if category=="weapons" else "armour"
-			entry.level=int(scene.game.enhancement_parameter("threshold_%d" % (mini(index,2)+1)))
+			entry.level=1+index
 	scene.game.invalidate_stat_cache()
 	scene.game.reset_player()
 	scene.build_ui()
@@ -69,7 +69,7 @@ func run() -> void:
 	await click(panel.upgrade_button)
 	check(scene.game.enhancement_level()==1 and GrowthNumber.compare(scene.game.profile.jewelFragments,GrowthNumber.subtract(balance_before,cost_before))==0,"Actual upgrade click buys shared level with exact fragment cost")
 	await click(panel.max_button)
-	check(scene.game.enhancement_level()==4 and GrowthNumber.compare(scene.game.profile.jewelFragments,0)==0,"Actual MAX click purchases exactly affordable levels")
+	check(scene.game.enhancement_level()==3 and GrowthNumber.compare(scene.game.profile.jewelFragments,0)==0,"Actual MAX click purchases exactly affordable levels")
 	var order_before: Array=scene.game.enhancement_order("weapons").duplicate()
 	await click(panel.effect_cards.weapons[1].up)
 	check(scene.game.enhancement_order("weapons")==[order_before[1],order_before[0],order_before[2]],"Actual arrow click reorders effects immediately")
@@ -81,7 +81,7 @@ func run() -> void:
 	scene.game.planet_progress("1").conquered=true
 	scene.game.invalidate_stat_cache()
 	panel.invalidate()
-	check(panel.level_label.text==UIText.t("enhance.level",{"level":4}) and panel.bonus_label.text==UIText.t("enhance.bonus",{"bonus":scene.game.enhancement_level_bonus(),"effective":scene.game.enhancement_effective_level()}),"Planet bonus changes strength without changing purchased level")
+	check(panel.level_label.text==UIText.t("enhance.level",{"level":3}) and panel.bonus_label.text==UIText.t("enhance.bonus",{"bonus":scene.game.enhancement_level_bonus(),"effective":scene.game.enhancement_effective_level()}),"Planet bonus changes strength without changing purchased level")
 	var threshold_before: int=panel.threshold_level(0)
 	var repeat_probability: float=scene.db.data.enhance_config.repeat_probability.value
 	scene.db.data.enhance_config.threshold_1.value=7
@@ -111,6 +111,9 @@ func run() -> void:
 	panel.refresh()
 	check(scene.writes.is_empty() and root.gui_get_focus_owner()==focused,"Unchanged paused refresh makes no property writes and preserves focus")
 	check(scene.battle_layer.visible and scene.workspace_frame.visible,"Enhancement page keeps battle and shared workspace visible")
+	var overview_level: int=scene.game.enhancement_level()
+	scene.game.profile.enhancementLevel=int(scene.db.data.enhance_config.threshold_3.value)
+	scene.game.invalidate_stat_cache()
 	scene.game.paused=false
 	scene.game.reset_player()
 	scene.game.advance_jewel_repair(2.0)
@@ -121,11 +124,14 @@ func run() -> void:
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://.runtime/enhancement-page.png")
+	scene.game.profile.enhancementLevel=overview_level
+	scene.game.invalidate_stat_cache()
+	panel.refresh()
 	await click(panel.effect_cards.weapons[0].branches)
 	check(panel.branch_overlay.visible and panel.branch_effect==scene.game.enhancement_order("weapons")[0],"Actual branch button opens selected effect independently of order")
 	check(panel.branch_rows[0].A.disabled and panel.branch_rows[1].A.disabled and panel.branch_rows[2].A.disabled,"Branches below configured thresholds stay locked")
 	var branch_refs: Array=panel.branch_rows.map(func(row):return row.A)
-	scene.game.profile.enhancementLevel=scene.game.enhancement_branch_threshold(1)-scene.game.enhancement_level_bonus()
+	scene.game.profile.enhancementLevel=scene.game.enhancement_branch_threshold(1,panel.branch_category,panel.branch_effect)-scene.game.enhancement_level_bonus()
 	scene.game.invalidate_stat_cache()
 	panel.refresh()
 	check(not panel.branch_rows[0].A.disabled and panel.branch_rows[1].A.disabled,"Planet-added levels unlock first branch at its configured total without unlocking second")
@@ -139,20 +145,20 @@ func run() -> void:
 	for index in 3:check(is_same(branch_refs[index],panel.branch_rows[index].A),"Branch interactions preserve option controls "+str(index))
 	var second_threshold: int=scene.db.data.enhance_config.branch_threshold_2.value
 	scene.db.data.enhance_config.branch_threshold_2.value=13
-	scene.game.profile.enhancementLevel=13
+	scene.game.profile.enhancementLevel=13-scene.game.enhancement_level_bonus()
 	scene.game.invalidate_stat_cache()
 	panel.refresh()
 	check(panel.branch_rows[1].title.text==UIText.t("enhance.branches.milestone",{"node":2,"level":13}) and not panel.branch_rows[1].A.disabled,"Alternative branch config updates its threshold and availability")
 	await click(panel.branch_rows[1].A)
 	check(scene.game.enhancement_branch_choice(panel.branch_category,panel.branch_effect,2)=="A","Each milestone stores an independent two-way choice")
 	scene.db.data.enhance_config.branch_threshold_2.value=second_threshold
-	scene.game.profile.enhancementLevel=second_threshold
+	scene.game.profile.enhancementLevel=second_threshold-scene.game.enhancement_level_bonus()
 	scene.game.invalidate_stat_cache()
 	panel.refresh()
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://.runtime/enhancement-branches.png")
-	scene.game.profile.enhancementLevel=scene.game.enhancement_branch_threshold(3)
+	scene.game.profile.enhancementLevel=int(scene.db.data.enhance_config.branch_threshold_3.value)+int(scene.db.data.enhance_config.threshold_3.value)
 	scene.game.invalidate_stat_cache()
 	for category in ["weapons","defence"]:
 		for effect in scene.game.enhancement_order(category):
@@ -191,8 +197,8 @@ func run() -> void:
 	scene.game.hit_player(1,1)
 	scene.game.paused=true
 	panel.refresh()
-	check(scene.enhancement_protection_state_text().contains(UIText.t("enhance.protection_state.mixed_energy",{"range":UIText.t("enhance.protection_state.range",{"minimum":"50","maximum":"75"})})) and scene.enhancement_protection_details().contains("能量抗性"),"Mixed protection is labeled partial and details use core-owned energy identity")
-	check(panel.branch_rows[1].B_description.get_parsed_text().contains("50% 至 75%"),"Memory description reports mixed common-resolver resistance rather than a false uniform value")
+	check(scene.enhancement_protection_state_text().contains("75%") and scene.enhancement_protection_details().contains("能量抗性"),"Shared rank eligibility applies actual energy identity to every module")
+	check(panel.branch_rows[1].B_description.get_parsed_text().contains("75%"),"Memory description reports common-resolver resistance regardless of equipment level")
 	if DisplayServer.get_name()!="headless":
 		scene.refresh_draw_layers(0)
 		panel.branch_scroll.scroll_vertical=0

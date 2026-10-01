@@ -22,40 +22,44 @@ func fixture() -> BattleGame:
  g.profile.grantedUnlocks=[db.unlock_id("feature","jewels")]
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
  g.profile.enhancementLevel=1
+ g.profile.enhancementOrder.defence=["memory_material","adaptation","delayed_damage"]
  g.profile.loadout={"weapons":[{"key":"laser","level":150},{"key":"missile","level":150},{"key":"cannon","level":150}],"defence":[{"key":"shield","level":150},{"key":"armour","level":150},{"key":"armour","level":49}]}
  g.reset_player()
  return g
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
  var g:=fixture()
- for value in [[49,0],[50,1],[99,1],[100,2],[149,2],[150,3]]:
-  var entry={"key":"laser","level":value[0]}
-  check(g.available_effect_count(entry)==value[1],"actual equipment threshold "+str(value[0]))
+ for value in [[0,1],[9,1],[10,2],[19,2],[20,3]]:
+  g.profile.enhancementLevel=value[0]
+  var entry={"key":"laser","level":1}
+  check(g.available_effect_count(entry)==value[1],"shared enhancement threshold "+str(value[0]))
   check(g.enhancement_effects(entry).size()==value[1],"eligible effect count "+str(value[0]))
  check(not g.set_enhancement_order("weapons",["repeat","repeat","critical"]),"duplicate effect rejected")
  check(g.set_enhancement_order("weapons",["critical","repeat","proficiency"]),"free reorder")
  check(g.enhancement_effects({"key":"laser","level":50})[0].kind=="critical","first eligible changes after reorder")
  check(g.enhancement_effects({"key":"armour","level":150}).size()==3,"three unique defense effects")
- check(g.enhancement_cost(1)==100 and g.enhancement_cost(10)==1968300,"target exponential cost")
+ check(g.enhancement_cost(1)==100 and g.enhancement_cost(10)==100*pow(g.enhancement_parameter("cost_growth"),9),"target exponential cost")
  g.profile.enhancementLevel=0
  g.profile.jewelFragments=400
- check(g.upgrade_enhancement(10)==2 and g.enhancement_level()==2 and g.profile.jewelFragments==0,"bulk spends each target once")
+ check(g.upgrade_enhancement(10)==2 and g.enhancement_level()==2 and g.profile.jewelFragments==100,"bulk spends each target once")
  var before=g.enhancement_effective_level()
  g.profile.planets["1"].conquered=true
  g.invalidate_stat_cache()
  check(g.enhancement_level_bonus()==1 and g.enhancement_effective_level()==before+1,"planet adds effective level")
- check(g.enhancement_cost()==900,"free planet levels never affect purchase cost")
+ check(g.enhancement_cost()==400,"free planet levels never affect purchase cost")
  g.profile.enhancementLevel=0
  check(g.enhancement_effects({"key":"laser","level":50}).size()==1,"free planet level works at purchased zero")
  g.profile.planets["1"].conquered=false;g.invalidate_stat_cache()
- check(g.enhancement_effects({"key":"laser","level":150}).is_empty(),"zero level no effect")
- g.profile.enhancementLevel=1
+ check(g.enhancement_effects({"key":"laser","level":150}).size()==1,"zero shared level enables first effect")
+ g.profile.enhancementOrder.weapons=g.default_enhancement_order().weapons
+ g.profile.enhancementLevel=19
  check(g.jewel_critical({"key":"laser","level":49})==Vector2(.25,2),"player base crit before threshold")
- check(g.jewel_critical({"key":"laser","level":150}).is_equal_approx(Vector2(.25,2.3)),"crit increases multiplier not rate")
+ g.profile.enhancementLevel=20
+ check(g.jewel_critical({"key":"laser","level":150}).is_equal_approx(Vector2(.25,8)),"crit opens at third shared threshold and increases multiplier not rate")
  var locked:=BattleGame.new(g.db,false)
  locked.profile.enhancementLevel=10
  check(locked.enhancement_effects({"key":"laser","level":150}).is_empty(),"unlock gates effects")
- g=fixture();g.profile.loadout.weapons[0].level=49;g.state=BattleGame.State.COMBAT
+ g=fixture();g.profile.enhancementOrder.weapons=["repeat","critical","proficiency"];g.profile.loadout.weapons[0].level=49;g.state=BattleGame.State.COMBAT
  g.spawn_group()
  for enemy in g.enemies:enemy.hp=1000000.0;enemy.max_hp=1000000.0;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
  for i in g.weapon_entries().size():g.cooldowns[g.slot_id("weapons",i)]=999
@@ -110,7 +114,7 @@ func run() -> void:
  check(g.memory_buffer(0)==0,"unequip removes protection")
  g=fixture();g.advance_jewel_repair(2)
  g.profile.loadout.defence[0].level=49;g.invalidate_stat_cache()
- check(g.memory_buffer(0)==0,"lower level removes protection")
+ check(g.memory_buffer(0)>0,"lower equipment level preserves shared effect protection")
  g=fixture();g.profile.enhancementLevel=2;g.advance_jewel_repair(2)
  g.profile.enhancementLevel=1;g.invalidate_stat_cache()
  check(g.memory_buffer(0)==10,"cap lowering clamps existing buffer")
@@ -162,8 +166,8 @@ func run() -> void:
  var sim=preload("res://scripts/balance_game.gd").new(ShipDatabase.new())
  sim.profile.grantedUnlocks=[sim.db.unlock_id("feature","jewels")];sim.profile.enhancementLevel=1;sim.profile.enhancementAttacks=1000
  var simulated_entry={"key":"laser","level":49}
- check(sim.jewel_effects({"key":"laser","level":150}).size()==3,"simulator enhancement effects without sockets")
- check(sim.jewel_equipment_stat(simulated_entry,50)>sim.equipment_stat("laser",50),"next-level stat preview applies newly eligible shared effect")
+ check(sim.jewel_effects({"key":"laser","level":150}).size()==1,"simulator first shared enhancement effect without sockets")
+ check(sim.jewel_equipment_stat(simulated_entry,50)>sim.equipment_stat("laser",50),"next-level stat preview applies shared effect independently of equipment preview level")
 
  g=fixture()
  var larger := ""
@@ -174,7 +178,7 @@ func run() -> void:
  check(g.memory_buffer(2)>0,"larger hull enables tail defense protection")
  check(g.switch_ship(g.first_ship()) and g.memory_buffer(2)==0 and g.module_entry("defence",2).level==150,"hull-disabled tail loses protection but keeps module growth")
 
- g=fixture();g.profile.enhancementLevel=9
+ g=fixture();g.set_enhancement_order("weapons",["critical","repeat","proficiency"]);g.profile.enhancementLevel=9
  check(not g.enhancement_branch_unlocked("weapons","critical",1) and not g.set_enhancement_branch("weapons","critical",1,"A"),"branch below effective threshold locked")
  g.profile.planets["1"].conquered=true;g.invalidate_stat_cache()
  check(g.enhancement_branch_unlocked("weapons","critical",1) and g.set_enhancement_branch("weapons","critical",1,"A"),"planet free level unlocks branch at effective10")
@@ -186,7 +190,7 @@ func run() -> void:
  check(g.enhancement_branch_choice("weapons","critical",1)=="B" and g.enhancement_branch_choice("weapons","repeat",1)=="","reorder keeps effect-specific choice independent")
  var branch_save=g.profile.duplicate(true);g.load_jewels(branch_save)
  check(g.enhancement_branch_choice("weapons","critical",1)=="B","branch survives new-schema load")
- g.profile.enhancementLevel=30
+ g.profile.enhancementLevel=50
  for category in g.default_enhancement_order():
   for effect in g.default_enhancement_order()[category]:
    for node in [1,2,3]:check(g.set_enhancement_branch(category,effect,node,"A"),"all six effect branches node"+str(node))

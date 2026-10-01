@@ -13,7 +13,7 @@ func fixture(key:="laser"):
   db.equipment[weapon][0].dmg=100;db.equipment[weapon][0].dmgMulti=0;db.equipment[weapon][0].cd=.2
  db.equipment.longLaser[0].para3=.2
  var g=BattleGame.new(db,false)
- g.speed=1;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=30
+ g.speed=1;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
  for enemy in g.enemies:enemy.hp=1e12;enemy.max_hp=1e12;enemy.armourType=0

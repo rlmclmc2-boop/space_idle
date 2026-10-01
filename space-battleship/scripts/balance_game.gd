@@ -189,8 +189,8 @@ func clear_tick_effects() -> void:
 	tick_effect_entries.clear()
 	tick_effect_values.clear()
 
-func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null) -> Variant:
-	if not repair_cache_active or level >= 0 or effects != null:return super.jewel_equipment_stat(entry,level,effects)
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true) -> Variant:
+	if not repair_cache_active or level >= 0 or effects != null or not include_timed_buffs:return super.jewel_equipment_stat(entry,level,effects,include_timed_buffs)
 	var index := repair_entry_index(entry)
 	if not repair_stats.has(index):repair_stats[index] = super.jewel_equipment_stat(entry,level)
 	return repair_stats[index]

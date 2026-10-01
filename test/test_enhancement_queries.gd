@@ -2,7 +2,7 @@ extends SceneTree
 class ComparedGame extends BattleGame:
 	func reference_effects(entry: Dictionary) -> Array:
 		var result: Array = []
-		if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return result
+		if str(entry.get("key","")).is_empty() or not enhancement_unlocked():return result
 		var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
 		var order := enhancement_order(category)
 		for i in available_effect_count(entry):

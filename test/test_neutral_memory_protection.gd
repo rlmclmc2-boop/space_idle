@@ -14,11 +14,14 @@ func fixture(deferred := false) -> BattleGame:
  db.equipment.shield[0].dmgtype=1;db.equipment.armour[0].dmgtype=2
  db.config.dmgReduce=.5
  db.data.enhance_config.deferred_clear_probability.value=0
+ # Keep repair strength1 while isolating the two shared effects in this fixture.
+ db.data.enhance_config.threshold_2.value=1;db.data.enhance_config.threshold_3.value=2
+ db.data.enhance_config.adaptation_growth.value=0
  var g:=BattleGame.new(db,false)
  g.profile.grantedUnlocks=[db.unlock_id("feature","jewels")]
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
  g.profile.enhancementLevel=1
- g.profile.enhancementOrder.defence=["memory_material","delayed_damage","adaptation"]
+ g.profile.enhancementOrder.defence=["memory_material","delayed_damage","adaptation"] if deferred else ["memory_material","adaptation","delayed_damage"]
  var level := 100 if deferred else 50
  g.profile.loadout={"weapons":[{"key":"laser","level":1}],"defence":[{"key":"shield","level":level},{"key":"armour","level":level}]}
  g.reset_player();g.state=BattleGame.State.COMBAT

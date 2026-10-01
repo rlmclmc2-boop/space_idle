@@ -35,6 +35,10 @@ var branch_rows: Array = []
 var branch_category := ""
 var branch_effect := ""
 var branch_scroll: ScrollContainer
+var effect_detail_dialog: AcceptDialog
+var effect_detail_body: RichTextLabel
+var detail_effect := ""
+var detail_category := ""
 
 func _init() -> void:
 	hide()
@@ -146,13 +150,14 @@ func create_effect_card(parent: Node, rect: Rect2, category: String, index: int)
 	threshold.hide()
 	var description := PARAMETER_TEXT.create_label(card,Rect2(20,65,568,48),20,SHELL.face(500),NAVY)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var state := text_label(card,"",Rect2(20,132,426,32),21,MUTED)
+	var state := text_label(card,"",Rect2(20,132,314,32),21,MUTED)
 	var up := button(card,"enhance.move_up",Rect2(484,12,50,38),func():move_effect(category,index,-1))
 	var down := button(card,"enhance.move_down",Rect2(544,12,50,38),func():move_effect(category,index,1))
+	var details := button(card,"equipment.inspect",Rect2(350,128,106,36),func():open_effect_details(category,str(game.enhancement_order(category)[index])))
 	var branches := button(card,"enhance.branches.open",Rect2(466,128,128,36),func():open_branches(category,str(game.enhancement_order(category)[index])))
 	up.tooltip_text = UIText.t("enhance.move_up_hint")
 	down.tooltip_text = UIText.t("enhance.move_down_hint")
-	return {"panel":card,"rank":rank,"title":title,"threshold":threshold,"description":description,"state":state,"up":up,"down":down,"branches":branches}
+	return {"panel":card,"rank":rank,"title":title,"threshold":threshold,"description":description,"state":state,"up":up,"down":down,"branches":branches,"details":details}
 
 func open(_category := "", _index := -1) -> void:
 	if not game.enhancement_unlocked():return
@@ -175,7 +180,9 @@ func on_visibility_changed() -> void:
 	if visible:
 		metrics_timer.start()
 		refresh()
-	else:metrics_timer.stop()
+	else:
+		metrics_timer.stop()
+		if is_instance_valid(effect_detail_dialog):effect_detail_dialog.hide()
 
 func invalidate() -> void:
 	dirty = true
@@ -215,7 +222,7 @@ func display(value: Variant) -> String:
 	return FORMAT.precise(value)
 
 func threshold_level(index: int) -> int:
-	return int(parameter("threshold_%d" % (index+1)))
+	return game.enhancement_effect_threshold(index)
 
 func effect_name(kind: String) -> String:
 	return UIText.t("enhance.effect."+kind) if not kind.is_empty() else UIText.t("enhance.effect.pending")
@@ -232,7 +239,7 @@ func effect_description(kind: String) -> String:
 			var bonus := roundf(coefficient*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*round_scale)/round_scale
 			return UIText.t("enhance.description."+kind,{"bonus":FORMAT.percentage(bonus*100),"count":FORMAT.compact(count)})
 		"repeat":
-			return UIText.t("enhance.description.repeat",{"chance":FORMAT.percentage(parameter("repeat_probability")*100),"delay":display(parameter("repeat_delay")),"bonus":FORMAT.percentage(parameter("repeat_growth")*level*100)})
+			return UIText.t("enhance.description.repeat",{"chance":FORMAT.percentage(parameter("repeat_probability")*100),"delay":display(parameter("repeat_delay")),"bonus":FORMAT.percentage(100.0+parameter("repeat_growth")*level*100)})
 		"critical":
 			return UIText.t("enhance.description.critical",{"chance":FORMAT.percentage(parameter("base_critical_rate")*100),"multiplier":FORMAT.percentage(N.multiply(parameter("base_critical_multiplier")+parameter("critical_growth")*level,100.0))})
 		"delayed_damage":
@@ -252,7 +259,7 @@ func runtime_effect_description(kind: String) -> String:
 			var bonus := roundf(float(values.growth)*game.enhancement_effective_level()*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
 			return UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(count),"bonus":FORMAT.percentage(bonus*100),"branch":FORMAT.percentage(values.branch_bonus_percent)})
 		"repeat":
-			return UIText.t("enhance.description.repeat.runtime",{"chance":FORMAT.percentage(values.probability_percent),"delay":display(values.delay),"bonus":FORMAT.percentage(values.damage_percent)})
+			return UIText.t("enhance.description.repeat.runtime",{"chance":FORMAT.percentage(values.probability_percent),"delay":display(values.delay),"bonus":FORMAT.percentage(100.0+float(values.damage_percent))})
 		"critical":
 			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(values.eligible_modules)>0
 			var key := "enhance.description.critical.runtime" if guaranteed else "enhance.description.critical.runtime_regular"
@@ -298,7 +305,7 @@ func effect_overview(kind: String) -> String:
 func eligible_count(category: String, index: int) -> int:
 	var count := 0
 	for entry in game.loadout_entries(category):
-		if not str(entry.get("key","")).is_empty() and game.available_effect_count(entry)>index:count+=1
+		if not str(entry.get("key","")).is_empty() and game.active_enhancement_effect_count(entry)>index:count+=1
 	return count
 
 func refresh() -> void:
@@ -328,15 +335,47 @@ func refresh() -> void:
 			host.set_ui_value(card.title,"text",effect_name(kind))
 
 			host.set_ui_value(card.description,"text",effect_overview(kind))
-			host.set_ui_value(card.description,"tooltip_text",effect_description(kind)+("\n"+host.enhancement_protection_details() if kind=="memory_material" else ""))
-			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t("enhance.overview.state",{"count":eligible_count(category,index),"path":compact_branch_path(category,kind)}))
+			host.set_ui_value(card.description,"tooltip_text",effect_details_text(kind))
+			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(category,index)}))
 			host.set_ui_value(card.up,"disabled",index==0)
 			host.set_ui_value(card.down,"disabled",index==2)
+			host.set_ui_value(card.details,"disabled",kind.is_empty())
 			host.set_ui_value(card.branches,"disabled",kind.is_empty())
 			host.set_ui_value(card.branches,"tooltip_text",branch_summary(category,kind))
 	host.set_ui_value(rule_label,"text",UIText.t("enhance.overview.thresholds",{"first":threshold_level(0),"second":threshold_level(1),"third":threshold_level(2)}))
 	refresh_branches()
+	refresh_effect_details()
 	host.set_ui_value(level_label,"tooltip_text",UIText.t("enhance.history",{"attacks":FORMAT.compact(game.profile.get("enhancementAttacks",0)),"hits":FORMAT.compact(game.profile.get("enhancementHits",0))}))
+
+func effect_details_text(kind: String) -> String:
+	var text := effect_description(kind)
+	if kind in ["proficiency","adaptation"]:
+		text+="\n\n"+UIText.t("enhance.history."+kind)
+	if kind=="memory_material":text+="\n\n"+host.enhancement_protection_details()
+	return text
+
+func open_effect_details(category: String, kind: String) -> void:
+	if kind.is_empty():return
+	detail_category=category
+	detail_effect=kind
+	if not is_instance_valid(effect_detail_dialog):
+		effect_detail_dialog=AcceptDialog.new()
+		SKIN.dialog(effect_detail_dialog)
+		effect_detail_body=RichTextLabel.new()
+		effect_detail_body.custom_minimum_size=Vector2(600,360)
+		effect_detail_body.selection_enabled=true
+		effect_detail_body.scroll_active=true
+		effect_detail_dialog.add_child(effect_detail_body)
+		add_child(effect_detail_dialog)
+	refresh_effect_details(true)
+	effect_detail_dialog.popup_centered(Vector2i(640,460))
+
+func refresh_effect_details(force := false) -> void:
+	if not is_instance_valid(effect_detail_dialog) or (not force and not effect_detail_dialog.visible):return
+	var index := game.enhancement_order(detail_category).find(detail_effect)
+	host.set_ui_value(effect_detail_dialog,"title",effect_name(detail_effect))
+	var text := UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(detail_category,index)})+"\n\n"+effect_details_text(detail_effect)
+	host.set_ui_value(effect_detail_body,"text",text)
 
 func build_branch_drawer() -> void:
 	branch_overlay = Control.new()
@@ -454,7 +493,7 @@ func refresh_branches() -> void:
 		var row: Dictionary = branch_rows[node-1]
 		var unlocked := game.enhancement_branch_unlocked(branch_category,branch_effect,node)
 		var choice := game.enhancement_branch_choice(branch_category,branch_effect,node)
-		host.set_ui_value(row.title,"text",UIText.t("enhance.branches.milestone",{"node":node,"level":game.enhancement_branch_threshold(node)}))
+		host.set_ui_value(row.title,"text",UIText.t("enhance.branches.milestone",{"node":node,"level":game.enhancement_branch_threshold(node,branch_category,branch_effect)}))
 		host.set_ui_value(row.status,"text",UIText.t("enhance.branches.locked") if not unlocked else UIText.t("enhance.branches.awaiting") if choice.is_empty() else UIText.t("enhance.branches.selected",{"choice":choice}))
 		for option in ["A","B"]:
 			var control: Button = row[option]
