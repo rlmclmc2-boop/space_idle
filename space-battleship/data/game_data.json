@@ -17048,7 +17048,7 @@
     },
     "cost_growth": {
       "id": "cost_growth",
-      "value": 3,
+      "value": 2,
       "unit": "倍率",
       "des": "整数≥1；费用＝首级费用×倍率^(购买等级−1)"
     },

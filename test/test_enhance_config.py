@@ -21,7 +21,7 @@ for key,value in [('cost_base',7),('cost_growth',2),('threshold_1',10),('thresho
 validate_projection(alternative)
 alternative['enhance_config']['cost_growth']['value']=1
 validate_projection(alternative)
-assert 'cost_exponent' not in d['enhance_config'] and d['enhance_config']['cost_growth']['value']==3
+assert 'cost_exponent' not in d['enhance_config'] and d['enhance_config']['cost_growth']['value']==2
 for name in ['crew_assignment','planet_buff']:
  b=openpyxl.load_workbook(p/f'config_excel/{name}.xlsx',data_only=True,read_only=True)
  assert convert_sheet(name,read_rows(b[name]))==d[name];b.close()
