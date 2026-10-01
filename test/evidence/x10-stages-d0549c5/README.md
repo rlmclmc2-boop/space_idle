@@ -62,3 +62,21 @@ Each reported phase is inclusive; parent/child timings overlap. 480 measured fra
 |final-candidate|51.801937|51.706360|19.159101|
 
 Frame interval includes synchronous logic plus waiting for frame_post_draw. The remainder is not GPU time: it includes engine/render submission, software rasterization and scheduling. With cache, complete run is51.802wall seconds for100 game seconds (effective1.930x real time despite selectedX10), about11.58 observed rendered frames/second. Main synchronous work totals19.159s; approximately32.55s lies outside that measured function. Thus rendering/engine waiting is now the largest whole-frame segment; logic still about32msP50/45msP95. The full live player viewport uses4xMSAA and directional shadow; accelerated mode already suppresses many2D effects. Next isolated probes preserve all gameplay/muzzle poses and continuous viewport rendering, reducing only MSAA and shadow quality atX10. No cadence reduction/freeze is accepted.
+
+## Cadence correction and next checkpoints
+
+The original600-frame tests supply1/60 wall delta regardless of actual render time. They are equal-work microbenchmarks only. Their100game-sec/51.8wall-sec ratio is not production liveX10 acceptance. All480 measured fixed-input frames exceed16.67ms. No claim of stable60fps or productionX10 full speed is supported. 260checks mean260assertions inside one unlock test, not260independent tests.
+
+New live runs manually pass elapsed real wall time between rendered frames into the actual scene._process; the scene uses its unchanged foreground0.1-second clamp. Rendering and frame_post_draw remain enabled. Live samples150frames, exclude30warmup for quantiles. Each variant starts the same synthetic populated scene. Elapsed input above0.1 is discarded by production; there is no persistent time-debt queue. Sum of discarded wall seconds is reported.
+
+|Live variant|Wall sec|Simulation sec|Effective real-time multiplier|Clamp discarded sec|Main P50/P95 ms|Frame P50/P95 ms|
+|---|---:|---:|---:|---:|---:|---:|
+|live-baseline|34.672|149.16670|4.302|19.548|149.613/238.644|201.725/294.928|
+|live-reconcile|30.121|149.16670|4.952|15.012|115.819/220.424|163.555/276.795|
+|live-quality|27.075|148.85538|5.498|12.010|120.334/203.578|155.049/239.683|
+
+Baseline is d0549c5. Reconcile checkpoint a4d84e2 resolves common branch choice/gate eligibility once per synchronous module reconciliation, retains nothing across calls/ticks, preserves original full reconciliation order and exact1/60 substeps. Fixed600 frame and live150 frame gameplay traces match baseline exactly. X1 headless240-frame protection pair also matches every trace/final field. Existing branch regression146assertions passes. No high-speed approximation was introduced.
+
+Ship-quality checkpoint3b30189 builds on a4d84e2. At speed>=10 only, disables player viewport4xMSAA and directional shadows; below10 restores both. Same viewport size, camera, launch coordinates, models, every-frame rendering, pause/hidden policies. Quality transition regression51assertions passes. Actual rendered image inspected. Fixed600-frame gameplay trace exactly matches a4d84e2. Live quality run differs in supplied wall deltas and has148.85538 vs149.1667game-sec: damage/hits/RNG/receipts/stage/group/state/player match; fire events4326vs4325. Do not call these different-cadence runs strict trace equivalence. Same-delta replay is being added. Main fixture records zero body damage due enormous high-level defense; its equal survival alone is weak pressure coverage, so an additional isolated hostile-pressure exact pair is being added.
+
+The entire battle remains visible and continuously rendered. These are cloud llvmpipe measurements and do not establish Windows gain. Largest live bottleneck is now simulation feedback under long real deltas (mainP95>200ms), not merely MSAA. Full coarse stepping remains rejected. Further synchronous membership reuse is being measured, not published here as verified yet.
