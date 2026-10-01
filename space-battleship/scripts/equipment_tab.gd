@@ -34,6 +34,8 @@ var upgrade_amount := 1
 var amount_buttons: Array[Button] = []
 var picker_open := false
 var pending_key := ""
+# Draft belongs to the selected slot and its equipped identity, not its level.
+var draft_context: Array = []
 var summary: Label
 var grid_defence: GridContainer
 var slot_list: VBoxContainer
@@ -563,8 +565,12 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 			detail.slots.add_item(host.NAMES.get(option,UIText.t("equipment.vacant")))
 			detail.slots.set_item_disabled(detail.slots.item_count-1,not str(option).is_empty() and not host.game.profile.unlocked.has(option))
 		slot_options = options
-	if detail.slots.selected!=options.find(key):detail.slots.select(options.find(key))
-	pending_key = key
+	var context: Array = [selected,key,item.locked]
+	var draft_valid: bool = options.has(pending_key) and (pending_key.is_empty() or host.game.profile.unlocked.has(pending_key))
+	if draft_context!=context or not draft_valid:
+		pending_key=key
+		draft_context=context
+	if detail.slots.selected!=options.find(pending_key):detail.slots.select(options.find(pending_key))
 	refresh_confirm()
 	host.set_ui_value(detail.slots,"disabled",item.locked)
 	host.set_ui_value(detail.icon,"texture",item.icon)
