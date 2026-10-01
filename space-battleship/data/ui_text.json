@@ -7192,35 +7192,35 @@
   },
   {
     "key": "ship.ship.frigate.des",
-    "text": "护卫舰",
+    "text": "游隼侦察艇",
     "params": "",
     "category": "ship",
     "note": "配置显示覆盖；ID Frigate / des"
   },
   {
     "key": "ship.ship.destroyer.des",
-    "text": "驱逐舰",
+    "text": "飞燕护卫舰",
     "params": "",
     "category": "ship",
     "note": "配置显示覆盖；ID Destroyer / des"
   },
   {
     "key": "ship.ship.cruiser.des",
-    "text": "巡洋舰",
+    "text": "云鳐巡洋舰",
     "params": "",
     "category": "ship",
     "note": "配置显示覆盖；ID Cruiser / des"
   },
   {
     "key": "ship.ship.battleship.des",
-    "text": "战列舰",
+    "text": "玄甲战列舰",
     "params": "",
     "category": "ship",
     "note": "配置显示覆盖；ID Battleship / des"
   },
   {
     "key": "ship.ship.heavy_battleship.des",
-    "text": "重型战列舰",
+    "text": "白鲸无畏舰",
     "params": "",
     "category": "ship",
     "note": "配置显示覆盖；ID Heavy_Battleship / des"

@@ -50,13 +50,13 @@ func run() -> void:
 	press.position = Vector2(weapons.input.size.x,weapons.input.size.y*0.5)
 	weapons.input._gui_input(press)
 	check(int(scene.game.profile.reactorAllocation.weapons)==60 and int(scene.game.profile.reactorAllocation.defence)==40 and scene.game.reactor_allocated()==capacity,"Increase stops at current amount plus remaining without moving another module")
-	check(weapons.input.value_label.visible and weapons.input.value_label.text=="60" and weapons.slider.max_value==capacity and is_equal_approx(weapons.track.available_ratio,0.6),"Drag value and unavailable track segment reflect integer limit")
+	check(weapons.input.find_children("*","Label",false,false).is_empty() and weapons.slider.max_value==capacity and is_equal_approx(weapons.track.available_ratio,0.6),"Drag has no floating number and unavailable track segment reflects integer limit")
 	var release := InputEventMouseButton.new()
 	release.button_index = MOUSE_BUTTON_LEFT
 	release.pressed = false
 	release.position = press.position
 	weapons.input._gui_input(release)
-	check(not weapons.input.value_label.visible and panel.remaining_label.text.contains("0"),"Drag value hides after release at zero remaining")
+	check(not weapons.input.dragging and panel.remaining_label.text.contains("0"),"Drag finishes at zero remaining")
 	click_power(defence.input,0.0)
 	check(int(scene.game.profile.reactorAllocation.defence)==0 and int(scene.game.profile.reactorAllocation.weapons)==60 and scene.game.reactor_allocated()==60 and panel.remaining_label.text.contains("40"),"Decrease returns energy to remaining pool")
 	weapons.clear.emit_signal("pressed")
@@ -85,7 +85,7 @@ func run() -> void:
 	check(scene.game.profile.reactorAllocation.weapons == before_step,"Plus restores one configured allocation step")
 	press.position = Vector2(weapons.input.size.x*0.3,weapons.input.size.y*0.5)
 	weapons.input._gui_input(press)
-	check(weapons.input.value_label.text==scene.number(scene.game.profile.reactorAllocation.weapons),"Drag label uses shared compact formatting")
+	check(weapons.energy.text==UIText.t("reactor.flow.manual",{"amount":panel.energy_text(scene.game.profile.reactorAllocation.weapons),"capacity":panel.energy_text(scene.game.reactor_capacity())}),"Manual readout below track remains during drag")
 	release.position = press.position
 	weapons.input._gui_input(release)
 	# Explicit presentation fixture: compare occupied capacity with free supply.
