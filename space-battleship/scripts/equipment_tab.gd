@@ -171,8 +171,6 @@ func setup(owner_ui: Node) -> void:
 	footer_actions.position = Vector2(610,10)
 	footer_actions.add_theme_constant_override("separation",10)
 	footer.add_child(footer_actions)
-	footer_buttons.swap = action_button(footer_actions,"equipment.swap","swap_module",func():open_picker(selected),true)
-	footer_buttons.enhancement = action_button(footer_actions,"enhance.tab","enhancement",func():act("enhancement"))
 	footer_buttons.details = action_button(footer_actions,"equipment.inspect","module_detail",show_inspector)
 	build_detail()
 	resized.connect(layout_contents)
@@ -204,7 +202,7 @@ func build_detail() -> void:
 	detail.meta = label(detail_body,"",Rect2(116,50,440,34),20,NAVY)
 	detail.primary = label(detail_body,"",Rect2(18,104,540,36),24,NAVY)
 	detail.status = label(detail_body,"",Rect2(18,145,540,30),19,NAVY)
-	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],func(i):pending_key=str(slot_options[i]);refresh_confirm())
+	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],choose_equipment)
 	skin_button(detail.slots,true)
 	detail.equip = action_button(detail_body,"equipment.confirm_free","equip_confirm",confirm_equipment,true)
 	detail.equip.position = Vector2(18,254)
@@ -237,8 +235,8 @@ func layout_contents() -> void:
 	grid_scroll.size = Vector2(width-44,height-260)
 	footer.position = Vector2(22,height-80)
 	footer.size = Vector2(width-44,70)
-	footer.get_child(1).position.x = maxf(340,width-470)
-	footer_title.size.x = maxf(280,width-520)
+	footer.get_child(1).position.x = maxf(340,width-200)
+	footer_title.size.x = maxf(280,width-250)
 	# Both categories share one grid density. Narrow physical windows reduce columns.
 	var logical_columns := floori((grid_scroll.size.x+14.0)/(Card.MIN_SIZE.x+14.0))
 	var logical_view := get_viewport().get_visible_rect().size
@@ -307,6 +305,13 @@ func open_picker(id: String) -> void:
 	detail_scroll.scroll_vertical = 0
 	detail.slots.grab_focus()
 
+func choose_equipment(index: int) -> void:
+	if index<0 or index>=slot_options.size():return
+	pending_key = str(slot_options[index])
+	refresh_confirm()
+	if picker_open and not detail.equip.disabled:
+		change_equipment(pending_key)
+
 func refresh_confirm() -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
@@ -324,9 +329,9 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 		"empty_module":return cards[id].equip_button if cards.has(id) else null
 		"upgrade_action":return cards[id].upgrade_button if cards.has(id) else null
 		"module_detail":return footer_buttons.details
-		"swap_module":return footer_buttons.swap
-		"equip_confirm":return detail.equip if detail_frame.visible and picker_open and selected==id and detail.equip.visible else null
-		"enhancement":return footer_buttons.enhancement
+		"swap_module":return cards[id].name_button if cards.has(id) else null
+		"equip_confirm":return detail.slots if detail_frame.visible and picker_open and selected==id else null
+		"enhancement":return detail.enhancement if detail_frame.visible and detail.enhancement.visible else null
 	return null
 
 func toggle_details() -> void:
@@ -546,9 +551,6 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	selected_slot = int(item.index)
 	# The page footer stays live even while the inspector is closed.
 	host.set_ui_value(footer_title,"text",item.name)
-	host.set_ui_value(footer_buttons.enhancement,"visible",host.game.enhancement_unlocked())
-	host.set_ui_value(footer_buttons.enhancement,"disabled",not host.game.enhancement_unlocked())
-	host.set_ui_value(footer_buttons.swap,"disabled",item.locked)
 	if not force and not detail_frame.is_visible_in_tree():
 		detail_dirty=true
 		return
@@ -584,7 +586,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(category,selected_slot,10 if action=="ten" else 1))
-	host.set_ui_value(detail.equip,"visible",true)
+	host.set_ui_value(detail.equip,"visible",not picker_open)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
 	host.set_ui_value(detail.remove,"disabled",item.locked)
 	host.set_ui_value(detail.enhancement,"visible",host.game.enhancement_unlocked())
