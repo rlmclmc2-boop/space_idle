@@ -5,7 +5,9 @@ const RAIL_SPEED_FACTOR := 12.0
 const MISSILE_LAUNCH_SPEED := 120.0
 const MISSILE_CRUISE_SPEED := 420.0
 const MISSILE_TURN_RATE := 4.0
-const ORPHAN_LIFETIME := 0.24
+# Normal coasting exits the arena first, even at the minimum guided speed.
+# This is only a backstop for malformed/stalled projectiles, not a visual fade.
+const ORPHAN_LIFETIME := 30.0
 const MISSILE_REACQUIRE_INTERVAL := 0.12
 const MISSILE_DEPARTURE_ANGLE := 12.0
 const MISSILE_IGNITION := 0.22
@@ -141,7 +143,7 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	shot.x=origin.x;shot.y=origin.y;shot.direction=direction.normalized()
 	shot.speed=MISSILE_LAUNCH_SPEED
 	shot.mount=int(packet.mount);shot.prototype_missile=true
-	shot.launch_point=origin;shot.motion_age=0.0;shot.orphan_age=0.0;shot.retarget_after=0.0
+	shot.launch_point=origin;shot.motion_age=0.0;shot.orphan_age=0.0
 	shot.last_target_point=aim;shot.closest_range=INF
 	shot.ignition_at=MISSILE_IGNITION;shot.seek_at=MISSILE_SEEK_START;shot.cruise_at=MISSILE_CRUISE_AT
 	if not target_alive:shot.target={}
@@ -151,14 +153,12 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
 	shot.motion_age=float(shot.motion_age)+dt
-	if float(shot.motion_age)>4.5:
-		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
 	if not missile_target_live(shot.target):
+		# An ejected missile never acquires another target. Pending packets still
+		# use the existing due-time target validation in tick_projectiles.
 		shot.target={}
-		if motion_clock>=float(shot.retarget_after):
-			shot.retarget_after=motion_clock+MISSILE_REACQUIRE_INTERVAL
-			shot.target=missile_retarget_candidate(int(shot.type))
-			if not shot.target.is_empty():missile_retarget_count+=1
+	if not shot.target.is_empty() and float(shot.motion_age)>4.5:
+		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
 	var position:=Vector2(shot.x,shot.y)
 	var old_angle:float=Vector2(shot.direction).angle()
 	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,MISSILE_CRUISE_SPEED,smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
@@ -187,16 +187,11 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 			hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)))
 			return true
 	else:
-		if float(shot.orphan_age)<=0.0:shot.orphan_start_speed=float(shot.speed)
 		shot.orphan_age=float(shot.orphan_age)+dt
 		if float(shot.orphan_age)>=ORPHAN_LIFETIME:
 			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
-		# A short finite forward coast, without hidden payload inventory, lifetime
-		# freezing or fresh fire events. A new enemy can still be acquired here.
-		shot.speed=float(shot.orphan_start_speed)*exp(-12.0*float(shot.orphan_age))
-		var angle:=rotate_toward(old_angle,-PI/2,MISSILE_TURN_RATE*dt)
-		maximum_turn_step_error=maxf(maximum_turn_step_error,absf(angle_difference(old_angle,angle))-MISSILE_TURN_RATE*dt)
-		shot.direction=Vector2.from_angle(angle)
+		# Keep the last heading and speed until the ordinary off-screen cleanup.
+		# An empty target also excludes collision and every hit/crit effect above.
 	var movement:=Vector2(shot.direction)*float(shot.speed)*dt
 	shot.x+=movement.x;shot.y+=movement.y
 	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+80:shot.dead=true

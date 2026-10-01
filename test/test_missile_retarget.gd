@@ -9,6 +9,7 @@ func check(ok:bool,label:String)->void:
 func _initialize()->void:call_deferred("run")
 func fixture(count:=2,launchers:=1):
 	var g=Presented.new(ShipDatabase.new(),false)
+	g.stat_cache_enabled=true
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	g.profile.loadout={"weapons":[],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
 	for i in launchers:g.profile.loadout.weapons.append({"key":"missile","level":150})
@@ -64,34 +65,39 @@ func run()->void:
 	step(g,0);target.hp=0
 	advance(g,3)
 	verify_five(g,payloads,"target dies after first ejection")
-	check(g.hit_records.size()==5 and g.hit_records.all(func(r):return int(r.target_uid)==101),"In-flight first packet and remaining four reacquire the live second enemy")
-	check(g.missile_retarget_count==5 and g.rng.state==rng_after,"Five retargets reuse exact payloads without rerolling")
+	check(g.hit_records.size()==4 and g.hit_records.all(func(r):return int(r.target_uid)==101),"Only four pending packets acquire the live second enemy")
+	check(g.missile_retarget_count==4 and g.rng.state==rng_after,"Four pending retargets reuse exact payloads without rerolling")
 	check(g.missile_target_scans<=5,"Dead-target searches reuse bounded candidate cache")
 	g=fixture(5,3)
 	for mount in 3:commit(g,mount,g.enemies[0])
 	step(g,0)
 	var live_lock_violations:=0
 	var tracked:Dictionary={}
+	var lost:Dictionary={}
 	for frame in 180:
 		if frame in [12,30,48]:g.enemies[[12,30,48].find(frame)].hp=0
 		for shot in g.projectiles:
 			var previous:Dictionary=tracked.get(int(shot.serial),{})
 			if not previous.is_empty() and g.missile_target_live(previous) and not is_same(previous,shot.target):live_lock_violations+=1
+			if not g.missile_target_live(shot.target):lost[int(shot.serial)]=true
 			tracked[int(shot.serial)]=shot.target
 		step(g,1.0/60.0)
 	check(g.launch_records.size()==15 and g.launch_records.all(func(r):return r.target_alive),"Rapid casualties and three launchers release fifteen valid packets")
-	check(live_lock_violations==0 and g.hit_records.size()==15,"Rapid target deaths preserve live locks and all fifteen eventual hits")
+	check(live_lock_violations==0 and not lost.is_empty() and g.hit_records.all(func(r):return not lost.has(int(r.serial))),"Rapid target deaths preserve live locks and never hit with orphaned missiles")
 	check(g.missile_target_scans<=15 and g.maximum_turn_step_error<.00001,"Multiple launchers share throttled lookup and bounded turn rate")
 	g=fixture(1);target=g.enemies[0]
 	commit(g,0,target);step(g,0)
 	var orphan:Dictionary=g.projectiles[0]
 	var loss_point:=Vector2(orphan.x,orphan.y)
+	var loss_velocity:=Vector2(orphan.direction)*float(orphan.speed)
 	target.hp=0
 	g.change_state(BattleGame.State.TRAVEL)
 	advance(g,2)
 	check(g.launch_records.size()==1 and g.invalid_target_cancellations==4 and g.missile_queue.is_empty(),"No enemies cancels four invalid due packets rather than banking hidden salvos")
-	check(g.projectiles.is_empty() and g.orphan_expirations==1 and orphan.dead,"Empty field retires the existing orphan within bounded window")
-	check(Vector2(orphan.x,orphan.y).distance_to(loss_point)<45,"Empty-field coast decelerates and does not wander through the fleet")
+	check(not g.projectiles.is_empty() and g.orphan_expirations==0 and not orphan.dead,"Empty field preserves a visible coasting missile beyond the old fade window")
+	check(Vector2(orphan.x,orphan.y).distance_to(loss_point+loss_velocity*2)<.01,"Empty-field coast keeps its exact velocity")
+	advance(g,10)
+	check(g.projectiles.is_empty() and g.hit_records.is_empty() and g.orphan_expirations==0,"Coasting exits the arena without timeout or ghost hits")
 	g=fixture(2);target=g.enemies[0]
 	commit(g,0,target);step(g,0)
 	var first:Dictionary=g.projectiles[0]
@@ -100,16 +106,46 @@ func run()->void:
 	g.enemies[1].hp=1e30
 	g.change_state(BattleGame.State.COMBAT)
 	advance(g,3)
-	check(g.launch_records.size()==5 and g.hit_records.size()==5 and g.hit_records[0].serial==first.serial,"Enemy appearing within finite coast window reacquires the same existing packet")
+	check(g.launch_records.size()==5 and g.hit_records.size()==4 and g.hit_records.all(func(r):return r.serial!=first.serial),"New enemy never reacquires an already orphaned packet; pending four still hit")
 	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0)
 	var expired:Dictionary=g.projectiles[0]
 	expired.motion_age=4.49;step(g,.02)
-	check(expired.dead and g.lifetime_expirations==1,"Original 4.5-second total lifetime is never frozen or extended")
+	check(expired.dead and g.lifetime_expirations==1,"Live-target missile retains its original 4.5-second lifetime")
 	g.change_state(BattleGame.State.LEVEL_CLEAR)
 	check(g.missile_queue.is_empty(),"Terminal clear keeps existing pending-salvo cancellation")
 	g=fixture(1);g.missile_target_registry.clear()
 	commit(g,0,g.enemies[0]);step(g,0)
 	check(g.launch_records.size()==1 and g.launch_records[0].target_alive,"Shared candidate query refreshes externally replaced runtime identities")
+	# Ordinary wave replacement invalidates runtime identity without retargeting.
+	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0)
+	var wave_shot:Dictionary=g.projectiles[0]
+	g.spawn_group();step(g,1.0/60.0)
+	check(wave_shot.target.is_empty() and not wave_shot.dead,"Ordinary new wave keeps old missile coasting")
+	# All cardinal/diagonal directions, minimum speed, and an age beyond 4.5s.
+	for direction in [Vector2.UP,Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT,Vector2(-1,-1).normalized(),Vector2(1,-1).normalized(),Vector2(-1,1).normalized(),Vector2(1,1).normalized()]:
+		g=fixture(2);commit(g,0,g.enemies[0]);step(g,0)
+		g.missile_queue.clear() # isolate one already released missile
+		var shot:Dictionary=g.projectiles[0]
+		shot.x=286.;shot.y=348.;shot.direction=direction;shot.speed=60.;shot.motion_age=4.49
+		g.enemies[0].hp=0
+		var state:int=g.rng.state
+		var straight:=true
+		for frame in 1500:
+			if shot.dead:break
+			step(g,1.0/60.0)
+			straight=straight and shot.direction==direction and shot.speed==60.
+		check(straight and shot.dead and (shot.x < -32 or shot.x > 604 or shot.y < -32 or shot.y > 776),"Orphan leaves arena along unchanged direction "+str(direction))
+		check(g.hit_records.is_empty() and g.missile_retirements.is_empty() and g.orphan_expirations==0 and g.rng.state==state,"Offscreen cleanup has no ghost damage, retirement effect or RNG "+str(direction))
+	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0);g.missile_queue.clear()
+	var stalled:Dictionary=g.projectiles[0]
+	stalled.speed=0.;g.enemies[0].hp=0;step(g,30.)
+	check(stalled.dead and g.orphan_expirations==1 and g.hit_records.is_empty(),"Stalled malformed missile has finite cleanup backstop")
+	# Final encounter still clears every projectile and pending salvo.
+	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0)
+	g.group_index=g.db.levels[g.stage-1].groups.size()
+	g.hit_enemy(g.enemies[0],1e100,1,[],false)
+	g.tick(1.0/60.0)
+	check(g.projectiles.is_empty() and g.missile_queue.is_empty(),"Final group clear retains unified projectile/salvo cleanup")
 	var original:=ShipDatabase.new()
 	check(int(original.equipment.missile[0].para1)==4 and int(g.db.equipment.missile[0].para1)==5,"Player-only five-shot projection leaves source/enemy equipment untouched")
 	var hostile:Dictionary={"x":200.0,"y":100.0,"uid":77}
