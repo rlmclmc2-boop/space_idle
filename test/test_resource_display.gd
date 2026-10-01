@@ -15,7 +15,7 @@ func run() -> void:
 	scene.game.save_enabled = false
 	scene.game.profile.resources["1"] = 123
 	scene.game.profile.resources["2"] = 45
-	check(scene.resource_display("1")=="120" and scene.resource_display("2")=="45", "Default displays use KMBT totals")
+	check(scene.resource_display("1")=="123" and scene.resource_display("2")=="45", "Default displays retain three significant digits")
 	scene.resource_mode_button.pressed.emit()
 	check(scene.resource_rate_mode and scene.resource_display("1")=="0.00/秒", "Button switches to empty rate")
 	for manual in [true,false]:
@@ -44,6 +44,7 @@ func run() -> void:
 		scene.game.drops.append({"uid":92,"x":155.0,"y":300.0,"age":0.0,"id":"2","amount":5.0,"speed":40.0,"auto_gen":true})
 		scene.game.drops.append({"uid":93,"x":330.0,"y":300.0,"age":0.6,"id":"1","amount":5.0,"speed":40.0})
 		scene.battle_layer.queue_redraw()
+		scene.drop_layer.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://resource-drops.png")
@@ -73,6 +74,7 @@ func run() -> void:
 	if DisplayServer.get_name() != "headless":
 		killed_iron.age = 0.6
 		scene.battle_layer.queue_redraw()
+		scene.drop_layer.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://kill-iron-drop.png")
@@ -105,6 +107,7 @@ func run() -> void:
 	if DisplayServer.get_name() != "headless":
 		left_iron.age = 0.6
 		scene.battle_layer.queue_redraw()
+		scene.drop_layer.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://stage13-left-iron.png")
@@ -113,9 +116,10 @@ func run() -> void:
 	var furnace_iron := {"uid":9901,"x":135.0,"y":320.0,"age":2.0,"id":"1","amount":250.0,"hightech":true}
 	var furnace_core := {"uid":9902,"x":218.0,"y":320.0,"age":2.0,"id":"jewel","amount":25.0,"hightech":true,"jewel":true}
 	scene.game.drops.append_array([furnace_iron,furnace_core])
-	check(scene.FURNACE_IRON_TEXTURE != scene.FURNACE_CORE_TEXTURE,"Furnace resources have distinct sprites")
+	check(scene.RESOURCE_ART.texture("1") != scene.RESOURCE_ART.texture("jewel"),"Furnace resources have distinct sprites")
 	if DisplayServer.get_name() != "headless":
 		scene.battle_layer.queue_redraw()
+		scene.drop_layer.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://furnace-resources.png")

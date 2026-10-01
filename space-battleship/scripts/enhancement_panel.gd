@@ -5,6 +5,7 @@ const SHELL := preload("res://scripts/shell_presentation.gd")
 const FORMAT := preload("res://scripts/number_format.gd")
 const PARAMETER_TEXT := preload("res://scripts/parameter_text.gd")
 const N := preload("res://scripts/growth_number.gd")
+const RESOURCE_ART := preload("res://scripts/resource_art.gd")
 const NAVY := SHELL.NAVY
 const PAPER := SHELL.PAPER
 const TEAL := SHELL.TEAL
@@ -56,7 +57,16 @@ func setup(owner_node: Node) -> void:
 
 	level_label = text_label(header,"",Rect2(148,24,500,44),34)
 	bonus_label = text_label(header,"",Rect2(148,83,500,28),21,MUTED)
-	balance_label = text_label(header,"",Rect2(674,18,600,34),23)
+	var fragment_icon := TextureRect.new()
+	fragment_icon.name = "FragmentBalanceIcon"
+	fragment_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	fragment_icon.texture = RESOURCE_ART.FRAGMENT
+	fragment_icon.position = Vector2(674,18)
+	fragment_icon.size = Vector2(32,32)
+	fragment_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	fragment_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(fragment_icon)
+	balance_label = text_label(header,"",Rect2(714,18,560,34),23)
 	cost_label = text_label(header,"",Rect2(674,57,600,32),21)
 	progress = ProgressBar.new()
 	progress.position = Vector2(674,101)

@@ -8,8 +8,7 @@ const MUTED := Color("8195ac")
 const CYAN := Color("71e5f4")
 const ORANGE := Color("ffbc73")
 const PURPLE := Color("b3a0ff")
-const FURNACE_IRON_TEXTURE := preload("res://assets/hightech/furnace-iron-cache.png")
-const FURNACE_CORE_TEXTURE := preload("res://assets/hightech/furnace-jewel-core.png")
+const RESOURCE_ART := preload("res://scripts/resource_art.gd")
 const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],2:["reactor"],4:["jewel"],8:["galaxy"]}
 const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",2:"reactor.tab",4:"enhance.tab",8:"galaxy.tab"}
 const RIGHT_UI_OFFSET := 608.0
@@ -177,6 +176,7 @@ var background_layer: Node2D
 var chrome_layer: Node2D
 var stars_layer: Node2D
 var battle_layer: Node2D
+var drop_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
 var enhancement_panel: Panel
@@ -541,6 +541,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			toast(str(info.message))
 		"jewel_pickup":
 			if is_instance_valid(enhancement_panel):enhancement_panel.pickup_feedback(info)
+			resource_pickup_feedback(info)
 		"state":
 			refresh_structure()
 			refresh_navigation()
@@ -606,16 +607,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			if info.has("shot") and weapon_key(info.shot)=="cannon":railgun_sound("release")
 			else:beep(620 if info.type == 1 else 200)
 		"collect":
-			var active: Dictionary = {}
-			for entry in floats:
-				if entry.get("resource","")==info.id and float(entry.life)>0 and fx_time-float(entry.born)<0.4:active = entry
-			if active.is_empty():
-				floats = floats.filter(func(f):return f.get("resource","")!=info.id)
-				active = {"resource":info.id,"amount":0.0,"born":fx_time,"color":INK if info.id=="1" else PURPLE,"life":0.8}
-				floats.append(active)
-			active.amount = GrowthNumber.add(active.amount,info.amount)
-			active.text = UIText.t("main.on_event.text_01", {"amount":"%s" % (number(active.amount)), "id":"%s" % (UIText.data_text("resources",str(info.id)))})
-			queue_pickup_effect(info,active.color)
+			resource_pickup_feedback(info)
 		"encounter":
 			wave_hint = 0.8
 		"wave_clear":
@@ -2042,20 +2034,22 @@ func create_draw_layers() -> void:
 	battle_clip.clip_contents = true
 	battle_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	battle_layer = Node2D.new()
+	drop_layer = Node2D.new()
+	drop_layer.name = "BattleResources"
 	battle_hud_layer = Node2D.new()
 	battle_hud_layer.position = Vector2.ZERO
 	resource_layer = Node2D.new()
 	overlay_layer = Node2D.new()
 	overlay_layer.z_index = 1
-	var layers := [background_layer,stars_layer,chrome_layer,battle_layer,battle_hud_layer,resource_layer,overlay_layer]
-	var painters := [draw_background,draw_stars,draw_chrome,draw_battle,draw_vertical_battle_hud,draw_resources,draw_overlay]
+	var layers := [background_layer,stars_layer,chrome_layer,drop_layer,battle_layer,battle_hud_layer,resource_layer,overlay_layer]
+	var painters := [draw_background,draw_stars,draw_chrome,draw_battle_resources,draw_battle,draw_vertical_battle_hud,draw_resources,draw_overlay]
 	for index in layers.size():
 		var layer: Node2D = layers[index]
 		var painter: Callable = painters[index]
 		if layer==stars_layer:
 			add_child(battle_clip)
 			battle_clip.add_child(layer)
-		elif layer==battle_layer:
+		elif layer==battle_layer or layer==drop_layer:
 			battle_clip.add_child(layer)
 		else:
 			add_child(layer)
@@ -2081,6 +2075,11 @@ func refresh_draw_layers(dt: float) -> void:
 		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
 		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
 			battle_layer.queue_redraw()
+	if drop_layer.visible!=battle_layer.visible:drop_layer.visible=battle_layer.visible
+	if drop_layer.visible:
+		var drops_changed := ui_state_changed(drop_layer,[game.drops,death_drop_positions,pickup_effects])
+		if drops_changed or (dt>0 and not game.paused and (not game.drops.is_empty() or not pickup_effects.is_empty())):
+			drop_layer.queue_redraw()
 	# The HUD reads encounter identity and player health, never enemy cooldowns
 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
 	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),enhancement_defense_hud_state()]):
@@ -2376,6 +2375,20 @@ func battle_notices() -> Array[Dictionary]:
 	if not resource_text.is_empty():notices.append({"text":" · ".join(resource_text),"resources":resource_ids,"color":resource_color,"alpha":resource_alpha})
 	return notices
 
+func resource_pickup_feedback(info: Dictionary) -> void:
+	var id := "jewel" if info.has("jewel") else str(info.id)
+	var active: Dictionary = {}
+	for entry in floats:
+		if entry.get("resource","")==id and float(entry.life)>0 and fx_time-float(entry.born)<0.4:active = entry
+	if active.is_empty():
+		floats = floats.filter(func(f):return f.get("resource","")!=id)
+		active = {"resource":id,"amount":0.0,"born":fx_time,"color":RESOURCE_ART.accent(id),"life":0.8}
+		floats.append(active)
+	active.amount = GrowthNumber.add(active.amount,info.amount)
+	var caption := UIText.t("main._ready.text_02") if id=="jewel" else UIText.data_text("resources",id)
+	active.text = UIText.t("main.on_event.text_01",{"amount":number(active.amount),"id":caption})
+	queue_pickup_effect(info,active.color)
+
 func battle_notice_rect(index: int) -> Rect2:
 	return Rect2(Vector2(40,138+index*23),Vector2(532,22))
 
@@ -2390,21 +2403,19 @@ func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
 			if str(drop.id) in notices[index].get("resources",[]):
 				destination=battle_notice_rect(index).get_center()
 				break
-	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color})
+	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color,"resource":"jewel" if drop.has("jewel") else str(drop.get("id","1"))})
 
 func draw_overlay() -> void:
-	for effect in pickup_effects:
-		var progress := 1.0-float(effect.life)/float(effect.duration)
-		var point: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-progress,3))
-		var tail: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-maxf(0,progress-0.09),3))
-		draw_surface.draw_line(tail,point,Color(effect.color,0.55*(1.0-progress)),3.0,true)
-		draw_surface.draw_circle(point,3.5,Color(effect.color,1.0-progress))
 	var notices := battle_notices()
 	for index in notices.size():
 		var notice := battle_notice_rect(index)
 		var entry: Dictionary = notices[index]
 		box(notice,Color(0.045,0.075,0.11,0.9*float(entry.alpha)),Color(0.16,0.23,0.29,0.4*float(entry.alpha)))
-		text_at(fit_battle_text(str(entry.text),notice.size.x-20.0,14),notice.position+Vector2(10,16),14,Color(entry.color,float(entry.alpha)))
+		var resource_ids: Array = entry.get("resources",[])
+		var icon_width := resource_ids.size()*20.0
+		for icon_index in resource_ids.size():
+			RESOURCE_ART.draw_icon(draw_surface,str(resource_ids[icon_index]),notice.position+Vector2(12+icon_index*20,11),20.0,float(entry.alpha))
+		text_at(fit_battle_text(str(entry.text),notice.size.x-20.0-icon_width,14),notice.position+Vector2(10+icon_width,16),14,Color(entry.color,float(entry.alpha)))
 	if help_open:
 		draw_help()
 	if not game.pending_unlocks.is_empty():
@@ -2455,6 +2466,25 @@ func draw_environment_event(offset: Vector2) -> void:
 	draw_surface.draw_line(point+trail*0.55,point,Color(1.0,0.91,0.77,0.42*fade),1.0,true)
 	draw_surface.draw_circle(point,2.0,Color.WHITE,0.55*fade)
 
+func draw_battle_resources() -> void:
+	var mouse_pos := drop_layer.to_local(get_global_mouse_position())
+	for drop in game.drops:
+		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
+		var pos := drop_render_position(drop)
+		var id := "jewel" if drop.has("jewel") else str(drop.id)
+		var color := RESOURCE_ART.accent(id)
+		RESOURCE_ART.draw_drop(draw_surface,drop,pos,clock)
+		if pos.distance_to(mouse_pos)<40:
+			var caption := UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
+			var caption_pos := Vector2(clampf(pos.x-85.0,12.0,BATTLE_VIEW_SIZE.x-182.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
+			text_at(fit_battle_text(caption,170,17),caption_pos,17,color)
+	for effect in pickup_effects:
+		var progress := 1.0-float(effect.life)/float(effect.duration)
+		var point: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-progress,3))-BATTLE_ORIGIN
+		var tail: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-maxf(0,progress-0.09),3))-BATTLE_ORIGIN
+		draw_surface.draw_line(tail,point,Color(effect.color,0.55*(1.0-progress)),3.0,true)
+		RESOURCE_ART.draw_icon(draw_surface,str(effect.resource),point,lerpf(22.0,14.0,progress),1.0-progress)
+
 func draw_battle() -> void:
 	player_weapon_components()
 	battle_draw_player_position=player_render_position()
@@ -2462,35 +2492,6 @@ func draw_battle() -> void:
 	var boss_battle := game.state == BattleGame.State.COMBAT and game.is_boss_encounter()
 	var offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
 	if not accelerated_visual_mode:draw_environment_event(offset)
-	for drop in game.drops:
-		if float(drop.age)<0.5 and not drop.get("hightech",false) and not drop.get("auto_gen",false):continue
-		var pos := drop_render_position(drop)
-		var color := INK if drop.id=="1" else PURPLE
-		var bob := sin(clock*3+float(drop.uid))*3
-		var furnace: bool = drop.get("hightech", false)
-		var core: bool = furnace and drop.has("jewel")
-		var auto_gen: bool = drop.get("auto_gen", false)
-		if auto_gen and drop.id=="2":
-			draw_surface.draw_circle(pos+Vector2(0,bob),20.0,Color("b278ff",0.18))
-			draw_surface.draw_set_transform(pos+Vector2(0,bob),0.0,Vector2(0.55,0.55))
-			draw_auto_uranium(Vector2.ZERO,float(drop.uid))
-			draw_surface.draw_set_transform(Vector2.ZERO)
-			if pos.distance_to(battle_layer.to_local(get_global_mouse_position()))<40:
-				text_at(number(drop.amount),pos+Vector2(-12,45+bob),17,PURPLE)
-			continue
-		if furnace:
-			draw_furnace_drop(drop,pos,core,bob)
-			continue
-		if auto_gen:
-			draw_surface.draw_line(pos-Vector2(0,20),pos-Vector2(0,60),Color(color,0.25),2)
-		if drop.id=="1":
-			draw_iron_drop(pos+Vector2(0,bob))
-		else:
-			text_at("◇",pos+Vector2(-10,7+bob),16,Color(color,0.65))
-		if pos.distance_to(battle_layer.to_local(get_global_mouse_position()))<40:
-			var caption := UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
-			var caption_pos := Vector2(clampf(pos.x-85.0,12.0,BATTLE_VIEW_SIZE.x-182.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
-			text_at(fit_battle_text(caption,170,17),caption_pos,17,color)
 	if not accelerated_visual_mode:draw_battle_particles(offset,false)
 	var visual_index := projectile_visual_index()
 	var flights: Array = []
@@ -2605,50 +2606,6 @@ func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: flo
 func draw_beam_override(_shot: Dictionary, _offset: Vector2, _core: bool = true) -> bool:
 	# Optional presentation override; default preserves the original draw commands.
 	return false
-
-func draw_furnace_drop(drop: Dictionary, pos: Vector2, core: bool, bob: float) -> void:
-	var accent := PURPLE if core else ORANGE
-	var center := pos+Vector2(0,bob)
-	var pulse := 0.5+0.5*sin(clock*4.0+float(drop.uid))
-	draw_surface.draw_circle(center,36.0,Color(accent,(0.12 if core else 0.07)+pulse*0.05))
-	draw_surface.draw_circle(center,29.0,Color("0b1422",0.91))
-	draw_surface.draw_arc(center,29.0,0,TAU,36,Color(accent,0.34),1.0,true)
-	draw_surface.draw_arc(center,32.0,-PI/2,-PI/2+TAU*clampf(1.0-float(drop.age)/10.0,0,1),36,Color(accent,0.75),2.0,true)
-	draw_surface.draw_texture_rect(FURNACE_CORE_TEXTURE if core else FURNACE_IRON_TEXTURE,Rect2(center-Vector2(28,28),Vector2(56,56)),false,Color.WHITE)
-
-func draw_iron_drop(pos: Vector2) -> void:
-	var hull := PackedVector2Array([pos+Vector2(-10,-4),pos+Vector2(-4,-11),pos+Vector2(7,-9),pos+Vector2(12,-2),pos+Vector2(6,9),pos+Vector2(-6,10),pos+Vector2(-12,3)])
-	draw_surface.draw_circle(pos,15.0,Color("ffb45e",0.08))
-	draw_surface.draw_colored_polygon(hull,Color("68452f"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([hull[0],hull[1],hull[2],pos+Vector2(0,1)]),Color("c99661"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([hull[2],hull[3],hull[4],pos+Vector2(0,1)]),Color("a8774b"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([hull[0],pos+Vector2(0,1),hull[4],hull[5],hull[6]]),Color("784c30"))
-	for index in hull.size():
-		draw_surface.draw_line(hull[index],hull[(index+1)%hull.size()],Color("d5a56f"),1.4,true)
-	draw_surface.draw_line(pos+Vector2(-4,-5),pos+Vector2(3,-6),Color("efc18a"),1.2,true)
-
-func draw_auto_uranium(pos: Vector2, uid: float) -> void:
-	# The generated ore moves down toward the player.
-	var pulse := 0.5+0.5*sin(fx_time*4.0+uid)
-	var violet := Color("aa83ff")
-	var ice := Color("e9ddff")
-	for i in range(3):
-		var wake := pos+Vector2(6.0*sin(fx_time*5.0+uid+float(i)),-38.0-float(i)*24.0)
-		draw_surface.draw_line(pos-Vector2(0,15),wake,Color(violet,0.34-float(i)*0.07),5.0-float(i),true)
-		draw_surface.draw_circle(wake,3.0-float(i)*0.5,Color(ice,0.6-float(i)*0.12))
-	draw_surface.draw_circle(pos,35.0+4.0*pulse,Color(violet,0.075+0.025*pulse))
-	draw_surface.draw_circle(pos,26.0,Color(violet,0.13))
-	draw_surface.draw_arc(pos,30.0,-PI*0.7,PI*0.45,36,Color(ice,0.42+0.22*pulse),1.6,true)
-	draw_surface.draw_arc(pos,30.0,PI*0.5,PI*1.65,36,Color(violet,0.35),1.6,true)
-	var hull := PackedVector2Array([pos+Vector2(-21,-6),pos+Vector2(-9,-23),pos+Vector2(11,-25),pos+Vector2(25,-5),pos+Vector2(14,21),pos+Vector2(-11,23),pos+Vector2(-24,8)])
-	draw_surface.draw_colored_polygon(hull,Color("432c70"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([hull[0],hull[1],pos+Vector2(0,-8),pos+Vector2(-3,12),hull[6]]),Color("7952c2"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([hull[1],hull[2],hull[3],pos+Vector2(0,-8)]),Color("f3e7ff"))
-	draw_surface.draw_colored_polygon(PackedVector2Array([pos+Vector2(0,-8),hull[3],hull[4],pos+Vector2(-3,12)]),Color("ae71ed"))
-	for i in hull.size():
-		draw_surface.draw_line(hull[i],hull[(i+1)%hull.size()],Color(ice,0.85),2.0,true)
-	draw_surface.draw_line(pos+Vector2(-4,-11),pos+Vector2(6,3),Color(1,1,1,0.55+0.25*pulse),2.0,true)
-	draw_surface.draw_circle(pos+Vector2(1,-2),4.0+1.5*pulse,Color(ice,0.65+0.25*pulse))
 
 func draw_battle_particles(offset: Vector2, core: bool) -> void:
 	for p in particles:

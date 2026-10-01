@@ -1,0 +1,5 @@
+# Resource art
+
+Original native SVG geometry, authored for this project; no external images or fonts. The navy outline and cream fittings follow the existing ship, equipment and reactor UI. Iron keeps a warm faceted ore silhouette, uranium a violet mineral, and enhancement currency a teal shard cluster. All sources use a transparent 96×96 canvas with safe margins, round joins and no baked text, shadow or glow.
+
+`resource_art.gd` is the shared consumer: battlefield drops use 32 px, generated ore 38 px, furnace drops 42 px, pickup flights 22→14 px, notices 20 px, resource strip 27 px and enhancement balance 32 px (logical sizes, before screen scaling). Source type affects only size, a short wake or the existing ten-second furnace timer. The same silhouette identifies each currency throughout collection. SVGs are imported once by Godot. One shared `BattleResources` CanvasItem draws drops and flights behind the live ship composite; no per-drop node, shader, material or viewport is needed. Empty or paused unchanged resources retain their draw commands.
