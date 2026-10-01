@@ -47,12 +47,16 @@ func run() -> void:
 	scene.game.paused=true
 	scene.game.pending_unlocks.clear()
 	scene.game.profile.cleared=range(1,90)
+	scene.game.profile.highestLevel=90
+	scene.game.rebuild_unlocks()
+	scene.game.pending_unlocks.clear()
 	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	scene.game.profile.resources={"1":1e28,"2":1e28}
 	scene.game.profile.onboarding.completed=true
 	scene.game.switch_ship("Heavy_Battleship")
 	scene.game.equip_slot("weapons",0,"laser")
 	scene.game.equip_slot("weapons",1,"cannon")
+	scene.refresh_tab_visibility()
 	scene.equipment_tabs.current_tab=0
 	await process_frame
 	await process_frame
@@ -72,6 +76,30 @@ func run() -> void:
 	await click(panel.cards.weapons_1.upgrade_button,panel.cards.weapons_1.upgrade_button.size/2)
 	check(scene.game.module_entry("weapons",1).level==refit_level+1 and not panel.detail_frame.visible,"Independent actual upgrade click upgrades exact slot without opening picker")
 	panel.open_picker("weapons_1")
+	if DisplayServer.get_name()!="headless":
+		await click(panel.detail.slots,panel.detail.slots.size/2)
+		var popup: PopupMenu=panel.detail.slots.get_popup()
+		check(popup.visible,"Actual mouse expands native replacement menu")
+		var picker_ref: OptionButton=panel.detail.slots
+		scene.game.crew.auto_upgrade(scene.game,{"upgradeMode":"1"})
+		panel.refresh()
+		check(panel.picker_open and popup.visible and is_same(picker_ref,panel.detail.slots),"Auto-upgrade and refresh preserve open picker popup instance")
+		for down in [true,false]:
+			var event:=InputEventKey.new()
+			event.keycode=KEY_DOWN
+			event.pressed=down
+			Input.parse_input_event(event)
+			await process_frame
+		var chosen: int=popup.get_focused_item()
+		var expected_key: String=str(panel.slot_options[chosen]) if chosen>=0 else "invalid"
+		check(chosen>=0 and expected_key!=scene.game.module_entry("weapons",1).key,"Native menu focuses a different replacement option")
+		for down in [true,false]:
+			var event:=InputEventKey.new()
+			event.keycode=KEY_ENTER
+			event.pressed=down
+			Input.parse_input_event(event)
+			await process_frame
+		check(scene.game.module_entry("weapons",1).key==expected_key and not popup.visible,"Native popup keyboard selection immediately equips after auto-upgrade")
 	check(panel.footer_buttons.size()==1 and panel.footer_buttons.has("details"),"Main footer contains only details")
 	choose(panel,"cannon")
 	panel.show_inspector()
@@ -138,6 +166,9 @@ func run() -> void:
 	check(panel.selected=="defence_0" and panel.picker_open,"Defence name click opens exact defence slot")
 	choose(panel,BattleGame.DEFENSE_KEYS[0])
 	check(scene.game.module_entry("defence",0).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
+	check(not panel.detail.has("enhancement") and panel.get_action_anchor("enhancement")==null,"Equipment picker and inspector have no enhancement navigation")
+	scene.select_system(4)
+	check(scene.enhancement_panel.visible,"Independent enhancement main page entry remains available")
 	check(not scene.game.save_enabled,"No player save writes")
 	print("Equipment picker refresh: %d checks, %d failures"%[checks,failures])
 	if "--interactive" in OS.get_cmdline_user_args():

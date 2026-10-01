@@ -216,8 +216,8 @@ func build_detail() -> void:
 	detail_actions.add_theme_constant_override("h_separation",10)
 	detail_actions.add_theme_constant_override("v_separation",10)
 	detail_body.add_child(detail_actions)
-	for action in ["upgrade","ten","max","remove","enhancement"]:
-		detail[action] = action_button(detail_actions,("enhance.tab" if action=="enhancement" else "equipment.action."+action),action,func():act(action),action=="upgrade")
+	for action in ["upgrade","ten","max","remove"]:
+		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
 	detail.more = action_button(detail_body,"equipment.attributes.hide","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
@@ -331,7 +331,6 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 		"module_detail":return footer_buttons.details
 		"swap_module":return cards[id].name_button if cards.has(id) else null
 		"equip_confirm":return detail.slots if detail_frame.visible and picker_open and selected==id else null
-		"enhancement":return detail.enhancement if detail_frame.visible and detail.enhancement.visible else null
 	return null
 
 func toggle_details() -> void:
@@ -589,8 +588,6 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.equip,"visible",not picker_open)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
 	host.set_ui_value(detail.remove,"disabled",item.locked)
-	host.set_ui_value(detail.enhancement,"visible",host.game.enhancement_unlocked())
-	host.set_ui_value(detail.enhancement,"disabled",not host.game.enhancement_unlocked())
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
@@ -643,5 +640,4 @@ func act(action: String) -> void:
 			if action=="max":amount=host.game.max_upgrade_amount_slot(category,selected_slot)
 			host.game.upgrade_slot(category,selected_slot,amount)
 		"remove":host.game.unequip_slot(category,selected_slot)
-		"enhancement":host.select_system(4)
 	refresh(selected)
