@@ -1,0 +1,67 @@
+--- a/space-battleship/scripts/presented_battle_game.gd
++++ b/space-battleship/scripts/presented_battle_game.gd
+@@ -155,18 +155,41 @@
+ 
+ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
+ 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
++	# Loss/ages are checked every exact game step, even when steering is merged.
++	if not missile_target_live(shot.target):shot.target={}
++	if speed<10.0 and shot.has("fast_motion_elapsed"):
++		var held:=float(shot.fast_motion_elapsed)
++		shot.erase("fast_motion_elapsed")
++		while held>0.000000001:
++			var part:=minf(held,1.0/60.0)
++			_advance_missile_motion(shot,part)
++			if bool(shot.dead):return true
++			held-=part
+ 	shot.motion_age=float(shot.motion_age)+dt
+-	if not missile_target_live(shot.target):
+-		# An ejected missile never acquires another target. Pending packets still
+-		# use the existing due-time target validation in tick_projectiles.
+-		shot.target={}
+ 	if not shot.target.is_empty() and float(shot.motion_age)>4.5:
+ 		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
++	if shot.target.is_empty():
++		shot.orphan_age=float(shot.orphan_age)+dt
++		if float(shot.orphan_age)>=ORPHAN_LIFETIME:
++			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
++	else:shot.orphan_age=0.0
++	# X10+ merges only player missile movement. The caller still runs all game,
++	# attack, recovery and launch clocks at 1/60. Packet cuts may overshoot 1/30
++	# by at most the final 1/60 piece. No intervals survive projectile cleanup.
++	if speed>=10.0:
++		var held:=float(shot.get("fast_motion_elapsed",0.0))+dt
++		if held+0.000000001<1.0/30.0:
++			shot.fast_motion_elapsed=held
++			return true
++		dt=held
++		shot.erase("fast_motion_elapsed")
++	return _advance_missile_motion(shot,dt)
++
++func _advance_missile_motion(shot:Dictionary,dt:float)->bool:
+ 	var position:=Vector2(shot.x,shot.y)
+ 	var old_angle:float=Vector2(shot.direction).angle()
+ 	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,MISSILE_CRUISE_SPEED,smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
+ 	if not shot.target.is_empty():
+-		shot.orphan_age=0.0
+ 		var aim:=target_point(shot.target)
+ 		shot.last_target_point=aim
+ 		var wanted:=(aim-position).angle()
+@@ -190,9 +213,6 @@
+ 			hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)))
+ 			return true
+ 	else:
+-		shot.orphan_age=float(shot.orphan_age)+dt
+-		if float(shot.orphan_age)>=ORPHAN_LIFETIME:
+-			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
+ 		# Losing the lock stops steering, not the launch-to-cruise acceleration.
+ 		shot.speed=maxf(float(shot.speed),cruise_speed)
+ 		# Keep the last heading until the ordinary off-screen cleanup.
+@@ -205,6 +225,7 @@
+ func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
+ 	if bool(shot.get("retirement_emitted",false)):return
+ 	shot.retirement_emitted=true;shot.dead=true
++	shot.erase("fast_motion_elapsed")
+ 	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast}
+ 	missile_retirements.append(record)
+ 	if missile_retirements.size()>128:missile_retirements.pop_front()
