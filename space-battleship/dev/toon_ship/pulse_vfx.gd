@@ -17,14 +17,25 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2)->void:
 	# A short transverse energy ridge distinguishes the packet from a tracer.
 	surface.draw_line(point+direction*2.0-across*5.0,point+direction*2.0+across*5.0,Color(CYAN,0.8),1.2,true)
 static func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float)->void:
+	# Fire events live for 0.14 s, but this flash is already transparent at 0.075 s.
+	if age>=0.075 or not point.is_finite() or not direction.is_finite() or direction.is_zero_approx():return
 	var t:=clampf(age/0.075,0.0,1.0)
 	var fade:=1.0-t
 	var across:=direction.orthogonal()
 	var kick:=point-direction*(3.0*sin(t*PI))
 	# Local muzzle kick contracts while the packet departs. No hull transform changes.
-	surface.draw_colored_polygon(PackedVector2Array([kick-direction*2.0,kick+direction*15.0*fade+across*4.0*fade,kick+direction*9.0*fade,kick+direction*15.0*fade-across*4.0*fade]),Color(CYAN,fade))
+	# The concave four-point flash has a known two-triangle split. Submit it
+	# directly so near-expiry float-rounded vertices never enter ear clipping.
+	var back:=kick-direction*2.0
+	var center:=kick+direction*9.0*fade
+	_flash_triangle(surface,back,kick+direction*15.0*fade+across*4.0*fade,center,Color(CYAN,fade))
+	_flash_triangle(surface,back,center,kick+direction*15.0*fade-across*4.0*fade,Color(CYAN,fade))
 	surface.draw_line(kick-across*(4.0+3.0*t),kick+across*(4.0+3.0*t),Color(BLUE,fade*0.9),2.3,true)
 	surface.draw_line(kick,kick+direction*11.0*fade,Color(WHITE,fade),3.0*fade+0.5,true)
+static func _flash_triangle(surface:CanvasItem,a:Vector2,b:Vector2,c:Vector2,color:Color)->void:
+	# Zero/subpixel area can occur even before expiry after screen-coordinate rounding.
+	if absf((b-a).cross(c-a))<=0.00001:return
+	surface.draw_primitive(PackedVector2Array([a,b,c]),PackedColorArray([color]),PackedVector2Array())
 static func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,critical:bool)->void:
 	var t:=clampf(age/0.13,0.0,1.0)
 	var fade:=1.0-t
