@@ -1,6 +1,6 @@
 extends SceneTree
 ## Config-driven visual regression, with optional real-time ten-second capture.
-class TrackedUI extends "res://scripts/main.gd":
+class TrackedUI extends "res://scripts/battlefield.gd":
 	var writes: Array = []
 	func set_ui_value(control: Object, property: StringName, value: Variant) -> void:
 		if control.get(property) != value:writes.append(control)
@@ -50,12 +50,17 @@ func run() -> void:
 	screen.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(screen)
-	scene = TrackedUI.new()
+	# Instantiate the production entry. The derived script only tracks UI writes;
+	# it retains battlefield.gd and its normal toon ship renderer.
+	var entry = load("res://main.tscn").instantiate()
+	entry.set_script(TrackedUI)
+	scene = entry
 	scene.automation_args = ["--capture"]
 	viewport.add_child(scene)
 	scene.automation_args = []
 	scene.set_process(false)
 	scene.fps_label.hide()
+	check(is_instance_valid(scene.ship_view), "Production entry uses the current toon battlefield renderer")
 	var g = scene.game
 	var configuration: Dictionary = g.db.data.duplicate(true)
 	g.save_enabled = false
@@ -65,6 +70,7 @@ func run() -> void:
 	g.load_planets({})
 	g.profile.cleared = range(1,101)
 	g.profile.highestLevel = 101
+	g.profile.lifetime_max_stage = 101
 	g.rebuild_unlocks()
 	scene.refresh_structure()
 	scene.equipment_tabs.current_tab = 6
@@ -124,6 +130,16 @@ func run() -> void:
 		check(panel.selected_planet_id == id and selected.stage.visible, id + " actual list selection")
 		check(selected.visual.facility_renderer == panel.facility_renderer, id + " keeps the shared facility renderer")
 		check(selected.visual.globe.size.x <= selected.visual.size.x, id + " authored body envelope fits stage")
+		var body = selected.visual.globe
+		var body_phase: Vector2 = body.phases
+		selected.visual.advance(0.2,false)
+		check(body.phases != body_phase, id + " spherical motion retains configured clocks")
+		g.paused = true
+		var body_frozen := [body.phases,body.visual_clock,body.parameter_writes]
+		panel.refresh_sample(0.2)
+		check([body.phases,body.visual_clock,body.parameter_writes] == body_frozen, id + " pause freezes surface and stellar effects")
+		g.paused = false
+		panel.refresh_sample(0.0)
 		await capture("toon-body-" + id)
 		if id != first_id:check(not visual.is_visible_in_tree(), id + " previous globe is hidden")
 	await click(panel.cards[first_id].list_button)
@@ -132,7 +148,7 @@ func run() -> void:
 	panel.bonus_dialog.hide()
 	if OS.get_environment("PLANET_TOON_RECORD") == "1":await record(panel,card,first_id)
 	check(g.db.data == configuration, "Visual presentation leaves configuration unchanged")
-	print("PLANET TOON: %d checks, %d failures; bodies=%d; no gameplay/configuration writes" % [checks,failures,ids.size()])
+	print("PLANET TOON: %d checks, %d failures; bodies=%d; configuration unchanged; isolated save disabled" % [checks,failures,ids.size()])
 	screen.queue_free()
 	viewport.queue_free()
 	await process_frame

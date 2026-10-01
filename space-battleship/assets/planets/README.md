@@ -14,13 +14,17 @@ The `planet.xlsx` optional `visual` JSON column is the appearance authority (pro
 
 Stellar appearances use the same sphere: `emission`, `surfaceTint`, `shadowTint`, `detailScale`, `detailStrength`, `radiusScale`, `axisRatio`, `coronaWidth`, `pulseStrength`, `pulseSpeed`, `flareStrength`, `beamLength`, `beamWidth`, `beamSpeed`, `magnetosphere`. Radii and beam lengths are relative to the body; time settings use seconds, rotation uses turns/second. Omitted fields inherit neutral defaults; missing maps use the current default sphere textures. Geometry, halo, transparent cones and magnetic field are shader-generated. Visual clock is owned by the visible page, independent of exploration time. New bodies need only table rows and assets; IDs never select rendering code. The pulsar retains numeric gameplay ID `6` and display name `脉冲星-PSR T46+38`; resource filenames use safe ASCII.
 
-`t587e_surface.png` and `stellar_plasma.png`: built-in ImageGen, 2026-09-29, native 1774×887. Gas uses one map at two UV rates; all stellar bodies share the neutral plasma map at different scales/contrasts. No physical planetary ring bitmap or mesh is added. Import with mipmaps.
+`t587e_surface.png` and `stellar_plasma.png`: built-in ImageGen, 2026-10-01, native 1774×887 RGB. Cartoon replacements are saved at the existing configured paths, with mipmaps. Gas has broad cream/gold/olive atmospheric bands and rounded eddies; its one map is sampled at the two configured UV rates. All four stellar bodies share the neutral rounded-cell plasma map. Existing appearance fields control scale, tint, radius, corona, pulse and jets. No extra ring mesh, bitmap or second magnetic-field layer is added.
 
-Additional generation prompts:
+## Cartoon generation prompts
 
-> Generate ONE game-ready rectangular equirectangular albedo texture, 2:1 aspect ratio, full-bleed seamless horizontally tileable atmospheric gas giant map. Soft horizontal cream ivory pale gold sand and muted light brown cloud bands, broad stable gentle flows, fine subtle wisps, very weak large oval storms. Low contrast elegant heavy atmosphere, Saturn-like palette but original alien cloud patterns, NOT Jupiter. Flat uniformly unlit texture fills EVERY pixel; no spherical globe, no lighting, no shadow, no rings, no space, no text or borders. Shader will provide spherical mapping and differential cloud motion. Save output image locally for game project asset.
+Gas:
 
-> ONE full-bleed game texture: flat rectangular 2:1 equirectangular stellar convection plasma density field. Grayscale only, bright silver-gray irregular convection cells separated by darker thin meandering channels, organic billowing cellular granulation, multiscale turbulent fine filament details inside each cell. Approximately 35 cells across width, irregular natural sizes. Moderate contrast no pure black, no black holes. Horizontally seamless tileable, consistent scale and brightness everywhere, uniform unlit map. No sphere, no globe, no directional light, no corona, no beams, no stars, no space background, no lettering, no border. This single neutral texture will be colored warm white for fine main sequence granulation and dark orange/red for coarse red giant convection by Godot shader UV scale, and subtler blue-white for compact stellar cores.
+> Game-ready cartoon science-fiction gas-giant unlit albedo; flat full-bleed 2:1 equirectangular map, seamless horizontally. Broad calm cream/ivory/pale-gold/sandy-beige/pale-olive bands, a few clean rounded flowing swells and sparse stylized oval eddies. Soft cel-painted flat patches, minimal detail, no photographic grit. Shader supplies spherical wrapping and light. No globe, sphere, planet outline, rings, halo, space, stars, text, UI or frame. Matching left/right edges.
+
+Shared stellar map:
+
+> Cartoon stellar plasma density albedo; flat full-bleed 2:1 horizontally seamless grayscale map. Large organic rounded convection cells, broad cloud-puff interiors and medium-gray channels, clean two/three-tone patches with minimal wispy highlights. No fine noise or photographic granulation. Uniformly unlit, no sphere, globe, corona, beams, space, stars, text, border or UI. Shader supplies tint, spherical wrapping, scale differences, glow and magnetic jets. Matching left/right edges.
 
 ## Generation prompts
 
