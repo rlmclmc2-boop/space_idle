@@ -12,6 +12,7 @@ var target: Control
 var target_slot := ""
 var phase := ""
 var review := false
+var manually_opened := false
 var elapsed := 0.0
 var equip_target := ""
 
@@ -50,7 +51,7 @@ func setup(owner: Node) -> void:
 	action = make_button(row,"next",activate)
 	make_button(row,"dismiss",dismiss)
 	reopen = make_button(self,"reopen",open_guide)
-	reopen.position = host.BATTLE_ORIGIN - host.ui.position + Vector2(16,570)
+	preload("res://scripts/dialog_presentation.gd").button_skin(reopen)
 	outline = Panel.new()
 	outline.mouse_filter = MOUSE_FILTER_IGNORE
 	var border: StyleBoxFlat = host.style(Color(0,0,0,0),host.CYAN)
@@ -79,12 +80,16 @@ func flags() -> Dictionary:
 
 func dismiss() -> void:
 	flags().dismissed = true
+	manually_opened = false
 	review = false
 	refresh()
 
 func open_guide() -> void:
-	flags().dismissed = false
+	# A temporary review must not opt a dismissed profile back into auto-show.
+	manually_opened = true
 	review = bool(flags().completed)
+	host.help_open = false
+	host.refresh_navigation()
 	refresh()
 
 func decide() -> Dictionary:
@@ -131,20 +136,30 @@ func decide() -> Dictionary:
 			var parts := waiting_slot.split("_")
 			return {"phase":"waiting","slot":waiting_slot,"action":"show_upgrade","anchor":"upgrade_action","cost":host.cost_text(game.slot_upgrade_cost(parts[0],int(parts[1])))}
 		state.upgraded = true
-	if not game.profile.cleared.is_empty():return {"phase":"clear","action":"finish"}
+	if not game.profile.cleared.is_empty():
+		state.completed = true
+		manually_opened = false
+		return {"phase":"clear"}
 	return {"phase":"paused" if game.paused else "progress"}
 
 func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
 	var playing: bool = host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT]
-	var blocked: bool = host.help_open or (is_instance_valid(host.chrono_login_dialog) and host.chrono_login_dialog.visible) or (is_instance_valid(host.balance_lab) and host.balance_lab.visible)
-	var visible_now: bool = playing and not blocked and not flags().dismissed and (not flags().completed or review)
-	host.set_ui_value(reopen,"visible",playing and not blocked and not visible_now)
+	var modal_blocked: bool = (is_instance_valid(host.chrono_login_dialog) and host.chrono_login_dialog.visible) or (is_instance_valid(host.balance_lab) and host.balance_lab.visible)
+	# Reconcile completion before deciding visibility, including while dismissed.
+	var step := decide() if playing and (not flags().completed or manually_opened) else {"phase":"review"}
+	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and not flags().completed))
+	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
+	host.set_ui_value(reopen,"visible",show_reopen)
+	if show_reopen:
+		var help_panel: Rect2 = host.overlay_panel_rect(Vector2(820,551))
+		var help_scale := help_panel.size.x/820.0
+		host.set_ui_value(reopen,"position",help_panel.position-host.ui.position+Vector2(50,483)*help_scale)
+		host.set_ui_value(reopen,"scale",Vector2.ONE*help_scale)
 	host.set_ui_value(panel,"visible",visible_now)
 	if not visible_now:
 		host.set_ui_value(outline,"visible",false)
 		return
-	var step := decide()
 	phase = step.phase
 	host.set_ui_value(panel,"position",host.BATTLE_ORIGIN-host.ui.position+Vector2(16,16 if phase=="unlock" else 570))
 	target_slot = step.get("slot","")
@@ -185,7 +200,6 @@ func resolve_anchor(id: String, slot: String) -> Control:
 func activate() -> void:
 	match phase:
 		"intro":flags().intro = true
-		"clear":flags().completed = true
 		"unlock":
 			# Reuse the existing explicit acknowledgement action.
 			host.continue_button.pressed.emit()
