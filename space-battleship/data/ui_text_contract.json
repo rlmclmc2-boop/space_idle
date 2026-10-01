@@ -6254,6 +6254,45 @@
     },
     "galaxy.crew_recall_action": {
       "params": []
+    },
+    "reactor.flow.manual_heading": {
+      "params": []
+    },
+    "reactor.flow.manual": {
+      "params": [
+        "amount",
+        "capacity"
+      ]
+    },
+    "reactor.flow.share": {
+      "params": [
+        "percent"
+      ]
+    },
+    "reactor.flow.free": {
+      "params": [
+        "energy",
+        "percent"
+      ]
+    },
+    "reactor.flow.effective": {
+      "params": [
+        "energy",
+        "percent"
+      ]
+    },
+    "reactor.flow.details": {
+      "params": [
+        "manual",
+        "share",
+        "free",
+        "free_percent",
+        "effective",
+        "effect"
+      ]
+    },
+    "reactor.flow.smelting_scope": {
+      "params": []
     }
   },
   "bindings": {

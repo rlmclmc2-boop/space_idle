@@ -59,7 +59,7 @@ func apply_pointer(local_x: float) -> void:
 	var continuous := minf(fraction*float(capacity),float(available_max))
 	var value := mini(roundi(fraction*float(capacity)),available_max)
 	track.set_preview_ratio(continuous/maxf(float(capacity),1.0))
-	value_label.text = NumberFormat.compact(value)
+	value_label.text = str(value) if value < 1000000 else NumberFormat.compact(value)
 	value_label.position.x = clampf(continuous/maxf(float(capacity),1.0)*size.x-value_label.size.x*0.5,0.0,size.x-value_label.size.x)
 	slider.value = value
 

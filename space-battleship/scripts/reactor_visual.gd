@@ -1,5 +1,6 @@
 extends Control
 
+const ROUTES := preload("res://scripts/reactor_routes.gd")
 const CYAN := Color("37dfff")
 const ORB_SHADER := preload("res://assets/ui/reactor/orb.gdshader")
 
@@ -16,23 +17,22 @@ var available_ratio := 1.0
 var segment_styles: Dictionary = {}
 var network_route := PackedVector2Array()
 var network_length := 0.0
+var route := PackedVector2Array()
+var flow_source: Control
+var flow_offset := 0.0
+var flow_distance := 0.0
+var static_start := 0.0
+var inlet_point := Vector2.ZERO
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if (mode in ["network","branch","footer_conduit"] or mode.begins_with("scene_") or mode in ["track","busbar","pipe_horizontal","pipe_vertical"]) and ratio <= 0.0:set_process(false)
 	if mode == "core":build_core_layers()
-	if mode == "network":
-		network_route = PackedVector2Array([Vector2(17,18),Vector2(17,82)])
-		for step in range(1,9):
-			var t := step/8.0
-			network_route.append(Vector2(17,82)*(1.0-t)*(1.0-t)+Vector2(17,106)*2.0*(1.0-t)*t+Vector2(41,106)*t*t)
-		network_route.append(Vector2(284,106))
-		for step in range(1,13):
-			var t := step/12.0
-			network_route.append(Vector2(284,106)*(1.0-t)*(1.0-t)+Vector2(320,106)*2.0*(1.0-t)*t+Vector2(320,142)*t*t)
-		network_route.append(Vector2(320,155))
-		for index in range(1,network_route.size()):
-			network_length += network_route[index-1].distance_to(network_route[index])
+	if mode == "network":route = ROUTES.main_route()
+	if not route.is_empty():
+		network_route = route
+		network_length = ROUTES.length_of(route)
+	if mode == "conduit":set_process(false)
 	if mode == "segments" or mode.begins_with("compact_"):set_process(false)
 
 func build_core_layers() -> void:
@@ -51,11 +51,12 @@ func build_core_layers() -> void:
 func _process(delta: float) -> void:
 	if not is_visible_in_tree() or (mode == "track" and ratio <= 0.0 and not hovered and click_flash <= 0.0) or (mode in ["pipe_horizontal","pipe_vertical"] and ratio <= 0.0):return
 	if mode == "core":
-		phase = fmod(phase+delta*(0.35+ratio*2.2),1000.0)
+		phase = flow_source.phase/85.0 if is_instance_valid(flow_source) else fmod(phase+delta*(0.35+ratio*2.2),1000.0)
 		layers.orb.material.set_shader_parameter("phase",phase)
 	elif mode in ["network","branch","footer_conduit"]:
 		if ratio <= 0.0 and not (mode == "branch" and trunk_ratio > 0.0):return
-		phase = fmod(phase+delta*(45.0+maxf(ratio,trunk_ratio)*150.0),network_length if mode == "network" else 720.0)
+		if not is_instance_valid(flow_source):flow_distance+=delta*(65.0+ratio*95.0)
+		phase = flow_source.phase if is_instance_valid(flow_source) else fmod(flow_distance,ROUTES.PULSE_SPACING*100.0)
 		queue_redraw()
 	elif mode.begins_with("scene_") or mode.begins_with("compact_"):
 		phase = fmod(phase+delta*(0.3+ratio*1.7),64.0)
@@ -69,6 +70,9 @@ func _process(delta: float) -> void:
 func set_ratio(value: float) -> void:
 	if is_equal_approx(ratio,value):return
 	ratio = value
+	if mode == "network" and ratio<=0.0:
+		flow_distance=0.0
+		phase=0.0
 	if mode == "core" and layers.has("orb"):
 		layers.orb.material.set_shader_parameter("power",ratio)
 	else:queue_redraw()
@@ -102,6 +106,7 @@ func _draw() -> void:
 	elif mode == "busbar":draw_busbar()
 	elif mode == "segments":draw_segments()
 	elif mode.begins_with("compact_"):draw_compact_fx()
+	elif mode == "conduit":draw_conduit()
 	elif mode == "network":draw_network()
 	elif mode == "branch":draw_branch()
 	elif mode == "footer_conduit":draw_footer_conduit()
@@ -154,54 +159,60 @@ func draw_pipe() -> void:
 		draw_circle(center,2.0,Color(0.73,0.97,1.0,0.35+ratio*0.55))
 
 func network_point(distance: float) -> Vector2:
-	var remaining := clampf(distance,0.0,network_length)
-	for index in range(1,network_route.size()):
-		var length := network_route[index-1].distance_to(network_route[index])
-		if remaining <= length:
-			return network_route[index-1].lerp(network_route[index],remaining/maxf(0.001,length))
-		remaining -= length
-	return network_route[-1]
+	return ROUTES.point_at(route,distance)
+
+func draw_conduit() -> void:
+	if route.size()<2:return
+	var tube := PackedVector2Array([ROUTES.point_at(route,static_start)])
+	var distance := 0.0
+	for i in range(1,route.size()):
+		distance+=route[i-1].distance_to(route[i])
+		if distance>static_start:tube.append(route[i])
+	for layer in [[30.0,Color("243d50")],[23.0,Color("ecebdc")],[12.0,Color("355d6a")],[3.0,Color("669599")]]:
+		draw_polyline(tube,layer[1],layer[0],true)
+	for end in ([tube[0],tube[-1]] if static_start>0.0 else [tube[-1]]):
+		draw_circle(end,15.0,Color("243d50"))
+		draw_circle(end,11.5,Color("ecebdc"))
+		draw_circle(end,6.0,Color("355d6a"))
+
+	if static_start==0.0:
+		# Open the T junction, using the same trunk center as this branch route.
+		draw_line(route[0]-Vector2(0,15),route[0]+Vector2(0,15),Color("355d6a"),12.0,true)
+		draw_line(route[0]-Vector2(0,15),route[0]+Vector2(0,15),Color("669599"),3.0,true)
 
 func draw_network() -> void:
-	if ratio <= 0.0 or network_route.size() < 2:return
-	var strength := 0.45+0.45*sqrt(ratio)
-	draw_polyline(network_route,Color(0.05,0.55,1.0,strength*0.35),8.0,true)
-	draw_polyline(network_route,Color(0.12,0.75,1.0,strength*0.5),2.0,true)
-	# The same pulse travels out of the sphere, down the collector, then right.
-	draw_circle(network_route[0],10.0,Color(0.15,0.75,1.0,strength*0.18))
-	for pulse in 4:
-		var head := fposmod(phase+pulse*network_length/4.0,network_length)
-		for part in 8:
-			var distance := head-28.0+part*4.0
-			if distance < 0.0:continue
-			var opacity := strength*(0.18+0.1*part)
-			draw_line(network_point(distance),network_point(minf(distance+4.0,head)),Color(0.65,0.96,1.0,opacity),3.5,true)
+	if ratio <= 0.0 or route.size()<2:return
+	draw_flow()
+
+func draw_flow(points := PackedVector2Array(), offset := -1.0, power := -1.0) -> void:
+	var draw_route: PackedVector2Array = route if points.is_empty() else points
+	var draw_offset: float = flow_offset if offset < 0.0 else offset
+	var draw_power: float = ratio if power < 0.0 else power
+	var draw_length := ROUTES.length_of(draw_route)
+	var supplied_distance: float = flow_source.flow_distance if is_instance_valid(flow_source) else flow_distance
+	var strength := 0.40+0.55*sqrt(clampf(draw_power,0.0,1.0))
+	var head := fposmod(phase-draw_offset,ROUTES.PULSE_SPACING)
+	while head < draw_length+20.0:
+		for part in 7:
+			var distance := head-18.0+part*3.0
+			if distance>=0.0 and distance+3.0<=draw_length and draw_offset+distance+3.0<=supplied_distance:
+				draw_line(ROUTES.point_at(draw_route,distance),ROUTES.point_at(draw_route,distance+3.0),Color(0.62,0.97,0.94,strength*(0.25+part*0.12)),3.5,true)
+		if head>=0.0 and head<=draw_length and draw_offset+head<=supplied_distance:draw_circle(ROUTES.point_at(draw_route,head),3.5,Color(0.91,1.0,0.93,strength))
+		head+=ROUTES.PULSE_SPACING
 
 func draw_branch() -> void:
-	# The continuous trunk carries total allocated power, independently of this outlet.
-	if trunk_ratio > 0.0:
-		var trunk_glow := 0.24+0.55*sqrt(trunk_ratio)
-		draw_line(Vector2(17,0),Vector2(17,size.y),Color(0.14,0.68,1.0,trunk_glow*0.5),7.0,true)
-		draw_line(Vector2(17,0),Vector2(17,size.y),Color(0.50,0.91,1.0,trunk_glow*0.8),2.0,true)
-		for pulse in 4:
-			var y := fposmod(phase+float(pulse)*57.0,size.y)
-			draw_line(Vector2(17,y),Vector2(17,minf(y+16.0,size.y)),Color(0.73,0.97,1.0,trunk_glow),3.0,true)
-	if ratio <= 0.0:return
-	var glow := 0.24+0.55*sqrt(ratio)
-	# The tube and flow enter under the device, behind its inlet collar.
-	var start := Vector2(17,94)
-	var end := Vector2(130,94)
-	draw_line(start,end,Color(accent.r,accent.g,accent.b,glow*0.22),6.0,true)
-	draw_line(start,end,Color(accent.r,accent.g,accent.b,glow),2.0,true)
-	var x := 22.0+fposmod(phase*0.76,104.0)
-	draw_line(Vector2(x,94),Vector2(minf(x+9.0,130.0),94),Color(0.8,0.96,1.0,glow),2.0,true)
+	if trunk_ratio>0.0:
+		draw_flow(PackedVector2Array([route[0]-Vector2(0,15),route[0]+Vector2(0,15)]),flow_offset-15.0,trunk_ratio)
+	if ratio<=0.0:return
+	draw_flow()
+	# A receiving ring blooms only when a packet reaches the actual inlet.
+	var arrival := fposmod(phase-flow_offset-network_length,ROUTES.PULSE_SPACING)/ROUTES.PULSE_SPACING
+	var reached: bool = is_instance_valid(flow_source) and flow_source.flow_distance>=flow_offset+network_length
+	var pulse := maxf(0.0,1.0-arrival*4.0) if reached else 0.0
+	draw_arc(route[-1],8.0+pulse*3.0,-PI*0.5,PI*0.5,20,Color(0.53,0.92,0.86,0.25+pulse*0.65),2.0,true)
 
 func draw_footer_conduit() -> void:
-	if ratio <= 0.0:return
-	var glow := 0.24+0.55*sqrt(ratio)
-	var route := PackedVector2Array([Vector2(17,0),Vector2(17,42),Vector2(20,51),Vector2(29,56),Vector2(79,56)])
-	draw_polyline(route,Color(0.14,0.68,1.0,glow*0.3),6.0,true)
-	draw_polyline(route,Color(0.50,0.91,1.0,glow*0.65),2.0,true)
+	pass # The fixed manifold owns the complete terminal path.
 
 func draw_node() -> void:
 	var center := size*0.5
@@ -223,6 +234,10 @@ func draw_segments() -> void:
 func draw_compact_fx() -> void:
 	if ratio <= 0.0:return
 	var strength := 0.4+0.6*sqrt(ratio)
+	if is_instance_valid(flow_source) and flow_source.flow_distance>=flow_offset:
+		var received := maxf(0.0,1.0-fposmod(flow_source.phase-flow_offset,ROUTES.PULSE_SPACING)/ROUTES.PULSE_SPACING*4.0)
+		draw_circle(inlet_point+Vector2(9,0),5.0+received*2.0,Color(0.63,0.99,0.85,received*0.7))
+		draw_line(inlet_point,inlet_point+Vector2(18,0),Color(0.63,0.99,0.85,received*0.7),3.0,true)
 	if mode == "compact_defence":
 		var center := Vector2(124,83)
 		var radius := 29.0
@@ -268,7 +283,8 @@ func draw_track() -> void:
 	if available_ratio < 0.999:
 		draw_line(Vector2(available_x,3),Vector2(available_x,size.y-3),Color("6c858c"),2.0,true)
 	var thumb_x := clampf(fill*size.x,4.0,size.x-4.0)
-	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,-2,8,size.y+4))
+	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,-2,8,4))
+	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,size.y-2,8,4))
 	if hovered:
 		draw_line(Vector2(6,size.y+3),Vector2(size.x-6,size.y+3),accent,2.0,true)
 

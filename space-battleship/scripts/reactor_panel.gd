@@ -1,5 +1,6 @@
 extends Panel
 
+const ROUTES := preload("res://scripts/reactor_routes.gd")
 const SKIN := preload("res://scripts/dialog_presentation.gd")
 const ACCENT := Color("83cfcb")
 const CYAN := Color("286b73")
@@ -68,6 +69,16 @@ func set_readout(label: Label, value: String) -> void:
 			break
 	if label.get_theme_font_size("font_size") != selected:label.add_theme_font_size_override("font_size",selected)
 
+func energy_text(value: float) -> String:
+	# Keep modest pools exact: generic two-significant-digit compact formatting
+	# otherwise turns capacity 207 into 200 and makes shares appear incorrect.
+	if absf(value)<1000000.0:return ("%.1f" % value).trim_suffix(".0")
+	return NumberFormat.compact(value)
+
+func percent_text(value: float) -> String:
+	if value>0.0 and value<0.1:return "<0.1"
+	return ("%.1f" % value).trim_suffix(".0")
+
 func glass_style(border: Color) -> StyleBoxFlat:
 	var result := StyleBoxFlat.new()
 	result.bg_color = Color(0.025,0.075,0.125,0.82)
@@ -131,6 +142,28 @@ func visual(parent: Control, mode: String, at: Vector2, dimensions: Vector2, acc
 	parent.add_child(layer)
 	return layer
 
+func route_visual(parent: Control, mode: String, at: Vector2, dimensions: Vector2, route: PackedVector2Array, start := 0.0) -> Control:
+	var layer := preload("res://scripts/reactor_visual.gd").new()
+	layer.mode=mode
+	layer.position=at
+	layer.size=dimensions
+	layer.route=route
+	layer.static_start=start
+	parent.add_child(layer)
+	return layer
+
+func update_flow_offsets() -> void:
+	if not is_instance_valid(module_scroll):return
+	for key in module_controls:
+		var controls: Dictionary = module_controls[key]
+		var junction_y: float = module_scroll.position.y+controls.row.position.y-module_scroll.scroll_vertical+ROUTES.inlet(key).y
+		var offset := ROUTES.junction_distance(junction_y)
+		if not is_equal_approx(controls.branch.flow_offset,offset):
+			controls.branch.flow_offset=offset
+			controls.scene_fx.flow_offset=offset+controls.branch.network_length
+			controls.branch.queue_redraw()
+			controls.scene_fx.queue_redraw()
+
 func module_icon(parent: Control, key: String, at: Vector2, dimensions: Vector2) -> TextureRect:
 	return static_chrome(parent,MODULE_ICONS.get(key,MODULE_ICONS.defence),at,dimensions)
 
@@ -142,10 +175,12 @@ func setup(owner_ui: Node) -> void:
 	add_theme_stylebox_override("panel",glass_style(Color("27758d")))
 	clip_contents = true
 	room = static_chrome(self,preload("res://assets/ui/reactor/toon-console.svg"),Vector2.ZERO,Vector2(1364,1200))
+	route_visual(self,"conduit",ROUTES.ORIGIN,Vector2(400,910),ROUTES.main_route(),105.0)
 	core = visual(self,"core",Vector2(187,70),Vector2(350,350))
 	var core_caption := make_label(self,"reactor.heading",Vector2(179,457),354,18,SKIN.PAPER)
 	core_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	network = visual(self,"network",Vector2(345,315),Vector2(337,155))
+	network = visual(self,"network",ROUTES.ORIGIN,Vector2(400,910))
+	core.flow_source=network
 	readout_plate(self,Vector2(745,55),Vector2(580,295))
 	level_label = make_label(self,"",Vector2(766,72),530,44,CYAN,60)
 	energy_label = make_label(self,"",Vector2(766,153),272,28,CYAN)
@@ -168,7 +203,7 @@ func setup(owner_ui: Node) -> void:
 		upgrade_buttons[mode] = button
 	readout_plate(self,Vector2(48,536),Vector2(546,196))
 	make_label(self,"reactor.control_heading",Vector2(59,552),380,29,INK)
-	make_label(self,"reactor.control_subtitle",Vector2(60,593),380,13,MUTED,24)
+	make_label(self,"reactor.flow.manual_heading",Vector2(60,593),380,13,MUTED,24)
 	equalize_button = Button.new()
 	equalize_button.text = UIText.t("reactor.equalize")
 	equalize_button.position = Vector2(447,552)
@@ -206,6 +241,7 @@ func setup(owner_ui: Node) -> void:
 	module_scroll.get_v_scroll_bar().value_changed.connect(func(_value):
 		allocation_scroll.go_to_slot(module_scroll.current_slot())
 		update_module_animation_visibility()
+		update_flow_offsets()
 		update_scroll_hint())
 	allocation_scroll.get_v_scroll_bar().value_changed.connect(func(_value):module_scroll.go_to_slot(allocation_scroll.current_slot()))
 	var index := 0
@@ -213,8 +249,9 @@ func setup(owner_ui: Node) -> void:
 		var accent: Color = MODULE_COLORS.get(key,CYAN)
 		var row := card(module_content,Vector2(0,index*BAY_HEIGHT),Vector2(692,BAY_HEIGHT),accent)
 		static_chrome(row,preload("res://assets/ui/reactor/toon-bay.svg"),Vector2(64,4),Vector2(606,204))
-		static_chrome(row,preload("res://assets/ui/reactor/toon-coupling.svg"),Vector2.ZERO,Vector2(146,220))
-		var branch := visual(row,"branch",Vector2.ZERO,Vector2(146,BAY_HEIGHT),accent)
+		route_visual(row,"conduit",Vector2.ZERO,Vector2(230,BAY_HEIGHT),ROUTES.branch_route(key))
+		var branch := route_visual(row,"branch",Vector2.ZERO,Vector2(230,BAY_HEIGHT),ROUTES.branch_route(key))
+		branch.flow_source=network
 		var equipment_view := Control.new()
 		equipment_view.position = Vector2(80,15)
 		equipment_view.size = Vector2(223,180)
@@ -226,6 +263,8 @@ func setup(owner_ui: Node) -> void:
 			static_chrome(equipment_view,load(device_path),Vector2.ZERO,equipment_view.size)
 		else:module_icon(equipment_view,key,Vector2(65,40),Vector2(96,96))
 		var scene_fx := visual(equipment_view,"compact_"+key,Vector2.ZERO,equipment_view.size,accent)
+		scene_fx.flow_source=network
+		scene_fx.inlet_point=ROUTES.DEVICE_INLETS.get(key,Vector2(58,86))
 		var dimmer := ColorRect.new()
 		dimmer.position = equipment_view.position
 		dimmer.size = equipment_view.size
@@ -248,7 +287,7 @@ func setup(owner_ui: Node) -> void:
 		var bay_track := visual(row,"segments",Vector2(326,140),Vector2(322,38),accent)
 		var bay_energy := make_label(row,"",Vector2(334,142),306,20,SKIN.PAPER,34)
 		bay_energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(524,100),accent)
+		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(524,106),accent)
 		allocation_row.add_theme_stylebox_override("panel",SKIN.surface())
 		module_icon(allocation_row,key,Vector2(14,28),Vector2(42,42))
 		var allocation_name := make_label(allocation_row,"",Vector2(70,6),210,22,INK,32)
@@ -276,8 +315,8 @@ func setup(owner_ui: Node) -> void:
 		allocation_row.add_child(input)
 		var energy := make_label(allocation_row,"",Vector2(122,40),330,19,SKIN.PAPER,30)
 		energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var allocation_boost := make_label(allocation_row,"",Vector2(284,70),178,17,CYAN,26)
-		allocation_boost.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		var allocation_boost := make_label(allocation_row,"",Vector2(70,74),400,17,CYAN,26)
+		allocation_boost.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		var steps: Array[Button] = []
 		for direction in [-1,1]:
 			var step_button := Button.new()
@@ -298,6 +337,7 @@ func setup(owner_ui: Node) -> void:
 	readout_plate(self,Vector2(760,1094),Vector2(578,68))
 	scroll_hint = make_label(self,"",Vector2(780,1106),540,20,INK,42)
 	update_scroll_hint()
+	update_flow_offsets()
 	visibility_changed.connect(refresh)
 	host.equipment_tabs.tab_changed.connect(func(_index: int):refresh())
 	refresh()
@@ -352,6 +392,11 @@ func refresh() -> void:
 	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
 	var reactor_enabled: bool = game.reactor_unlocked()
 	var free_ratio: float = game.charge_free_ratio()
+	# The visual source follows real effective module supply, including free power.
+	var source_strength := 0.0
+	for key in module_controls:
+		source_strength+=game.reactor_effective_ratio(key)
+	source_strength=clampf(source_strength,0.0,1.0) if capacity>0 else 0.0
 	# Each control owns only its display dependencies. Hidden changes are caught
 	# on reveal; direct input and income refresh immediately without a timer.
 	if host.ui_state_changed(level_label,[game.profile.reactorLevel,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
@@ -359,7 +404,7 @@ func refresh() -> void:
 		host.set_ui_value(next_label,"text",UIText.t("reactor.next_level",{"level":str(int(game.profile.reactorLevel)+1)}))
 		host.set_ui_value(cost_label,"text",UIText.t("reactor.cost",{"cost":host.number(game.reactor_upgrade_cost())}))
 	if host.ui_state_changed(energy_label,[capacity]):
-		host.set_ui_value(energy_label,"text",UIText.t("reactor.energy",{"energy":host.number(capacity)}))
+		host.set_ui_value(energy_label,"text",UIText.t("reactor.energy",{"energy":energy_text(capacity)}))
 		set_readout(capacity_label,energy_label.text)
 	if host.ui_state_changed(uranium_label,[available]):
 		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
@@ -376,7 +421,7 @@ func refresh() -> void:
 		var unlocked: bool = game.reactor_module_unlocked(key)
 		var enabled: bool = unlocked and reactor_enabled
 		var amount: int = int(game.profile.reactorAllocation.get(key,0)) if unlocked else 0
-		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,amount,free_ratio,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
+		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,amount,free_ratio,source_strength,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
 		host.set_ui_value(slider,"editable",enabled)
 		host.set_ui_value(controls.input,"mouse_filter",Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE)
 		controls.input.capacity = capacity
@@ -384,14 +429,16 @@ func refresh() -> void:
 		host.set_ui_value(slider,"max_value",capacity)
 		host.set_ui_value(slider,"value",amount)
 		var power_ratio := float(amount)/maxf(1.0,capacity)
-		var visual_ratio := clampf(game.reactor_effective_ratio(key),0.0,1.0)
+		var effective_ratio: float = game.reactor_effective_ratio(key)
+		var effective_energy: float = effective_ratio*capacity
+		var free_energy: float = maxf(0.0,effective_energy-amount)
+		var visual_ratio := clampf(effective_ratio,0.0,1.0) if effective_energy>0.0 else 0.0
 		controls.track.set_ratio(power_ratio)
 		controls.branch.set_ratio(visual_ratio)
-		controls.branch.set_trunk_ratio(float(allocated)/maxf(1.0,capacity))
+		controls.branch.set_trunk_ratio(source_strength)
 		controls.bay_track.set_ratio(visual_ratio)
-		var allocation_text: String=UIText.t("reactor.allocation_tiny") if amount > 0 and power_ratio < 0.01 else UIText.t("reactor.allocation_share",{"percent":str(roundi(power_ratio*100.0))})
-		if enabled and free_ratio!=0.0:allocation_text=UIText.t("planet.charge_with_bonus",{"allocation":allocation_text,"bonus":NumberFormat.precise(free_ratio*100.0)})
-		host.set_ui_value(controls.share,"text",allocation_text)
+		var manual_percent := UIText.t("reactor.allocation_tiny") if amount > 0 and power_ratio < 0.01 else percent_text(power_ratio*100.0)+"%"
+		host.set_ui_value(controls.share,"text",UIText.t("reactor.flow.share",{"percent":manual_percent}))
 		host.set_ui_value(controls.steps[0],"disabled",amount <= 0 or not enabled)
 		host.set_ui_value(controls.steps[1],"disabled",allocated >= capacity or not enabled)
 		controls.track.set_available_ratio(float(controls.input.available_max)/maxf(1.0,capacity))
@@ -399,28 +446,23 @@ func refresh() -> void:
 		var shade := 0.58 if not enabled else 0.32 if visual_ratio == 0 else 0.08*(1.0-sqrt(visual_ratio))
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
 		host.set_ui_value(controls.boost,"modulate",Color(1.0,1.0,1.0,1.0) if visual_ratio > 0 else Color(0.72,0.72,0.72,1.0))
-		set_readout(controls.energy,UIText.t("reactor.module.energy",{"energy":host.number(amount)+" / "+host.number(capacity)}))
-		set_readout(controls.bay_energy,controls.energy.text)
+		set_readout(controls.energy,UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
+		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
 		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
 		var percent: float = (game.reactor_multiplier(key)-1.0)*float(host.db.config.reactorPercentScale)
-		var percent_text: String = host.number(percent) if percent >= 1000.0 else "%.1f" % percent
-		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.module.boost",{"percent":percent_text}))
+		var effect_percent: String = host.number(percent) if percent >= 1000.0 else "%.1f" % percent
+		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.flow.free",{"energy":energy_text(free_energy),"percent":percent_text(free_ratio*100.0 if enabled else 0.0)}))
 		var effect_key := "reactor.module.%s.effect" % key
 		var effect: String = UIText.t(effect_key) if MODULE_COLORS.has(key) else key
-		set_readout(controls.boost,effect+"  "+UIText.t("reactor.module.boost",{"percent":percent_text}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
-		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.module.condensation.desc") if key == "condensation" else "")
+		set_readout(controls.boost,effect+"  "+UIText.t("reactor.module.boost",{"percent":effect_percent}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
+		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.flow.details",{"manual":energy_text(amount),"share":manual_percent,"free":energy_text(free_energy),"free_percent":percent_text(free_ratio*100.0 if enabled else 0.0),"effective":energy_text(effective_energy),"effect":controls.boost.text})+("\n"+UIText.t("reactor.flow.smelting_scope") if key == "smelting" else "\n"+UIText.t("reactor.module.condensation.desc") if key == "condensation" else ""))
 	update_module_animation_visibility()
-	var network_active: bool = animate and allocated > 0
-	if network.is_processing() != network_active:network.set_process(network_active)
+	core.set_ratio(source_strength)
+	network.set_ratio(source_strength)
+	if core.is_processing() != (animate and source_strength>0.0):core.set_process(animate and source_strength>0.0)
+	if network.is_processing() != (animate and source_strength>0.0):network.set_process(animate and source_strength>0.0)
 	if host.ui_state_changed(allocation_label,[capacity,allocated]):
-		set_readout(allocation_label,UIText.t("reactor.allocated",{"allocated":host.number(allocated),"total":host.number(capacity)}))
-		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":host.number(capacity-allocated)}))
-		core.set_ratio(float(allocated)/maxf(1.0,capacity))
-		network.set_ratio(float(allocated)/maxf(1.0,capacity))
+		set_readout(allocation_label,UIText.t("reactor.allocated",{"allocated":energy_text(allocated),"total":energy_text(capacity)}))
+		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(capacity-allocated)}))
 		total_track.set_ratio(float(allocated)/maxf(1.0,capacity))
-		footer_flow.set_ratio(float(allocated)/maxf(1.0,capacity))
-	if core.is_processing() != (animate and allocated > 0):core.set_process(animate and allocated > 0)
-	var total_active: bool = animate and total_track.mode != "segments" and allocated > 0
-	if total_track.is_processing() != total_active:total_track.set_process(total_active)
-	if footer_flow.is_processing() != total_active:footer_flow.set_process(total_active)
 	refreshing = false

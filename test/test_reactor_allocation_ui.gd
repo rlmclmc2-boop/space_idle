@@ -68,10 +68,10 @@ func run() -> void:
 	scene.game.profile.reactorLevel = 60
 	scene.game.set_reactor_allocation("weapons",1234567)
 	panel.refresh()
-	check(weapons.energy.text==UIText.t("reactor.module.energy",{"energy":"1.23M / "+scene.number(scene.game.reactor_capacity())}) and int(scene.game.profile.reactorAllocation.weapons)==1234567,"Large display is compact without rounding allocation")
+	check(weapons.energy.text==UIText.t("reactor.flow.manual",{"amount":NumberFormat.compact(1234567),"capacity":panel.energy_text(scene.game.reactor_capacity())}) and int(scene.game.profile.reactorAllocation.weapons)==1234567,"Large display uses the current shared formatter without rounding allocation")
 	check(panel.energy_label.text==UIText.t("reactor.energy",{"energy":scene.number(scene.game.reactor_capacity())}) and panel.remaining_label.text==UIText.t("reactor.remaining",{"energy":scene.number(scene.game.reactor_capacity()-scene.game.reactor_allocated())}),"Total and remaining use shared quantity formatting")
 	check(weapons.boost.text.contains("K%") and panel.level_label.text.contains("60"),"Large percent is compact while level stays exact")
-	check(defence.share.text == UIText.t("reactor.allocation_tiny"),"Positive sub-percent allocation is not displayed as zero")
+	check(defence.share.text == UIText.t("reactor.flow.share",{"percent":UIText.t("reactor.allocation_tiny")}),"Positive sub-percent allocation is not displayed as zero")
 	var before_step: int = scene.game.profile.reactorAllocation.weapons
 	weapons.steps[0].emit_signal("pressed")
 	check(scene.game.profile.reactorAllocation.weapons == before_step-int(scene.db.config.reactorAllocationStep),"Minus follows the configured allocation step")

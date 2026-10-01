@@ -11336,7 +11336,7 @@
   },
   {
     "key": "reactor.module.defence.effect",
-    "text": "护盾效果",
+    "text": "装甲与护盾",
     "params": "",
     "category": "reactor",
     "note": "防御实际效果",
@@ -11344,7 +11344,7 @@
   },
   {
     "key": "reactor.module.smelting.effect",
-    "text": "铁产量",
+    "text": "铁掉落",
     "params": "",
     "category": "reactor",
     "note": "熔炼实际效果",
@@ -11359,14 +11359,14 @@
   },
   {
     "key": "reactor.module.condensation.effect",
-    "text": "掉落碎片",
+    "text": "强化碎片掉落",
     "params": "",
     "category": "reactor",
     "source": "reactor_panel.gd"
   },
   {
     "key": "reactor.module.condensation.desc",
-    "text": "提升直接掉落的强化碎片数量，不对碎片熔炼炉产出再次加成。",
+    "text": "只提高直接掉落的强化碎片数量，不加成熔炼炉产出或其他获取来源。",
     "params": "",
     "category": "reactor",
     "source": "reactor_panel.gd"
@@ -11848,5 +11848,47 @@
     "params": "",
     "category": "galaxy",
     "note": "星系管理"
+  },
+  {
+    "key": "reactor.flow.manual_heading",
+    "text": "手动分配 · 免费供能不占预算",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.manual",
+    "text": "手动 {amount} / {capacity} 能源",
+    "params": "{amount},{capacity}",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.share",
+    "text": "占用 {percent}",
+    "params": "{percent}",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.free",
+    "text": "重铸免费 {energy} 能源（{percent}%）",
+    "params": "{energy},{percent}",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.effective",
+    "text": "有效 {energy} 能源 · {percent}%",
+    "params": "{energy},{percent}",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.details",
+    "text": "手动分配 {manual} 能源，占可分配池 {share}。\n重铸免费 {free} 能源，相当于总容量的 {free_percent}%，不占分配预算。\n合计 {effective} 有效能源；{effect}。",
+    "params": "{manual},{share},{free},{free_percent},{effective},{effect}",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.flow.smelting_scope",
+    "text": "只提高普通击杀掉落的铁数量，不加成其他获取来源。",
+    "params": "",
+    "category": "reactor"
   }
 ]

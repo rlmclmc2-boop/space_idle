@@ -77,10 +77,10 @@ func run() -> void:
 	check(slider.value==20 and panel.module_controls.weapons.track.ratio>0,"Allocation feedback remains immediate")
 	g.profile.planets["1"].conquered=true
 	panel.refresh()
-	check(panel.module_controls.weapons.share.text.contains("(+10%)"),"Permanent free power invalidates module display")
+	check(panel.module_controls.weapons.allocation_boost.text.contains("10%") and panel.module_controls.weapons.bay_energy.text.contains(panel.energy_text(g.reactor_effective_ratio("weapons")*g.reactor_capacity())),"Permanent free power invalidates module display")
 	g.profile.planets["1"].conquered=false
 	panel.refresh()
-	check(not panel.module_controls.weapons.share.text.contains("("),"Removing bonus immediately clears display")
+	check(panel.module_controls.weapons.allocation_boost.text==UIText.t("reactor.flow.free",{"energy":"0","percent":"0"}),"Removing bonus immediately clears display")
 	g.db.config.reactorEnergyBase=float(g.db.config.reactorEnergyBase)*2
 	panel.refresh()
 	check(slider.max_value==g.reactor_capacity(),"Capacity dependency updates existing slider")
