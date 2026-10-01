@@ -3128,6 +3128,8 @@ func jewel_hit_player(raw, type: int) -> void:
 	var layers: Array=[]
 	for _index in capacities.shield.indices:layers.append("shield")
 	layers.append("armour")
+	var payments := {"shield":0.0,"armour":0.0}
+	var deferred_layers := {"shield":false,"armour":false}
 	for key in layers:
 		if N.compare(rest,0)<=0:break
 		var total = 0.0
@@ -3166,10 +3168,15 @@ func jewel_hit_player(raw, type: int) -> void:
 			damage=N.add(damage,body)
 			spent=N.add(spent,N.multiply(incoming,N.ratio(available[index],total)) if factor<=0 else N.divide(taken,factor))
 			if N.compare(taken,0)>0:jewel_defence_hit(index)
-		var rounded = N.minimum(player[key],damage if deferred_any else N.ceiling(damage))
+		payments[key]=N.add(payments[key],damage)
+		deferred_layers[key]=deferred_layers[key] or deferred_any
+		rest=N.subtract(incoming,spent)
+	# Redistribution is still one incoming hit per body layer. Rounding every
+	# pass would overcharge mixed-resistance shields and desync their allocation.
+	for key in ["shield","armour"]:
+		var rounded = N.minimum(player[key],payments[key] if deferred_layers[key] else N.ceiling(payments[key]))
 		player[key]=N.subtract(player[key],rounded)
 		loss=N.add(loss,rounded)
-		rest=N.subtract(incoming,spent)
 	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"player":true,"type":type})
 	if N.compare(player.armour,0)<=0:
 		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})

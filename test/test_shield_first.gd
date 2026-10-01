@@ -82,5 +82,27 @@ func run()->void:
  var expected=RandomNumberGenerator.new();expected.state=g.rng.state;expected.randf()
  g.advance_enhancement_deferred_tick()
  check(g.player.shield==98 and g.enhancement_deferred_total()==0 and g.rng.state==expected.state,"both source buckets pay then one shared clear roll")
+ check_mixed_shield_rounding()
  print("SHIELD FIRST: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
+
+func check_mixed_shield_rounding()->void:
+ for delayed in [false,true]:
+  var g=fixture();g.profile.selectedShip="Heavy_Battleship"
+  g.profile.enhancementLevel=30
+  g.profile.enhancementOrder.defence=["adaptation","memory_material","delayed_damage"]
+  g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"shield","level":150 if delayed else 50},{"key":"armour","level":1}]
+  check(g.set_enhancement_branch("defence","adaptation",3,"B"),"mixed shield resistance fixture")
+  g.db.config.dmgReduce=.5
+  g.invalidate_stat_cache();g.reset_player();g.player.armour=10
+  var incoming=401.0
+  var factor=1.0-g.enhancement_branches.resistance(g,g.slot_entry("defence",1),.5)
+  # First module consumes raw200. The remaining raw201 crosses only the second
+  # module's resistance once; split debt only after that one reduction.
+  var second_damage=(incoming-200.0)*factor
+  var fraction=g.enhancement_deferred_fraction() if delayed else 0.0
+  var expected_payment=100.0+second_damage*(1.0-fraction)
+  if not delayed:expected_payment=ceilf(expected_payment)
+  g.hit_player(incoming,int(g.db.equip("shield",1).dmgtype))
+  check(is_equal_approx(float(g.player.shield),200.0-expected_payment) and g.player.armour==10,"mixed shields round once and never bypass spare shield")
+  check(is_equal_approx(float(g.enhancement_deferred_total()),second_damage*fraction),"redistributed raw receives resistance and deferral exactly once")
