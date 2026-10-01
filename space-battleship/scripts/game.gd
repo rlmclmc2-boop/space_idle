@@ -2981,7 +2981,8 @@ func sync_enhancement_buffers() -> void:
 			enhancement_buffers.erase(index)
 			enhancement_buffer_owners.erase(index)
 		else:
-			enhancement_buffers[index]=N.minimum(enhancement_buffers[index],N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)))
+			var capacity = enhancement_module_protection_capacity(int(index)) if stat_cache_enabled else N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry))
+			enhancement_buffers[index]=N.minimum(enhancement_buffers[index],capacity)
 
 func memory_buffer(index: int) -> Variant:
 	sync_enhancement_buffers()
@@ -3000,8 +3001,12 @@ func enhancement_protection_current() -> Variant:
 
 func enhancement_module_protection_capacity(index: int) -> Variant:
 	var entry := slot_entry("defence",index)
-	var effect := memory_effect(entry)
-	return N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)) if not effect.is_empty() else 0.0
+	if not stat_cache_enabled:
+		var effect := memory_effect(entry)
+		return N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)) if not effect.is_empty() else 0.0
+	var key := str(entry.get("key",""))
+	if key not in DEFENSE_KEYS:return 0.0
+	return _jewel_defence_capacity(key).protection_caps.get(index,0.0)
 
 func enhancement_protection_capacity() -> Variant:
 	var total = 0.0
@@ -3248,6 +3253,38 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 			enhancement_buffer_owners[index]={"entry":entry,"key":str(entry.key)}
 	if ticks>0:enhancement_branches.recovery_pulse(self,positive_memory_recovery)
 
+func _jewel_defence_capacity(key: String) -> Dictionary:
+	# Memory capacity depends on the same equipment, counters, crew, planet and
+	# branch selections as the existing defence cache, not live buffers/timers.
+	var capacity: Dictionary = jewel_defence_capacity_cache.get(key, {}) if stat_cache_enabled else {}
+	if capacity.is_empty():
+		var indices: Array = []
+		var maxima = {}
+		var effects_by_index = {}
+		var protection_caps = {}
+		var total = 0.0
+		for index in defense_entries().size():
+			var entry = slot_entry("defence", index)
+			if entry.key != key:
+				continue
+			indices.append(index)
+			var effects = jewel_effects(entry)
+			var maximum = jewel_equipment_stat(entry, -1, effects)
+			maxima[index] = maximum
+			effects_by_index[index] = effects
+			var protection = 0.0
+			if stat_cache_enabled:
+				for effect in effects:
+					if effect.kind=="memory_material":
+						protection=N.multiply(maximum,float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry))
+						break
+			protection_caps[index]=protection
+			total = N.add(total,maximum)
+		capacity = {"indices":indices,"maxima":maxima,"effects":effects_by_index,"total":total,"protection_caps":protection_caps}
+		if stat_cache_enabled:
+			jewel_defence_capacity_cache[key] = capacity
+	return capacity
+
 func sync_jewel_defence_damage() -> Dictionary:
 	# The aggregate player health stays authoritative. This transient allocation
 	# records which module is damaged so its repair cannot heal another module.
@@ -3255,25 +3292,7 @@ func sync_jewel_defence_damage() -> Dictionary:
 	# existing per-module losses; nothing is persisted as a second health balance.
 	var capacities = {}
 	for key in ["shield", "armour"]:
-		var capacity: Dictionary = jewel_defence_capacity_cache.get(key, {}) if stat_cache_enabled else {}
-		if capacity.is_empty():
-			var indices: Array = []
-			var maxima = {}
-			var effects_by_index = {}
-			var total = 0.0
-			for index in defense_entries().size():
-				var entry = slot_entry("defence", index)
-				if entry.key != key:
-					continue
-				indices.append(index)
-				var effects = jewel_effects(entry)
-				var maximum = jewel_equipment_stat(entry, -1, effects)
-				maxima[index] = maximum
-				effects_by_index[index] = effects
-				total = N.add(total,maximum)
-			capacity = {"indices":indices,"maxima":maxima,"effects":effects_by_index,"total":total}
-			if stat_cache_enabled:
-				jewel_defence_capacity_cache[key] = capacity
+		var capacity := _jewel_defence_capacity(key)
 		var indices: Array = capacity.indices
 		var maxima: Dictionary = capacity.maxima
 		var total = capacity.total
