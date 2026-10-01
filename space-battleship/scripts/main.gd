@@ -2869,10 +2869,10 @@ func skin_equipment_button(action: Button, primary := false) -> void:
 func equipment_display_snapshot(entry: Dictionary, level := -1) -> Dictionary:
 	return EQUIPMENT_DISPLAY.snapshot(game,entry,level)
 
-func equipment_expected_details(entry: Dictionary, values: Dictionary = {}) -> String:
+func equipment_expected_details(entry: Dictionary, values: Dictionary = {}, exact := false) -> String:
 	if not BattleGame.WEAPON_KEYS.has(str(entry.get("key",""))):return ""
 	if values.is_empty():values=equipment_display_snapshot(entry)
-	return UIText.t("weapon.expected_damage_details",{"base":NUMBER_FORMAT.precise(values.base),"trigger":NUMBER_FORMAT.percentage(values.trigger*100.0),"bonus":NUMBER_FORMAT.percentage(values.bonus_probability*100.0),"multiplier":NUMBER_FORMAT.percentage(GrowthNumber.multiply(values.critical_multiplier,100.0)),"expected":NUMBER_FORMAT.precise(values.expected)})
+	return UIText.t("weapon.expected_damage_details",{"base":NUMBER_FORMAT.precise(values.base) if exact else number(values.base),"trigger":NUMBER_FORMAT.percentage(values.trigger*100.0),"bonus":NUMBER_FORMAT.percentage(values.bonus_probability*100.0),"multiplier":NUMBER_FORMAT.percentage(GrowthNumber.multiply(values.critical_multiplier,100.0)),"expected":NUMBER_FORMAT.precise(values.expected) if exact else number(values.expected)})
 
 func equipment_stat_text(entry: Dictionary, current: Dictionary = {}, next: Dictionary = {}) -> String:
 	var key := str(entry.key)

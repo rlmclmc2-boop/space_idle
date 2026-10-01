@@ -130,6 +130,11 @@ func run() -> void:
 	if not panel.details_open:await click(panel.detail.more)
 	await capture("detail")
 	check(panel.detail.stats.visible and panel.detail.stats.text.contains("期望伤害") and panel.detail.stats.text.contains("单次基础伤害"),"Expanded inspector and next-level preview share expectation")
+	var values: Dictionary=panel.items.weapons_0.projection
+	for field in ["base","expected"]:
+		check(panel.detail.stats.text.contains(FORMAT.compact(values[field])) and not panel.detail.stats.text.contains(FORMAT.precise(values[field])),"Visible "+field+" uses quantity compact format")
+		check(panel.detail.stats.tooltip_text.contains(FORMAT.precise(values[field])) and panel.detail.primary.tooltip_text.contains(FORMAT.precise(values[field])) and panel.items.weapons_0.tooltip.contains(FORMAT.precise(values[field])),"Exact "+field+" remains in detail and card hover")
+	check(panel.detail.stats.mouse_filter==Control.MOUSE_FILTER_PASS,"Expanded stats accepts hover without blocking scroll")
 	panel.detail_frame.hide();panel.cards.weapons_0.grab_focus()
 	var card: Button=panel.cards.weapons_0
 	var other: Button=panel.cards.weapons_1

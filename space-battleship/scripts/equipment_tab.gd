@@ -360,7 +360,7 @@ func equipment_item(category: String, index: int) -> Dictionary:
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
 
 func module_tooltip(entry: Dictionary, prefix: String, name: String, projection: Dictionary) -> String:
-	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
+	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
 
 func refresh(only_slot := "") -> void:
 	refresh_slots([] if only_slot.is_empty() else [only_slot])
@@ -557,7 +557,7 @@ func refresh_detail(next_projection: Dictionary = {}) -> void:
 	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
-	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection))
+	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
@@ -580,6 +580,7 @@ func refresh_detail(next_projection: Dictionary = {}) -> void:
 	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
+	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height()
 
 func change_equipment(key: String) -> void:
