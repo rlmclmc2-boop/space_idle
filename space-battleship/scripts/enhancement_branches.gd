@@ -44,15 +44,21 @@ func reconcile(g) -> void:
  # Eligibility is shared by every module in this synchronous reconciliation.
  # Resolve common choices/gates once here; retain no state across calls/ticks.
  var weapon_ready={}
+ var weapon_order: Array=g.profile.enhancementOrder.get("weapons",[])
+ var proficiency_index:=weapon_order.find("proficiency")
+ var critical_index:=weapon_order.find("critical")
  if not weapons.is_empty():
   for pair in [["proficiency",1],["critical",1],["critical",2]]:
    weapon_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("weapons",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("weapons",pair[0],pair[1])
  for index in weapons.keys():
   if int(index)>=g.weapon_entries().size():weapons.erase(index);continue
   var data: Dictionary=weapon(g,int(index));var entry: Dictionary=data.entry
-  if not weapon_ready.proficiency1 or not g.has_enhancement_effect(entry,"proficiency"):data.target={};data.dwell=0.0
-  if not weapon_ready.critical1 or not g.has_enhancement_effect(entry,"critical"):data.next=0
-  if not weapon_ready.critical2 or not g.has_enhancement_effect(entry,"critical"):data.stacks=0;data.stack_time=0.0
+  var count: int=g.active_enhancement_effect_count(entry) if str(entry.get("key","")) in g.WEAPON_KEYS and (weapon_ready.proficiency1 or weapon_ready.critical1 or weapon_ready.critical2) else 0
+  var proficiency_active:=proficiency_index>=0 and proficiency_index<count
+  var critical_active:=critical_index>=0 and critical_index<count
+  if not weapon_ready.proficiency1 or not proficiency_active:data.target={};data.dwell=0.0
+  if not weapon_ready.critical1 or not critical_active:data.next=0
+  if not weapon_ready.critical2 or not critical_active:data.stacks=0;data.stack_time=0.0
  var defense_ready={}
  for pair in [["adaptation",2],["memory_material",2],["memory_material",1],["delayed_damage",1],["adaptation",1]]:
   defense_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("defence",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("defence",pair[0],pair[1])
