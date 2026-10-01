@@ -141,6 +141,8 @@ func assign(g, id: String, assignment: String, target: String) -> bool:
 	if item.assignmentType==assignment and item.targetId==target:return true
 	g.capture_refit_health()
 	var previous := item.duplicate(true)
+	if item.assignmentType=="galaxy_explore":g.galaxy.flush_pending(g,str(item.targetId))
+	if assignment=="galaxy_explore":g.galaxy.flush_pending(g,target)
 	item.assignmentType=assignment
 	item.targetId=target
 	if assignment=="galaxy_explore":g.galaxy.start(g,target)

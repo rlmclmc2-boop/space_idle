@@ -4,6 +4,7 @@ var effects := preload("res://scripts/galaxy_effect_aggregator.gd").new()
 var regions := {}
 var elapsed := {}
 var elapsed_visible := {}
+var elapsed_crew := {}
 var visible_key := ""
 var effect_generation := 0
 var income_elapsed := 0.0
@@ -15,6 +16,7 @@ func load_state(g, raw: Dictionary) -> void:
 	regions.clear()
 	elapsed.clear()
 	elapsed_visible.clear()
+	elapsed_crew.clear()
 	income_elapsed=0
 	g.profile.galaxies={}
 	for key in g.db.data.get("galaxy",{}):
@@ -26,7 +28,9 @@ func load_state(g, raw: Dictionary) -> void:
 		region.setup(definition,definitions,int(setting(g,"chunk_size")),raw.get(key,{}) if raw.get(key,{}) is Dictionary else {})
 		regions[key]=region
 		g.profile.galaxies[key]=region.state
-		elapsed[key]=0.0
+		var pending: Dictionary=raw.get(key,{}) if raw.get(key,{}) is Dictionary else {}
+		elapsed[key]=maxf(0.0,float(pending.get("pending_online_time",0)))
+		elapsed_crew[key]=maxi(0,int(pending.get("pending_crew_count",0)))
 		elapsed_visible[key]=false
 	effect_generation+=1
 	effects.invalidate()
@@ -91,6 +95,10 @@ func advance(g, dt: float) -> void:
 	for key in regions:
 		var region=regions[key]
 		if not region.state.status in ["exploring","developing"]:continue
+		var count := crew_count(g,key)
+		if count!=int(elapsed_crew[key]):flush_pending(g,key)
+		elapsed_crew[key]=count
+		if count<=0:continue
 		var visible: bool=key==visible_key
 		# A visibility switch cannot replay hidden time through per-ship logic.
 		if visible!=bool(elapsed_visible[key]) and float(elapsed[key])>0:
@@ -107,7 +115,7 @@ func advance_region(g, key: String, dt: float, visible: bool) -> void:
 	var region=regions[key]
 	var before := int(region.building_revision)
 	g.capture_refit_health()
-	region.advance(dt,crew_count(g,key),visible)
+	region.advance(dt,int(elapsed_crew[key]),visible)
 	if before!=region.building_revision:
 		effect_generation+=1
 		g.invalidate_stat_cache()
@@ -118,9 +126,18 @@ func advance_region(g, key: String, dt: float, visible: bool) -> void:
 	g.event.emit("galaxy_changed",{"key":key})
 	if region.state.status=="complete":refresh_unlocks(g)
 
+func flush_pending(g, key: String) -> void:
+	if not regions.has(key) or float(elapsed.get(key,0))<=0:return
+	# Settle only time already earned, using the crew present during that time.
+	advance_region(g,key,float(elapsed[key]),false)
+	elapsed[key]=0.0
+
 func save_data() -> Dictionary:
 	var result := {}
-	for key in regions:result[key]=regions[key].save_data()
+	for key in regions:
+		result[key]=regions[key].save_data()
+		result[key].pending_online_time=float(elapsed[key])
+		result[key].pending_crew_count=int(elapsed_crew[key]) if float(elapsed[key])>0 else 0
 	return result
 
 func targets(_g) -> Array:
