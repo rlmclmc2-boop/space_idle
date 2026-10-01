@@ -2350,15 +2350,15 @@ func enhancement_defense_hud_state() -> Array:
 	# changing layer at equal total, cover expiry and queue clearing redraw the HUD.
 	return [game.enhancement_protection_status(),game.enhancement_deferred_total(),game.defense_entries().map(func(entry):return str(entry.get("key","")))]
 
-func neutral_protection_hud_text() -> String:
-	var current = game.enhancement_protection_current()
-	var capacity = game.enhancement_protection_capacity()
+func neutral_protection_hud_text(status: Dictionary = {}) -> String:
+	var current = game.enhancement_protection_current() if status.is_empty() else status.current
+	var capacity = game.enhancement_protection_capacity() if status.is_empty() else status.capacity
 	if GrowthNumber.compare(current,0)<=0 and GrowthNumber.compare(capacity,0)<=0:return ""
 	return UIText.t("enhance.protection_hud.runtime" if game.has_method("enhancement_protection_status") else "enhance.protection_hud",{"current":number(current),"capacity":number(capacity)})
 
-func enhancement_protection_state_text() -> String:
+func enhancement_protection_state_text(status: Dictionary = {}) -> String:
 	if not game.has_method("enhancement_protection_status"):return ""
-	var status: Dictionary = game.call("enhancement_protection_status")
+	if status.is_empty():status = game.call("enhancement_protection_status")
 	var mode := str(status.get("mode","neutral"))
 	var key := "enhance.protection_state."+mode
 	var duration := ceili(float(status.get("remaining",0))*10)/10.0

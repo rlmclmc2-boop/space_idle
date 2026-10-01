@@ -1,0 +1,10 @@
+--- test_save_policy.gd
++++ isolated-save-clock-fixture.gd
+@@ -13 +13,4 @@
+-		return super._build_save_data()
++		var saved := super._build_save_data()
++		# Freeze the test timestamp only, so JSON precision does not randomize equality.
++		saved.hightechSavedAt = 1760000000.0
++		return saved
+@@ -98,0 +102 @@
++	print("ROUNDTRIP ", loaded.save_interval_minutes," attempts=",loaded.attempts," builds=",loaded.builds," delta=", "%.12f" % (loaded.last_successful_save_at-g.last_successful_save_at))

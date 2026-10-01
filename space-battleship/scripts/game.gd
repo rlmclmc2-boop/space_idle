@@ -650,6 +650,9 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if entry.is_empty() or levels<1:
 		return false
 	var costs := slot_upgrade_cost(category, index, levels)
+	return can_afford_upgrade_costs(costs)
+
+func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
 		return false
 	for id in costs:
@@ -2970,11 +2973,11 @@ func memory_buffer(index: int) -> Variant:
 	sync_enhancement_buffers()
 	return enhancement_buffers.get(index,0.0)
 
-func enhancement_visible_buffer(index: int) -> Variant:
+func enhancement_visible_buffer(index: int, capacity: Variant = null) -> Variant:
 	var entry := slot_entry("defence",index)
 	var owner: Dictionary=enhancement_buffer_owners.get(index,{})
 	if entry.is_empty() or memory_effect(entry).is_empty() or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):return 0.0
-	return N.minimum(enhancement_buffers.get(index,0),enhancement_module_protection_capacity(index))
+	return N.minimum(enhancement_buffers.get(index,0),enhancement_module_protection_capacity(index) if capacity == null else capacity)
 
 func enhancement_protection_current() -> Variant:
 	var total = 0.0
@@ -2998,6 +3001,10 @@ func enhancement_damage_type_mode(type: int) -> String:
 
 func enhancement_protection_status() -> Dictionary:
 	var components: Array=[]
+	# This is a synchronous read projection. Reuse each module's capacity and
+	# visible balance for the aggregate instead of projecting them again.
+	var total_current = 0.0
+	var total_capacity = 0.0
 	var identities := {}
 	var remaining := INF
 	var lockout := 0.0
@@ -3006,11 +3013,14 @@ func enhancement_protection_status() -> Dictionary:
 	for index in defense_entries().size():
 		var data: Dictionary=enhancement_branches.defenses.get(index,{"cover":0.0,"cover_time":0.0,"resistance_type":0,"resistance_time":0.0,"lockout":0.0})
 		cover_current=N.add(cover_current,data.cover);cover_remaining=maxf(cover_remaining,float(data.cover_time))
-		var current=enhancement_visible_buffer(index)
+		var capacity=enhancement_module_protection_capacity(index)
+		var current=enhancement_visible_buffer(index,capacity)
+		total_current=N.add(total_current,current)
+		total_capacity=N.add(total_capacity,capacity)
 		var type:=int(data.resistance_type) if data.resistance_time>0 and data.lockout<=0 else 0
 		var resistance:=enhancement_branches.resistance(self,slot_entry("defence",index),enhancement_parameter("memory_b2_resistance")) if type>0 and enhancement_branches.active(self,slot_entry("defence",index),"memory_material",2,"B") else 0.0
 		if resistance<=0:type=0
-		components.append({"index":index,"current":current,"capacity":enhancement_module_protection_capacity(index),"type":type,"mode":enhancement_damage_type_mode(type),"resistance":resistance,"remaining":float(data.resistance_time),"lockout":float(data.lockout)})
+		components.append({"index":index,"current":current,"capacity":capacity,"type":type,"mode":enhancement_damage_type_mode(type),"resistance":resistance,"remaining":float(data.resistance_time),"lockout":float(data.lockout)})
 		lockout=maxf(lockout,float(data.lockout))
 		if N.compare(current,0)>0:
 			identities["%d:%.6f" % [type,resistance]]={"type":type,"resistance":resistance}
@@ -3022,7 +3032,7 @@ func enhancement_protection_status() -> Dictionary:
 		var identity: Dictionary=identities.values()[0]
 		mode=enhancement_damage_type_mode(int(identity.type))
 		resistance=float(identity.resistance)
-	return {"mode":mode,"current":enhancement_protection_current(),"capacity":enhancement_protection_capacity(),"resistance":resistance,"remaining":remaining if is_finite(remaining) else 0.0,"lockout":lockout,"components":components,"cover_current":cover_current,"cover_remaining":cover_remaining}
+	return {"mode":mode,"current":total_current,"capacity":total_capacity,"resistance":resistance,"remaining":remaining if is_finite(remaining) else 0.0,"lockout":lockout,"components":components,"cover_current":cover_current,"cover_remaining":cover_remaining}
 
 func consume_enhancement_protection(amount, type := 0, already_mitigated := true) -> Variant:
 	# Neutral temporary protection absorbs damage 1:1, before any resistance.

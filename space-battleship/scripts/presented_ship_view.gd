@@ -83,6 +83,10 @@ func _ready() -> void:
 	key.light_color = Color("fff8ee")
 	key.light_energy = 1.0
 	key.shadow_enabled = true
+	# The battlefield camera is orthographic and the formation occupies one
+	# shallow depth range. A single full-range shadow map avoids drawing the
+	# same hulls into overlapping perspective cascades, retaining live shadows.
+	key.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
 	key.directional_shadow_max_distance = 110
 	key.shadow_bias = 0.8
 	key.shadow_normal_bias = 3.0

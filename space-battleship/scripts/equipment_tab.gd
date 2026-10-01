@@ -257,14 +257,30 @@ func layout_contents() -> void:
 func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
 	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount)
+	var quotes := {}
 	for id in items:
-		update_card_cost(items[id])
+		update_card_cost(items[id],quotes)
 		cards[id].refresh(items[id],selected==id)
 
-func update_card_cost(item: Dictionary) -> void:
+func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
+	if item.locked:
+		item.cost = "—"
+		item.direct_upgradeable = false
+		return
+	# Module prices depend on category and level, not installed weapon type.
+	# Share only within this synchronous refresh; no quote survives a purchase,
+	# balance/config change, another refresh or a frame boundary.
+	var entry: Dictionary = host.game.slot_entry(item.category,item.index)
+	var quote_key := str([item.category,entry.get("level",0),upgrade_amount])
+	if quotes.has(quote_key):
+		item.cost = quotes[quote_key].cost
+		item.direct_upgradeable = quotes[quote_key].available
+		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
-	item.cost = host.cost_text(host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))) if not item.locked else "—"
-	item.direct_upgradeable = not item.locked and count>0 and host.game.can_upgrade_slot(item.category,item.index,count)
+	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
+	item.cost = host.cost_text(costs)
+	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
+	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable}
 
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return
@@ -351,6 +367,7 @@ func refresh_slots(changed: Array) -> void:
 		return
 	var detail_changed := dirty or changed.is_empty() or changed.has(selected)
 	var structure_changed := false
+	var quotes := {}
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
 			var id: String = host.game.slot_id(category,index)
@@ -371,7 +388,7 @@ func refresh_slots(changed: Array) -> void:
 			# Spending resources changes affordability on other modules, but not their stats.
 			if not (changed.is_empty() or dirty or changed.has(id)):
 				items[id].upgradeable = host.game.can_upgrade_slot(category,index)
-			update_card_cost(items[id])
+			update_card_cost(items[id],quotes)
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
@@ -400,6 +417,7 @@ func invalidate_stats(info: Dictionary) -> void:
 
 func refresh_stats() -> void:
 	var selected_changed := false
+	var quotes := {}
 	for id in stats_dirty:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
@@ -411,7 +429,7 @@ func refresh_stats() -> void:
 		if GrowthNumber.compare(value,item.mainStatNumber)==0:continue
 		item.mainStatNumber = value
 		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
-		update_card_cost(item)
+		update_card_cost(item,quotes)
 		cards[id].refresh(item,selected==id)
 		sort_dirty = sort_dirty or sort_mode==2
 		selected_changed = selected_changed or selected==id
@@ -422,13 +440,14 @@ func refresh_stats() -> void:
 func refresh_affordability() -> void:
 	observed_resources = host.game.profile.resources.duplicate()
 	var changed := false
+	var quotes := {}
 	for id in items:
 		var item: Dictionary = items[id]
 		var available: bool = host.game.can_upgrade_slot(item.category,item.index)
 		if item.upgradeable!=available:
 			item.upgradeable = available
 			changed = true
-		update_card_cost(item)
+		update_card_cost(item,quotes)
 		cards[id].refresh(item,selected==id)
 	if changed:
 		sort_dirty = sort_dirty or sort_mode==3
