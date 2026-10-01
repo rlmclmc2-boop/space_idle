@@ -71,7 +71,13 @@ func run() -> void:
 	check(weapons.energy.text==UIText.t("reactor.flow.manual",{"amount":NumberFormat.compact(1234567),"capacity":panel.energy_text(scene.game.reactor_capacity())}) and int(scene.game.profile.reactorAllocation.weapons)==1234567,"Large display uses the current shared formatter without rounding allocation")
 	check(panel.energy_label.text==UIText.t("reactor.energy",{"energy":scene.number(scene.game.reactor_capacity())}) and panel.remaining_label.text==UIText.t("reactor.remaining",{"energy":scene.number(scene.game.reactor_capacity()-scene.game.reactor_allocated())}),"Total and remaining use shared quantity formatting")
 	check(weapons.boost.text.contains("K%") and panel.level_label.text.contains("60"),"Large percent is compact while level stays exact")
-	check(defence.share.text == UIText.t("reactor.flow.share",{"percent":UIText.t("reactor.allocation_tiny")}),"Positive sub-percent allocation is not displayed as zero")
+	check(defence.share.text == UIText.t("reactor.flow.share_free",{"percent":UIText.t("reactor.allocation_tiny"),"free":panel.percent_text(scene.game.charge_free_ratio()*100.0)}),"Positive sub-percent allocation is not displayed as zero")
+	for free_ratio in [0.0,0.6,1.5,1000000.0]:
+		panel.update_supply_display(weapons,"25%",0.25,free_ratio)
+		check(weapons.share.text==UIText.t("reactor.flow.share_free",{"percent":"25%","free":panel.percent_text(free_ratio*100.0)}),"Allocation and free percent remain explicit")
+		check(weapons.manual_segment.size.x+weapons.free_segment.size.x<=350.001,"Free supply above 100% stays within its strip")
+		check(weapons.free_segment.position.x==112+weapons.manual_segment.size.x,"Manual and free segments are adjacent")
+		check(weapons.share.get_theme_font("font").get_string_size(weapons.share.text,HORIZONTAL_ALIGNMENT_LEFT,-1,weapons.share.get_theme_font_size("font_size")).x<=weapons.share.size.x,"Large free percent remains readable")
 	var before_step: int = scene.game.profile.reactorAllocation.weapons
 	weapons.steps[0].emit_signal("pressed")
 	check(scene.game.profile.reactorAllocation.weapons == before_step-int(scene.db.config.reactorAllocationStep),"Minus follows the configured allocation step")
@@ -82,6 +88,11 @@ func run() -> void:
 	check(weapons.input.value_label.text==scene.number(scene.game.profile.reactorAllocation.weapons),"Drag label uses shared compact formatting")
 	release.position = press.position
 	weapons.input._gui_input(release)
+	# Explicit presentation fixture: compare occupied capacity with free supply.
+	for index in range(1,7):scene.game.profile.planets[str(index)].conquered = true
+	scene.game.invalidate_stat_cache()
+	for key in scene.game.reactor_modules():scene.game.profile.reactorAllocation[key] = int(scene.game.reactor_capacity()/4)
+	panel.refresh()
 	for resolution in [Vector2i(1280,720),Vector2i(1920,1080),Vector2i(2048,1280)]:
 		root.size = resolution
 		await process_frame

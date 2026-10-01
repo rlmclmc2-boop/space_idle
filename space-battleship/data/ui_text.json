@@ -11872,7 +11872,7 @@
   },
   {
     "key": "reactor.flow.manual_heading",
-    "text": "手动分配 · 免费供能不占预算",
+    "text": "橙色占额度 · 青色免费额外供能",
     "params": "",
     "category": "reactor"
   },
@@ -11883,6 +11883,12 @@
     "category": "reactor"
   },
   {
+    "key": "reactor.flow.share_free",
+    "text": "占用{percent}（免费+{free}%）",
+    "params": "{percent},{free}",
+    "category": "reactor"
+  },
+  {
     "key": "reactor.flow.share",
     "text": "占用 {percent}",
     "params": "{percent}",
@@ -11890,7 +11896,7 @@
   },
   {
     "key": "reactor.flow.free",
-    "text": "重铸免费 {energy} 能源（{percent}%）",
+    "text": "免费+{percent}% · {energy}能源 · 不占额度",
     "params": "{energy},{percent}",
     "category": "reactor"
   },

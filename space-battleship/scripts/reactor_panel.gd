@@ -78,6 +78,26 @@ func energy_text(value: float) -> String:
 func percent_text(value: float) -> String:
 	return NumberFormat.percentage(value)
 
+func supply_segment(parent: Control, color: Color) -> ColorRect:
+	var segment := ColorRect.new()
+	segment.position = Vector2(112,68)
+	segment.size = Vector2(0,8)
+	segment.color = color
+	segment.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(segment)
+	return segment
+
+func update_supply_display(controls: Dictionary, manual_percent: String, power_ratio: float, free_ratio: float) -> void:
+	set_readout(controls.share,UIText.t("reactor.flow.share_free",{"percent":manual_percent,"free":percent_text(free_ratio*100.0)}))
+	# This separate supply strip includes free power; the input remains an integer
+	# allocation on the original capacity scale. Above 100%, fit both contributions.
+	var scale := maxf(1.0,power_ratio+free_ratio)
+	var manual_width := 350.0*clampf(power_ratio/scale,0.0,1.0)
+	var free_width := 350.0*clampf(free_ratio/scale,0.0,1.0)
+	host.set_ui_value(controls.manual_segment,"size",Vector2(manual_width,8))
+	host.set_ui_value(controls.free_segment,"position",Vector2(112+manual_width,68))
+	host.set_ui_value(controls.free_segment,"size",Vector2(free_width,8))
+
 func glass_style(border: Color) -> StyleBoxFlat:
 	var result := StyleBoxFlat.new()
 	result.bg_color = Color(0.025,0.075,0.125,0.82)
@@ -289,11 +309,11 @@ func setup(owner_ui: Node) -> void:
 		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(524,106),accent)
 		allocation_row.add_theme_stylebox_override("panel",SKIN.surface())
 		module_icon(allocation_row,key,Vector2(14,28),Vector2(42,42))
-		var allocation_name := make_label(allocation_row,"",Vector2(70,6),210,22,INK,32)
+		var allocation_name := make_label(allocation_row,"",Vector2(70,6),110,22,INK,32)
 		allocation_name.text = UIText.data_text("reactor",key)
 		allocation_name.tooltip_text = allocation_name.text
 		allocation_name.mouse_filter = Control.MOUSE_FILTER_PASS
-		var share := make_label(allocation_row,"",Vector2(288,6),189,18,INK,32)
+		var share := make_label(allocation_row,"",Vector2(180,6),324,20,INK,32)
 		share.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		var track := visual(allocation_row,"track",Vector2(112,38),Vector2(350,36),accent)
 		var slider := HSlider.new()
@@ -314,7 +334,11 @@ func setup(owner_ui: Node) -> void:
 		allocation_row.add_child(input)
 		var energy := make_label(allocation_row,"",Vector2(122,40),330,19,SKIN.PAPER,30)
 		energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var allocation_boost := make_label(allocation_row,"",Vector2(70,74),400,17,CYAN,26)
+		var supply_background := supply_segment(allocation_row,INK)
+		supply_background.size.x = 350
+		var manual_segment := supply_segment(allocation_row,MODULE_COLORS.weapons)
+		var free_segment := supply_segment(allocation_row,ACCENT)
+		var allocation_boost := make_label(allocation_row,"",Vector2(70,77),438,17,CYAN,25)
 		allocation_boost.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		var steps: Array[Button] = []
 		for direction in [-1,1]:
@@ -327,7 +351,7 @@ func setup(owner_ui: Node) -> void:
 			step_button.pressed.connect(step_allocation.bind(key,direction))
 			allocation_row.add_child(step_button)
 			steps.append(step_button)
-		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps}
+		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
 		index += 1
 	move_child(readout_plate(self,Vector2(48,1080),Vector2(546,62)),allocation_label.get_parent().get_index())
 	total_track = visual(self,"segments",Vector2(63,1088),Vector2(510,40))
@@ -437,7 +461,7 @@ func refresh() -> void:
 		controls.branch.set_trunk_ratio(source_strength)
 		controls.bay_track.set_ratio(visual_ratio)
 		var manual_percent := UIText.t("reactor.allocation_tiny") if amount > 0 and power_ratio < 0.01 else percent_text(power_ratio*100.0)+"%"
-		host.set_ui_value(controls.share,"text",UIText.t("reactor.flow.share",{"percent":manual_percent}))
+		update_supply_display(controls,manual_percent,power_ratio,free_ratio if enabled else 0.0)
 		host.set_ui_value(controls.steps[0],"disabled",amount <= 0 or not enabled)
 		host.set_ui_value(controls.steps[1],"disabled",allocated >= capacity or not enabled)
 		controls.track.set_available_ratio(float(controls.input.available_max)/maxf(1.0,capacity))
