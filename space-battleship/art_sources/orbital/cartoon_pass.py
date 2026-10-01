@@ -104,7 +104,7 @@ for kind in ["auto_explore", "refinery", "equipment", "shipyard"]:
             face.material_index = index
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE_NEXT"
-        scene.view_settings.view_transform = "AgX"
+    scene.view_settings.view_transform = "AgX"
     scene.view_settings.look = "AgX - Medium High Contrast"
     scene.world.node_tree.nodes["Background"].inputs[1].default_value = .50
     bpy.data.objects["Warm rim"].data.color = (.72, .90, 1)
