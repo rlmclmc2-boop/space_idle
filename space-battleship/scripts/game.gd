@@ -2638,33 +2638,21 @@ func enhancement_at_limit() -> bool:
 func enhancement_cost(target_level := -1) -> Variant:
 	var target := enhancement_level()+1 if target_level<0 else target_level
 	if target<1:return 0.0
-	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.power(target,enhancement_parameter("cost_exponent"))))
+	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.power(enhancement_parameter("cost_growth"),target-1)))
 
 func can_upgrade_enhancement() -> bool:
 	return enhancement_unlocked() and not enhancement_at_limit() and N.compare(profile.jewelFragments,enhancement_cost())>=0
 
-func enhancement_power_sum(target: int) -> Variant:
-	if target<=0:return 0.0
-	var exponent := int(enhancement_parameter("cost_exponent"))
-	# Sum powers by Faulhaber's binomial recurrence. Work depends on authored
-	# exponent, never the number of levels or the magnitude of fragment balance.
-	var sums: Array=[float(target)]
-	for degree in range(1,exponent+1):
-		var value = N.subtract(N.power(target+1,degree+1),1)
-		var choose := 1.0
-		for k in degree:
-			value=N.subtract(value,N.multiply(choose,sums[k]))
-			choose=choose*float(degree+1-k)/float(k+1)
-		sums.append(N.divide(value,degree+1))
-	return sums[exponent]
-
 func enhancement_purchase_cost(count: int) -> Variant:
 	if count<=0:return 0.0
-	if count<=16:
-		var total = 0.0
-		for target in range(enhancement_level()+1,enhancement_level()+count+1):total=N.add(total,enhancement_cost(target))
-		return total
-	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.subtract(enhancement_power_sum(enhancement_level()+count),enhancement_power_sum(enhancement_level()))))
+	var first = enhancement_cost()
+	if count==1:return first
+	var growth := enhancement_parameter("cost_growth")
+	# Integer authored growth means every level costs whole fragments. Sum the
+	# next count levels geometrically, without subtracting large prefix sums or
+	# traversing levels. GrowthNumber keeps overflowing powers JSON-safe.
+	var factor = float(count) if growth==1.0 else N.divide(N.subtract(N.power(growth,count),1.0),growth-1.0)
+	return N.ceiling(N.multiply(first,factor))
 
 func enhancement_max_upgrades(limit := -1) -> int:
 	if not enhancement_unlocked():return 0

@@ -48,7 +48,7 @@ func _initialize() -> void:
  check(limit_save.enhancement_at_limit() and limit_save.enhancement_level()==last.enhancement_level_limit(),"technical limit exact roundtrip")
  var unspent=limit_save.profile.jewelFragments.duplicate()
  check(not limit_save.can_upgrade_enhancement() and limit_save.upgrade_enhancement(-1)==0 and limit_save.profile.jewelFragments==unspent,"MAX at limit leaves balance unchanged and never wraps")
- check(GrowthNumber.valid(limit_save.enhancement_cost(limit_save.enhancement_level_limit())),"limit-level cubic cost remains valid growth quantity")
+ check(GrowthNumber.valid(limit_save.enhancement_cost(limit_save.enhancement_level_limit())),"limit-level exponential cost remains valid growth quantity")
 
  print("ENHANCEMENT SAVE: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)

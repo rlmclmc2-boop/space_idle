@@ -36,15 +36,15 @@ func run() -> void:
  check(g.set_enhancement_order("weapons",["critical","repeat","proficiency"]),"free reorder")
  check(g.enhancement_effects({"key":"laser","level":50})[0].kind=="critical","first eligible changes after reorder")
  check(g.enhancement_effects({"key":"armour","level":150}).size()==3,"three unique defense effects")
- check(g.enhancement_cost(1)==100 and g.enhancement_cost(10)==100000,"target cubic cost")
+ check(g.enhancement_cost(1)==100 and g.enhancement_cost(10)==1968300,"target exponential cost")
  g.profile.enhancementLevel=0
- g.profile.jewelFragments=900
+ g.profile.jewelFragments=400
  check(g.upgrade_enhancement(10)==2 and g.enhancement_level()==2 and g.profile.jewelFragments==0,"bulk spends each target once")
  var before=g.enhancement_effective_level()
  g.profile.planets["1"].conquered=true
  g.invalidate_stat_cache()
  check(g.enhancement_level_bonus()==1 and g.enhancement_effective_level()==before+1,"planet adds effective level")
- check(g.enhancement_cost()==2700,"free planet levels never affect purchase cost")
+ check(g.enhancement_cost()==900,"free planet levels never affect purchase cost")
  g.profile.enhancementLevel=0
  check(g.enhancement_effects({"key":"laser","level":50}).size()==1,"free planet level works at purchased zero")
  g.profile.planets["1"].conquered=false;g.invalidate_stat_cache()
@@ -133,18 +133,23 @@ func run() -> void:
  check(earned==123 and g.profile.jewelFragments==823 and g.profile.jewels.is_empty(),"income remains fragments without generation")
  check(g.hightech_unlocked(BattleGame.JEWEL_FURNACE)==false or g.db.data.hightech.has(BattleGame.JEWEL_FURNACE),"furnace identity retained")
  g=fixture();g.profile.enhancementLevel=0
- for exponent in [0,1,2,3,4,5,6]:
-  g.db.data.enhance_config.cost_exponent.value=exponent
+ for growth in [1,2,3,4,17]:
+  g.db.data.enhance_config.cost_growth.value=growth
   var independent := 0.0
-  for target in range(1,101):independent+=100.0*pow(target,exponent)
-  check(is_equal_approx(float(g.enhancement_purchase_cost(100)),independent),"bounded sum power "+str(exponent))
+  var next_cost := 100.0
+  for target in range(1,9):
+   independent+=next_cost
+   next_cost*=growth
+  check(g.enhancement_purchase_cost(8)==independent,"geometric sum matches independent per-level spend growth "+str(growth))
   g.profile.jewelFragments=independent
-  check(g.enhancement_max_upgrades()==100,"exact budget MAX exponent "+str(exponent))
- g.db.data.enhance_config.cost_exponent.value=3
+  check(g.enhancement_max_upgrades()==8,"exact budget MAX growth "+str(growth))
+  g.profile.jewelFragments=independent-1
+  check(g.enhancement_max_upgrades()==7,"one fragment short MAX growth "+str(growth))
+ g.db.data.enhance_config.cost_growth.value=3
  g.profile.jewelFragments={"m":1.0,"e":200.0}
  var begun=Time.get_ticks_usec();var purchased=g.upgrade_enhancement(-1)
  print("Enhancement hugeMAXus=",Time.get_ticks_usec()-begun)
- check(purchased==g.enhancement_level_limit() and g.enhancement_at_limit(),"huge balance MAX reaches persisted exact-integer boundary")
+ check(purchased==415 and g.enhancement_level()==415,"huge budget follows exponential sum without reaching technical cap")
  var saved=g.profile.duplicate(true);g.load_jewels(saved)
  check(g.profile.jewelFragments==saved.jewelFragments,"growth-number fragment balance loads without legacy dictionary confusion")
 

@@ -17044,13 +17044,13 @@
       "id": "cost_base",
       "value": 100,
       "unit": "碎片",
-      "des": "费用系数；正整数碎片数"
+      "des": "首级费用；正整数碎片数"
     },
-    "cost_exponent": {
-      "id": "cost_exponent",
+    "cost_growth": {
+      "id": "cost_growth",
       "value": 3,
-      "unit": "次方",
-      "des": "整数0..16；费用＝系数×目标实际等级^指数"
+      "unit": "倍率",
+      "des": "整数≥1；费用＝首级费用×倍率^(购买等级−1)"
     },
     "threshold_1": {
       "id": "threshold_1",
