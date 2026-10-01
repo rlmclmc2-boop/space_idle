@@ -4,6 +4,7 @@ extends Control
 const OrbitModels := preload("res://scripts/orbital_facilities.gd")
 const Art := preload("res://scripts/planet_art.gd")
 const PlanetSphere := preload("res://scripts/rotating_planet.gd")
+const BACKDROP := preload("res://assets/planets/toon/exploration-field.svg")
 const FACILITY_COLORS := {
 	"scout_satellite": Color("8ce9ff"),
 	"space_station": Color("ffd89b"),
@@ -67,7 +68,7 @@ func _layout_globe() -> void:
 	queue_redraw()
 
 func _body_radius() -> float:
-	var base := minf(size.y * 0.39, size.x * 0.248)
+	var base := minf(size.y * 0.39, size.x * 0.285)
 	var requested := base * clampf(float(appearance.get("radiusScale", 1.0)), 0.08, 1.25)
 	# Keep the entire authored corona/beam envelope inside the scene.
 	var available := maxf(1.0, minf(size.x, size.y) * 0.5 - 16.0)
@@ -75,7 +76,7 @@ func _body_radius() -> float:
 
 func _orbit_radius() -> float:
 	# Compact stars keep a readable operational area without an Earth-sized scan.
-	return maxf(_body_radius(), minf(size.y * 0.39, size.x * 0.248) * 0.65)
+	return maxf(_body_radius(), minf(size.y * 0.39, size.x * 0.285) * 0.65)
 
 func _map_texture(key: String, fallback: Texture2D) -> Texture2D:
 	var path := str(appearance.get(key, ""))
@@ -101,8 +102,8 @@ func configure(id: String, row: Dictionary) -> void:
 		# Legacy texture is a finished globe, never scroll it as an albedo map.
 		globe.surface_map = _map_texture("surfaceTexture", PlanetSphere.SURFACE)
 		globe.cloud_map = _map_texture("cloudTexture", PlanetSphere.CLOUDS)
-		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.003))
-		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0037))
+		globe.surface_speed = float(appearance.get("surfaceSpeed", 0.006))
+		globe.cloud_speed = float(appearance.get("cloudSpeed", 0.0073))
 		globe.glow_strength = clampf(float(appearance.get("glowStrength", 0.30)), 0.0, 1.0)
 		globe.shadow_strength = clampf(float(appearance.get("shadowStrength", 0.86)), 0.0, 1.0)
 		globe.cloud_opacity = clampf(float(appearance.get("cloudOpacity", 0.65)), 0.0, 1.0)
@@ -195,9 +196,11 @@ func advance(dt: float, paused: bool) -> void:
 	phase += step
 	if is_instance_valid(facility_renderer):facility_renderer.update_pose(phase)
 	if active:exploration_age += step
-	if completion_age < COMPLETION_FLASH_DURATION:
+	if completion_age < 3.2:
+		var previous_age := completion_age
 		completion_age += step
-		globe.globe_material.set_shader_parameter("completion_flash", 0.50 * maxf(0.0, 1.0 - completion_age / COMPLETION_FLASH_DURATION))
+		if previous_age < COMPLETION_FLASH_DURATION:
+			globe.globe_material.set_shader_parameter("completion_flash", 0.50 * maxf(0.0, 1.0 - completion_age / COMPLETION_FLASH_DURATION))
 	departure_age += step
 	for id in facility_reveals.keys():
 		facility_reveals[id] += step
@@ -207,16 +210,8 @@ func advance(dt: float, paused: bool) -> void:
 
 func _draw_background() -> void:
 	if icon_mode:return
-	for star in 75:
-		var point := Vector2(fmod(float(star * 193 + 47), size.x), fmod(float(star * 137 + 19), size.y))
-		var alpha := 0.08 + 0.20 * absf(sin(float(star) * 11.7))
-		background_layer.draw_circle(point, 0.55 + float(star % 7 == 0) * 0.55, Color("b5dcf4", alpha))
-	for grid in 5:
-		var x := size.x * float(grid + 1) / 6.0
-		background_layer.draw_line(Vector2(x, 0), Vector2(x, size.y), Color("4b95b2", 0.035), 1.0)
-	# Background and orbital back halves stay behind the planet.
-	background_layer.draw_circle(Vector2(size.x * 0.83, size.y * 0.22), size.y * 0.16, Color("24506d", 0.045))
-	background_layer.draw_circle(Vector2(size.x * 0.15, size.y * 0.76), size.y * 0.15, Color("31536b", 0.035))
+	# Static field, separate from the owner-driven sphere and orbital motion.
+	background_layer.draw_texture_rect(BACKDROP, Rect2(Vector2.ZERO, size), false)
 
 func _draw_back_orbits() -> void:
 	if icon_mode:return

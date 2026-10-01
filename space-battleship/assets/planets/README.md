@@ -1,6 +1,8 @@
 # Planet texture assets
 
-`surface.png` and `clouds.png`: generated with the built-in imagegen tool, 2026-09-29. Reference: `../ui/planet-globe.png` (palette/style only). Native outputs: 1774×887 each. Consumer: `scripts/rotating_planet.gd`, roughly 359 logical pixels across in the exploration stage. Mipmaps reduce minification shimmer. Original globe is retained for other consumers.
+The first-body cartoon prototype and its static exploration backdrop are documented in [toon/README.md](toon/README.md). These are the current default sphere maps; configured map paths remain authoritative.
+
+`surface.png` and `clouds.png`: generated with the built-in imagegen tool, 2026-09-29. Reference: `../ui/planet-globe.png` (palette/style only). Native outputs: 1774×887 each. Legacy albedo/cloud assets remain available to `scripts/rotating_planet.gd` through configured map paths. Mipmaps reduce minification shimmer. The original finished globe is retained for other consumers.
 
 Surface is an unlit equirectangular albedo. Clouds are an independent grayscale density map (black clear, white dense); the shader supplies opacity, differential motion, cloud shadow, fixed lighting and atmosphere. No extra atmosphere bitmap is required. A narrow shader overlap closes generated horizontal seams.
 
@@ -10,9 +12,9 @@ Instantiate `rotating_planet.gd`, call `fit_sphere(center, radius)`, then `advan
 
 The `planet.xlsx` optional `visual` JSON column is the appearance authority (projected by the existing importer). It accepts `surfaceTexture`, `cloudTexture`, `surfaceSpeed`, `cloudSpeed`, `glowStrength`, `shadowStrength`, `cloudOpacity`, `atmosphereColor`. The legacy `texture` field describes a pre-rendered globe and is deliberately not treated as a scrolling surface map.
 
-Stellar appearances use the same sphere: `emission`, `surfaceTint`, `shadowTint`, `detailScale`, `detailStrength`, `radiusScale`, `axisRatio`, `coronaWidth`, `pulseStrength`, `pulseSpeed`, `flareStrength`, `beamLength`, `beamWidth`, `beamSpeed`, `magnetosphere`. Radii and beam lengths are relative to the body; time settings use seconds, rotation uses turns/second. Omitted fields inherit neutral defaults; missing maps use the original textures. Geometry, halo, transparent cones and magnetic field are shader-generated. Visual clock is owned by the visible page, independent of exploration time. New bodies need only table rows and assets; IDs never select rendering code. The pulsar retains numeric gameplay ID `6` and display name `脉冲星-PSR T46+38`; resource filenames use safe ASCII.
+Stellar appearances use the same sphere: `emission`, `surfaceTint`, `shadowTint`, `detailScale`, `detailStrength`, `radiusScale`, `axisRatio`, `coronaWidth`, `pulseStrength`, `pulseSpeed`, `flareStrength`, `beamLength`, `beamWidth`, `beamSpeed`, `magnetosphere`. Radii and beam lengths are relative to the body; time settings use seconds, rotation uses turns/second. Omitted fields inherit neutral defaults; missing maps use the current default sphere textures. Geometry, halo, transparent cones and magnetic field are shader-generated. Visual clock is owned by the visible page, independent of exploration time. New bodies need only table rows and assets; IDs never select rendering code. The pulsar retains numeric gameplay ID `6` and display name `脉冲星-PSR T46+38`; resource filenames use safe ASCII.
 
-`t587e_surface.png` and `stellar_plasma.png`: built-in ImageGen, 2026-09-29, native 1774×887. Gas uses one map at two UV rates; all stellar bodies share the neutral plasma map at different scales/contrasts. Exploration body diameters: gas ~377, main sequence ~298, red giant ~438, dwarf ~79, pulsar ~57 logical pixels. No physical planetary ring bitmap or mesh is added. Import with mipmaps.
+`t587e_surface.png` and `stellar_plasma.png`: built-in ImageGen, 2026-09-29, native 1774×887. Gas uses one map at two UV rates; all stellar bodies share the neutral plasma map at different scales/contrasts. No physical planetary ring bitmap or mesh is added. Import with mipmaps.
 
 Additional generation prompts:
 

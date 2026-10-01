@@ -48,18 +48,30 @@ void fragment() {
         float clouds = map_sample(cloud_map, uv + vec2(phase.y, 0.0)).r;
         float cloud_shadow = map_sample(cloud_map, uv + vec2(phase.y + 0.002, 0.003)).r;
         terrain *= 1.0 - cloud_shadow * cloud_opacity * 0.18;
-        float day = smoothstep(-0.20, 0.80, dot(normal, light));
-        rgb = mix(terrain, vec3(0.91, 0.96, 1.0), clouds * cloud_opacity) * mix(1.0 - shadow_strength, 1.04, day);
+        float illumination = dot(normal, light);
+        float day = smoothstep(-0.20, 0.80, illumination);
+        // Broad, softly joined cel bands preserve spherical depth at window scale.
+        float cel_day = 0.38 + smoothstep(-0.10, 0.10, illumination) * 0.30
+            + smoothstep(0.48, 0.62, illumination) * 0.30;
+        vec3 lit_terrain = mix(terrain, vec3(0.94, 0.93, 0.86), clouds * cloud_opacity);
+        vec3 night_tint = vec3(0.22, 0.40, 0.52);
+        rgb = lit_terrain * mix(vec3(1.0), mix(night_tint, vec3(cel_day), day), shadow_strength);
+        rgb += vec3(0.93, 0.94, 0.81) * pow(max(0.0, illumination), 12.0) * 0.08;
         rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 3.5) * glow_strength * (0.2 + 0.8 * day);
         if (emission > 0.0) {
             vec2 star_uv = uv * max(0.1, detail_scale);
             float cells = map_sample(surface_map, star_uv + vec2(phase.x, 0.0)).r;
             float detail = map_sample(surface_map, star_uv * 1.73 + vec2(phase.y, phase.x * 0.3)).r;
             float granules = clamp(mix(0.78, cells * 0.78 + detail * 0.22, detail_strength), 0.0, 1.0);
+            granules = mix(granules, 0.32 + smoothstep(0.36, 0.53, granules) * 0.36
+                + smoothstep(0.64, 0.78, granules) * 0.24, 0.65);
             rgb = mix(shadow_tint.rgb, surface_tint.rgb, granules) * emission;
             rgb *= 0.78 + 0.22 * pow(normal.z, 0.35);
             rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 5.0) * glow_strength * 0.25;
         }
+        // The contour belongs to the sphere: it does not spin with the map.
+        float contour = smoothstep(0.965, 0.993, r) * (1.0 - min(1.0, emission));
+        rgb = mix(rgb, vec3(0.12, 0.24, 0.31), contour * 0.75);
         // Completion lights only the body, leaving its corona and orbital space unchanged.
         float spot = 1.0 - smoothstep(0.0, 0.28, distance(p, completion_spot));
         rgb = mix(rgb, max(rgb, vec3(0.90, 0.97, 1.0)), completion_flash * spot);
