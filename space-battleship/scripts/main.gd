@@ -2367,7 +2367,7 @@ func enhancement_protection_state_text(status: Dictionary = {}) -> String:
 		key = "enhance.protection_state.lockout"
 		duration = ceili(float(status.lockout)*10)/10.0
 	var arguments := {}
-	if mode in ["physical","energy"]:arguments.resistance=NUMBER_FORMAT.precise(float(status.get("resistance",0))*100)
+	if mode in ["physical","energy"]:arguments.resistance=NUMBER_FORMAT.percentage(float(status.get("resistance",0))*100)
 	if mode in ["physical","energy"] or key=="enhance.protection_state.lockout":arguments.duration=NUMBER_FORMAT.precise(duration)
 	var caption := mixed_protection_state_text(status) if mode=="mixed" else UIText.t(key,arguments)
 	if GrowthNumber.compare(status.get("cover_current",0),0)>0:
@@ -2387,7 +2387,7 @@ func mixed_protection_state_text(status: Dictionary) -> String:
 		if strengths[mode].is_empty():continue
 		var minimum: float=strengths[mode].min()
 		var maximum: float=strengths[mode].max()
-		types[mode]=UIText.t("enhance.protection_state.range",{"minimum":NUMBER_FORMAT.compact(minimum),"maximum":NUMBER_FORMAT.compact(maximum)}) if minimum!=maximum else UIText.t("enhance.protection_state.range_equal",{"value":NUMBER_FORMAT.compact(minimum)})
+		types[mode]=UIText.t("enhance.protection_state.range",{"minimum":NUMBER_FORMAT.percentage(minimum),"maximum":NUMBER_FORMAT.percentage(maximum)}) if minimum!=maximum else UIText.t("enhance.protection_state.range_equal",{"value":NUMBER_FORMAT.percentage(minimum)})
 	var caption := ""
 	if types.has("physical") and types.has("energy"):
 		caption=UIText.t("enhance.protection_state.dual",{"physical":types.physical,"energy":types.energy})
@@ -2407,7 +2407,7 @@ func enhancement_protection_details() -> String:
 		var key := "enhance.protection_state.lockout" if float(component.lockout)>0 else "enhance.protection_state."+mode
 		var duration: float = component.lockout if float(component.lockout)>0 else component.remaining
 		var arguments := {}
-		if mode in ["physical","energy"] and float(component.lockout)<=0:arguments.resistance=NUMBER_FORMAT.precise(float(component.resistance)*100)
+		if mode in ["physical","energy"] and float(component.lockout)<=0:arguments.resistance=NUMBER_FORMAT.percentage(float(component.resistance)*100)
 		if mode in ["physical","energy"] or float(component.lockout)>0:arguments.duration=NUMBER_FORMAT.precise(ceili(duration*10)/10.0)
 		var state := UIText.t(key,arguments)
 		lines.append(UIText.t("enhance.protection_component",{"index":int(component.index)+1,"current":number(component.current),"capacity":number(component.capacity),"state":state}))

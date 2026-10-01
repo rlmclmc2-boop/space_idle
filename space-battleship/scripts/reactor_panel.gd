@@ -76,8 +76,7 @@ func energy_text(value: float) -> String:
 	return NumberFormat.compact(value)
 
 func percent_text(value: float) -> String:
-	if value>0.0 and value<0.1:return "<0.1"
-	return ("%.1f" % value).trim_suffix(".0")
+	return NumberFormat.percentage(value)
 
 func glass_style(border: Color) -> StyleBoxFlat:
 	var result := StyleBoxFlat.new()
@@ -450,7 +449,7 @@ func refresh() -> void:
 		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
 		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
 		var percent: float = (game.reactor_multiplier(key)-1.0)*float(host.db.config.reactorPercentScale)
-		var effect_percent: String = host.number(percent) if percent >= 1000.0 else "%.1f" % percent
+		var effect_percent: String = NumberFormat.percentage(percent)
 		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.flow.free",{"energy":energy_text(free_energy),"percent":percent_text(free_ratio*100.0 if enabled else 0.0)}))
 		var effect_key := "reactor.module.%s.effect" % key
 		var effect: String = UIText.t(effect_key) if MODULE_COLORS.has(key) else key

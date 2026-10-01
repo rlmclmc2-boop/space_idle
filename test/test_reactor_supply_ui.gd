@@ -103,7 +103,7 @@ func run() -> void:
  check(g.reactor_allocated()==0,"Free power does not consume budget")
  g.set_reactor_allocation("weapons",25)
  await snapshot("manual25-free")
- check(panel.module_controls.weapons.energy.text.contains("25 / 207") and panel.module_controls.weapons.share.text.contains("12.1%"),"25 energy is 12.1 percent at capacity 207")
+ check(panel.module_controls.weapons.energy.text.contains("25 / 207") and panel.module_controls.weapons.share.text.contains("12%"),"25 / 207 displays rounded12 percent without changing allocation")
  g.set_reactor_allocation("weapons",50)
  await snapshot("partial-free")
  check(is_equal_approx(g.reactor_effective_ratio("weapons"),50.0/capacity+0.1),"50 energy share is 50/capacity, plus free ratio")
