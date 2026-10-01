@@ -83,6 +83,7 @@ var last_save_error: Error = OK
 var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
 var main_attack_serial := 0
+var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
@@ -1937,6 +1938,9 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 			shot.attack_snapshot=enhancement_attack_contexts[mount].snapshot
 			finish_enhancement_attack(mount)
 		shot.main_attack_id=shot.attack_snapshot.id
+		shot.attack_instance=new_attack_instance(shot.attack_snapshot) if repeated else shot.attack_snapshot.instance
+		shot.attack_instance_id=shot.attack_instance.id
+		bind_beam_chain(shot)
 
 	event.emit("beam_started", {"shot":shot})
 
@@ -1946,7 +1950,9 @@ func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
 func tick_long_laser(shot: Dictionary, dt: float) -> void:
 	if not long_laser_valid(shot):
 		shot.dead = true
+		end_beam_chain(shot)
 		return
+	prune_beam_chain(shot)
 	var offset := enemy_weapon_offset(shot.source, shot.mount) if shot.hostile else player_weapon_offset(shot.mount)
 	if shot.repeated:
 		offset.x += 6.0
@@ -1969,7 +1975,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
 			hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
 		else:
-			enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot}
+			enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot,"instance":shot.attack_instance}
 			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
 			if int(shot.ticks)==1 and not shot.repeated:
 				queue_jewel_repeats(shot.mount,boost,shot)
@@ -1981,6 +1987,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			enhancement_attack_contexts.erase(int(shot.mount))
 		if not projectiles.has(shot) or not long_laser_valid(shot):
 			shot.dead = true
+			end_beam_chain(shot)
 			break
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
@@ -2030,6 +2037,11 @@ func acknowledge_unlocks() -> void:
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false) -> void:
 	if enemy.hp <= 0:
 		return
+	var chain_origin := Vector2(enemy.x,enemy.y)
+	for effect in effects:
+		var chain:Dictionary=effect.get("chain_state",{})
+		if effect.get("chain",false) and not chain.get("used",false) and not effect.get("chain_used",false):
+			chain_origin=chain_target_point(enemy);break
 	jewel_on_hit(enemy, effects)
 	var resistance := float(db.config.dmgReduce)
 	for effect in effects:
@@ -2038,6 +2050,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	enemy.hp = N.subtract(enemy.hp,amount)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
+		break_beam_chain_target(enemy)
 		if is_boss_encounter() and targets().is_empty():
 			projectiles.clear()
 		event.emit("explode", enemy)
@@ -2055,7 +2068,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 				if adjacent.hp > 0 and abs(int(adjacent.slot) - int(enemy.slot)) in [1, 2]:
 					hit_enemy(adjacent, float(enemy.max_hp) * float(enemy.jewelExplosion), type)
 
-	launch_enhancement_chain(enemy,raw,type,effects,critical)
+	launch_enhancement_chain(enemy,raw,type,effects,critical,chain_origin)
 
 func collect(drop: Dictionary, manual: bool) -> void:
 	if not drops.has(drop):
@@ -2403,6 +2416,9 @@ func tick_projectiles(dt: float) -> void:
 		# Hits/signals may clear, replace or reorder it; retain the original check
 		# whenever that position no longer holds this exact projectile.
 		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):
+			continue
+		if shot.get("chain_hop",false):
+			advance_chain_projectile(shot,dt)
 			continue
 		if advance_custom_projectile(shot,dt):continue
 		if shot.get("beam", false):
@@ -2861,15 +2877,22 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 				effect.chain=true;effect.chain_targets=int(enhancement_parameter("repeat_b1_targets"))
 		var secondary := enhancement_branches.active(self,entry,"repeat",3,"B") and rng.randf()<enhancement_parameter("repeat_b3_probability")
 		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":plan_attack_repeats(entry,effects),"weapon":player_weapon_row(entry).duplicate(true)}
-	return attack_from_snapshot(context.snapshot,multiplier)
+		context.snapshot.instance=new_attack_instance(context.snapshot)
+		context.instance=context.snapshot.instance
+	return attack_from_snapshot(context.snapshot,multiplier,context.get("instance",{}))
 
-func attack_from_snapshot(snapshot: Dictionary, multiplier: float) -> Dictionary:
-	# Each damage carrier owns its chain allowance; only the result is shared.
+func attack_from_snapshot(snapshot: Dictionary, multiplier: float, instance: Dictionary = {}) -> Dictionary:
+	# A salvo shares one attack instance; independent repeats retain the root roll
+	# but receive a fresh instance. Never deep-copy the shared chain state.
+	if instance.is_empty():
+		if not snapshot.has("instance"):snapshot.instance=new_attack_instance(snapshot)
+		instance=snapshot.instance
 	var effects: Array=[]
 	for source in snapshot.effects:
 		var effect: Dictionary=source.duplicate(true)
+		if effect.get("chain",false):effect.chain_state=instance.chain
 		effects.append(effect)
-	return {"main_attack_id":snapshot.id,"damage":N.multiply(snapshot.damage,multiplier),"effects":effects,"critical":snapshot.critical,"critical_bonus_applied":snapshot.critical_bonus_applied}
+	return {"attack_instance_id":instance.id,"main_attack_id":snapshot.id,"damage":N.multiply(snapshot.damage,multiplier),"effects":effects,"critical":snapshot.critical,"critical_bonus_applied":snapshot.critical_bonus_applied}
 
 func plan_attack_repeats(entry: Dictionary, effects: Array) -> Array:
 	# All bounded generations roll now; delayed execution never rolls again.
@@ -2908,6 +2931,7 @@ func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vect
 func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
 	fire(player,target,weapon,attack.damage,false,str(slot_entry("weapons",index).key),offset,visual_spread)
 	projectiles.back().main_attack_id = attack.get("main_attack_id",0)
+	projectiles.back().attack_instance_id = attack.get("attack_instance_id",0)
 	projectiles.back().jewelEffects = attack.effects
 	projectiles.back().critical = attack.critical
 	projectiles.back().critical_bonus_applied=attack.get("critical_bonus_applied",attack.critical)
@@ -2932,21 +2956,116 @@ func launch_enhancement_secondary(index: int, primary: Dictionary, weapon: Dicti
 	context.derived=false
 	event.emit("enhancement_secondary",{"source":Vector2(primary.x,primary.y),"target":Vector2(target.x,target.y),"weapon":str(entry.key),"beam":beam_tick})
 
-func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array, critical: bool) -> void:
-	var chain: Dictionary={}
-	for effect in effects:
-		if effect.get("chain",false) and not effect.get("chain_used",false):chain=effect;break
-	if chain.is_empty():return
-	chain.chain_used=true
-	var candidates: Array=targets(type).filter(func(target):return not is_same(target,enemy))
-	var visited := {int(enemy.uid):true}
-	for target in candidates.slice(0,int(chain.get("chain_targets",enhancement_parameter("repeat_b1_targets")))):
+func new_attack_instance(snapshot: Dictionary) -> Dictionary:
+	attack_instance_serial+=1
+	var count:=0
+	for effect in snapshot.effects:
+		if effect.get("chain",false):
+			count=int(effect.get("chain_targets",enhancement_parameter("repeat_b1_targets")));break
+	return {"id":attack_instance_serial,"chain":{"instance_id":attack_instance_serial,"count":count,"used":false,"beam":false,"ended":false,"links":[]}}
+
+func chain_target_point(target: Dictionary) -> Vector2:
+	return Vector2(target.x,target.y)
+
+func chain_target_alive(target: Dictionary) -> bool:
+	return not target.is_empty() and N.compare(target.get("hp",0),0)>0 and enemies.any(func(enemy):return is_same(enemy,target))
+
+func select_chain_targets(primary: Dictionary, type: int, count: int) -> Array:
+	var result:Array=[]
+	if count<=0:return result
+	var visited:Dictionary={int(primary.uid):true}
+	for target in targets(type):
+		if result.size()>=count:break
 		if visited.has(int(target.uid)):continue
-		visited[int(target.uid)]=true
-		var continued: Array=effects.duplicate(true)
-		for effect in continued:effect.chain=false;effect.chain_used=true
-		event.emit("enhancement_chain",{"source":Vector2(enemy.x,enemy.y),"target":Vector2(target.x,target.y),"weapon":str(chain.get("weapon_key",""))})
-		hit_enemy(target,raw,type,continued,critical)
+		visited[int(target.uid)]=true;result.append(target)
+	return result
+
+func bind_beam_chain(shot: Dictionary) -> void:
+	var chain:Dictionary=shot.attack_instance.chain
+	chain.beam=true;chain.used=true;chain.primary=shot.target
+	for target in select_chain_targets(shot.target,int(shot.weapon.dmgtype),int(chain.count)):
+		chain.links.append({"target":target,"broken":false})
+
+func prune_beam_chain(shot: Dictionary) -> void:
+	for link in shot.get("attack_instance",{}).get("chain",{}).get("links",[]):
+		if not link.broken and not chain_target_alive(link.target):link.broken=true
+
+func end_beam_chain(shot: Dictionary) -> void:
+	var chain:Dictionary=shot.get("attack_instance",{}).get("chain",{})
+	if not chain.is_empty():chain.ended=true;chain.links.clear()
+
+func break_beam_chain_target(target: Dictionary) -> void:
+	for shot in projectiles:
+		if not shot.get("beam",false):continue
+		for link in shot.get("attack_instance",{}).get("chain",{}).get("links",[]):
+			if is_same(link.target,target):link.broken=true
+
+func beam_chain_targets(shot: Dictionary) -> Array:
+	# Presentation reads this relation; it never selects/rebinds or mutates it.
+	var result:Array=[]
+	if not projectiles.has(shot) or not long_laser_valid(shot):return result
+	var chain:Dictionary=shot.get("attack_instance",{}).get("chain",{})
+	if chain.get("ended",false):return result
+	for link in chain.get("links",[]):
+		if not link.broken and chain_target_alive(link.target):result.append(link.target)
+	return result
+
+func chain_damage_effects(effects: Array) -> Array:
+	var continued:Array=[]
+	for source in effects:
+		var effect:Dictionary=source.duplicate()
+		effect.erase("chain_state")
+		effect.chain=false;effect.chain_used=true;continued.append(effect)
+	return continued
+
+func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array, critical: bool, origin := Vector2.INF) -> void:
+	var effect:Dictionary={}
+	for candidate in effects:
+		if candidate.get("chain",false) and not candidate.get("chain_used",false):effect=candidate;break
+	if effect.is_empty():return
+	if not effect.has("chain_state"):
+		# Compatibility for direct hit payloads; canonical attacks bind this at startup.
+		attack_instance_serial+=1
+		effect.chain_state={"instance_id":attack_instance_serial,"count":int(effect.get("chain_targets",enhancement_parameter("repeat_b1_targets"))),"used":false,"beam":false,"ended":false,"links":[]}
+	var chain:Dictionary=effect.chain_state
+	if chain.ended:return
+	if chain.beam:
+		# Secondary copies share the instance but are not additional beam ticks.
+		if not is_same(enemy,chain.primary):return
+		var continued:=chain_damage_effects(effects)
+		for link in chain.links:
+			if not link.broken and not chain_target_alive(link.target):link.broken=true
+			if not link.broken:hit_enemy(link.target,raw,type,continued,critical)
+		return
+	if chain.used:return
+	chain.used=true;effect.chain_used=true
+	var continued:=chain_damage_effects(effects)
+	if origin==Vector2.INF:origin=chain_target_point(enemy)
+	for target in select_chain_targets(enemy,type,int(chain.count)):
+		projectile_serial+=1
+		var direction:Vector2=(chain_target_point(target)-origin).normalized()
+		if direction.is_zero_approx():direction=Vector2.UP
+		# A visible damage carrier starts at the hit, never at a weapon mount.
+		var hop:Dictionary={"x":origin.x,"y":origin.y,"target":target,"damage":raw,"type":type,"speed":720.0,"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key","")}
+		projectiles.append(hop)
+		event.emit("enhancement_chain",{"source":origin,"target":chain_target_point(target),"weapon":str(effect.get("weapon_key","")),"shot":hop})
+
+func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
+	if shot.dead:return
+	if not chain_target_alive(shot.target):shot.target={}
+	var position:=Vector2(shot.x,shot.y)
+	if not shot.target.is_empty():
+		var aim:=chain_target_point(shot.target)
+		var distance:=position.distance_to(aim)
+		if distance<=float(shot.speed)*dt:
+			shot.x=aim.x;shot.y=aim.y;shot.dead=true
+			event.emit("projectile_impact",{"shot":shot,"pos":aim})
+			hit_enemy(shot.target,shot.damage,int(shot.type),shot.jewelEffects,bool(shot.critical))
+			return
+		shot.direction=(aim-position).normalized()
+	var movement:Vector2=shot.direction*float(shot.speed)*dt
+	shot.x+=movement.x;shot.y+=movement.y
+	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
 
 func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}) -> void:
 	var context: Dictionary=enhancement_attack_contexts.get(index,{})
@@ -2989,7 +3108,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		pending.execution.launched=true
 		# A derived salvo counts as an attack, but never rerolls or consumes root buffs.
 		record_enhancement_attack()
-		enhancement_attack_contexts[int(pending.index)]={"derived":true,"snapshot":pending.snapshot}
+		enhancement_attack_contexts[int(pending.index)]={"derived":true,"snapshot":pending.snapshot,"instance":new_attack_instance(pending.snapshot)}
 		for n in (int(weapon.para1) if entry.key == "missile" else 1):
 			jewel_fire(int(pending.index), candidates[n % candidates.size()], weapon, player_weapon_offset(int(pending.index)), float(pending.multiplier), missile_visual_spread(n,int(weapon.para1)) if entry.key=="missile" else 0.0,n,int(weapon.para1) if entry.key=="missile" else 1)
 		launch_enhancement_secondary(int(pending.index),candidates[0],weapon,float(pending.multiplier))

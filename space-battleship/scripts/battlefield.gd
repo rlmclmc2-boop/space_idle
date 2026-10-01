@@ -6,6 +6,7 @@ const ENEMY_VFX := preload("res://dev/toon_ship/enemy_weapon_vfx.gd")
 var enemy_vfx_enabled:=true
 var enemy_launch_context:=false
 var enemy_impacts:Array[Dictionary]=[]
+const CHAIN_VFX := preload("res://dev/toon_ship/chain_vfx.gd")
 const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
@@ -300,6 +301,7 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="projectile_impact" and info.shot.get("chain_hop",false):return
 	if kind=="hit" and bool(info.get("player",false)):
 		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
 	if kind=="explode":
@@ -340,6 +342,10 @@ func sync_beam_visuals()->void:
 
 
 func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float)->bool:
+	if shot.get("chain_hop",false):
+		var logical:=Vector2(shot.x,shot.y)
+		CHAIN_VFX.flight(draw_surface,pos,battle_point(logical+Vector2(shot.direction))-battle_point(logical))
+		return true
 	if not _is_own_missile(shot):return false
 	var visual:=projectile_visual(shot)
 	# Every real missile, including an orphan, retains one physical body.
@@ -359,6 +365,8 @@ func draw_beam_override(shot:Dictionary,offset:Vector2,core:bool=true)->bool:
 		CONTINUOUS_BEAM_VFX.active(draw_surface,muzzle,target,fx_time,float(style.width),float(style.power),float(style.pulse))
 		if beam_full_started.has(int(shot.serial)):
 			CONTINUOUS_BEAM_VFX.full_cue(draw_surface,target,fx_time-float(beam_full_started[int(shot.serial)]))
+		for linked in game.beam_chain_targets(shot):
+			CHAIN_VFX.link(draw_surface,target,entity_render_position(linked)+offset,fx_time)
 	return true
 
 
@@ -514,6 +522,7 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 
 
 func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
+	if shot.get("chain_hop",false):return Vector2(shot.direction).angle()
 	if _is_simple_enemy(shot):
 		var angle:float=visual.get("angle",Vector2(shot.direction).angle())
 		if core:ENEMY_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),weapon_key(shot))
