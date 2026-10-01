@@ -72,7 +72,7 @@ func invalidate_resources(g, ids: Array) -> void:
 
 func reactor_allocation_state(g, id: String) -> Array:
 	# Free charge affects multipliers/UI, never the ordinary energy pool or split.
-	return [id,g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
+	return [id,active(g,entry(g,id)),g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
 
 func invalidate_reactor_allocation(g) -> void:
 	var id := ""

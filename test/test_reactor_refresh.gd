@@ -100,13 +100,15 @@ func run() -> void:
 	for i in 300:scene.refresh_visible_cards(1.0/60.0)
 	check(g.effect_queries==idle_effect_queries and scene.writes.is_empty(),"300 unchanged visible frames do no reactor dependency work or property writes")
 	print("REACTOR IDLE / 300 frames: effect dependency queries=",g.effect_queries-idle_effect_queries,"; prior per-frame path=",300*panel.module_controls.size())
+	g.paused=false
+	g.speed=1.0
 	g.profile.resources["2"]=0.0
 	g.resources_changed(["2"])
-	for i in 6:scene.refresh_visible_cards(1.0/60.0)
+	for i in 30:scene.refresh_visible_cards(1.0/60.0)
 	check(g.effect_queries==idle_effect_queries,"dirty resource refresh waits its fixed cutoff")
 	g.profile.resources["2"]=1e6
 	g.event.emit("galaxy_income",{"id":"2","amount":1e6})
-	for i in 7:scene.refresh_visible_cards(1.0/60.0)
+	for i in 31:scene.refresh_visible_cards(1.0/60.0)
 	check(g.effect_queries>idle_effect_queries and not panel.upgrade_buttons.x1.disabled,"merged income does not postpone first UI dirty cutoff")
 	idle_effect_queries=g.effect_queries
 	g.resources_changed(["1"])

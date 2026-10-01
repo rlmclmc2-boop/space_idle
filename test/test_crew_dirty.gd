@@ -180,5 +180,22 @@ func _initialize() -> void:
 	check(xp_member.level==xp_level,"XP fixture stays below next level")
 	xp_only.crew.advance(xp_only,1)
 	check(xp_only.attempts==xp_attempts,"XP-only change never wakes failed purchase")
+	# A saved level-zero assignment can be retained while its crew unlock is unavailable.
+	# Restoring just that unlock leaves energy capacity and module targets unchanged.
+	var reenabled := fixture()
+	var reactor_member: Dictionary=reenabled.profile.crew[3]
+	var gate: String=reenabled.db.data.crew[reactor_member.crewId].unlockId
+	var old_gate_level: int=reenabled.db.data.unlock[gate].level
+	reenabled.db.data.unlock[gate].level=99999
+	reenabled.profile.grantedUnlocks.erase(gate)
+	reenabled.rebuild_unlocks()
+	reenabled.crew.advance(reenabled,1)
+	check(reenabled.splits.reactor==0,"locked crew does not distribute")
+	var pool_before: int=reenabled.reactor_capacity()
+	reenabled.db.data.unlock[gate].level=old_gate_level
+	reenabled.rebuild_unlocks()
+	check(reenabled.reactor_capacity()==pool_before,"unlock fixture preserves capacity")
+	reenabled.crew.advance(reenabled,1)
+	check(reenabled.splits.reactor==1 and reenabled.reactor_allocated()==pool_before,"crew unlock alone wakes retained distribution")
 	print("CREW DIRTY: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

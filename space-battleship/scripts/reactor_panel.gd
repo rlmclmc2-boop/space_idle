@@ -394,9 +394,9 @@ func refresh_pending(delta := 0.0) -> void:
 		animation_state=next
 		refresh_animation_state()
 	if not dirty or not next[0]:return
-	refresh_elapsed+=maxf(0.0,delta)
-	# Fixed first-dirty cutoff coalesces income; direct actions/reveal use refresh.
-	if delta<=0.0 or refresh_elapsed>=0.2:refresh()
+	if not host.game.paused:refresh_elapsed+=maxf(0.0,delta)*host.game.speed
+	# One game-second from first change, matching automation; direct actions/reveal stay immediate.
+	if delta<=0.0 or refresh_elapsed+0.000000001>=1.0:refresh()
 
 func step_allocation(key: String, direction: int) -> void:
 	change_allocation(float(host.game.profile.reactorAllocation.get(key,0))+direction*int(host.db.config.reactorAllocationStep),key)
