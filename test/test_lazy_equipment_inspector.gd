@@ -139,6 +139,24 @@ func run():
 		scene.game.record_enhancement_attack()
 		scene.equipment_panel.show_inspector()
 	compare(a,b,"collapsed inspector reopens latest",true)
+	# Reload into existing UI owners; the reload caller refreshes their page data,
+	# as normal startup setup does, while the closed inspector stays lazy.
+	for scene in [a,b]:
+		scene.game.save_enabled=true;scene.game.save_progress();scene.game.save_enabled=false
+	# Both paired saves create the same runtime bookkeeping; align their wall timestamp.
+	a.game.profile.chronoSavedAt=b.game.profile.chronoSavedAt
+	var saved_level=int(a.game.module_entry("weapons",0).level)
+	for scene in [a,b]:
+		var p=scene.equipment_panel;var g=scene.game
+		p.detail_frame.hide();p.select_item(g.slot_id("weapons",0))
+		g.profile.loadout.weapons[0].level=saved_level+4
+		g.invalidate_stat_cache();g.reset_player();p.refresh()
+		g.load_progress();g.reset_player();p.refresh()
+		check(int(p.items[g.slot_id("weapons",0)].level)==saved_level,"reload refreshes latest card level")
+	compare(a,b,"reload closed",false)
+	for scene in [a,b]:scene.equipment_panel.show_inspector()
+	compare(a,b,"reload immediate reopen",true)
+	check(not b.equipment_panel.detail_dirty,"reload inspector clean before draw")
 	for scene in [a,b]:
 		scene.game.launch_provider=Callable();scene.game.target_provider=Callable();scene.queue_free()
 	await process_frame;await process_frame
