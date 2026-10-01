@@ -174,6 +174,14 @@ func refresh() -> void:
 		host.set_ui_value(choice_titles[key],"text",UIText.data_text("ship",key,"des"))
 		host.set_ui_value(choice_capacities[key],"text",UIText.t("ship.refit.capacity_summary",{"weapons":str(int(row.weaponSlots)),"defence":str(int(row.defenseSlots))}))
 		host.set_ui_value(choice_states[key],"text",UIText.t("ship.refit.active_badge") if current==key else UIText.t("ship.refit.preview_badge") if candidate==key else "")
+		var has_state: bool=current==key or candidate==key
+		var top := 32.0 if has_state else 0.0
+		host.set_ui_value(choice_states[key],"visible",has_state)
+		host.set_ui_value(choices[key],"custom_minimum_size",Vector2(226,122+top))
+		host.set_ui_value(locked_previews[key],"position",Vector2(6,10+top))
+		host.set_ui_value(choice_titles[key],"position",Vector2(86,8+top))
+		host.set_ui_value(choice_capacities[key],"position",Vector2(86,46+top))
+		host.set_ui_value(locked_labels[key],"position",Vector2(86,32+top))
 		host.set_ui_value(locked_labels[key],"visible",locked)
 		host.set_ui_value(locked_labels[key],"text",unlock_hint(key) if locked else "")
 		host.set_ui_value(choices[key],"text",text)

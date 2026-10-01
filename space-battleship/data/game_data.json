@@ -3,7 +3,7 @@
   "ship": {
     "Frigate": {
       "name": "Frigate",
-      "des": "护卫舰",
+      "des": "游隼侦察艇",
       "weaponSlots": 3,
       "defenseSlots": 2,
       "movement": 50,
@@ -12,7 +12,7 @@
     },
     "Destroyer": {
       "name": "Destroyer",
-      "des": "驱逐舰",
+      "des": "飞燕护卫舰",
       "weaponSlots": 4,
       "defenseSlots": 2,
       "movement": 50,
@@ -21,7 +21,7 @@
     },
     "Cruiser": {
       "name": "Cruiser",
-      "des": "巡洋舰",
+      "des": "云鳐巡洋舰",
       "weaponSlots": 5,
       "defenseSlots": 3,
       "movement": 50,
@@ -30,7 +30,7 @@
     },
     "Battleship": {
       "name": "Battleship",
-      "des": "战列舰",
+      "des": "玄甲战列舰",
       "weaponSlots": 6,
       "defenseSlots": 3,
       "movement": 50,
@@ -39,7 +39,7 @@
     },
     "Heavy_Battleship": {
       "name": "Heavy_Battleship",
-      "des": "重型战列舰",
+      "des": "白鲸无畏舰",
       "weaponSlots": 8,
       "defenseSlots": 4,
       "movement": 50,
@@ -15507,8 +15507,8 @@
       "target": "Frigate",
       "level": 0,
       "mode": "cleared",
-      "title": "护卫舰",
-      "desc": "可在战舰页面启用护卫舰。"
+      "title": "游隼侦察艇",
+      "desc": "可在战舰页面启用游隼侦察艇。"
     },
     "ship/Destroyer": {
       "name": "ship/Destroyer",
@@ -15516,7 +15516,7 @@
       "target": "Destroyer",
       "level": 10,
       "mode": "cleared",
-      "title": "驱逐舰",
+      "title": "飞燕护卫舰",
       "desc": "当然,我们的科学家研发了新的战舰,你可以立即试试了...撕碎你的敌人吧"
     },
     "ship/Cruiser": {
@@ -15525,7 +15525,7 @@
       "target": "Cruiser",
       "level": 20,
       "mode": "cleared",
-      "title": "巡洋舰",
+      "title": "云鳐巡洋舰",
       "desc": "这艘船,很大,很强,很暴力,他有更多的武器,来帮助你干掉所有对手"
     },
     "ship/Battleship": {
@@ -15534,7 +15534,7 @@
       "target": "Battleship",
       "level": 30,
       "mode": "cleared",
-      "title": "战列舰",
+      "title": "玄甲战列舰",
       "desc": "这是我们能提供的最强的战舰了,相信我,它能陪你走到最后"
     },
     "ship/Heavy_Battleship": {
@@ -15543,7 +15543,7 @@
       "target": "Heavy_Battleship",
       "level": 50,
       "mode": "cleared",
-      "title": "重型战列舰",
+      "title": "白鲸无畏舰",
       "desc": "我之前说过那是我们能提供的最强战舰了吗?有了新船坞,那已经是过去式了,这艘新船将更有力的摧毁你的敌人."
     },
     "reactor": {
