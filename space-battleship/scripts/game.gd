@@ -2757,7 +2757,11 @@ func set_enhancement_order(category: String, order: Array) -> bool:
 
 func available_effect_count(entry: Dictionary) -> int:
 	var key := str(entry.get("key",""))
-	if (key not in WEAPON_KEYS and key not in DEFENSE_KEYS) or not enhancement_unlocked():return 0
+	if key not in WEAPON_KEYS and key not in DEFENSE_KEYS:return 0
+	return shared_enhancement_effect_count()
+
+func shared_enhancement_effect_count() -> int:
+	if not enhancement_unlocked():return 0
 	var count := 0
 	var shared_level := enhancement_effective_level()
 	for index in 3:
