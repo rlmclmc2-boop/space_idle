@@ -1013,7 +1013,7 @@
   },
   {
     "key": "equipment.refit_hint",
-    "text": "免费装配 · 等级随槽位保留 · 点选槽位后在下方操作",
+    "text": "免费装配 · 等级随槽位保留 · 点击名称选择即换装",
     "params": "",
     "category": "equipment"
   },

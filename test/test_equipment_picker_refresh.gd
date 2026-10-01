@@ -21,10 +21,24 @@ func choose(panel: Control, key: String) -> void:
 	var index: int=panel.slot_options.find(key)
 	panel.detail.slots.select(index)
 	panel.detail.slots.item_selected.emit(index)
+func click(control: Control, offset: Vector2) -> void:
+	if DisplayServer.get_name()=="headless":
+		control.pressed.emit()
+		await process_frame
+		return
+	var point := root.get_final_transform()*control.get_global_transform_with_canvas()*offset
+	for down in [true,false]:
+		var event := InputEventMouseButton.new()
+		event.button_index=MOUSE_BUTTON_LEFT
+		event.pressed=down
+		event.position=point
+		Input.parse_input_event(event)
+		await process_frame
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
 	var scene=load("res://main.tscn").instantiate()
 	scene.set_script(IsolatedUI)
+	scene.automation_args=["--capture"]
 	root.add_child(scene)
 	current_scene=scene
 	scene.automation_args=[]
@@ -33,17 +47,62 @@ func run() -> void:
 	scene.game.paused=true
 	scene.game.pending_unlocks.clear()
 	scene.game.profile.cleared=range(1,90)
+	scene.game.profile.highestLevel=90
+	scene.game.rebuild_unlocks()
+	scene.game.pending_unlocks.clear()
 	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	scene.game.profile.resources={"1":1e28,"2":1e28}
 	scene.game.profile.onboarding.completed=true
 	scene.game.switch_ship("Heavy_Battleship")
 	scene.game.equip_slot("weapons",0,"laser")
 	scene.game.equip_slot("weapons",1,"cannon")
+	scene.refresh_tab_visibility()
 	scene.equipment_tabs.current_tab=0
 	await process_frame
 	await process_frame
 	var panel: Control=scene.equipment_panel
+	var name_button: Button=panel.cards.weapons_1.name_button
+	await click(name_button,Vector2(name_button.size.x-4,17))
+	check(panel.selected=="weapons_1" and panel.picker_open and panel.detail_frame.visible,"Actual name-row blank-space click opens exact slot picker")
+	var refit_level: int=scene.game.module_entry("weapons",1).level
+	choose(panel,"missile")
+	check(scene.game.module_entry("weapons",1).key=="missile" and scene.game.module_entry("weapons",1).level==refit_level,"Picker selection immediately equips and preserves slot level")
+	check(not panel.detail.equip.visible and panel.detail_frame.visible,"Picker requires no confirmation and retains its controls")
+	check(scene.game.module_entry("weapons",0).key=="laser","Refit leaves other slot unchanged")
+	if DisplayServer.get_name()!="headless":
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://../name-refit.png")
+	panel.detail_frame.hide()
+	await click(panel.cards.weapons_1.upgrade_button,panel.cards.weapons_1.upgrade_button.size/2)
+	check(scene.game.module_entry("weapons",1).level==refit_level+1 and not panel.detail_frame.visible,"Independent actual upgrade click upgrades exact slot without opening picker")
 	panel.open_picker("weapons_1")
+	if DisplayServer.get_name()!="headless":
+		await click(panel.detail.slots,panel.detail.slots.size/2)
+		var popup: PopupMenu=panel.detail.slots.get_popup()
+		check(popup.visible,"Actual mouse expands native replacement menu")
+		var picker_ref: OptionButton=panel.detail.slots
+		scene.game.crew.auto_upgrade(scene.game,{"upgradeMode":"1"})
+		panel.refresh()
+		check(panel.picker_open and popup.visible and is_same(picker_ref,panel.detail.slots),"Auto-upgrade and refresh preserve open picker popup instance")
+		for down in [true,false]:
+			var event:=InputEventKey.new()
+			event.keycode=KEY_DOWN
+			event.pressed=down
+			Input.parse_input_event(event)
+			await process_frame
+		var chosen: int=popup.get_focused_item()
+		var expected_key: String=str(panel.slot_options[chosen]) if chosen>=0 else "invalid"
+		check(chosen>=0 and expected_key!=scene.game.module_entry("weapons",1).key,"Native menu focuses a different replacement option")
+		for down in [true,false]:
+			var event:=InputEventKey.new()
+			event.keycode=KEY_ENTER
+			event.pressed=down
+			Input.parse_input_event(event)
+			await process_frame
+		check(scene.game.module_entry("weapons",1).key==expected_key and not popup.visible,"Native popup keyboard selection immediately equips after auto-upgrade")
+	check(panel.footer_buttons.size()==1 and panel.footer_buttons.has("details"),"Main footer contains only details")
+	choose(panel,"cannon")
+	panel.show_inspector()
 	choose(panel,"missile")
 	var cards: Dictionary=panel.cards.duplicate()
 	var tabs: int=scene.equipment_tabs.get_instance_id()
@@ -92,10 +151,24 @@ func run() -> void:
 	check(panel.items.weapons_7.locked and panel.pending_key==panel.items.weapons_7.key and panel.detail.equip.disabled,"Ship capacity removal invalidates draft safely")
 	scene.game.switch_ship("Heavy_Battleship")
 	panel.open_picker("weapons_1")
+	panel.show_inspector()
 	choose(panel,"missile")
 	scene.game.profile.unlocked.erase("missile")
 	panel.refresh()
 	check(panel.pending_key=="cannon","Unavailable candidate restores equipped choice")
+	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+	panel.refresh()
+	panel.detail_frame.hide()
+	panel.grid_scroll.ensure_control_visible(panel.cards.defence_0)
+	await process_frame
+	await process_frame
+	await click(panel.cards.defence_0.name_button,Vector2(20,17))
+	check(panel.selected=="defence_0" and panel.picker_open,"Defence name click opens exact defence slot")
+	choose(panel,BattleGame.DEFENSE_KEYS[0])
+	check(scene.game.module_entry("defence",0).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
+	check(not panel.detail.has("enhancement") and panel.get_action_anchor("enhancement")==null,"Equipment picker and inspector have no enhancement navigation")
+	scene.select_system(4)
+	check(scene.enhancement_panel.visible,"Independent enhancement main page entry remains available")
 	check(not scene.game.save_enabled,"No player save writes")
 	print("Equipment picker refresh: %d checks, %d failures"%[checks,failures])
 	if "--interactive" in OS.get_cmdline_user_args():

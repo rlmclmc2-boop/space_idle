@@ -14,6 +14,7 @@ var picture: TextureRect
 var last_state: Array = []
 var upgrade_button: Button
 var equip_button: Button
+var name_button: Button
 var slot_id := ""
 var is_locked := false
 var is_equipped := false
@@ -48,6 +49,15 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(picture)
 	fields.title = text_field(self,Rect2(88,8,208,34),23,650,INK)
+	# The entire name row targets this card's slot, independently of upgrades.
+	name_button = Button.new()
+	name_button.flat = true
+	name_button.set_meta("action_id","swap_module")
+	name_button.tooltip_text = UIText.t("equipment.swap")
+	for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_disabled_color","font_focus_color"]:
+		name_button.add_theme_color_override(state,Color.TRANSPARENT)
+	name_button.pressed.connect(func():equip_requested.emit())
+	add_child(name_button)
 	fields.level = text_field(self,Rect2(88,43,208,31),21,500,MUTED)
 	fields.caption = text_field(self,Rect2(14,80,76,32),21,500,MUTED)
 	fields.stat = text_field(self,Rect2(92,74,204,44),30,650,INK)
@@ -90,6 +100,8 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 func layout_contents() -> void:
 	if not is_instance_valid(upgrade_button):return
 	fields.title.size.x = size.x-102
+	name_button.position = Vector2(14,8)
+	name_button.size = Vector2(size.x-28,34)
 	fields.level.size.x = size.x-102
 	host.set_ui_value(fields.caption,"size",Vector2(108 if is_weapon else 76,32))
 	host.set_ui_value(fields.stat,"position",Vector2(126 if is_weapon else 92,74))
@@ -114,6 +126,9 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	set_meta("action_id","module_select")
 	upgrade_button.set_meta("slot_id",slot_id)
 	equip_button.set_meta("slot_id",slot_id)
+	name_button.set_meta("slot_id",slot_id)
+	host.set_ui_value(name_button,"text",item.name)
+	host.set_ui_value(name_button,"disabled",item.locked)
 	host.set_ui_value(fields.title,"text",item.name)
 	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
