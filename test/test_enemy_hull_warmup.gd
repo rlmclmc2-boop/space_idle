@@ -35,6 +35,19 @@ func run() -> void:
 		check(scene.enemy_hull_bounds(texture)==expected,"original silhouette formula "+str(size_class))
 	check(scene.texture_misses.is_empty() and scene.bounds_misses==0,"all hulls and bounds reused")
 	check(scene.game.profile==profile and scene.game.player==player and scene.game.rng.state==rng_state,"preparation reads cannot change gameplay state or RNG")
+	# Incomplete optional profiles cannot turn an unused hull into a startup error.
+	var probe=IsolatedUI.new()
+	probe.visual_config={"ships":{"enemy_1":{"texture":str(scene.ship_visual_entry("enemy_1").texture)},"enemy_2":{"texture":"res://assets/ships/enemy/not-present.png"},"enemy_3":{"texture":""}}}
+	probe.prepare_enemy_hulls()
+	check(probe.bounds_misses==1 and probe.texture_misses.size()==1,"missing/unconfigured hulls are skipped before load")
+	var image=Image.create(8,12,false,Image.FORMAT_RGBA8)
+	image.fill(Color.TRANSPARENT);image.fill_rect(Rect2i(2,3,4,6),Color.WHITE)
+	var dynamic_texture=ImageTexture.create_from_image(image)
+	var expected_dynamic=Rect2(Vector2(2,3)/Vector2(8,12)-Vector2(0.5,0.5),Vector2(4,6)/Vector2(8,12))
+	check(probe.enemy_hull_bounds(dynamic_texture)==expected_dynamic,"new texture ID retains original lazy bounds calculation")
+	var misses=probe.bounds_misses
+	check(probe.enemy_hull_bounds(dynamic_texture)==expected_dynamic and probe.bounds_misses==misses,"new texture ID then reuses bounds")
+	probe.free()
 	scene.game.rng.seed=1701;scene.game.state=BattleGame.State.COMBAT;scene.game.spawn_group()
 	var enemy=scene.game.enemies[0].duplicate(true)
 	enemy.size=6

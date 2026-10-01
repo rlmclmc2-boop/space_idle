@@ -82,8 +82,7 @@ func _ready() -> void:
 	super._ready()
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.
-	for size_class in range(1,7):
-		enemy_hull_bounds(ship_hull_texture("enemy_"+str(size_class)))
+	prepare_enemy_hulls()
 	ship_view = SHIP_VIEW.new()
 	ship_view.name = "BattleShipView"
 	ship_view.size = BATTLE_VIEW_SIZE
@@ -697,6 +696,15 @@ func enemy_hull_light(enemy:Dictionary)->float:
 	# Raise texture contrast only: keep alpha, footprint, mounts and depth order.
 	var depth:=enemy_depth(enemy)
 	return lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
+
+func prepare_enemy_hulls() -> void:
+	for size_class in range(1,7):
+		var path := str(ship_visual_entry("enemy_"+str(size_class)).get("texture",""))
+		# Optional/unavailable hulls must not introduce an error before encounter.
+		# A later configured texture still resolves through the ordinary draw path.
+		if path.is_empty() or not ResourceLoader.exists(path):continue
+		var texture := visual_texture(path)
+		if texture != null:enemy_hull_bounds(texture)
 
 func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 	var texture_key:=texture.get_instance_id()
