@@ -68,7 +68,7 @@ func run() -> void:
 	scene.game.profile.reactorLevel = 60
 	scene.game.set_reactor_allocation("weapons",1234567)
 	panel.refresh()
-	check(weapons.energy.text==UIText.t("reactor.module.energy",{"energy":"1.2M"}) and int(scene.game.profile.reactorAllocation.weapons)==1234567,"Large display is compact without rounding allocation")
+	check(weapons.energy.text==UIText.t("reactor.module.energy",{"energy":"1.23M / "+scene.number(scene.game.reactor_capacity())}) and int(scene.game.profile.reactorAllocation.weapons)==1234567,"Large display is compact without rounding allocation")
 	check(panel.energy_label.text==UIText.t("reactor.energy",{"energy":scene.number(scene.game.reactor_capacity())}) and panel.remaining_label.text==UIText.t("reactor.remaining",{"energy":scene.number(scene.game.reactor_capacity()-scene.game.reactor_allocated())}),"Total and remaining use shared quantity formatting")
 	check(weapons.boost.text.contains("K%") and panel.level_label.text.contains("60"),"Large percent is compact while level stays exact")
 	check(defence.share.text == UIText.t("reactor.allocation_tiny"),"Positive sub-percent allocation is not displayed as zero")
@@ -89,7 +89,7 @@ func run() -> void:
 			var controls = panel.module_controls[key]
 			var energy_rect: Rect2 = controls.energy.get_global_rect()
 			var track_rect: Rect2 = controls.track.get_global_rect()
-			check(energy_rect.position.y >= track_rect.end.y and not energy_rect.intersects(controls.input.get_global_rect()) and controls.energy.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Energy text stays below the allocation track without blocking input at "+str(resolution))
+			check(track_rect.encloses(energy_rect) and controls.energy.mouse_filter==Control.MOUSE_FILTER_IGNORE,"Current / maximum energy stays inside the allocation track without blocking input at "+str(resolution))
 			check(not track_rect.intersects(controls.clear.get_global_rect()) and not controls.name.get_global_rect().intersects(controls.boost.get_global_rect()),"Row text and clear button do not overlap at "+str(resolution))
 			var expected_prefix: String=UIText.t("reactor.module.%s.effect" % key) if scene.game.reactor_module_unlocked(key) else UIText.t("reactor.module.locked",{"level":str(int(scene.db.unlock_row("reactor_module",key).get("level",0)))})
 			check(controls.boost.text.begins_with(expected_prefix) and controls.boost.get_minimum_size().x <= controls.boost.size.x,"Named effect or locked module label fits at "+str(resolution))

@@ -52,13 +52,25 @@ func run() -> void:
 	panel.refresh()
 	check(panel.upgrade_buttons.x1.disabled and g.affordability_queries==queries+1,"Income/budget changes immediately update upgrade availability")
 	check(not scene.writes.has(slider.get_instance_id()),"Resource-only change does not rewrite allocation slider")
+	g.paused=false
+	panel.change_allocation(20,"weapons")
+	panel.refresh()
 	scene.equipment_tabs.current_tab=0
+	check(not panel.core.is_processing() and not panel.network.is_processing(),"Leaving the selected tab synchronously stops animations")
 	g.profile.resources["2"]=1000.0
 	g.profile.reactorLevel=2
 	queries=g.affordability_queries
 	panel.refresh()
 	check(g.affordability_queries==queries,"Hidden panel defers data work")
+	await process_frame
+	var hidden_phase: float=panel.core.phase
+	await create_timer(0.25).timeout
+	check(not panel.is_visible_in_tree() and panel.core.phase==hidden_phase,"Actually hidden core stays stopped across frames")
+	for controls in panel.module_controls.values():
+		for layer_key in ["branch","track","scene_fx"]:
+			check(not controls[layer_key].is_processing(),"Hidden module animation is stopped: "+str(layer_key))
 	scene.equipment_tabs.current_tab=2
+	await process_frame
 	panel.refresh()
 	check(panel.level_label.text.contains("2") and not panel.upgrade_buttons.x1.disabled,"Reveal catches up level and budget")
 	panel.change_allocation(20,"weapons")

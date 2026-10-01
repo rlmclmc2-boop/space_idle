@@ -5,11 +5,8 @@ const ACCENT := Color("83cfcb")
 const CYAN := Color("286b73")
 const MUTED := Color("506878")
 const INK := Color("243d50")
-const MODULE_COLORS := {"weapons":Color("ffab4d"),"defence":Color("53bbff"),"smelting":Color("3ff0bd"),"condensation":Color("c998ff")}
+const MODULE_COLORS := {"weapons":Color("dba46c"),"defence":Color("83cfcb"),"smelting":Color("8cc6b4"),"condensation":Color("abc2db")}
 const MODULE_ICONS := {"weapons":preload("res://assets/ui/reactor/weapon.svg"),"defence":preload("res://assets/ui/reactor/defence.svg"),"smelting":preload("res://assets/ui/reactor/smelting.svg"),"condensation":preload("res://assets/ui/reactor/condensation.svg")}
-const HEADER_ART := preload("res://assets/ui/reactor/reactor-header.png")
-const MODULE_BAY_FRAME := preload("res://assets/ui/reactor/module-bay-frame.png")
-const MODULE_SCENES := {"weapons":preload("res://assets/ui/reactor/module-weapons-v2.png"),"defence":preload("res://assets/ui/reactor/module-defence-v2.png"),"smelting":preload("res://assets/ui/reactor/module-smelting-v2.png")}
 const BAY_HEIGHT := 220
 
 var host: Node
@@ -38,6 +35,9 @@ var refreshing := false
 
 func make_label(parent: Control, key: String, at: Vector2, width: float, font_size := 18, color := INK, height := 42.0) -> Label:
 	var result: Label = host.equipment_card_label(parent,"" if key.is_empty() else UIText.t(key),Rect2(at,Vector2(width,height)),font_size,color)
+	result.autowrap_mode = TextServer.AUTOWRAP_OFF
+	result.clip_text = true
+	result.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	result.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if font_size >= 18:result.add_theme_font_override("font",SKIN.SHELL.face(600))
 	return result
@@ -61,7 +61,8 @@ func set_readout(label: Label, value: String) -> void:
 	host.set_ui_value(label,"text",value)
 	var font: Font = label.get_theme_font("font")
 	var selected := 17
-	for font_size in range(33 if label.size.y > 40.0 else 23,16,-1):
+	var largest := 33 if label.size.y > 40.0 else 20 if label.size.y <= 30.0 else 23
+	for font_size in range(largest,16,-1):
 		if font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x <= label.size.x-8.0:
 			selected = font_size
 			break
@@ -140,14 +141,9 @@ func setup(owner_ui: Node) -> void:
 	strong_font.variation_embolden = 0.6
 	add_theme_stylebox_override("panel",glass_style(Color("27758d")))
 	clip_contents = true
-	static_chrome(self,preload("res://assets/ui/reactor/room-backing.svg"),Vector2.ZERO,Vector2(1364,1200))
-	room = image_region(self,HEADER_ART,Rect2(0,0,990,660),Vector2.ZERO,Vector2(690,510))
-	static_chrome(self,preload("res://assets/ui/reactor/integrated-console.svg"),Vector2.ZERO,Vector2(1364,1200))
-	for section in 3:
-		var trim := 45 if section == 0 else 0
-		image_region(self,MODULE_BAY_FRAME,Rect2(397,trim*230.0/220.0,145,230-trim*230.0/220.0),Vector2(630,420+section*220+trim),Vector2(70,220-trim))
+	room = static_chrome(self,preload("res://assets/ui/reactor/toon-console.svg"),Vector2.ZERO,Vector2(1364,1200))
 	core = visual(self,"core",Vector2(187,70),Vector2(350,350))
-	var core_caption := make_label(self,"reactor.core_caption",Vector2(179,457),354,18,SKIN.PAPER)
+	var core_caption := make_label(self,"reactor.heading",Vector2(179,457),354,18,SKIN.PAPER)
 	core_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	network = visual(self,"network",Vector2(345,315),Vector2(337,155))
 	readout_plate(self,Vector2(745,55),Vector2(580,295))
@@ -181,7 +177,7 @@ func setup(owner_ui: Node) -> void:
 	equalize_button.pressed.connect(func():host.game.equalize_reactor_allocation();refresh())
 	add_child(equalize_button)
 	capacity_label = clipped_readout(self,Vector2(66,653),Vector2(246,65),CYAN)
-	allocation_label = clipped_readout(self,Vector2(66,1083),Vector2(510,38),MUTED)
+	allocation_label = clipped_readout(self,Vector2(74,1088),Vector2(490,38),SKIN.PAPER)
 	remaining_label = clipped_readout(self,Vector2(338,653),Vector2(244,65),INK)
 	var count: int = host.game.reactor_modules().size()
 	module_scroll = preload("res://scripts/reactor_module_scroll.gd").new()
@@ -205,7 +201,7 @@ func setup(owner_ui: Node) -> void:
 	allocation_scroll.theme = SKIN.theme()
 	add_child(allocation_scroll)
 	var allocation_content := Control.new()
-	allocation_content.custom_minimum_size = Vector2(546,maxi(3,count)*110)
+	allocation_content.custom_minimum_size = Vector2(524,maxi(3,count)*110)
 	allocation_scroll.add_child(allocation_content)
 	module_scroll.get_v_scroll_bar().value_changed.connect(func(_value):
 		allocation_scroll.go_to_slot(module_scroll.current_slot())
@@ -216,10 +212,8 @@ func setup(owner_ui: Node) -> void:
 	for key in host.game.reactor_modules():
 		var accent: Color = MODULE_COLORS.get(key,CYAN)
 		var row := card(module_content,Vector2(0,index*BAY_HEIGHT),Vector2(692,BAY_HEIGHT),accent)
-		static_chrome(row,preload("res://assets/ui/reactor/module-housing-v3.png"),Vector2(64,4),Vector2(628,204))
-		static_chrome(row,preload("res://assets/ui/reactor/module-rim.svg"),Vector2(64,4),Vector2(628,204)).modulate = accent
-		static_chrome(row,preload("res://assets/ui/reactor/module-console.svg"),Vector2(64,4),Vector2(628,204))
-		static_chrome(row,preload("res://assets/ui/reactor/module-coupling.svg"),Vector2.ZERO,Vector2(146,220))
+		static_chrome(row,preload("res://assets/ui/reactor/toon-bay.svg"),Vector2(64,4),Vector2(606,204))
+		static_chrome(row,preload("res://assets/ui/reactor/toon-coupling.svg"),Vector2.ZERO,Vector2(146,220))
 		var branch := visual(row,"branch",Vector2.ZERO,Vector2(146,BAY_HEIGHT),accent)
 		var equipment_view := Control.new()
 		equipment_view.position = Vector2(80,15)
@@ -227,24 +221,23 @@ func setup(owner_ui: Node) -> void:
 		equipment_view.clip_contents = true
 		equipment_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(equipment_view)
-		if key == "defence":
-			static_chrome(equipment_view,preload("res://assets/ui/reactor/module-defence-v3.png"),Vector2(24,0),Vector2(180,180))
-		elif key == "condensation":
-			image_region(equipment_view,preload("res://assets/hightech/furnace-jewel-core.png"),Rect2(280,130,700,970),Vector2(53,0),Vector2(130,180))
-		elif MODULE_SCENES.has(key):
-			var texture: Texture2D = MODULE_SCENES[key]
-			static_chrome(equipment_view,texture,Vector2(0,0),Vector2(223,180))
+		var device_path := "res://assets/ui/reactor/toon-%s.svg" % key
+		if ResourceLoader.exists(device_path):
+			static_chrome(equipment_view,load(device_path),Vector2.ZERO,equipment_view.size)
+		else:module_icon(equipment_view,key,Vector2(65,40),Vector2(96,96))
 		var scene_fx := visual(equipment_view,"compact_"+key,Vector2.ZERO,equipment_view.size,accent)
 		var dimmer := ColorRect.new()
 		dimmer.position = equipment_view.position
 		dimmer.size = equipment_view.size
 		dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(dimmer)
-		readout_plate(row,Vector2(312,16),Vector2(358,180))
+		readout_plate(row,Vector2(312,16),Vector2(348,180))
 		var icon := module_icon(row,key,Vector2(323,25),Vector2(34,34))
-		var name_label := make_label(row,"",Vector2(369,24),190,29,INK)
+		var name_label := make_label(row,"",Vector2(367,24),177,25,INK)
 		name_label.text = UIText.data_text("reactor",key)
-		var boost := make_label(row,"",Vector2(324,83),348,27,CYAN)
+		name_label.tooltip_text = name_label.text
+		name_label.mouse_filter = Control.MOUSE_FILTER_PASS
+		var boost := make_label(row,"",Vector2(324,83),322,25,CYAN)
 		var clear_button := Button.new()
 		clear_button.text = UIText.t("reactor.clear")
 		clear_button.position = Vector2(561,25)
@@ -252,16 +245,19 @@ func setup(owner_ui: Node) -> void:
 		button_style(clear_button,CYAN)
 		clear_button.pressed.connect(func():change_allocation(0,key))
 		row.add_child(clear_button)
-		var bay_energy := make_label(row,"",Vector2(327,144),170,18,INK,34)
-		var bay_track := visual(row,"segments",Vector2(500,151),Vector2(159,20),accent)
-		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(546,100),accent)
+		var bay_track := visual(row,"segments",Vector2(326,140),Vector2(322,38),accent)
+		var bay_energy := make_label(row,"",Vector2(334,142),306,20,SKIN.PAPER,34)
+		bay_energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var allocation_row := card(allocation_content,Vector2(0,index*110),Vector2(524,100),accent)
 		allocation_row.add_theme_stylebox_override("panel",SKIN.surface())
 		module_icon(allocation_row,key,Vector2(14,28),Vector2(42,42))
-		var allocation_name := make_label(allocation_row,"",Vector2(76,6),180,22,INK,32)
+		var allocation_name := make_label(allocation_row,"",Vector2(70,6),210,22,INK,32)
 		allocation_name.text = UIText.data_text("reactor",key)
-		var share := make_label(allocation_row,"",Vector2(278,6),207,19,INK,32)
+		allocation_name.tooltip_text = allocation_name.text
+		allocation_name.mouse_filter = Control.MOUSE_FILTER_PASS
+		var share := make_label(allocation_row,"",Vector2(288,6),189,18,INK,32)
 		share.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		var track := visual(allocation_row,"track",Vector2(124,43),Vector2(360,20),accent)
+		var track := visual(allocation_row,"track",Vector2(112,38),Vector2(350,36),accent)
 		var slider := HSlider.new()
 		slider.position = track.position
 		slider.size = track.size
@@ -273,19 +269,20 @@ func setup(owner_ui: Node) -> void:
 		slider.focus_exited.connect(track.set_hovered.bind(false))
 		allocation_row.add_child(slider)
 		var input := preload("res://scripts/reactor_power_input.gd").new()
-		input.position = Vector2(124,34)
-		input.size = Vector2(360,34)
+		input.position = Vector2(112,34)
+		input.size = Vector2(350,44)
 		input.slider = slider
 		input.track = track
 		allocation_row.add_child(input)
-		var energy := make_label(allocation_row,"",Vector2(124,72),205,18,INK,26)
-		var allocation_boost := make_label(allocation_row,"",Vector2(332,72),154,20,CYAN,26)
+		var energy := make_label(allocation_row,"",Vector2(122,40),330,19,SKIN.PAPER,30)
+		energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var allocation_boost := make_label(allocation_row,"",Vector2(284,70),178,17,CYAN,26)
 		allocation_boost.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		var steps: Array[Button] = []
 		for direction in [-1,1]:
 			var step_button := Button.new()
 			step_button.text = "−" if direction < 0 else "+"
-			step_button.position = Vector2(78 if direction < 0 else 495,39)
+			step_button.position = Vector2(70 if direction < 0 else 474,37)
 			step_button.size = Vector2(34,34)
 			step_button.add_theme_font_size_override("font_size",25)
 			button_style(step_button,accent)
@@ -295,12 +292,14 @@ func setup(owner_ui: Node) -> void:
 		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps}
 		index += 1
 	move_child(readout_plate(self,Vector2(48,1080),Vector2(546,62)),allocation_label.get_parent().get_index())
-	total_track = visual(self,"busbar",Vector2(63,1114),Vector2(523,8))
+	total_track = visual(self,"segments",Vector2(63,1088),Vector2(510,40))
+	move_child(total_track,allocation_label.get_parent().get_index())
 	footer_flow = visual(self,"footer_conduit",Vector2(648,1080),Vector2(110,90))
 	readout_plate(self,Vector2(760,1094),Vector2(578,68))
 	scroll_hint = make_label(self,"",Vector2(780,1106),540,20,INK,42)
 	update_scroll_hint()
 	visibility_changed.connect(refresh)
+	host.equipment_tabs.tab_changed.connect(func(_index: int):refresh())
 	refresh()
 
 func step_allocation(key: String, direction: int) -> void:
@@ -315,9 +314,13 @@ func change_allocation(value: float, key: String) -> void:
 	host.game.set_reactor_allocation(key,value)
 	refresh()
 
+func page_active() -> bool:
+	# Tab selection changes synchronously, before deferred CanvasItem visibility.
+	return is_visible_in_tree() and is_instance_valid(host.equipment_tabs) and host.equipment_tabs.get_current_tab_control() == self
+
 func update_module_animation_visibility() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(module_scroll):return
-	var animate: bool = is_visible_in_tree() and not host.game.paused
+	var animate: bool = page_active() and not host.game.paused
 	var first: int = module_scroll.current_slot()
 	for controls in module_controls.values():
 		var in_view: bool = animate and controls.index >= first and controls.index < first+3
@@ -329,19 +332,19 @@ func update_module_animation_visibility() -> void:
 
 func refresh() -> void:
 	if not is_instance_valid(host):return
-	var animate: bool = is_visible_in_tree() and not host.game.paused
-	if is_instance_valid(core) and core.is_processing() != animate:core.set_process(animate)
+	var animate: bool = page_active() and not host.game.paused
+	if is_instance_valid(core) and core.is_processing() != (animate and core.ratio > 0.0):core.set_process(animate and core.ratio > 0.0)
 	if is_instance_valid(network):
 		var network_active: bool = animate and network.ratio > 0.0
 		if network.is_processing() != network_active:network.set_process(network_active)
 	update_module_animation_visibility()
 	if is_instance_valid(total_track):
-		var total_active: bool = animate and total_track.ratio > 0.0
+		var total_active: bool = animate and total_track.mode != "segments" and total_track.ratio > 0.0
 		if total_track.is_processing() != total_active:total_track.set_process(total_active)
 	if is_instance_valid(footer_flow):
 		var footer_active: bool = animate and footer_flow.ratio > 0.0
 		if footer_flow.is_processing() != footer_active:footer_flow.set_process(footer_active)
-	if not is_visible_in_tree():return
+	if not page_active():return
 	refreshing = true
 	var game = host.game
 	var capacity: int = game.reactor_capacity()
@@ -393,18 +396,18 @@ func refresh() -> void:
 		host.set_ui_value(controls.steps[1],"disabled",allocated >= capacity or not enabled)
 		controls.track.set_available_ratio(float(controls.input.available_max)/maxf(1.0,capacity))
 		controls.scene_fx.set_ratio(visual_ratio)
-		var shade := 0.53 if visual_ratio == 0 else 0.20*(1.0-sqrt(visual_ratio))
+		var shade := 0.58 if not enabled else 0.32 if visual_ratio == 0 else 0.08*(1.0-sqrt(visual_ratio))
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
 		host.set_ui_value(controls.boost,"modulate",Color(1.0,1.0,1.0,1.0) if visual_ratio > 0 else Color(0.72,0.72,0.72,1.0))
-		host.set_ui_value(controls.energy,"text",UIText.t("reactor.module.energy",{"energy":host.number(amount)}))
-		host.set_ui_value(controls.bay_energy,"text",controls.energy.text)
+		set_readout(controls.energy,UIText.t("reactor.module.energy",{"energy":host.number(amount)+" / "+host.number(capacity)}))
+		set_readout(controls.bay_energy,controls.energy.text)
 		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
 		var percent: float = (game.reactor_multiplier(key)-1.0)*float(host.db.config.reactorPercentScale)
 		var percent_text: String = host.number(percent) if percent >= 1000.0 else "%.1f" % percent
 		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.module.boost",{"percent":percent_text}))
 		var effect_key := "reactor.module.%s.effect" % key
 		var effect: String = UIText.t(effect_key) if MODULE_COLORS.has(key) else key
-		host.set_ui_value(controls.boost,"text",effect+"  "+UIText.t("reactor.module.boost",{"percent":percent_text}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
+		set_readout(controls.boost,effect+"  "+UIText.t("reactor.module.boost",{"percent":percent_text}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
 		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.module.condensation.desc") if key == "condensation" else "")
 	update_module_animation_visibility()
 	var network_active: bool = animate and allocated > 0
@@ -416,7 +419,8 @@ func refresh() -> void:
 		network.set_ratio(float(allocated)/maxf(1.0,capacity))
 		total_track.set_ratio(float(allocated)/maxf(1.0,capacity))
 		footer_flow.set_ratio(float(allocated)/maxf(1.0,capacity))
-	var total_active := animate and allocated > 0
+	if core.is_processing() != (animate and allocated > 0):core.set_process(animate and allocated > 0)
+	var total_active: bool = animate and total_track.mode != "segments" and allocated > 0
 	if total_track.is_processing() != total_active:total_track.set_process(total_active)
 	if footer_flow.is_processing() != total_active:footer_flow.set_process(total_active)
 	refreshing = false

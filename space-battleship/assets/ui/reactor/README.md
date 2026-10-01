@@ -1,6 +1,8 @@
 # 反应炉模块化美术
 
-当前布局接口见 [interface-contract.md](interface-contract.md)，不在本文件重复坐标。
+当前由 `reactor_panel.gd` 定义布局；[interface-contract.md](interface-contract.md) 记录旧金属版接口。
+
+圆润版：`toon-console.svg`、`toon-bay.svg`、`toon-coupling.svg`、`toon-{weapons,defence,smelting,condensation}.svg` 为原生 SVG 几何绘制，消费尺寸分别为 1364×1200、606×204、146×220、223×180。设计要求：奶油白厚外壳、深蓝内腔、青色管路，无烘焙文字和运行光效。`orb.gdshader` 绘制受分配负载驱动的局部核心；设备动效由 `reactor_visual.gd` 叠加。以下为保留的历史资产说明。
 
 复用：reactor-header.png 提供左上机械球腔；module-bay-frame.png 仅提供主管无分叉纹理；module-weapons-v2.png、module-smelting-v2.png 提供设备；weapon.svg、defence.svg、smelting.svg 提供模块图标。旧版资产保留，旧槽位 SVG 不再被此界面引用。
 

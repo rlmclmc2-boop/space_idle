@@ -51,14 +51,14 @@ func build_core_layers() -> void:
 func _process(delta: float) -> void:
 	if not is_visible_in_tree() or (mode == "track" and ratio <= 0.0 and not hovered and click_flash <= 0.0) or (mode in ["pipe_horizontal","pipe_vertical"] and ratio <= 0.0):return
 	if mode == "core":
-		phase = fmod(phase+delta*(0.8+ratio*1.6),1000.0)
+		phase = fmod(phase+delta*(0.35+ratio*2.2),1000.0)
 		layers.orb.material.set_shader_parameter("phase",phase)
 	elif mode in ["network","branch","footer_conduit"]:
 		if ratio <= 0.0 and not (mode == "branch" and trunk_ratio > 0.0):return
-		phase = fmod(phase+delta*145.0,network_length if mode == "network" else 720.0)
+		phase = fmod(phase+delta*(45.0+maxf(ratio,trunk_ratio)*150.0),network_length if mode == "network" else 720.0)
 		queue_redraw()
 	elif mode.begins_with("scene_") or mode.begins_with("compact_"):
-		phase = fmod(phase+delta,8.0)
+		phase = fmod(phase+delta*(0.3+ratio*1.7),64.0)
 		queue_redraw()
 	else:
 		var travel := size.y if mode == "pipe_vertical" else size.x
@@ -212,14 +212,13 @@ func draw_node() -> void:
 	draw_circle(center,3.0,accent.lightened(0.35) if ratio > 0.0 else Color("28556a"))
 
 func draw_segments() -> void:
-	var segment_width := size.x/6.0
-	for index in 6:
-		var value := clampf(ratio*6.0-index,0.0,1.0)
-		var bounds := Rect2(index*segment_width+1,2,segment_width-3,size.y-4)
-		draw_rect(bounds,accent.darkened(0.79))
-		if value > 0.0:
-			draw_rect(Rect2(bounds.position,Vector2(bounds.size.x*value,bounds.size.y)),accent)
-			draw_line(bounds.position,bounds.position+Vector2(bounds.size.x*value,0),accent.lightened(0.6),1.0,true)
+	draw_style_box(track_segment_style(Color("243d50")),Rect2(Vector2.ZERO,size))
+	var filled := clampf(ratio,0.0,1.0)*(size.x-6.0)
+	if filled > 0.0:
+		draw_style_box(track_segment_style(accent.darkened(0.55)),Rect2(3,3,filled,size.y-6))
+		for index in 5:
+			var x := (index+1)*size.x/6.0
+			draw_line(Vector2(x,size.y-6),Vector2(x,size.y-3),Color("83cfcb"),2.0,true)
 
 func draw_compact_fx() -> void:
 	if ratio <= 0.0:return
@@ -261,34 +260,23 @@ func draw_compact_fx() -> void:
 		draw_arc(size*0.5,28,phase,phase+PI,32,Color(accent.r,accent.g,accent.b,strength),2.0,true)
 
 func draw_track() -> void:
-	var displayed_ratio := preview_ratio if preview_ratio >= 0.0 else ratio
-	var fill := clampf(displayed_ratio,0.0,1.0)
-	var segment_width := size.x/10.0
-	for index in 10:
-		var x := index*segment_width
-		draw_style_box(track_segment_style(Color("113047")),Rect2(x,5,segment_width-3,10))
-		var filled := clampf(fill*10.0-index,0.0,1.0)
-		if filled > 0.0:
-			draw_style_box(track_segment_style(accent),Rect2(x,5,(segment_width-3)*filled,10))
-			draw_line(Vector2(x+1,6),Vector2(x+(segment_width-3)*filled,6),accent.lightened(0.6),1.0,true)
+	var fill := clampf(preview_ratio if preview_ratio >= 0.0 else ratio,0.0,1.0)
+	draw_style_box(track_segment_style(Color("243d50")),Rect2(Vector2.ZERO,size))
 	if fill > 0.0:
-		var glint := fposmod(phase,maxf(1.0,size.x*fill))
-		draw_line(Vector2(glint,7),Vector2(glint,13),Color(1.0,1.0,1.0,0.65),1.0,true)
-	var thumb_x := clampf(fill*size.x,5.0,size.x-5.0)
-	draw_rect(Rect2(thumb_x-8,-3,16,26),Color(accent.r,accent.g,accent.b,0.15))
-	draw_style_box(track_segment_style(accent.lightened(0.5)),Rect2(thumb_x-5,0,10,20))
-	draw_style_box(track_segment_style(accent),Rect2(thumb_x-3,3,6,14))
-	if hovered or click_flash > 0.0:
-		draw_line(Vector2.ZERO,Vector2(size.x,0),Color(accent.r,accent.g,accent.b,0.5+click_flash*0.5),1.0,true)
+		draw_style_box(track_segment_style(accent.darkened(0.55)),Rect2(2,2,maxf(2.0,(size.x-4.0)*fill),size.y-4))
+	var available_x := size.x*clampf(available_ratio,0.0,1.0)
 	if available_ratio < 0.999:
-		var start := size.x*clampf(available_ratio,0.0,1.0)
-		draw_rect(Rect2(start,5,size.x-start,10),Color(0.02,0.04,0.07,0.65))
+		draw_line(Vector2(available_x,3),Vector2(available_x,size.y-3),Color("6c858c"),2.0,true)
+	var thumb_x := clampf(fill*size.x,4.0,size.x-4.0)
+	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,-2,8,size.y+4))
+	if hovered:
+		draw_line(Vector2(6,size.y+3),Vector2(size.x-6,size.y+3),accent,2.0,true)
 
 func track_segment_style(color: Color) -> StyleBoxFlat:
 	if segment_styles.has(color):return segment_styles[color]
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
-	style.set_corner_radius_all(2)
+	style.set_corner_radius_all(7)
 	segment_styles[color] = style
 	return style
 
