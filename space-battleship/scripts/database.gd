@@ -12,6 +12,7 @@ var config: Dictionary
 var defaults: Dictionary
 var ships: Dictionary
 var mon_source_error := ""
+var unlock_lookup: Dictionary = {}
 
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
@@ -112,9 +113,19 @@ func unlock_level(key: String) -> int:
 	return int(unlock_row("equipment", key).get("level", -1))
 
 func unlock_id(kind: String, key: String) -> String:
+	# Cache only identities, never gate levels or availability. Validate the live
+	# row on each hit so table replacement/removal does not retain a stale ID.
+	var lookups: Dictionary = unlock_lookup.get(kind,{})
+	var cached := str(lookups.get(key,""))
+	var current: Dictionary = data.get("unlock",{}).get(cached,{})
+	if current.get("type","")==kind and current.get("target","")==key:return cached
+	lookups.erase(key)
 	for id in data.get("unlock", {}):
 		var row: Dictionary = data.unlock[id]
 		if row.type == kind and row.target == key:
+			# Unknown queries are not retained; authoring reloads stay bounded.
+			if lookups.size()>=128:lookups.clear()
+			lookups[key]=str(id);unlock_lookup[kind]=lookups
 			return str(id)
 	return ""
 

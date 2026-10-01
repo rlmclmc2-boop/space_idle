@@ -13,6 +13,7 @@
 | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
 | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |
 | 战舰静态预览 | `test_ship_preview.gd --headless` 检查五舰实际模型来源、真实槽位映射、候选/当前/锁定、空槽/无人机/停用、显式启用与局部复用；图形运行捕获五舰和特殊状态。运行隔离工程须包含 `dev`/`addons`，步骤见 [预览资产说明](../space-battleship/assets/ui/ships/README.md)。 |
+| 战场X10舰船画质 | `test_accelerated_ship_quality.gd --headless` 检查高倍画质切换与X1恢复、全部槽位/发射管的规范坐标、持续渲染及暂停/隐藏策略；实际画质与性能须另做可见场景配对。 |
 | 入门指引 | `test_beginner_guide.gd` 检查首次引导、自动完成、关闭不复弹、帮助入口回看及正常存读档；图形运行核对入口和交互 |
 | UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
 | 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
@@ -26,7 +27,7 @@
 | 护盾先扣 / 延迟伤害分层 | `test_shield_first.gd --headless` 检查实际扣款先盾后生命、恢复/移除护盾、溢出与零生命死亡；队列与临时防护用 `test_deferred_enhancements.gd`、`test_neutral_memory_protection.gd`。 |
 | 攻击快照 / 连发继承 / 光束周期 | `test_main_attack_snapshot.gd --headless` 检查批次计数、冻结属性、派生继承与取消、批次共享连锁；配合 `test_enhancement_branch_attacks.gd`，`test_chain_projectiles.gd` 检查跳弹到达结算、失锁/清场及光束固定连线。旧 `test_attack_effect_reuse.gd` 的逐弹 RNG 等价断言不适用于批次快照规则。 |
 | 全局装备强化 | `test_enhancements.gd` 检查共享顺序/实际装备门槛/全局事件/费用/MAX/分支；`test_enhancement_branches.gd` 检查36选项、状态/组合/实际恢复/混合抗性；`test_enhancement_branch_attacks.gd` 检查四武器、规范攻击计数、单次连锁与有界连发；`test_deferred_enhancements.gd` 检查延迟队列、全局清除和时序；`test_neutral_memory_protection.gd` 检查无抗性临时保护、原始伤害溢出和延迟交互；`test_enhancement_save.gd` 检查旧档清理/余额/新档/重铸；`test_enhancement_furnace.gd` 检查碎片生产不递归；`test_percentage_expected_damage.gd` 检查整数/紧凑百分比、模块暴击期望、计时增益仅战斗生效且不触发面板刷新；`test_enhance_config.py` 校验唯一配置表和非法输入；`test_enhancement_cost.gd --headless` 检查指数单价、几何批量/MAX、赠送级免计费和超大余额。旧宝石背包/合成/镶嵌专项已被替代，不作新系统验收入口。 |
-| 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；页签显隐用 `test_tab_unlocks.gd` |
+| 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
 | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
 | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
 | 音乐与开关偏好 | `test_bgm.gd` |

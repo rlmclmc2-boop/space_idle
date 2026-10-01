@@ -2795,12 +2795,18 @@ func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
 			effect.p4=enhancement_parameter("memory_buffer_fraction")
 	return effect
 
+func active_enhancement_effect_count(entry: Dictionary) -> int:
+	if str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return 0
+	return available_effect_count(entry)
+
 func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
 	# Scalar membership query; no effect payloads or retained/cross-tick cache.
-	if kind.is_empty() or str(entry.get("key","")).is_empty() or not enhancement_unlocked() or enhancement_effective_level()<=0:return -1
+	if kind.is_empty():return -1
+	var count := active_enhancement_effect_count(entry)
+	if count<=0:return -1
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
 	var order: Array = profile.enhancementOrder.get(category,[])
-	for i in available_effect_count(entry):
+	for i in count:
 		if str(order[i])==kind:return i
 	return -1
 

@@ -162,6 +162,7 @@ func _sync_parameters() -> void:
 
 func _process(delta: float) -> void:
 	if is_instance_valid(ship_view):
+		ship_view.set_accelerated_quality(game.speed >= 10.0)
 		if current_hull != str(game.profile.selectedShip):
 			current_hull = str(game.profile.selectedShip)
 			if not ship_view.set_hull(current_hull):
