@@ -19,6 +19,23 @@ const AMBER := Color("ffad4c")
 const HOT := Color("fff0be")
 const SMOKE := Color("aaa4a1")
 
+# Shared nose-relative geometry, uploaded once and never mutated.
+# Keep the native antialiased strokes and their original draw order.
+static var _fin_left_mesh := _polygon_mesh(PackedVector2Array([Vector2(-16,2.8),Vector2(-24,6.2),Vector2(-22,2.8)]))
+static var _fin_right_mesh := _polygon_mesh(PackedVector2Array([Vector2(-16,-2.8),Vector2(-24,-6.2),Vector2(-22,-2.8)]))
+static var _body_mesh := _polygon_mesh(PackedVector2Array([Vector2(1,0),Vector2(-7,3.1),Vector2(-23,3.1),Vector2(-25,0),Vector2(-23,-3.1),Vector2(-7,-3.1)]))
+static var _body_edge := PackedVector2Array([Vector2(1,0),Vector2(-7,3.1),Vector2(-23,3.1),Vector2(-25,0),Vector2(-23,-3.1),Vector2(-7,-3.1),Vector2(1,0)])
+static var _nose_mesh := _polygon_mesh(PackedVector2Array([Vector2(1,0),Vector2(-7,3.1),Vector2(-7,-3.1)]))
+
+static func _polygon_mesh(points:PackedVector2Array)->ArrayMesh:
+	var mesh:=ArrayMesh.new()
+	var arrays:=[]
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX]=points
+	arrays[Mesh.ARRAY_INDEX]=Geometry2D.triangulate_polygon(points)
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays,[],{},Mesh.ARRAY_FLAG_USE_2D_VERTICES)
+	return mesh
+
 
 static func _noise(seed: int, channel: int) -> float:
 	# Bounded deterministic visual hash, independent of game/random generator state.
@@ -43,18 +60,17 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,
 	elif age<0.22:
 		surface.draw_circle(nozzle-axis*3.0,2.5,Color(SMOKE,(1.0-age/0.22)*0.30))
 	if not draw_body:return
-	# The simulation point is the nose; the substantial rocket body trails it.
-	for sign_value in [-1.0,1.0]:
-		var fin:=PackedVector2Array([point-axis*16.0+side*sign_value*2.8,point-axis*24.0+side*sign_value*6.2,point-axis*22.0+side*sign_value*2.8])
-		surface.draw_colored_polygon(fin,OUTLINE)
-		surface.draw_line(point-axis*19.0+side*sign_value*3.4,point-axis*23.0+side*sign_value*5.0,RED,1.5,true)
-	var body:=PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*23.0-side*3.1,point-axis*25.0,point-axis*23.0+side*3.1,point-axis*7.0+side*3.1])
-	surface.draw_colored_polygon(body,ARMOR)
-	var edge:=PackedVector2Array(body);edge.append(body[0])
-	surface.draw_polyline(edge,OUTLINE,1.0,true)
-	surface.draw_colored_polygon(PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*7.0+side*3.1]),RED)
-	surface.draw_line(point-axis*9.0+side*1.5,point-axis*21.0+side*1.5,SHADOW,1.5,true)
-	surface.draw_line(point-axis*9.0-side*1.7,point-axis*20.0-side*1.7,Color.WHITE,0.9,true)
+	surface.draw_set_transform(point,axis.angle())
+	surface.draw_mesh(_fin_left_mesh,null,Transform2D.IDENTITY,OUTLINE)
+	surface.draw_line(Vector2(-19,3.4),Vector2(-23,5.0),RED,1.5,true)
+	surface.draw_mesh(_fin_right_mesh,null,Transform2D.IDENTITY,OUTLINE)
+	surface.draw_line(Vector2(-19,-3.4),Vector2(-23,-5.0),RED,1.5,true)
+	surface.draw_mesh(_body_mesh,null,Transform2D.IDENTITY,ARMOR)
+	surface.draw_polyline(_body_edge,OUTLINE,1.0,true)
+	surface.draw_mesh(_nose_mesh,null,Transform2D.IDENTITY,RED)
+	surface.draw_line(Vector2(-9,-1.5),Vector2(-21,-1.5),SHADOW,1.5,true)
+	surface.draw_line(Vector2(-9,1.7),Vector2(-20,1.7),Color.WHITE,0.9,true)
+	surface.draw_set_transform(Vector2.ZERO)
 
 
 static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, offset: Vector2, core: bool, _seed: int = 0, budget: float = 1.0) -> void:
