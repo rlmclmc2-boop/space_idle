@@ -1,0 +1,9 @@
+func draw_battle() -> void:
+	var before_cpu:=int(OS.get_environment("SPACE_IDLE_DIAG_THREAD_CPU_US"))
+	var started:=Time.get_ticks_usec()
+	_density_main_draw_battle()
+	var elapsed:=Time.get_ticks_usec()-started
+	var elapsed_cpu:=int(OS.get_environment("SPACE_IDLE_DIAG_THREAD_CPU_US"))-before_cpu
+	var meter=Engine.get_meta("saved_perf")
+	meter.record("main.draw_battle",elapsed)
+	meter.record("main.draw_cpu",elapsed_cpu)

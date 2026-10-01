@@ -1,0 +1,32 @@
+Bounded FX-tail checkpoint at cfbfc2b — no new production optimization
+
+Two900-frame diagnostic windows were captured on the same dynamic synthetic workload (game.speed1, upgrade amount1, real stat cache on, fixed1/60 main-scene replay). Peak116 projectiles; no frozen clones and no150-dynamic-load claim. Both900-row gameplay traces match the prior cfbfc2b trace for all11 checked state fields. Added stages measure whole FX calls, trail geometry and native trail submission, with per-frame totals, worst single call/identity, wall/thread-CPU time and recording overhead.
+
+IMPORTANT: both runs completed and wrote parseable900-row JSON, then exited with SIGABRT(-6) during shutdown. They are named *-unclean.json and are EXPLORATORY, NOT candidate-acceptance data. The diagnostic Engine metadata reference was subsequently explicitly released; a short exit smoke passes. No further900-frame repetitions were performed after the stated two-window budget. No gameplay or rendering production code was changed in this phase.
+
+Observations, not causal proof (post-warmup840 frames; microseconds):
+                        A P50/P95/max       B P50/P95/max
+FX call sum             1686.5/2485/6394    1699/2343/6009
+trail geometry sum       138/228/1275        139.5/230/797
+trail submission sum     294/514/4521        299/490/1116
+The earlier18.748ms FX spike at frame824 did not recur: corresponding FX totals here2710/2470us. Slow single calls move between branches/stages. Example A frame495: native trail submission max2054us /threadCPU2048us, four points, no zero-length segments. A frame704: geometry max1138us /CPU1133us, four points, no zero segments. B frame281: whole FX max4075us /CPU4073us, core=false and orphan=true, a branch which performs no trail draw. B frame347: whole FX max2342us but geometry max8us and submission max14us. These totals include generic profiling wrappers as well as selection logic. They do NOT establish that a particular Boolean/string operation costs milliseconds, or exclude instrumentation/native-engine/driver effects.
+
+Conclusion/boundary
+No stable same-frame/same-carrier hotspot was established, and the original18.7ms event was not reproduced within the bounded windows. The precise CPU timer means these observed local calls are not explained solely by ordinary off-CPU scheduling delay, but that is not enough to label the cause, and the software renderer cannot establish Windows/NVIDIA behavior. Do not implement another visual reduction, geometry change or game-state cache on this evidence. The overall spike task remains open. Prior cfbfc2b accepted evidence and production commit are unaffected by these added diagnostic copies.
+
+Minimal next Windows verification
+Files prepare_live.py, install_fx.py, fx_tail_meter.gd and live_fx_sample.gd form an isolated wall-time-only sampler. Use the same Godot executable and current project as the user; explicitly supply the local progress.json. It copies only runtime source/assets/addons to a new directory, resolves the engine's actual userdata path under private environment directories BEFORE gameplay, and stops if that path escapes the private directory. The supplied save is read once into a snapshot and written only to the private copy. No original save is opened for writing; the original game may independently keep saving. No player save or original-source path is embedded in the report or committed here.
+Example (replace paths):
+ python prepare_live.py --project C:/space_idle/space-battleship --save C:/actual/progress.json --godot C:/path/Godot.exe --out C:/temp/fx-private
+The private game loads the real snapshot normally, including its normal save policy in private userdata. It does not change FPS, VSync, resolution, game speed or stats. Manually keep the equipment page, foreground,1x/+1; the normal sampler waits for its conditions, records20 seconds, and supports F7 for one additional capture. Close the private window afterward. Reports are under the printed private project's .runtime/frame-sample-*.json.
+Send only the resulting report through the existing private channel/Library, not the private progress.json, userdata, or any raw user data to GitHub. The report adds actual ship/loadout/branches, crew levels, hightech levels, cache state, projectile type/hostility counts, orphan counts, original/instrumented source hashes, FX stage totals/maxima and observer overhead. Windows readings are WALL TIME ONLY: do not infer thread CPU or GPU time. Compare only similarly instrumented runs. If a large FX event repeats, its stage and carrier fields select the next narrow investigation; native stack/ETW capture may then be needed, rather than changing visuals speculatively.
+
+Validation of materials
+prepare_live.py staged a private project from an empty synthetic save and the actual engine resolved userdata inside the private directory; import and script compilation passed. A Linux Compatibility wall-only smoke executed the actual LiveScene subclass:5/5 completed rows matched a per-frame sentinel, metadata included source hashes/cache state, a report was written, and the process exited0. The focus gate was bypassed only in smoke.gd, never in live_fx_sample.gd. This is NOT Windows validation; the Windows path guard can safely refuse startup if that engine ignores the private environment. Final helper edits are syntax-checked. No Windows hardware result is claimed.
+
+Files
+- fx-a/b-unclean.json + logs: quarantined completed windows with unclean teardown.
+- dynamic.gd/probe.py/run_gui.py/thread_clock.c: synthetic replay diagnostics; final dynamic.gd releases both Engine metadata keys.
+- live_fx_sample.gd/prepare_live.py/install_fx.py/fx_tail_meter.gd: real-save private sampler, no production installation.
+- live-smoke.log/smoke.gd: bounded observer alignment/lifecycle check.
+Production remains cfbfc2b; no additional production candidate is justified here. New authorized ricochet and temporary-BUFF work begins only after this checkpoint, and must not be mixed into the above comparisons.
