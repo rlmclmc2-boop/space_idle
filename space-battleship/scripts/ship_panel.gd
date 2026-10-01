@@ -14,6 +14,8 @@ var locked_previews: Dictionary = {}
 var locked_labels: Dictionary = {}
 var information: Array[Control] = []
 var choice_scroll: ScrollContainer
+var mount_scroll: ScrollContainer
+var mount_lists: Dictionary = {}
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
@@ -74,6 +76,21 @@ func setup(owner_ui: Node) -> void:
 	preview.add_child(picture)
 	heading = host.equipment_card_label(self,"",Rect2(300,112,730,56),18,host.CYAN)
 	information.append(host.equipment_card_label(self,UIText.t("ship.refit.mounts"),Rect2(1080,120,240,52),13,host.MUTED))
+	mount_scroll = ScrollContainer.new()
+	mount_scroll.position = Vector2(1080,200)
+	mount_scroll.size = Vector2(240,550)
+	mount_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(mount_scroll)
+	var mount_list := VBoxContainer.new()
+	mount_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mount_list.add_theme_constant_override("separation",18)
+	mount_scroll.add_child(mount_list)
+	for category in ["defence","weapons"]:
+		var rows := VBoxContainer.new()
+		rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rows.add_theme_constant_override("separation",8)
+		mount_list.add_child(rows)
+		mount_lists[category] = rows
 	result = host.equipment_card_label(self,"",Rect2(1080,770,240,74),16,host.CYAN)
 	result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	confirm = Button.new()
@@ -121,6 +138,7 @@ func refresh() -> void:
 	host.set_ui_value(heading,"text",unlock_hint(candidate) if locked else UIText.data_text("ship",candidate,"des"))
 	for control in information:host.set_ui_value(control,"visible",not locked)
 	host.set_ui_value(result,"visible",not locked)
+	host.set_ui_value(mount_scroll,"visible",not locked)
 	host.set_ui_value(confirm,"visible",not locked)
 	if locked:
 		for mount in mounts.values():host.set_ui_value(mount,"visible",false)
@@ -150,14 +168,19 @@ func refresh() -> void:
 			var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 			var text: String = prefix+" · Lv."+str(entry.get("level",1))
 			var enabled := index<capacity
-			if category=="weapons" and enabled:
+			var on_hull: bool = category=="weapons" and enabled
+			var target_parent: Control = preview if on_hull else mount_lists[category]
+			if button.get_parent()!=target_parent:button.reparent(target_parent,false)
+			host.set_ui_value(button,"autowrap_mode",TextServer.AUTOWRAP_OFF if on_hull else TextServer.AUTOWRAP_WORD_SMART)
+			host.set_ui_value(button,"clip_text",not on_hull)
+			host.set_ui_value(button,"custom_minimum_size",Vector2.ZERO if on_hull else Vector2(0,48))
+			if on_hull:
 				var center: Vector2 = host.player_mount_center(candidate,index).rotated(-PI/2)*preview_size.y/(1774.0*float(host.battle_visual.player_core_scale))+Vector2(380,410)
 				host.set_ui_value(button,"position",center-Vector2(36,16))
 				host.set_ui_value(button,"size",Vector2(72,32))
 			else:
-				host.set_ui_value(button,"position",Vector2(800,70+index*42 if category=="defence" else 340+(index-capacity)*34))
-				host.set_ui_value(button,"size",Vector2(240,30))
-				text+=" · "+host.NAMES.get(key,UIText.t("equipment.vacant"))
+				# The column owns row height and width; long names wrap and overflow scrolls.
+				text+="\n"+host.NAMES.get(key,UIText.t("equipment.vacant"))
 			if not enabled:text+=" · "+UIText.t("equipment.state.locked")
 			host.set_ui_value(button,"text",text)
 			host.set_ui_value(button,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":host.NAMES.get(key,UIText.t("equipment.vacant")),"level":str(entry.get("level",1))}))

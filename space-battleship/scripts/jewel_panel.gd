@@ -583,7 +583,7 @@ func stat_comparison(before: Dictionary, after: Dictionary) -> String:
 	var value = game.jewel_equipment_stat(after)
 	var lines: PackedStringArray=[]
 	if GrowthNumber.compare(old,value)!=0:
-		lines.append(UIText.t("gem.stat_comparison.text_01", {"else":"%s" % (UIText.t("gem.stat_comparison.text_02") if category=="defence" else UIText.t("gem.stat_comparison.text_03")), "old":"%s" % (host.number(old)), "value":"%s" % (host.number(value)), "old_4":GrowthNumber.signed_difference(value,old)}))
+		lines.append(UIText.t("gem.stat_comparison.text_01", {"else":"%s" % (UIText.t("gem.stat_comparison.text_02") if category=="defence" else UIText.t("gem.stat_comparison.text_03")), "old":"%s" % (host.number(old)), "value":"%s" % (host.number(value)), "old_4":NumberFormat.signed_difference(value,old)}))
 	if category=="weapons":
 		var old_crit := game.jewel_critical(before)
 		var new_crit := game.jewel_critical(after)

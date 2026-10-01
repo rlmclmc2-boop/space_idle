@@ -57,6 +57,12 @@ static func compact(value) -> String:
 	var within_unit := int(exponent)-unit*3
 	return sign+trimmed_decimal(rounded*pow(10.0,within_unit),2-within_unit)+SUFFIXES[unit]
 
+# Match both endpoints and their signed change on the same presentation ladder.
+static func signed_difference(value, previous) -> String:
+	var direction := GrowthNumber.compare(value,previous)
+	var magnitude = GrowthNumber.subtract(GrowthNumber.maximum(value,previous),GrowthNumber.minimum(value,previous))
+	return ("+" if direction>=0 else "-")+compact(magnitude)
+
 static func rate(value) -> String:
 	if value is Dictionary:return compact(value)
 	return "%.2f" % value if absf(value) < 1000.0 else compact(value)

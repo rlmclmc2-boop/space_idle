@@ -24,5 +24,13 @@ func _initialize() -> void:
 	assert(NumberFormat.damage(-9.9e19)=="99Qi")
 	assert(NumberFormat.rate(large)=="1.23e+350")
 	assert(NumberFormat.rate(0.5)=="0.50")
+	for pair in [[814000000000,667245201711,"+147B"],[667245201711,814000000000,"-147B"],[12,12,"+0"],[0.15,0.1,"+0.05"],[0.1,0.15,"-0.05"],[{"m":8.14,"e":350},{"m":6.67,"e":350},"+1.47e+350"],[{"m":6.67,"e":350},{"m":8.14,"e":350},"-1.47e+350"]]:
+		checks+=1
+		var previous=pair[1].duplicate(true) if pair[1] is Dictionary else pair[1]
+		var value=pair[0].duplicate(true) if pair[0] is Dictionary else pair[0]
+		var actual=NumberFormat.signed_difference(pair[0],pair[1])
+		if actual!=pair[2] or pair[0]!=value or pair[1]!=previous:
+			failures+=1
+			printerr("Signed difference expected ",pair[2]," got ",actual)
 	print("QUANTITY_FORMAT ",checks," cases, ",failures," failures; dictionary preservation and damage/rate checks passed")
 	quit(1 if failures else 0)
