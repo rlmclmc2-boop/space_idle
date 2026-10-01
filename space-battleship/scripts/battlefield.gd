@@ -622,21 +622,71 @@ func draw_vertical_battle_hud()->void:
 	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
 	battle_meter(Rect2(44,188,524,5),game.distance/maxf(1,float(db.levels[game.stage-1].length)),BATTLE_TEAL)
-	var neutral_caption:=neutral_protection_hud_text()
-	if not neutral_caption.is_empty():
-		var protection_state:=enhancement_protection_state_text()
-		text_at(neutral_caption,Vector2(44,155 if not protection_state.is_empty() else 166),17,BATTLE_CREAM)
-		if not protection_state.is_empty():text_at(protection_state,Vector2(44,176),15,Color("9eb4bd"))
-		battle_meter(Rect2(44,180 if not protection_state.is_empty() else 174,524,4),GrowthNumber.ratio(game.enhancement_protection_current(),GrowthNumber.maximum(1,game.enhancement_protection_capacity())),Color("b5c1bc"))
 	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
 		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(315,132),14,BATTLE_WARM)
 	battle_panel(Rect2(30,1132,552,114))
-	var armour_text:=UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))})
-	text_at(armour_text,Vector2(48,1160),17,BATTLE_CREAM)
-	battle_meter(Rect2(48,1172,516,7),GrowthNumber.ratio(game.player.armour,GrowthNumber.maximum(1,game.stat("armour"))),BATTLE_WARM)
+	var status := game.enhancement_protection_status()
+	var layers := defense_hud_layers(status)
+	draw_defense_hud_row("armour",layers.armour,status,1158,BATTLE_WARM)
 	if game.profile.unlocked.has("shield"):
-		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(48,1208),17,BATTLE_TEAL)
-		battle_meter(Rect2(48,1220,516,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),BATTLE_TEAL)
+		draw_defense_hud_row("shield",layers.shield,status,1197,BATTLE_TEAL)
+	var footer := defense_hud_footer(status)
+	if not footer.is_empty():
+		draw_defense_caption(footer,Vector2(48,1238),BATTLE_WARM)
+
+func defense_hud_layers(status:Dictionary)->Dictionary:
+	# Temporary pool ownership is explicit in the public snapshot's component
+	# index. Cover is global in that snapshot; debt can spill into another layer.
+	var layers := {"armour":{"current":0.0,"capacity":0.0,"components":[]},"shield":{"current":0.0,"capacity":0.0,"components":[]}}
+	for component in status.get("components",[]):
+		var key := str(game.slot_entry("defence",int(component.index)).get("key",""))
+		if not layers.has(key):continue
+		var layer:Dictionary=layers[key]
+		layer.current=GrowthNumber.add(layer.current,component.current)
+		layer.capacity=GrowthNumber.add(layer.capacity,component.capacity)
+		layer.components.append(component)
+	return layers
+
+func defense_temporary_caption(layer:Dictionary)->String:
+	if GrowthNumber.compare(layer.current,0)<=0 and GrowthNumber.compare(layer.capacity,0)<=0:return ""
+	var state := mixed_protection_state_text(layer)
+	return UIText.t("battle.defense.temporary",{"current":number(layer.current),"state":state})
+
+func defense_hud_footer(status:Dictionary)->String:
+	var captions:Array[String]=[]
+	if GrowthNumber.compare(status.get("cover_current",0),0)>0:
+		captions.append(UIText.t("battle.defense.cover",{"amount":number(status.cover_current),"duration":NUMBER_FORMAT.precise(ceili(float(status.cover_remaining)*10)/10.0)}))
+	var debt=game.enhancement_deferred_total()
+	if GrowthNumber.compare(debt,0)>0:
+		captions.append(UIText.t("battle.defense.debt",{"amount":number(debt)}))
+	return " · ".join(captions)
+
+func defense_caption_size(caption:String,preferred:int)->int:
+	var result:=preferred
+	while result>13 and font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,result).x>516.0:result-=1
+	return result
+
+func draw_defense_caption(caption:String,position:Vector2,color:Color)->void:
+	# These three tightly bounded rows share the original 114 px panel. Bypass
+	# the legacy text_at minimum only when a complete large-number label needs it.
+	draw_surface.draw_string(font,position,caption,HORIZONTAL_ALIGNMENT_LEFT,-1,defense_caption_size(caption,17),color)
+
+func draw_defense_hud_row(key:String,layer:Dictionary,status:Dictionary,y:float,color:Color)->void:
+	var body=game.player.armour if key=="armour" else game.player.shield
+	var maximum=game.stat("armour") if key=="armour" else game.max_shield()
+	var title := UIText.t("battle.hp",{"current_hp":number(body),"max_hp":number(maximum)}) if key=="armour" else UIText.t("battle.shield",{"current_shield":number(body),"max_shield":number(maximum)})
+	var temporary:=defense_temporary_caption(layer)
+	if not temporary.is_empty():title+=" · "+temporary
+	draw_defense_caption(title,Vector2(48,y),BATTLE_CREAM if key=="armour" else BATTLE_TEAL)
+	var meter:=Rect2(48,y+10,516,7)
+	battle_meter(meter,GrowthNumber.ratio(body,GrowthNumber.maximum(1,maximum)),color)
+	if GrowthNumber.compare(status.get("cover_current",0),0)>0:
+		# A shared outline embraces the existing bars. It never increases HP fill.
+		draw_surface.draw_rect(meter.grow(3),Color("c7d2c4"),false,1.5)
+	if GrowthNumber.compare(layer.current,0)>0:
+		var ratio:=GrowthNumber.ratio(layer.current,GrowthNumber.maximum(1,layer.capacity))
+		draw_surface.draw_line(meter.position-Vector2(0,1),meter.position+Vector2(meter.size.x*ratio,-1),Color("c7d2c4"),2.0)
+
 
 func enemy_hull_light(enemy:Dictionary)->float:
 	# Small silhouettes need readable armor at the native ~390 px battlefield.

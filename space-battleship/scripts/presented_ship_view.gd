@@ -24,15 +24,13 @@ var carriers: Array[Node3D] = []
 var carrier_states: Array[Dictionary] = []
 var pose_initialized := false
 var last_pose_scale := 0.0
-const CARRIER_SCALE := 0.70
+const CARRIER_SCALE := 0.48
 const CARRIER_WEAPON_SCALE := 1.20
 const ORBIT_PERIOD := 18.0
+# Canonical battlefield pixels: hull size and carrier count never expand this envelope.
+const FLEET_HALF_EXTENT := Vector2(160,178)
 var orbit_elapsed := 0.0
 var orbit_center := Vector3.ZERO
-const MAX_CARRIER_LAG := 0.45
-const STATION_WANDER := 0.78
-const ANCHOR_DEADBAND := 0.90
-var visual_rng := RandomNumberGenerator.new()
 var turret: Node3D
 var muzzle: Node3D
 var shield: MeshInstance3D
@@ -117,7 +115,6 @@ func set_hull(key: String) -> bool:
 	exhaust_materials.clear()
 	loadout_signature = ""
 	hull_key = key
-	visual_rng.seed = 5729+key.hash()
 	hull_config = manifest.hulls[key]
 	model_span = float(hull_config.model_span)
 	var radius := float(manifest.weapon_contract.conservative_xz_rotation_radius)
@@ -187,9 +184,6 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 		if not resources.has(item.key):
 			push_error("Unsupported weapon visual: "+str(item.key))
 			return false
-		if item.carrier == "drone" and item.mount >= hull_config.drone_offsets.size():
-			push_error("Insufficient visual drone offsets for active loadout")
-			return false
 	for module in modules: module.node.free()
 	for carrier in carriers: carrier.free()
 	modules.clear()
@@ -204,7 +198,9 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			var carrier := (load(str(manifest.drone.path)) as PackedScene).instantiate() as Node3D
 			carrier.name = "VisualCarrierSlot%02d"%(int(item.slot)+1)
 			world.add_child(carrier)
-			var offset: Array = hull_config.drone_offsets[item.mount]
+			# Assignment capacity comes from gameplay. Additional valid configured slots
+			# reuse the bounded visual orbit instead of requiring new authored offsets.
+			var offset: Array = hull_config.drone_offsets[item.mount] if item.mount<hull_config.drone_offsets.size() else [0,0.1,0]
 			var local_offset := Vector3(float(offset[0]),float(offset[1]),float(offset[2]))
 			carrier_states.append({"offset":local_offset,"ready":false,"heading":0.0})
 			# Never show the world origin while a freshly created formation awaits a pose.
@@ -342,87 +338,31 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
-func _carrier_safe(point: Vector3, scale_value: float, own_index: int) -> bool:
-	var local := (point-ship.global_position)/scale_value
+func _update_carriers(scale_value: float, _visual_delta: float) -> void:
+	# Soft separation: compact independent ellipses may pass behind the hull.
+	# There is no hard exclusion radius that grows with hull size or carrier count.
+	var pixels_per_model := scale_value/WORLD_PER_PIXEL
 	var low: Array=hull_config.godot_aabb_min
 	var high: Array=hull_config.godot_aabb_max
-	var radius := float(manifest.weapon_contract.conservative_xz_rotation_radius)*CARRIER_SCALE*CARRIER_WEAPON_SCALE
-	# Conservative hull rectangle exclusion plus weapon rotation envelopes.
-	if local.x>float(low[0])-radius and local.x<float(high[0])+radius and local.z>float(low[2])-radius and local.z<float(high[2])+radius:return false
-	for mount in hull_config.weapon_mounts:
-		var pos:=Vector3(float(mount.position[0]),0,float(mount.position[2]))
-		if Vector2(local.x-pos.x,local.z-pos.z).length()<radius+1.24+0.08:return false
+	var hull_half := Vector2(maxf(absf(float(low[0])),absf(float(high[0]))),maxf(absf(float(low[2])),absf(float(high[2]))))*pixels_per_model
+	var carrier_radius := maxf(1.6,float(manifest.weapon_contract.conservative_xz_rotation_radius)*CARRIER_WEAPON_SCALE)*CARRIER_SCALE*pixels_per_model+3.0
+	var extent := FLEET_HALF_EXTENT
+	# Use the existing canonical viewport, including edge anchors and resize.
+	extent.x=minf(extent.x,minf(rendered_position.x,size.x-rendered_position.x)-8.0)
+	extent.y=minf(extent.y,minf(rendered_position.y,size.y-rendered_position.y)-8.0)
+	var radius := Vector2(minf(hull_half.x+carrier_radius*0.55+8.0,extent.x-carrier_radius),minf(hull_half.y+carrier_radius*0.55+8.0,extent.y-carrier_radius))
+	radius=radius.max(Vector2.ONE*8.0)*WORLD_PER_PIXEL
 	for i in carriers.size():
-		if i==own_index or not bool(carrier_states[i].ready):continue
-		var diff:Vector3=(point-carriers[i].global_position)/scale_value
-		if Vector2(diff.x,diff.z).length()<radius*2.0+0.12:return false
-	var screen:=camera.unproject_position(point)
-	var pixel_radius:=radius*scale_value/WORLD_PER_PIXEL+10.0
-	return Rect2(Vector2.ONE*pixel_radius,size-Vector2.ONE*pixel_radius*2.0).has_point(screen)
-
-
-func _update_carriers(scale_value: float, visual_delta: float) -> void:
-	if hull_key=="Heavy_Battleship":
-		_update_orbit_carriers(scale_value)
-		return
-	# World-space, independent visual stationkeeping. Each craft owns a target,
-	# dwell clock and heading. There is no orbit, shared sine, or combat RNG use.
-	var resized := not is_equal_approx(last_pose_scale,scale_value)
-	var dt := clampf(visual_delta,0.0,0.10)
-	for i in carriers.size():
-		var carrier:=carriers[i]
-		var state:=carrier_states[i]
-		var nominal:Vector3=ship.global_position+Vector3(state.offset)*scale_value
-		carrier.scale=Vector3.ONE*scale_value*CARRIER_SCALE
-		if not bool(state.ready) or resized:
-			carrier.global_position=nominal
-			carrier.rotation=Vector3.ZERO
-			state.merge({"ready":true,"heading":0.0,"anchor":nominal,"goal":nominal,"wait":0.45+float(i)*0.70},true)
-		elif dt>0.0:
-			# Small mother-ship movement does not drag every craft with it.
-			if Vector3(state.anchor).distance_to(nominal)>ANCHOR_DEADBAND*scale_value:
-				state.anchor=nominal
-				state.goal=nominal
-				state.wait=0.0
-			state.wait=float(state.wait)-dt
-			if float(state.wait)<=0.0:
-				for attempt in 8:
-					var candidate:Vector3=Vector3(state.anchor)+Vector3(visual_rng.randf_range(-STATION_WANDER,STATION_WANDER),0,visual_rng.randf_range(-STATION_WANDER,STATION_WANDER))*scale_value
-					if _carrier_safe(candidate,scale_value,i):
-						state.goal=candidate
-						break
-				state.wait=visual_rng.randf_range(2.4,4.2)
-			var previous:=carrier.global_position
-			var next:=previous.lerp(Vector3(state.goal),1.0-exp(-(1.8+float(i)*0.25)*dt))
-			# Collision safety takes priority over an individual station choice.
-			if not _carrier_safe(next,scale_value,i):
-				state.goal=nominal
-				next=previous.lerp(nominal,1.0-exp(-4.0*dt))
-			if next.distance_to(Vector3(state.goal))<0.002*scale_value:next=state.goal
-			carrier.global_position=next
-			var movement:=next-previous
-			var heading:=clampf(-movement.x/maxf(scale_value*dt,0.0001)*0.13,-0.14,0.14)
-			state.heading=lerpf(float(state.heading),heading,1.0-exp(-3.0*dt))
-			if absf(float(state.heading))<0.0001:state.heading=0.0
-			carrier.rotation=Vector3(0,float(state.heading),0)
-		carrier.visible=true
-	last_pose_scale=scale_value
-	pose_initialized=true
-
-
-func _update_orbit_carriers(scale_value: float) -> void:
-	# All phases advance continuously with bounded individual speed variation.
-	# Equal average periods preserve separation indefinitely (no eventual overtakes).
-	for i in carriers.size():
-		var phase := TAU*float(i)/3.0
-		var theta := TAU*orbit_elapsed/ORBIT_PERIOD+phase+0.045*sin(TAU*orbit_elapsed/ORBIT_PERIOD*2.0+phase)
-		var rx := 5.65+float(i)*0.06
-		var rz := 5.85-float(i)*0.06
+		var phase := TAU*float(i)/maxi(carriers.size(),1)
+		var period := ORBIT_PERIOD*(1.0+0.055*sin(float(i)*2.399963))
+		var theta := TAU*orbit_elapsed/period+phase
+		var radial := 0.94+0.06*sin(theta*2.0+float(i)*1.7)
 		var carrier:=carriers[i]
 		carrier.scale=Vector3.ONE*scale_value*CARRIER_SCALE
-		carrier.global_position=orbit_center+Vector3(sin(theta)*rx,0.10,-cos(theta)*rz)*scale_value
-		# Independently directed carrier; its turret compensates for the world yaw.
-		carrier.rotation=Vector3(0,atan2(-cos(theta)*rx,-sin(theta)*rz),0)
+		# Lower depth puts a crossing drone behind the flagship, rather than
+		# forcing it outside the silhouette or gluing it to the mother's bob.
+		carrier.global_position=orbit_center+Vector3(sin(theta)*radius.x*radial,-1.6*scale_value,-cos(theta)*radius.y*radial)
+		carrier.rotation=Vector3(0,atan2(-cos(theta)*radius.x,-sin(theta)*radius.y),0)
 		carrier_states[i].ready=true
 		carrier.visible=true
 	last_pose_scale=scale_value

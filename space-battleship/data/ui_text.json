@@ -1,5 +1,26 @@
 [
   {
+    "key": "battle.defense.debt",
+    "text": "待承受 {amount}",
+    "params": "{amount}",
+    "category": "battle",
+    "note": "既有底部防御区强化状态"
+  },
+  {
+    "key": "battle.defense.cover",
+    "text": "护罩 {amount} · {duration}秒",
+    "params": "{amount},{duration}",
+    "category": "battle",
+    "note": "既有底部防御区强化状态"
+  },
+  {
+    "key": "battle.defense.temporary",
+    "text": "临防 {current} · {state}",
+    "params": "{current},{state}",
+    "category": "battle",
+    "note": "既有底部防御区强化状态"
+  },
+  {
     "key": "crew.page_hint",
     "text": "标记显示当前岗位 · 点击船员设置分配",
     "params": "",

@@ -2182,7 +2182,7 @@ func refresh_draw_layers(dt: float) -> void:
 			battle_layer.queue_redraw()
 	# The HUD reads encounter identity and player health, never enemy cooldowns
 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
-	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),game.enhancement_protection_current(),game.enhancement_protection_capacity(),enhancement_protection_state_text()]):
+	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),enhancement_defense_hud_state()]):
 		battle_hud_layer.queue_redraw()
 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
 		resource_layer.queue_redraw()
@@ -2344,6 +2344,11 @@ func draw_vertical_battle_hud() -> void:
 	if game.profile.unlocked.has("shield"):
 		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(44,1207),15,CYAN)
 		bar(Rect2(44,1219,524,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),CYAN)
+
+func enhancement_defense_hud_state() -> Array:
+	# Small read-only runtime projection. Include ownership and debt so a pool
+	# changing layer at equal total, cover expiry and queue clearing redraw the HUD.
+	return [game.enhancement_protection_status(),game.enhancement_deferred_total(),game.defense_entries().map(func(entry):return str(entry.get("key","")))]
 
 func neutral_protection_hud_text() -> String:
 	var current = game.enhancement_protection_current()

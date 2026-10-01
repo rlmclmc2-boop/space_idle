@@ -6293,6 +6293,23 @@
     },
     "reactor.flow.smelting_scope": {
       "params": []
+    },
+    "battle.defense.temporary": {
+      "params": [
+        "current",
+        "state"
+      ]
+    },
+    "battle.defense.cover": {
+      "params": [
+        "amount",
+        "duration"
+      ]
+    },
+    "battle.defense.debt": {
+      "params": [
+        "amount"
+      ]
     }
   },
   "bindings": {
