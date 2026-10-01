@@ -5,7 +5,7 @@ const BUILDING_SCALE := 1.4
 var region
 var settings := {}
 var view := SubViewport.new()
-var container := SubViewportContainer.new()
+var container := TextureRect.new()
 var world := Node3D.new()
 var camera := Camera3D.new()
 var models := Node3D.new()
@@ -59,12 +59,14 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	container.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	container.stretch=true
+	container.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	container.stretch_mode=TextureRect.STRETCH_SCALE
 	add_child(container)
 	view.own_world_3d=true
 	view.handle_input_locally=false
 	view.msaa_3d=Viewport.MSAA_4X
-	container.add_child(view)
+	add_child(view)
+	container.texture=view.get_texture()
 	view.add_child(world)
 	world.add_child(models)
 	world.add_child(transit)
@@ -113,6 +115,7 @@ func _ready() -> void:
 	world.add_child(highlight)
 	highlight.visible=false
 	resized.connect(layout)
+	get_viewport().size_changed.connect(layout)
 	visibility_changed.connect(sync_visibility)
 	layout()
 	sync_visibility()
@@ -269,11 +272,15 @@ func sync_visibility() -> void:
 	if active:refresh()
 func layout() -> void:
 	if not is_inside_tree():return
-	# UI scaling otherwise supersamples this viewport at nearly twice native pixels.
-	# Keep 4x edge AA while bounding small-window fill cost; high-resolution views stay full.
+	# Match displayed pixels up to the original logical-size budget. Integer shrink
+	# thresholds accidentally supersampled mid-size windows by almost 3x.
+	# Keep 4x MSAA and let imported mesh LOD use the true projected pixel size.
 	var screen_scale := (get_viewport().get_final_transform()*get_screen_transform()).get_scale().abs()
-	var shrink := 2 if minf(screen_scale.x,screen_scale.y)<=0.6 else 1
-	if container.stretch_shrink!=shrink:container.stretch_shrink=shrink
+	var pixel_size := Vector2i((size*screen_scale.min(Vector2.ONE)).ceil()).max(Vector2i.ONE)
+	if view.size!=pixel_size:view.size=pixel_size
+	# Whole-city overview tolerates small detail; inspecting at 2x restores the
+	# default one-pixel LOD threshold. Animation and building levels are untouched.
+	view.mesh_lod_threshold=clampf(4.0/(zoom*zoom),1.0,4.0)
 	frame_size=fit_size()
 	camera.size=frame_size/zoom
 	# Fixed isometric framing: 45-degree azimuth, 35.26-degree downward pitch.

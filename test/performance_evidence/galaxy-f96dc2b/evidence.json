@@ -1,0 +1,695 @@
+{
+  "base": "f96dc2bd1fa490b2f7084ce73c6234127f7364e0",
+  "environment": {
+    "cpu_max": "400000 100000",
+    "memory_max": 17179869184,
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "hardware_gpu": false,
+    "godot": "4.6.3",
+    "window": [
+      1373,
+      883
+    ]
+  },
+  "method": {
+    "warmup": 15,
+    "samples": 60,
+    "game_step": 0.016666666666666666,
+    "galaxy_visual_clock_offset": 60,
+    "save_enabled": false,
+    "rich_fixture": true,
+    "realtime": false,
+    "readback_outside_timing": true
+  },
+  "runs": {
+    "before": {
+      "calls": {
+        "max": 756.0,
+        "mean": 652.55,
+        "p50": 656.0,
+        "p95": 755.0,
+        "p99": 756.0
+      },
+      "frames_us": {
+        "max": 348918,
+        "mean": 331982.833333333,
+        "p50": 331223,
+        "p95": 343588,
+        "p99": 348918
+      },
+      "main_us": {
+        "max": 13759,
+        "mean": 6918.01666666667,
+        "p50": 6463,
+        "p95": 9554,
+        "p99": 13759
+      },
+      "memory": 150309100,
+      "memory_delta": 317096,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "node_delta": 0,
+      "page": 8,
+      "primitives": {
+        "max": 341381.0,
+        "mean": 337741.533333333,
+        "p50": 337712.0,
+        "p95": 341283.0,
+        "p99": 341381.0
+      },
+      "projectiles": {
+        "max": 9,
+        "mean": 4.48333333333333,
+        "p50": 4,
+        "p95": 8,
+        "p99": 9
+      },
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "switch_cpu_us": 1303,
+      "switch_frame_us": 918213,
+      "timings": {},
+      "views": [
+        {
+          "calls": 195,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Planets/@Node@1521/@SubViewport@1522",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 287,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Galaxy/@PanelContainer@1591/@VBoxContainer@1592/@PanelContainer@1684/@Control@1685/@Control@1686/@SubViewportContainer@1687/@SubViewport@1688",
+          "size": "(1324, 907)"
+        }
+      ]
+    },
+    "after": {
+      "calls": {
+        "max": 756.0,
+        "mean": 652.55,
+        "p50": 656.0,
+        "p95": 755.0,
+        "p99": 756.0
+      },
+      "frames_us": {
+        "max": 172026,
+        "mean": 159812.283333333,
+        "p50": 159585,
+        "p95": 170164,
+        "p99": 172026
+      },
+      "main_us": {
+        "max": 12766,
+        "mean": 6738.98333333333,
+        "p50": 6256,
+        "p95": 10101,
+        "p99": 12766
+      },
+      "memory": 150311632,
+      "memory_delta": 316900,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "node_delta": 0,
+      "page": 8,
+      "primitives": {
+        "max": 147387.0,
+        "mean": 145120.033333333,
+        "p50": 145208.0,
+        "p95": 147217.0,
+        "p99": 147387.0
+      },
+      "projectiles": {
+        "max": 9,
+        "mean": 4.48333333333333,
+        "p50": 4,
+        "p95": 8,
+        "p99": 9
+      },
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "switch_cpu_us": 1414,
+      "switch_frame_us": 855548,
+      "timings": {},
+      "views": [
+        {
+          "calls": 195,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Planets/@Node@1521/@SubViewport@1522",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 287,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Galaxy/@PanelContainer@1591/@VBoxContainer@1592/@PanelContainer@1684/@Control@1685/@Control@1686/@SubViewport@1688",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    "after-repeat": {
+      "calls": {
+        "max": 756.0,
+        "mean": 652.55,
+        "p50": 656.0,
+        "p95": 755.0,
+        "p99": 756.0
+      },
+      "frames_us": {
+        "max": 167824,
+        "mean": 158844.35,
+        "p50": 159058,
+        "p95": 165663,
+        "p99": 167824
+      },
+      "main_us": {
+        "max": 13403,
+        "mean": 6484.93333333333,
+        "p50": 6115,
+        "p95": 8974,
+        "p99": 13403
+      },
+      "memory": 150311760,
+      "memory_delta": 316900,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "node_delta": 0,
+      "page": 8,
+      "primitives": {
+        "max": 147387.0,
+        "mean": 145120.033333333,
+        "p50": 145208.0,
+        "p95": 147217.0,
+        "p99": 147387.0
+      },
+      "projectiles": {
+        "max": 9,
+        "mean": 4.48333333333333,
+        "p50": 4,
+        "p95": 8,
+        "p99": 9
+      },
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "switch_cpu_us": 1391,
+      "switch_frame_us": 870533,
+      "timings": {},
+      "views": [
+        {
+          "calls": 195,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Planets/@Node@1521/@SubViewport@1522",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 287,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@10/@TabContainer@989/Galaxy/@PanelContainer@1591/@VBoxContainer@1592/@PanelContainer@1684/@Control@1685/@Control@1686/@SubViewport@1688",
+          "size": "(815, 558)"
+        }
+      ]
+    }
+  },
+  "diagnostics": {
+    "ablation": [
+      {
+        "calls": {
+          "max": 251,
+          "mean": 240.2,
+          "p50": 239,
+          "p95": 251,
+          "p99": 251
+        },
+        "cpu": {
+          "max": 28603,
+          "mean": 6958.83333333333,
+          "p50": 6211,
+          "p95": 9236,
+          "p99": 28603
+        },
+        "frame": {
+          "max": 347785,
+          "mean": 329809.6,
+          "p50": 331117,
+          "p95": 347785,
+          "p99": 347785
+        },
+        "primitives": {
+          "max": 292404,
+          "mean": 291345.6,
+          "p50": 291228,
+          "p95": 292404,
+          "p99": 292404
+        },
+        "variant": "base"
+      },
+      {
+        "calls": {
+          "max": 272,
+          "mean": 261.2,
+          "p50": 260,
+          "p95": 272,
+          "p99": 272
+        },
+        "cpu": {
+          "max": 13331,
+          "mean": 7047.8,
+          "p50": 6362,
+          "p95": 12265,
+          "p99": 13331
+        },
+        "frame": {
+          "max": 332738,
+          "mean": 310417.3,
+          "p50": 307082,
+          "p95": 332738,
+          "p99": 332738
+        },
+        "primitives": {
+          "max": 275226,
+          "mean": 274167.6,
+          "p50": 274050,
+          "p95": 275226,
+          "p99": 275226
+        },
+        "variant": "no_core"
+      },
+      {
+        "calls": {
+          "max": 71,
+          "mean": 71.0,
+          "p50": 71,
+          "p95": 71,
+          "p99": 71
+        },
+        "cpu": {
+          "max": 12897,
+          "mean": 7272.9,
+          "p50": 6598,
+          "p95": 10214,
+          "p99": 12897
+        },
+        "frame": {
+          "max": 121481,
+          "mean": 108081.3,
+          "p50": 107612,
+          "p95": 121481,
+          "p99": 121481
+        },
+        "primitives": {
+          "max": 26240,
+          "mean": 26240.0,
+          "p50": 26240,
+          "p95": 26240,
+          "p99": 26240
+        },
+        "variant": "no_buildings"
+      },
+      {
+        "calls": {
+          "max": 62,
+          "mean": 62.0,
+          "p50": 62,
+          "p95": 62,
+          "p99": 62
+        },
+        "cpu": {
+          "max": 12285,
+          "mean": 6952.83333333333,
+          "p50": 6215,
+          "p95": 12274,
+          "p99": 12285
+        },
+        "frame": {
+          "max": 91727,
+          "mean": 83741.75,
+          "p50": 82931,
+          "p95": 91727,
+          "p99": 91727
+        },
+        "primitives": {
+          "max": 6122,
+          "mean": 6122.0,
+          "p50": 6122,
+          "p95": 6122,
+          "p99": 6122
+        },
+        "variant": "no_models"
+      },
+      {
+        "calls": {
+          "max": 286,
+          "mean": 286.0,
+          "p50": 286,
+          "p95": 286,
+          "p99": 286
+        },
+        "cpu": {
+          "max": 15494,
+          "mean": 7627.1,
+          "p50": 6744,
+          "p95": 13327,
+          "p99": 15494
+        },
+        "frame": {
+          "max": 335011,
+          "mean": 319126.5,
+          "p50": 321243,
+          "p95": 335011,
+          "p99": 335011
+        },
+        "primitives": {
+          "max": 295930,
+          "mean": 295930.0,
+          "p50": 295930,
+          "p95": 295930,
+          "p99": 295930
+        },
+        "variant": "no_backdrop"
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 13009,
+          "mean": 7848.73333333333,
+          "p50": 7036,
+          "p95": 11604,
+          "p99": 13009
+        },
+        "frame": {
+          "max": 162183,
+          "mean": 147331.8,
+          "p50": 144343,
+          "p95": 162183,
+          "p99": 162183
+        },
+        "primitives": {
+          "max": 295932,
+          "mean": 295932.0,
+          "p50": 295932,
+          "p95": 295932,
+          "p99": 295932
+        },
+        "variant": "no_msaa"
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 14228,
+          "mean": 7770.1,
+          "p50": 6869,
+          "p95": 12923,
+          "p99": 14228
+        },
+        "frame": {
+          "max": 212723,
+          "mean": 204367.0,
+          "p50": 204507,
+          "p95": 212723,
+          "p99": 212723
+        },
+        "primitives": {
+          "max": 94164,
+          "mean": 94164.0,
+          "p50": 94164,
+          "p95": 94164,
+          "p99": 94164
+        },
+        "variant": "lod8"
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 18008,
+          "mean": 8423.53333333333,
+          "p50": 7254,
+          "p95": 17623,
+          "p99": 18008
+        },
+        "frame": {
+          "max": 218498,
+          "mean": 200884.15,
+          "p50": 199852,
+          "p95": 218498,
+          "p99": 218498
+        },
+        "primitives": {
+          "max": 192922,
+          "mean": 192922.0,
+          "p50": 192922,
+          "p95": 192922,
+          "p99": 192922
+        },
+        "variant": "half_pixels"
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 12494,
+          "mean": 7208.73333333333,
+          "p50": 6585,
+          "p95": 11464,
+          "p99": 12494
+        },
+        "frame": {
+          "max": 86601,
+          "mean": 66795.8,
+          "p50": 64102,
+          "p95": 86601,
+          "p99": 86601
+        },
+        "primitives": {
+          "max": 192922,
+          "mean": 192922.0,
+          "p50": 192922,
+          "p95": 192922,
+          "p99": 192922
+        },
+        "variant": "no_view"
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 12481,
+          "mean": 7439.33333333333,
+          "p50": 6654,
+          "p95": 12072,
+          "p99": 12481
+        },
+        "frame": {
+          "max": 354866,
+          "mean": 335127.8,
+          "p50": 334835,
+          "p95": 354866,
+          "p99": 354866
+        },
+        "primitives": {
+          "max": 295932,
+          "mean": 295932.0,
+          "p50": 295932,
+          "p95": 295932,
+          "p99": 295932
+        },
+        "variant": "base_repeat"
+      }
+    ],
+    "native": [
+      {
+        "calls": {
+          "max": 251,
+          "mean": 240.2,
+          "p50": 239,
+          "p95": 251,
+          "p99": 251
+        },
+        "cpu": {
+          "max": 32548,
+          "mean": 6881.6,
+          "p50": 5995,
+          "p95": 8587,
+          "p99": 32548
+        },
+        "frame": {
+          "max": 234243,
+          "mean": 223431.3,
+          "p50": 224853,
+          "p95": 234243,
+          "p99": 234243
+        },
+        "primitives": {
+          "max": 227538,
+          "mean": 226796.4,
+          "p50": 226714,
+          "p95": 227538,
+          "p99": 227538
+        },
+        "variant": 1
+      },
+      {
+        "calls": {
+          "max": 281,
+          "mean": 270.2,
+          "p50": 269,
+          "p95": 281,
+          "p99": 281
+        },
+        "cpu": {
+          "max": 12554,
+          "mean": 6728.9,
+          "p50": 6167,
+          "p95": 9813,
+          "p99": 12554
+        },
+        "frame": {
+          "max": 212692,
+          "mean": 201588.55,
+          "p50": 201792,
+          "p95": 212692,
+          "p99": 212692
+        },
+        "primitives": {
+          "max": 166204,
+          "mean": 165689.2,
+          "p50": 165632,
+          "p95": 166204,
+          "p99": 166204
+        },
+        "variant": 2
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 13385,
+          "mean": 7143.73333333333,
+          "p50": 6520,
+          "p95": 10466,
+          "p99": 13385
+        },
+        "frame": {
+          "max": 164293,
+          "mean": 157804.7,
+          "p50": 157469,
+          "p95": 164293,
+          "p99": 164293
+        },
+        "primitives": {
+          "max": 101548,
+          "mean": 101548.0,
+          "p50": 101548,
+          "p95": 101548,
+          "p99": 101548
+        },
+        "variant": 4
+      },
+      {
+        "calls": {
+          "max": 287,
+          "mean": 287.0,
+          "p50": 287,
+          "p95": 287,
+          "p99": 287
+        },
+        "cpu": {
+          "max": 11910,
+          "mean": 7009.66666666667,
+          "p50": 6571,
+          "p95": 11787,
+          "p99": 11910
+        },
+        "frame": {
+          "max": 157309,
+          "mean": 139252.4,
+          "p50": 138766,
+          "p95": 157309,
+          "p99": 157309
+        },
+        "primitives": {
+          "max": 69724,
+          "mean": 69724.0,
+          "p50": 69724,
+          "p95": 69724,
+          "p99": 69724
+        },
+        "variant": 8
+      }
+    ]
+  },
+  "regression": {
+    "checks": 253,
+    "failures": 0,
+    "exit": 0
+  },
+  "source_sha256": {
+    "space-battleship/scripts/galaxy_map.gd": "0a2d94983e3110a46ce3d6b8541ec559eacd38ee0bb40f9fc2483835905d5a35",
+    "test/whole_game_perf.gd": "21cd039abb7cc93674e483509ee42fbacd31b578ead5afaa473c01bfb2e8f3bd",
+    "test/test_galaxy_ui.gd": "e2652f039c67aaa81cb5c27a039b1ac422cbc8b54b46e7edd108c4f9c481c267"
+  }
+}

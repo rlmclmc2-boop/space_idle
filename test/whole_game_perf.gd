@@ -85,6 +85,9 @@ func run():
   scenario_index+=1
   var switch_started=Time.get_ticks_usec()
   scene.select_system(page)
+  if page==8 and OS.get_environment("PERF_GALAXY_STEADY")=="1":
+   # Settle presentation-only departure staggering; never advance gameplay.
+   scene.galaxy_panel.map.visual_clock+=60.0
   var switch_cpu_us=Time.get_ticks_usec()-switch_started
   await process_frame
   var switch_frame_us=Time.get_ticks_usec()-switch_started

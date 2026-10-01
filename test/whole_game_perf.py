@@ -37,6 +37,7 @@ def main():
     parser.add_argument('--instrument', action='store_true')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
     parser.add_argument('--frames', type=int, default=60)
+    parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
     assert 1 <= args.frames <= 600
     work = ROOT / 'test/work'
@@ -83,7 +84,7 @@ def main():
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
-    env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames))
+    env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     with (area / (args.label + '-import.log')).open('w', encoding='utf-8') as log:

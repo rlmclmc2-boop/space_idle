@@ -82,6 +82,19 @@ func run() -> void:
 		previous_count=count
 	check(map.transports.is_empty() and map.transit.active_edges.is_empty(),"Unbuilt galaxy has no normal display traffic")
 	check(map.view.own_world_3d and map.camera.projection==Camera3D.PROJECTION_ORTHOGONAL,"Independent orthographic world")
+	var expected_pixels: Vector2i=Vector2i((map.size*(map.get_viewport().get_final_transform()*map.get_screen_transform()).get_scale().abs()).ceil()).max(Vector2i.ONE).min(Vector2i(map.size.ceil()))
+	check(map.view.size==expected_pixels,"Galaxy renders displayed pixels within its original budget, including fractional UI scale")
+	check(map.view.msaa_3d==Viewport.MSAA_4X,"Native display keeps four-sample antialiasing")
+	var window_size: Vector2i=root.size
+	root.size=Vector2i(1280,800)
+	await process_frame;await process_frame
+	expected_pixels=Vector2i((map.size*(map.get_viewport().get_final_transform()*map.get_screen_transform()).get_scale().abs()).ceil()).max(Vector2i.ONE).min(Vector2i(map.size.ceil()))
+	check(map.view.size==expected_pixels,"Window resize updates native viewport without an integer shrink cliff")
+	root.size=Vector2i(2560,1600)
+	await process_frame;await process_frame
+	check(map.view.size.x<=ceili(map.size.x) and map.view.size.y<=ceili(map.size.y),"Large window does not raise the original render budget")
+	root.size=window_size
+	await process_frame;await process_frame
 	var old_zoom: float=map.zoom
 	var position: Vector2=map.get_global_rect().get_center()
 	var wheel := InputEventMouseButton.new()
@@ -175,6 +188,7 @@ func run() -> void:
 	if OS.get_environment("GALAXY_RENDER_SAMPLE")=="1":await render_sample(map)
 	# The representative cluster uses the exact first four nodes and their planned types.
 	map.zoom=2.4;map.pan=-map.frame_origin;map.layout()
+	check(is_equal_approx(map.view.mesh_lod_threshold,1.0),"Inspecting restores one-pixel geometric detail")
 	await capture(viewport,"galaxy-hub-cluster-ui.png")
 	map.zoom=1.0;map.pan=Vector2.ZERO;map.layout()
 	var id := 2
@@ -263,7 +277,9 @@ func run() -> void:
 		panel.refresh()
 		scene.refresh_fps_label(true)
 		await create_timer(90).timeout
+	scene.game.launch_provider=Callable();scene.game.target_provider=Callable()
 	scene.queue_free()
+	await process_frame
 	await process_frame
 	current_scene=null
 	quit(1 if failures else 0)
