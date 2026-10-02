@@ -1,0 +1,219 @@
+From 87869fcea908656e06d5e1442c7cc9a884a7a764 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=9B=B7=E6=98=8E=E6=99=A8?= <rlmclmc2@gmail.com>
+Date: Fri, 2 Oct 2026 06:09:12 +0000
+Subject: [PATCH] Collect all battlefield resources on mouse hover and swept
+ motion
+
+---
+ space-battleship/scripts/game.gd   |  8 +--
+ space-battleship/scripts/main.gd   | 22 ++++++--
+ test/test_furnace_income.gd        |  9 +--
+ test/test_jewels.gd                |  4 +-
+ test/test_resource_hover_pickup.gd | 89 ++++++++++++++++++++++++++++++
+ 5 files changed, 116 insertions(+), 16 deletions(-)
+ create mode 100644 test/test_resource_hover_pickup.gd
+
+diff --git a/space-battleship/scripts/game.gd b/space-battleship/scripts/game.gd
+index 8082ad1..525777a 100644
+--- a/space-battleship/scripts/game.gd
++++ b/space-battleship/scripts/game.gd
+@@ -2106,15 +2106,13 @@ func settle_drops() -> void:
+ 	for drop in drops.duplicate():
+ 		collect(drop, false)
+ 
+-func collect_near(pos: Vector2, clicked := false, position_overrides: Dictionary = {}) -> void:
++func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionary = {}, path_start: Variant = null) -> void:
+ 	if paused:
+ 		return
+ 	for drop in drops.duplicate():
+-		var core: bool = drop.get("hightech",false) and drop.has("jewel")
+-		if (drop.get("hightech", false) or drop.has("jewel")) and not clicked and not core:
+-			continue
+ 		var drop_pos: Vector2 = position_overrides.get(int(drop.uid),Vector2(drop.x,drop.y))
+-		if drop_pos.distance_to(pos) < 55:
++		var nearest := Geometry2D.get_closest_point_to_segment(drop_pos,path_start,pos) if path_start is Vector2 else pos
++		if drop_pos.distance_to(nearest) < 55:
+ 			collect(drop, true)
+ 
+ func clear_level() -> void:
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index 315da44..f2d6f9d 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -469,10 +469,15 @@ func _unhandled_input(event: InputEvent) -> void:
+ 		get_viewport().set_input_as_handled()
+ 		return
+ 	if is_instance_valid(balance_lab) and balance_lab.visible:return
+-	if event is InputEventMouseMotion and battle_clip.get_global_rect().has_point(event.position):
+-		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions())
+-	if event is InputEventMouseButton and event.pressed and battle_clip.get_global_rect().has_point(event.position):
+-		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),event.button_index == MOUSE_BUTTON_LEFT,drop_pickup_positions())
++	if (event is InputEventMouseMotion or event is InputEventMouseButton) and not resource_input_blocked():
++		var field := battle_clip.get_global_rect()
++		if event is InputEventMouseMotion and field.has_point(event.position):
++			var previous: Vector2 = event.position-event.relative
++			# Sweep only within the battlefield; GUI-consumed events never reach here.
++			var start: Variant = battle_logical_point(battle_layer.to_local(previous)) if field.has_point(previous) else null
++			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions(),start)
++		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and field.has_point(event.position):
++			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),true,drop_pickup_positions())
+ 	if event is InputEventKey and event.pressed and not event.echo:
+ 		if event.keycode == KEY_F1:
+ 			show_qa_tools()
+@@ -485,6 +490,15 @@ func _unhandled_input(event: InputEvent) -> void:
+ 			else:
+ 				game.paused = not game.paused
+ 
++func resource_input_blocked() -> bool:
++	if help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
++	var viewport := get_viewport()
++	if not get_window().has_focus():return true
++	if viewport.gui_get_hovered_control()!=null:return true
++	for window in viewport.get_embedded_subwindows():
++		if window.exclusive or window.popup_window:return true
++	return false
++
+ func on_event(kind: String, info: Dictionary) -> void:
+ 	match kind:
+ 		"galaxy_unlocked":
+diff --git a/test/test_furnace_income.gd b/test/test_furnace_income.gd
+index d86c917..572fac4 100644
+--- a/test/test_furnace_income.gd
++++ b/test/test_furnace_income.gd
+@@ -15,6 +15,8 @@ func _initialize() -> void:
+ 
+ func run() -> void:
+ 	var db := ShipDatabase.new()
++	db.unlock_row("hightech",F).level=0
++	db.data.hightech[F].para1=30.0
+ 	db.data.hightech[F].para2=0.5
+ 	db.config.autoCollectReduce=0.5
+ 	var g := BattleGame.new(db,false)
+@@ -70,11 +72,10 @@ func run() -> void:
+ 	interactive.advance_hightech(30)
+ 	var block: Dictionary=interactive.drops[0]
+ 	check(block.amount==16,"Furnace output rounds up")
+-	interactive.collect_near(Vector2(block.x,block.y))
+ 	interactive.settle_drops()
+-	check(interactive.drops.has(block) and interactive.profile.resources["1"]==0,"Furnace is neither hovered nor auto-settled")
+-	interactive.collect_near(Vector2(block.x,block.y),true)
+-	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Click grants full furnace amount")
++	check(interactive.drops.has(block) and interactive.profile.resources["1"]==0,"Furnace cannot be auto-settled before expiry")
++	interactive.collect_near(Vector2(block.x,block.y))
++	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Hover grants full furnace amount")
+ 	interactive.advance_hightech(30)
+ 	block=interactive.drops[0]
+ 	interactive.advance_hightech(9.5)
+diff --git a/test/test_jewels.gd b/test/test_jewels.gd
+index f062faf..ef2b4b8 100644
+--- a/test/test_jewels.gd
++++ b/test/test_jewels.gd
+@@ -160,9 +160,7 @@ func run() -> void:
+ 	check(game.drops.filter(func(d):return d.has("jewel")).size()==1,"Drop entry itself rejects repeated death notifications")
+ 	var drop: Dictionary=jewel_drops[0]
+ 	game.collect_near(Vector2(drop.x,drop.y),false)
+-	check(game.drops.has(drop),"Fragments require click rather than hover")
+-	game.collect_near(Vector2(drop.x,drop.y),true)
+-	check(not game.drops.has(drop),"Manual click picks fragment")
++	check(not game.drops.has(drop),"Hover picks fragments in full")
+ 	var count_before: float=game.profile.jewelFragments
+ 	game.collect(drop,true)
+ 	check(game.profile.jewelFragments==count_before,"Repeated pickup cannot duplicate fragments")
+diff --git a/test/test_resource_hover_pickup.gd b/test/test_resource_hover_pickup.gd
+new file mode 100644
+index 0000000..818deaf
+--- /dev/null
++++ b/test/test_resource_hover_pickup.gd
+@@ -0,0 +1,89 @@
++extends SceneTree
++## Actual viewport mouse events with synthetic drops; no player save.
++class IsolatedUI extends "res://scripts/battlefield.gd":
++ func create_battle_game(_persist: bool) -> BattleGame:return super.create_battle_game(false)
++ func show_qa_tools() -> void:pass
++var scene
++var checks := 0
++var failures := 0
++var serial := 9000
++func check(ok: bool,label: String) -> void:
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL: "+label)
++func _initialize() -> void:call_deferred("run")
++func drop(id: String,point := Vector2(300,350),furnace := false) -> Dictionary:
++ serial+=1
++ var entry := {"uid":serial,"id":id,"x":point.x,"y":point.y,"age":0.0,"amount":17.0}
++ if furnace:entry.hightech=true
++ if id=="jewel":entry.jewel=true;entry.jewelRatio=1.0
++ scene.game.drops.append(entry)
++ return entry
++func screen(point: Vector2) -> Vector2:
++ return root.get_final_transform()*scene.battle_layer.get_global_transform()*scene.battle_point(point)
++func motion(point: Vector2,from: Variant = null) -> void:
++ var event:=InputEventMouseMotion.new();event.position=screen(point);event.global_position=event.position
++ event.relative=event.position-screen(from) if from is Vector2 else Vector2.ZERO
++ Input.parse_input_event(event);await process_frame;await process_frame
++func capture(name: String) -> void:
++ var folder:=OS.get_environment("RESOURCE_HOVER_EVIDENCE")
++ if folder.is_empty():return
++ scene.drop_layer.queue_redraw();scene.resource_layer.queue_redraw();scene.overlay_layer.queue_redraw()
++ await process_frame;await process_frame;await RenderingServer.frame_post_draw
++ root.get_texture().get_image().save_png(folder+"/"+name+".png")
++func run() -> void:
++ root.size=Vector2i(1373,883);root.position=Vector2i.ZERO
++ scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"]
++ root.add_child(scene);current_scene=scene;scene.automation_args=[];scene.set_process(false)
++ var g=scene.game;g.save_enabled=false;g.pending_unlocks.clear();g.profile.highestLevel=90;g.profile.cleared=range(1,90);g.rebuild_unlocks()
++ g.profile.onboarding.completed=true;g.profile.resources={"1":0.0,"2":0.0};g.profile.jewelFragments=0.0;g.drops.clear();g.paused=false
++ scene.refresh_navigation()
++ await process_frame;await process_frame
++ # All live entry categories share collection, including configured auto generation.
++ for kind in ["iron","uranium","auto","iron-furnace","fragment","fragment-furnace"]:
++  var id: String="jewel" if kind.contains("fragment") else ("2" if kind=="uranium" or kind=="auto" else "1")
++  var entry:=drop(id,Vector2(300,350),kind.contains("furnace"))
++  if kind=="auto":entry.auto_gen=true;entry.speed=40.0
++  var before: float=float(g.profile.jewelFragments if id=="jewel" else g.profile.resources[id])
++  await motion(Vector2(300,350))
++  var after: float=float(g.profile.jewelFragments if id=="jewel" else g.profile.resources[id])
++  check(not g.drops.has(entry) and after==before+17,"Hover credits full "+kind)
++  await motion(Vector2(300,350));await motion(Vector2(100,350));await motion(Vector2(300,350));g.collect(entry,true)
++  check(float(g.profile.jewelFragments if id=="jewel" else g.profile.resources[id])==after,"Stay/reentry/stale collection cannot credit twice: "+kind)
++ var first:=drop("1",Vector2(200,350),true);var second:=drop("2",Vector2(400,350))
++ var iron: float=float(g.profile.resources["1"]);var uranium: float=float(g.profile.resources["2"])
++ await capture("before-hover")
++ await motion(Vector2(510,350),Vector2(90,350))
++ check(not g.drops.has(first) and not g.drops.has(second) and g.profile.resources["1"]==iron+17 and g.profile.resources["2"]==uranium+17,"One fast motion collects multiple crossed drops")
++ await capture("after-hover")
++ var blocked:=drop("1")
++ scene.help_open=true;scene.refresh_navigation();await motion(Vector2(300,350))
++ check(g.drops.has(blocked),"Help overlay blocks hover")
++ scene.help_open=false;g.pending_unlocks.append("laser");await motion(Vector2(300,350))
++ check(g.drops.has(blocked),"Unlock overlay blocks hover")
++ g.pending_unlocks.clear();scene.refresh_navigation()
++ var cover:=ColorRect.new();cover.position=scene.battle_clip.position;cover.size=scene.battle_clip.size;cover.mouse_filter=Control.MOUSE_FILTER_STOP;cover.z_index=100
++ scene.add_child(cover);await process_frame
++ await motion(Vector2(300,350))
++ check(g.drops.has(blocked),"GUI-consumed mouse motion cannot collect through a control")
++ cover.queue_free();await process_frame
++ var dialog:=AcceptDialog.new();scene.add_child(dialog);dialog.exclusive=true;dialog.popup_centered(Vector2i(800,600));await process_frame
++ await motion(Vector2(300,350))
++ check(g.drops.has(blocked),"Exclusive native dialog blocks battlefield hover")
++ dialog.hide();dialog.queue_free();await process_frame
++ g.paused=true;await motion(Vector2(300,350));check(g.drops.has(blocked),"Paused collection remains blocked")
++ g.paused=false
++ for down in [true,false]:
++  var click:=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.pressed=down;click.position=screen(Vector2(300,350));Input.parse_input_event(click);await process_frame
++ check(not g.drops.has(blocked),"Existing click/touch-emulated click collection still works")
++ var core:=drop("jewel",Vector2(300,350),true)
++ var fragments: float=float(g.profile.jewelFragments)
++ g.collect(core,false)
++ check(g.drops.has(core) and g.profile.jewelFragments==fragments,"Fragment furnace keeps its pre-expiry automatic collection guard")
++ core.age=10.0;g.collect(core,false)
++ var recycled:=ceilf(17.0*(1.0-float(g.db.config.autoCollectReduce)))
++ check(not g.drops.has(core) and g.profile.jewelFragments==fragments+recycled,"Fragment furnace expiry retains configured automatic loss")
++ g.collect(core,true)
++ check(g.profile.jewelFragments==fragments+recycled,"Expired fragment furnace cannot credit twice")
++ check(not g.save_enabled,"Fixture writes no player save")
++ print("RESOURCE HOVER: %d checks, %d failures" % [checks,failures])
++ scene.queue_free();await process_frame;quit(1 if failures else 0)
+-- 
+2.52.0
+
