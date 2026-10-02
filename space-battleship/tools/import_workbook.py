@@ -99,6 +99,8 @@ def convert_sheet(name, rows):
     if name=="mon":
         result={}
         for row in rows:
+            for field in ('shield','shieldType','shieldRecovery','shieldDelay'):
+                row[field] = 0 if row.get(field) is None else row[field]
             mounts = []
             for part in clean(row["equipment"]).split(","):
                 fields = part.split("|")
@@ -306,6 +308,11 @@ def validate_projection(data, *, check_level_ratios=True):
                 raise ValueError(ui_text('debug.import_workbook.message_13', eid=eid, key=key))
         positive(enemy['health'],f'enemy {enemy["id"]} health')
         positive(enemy['dmgMultiple'],f'enemy {enemy["id"]} damage multiplier',True)
+        for field in ('shield','shieldRecovery','shieldDelay'):
+            if type(enemy.get(field,0)) not in (int,float):raise ValueError(f'enemy {eid}: invalid {field}')
+            positive(enemy.get(field,0),f'enemy {eid} {field}',True)
+        if type(enemy.get('shieldType',0)) not in (int,float) or enemy.get('shieldType',0) not in (0,1,2):
+            raise ValueError(f'enemy {eid}: invalid shieldType')
         for drop in enemy['drops']:
             if str(drop['resourceId']) not in data['resources']: raise ValueError(ui_text('debug.import_workbook.message_14', eid=eid))
             positive(drop['amount'],'drop amount',True)

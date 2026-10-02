@@ -99,6 +99,8 @@ var enhancement_deferred_tick := 0
 var enhancement_deferred: Dictionary = {}
 # Preserves damage fraction while a capacity temporarily becomes zero during refit.
 var refit_health_ratios := {"armour":1.0,"shield":1.0}
+var enemy_shield_time := 0.0
+var enemy_shield_hit_time := -1.0
 
 # Overridden only by the isolated Debug simulator. Live games retain wall time.
 func economy_time() -> float:
@@ -1821,6 +1823,10 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.y = slot_position.y
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
 		enemy.max_hp = enemy.hp
+		enemy.max_shield = ceilf(float(row.get("shield",0)) * ratio("lifeRatio"))
+		enemy.shield = enemy.max_shield
+		enemy.shield_updated_at = enemy_shield_time
+		enemy.shield_hit_at = enemy_shield_time
 		enemy.res_ratio = ratio("resRatio")
 		# Legacy hull flag controls drawing/weapon offsets, not stage completion.
 		enemy.boss = float(row.size) > 1
@@ -1856,8 +1862,8 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 			alive.append(e)
 	alive.sort_custom(func(a,b):
 		if damage_type != 0:
-			var a_resists := int(a.armourType) == damage_type
-			var b_resists := int(b.armourType) == damage_type
+			var a_resists := enemy_resistance_type(a) == damage_type
+			var b_resists := enemy_resistance_type(b) == damage_type
 			if a_resists != b_resists:
 				return not a_resists
 		if a.y != b.y:
@@ -1872,6 +1878,9 @@ func has_alive_enemy() -> bool:
 		if enemy.hp > 0:
 			return true
 	return false
+
+func enemy_resistance_type(enemy: Dictionary) -> int:
+	return int(enemy.get("shieldType",0)) if N.compare(enemy.get("shield",0),0)>0 else int(enemy.armourType)
 
 func reduced_damage(raw, type: int, resistance: int) -> Variant:
 	return N.maximum(1, N.ceiling(N.multiply(raw,1.0 - float(db.config.dmgReduce) if type == resistance else 1.0)))
@@ -2000,7 +2009,10 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 			var attack := jewel_attack(shot.mount, multiplier * boost)
 			if attack.critical:
 				event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
+			var previous_hit_time := enemy_shield_hit_time
+			enemy_shield_hit_time=enemy_shield_time-float(shot.elapsed)+due
 			hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
+			enemy_shield_hit_time=previous_hit_time
 			launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
 			enhancement_attack_contexts.erase(int(shot.mount))
 		if not projectiles.has(shot) or not long_laser_valid(shot):
@@ -2064,8 +2076,24 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	var resistance := float(db.config.dmgReduce)
 	for effect in effects:
 		if effect.has("enemy_resistance"):resistance=float(effect.enemy_resistance);break
-	var amount = N.maximum(1,N.ceiling(N.multiply(N.multiply(raw,1.0+float(enemy.get("interference",0))),1.0-resistance if type==int(enemy.armourType) else 1.0)))
-	enemy.hp = N.subtract(enemy.hp,amount)
+	var incoming = N.multiply(raw,1.0+float(enemy.get("interference",0)))
+	var absorbed = 0.0
+	if float(enemy.get("max_shield",0))>0:
+		incoming=N.maximum(1,incoming)
+		var at := maxf(float(enemy.get("shield_updated_at",enemy_shield_time)),enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
+		settle_enemy_shield(enemy,at)
+		# A periodic beam hit is a hit, even though the whole beam is one attack.
+		enemy.shield_hit_at=at
+		if N.compare(enemy.get("shield",0),0)>0:
+			var factor := 1.0-resistance if type==int(enemy.get("shieldType",0)) else 1.0
+			absorbed=N.minimum(enemy.shield,N.maximum(1,N.multiply(incoming,factor)))
+			enemy.shield=N.subtract(enemy.shield,absorbed)
+			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
+	var amount = 0.0
+	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
+		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
+		enemy.hp=N.subtract(enemy.hp,amount)
+	amount=N.add(amount,absorbed)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
 		break_beam_chain_target(enemy)
@@ -2276,6 +2304,19 @@ func weapon_cooldown_after_shot(remaining_before: float, dt: float, interval: fl
 	var remainder := fposmod(overrun,interval)
 	return interval if remainder <= 0.000000001 else interval-remainder
 
+func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
+	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
+	var before := float(enemy.get("shield_updated_at",at))
+	var ready_at := float(enemy.get("shield_hit_at",at))+float(enemy.get("shieldDelay",0))
+	var healing_time := maxf(0,at-ready_at)-maxf(0,before-ready_at)
+	if healing_time>0:
+		enemy.shield=N.minimum(enemy.max_shield,N.add(enemy.shield,N.multiply(enemy.max_shield,float(enemy.get("shieldRecovery",0))*healing_time)))
+	enemy.shield_updated_at=at
+
+func advance_enemy_shields(dt: float) -> void:
+	enemy_shield_time+=dt
+	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
+
 func tick(dt: float) -> void:
 	if paused:
 		return
@@ -2352,6 +2393,7 @@ func tick(dt: float) -> void:
 			spawn_group()
 		return
 	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p))
+	enemy_shield_time+=dt
 	for index in range(weapon_entries().size()):
 		var entry: Dictionary = weapon_entries()[index]
 		var key := str(entry.key)
@@ -2402,6 +2444,7 @@ func tick(dt: float) -> void:
 				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)
+	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 	if state == State.COMBAT and not has_alive_enemy():
 		if guarding_here():
 			if guard_engaged and is_boss_encounter():

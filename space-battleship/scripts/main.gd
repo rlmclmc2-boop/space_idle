@@ -2812,6 +2812,8 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
 	var w := dimensions.y * 0.8
 	bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+	if float(enemy.get("max_shield",0))>0:
+		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-12,w,4),float(enemy.shield)/float(enemy.max_shield),CYAN)
 	if boss_battle:
 		var marker := pos + Vector2(dimensions.y/2+4,-10)
 		marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
