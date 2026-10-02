@@ -190,8 +190,15 @@ var save_interval_input: LineEdit
 var save_interval_feedback: Label
 var last_save_label: Label
 var save_status_label: Label
+var save_transfer := preload("res://scripts/save_transfer.gd").new()
+var save_file_dialog: FileDialog
+var save_import_confirmation: ConfirmationDialog
+var save_transfer_feedback: Label
+var pending_import: Dictionary = {}
+var import_committing := false
 
 func _ready() -> void:
+	var from_save_import := get_tree().has_meta("save_import_backup")
 	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
 	position.x = -VIEW_CROP_LEFT
 	for side in [-1.0,1.0]:
@@ -265,6 +272,10 @@ func _ready() -> void:
 		music.play()
 	game.resume_progress()
 	build_ui()
+	if get_tree().has_meta("save_import_backup"):
+		var backup: String=get_tree().get_meta("save_import_backup")
+		get_tree().remove_meta("save_import_backup")
+		call_deferred("save_transfer_message",UIText.t("save.import_success",{"backup":backup}))
 	if automation_args.has("--capture"):
 		game.start(1, false)
 		game.distance = 99.8
@@ -281,7 +292,7 @@ func _ready() -> void:
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
-		call_deferred("show_chrono_login_report")
+		if not from_save_import:call_deferred("show_chrono_login_report")
 	elif OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
 		call_deferred("show_qa_tools")
 
@@ -773,6 +784,7 @@ func show_save_settings() -> void:
 		save_settings_dialog.theme = Theme.new()
 		save_settings_dialog.theme.default_font = font
 		save_settings_dialog.theme.default_font_size = 18
+		save_settings_dialog.exclusive = true
 		add_child(save_settings_dialog)
 		var content := VBoxContainer.new()
 		content.custom_minimum_size = Vector2(580,280)
@@ -810,6 +822,22 @@ func show_save_settings() -> void:
 		manual.disabled = not game.save_enabled
 		manual.pressed.connect(manual_save)
 		content.add_child(manual)
+		var transfer_row := HBoxContainer.new()
+		transfer_row.add_theme_constant_override("separation",12)
+		content.add_child(transfer_row)
+		for mode in ["export","import"]:
+			var transfer_button := Button.new()
+			transfer_button.name = "ExportSave" if mode=="export" else "ImportSave"
+			transfer_button.text = UIText.t("save."+mode)
+			transfer_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			transfer_button.disabled = OS.has_feature("web") or (mode=="import" and not game.save_enabled)
+			transfer_button.pressed.connect(open_save_file.bind(mode))
+			transfer_row.add_child(transfer_button)
+		save_transfer_feedback = Label.new()
+		save_transfer_feedback.custom_minimum_size.x = 580
+		save_transfer_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		save_transfer_feedback.text = UIText.t("save.web_unavailable" if OS.has_feature("web") else "save.transfer_hint")
+		content.add_child(save_transfer_feedback)
 		var warning := Label.new()
 		warning.custom_minimum_size.x = 580
 		warning.size.x = 580
@@ -819,7 +847,77 @@ func show_save_settings() -> void:
 	save_interval_input.text = str(game.save_interval_minutes)
 	save_interval_feedback.text = UIText.t("save.interval_hint")
 	refresh_save_status()
-	save_settings_dialog.popup_centered(Vector2i(620,360))
+	save_settings_dialog.popup_centered(Vector2i(660,470))
+
+func open_save_file(mode: String) -> void:
+	if OS.has_feature("web") or import_committing:return
+	pending_import.clear()
+	if not is_instance_valid(save_file_dialog):
+		save_file_dialog = FileDialog.new()
+		save_file_dialog.name = "SaveTransferFile"
+		save_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+		save_file_dialog.use_native_dialog = true
+		save_file_dialog.exclusive = true
+		save_file_dialog.add_filter("*.json",UIText.t("save.file_filter"))
+		save_file_dialog.file_selected.connect(save_file_selected)
+		save_file_dialog.canceled.connect(func():pending_import.clear();show_save_settings())
+		add_child(save_file_dialog)
+	save_file_dialog.set_meta("mode",mode)
+	save_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if mode=="export" else FileDialog.FILE_MODE_OPEN_FILE
+	save_file_dialog.current_file = "space-battleship-progress.json" if mode=="export" else ""
+	save_settings_dialog.hide()
+	save_file_dialog.popup_centered(Vector2i(860,560))
+
+func save_file_selected(path: String) -> void:
+	if save_file_dialog.get_meta("mode")=="export":
+		var error: Error=save_transfer.export_progress(game,path)
+		save_transfer_message(UIText.t("save.export_success",{"file":path.get_file()}) if error==OK else UIText.t("save.transfer_failed",{"error":error_string(error)}))
+		return
+	var prepared: Dictionary=save_transfer.prepare(path,db)
+	if not prepared.error.is_empty():
+		save_transfer_message(UIText.t("save.import_invalid_"+str(prepared.error)))
+		return
+	pending_import=prepared.data
+	if not is_instance_valid(save_import_confirmation):
+		save_import_confirmation=ConfirmationDialog.new()
+		save_import_confirmation.name="ConfirmSaveImport"
+		save_import_confirmation.title=UIText.t("save.import_title")
+		save_import_confirmation.ok_button_text=UIText.t("save.import_replace")
+		save_import_confirmation.exclusive=true
+		preload("res://scripts/dialog_presentation.gd").dialog(save_import_confirmation)
+		save_import_confirmation.confirmed.connect(confirm_save_import)
+		save_import_confirmation.canceled.connect(func():pending_import.clear();show_save_settings())
+		add_child(save_import_confirmation)
+	save_import_confirmation.dialog_text=UIText.t("save.import_confirmation",{"file":path.get_file(),"stage":str(prepared.stage)})
+	save_import_confirmation.popup_centered(Vector2i(680,300))
+
+func save_transfer_message(message: String) -> void:
+	show_save_settings()
+	save_transfer_feedback.text=message
+
+func confirm_save_import() -> void:
+	if import_committing or pending_import.is_empty():return
+	import_committing=true
+	var transaction: Dictionary=save_transfer.commit_import(game,pending_import)
+	pending_import.clear()
+	if transaction.error!=OK:
+		import_committing=false
+		save_transfer_message(UIText.t("save.transfer_failed",{"error":error_string(transaction.error)}))
+		return
+	# Explicit global replacement uses the same fresh load/cache/UI path as startup.
+	var was_saving: bool=game.save_enabled
+	game.save_enabled=false
+	set_process(false)
+	var error:=get_tree().reload_current_scene()
+	if error!=OK:
+		var rollback_error: Error=save_transfer.rollback(transaction)
+		game.save_enabled=was_saving
+		set_process(true)
+		import_committing=false
+		save_transfer_message(UIText.t("save.import_reload_failed",{"error":error_string(error),"backup":str(transaction.backup),"rollback":error_string(rollback_error)}))
+		return
+	save_transfer.finish(transaction)
+	get_tree().set_meta("save_import_backup",str(transaction.backup)+"/current-progress.json")
 
 func apply_save_interval() -> void:
 	if not game.set_save_interval(save_interval_input.text):

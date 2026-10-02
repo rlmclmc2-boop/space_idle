@@ -12262,5 +12262,101 @@
     "text": "武器无人机 · {page}/{pages} 页 · 共 {count} 架",
     "params": "{page},{pages},{count}",
     "category": "ship"
+  },
+  {
+    "key": "save.export",
+    "text": "导出存档",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import",
+    "text": "导入存档",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.file_filter",
+    "text": "太空战舰存档",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.transfer_hint",
+    "text": "导出当前进度为 JSON 文件。导入会替换当前进度，并先保留可重新导入的备份。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.web_unavailable",
+    "text": "文件导入导出暂支持桌面版；网页版无法通过此文件选择器访问本机文件。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.export_success",
+    "text": "已导出当前进度：{file}",
+    "params": "{file}",
+    "category": "settings"
+  },
+  {
+    "key": "save.transfer_failed",
+    "text": "操作失败（{error}），当前进度未替换。",
+    "params": "{error}",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_invalid_read",
+    "text": "无法读取所选文件，当前进度未替换。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_invalid_size",
+    "text": "所选文件为空或超过 16 MB，当前进度未替换。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_invalid_format",
+    "text": "文件损坏或不是有效存档，当前进度未替换。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_invalid_version",
+    "text": "存档版本不兼容；支持版本 2、3、4，当前进度未替换。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_title",
+    "text": "确认导入存档",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_replace",
+    "text": "备份并替换进度",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_confirmation",
+    "text": "已校验：{file}\n可进入第 {stage} 关。\n\n导入将替换当前全部进度，并重新加载游戏。确认前会备份当前进度；取消不会导入。",
+    "params": "{file},{stage}",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_success",
+    "text": "导入成功。原进度备份：{backup}\n如需恢复，可通过“导入存档”选择此文件。",
+    "params": "{backup}",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_reload_failed",
+    "text": "重新加载失败（{error}）；恢复结果：{rollback}。原进度备份：{backup}",
+    "params": "{error},{rollback},{backup}",
+    "category": "settings"
   }
 ]

@@ -6513,6 +6513,67 @@
         "damage",
         "absorbed"
       ]
+    },
+    "save.export": {
+      "params": []
+    },
+    "save.import": {
+      "params": []
+    },
+    "save.file_filter": {
+      "params": []
+    },
+    "save.transfer_hint": {
+      "params": []
+    },
+    "save.web_unavailable": {
+      "params": []
+    },
+    "save.export_success": {
+      "params": [
+        "file"
+      ]
+    },
+    "save.transfer_failed": {
+      "params": [
+        "error"
+      ]
+    },
+    "save.import_invalid_read": {
+      "params": []
+    },
+    "save.import_invalid_size": {
+      "params": []
+    },
+    "save.import_invalid_format": {
+      "params": []
+    },
+    "save.import_invalid_version": {
+      "params": []
+    },
+    "save.import_title": {
+      "params": []
+    },
+    "save.import_replace": {
+      "params": []
+    },
+    "save.import_confirmation": {
+      "params": [
+        "file",
+        "stage"
+      ]
+    },
+    "save.import_success": {
+      "params": [
+        "backup"
+      ]
+    },
+    "save.import_reload_failed": {
+      "params": [
+        "error",
+        "rollback",
+        "backup"
+      ]
     }
   },
   "bindings": {

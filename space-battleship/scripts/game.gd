@@ -214,11 +214,14 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
+	var raw = progress_writer.read_progress(SAVE_PATH)
+	if raw is Dictionary:load_progress_data(raw)
+
+func load_progress_data(raw: Dictionary) -> void:
+	# Also used on an isolated fresh game to validate portable imports.
 	invalidate_stat_cache()
 	login_chrono_particles = 0.0
-	var raw = progress_writer.read_progress(SAVE_PATH)
-	if not raw is Dictionary or int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:
-		return
+	if int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:return
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
@@ -543,8 +546,20 @@ func _build_save_data() -> Dictionary:
 	profile.resourceSamples = resource_samples
 	profile.chronoSavedAt = float(profile.hightechSavedAt)
 	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
-	# Compatibility projection only; never install name-based levels in runtime.
-	var saved := profile.duplicate()
+	return _compose_save_data(profile.duplicate())
+
+func portable_save_data() -> Dictionary:
+	# Export and import backup must leave unsaved runtime progress unchanged.
+	var saved := profile.duplicate(true)
+	var now := Time.get_unix_time_from_system()
+	saved.hightechOrder = hightech_slots()
+	saved.hightechSavedAt = now
+	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0).duplicate(true)
+	saved.chronoSavedAt = now
+	saved.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false)).duplicate(true)
+	return _compose_save_data(saved)
+
+func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
