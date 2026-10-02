@@ -1,0 +1,647 @@
+{
+  "fixture": "isolated logic-owned first-galaxy plan, 30 completed nodes",
+  "frames": [
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00000.jpg",
+      "time_s": 0.124662,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00001.jpg",
+      "time_s": 0.249225,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00002.jpg",
+      "time_s": 0.374351,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00003.jpg",
+      "time_s": 0.501417,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00004.jpg",
+      "time_s": 0.641907,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00005.jpg",
+      "time_s": 0.780922,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00006.jpg",
+      "time_s": 0.924641,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00007.jpg",
+      "time_s": 1.050422,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00008.jpg",
+      "time_s": 1.18877,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00009.jpg",
+      "time_s": 1.319859,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00010.jpg",
+      "time_s": 1.454712,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00011.jpg",
+      "time_s": 1.584909,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00012.jpg",
+      "time_s": 1.721044,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00013.jpg",
+      "time_s": 1.859509,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00014.jpg",
+      "time_s": 2.008094,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00015.jpg",
+      "time_s": 2.136423,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00016.jpg",
+      "time_s": 2.269121,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00017.jpg",
+      "time_s": 2.398312,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00018.jpg",
+      "time_s": 2.527663,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00019.jpg",
+      "time_s": 2.658083,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00020.jpg",
+      "time_s": 2.791088,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00021.jpg",
+      "time_s": 2.92755,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00022.jpg",
+      "time_s": 3.05759,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00023.jpg",
+      "time_s": 3.189614,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00024.jpg",
+      "time_s": 3.322706,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00025.jpg",
+      "time_s": 3.449594,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00026.jpg",
+      "time_s": 3.579063,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00027.jpg",
+      "time_s": 3.706903,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00028.jpg",
+      "time_s": 3.837754,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00029.jpg",
+      "time_s": 3.966046,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00030.jpg",
+      "time_s": 4.0953,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00031.jpg",
+      "time_s": 4.219098,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00032.jpg",
+      "time_s": 4.350464,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00033.jpg",
+      "time_s": 4.475195,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00034.jpg",
+      "time_s": 4.606979,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00035.jpg",
+      "time_s": 4.742906,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00036.jpg",
+      "time_s": 4.877618,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00037.jpg",
+      "time_s": 5.025157,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00038.jpg",
+      "time_s": 5.154049,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00039.jpg",
+      "time_s": 5.278531,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00040.jpg",
+      "time_s": 5.419528,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00041.jpg",
+      "time_s": 5.547291,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00042.jpg",
+      "time_s": 5.677558,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00043.jpg",
+      "time_s": 5.813137,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00044.jpg",
+      "time_s": 5.960917,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00045.jpg",
+      "time_s": 6.090438,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00046.jpg",
+      "time_s": 6.223448,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00047.jpg",
+      "time_s": 6.354987,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00048.jpg",
+      "time_s": 6.487029,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00049.jpg",
+      "time_s": 6.618332,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00050.jpg",
+      "time_s": 6.758073,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00051.jpg",
+      "time_s": 6.89637,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00052.jpg",
+      "time_s": 7.036274,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00053.jpg",
+      "time_s": 7.16556,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00054.jpg",
+      "time_s": 7.308984,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00055.jpg",
+      "time_s": 7.449804,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00056.jpg",
+      "time_s": 7.596141,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00057.jpg",
+      "time_s": 7.730529,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00058.jpg",
+      "time_s": 7.870476,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00059.jpg",
+      "time_s": 8.015828,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00060.jpg",
+      "time_s": 8.157823,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00061.jpg",
+      "time_s": 8.293275,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00062.jpg",
+      "time_s": 8.435969,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00063.jpg",
+      "time_s": 8.568374,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00064.jpg",
+      "time_s": 8.706485,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00065.jpg",
+      "time_s": 8.843728,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00066.jpg",
+      "time_s": 8.982871,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00067.jpg",
+      "time_s": 9.112887,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00068.jpg",
+      "time_s": 9.243423,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00069.jpg",
+      "time_s": 9.370065,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00070.jpg",
+      "time_s": 9.501948,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00071.jpg",
+      "time_s": 9.63151,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00072.jpg",
+      "time_s": 9.761214,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00073.jpg",
+      "time_s": 9.892341,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00074.jpg",
+      "time_s": 10.018004,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00075.jpg",
+      "time_s": 10.151629,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00076.jpg",
+      "time_s": 10.278979,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00077.jpg",
+      "time_s": 10.406426,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00078.jpg",
+      "time_s": 10.53876,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00079.jpg",
+      "time_s": 10.671862,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00080.jpg",
+      "time_s": 10.817313,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00081.jpg",
+      "time_s": 10.952351,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00082.jpg",
+      "time_s": 11.078425,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00083.jpg",
+      "time_s": 11.201447,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00084.jpg",
+      "time_s": 11.32854,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00085.jpg",
+      "time_s": 11.457411,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00086.jpg",
+      "time_s": 11.590024,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00087.jpg",
+      "time_s": 11.721682,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00088.jpg",
+      "time_s": 11.8519,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00089.jpg",
+      "time_s": 11.981974,
+      "traffic_visible": 6
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "file": "frame_00090.jpg",
+      "time_s": 12.111122,
+      "traffic_visible": 6
+    }
+  ],
+  "height": 883,
+  "source": "actual native game root framebuffer, every rendered frame, real wall-clock timestamps",
+  "speed": 1.0,
+  "wall_seconds": 12.111122,
+  "width": 1372
+}
