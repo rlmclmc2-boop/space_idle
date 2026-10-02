@@ -186,7 +186,8 @@ def validate_description(row, field='description', section='hightech'):
 def validate_weapon_motion(data):
     motion = data.get('weapon_motion', {})
     expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y'}
-    if motion and set(motion) != expected:
+    if not isinstance(motion,dict):raise ValueError('weapon_motion: expected table')
+    if 'weapon_motion' in data and set(motion) != expected:
         raise ValueError(f'weapon_motion: missing {sorted(expected-set(motion))}; unknown {sorted(set(motion)-expected)}')
     for key,row in motion.items():
         value = row.get('value')
@@ -201,13 +202,20 @@ def validate_weapon_motion(data):
     if motion and float(motion['missile_cruise_at']['value']) <= float(motion['missile_ignition_at']['value']):
         raise ValueError('weapon_motion: cruise_at must exceed ignition_at')
     enemy_base=data.get('enemy_weapon_base',{})
-    if enemy_base and set(enemy_base)!={'laser','missile','cannon','longLaser'}:raise ValueError('enemy_weapon_base: require all four base weapons')
+    if 'enemy_weapon_base' in data and (not isinstance(enemy_base,dict) or set(enemy_base)!={'laser','missile','cannon','longLaser'}):raise ValueError('enemy_weapon_base: require all four base weapons')
     if motion:
         salvo=data['equipment']['missile'][0].get('para1')
         if type(salvo) not in (int,float) or not math.isfinite(salvo) or salvo<1 or salvo!=int(salvo):raise ValueError('equipment missile.para1: expected positive integer salvo quantity')
     for key,row in enemy_base.items():
         for field in ('dmg','cd','dmgtype'):
             positive(row.get(field), f'enemy_weapon_base {key}.{field}')
+        # Require consumed fields, while retaining nullable unused parameters
+        # and the beam's intentionally optional charge duration.
+        required = ('para1','para2') if key in ('missile','longLaser') else ('para1',)
+        for field in required:
+            positive(row.get(field), f'enemy_weapon_base {key}.{field}', key == 'longLaser' and field == 'para1')
+        if key == 'longLaser' and 'para3' not in row:
+            raise ValueError('enemy_weapon_base longLaser.para3: charge column required (nullable)')
         for field in ('para1','para2','para3'):
             if row.get(field) is not None:positive(row[field], f'enemy_weapon_base {key}.{field}', True)
     if motion:

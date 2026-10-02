@@ -8,7 +8,7 @@ const PROPERTIES={"player_cannon_speed_multiplier":"RAIL_SPEED_FACTOR","missile_
 func check(ok:bool,label:String):
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
-func fixture(variant:Dictionary={},level:=1):
+func fixture(variant:Dictionary={},level:=1,enemy_hp:=1e100):
  var db:=ShipDatabase.new()
  if variant.get("_legacy",false):
   db.data.erase("weapon_motion");db.data.erase("enemy_weapon_base")
@@ -19,7 +19,7 @@ func fixture(variant:Dictionary={},level:=1):
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
  g.profile.loadout={"weapons":[{"key":"missile","level":level}],"defence":[{"key":"shield","level":1},{"key":"armour","level":1}]}
  g.reset_player();g.start(1,false);g.spawn_group()
- var enemy:Dictionary=g.enemies[0].duplicate(true);enemy.uid=1701;enemy.hp=1e100;enemy.max_hp=1e100;enemy.x=300;enemy.y=100;enemy.cooldowns=enemy.cooldowns.map(func(_v):return 999.0)
+ var enemy:Dictionary=g.enemies[0].duplicate(true);enemy.uid=1701;enemy.hp=enemy_hp;enemy.max_hp=enemy_hp;enemy.x=300;enemy.y=100;enemy.cooldowns=enemy.cooldowns.map(func(_v):return 999.0)
  g.enemies.clear();g.enemies.append(enemy);g.refresh_missile_target_registry()
  g.launch_provider=func(_mount,_aim,_ordinal):return {"position":Vector2(300,700),"direction":Vector2.UP}
  g.cooldowns.weapons_0=999.0
@@ -61,6 +61,17 @@ func run():
  FileAccess.open("res://weapon-default-results.json",FileAccess.WRITE).store_string(JSON.stringify(default_state))
  check(packets.size()==5 and g.launch_records.size()==5,"Default source fires current five-carrier salvo")
  check(g.db.equip("missile",1).dmg==120 and g.db.equip("missile",1).cd==2.4,"Default damage and cooldown match current presentation")
+ var damage_sample=fixture({},1,10000.0)
+ damage_sample.enemies[0].armourType=1 # Missile type 2: no resistance in this exact-total sample.
+ damage_sample.enemies[0].interference=0.0
+ salvo(damage_sample)
+ for i in 240:damage_sample.tick(1.0/60.0)
+ var recorded_damage:=0.0
+ for hit in damage_sample.hit_records:recorded_damage+=float(hit.damage)
+ var remaining_hp:float=damage_sample.enemies[0].hp if not damage_sample.enemies.is_empty() else 0.0
+ check(damage_sample.hit_records.size()==5 and remaining_hp>0 and remaining_hp<10000,"Finite-HP sample receives all five hits without killing target")
+ check(recorded_damage==600.0 and 10000.0-remaining_hp==recorded_damage,"Finite-HP loss equals exact five-carrier damage total")
+ FileAccess.open("res://weapon-damage-sample.json",FileAccess.WRITE).store_string(JSON.stringify({"initial_hp":10000,"remaining_hp":remaining_hp,"total_damage":recorded_damage,"hits":damage_sample.hit_records,"rng":str(damage_sample.rng.state)}))
  if OS.get_environment("WEAPON_CONFIG_BASELINE")!="1":
   var source:=ShipDatabase.new();var legacy_equipment:Dictionary=source.equipment.duplicate(true)
   for field in ["dmg","cd","dmgtype","para1","para2","para3"]:legacy_equipment.missile[0][field]=source.data.enemy_weapon_base.missile[field]
