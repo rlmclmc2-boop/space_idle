@@ -2,12 +2,12 @@ extends RefCounted
 ## Presentation only. Warm, bounded main-cannon strokes leave cyan laser packets readable.
 const ELECTRIC := Color("ffb65c")
 const HOT := Color("fff3cf")
-var charge_radius := 20.0
+var charge_radius := 28.0
 var trail_length := 138.0
-var trail_width := 10.0
+var trail_width := 28.0
 var flash_seconds := 0.09
 var impact_seconds := 0.16
-var impact_radius := 24.0
+var impact_radius := 32.0
 var penetration_length := 80.0
 func configure(db) -> void:
 	for key in ["charge_radius","trail_length","trail_width","flash_seconds","impact_seconds","impact_radius","penetration_length"]:
@@ -20,7 +20,7 @@ func charge(surface:CanvasItem,point:Vector2,direction:Vector2,amount:float,cloc
 		var lit:=clampf(amount*3.0-float(index),0.0,1.0)
 		var center:=point-direction*charge_radius*(0.9-float(index)*0.28)
 		surface.draw_line(center-side*charge_radius*0.23,center+side*charge_radius*0.23,Color(ELECTRIC,lit*0.9),trail_width*0.26,true)
-	var radius:=charge_radius*lerpf(1.0,0.35,amount)
+	var radius:=charge_radius*lerpf(1.0,0.6,amount)
 	for index in 2:
 		var angle:=clock*1.8+float(index)*PI
 		surface.draw_arc(point,radius,angle,angle+PI*0.7,12,Color(ELECTRIC,amount*0.85),trail_width*0.22,true)
@@ -30,16 +30,17 @@ func flight(surface:CanvasItem,point:Vector2,direction:Vector2,_clock:float,orig
 	var length:=minf(origin.distance_to(point),trail_length)
 	if length<0.1:return
 	var side:=direction.orthogonal()
-	var nose:=point+direction*trail_width
-	var shoulder:=point-direction*minf(length*0.35,trail_width*2.0)
+	var nose:=point+direction*trail_width*0.7
+	var shoulder:=point-direction*minf(length*0.22,trail_width*0.9)
+	var front:=point+direction*trail_width*0.12
 	var back:=point-direction*length
-	surface.draw_colored_polygon(PackedVector2Array([nose,shoulder+side*trail_width*0.5,back,shoulder-side*trail_width*0.5]),ELECTRIC)
-	surface.draw_line(back.lerp(point,0.32),nose,Color(HOT,0.95),trail_width*0.3,true)
+	surface.draw_colored_polygon(PackedVector2Array([nose,front+side*trail_width*0.5,shoulder+side*trail_width*0.42,back,shoulder-side*trail_width*0.42,front-side*trail_width*0.5]),ELECTRIC)
+	surface.draw_line(back.lerp(point,0.65),nose,Color(HOT,0.95),trail_width*0.3,true)
 func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float)->void:
 	if age<0 or age>=flash_seconds:return
 	var fade:=1.0-age/flash_seconds
-	surface.draw_line(point-direction*trail_width*0.6,point+direction*trail_width*4.4,Color(ELECTRIC,fade*budget),trail_width*(0.3+fade*0.7),true)
-	surface.draw_line(point,point+direction*trail_width*3.0,Color(HOT,fade),trail_width*0.35,true)
+	surface.draw_line(point-direction*trail_width*0.6,point+direction*trail_width*2.0,Color(ELECTRIC,fade*budget),trail_width*(0.3+fade*0.7),true)
+	surface.draw_line(point,point+direction*trail_width*1.6,Color(HOT,fade),trail_width*0.35,true)
 	var side:=direction.orthogonal()*charge_radius*(0.4+0.3*(1.0-fade))
 	surface.draw_line(point-side,point+side,Color(ELECTRIC,fade*budget),trail_width*0.22,true)
 func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critical:bool,budget:float)->void:

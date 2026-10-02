@@ -17589,7 +17589,7 @@
     },
     "rail_charge_radius": {
       "id": "rail_charge_radius",
-      "value": 20,
+      "value": 28,
       "unit": "显示像素",
       "description": "局部炮口蓄力环半径",
       "scope": "玩家磁轨炮表现"
@@ -17603,7 +17603,7 @@
     },
     "rail_trail_width": {
       "id": "rail_trail_width",
-      "value": 10,
+      "value": 28,
       "unit": "显示像素",
       "description": "磁轨主炮弹道宽度",
       "scope": "玩家磁轨炮表现"
@@ -17624,7 +17624,7 @@
     },
     "rail_impact_radius": {
       "id": "rail_impact_radius",
-      "value": 24,
+      "value": 32,
       "unit": "显示像素",
       "description": "主炮命中冲击半径",
       "scope": "玩家磁轨炮表现"
