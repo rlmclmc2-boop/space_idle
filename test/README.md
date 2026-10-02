@@ -11,6 +11,7 @@
 | 星球加成弹窗 / 自动探索默认 | `test_planet_dialog_layout.gd` 检查分组、数值对齐、详情、四设施操作、六星球隔离、长文案、大数及隐藏/暂停；`test_planet_bonus_dialog.gd` 检查本星球已生效加成、倍率实时更新、真实点击、默认开启和手动关闭存读档 |
 | 伤害、取整与弹体 | 失锁加速用 `test_missile_orphan_acceleration.gd --headless`（同批五枚加速曲线与离屏），失锁/换波语义用 `test_missile_retarget.gd --headless`；`test_rule_rounding.gd`、`test_target_resistance.gd`、`test_projectile_lifecycle.gd`；命中回调中的删除/重排/清场新增用 `test_projectile_iteration.gd --headless`；持续光束用 `test_long_laser.gd`，溢出/坚韧用 `test_shield_overflow.gd` / `test_tenacity_survival.gd` |
 | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
+| 强化解锁与首级门槛 | `test_enhancement_unlock_gate.gd --headless` 验证锁定消费者、0/1/10/20主效果、原分支门槛、迁移/永久加成及缓存；`test_shared_enhancement_ranks.gd` 验证排序、实际攻击与详情；源表校验用 `test_enhance_config.py`。 |
 | 武器 Excel / 运动参数 | `test_weapon_config.py` 在隔离源表中逐项调参，经正式增量导出验证玩家/敌方隔离及实际运动；只跑1倍。`SPACE_BATTLESHIP_GODOT` 可指定引擎。 |
 | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |
 | 战舰静态预览 | `test_ship_preview.gd --headless` 检查五舰实际模型来源、真实槽位映射、候选/当前/锁定、空槽/无人机/停用、显式启用与局部复用；图形运行捕获五舰和特殊状态。运行隔离工程须包含 `dev`/`addons`，步骤见 [预览资产说明](../space-battleship/assets/ui/ships/README.md)。 |
