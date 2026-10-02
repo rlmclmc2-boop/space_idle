@@ -469,15 +469,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if is_instance_valid(balance_lab) and balance_lab.visible:return
-	if (event is InputEventMouseMotion or event is InputEventMouseButton) and not resource_input_blocked():
-		var field := battle_clip.get_global_rect()
-		if event is InputEventMouseMotion and field.has_point(event.position):
-			var previous: Vector2 = event.position-event.relative
-			# Sweep only within the battlefield; GUI-consumed events never reach here.
-			var start: Variant = battle_logical_point(battle_layer.to_local(previous)) if field.has_point(previous) else null
-			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions(),start)
-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and field.has_point(event.position):
-			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),true,drop_pickup_positions())
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		collect_render_path(event.position,event.position)
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F1:
 			show_qa_tools()
@@ -490,14 +483,74 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				game.paused = not game.paused
 
+func _input(event: InputEvent) -> void:
+	# Motion may end on a GUI control after crossing exposed battlefield space.
+	if event is InputEventMouseMotion and is_instance_valid(battle_clip):
+		collect_render_path(event.position-event.relative,event.position)
+
 func resource_input_blocked() -> bool:
-	if help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
-	var viewport := get_viewport()
+	if game.paused or help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
+	if is_instance_valid(balance_lab) and balance_lab.visible:return true
 	if not get_window().has_focus():return true
-	if viewport.gui_get_hovered_control()!=null:return true
-	for window in viewport.get_embedded_subwindows():
+	for window in get_viewport().get_embedded_subwindows():
 		if window.exclusive or window.popup_window:return true
 	return false
+
+func clip_pickup_path(from: Vector2, to: Vector2, rect: Rect2) -> Array[Vector2]:
+	var low := 0.0
+	var high := 1.0
+	var delta := to-from
+	for axis in 2:
+		if is_zero_approx(delta[axis]):
+			if from[axis]<rect.position[axis] or from[axis]>rect.end[axis]:return []
+		else:
+			var a: float=(rect.position[axis]-from[axis])/delta[axis]
+			var b: float=(rect.end[axis]-from[axis])/delta[axis]
+			low=maxf(low,minf(a,b));high=minf(high,maxf(a,b))
+			if low>high:return []
+	return [from+delta*low,from+delta*high]
+
+func pickup_control_rects(control: Control, field: Rect2, clip: Rect2, result: Array[Rect2]) -> void:
+	if not control.is_visible_in_tree():return
+	var rect: Rect2=(control.get_global_transform_with_canvas()*Rect2(Vector2.ZERO,control.size)).intersection(clip)
+	if control.mouse_filter!=Control.MOUSE_FILTER_IGNORE and rect.intersects(field):result.append(rect.intersection(field))
+	if control.clip_contents:
+		clip=rect
+		if not clip.intersects(field):return
+	for child in control.get_children():
+		if child is Control:pickup_control_rects(child,field,clip,result)
+
+func collect_render_path(from: Vector2, to: Vector2) -> void:
+	if game.drops.is_empty() or resource_input_blocked():return
+	var field: Rect2=battle_clip.get_global_transform_with_canvas()*Rect2(Vector2.ZERO,battle_clip.size)
+	var clipped := clip_pickup_path(from,to,field)
+	if clipped.is_empty():return
+	var covers: Array[Rect2]=[]
+	for child in get_children():
+		if child is Control:pickup_control_rects(child,field,field,covers)
+	var paths: Array=[clipped]
+	for cover in covers:
+		var exposed: Array=[]
+		for path in paths:
+			var cut := clip_pickup_path(path[0],path[1],cover)
+			if cut.is_empty():exposed.append(path)
+			else:
+				if path[0].distance_to(cut[0])>0.001:exposed.append([path[0],cut[0]])
+				if path[1].distance_to(cut[1])>0.001:exposed.append([cut[1],path[1]])
+		paths=exposed
+		if paths.is_empty():return
+	recover_death_drop_positions()
+	var transform := battle_layer.get_global_transform_with_canvas()
+	var inverse := transform.affine_inverse()
+	for drop in game.drops.duplicate():
+		var point := drop_render_position(drop)
+		var screen_point: Vector2=transform*point
+		if not field.has_point(screen_point) or covers.any(func(rect):return rect.has_point(screen_point)):continue
+		for path in paths:
+			var nearest := Geometry2D.get_closest_point_to_segment(point,inverse*path[0],inverse*path[1])
+			if point.distance_to(nearest)<55:
+				game.collect(drop,true)
+				break
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:

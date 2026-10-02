@@ -20,10 +20,13 @@ func drop(id: String,point := Vector2(300,350),furnace := false) -> Dictionary:
  return entry
 func screen(point: Vector2) -> Vector2:
  return root.get_final_transform()*scene.battle_layer.get_global_transform()*scene.battle_point(point)
-func motion(point: Vector2,from: Variant = null) -> void:
- var event:=InputEventMouseMotion.new();event.position=screen(point);event.global_position=event.position
- event.relative=event.position-screen(from) if from is Vector2 else Vector2.ZERO
+func motion_render(point: Vector2,from: Variant = null) -> void:
+ var transform: Transform2D=root.get_final_transform()*scene.battle_layer.get_global_transform()
+ var event:=InputEventMouseMotion.new();event.position=transform*point;event.global_position=event.position
+ event.relative=event.position-transform*from if from is Vector2 else Vector2.ZERO
  Input.parse_input_event(event);await process_frame;await process_frame
+func motion(point: Vector2,from: Variant = null) -> void:
+ await motion_render(scene.battle_point(point),scene.battle_point(from) if from is Vector2 else null)
 func capture(name: String) -> void:
  var folder:=OS.get_environment("RESOURCE_HOVER_EVIDENCE")
  if folder.is_empty():return
@@ -55,6 +58,33 @@ func run() -> void:
  await motion(Vector2(510,350),Vector2(90,350))
  check(not g.drops.has(first) and not g.drops.has(second) and g.profile.resources["1"]==iron+17 and g.profile.resources["2"]==uranium+17,"One fast motion collects multiple crossed drops")
  await capture("after-hover")
+ var entering:=drop("1",Vector2(80,350))
+ await motion(Vector2(500,350),Vector2(-100,350))
+ check(not g.drops.has(entering),"Outside-to-inside motion collects crossed edge resource")
+ var leaving:=drop("1",Vector2(500,350))
+ await motion(Vector2(700,350),Vector2(100,350))
+ check(not g.drops.has(leaving),"Inside-to-outside motion collects crossed edge resource")
+ var crossing:=drop("2",Vector2(300,350))
+ await motion(Vector2(700,350),Vector2(-100,350))
+ check(not g.drops.has(crossing),"Two outside endpoints still sweep the clipped battlefield")
+ var diagonal:=drop("1",Vector2(341.2,420))
+ await motion_render(Vector2(562,900),Vector2(10,250))
+ check(not g.drops.has(diagonal),"Rendered diagonal picks the nonlinear-map regression resource without radius inflation")
+ var partial:=ColorRect.new();partial.color=Color(0.15,0.3,0.4);partial.mouse_filter=Control.MOUSE_FILTER_STOP;partial.z_index=100
+ partial.position=scene.battle_layer.get_global_transform()*scene.battle_point(Vector2(300,350))-Vector2(60,60);partial.size=Vector2(120,120)
+ scene.add_child(partial);await process_frame
+ var under:=drop("1",Vector2(300,350));var before_cover:=drop("1",Vector2(100,350));var after_cover:=drop("2",Vector2(500,350))
+ await capture("partial-cover-before")
+ await motion(Vector2(560,350),Vector2(10,350))
+ check(g.drops.has(under) and not g.drops.has(before_cover) and not g.drops.has(after_cover),"Uncovered endpoints cannot collect through partial GUI cover; exposed drops still collect")
+ await capture("partial-cover-after")
+ var ending_on_gui:=drop("1",Vector2(100,350))
+ await motion(Vector2(300,350),Vector2(10,350))
+ check(g.drops.has(under) and not g.drops.has(ending_on_gui),"Motion ending on GUI retains its exposed path")
+ var starting_on_gui:=drop("1",Vector2(500,350))
+ await motion(Vector2(560,350),Vector2(300,350))
+ check(g.drops.has(under) and not g.drops.has(starting_on_gui),"Motion starting on GUI retains its exposed path")
+ partial.queue_free();await process_frame;g.drops.erase(under)
  var blocked:=drop("1")
  scene.help_open=true;scene.refresh_navigation();await motion(Vector2(300,350))
  check(g.drops.has(blocked),"Help overlay blocks hover")
