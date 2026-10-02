@@ -695,10 +695,10 @@ def validate_attack_pairs(data):
             for mount in enemies[str(eid)]['equipment']:
                 name = mount['name']
                 base = name.replace('_mon', '').replace('-mon', '')
-                weapon = data['equipment'].get(name, [{}])[0]
+                weapon = next((row for row in data['equipment'].get(name, []) if row.get('level') == 1), {})
                 damage_type = weapon.get('dmgtype')
                 if damage_type is None:
-                    fallback = data['equipment'].get(base, [{}])[0]
+                    fallback = next((row for row in data['equipment'].get(base, []) if row.get('level') == 1), {})
                     damage_type = data.get('enemy_weapon_base', {}).get(base, {}).get('dmgtype', fallback.get('dmgtype'))
                 if type(damage_type) not in (int, float) or damage_type != expected:
                     raise ValueError(f'battle_design {key}: declared attack type differs from actual weapon')

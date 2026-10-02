@@ -3,7 +3,7 @@ import copy,io,json,pathlib,subprocess,sys
 import openpyxl
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'space-battleship/tools'))
-from import_workbook import validate_projection
+from import_workbook import validate_projection, validate_attack_pairs
 from config_workbooks import read_changed_file
 BASE='b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f'
 data=json.loads((ROOT/'space-battleship/data/game_data.json').read_text())
@@ -58,4 +58,22 @@ rejects(lambda v:v['enemies']['2001'].__setitem__('equipment',[{'name':'laser_mo
 rejects(lambda v:v['equipment']['laser_mon'][0].__setitem__('dmgtype',True))
 rejects(lambda v:v['groups']['2001'].__setitem__('slots',v['groups']['2001']['slots'][:10]))
 rejects(lambda v:v['battle_design'].pop(key))
-print('Attack pairs: 40 templates/20 pairs,60 copied enemies,4 Excel projections,old IDs/levels/defence/growth,legacy metadata and12 malformed cases passed')
+# Runtime resolves Lv1 regardless of workbook row order, including fallback.
+def reordered(v, invalid=False, fallback=False):
+    name = 'laser' if fallback else 'laser_mon'
+    rows = v['equipment'][name]
+    first = copy.deepcopy(rows[0]);first['level']=2;first['dmgtype']=1
+    rows.insert(0, first)
+    if fallback:
+        v['equipment']['laser_mon'][0]['dmgtype']=None
+        v['enemy_weapon_base']['laser'].pop('dmgtype',None)
+    if invalid:rows[1]['dmgtype']=2
+for fallback in [False,True]:
+    valid=copy.deepcopy(data);reordered(valid,fallback=fallback)
+    validate = validate_attack_pairs if fallback else validate_projection
+    validate(valid)
+    invalid=copy.deepcopy(valid);invalid['equipment']['laser' if fallback else 'laser_mon'][1]['dmgtype']=2
+    try:validate(invalid)
+    except ValueError:pass
+    else:raise AssertionError('Lv2 row concealed invalid Lv1 attack type')
+print('Attack pairs: 40 templates/20 pairs,60 copied enemies,4 Excel projections,old IDs/levels/defence/growth,legacy metadata,14 malformed cases and2 valid Lv1 reorder cases passed')
