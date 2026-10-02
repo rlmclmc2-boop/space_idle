@@ -10,6 +10,17 @@ class Native extends "res://scripts/presented_battle_game.gd":
 	func tick(dt:float)->void:
 		simulated_time+=dt;super.tick(dt)
 var scenes:Array=[]
+func serializable(value):
+	if value is float and not is_finite(value):return str(value)
+	if value is Array:
+		var result:Array=[]
+		for item in value:result.append(serializable(item))
+		return result
+	if value is Dictionary:
+		var result:Dictionary={}
+		for key in value:result[key]=serializable(value[key])
+		return result
+	return value
 func signature(g)->Dictionary:
 	return {"stage":g.stage,"node":g.group_index,"state":g.state,"distance":g.distance,"player":g.player,"enemies":g.enemies,"resources":g.profile.resources,"loadout":g.profile.loadout,"tech":g.profile.hightechLevels,"points":g.profile.techPoints,"scientists":g.profile.scientists,"assignments":g.profile.scientistAssignments,"reactor":g.profile.reactorLevel,"allocation":g.profile.reactorAllocation,"rng":str(g.rng.state),"cleared":g.profile.cleared,"production":g.production_time(),"furnace_peak":g.profile.furnaceIncomePeak,"projectiles":g.projectiles,"queue":g.missile_queue,"drops":g.drops,"motion_clock":g.motion_clock,"crew":g.profile.crew,"planets":g.profile.planets,"galaxies":g.profile.get("galaxies",{}),"enhancement":g.profile.get("enhancementBranches",{}),"enhancement_level":g.profile.get("enhancementLevel",0),"jewels":g.profile.get("jewels",{})}
 func _initialize():call_deferred("run")
@@ -51,7 +62,7 @@ func run():
 		else:
 			a.tick(1.0/60.0);b.tick(1.0/60.0)
 		if (step+1)%60==0:
-			var left=JSON.parse_string(JSON.stringify(signature(a)));var right=JSON.parse_string(JSON.stringify(signature(b)))
+			var left=JSON.parse_string(JSON.stringify(serializable(signature(a))));var right=JSON.parse_string(JSON.stringify(serializable(signature(b))))
 			if left!=right:
 				var f=FileAccess.open("res://.runtime/formal-adapter-mismatch.json",FileAccess.WRITE);f.store_string(JSON.stringify({"second":(step+1)/60,"adapter":left,"native":right},"\t"));f.close()
 				printerr("FORMAL_ADAPTER_MISMATCH second=",(step+1)/60);quit(1);return

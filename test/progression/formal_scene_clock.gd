@@ -23,7 +23,7 @@ func run_case(boost:float,fps:int)->Dictionary:
 		driver.before_tick(1.0/fps)
 		driver.scene.advance_game_time(boost/fps)
 		driver.after_tick(1.0/fps)
-	var result={"weapon":weapon,"boost":boost,"fps":fps,"x1_seconds":g.simulated_time,"pending":driver.scene.game_time_remainder,"resources":g.profile.resources,"rng":str(g.rng.state),"kills":metrics.kills,"deaths":metrics.deaths,"state":g.state,"node":g.group_index,"furnace_peak":g.profile.furnaceIncomePeak,"motion_clock":g.motion_clock,"scope":"Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects"}
+	var result={"weapon":weapon,"boost":boost,"fps":fps,"x1_seconds":g.simulated_time,"pending":driver.scene.game_time_remainder,"resources":g.profile.resources,"player":g.player,"projectiles":g.projectiles,"queue":g.missile_queue,"rng":str(g.rng.state),"kills":metrics.kills,"deaths":metrics.deaths,"state":g.state,"node":g.group_index,"furnace_peak":g.profile.furnaceIncomePeak,"motion_clock":g.motion_clock,"scope":"Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects"}
 	driver.close();return result
 func run():
 	if not OS.get_environment("PROGRESSION_CLOCK_WEAPON").is_empty():weapon=OS.get_environment("PROGRESSION_CLOCK_WEAPON")

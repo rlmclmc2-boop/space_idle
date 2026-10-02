@@ -1,0 +1,78 @@
+[
+	{
+		"boost": 1.0,
+		"deaths": 0,
+		"fps": 60,
+		"furnace_peak": 0.0,
+		"kills": 34,
+		"motion_clock": 119.999999999994,
+		"node": 1,
+		"pending": 0.0,
+		"resources": {
+			"1": 0.0,
+			"2": 9.0
+		},
+		"rng": "6734080738295785461",
+		"scope": "Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects",
+		"state": 3,
+		"weapon": "cannon",
+		"x1_seconds": 119.999999999994
+	},
+	{
+		"boost": 10.0,
+		"deaths": 0,
+		"fps": 60,
+		"furnace_peak": 0.0,
+		"kills": 34,
+		"motion_clock": 119.999999999994,
+		"node": 1,
+		"pending": 0.0000000000000199770755493489,
+		"resources": {
+			"1": 0.0,
+			"2": 9.0
+		},
+		"rng": "6734080738295785461",
+		"scope": "Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects",
+		"state": 3,
+		"weapon": "cannon",
+		"x1_seconds": 119.999999999994
+	},
+	{
+		"boost": 1.0,
+		"deaths": 0,
+		"fps": 144,
+		"furnace_peak": 0.0,
+		"kills": 34,
+		"motion_clock": 119.999999999994,
+		"node": 1,
+		"pending": 0.0,
+		"resources": {
+			"1": 0.0,
+			"2": 9.0
+		},
+		"rng": "6734080738295785461",
+		"scope": "Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects",
+		"state": 3,
+		"weapon": "cannon",
+		"x1_seconds": 119.999999999994
+	},
+	{
+		"boost": 10.0,
+		"deaths": 0,
+		"fps": 144,
+		"furnace_peak": 0.0,
+		"kills": 34,
+		"motion_clock": 119.999999999994,
+		"node": 1,
+		"pending": 0.0000000000000319674842153006,
+		"resources": {
+			"1": 0.0,
+			"2": 9.0
+		},
+		"rng": "6734080738295785461",
+		"scope": "Controlled weapon farming; full production event hook; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects",
+		"state": 3,
+		"weapon": "cannon",
+		"x1_seconds": 119.999999999994
+	}
+]

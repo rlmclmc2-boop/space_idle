@@ -1,0 +1,15 @@
+{
+  "result": "4 business-output signatures equal",
+  "keys": [
+    "resources",
+    "rng",
+    "kills",
+    "deaths",
+    "state",
+    "node",
+    "furnace_peak",
+    "motion_clock"
+  ],
+  "full_event_hook": true,
+  "limits": "Controlled advance_game_time farming fixture, no chrono spending, GUI scheduling, complete projectile/player comparison or full progression claim"
+}
