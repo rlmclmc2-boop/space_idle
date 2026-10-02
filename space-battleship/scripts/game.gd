@@ -2480,7 +2480,7 @@ func load_jewels(raw: Dictionary) -> void:
 	profile.enhancementBranches = default_enhancement_branches()
 	profile.enhancementAttacks = 0
 	profile.enhancementHits = 0
-	if int(raw.get("enhancementVersion",0)) == 1:
+	if int(raw.get("enhancementVersion",0)) == 1 or raw.has("enhancementLevel"):
 		for field in ["enhancementLevel", "enhancementAttacks", "enhancementHits"]:
 			var value = raw.get(field,0)
 			if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)<9223372036854775807.0 and (field!="enhancementLevel" or float(value)<=ENHANCEMENT_LEVEL_LIMIT):
@@ -2558,7 +2558,7 @@ func enhancement_branch_threshold(node: int, category: String, effect: String) -
 	if node not in [1,2,3]:return -1
 	var index: int=profile.enhancementOrder.get(category,[]).find(effect)
 	if index<0:return -1
-	return int(enhancement_parameter("branch_threshold_%d" % node))+enhancement_effect_threshold(index)
+	return int(enhancement_parameter("branch_threshold_%d" % node)+enhancement_parameter("branch_position_offset_%d" % (index+1)))
 
 func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
 	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
@@ -2634,30 +2634,31 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 	var category := "weapons" if effect in ["proficiency","repeat","critical"] else "defence"
 	var eligible: Array=loadout_entries(category).filter(func(candidate):return enhancement_effects(candidate).any(func(value):return value.kind==effect))
 	var sample: Dictionary=entry if not entry.is_empty() else (eligible[0] if not eligible.is_empty() else {})
+	var active_level := enhancement_effective_level() if has_enhancement_effect(sample,effect) else 0
 	var result := {"effect":effect,"effective_level":enhancement_effective_level(),"eligible_modules":eligible.size(),"entry_specific":not entry.is_empty()}
 	match effect:
 		"proficiency","adaptation":
-			result.growth=enhancement_parameter(effect+"_growth")
+			result.growth=enhancement_parameter(effect+"_growth") if active_level>0 else 0.0
 			result.history=int(profile.enhancementAttacks if effect=="proficiency" else profile.enhancementHits)
 			result.branch_bonus_percent=enhancement_branches.a_count(self,sample,effect)*enhancement_parameter("proficiency_a_damage_bonus" if effect=="proficiency" else "adaptation_a_capacity_bonus")*100.0
 		"repeat":
 			result.probability_percent=enhancement_branches.repeat_probability(self,sample)*100.0
-			result.damage_percent=enhancement_parameter("repeat_growth")*enhancement_effective_level()*100.0
+			result.damage_percent=enhancement_parameter("repeat_growth")*active_level*100.0
 			result.delay=enhancement_parameter("repeat_delay")
 		"critical":
-			var critical:=jewel_critical(sample) if not sample.is_empty() else Vector2(enhancement_parameter("base_critical_rate"),enhancement_parameter("base_critical_multiplier"))
-			var base_chance:=enhancement_parameter("base_critical_rate")
+			var critical:=jewel_critical(sample) if not sample.is_empty() else Vector2(0,1)
+			var base_chance:=enhancement_parameter("base_critical_rate") if active_level>0 else 0.0
 			if not sample.is_empty():base_chance+=float(db.equip(str(sample.key),int(sample.level)).get("cri",0))+enhancement_branches.a_count(self,sample,"critical")*enhancement_parameter("critical_a_probability")
 			result.base_probability_percent=clampf(base_chance,0,1)*100.0
 			result.probability_percent=critical.x*100.0;result.damage_multiplier=critical.y
-			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else enhancement_parameter("base_critical_rate")*100.0
+			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else 0.0
 		"memory_material":
 			result.interval=enhancement_parameter("memory_interval")
-			result.heal_percent=enhancement_parameter("memory_heal_fraction")*enhancement_effective_level()*enhancement_branches.memory_heal_multiplier(self,sample)*100.0
-			result.charge_percent=enhancement_parameter("memory_heal_fraction")*enhancement_effective_level()*enhancement_branches.memory_charge_multiplier(self,sample)*100.0
-			result.capacity_percent=enhancement_parameter("memory_buffer_fraction")*enhancement_effective_level()*enhancement_branches.memory_cap_multiplier(self,sample)*100.0
+			result.heal_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_heal_multiplier(self,sample)*100.0
+			result.charge_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_charge_multiplier(self,sample)*100.0
+			result.capacity_percent=enhancement_parameter("memory_buffer_fraction")*active_level*enhancement_branches.memory_cap_multiplier(self,sample)*100.0
 		"delayed_damage":
-			result.fraction_percent=enhancement_deferred_fraction()*100.0;result.duration=enhancement_parameter("deferred_duration");result.interval=enhancement_parameter("deferred_interval")
+			result.fraction_percent=enhancement_deferred_fraction(active_level)*100.0;result.duration=enhancement_parameter("deferred_duration");result.interval=enhancement_parameter("deferred_interval")
 			result.probability_percent=enhancement_branches.clear_probability(self)*100.0;result.underlying_probability_percent=enhancement_branches.clear_underlying_probability(self)*100.0
 	return result
 
@@ -3335,6 +3336,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		begin_retreat()
 
 func enhancement_deferred_fraction(level := -1) -> float:
+	if not enhancement_unlocked():return 0.0
 	var current := enhancement_effective_level() if level<0 else level
 	if current<=0:return 0.0
 	var scale := enhancement_parameter("deferred_percent_scale")

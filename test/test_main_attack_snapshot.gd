@@ -10,6 +10,7 @@ func fixture(key := "laser"):
  for weapon in ["laser","missile","cannon","longLaser"]:
   db.equipment[weapon][0].dmg=100;db.equipment[weapon][0].dmgMulti=0;db.equipment[weapon][0].cri=0;db.equipment[weapon][0].criDmg=0
  db.equipment.longLaser[0].para3=.2
+ db.equipment.missile[0].para1=5 # Explicit five-carrier boundary fixture, independent of authored balance.
  for defense in ["armour","shield"]:
   db.equipment[defense][0].para1=100;db.equipment[defense][0]["para2" if defense=="armour" else "para4"]=0
  db.equipment.shield[0].para2=0;db.equipment.shield[0].dmgtype=1;db.equipment.armour[0].dmgtype=2
