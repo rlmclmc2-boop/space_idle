@@ -128,7 +128,11 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  if error!=OK:return {"error":error}
  for suffix in ["", ".bak"]:
   if FileAccess.file_exists(primary+suffix):
-   var bytes:=FileAccess.get_file_as_bytes(primary+suffix)
+   var original_file:=FileAccess.open(primary+suffix,FileAccess.READ)
+   if original_file==null:return {"error":FileAccess.get_open_error()}
+   var bytes:=original_file.get_buffer(original_file.get_length())
+   if original_file.get_error()!=OK:return {"error":ERR_FILE_CANT_READ}
+   original_file.close()
    error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
    if error!=OK:return {"error":error}
  var candidate:=BattleGame.new(game.db,false)
@@ -148,6 +152,14 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
 
 func rollback(transaction: Dictionary) -> Error:
  var primary: String=transaction.primary
+ if transaction.had_primary and not FileAccess.file_exists(primary+".import-prev"):
+  var backup_file:=FileAccess.open(str(transaction.backup)+"/original-progress.json",FileAccess.READ)
+  if backup_file==null:return FileAccess.get_open_error()
+  var bytes:=backup_file.get_buffer(backup_file.get_length())
+  if backup_file.get_error()!=OK:return ERR_FILE_CANT_READ
+  backup_file.close()
+  var restored:=write_file(primary+".import-prev",bytes)
+  if restored!=OK:return restored
  var error:=DirAccess.remove_absolute(primary)
  if error!=OK:return error
  return rename(primary+".import-prev",primary) if transaction.had_primary else OK

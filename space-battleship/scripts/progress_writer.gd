@@ -57,7 +57,16 @@ func clear_files() -> Error:
 	return OK
 
 static func read_progress(path: String) -> Variant:
-	for suffix in ["", ".bak"]:
+	# Interrupted import installation keeps the previous committed primary here.
+	# Never read .import-new: it is uncommitted, even if it parses successfully.
+	var previous := path+".import-prev"
+	if FileAccess.file_exists(previous):
+		if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
+			if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
+		if _read_progress_file(path)!=null:
+			DirAccess.remove_absolute(previous)
+			if FileAccess.file_exists(path+".import-new"):DirAccess.remove_absolute(path+".import-new")
+	for suffix in ["", ".import-prev", ".bak"]:
 		var data = _read_progress_file(path + suffix)
 		if data != null:return data
 	return null

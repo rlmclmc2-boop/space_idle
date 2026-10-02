@@ -61,4 +61,11 @@ func run() -> void:
  var repeat:=BattleGame.new(db,true)
  check(repeat.profile.resources==restored.profile.resources,"Repeated import replaces rather than duplicates progress")
  check(transfer.export_progress(g,BattleGame.SAVE_PATH)==ERR_INVALID_PARAMETER,"Export cannot overwrite active progress path")
+ # Recovery of a process interruption between old-primary move and installation.
+ FileAccess.open(BattleGame.SAVE_PATH+".import-prev",FileAccess.WRITE).store_string(original)
+ DirAccess.remove_absolute(BattleGame.SAVE_PATH)
+ FileAccess.open(BattleGame.SAVE_PATH+".import-new",FileAccess.WRITE).store_string('{"version":4}')
+ var recovered: Variant=preload("res://scripts/progress_writer.gd").read_progress(BattleGame.SAVE_PATH)
+ check(recovered.resources["1"]==111 and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Interrupted installation restores the previous committed file on startup")
+ check(not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev") and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-new"),"Recovered interruption clears owned staging files for retry")
  print("SAVE TRANSFER: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

@@ -854,18 +854,22 @@ func show_save_settings() -> void:
 	refresh_save_status()
 	save_settings_dialog.popup_centered(Vector2i(660,470))
 
+func create_save_file_picker() -> FileDialog:
+	var picker := FileDialog.new()
+	picker.use_native_dialog = true
+	return picker
+
 func open_save_file(mode: String) -> void:
 	if OS.has_feature("web") or import_committing:return
 	pending_import.clear()
 	if not is_instance_valid(save_file_dialog):
-		save_file_dialog = FileDialog.new()
+		save_file_dialog = create_save_file_picker()
 		save_file_dialog.name = "SaveTransferFile"
 		save_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
-		save_file_dialog.use_native_dialog = true
 		save_file_dialog.exclusive = true
 		save_file_dialog.add_filter("*.json",UIText.t("save.file_filter"))
 		save_file_dialog.file_selected.connect(save_file_selected)
-		save_file_dialog.canceled.connect(func():pending_import.clear();show_save_settings())
+		save_file_dialog.canceled.connect(func():save_file_dialog.hide();pending_import.clear();show_save_settings())
 		add_child(save_file_dialog)
 	save_file_dialog.set_meta("mode",mode)
 	save_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if mode=="export" else FileDialog.FILE_MODE_OPEN_FILE
@@ -874,6 +878,7 @@ func open_save_file(mode: String) -> void:
 	save_file_dialog.popup_centered(Vector2i(860,560))
 
 func save_file_selected(path: String) -> void:
+	save_file_dialog.hide()
 	if save_file_dialog.get_meta("mode")=="export":
 		var error: Error=save_transfer.export_progress(game,path)
 		save_transfer_message(UIText.t("save.export_success",{"file":path.get_file()}) if error==OK else UIText.t("save.transfer_failed",{"error":error_string(error)}))
@@ -891,7 +896,7 @@ func save_file_selected(path: String) -> void:
 		save_import_confirmation.exclusive=true
 		preload("res://scripts/dialog_presentation.gd").dialog(save_import_confirmation)
 		save_import_confirmation.confirmed.connect(confirm_save_import)
-		save_import_confirmation.canceled.connect(func():pending_import.clear();show_save_settings())
+		save_import_confirmation.canceled.connect(func():save_import_confirmation.hide();pending_import.clear();show_save_settings())
 		add_child(save_import_confirmation)
 	save_import_confirmation.dialog_text=UIText.t("save.import_confirmation",{"file":path.get_file(),"stage":str(prepared.stage)})
 	save_import_confirmation.popup_centered(Vector2i(680,300))
@@ -901,6 +906,7 @@ func save_transfer_message(message: String) -> void:
 	save_transfer_feedback.text=message
 
 func confirm_save_import() -> void:
+	save_import_confirmation.hide()
 	if import_committing or pending_import.is_empty():return
 	import_committing=true
 	var transaction: Dictionary=save_transfer.commit_import(game,pending_import)
@@ -913,7 +919,8 @@ func confirm_save_import() -> void:
 	var was_saving: bool=game.save_enabled
 	game.save_enabled=false
 	set_process(false)
-	var error:=get_tree().reload_current_scene()
+	var scene_tree:=get_tree()
+	var error:=scene_tree.reload_current_scene()
 	if error!=OK:
 		var rollback_error: Error=save_transfer.rollback(transaction)
 		game.save_enabled=was_saving
@@ -922,7 +929,7 @@ func confirm_save_import() -> void:
 		save_transfer_message(UIText.t("save.import_reload_failed",{"error":error_string(error),"backup":str(transaction.backup),"rollback":error_string(rollback_error)}))
 		return
 	save_transfer.finish(transaction)
-	get_tree().set_meta("save_import_backup",str(transaction.backup)+"/current-progress.json")
+	scene_tree.set_meta("save_import_backup",str(transaction.backup)+"/current-progress.json")
 
 func apply_save_interval() -> void:
 	if not game.set_save_interval(save_interval_input.text):
