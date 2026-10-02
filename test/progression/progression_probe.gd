@@ -1,7 +1,7 @@
 extends SceneTree
 const Game = preload("res://scripts/balance_game.gd")
 const Database = preload("res://scripts/balance_database.gd")
-const Policy = preload("res://scripts/balance_autoplayer.gd")
+const Policy = preload("res://qa/sparse_policy.gd")
 const Metrics = preload("res://scripts/balance_metrics.gd")
 const STEP = 1.0 / 60.0
 var game
@@ -58,9 +58,15 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	trace = FileAccess.open(output+"/actions.jsonl",FileAccess.WRITE)
 	game = Game.new(Database.new());game.rng.seed=int(options.seed)
+	game.stat_cache_enabled=bool(options.get("stat_cache",true))
 	game.metrics=metrics;metrics.initialize(game)
 	game.event.connect(observe)
 	policy.configure(str(options.strategy),int(options.seed))
+	policy.thematic=bool(options.get("thematic",false))
+	policy.allow_reforge=bool(options.get("allow_reforge",true))
+	policy.journal=func(kind, extra):
+		actions+=1
+		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":kind,"stage":game.stage,"payload":extra}));trace.flush()
 	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","initial_state":"fresh","qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
 	snapshot("0")
 	var started := Time.get_ticks_usec()
@@ -72,14 +78,17 @@ func run() -> void:
 		game.tick(STEP);steps+=1
 		var current := str(game.stage)+":"+str(game.group_index)+":"+str(game.state)
 		if current!=wave_key:
-			if not wave_key.is_empty():wave_rows.append({"key":wave_key,"seconds":game.simulated_time-wave_start,"end_x1_seconds":game.simulated_time})
+			if not wave_key.is_empty():
+				var row := {"key":wave_key,"seconds":game.simulated_time-wave_start,"end_x1_seconds":game.simulated_time}
+				wave_rows.append(row)
+				trace.store_line(JSON.stringify({"kind":"state_interval","row":row}));trace.flush()
 			wave_key=current;wave_start=game.simulated_time
 		if steps%3600==0:
 			metrics.sample(game,60,false)
 			write_json("heartbeat.json",{"x1_seconds":game.simulated_time,"stage":game.stage,"highest":game.profile.highestLevel,"deaths":metrics.deaths,"wall_seconds":(Time.get_ticks_usec()-started)/1e6})
 			if game.simulated_time-last_heartbeat>=600:
 				last_heartbeat=int(game.simulated_time);print("HEARTBEAT x1_seconds=",game.simulated_time," stage=",game.stage," deaths=",metrics.deaths)
-		if clears.has(str(options.stop_clear)):break
+		if clears.has(str(int(options.stop_clear))):break
 	snapshot("end")
 	write_json("summary.json",{"options":options,"x1_seconds":game.simulated_time,"steps":steps,"clears":clears,"highest":game.profile.highestLevel,"deaths":metrics.deaths,"action_sessions":action_sessions,"action_events":actions,"action_intervals":action_gaps,"metrics":metrics.report(game),"wall_seconds":(Time.get_ticks_usec()-started)/1e6,"profile":game.profile,"waves":wave_rows})
 	trace.close();print("RESULT ",output," clears=",clears," deaths=",metrics.deaths," sessions=",action_sessions)

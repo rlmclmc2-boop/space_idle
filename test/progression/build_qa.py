@@ -4,6 +4,7 @@ import argparse, hashlib, json, re, shutil, subprocess
 ROOT = Path(__file__).resolve().parents[2]
 p = argparse.ArgumentParser()
 p.add_argument('--output', type=Path, required=True)
+p.add_argument('--data-ref', help='Use the exact game_data.json of a frozen ref with current QA code')
 a = p.parse_args(); out=a.output.resolve(); source=ROOT/'space-battleship'
 if out.exists(): raise SystemExit('Output exists; use a new directory to preserve evidence')
 out.mkdir(parents=True)
@@ -21,10 +22,13 @@ while queue:
  for name,dep in classes.items():
   if re.search(r'\b'+name+r'\b',content) and dep!=rel:queue.append(dep)
 shutil.copytree(source/'data',out/'data')
-(out/'qa').mkdir(); shutil.copy2(Path(__file__).with_name('progression_probe.gd'),out/'qa/progression_probe.gd')
+if a.data_ref:
+ (out/'data/game_data.json').write_bytes(subprocess.check_output(['git','show',a.data_ref+':space-battleship/data/game_data.json'],cwd=ROOT))
+(out/'qa').mkdir(); 
+for script in Path(__file__).parent.glob('*.gd'):shutil.copy2(script,out/'qa'/script.name)
 (out/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Progression QA isolated"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
 commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
-manifest={'source_commit':commit,'dirty':subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True),'files':{}}
+manifest={'source_commit':commit,'data_ref':a.data_ref,'dirty':subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True),'files':{}}
 for f in sorted(out.rglob('*')):
  if f.is_file():manifest['files'][f.relative_to(out).as_posix()]=hashlib.sha256(f.read_bytes()).hexdigest()
 manifest['fingerprint']=hashlib.sha256(json.dumps(manifest['files'],sort_keys=True).encode()).hexdigest()

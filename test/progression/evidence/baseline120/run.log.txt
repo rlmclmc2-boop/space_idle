@@ -1,0 +1,16 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+CLEAR stage=1 x1_seconds=48.9666666666652
+CLEAR stage=2 x1_seconds=111.999999999995
+CLEAR stage=3 x1_seconds=190.31666666671
+CLEAR stage=4 x1_seconds=261.300000000091
+CLEAR stage=5 x1_seconds=397.766666666634
+CLEAR stage=6 x1_seconds=654.783333333066
+HEARTBEAT x1_seconds=659.999999999728 stage=7 deaths=9
+CLEAR stage=7 x1_seconds=1052.46666666604
+HEARTBEAT x1_seconds=1259.99999999918 stage=8 deaths=25
+CLEAR stage=8 x1_seconds=1284.94999999916
+CLEAR stage=9 x1_seconds=1630.23333333218
+HEARTBEAT x1_seconds=1859.99999999864 stage=10 deaths=46
+CLEAR stage=10 x1_seconds=1975.13333333187
+RESULT /workspace/space_idle/test/work/progression-baseline-cache/results/baseline120 clears={ "1": 48.9666666666652, "2": 111.999999999995, "3": 190.31666666671, "4": 261.300000000091, "5": 397.766666666634, "6": 654.783333333066, "7": 1052.46666666604, "8": 1284.94999999916, "9": 1630.23333333218, "10": 1975.13333333187 } deaths=51 sessions=48

@@ -1,0 +1,738 @@
+{
+  "version": "early-v2",
+  "stage_range": [
+    1,
+    10
+  ],
+  "reason": "Initial teaching roster and economy candidate after 49-second stage1 / 398-second teaching baseline; not accepted balance. Stage4/5 themes are suggestions. Retain 40 original templates.",
+  "health_normalization": 0.1454,
+  "ratios": [
+    1,
+    1.5,
+    2,
+    3,
+    4.5,
+    9,
+    18,
+    36,
+    72,
+    144
+  ],
+  "waves": [
+    {
+      "stage": 1,
+      "node": 1,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 2001,
+      "group": 30011,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 1,
+      "node": 2,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 1001,
+      "group": 30012,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 1,
+      "node": 3,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 2001,
+      "group": 30013,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 1,
+      "node": 4,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 1001,
+      "group": 30014,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 1,
+      "node": 5,
+      "tier": "elite",
+      "theme": "laser",
+      "source_group": 2009,
+      "group": 30015,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 2,
+      "node": 1,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 1002,
+      "group": 30021,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 2,
+      "node": 2,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 2002,
+      "group": 30022,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 2,
+      "node": 3,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 1002,
+      "group": 30023,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 2,
+      "node": 4,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 2002,
+      "group": 30024,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 2,
+      "node": 5,
+      "tier": "elite",
+      "theme": "missile",
+      "source_group": 1010,
+      "group": 30025,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 3,
+      "node": 1,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 2003,
+      "group": 30031,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 3,
+      "node": 2,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 1003,
+      "group": 30032,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 3,
+      "node": 3,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 2003,
+      "group": 30033,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 3,
+      "node": 4,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 1003,
+      "group": 30034,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 3,
+      "node": 5,
+      "tier": "elite",
+      "theme": "cannon",
+      "source_group": 2011,
+      "group": 30035,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 4,
+      "node": 1,
+      "tier": "normal",
+      "theme": "neutral1",
+      "source_group": 1005,
+      "group": 30041,
+      "variant": "energy_attack",
+      "suggested": true
+    },
+    {
+      "stage": 4,
+      "node": 2,
+      "tier": "normal",
+      "theme": "neutral1",
+      "source_group": 2005,
+      "group": 30042,
+      "variant": "physical_attack",
+      "suggested": true
+    },
+    {
+      "stage": 4,
+      "node": 3,
+      "tier": "normal",
+      "theme": "neutral1",
+      "source_group": 1005,
+      "group": 30043,
+      "variant": "energy_attack",
+      "suggested": true
+    },
+    {
+      "stage": 4,
+      "node": 4,
+      "tier": "normal",
+      "theme": "neutral1",
+      "source_group": 2005,
+      "group": 30044,
+      "variant": "physical_attack",
+      "suggested": true
+    },
+    {
+      "stage": 4,
+      "node": 5,
+      "tier": "elite",
+      "theme": "neutral1",
+      "source_group": 1013,
+      "group": 30045,
+      "variant": "energy_attack",
+      "suggested": true
+    },
+    {
+      "stage": 5,
+      "node": 1,
+      "tier": "normal",
+      "theme": "neutral2",
+      "source_group": 2006,
+      "group": 30051,
+      "variant": "physical_attack",
+      "suggested": true
+    },
+    {
+      "stage": 5,
+      "node": 2,
+      "tier": "normal",
+      "theme": "neutral2",
+      "source_group": 1006,
+      "group": 30052,
+      "variant": "energy_attack",
+      "suggested": true
+    },
+    {
+      "stage": 5,
+      "node": 3,
+      "tier": "normal",
+      "theme": "neutral2",
+      "source_group": 2006,
+      "group": 30053,
+      "variant": "physical_attack",
+      "suggested": true
+    },
+    {
+      "stage": 5,
+      "node": 4,
+      "tier": "normal",
+      "theme": "neutral2",
+      "source_group": 1006,
+      "group": 30054,
+      "variant": "energy_attack",
+      "suggested": true
+    },
+    {
+      "stage": 5,
+      "node": 5,
+      "tier": "elite",
+      "theme": "neutral2",
+      "source_group": 2014,
+      "group": 30055,
+      "variant": "physical_attack",
+      "suggested": true
+    },
+    {
+      "stage": 6,
+      "node": 1,
+      "tier": "normal",
+      "theme": "longLaser",
+      "source_group": 1004,
+      "group": 30061,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 2,
+      "tier": "normal",
+      "theme": "longLaser",
+      "source_group": 2004,
+      "group": 30062,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 3,
+      "tier": "normal",
+      "theme": "longLaser",
+      "source_group": 1004,
+      "group": 30063,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 4,
+      "tier": "normal",
+      "theme": "longLaser",
+      "source_group": 2004,
+      "group": 30064,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 5,
+      "tier": "normal",
+      "theme": "longLaser",
+      "source_group": 1004,
+      "group": 30065,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 6,
+      "tier": "elite",
+      "theme": "longLaser",
+      "source_group": 2012,
+      "group": 30066,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 7,
+      "tier": "elite",
+      "theme": "longLaser",
+      "source_group": 1012,
+      "group": 30067,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 8,
+      "tier": "elite",
+      "theme": "longLaser",
+      "source_group": 2012,
+      "group": 30068,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 6,
+      "node": 9,
+      "tier": "boss",
+      "theme": "longLaser",
+      "source_group": 1017,
+      "group": 30069,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 1,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 2001,
+      "group": 30071,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 2,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 1001,
+      "group": 30072,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 3,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 2001,
+      "group": 30073,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 4,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 1001,
+      "group": 30074,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 5,
+      "tier": "normal",
+      "theme": "laser",
+      "source_group": 2001,
+      "group": 30075,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 6,
+      "tier": "elite",
+      "theme": "laser",
+      "source_group": 1009,
+      "group": 30076,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 7,
+      "tier": "elite",
+      "theme": "laser",
+      "source_group": 2009,
+      "group": 30077,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 8,
+      "tier": "elite",
+      "theme": "laser",
+      "source_group": 1009,
+      "group": 30078,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 7,
+      "node": 9,
+      "tier": "boss",
+      "theme": "laser",
+      "source_group": 2017,
+      "group": 30079,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 1,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 1002,
+      "group": 30081,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 2,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 2002,
+      "group": 30082,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 3,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 1002,
+      "group": 30083,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 4,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 2002,
+      "group": 30084,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 5,
+      "tier": "normal",
+      "theme": "missile",
+      "source_group": 1002,
+      "group": 30085,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 6,
+      "tier": "elite",
+      "theme": "missile",
+      "source_group": 2010,
+      "group": 30086,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 7,
+      "tier": "elite",
+      "theme": "missile",
+      "source_group": 1010,
+      "group": 30087,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 8,
+      "tier": "elite",
+      "theme": "missile",
+      "source_group": 2010,
+      "group": 30088,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 8,
+      "node": 9,
+      "tier": "boss",
+      "theme": "missile",
+      "source_group": 1018,
+      "group": 30089,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 1,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 2003,
+      "group": 30091,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 2,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 1003,
+      "group": 30092,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 3,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 2003,
+      "group": 30093,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 4,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 1003,
+      "group": 30094,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 5,
+      "tier": "normal",
+      "theme": "cannon",
+      "source_group": 2003,
+      "group": 30095,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 6,
+      "tier": "elite",
+      "theme": "cannon",
+      "source_group": 1011,
+      "group": 30096,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 7,
+      "tier": "elite",
+      "theme": "cannon",
+      "source_group": 2011,
+      "group": 30097,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 8,
+      "tier": "elite",
+      "theme": "cannon",
+      "source_group": 1011,
+      "group": 30098,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 9,
+      "node": 9,
+      "tier": "boss",
+      "theme": "cannon",
+      "source_group": 2018,
+      "group": 30099,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 1,
+      "tier": "normal",
+      "theme": "neutral3",
+      "source_group": 1007,
+      "group": 30101,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 2,
+      "tier": "normal",
+      "theme": "neutral3",
+      "source_group": 2007,
+      "group": 30102,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 3,
+      "tier": "normal",
+      "theme": "neutral3",
+      "source_group": 1007,
+      "group": 30103,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 4,
+      "tier": "normal",
+      "theme": "neutral3",
+      "source_group": 2007,
+      "group": 30104,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 5,
+      "tier": "normal",
+      "theme": "neutral3",
+      "source_group": 1007,
+      "group": 30105,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 6,
+      "tier": "elite",
+      "theme": "neutral3",
+      "source_group": 2015,
+      "group": 30106,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 7,
+      "tier": "elite",
+      "theme": "neutral3",
+      "source_group": 1015,
+      "group": 30107,
+      "variant": "energy_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 8,
+      "tier": "elite",
+      "theme": "neutral3",
+      "source_group": 2015,
+      "group": 30108,
+      "variant": "physical_attack",
+      "suggested": false
+    },
+    {
+      "stage": 10,
+      "node": 9,
+      "tier": "boss",
+      "theme": "neutral3",
+      "source_group": 1017,
+      "group": 30109,
+      "variant": "energy_attack",
+      "suggested": false
+    }
+  ],
+  "import": {
+    "ok": true,
+    "action": "import",
+    "changed": [
+      "level",
+      "mon",
+      "monGroup"
+    ],
+    "parsed": [
+      "level",
+      "mon",
+      "monGroup"
+    ],
+    "message": "导入成功：更新 level、mon、monGroup；其余配置保持不变。"
+  }
+}
