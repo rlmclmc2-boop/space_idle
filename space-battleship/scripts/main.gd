@@ -438,7 +438,7 @@ func advance_game_time(seconds: float) -> void:
 	var remaining := seconds
 	# Floating-point residue after a full step must not run another near-zero tick.
 	while remaining > 0.000000001:
-		var max_step := FAST_MODE_GAME_STEP if fast_mode_enabled() else 1.0/60.0
+		var max_step := 1.0/60.0
 		var step := minf(remaining, max_step)
 		game.tick(step)
 		remaining -= step

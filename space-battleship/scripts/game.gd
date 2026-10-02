@@ -126,7 +126,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":SAVE_VERSION, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
@@ -414,7 +414,7 @@ func load_hightech(raw: Dictionary) -> void:
 			raw.erase(field)
 	if raw.get("hightechOrder") is Array:
 		profile.hightechOrder = raw.hightechOrder.filter(func(key):return key is String)
-	for field in ["hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed", "furnaceIncomePeak", "jewelFurnaceIncomePeak"]:
+	for field in ["productionElapsed", "hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed", "furnaceIncomePeak", "jewelFurnaceIncomePeak"]:
 		if nonnegative_number(raw.get(field)):
 			profile[field] = float(raw[field])
 	if raw.get("hightechLevels") is Dictionary:
@@ -435,12 +435,14 @@ func load_hightech(raw: Dictionary) -> void:
 			profile.techPoints[key] = float(points)
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
-			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
+			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
 				# Legacy samples have no reliable source; keep totals but exclude them
 				# from furnace input until this short rolling window expires.
-				resource_samples.append({"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
-	profile.furnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt))
-	profile.jewelFurnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt),true)
+				var restored := {"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))}
+				if nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time():restored.production_time=float(sample.production_time)
+				resource_samples.append(restored)
+	profile.furnaceIncomePeak = furnace_income_peak()
+	profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
 	if raw.get("hightechDrops") is Array:
 		for drop in raw.hightechDrops:
 			if drop is Dictionary and nonnegative_number(drop.get("age")) and float(drop.age) < 10 and nonnegative_number(drop.get("amount")) and nonnegative_number(drop.get("x")) and nonnegative_number(drop.get("y")):
@@ -557,7 +559,7 @@ func portable_save_data() -> Dictionary:
 	var now := Time.get_unix_time_from_system()
 	saved.hightechOrder = hightech_slots()
 	saved.hightechSavedAt = now
-	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0).duplicate(true)
+	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0 or (sample.has("production_time") and float(sample.production_time)>production_time()-60.0)).duplicate(true)
 	saved.chronoSavedAt = now
 	saved.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false)).duplicate(true)
 	return _compose_save_data(saved)
@@ -1353,6 +1355,7 @@ func reforge_planet(id: String) -> bool:
 	next.resources=profile.resources.duplicate(true)
 	# Chrono particles are a persistent reserve, independent of run progress.
 	next.chronoParticles=profile.chronoParticles
+	next.productionElapsed=production_time()
 	profile=next
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
@@ -1452,8 +1455,9 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if real_dt < 0:
 		real_dt = dt
 	if end_time < 0:
-		end_time = economy_time()
-	var wall_per_step := real_dt / dt if dt > 0 else 1.0
+		end_time = production_time()
+	# All furnace production boundaries use game time; no wall-window speed amplification.
+	var wall_per_step := 1.0
 	var rates := {}
 	var active := active_research(rates)
 	# Huge point budgets cannot be settled one level/event at a time.
@@ -1548,8 +1552,26 @@ func hightech_bulk_cost(key: String, level: int, count: int) -> float:
 		factor *= factor
 	return total
 
+func production_time() -> float:
+	return float(profile.get("productionElapsed",0.0))
+
 func prune_resource_samples(now: float) -> void:
-	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
+	# HUD receipts use real time; production inputs use X1 game time.
+	var game_now := production_time()
+	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0 or (sample.has("production_time") and float(sample.production_time)>game_now-60.0))
+
+func production_minute_total(id: String, at := -1.0) -> Variant:
+	var game_now := production_time()
+	if at < 0:at=game_now
+	var wall_now := economy_time()
+	var total = 0.0
+	for sample in resource_samples:
+		if sample.get("origin","drop")!="drop" or str(sample.id)!=id:continue
+		# Old explicit-origin samples keep their remaining X1 window on migration.
+		# Their old acceleration history is unavailable; persisted peaks are retained.
+		var stamp := float(sample.get("production_time",game_now-(wall_now-float(sample.time))))
+		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.get("production_base",sample.amount))
+	return total
 
 func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
 	if now < 0:
@@ -1563,7 +1585,7 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 	return total
 
 func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(resource_minute_total("jewel" if jewel else "1",now,true)))
+	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(production_minute_total("jewel" if jewel else "1",now)))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -2170,7 +2192,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
-	resource_samples.append({"time":economy_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
@@ -2351,6 +2373,7 @@ func advance_enemy_shields(dt: float) -> void:
 func tick(dt: float) -> void:
 	if paused:
 		return
+	profile.productionElapsed=production_time()+dt
 	enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
@@ -2616,7 +2639,7 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> flo
 	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and earned > 0:
-		resource_samples.append({"time":economy_time(),"id":"jewel","amount":earned,"origin":source})
+		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
 		profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned

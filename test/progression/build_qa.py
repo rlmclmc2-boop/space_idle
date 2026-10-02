@@ -24,7 +24,7 @@ while queue:
 shutil.copytree(source/'data',out/'data')
 if a.data_ref:
  (out/'data/game_data.json').write_bytes(subprocess.check_output(['git','show',a.data_ref+':space-battleship/data/game_data.json'],cwd=ROOT))
-(out/'qa').mkdir(); 
+(out/'.runtime').mkdir(); (out/'qa').mkdir(); 
 for script in Path(__file__).parent.glob('*.gd'):shutil.copy2(script,out/'qa'/script.name)
 (out/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Progression QA isolated"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
 commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()

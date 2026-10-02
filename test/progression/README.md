@@ -38,3 +38,17 @@ python space-battleship/tools/config_workbooks.py import
 ```
 
 Evidence categories: diagnosis, checkpoint regression, full fresh run; facts versus hypotheses; numeric fixes versus experience recommendations. Every candidate records reason, affected stages/systems, prior failure and retest. The parent independently runs this package; this branch does not claim that happened.
+
+## Clock repair and version boundary
+
+The parent independently reproduced X10 furnace peak amplification in `qa/parent-probes-20261002` at `4d81bed07d88c008a02bcbd42eff25eb217214e4`. The experimental repair gives production its own persisted game clock while HUD receipts retain wall time, routes galaxy production to the same direct-input window, and uses 1/60 steps in formal main at every multiplier. Existing old historical peaks are retained; their historical acceleration cannot be reconstructed.
+
+Run the controlled receipt/save/offline-clock regression in a freshly built package:
+
+```sh
+godot --headless --path /tmp/progression-v3 --script qa/time_equivalence.gd
+```
+
+Controlled 600 X1 seconds: X1 and X10 both receive iron 7854, retain furnace peak650 and direct production window600; HUD real-minute totals intentionally differ. This is a rule fixture, not a full offline catch-up playthrough. Main time139/furnace32/research70/galaxy2344 assertions passed. `test_offline_resources.gd` retained failure: immediate reload reports offline particles again from the same unsaved snapshot, although resulting reserve is unchanged. Current timed/manual-only saving leaves startup settlement unsaved; changing this needs an explicit persistence decision and is not concealed by this repair.
+
+Pre-repair v3 is frozen evidence: 120s visits cleared10 at8045.9s,30 deaths; 300s and900s budgets ended at10800s without clearing10. Teaching with thematic choices took124.22/138.75/150.85/136.27/154.7s,0 deaths. Stage6 consumed4663.23s and farmed the previous level repeatedly: a pacing bottleneck to redistribute. Recorded action events are API/domain events rather than literal mouse clicks; early acknowledgment instrumentation overcounted pending notices and is retained as a known measurement defect. Complete all final acceptance on the repaired single version.
