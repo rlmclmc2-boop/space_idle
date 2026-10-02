@@ -3247,7 +3247,7 @@ func enhancement_protection_status() -> Dictionary:
 		resistance=float(identity.resistance)
 	return {"mode":mode,"current":total_current,"capacity":total_capacity,"resistance":resistance,"remaining":remaining if is_finite(remaining) else 0.0,"lockout":lockout,"components":components,"cover_current":cover_current,"cover_remaining":cover_remaining}
 
-func consume_enhancement_protection(amount, type := 0, already_mitigated := true) -> Variant:
+func consume_enhancement_protection(amount, type := 0, already_mitigated := true, feedback: Dictionary = {}) -> Variant:
 	# Neutral temporary protection absorbs damage 1:1, before any resistance.
 	# Stable module order preserves each contributing module's cap ownership.
 	sync_enhancement_buffers()
@@ -3263,6 +3263,7 @@ func consume_enhancement_protection(amount, type := 0, already_mitigated := true
 			return 0.0
 		var protected = N.minimum(enhancement_buffers[index],N.multiply(rest,factor))
 		enhancement_buffers[index]=N.subtract(enhancement_buffers[index],protected)
+		if feedback.has("absorbed"):feedback.absorbed=N.add(feedback.absorbed,protected)
 		rest=N.subtract(rest,N.divide(protected,maxf(0.001,factor)))
 		if N.compare(protected,0)>0:jewel_defence_hit(int(index))
 	return rest
@@ -3271,7 +3272,9 @@ func jewel_hit_player(raw, type: int) -> void:
 	var capacities := sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	since_hit=0.0
-	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,raw),type,false)
+	var after_cover = enhancement_branches.consume_cover(self,raw)
+	var feedback := {"absorbed":N.subtract(raw,after_cover)}
+	var rest = consume_enhancement_protection(after_cover,type,false,feedback)
 	var loss = 0.0
 	# A capped module can leave raw overflow while other shield modules still
 	# have room (different resistance/deferral). Redistribute within the shield
@@ -3328,7 +3331,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		var rounded = N.minimum(player[key],payments[key] if deferred_layers[key] else N.ceiling(payments[key]))
 		player[key]=N.subtract(player[key],rounded)
 		loss=N.add(loss,rounded)
-	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"player":true,"type":type})
+	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"absorbed":feedback.absorbed,"player":true,"type":type})
 	if N.compare(player.armour,0)<=0:
 		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
@@ -3366,7 +3369,9 @@ func queue_enhancement_deferred(key: String, amount) -> void:
 func apply_enhancement_deferred(_key: String, amount) -> void:
 	# This debt was already mitigated at the incoming event; protection and body
 	# consume it 1:1 with no new resistance, deferral or incoming-history event.
-	var rest = consume_enhancement_protection(enhancement_branches.consume_cover(self,amount))
+	var after_cover = enhancement_branches.consume_cover(self,amount)
+	var feedback := {"absorbed":N.subtract(amount,after_cover)}
+	var rest = consume_enhancement_protection(after_cover,0,true,feedback)
 	var loss = 0.0
 	var layers := ["shield","armour"] # Origin is accounting metadata, not a bypass of current shields.
 	for layer in layers:
@@ -3391,7 +3396,8 @@ func apply_enhancement_deferred(_key: String, amount) -> void:
 		player[layer]=0.0 if N.compare(taken,total)>=0 and N.compare(total,0)>0 else N.subtract(player[layer],body_loss)
 		loss=N.add(loss,body_loss)
 		rest=N.subtract(rest,taken)
-	if N.compare(loss,0)>0:event.emit("hit",{"x":player.x,"y":player.y,"amount":N.ceiling(loss),"player":true,"type":0,"deferred":true})
+	if N.compare(loss,0)>0 or N.compare(feedback.absorbed,0)>0:
+		event.emit("hit",{"x":player.x,"y":player.y,"amount":N.ceiling(loss),"absorbed":feedback.absorbed,"player":true,"type":0,"deferred":true})
 	if N.compare(player.armour,0)<=0:
 		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()

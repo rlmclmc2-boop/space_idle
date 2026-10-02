@@ -6502,6 +6502,17 @@
         "pages",
         "count"
       ]
+    },
+    "battle.damage_absorbed": {
+      "params": [
+        "absorbed"
+      ]
+    },
+    "battle.damage_with_absorption": {
+      "params": [
+        "damage",
+        "absorbed"
+      ]
     }
   },
   "bindings": {
