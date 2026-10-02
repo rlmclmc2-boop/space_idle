@@ -1,0 +1,44 @@
+{
+  "image": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/galaxy-city-ui(2).png",
+    "file_id": "file_000000001bec820e9d0cb239a28c4485",
+    "library_file_id": "libfile_7e83f7eb56648191b1871d21205bbb2d",
+    "file_name": "galaxy-city-ui(2).png",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "image/png",
+    "library_artifact_type": "image",
+    "file_size_bytes": 520165,
+    "external_connectors_accessed": false
+  },
+  "video": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/galaxy-city(1).mp4",
+    "file_id": "file_000000006bbc82308145c20b030f8a5e",
+    "library_file_id": "libfile_6c841d147ab081918548d3404e7c3b88",
+    "file_name": "galaxy-city(1).mp4",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "video/mp4",
+    "library_artifact_type": "other",
+    "file_size_bytes": 384656,
+    "external_connectors_accessed": false
+  }
+}
