@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);a=p.parse_args()
 from source_lock import acquire
 _source_lock=acquire(ROOT)
 data=json.loads((SRC/'data/game_data.json').read_text())
@@ -28,13 +28,14 @@ while len(themes)<a.roster_through:themes.extend(cycle)
 ratios=[1,1.5,2,3,4.5,1.2**15]+[1.2**(30+10*i) for i in range(4)]
 ratios += [1.2**(60+13*i) for i in range(1,11)]
 resources=[1.4**i for i in range(5)]+[12*1.2**(10*i) for i in range(5)]
+resources[4]*=a.teaching_fifth_income
 resources += [resources[9]*1.2**13*a.late_income*1.2**(a.late_income_step*(i-1)) for i in range(1,11)]
 if a.smooth_income_floor:
  for index in range(10,20):resources[index]=max(resources[index],resources[index-1]*1.4)
 if a.through>20:
  # Provisional future budget. Every value is subject to segment regression.
- ratios += [1.2**(190+8*i) for i in range(1,11)]
- resources += [resources[19]*1.2**(8*i)*4 for i in range(1,11)]
+ ratios += [1.2**(190+a.future_growth_step*i) for i in range(1,11)]
+ resources += [resources[19]*1.2**(a.future_income_step*i)*a.future_income_coefficient for i in range(1,11)]
  first_steps=[8,16,32,48,68]
  first_income=[0,0,4,4,10]
  ratios += [ratios[29]*1.2**i for i in first_steps]
@@ -59,6 +60,11 @@ for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
    if eid is None:slots.append('null');continue
    newid=40000+stage*1000+node*20+slot;row=source_row('mon',eid);row['id']=newid
    row['des']=f'校准{a.version}-关{stage}-层{node}-'+str(row['des'])
+   if a.themed_beam_bosses and theme=='longLaser' and tier in ['boss','ultimate']:
+    # Same authored recovery rule as the level's ordinary/elite enemies.
+    # Split total base defence; keep every attack variant and formation intact.
+    total=float(row['health'])+float(row['shield'] or 0)
+    row.update(health=round(total*.5),shield=round(total*.5),armourType=2,shieldType=2,shieldRecovery=.2,shieldDelay=.3)
    row['health']=max(1,round(float(row['health'])*.1454));row['shield']=max(0,round(float(row['shield'] or 0)*.1454))
    loot=(8 if tier=='normal' else 20) if stage<=5 else max(1,round((30 if tier=='normal' else 60 if tier=='elite' else 120)/len([e for e in original['slots'] if e is not None])))
    row['res']='{1,%d,1}'%loot
@@ -67,7 +73,7 @@ for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
    replace('mon',newid,row);slots.append(str(newid))
   replace('monGroup',newgid,{'id':newgid,'des':f'校准{a.version}-关{stage}-层{node}-{tier}-{theme}-{variant}','mon':'{'+','.join(slots)+'}'})
   groups.append((newgid,node*.9/len(tiers)))
-  manifest.append({'stage':stage,'node':node,'tier':tier,'theme':theme,'source_group':gid,'group':newgid,'variant':variant,'suggested':stage in [4,5]})
+  manifest.append({'stage':stage,'node':node,'tier':tier,'theme':theme,'source_group':gid,'group':newgid,'variant':variant,'suggested':stage in [4,5],'themed_recovery_shield':a.themed_beam_bosses and theme=='longLaser' and tier in ['boss','ultimate']})
  row=source_row('level',stage)
  row.update(length=4000 if stage<=5 else 1000,monGroup='{'+','.join(f'{g}|{pos:.6f}' for g,pos in groups)+'}')
  if stage<=a.through:
@@ -79,5 +85,12 @@ for n,b in books.items():b.save(CFG/(n+'.xlsx'))
 recache_level(CFG/"level.xlsx",sheets["level"],subprocess.check_output(["git","show","04a5a307bcef9325efa9026e1ca94affa577e10d:space-battleship/config_excel/level.xlsx"],cwd=ROOT))
 result=incremental_import(CFG,SRC/'data/game_data.json')
 evidence=ROOT/'test/progression/candidates';evidence.mkdir(exist_ok=True)
-(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'roster_range':[1,max(a.through,a.roster_through)],'reason':'Segmented candidate; v4 diagnostic cleared20 at4.79h, far below12–18h. Late income coefficient is explicit and must be tested from a fresh profile; stage4/5 remain suggestions. Original40 templates retained; downstream Excel formula dependencies are recalculated and unaccepted.','health_normalization':.1454,'ratios':ratios,'resource_ratios':resources,'late_income_coefficient':a.late_income,'late_income_step':a.late_income_step,'smooth_income_floor':a.smooth_income_floor,'affected':'Generated numeric range plus later formula dependencies. Future candidate is provisional until segmented and single-version full fresh tests.','waves':manifest,'import':result},indent=2,ensure_ascii=False))
+meta={'version':a.version,'stage_range':[1,a.through],'roster_range':[1,max(a.through,a.roster_through)],
+ 'reason':'Segmented numerical candidate. Old basic timings are diagnostic only. Explicit income/defence changes require fresh formal-scene tests; stage4/5 remain suggestions. Original40 identities retained, with numerical pair compensation recorded separately. Future formula dependencies are recalculated and unaccepted.',
+ 'health_normalization':.1454,'ratios':ratios,'resource_ratios':resources,
+ 'late_income_coefficient':a.late_income,'late_income_step':a.late_income_step,
+ 'smooth_income_floor':a.smooth_income_floor,'parameters':vars(a),
+ 'affected':'Generated numeric range and roster, plus later formula dependencies. Future candidate is provisional until segmented and single-version full fresh tests.',
+ 'waves':manifest,'import':result}
+(evidence/(a.version+'.json')).write_text(json.dumps(meta,indent=2,ensure_ascii=False))
 print(json.dumps(result))
