@@ -27,12 +27,22 @@ func visual_step(scene,dt:float):
 	scene.ship_view.set_pose(scene.player_render_position()+scene.reference_offset,scene.reference_height,0.0,aim,scene.demo_time,scene.shield_enabled,false,dt)
 	scene.fx_time+=dt;scene.advance_turrets(dt)
 func signature(g)->Dictionary:
-	return {"stage":g.stage,"node":g.group_index,"state":g.state,"distance":g.distance,"player":g.player,"enemies":g.enemies,"resources":g.profile.resources,"loadout":g.profile.loadout,"tech":g.profile.hightechLevels,"points":g.profile.techPoints,"scientists":g.profile.scientists,"assignments":g.profile.scientistAssignments,"reactor":g.profile.reactorLevel,"allocation":g.profile.reactorAllocation,"rng":str(g.rng.state),"cleared":g.profile.cleared,"production":g.production_time(),"furnace_peak":g.profile.furnaceIncomePeak,"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"motion_clock":g.motion_clock}
+	return {"stage":g.stage,"node":g.group_index,"state":g.state,"distance":g.distance,"player":g.player,"enemies":g.enemies,"resources":g.profile.resources,"loadout":g.profile.loadout,"tech":g.profile.hightechLevels,"points":g.profile.techPoints,"scientists":g.profile.scientists,"assignments":g.profile.scientistAssignments,"reactor":g.profile.reactorLevel,"allocation":g.profile.reactorAllocation,"rng":str(g.rng.state),"cleared":g.profile.cleared,"production":g.production_time(),"furnace_peak":g.profile.furnaceIncomePeak,"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"motion_clock":g.motion_clock,"crew":g.profile.crew,"planets":g.profile.planets,"galaxies":g.profile.get("galaxies",{}),"enhancement":g.profile.get("enhancementBranches",{}),"enhancement_level":g.profile.get("enhancementLevel",0),"jewels":g.profile.get("jewels",{})}
 func _initialize():call_deferred("run")
 func run():
 	var a=Adapter.new(ShipDatabase.new());var b=Native.new(ShipDatabase.new())
 	a.stat_cache_enabled=true;b.stat_cache_enabled=true
 	a.rng.seed=20261002;b.rng.seed=20261002
+	var checkpoint_path:=OS.get_environment("PROGRESSION_COMPARE_CHECKPOINT")
+	if not checkpoint_path.is_empty():
+		var checkpoint:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(checkpoint_path))
+		for game in [a,b]:
+			game.simulated_time=float(checkpoint.x1_seconds)
+			var raw:Dictionary=checkpoint.save.duplicate(true)
+			raw.chronoSavedAt=Time.get_unix_time_from_system()
+			game.load_progress_data(raw);game.profile.chronoParticles=float(raw.get("chronoParticles",0));game.login_chrono_particles=0
+			game.resume_progress();game.rng.state=int(str(checkpoint.rng_state))
+		print("FORMAL_COMPARE_CHECKPOINT diagnostic=",checkpoint_path," input_seconds=",a.simulated_time," config_sha256=",FileAccess.get_sha256("res://data/game_data.json"))
 	var scene_mode:=OS.get_environment("PROGRESSION_COMPARE_SCENE")=="1"
 	if scene_mode:scenes=[prepare(a),prepare(b)]
 	var policies=[Policy.new(),Policy.new()]

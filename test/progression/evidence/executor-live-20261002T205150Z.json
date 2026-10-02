@@ -1,0 +1,20 @@
+{
+  "utc": "2026-10-02 20:51:50 UTC",
+  "action": "Actual successful clock read plus shell heartbeat/tail/git rev-parse",
+  "candidate": "fa9b62416ae7ee90d8b5455fb9efd28b601e92de",
+  "heartbeat": {
+    "deaths": 100,
+    "highest": 15,
+    "stage": 15,
+    "wall_seconds": 1273.540058,
+    "x1_seconds": 16679.9999998414
+  },
+  "run": "test/work/formal-scene-v11-fresh/results/fresh120-through20",
+  "initial_observation": {
+    "x1_seconds": 15659.9999998563,
+    "stage": 15,
+    "deaths": 95
+  },
+  "status": "Executor available; fresh formal-scene run active",
+  "communication": "No outgoing cloud_threads tool exposed here; Git evidence and commentary are available"
+}
