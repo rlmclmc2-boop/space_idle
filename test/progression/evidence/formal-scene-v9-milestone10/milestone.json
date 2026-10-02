@@ -1,0 +1,98 @@
+{
+  "scope": "Fresh formal Presented plus actual scene providers; interim milestone through10, not final0–20/full journey acceptance",
+  "source_candidate": "9efd2c4 frozen package built before evidence-only commit",
+  "seed": 20261002,
+  "visits": "Teaching10s then120s, QA assumption",
+  "x1_seconds": 8408.64999996179,
+  "x1_hours": 2.335736111100497,
+  "action_sessions": 114,
+  "action_api_events": 784,
+  "by_stage": [
+    {
+      "stage": 1,
+      "wins": 5,
+      "losses": 0,
+      "median_winning_wave_seconds": 9.79999999999944,
+      "maximum_winning_wave_seconds": 21.2166666666655
+    },
+    {
+      "stage": 2,
+      "wins": 5,
+      "losses": 0,
+      "median_winning_wave_seconds": 10.9166666666754,
+      "maximum_winning_wave_seconds": 13.366666666655
+    },
+    {
+      "stage": 3,
+      "wins": 5,
+      "losses": 0,
+      "median_winning_wave_seconds": 10.7833333333235,
+      "maximum_winning_wave_seconds": 24.916666666644
+    },
+    {
+      "stage": 4,
+      "wins": 5,
+      "losses": 0,
+      "median_winning_wave_seconds": 10.6333333333237,
+      "maximum_winning_wave_seconds": 21.3999999999805
+    },
+    {
+      "stage": 5,
+      "wins": 5,
+      "losses": 1,
+      "median_winning_wave_seconds": 10.7333333333236,
+      "maximum_winning_wave_seconds": 27.833333333308
+    },
+    {
+      "stage": 6,
+      "wins": 188,
+      "losses": 17,
+      "median_winning_wave_seconds": 8.04999999999268,
+      "maximum_winning_wave_seconds": 27.6000000003514
+    },
+    {
+      "stage": 7,
+      "wins": 341,
+      "losses": 16,
+      "median_winning_wave_seconds": 4.64999999993233,
+      "maximum_winning_wave_seconds": 65.9333333323739
+    },
+    {
+      "stage": 8,
+      "wins": 77,
+      "losses": 7,
+      "median_winning_wave_seconds": 8.51666666654273,
+      "maximum_winning_wave_seconds": 22.8833333330003
+    },
+    {
+      "stage": 9,
+      "wins": 53,
+      "losses": 3,
+      "median_winning_wave_seconds": 1.5166666666446,
+      "maximum_winning_wave_seconds": 28.3666666662539
+    },
+    {
+      "stage": 10,
+      "wins": 44,
+      "losses": 3,
+      "median_winning_wave_seconds": 3.283333333285555,
+      "maximum_winning_wave_seconds": 36.8499999994638
+    }
+  ],
+  "facts": [
+    "Teaching clears individually2.07–3.04min",
+    "Clear10 cumulative2.336h meets2–3h in this single strategy/seed",
+    "Stage7 longest winning wave65.93s; chosen laser strategy versus generic physical-armour Boss"
+  ],
+  "hypotheses": [
+    "Boss theme and recommended weapon should be coordinated; timeline pass alone is insufficient",
+    "Sparse automated purchasing remains a human-experience proxy"
+  ],
+  "pending": [
+    "300/900s same-seed sensitivity",
+    "20 budget",
+    "Physical damage-pair compensation source change and regression",
+    "30/34/reforge/35/60/all galaxy max",
+    "Actual scene X1/X10 and frame-rate equivalence"
+  ]
+}

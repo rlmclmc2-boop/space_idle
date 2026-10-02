@@ -47,8 +47,12 @@ func act(g: BattleGame, elapsed: float) -> bool:
 			for member in g.profile.crew:
 				if state.crew.size()>=int(row.extra_crew):break
 				if g.idle_planet_crew(str(member.crewId)) and g.planet_buildings.assign(g,str(id),str(row.id),str(member.crewId)):record(g,"assign_builder",{"planet":id,"building":row.id,"crew":member.crewId})
-		if allow_reforge and g.stage>=34+5*(int(id)-1) and g.can_reforge_planet(str(id)):
+		# First preparation is evaluated after two further clears (30 -> 32).
+		# This is a QA action strategy, not an added gameplay unlock condition.
+		var reforge_ready_progress: bool = g.profile.highestLevel>=33 if int(id)==1 else g.stage>=34+5*(int(id)-1)
+		if allow_reforge and reforge_ready_progress and g.can_reforge_planet(str(id)):
 			if g.reforge_planet(str(id)):
+				farm={};best_won={};deaths_seen=int(g.metrics.deaths)
 				record(g,"reforge",{"planet":id});recovering=true
 				if use_bulk:
 					for attempt in range(24):
