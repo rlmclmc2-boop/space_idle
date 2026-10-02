@@ -39,7 +39,7 @@ func run()->void:
   var actual_count:int=view.carriers.size()
   var profile:String=JSON.stringify(g.profile)
   var rng_state:int=g.rng.state
-  for count in [0,1,3]:
+  for count in ([0,1,3,10] if key=="Heavy_Battleship" else [0,1,3]):
    var entries:Array=[]
    for i in int(view.hull_config.hull_mount_budget)+count:entries.append({"key":["laser","cannon","missile","longLaser"][i%4],"level":1})
    view.set_loadout(entries,entries.size())
@@ -53,8 +53,12 @@ func run()->void:
      view.set_pose(Vector2(x,anchor.y),height,0.0,Vector2(286,100),0,false,false)
      var hull:Rect2=bounds(view.ship,view.camera)
      var points:Array=[]
+     var boxes:Array=[]
      for carrier in view.carriers:
       var box:Rect2=bounds(carrier,view.camera)
+      if count>4:
+       for other in boxes:check(not box.intersects(other),"dense escorts remain separate")
+      boxes.append(box)
       check(Rect2(Vector2.ONE*11.0,view.size-Vector2.ONE*22.0).encloses(box),"whole drone clears viewport "+key)
       check(not hull.grow(25.0).intersects(box),"whole drone clears flagship "+key)
       var separation:float=maxf(maxf(hull.position.x-box.end.x,box.position.x-hull.end.x),maxf(hull.position.y-box.end.y,box.position.y-hull.end.y))

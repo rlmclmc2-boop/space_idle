@@ -367,6 +367,9 @@ func _update_carriers(scale_value: float, visual_delta: float) -> void:
 	var yaw := deg_to_rad(0.65)
 	var exclusion := Vector2(hull_half.x*cos(yaw)+hull_half.y*sin(yaw),hull_half.y*cos(yaw)+hull_half.x*sin(yaw))*pixels_per_model+Vector2.ONE*(carrier_radius+CARRIER_HULL_GAP+1.2)
 	var forward_y := rendered_position.y-exclusion.y-CARRIER_DRIFT.y
+	# Dense wings keep separate berths: crossing the other rows would obscure
+	# escorts already ahead of the flagship. Small independent drift remains.
+	var dense_formation := carriers.size()>4
 	for i in carriers.size():
 		var state: Dictionary = carrier_states[i]
 		var recovery := smoothstep(0.0,0.32,orbit_elapsed-float(state.steady_until))
@@ -377,8 +380,8 @@ func _update_carriers(scale_value: float, visual_delta: float) -> void:
 		var period := 34.0+float(pair)*4.3
 		var swap_time := maxf(0.0,time-14.0-float(pair)*5.0)
 		var cycle := int(swap_time/period)
-		var swap := clampf(fmod(swap_time,period)/8.0,0.0,1.0)
-		if cycle%2==1:side=-side
+		var swap := 0.0 if dense_formation else clampf(fmod(swap_time,period)/8.0,0.0,1.0)
+		if not dense_formation and cycle%2==1:side=-side
 		# Paired wings exchange berths only occasionally, passing ahead of the
 		# bow in separate depth lanes. Most time is spent quietly escorting.
 		var left := clampf(rendered_position.x-exclusion.x-CARRIER_DRIFT.x,safe.position.x+CARRIER_DRIFT.x,safe.end.x-CARRIER_DRIFT.x)
@@ -387,8 +390,9 @@ func _update_carriers(scale_value: float, visual_delta: float) -> void:
 		var from := Vector2(left if side<0 else right,berth_y)
 		var to := Vector2(right if side<0 else left,berth_y)
 		# At an unusual side anchor, move the obstructed berth ahead of the bow.
-		if absf(from.x-rendered_position.x)<exclusion.x+CARRIER_DRIFT.x-0.1:from.y=minf(from.y,forward_y)
-		if absf(to.x-rendered_position.x)<exclusion.x+CARRIER_DRIFT.x-0.1:to.y=minf(to.y,forward_y)
+		var edge_row := float(pair)*(carrier_radius*2.0+24.0) if dense_formation else 0.0
+		if absf(from.x-rendered_position.x)<exclusion.x+CARRIER_DRIFT.x-0.1:from.y=minf(from.y,forward_y-edge_row)
+		if absf(to.x-rendered_position.x)<exclusion.x+CARRIER_DRIFT.x-0.1:to.y=minf(to.y,forward_y-edge_row)
 		var crossing_y := minf(forward_y,berth_y)-float(i%2)*(carrier_radius*2.0+18.0)
 		var point: Vector2
 		if swap<0.25:point=from.lerp(Vector2(from.x,crossing_y),smoothstep(0.0,0.25,swap))
