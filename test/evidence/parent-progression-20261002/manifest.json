@@ -1,0 +1,42 @@
+{
+  "source": "04a5a307bcef9325efa9026e1ca94affa577e10d",
+  "engine": "Godot 4.6.3",
+  "operator": "parent own executor",
+  "time_steps_checks": 139,
+  "time_steps_failures": 0,
+  "first_hour": {
+    "game_seconds": 3600,
+    "wall_ms": 77068,
+    "scope": "unmodified old levels with 40-pair config; initial diagnostic, not target acceptance",
+    "policy": "10s until five clears, 300s thereafter, immediate unlock ack; max12 cheapest relative-cost upgrades per opportunity; no planet or galaxy management"
+  },
+  "chrono_probe": {
+    "input": "first-hour-evidence.json profile",
+    "game_seconds_each": 600,
+    "settings": [
+      [
+        1,
+        0.016666666666666666
+      ],
+      [
+        10,
+        0.016666666666666666
+      ],
+      [
+        10,
+        0.06666666666666667
+      ]
+    ],
+    "scope": "controlled no-input economic wall clock and step-size comparison, does not include particle budget or wall-clock app run"
+  },
+  "reproduce": [
+    "Use isolated project/user directory per test/run.py and import assets once",
+    "Run parent_direct_probe.gd with --headless --path isolated_project --script script_path",
+    "Run parent_chrono_probe.gd on that same isolated project; it reads the generated .runtime/parent-direct-first-hour/evidence.json"
+  ],
+  "limitations": [
+    "Synthetic QA clock, not real player save",
+    "Old F8 cannot compile on this baseline; failed attempt not counted",
+    "No full 50–60h or reforge/galaxy claim"
+  ]
+}
