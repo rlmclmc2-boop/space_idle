@@ -3167,8 +3167,11 @@ func sync_enhancement_buffers() -> void:
 	for index in enhancement_buffers.keys():
 		var entry := slot_entry("defence",int(index))
 		var owner: Dictionary=enhancement_buffer_owners.get(index,{})
-		var effect := memory_effect(entry)
-		if entry.is_empty() or effect.is_empty() or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):
+		# Cached capacity already owns the memory payload. This validation only
+		# needs membership; retain the full payload for the uncached calculation.
+		var effect := {} if stat_cache_enabled else memory_effect(entry)
+		var has_memory := _enhancement_effect_index(entry,"memory_material")>=0 if stat_cache_enabled else not effect.is_empty()
+		if entry.is_empty() or not has_memory or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):
 			enhancement_buffers.erase(index)
 			enhancement_buffer_owners.erase(index)
 		else:
