@@ -489,7 +489,7 @@ func invalidate_equipment_projections() -> void:
 	if not is_instance_valid(equipment_panel):return
 	# Coalesce repeated modifier events with equipment_stats in refresh_pending.
 	for category in ["weapons","defence"]:
-		equipment_panel.invalidate_stats({"category":category})
+		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
