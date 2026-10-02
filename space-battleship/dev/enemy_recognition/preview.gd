@@ -7,7 +7,7 @@ const MUTED := Color("8195ac")
 const METAL := Color("986f52")
 const ENERGY := Color("64b5ff")
 const REPAIR := Color("ffaf61")
-const ENVELOPE := preload("res://envelope.gd")
+const ENVELOPE := preload("res://scripts/enemy_protection_geometry.gd")
 var data: Dictionary
 var visuals: Dictionary
 var textures: Dictionary = {}

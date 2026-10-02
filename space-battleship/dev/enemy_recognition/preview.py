@@ -32,7 +32,8 @@ def main():
     for hull in (source / hulls).glob('*.png'):
         shutil.copy2(hull, stage / hulls / hull.name)
     shutil.copy2(here / 'preview.gd', stage / 'preview.gd')
-    shutil.copy2(here / 'envelope.gd', stage / 'envelope.gd')
+    (stage / 'scripts').mkdir(exist_ok=True)
+    shutil.copy2(source / 'scripts/enemy_protection_geometry.gd', stage / 'scripts/enemy_protection_geometry.gd')
     (stage / 'project.godot').write_text('''config_version=5
 [application]
 config/name="Enemy recognition review"

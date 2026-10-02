@@ -2,7 +2,6 @@ extends "res://scripts/main.gd"
 ## Live battle presentation. Save, inventory and unlock authority remains BattleGame.
 
 const PROTOTYPE_GAME := preload("res://scripts/presented_battle_game.gd")
-const ENEMY_VFX := preload("res://dev/toon_ship/enemy_weapon_vfx.gd")
 var enemy_vfx_enabled:=true
 var enemy_launch_context:=false
 var enemy_impacts:Array[Dictionary]=[]
@@ -265,12 +264,7 @@ func _draw_muzzle_cues() -> void:
 		pulse_layer.draw_circle(point,radius*(0.3+progress),Color(Color("d9a477"),maxf(0.0,0.28-age*1.5)))
 		if age<0.22:pulse_layer.draw_circle(point,radius*(0.5-age*1.5),Color(Color("f5e4bd"),1.0-age/0.22))
 	for event in enemy_impacts:
-		if event.get("kind","")=="fire":
-			var age:=fx_time-float(event.born)
-			var point:=battle_point(event.position)
-			pulse_layer.draw_line(point,point+Vector2(event.direction)*4.0,Color(Color("e2a36b"),maxf(0.0,1.0-age/0.12)),2.0,true)
-			continue
-		ENEMY_VFX.impact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),event.key)
+		enemy_recognition.draw_contact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),int(event.damage_type),event.get("kind","")=="fire")
 	if pulse_vfx_enabled:
 		for event in pulse_events:
 			var age:=fx_time-float(event.born)
@@ -453,7 +447,7 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 	super.weapon_launch(shot,spread)
 	if enemy_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
-		enemy_impacts.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"key":weapon_key(shot),"born":fx_time})
+		enemy_impacts.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
 	if pulse_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
@@ -495,7 +489,7 @@ func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:fl
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	if _is_simple_enemy(shot):
-		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":shot.direction,"key":weapon_key(shot),"born":fx_time})
+		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":shot.direction,"damage_type":int(shot.get("type",0)),"born":fx_time})
 		return
 	if _is_own_missile(shot):
 		if fast_mode_enabled():return
@@ -526,7 +520,7 @@ func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,vi
 	if shot.get("chain_hop",false):return Vector2(shot.direction).angle()
 	if _is_simple_enemy(shot):
 		var angle:float=visual.get("angle",Vector2(shot.direction).angle())
-		if core:ENEMY_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),weapon_key(shot))
+		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.get("type",0)),core)
 		return angle
 	if _is_own_missile(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
@@ -711,7 +705,9 @@ func prepare_enemy_hulls() -> void:
 		# A later configured texture still resolves through the ordinary draw path.
 		if path.is_empty() or not ResourceLoader.exists(path):continue
 		var texture := visual_texture(path)
-		if texture != null:enemy_hull_bounds(texture)
+		if texture != null:
+			enemy_hull_bounds(texture)
+			enemy_recognition.hull_profile(texture)
 
 func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 	var texture_key:=texture.get_instance_id()
@@ -729,6 +725,9 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
+	var packet := enemy_recognition_geometry(enemy)
+	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
+	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
 	# Track the actual opaque silhouette instead of using the transverse width as height.
@@ -737,12 +736,13 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var top:=pos.y
 	for corner in [used.position,Vector2(used.end.x,used.position.y),used.end,Vector2(used.position.x,used.end.y)]:
 		top=minf(top,pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y)
+	for point in outline:top=minf(top,pos.y+point.rotated(PI+angle).y)
 	top-=9.0
 	var bar_width:=clampf(width*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	battle_meter(Rect2(left,maxf(6,top),bar_width,4),float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
-		battle_meter(Rect2(left,maxf(6,top-7),bar_width,4),float(enemy.shield)/float(enemy.max_shield),BATTLE_TEAL)
+		battle_meter(Rect2(left,maxf(6,top-7),bar_width,4),float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.PHYSICAL if int(enemy.get("shieldType",0))==2 else ENEMY_RECOGNITION.ENERGY)
 	if boss_battle:
 		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),Vector2(left, maxf(20,top-5)),12,BATTLE_CREAM)
 
