@@ -177,7 +177,7 @@ index 3f8e414..9006e45 100644
    },
    "bindings": {
 diff --git a/space-battleship/scripts/game.gd b/space-battleship/scripts/game.gd
-index dd34e48..98cfafe 100644
+index cd441f9..c57a200 100644
 --- a/space-battleship/scripts/game.gd
 +++ b/space-battleship/scripts/game.gd
 @@ -214,11 +214,14 @@ func empty_loadout(key: String) -> Dictionary:
@@ -222,7 +222,7 @@ index dd34e48..98cfafe 100644
  	saved.galaxies=galaxy.save_data()
  	saved.grantedUnlocks = granted_unlocks()
 diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
-index 4b8e2c2..2ccfafc 100644
+index e9ad9fa..c7ecb8e 100644
 --- a/space-battleship/scripts/main.gd
 +++ b/space-battleship/scripts/main.gd
 @@ -190,8 +190,15 @@ var save_interval_input: LineEdit
@@ -241,7 +241,7 @@ index 4b8e2c2..2ccfafc 100644
  	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
  	position.x = -VIEW_CROP_LEFT
  	for side in [-1.0,1.0]:
-@@ -265,6 +272,10 @@ func _ready() -> void:
+@@ -266,6 +273,10 @@ func _ready() -> void:
  		music.play()
  	game.resume_progress()
  	build_ui()
@@ -252,7 +252,7 @@ index 4b8e2c2..2ccfafc 100644
  	if automation_args.has("--capture"):
  		game.start(1, false)
  		game.distance = 99.8
-@@ -281,7 +292,7 @@ func _ready() -> void:
+@@ -282,7 +293,7 @@ func _ready() -> void:
  		build_ui()
  	get_window().min_size = Vector2i(960,540)
  	if game.save_enabled:
@@ -261,7 +261,7 @@ index 4b8e2c2..2ccfafc 100644
  	elif OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
  		call_deferred("show_qa_tools")
  
-@@ -778,6 +789,7 @@ func show_save_settings() -> void:
+@@ -779,6 +790,7 @@ func show_save_settings() -> void:
  		save_settings_dialog.theme = Theme.new()
  		save_settings_dialog.theme.default_font = font
  		save_settings_dialog.theme.default_font_size = 18
@@ -269,7 +269,7 @@ index 4b8e2c2..2ccfafc 100644
  		add_child(save_settings_dialog)
  		var content := VBoxContainer.new()
  		content.custom_minimum_size = Vector2(580,280)
-@@ -815,6 +827,22 @@ func show_save_settings() -> void:
+@@ -816,6 +828,22 @@ func show_save_settings() -> void:
  		manual.disabled = not game.save_enabled
  		manual.pressed.connect(manual_save)
  		content.add_child(manual)
@@ -292,7 +292,7 @@ index 4b8e2c2..2ccfafc 100644
  		var warning := Label.new()
  		warning.custom_minimum_size.x = 580
  		warning.size.x = 580
-@@ -824,7 +852,84 @@ func show_save_settings() -> void:
+@@ -825,7 +853,84 @@ func show_save_settings() -> void:
  	save_interval_input.text = str(game.save_interval_minutes)
  	save_interval_feedback.text = UIText.t("save.interval_hint")
  	refresh_save_status()
@@ -379,10 +379,10 @@ index 4b8e2c2..2ccfafc 100644
  func apply_save_interval() -> void:
  	if not game.set_save_interval(save_interval_input.text):
 diff --git a/space-battleship/scripts/progress_writer.gd b/space-battleship/scripts/progress_writer.gd
-index ac5f9e4..2448e56 100644
+index ac5f9e4..ec697e5 100644
 --- a/space-battleship/scripts/progress_writer.gd
 +++ b/space-battleship/scripts/progress_writer.gd
-@@ -56,8 +56,41 @@ func clear_files() -> Error:
+@@ -56,8 +56,47 @@ func clear_files() -> Error:
  			if error != OK:return error
  	return OK
  
@@ -394,7 +394,13 @@ index ac5f9e4..2448e56 100644
 +	if OS.get_name()=="Windows":
 +		var error:=OS.execute("tasklist",["/FI","PID eq "+str(pid),"/FO","CSV","/NH"],output,true)
 +		return error!=0 or output.any(func(line):return str(line).contains('","'+str(pid)+'",'))
-+	return OS.execute("/bin/kill",["-0",str(pid)],output,true)==0
++	var error:=OS.execute("/bin/ps",["-p",str(pid),"-o","pid="],output,true)
++	return _import_owner_ps_result(error,output)
++
++static func _import_owner_ps_result(error: int, output: Array) -> bool:
++	# POSIX ps: exit 1 with no output means no matching PID. Diagnostics or an
++	# execution failure leave ownership unknown, so retain the transaction.
++	return error!=1 or output.any(func(line):return not str(line).strip_edges().is_empty())
 +
  static func read_progress(path: String) -> Variant:
 -	for suffix in ["", ".bak"]:
@@ -644,14 +650,14 @@ index 0000000..1378a84
 +func finish(transaction: Dictionary) -> void:
 + if transaction.had_primary:DirAccess.remove_absolute(str(transaction.primary)+".import-prev")
 diff --git a/test/README.md b/test/README.md
-index fb8e981..2140169 100644
+index 92eb53d..b0551bc 100644
 --- a/test/README.md
 +++ b/test/README.md
-@@ -32,6 +32,7 @@
+@@ -33,6 +33,7 @@
  | 全局装备强化 | `test_shared_enhancement_ranks.gd` 检查共享0/9/10/19/20与分支位置边界、重排停用/恢复、保存和六种显式详情（图形模式验证点击）；`test_enhancements.gd` 检查共享顺序/共享强化门槛/全局事件/费用/MAX/分支；`test_enhancement_branches.gd` 检查36选项、状态/组合/实际恢复/共同抗性；`test_enhancement_branch_attacks.gd` 检查四武器、规范攻击计数、单次连锁与有界连发；`test_deferred_enhancements.gd` 检查延迟队列、全局清除和时序；`test_neutral_memory_protection.gd` 检查无抗性临时保护、原始伤害溢出和延迟交互；`test_enhancement_save.gd` 检查旧档清理/余额/新档/重铸；`test_enhancement_furnace.gd` 检查碎片生产不递归；`test_percentage_expected_damage.gd` 检查整数/紧凑百分比、模块暴击期望、计时增益仅战斗生效且不触发面板刷新；`test_enhance_config.py` 校验唯一配置表和非法输入；`test_enhancement_cost.gd --headless` 检查指数单价、几何批量/MAX、赠送级免计费和超大余额。旧宝石背包/合成/镶嵌专项已被替代，不作新系统验收入口。 |
  | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
  | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
-+| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。`python test_save_import_recovery.py --project 隔离工程 --output 日志目录` 通过真实进程死亡与新进程启动检查五种恢复状态（含首次无原档）、三种存活事务保护（Linux）。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
++| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用真实设置菜单入口/按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。`python test_save_import_recovery.py --project 隔离工程 --output 日志目录` 通过真实进程死亡与新进程启动检查五种恢复状态（含首次无原档）、三种存活事务保护（Linux）。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
  | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
  | 音乐与开关偏好 | `test_bgm.gd` |
  | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
@@ -798,10 +804,10 @@ index 0000000..d5b2eac
 +raise SystemExit(bool(failures))
 diff --git a/test/test_save_transfer.gd b/test/test_save_transfer.gd
 new file mode 100644
-index 0000000..cc8b8fe
+index 0000000..5c10869
 --- /dev/null
 +++ b/test/test_save_transfer.gd
-@@ -0,0 +1,96 @@
+@@ -0,0 +1,99 @@
 +extends SceneTree
 +const Transfer := preload("res://scripts/save_transfer.gd")
 +class FailInstall extends Transfer:
@@ -819,6 +825,9 @@ index 0000000..cc8b8fe
 + var file:=FileAccess.open(path,FileAccess.WRITE);file.store_string(JSON.stringify(value));file.close()
 +func _initialize() -> void:call_deferred("run")
 +func run() -> void:
++ var writer:=preload("res://scripts/progress_writer.gd")
++ for query in [[0,["123"]],[1,[]],[1,["permission denied"]],[-1,[]],[2,["invalid option"]]]:
++  check(writer._import_owner_ps_result(query[0],query[1])!=(query[0]==1 and query[1].is_empty()),"Failed ownership query is retained; only confirmed absence is cleared")
 + var db:=ShipDatabase.new();db.config.offlineMax=0
 + var g:=BattleGame.new(db,false);g.profile.cleared=range(1,40);g.rebuild_unlocks();g.resume_progress();g.paused=true
 + g.profile.resources={"1":{"m":9.7,"e":400.0},"2":321.0};g.profile.enhancementLevel=31;g.profile.planets["1"].conquered=true;g.profile.planets["1"].degree={"m":1.2,"e":350.0}
@@ -900,10 +909,10 @@ index 0000000..cc8b8fe
 + print("SAVE TRANSFER: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
 diff --git a/test/test_save_transfer_ui.gd b/test/test_save_transfer_ui.gd
 new file mode 100644
-index 0000000..6f071b2
+index 0000000..01ae04f
 --- /dev/null
 +++ b/test/test_save_transfer_ui.gd
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,133 @@
 +extends SceneTree
 +## Real button and picker/confirmation input with isolated synthetic progress.
 +class IsolatedUI extends "res://scripts/battlefield.gd":
@@ -932,8 +941,17 @@ index 0000000..6f071b2
 +  await process_frame
 + await process_frame
 +func open_settings() -> void:
-+ # Existing entry setup; transfer controls, file selection and confirmation use input below.
-+ scene.show_save_settings();await process_frame;await process_frame
++ await activate(scene.guard_settings)
++ var menu: PopupMenu=scene.guard_settings.get_popup()
++ check(menu.visible,"Real Settings header input opens menu")
++ if not menu.visible:quit(1);return
++ menu.set_focused_item(menu.get_item_index(30))
++ await capture("settings-menu")
++ for down in [true,false]:
++  var event:=InputEventKey.new();event.keycode=KEY_ENTER;event.pressed=down
++  Input.parse_input_event(event);await process_frame
++ await process_frame
++ check(not menu.visible and is_instance_valid(scene.save_settings_dialog) and scene.save_settings_dialog.visible,"Real menu confirmation opens Save settings")
 +func item_lists(node: Node) -> Array:
 + var result: Array=[]
 + if node is ItemList:result.append(node)

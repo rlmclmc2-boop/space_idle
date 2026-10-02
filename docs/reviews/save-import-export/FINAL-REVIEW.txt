@@ -1,0 +1,23 @@
+Final save import/export review and native demo integration
+Candidate: a22fd7d4c12d8f573c332cfc9e5ef85ffc19337d
+Source branch: feature/save-import-export; no main merge or push.
+Aligned main: a653accb81a8848c770ece2a0338cb96a9933f35, preserved as an ancestor. All source Excel workbooks, published galaxy assets, railgun VFX and enhancement UI have zero diff from that main. Source changes remain only save transfer and its tests/text.
+
+Independent read-only reviewer: /root/final_readonly_review. No files changed or GUI run by reviewer. Both original P2 findings are closed: abandoned .import-new recovers, including first import without primary; invalid edge/node/build references are rejected before confirmation. Eight real-process recovery scenarios show original/committed bytes retained, live-owner staging retained, subsequent import and rollback available.
+Reviewer found a conditional macOS P2 in the old kill-0 query: execution failure could be mistaken for a dead owner. Final candidate changes fallback to /bin/ps -p PID -o pid=, interpreting only exit1 with no output as absence and retaining diagnostics/failed execution. Reviewer independently rechecked this small fix against Apple adv_cmds/ps sources and found the same mis-clear condition closed. Source: https://github.com/apple-oss-distributions/adv_cmds/blob/main/ps/ps.c and print.c. Five classification regressions cover live/absent/diagnostic/spawn-failure/other-error; these are not macOS runtime tests.
+Remaining compatibility risks: Windows tasklist and macOS ps paths have not been run on those platforms. Ownership is PID-only, so PID reuse or unrecognized markers can conservatively block import; original files remain retained. Marker creation is not a cross-process atomic lock, so two game instances starting import simultaneously are not verified or serialized. Do not claim full multi-process mutual exclusion. No remaining reproduced blocking finding in the tested Linux single-game workflow.
+
+Final tests on this exact working implementation:
+- Logic: 56 checks, 0 failures, exit0 (final-logic.log/exit).
+- Real new processes: 8 scenarios, 0 failures, exit0 (final-recovery.log/exit). Four actual self-SIGKILLs (-9), then different Godot process startup. Cases: legacy orphan; first-save/staged/moved/installed interruptions; live-owner staged/moved/installed preservation. Backup and rollback checks included.
+- GUI: 26 checks, 0 failures, exit0 (final-gui.log/exit). Real mouse input clicks Settings header; actual menu keyboard confirmation opens Save settings (no direct show_save_settings call or emitted signal). Subsequent mouse inputs select export/import controls, native Godot file-list items and replacement/cancel buttons. Initial isolated synthetic game setup only; after import uses production main.tscn fresh reload. Verifies no preview/cancel changes, future-version rejection, current unsaved789/456 backup, demo import, actual galaxy navigation and live3D render, 30 building slots through export/reimport/reload, and backup import restoring prior progress. Screenshots show the current published galaxy artwork. Linux software-renderer VSync warning only in GUI.
+- Isolated editor import: exit0; no parse/import errors in final-import.log.
+- No real user progress read or changed: all test operations under isolated test/work userdata. Old save-policy/boundary failures retain prior baseline evidence; they were not broadened into this task.
+
+Exact existing demo:
+Git: commit6328711a11fbacf8e45b6ab0e98f9abb000d8e27, path demo/space-idle-galaxy-demo-v4.json.
+Local materialized file: /workspace/planet-delivery/save-transfer/demo/space-idle-galaxy-demo-v4.json
+Size: 43107 bytes; SHA256: e2d36dd16177ac49fd0e9b3407c68570caa2eb6daa8cac14fd34b21bffa9107b.
+Native UTF8 JSON, outer version4, inner galaxy version3, no envelope. Cleared1..75, six planets conquered, galaxy_1 has30 buildings in six types/mixed levels1..5, no assigned crew, iron100K/uranium10K, modulelevel10. The file is byte-identical to the original commit. Import does not auto-open a page; click galaxy after replacement/startup.
+
+Deliverables: current code branch/hash above; candidate.patch against maina653acc; settings-menu.png/settings.png/confirmation.png/galaxy-imported.png; final logic/GUI/recovery/import logs and exits; exact demo and README; independent-readonly-review.txt. Previous Library creation failed before creating any item; this authorized Git evidence branch is the delivery route, no fake Library IDs.
