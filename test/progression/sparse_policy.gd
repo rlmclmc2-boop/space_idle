@@ -1,10 +1,11 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v5-phase-safe-cards-branchA"
+const VERSION="sparse-v6-recovery-cards-branchA"
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
 var recovering := false
+var recovery_end_stage := 0
 var farm := {}
 var deaths_seen := 0
 var last_progress := 0.0
@@ -30,6 +31,7 @@ func manual_upgrade_sweep(g,levels:int)->bool:
 			if g.upgrade_slot(category,index,levels):changed=true
 	return changed
 func act(g: BattleGame, elapsed: float) -> bool:
+	if recovering and g.profile.cleared.has(recovery_end_stage):recovering=false
 	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
 	respect_guard=true
 	var changed: bool = super.act(g,elapsed)
@@ -44,7 +46,7 @@ func act(g: BattleGame, elapsed: float) -> bool:
 				for node in [1,2,3]:
 					if g.enhancement_branch_unlocked(category,effect,node) and g.enhancement_branch_choice(category,effect,node).is_empty():
 						if g.set_enhancement_branch(category,effect,node,"A"):record(g,"choose_enhancement_branch",{"category":category,"effect":effect,"node":node,"choice":"A","assumption":"first option, no automatic respec"})
-	if use_bulk and g.stage>=6:
+	if (use_bulk or recovering) and g.stage>=6:
 		# Declared optional strategy: visit each real module card at +10/+1.
 		for attempt in range(3):
 			if manual_upgrade_sweep(g,10):record(g,"manual_card_sweep",{"mode":"10"})
@@ -72,7 +74,7 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		if allow_reforge and reforge_ready_progress and g.can_reforge_planet(str(id)):
 			if g.reforge_planet(str(id)):
 				farm={};best_won={};deaths_seen=int(g.metrics.deaths)
-				record(g,"reforge",{"planet":id});recovering=true
+				record(g,"reforge",{"planet":id});recovering=true;recovery_end_stage=35+5*(int(id)-1)
 				# Major reforge visit: rebuild with existing +10 card actions.
 				# Every successful card emits its own upgrade event for operation counts.
 				for attempt in range(24):

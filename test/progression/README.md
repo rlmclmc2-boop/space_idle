@@ -112,3 +112,12 @@ Use actual spaced CLI forms (`--duration 64800 --stop-clear 20 --visit-seconds 3
 Main now carries frame tails in a fixed1/60 accumulator. Prior1/60 maximum still performed shorter tail ticks each render frame, allowing144fps X1/X10 combat drift even with equal production clocks.151 checks pass including45/60/144fps budgets, pause/background and original particle accounting. Runtime pending time is under1/60 second; save/reload does not persist that substep.
 
 Source v7 smooths11–13 income with at least1.4× preceding income, eliminating the99% reward drop;14–20 coefficient remains prior v5 until next linked adjustment. Source/import transaction locks avoid intermediate formula-cache reads.
+
+
+## Sparse v6 recovery diagnostic
+
+The corrected full-UI fresh seed20261002/120s run reproduces clear10 at8032.1167s (2.231h),116 active visits/800 domain action events. No enhancement branch is eligible by10; the 1,000,000-fragment controlled restored-clock fixture separately proves13 enhancement levels and first A branches, while the old modulo-clock policy buys zero. Evidence `full-ui-fresh120-through10` and `sparse-v6-phase-branches`.
+
+Sparse v6 adds real per-card +10/+1 recovery visits after reforge, ends this recovery strategy after clearing the corresponding next planet gate, and restores its state in diagnostic checkpoints. This is a test strategy change, not a new mechanic or source-number change. Frozen ec82741 parent full run keeps its v5 policy and remains an independent comparison. The v15b ongoing fork predates the v6 stop/restore correction; its dirty code fingerprint is retained and it is only a segment diagnosis.
+
+The v15 first-preparation segment cleared31 at42985.1667 and32 at44947.9000 from30 at41963.7333:17.02min to31 and49.74min to32. This fails the intended smooth progression over approximately4h preparation. Its later forge/recovery timings remain pending; do not infer success from the numerical coefficients.

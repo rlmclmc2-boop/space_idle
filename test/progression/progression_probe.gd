@@ -37,7 +37,7 @@ func snapshot(label: String) -> void:
 	var projection:Dictionary={"armour":game.stat("armour"),"shield":game.stat("shield"),"reactor_weapons":game.reactor_multiplier("weapons"),"reactor_defence":game.reactor_multiplier("defence"),"reactor_smelting":game.reactor_multiplier("smelting"),"weapons":[]}
 	for entry in game.weapon_entries():
 		projection.weapons.append({"key":entry.key,"actual_level":entry.level,"effective_level":game.effective_equipment_level(int(entry.level)),"equipment_damage":0 if str(entry.key).is_empty() else game.equipment_stat(str(entry.key),int(entry.level))})
-	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"combat_projection":projection,"projection_scope":"Current ordinary capacities/damage; excludes per-hit critical/channel counters","rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
+	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"combat_projection":projection,"projection_scope":"Current ordinary capacities/damage; excludes per-hit critical/channel counters","rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen,"recovering":policy.recovering,"recovery_end_stage":policy.recovery_end_stage,"version":Policy.VERSION},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind=="encounter":
 		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
@@ -119,7 +119,7 @@ func run() -> void:
 		game.resume_progress();game.rng.state=int(str(checkpoint.rng_state))
 		var old:Dictionary=checkpoint.get("policy",{})
 		if old.has("random_state"):policy.random.state=int(str(old.random_state))
-		for field in ["last_refit","unlocked_count","farm","best_won","deaths_seen"]:
+		for field in ["last_refit","unlocked_count","farm","best_won","deaths_seen","recovering","recovery_end_stage"]:
 			if old.has(field):policy.set(field,old[field])
 		next_visit=game.simulated_time
 	game.event.connect(observe)
