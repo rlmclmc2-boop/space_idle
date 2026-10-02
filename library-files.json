@@ -2,16 +2,22 @@
   {
     "name": "city-block-overview-ui.png",
     "id": "libfile_a8069b7fa9c481918ce2c803a19f7427",
-    "file_id": "file_00000000dec481fdb60bd92532357e6a"
+    "file_id": "file_0000000028d48230832f215686c59143",
+    "version": 1,
+    "status": "succeeded"
   },
   {
     "name": "city-block-straight-detail.png",
     "id": "libfile_a2757b0e9a2481919e9a4674934bdee7",
-    "file_id": "file_000000001688822facff10311a1acfbd"
+    "file_id": "file_00000000545c81f5bf101959bd55f39b",
+    "version": 1,
+    "status": "succeeded"
   },
   {
     "name": "city-block-elbow-detail.png",
     "id": "libfile_7871c44d2ac08191b020c43d2b6950e0",
-    "file_id": "file_000000001294820cb62fcbd80c8436de"
+    "file_id": "file_000000007c8c81fd84722726a82c1df5",
+    "version": 1,
+    "status": "succeeded"
   }
 ]
