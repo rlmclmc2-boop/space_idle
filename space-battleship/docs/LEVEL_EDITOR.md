@@ -1,6 +1,6 @@
 # LEVEL_EDITOR: editor-only rules
 OPEN: 关卡编辑器.cmd or F1 QA; independent scene, no battle/player progress. Runtime setup: [README](../README.md).
-- Edit enemies, 10-slot groups, level encounters; switching record keeps draft. Validate draft=no write. Save/import includes current input -> validate -> backup -> commit; QA restart loads result.
+- Edit enemies, legacy 10-slot or new 15-slot groups, level encounters; switching record keeps draft. Validate draft=no write. Save/import includes current input -> validate -> backup -> commit; QA restart loads result.
 - WRITE ONLY config_excel/{mon,monGroup,level}.xlsx + data/game_data.json + import fingerprints. Other sheets=reference validation; no legacy workbook write. Unchanged sheets byte-identical; changed sheet updates data XML, keeps style. External source/manifest/target JSON change -> reject overwrite.
 - Level atkRatio/lifeRatio/resRatio: no editor UI/formula/cache validation; existing IDs preserve cells/cache, new IDs=1 then maintain in sheet. Other numeric fields support same-sheet refs,+,-,*,/,ROUND and cached-value checks. Level IDs contiguous from 1; add/delete does not relocate old formula refs. Standard import still full-validates.
 - Referenced enemy/group: unlink before delete; ID change updates refs. Reject dangling refs, duplicate IDs, invalid number/weapon/resource. Backup per batch at .runtime/level-editor-backups/; failed commit attempts rollback, which can also fail. Restore only while editor closed, same batch+relative paths; see STATUS U-019/U-020.

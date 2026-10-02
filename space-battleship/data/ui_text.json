@@ -6826,7 +6826,7 @@
   },
   {
     "key": "debug.show_record.text_02",
-    "text": "十格编队（从上到下）；每艘敌舰只占一格，size仅决定外观。",
+    "text": "新编组为3排×5槽，按行从左到右填写；旧十槽编组保留原阵位。",
     "params": "",
     "category": "debug",
     "note": "固定文字",
@@ -8184,7 +8184,7 @@
   },
   {
     "key": "debug.import_workbook.message_110",
-    "text": "group {gid}: expected 10 slots",
+    "text": "group {gid}: expected legacy 10 slots or 3×5 (15) slots",
     "params": "{gid}",
     "category": "debug",
     "note": "配置工具校验提示",

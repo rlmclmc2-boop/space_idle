@@ -1,0 +1,21 @@
+counter,enemy_hp,engine,group_id,id,module_level,player_armour,player_shield,projected_damage,seconds,seed,state,tier,upgrade,weapon,win
+laser,0.0,4.6.3-stable (official),1001.0,normal_laser,10.0,5200.0,2511.0,520.0,9.80000000000007,1701,2,normal,0.0,laser,True
+laser,0.0,4.6.3-stable (official),1001.0,normal_laser,10.0,5200.0,2457.0,1000.0,13.0333333333336,1701,2,normal,0.0,missile,True
+laser,0.0,4.6.3-stable (official),1001.0,normal_laser,10.0,5200.0,2295.0,7700.0,32.0333333333328,1701,2,normal,0.0,cannon,True
+laser,0.0,4.6.3-stable (official),1001.0,normal_laser,10.0,5200.0,2484.0,180.0,12.6000000000002,1701,2,normal,0.0,longLaser,True
+missile,0.0,4.6.3-stable (official),1002.0,normal_missile,10.0,5200.0,2236.0,520.0,24.3166666666666,1701,2,normal,0.0,laser,True
+missile,0.0,4.6.3-stable (official),1002.0,normal_missile,10.0,5200.0,2415.0,1000.0,10.7833333333334,1701,2,normal,0.0,missile,True
+missile,0.0,4.6.3-stable (official),1002.0,normal_missile,10.0,5200.0,1784.0,7700.0,53.1666666666649,1701,2,normal,0.0,cannon,True
+missile,0.0,4.6.3-stable (official),1002.0,normal_missile,10.0,5200.0,2193.0,180.0,26.9999999999997,1701,2,normal,0.0,longLaser,True
+cannon,0.0,4.6.3-stable (official),1003.0,normal_cannon,10.0,5200.0,2524.0,520.0,40.1166666666657,1701,2,normal,0.0,laser,True
+cannon,0.0,4.6.3-stable (official),1003.0,normal_cannon,10.0,5200.0,2576.0,1000.0,13.0833333333336,1701,2,normal,0.0,missile,True
+cannon,0.0,4.6.3-stable (official),1003.0,normal_cannon,10.0,5200.0,2580.0,7700.0,10.8000000000001,1701,2,normal,0.0,cannon,True
+cannon,0.0,4.6.3-stable (official),1003.0,normal_cannon,10.0,5200.0,2569.0,180.0,16.4000000000004,1701,2,normal,0.0,longLaser,True
+longLaser,0.0,4.6.3-stable (official),1004.0,normal_longLaser,10.0,5200.0,2553.0,520.0,12.7500000000002,1701,2,normal,0.0,laser,True
+longLaser,0.0,4.6.3-stable (official),1004.0,normal_longLaser,10.0,5200.0,2522.0,1000.0,15.5333333333337,1701,2,normal,0.0,missile,True
+longLaser,0.0,4.6.3-stable (official),1004.0,normal_longLaser,10.0,5200.0,2519.0,7700.0,21.3500000000001,1701,2,normal,0.0,cannon,True
+longLaser,0.0,4.6.3-stable (official),1004.0,normal_longLaser,10.0,5200.0,2565.0,180.0,9.60000000000006,1701,2,normal,0.0,longLaser,True
+neutral,0.0,4.6.3-stable (official),1005.0,normal_neutral1,10.0,5200.0,2553.0,520.0,12.7500000000002,1701,2,normal,0.0,laser,True
+neutral,0.0,4.6.3-stable (official),1005.0,normal_neutral1,10.0,5200.0,2559.0,1000.0,8.28333333333332,1701,2,normal,0.0,missile,True
+neutral,0.0,4.6.3-stable (official),1005.0,normal_neutral1,10.0,5200.0,2559.0,7700.0,10.8166666666668,1701,2,normal,0.0,cannon,True
+neutral,0.0,4.6.3-stable (official),1005.0,normal_neutral1,10.0,5200.0,2565.0,180.0,9.60000000000006,1701,2,normal,0.0,longLaser,True

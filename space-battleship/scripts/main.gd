@@ -1304,8 +1304,9 @@ func player_mount_center(key: String, index: int) -> Vector2:
 func enemy_config_visual_scale(size: int) -> float:
 	return float(db.config.get("enemyVisualScaleSize"+str(clampi(size,1,6)),1.0))
 
-func enemy_formation_anchor(slot: int, large: bool, size: int) -> Vector2:
+func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) -> Vector2:
 	var scale_offset := maxf(0.0,enemy_config_visual_scale(size)-1.0)*35.0
+	if columns==5:return BattleGame.enemy_slot_position(slot,columns)+Vector2(0,scale_offset)
 	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
@@ -1317,8 +1318,9 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var phase := rng.randf()*TAU
 	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
 	var large := game.is_boss_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
-	var anchor := enemy_formation_anchor(slot,large,int(enemy.size))
-	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot).x
+	var columns:=int(enemy.get("formation_columns",10))
+	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
+	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
 	target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
@@ -1344,7 +1346,10 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
 	var player_front := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)-absf(float(battle_visual.player_idle_y))-player_half_height
 	var enemy_half_height := (78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
-	return minf(BATTLE_VIEW_SIZE.y*float(battle_visual.enemy_max_y),player_front-BATTLE_VIEW_SIZE.y*float(battle_visual.enemy_player_min_gap)-enemy_half_height)
+	# The legacy cap fits one row. Fifteen-slot groups need the third row;
+	# retain the same measured clearance from the player hull.
+	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
+	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*float(battle_visual.enemy_player_min_gap)-enemy_half_height)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
@@ -2742,6 +2747,8 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
 	var w := dimensions.y * 0.8
 	bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+	if float(enemy.get("max_shield",0))>0:
+		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-12,w,4),float(enemy.shield)/float(enemy.max_shield),CYAN)
 	if boss_battle:
 		var marker := pos + Vector2(dimensions.y/2+4,-10)
 		marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)

@@ -741,6 +741,8 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var bar_width:=clampf(width*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	battle_meter(Rect2(left,maxf(6,top),bar_width,4),float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
+	if float(enemy.get("max_shield",0))>0:
+		battle_meter(Rect2(left,maxf(6,top-7),bar_width,4),float(enemy.shield)/float(enemy.max_shield),BATTLE_TEAL)
 	if boss_battle:
 		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),Vector2(left, maxf(20,top-5)),12,BATTLE_CREAM)
 

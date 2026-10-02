@@ -224,7 +224,7 @@
         "dmgtype": 1,
         "dmg": 35,
         "dmgMulti": 0.2,
-        "cd": 0.28,
+        "cd": 0.2,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -273,10 +273,6 @@
       "armourType": 1,
       "res": "{1,10,1}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -298,10 +294,6 @@
       "armourType": 2,
       "res": "{1,10,1}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -323,10 +315,6 @@
       "armourType": 1,
       "res": "{1,10,0.4}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -348,10 +336,6 @@
       "armourType": 2,
       "res": "{1,10,0.4}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -376,10 +360,6 @@
       "armourType": 2,
       "res": "{1,50,1}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -404,10 +384,6 @@
       "armourType": 1,
       "res": "{1,50,1}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -438,10 +414,6 @@
       "armourType": 1,
       "res": "{1,100,1}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -472,10 +444,6 @@
       "armourType": 2,
       "res": "{1,100,1}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -512,10 +480,6 @@
       "armourType": 1,
       "res": "{1,200,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -552,10 +516,6 @@
       "armourType": 2,
       "res": "{1,200,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -598,10 +558,6 @@
       "armourType": 1,
       "res": "{1,400,1}",
       "size": 6,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -644,10 +600,6 @@
       "armourType": 2,
       "res": "{1,400,1}",
       "size": 6,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -669,10 +621,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -694,10 +642,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -719,10 +663,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -744,10 +684,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -769,10 +705,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -794,10 +726,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -819,10 +747,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -844,10 +768,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -869,10 +789,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -894,10 +810,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -919,10 +831,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -944,10 +852,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -969,10 +873,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -994,10 +894,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1019,10 +915,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1044,10 +936,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1065,14 +953,10 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 8000,
+      "health": 16000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 8000,
-      "shieldType": 2,
-      "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
       "drops": [
         {
           "resourceId": 1,
@@ -1090,14 +974,10 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 8000,
+      "health": 16000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 8000,
-      "shieldType": 2,
-      "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
       "drops": [
         {
           "resourceId": 1,
@@ -1119,10 +999,6 @@
       "armourType": 0,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1144,10 +1020,6 @@
       "armourType": 0,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1165,14 +1037,10 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 7000,
+      "health": 7500,
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1194,10 +1062,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1219,10 +1083,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1244,10 +1104,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1269,10 +1125,6 @@
       "armourType": 0,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1294,10 +1146,6 @@
       "armourType": 0,
       "res": "{1,0,0}",
       "size": 3,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1319,10 +1167,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1344,10 +1188,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1369,10 +1209,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1394,10 +1230,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1419,10 +1251,6 @@
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1444,10 +1272,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1469,10 +1293,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1494,10 +1314,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1519,10 +1335,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1544,10 +1356,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1569,10 +1377,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1594,10 +1398,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1619,10 +1419,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1644,10 +1440,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1669,10 +1461,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1694,10 +1482,6 @@
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1715,14 +1499,10 @@
         }
       ],
       "dmgMultiple": 7.5,
-      "health": 22800,
+      "health": 64000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 22800,
-      "shieldType": 2,
-      "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
       "drops": [
         {
           "resourceId": 1,
@@ -1740,14 +1520,10 @@
         }
       ],
       "dmgMultiple": 7.5,
-      "health": 17800,
+      "health": 50000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 17800,
-      "shieldType": 2,
-      "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
       "drops": [
         {
           "resourceId": 1,
@@ -1765,14 +1541,10 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 16000,
+      "health": 17000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1789,15 +1561,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 12,
-      "health": 21000,
+      "dmgMultiple": 7.1,
+      "health": 10000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1814,15 +1582,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.5,
-      "health": 11100,
+      "dmgMultiple": 5.8,
+      "health": 7000,
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1839,15 +1603,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.12,
-      "health": 16100,
-      "armourType": 2,
+      "dmgMultiple": 6.8,
+      "health": 6000,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1864,15 +1624,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 12.1,
-      "health": 21100,
+      "dmgMultiple": 0.1,
+      "health": 17000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1889,15 +1645,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.48,
-      "health": 11080,
-      "armourType": 1,
+      "dmgMultiple": 5.7,
+      "health": 17000,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1914,15 +1666,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.09,
-      "health": 16200,
+      "dmgMultiple": 0.1,
+      "health": 17000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1939,15 +1687,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 11.9,
-      "health": 21200,
-      "armourType": 2,
+      "dmgMultiple": 7.3,
+      "health": 7500,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1964,15 +1708,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.6,
-      "health": 11060,
-      "armourType": 1,
+      "dmgMultiple": 8.9,
+      "health": 9000,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -1989,15 +1729,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.13,
-      "health": 16300,
+      "dmgMultiple": 0.1,
+      "health": 18000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2014,15 +1750,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 12.05,
-      "health": 21300,
-      "armourType": 2,
+      "dmgMultiple": 7,
+      "health": 7600,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2039,15 +1771,11 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.52,
-      "health": 11040,
-      "armourType": 1,
+      "dmgMultiple": 9.4,
+      "health": 9000,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2058,21 +1786,17 @@
     },
     "1087": {
       "id": 1087,
-      "des": "物理甲BOSS：长激光占优",
+      "des": "编排草案-boss-physical-尺寸5",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
       "dmgMultiple": 11,
-      "health": 315000,
-      "armourType": 2,
+      "health": 330000,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2083,21 +1807,17 @@
     },
     "1088": {
       "id": 1088,
-      "des": "能量盾BOSS：磁轨占优",
+      "des": "编排草案-boss-energy-尺寸5",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
       "dmgMultiple": 11,
-      "health": 15000,
+      "health": 440000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 5,
-      "shield": 300000,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2108,21 +1828,17 @@
     },
     "1089": {
       "id": 1089,
-      "des": "物理甲终极：长激光占优",
+      "des": "编排草案-ultimate-physical-尺寸6",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 6.6,
-      "health": 895000,
-      "armourType": 2,
+      "dmgMultiple": 6,
+      "health": 850000,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 6,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -2133,21 +1849,17 @@
     },
     "1090": {
       "id": 1090,
-      "des": "能量盾终极：磁轨占优",
+      "des": "编排草案-ultimate-energy-尺寸6",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 6.6,
-      "health": 40000,
+      "dmgMultiple": 6,
+      "health": 1250000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 6,
-      "shield": 770000,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
       "drops": [
         {
           "resourceId": 1,
@@ -6562,9 +6274,9 @@
         null,
         null,
         1067,
-        null,
         1068,
         null,
+        1068,
         1067,
         null,
         1069,
@@ -6582,9 +6294,9 @@
         null,
         null,
         1072,
-        null,
         1073,
         null,
+        1073,
         1072,
         null,
         1074,
@@ -6602,9 +6314,9 @@
         null,
         null,
         1077,
-        null,
         1078,
         null,
+        1078,
         1077,
         null,
         1079,
@@ -6622,9 +6334,9 @@
         null,
         null,
         1082,
-        null,
         1083,
         null,
+        1083,
         1082,
         null,
         1084,
@@ -17331,28 +17043,28 @@
     "enemyCannonMissingDamageAndCooldown": "Use enemy_weapon_base for missing hostile weapon fields."
   },
   "source_files": {
-    "level": "/workspace/space_idle/space-battleship/config_excel/level.xlsx",
-    "equipment": "/workspace/space_idle/space-battleship/config_excel/equipment.xlsx",
-    "mon": "/workspace/space_idle/space-battleship/config_excel/mon.xlsx",
-    "monGroup": "/workspace/space_idle/space-battleship/config_excel/monGroup.xlsx",
-    "res": "/workspace/space_idle/space-battleship/config_excel/res.xlsx",
-    "config": "/workspace/space_idle/space-battleship/config_excel/config.xlsx",
-    "ship": "/workspace/space_idle/space-battleship/config_excel/ship.xlsx",
-    "hightech": "/workspace/space_idle/space-battleship/config_excel/hightech.xlsx",
-    "unlock": "/workspace/space_idle/space-battleship/config_excel/unlock.xlsx",
-    "crew": "/workspace/space_idle/space-battleship/config_excel/crew.xlsx",
-    "crew_assignment": "/workspace/space_idle/space-battleship/config_excel/crew_assignment.xlsx",
-    "crew_config": "/workspace/space_idle/space-battleship/config_excel/crew_config.xlsx",
-    "planet": "/workspace/space_idle/space-battleship/config_excel/planet.xlsx",
-    "planet_build": "/workspace/space_idle/space-battleship/config_excel/planet_build.xlsx",
-    "planet_buff": "/workspace/space_idle/space-battleship/config_excel/planet_buff.xlsx",
-    "enhance_config": "/workspace/space_idle/space-battleship/config_excel/enhance_config.xlsx",
-    "galaxy": "/workspace/space_idle/space-battleship/config_excel/galaxy.xlsx",
-    "galaxy_build": "/workspace/space_idle/space-battleship/config_excel/galaxy_build.xlsx",
-    "galaxy_config": "/workspace/space_idle/space-battleship/config_excel/galaxy_config.xlsx",
-    "weapon_motion": "/workspace/space_idle/space-battleship/config_excel/weapon_motion.xlsx",
-    "enemy_weapon_base": "/workspace/space_idle/space-battleship/config_excel/enemy_weapon_base.xlsx",
-    "battle_design": "/workspace/space_idle/space-battleship/config_excel/battle_design.xlsx"
+    "level": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/level.xlsx",
+    "equipment": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/equipment.xlsx",
+    "mon": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/mon.xlsx",
+    "monGroup": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/monGroup.xlsx",
+    "res": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/res.xlsx",
+    "config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/config.xlsx",
+    "ship": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/ship.xlsx",
+    "hightech": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/hightech.xlsx",
+    "unlock": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/unlock.xlsx",
+    "crew": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew.xlsx",
+    "crew_assignment": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew_assignment.xlsx",
+    "crew_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew_config.xlsx",
+    "planet": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet.xlsx",
+    "planet_build": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet_build.xlsx",
+    "planet_buff": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet_buff.xlsx",
+    "enhance_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/enhance_config.xlsx",
+    "galaxy": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy.xlsx",
+    "galaxy_build": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy_build.xlsx",
+    "galaxy_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy_config.xlsx",
+    "weapon_motion": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/weapon_motion.xlsx",
+    "enemy_weapon_base": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/enemy_weapon_base.xlsx",
+    "battle_design": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/battle_design.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -18130,7 +17842,7 @@
       "baseTime": 60,
       "baseExp": 150,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.0075,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.0017,\"cloudSpeed\":0.0022,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
       "reforgeStartLevel": 10,
       "minTime": 5
     },
@@ -18141,7 +17853,7 @@
       "baseTime": 60,
       "baseExp": 200,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.3,\"radiusScale\":0.83,\"detailScale\":1.2,\"detailStrength\":0.9,\"surfaceSpeed\":0.0065,\"cloudSpeed\":0.008,\"surfaceTint\":\"fff4c9\",\"shadowTint\":\"d49642\",\"atmosphereColor\":\"ffdda0\",\"coronaWidth\":0.085,\"glowStrength\":0.56,\"flareStrength\":0.12}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.3,\"radiusScale\":0.83,\"detailScale\":3.2,\"detailStrength\":0.7,\"surfaceSpeed\":0.002,\"cloudSpeed\":0.0028,\"surfaceTint\":\"fff4c9\",\"shadowTint\":\"d49642\",\"atmosphereColor\":\"ffdda0\",\"coronaWidth\":0.085,\"glowStrength\":0.56,\"flareStrength\":0.12}",
       "reforgeStartLevel": 15,
       "minTime": 5
     },
@@ -18152,7 +17864,7 @@
       "baseTime": 60,
       "baseExp": 250,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.1,\"radiusScale\":1.22,\"detailScale\":0.55,\"detailStrength\":1,\"surfaceSpeed\":0.0035,\"cloudSpeed\":0.0045,\"surfaceTint\":\"ff8539\",\"shadowTint\":\"6b100c\",\"atmosphereColor\":\"ee6333\",\"coronaWidth\":0.2,\"glowStrength\":0.27,\"pulseStrength\":0.009,\"pulseSpeed\":0.05}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.1,\"radiusScale\":1.22,\"detailScale\":0.55,\"detailStrength\":1,\"surfaceSpeed\":0.0007,\"cloudSpeed\":0.0011,\"surfaceTint\":\"ff8539\",\"shadowTint\":\"6b100c\",\"atmosphereColor\":\"ee6333\",\"coronaWidth\":0.2,\"glowStrength\":0.27,\"pulseStrength\":0.009,\"pulseSpeed\":0.05}",
       "reforgeStartLevel": 20,
       "minTime": 5
     },
@@ -18163,7 +17875,7 @@
       "baseTime": 60,
       "baseExp": 300,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.6,\"radiusScale\":0.22,\"detailScale\":1.0,\"detailStrength\":0.8,\"surfaceSpeed\":0.008,\"cloudSpeed\":0.01,\"surfaceTint\":\"f6ffff\",\"shadowTint\":\"a0d9ff\",\"atmosphereColor\":\"96ceff\",\"coronaWidth\":0.065,\"glowStrength\":0.8}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.6,\"radiusScale\":0.22,\"detailScale\":2,\"detailStrength\":0.06,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.009,\"surfaceTint\":\"f6ffff\",\"shadowTint\":\"a0d9ff\",\"atmosphereColor\":\"96ceff\",\"coronaWidth\":0.065,\"glowStrength\":0.8}",
       "reforgeStartLevel": 25,
       "minTime": 5
     },
@@ -18174,7 +17886,7 @@
       "baseTime": 60,
       "baseExp": 350,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.7,\"radiusScale\":0.16,\"detailStrength\":0.85,\"surfaceSpeed\":0.02,\"cloudSpeed\":0.025,\"surfaceTint\":\"edffff\",\"shadowTint\":\"8bc9ff\",\"atmosphereColor\":\"6fbfff\",\"coronaWidth\":0.12,\"glowStrength\":0.8,\"beamLength\":7.5,\"beamWidth\":0.2,\"beamSpeed\":1.6,\"magnetosphere\":0.55,\"detailScale\":1.0}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.7,\"radiusScale\":0.16,\"detailStrength\":0.12,\"surfaceSpeed\":0.35,\"cloudSpeed\":0.42,\"surfaceTint\":\"edffff\",\"shadowTint\":\"8bc9ff\",\"atmosphereColor\":\"6fbfff\",\"coronaWidth\":0.12,\"glowStrength\":0.8,\"beamLength\":7.5,\"beamWidth\":0.2,\"beamSpeed\":1.6,\"magnetosphere\":0.55}",
       "reforgeStartLevel": 30,
       "minTime": 5
     }
@@ -18948,7 +18660,7 @@
     },
     "max_transport_ships": {
       "key": "max_transport_ships",
-      "value": 6,
+      "value": 12,
       "type": "int",
       "des": "交通艇池上限"
     },
@@ -18960,19 +18672,19 @@
     },
     "camera_zoom_min": {
       "key": "camera_zoom_min",
-      "value": 0.4,
+      "value": 0.6,
       "type": "float",
       "des": "最小相机缩放"
     },
     "camera_zoom_max": {
       "key": "camera_zoom_max",
-      "value": 0.6,
+      "value": 2.8,
       "type": "float",
       "des": "最大相机缩放"
     },
     "transport_buildings_per_ship": {
       "key": "transport_buildings_per_ship",
-      "value": 5,
+      "value": 3,
       "type": "float",
       "des": "每艇对应已建成功能建筑（座/艇）"
     },
@@ -19004,7 +18716,7 @@
     },
     "threshold_1": {
       "id": "threshold_1",
-      "value": 1,
+      "value": 0,
       "unit": "强化级",
       "des": "第1顺位效果的有效共享强化等级门槛；装备等级无关"
     },
@@ -19132,19 +18844,19 @@
       "id": "branch_threshold_1",
       "value": 10,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第1分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_2": {
       "id": "branch_threshold_2",
       "value": 20,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第2分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_3": {
       "id": "branch_threshold_3",
       "value": 30,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第3分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "proficiency_a_damage_bonus": {
       "id": "proficiency_a_damage_bonus",
@@ -19379,24 +19091,6 @@
       "value": 1,
       "unit": "倍率",
       "des": "未强制清除概率缺口转化为伤害增加的系数"
-    },
-    "branch_position_offset_1": {
-      "id": "branch_position_offset_1",
-      "value": 0,
-      "unit": "有效强化级",
-      "des": "第1顺位分支门槛偏移；与主效果启用门槛独立"
-    },
-    "branch_position_offset_2": {
-      "id": "branch_position_offset_2",
-      "value": 10,
-      "unit": "有效强化级",
-      "des": "第2顺位分支门槛偏移；与主效果启用门槛独立"
-    },
-    "branch_position_offset_3": {
-      "id": "branch_position_offset_3",
-      "value": 20,
-      "unit": "有效强化级",
-      "des": "第3顺位分支门槛偏移；与主效果启用门槛独立"
     }
   },
   "weapon_motion": {
@@ -19546,62 +19240,6 @@
       "unit": "方向向量Y",
       "description": "偏转方向的朝前门槛；上方为负，范围[-1,0]",
       "scope": "玩家导弹"
-    },
-    "rail_charge_seconds": {
-      "id": "rail_charge_seconds",
-      "value": 0.9,
-      "unit": "游戏秒",
-      "description": "玩家磁轨炮周期末段蓄力表现；包含在equipment.cannon.cd内，随合法冷却倍率同比缩放",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_charge_radius": {
-      "id": "rail_charge_radius",
-      "value": 28,
-      "unit": "显示像素",
-      "description": "局部炮口蓄力环半径",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_trail_length": {
-      "id": "rail_trail_length",
-      "value": 138,
-      "unit": "显示像素",
-      "description": "磁轨弹头后方短弹道最大长度；不连接整条炮口到目标",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_trail_width": {
-      "id": "rail_trail_width",
-      "value": 28,
-      "unit": "显示像素",
-      "description": "磁轨主炮弹道宽度",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_flash_seconds": {
-      "id": "rail_flash_seconds",
-      "value": 0.09,
-      "unit": "显示秒",
-      "description": "主炮局部炮口闪光时长",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_impact_seconds": {
-      "id": "rail_impact_seconds",
-      "value": 0.16,
-      "unit": "显示秒",
-      "description": "主炮局部命中冲击时长",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_impact_radius": {
-      "id": "rail_impact_radius",
-      "value": 32,
-      "unit": "显示像素",
-      "description": "主炮命中冲击半径",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_penetration_length": {
-      "id": "rail_penetration_length",
-      "value": 80,
-      "unit": "显示像素",
-      "description": "命中处向前的短促视觉冲击长度；不改变命中与连锁",
-      "scope": "玩家磁轨炮表现"
     }
   },
   "enemy_weapon_base": {
@@ -19823,45 +19461,45 @@
       "id": "boss_physical",
       "group_id": 1017,
       "tier": "boss",
-      "counter": "energy",
+      "counter": "physical",
       "base_level": 10,
       "min_upgrade": 2,
       "target_seconds": 30,
       "status": "exploratory",
-      "description": "组名指敌方防御；counter仍指优势攻击类型；Destroyer Lv10+N，无额外加成；待实测"
+      "description": "固定Destroyer四武器槽；护盾+护甲各一；Lv10+N；无额外加成；physical仅为待验证目标"
     },
     "boss_energy": {
       "id": "boss_energy",
       "group_id": 1018,
       "tier": "boss",
-      "counter": "physical",
+      "counter": "energy",
       "base_level": 10,
       "min_upgrade": 2,
       "target_seconds": 30,
       "status": "exploratory",
-      "description": "组名指敌方防御；counter仍指优势攻击类型；Destroyer Lv10+N，无额外加成；待实测"
+      "description": "固定Destroyer四武器槽；护盾+护甲各一；Lv10+N；无额外加成；energy仅为待验证目标"
     },
     "ultimate_physical": {
       "id": "ultimate_physical",
       "group_id": 1019,
+      "tier": "ultimate",
+      "counter": "physical",
+      "base_level": 10,
+      "min_upgrade": 3,
+      "target_seconds": 60,
+      "status": "exploratory",
+      "description": "固定Destroyer四武器槽；护盾+护甲各一；Lv10+N；无额外加成；physical仅为待验证目标"
+    },
+    "ultimate_energy": {
+      "id": "ultimate_energy",
+      "group_id": 1020,
       "tier": "ultimate",
       "counter": "energy",
       "base_level": 10,
       "min_upgrade": 3,
       "target_seconds": 60,
       "status": "exploratory",
-      "description": "组名指敌方防御；counter仍指优势攻击类型；Destroyer Lv10+N，无额外加成；待实测"
-    },
-    "ultimate_energy": {
-      "id": "ultimate_energy",
-      "group_id": 1020,
-      "tier": "ultimate",
-      "counter": "physical",
-      "base_level": 10,
-      "min_upgrade": 3,
-      "target_seconds": 60,
-      "status": "exploratory",
-      "description": "组名指敌方防御；counter仍指优势攻击类型；Destroyer Lv10+N，无额外加成；待实测"
+      "description": "固定Destroyer四武器槽；护盾+护甲各一；Lv10+N；无额外加成；energy仅为待验证目标"
     }
   }
 }

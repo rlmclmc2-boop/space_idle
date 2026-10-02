@@ -175,7 +175,7 @@ func show_record(index: int) -> void:
 		var grid := GridContainer.new()
 		grid.columns = 2
 		form.add_child(grid)
-		for i in range(10):
+		for i in range(10 if values.size()==10 else 15):
 			var label := Label.new()
 			label.text = UIText.t("debug.show_record.text_03", {"i":"%02d" % ((i + 1))})
 			grid.add_child(label)
@@ -273,7 +273,7 @@ func add_record(duplicate: bool) -> void:
 	elif table == "mon":
 		row = {"des":UIText.t("debug.add_record.text_01"), "equipment":"{laser_mon|1}", "dmgMultiple":1, "health":100, "armourType":0, "res":"{1,10,1}", "size":1}
 	elif table == "monGroup":
-		row = {"des":UIText.t("debug.add_record.text_02"), "mon":"{null,null,null,null,null,null,null,null,null,null}"}
+		row = {"des":UIText.t("debug.add_record.text_02"), "mon":"{null,null,null,null,null,null,null,null,null,null,null,null,null,null,null}"}
 	else:
 		row = {"length":1000, "monGroup":"", "atkRatio":1, "lifeRatio":1, "resRatio":1, "jewelRatio":1}
 	var next_id := 1
