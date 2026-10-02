@@ -24,7 +24,7 @@ def bake_vertex_shading(obj):
             direction=n*z+tangent*(radial*math.cos(angle))+bitangent*(radial*math.sin(angle))
             hit,normal,index,distance=tree.ray_cast(vertex.co+n*.025,direction,1.6)
             if hit is not None:blocked+=1-distance/1.6
-        occlusion.append(1-.55*blocked/12)
+        occlusion.append(1-.38*blocked/12)
     attr=mesh.color_attributes.new(name='CoreAO',type='FLOAT_COLOR',domain='CORNER')
     values=array('f',[0])*(len(mesh.loops)*4)
     for face in mesh.polygons:
