@@ -10,10 +10,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--godot', default='godot')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--mode', choices=['board', 'small', 'recovery', 'weapons'], default='board')
+    parser.add_argument('--mode', choices=['board', 'small', 'recovery', 'weapons', 'coverage'], default='board')
     parser.add_argument('--gray', action='store_true', help='Render grayscale directly in Godot')
     parser.add_argument('--frames', type=int, default=0)
+    parser.add_argument('--gap', type=float, default=2.0, help='Visible clearance in screen pixels')
+    parser.add_argument('--layer-gap', type=float, default=2.5, help='Visible clearance between protection layers')
     args = parser.parse_args()
+    if args.gap < 0 or args.layer_gap < 0:
+        parser.error('Protection clearances must be nonnegative')
     here = Path(__file__).resolve().parent
     source = here.parents[1]
     output = args.output.resolve()
@@ -28,6 +32,7 @@ def main():
     for hull in (source / hulls).glob('*.png'):
         shutil.copy2(hull, stage / hulls / hull.name)
     shutil.copy2(here / 'preview.gd', stage / 'preview.gd')
+    shutil.copy2(here / 'envelope.gd', stage / 'envelope.gd')
     (stage / 'project.godot').write_text('''config_version=5
 [application]
 config/name="Enemy recognition review"
@@ -38,7 +43,7 @@ window/size/viewport_height=883
 [rendering]
 renderer/rendering_method="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.03,0.05,0.1,1)
-''', encoding='utf-8')
+''' + f'\n[visuals]\nenemy_protection_gap_pixels={args.gap}\nenemy_protection_layer_gap_pixels={args.layer_gap}\n', encoding='utf-8')
     (stage / 'preview.tscn').write_text('''[gd_scene load_steps=2 format=3]
 [ext_resource type="Script" path="res://preview.gd" id="1"]
 [node name="Review" type="Node2D"]

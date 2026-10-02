@@ -24,14 +24,23 @@
 
 ## 当前证据
 
-- [四类防御与进攻对照](evidence/board-v3.png)
-- [1373×883正常尺寸检查](evidence/small-v3.png)
-- [恢复盾等待、回补、满盾、破盾关键状态](evidence/recovery-v3.png)
+- [包覆修正：小/中/大与旋转极限](evidence/coverage-v4.png)
+- [1373×883正常尺寸检查](evidence/small-v4.png)
+- [恢复盾等待、回补、满盾、破盾关键状态](evidence/recovery-v4.png)
+- [默认包覆检查结果](evidence/coverage-check.json) / [另一间隙配置结果](evidence/coverage-check-custom.json)
 - [炮口第二版彩色](evidence/weapons-v2.png) / [灰度](evidence/weapons-v2-gray.png)
 
 复用项目既有Toon敌舰PNG，六边轮廓与炮口为Godot程序绘制，无外部生成图。正常窗口1373×883，572×960逻辑战场按1373/1952缩放；原组1002保留5列3行与全部15个槽位。舰宽沿用main.gd enemy_render_width公式，固定护卫舰基准、前景深度1、尺寸随机系数1；1088为BOSS，其他普通。炮口图使用相同原舰体26.1px/35.3px舰宽，无动态辅助识别。近看仅辅助结构，识别判断以正常尺寸为准。
 
-第一版board-000/small-000/recovery-018/recovery.mp4仅保留历史，已被当前证据替代，不再用于装甲样板审阅。当前分片动态算法保留；本轮只交关键状态静帧。
+V3及更早图/视频仅保留历史，已被V4包覆证据替代，不再用于判断完整包覆。分片动态算法保留；本轮只交关键状态静帧。颜色、防御语法、炮口形状与舰体尺寸沿用已认可版本，只修轮廓范围。
+
+## 包覆计算与验证
+
+`envelope.gd` 读取六张舰体PNG全部非零alpha像素的行边界（含像素单元角点），转为凸包；合并当前预览单管/双叉炮口的实体边界与恢复节点。每条六边斜边按点到边的垂直距离求支撑尺寸，不以矩形宽高代替六边包覆。轮廓与实体用同一舰体/炮口变换；半线宽和抗锯齿余量也计入。单层直接包覆实体，实际存在不同类型嵌套时才额外留层间隙；大型舰首前层由外盾包络继续外扩。
+
+默认可见实体间隙2px，层间/前层间隙2.5px，分别通过启动器 `--gap` / `--layer-gap` 配置。检查独立计算各边有符号垂距：全部6种舰体、2种炮口、3种显示尺度、舰体-6/0/+6°、实际挂点45/50/55/60°朝向极限及额外90/180°诊断方向，共1404组。默认配置和3px/3.5px配置均要求全部边满足余量，结果保留JSON；浮点误差容限0.001px。
+
+范围是当前预览的一个武器挂件及恢复节点，未接入正式多炮座渲染；正式接入时须汇总当时全部实际挂件与变换，不用该中心挂件夹具替代。开火闪光、弹道、击中特效不属于防护实体包络。几何通过不替代父任务的实际像素审查。
 
 ## 重现
 
@@ -43,6 +52,8 @@ python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/ene
 python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/enemy-recognition-v3 --mode recovery
 python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/enemy-recognition-v3 --mode weapons
 python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/enemy-recognition-v3 --mode weapons --gray
+python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/enemy-recognition-envelope --mode coverage
+python3 dev/enemy_recognition/preview.py --godot godot --output ../test/work/enemy-recognition-envelope-custom --mode coverage --gap 3 --layer-gap 3.5
 ```
 
 启动器仅复制六张PNG、字体和两份JSON到输出目录下的隔离Godot项目，用户目录也隔离。没有游戏机制测试或长模拟。已检查正常尺寸和彩色/灰度炮口像素；父任务仍须亲自审图。繁忙弹幕、入场远景、其他玩家舰基准、随机尺寸及全部敌组尚未验收。
