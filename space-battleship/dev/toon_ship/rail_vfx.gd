@@ -57,5 +57,5 @@ func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,direction:Vec
 		origin.lerp(end,0.67)+side*kink*0.8,
 		origin.lerp(end,0.69)-side*kink*0.5,end])
 	var fade:=pow(1.0-age/lifetime,2)
-	surface.draw_polyline(points,Color(ELECTRIC,fade*budget),maxf(1.0,trail_width*0.085),true)
-	surface.draw_polyline(points,Color(HOT,fade*budget*0.8),maxf(0.65,trail_width*0.027),true)
+	surface.draw_polyline(points,Color(ELECTRIC,fade*budget),maxf(2.0,trail_width*0.17),true)
+	surface.draw_polyline(points,Color(HOT,fade*budget*0.8),maxf(1.3,trail_width*0.054),true)
