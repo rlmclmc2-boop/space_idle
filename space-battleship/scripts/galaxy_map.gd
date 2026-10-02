@@ -272,7 +272,10 @@ func sync_visibility() -> void:
 	set_process(active)
 	view.render_target_update_mode=SubViewport.UPDATE_ALWAYS if active else SubViewport.UPDATE_DISABLED
 	world.process_mode=Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
-	if active:refresh()
+	if not is_visible_in_tree():clear_hover()
+	elif region!=null:
+		refresh()
+		request_visual_frame()
 func layout() -> void:
 	if not is_inside_tree():return
 	# Match displayed pixels up to the original logical-size budget. Integer shrink
