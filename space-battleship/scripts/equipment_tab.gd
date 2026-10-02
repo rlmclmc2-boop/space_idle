@@ -425,6 +425,8 @@ func refresh_pending() -> void:
 	refresh_stats()
 	if detail_dirty and detail_frame.is_visible_in_tree():refresh_detail()
 func invalidate_stats(info: Dictionary) -> void:
+	# Shared modifiers also change inspector text when the numeric projection is unchanged.
+	if info.get("detail",false):detail_dirty=true
 	if not is_visible_in_tree():
 		dirty = true
 		return

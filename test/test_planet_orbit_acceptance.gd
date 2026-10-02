@@ -107,6 +107,10 @@ func run() -> void:
 	check(card.log_label.text == "\n\n".join(card.log_entries), "Reveal catches up history text")
 	g.cancel_planet_exploration("1")
 	var first_history: Array = card.log_entries.duplicate()
+	# Later planets require conquest of their predecessor as well as the unlock gate.
+	g.profile.planets["1"].conquered = true
+	panel.refresh()
+	check(panel.cards.has("2"), "Conquest unlocks the second planet for history isolation")
 	await click(panel.cards["2"].list_button)
 	check(panel.cards["2"].log_entries.is_empty(), "Planet histories are independent")
 	await click(card.list_button)
@@ -158,6 +162,8 @@ func run() -> void:
 	panel.facility_dialog.hide()
 	await capture("acceptance-orbits-and-log")
 	# Selected-planet ownership must never leak through the shared atlas.
+	for id in ["2", "3", "4", "5"]:g.profile.planets[id].conquered = true
+	panel.refresh()
 	for id in panel.cards:
 		await click(panel.cards[id].list_button)
 		var selected: Dictionary = panel.cards[id]
