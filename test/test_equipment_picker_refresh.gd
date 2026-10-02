@@ -23,7 +23,8 @@ func choose(panel: Control, key: String) -> void:
 	panel.detail.slots.item_selected.emit(index)
 func click(control: Control, offset: Vector2) -> void:
 	if DisplayServer.get_name()=="headless":
-		control.pressed.emit()
+		if control is OptionButton:control.show_popup()
+		else:control.pressed.emit()
 		await process_frame
 		return
 	var point := root.get_final_transform()*control.get_global_transform_with_canvas()*offset
@@ -61,13 +62,15 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var panel: Control=scene.equipment_panel
-	var name_button: Button=panel.cards.weapons_1.name_button
+	var name_button: OptionButton=panel.cards.weapons_1.name_button
 	await click(name_button,Vector2(name_button.size.x-4,17))
-	check(panel.selected=="weapons_1" and panel.picker_open and panel.detail_frame.visible,"Actual name-row blank-space click opens exact slot picker")
+	check((name_button.get_popup().visible or DisplayServer.get_name()=="headless") and not panel.detail_frame.visible,"Actual title click opens inline slot menu without inspector")
 	var refit_level: int=scene.game.module_entry("weapons",1).level
-	choose(panel,"missile")
+	name_button.get_popup().hide()
+	name_button.select(panel.cards.weapons_1.equipment_options.find("missile"))
+	name_button.item_selected.emit(name_button.selected)
 	check(scene.game.module_entry("weapons",1).key=="missile" and scene.game.module_entry("weapons",1).level==refit_level,"Picker selection immediately equips and preserves slot level")
-	check(not panel.detail.equip.visible and panel.detail_frame.visible,"Picker requires no confirmation and retains its controls")
+	check(not panel.detail_frame.visible,"Inline choice requires no confirmation or inspector")
 	check(scene.game.module_entry("weapons",0).key=="laser","Refit leaves other slot unchanged")
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw
@@ -77,13 +80,12 @@ func run() -> void:
 	check(scene.game.module_entry("weapons",1).level==refit_level+1 and not panel.detail_frame.visible,"Independent actual upgrade click upgrades exact slot without opening picker")
 	panel.open_picker("weapons_1")
 	if DisplayServer.get_name()!="headless":
-		await click(panel.detail.slots,panel.detail.slots.size/2)
-		var popup: PopupMenu=panel.detail.slots.get_popup()
+		var popup: PopupMenu=name_button.get_popup()
 		check(popup.visible,"Actual mouse expands native replacement menu")
-		var picker_ref: OptionButton=panel.detail.slots
+		var picker_ref: OptionButton=name_button
 		scene.game.crew.auto_upgrade(scene.game,{"upgradeMode":"1"})
 		panel.refresh()
-		check(panel.picker_open and popup.visible and is_same(picker_ref,panel.detail.slots),"Auto-upgrade and refresh preserve open picker popup instance")
+		check(popup.visible and is_same(picker_ref,panel.cards.weapons_1.name_button),"Auto-upgrade and refresh preserve open picker popup instance")
 		for down in [true,false]:
 			var event:=InputEventKey.new()
 			event.keycode=KEY_DOWN
@@ -91,7 +93,7 @@ func run() -> void:
 			Input.parse_input_event(event)
 			await process_frame
 		var chosen: int=popup.get_focused_item()
-		var expected_key: String=str(panel.slot_options[chosen]) if chosen>=0 else "invalid"
+		var expected_key: String=str(panel.cards.weapons_1.equipment_options[chosen]) if chosen>=0 else "invalid"
 		check(chosen>=0 and expected_key!=scene.game.module_entry("weapons",1).key,"Native menu focuses a different replacement option")
 		for down in [true,false]:
 			var event:=InputEventKey.new()
@@ -101,7 +103,9 @@ func run() -> void:
 			await process_frame
 		check(scene.game.module_entry("weapons",1).key==expected_key and not popup.visible,"Native popup keyboard selection immediately equips after auto-upgrade")
 	check(panel.footer_buttons.size()==1 and panel.footer_buttons.has("details"),"Main footer contains only details")
-	choose(panel,"cannon")
+	name_button.get_popup().hide()
+	panel.change_card_equipment("weapons_1","cannon")
+	panel.select_item("weapons_1")
 	panel.show_inspector()
 	choose(panel,"missile")
 	var cards: Dictionary=panel.cards.duplicate()
@@ -140,17 +144,17 @@ func run() -> void:
 	await process_frame
 	panel.refresh_pending()
 	check(not panel.dirty and panel.pending_key=="missile","Reveal keeps valid draft")
-	panel.open_picker("weapons_0")
+	panel.select_item("weapons_0")
 	check(panel.pending_key=="laser","Selecting a different slot initializes its equipped key")
 	choose(panel,"missile")
 	scene.game.unequip_slot("weapons",0)
 	check(panel.pending_key.is_empty() and panel.detail.slots.selected==0,"Actual module removal resets stale identity draft")
-	panel.open_picker("weapons_7")
+	panel.select_item("weapons_7")
 	choose(panel,"longLaser")
 	scene.game.switch_ship("Frigate")
 	check(panel.items.weapons_7.locked and panel.pending_key==panel.items.weapons_7.key and panel.detail.equip.disabled,"Ship capacity removal invalidates draft safely")
 	scene.game.switch_ship("Heavy_Battleship")
-	panel.open_picker("weapons_1")
+	panel.select_item("weapons_1")
 	panel.show_inspector()
 	choose(panel,"missile")
 	scene.game.profile.unlocked.erase("missile")
@@ -163,8 +167,9 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	await click(panel.cards.defence_0.name_button,Vector2(20,17))
-	check(panel.selected=="defence_0" and panel.picker_open,"Defence name click opens exact defence slot")
-	choose(panel,BattleGame.DEFENSE_KEYS[0])
+	check((panel.cards.defence_0.name_button.get_popup().visible or DisplayServer.get_name()=="headless") and not panel.detail_frame.visible,"Defence title opens inline menu")
+	panel.cards.defence_0.name_button.get_popup().hide()
+	panel.cards.defence_0.name_button.item_selected.emit(panel.cards.defence_0.equipment_options.find(BattleGame.DEFENSE_KEYS[0]))
 	check(scene.game.module_entry("defence",0).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
 	check(not panel.detail.has("enhancement") and panel.get_action_anchor("enhancement")==null,"Equipment picker and inspector have no enhancement navigation")
 	scene.select_system(4)

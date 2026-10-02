@@ -298,12 +298,15 @@ func show_inspector() -> void:
 
 func open_picker(id: String) -> void:
 	refresh_pending()
-	select_item(id)
-	picker_open = true
-	refresh_detail({},true)
-	detail_frame.show()
-	detail_scroll.scroll_vertical = 0
-	detail.slots.grab_focus()
+	if cards.has(id) and not cards[id].name_button.disabled:
+		cards[id].name_button.show_popup()
+
+func change_card_equipment(id: String, key: String) -> void:
+	if not items.has(id) or items[id].locked:return
+	var item: Dictionary = items[id]
+	if key.is_empty():host.game.unequip_slot(item.category,int(item.index))
+	else:host.game.equip_slot(item.category,int(item.index),key)
+	refresh(id)
 
 func choose_equipment(index: int) -> void:
 	if index<0 or index>=slot_options.size():return
@@ -330,7 +333,7 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 		"upgrade_action":return cards[id].upgrade_button if cards.has(id) else null
 		"module_detail":return footer_buttons.details
 		"swap_module":return cards[id].name_button if cards.has(id) else null
-		"equip_confirm":return detail.slots if detail_frame.visible and picker_open and selected==id else null
+		"equip_confirm":return cards[id].name_button if cards.has(id) and cards[id].name_button.get_popup().visible else null
 	return null
 
 func toggle_details() -> void:
@@ -395,6 +398,7 @@ func refresh_slots(changed: Array) -> void:
 				(grid if category=="weapons" else grid_defence).add_child(card)
 				card.setup(host,self)
 				card.equip_requested.connect(func():open_picker(id))
+				card.equipment_selected.connect(func(key: String):change_card_equipment(id,key))
 				card.upgrade_requested.connect(func():upgrade_card(id))
 				card.pressed.connect(func():select_item(id))
 				cards[id] = card

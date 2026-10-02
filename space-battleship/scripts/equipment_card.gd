@@ -1,6 +1,7 @@
 extends Button
 ## One persistent card and interaction map for every weapon/defence module.
 signal equip_requested
+signal equipment_selected(key: String)
 signal upgrade_requested
 const MIN_SIZE := Vector2(310,176)
 const ACTION_SIZE := Vector2(246,56)
@@ -14,7 +15,9 @@ var picture: TextureRect
 var last_state: Array = []
 var upgrade_button: Button
 var equip_button: Button
-var name_button: Button
+var name_button: OptionButton
+var equipment_options: Array = []
+var options_state: Array = []
 var slot_id := ""
 var is_locked := false
 var is_equipped := false
@@ -49,14 +52,18 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(picture)
 	fields.title = text_field(self,Rect2(88,8,208,34),23,650,INK)
-	# The entire name row targets this card's slot, independently of upgrades.
-	name_button = Button.new()
+	fields.title.hide()
+	name_button = OptionButton.new()
 	name_button.flat = true
+	name_button.fit_to_longest_item = false
 	name_button.set_meta("action_id","swap_module")
 	name_button.tooltip_text = UIText.t("equipment.swap")
-	for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_disabled_color","font_focus_color"]:
-		name_button.add_theme_color_override(state,Color.TRANSPARENT)
-	name_button.pressed.connect(func():equip_requested.emit())
+	name_button.add_theme_font_override("font",face(650))
+	name_button.add_theme_font_size_override("font_size",23)
+	for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+		name_button.add_theme_color_override(state,INK)
+	name_button.item_selected.connect(func(index: int):
+		if index>=0 and index<equipment_options.size():equipment_selected.emit(str(equipment_options[index])))
 	add_child(name_button)
 	fields.level = text_field(self,Rect2(88,43,208,31),21,500,MUTED)
 	fields.caption = text_field(self,Rect2(14,80,76,32),21,500,MUTED)
@@ -100,8 +107,8 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 func layout_contents() -> void:
 	if not is_instance_valid(upgrade_button):return
 	fields.title.size.x = size.x-102
-	name_button.position = Vector2(14,8)
-	name_button.size = Vector2(size.x-28,34)
+	name_button.position = Vector2(88,8)
+	name_button.size = Vector2(size.x-102,34)
 	fields.level.size.x = size.x-102
 	host.set_ui_value(fields.caption,"size",Vector2(108 if is_weapon else 76,32))
 	host.set_ui_value(fields.stat,"position",Vector2(126 if is_weapon else 92,74))
@@ -114,6 +121,7 @@ func layout_contents() -> void:
 
 func refresh(item: Dictionary, chosen: bool) -> void:
 	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false)]
+	refresh_options(item)
 	if last_state == state:return
 	last_state = state
 	slot_id = item.id
@@ -127,7 +135,6 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	upgrade_button.set_meta("slot_id",slot_id)
 	equip_button.set_meta("slot_id",slot_id)
 	name_button.set_meta("slot_id",slot_id)
-	host.set_ui_value(name_button,"text",item.name)
 	host.set_ui_value(name_button,"disabled",item.locked)
 	host.set_ui_value(fields.title,"text",item.name)
 	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
@@ -147,3 +154,21 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
 	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
+
+func refresh_options(item: Dictionary) -> void:
+	var state := [item.category,item.index,item.key,item.locked,host.game.profile.unlocked.duplicate()]
+	if options_state==state:return
+	options_state=state
+	if equipment_options.is_empty():
+		equipment_options = [""]
+		equipment_options.append_array(BattleGame.WEAPON_KEYS if item.category=="weapons" else BattleGame.DEFENSE_KEYS)
+		for key in equipment_options:name_button.add_item("")
+	var prefix := ("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2)
+	for index in equipment_options.size():
+		var key: String = equipment_options[index]
+		var title := prefix+" "+str(host.NAMES.get(key,UIText.t("equipment.vacant")))
+		if name_button.get_item_text(index)!=title:name_button.set_item_text(index,title)
+		var blocked: bool = item.locked or (not key.is_empty() and not host.game.profile.unlocked.has(key))
+		if name_button.is_item_disabled(index)!=blocked:name_button.set_item_disabled(index,blocked)
+	var current := equipment_options.find(item.key)
+	if name_button.selected!=current:name_button.select(current)
