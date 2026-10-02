@@ -27,8 +27,10 @@ var last_pose_scale := 0.0
 const CARRIER_SCALE := 0.48
 const CARRIER_WEAPON_SCALE := 1.20
 const ORBIT_PERIOD := 18.0
-# Canonical battlefield pixels: hull size and carrier count never expand this envelope.
-const FLEET_HALF_EXTENT := Vector2(160,178)
+# Canonical battlefield pixels; independent patrols stay ahead of the flagship.
+const CARRIER_PATROL_HALF_EXTENT := Vector2(160,52)
+const CARRIER_HULL_GAP := 26.0
+const CARRIER_EDGE_MARGIN := 12.0
 var orbit_elapsed := 0.0
 var orbit_center := Vector3.ZERO
 var turret: Node3D
@@ -344,19 +346,31 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 
 
 func _update_carriers(scale_value: float, _visual_delta: float) -> void:
-	# Soft separation: compact independent ellipses may pass behind the hull.
-	# There is no hard exclusion radius that grows with hull size or carrier count.
+	# The full rotating drone (including its weapon) must fit inside the actual
+	# clipped battle viewport. A center-only clamp leaves wings half hidden.
 	var pixels_per_model := scale_value/WORLD_PER_PIXEL
-	var low: Array=hull_config.godot_aabb_min
-	var high: Array=hull_config.godot_aabb_max
-	var hull_half := Vector2(maxf(absf(float(low[0])),absf(float(high[0]))),maxf(absf(float(low[2])),absf(float(high[2]))))*pixels_per_model
-	var carrier_radius := maxf(1.6,float(manifest.weapon_contract.conservative_xz_rotation_radius)*CARRIER_WEAPON_SCALE)*CARRIER_SCALE*pixels_per_model+3.0
-	var extent := FLEET_HALF_EXTENT
-	# Use the existing canonical viewport, including edge anchors and resize.
-	extent.x=minf(extent.x,minf(rendered_position.x,size.x-rendered_position.x)-8.0)
-	extent.y=minf(extent.y,minf(rendered_position.y,size.y-rendered_position.y)-8.0)
-	var radius := Vector2(minf(hull_half.x+carrier_radius*0.55+8.0,extent.x-carrier_radius),minf(hull_half.y+carrier_radius*0.55+8.0,extent.y-carrier_radius))
-	radius=radius.max(Vector2.ONE*8.0)*WORLD_PER_PIXEL
+	var drone_low: Array = manifest.drone.godot_aabb_min
+	var drone_high: Array = manifest.drone.godot_aabb_max
+	var drone_half := Vector2(maxf(absf(float(drone_low[0])),absf(float(drone_high[0]))),maxf(absf(float(drone_low[2])),absf(float(drone_high[2]))))
+	var carrier_radius := maxf(drone_half.length(),float(manifest.weapon_contract.conservative_xz_rotation_radius)*CARRIER_WEAPON_SCALE)*CARRIER_SCALE*pixels_per_model
+	var inset := carrier_radius+CARRIER_EDGE_MARGIN
+	var safe := Rect2(Vector2.ONE*inset,(size-Vector2.ONE*inset*2.0).max(Vector2.ZERO))
+	# Include the rotating flagship silhouette and mounted weapons, with room
+	# for its idle bob. Patrol in the open forward space instead of compressing
+	# a hull-centered orbit into the small gap above the bottom HUD.
+	var low: Array = hull_config.godot_aabb_min
+	var high: Array = hull_config.godot_aabb_max
+	var hull_half := Vector2(maxf(absf(float(low[0])),absf(float(high[0]))),maxf(absf(float(low[2])),absf(float(high[2]))))
+	var weapon_radius := float(manifest.weapon_contract.conservative_xz_rotation_radius)
+	for mount in hull_config.weapon_mounts:
+		hull_half = hull_half.max(Vector2(absf(float(mount.position[0])),absf(float(mount.position[2])))+Vector2.ONE*weapon_radius)
+	var yaw := ship.rotation.y
+	var hull_front := (hull_half.y*absf(cos(yaw))+hull_half.x*absf(sin(yaw)))*pixels_per_model+1.2
+	var patrol_bottom := minf(safe.end.y,rendered_position.y-hull_front-carrier_radius-CARRIER_HULL_GAP)
+	var radius := Vector2(minf(CARRIER_PATROL_HALF_EXTENT.x,safe.size.x*0.5),minf(CARRIER_PATROL_HALF_EXTENT.y,maxf(0.0,(patrol_bottom-safe.position.y)*0.5)))
+	var patrol_center := Vector2(clampf(rendered_position.x,safe.position.x+radius.x,safe.end.x-radius.x),maxf(safe.position.y+radius.y,patrol_bottom-radius.y))
+	var world_center := Vector3((patrol_center.x-size.x*0.5)*WORLD_PER_PIXEL,0,(patrol_center.y-size.y*0.5)*WORLD_PER_PIXEL)
+	radius *= WORLD_PER_PIXEL
 	for i in carriers.size():
 		var phase := TAU*float(i)/maxi(carriers.size(),1)
 		var period := ORBIT_PERIOD*(1.0+0.055*sin(float(i)*2.399963))
@@ -364,9 +378,7 @@ func _update_carriers(scale_value: float, _visual_delta: float) -> void:
 		var radial := 0.94+0.06*sin(theta*2.0+float(i)*1.7)
 		var carrier:=carriers[i]
 		carrier.scale=Vector3.ONE*scale_value*CARRIER_SCALE
-		# Lower depth puts a crossing drone behind the flagship, rather than
-		# forcing it outside the silhouette or gluing it to the mother's bob.
-		carrier.global_position=orbit_center+Vector3(sin(theta)*radius.x*radial,-1.6*scale_value,-cos(theta)*radius.y*radial)
+		carrier.global_position=world_center+Vector3(sin(theta)*radius.x*radial,-1.6*scale_value,-cos(theta)*radius.y*radial)
 		carrier.rotation=Vector3(0,atan2(-cos(theta)*radius.x,-sin(theta)*radius.y),0)
 		carrier_states[i].ready=true
 		carrier.visible=true
