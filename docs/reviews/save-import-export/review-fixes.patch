@@ -1,8 +1,8 @@
 diff --git a/space-battleship/scripts/progress_writer.gd b/space-battleship/scripts/progress_writer.gd
-index 4e4adde..32bc478 100644
+index 4e4adde..2448e56 100644
 --- a/space-battleship/scripts/progress_writer.gd
 +++ b/space-battleship/scripts/progress_writer.gd
-@@ -56,16 +56,39 @@ func clear_files() -> Error:
+@@ -56,16 +56,40 @@ func clear_files() -> Error:
  			if error != OK:return error
  	return OK
  
@@ -43,7 +43,8 @@ index 4e4adde..32bc478 100644
 +			if _read_progress_file(path)!=null:DirAccess.remove_absolute(previous)
 +		# Also covers interruption after staging new bytes, before moving the old primary.
 +		# An uncommitted incoming file must never replace a valid committed primary.
-+		if _read_progress_file(path)!=null and FileAccess.file_exists(path+".import-new"):
++		# First import may have no primary yet; abandoned bytes are still uncommitted.
++		if FileAccess.file_exists(path+".import-new"):
 +			DirAccess.remove_absolute(path+".import-new")
  	for suffix in ["", ".import-prev", ".bak"]:
  		var data = _read_progress_file(path + suffix)
@@ -154,7 +155,7 @@ index f3e7c76..1378a84 100644
   if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
   var primary: String=game.progress_writer.path
 diff --git a/test/README.md b/test/README.md
-index 524a4fe..7c460d0 100644
+index 524a4fe..2140169 100644
 --- a/test/README.md
 +++ b/test/README.md
 @@ -32,7 +32,7 @@
@@ -162,13 +163,13 @@ index 524a4fe..7c460d0 100644
  | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
  | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
 -| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
-+| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。`python test_save_import_recovery.py --project 隔离工程 --output 日志目录` 通过真实进程死亡与新进程启动检查四种恢复状态、三种存活事务保护（Linux）。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
++| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。`python test_save_import_recovery.py --project 隔离工程 --output 日志目录` 通过真实进程死亡与新进程启动检查五种恢复状态（含首次无原档）、三种存活事务保护（Linux）。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
  | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
  | 音乐与开关偏好 | `test_bgm.gd` |
  | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
 diff --git a/test/test_save_import_recovery.gd b/test/test_save_import_recovery.gd
 new file mode 100644
-index 0000000..d7376d7
+index 0000000..9af8ff5
 --- /dev/null
 +++ b/test/test_save_import_recovery.gd
 @@ -0,0 +1,58 @@
@@ -182,7 +183,7 @@ index 0000000..d7376d7
 +  while true:OS.delay_msec(10)
 + func write_file(path: String,bytes: PackedByteArray) -> Error:
 +  var error:=super.write_file(path,bytes)
-+  if error==OK and path.ends_with(".import-new") and phase=="staged":stop()
++  if error==OK and path.ends_with(".import-new") and phase in ["staged","first-save"]:stop()
 +  return error
 + func rename(from: String,to: String) -> Error:
 +  var error:=super.rename(from,to)
@@ -201,17 +202,17 @@ index 0000000..d7376d7
 + var db:=ShipDatabase.new();db.config.offlineMax=0
 + var game:=BattleGame.new(db,mode!="interrupt")
 + if mode=="interrupt":
-+  game.load_progress_data(JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)))
++  if FileAccess.file_exists(BattleGame.SAVE_PATH):game.load_progress_data(JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)))
 +  var raw:=game.portable_save_data();raw.resources["1"]=333;raw.resources["2"]=444
 +  var service:=Interrupted.new();service.phase=phase
 +  var result:=service.commit_import(game,raw)
 +  printerr("Expected interruption, got "+str(result));quit(1);return
 + var primary:=ProjectSettings.globalize_path(BattleGame.SAVE_PATH)
 + check(OS.get_user_data_dir().contains("test/work"),"Isolated fresh-process user directory")
-+ var expected:=333 if phase=="installed" else 111
++ var expected=BattleGame.new(db,false).profile.resources["1"] if phase=="first-save" else 333 if phase=="installed" else 111
 + check(game.profile.resources["1"]==expected,"Fresh startup loads committed progress at "+phase)
 + var before:=FileAccess.get_file_as_bytes(primary) if FileAccess.file_exists(primary) else PackedByteArray()
-+ var recovery:=FileAccess.get_file_as_bytes(primary+".bak")
++ var recovery:=FileAccess.get_file_as_bytes(primary+".bak") if FileAccess.file_exists(primary+".bak") else PackedByteArray()
 + var previous:=FileAccess.get_file_as_bytes(primary+".import-prev") if FileAccess.file_exists(primary+".import-prev") else PackedByteArray()
 + var incoming:=FileAccess.get_file_as_bytes(primary+".import-new") if FileAccess.file_exists(primary+".import-new") else PackedByteArray()
 + if mode=="active":
@@ -225,17 +226,17 @@ index 0000000..d7376d7
 +  var service:=Transfer.new();var transaction:=service.commit_import(game,raw)
 +  check(transaction.error==OK,"Subsequent import succeeds after "+phase)
 +  if transaction.error==OK:
-+   check(FileAccess.get_file_as_bytes(transaction.backup+"/original-progress.json")==before,"Subsequent import backs up exact recovered primary")
-+   check(service.rollback(transaction)==OK and FileAccess.get_file_as_bytes(primary)==before,"Subsequent import rollback preserves recovered primary")
-+ check(FileAccess.get_file_as_bytes(primary+".bak")==recovery,"Startup/import preserve committed recovery copy")
++   check((FileAccess.get_file_as_bytes(transaction.backup+"/original-progress.json") if FileAccess.file_exists(transaction.backup+"/original-progress.json") else PackedByteArray())==before,"Subsequent import backs up exact recovered primary")
++   check(service.rollback(transaction)==OK and (FileAccess.get_file_as_bytes(primary) if FileAccess.file_exists(primary) else PackedByteArray())==before,"Subsequent import rollback preserves recovered primary")
++ check((FileAccess.get_file_as_bytes(primary+".bak") if FileAccess.file_exists(primary+".bak") else PackedByteArray())==recovery,"Startup/import preserve committed recovery copy")
 + print("IMPORT RECOVERY "+mode+" "+phase+": %d checks, %d failures"%[checks,failures])
 + quit(1 if failures else 0)
 diff --git a/test/test_save_import_recovery.py b/test/test_save_import_recovery.py
 new file mode 100644
-index 0000000..820b725
+index 0000000..d5b2eac
 --- /dev/null
 +++ b/test/test_save_import_recovery.py
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,71 @@
 +"""Real process death and fresh Godot startup, using a caller-owned isolated copy."""
 +import argparse
 +import json
@@ -256,7 +257,7 @@ index 0000000..820b725
 +old = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 111, "2": 222}}).encode()
 +new = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 333, "2": 444}}).encode()
 +failures = 0
-+scenarios = [("legacy", "staged"), *(('interrupt', p) for p in ["staged", "moved", "installed"]), *(('active', p) for p in ["staged", "moved", "installed"])]
++scenarios = [("legacy", "staged"), ("interrupt", "first-save"), *(('interrupt', p) for p in ["staged", "moved", "installed"]), *(('active', p) for p in ["staged", "moved", "installed"])]
 +if args.case:
 +    scenarios = [(mode, phase) for mode, phase in scenarios if f"{mode}-{phase}" == args.case]
 +    assert scenarios, "Unknown scenario"
@@ -270,6 +271,9 @@ index 0000000..820b725
 +        (user / ("progress.json" + suffix)).unlink(missing_ok=True)
 +    primary.write_bytes(old)
 +    (user / "progress.json.bak").write_bytes(old + b"\n")
++    if phase == "first-save":
++        primary.unlink()
++        (user / "progress.json.bak").unlink()
 +    cmd = [args.godot, "--headless", "--path", str(project), "--script", "../test/test_save_import_recovery.gd", "--"]
 +    if mode == "interrupt":
 +        stopped = subprocess.run(cmd + [mode, phase], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)
@@ -293,7 +297,9 @@ index 0000000..820b725
 +    print(startup.stdout.decode(), end="")
 +    if startup.returncode != 0:
 +        failures += 1
-+    if mode != "active":
++    if phase == "first-save":
++        assert not primary.exists(), "No original disk save must remain absent after rollback"
++    elif mode != "active":
 +        assert json.loads(primary.read_bytes())["resources"]["1"] == (333 if phase == "installed" else 111)
 +        if phase != "installed":
 +            assert primary.read_bytes() == old, "Abandoned incoming never replaces committed original"
