@@ -30,7 +30,7 @@
 - [物理火炮](evidence/live/battle-physical.png) / [真实双炮位物理、能量对照](evidence/live/battle-multi-mounts.png)
 - [大型混合防护](evidence/live/battle-large-shield.png) / [破盾后内甲](evidence/live/battle-shield-broken.png)
 - [实际回补](evidence/live/battle-recovery.png) / [受击中断](evidence/live/battle-recovery-interrupted.png) / [暂停](evidence/live/battle-paused.png) / [击毁清理](evidence/live/battle-cleanup.png)
-- [10.3秒实机场景逐帧回放](evidence/live/battle-real.mp4) / [检查结果与实际字段](evidence/live/recognition-check.json) / [引擎日志](evidence/live/recognition-check.log)
+- [10.3秒实机场景逐帧回放](evidence/live/battle-real.mp4) / [检查结果与实际字段](evidence/live/recognition-check.json) / [引擎日志](evidence/live/recognition-check.txt)
 
 短检只在隔离项目与用户目录运行：内存选择原组1002、2、8、1009、1018、1004，保留原槽位、字段、武器数据；玩家使用Heavy_Battleship、表内一级激光和十级装甲。破盾、部分盾量、受击中断、击毁通过现有hit_enemy路径施加受控测试命中，恢复段临时清空内存玩家武器以观察真实恢复。源Excel、JSON、存档不变，视频不是自然闯关或平衡结论。视频每帧推进0.1s模拟，按10fps回放；软件图形环境的界面FPS不作为性能结论。
 
