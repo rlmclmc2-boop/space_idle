@@ -1,0 +1,301 @@
+diff --git a/space-battleship/art_sources/orbital/simplify_facilities.py b/space-battleship/art_sources/orbital/simplify_facilities.py
+new file mode 100644
+index 0000000..c5d85ad
+--- /dev/null
++++ b/space-battleship/art_sources/orbital/simplify_facilities.py
+@@ -0,0 +1,83 @@
++"""Rebuild station/workshop/dock with the approved refinery's chunky matte style.
++Blender --background --python this_file; preserves Facility/Motion and studio.
++Only these three .blend/GLB/icon files and their statistics are replaced.
++"""
++import json
++import sys
++from pathlib import Path
++import bpy
++from mathutils import Vector
++ROOT=Path(__file__).resolve().parent
++OUT=ROOT.parents[1]/'assets/planets/orbital/models'
++def xyz(p):return Vector((p[0],-p[2],p[1]))
++def material(name,color):
++ m=bpy.data.materials.get(name) or bpy.data.materials.new(name);m.use_nodes=True
++ rgb=[int(color[i:i+2],16)/255 for i in (0,2,4)]
++ rgb=tuple(v/12.92 if v<.04045 else ((v+.055)/1.055)**2.4 for v in rgb)
++ m.diffuse_color=(*rgb,1);bsdf=m.node_tree.nodes.get('Principled BSDF')
++ for key,value in [('Base Color',(*rgb,1)),('Metallic',0),('Roughness',.88),('Specular IOR Level',.08)]:bsdf.inputs[key].default_value=value
++ return m
++def attach(o,parent):
++ world=o.matrix_world.copy();o.parent=parent;o.matrix_world=world;o.select_set(False);return o
++def block(name,p,d,mat,parent,bevel=.15):
++ bpy.ops.mesh.primitive_cube_add(size=1,location=xyz(p));o=bpy.context.object;o.name=name
++ o.dimensions=(d[0],d[2],d[1]);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
++ o.data.materials.append(mat);mod=o.modifiers.new('Broad chamfer','BEVEL');mod.width=bevel;mod.segments=1
++ bpy.ops.object.modifier_apply(modifier=mod.name);return attach(o,parent)
++def footprint(name,polygon,low,high,mats,parent):
++ # Single outward-facing silhouette; pale top/sides and navy underside.
++ n=len(polygon);verts=[xyz((x,y,z)) for y in (low,high) for x,z in polygon]
++ faces=[tuple(range(n)),tuple(reversed(range(n,n*2)))]
++ faces.extend((i,i+n,(i+1)%n+n,(i+1)%n) for i in range(n))
++ mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces)
++ for mat in mats:mesh.materials.append(mat)
++ for face in mesh.polygons:face.material_index=min(1,len(mats)-1) if face.index==0 else 0
++ mesh.update();o=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(o);return attach(o,parent)
++stats=json.loads((OUT/'model-stats.json').read_text())
++kinds=['auto_explore','equipment','shipyard']
++selected=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else kinds
++assert selected and all(kind in kinds for kind in selected)
++for kind in selected:
++ bpy.ops.wm.open_mainfile(filepath=str(ROOT/(kind+'.blend')))
++ root,motion=bpy.data.objects['Facility'],bpy.data.objects['Motion']
++ for o in list(root.children_recursive):
++  if o.type=='MESH':bpy.data.objects.remove(o,do_unlink=True)
++ cream=material('Orbital pale ceramic','f5efd9');navy=material('Orbital navy structure','264756')
++ amber=material('Orbital amber hardware','fbc455');cyan=material('Orbital broad cyan glass','49cfb7');blue=material('Orbital solid solar blue','4087ac')
++ if kind=='auto_explore':
++  # Habitat + two uninterrupted paddles, no grid, struts or antennae.
++  block('Chunky habitat',(0,0,0),(2.25,1.80,3.30),cream,root,.28)
++  for x in [-2.05,2.05]:block('Broad solar paddle',(x,-.12,0),(1.90,.34,2.90),blue,root,.13)
++  block('Single habitat window',(0,.12,-1.65),(1.50,.68,.06),cyan,root,.02)
++  block('Broad radar head',(0,1.08,0),(1.25,.42,1.25),navy,motion,.13)
++  block('Radar face',(0,1.30,0),(.92,.06,.92),cyan,motion,.02)
++ elif kind=='equipment':
++  # Squat workshop and oversized moving press define the contour.
++  block('Workshop plinth',(0,-.65,0),(4.40,.70,3.60),navy,root,.23)
++  block('Workshop housing',(0,.30,-.40),(3.40,1.65,2.80),cream,root,.25)
++  block('Wide workshop window',(0,.30,-1.82),(2.25,.62,.07),cyan,root,.02)
++  block('Press support',(-1.30,.62,1.08),(.72,1.85,.90),cream,root,.10)
++  block('Oversized press head',(0,1.60,1.08),(2.65,.72,1.65),amber,motion,.22)
++ else:
++  # Thick open U cradle around one hull, no gantry lattice.
++  footprint('Open docking cradle',[(-2.10,-2.55),(2.10,-2.55),(2.10,2.55),(1.05,2.55),(1.05,-1.35),(-1.05,-1.35),(-1.05,2.55),(-2.10,2.55)],-.85,-.10,[cream,navy],root)
++  for x in [-1.58,1.58]:block('Amber docking end',(x,-.08,2.12),(.98,.22,.72),amber,root,.07)
++  footprint('Single docked hull',[(0,-1.68),(.78,-.60),(.78,1.10),(.40,1.52),(-.40,1.52),(-.78,1.10),(-.78,-.60)],-.02,.66,[cream,navy],motion)
++  block('Wide docked hull glass',(0,.69,-.12),(1.02,.07,.98),cyan,motion,.04)
++ for parent,name in [(root,'StaticHull'),(motion,'AnimatedHardware')]:
++  objects=[o for o in parent.children if o.type=='MESH'];bpy.ops.object.select_all(action='DESELECT')
++  for o in objects:o.select_set(True)
++  bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join();o=bpy.context.object;o.name=name
++  original=list(o.data.materials);unique=list(dict.fromkeys(original));indices=[unique.index(original[f.material_index]) for f in o.data.polygons]
++  o.data.materials.clear()
++  for mat in unique:o.data.materials.append(mat)
++  for face,slot in zip(o.data.polygons,indices):face.material_index=slot
++ objects=[root,*root.children_recursive];bpy.ops.object.select_all(action='DESELECT')
++ for o in objects:o.select_set(True)
++ bpy.context.view_layer.objects.active=root
++ bpy.ops.export_scene.gltf(filepath=str(OUT/(kind+'.glb')),export_format='GLB',use_selection=True,export_animations=False,export_cameras=False,export_lights=False,export_yup=True)
++ meshes=[o for o in objects if o.type=='MESH'];row=next(r for r in stats if r['kind']==kind)
++ row.update(triangles=sum(sum(len(f.vertices)-2 for f in o.data.polygons) for o in meshes),mesh_objects=len(meshes),material_surfaces=sum(len(o.data.materials) for o in meshes))
++ scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE_NEXT';scene.render.film_transparent=True;scene.render.filepath=str(OUT/(kind+'-icon.png'))
++ bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/(kind+'.blend')));bpy.ops.render.render(write_still=True);print('FAMILY MODEL',row)
++(OUT/'model-stats.json').write_text(json.dumps(stats,indent=2))
+diff --git a/space-battleship/art_sources/orbital/simplify_refinery.py b/space-battleship/art_sources/orbital/simplify_refinery.py
+new file mode 100644
+index 0000000..ddf7671
+--- /dev/null
++++ b/space-battleship/art_sources/orbital/simplify_refinery.py
+@@ -0,0 +1,150 @@
++"""Rebuild only the refinery as three readable masses at its orbital pixel size.
++
++Run from the project directory with Blender --background --python this_file.
++The existing Facility/Motion pivots and studio remain authoritative. No textures,
++thin rods, solar grids or small service parts are added to the runtime model.
++"""
++import json
++import math
++from pathlib import Path
++
++import bpy
++from mathutils import Vector
++
++ROOT = Path(__file__).resolve().parent
++OUT = ROOT.parents[1] / "assets/planets/orbital/models"
++bpy.ops.wm.open_mainfile(filepath=str(ROOT / "refinery.blend"))
++root = bpy.data.objects["Facility"]
++motion = bpy.data.objects["Motion"]
++for obj in list(root.children_recursive):
++    if obj.type == "MESH":
++        bpy.data.objects.remove(obj, do_unlink=True)
++
++
++def xyz(point):
++    return Vector((point[0], -point[2], point[1]))
++
++
++def material(name, hex_color):
++    mat = bpy.data.materials.get(name) or bpy.data.materials.new(name)
++    mat.use_nodes = True
++    values = [int(hex_color[i:i+2], 16) / 255 for i in (0, 2, 4)]
++    rgb = tuple(v / 12.92 if v < .04045 else ((v + .055) / 1.055) ** 2.4 for v in values)
++    mat.diffuse_color = (*rgb, 1)
++    bsdf = mat.node_tree.nodes.get("Principled BSDF")
++    bsdf.inputs["Base Color"].default_value = (*rgb, 1)
++    bsdf.inputs["Metallic"].default_value = 0
++    bsdf.inputs["Roughness"].default_value = .88
++    bsdf.inputs["Specular IOR Level"].default_value = .08
++    return mat
++
++
++amber = material("Refinery amber storage", "fbc455")
++cream = material("Refinery pale tank caps", "f5efd9")
++navy = material("Refinery navy pump body", "264756")
++cyan = material("Refinery broad pump indicator", "49cfb7")
++
++
++def attach(obj, parent):
++    world = obj.matrix_world.copy()
++    obj.parent = parent
++    obj.matrix_world = world
++    return obj
++
++
++def block(name, position, dimensions, mat, parent, bevel=.16):
++    bpy.ops.mesh.primitive_cube_add(size=1, location=xyz(position))
++    obj = bpy.context.object
++    obj.name = name
++    obj.dimensions = (dimensions[0], dimensions[2], dimensions[1])
++    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
++    obj.data.materials.append(mat)
++    mod = obj.modifiers.new("Broad rounded silhouette", "BEVEL")
++    mod.width = bevel
++    mod.segments = 1
++    bpy.ops.object.modifier_apply(modifier=mod.name)
++    attach(obj, parent)
++    obj.select_set(False)
++    return obj
++
++
++def tank(x):
++    # One continuous chunky capsule; pale endcaps occupy broad areas, no seams.
++    profile = [(-1.95, .22), (-1.72, .66), (-1.38, .90),
++               (1.38, .90), (1.72, .66), (1.95, .22)]
++    count = 12
++    vertices = [xyz((x + radius * math.cos(a * math.tau / count),
++                     radius * math.sin(a * math.tau / count), z))
++                for z, radius in profile for a in range(count)]
++    faces = []
++    slots = []
++    for ring in range(len(profile) - 1):
++        for a in range(count):
++            faces.append((ring*count+a, ring*count+(a+1)%count,
++                          (ring+1)*count+(a+1)%count, (ring+1)*count+a))
++            slots.append(0 if ring == 2 else 1)
++    faces.extend([tuple(reversed(range(count))), tuple(range((len(profile)-1)*count, len(profile)*count))])
++    slots.extend([1, 1])
++    mesh = bpy.data.meshes.new("Twelve-sided storage capsule")
++    mesh.from_pydata(vertices, [], faces)
++    mesh.materials.append(amber)
++    mesh.materials.append(cream)
++    for face, slot in zip(mesh.polygons, slots):
++        face.material_index = slot
++    mesh.update()
++    obj = bpy.data.objects.new("Oversized storage tank", mesh)
++    bpy.context.collection.objects.link(obj)
++    attach(obj, root)
++
++
++tank(-1.55)
++tank(1.55)
++block("Single central pump body", (0, .25, 0), (1.65, 1.70, 3.30), navy, root)
++# The moving lid remains on the original nonzero Motion pivot. Its broad face
++# replaces the tiny rotor, using the same owner-driven rotation in Godot.
++pivot = motion.matrix_world.translation
++cap_position = (pivot.x, pivot.z, -pivot.y)
++block("Large moving pump lid", cap_position, (1.55, .30, 1.55), cream, motion, .12)
++block("One broad pump indicator", (cap_position[0], cap_position[1]+.17, cap_position[2]),
++      (.90, .045, .70), cyan, motion, .015)
++
++for parent, name in [(root, "StaticHull"), (motion, "AnimatedHardware")]:
++    objects = [obj for obj in parent.children if obj.type == "MESH"]
++    bpy.ops.object.select_all(action="DESELECT")
++    for obj in objects:
++        obj.select_set(True)
++    bpy.context.view_layer.objects.active = objects[0]
++    bpy.ops.object.join()
++    obj = bpy.context.object
++    obj.name = name
++    original = list(obj.data.materials)
++    unique = list(dict.fromkeys(original))
++    indices = [unique.index(original[face.material_index]) for face in obj.data.polygons]
++    obj.data.materials.clear()
++    for mat in unique:
++        obj.data.materials.append(mat)
++    for face, slot in zip(obj.data.polygons, indices):
++        face.material_index = slot
++
++objects = [root, *root.children_recursive]
++bpy.ops.object.select_all(action="DESELECT")
++for obj in objects:
++    obj.select_set(True)
++bpy.context.view_layer.objects.active = root
++bpy.ops.export_scene.gltf(filepath=str(OUT / "refinery.glb"), export_format="GLB",
++                         use_selection=True, export_animations=False,
++                         export_cameras=False, export_lights=False, export_yup=True)
++meshes = [obj for obj in objects if obj.type == "MESH"]
++stats = json.loads((OUT / "model-stats.json").read_text())
++for row in stats:
++    if row["kind"] == "refinery":
++        row.update(triangles=sum(sum(len(face.vertices)-2 for face in obj.data.polygons) for obj in meshes),
++                   mesh_objects=len(meshes), material_surfaces=sum(len(obj.data.materials) for obj in meshes))
++(OUT / "model-stats.json").write_text(json.dumps(stats, indent=2))
++scene = bpy.context.scene
++scene.render.engine = "BLENDER_EEVEE_NEXT"
++scene.render.film_transparent = True
++scene.render.filepath = str(OUT / "refinery-icon.png")
++bpy.ops.wm.save_as_mainfile(filepath=str(ROOT / "refinery.blend"))
++bpy.ops.render.render(write_still=True)
++print("REFINERY SAMPLE", next(row for row in stats if row["kind"] == "refinery"))
+diff --git a/space-battleship/assets/planets/orbital/models/README.md b/space-battleship/assets/planets/orbital/models/README.md
+index c1b9006..3519ae4 100644
+--- a/space-battleship/assets/planets/orbital/models/README.md
++++ b/space-battleship/assets/planets/orbital/models/README.md
+@@ -2,9 +2,10 @@
+ 
+ Source: editable Blender scenes, refined from the approved procedural Godot meshes; no third-party model assets. Editable sources and scripts: `../../../../art_sources/orbital/`. Runtime: `scripts/orbital_facilities.gd`; card icons: `scripts/planet_art.gd`.
+ 
+-- `*.glb`: soft ceramic-white hulls, navy structure, amber service hardware, blue photovoltaic panels and cyan navigation glass. Oversized habitat lights, tank markings, manipulator housings and docking guides remain readable at orbital scale. Static hull and moving hardware are merged separately by material; budgets are checked by `test_orbital_blender_assets.gd`. Geometry statistics: `model-stats.json`.
++- `*.glb`: chunky matte cream/navy/amber/cyan forms, solid blue solar wings, without fine grids or antennae. Recognition comes from station wings, refinery tanks, a workshop press and an open docking cradle. Static hull and moving hardware are merged separately by material; budgets are checked by `test_orbital_blender_assets.gd`. Geometry statistics: `model-stats.json`.
+ - `*-icon.png`: transparent 768px Eevee renders of the matching models; import with mipmaps and alpha-border fixing. Scene models use the shared 1024x256 atlas; card icons occupy 76x64 logical pixels.
+ - Preserve the `Facility` root and `Motion` pivot, local origin, scale and axes when editing. Godot owns body spin, orbit and hardware motion; do not bake these into exported transforms or add autonomous animation.
+ - Edit the `.blend` files, then run `blender --background --python art_sources/orbital/export_models.py` from the project directory. This exports only the model hierarchy, excludes studio cameras/lights and regenerates icons. Reimport in Godot and run the asset and orbit acceptance tests.
++- Geometry rebuilds: `simplify_refinery.py` replaces only the refinery; `simplify_facilities.py` replaces the other three sources/models/icons. Both preserve existing pivots and studio settings. Use `export_models.py` to export manual scene edits without rebuilding geometry. Check the normal game view and unscaled orbital crops; icon renders alone do not establish readability.
+ - `cartoon_pass.py` applies the palette and recognition details once to pre-pass sources; rerunning on edited scenes duplicates those details. Use `export_models.py` for normal edits.
+ - `polish.py` rebuilds the source files from `base-*.glb`, overwriting manual source edits; use only for an intentional procedural rebuild. The source directory is excluded from Godot import by `art_sources/.gdignore`.
+diff --git a/space-battleship/assets/planets/orbital/models/model-stats.json b/space-battleship/assets/planets/orbital/models/model-stats.json
+index bde9b5d..42e90ef 100644
+--- a/space-battleship/assets/planets/orbital/models/model-stats.json
++++ b/space-battleship/assets/planets/orbital/models/model-stats.json
+@@ -1,26 +1,26 @@
+ [
+   {
+     "kind": "auto_explore",
+-    "triangles": 11702,
++    "triangles": 264,
+     "mesh_objects": 2,
+-    "material_surfaces": 9
++    "material_surfaces": 5
+   },
+   {
+     "kind": "refinery",
+-    "triangles": 22572,
++    "triangles": 412,
+     "mesh_objects": 2,
+-    "material_surfaces": 7
++    "material_surfaces": 5
+   },
+   {
+     "kind": "equipment",
+-    "triangles": 17862,
++    "triangles": 220,
+     "mesh_objects": 2,
+-    "material_surfaces": 9
++    "material_surfaces": 4
+   },
+   {
+     "kind": "shipyard",
+-    "triangles": 21666,
++    "triangles": 184,
+     "mesh_objects": 2,
+-    "material_surfaces": 7
++    "material_surfaces": 6
+   }
+ ]
+\ No newline at end of file
