@@ -1,6 +1,11 @@
 extends SceneTree
 const Presented=preload("res://scripts/presented_battle_game.gd")
 const Balanced=preload("res://scripts/balance_game.gd")
+class ObservedPresented extends "res://scripts/presented_battle_game.gd":
+ var query_times:Array=[]
+ func enemy_resistance_type(enemy:Dictionary)->int:
+  query_times.append(enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
+  return super.enemy_resistance_type(enemy)
 var checks:=0
 var failures:=0
 var games:Array=[]
@@ -81,15 +86,17 @@ func run():
  beam(g);g.tick(1)
  check(g.missile_retarget_count==1 and e.shield==0 and e.hp<=9950,"Presented pending retarget cannot recover shields before earlier beam")
  check(is_equal_approx(g.enemy_shield_time,1.0),"Presented override advances shield clock once")
- g=fixture(Presented);e=g.enemies[0];e.y-=300
+ g=fixture(ObservedPresented);e=g.enemies[0];e.y-=300
  e.shield=55;e.shield_updated_at=.35;g.enemy_shield_time=.35
- g.profile.loadout.weapons[1]={"key":"missile","level":1};g.refresh_missile_target_registry()
+ g.profile.loadout.weapons[1]={"key":"missile","level":1}
+ other=e.duplicate(true);other.uid=997;other.armourType=2;other.max_shield=0;other.shield=0;g.enemies.append(other);g.refresh_missile_target_registry()
  dead=e.duplicate(true);dead.uid=998;dead.hp=0
  g.launch_player_attack(1,dead,g.player_weapon_row(g.slot_entry("weapons",1)),attack,Vector2.ZERO,0.0)
  shot=beam(g);shot.charge=.4;shot.elapsed=.35;shot.next_hit_at=.4
- g.tick_projectiles(.15)
+ g.query_times.clear();g.tick_projectiles(.15)
  check(g.missile_retarget_count==1 and is_equal_approx(e.shield,50.0) and is_equal_approx(e.shield_hit_at,.4),"Presented coarse prepass crossing recovery boundary cannot pre-heal before beam due")
  check(is_equal_approx(g.enemy_shield_time,.5),"Presented direct coarse call advances the single clock by exactly dt")
+ check(not g.query_times.is_empty() and g.query_times.all(func(at):return is_equal_approx(at,.35)),"Presented real multi-target retarget comparisons run at step start")
  g=fixture();e=g.enemies[0];g.enemy_shield_time=1.4;g.db.equipment.longLaser[0].para3=1;g.db.equipment.longLaser[0].cd=2
  shot=beam(g);g.tick_long_laser(shot,1.4)
  check(is_equal_approx(g.enemy_shield_time,1.4) and is_equal_approx(e.shield_hit_at,1.0),"low-level beam resolver uses caller clock and scheduled due without advancing clock twice")
