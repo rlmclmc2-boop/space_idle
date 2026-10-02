@@ -57,6 +57,7 @@ func _initialize():call_deferred("run")
 func run():
  var args:=OS.get_cmdline_user_args()
  if not args.is_empty():options=JSON.parse_string(FileAccess.get_file_as_string(args[0]))
+ elif not OS.get_environment("ENEMY_DESIGN_OPTIONS").is_empty():options=JSON.parse_string(OS.get_environment("ENEMY_DESIGN_OPTIONS"))
  if options.get("presentation",false):
   scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
   root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false

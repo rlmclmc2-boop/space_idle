@@ -2,7 +2,7 @@
 from pathlib import Path
 import argparse,json,sys,openpyxl
 root=Path(__file__).resolve().parents[2];cfg=root/'space-battleship/config_excel'
-p=argparse.ArgumentParser();p.add_argument('--equipment',type=int,default=15);p.add_argument('--hightech',type=int,default=10);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--equipment',type=int,default=15);p.add_argument('--hightech',type=int,default=10);p.add_argument('--first-equipment',type=int);p.add_argument('--first-hightech',type=int);a=p.parse_args()
 from source_lock import acquire
 _source_lock=acquire(root)
 w=openpyxl.load_workbook(cfg/'planet_buff.xlsx');s=w.active;h={c.value:c.column for c in s[1] if c.value};changes=[]
@@ -10,6 +10,9 @@ for r in range(4,s.max_row+1):
  target=s.cell(r,h['target']).value
  if s.cell(r,h['buff_type']).value!='level_bonus' or target not in ['equipment','hightech']:continue
  value=a.equipment if target=='equipment' else a.hightech
+ if int(s.cell(r,h['planet_id']).value)==1:
+  first=a.first_equipment if target=='equipment' else a.first_hightech
+  if first is not None:value=first
  changes.append({'id':s.cell(r,h['id']).value,'planet':s.cell(r,h['planet_id']).value,'target':target,'old':s.cell(r,h['value']).value,'new':value})
  s.cell(r,h['value'],value);s.cell(r,h['des'],('装备' if target=='equipment' else 'AI工厂')+'效果等级 +'+str(value))
 w.save(cfg/'planet_buff.xlsx')

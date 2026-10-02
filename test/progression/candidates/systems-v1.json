@@ -3,6 +3,13 @@
   "changes": [
     {
       "sheet": "config",
+      "id": "hightechCostGrowthLevel",
+      "field": "para_1",
+      "old": 400,
+      "new": 50
+    },
+    {
+      "sheet": "config",
       "id": "reactorEnergyGrowth",
       "field": "para_1",
       "old": 1.06,

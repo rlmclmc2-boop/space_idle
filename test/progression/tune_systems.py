@@ -16,7 +16,7 @@ def edit(name,key_column,targets):
   for field,value in targets[key].items():
    old=s.cell(r,h[field]).value;s.cell(r,h[field],value);changes.append({'sheet':name,'id':key,'field':field,'old':old,'new':value})
  w.save(CFG/(name+'.xlsx'))
-edit('config','name',{'reactorEnergyGrowth':{'para_1':1.06}})
+edit('config','name',{'reactorEnergyGrowth':{'para_1':1.06},'hightechCostGrowthLevel':{'para_1':50}})
 edit('planet','id',{1:{'baseTime':60,'minTime':60}})
 # First preparation: 60 trips (~1h), then 180 trips (~3h). Later planets retain old prep pending decision.
 w=openpyxl.load_workbook(CFG/'planet_build.xlsx');s=w.active;h={c.value:c.column for c in s[1] if c.value is not None}

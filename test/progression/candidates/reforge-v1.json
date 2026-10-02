@@ -7,14 +7,14 @@
       "planet": 1,
       "target": "equipment",
       "old": 15,
-      "new": 15
+      "new": 25
     },
     {
       "id": 2,
       "planet": 1,
       "target": "hightech",
       "old": 10,
-      "new": 10
+      "new": 20
     },
     {
       "id": 11,
