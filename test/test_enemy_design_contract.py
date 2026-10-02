@@ -50,7 +50,7 @@ for name in ("equipment", "mon", "monGroup", "level", "weapon_motion"):
     old_bytes = subprocess.check_output(["git", "show", f"{BASE}:{relative}"], cwd=ROOT)
     old = openpyxl.load_workbook(io.BytesIO(old_bytes)).active
     new = openpyxl.load_workbook(ROOT / relative).active
-    allowed = {"E8", "G8"} if name == "equipment" else set()
+    allowed = {"E8", "G8", "G12"} if name == "equipment" else set()
     for row in old:
         for cell in row:
             assert cell.value == new[cell.coordinate].value or cell.coordinate in allowed, (name, cell.coordinate)

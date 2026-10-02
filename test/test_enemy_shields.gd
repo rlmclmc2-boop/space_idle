@@ -4,7 +4,7 @@ var failures:=0
 func check(ok:bool,label:String):
  checks+=1
  if not ok:failures+=1;printerr(label)
-func fixture(weapon:="",shield:=20.0,hp:=100.0) -> BattleGame:
+func fixture(weapon:="",shield:=20.0,hp:=100.0,beam_period:=0.2) -> BattleGame:
  var db:=ShipDatabase.new()
  var g:=BattleGame.new(db,false)
  g.start(1,false);g.spawn_group()
@@ -18,7 +18,7 @@ func fixture(weapon:="",shield:=20.0,hp:=100.0) -> BattleGame:
  if weapon!="":
   g.profile.loadout.weapons[0]={"key":weapon,"level":1}
   db.equipment[weapon][0].dmg=10;db.equipment[weapon][0].dmgMulti=0
-  if weapon=="longLaser":db.equipment[weapon][0].para3=0.0;db.equipment[weapon][0].para2=1.0
+  if weapon=="longLaser":db.equipment[weapon][0].cd=beam_period;db.equipment[weapon][0].para3=0.0;db.equipment[weapon][0].para2=1.0
  g.reset_player()
  return g
 func _initialize():call_deferred("run")
@@ -58,6 +58,19 @@ func run():
  for i in 61:beam.tick(1.0/60.0)
  check(e.shield<50 and is_equal_approx(e.hp,1000),"0.2s continuous hits suppress recovery without damaging protected HP")
  check(beam.profile.enhancementAttacks==1 and beam.projectiles[0].ticks>=5,"periods remain one main attack")
+ # Keep the 0.2 boundary fixture above; separately exercise the current table.
+ var live_period:float=ShipDatabase.new().equipment.longLaser[0].cd
+ var live:=fixture("longLaser",100,1000,live_period);e=live.enemies[0]
+ e.armourType=0;e.shieldType=0;e.shieldRecovery=1.0
+ live.db.data.enhance_config.base_critical_rate.value=0;live.db.equipment.longLaser[0].cri=0
+ for i in 61:live.tick(1.0/60.0)
+ var periods:int=live.projectiles[0].ticks
+ var unhealed:float=100.0-10.0*periods
+ check(is_equal_approx(e.shield,unhealed) if live_period<=e.shieldDelay else e.shield>unhealed,"live beam period suppresses recovery only while gaps stay within delay")
+ check(live.profile.enhancementAttacks==1 and e.hp==1000,"live periods inherit one attack and protected HP stays intact")
+ var held:float=e.shield
+ live.advance_enemy_shields(e.shieldDelay+0.1)
+ check(e.shield>held,"interruption permits shield recovery after its hit delay")
  var laser:=fixture("laser",100,1000);e=laser.enemies[0];e.armourType=0;e.shieldType=0;e.shieldRecovery=1.0
  for i in 61:laser.tick(1.0/60.0)
  check(e.shield>80 and e.hp==1000,"0.5s pulse gaps permit shield recovery")

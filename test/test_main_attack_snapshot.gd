@@ -5,11 +5,11 @@ var failures := 0
 func check(ok: bool,label: String) -> void:
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
-func fixture(key := "laser"):
+func fixture(key := "laser",beam_period := 0.2):
  var db:=ShipDatabase.new()
  for weapon in ["laser","missile","cannon","longLaser"]:
   db.equipment[weapon][0].dmg=100;db.equipment[weapon][0].dmgMulti=0;db.equipment[weapon][0].cri=0;db.equipment[weapon][0].criDmg=0
- db.equipment.longLaser[0].para3=.2
+ db.equipment.longLaser[0].cd=beam_period;db.equipment.longLaser[0].para3=.2
  db.equipment.missile[0].para1=5 # Explicit five-carrier boundary fixture, independent of authored balance.
  for defense in ["armour","shield"]:
   db.equipment[defense][0].para1=100;db.equipment[defense][0]["para2" if defense=="armour" else "para4"]=0
@@ -165,8 +165,39 @@ func run()->void:
   g=fixture(key);var root=salvo(g)
   check(g.projectiles.size()==1 and g.projectiles[0].main_attack_id==root.id,"single-shot weapon uses shared snapshot "+key)
  check_snapshot_boundaries()
+ check_live_beam_period()
  print("MAIN ATTACK SNAPSHOT: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
+
+func check_live_beam_period()->void:
+ # Boundary fixtures above pin .2; also cover the current period and charge.
+ var authored=ShipDatabase.new().equipment.longLaser[0]
+ var g=fixture("longLaser",float(authored.cd))
+ g.db.equipment.longLaser[0].para3=authored.para3
+ g.db.data.enhance_config.base_critical_rate.value=0
+ choose(g,"proficiency",2);choose(g,"repeat",1)
+ var interval:float=float(authored.cd)*g.enhancement_parameter("proficiency_b2_interval_multiplier")
+ var entry=g.slot_entry("weapons",0)
+ var history:int=g.profile.enhancementAttacks
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ var beam=g.projectiles.back();var frozen=beam.attack_snapshot
+ var chain:Dictionary=beam.attack_instance.chain
+ var bound:Array=chain.links.map(func(link):return link.target)
+ check(is_equal_approx(frozen.weapon.cd,interval) and is_equal_approx(beam.charge,float(authored.para3)),"live beam freezes authored charge and reduced period")
+ var rng_state=g.rng.state
+ g.tick_long_laser(beam,float(beam.charge)+2.0*interval)
+ check(beam.ticks==3 and g.profile.enhancementAttacks==history+1 and g.rng.state==rng_state,"live beam periods inherit one attack without rerolls")
+ check(chain.links.size()==mini(int(g.enhancement_parameter("repeat_b1_targets")),g.enemies.size()-1) and chain.links.all(func(link):return link.target.hp<link.target.max_hp) and g.projectiles.size()==1,"live beam periods propagate through one bound relation without new carriers")
+ var previous_hp:Array=bound.map(func(target):return target.hp)
+ entry.level+=1;g.invalidate_stat_cache();g.db.equipment.longLaser[0].cd=float(authored.cd)*1.5
+ g.tick_long_laser(beam,interval)
+ var retained:bool=chain.links.size()==bound.size() and not bound.is_empty()
+ for index in mini(chain.links.size(),bound.size()):
+  retained=retained and is_same(chain.links[index].target,bound[index]) and bound[index].hp<previous_hp[index]
+ check(beam.ticks==4 and is_same(beam.attack_snapshot,frozen) and retained and g.rng.state==rng_state,"live beam keeps cadence and each original link takes the next periodic damage")
+ beam.dead=true
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ check(is_equal_approx(g.projectiles.back().attack_snapshot.weapon.cd,interval*1.5) and g.profile.enhancementAttacks==history+2,"next live beam reads changed period as one new attack")
 
 func check_snapshot_boundaries()->void:
  # Use real growth with fixed critical outcome, so the level change is observable.

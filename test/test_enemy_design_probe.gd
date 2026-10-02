@@ -39,6 +39,10 @@ func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
   scene.db=db;scene.game=game;scene.current_hull="Destroyer"
   scene.enemy_poses.clear();scene.turret_visuals.clear();scene.fx_time=0.0;scene.demo_time=0.0
   scene.ship_view.set_hull("Destroyer")
+  # Reused scene must start every match with the same carrier phase and pose.
+  scene.ship_view.orbit_elapsed=0.0
+  scene.ship_view.pose_initialized=false
+  scene.ship_view.loadout_signature=""
   scene.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
   scene._set_reference_dimensions()
   game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point

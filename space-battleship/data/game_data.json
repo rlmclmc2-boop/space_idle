@@ -224,7 +224,7 @@
         "dmgtype": 1,
         "dmg": 35,
         "dmgMulti": 0.2,
-        "cd": 0.2,
+        "cd": 0.28,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -1715,11 +1715,11 @@
         }
       ],
       "dmgMultiple": 7.5,
-      "health": 32000,
+      "health": 22800,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
-      "shield": 32000,
+      "shield": 22800,
       "shieldType": 2,
       "shieldRecovery": 0.2,
       "shieldDelay": 0.3,
@@ -1740,11 +1740,11 @@
         }
       ],
       "dmgMultiple": 7.5,
-      "health": 25000,
+      "health": 17800,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
-      "shield": 25000,
+      "shield": 17800,
       "shieldType": 2,
       "shieldRecovery": 0.2,
       "shieldDelay": 0.3,
@@ -1765,7 +1765,7 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 17000,
+      "health": 16000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
@@ -1789,8 +1789,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 7.1,
-      "health": 10000,
+      "dmgMultiple": 12,
+      "health": 21000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
@@ -1814,8 +1814,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.8,
-      "health": 7000,
+      "dmgMultiple": 5.5,
+      "health": 11100,
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
@@ -1839,9 +1839,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 7.2,
-      "health": 6000,
-      "armourType": 1,
+      "dmgMultiple": 0.12,
+      "health": 16100,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
       "shield": 0,
@@ -1864,8 +1864,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1,
-      "health": 17000,
+      "dmgMultiple": 12.1,
+      "health": 21100,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
@@ -1889,9 +1889,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 6.1,
-      "health": 17000,
-      "armourType": 2,
+      "dmgMultiple": 5.48,
+      "health": 11080,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
       "shield": 0,
@@ -1914,8 +1914,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1,
-      "health": 17000,
+      "dmgMultiple": 0.09,
+      "health": 16200,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
@@ -1939,9 +1939,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 7.3,
-      "health": 7500,
-      "armourType": 1,
+      "dmgMultiple": 11.9,
+      "health": 21200,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 1,
       "shield": 0,
@@ -1964,9 +1964,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 8.9,
-      "health": 9000,
-      "armourType": 2,
+      "dmgMultiple": 5.6,
+      "health": 11060,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
       "shield": 0,
@@ -1989,8 +1989,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1,
-      "health": 18000,
+      "dmgMultiple": 0.13,
+      "health": 16300,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 4,
@@ -2014,9 +2014,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 7.3,
-      "health": 7600,
-      "armourType": 1,
+      "dmgMultiple": 12.05,
+      "health": 21300,
+      "armourType": 2,
       "res": "{1,0,0}",
       "size": 2,
       "shield": 0,
@@ -2039,9 +2039,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 9.8,
-      "health": 9000,
-      "armourType": 2,
+      "dmgMultiple": 5.52,
+      "health": 11040,
+      "armourType": 1,
       "res": "{1,0,0}",
       "size": 1,
       "shield": 0,
@@ -2065,7 +2065,7 @@
         }
       ],
       "dmgMultiple": 11,
-      "health": 440000,
+      "health": 315000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 5,
@@ -2115,7 +2115,7 @@
         }
       ],
       "dmgMultiple": 6.6,
-      "health": 1250000,
+      "health": 895000,
       "armourType": 2,
       "res": "{1,0,0}",
       "size": 6,
@@ -6562,9 +6562,9 @@
         null,
         null,
         1067,
-        1068,
         null,
         1068,
+        null,
         1067,
         null,
         1069,
@@ -6582,9 +6582,9 @@
         null,
         null,
         1072,
-        1073,
         null,
         1073,
+        null,
         1072,
         null,
         1074,
@@ -6602,9 +6602,9 @@
         null,
         null,
         1077,
-        1078,
         null,
         1078,
+        null,
         1077,
         null,
         1079,
@@ -6622,9 +6622,9 @@
         null,
         null,
         1082,
-        1083,
         null,
         1083,
+        null,
         1082,
         null,
         1084,
