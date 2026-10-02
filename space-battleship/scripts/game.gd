@@ -1880,6 +1880,7 @@ func has_alive_enemy() -> bool:
 	return false
 
 func enemy_resistance_type(enemy: Dictionary) -> int:
+	settle_enemy_shield(enemy,enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
 	return int(enemy.get("shieldType",0)) if N.compare(enemy.get("shield",0),0)>0 else int(enemy.armourType)
 
 func reduced_damage(raw, type: int, resistance: int) -> Variant:
@@ -1974,11 +1975,11 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
 	return minf(1.0 + (float(weapon.para2) - 1.0) * duration / float(weapon.para1), float(weapon.para2)) if float(weapon.para1) > 0 else float(weapon.para2)
 
-func tick_long_laser(shot: Dictionary, dt: float) -> void:
+func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 	if not long_laser_valid(shot):
 		shot.dead = true
 		end_beam_chain(shot)
-		return
+		return false
 	prune_beam_chain(shot)
 	var offset := enemy_weapon_offset(shot.source, shot.mount) if shot.hostile else player_weapon_offset(shot.mount)
 	if shot.repeated:
@@ -1991,34 +1992,64 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 	var interval := float(weapon.cd)
 	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
 	if not shot.has("next_hit_at"):shot.next_hit_at=first_hit
+	return true
+
+func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+	var interval := float(weapon.cd)
+	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
+	var previous_hit_time := enemy_shield_hit_time
+	enemy_shield_hit_time=enemy_shield_time-float(shot.elapsed)+due
+	shot.ticks += 1
+	var duration := due-first_hit if float(shot.charge)>=0 else due
+	var multiplier := long_laser_multiplier(weapon, duration)
+	event.emit("beam_hit", {"shot":shot})
+	if shot.hostile:
+		var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
+		hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
+	else:
+		enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot,"instance":shot.attack_instance}
+		var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
+		if int(shot.ticks)==1 and not shot.repeated:
+			queue_jewel_repeats(shot.mount,boost,shot)
+		var attack := jewel_attack(shot.mount, multiplier * boost)
+		if attack.critical:
+			event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
+		hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
+		launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
+		enhancement_attack_contexts.erase(int(shot.mount))
+	if not projectiles.has(shot) or not long_laser_valid(shot):
+		shot.dead = true
+		end_beam_chain(shot)
+	enemy_shield_hit_time=previous_hit_time
+
+func tick_long_laser(shot: Dictionary, dt: float) -> void:
+	if not advance_long_laser(shot,dt):return
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
 		var due := float(shot.next_hit_at)
-		shot.next_hit_at=due+interval
-		shot.ticks += 1
-		var duration := due-first_hit if float(shot.charge)>=0 else due
-		var multiplier := long_laser_multiplier(weapon, duration)
-		event.emit("beam_hit", {"shot":shot})
-		if shot.hostile:
-			var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
-			hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
-		else:
-			enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot,"instance":shot.attack_instance}
-			var boost := float(shot.repeat_multiplier) * float(shot.charged_multiplier)
-			if int(shot.ticks)==1 and not shot.repeated:
-				queue_jewel_repeats(shot.mount,boost,shot)
-			var attack := jewel_attack(shot.mount, multiplier * boost)
-			if attack.critical:
-				event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
-			var previous_hit_time := enemy_shield_hit_time
-			enemy_shield_hit_time=enemy_shield_time-float(shot.elapsed)+due
-			hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical)
-			enemy_shield_hit_time=previous_hit_time
-			launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
-			enhancement_attack_contexts.erase(int(shot.mount))
-		if not projectiles.has(shot) or not long_laser_valid(shot):
-			shot.dead = true
-			end_beam_chain(shot)
-			break
+		shot.next_hit_at=due+float(weapon.cd)
+		apply_long_laser_hit(shot,due)
+		if shot.dead:break
+
+func tick_shield_beams(pending: Array, dt: float) -> void:
+	# Flying rounds and asynchronous chain hops hit at the step boundary. Beam
+	# periods can precede it, so merge periods across mounts before those hits.
+	var hits: Array[Dictionary] = []
+	for index in pending.size():
+		var shot: Dictionary = pending[index]
+		if not shot.get("beam",false) or not projectiles.has(shot):continue
+		if not advance_long_laser(shot,dt):continue
+		var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+		while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
+			var due := float(shot.next_hit_at)
+			hits.append({"at":enemy_shield_time-float(shot.elapsed)+due,"due":due,"index":index,"shot":shot})
+			shot.next_hit_at=due+float(weapon.cd)
+	hits.sort_custom(func(a,b):return a.index<b.index if a.at==b.at else a.at<b.at)
+	for item in hits:
+		var shot: Dictionary = item.shot
+		if not projectiles.has(shot) or not long_laser_valid(shot):continue
+		apply_long_laser_hit(shot,float(item.due))
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	record_enhancement_hit() # Exactly once per incoming attack, even if protection absorbs it.
@@ -2393,7 +2424,6 @@ func tick(dt: float) -> void:
 			spawn_group()
 		return
 	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p))
-	enemy_shield_time+=dt
 	for index in range(weapon_entries().size()):
 		var entry: Dictionary = weapon_entries()[index]
 		var key := str(entry.key)
@@ -2467,7 +2497,12 @@ func tick(dt: float) -> void:
 		guard_elapsed = 0
 
 func tick_projectiles(dt: float) -> void:
+	# Overrides select pending launches at step start; only this base advances
+	# the shield clock, before resolving scheduled periods and boundary hits.
+	if state==State.COMBAT:enemy_shield_time+=dt
 	var pending := projectiles.duplicate()
+	var shield_timing := enemies.any(func(enemy):return float(enemy.get("max_shield",0))>0)
+	if shield_timing:tick_shield_beams(pending,dt)
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
 		# Usually the live array retains its order for the whole step. Identity at
@@ -2481,7 +2516,7 @@ func tick_projectiles(dt: float) -> void:
 			continue
 		if advance_custom_projectile(shot,dt):continue
 		if shot.get("beam", false):
-			tick_long_laser(shot, dt)
+			if not shield_timing:tick_long_laser(shot, dt)
 			continue
 		if not shot.target.is_empty():
 			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
