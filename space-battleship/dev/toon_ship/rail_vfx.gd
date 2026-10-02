@@ -1,77 +1,67 @@
 extends RefCounted
-## Electric discharge, not a persistent optical beam. Every shape belongs to one real shot.
-const ELECTRIC := Color("78cfff")
-const HOT := Color("eaffff")
-static func noise(seed:int,channel:int)->float:
-	var n:=posmod(seed*7919+channel*104729,2147483647)
-	n=(n^(n<<13))&0x7fffffff
-	return float(posmod(n*48271,2147483647))/2147483647.0
-static func jagged(a:Vector2,b:Vector2,seed:int,width:float,count:int=12)->PackedVector2Array:
-	var direction:Vector2=(b-a).normalized()
-	var across:=direction.orthogonal()
-	var points:=PackedVector2Array()
-	for index in count+1:
-		var t:=float(index)/float(count)
-		var envelope:=minf(1.0,minf(t,1.0-t)*5.0)
-		var along:=t if index in [0,count] else t+(noise(seed,index+71)-0.5)*0.45/float(count)
-		points.append(a.lerp(b,along)+across*(noise(seed,index)*2.0-1.0)*width*envelope)
-	return points
-static func charge(surface:CanvasItem,point:Vector2,direction:Vector2,amount:float,clock:float)->void:
+## Presentation only. Warm, bounded main-cannon strokes leave cyan laser packets readable.
+const ELECTRIC := Color("ffb65c")
+const HOT := Color("fff3cf")
+var charge_radius := 20.0
+var trail_length := 138.0
+var trail_width := 10.0
+var flash_seconds := 0.09
+var impact_seconds := 0.16
+var impact_radius := 24.0
+var penetration_length := 80.0
+func configure(db) -> void:
+	for key in ["charge_radius","trail_length","trail_width","flash_seconds","impact_seconds","impact_radius","penetration_length"]:
+		set(key,db.weapon_motion_value("rail_"+key,float(get(key))))
+func charge(surface:CanvasItem,point:Vector2,direction:Vector2,amount:float,clock:float)->void:
 	if amount<=0:return
 	var side:=direction.orthogonal()
-	var seed:=int(clock*14.0)+int(point.x)*7
-	# Cross-rail arcs visibly bridge the two metal sides of the barrel.
+	# The three broad rail cells fill towards the muzzle; no combat RNG or particles.
 	for index in 3:
-		var center:=point-direction*(5.0+float(index)*6.0)
-		var bridge:=jagged(center-side*4.8,center+side*4.8,seed+index*19,2.6,5)
-		surface.draw_polyline(bridge,Color(ELECTRIC,amount*0.9),1.7,true)
-		surface.draw_circle(center+side*(noise(seed,index+8)-0.5)*9.0,1.0,Color(HOT,amount))
-static func discharge(surface:CanvasItem,origin:Vector2,end:Vector2,age:float,seed:int)->void:
-	if age<0.0 or age>0.18 or origin.distance_squared_to(end)<1.0:return
-	var fade:=pow(1.0-age/0.18,1.25)
-	var phase:=0 if age<0.05 else 1
-	var points:=jagged(origin,end,seed+phase*53,13.0,14)
-	var direction:Vector2=(end-origin).normalized()
-	var across:=direction.orthogonal()
-	# The core exists for less than a rendered frame; the dominant shape is electric.
-	if age<0.022:
-		surface.draw_line(origin,end,Color(HOT,0.8),1.4,true)
-		surface.draw_polyline(points,Color(ELECTRIC,0.20),10.0,true)
-		surface.draw_polyline(points,ELECTRIC,3.8,true)
-		surface.draw_polyline(points,HOT,1.2,true)
-	else:
-		# Broken corona segments remain after passage; never a long fading laser.
-		for start in [1,5,9]:
-			var piece:=PackedVector2Array([points[start],points[start+1],points[start+2],points[start+3]])
-			surface.draw_polyline(piece,Color(ELECTRIC,fade*0.85),2.0,true)
-	for index in [3,6,9,11]:
-		var side:float=-1.0 if index%2==0 else 1.0
-		var reach:=22.0+noise(seed,index+31)*30.0
-		var tip:Vector2=points[index]+across*side*reach+direction*(noise(seed,index+41)-0.5)*26.0
-		var branch:=jagged(points[index],tip,seed+index*17,7.0,5)
-		surface.draw_polyline(branch,Color(ELECTRIC,fade*0.8),1.7,true)
-		if age<0.075:
-			var fork:Vector2=branch[2]+across*side*14.0-direction*12.0
-			surface.draw_polyline(jagged(branch[2],fork,seed+index*29,3.0,3),Color(HOT,fade*0.65),1.0,true)
-static func flight(surface:CanvasItem,point:Vector2,_direction:Vector2,clock:float,origin:Vector2)->void:
-	discharge(surface,origin,point,0.0,int(origin.x*17.0+clock*19.0))
-static func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float)->void:
-	if age>0.09:return
-	var fade:=clampf(1.0-age/0.09,0.0,1.0)*budget
-	for index in 3:
-		var tip:=point+direction.rotated(float(index-1)*0.65)*(12.0+float(index)*3.0)
-		surface.draw_polyline(jagged(point,tip,index+17,4.0,4),Color(ELECTRIC,fade),1.8,true)
-static func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critical:bool,budget:float)->void:
-	if age>0.10:return
-	var fade:=clampf(1.0-age/0.10,0.0,1.0)*budget
-	for side in [-1.0,1.0]:
-		var tip:Vector2=point+direction.orthogonal()*side*14.0-direction*6.0
-		surface.draw_polyline(jagged(point,tip,int(side)+41,5.0,4),Color(HOT,fade),1.8,true)
-static func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,direction:Vector2,age:float,_budget:float,bounds:Vector2)->void:
-	var reach:=2000.0
+		var lit:=clampf(amount*3.0-float(index),0.0,1.0)
+		var center:=point-direction*charge_radius*(0.9-float(index)*0.28)
+		surface.draw_line(center-side*charge_radius*0.23,center+side*charge_radius*0.23,Color(ELECTRIC,lit*0.9),trail_width*0.26,true)
+	var radius:=charge_radius*lerpf(1.0,0.35,amount)
+	for index in 2:
+		var angle:=clock*1.8+float(index)*PI
+		surface.draw_arc(point,radius,angle,angle+PI*0.7,12,Color(ELECTRIC,amount*0.85),trail_width*0.22,true)
+	surface.draw_circle(point,trail_width*(0.12+amount*0.2),Color(HOT,amount*0.9))
+func flight(surface:CanvasItem,point:Vector2,direction:Vector2,_clock:float,origin:Vector2)->void:
+	# A capped tail follows the projectile. Never redraw the whole travelled path.
+	var length:=minf(origin.distance_to(point),trail_length)
+	if length<0.1:return
+	var side:=direction.orthogonal()
+	var nose:=point+direction*trail_width
+	var shoulder:=point-direction*minf(length*0.35,trail_width*2.0)
+	var back:=point-direction*length
+	surface.draw_colored_polygon(PackedVector2Array([nose,shoulder+side*trail_width*0.5,back,shoulder-side*trail_width*0.5]),ELECTRIC)
+	surface.draw_line(back.lerp(point,0.32),nose,Color(HOT,0.95),trail_width*0.3,true)
+func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float)->void:
+	if age<0 or age>=flash_seconds:return
+	var fade:=1.0-age/flash_seconds
+	surface.draw_line(point-direction*trail_width*0.6,point+direction*trail_width*4.4,Color(ELECTRIC,fade*budget),trail_width*(0.3+fade*0.7),true)
+	surface.draw_line(point,point+direction*trail_width*3.0,Color(HOT,fade),trail_width*0.35,true)
+	var side:=direction.orthogonal()*charge_radius*(0.4+0.3*(1.0-fade))
+	surface.draw_line(point-side,point+side,Color(ELECTRIC,fade*budget),trail_width*0.22,true)
+func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critical:bool,budget:float)->void:
+	if age<0 or age>=impact_seconds:return
+	var t:=age/impact_seconds
+	var fade:=1.0-t
+	var radius:=impact_radius*(0.3+t*0.7)
+	var side:=direction.orthogonal()
+	# Local broken shock arcs communicate mass without an opaque explosion disc.
+	for sign in [-1.0,1.0]:
+		var angle: float=direction.angle()+sign*PI*0.5
+		surface.draw_arc(point,radius,angle-0.6,angle+0.6,10,Color(ELECTRIC,fade*budget),trail_width*(0.1+fade*0.16),true)
+		surface.draw_line(point+side*sign*radius*0.5,point+side*sign*radius-direction*radius*0.4,Color(HOT,fade),trail_width*0.16,true)
+	if t<0.3:surface.draw_circle(point,trail_width*0.45*(1.0-t),Color(HOT,fade))
+func penetration(surface:CanvasItem,_origin:Vector2,contact:Vector2,direction:Vector2,age:float,budget:float,bounds:Vector2)->void:
+	if age<0 or age>=impact_seconds:return
+	var reach:=penetration_length
 	if direction.x>0.0001:reach=minf(reach,(bounds.x-contact.x)/direction.x)
 	elif direction.x<-0.0001:reach=minf(reach,-contact.x/direction.x)
 	if direction.y>0.0001:reach=minf(reach,(bounds.y-contact.y)/direction.y)
 	elif direction.y<-0.0001:reach=minf(reach,(36.0-contact.y)/direction.y)
+	var fade:=pow(1.0-age/impact_seconds,2)
 	var end:=contact+direction*maxf(0.0,reach)
-	discharge(surface,origin,end,age,int(origin.x*19.0+contact.x*7.0+contact.y))
+	surface.draw_line(contact,end,Color(ELECTRIC,fade*budget),trail_width*0.65,true)
+	surface.draw_line(contact,end,Color(HOT,fade),trail_width*0.2,true)

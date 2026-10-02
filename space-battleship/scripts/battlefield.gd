@@ -10,6 +10,7 @@ const CHAIN_VFX := preload("res://dev/toon_ship/chain_vfx.gd")
 const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
+var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 
@@ -81,6 +82,7 @@ var stable_center_ready := false
 
 func _ready() -> void:
 	super._ready()
+	rail_vfx.configure(db)
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.
 	prepare_enemy_hulls()
@@ -192,7 +194,7 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(ship_view): return
 	missile_events = missile_events.filter(func(e):return fx_time-float(e.born)<float(e.get("duration",0.25)))
 	if accelerated_visual_mode:missile_events.clear()
-	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<0.31)
+	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<maxf(rail_vfx.flash_seconds,rail_vfx.impact_seconds))
 	if accelerated_visual_mode:rail_events.clear()
 	enemy_impacts=enemy_impacts.filter(func(e):return fx_time-float(e.born)<0.12)
 	if accelerated_visual_mode:enemy_impacts.clear()
@@ -282,10 +284,10 @@ func _draw_muzzle_cues() -> void:
 		for event in rail_events:
 			var age:=fx_time-float(event.born)
 			var point:=battle_point(Vector2(event.position))
-			if event.kind=="fire":RAIL_VFX.flash(pulse_layer,point,event.direction,age,budget)
+			if event.kind=="fire":rail_vfx.flash(pulse_layer,point,event.direction,age,budget)
 			else:
-				RAIL_VFX.penetration(pulse_layer,battle_point(Vector2(event.origin)),point,event.direction,age,budget,BATTLE_VIEW_SIZE)
-				RAIL_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
+				rail_vfx.penetration(pulse_layer,battle_point(Vector2(event.origin)),point,event.direction,age,budget,BATTLE_VIEW_SIZE)
+				rail_vfx.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
 
 	if missile_vfx_enabled:
 		var budget:=clampf(2.0/sqrt(maxf(1.0,float(missile_events.size()))),0.45,1.0)
@@ -422,13 +424,11 @@ func advance_projectile_visuals(dt:float)->void:
 func _draw_rail_charge(module:Dictionary)->void:
 	if accelerated_visual_mode or game.state!=BattleGame.State.COMBAT or not game.has_alive_enemy():return
 	var slot:=int(module.slot)
-	var id:=game.slot_id("weapons",slot)
-	var remaining:=float(game.cooldowns.get(id,999.0))
-	var amount:float=railgun_fx.charge(remaining,maxf(0.01,game.speed))
+	var amount:float=player_railgun_charge(slot)
 	if amount<=0.0:return
 	var point:Vector2=ship_view.screen_muzzle_for_slot(slot)
 	var ahead:Vector2=ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
-	RAIL_VFX.charge(pulse_layer,point,(ahead-point).normalized(),amount,fx_time)
+	rail_vfx.charge(pulse_layer,point,(ahead-point).normalized(),amount,fx_time)
 
 
 func _is_own_rail(shot:Dictionary)->bool:
@@ -535,7 +535,7 @@ func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,vi
 		return angle
 	if _is_own_rail(shot):
 		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
-		if core:RAIL_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",Vector2(shot.x,shot.y)))))
+		if core:rail_vfx.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",Vector2(shot.x,shot.y)))))
 		return angle
 	if not _is_own_pulse(shot):return super.draw_projectile_fx(shot,pos,offset,core,visual,trail_budget)
 	var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))

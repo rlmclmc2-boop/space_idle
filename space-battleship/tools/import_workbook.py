@@ -185,7 +185,7 @@ def validate_description(row, field='description', section='hightech'):
 
 def validate_weapon_motion(data):
     motion = data.get('weapon_motion', {})
-    expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y'}
+    expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y','rail_charge_seconds','rail_charge_radius','rail_trail_length','rail_trail_width','rail_flash_seconds','rail_impact_seconds','rail_impact_radius','rail_penetration_length'}
     if not isinstance(motion,dict):raise ValueError('weapon_motion: expected table')
     if 'weapon_motion' in data and set(motion) != expected:
         raise ValueError(f'weapon_motion: missing {sorted(expected-set(motion))}; unknown {sorted(set(motion)-expected)}')
