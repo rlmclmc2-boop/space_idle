@@ -1,0 +1,94 @@
+{
+  "triangles": {
+    "before": 369944,
+    "after": 221564,
+    "reduction_percent": 40.11
+  },
+  "bytes": {
+    "before": 14706876,
+    "after": 8878644,
+    "reduction_percent": 39.63
+  },
+  "per_family": {
+    "galaxy_core": {
+      "triangles": {
+        "before": 85772,
+        "after": 85772
+      },
+      "bytes": {
+        "before": 2561288,
+        "after": 2612152
+      }
+    },
+    "colony_ring": {
+      "triangles": {
+        "before": 75804,
+        "after": 57420
+      },
+      "bytes": {
+        "before": 2540348,
+        "after": 1875060
+      }
+    },
+    "orbital_shipyard": {
+      "triangles": {
+        "before": 68660,
+        "after": 47792
+      },
+      "bytes": {
+        "before": 2583664,
+        "after": 1826992
+      }
+    },
+    "stellar_energy_array": {
+      "triangles": {
+        "before": 37548,
+        "after": 25512
+      },
+      "bytes": {
+        "before": 1380908,
+        "after": 933036
+      }
+    },
+    "interstellar_refinery": {
+      "triangles": {
+        "before": 60820,
+        "after": 34644
+      },
+      "bytes": {
+        "before": 2669220,
+        "after": 1586168
+      }
+    },
+    "crystal_refinery": {
+      "triangles": {
+        "before": 49792,
+        "after": 27072
+      },
+      "bytes": {
+        "before": 2343936,
+        "after": 1377728
+      }
+    },
+    "heavy_element_refinery": {
+      "triangles": {
+        "before": 77320,
+        "after": 29124
+      },
+      "bytes": {
+        "before": 3188800,
+        "after": 1279660
+      }
+    },
+    "transport_shuttle": {
+      "triangles": {
+        "before": 3088,
+        "after": 2900
+      },
+      "bytes": {
+        "before": 134544,
+        "after": 126520
+      }
+    }
+  }
+}
