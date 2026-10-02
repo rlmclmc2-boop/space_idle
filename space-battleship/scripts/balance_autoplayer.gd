@@ -16,7 +16,7 @@ func configure(name: String, seed_value: int) -> void:
 func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	var row := game.db.equip(key,level)
 	if row.is_empty() or float(row.get("cd",0)) <= 0:return 0.0
-	var value := game.equipment_stat(key,level)/float(row.cd)*(float(row.para1) if key == "missile" else 1.0)
+	var value: float = game.equipment_stat(key,level)/float(row.cd)*(float(row.para1) if key == "missile" else 1.0)
 	if key == "longLaser":
 		# Six-second target horizon. Read the real beam multiplier, not a second damage formula.
 		var active := maxf(0,6.0-float(row.get("para3",row.cd)))
@@ -68,7 +68,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 	for _purchase in MAX_PURCHASES:
 		var best := {}
 		var best_score := 0.0
-		var danger := float(game.player.armour) < game.stat("armour")*0.5 or game.state == BattleGame.State.RETREAT
+		var danger: bool = float(game.player.armour) < game.stat("armour")*0.5 or game.state == BattleGame.State.RETREAT
 		for category in ["weapons","defence"]:
 			for index in game.loadout_entries(category).size():
 				var entry := game.slot_entry(category,index)
@@ -77,7 +77,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 				var costs := game.slot_upgrade_cost(category,index)
 				for id in costs:
 					cost += float(costs[id])/maxf(float(game.profile.resources.get(id,0)),1.0)
-				var before := game.jewel_equipment_stat(entry)
+				var before: float = game.jewel_equipment_stat(entry)
 				var gain := maxf(0,game.jewel_equipment_stat(entry,int(entry.level)+1)-before)/maxf(before,1.0)
 				if gain <= 0:continue
 				affordable = true

@@ -51,7 +51,8 @@ func visit() -> void:
 	trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":"visit","actions":actions-before,"stage":game.stage,"resources":game.profile.resources,"loadout":game.profile.loadout}));trace.flush()
 func run() -> void:
 	options = {"duration":10800,"stop_clear":10,"seed":20261002,"visit_seconds":120,"teaching_seconds":10,"strategy":"BALANCED"}
-	var custom = JSON.parse_string(OS.get_environment("PROGRESSION_OPTIONS"))
+	var raw_options := OS.get_environment("PROGRESSION_OPTIONS")
+	var custom = JSON.parse_string(raw_options) if not raw_options.is_empty() else {}
 	if custom is Dictionary:options.merge(custom,true)
 	output = ProjectSettings.globalize_path("res://results/"+str(options.get("label","baseline")))
 	DirAccess.make_dir_recursive_absolute(output)
