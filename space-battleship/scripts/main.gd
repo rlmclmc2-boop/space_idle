@@ -235,6 +235,7 @@ func _ready() -> void:
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
 	game = create_battle_game(not automation_args.has("--capture"))
+	railgun_fx.configure(db)
 	if game.save_enabled:
 		load_music_setting()
 	game.event.connect(on_event)
@@ -974,12 +975,19 @@ func railgun_component_charge(component, enemy: Dictionary = {}) -> float:
 		var remaining := INF
 		if enemy.is_empty():
 			if str(game.slot_entry("weapons",slot).get("key",""))!="cannon":continue
-			remaining=float(game.cooldowns.get(game.slot_id("weapons",slot),INF))
+			progress=maxf(progress,player_railgun_charge(slot))
+			continue
 		else:
 			if slot>=enemy.cooldowns.size() or str(enemy.equipment[slot].name).replace("_mon", "").replace("-mon", "")!="cannon":continue
 			remaining=float(enemy.cooldowns[slot])
 		progress=maxf(progress,railgun_fx.charge(remaining,maxf(0.01,game.speed)))
 	return progress
+
+func player_railgun_charge(slot: int) -> float:
+	var entry: Dictionary=game.slot_entry("weapons",slot)
+	var remaining := float(game.cooldowns.get(game.slot_id("weapons",slot),INF))
+	var base: Dictionary=db.equip("cannon",int(entry.get("level",1)))
+	return railgun_fx.player_charge(remaining,game.enhancement_branches.cooldown_multiplier(game,entry),float(base.cd))
 
 func railgun_sound(kind: String) -> void:
 	if not sound_on or game.paused or not railgun_audio.has(kind):return

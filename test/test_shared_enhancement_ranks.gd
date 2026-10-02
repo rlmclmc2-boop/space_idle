@@ -38,7 +38,7 @@ func run() -> void:
  var g:=fixture()
  for level in [0,9,10,19,20]:
   g.profile.enhancementLevel=level
-  var expected:=1 if level<10 else 2 if level<20 else 3
+  var expected:=0 if level==0 else 1 if level<10 else 2 if level<20 else 3
   for key in ["laser","armour"]:
    for equipment_level in [1,200]:
     var entry={"key":key,"level":equipment_level}
@@ -52,26 +52,28 @@ func run() -> void:
     for level in [gate-1,gate]:
      g.profile.enhancementLevel=level
      check(g.enhancement_branch_unlocked(category,order[rank],node)==(level==gate),"Position branch boundary%s/%s/%s/%s"%[category,rank,node,level])
- # A distinct valid configuration drives all consumers, including zero-first semantics.
- for i in 3:g.db.data.enhance_config["threshold_%d"%(i+1)].value=[0,7,17][i]
+ # A distinct valid configuration drives all consumers, with independent position offsets.
+ for i in 3:g.db.data.enhance_config["threshold_%d"%(i+1)].value=[1,7,17][i]
+ for i in 3:g.db.data.enhance_config["branch_position_offset_%d"%(i+1)].value=[0,7,17][i]
  for i in 3:g.db.data.enhance_config["branch_threshold_%d"%(i+1)].value=[5,11,23][i]
  g.profile.enhancementLevel=7
  check(g.active_enhancement_effect_count(g.slot_entry("weapons",0))==2 and g.enhancement_branch_threshold(2,"weapons","critical")==28,"Alternative shared/node config is authoritative")
  g=fixture();g.profile.enhancementLevel=0
- check(g.set_enhancement_order("weapons",["repeat","proficiency","critical"]) and g.has_enhancement_effect(g.slot_entry("weapons",0),"repeat"),"Unopened effect can swap into first position at shared zero")
+ check(g.set_enhancement_order("weapons",["repeat","proficiency","critical"]) and not g.has_enhancement_effect(g.slot_entry("weapons",0),"repeat"),"Unopened effect can swap at zero without becoming active")
+ g.profile.enhancementLevel=1;g.invalidate_stat_cache()
  g.db.data.enhance_config.repeat_probability.value=1;g.db.data.enhance_config.base_critical_rate.value=0
  g.state=BattleGame.State.COMBAT;g.spawn_group()
  g.begin_enhancement_attack(0,g.enemies[0]);g.record_enhancement_attack()
  g.jewel_fire(0,g.enemies[0],g.player_weapon_row(g.slot_entry("weapons",0)),g.player_weapon_offset(0))
  g.queue_jewel_repeats(0,1);g.finish_enhancement_attack(0);g.advance_jewel_repeats(g.enhancement_parameter("repeat_delay"))
- check(g.projectiles.size()==2 and g.projectiles[0].damage==g.projectiles[1].damage and g.profile.enhancementAttacks==2,"Shared-zero repeat actually launches unchanged100% extra damage and counts its batch")
+ check(g.projectiles.size()==2 and g.projectiles[1].damage==N.multiply(g.projectiles[0].damage,1.0+g.enhancement_parameter("repeat_growth")) and g.profile.enhancementAttacks==2,"Shared-one repeat launches configured extra damage and counts its batch")
  g=fixture();g.profile.enhancementLevel=0
  check(g.set_enhancement_order("weapons",["critical","repeat","proficiency"]),"Critical swaps into active first position")
  g.profile.enhancementLevel=10;g.invalidate_stat_cache()
  check(g.set_enhancement_branch("weapons","critical",1,"A"),"Branch A opens at rank1 shared10")
  check(is_equal_approx(g.jewel_critical(g.slot_entry("weapons",0)).x,.4),"Active A branch affects actual critical rate")
  g.set_enhancement_order("weapons",["proficiency","repeat","critical"])
- check(g.enhancement_branch_choice("weapons","critical",1)=="A" and not g.enhancement_branch_unlocked("weapons","critical",1) and is_equal_approx(g.jewel_critical(g.slot_entry("weapons",0)).x,.25),"Reorder retains choice but immediately deactivates below new gate")
+ check(g.enhancement_branch_choice("weapons","critical",1)=="A" and not g.enhancement_branch_unlocked("weapons","critical",1) and is_equal_approx(g.jewel_critical(g.slot_entry("weapons",0)).x,0),"Reorder retains choice but immediately deactivates below new gate")
  g.profile.enhancementLevel=30;g.invalidate_stat_cache()
  check(g.enhancement_branch_unlocked("weapons","critical",1) and is_equal_approx(g.jewel_critical(g.slot_entry("weapons",0)).x,.4),"Retained choice resumes at moved rank gate")
  g.profile.enhancementLevel=10;g.profile.jewelFragments=12345;g.profile.enhancementAttacks=987;g.profile.enhancementHits=654
@@ -119,9 +121,9 @@ func run() -> void:
     await RenderingServer.frame_post_draw
     root.get_texture().get_image().save_png("res://../shared-enhancement-details.png")
    panel.effect_detail_dialog.hide()
- check(panel.eligible_count("weapons",0)>0 and panel.eligible_count("weapons",1)==0,"UI counts use same shared-zero authority")
+ check(panel.eligible_count("weapons",0)==0 and panel.eligible_count("weapons",1)==0,"UI shows no active effects at shared zero")
  panel.move_effect("weapons",2,-1);panel.move_effect("weapons",1,-1)
- check(scene.game.enhancement_order("weapons")[0]=="critical" and panel.eligible_count("weapons",0)>0 and scene.game.has_enhancement_effect(scene.game.slot_entry("weapons",0),"critical"),"UI reorder immediately updates actual eligible effect")
+ check(scene.game.enhancement_order("weapons")[0]=="critical" and panel.eligible_count("weapons",0)==0 and not scene.game.has_enhancement_effect(scene.game.slot_entry("weapons",0),"critical"),"UI reorder retains zero-level dormancy")
  panel.open_branches("weapons","critical")
  check(panel.branch_rows[0].title.text==UIText.t("enhance.branches.milestone",{"node":1,"level":10}) and panel.branch_rows[0].A.disabled,"Drawer uses current position gate at shared0")
  scene.game.profile.enhancementLevel=10;scene.game.invalidate_stat_cache();panel.refresh()

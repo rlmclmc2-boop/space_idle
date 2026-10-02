@@ -185,7 +185,7 @@ def validate_description(row, field='description', section='hightech'):
 
 def validate_weapon_motion(data):
     motion = data.get('weapon_motion', {})
-    expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y'}
+    expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y','rail_charge_seconds','rail_charge_radius','rail_trail_length','rail_trail_width','rail_flash_seconds','rail_impact_seconds','rail_impact_radius','rail_penetration_length'}
     if not isinstance(motion,dict):raise ValueError('weapon_motion: expected table')
     if 'weapon_motion' in data and set(motion) != expected:
         raise ValueError(f'weapon_motion: missing {sorted(expected-set(motion))}; unknown {sorted(set(motion)-expected)}')
@@ -577,10 +577,10 @@ def validate_planets(data):
 
     settings = data.get('enhance_config', {})
     if settings:
-        required = 'cost_base cost_growth threshold_1 threshold_2 threshold_3 base_critical_rate base_critical_multiplier critical_growth proficiency_growth adaptation_growth counter_log_base bonus_round_scale repeat_probability repeat_growth repeat_delay memory_interval memory_heal_fraction memory_buffer_fraction deferred_duration deferred_interval deferred_curve_coefficient deferred_percent_scale deferred_clear_probability branch_threshold_1 branch_threshold_2 branch_threshold_3'.split()
+        required = 'cost_base cost_growth threshold_1 threshold_2 threshold_3 base_critical_rate base_critical_multiplier critical_growth proficiency_growth adaptation_growth counter_log_base bonus_round_scale repeat_probability repeat_growth repeat_delay memory_interval memory_heal_fraction memory_buffer_fraction deferred_duration deferred_interval deferred_curve_coefficient deferred_percent_scale deferred_clear_probability branch_threshold_1 branch_threshold_2 branch_threshold_3 branch_position_offset_1 branch_position_offset_2 branch_position_offset_3'.split()
         for key in required:
             row = settings.get(key, {})
-            positive(row.get('value'), 'enhance_config ' + key, key in ('threshold_1','base_critical_rate','critical_growth','proficiency_growth','adaptation_growth','repeat_probability','repeat_growth','memory_heal_fraction','memory_buffer_fraction','deferred_clear_probability'))
+            positive(row.get('value'), 'enhance_config ' + key, key in ('branch_position_offset_1','branch_position_offset_2','branch_position_offset_3','base_critical_rate','critical_growth','proficiency_growth','adaptation_growth','repeat_probability','repeat_growth','memory_heal_fraction','memory_buffer_fraction','deferred_clear_probability'))
             if not isinstance(row.get('des'), str) or not row['des'].strip() or not isinstance(row.get('unit'),str) or not row['unit'].strip():
                 raise ValueError('enhance_config ' + key + ': missing unit or description')
         for key in ('base_critical_rate','repeat_probability','deferred_clear_probability'):
@@ -594,6 +594,8 @@ def validate_planets(data):
         if isinstance(growth,bool) or growth != int(growth) or growth < 1:raise ValueError('enhance_config: cost_growth must be integer >=1')
         branch_thresholds=[settings['branch_threshold_'+str(i)]['value'] for i in (1,2,3)]
         if any(n != int(n) for n in branch_thresholds) or not branch_thresholds[0] < branch_thresholds[1] < branch_thresholds[2]:raise ValueError('enhance_config: expected ascending integer branch thresholds')
+        offsets=[settings['branch_position_offset_'+str(i)]['value'] for i in (1,2,3)]
+        if any(n != int(n) for n in offsets) or not offsets[0] < offsets[1] < offsets[2]:raise ValueError('enhance_config: expected ascending integer branch position offsets')
         precision=settings['deferred_percent_scale']['value']
         if precision != int(precision):raise ValueError('enhance_config: deferred_percent_scale must be positive integer')
 

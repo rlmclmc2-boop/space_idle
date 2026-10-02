@@ -77,5 +77,30 @@ for case in ('empty weapon_motion', 'empty enemy_weapon_base', 'null missile spe
             results.append({'case': case, 'error': str(error), 'projection_unchanged': True})
         else:
             raise AssertionError(case + ' accepted')
+# New rail presentation controls must survive the same published Excel path.
+with tempfile.TemporaryDirectory(dir=game.parent, prefix='rail-config-') as directory:
+    area = Path(directory)
+    config = area / 'config_excel'
+    shutil.copytree(game / 'config_excel', config, ignore=shutil.ignore_patterns('.import_state.json'))
+    target = area / 'game_data.json'
+    target.write_text(json.dumps(base), encoding='utf8')
+    path = config / 'weapon_motion.xlsx'
+    workbook = openpyxl.load_workbook(path)
+    sheet = workbook['weapon_motion']
+    headers = {cell.value: cell.column for cell in sheet[1]}
+    changed = {}
+    for row in range(4, sheet.max_row + 1):
+        key = sheet.cell(row, headers['id']).value
+        if key and key.startswith('rail_'):
+            cell = sheet.cell(row, headers['value'])
+            cell.value *= 0.75
+            changed[key] = cell.value
+    assert len(changed) == 8
+    workbook.save(path)
+    incremental_import(config, target)
+    exported = json.loads(target.read_text(encoding='utf8'))
+    for key, value in changed.items():
+        assert exported['weapon_motion'][key]['value'] == value
+    results.append({'case': 'all eight rail controls exported from Excel', 'values': changed})
 (game / 'weapon-validation-results.json').write_text(json.dumps(results, indent=2), encoding='utf8')
 print(f'WEAPON TABLE VALIDATION: {len(results)} cases passed; 4 actual invalid Excel imports rejected; projection unchanged')

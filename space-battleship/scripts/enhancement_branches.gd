@@ -133,11 +133,13 @@ func cooldown_multiplier(g,entry: Dictionary) -> float:
  return g.enhancement_parameter("proficiency_b2_interval_multiplier") if active(g,entry,"proficiency",2,"B") else 1.0
 
 func repeat_probability(g,entry: Dictionary) -> float:
+ if not g.has_enhancement_effect(entry,"repeat"):return 0.0
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability"),0,1)
 
 func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -> float:
  var row: Dictionary=g.db.equip(str(entry.key),int(entry.level))
- var rate: float=g.enhancement_parameter("base_critical_rate")+float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
+ var rate: float=float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
+ if g.has_enhancement_effect(entry,"critical"):rate+=g.enhancement_parameter("base_critical_rate")
  var index: int=g.weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
  if include_timed_buffs and index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
  return clampf(rate,0,1)
@@ -162,6 +164,7 @@ func memory_charge_multiplier(g,entry: Dictionary) -> float:
  return multiplier
 
 func clear_underlying_probability(g,prospective_node := -1,prospective_choice := "") -> float:
+ if not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"delayed_damage")):return 0.0
  var chance: float=g.enhancement_parameter("deferred_clear_probability")
  for node in [1,2,3]:
   var selected := global_active(g,"delayed_damage",node,"A")
