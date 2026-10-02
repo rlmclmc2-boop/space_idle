@@ -1,0 +1,40 @@
+{
+  "equipment": {
+    "existing_cell_changes": [
+      {
+        "cell": "E8",
+        "field": "dmg",
+        "old": 350,
+        "new": 1500
+      },
+      {
+        "cell": "G8",
+        "field": "cd",
+        "old": 2,
+        "new": 3.5
+      }
+    ],
+    "added_rows": 0,
+    "byte_identical": false
+  },
+  "mon": {
+    "existing_cell_changes": [],
+    "added_rows": 60,
+    "byte_identical": false
+  },
+  "monGroup": {
+    "existing_cell_changes": [],
+    "added_rows": 20,
+    "byte_identical": false
+  },
+  "level": {
+    "existing_cell_changes": [],
+    "added_rows": 0,
+    "byte_identical": true
+  },
+  "weapon_motion": {
+    "existing_cell_changes": [],
+    "added_rows": 0,
+    "byte_identical": true
+  }
+}

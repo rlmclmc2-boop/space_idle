@@ -15,7 +15,7 @@ from galaxy_config import validate as validate_galaxy
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff", "enhance_config":"enhance_config"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
-SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config','weapon_motion','enemy_weapon_base')})
+SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config','weapon_motion','enemy_weapon_base','battle_design')})
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
 def clean(value):
@@ -30,7 +30,7 @@ def read_rows(sheet):
     return [{key:value for key,value in zip(header,row) if key is not None} for row in values if row and row[0] is not None]
 
 def convert_sheet(name, rows):
-    if name in ('weapon_motion', 'enemy_weapon_base'):
+    if name in ('weapon_motion', 'enemy_weapon_base', 'battle_design'):
         result = {}
         for row in rows:
             key = row.get('id')
@@ -281,9 +281,17 @@ def validate_projection(data, *, check_level_ratios=True):
         for g in level['groups']:
             if str(g['id']) not in groups: raise ValueError(ui_text('debug.import_workbook.message_131', id=g["id"]))
     for gid,g in groups.items():
-        if len(g['slots'])!=10: raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
+        if len(g['slots']) not in (10,15): raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
         for enemy_id in g['slots']:
             if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(ui_text('debug.import_workbook.message_132', enemy_id=enemy_id))
+    for key,row in data.get('battle_design',{}).items():
+        if str(row.get('group_id')) not in groups:raise ValueError(f'battle_design {key}: missing group')
+        if row.get('tier') not in ('normal','elite','boss','ultimate'):raise ValueError(f'battle_design {key}: invalid tier')
+        if row.get('counter') not in ('laser','missile','cannon','longLaser','neutral','physical','energy'):raise ValueError(f'battle_design {key}: invalid counter')
+        positive(row.get('target_seconds'),f'battle_design {key} duration')
+        positive(row.get('base_level'),f'battle_design {key} base level')
+        upgrade=row.get('min_upgrade')
+        if type(row['base_level']) not in (int,float) or row['base_level']!=int(row['base_level']) or type(upgrade) not in (int,float) or upgrade!=int(upgrade) or upgrade not in (0,1,2,3):raise ValueError(f'battle_design {key}: invalid upgrade baseline')
     for enemy in enemies.values():
         eid = enemy['id']
         size = enemy['size']
@@ -640,7 +648,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('ship','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','enhance_config','weapon_motion','enemy_weapon_base'):
+                if name in ('ship','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','enhance_config','weapon_motion','enemy_weapon_base','battle_design'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))

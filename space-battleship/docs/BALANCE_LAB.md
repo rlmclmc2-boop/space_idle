@@ -1,7 +1,7 @@
 # BALANCE_LAB: F8/F9 simulation contracts
 SRC: actual thresholds/budgets in data/*analysis*.json, data/auto_level_generation.json, relevant scripts. Performance/FAST details: [PERF](BALANCE_PERFORMANCE.md).
 
-ISOLATION: F8 Lab and F9 fleet/auto-level use private cfg, rule objects, RNG; no game save/formal cfg/main-game write. In-game outputs: ../test/work/; portable tool: own results/. Portable tool from tools/build_result_analyzer.py bundles same rule+cfg snapshot; rebuild after rule/cfg change. Repro requires same cfg/strategy/engine RNG version/seed; mismatched old-batch fingerprint rejects retest. F9 2D formation is DEBUG preview/scoring, not battle position; real combat uses original ten-slot row.
+ISOLATION: F8 Lab and F9 fleet/auto-level use private cfg, rule objects, RNG; no game save/formal cfg/main-game write. In-game outputs: ../test/work/; portable tool: own results/. Portable tool from tools/build_result_analyzer.py bundles same rule+cfg snapshot; rebuild after rule/cfg change. Repro requires same cfg/strategy/engine RNG version/seed; mismatched old-batch fingerprint rejects retest. F9 2D formation is DEBUG preview/scoring, not battle position; real combat uses the legacy ten-slot row or fifteen-slot 3×5 grid from group slot count.
 
 FLEET GENERATOR
 - Select structure template -> fill paired positions using existing ship attributes; reject out-of-range count/strength/formation without relaxing bounds. Composition signature=sorted nonempty ship IDs including multiplicity, independent of slot/order; bounded attempt exhaustion -> partial+attempt_limit, not proof search space exhausted.

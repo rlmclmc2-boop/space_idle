@@ -30,7 +30,8 @@ const ENEMY_LINE_LEFT := 66.0
 const ENEMY_LINE_SPACING := 440.0 / 9.0
 const ENEMY_LINE_Y := 140.0
 
-static func enemy_slot_position(slot: int) -> Vector2:
+static func enemy_slot_position(slot: int, columns := 10) -> Vector2:
+	if columns == 5:return Vector2(ENEMY_LINE_LEFT+float(slot%5)*110.0,94.0+float(slot/5)*144.0)
 	return Vector2(ENEMY_LINE_LEFT + float(slot) * ENEMY_LINE_SPACING,ENEMY_LINE_Y)
 var db: ShipDatabase
 var profile: Dictionary
@@ -1805,6 +1806,7 @@ func spawn_group(keep_distance := false) -> void:
 		profile.guardDistance = distance
 	enemies.clear()
 	var slots: Array = db.groups[str(int(encounter.id))].slots
+	var formation_columns := 5 if slots.size()==15 else 10
 	for slot in range(slots.size()):
 		if slots[slot] == null:
 			continue
@@ -1813,7 +1815,8 @@ func spawn_group(keep_distance := false) -> void:
 		uid += 1
 		enemy.uid = uid
 		enemy.slot = slot
-		var slot_position := enemy_slot_position(slot)
+		enemy.formation_columns = formation_columns
+		var slot_position := enemy_slot_position(slot,formation_columns)
 		enemy.x = slot_position.x
 		enemy.y = slot_position.y
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))

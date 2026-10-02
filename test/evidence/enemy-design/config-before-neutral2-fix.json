@@ -1037,7 +1037,7 @@
         }
       ],
       "dmgMultiple": 0.1,
-      "health": 7000,
+      "health": 7500,
       "armourType": 1,
       "res": "{1,0,0}",
       "size": 2,
@@ -17043,28 +17043,28 @@
     "enemyCannonMissingDamageAndCooldown": "Use enemy_weapon_base for missing hostile weapon fields."
   },
   "source_files": {
-    "level": "/workspace/space_idle-enemy-review/space-battleship/config_excel/level.xlsx",
-    "equipment": "/workspace/space_idle-enemy-review/space-battleship/config_excel/equipment.xlsx",
-    "mon": "/workspace/space_idle-enemy-review/space-battleship/config_excel/mon.xlsx",
-    "monGroup": "/workspace/space_idle-enemy-review/space-battleship/config_excel/monGroup.xlsx",
-    "res": "/workspace/space_idle-enemy-review/space-battleship/config_excel/res.xlsx",
-    "config": "/workspace/space_idle-enemy-review/space-battleship/config_excel/config.xlsx",
-    "ship": "/workspace/space_idle-enemy-review/space-battleship/config_excel/ship.xlsx",
-    "hightech": "/workspace/space_idle-enemy-review/space-battleship/config_excel/hightech.xlsx",
-    "unlock": "/workspace/space_idle-enemy-review/space-battleship/config_excel/unlock.xlsx",
-    "crew": "/workspace/space_idle-enemy-review/space-battleship/config_excel/crew.xlsx",
-    "crew_assignment": "/workspace/space_idle-enemy-review/space-battleship/config_excel/crew_assignment.xlsx",
-    "crew_config": "/workspace/space_idle-enemy-review/space-battleship/config_excel/crew_config.xlsx",
-    "planet": "/workspace/space_idle-enemy-review/space-battleship/config_excel/planet.xlsx",
-    "planet_build": "/workspace/space_idle-enemy-review/space-battleship/config_excel/planet_build.xlsx",
-    "planet_buff": "/workspace/space_idle-enemy-review/space-battleship/config_excel/planet_buff.xlsx",
-    "enhance_config": "/workspace/space_idle-enemy-review/space-battleship/config_excel/enhance_config.xlsx",
-    "galaxy": "/workspace/space_idle-enemy-review/space-battleship/config_excel/galaxy.xlsx",
-    "galaxy_build": "/workspace/space_idle-enemy-review/space-battleship/config_excel/galaxy_build.xlsx",
-    "galaxy_config": "/workspace/space_idle-enemy-review/space-battleship/config_excel/galaxy_config.xlsx",
-    "weapon_motion": "/workspace/space_idle-enemy-review/space-battleship/config_excel/weapon_motion.xlsx",
-    "enemy_weapon_base": "/workspace/space_idle-enemy-review/space-battleship/config_excel/enemy_weapon_base.xlsx",
-    "battle_design": "/workspace/space_idle-enemy-review/space-battleship/config_excel/battle_design.xlsx"
+    "level": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/level.xlsx",
+    "equipment": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/equipment.xlsx",
+    "mon": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/mon.xlsx",
+    "monGroup": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/monGroup.xlsx",
+    "res": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/res.xlsx",
+    "config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/config.xlsx",
+    "ship": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/ship.xlsx",
+    "hightech": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/hightech.xlsx",
+    "unlock": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/unlock.xlsx",
+    "crew": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew.xlsx",
+    "crew_assignment": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew_assignment.xlsx",
+    "crew_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/crew_config.xlsx",
+    "planet": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet.xlsx",
+    "planet_build": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet_build.xlsx",
+    "planet_buff": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/planet_buff.xlsx",
+    "enhance_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/enhance_config.xlsx",
+    "galaxy": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy.xlsx",
+    "galaxy_build": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy_build.xlsx",
+    "galaxy_config": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/galaxy_config.xlsx",
+    "weapon_motion": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/weapon_motion.xlsx",
+    "enemy_weapon_base": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/enemy_weapon_base.xlsx",
+    "battle_design": "/workspace/space_idle-enemy-formations/space-battleship/config_excel/battle_design.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -18716,7 +18716,7 @@
     },
     "threshold_1": {
       "id": "threshold_1",
-      "value": 1,
+      "value": 0,
       "unit": "强化级",
       "des": "第1顺位效果的有效共享强化等级门槛；装备等级无关"
     },
@@ -18844,19 +18844,19 @@
       "id": "branch_threshold_1",
       "value": 10,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第1分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_2": {
       "id": "branch_threshold_2",
       "value": 20,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第2分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "branch_threshold_3": {
       "id": "branch_threshold_3",
       "value": 30,
       "unit": "有效强化级",
-      "des": "分支节点基础门槛；加上独立的效果位置偏移，不加主效果启用门槛"
+      "des": "第3分支节点基础门槛；加上效果当前位置的有效共享强化门槛"
     },
     "proficiency_a_damage_bonus": {
       "id": "proficiency_a_damage_bonus",
@@ -19091,24 +19091,6 @@
       "value": 1,
       "unit": "倍率",
       "des": "未强制清除概率缺口转化为伤害增加的系数"
-    },
-    "branch_position_offset_1": {
-      "id": "branch_position_offset_1",
-      "value": 0,
-      "unit": "有效强化级",
-      "des": "第1顺位分支门槛偏移；与主效果启用门槛独立"
-    },
-    "branch_position_offset_2": {
-      "id": "branch_position_offset_2",
-      "value": 10,
-      "unit": "有效强化级",
-      "des": "第2顺位分支门槛偏移；与主效果启用门槛独立"
-    },
-    "branch_position_offset_3": {
-      "id": "branch_position_offset_3",
-      "value": 20,
-      "unit": "有效强化级",
-      "des": "第3顺位分支门槛偏移；与主效果启用门槛独立"
     }
   },
   "weapon_motion": {
@@ -19258,62 +19240,6 @@
       "unit": "方向向量Y",
       "description": "偏转方向的朝前门槛；上方为负，范围[-1,0]",
       "scope": "玩家导弹"
-    },
-    "rail_charge_seconds": {
-      "id": "rail_charge_seconds",
-      "value": 0.9,
-      "unit": "游戏秒",
-      "description": "玩家磁轨炮周期末段蓄力表现；包含在equipment.cannon.cd内，随合法冷却倍率同比缩放",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_charge_radius": {
-      "id": "rail_charge_radius",
-      "value": 28,
-      "unit": "显示像素",
-      "description": "局部炮口蓄力环半径",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_trail_length": {
-      "id": "rail_trail_length",
-      "value": 138,
-      "unit": "显示像素",
-      "description": "磁轨弹头后方短弹道最大长度；不连接整条炮口到目标",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_trail_width": {
-      "id": "rail_trail_width",
-      "value": 28,
-      "unit": "显示像素",
-      "description": "磁轨主炮弹道宽度",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_flash_seconds": {
-      "id": "rail_flash_seconds",
-      "value": 0.09,
-      "unit": "显示秒",
-      "description": "主炮局部炮口闪光时长",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_impact_seconds": {
-      "id": "rail_impact_seconds",
-      "value": 0.16,
-      "unit": "显示秒",
-      "description": "主炮局部命中冲击时长",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_impact_radius": {
-      "id": "rail_impact_radius",
-      "value": 32,
-      "unit": "显示像素",
-      "description": "主炮命中冲击半径",
-      "scope": "玩家磁轨炮表现"
-    },
-    "rail_penetration_length": {
-      "id": "rail_penetration_length",
-      "value": 80,
-      "unit": "显示像素",
-      "description": "命中处向前的短促视觉冲击长度；不改变命中与连锁",
-      "scope": "玩家磁轨炮表现"
     }
   },
   "enemy_weapon_base": {

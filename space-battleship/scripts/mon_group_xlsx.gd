@@ -2,7 +2,7 @@ extends RefCounted
 ## Copies the existing monGroup workbook and replaces only its data rows.
 const TEMPLATE := "res://config_excel/monGroup.xlsx"
 const STYLES := "xl/styles.xml"
-const SLOT_COUNT := 10
+const SLOT_COUNTS := [10,15]
 const MON_TABLE := "res://../space-battleship/config_excel/mon.xlsx"
 
 static func read_mon_names() -> Dictionary:
@@ -150,7 +150,7 @@ static func export_groups(levels: Array,output_path: String,known_enemies: Dicti
 		var stage=levels[index]
 		if not stage is Dictionary or not stage.get("group_data") is Dictionary:return "invalid_group"
 		var group: Dictionary=stage.group_data
-		if not group.get("slots") is Array or group.slots.size()!=SLOT_COUNT:return "invalid_group"
+		if not group.get("slots") is Array or not group.slots.size() in SLOT_COUNTS:return "invalid_group"
 		var id: int=int(stage.get("enemy_group",0))
 		if id<1 or ids.has(id):return "invalid_group"
 		ids[id]=true
