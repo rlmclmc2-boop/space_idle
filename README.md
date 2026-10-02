@@ -1,0 +1,13 @@
+# Approved main integration evidence
+
+Both authorized main updates were pushed normally and verified against the remote.
+
+1. Enhancement plus railgun: `4a7cac083bbbbb6e96235b091582272bcdca09bc`, contains exact candidates `8a3771e3c1cadd35a9ca930193a33d8ea4f578ab` and `408d0b26bd39f54fd64710baa850e9c5287ef533`. Final combined isolated source passed enhancement gate 157, rendered overview text 85, actual cannon cadence/impact 27, enhancement table validation with 24 rejected invalid cases, and weapon table validation 19. See [raw logs and audits](enhancement-railgun/). The generated JSON conflict was resolved by the official full importer from all combined source workbooks. Compared with prior main 8b63137, equipment's only existing changed cell is G8 CD 2→3.5; weapon_motion's existing cells are unchanged and eight approved presentation rows were appended. Damage 350, speed 40, multiplier 1 and growth remain preserved.
+
+2. Galaxy: `a653accb81a8848c770ece2a0338cb96a9933f35`, contains exact galaxy candidate `7f2be2299ef8d0cce57e4e30ab30e4ec313e6958` and the first main update. [Asset log](galaxy/assets.log) reports zero GLB failures; [actual UI log](galaxy/ui.log) reports 282 checks, zero failures, 150/150 roof picks, zero hover events while pinned, and zero paused lifecycle visual ticks. All Excel workbooks and configuration JSON are byte-identical across this second merge; see [preservation proof](galaxy/config-preservation.json) and [remote ancestry proof](galaxy/remote-verification.json).
+
+Native synthetic main-scene screenshots: [complete galaxy](galaxy/galaxy-complete-ui.png), [held selection](galaxy/galaxy-selection-held-ui.png), [paused selection](galaxy/galaxy-paused-selection-ui.png), [restored paused region](galaxy/galaxy-paused-region-restored-ui.png). No private save or image is included. Linux llvmpipe FPS in screenshots is not a Windows performance guarantee.
+
+The final related checks were performed on the combined source, not substituted with earlier candidate results. The test harness reused one isolated project/user directory after replacing only the galaxy merge's changed source/assets and performing a fresh editor asset import. Early command-path mistakes were corrected before the retained final runs; no production change was needed. The railgun run's unavailable ALSA device fell back to Dummy; logic and script checks passed.
+
+Windows high-speed performance, broad combat matrices, enemy calibration and new save import/export UI were not tested or merged. The galaxy demo loader test was not run for this deployment and is not claimed as import-UI acceptance. This task returns to galaxy-only work after these approved merges.

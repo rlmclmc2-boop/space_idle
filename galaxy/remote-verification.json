@@ -1,0 +1,10 @@
+{
+  "remote_main": "a653accb81a8848c770ece2a0338cb96a9933f35",
+  "local_equals_remote": true,
+  "contains_candidates": [
+    "8a3771e3c1cadd35a9ca930193a33d8ea4f578ab",
+    "408d0b26bd39f54fd64710baa850e9c5287ef533",
+    "7f2be2299ef8d0cce57e4e30ab30e4ec313e6958"
+  ],
+  "first_main_merge": "4a7cac083bbbbb6e96235b091582272bcdca09bc"
+}

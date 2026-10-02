@@ -1,0 +1,28 @@
+{
+  "byte_identical_to_first_main": true,
+  "files": {
+    "space-battleship/config_excel/config.xlsx": "632c7d3cb254f55648ed706252bbe36fc9a08ee416335d045377f08ac2a37945",
+    "space-battleship/config_excel/crew.xlsx": "a3b391374038cb1fb44b72d93ce2461316ee756d41307085865a771b16bcbb1d",
+    "space-battleship/config_excel/crew_assignment.xlsx": "e5a0034d189e5cecf6ee2c4fbe91ab3c4718965df6b4c3716f9e499dc6f93ec4",
+    "space-battleship/config_excel/crew_config.xlsx": "b518aa3e5d9fc2711ff5712e42ddecb9d89673e0a41b2c153384aa008a68fdc9",
+    "space-battleship/config_excel/enhance_config.xlsx": "36951b0a67cb5ff65f5e02c492720cffc915a5175d3c46e6844297007cb7582b",
+    "space-battleship/config_excel/equipment.xlsx": "da819b05eb54511863401fd2d9e4821dbe84712a6b28ebf5704fad03effeb088",
+    "space-battleship/config_excel/galaxy.xlsx": "d9fea6c1f7891f5faf010218da7011a2ac47f3961a71a1fdb0536d3984bc44e4",
+    "space-battleship/config_excel/galaxy_build.xlsx": "664c9d1f66e8753dba189c12712df925fb1a50bfc1c06f969b25ed6a0a62d1b6",
+    "space-battleship/config_excel/galaxy_config.xlsx": "75671e41671cb65352832967f1f9658ceba323622ccaefa90b1032e4e58354a3",
+    "space-battleship/config_excel/hightech.xlsx": "b53e10c4c34cbbb73b0967aedb0e79fdfe83d3fb3357e5e2e4bcf123ba3329b9",
+    "space-battleship/config_excel/level.xlsx": "fee90a0bfc13a7b6e825824f8ea33bfd6e107b7b3431780fe61bb2cbd91bd019",
+    "space-battleship/config_excel/level_monGroup_generated.xlsx": "b1ed60b126b21999163f7417cb1929dd3b740480aca8bbe2d507e5c7ccf13500",
+    "space-battleship/config_excel/mon.xlsx": "1aa84d995f2bad38ebee421997c0d356eea257be39d766740854a6c03766f5e7",
+    "space-battleship/config_excel/monGroup.xlsx": "0b4b1059c95044ea8d4f1d518bdac9ee385a79f64c8b5a46df6dbd269df1edbb",
+    "space-battleship/config_excel/planet.xlsx": "0ff26f17f1149e3930fed6e65235da795743ba4b7f54986c47c8b6baf38d2c52",
+    "space-battleship/config_excel/planet_buff.xlsx": "e575a934aba095f6ebfd668fb1104dd7bd84d35ab945a037edf60641f64a0fc8",
+    "space-battleship/config_excel/planet_build.xlsx": "33ae8b5766670facc958e4fc1865bdf19f80045b7a01b0de764f52c92a706cab",
+    "space-battleship/config_excel/res.xlsx": "6859620d9c46434c2d580567a4bb2a3a5d50daf94a351a51cf446c0430917a61",
+    "space-battleship/config_excel/ship.xlsx": "470e3eed84af1f8aecdc47457c49f792afe80080c2b2aeabdb290564cacd5be7",
+    "space-battleship/config_excel/unlock.xlsx": "8d01cb54c2a5f1bafb06df66bbd3d34b64c41ceb98fc544c31ed62fce7450a2b",
+    "space-battleship/config_excel/weapon_motion.xlsx": "7a686c2f8c34e4c584f1e208525be87dc7828f37291e03432d93ffc50fb2fa5c",
+    "space-battleship/config_excel/enemy_weapon_base.xlsx": "27bc9c35185e5b5980371f9a05720e825ab3ffe97507a46e5b9e8c0a59f9c259",
+    "space-battleship/data/game_data.json": "084e9b85ad61f981ed1214ee4f0257e4defdc87f9b5a1e154640526e071a4ec3"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "base": "8b631374a4c8f217af0ce3c68bd1a233ad289b6c",
+  "workbooks": {
+    "equipment": {
+      "existing_cell_changes": [
+        {
+          "cell": "G8",
+          "before": 2,
+          "after": 3.5
+        }
+      ],
+      "added_rows": 0,
+      "sha256": "da819b05eb54511863401fd2d9e4821dbe84712a6b28ebf5704fad03effeb088"
+    },
+    "weapon_motion": {
+      "existing_cell_changes": [],
+      "added_rows": 8,
+      "sha256": "7a686c2f8c34e4c584f1e208525be87dc7828f37291e03432d93ffc50fb2fa5c"
+    }
+  },
+  "changed_projection_sections": [
+    "equipment",
+    "source_files",
+    "enhance_config",
+    "weapon_motion"
+  ]
+}

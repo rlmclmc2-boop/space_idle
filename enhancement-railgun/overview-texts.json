@@ -1,0 +1,544 @@
+[
+  {
+    "actual": "暴伤为原伤害的 1.1K% · 当前暴击率 25%",
+    "case": "critical branch boundary level29",
+    "expected": "暴伤为原伤害的 1.1K% · 当前暴击率 25%"
+  },
+  {
+    "actual": "暴击触发 100% · 触发后 25% 概率造成原伤害的 1.1K%",
+    "case": "critical branch boundary level30",
+    "expected": "暴击触发 100% · 触发后 25% 概率造成原伤害的 1.1K%"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": true,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +600%",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +600%",
+    "kind": "proficiency"
+  },
+  {
+    "active": true,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +30%",
+    "case": "config0 reordered active first-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +30%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": true,
+    "actual": "50% 概率追加攻击 · 原伤害的 500%",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "50% 概率追加攻击 · 原伤害的 500%",
+    "kind": "repeat"
+  },
+  {
+    "active": true,
+    "actual": "50% 概率追加攻击 · 原伤害的 120%",
+    "case": "config0 reordered active first-position",
+    "expected": "50% 概率追加攻击 · 原伤害的 120%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": true,
+    "actual": "暴伤为原伤害的 800% · 当前暴击率 25%",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "暴伤为原伤害的 800% · 当前暴击率 25%",
+    "kind": "critical"
+  },
+  {
+    "active": true,
+    "actual": "暴伤为原伤害的 230% · 当前暴击率 25%",
+    "case": "config0 reordered active first-position",
+    "expected": "暴伤为原伤害的 230% · 当前暴击率 25%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +600%",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +600%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +30%",
+    "case": "config0 reordered active first-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +30%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config0 adaptation second-position level1",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +300%",
+    "case": "config0 adaptation second-position level10",
+    "expected": "受击越多，防御越强 · 历史增幅 +300%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": true,
+    "actual": "持续修复并积累护盾 · 100%/秒",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "持续修复并积累护盾 · 100%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": true,
+    "actual": "持续修复并积累护盾 · 5%/秒",
+    "case": "config0 reordered active first-position",
+    "expected": "持续修复并积累护盾 · 5%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config0 unlockedfalse level50 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config0 unlockedtrue level0 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config0 unlockedtrue level1 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config0 unlockedtrue level19 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": true,
+    "actual": "延后承受 95% 伤害 · 余伤免除概率 25%",
+    "case": "config0 unlockedtrue level20 last-position",
+    "expected": "延后承受 95% 伤害 · 余伤免除概率 25%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": true,
+    "actual": "延后承受 50% 伤害 · 余伤免除概率 25%",
+    "case": "config0 reordered active first-position",
+    "expected": "延后承受 50% 伤害 · 余伤免除概率 25%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +0%",
+    "kind": "proficiency"
+  },
+  {
+    "active": true,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +507%",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +507%",
+    "kind": "proficiency"
+  },
+  {
+    "active": true,
+    "actual": "攻击越多，伤害越高 · 历史增伤 +78%",
+    "case": "config1 reordered active first-position",
+    "expected": "攻击越多，伤害越高 · 历史增伤 +78%",
+    "kind": "proficiency"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "0% 概率追加攻击 · 原伤害的 100%",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "0% 概率追加攻击 · 原伤害的 100%",
+    "kind": "repeat"
+  },
+  {
+    "active": true,
+    "actual": "50% 概率追加攻击 · 原伤害的 360%",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "50% 概率追加攻击 · 原伤害的 360%",
+    "kind": "repeat"
+  },
+  {
+    "active": true,
+    "actual": "50% 概率追加攻击 · 原伤害的 140%",
+    "case": "config1 reordered active first-position",
+    "expected": "50% 概率追加攻击 · 原伤害的 140%",
+    "kind": "repeat"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "暴伤为原伤害的 100% · 当前暴击率 0%",
+    "kind": "critical"
+  },
+  {
+    "active": true,
+    "actual": "暴伤为原伤害的 590% · 当前暴击率 25%",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "暴伤为原伤害的 590% · 当前暴击率 25%",
+    "kind": "critical"
+  },
+  {
+    "active": true,
+    "actual": "暴伤为原伤害的 260% · 当前暴击率 25%",
+    "case": "config1 reordered active first-position",
+    "expected": "暴伤为原伤害的 260% · 当前暴击率 25%",
+    "kind": "critical"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +273%",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +273%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +42%",
+    "case": "config1 reordered active first-position",
+    "expected": "受击越多，防御越强 · 历史增幅 +42%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "受击越多，防御越强 · 历史增幅 +0%",
+    "case": "config1 adaptation second-position level1",
+    "expected": "受击越多，防御越强 · 历史增幅 +0%",
+    "kind": "adaptation"
+  },
+  {
+    "active": true,
+    "actual": "受击越多，防御越强 · 历史增幅 +147%",
+    "case": "config1 adaptation second-position level7",
+    "expected": "受击越多，防御越强 · 历史增幅 +147%",
+    "kind": "adaptation"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "持续修复并积累护盾 · 0%/秒",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "持续修复并积累护盾 · 0%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": true,
+    "actual": "持续修复并积累护盾 · 65%/秒",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "持续修复并积累护盾 · 65%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": true,
+    "actual": "持续修复并积累护盾 · 10%/秒",
+    "case": "config1 reordered active first-position",
+    "expected": "持续修复并积累护盾 · 10%/秒",
+    "kind": "memory_material"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config1 unlockedfalse level50 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config1 unlockedtrue level0 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config1 unlockedtrue level1 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": false,
+    "actual": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "case": "config1 unlockedtrue level12 last-position",
+    "expected": "延后承受 0% 伤害 · 余伤免除概率 0%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": true,
+    "actual": "延后承受 92% 伤害 · 余伤免除概率 25%",
+    "case": "config1 unlockedtrue level13 last-position",
+    "expected": "延后承受 92% 伤害 · 余伤免除概率 25%",
+    "kind": "delayed_damage"
+  },
+  {
+    "active": true,
+    "actual": "延后承受 66% 伤害 · 余伤免除概率 25%",
+    "case": "config1 reordered active first-position",
+    "expected": "延后承受 66% 伤害 · 余伤免除概率 25%",
+    "kind": "delayed_damage"
+  }
+]
