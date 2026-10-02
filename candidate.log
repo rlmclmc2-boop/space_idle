@@ -1,0 +1,13 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+PLANET FIXTURE visible=true tab=6 unlocked=true cards=["1", "2", "3", "4", "5", "6"]
+ROTATION BODY {"center":[904.680114746094,427.790985107422],"changed_fraction":0.725207100591716,"cloud_speed":0.0073,"frames":120,"id":"1","mean_rgb_byte_delta":22.604536746687,"radius_px":130.406773707097,"simulation_seconds":12,"surface_speed":0.006}
+ROTATION BODY {"center":[904.680053710938,427.791015625],"changed_fraction":0.671319729340935,"cloud_speed":0.0075,"frames":120,"id":"2","mean_rgb_byte_delta":8.12522419141976,"radius_px":136.927119853984,"simulation_seconds":12,"surface_speed":0.006}
+ROTATION BODY {"center":[904.680053710938,427.791015625],"changed_fraction":0.709876543209877,"cloud_speed":0.008,"frames":120,"id":"3","mean_rgb_byte_delta":8.410493325856,"radius_px":108.237616425257,"simulation_seconds":12,"surface_speed":0.0065}
+ROTATION BODY {"center":[904.680114746094,427.791015625],"changed_fraction":0.625705455522709,"cloud_speed":0.0045,"frames":120,"id":"4","mean_rgb_byte_delta":7.81604360830108,"radius_px":121.63536283705,"simulation_seconds":12,"surface_speed":0.0035}
+ROTATION BODY {"center":[904.680114746094,427.790985107422],"changed_fraction":0.394768133174792,"cloud_speed":0.01,"frames":120,"id":"5","mean_rgb_byte_delta":2.56321823802488,"radius_px":28.68948731021,"simulation_seconds":12,"surface_speed":0.008}
+ROTATION BODY {"center":[904.680114746094,427.791015625],"changed_fraction":0.419501133786848,"cloud_speed":0.025,"frames":120,"id":"6","mean_rgb_byte_delta":3.00302325260072,"radius_px":20.8650838468048,"simulation_seconds":12,"surface_speed":0.02}
+CELESTIAL ROTATION checks=48 failures=0
