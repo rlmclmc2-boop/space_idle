@@ -2349,13 +2349,9 @@ func leave(next: State) -> void:
 	paused = false
 	change_state(next)
 
-func weapon_cooldown_after_shot(remaining_before: float, dt: float, interval: float) -> float:
-	if speed < 3.0 or interval <= 0:
-		return interval
-	# Coarse accelerated ticks retain the fraction elapsed after a scheduled shot.
-	var overrun := maxf(0.0,dt-remaining_before)
-	var remainder := fposmod(overrun,interval)
-	return interval if remainder <= 0.000000001 else interval-remainder
+func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: float) -> float:
+	# Every multiplier uses the same fixed-step attack schedule as X1.
+	return interval
 
 func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
 	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return

@@ -2,6 +2,8 @@ extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
 var thematic := false
 var allow_reforge := true
+var use_bulk := false
+var recovering := false
 var farm := {}
 var deaths_seen := 0
 var last_progress := 0.0
@@ -17,12 +19,14 @@ func module_sum(g) -> int:
 func preferred(stage: int) -> String:
 	return {1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(stage,"")
 func act(g: BattleGame, elapsed: float) -> bool:
+	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
 	var changed: bool = super.act(g,elapsed)
-	if thematic:
-		var weapon := preferred(g.stage)
-		if not weapon.is_empty() and g.profile.unlocked.has(weapon):
-			for index in g.weapon_entries().size():
-				if str(g.weapon_entries()[index].key)!=weapon:g.equip_slot("weapons",index,weapon)
+	if use_bulk and g.stage>=6:
+		# Existing all-module x10/x1 buttons consume accumulated money in a few clicks.
+		for attempt in range(3):
+			if g.upgrade_equipment_batch("10"):record(g,"bulk_upgrade",{"mode":"10"})
+			elif g.upgrade_equipment_batch("1"):record(g,"bulk_upgrade",{"mode":"1"})
+			else:break
 	# Activate each explicitly ready building; reserve idle crews for exploration/building first.
 	for id in g.profile.planets:
 		if not g.planet_unlocked(str(id)):continue
@@ -40,7 +44,12 @@ func act(g: BattleGame, elapsed: float) -> bool:
 				if state.crew.size()>=int(row.extra_crew):break
 				if g.idle_planet_crew(str(member.crewId)) and g.planet_buildings.assign(g,str(id),str(row.id),str(member.crewId)):record(g,"assign_builder",{"planet":id,"building":row.id,"crew":member.crewId})
 		if allow_reforge and g.stage>=34+5*(int(id)-1) and g.can_reforge_planet(str(id)):
-			if g.reforge_planet(str(id)):record(g,"reforge",{"planet":id})
+			if g.reforge_planet(str(id)):
+				record(g,"reforge",{"planet":id});recovering=true
+				if use_bulk:
+					for attempt in range(24):
+						if not g.upgrade_equipment_batch("10"):break
+						record(g,"reforge_bulk_upgrade",{"mode":"10"})
 	# Assign actual idle crews, once systems are unlocked. Keep two available for future planets.
 	var idle: Array=g.profile.crew.filter(func(member):return g.idle_planet_crew(str(member.crewId)))
 	for member in idle.slice(2):

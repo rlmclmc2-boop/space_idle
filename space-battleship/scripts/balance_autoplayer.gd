@@ -3,6 +3,7 @@ extends RefCounted
 const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
 var strategy := "BALANCED"
+var forced_weapon := ""
 var random := RandomNumberGenerator.new()
 var last_refit := -60.0
 var unlocked_count := 0
@@ -52,6 +53,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 		if strategy == "BALANCED" and not available.is_empty():best = available[(index+maxi(0,available.size()-game.weapon_entries().size())) % available.size()]
 		elif strategy == "RANDOM_VALID":
 			best = available[random.randi_range(0,available.size()-1)] if refit_due and not available.is_empty() else str(entry.key)
+		if not forced_weapon.is_empty() and game.profile.unlocked.has(forced_weapon):best=forced_weapon
 		if not best.is_empty() and best != str(entry.key):game.equip_slot("weapons",index,best)
 	for index in game.defense_entries().size():
 		var entry: Dictionary = game.defense_entries()[index]

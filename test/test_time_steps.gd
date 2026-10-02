@@ -74,7 +74,7 @@ func run() -> void:
 	check(exact_steps.steps.size()==10,"10x exact frame has no floating-point residue tick")
 	var cooldown_probe := BattleGame.new(scene.db,false)
 	cooldown_probe.speed = 3.0
-	check(is_equal_approx(cooldown_probe.weapon_cooldown_after_shot(0.1,1.0/6.0,0.5),0.5-(1.0/6.0-0.1)),"3x cooldown preserves elapsed time after a coarse tick")
+	check(is_equal_approx(cooldown_probe.weapon_cooldown_after_shot(0.1,1.0/6.0,0.5),0.5),"3x cooldown retains the same X1 attack schedule")
 	cooldown_probe.speed = 2.99
 	check(is_equal_approx(cooldown_probe.weapon_cooldown_after_shot(0.1,1.0/6.0,0.5),0.5),"below 3x keeps the standard cooldown")
 	var background := ObservedGame.new(scene.db,false)
