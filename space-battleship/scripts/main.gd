@@ -61,6 +61,8 @@ const PROJECTILE_SCALE := 0.65
 const SHIP_ART_CANVAS := Vector2(887, 1774)
 const NUMBER_FORMAT := preload("res://scripts/number_format.gd")
 const SHIP_VISUALS := preload("res://scripts/ship_visuals.gd")
+const ENEMY_RECOGNITION := preload("res://scripts/enemy_recognition_visual.gd")
+var enemy_recognition = ENEMY_RECOGNITION.new()
 const RAILGUN_FX := preload("res://scripts/railgun_fx.gd")
 var railgun_fx = RAILGUN_FX.new()
 var railgun_audio: Dictionary = {}
@@ -1083,14 +1085,17 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 			if profile.is_empty() or not point.get("allowed_weapon_visual_class",[]).has(profile.get("visual_class","")):continue
 			if owner<0 or (str(weapon_visual_profile(str(entries[owner].get("key",""))).get("visual_class",""))=="missile" and str(profile.get("visual_class",""))!="missile"):
 				owner=index
-		if owner>=0:components.append(WEAPON_VISUAL.new(point,weapon_visual_profile(str(entries[owner].key)),bound,owner,faction))
+		if owner>=0:
+			var component=WEAPON_VISUAL.new(point,weapon_visual_profile(str(entries[owner].key)),bound,owner,faction)
+			if faction=="enemy":component.damage_type=int(db.enemy_weapon(str(entries[owner].key)).get("dmgtype",0))
+			components.append(component)
 	return components
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
 	var entries: Array = []
-	var signature := ship_key
+	var signature := ship_key+":"+str(db.get_instance_id())
 	for equipment in enemy.equipment:
 		var key := str(equipment.get("name",""))
 		entries.append({"key":key})
@@ -1467,6 +1472,11 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			visual.fixed_direction=shot.direction
 			visual.angle=Vector2(visual.fixed_step).angle()
 	var tier := weapon_visual_tier(shot)
+	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
+		var physical := int(shot.type)==2
+		weapon_flash(pos,ENEMY_RECOGNITION.PHYSICAL if physical else ENEMY_RECOGNITION.ENERGY,5.0 if physical else 3.5,0.07)
+		if physical:weapon_smoke(pos,Color("8992a0"),1,0.14,3.0)
+		return
 	if key=="cannon":
 		weapon_flash(pos,Color("d8f8ff"),5.0*clampf(railgun_fx.muzzle_flash,0.0,1.5),0.035)
 		return
@@ -1538,6 +1548,10 @@ func projectile_visual_index() -> Dictionary:
 func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 	if fast_mode_enabled():return
 	var key := weapon_key(shot)
+	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
+		weapon_flash(pos,ENEMY_RECOGNITION.PHYSICAL if int(shot.type)==2 else ENEMY_RECOGNITION.ENERGY,5.0,0.07)
+		weapon_sparks(pos,2,90,shot.get("direction",Vector2.RIGHT))
+		return
 	if key=="cannon":
 		if particles.size()<WEAPON_PARTICLE_LIMIT:
 			particles.append({"pos":pos,"vel":Vector2.ZERO,"color":Color("9eeaff"),"life":0.18,"duration":0.18,"rail_contact":true,"direction":shot.get("direction",Vector2.RIGHT)})
@@ -1565,6 +1579,9 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 	var angle: float = shot.direction.angle()
 	if not visual.is_empty():
 		angle = visual.angle
+	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
+		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.type),core)
+		return angle
 	if key=="cannon":
 		if core:
 			var distance := pos.distance_to(battle_point(visual.get("origin",Vector2(shot.x,shot.y)))+offset)
@@ -2194,9 +2211,10 @@ func refresh_draw_layers(dt: float) -> void:
 	if not is_instance_valid(battle_layer):
 		return
 	sync_battle_visibility()
-	for slot in 10:
-		if enemy_poses.has(slot) and not game.enemies.has(enemy_poses[slot].entity):enemy_poses.erase(slot)
-	for enemy in game.enemies:enemy_pose(enemy)
+	for slot in enemy_poses.keys():
+		if not game.enemies.has(enemy_poses[slot].entity) or GrowthNumber.compare(enemy_poses[slot].entity.get("hp",0),0)<=0:enemy_poses.erase(slot)
+	for enemy in game.enemies:
+		if GrowthNumber.compare(enemy.get("hp",0),0)>0:enemy_pose(enemy)
 	for source_uid in death_drop_positions.keys():
 		if not game.drops.any(func(drop):return int(drop.get("source_uid",-1))==int(source_uid)):
 			death_drop_positions.erase(source_uid)
@@ -2743,12 +2761,17 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	var packet := enemy_recognition_geometry(enemy)
+	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,pose)
+	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,dimensions.x,packet,status,game.enemy_shield_time)
+	var status_top := -dimensions.x/2.0
+	for point in outline:status_top=minf(status_top,point.rotated(PI+angle).y)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
 	var w := dimensions.y * 0.8
-	bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
+	bar(Rect2(pos.x-w/2,pos.y+status_top-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
 	if float(enemy.get("max_shield",0))>0:
-		bar(Rect2(pos.x-w/2,pos.y-dimensions.x/2-12,w,4),float(enemy.shield)/float(enemy.max_shield),CYAN)
+		bar(Rect2(pos.x-w/2,pos.y+status_top-12,w,4),float(enemy.shield)/float(enemy.max_shield),ORANGE if int(enemy.get("shieldType",0))==2 else CYAN)
 	if boss_battle:
 		var marker := pos + Vector2(dimensions.y/2+4,-10)
 		marker.x=minf(marker.x,BATTLE_VIEW_SIZE.x-44)
@@ -2874,10 +2897,22 @@ func draw_player_weapon_components(ship_key: String, pos: Vector2, scale_value: 
 			recoil=maxf(recoil,8.0*clampf(float(pose.get("recoil",0.0))/0.13,0,1)/scale_value)
 		draw_weapon_component(component,pos+point.rotated(hull_angle)*scale_value,angle,width,scale_value,pulse,recoil if component.mode()=="main" else 0.0,railgun_component_charge(component))
 
+func enemy_recognition_screen_scale() -> float:
+	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
+
+func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
+	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+	var components := enemy_weapon_components(enemy)
+	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale())
+
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
 		if (int(component.hardpoint.get("z",1))<=0)!=under_hull:continue
 		var pose:=enemy_component_pose(enemy,component)
+		var weapon_class := str(component.profile.get("visual_class",""))
+		if (component.damage_type==2 and weapon_class=="gun") or (component.damage_type==1 and weapon_class=="energy"):
+			enemy_recognition.draw_weapon(draw_surface,pos,pose,component.damage_type,enemy_recognition_screen_scale())
+			continue
 		draw_surface.draw_set_transform(pos+Vector2(pose.origin),float(pose.angle))
 		var width:float=pose.width
 		var port:Vector2=pose.port

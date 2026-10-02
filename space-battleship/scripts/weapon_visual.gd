@@ -6,6 +6,7 @@ var profile: Dictionary
 var slots: Array[int]
 var owner_slot: int
 var faction: String
+var damage_type := 0 # Read-only attack-type projection for enemy presentation.
 
 func _init(point: Dictionary, weapon_profile: Dictionary, bound_slots: Array[int], selected_slot: int, skin: String) -> void:
 	hardpoint = point

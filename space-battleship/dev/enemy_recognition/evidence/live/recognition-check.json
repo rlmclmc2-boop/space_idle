@@ -1,0 +1,744 @@
+{
+	"checks": 112,
+	"controlled_events": [
+		"large-shield: existing hit_enemy path with shield+1 physical hit; no table edit",
+		"regen: existing hit_enemy path with 65% max shield energy hit; player weapons emptied in memory to observe actual delay/recovery",
+		"regen death: existing hit_enemy path with lethal fixture hit, followed by 1.5s cleanup"
+	],
+	"envelope_builds": 80,
+	"failures": 0,
+	"frames": 103,
+	"hull_scans": 6,
+	"renderer_mutations": false,
+	"scenarios": [
+		{
+			"actual_fields": [
+				{
+					"armourType": 1.0,
+					"id": 1007.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1008.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1009.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1008.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1007.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1010.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1011.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1012.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1011.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1010.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1013.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1014.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1015.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1014.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 1013.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				}
+			],
+			"alive": 15,
+			"min_visible_gap_pixels": 2.57697871144384,
+			"mounts": 15,
+			"name": "15-small-energy",
+			"screen_scale": 0.7028688788414
+		},
+		{
+			"actual_fields": [
+				{
+					"armourType": 2.0,
+					"id": 2.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 1.0,
+							"damage": 40.0,
+							"key": "cannon-mon",
+							"type": 2.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 2.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 1.0,
+							"damage": 40.0,
+							"key": "cannon-mon",
+							"type": 2.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 2.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 1.0,
+							"damage": 40.0,
+							"key": "cannon-mon",
+							"type": 2.0
+						}
+					]
+				}
+			],
+			"alive": 3,
+			"min_visible_gap_pixels": 9.19678203354299,
+			"mounts": 3,
+			"name": "physical-fire",
+			"screen_scale": 0.7028688788414
+		},
+		{
+			"actual_fields": [
+				{
+					"armourType": 2.0,
+					"id": 5.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 3.0,
+					"weapons": [
+						{
+							"cd": 1.0,
+							"damage": 40.0,
+							"key": "cannon-mon",
+							"type": 2.0
+						},
+						{
+							"cd": 1.0,
+							"damage": 40.0,
+							"key": "cannon-mon",
+							"type": 2.0
+						}
+					]
+				},
+				{
+					"armourType": 1.0,
+					"id": 6.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 3.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						},
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				}
+			],
+			"alive": 2,
+			"min_visible_gap_pixels": 3.25728969556735,
+			"mounts": 4,
+			"name": "mixed-real-multi-mounts",
+			"screen_scale": 0.7028688788414
+		},
+		{
+			"actual_fields": [
+				{
+					"armourType": 2.0,
+					"id": 1043.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1044.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1045.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1044.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 2.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1043.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1046.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 4.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1046.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 4.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1047.0,
+					"max_shield": 0.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 0.0,
+					"size": 1.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				}
+			],
+			"alive": 15,
+			"min_visible_gap_pixels": 2.57697871144384,
+			"mounts": 15,
+			"name": "physical-armour-fleet",
+			"screen_scale": 0.7028688788414
+		},
+		{
+			"actual_fields": [
+				{
+					"armourType": 2.0,
+					"id": 1088.0,
+					"max_shield": 300000.0,
+					"shieldDelay": 0.0,
+					"shieldRecovery": 0.0,
+					"shieldType": 1.0,
+					"size": 5.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				}
+			],
+			"alive": 1,
+			"min_visible_gap_pixels": 11.1988692768288,
+			"mounts": 1,
+			"name": "large-energy-shield",
+			"screen_scale": 0.7028688788414
+		},
+		{
+			"actual_fields": [
+				{
+					"armourType": 2.0,
+					"id": 1017.0,
+					"max_shield": 8000.0,
+					"shieldDelay": 0.3,
+					"shieldRecovery": 0.2,
+					"shieldType": 2.0,
+					"size": 3.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1018.0,
+					"max_shield": 8000.0,
+					"shieldDelay": 0.3,
+					"shieldRecovery": 0.2,
+					"shieldType": 2.0,
+					"size": 3.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				},
+				{
+					"armourType": 2.0,
+					"id": 1017.0,
+					"max_shield": 8000.0,
+					"shieldDelay": 0.3,
+					"shieldRecovery": 0.2,
+					"shieldType": 2.0,
+					"size": 3.0,
+					"weapons": [
+						{
+							"cd": 0.5,
+							"damage": 20.0,
+							"key": "laser_mon",
+							"type": 1.0
+						}
+					]
+				}
+			],
+			"alive": 3,
+			"min_visible_gap_pixels": 5.46731395767089,
+			"mounts": 3,
+			"name": "actual-shield-recovery",
+			"screen_scale": 0.7028688788414
+		}
+	]
+}
