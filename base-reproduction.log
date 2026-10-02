@@ -1,0 +1,21 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: config0 unlockedfalse level50 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +1.5K% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config0 unlockedtrue level1 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +30% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config0 unlockedtrue level19 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +570% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config0 unlockedfalse level50 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +1.5K% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config0 unlockedtrue level1 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +30% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config0 unlockedtrue level19 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +570% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config0 adaptation second-position level1 adaptation actual=受击越多，防御越强 · 历史增幅 +30% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config0 unlockedtrue level1 last-position delayed_damage actual=延后承受 50% 伤害 · 余伤免除概率 0% expected=延后承受 0% 伤害 · 余伤免除概率 0%
+FAIL: config0 unlockedtrue level19 last-position delayed_damage actual=延后承受 95% 伤害 · 余伤免除概率 0% expected=延后承受 0% 伤害 · 余伤免除概率 0%
+FAIL: config1 unlockedfalse level50 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +2K% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config1 unlockedtrue level1 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +39% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config1 unlockedtrue level12 last-position proficiency actual=攻击越多，伤害越高 · 历史增伤 +468% expected=攻击越多，伤害越高 · 历史增伤 +0%
+FAIL: config1 unlockedfalse level50 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +1.1K% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config1 unlockedtrue level1 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +21% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config1 unlockedtrue level12 last-position adaptation actual=受击越多，防御越强 · 历史增幅 +252% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config1 adaptation second-position level1 adaptation actual=受击越多，防御越强 · 历史增幅 +21% expected=受击越多，防御越强 · 历史增幅 +0%
+FAIL: config1 unlockedtrue level1 last-position delayed_damage actual=延后承受 50% 伤害 · 余伤免除概率 0% expected=延后承受 0% 伤害 · 余伤免除概率 0%
+FAIL: config1 unlockedtrue level12 last-position delayed_damage actual=延后承受 92% 伤害 · 余伤免除概率 0% expected=延后承受 0% 伤害 · 余伤免除概率 0%
+Enhancement summary: 85 checks, 18 failures

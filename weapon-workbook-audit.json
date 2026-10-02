@@ -1,0 +1,10 @@
+{
+  "space-battleship/config_excel/equipment.xlsx": {
+    "sha256": "6e27c9a0416a0a4b731260d41060a94695257f2c8b5e116117d94688656e4515",
+    "byte_identical_to_base": true
+  },
+  "space-battleship/config_excel/weapon_motion.xlsx": {
+    "sha256": "27fcfc2f18b26c3cff235dde8b43611b767f8399d3f4256c6a04c387fd2a571c",
+    "byte_identical_to_base": true
+  }
+}
