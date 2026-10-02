@@ -6574,6 +6574,21 @@
         "rollback",
         "backup"
       ]
+    },
+    "save.tab": {
+      "params": []
+    },
+    "save.current_title": {
+      "params": []
+    },
+    "save.export_description": {
+      "params": []
+    },
+    "save.import_description": {
+      "params": []
+    },
+    "save.automatic_title": {
+      "params": []
     }
   },
   "bindings": {

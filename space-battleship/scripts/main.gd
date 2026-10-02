@@ -54,7 +54,7 @@ const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
 const RESOURCE_STRIP_PRESENTATION := preload("res://scripts/resource_strip_presentation.gd")
 const SHELL_PRESENTATION := preload("res://scripts/shell_presentation.gd")
 const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎","◷","✧"]
-const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab"]
+const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab","save.tab"]
 var NAMES: Dictionary = {}
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
@@ -185,7 +185,8 @@ var overlay_layer: Node2D
 var enhancement_panel: Panel
 var beginner_guide: Control
 var chrono_login_dialog: AcceptDialog
-var save_settings_dialog: AcceptDialog
+var save_panel: Control
+var save_confirmation_text: Label
 var save_interval_input: LineEdit
 var save_interval_feedback: Label
 var last_save_label: Label
@@ -781,79 +782,9 @@ func load_music_setting() -> void:
 	if saved is bool:
 		music_on = saved
 
-func show_save_settings() -> void:
-	if not is_instance_valid(save_settings_dialog):
-		save_settings_dialog = AcceptDialog.new()
-		save_settings_dialog.name = "SaveSettings"
-		save_settings_dialog.title = UIText.t("save.settings")
-		save_settings_dialog.ok_button_text = UIText.t("system.confirm")
-		save_settings_dialog.theme = Theme.new()
-		save_settings_dialog.theme.default_font = font
-		save_settings_dialog.theme.default_font_size = 18
-		save_settings_dialog.exclusive = true
-		add_child(save_settings_dialog)
-		var content := VBoxContainer.new()
-		content.custom_minimum_size = Vector2(580,280)
-		content.size = content.custom_minimum_size
-		content.add_theme_constant_override("separation",12)
-		save_settings_dialog.add_child(content)
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation",12)
-		content.add_child(row)
-		var interval_label := Label.new()
-		interval_label.text = UIText.t("save.interval")
-		row.add_child(interval_label)
-		save_interval_input = LineEdit.new()
-		save_interval_input.name = "SaveIntervalMinutes"
-		save_interval_input.custom_minimum_size.x = 100
-		save_interval_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(save_interval_input)
-		var apply := Button.new()
-		apply.name = "ApplySaveInterval"
-		apply.text = UIText.t("save.apply_interval")
-		apply.pressed.connect(apply_save_interval)
-		row.add_child(apply)
-		save_interval_input.text_submitted.connect(func(_text):apply_save_interval())
-		save_interval_feedback = Label.new()
-		last_save_label = Label.new()
-		save_status_label = Label.new()
-		for label in [save_interval_feedback,last_save_label,save_status_label]:
-			label.custom_minimum_size.x = 580
-			label.size.x = 580
-			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			content.add_child(label)
-		var manual := Button.new()
-		manual.name = "ManualSave"
-		manual.text = UIText.t("save.manual")
-		manual.disabled = not game.save_enabled
-		manual.pressed.connect(manual_save)
-		content.add_child(manual)
-		var transfer_row := HBoxContainer.new()
-		transfer_row.add_theme_constant_override("separation",12)
-		content.add_child(transfer_row)
-		for mode in ["export","import"]:
-			var transfer_button := Button.new()
-			transfer_button.name = "ExportSave" if mode=="export" else "ImportSave"
-			transfer_button.text = UIText.t("save."+mode)
-			transfer_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			transfer_button.disabled = OS.has_feature("web") or (mode=="import" and not game.save_enabled)
-			transfer_button.pressed.connect(open_save_file.bind(mode))
-			transfer_row.add_child(transfer_button)
-		save_transfer_feedback = Label.new()
-		save_transfer_feedback.custom_minimum_size.x = 580
-		save_transfer_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		save_transfer_feedback.text = UIText.t("save.web_unavailable" if OS.has_feature("web") else "save.transfer_hint")
-		content.add_child(save_transfer_feedback)
-		var warning := Label.new()
-		warning.custom_minimum_size.x = 580
-		warning.size.x = 580
-		warning.text = UIText.t("save.warning")
-		warning.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		content.add_child(warning)
-	save_interval_input.text = str(game.save_interval_minutes)
-	save_interval_feedback.text = UIText.t("save.interval_hint")
+func show_save_page() -> void:
+	select_system(equipment_tabs.get_tab_idx_from_control(save_panel))
 	refresh_save_status()
-	save_settings_dialog.popup_centered(Vector2i(660,470))
 
 func create_save_file_picker() -> FileDialog:
 	var picker := FileDialog.new()
@@ -870,12 +801,11 @@ func open_save_file(mode: String) -> void:
 		save_file_dialog.exclusive = true
 		save_file_dialog.add_filter("*.json",UIText.t("save.file_filter"))
 		save_file_dialog.file_selected.connect(save_file_selected)
-		save_file_dialog.canceled.connect(func():save_file_dialog.hide();pending_import.clear();show_save_settings())
+		save_file_dialog.canceled.connect(func():save_file_dialog.hide();pending_import.clear();show_save_page())
 		add_child(save_file_dialog)
 	save_file_dialog.set_meta("mode",mode)
 	save_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if mode=="export" else FileDialog.FILE_MODE_OPEN_FILE
 	save_file_dialog.current_file = "space-battleship-progress.json" if mode=="export" else ""
-	save_settings_dialog.hide()
 	save_file_dialog.popup_centered(Vector2i(860,560))
 
 func save_file_selected(path: String) -> void:
@@ -897,13 +827,19 @@ func save_file_selected(path: String) -> void:
 		save_import_confirmation.exclusive=true
 		preload("res://scripts/dialog_presentation.gd").dialog(save_import_confirmation)
 		save_import_confirmation.confirmed.connect(confirm_save_import)
-		save_import_confirmation.canceled.connect(func():save_import_confirmation.hide();pending_import.clear();show_save_settings())
+		save_import_confirmation.canceled.connect(func():save_import_confirmation.hide();pending_import.clear();show_save_page())
 		add_child(save_import_confirmation)
-	save_import_confirmation.dialog_text=UIText.t("save.import_confirmation",{"file":path.get_file(),"stage":str(prepared.stage)})
-	save_import_confirmation.popup_centered(Vector2i(680,300))
+		save_confirmation_text=Label.new()
+		save_confirmation_text.name="ImportReplacementRisk"
+		save_confirmation_text.custom_minimum_size=Vector2(600,220)
+		save_confirmation_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		save_confirmation_text.add_theme_color_override("font_color",Color("916326"))
+		save_import_confirmation.add_child(save_confirmation_text)
+	save_confirmation_text.text=UIText.t("save.import_confirmation",{"file":path.get_file(),"stage":str(prepared.stage)})
+	save_import_confirmation.popup_centered(Vector2i(680,340))
 
 func save_transfer_message(message: String) -> void:
-	show_save_settings()
+	show_save_page()
 	save_transfer_feedback.text=message
 
 func confirm_save_import() -> void:
@@ -943,13 +879,15 @@ func manual_save() -> void:
 	game.save_progress()
 
 func refresh_save_status() -> void:
-	if not is_instance_valid(last_save_label):return
+	if not is_instance_valid(last_save_label) or not save_panel.is_visible_in_tree():return
+	save_panel.refresh_actions()
 	var display := UIText.t("save.never")
 	if game.last_successful_save_at > 0:
 		var bias := int(Time.get_time_zone_from_system().get("bias",0))
 		display = Time.get_datetime_string_from_unix_time(int(game.last_successful_save_at)+bias*60,true)
-	last_save_label.text = UIText.t("save.last_success", {"time":display})
-	save_status_label.text = UIText.t("save.failed", {"error":error_string(game.last_save_error)}) if game.last_save_error != OK else ""
+	set_ui_value(last_save_label,"text",UIText.t("save.last_success", {"time":display}))
+	set_ui_value(save_status_label,"text",UIText.t("save.failed", {"error":error_string(game.last_save_error)}) if game.last_save_error != OK else "")
+	set_ui_value(save_status_label,"visible",game.last_save_error != OK)
 
 func save_music_setting() -> void:
 	var config := ConfigFile.new()
@@ -1839,12 +1777,8 @@ func build_ui() -> void:
 	for mode in 3:
 		death_menu.add_radio_check_item([UIText.t("main.build_ui.text_19"), UIText.t("main.build_ui.text_20"), UIText.t("gem.setup.text_03")][mode],10+mode)
 		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
-	death_menu.add_separator()
-	death_menu.add_item(UIText.t("save.settings"),30)
 	death_menu.id_pressed.connect(func(mode):
-		if mode==30:
-			show_save_settings()
-		elif mode==20:
+		if mode==20:
 			var details := AcceptDialog.new()
 			preload("res://scripts/dialog_presentation.gd").dialog(details)
 			details.ok_button_text = UIText.t("system.confirm")
@@ -2057,6 +1991,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())
+	pages.append(true) # Save is always the final page, independent of unlocks.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
@@ -3113,6 +3048,12 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.add_child(galaxy_panel)
 	equipment_tabs.set_tab_title(8,UIText.t("galaxy.tab"))
 	galaxy_panel.setup(self)
+	# Append after every gameplay page so unlocks never place a tab below Save.
+	save_panel = preload("res://scripts/save_panel.gd").new()
+	save_panel.name = "Save"
+	equipment_tabs.add_child(save_panel)
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(save_panel),UIText.t("save.tab"))
+	save_panel.setup(self)
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
