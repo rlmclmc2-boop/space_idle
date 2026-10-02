@@ -47,7 +47,7 @@ func observe(kind: String, payload: Dictionary) -> void:
 		trace.store_line(JSON.stringify({"kind":"wave_result","wave":encounter}));trace.flush();completed_waves+=1;encounter={}
 
 	if kind=="planet_reforged":
-		reforges.append({"planet":payload.get("id",""),"start":game.simulated_time,"return34":null,"clear_next_planet":null})
+		reforges.append({"planet":payload.get("id",""),"start":game.simulated_time,"return34":null,"clear_wall_stage":null,"clear_next_planet":null})
 		current_reforge=reforges.size()-1
 		snapshot("reforge_"+str(payload.get("id","")))
 	if kind in ["upgrade","upgrades_completed","module_changed","ship_changed","scientists_changed","reactor_changed","enhancement_changed","planet_changed","planet_reforged","crew_changed"]:
@@ -57,8 +57,8 @@ func observe(kind: String, payload: Dictionary) -> void:
 		if current_reforge>=0:
 			var phase:Dictionary=reforges[current_reforge]
 			var planet:int=int(phase.planet)
-			if game.stage==34+5*(planet-1) and phase.return34==null:
-				phase.return34=game.simulated_time;snapshot("reforge_return_"+str(planet))
+			if game.stage==34+5*(planet-1) and phase.clear_wall_stage==null:
+				phase.clear_wall_stage=game.simulated_time;snapshot("reforge_clear_wall_"+str(planet))
 			if game.stage==35+5*(planet-1) and phase.clear_next_planet==null:
 				phase.clear_next_planet=game.simulated_time;snapshot("reforge_clear_"+str(planet))
 		if not clears.has(str(game.stage)):
@@ -137,6 +137,11 @@ func run() -> void:
 		if scene_driver!=null:scene_driver.before_tick(STEP)
 		game.tick(STEP);steps+=1
 		if scene_driver!=null:scene_driver.after_tick(STEP)
+		if current_reforge>=0:
+			var phase:Dictionary=reforges[current_reforge]
+			var planet:int=int(phase.planet)
+			if game.stage>=34+5*(planet-1) and phase.return34==null:
+				phase.return34=game.simulated_time;snapshot("reforge_return_"+str(planet))
 		if game.stage in [30,32,34,35,40,45,50,55,60] and not reached.has(str(game.stage)):
 			reached[str(game.stage)]=game.simulated_time;snapshot("reach_"+str(game.stage))
 		if game.galaxy.regions.has("galaxy_1") and game.galaxy.regions.galaxy_1.is_complete() and galaxy_completion<0:

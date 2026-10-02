@@ -1,0 +1,9 @@
+{
+  "result": "PASS900 seconds",
+  "comparison": "corrected QA driver vs native battlefield._process, both full production event hook",
+  "seed": 20261002,
+  "policy": "BALANCED; teaching10 seconds/later120 seconds",
+  "checks": "every-second state/resources/RNG/research/projectile count/queue/crew/planets/galaxies/enhancement",
+  "limitations": "Only first900 seconds, not entire progression, boost or late-game proof",
+  "command": "PROGRESSION_COMPARE_SCENE=1 PROGRESSION_COMPARE_DURATION=900 python test/progression/run_entry.py --project PACKAGE --entry res://qa/test_progression_scene_equivalence.gd --label driver-native900"
+}
