@@ -96,10 +96,19 @@ func max_equipment_level(key: String) -> int:
 	# Integer storage boundary only; legacy row count is not a gameplay cap.
 	return 2147483647 if equipment.has(key) else 1
 
+func weapon_motion_value(key: String, fallback: float) -> float:
+	return float(data.get("weapon_motion",{}).get(key,{}).get("value",fallback))
+
+func projectile_pixels_per_unit(hostile := false) -> float:
+	return weapon_motion_value("enemy_projectile_pixels_per_unit" if hostile else "player_projectile_pixels_per_unit",float(defaults.get("projectilePixelsPerUnit",28.0)))
+
 func enemy_weapon(key: String) -> Dictionary:
 	var row := equip(key, 1).duplicate(true)
 	var base_key := key.replace("_mon", "").replace("-mon", "")
-	var fallback := equip(base_key, 1)
+	var fallback := equip(base_key, 1).duplicate(true)
+	var enemy_base: Dictionary=data.get("enemy_weapon_base",{}).get(base_key,{})
+	for field in ["dmg","cd","dmgtype","para1","para2","para3"]:
+		if enemy_base.has(field):fallback[field]=enemy_base[field]
 	if row.is_empty():
 		return fallback.duplicate(true)
 	for field in ["dmg", "cd", "dmgtype", "para1", "para2"]:

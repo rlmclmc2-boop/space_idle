@@ -114,20 +114,20 @@
     "missile": [
       {
         "name": "missile",
-        "des": "导弹武器，导弹会锁定多个敌人，锁定数量为para1定义。但敌人数量不足则只会发射敌人数量的导弹，不会多发。para2是导弹飞行速度",
+        "des": "每批发射para1枚导弹，按存活目标轮转分配，目标不足仍发满整批；para2为巡航速度（单位/秒），乘玩家弹速像素换算。",
         "level": 1,
         "dmgtype": 2,
-        "dmg": 60,
+        "dmg": 120,
         "dmgMulti": 0.2,
-        "cd": 1,
+        "cd": 2.4,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 4,
-        "para2": 20,
+        "para1": 5,
+        "para2": 15,
         "para3": null,
         "para4": null
       }
@@ -15375,34 +15375,35 @@
     "loopDelay": 6.0,
     "deathRetreatDistance": 300,
     "deathRetreatDuration": 1.2,
-    "projectilePixelsPerUnit": 28.0,
     "startingIron": 0.0,
     "startingTitanium": 0.0
   },
   "fallbacks": {
-    "enemyWeaponMissingLevel": "Use player weapon row 1 when the enemy weapon row is missing.",
-    "enemyCannonMissingDamageAndCooldown": "Use player cannon row 1 for missing fields."
+    "enemyWeaponMissingLevel": "Use enemy_weapon_base when the enemy weapon row is missing.",
+    "enemyCannonMissingDamageAndCooldown": "Use enemy_weapon_base for missing hostile weapon fields."
   },
   "source_files": {
-    "level": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/level.xlsx",
-    "equipment": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/equipment.xlsx",
-    "mon": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/mon.xlsx",
-    "monGroup": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/monGroup.xlsx",
-    "res": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/res.xlsx",
-    "config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/config.xlsx",
-    "ship": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/ship.xlsx",
-    "hightech": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/hightech.xlsx",
-    "unlock": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/unlock.xlsx",
-    "crew": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew.xlsx",
-    "crew_assignment": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew_assignment.xlsx",
-    "crew_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/crew_config.xlsx",
-    "planet": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet.xlsx",
-    "planet_build": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet_build.xlsx",
-    "planet_buff": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/planet_buff.xlsx",
-    "enhance_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/enhance_config.xlsx",
-    "galaxy": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy.xlsx",
-    "galaxy_build": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy_build.xlsx",
-    "galaxy_config": "/workspace/scratch/9ced2a722b42/enhancement_core/space-battleship/config_excel/galaxy_config.xlsx"
+    "level": "/workspace/space_idle-weapon-config/space-battleship/config_excel/level.xlsx",
+    "equipment": "/workspace/space_idle-weapon-config/space-battleship/config_excel/equipment.xlsx",
+    "mon": "/workspace/space_idle-weapon-config/space-battleship/config_excel/mon.xlsx",
+    "monGroup": "/workspace/space_idle-weapon-config/space-battleship/config_excel/monGroup.xlsx",
+    "res": "/workspace/space_idle-weapon-config/space-battleship/config_excel/res.xlsx",
+    "config": "/workspace/space_idle-weapon-config/space-battleship/config_excel/config.xlsx",
+    "ship": "/workspace/space_idle-weapon-config/space-battleship/config_excel/ship.xlsx",
+    "hightech": "/workspace/space_idle-weapon-config/space-battleship/config_excel/hightech.xlsx",
+    "unlock": "/workspace/space_idle-weapon-config/space-battleship/config_excel/unlock.xlsx",
+    "crew": "/workspace/space_idle-weapon-config/space-battleship/config_excel/crew.xlsx",
+    "crew_assignment": "/workspace/space_idle-weapon-config/space-battleship/config_excel/crew_assignment.xlsx",
+    "crew_config": "/workspace/space_idle-weapon-config/space-battleship/config_excel/crew_config.xlsx",
+    "planet": "/workspace/space_idle-weapon-config/space-battleship/config_excel/planet.xlsx",
+    "planet_build": "/workspace/space_idle-weapon-config/space-battleship/config_excel/planet_build.xlsx",
+    "planet_buff": "/workspace/space_idle-weapon-config/space-battleship/config_excel/planet_buff.xlsx",
+    "enhance_config": "/workspace/space_idle-weapon-config/space-battleship/config_excel/enhance_config.xlsx",
+    "galaxy": "/workspace/space_idle-weapon-config/space-battleship/config_excel/galaxy.xlsx",
+    "galaxy_build": "/workspace/space_idle-weapon-config/space-battleship/config_excel/galaxy_build.xlsx",
+    "galaxy_config": "/workspace/space_idle-weapon-config/space-battleship/config_excel/galaxy_config.xlsx",
+    "weapon_motion": "/workspace/space_idle-weapon-config/space-battleship/config_excel/weapon_motion.xlsx",
+    "enemy_weapon_base": "/workspace/space_idle-weapon-config/space-battleship/config_excel/enemy_weapon_base.xlsx"
   },
   "hightech": {
     "超时空炼铁炉": {
@@ -17429,6 +17430,193 @@
       "value": 1,
       "unit": "倍率",
       "des": "未强制清除概率缺口转化为伤害增加的系数"
+    }
+  },
+  "weapon_motion": {
+    "player_projectile_pixels_per_unit": {
+      "id": "player_projectile_pixels_per_unit",
+      "value": 28,
+      "unit": "像素/单位",
+      "description": "玩家普通弹体与导弹巡航速度的单位换算",
+      "scope": "玩家"
+    },
+    "enemy_projectile_pixels_per_unit": {
+      "id": "enemy_projectile_pixels_per_unit",
+      "value": 28,
+      "unit": "像素/单位",
+      "description": "敌方普通弹体速度单位换算；与玩家参数独立",
+      "scope": "敌方"
+    },
+    "player_cannon_speed_multiplier": {
+      "id": "player_cannon_speed_multiplier",
+      "value": 12,
+      "unit": "倍",
+      "description": "玩家火炮表para1速度再乘此倍率；敌方不乘",
+      "scope": "玩家火炮"
+    },
+    "chain_carrier_speed": {
+      "id": "chain_carrier_speed",
+      "value": 720,
+      "unit": "像素/秒",
+      "description": "到达后结算的玩家连锁载体速度",
+      "scope": "玩家连锁"
+    },
+    "missile_ejection_gap": {
+      "id": "missile_ejection_gap",
+      "value": 0.28,
+      "unit": "秒",
+      "description": "同批逐枚离管间隔",
+      "scope": "玩家导弹"
+    },
+    "missile_launch_speed": {
+      "id": "missile_launch_speed",
+      "value": 120,
+      "unit": "像素/秒",
+      "description": "离管初速；巡航速度来自equipment.missile.para2",
+      "scope": "玩家导弹"
+    },
+    "missile_turn_rate": {
+      "id": "missile_turn_rate",
+      "value": 4,
+      "unit": "弧度/秒",
+      "description": "制导最大转角速度",
+      "scope": "玩家导弹"
+    },
+    "missile_orphan_lifetime": {
+      "id": "missile_orphan_lifetime",
+      "value": 30,
+      "unit": "秒",
+      "description": "失锁直飞安全上限；通常先正常离屏",
+      "scope": "玩家导弹"
+    },
+    "missile_reacquire_interval": {
+      "id": "missile_reacquire_interval",
+      "value": 0.12,
+      "unit": "秒",
+      "description": "尚未离管的无效目标重选缓存间隔；飞行弹体不重锁",
+      "scope": "玩家导弹"
+    },
+    "missile_departure_angle": {
+      "id": "missile_departure_angle",
+      "value": 12,
+      "unit": "度",
+      "description": "逐枚左右离管偏转角",
+      "scope": "玩家导弹"
+    },
+    "missile_ignition_at": {
+      "id": "missile_ignition_at",
+      "value": 0.22,
+      "unit": "秒",
+      "description": "开始由初速平滑加速的时刻",
+      "scope": "玩家导弹"
+    },
+    "missile_seek_start": {
+      "id": "missile_seek_start",
+      "value": 0.4,
+      "unit": "秒",
+      "description": "开始转向制导的时刻",
+      "scope": "玩家导弹"
+    },
+    "missile_cruise_at": {
+      "id": "missile_cruise_at",
+      "value": 0.65,
+      "unit": "秒",
+      "description": "到达表设巡航速度的时刻",
+      "scope": "玩家导弹"
+    },
+    "missile_lifetime": {
+      "id": "missile_lifetime",
+      "value": 4.5,
+      "unit": "秒",
+      "description": "仍锁定目标的飞行寿命上限",
+      "scope": "玩家导弹"
+    },
+    "missile_brake_range": {
+      "id": "missile_brake_range",
+      "value": 120,
+      "unit": "像素",
+      "description": "接近目标且角差过大时的减速距离",
+      "scope": "玩家导弹"
+    },
+    "missile_brake_angle": {
+      "id": "missile_brake_angle",
+      "value": 0.3,
+      "unit": "弧度",
+      "description": "触发接近减速的角差门槛",
+      "scope": "玩家导弹"
+    },
+    "missile_min_guided_speed": {
+      "id": "missile_min_guided_speed",
+      "value": 60,
+      "unit": "像素/秒",
+      "description": "近目标制导最低速度",
+      "scope": "玩家导弹"
+    },
+    "missile_brake_factor": {
+      "id": "missile_brake_factor",
+      "value": 0.7,
+      "unit": "倍",
+      "description": "距离×转向速率对应的制导减速系数",
+      "scope": "玩家导弹"
+    },
+    "missile_hit_radius": {
+      "id": "missile_hit_radius",
+      "value": 5,
+      "unit": "像素",
+      "description": "目标到移动线段的命中半径",
+      "scope": "玩家导弹"
+    },
+    "missile_launch_edge_margin": {
+      "id": "missile_launch_edge_margin",
+      "value": 55,
+      "unit": "像素",
+      "description": "边缘发射管向外偏转的保护区",
+      "scope": "玩家导弹"
+    },
+    "missile_launch_forward_y": {
+      "id": "missile_launch_forward_y",
+      "value": -0.12,
+      "unit": "方向向量Y",
+      "description": "偏转方向的朝前门槛；上方为负，范围[-1,0]",
+      "scope": "玩家导弹"
+    }
+  },
+  "enemy_weapon_base": {
+    "laser": {
+      "id": "laser",
+      "dmg": 100,
+      "cd": 0.5,
+      "dmgtype": 1,
+      "para1": 30,
+      "para2": null,
+      "para3": null
+    },
+    "missile": {
+      "id": "missile",
+      "dmg": 60,
+      "cd": 1,
+      "dmgtype": 2,
+      "para1": 4,
+      "para2": 20,
+      "para3": null
+    },
+    "cannon": {
+      "id": "cannon",
+      "dmg": 200,
+      "cd": 1,
+      "dmgtype": 2,
+      "para1": 40,
+      "para2": null,
+      "para3": null
+    },
+    "longLaser": {
+      "id": "longLaser",
+      "dmg": 35,
+      "cd": 0.2,
+      "dmgtype": 1,
+      "para1": 2,
+      "para2": 3,
+      "para3": 1
     }
   }
 }

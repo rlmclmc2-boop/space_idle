@@ -1,18 +1,26 @@
 extends "res://scripts/game.gd"
 ## Authorized player weapon presentation mechanics. Shared attack/hit paths remain authoritative.
-const EJECTION_GAP := 0.28
-const RAIL_SPEED_FACTOR := 12.0
-const MISSILE_LAUNCH_SPEED := 120.0
-const MISSILE_CRUISE_SPEED := 420.0
-const MISSILE_TURN_RATE := 4.0
+var EJECTION_GAP := 0.28
+var RAIL_SPEED_FACTOR := 12.0
+var MISSILE_LAUNCH_SPEED := 120.0
+var MISSILE_CRUISE_SPEED := 420.0
+var MISSILE_TURN_RATE := 4.0
 # Normal coasting exits the arena first, even at the minimum guided speed.
 # This is only a backstop for malformed/stalled projectiles, not a visual fade.
-const ORPHAN_LIFETIME := 30.0
-const MISSILE_REACQUIRE_INTERVAL := 0.12
-const MISSILE_DEPARTURE_ANGLE := 12.0
-const MISSILE_IGNITION := 0.22
-const MISSILE_SEEK_START := 0.40
-const MISSILE_CRUISE_AT := 0.65
+var ORPHAN_LIFETIME := 30.0
+var MISSILE_REACQUIRE_INTERVAL := 0.12
+var MISSILE_DEPARTURE_ANGLE := 12.0
+var MISSILE_IGNITION := 0.22
+var MISSILE_SEEK_START := 0.40
+var MISSILE_CRUISE_AT := 0.65
+var MISSILE_LIFETIME := 4.5
+var MISSILE_BRAKE_RANGE := 120.0
+var MISSILE_BRAKE_ANGLE := 0.30
+var MISSILE_MIN_GUIDED_SPEED := 60.0
+var MISSILE_BRAKE_FACTOR := 0.70
+var MISSILE_HIT_RADIUS := 5.0
+var MISSILE_LAUNCH_EDGE_MARGIN := 55.0
+var MISSILE_LAUNCH_FORWARD_Y := -0.12
 var launch_provider:Callable
 var target_provider:Callable
 var missile_queue:Array[Dictionary]=[]
@@ -36,10 +44,32 @@ var invalid_target_cancellations:=0
 func _init(database:ShipDatabase,persist:=true)->void:
 	# Keep player equipment/UI projection separate from every hostile fallback.
 	var player_database=preload("res://scripts/player_weapon_database.gd").new(database)
-	for row in player_database.equipment.get("missile",[]):
-		row.para1=5;row.cd=2.4;row.dmg=float(row.dmg)*2.0
-		row.para2=MISSILE_CRUISE_SPEED/float(player_database.defaults.projectilePixelsPerUnit)
+	# Only legacy data without the migration table retains the old presentation
+	# projection. Authored equipment values always win for migrated data.
+	if not player_database.data.has("weapon_motion"):
+		for row in player_database.equipment.get("missile",[]):
+			row.para1=5;row.cd=2.4;row.dmg=float(row.dmg)*2.0
+			row.para2=420.0/player_database.projectile_pixels_per_unit()
 	super(player_database,persist)
+	EJECTION_GAP=db.weapon_motion_value("missile_ejection_gap",EJECTION_GAP)
+	RAIL_SPEED_FACTOR=db.weapon_motion_value("player_cannon_speed_multiplier",RAIL_SPEED_FACTOR)
+	MISSILE_LAUNCH_SPEED=db.weapon_motion_value("missile_launch_speed",MISSILE_LAUNCH_SPEED)
+	MISSILE_TURN_RATE=db.weapon_motion_value("missile_turn_rate",MISSILE_TURN_RATE)
+	ORPHAN_LIFETIME=db.weapon_motion_value("missile_orphan_lifetime",ORPHAN_LIFETIME)
+	MISSILE_REACQUIRE_INTERVAL=db.weapon_motion_value("missile_reacquire_interval",MISSILE_REACQUIRE_INTERVAL)
+	MISSILE_DEPARTURE_ANGLE=db.weapon_motion_value("missile_departure_angle",MISSILE_DEPARTURE_ANGLE)
+	MISSILE_IGNITION=db.weapon_motion_value("missile_ignition_at",MISSILE_IGNITION)
+	MISSILE_SEEK_START=db.weapon_motion_value("missile_seek_start",MISSILE_SEEK_START)
+	MISSILE_CRUISE_AT=db.weapon_motion_value("missile_cruise_at",MISSILE_CRUISE_AT)
+	MISSILE_LIFETIME=db.weapon_motion_value("missile_lifetime",MISSILE_LIFETIME)
+	MISSILE_BRAKE_RANGE=db.weapon_motion_value("missile_brake_range",MISSILE_BRAKE_RANGE)
+	MISSILE_BRAKE_ANGLE=db.weapon_motion_value("missile_brake_angle",MISSILE_BRAKE_ANGLE)
+	MISSILE_MIN_GUIDED_SPEED=db.weapon_motion_value("missile_min_guided_speed",MISSILE_MIN_GUIDED_SPEED)
+	MISSILE_BRAKE_FACTOR=db.weapon_motion_value("missile_brake_factor",MISSILE_BRAKE_FACTOR)
+	MISSILE_HIT_RADIUS=db.weapon_motion_value("missile_hit_radius",MISSILE_HIT_RADIUS)
+	MISSILE_LAUNCH_EDGE_MARGIN=db.weapon_motion_value("missile_launch_edge_margin",MISSILE_LAUNCH_EDGE_MARGIN)
+	MISSILE_LAUNCH_FORWARD_Y=db.weapon_motion_value("missile_launch_forward_y",MISSILE_LAUNCH_FORWARD_Y)
+	MISSILE_CRUISE_SPEED=float(db.equip("missile",1).para2)*db.projectile_pixels_per_unit()
 
 func tick(dt:float)->void:
 	if paused:return
@@ -141,9 +171,10 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	var departure_angle:=MISSILE_DEPARTURE_ANGLE
 	var trial:=direction.rotated(side*deg_to_rad(departure_angle))
 	# Launch remains toward the battle line even at an outer drone's tube.
-	if trial.y>=-0.12 or (origin.x<55.0 and trial.x<0.0) or (origin.x>BATTLE_SIZE.x-55.0 and trial.x>0.0):departure_angle=0.0
+	if trial.y>=MISSILE_LAUNCH_FORWARD_Y or (origin.x<MISSILE_LAUNCH_EDGE_MARGIN and trial.x<0.0) or (origin.x>BATTLE_SIZE.x-MISSILE_LAUNCH_EDGE_MARGIN and trial.x>0.0):departure_angle=0.0
 	direction=direction.rotated(side*deg_to_rad(departure_angle))
 	shot.x=origin.x;shot.y=origin.y;shot.direction=direction.normalized()
+	shot.cruise_speed=float(shot.speed)
 	shot.speed=MISSILE_LAUNCH_SPEED
 	shot.mount=int(packet.mount);shot.prototype_missile=true
 	shot.launch_point=origin;shot.motion_age=0.0;shot.orphan_age=0.0
@@ -160,11 +191,11 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		# An ejected missile never acquires another target. Pending packets still
 		# use the existing due-time target validation in tick_projectiles.
 		shot.target={}
-	if not shot.target.is_empty() and float(shot.motion_age)>4.5:
+	if not shot.target.is_empty() and float(shot.motion_age)>MISSILE_LIFETIME:
 		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
 	var position:=Vector2(shot.x,shot.y)
 	var old_angle:float=Vector2(shot.direction).angle()
-	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,MISSILE_CRUISE_SPEED,smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
+	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,float(shot.get("cruise_speed",MISSILE_CRUISE_SPEED)),smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
 	if not shot.target.is_empty():
 		shot.orphan_age=0.0
 		var aim:=target_point(shot.target)
@@ -173,8 +204,8 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		var range_now:=position.distance_to(aim)
 		# Keep the live lock on a near miss; brake enough for a bounded turn rather
 		# than deliberately turning it into a long, wandering orphan.
-		if range_now<120.0 and absf(angle_difference(old_angle,wanted))>0.30:
-			cruise_speed=minf(cruise_speed,maxf(60.0,range_now*MISSILE_TURN_RATE*0.70))
+		if range_now<MISSILE_BRAKE_RANGE and absf(angle_difference(old_angle,wanted))>MISSILE_BRAKE_ANGLE:
+			cruise_speed=minf(cruise_speed,maxf(MISSILE_MIN_GUIDED_SPEED,range_now*MISSILE_TURN_RATE*MISSILE_BRAKE_FACTOR))
 		shot.speed=cruise_speed
 		if float(shot.motion_age)>=MISSILE_SEEK_START:
 			var angle:=rotate_toward(old_angle,wanted,MISSILE_TURN_RATE*dt)
@@ -182,7 +213,7 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 			shot.direction=Vector2.from_angle(angle)
 		var next:=position+Vector2(shot.direction)*float(shot.speed)*dt
 		var closest:=Geometry2D.get_closest_point_to_segment(aim,position,next)
-		if closest.distance_to(aim)<=5.0:
+		if closest.distance_to(aim)<=MISSILE_HIT_RADIUS:
 			shot.dead=true
 			if hit_records.size()>=2048:hit_records.pop_front()
 			hit_records.append({"time":motion_clock,"serial":int(shot.serial),"target_uid":int(shot.target.get("uid",-1)),"target_alive":float(shot.target.hp)>0,"damage":shot.damage})

@@ -34,9 +34,11 @@ func run() -> void:
 				if JSON.stringify(database.data).sha256_text() != fixture.data_sha256:
 					printerr("Fixture config fingerprint mismatch; regenerate naturally")
 					quit(2); return
-				var speed_value: float = database.defaults.projectilePixelsPerUnit*scale
-				if not Scan.valid_value(["defaults","projectilePixelsPerUnit"],speed_value):quit(2); return
-				Scan.apply(database.data,["defaults","projectilePixelsPerUnit"],speed_value)
+				for actor in ["player","enemy"]:
+					var path: Array=["weapon_motion",actor+"_projectile_pixels_per_unit","value"]
+					var speed_value: float=Scan.read(database.data,path)*scale
+					if not Scan.valid_value(path,speed_value):quit(2); return
+					Scan.apply(database.data,path,speed_value)
 				var game = Game.new(database)
 				game.simulation_mode = mode
 				game.profile = fixture.profile.duplicate(true)
