@@ -34,7 +34,7 @@ func _initialize() -> void:
 	db.config.offlineMax = 0
 	write_save({"version":BattleGame.SAVE_VERSION,"resources":{"1":123.5,"2":-4}})
 	var loaded := BattleGame.new(db,true)
-	check(loaded.profile.resources=={"1":124.0,"2":0.0},"Legacy fractional save rounds up and negative resource clamps")
+	check(loaded.profile.resources=={"1":123.5,"2":0.0},"Fractional save remains exact and negative resource clamps")
 	check(loaded.profile.version==BattleGame.SAVE_VERSION and loaded.slot_entry("weapons",0).level==1,"Missing fields retain current version and default equipment")
 	check(not loaded.profile.has("levels"),"Compatibility levels never enter runtime")
 	var again := BattleGame.new(db,true)

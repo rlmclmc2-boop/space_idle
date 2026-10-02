@@ -34,6 +34,7 @@ for script in Path(__file__).parent.glob('*.gd'):shutil.copy2(script,out/'qa'/sc
 if a.scene:
  shutil.copy2(ROOT/'test/test_enemy_design_probe.gd',out/'qa/enemy_design_probe.gd')
  shutil.copy2(ROOT/'test/test_progression_scene_equivalence.gd',out/'qa/test_progression_scene_equivalence.gd')
+shutil.copy2(ROOT/"test/test_offline_settlement_contract.gd",out/"qa/test_offline_settlement_contract.gd")
 # Same lab bookkeeping/caches, but inherit the actual battlefield's combat class.
 # The generated adapter changes no gameplay method. Exact mode is mandatory.
 adapter=(source/'scripts/balance_game.gd').read_text().replace('extends BattleGame','extends "res://scripts/presented_battle_game.gd"',1)

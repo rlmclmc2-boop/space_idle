@@ -253,7 +253,8 @@ func load_progress_data(raw: Dictionary) -> void:
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if N.valid(value):
-			profile.resources[id] = N.ceiling(value)
+			# Restoring a balance must not mint the remainder of a fractional unit.
+			profile.resources[id] = value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
