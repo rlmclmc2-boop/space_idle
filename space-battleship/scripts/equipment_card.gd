@@ -55,9 +55,9 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	fields.title = text_field(self,Rect2(88,8,208,34),23,650,INK)
 	fields.title.hide()
 	name_button = OptionButton.new()
-	name_button.flat = true
 	name_button.fit_to_longest_item = false
 	Chrome.option(name_button,false)
+	style_refit_button()
 	var menu := name_button.get_popup()
 	menu.add_theme_font_override("font",face(500))
 	menu.add_theme_font_size_override("font_size",23)
@@ -111,6 +111,30 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	add_theme_stylebox_override("pressed",panel.panel_style(Color("d8e6de")))
 	add_theme_stylebox_override("focus",panel.panel_style(Color.TRANSPARENT,panel.TEAL))
 	layout_contents()
+
+func style_refit_button() -> void:
+	# Compact card-local chrome; the native option still owns input and selection.
+	name_button.add_theme_icon_override("arrow",preload("res://assets/ui/dialog/refit-arrow.svg"))
+	name_button.add_theme_constant_override("modulate_arrow",1)
+	name_button.add_theme_constant_override("arrow_margin",7)
+	name_button.add_theme_color_override("font_disabled_color",MUTED)
+	for state in ["normal","hover","pressed","disabled","focus"]:
+		var fill := Color("dfede4")
+		if state=="hover":fill=Chrome.TEAL.lightened(0.16)
+		if state=="pressed":fill=Chrome.TEAL.darkened(0.10)
+		if state=="disabled":fill=Color("b7c5c4")
+		var box := Chrome.surface(Color.TRANSPARENT if state=="focus" else fill,INK,0)
+		box.set_corner_radius_all(6)
+		box.set_border_width_all(2)
+		box.content_margin_left=7
+		box.content_margin_right=7
+		if state in ["normal","hover"]:
+			box.shadow_color=Color(0.14,0.24,0.31,0.22)
+			box.shadow_size=1
+			box.shadow_offset=Vector2(0,2)
+		if state=="focus":box.border_color=Color("3e8b93")
+		if state=="disabled":box.border_color=MUTED
+		name_button.add_theme_stylebox_override(state,box)
 
 func layout_contents() -> void:
 	if not is_instance_valid(upgrade_button):return
