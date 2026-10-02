@@ -1,6 +1,6 @@
 # Galaxy orbital assets
 
-GLB is the runtime authority. The separate central headquarters anchors 30 functional nodes in the first Galaxy; placement, rotation, connectivity and counts come only from the saved construction blueprint documented in [GALAXY](../../../docs/GALAXY.md).
+GLB is the runtime authority. The separate central headquarters anchors 30 functional nodes in the first Galaxy; IDs, types, rotations, prerequisites and counts come from the saved construction blueprint; the renderer maps those stable IDs into shared city districts documented in [GALAXY](../../../docs/GALAXY.md).
 
 ## Rebuild and provenance
 
@@ -20,11 +20,11 @@ Add `--family colony_ring interstellar_refinery --levels 1 5` for a filtered reb
 
 ## Runtime contract
 
-- Godot Y-up; one Blender unit equals one Godot unit. Root is true planar center and bottom center. Apply blueprint `rotation_y`; functional renderer scale is `galaxy_map.gd::BUILDING_SCALE`, while the core stays at 1.2. Model and dock extensions must remain inside the complete 14×14 functional footprint (core 32×32)
+- Godot Y-up; one Blender unit equals one Godot unit. Functional roots are planar/bottom centered. The headquarters Structure has an unscaled bottom Y=0.09 and X/Z center `(0.43235588,1.19500065)`; `galaxy_city_layout.gd::core_offset` applies its separate adapter. Apply blueprint `rotation_y`; functional renderer scale is `galaxy_map.gd::BUILDING_SCALE`, while the core stays at 1.2. Model and dock extensions must remain inside the complete 14×14 functional footprint (core 32×32)
 - `Structure` is merged static geometry. `DockSocket` is a child transform; find it recursively beneath the imported root. The shuttle nose points toward Godot -Z
 - `Core*` and `GalaxyToon*` materials use white albedo with baked tint/shading in `COLOR_0`; enable vertex-color albedo after import. Preserve this attribute on re-export. Material names are shared cache keys
 - Opaque meshes only. No per-building lights, cameras, physics, embedded animation, live viewports or transparency stacks. The entire Galaxy uses one independent orthographic viewport and one opaque imported backdrop texture
-- Planned footprints and static transit corridors are renderer geometry. Corridors consume exact blueprint edge paths. Normal traffic uses only completed parent/child connections; construction vessels are separate. A building under construction reveals its real model using full `node_progress`, with a restrained gantry; upgrading retains the current-level model
+- Shared district decks and bridge corridors are static renderer geometry. Each used edge has a local `PipeSocket` at Y=-0.9, outward +Z/up +Y; bridges mate opposed transformed sockets with a 4.8×1.8 section. Hollow walls, flange shoulders, deck panels and mounting collars follow the approved three-building sample; each structure is merged once. Construction and decorative craft use independent elevated dock-to-dock paths; decorative traffic counts are hidden. A building under construction reveals its real model using full `node_progress`, with a restrained gantry; upgrading retains the current-level model
 - Visible sampling updates affected model/state nodes only. Cached assets/materials/static routes are reused; hidden and paused pages stop viewport rendering, traffic and construction motion. The backdrop is static, with no shader clock. Small UI-scaled windows bound viewport fill cost while retaining 4× edge AA
 
 Display traffic is tuned in `config_excel/galaxy_config.xlsx`: `transport_buildings_per_ship` (completed buildings/boat), `max_transport_ships` (upper bound), `transport_initial_delay` and `transport_departure_interval` (seconds). These never affect work or income. The pool grows with completed buildings, reuses scenes/materials and departs in staggered batches.

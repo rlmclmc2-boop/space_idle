@@ -3,6 +3,8 @@ extends Control
 signal slot_selected(id: int)
 const BUILDING_SCALE := 1.4
 var region
+var city_layout := preload("res://scripts/galaxy_city_layout.gd").new()
+var city := preload("res://scripts/galaxy_city_structure.gd").new()
 var settings := {}
 var view := SubViewport.new()
 var container := TextureRect.new()
@@ -71,6 +73,7 @@ func _ready() -> void:
 	view.add_child(world)
 	world.add_child(models)
 	world.add_child(transit)
+	world.add_child(city)
 	world.add_child(camera)
 	camera.projection=Camera3D.PROJECTION_ORTHOGONAL
 	camera.far=600
@@ -110,7 +113,7 @@ func _ready() -> void:
 	plane.size=Vector2(1200,1200)
 	backdrop.mesh=plane
 	backdrop.material_override=space_material
-	backdrop.position.y=-5
+	backdrop.position.y=-8
 	world.add_child(backdrop)
 	highlight=ring(7.6,cyan,0.35)
 	world.add_child(highlight)
@@ -204,13 +207,19 @@ func select(value) -> void:
 	hover_slot=-1
 	inspected_slot=-1
 	highlight.visible=false
-	zoom=1
+	zoom=setting("camera_zoom_max",0.6)
 	pan=Vector2.ZERO
-	if region==null:return
+	if region==null:
+		city.visible=false
+		return
+	city.visible=true
+	city_layout.configure(region)
+	city.configure(city_layout)
 	rng.seed=int(region.row.slot_seed)+12345
 	core=asset(str(region.row.core_asset))
 	core.scale=Vector3.ONE*1.2
 	models.add_child(core)
+	core.position=city_layout.core_offset
 	fog_image=Image.create(int(region.row.map_w),int(region.row.map_h),false,Image.FORMAT_R8)
 	for y in fog_image.get_height():
 		for x in fog_image.get_width():fog_image.set_pixel(x,y,Color(float(region.cells[y*int(region.row.map_w)+x]),0,0))
@@ -219,13 +228,13 @@ func select(value) -> void:
 	for slot in region.slots:
 		var node := Node3D.new()
 		node.name="Slot%d"%int(slot.id)
-		node.position=Vector3(float(slot.world_pos[0]),0,float(slot.world_pos[1]))
+		node.position=city_layout.positions[int(slot.id)]
 		node.rotation.y=float(region.blueprint.nodes[int(slot.id)].rotation_y)
 		models.add_child(node)
 		slot_nodes[int(slot.id)]=node
 		var footprint := ring(5.7,planned_material)
 		footprint.name="SurveyFootprint"
-		footprint.position.y=-0.45
+		footprint.position.y=0.04
 		node.add_child(footprint)
 		var scaffold := Node3D.new()
 		scaffold.name="Scaffold"
@@ -259,6 +268,7 @@ func select(value) -> void:
 		pulse.visible=false
 		world.add_child(pulse)
 		pulses.append({"node":pulse})
+	city.refresh_states(region)
 	frame_size=fit_size()
 	layout()
 	refresh()
@@ -284,11 +294,11 @@ func layout() -> void:
 	var screen_scale := (get_viewport().get_final_transform()*get_screen_transform()).get_scale().abs()
 	var pixel_size := Vector2i((size*screen_scale.min(Vector2.ONE)).ceil()).max(Vector2i.ONE)
 	if view.size!=pixel_size:view.size=pixel_size
-	# Whole-city overview tolerates small detail; inspecting at 2x restores the
-	# default one-pixel LOD threshold. Animation and building levels are untouched.
+	# The configured zoom range is relative to the current city's safe fit.
+	zoom=clampf(zoom,setting("camera_zoom_min",0.4),setting("camera_zoom_max",0.6))
 	view.mesh_lod_threshold=clampf(4.0/(zoom*zoom),1.0,4.0)
 	frame_size=fit_size()
-	camera.size=frame_size/zoom
+	camera.size=frame_size*setting("camera_zoom_max",0.6)/zoom
 	# Fixed isometric framing: 45-degree azimuth, 35.26-degree downward pitch.
 	var target := Vector3(frame_origin.x+pan.x,0,frame_origin.y+pan.y)
 	camera.position=target+Vector3(130,130,130)
@@ -296,29 +306,44 @@ func layout() -> void:
 	request_visual_frame()
 func fit_size() -> float:
 	if region==null:frame_origin=Vector2.ZERO;return 120.0
-	var low := Vector2(INF,INF)
-	var high := Vector2(-INF,-INF)
-	for plan in [region.blueprint.core]+region.blueprint.nodes:
-		var position := Vector2(float(plan.world_pos[0]),float(plan.world_pos[1]))
-		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
-		var core_bounds: Array=asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])
-		var height := float(core_bounds[1])*1.2
-		if int(plan.id)>=0:
-			var definition: Dictionary=region.builds[str(plan.planned_type)]
-			var bounds: Array=asset_bounds.get(str(definition.asset_lv5),[10.0,6.0,10.0])
-			height=float(bounds[1])*BUILDING_SCALE
-		for x in [-half.x,half.x]:
-			for z in [-half.y,half.y]:
-				var point := position+Vector2(x,z)
-				for y in [0.0,height]:
-					var projected := Vector2((point.x-point.y)*0.707107,(point.x+point.y)*0.408248-y*0.816497)
-					low=low.min(projected);high=high.max(projected)
-	# Center the actual asymmetric saved plan, including upper model bounds.
-	var center := (low+high)*0.5
+	var low:=Vector2(INF,INF);var high:=Vector2(-INF,-INF)
+	var points:Array[Vector3]=[]
+	for root in [city.hub]+city.district_nodes+city.junction_nodes+city.trunk_nodes+city.branch_nodes:
+		if not root.visible:continue
+		var body:MeshInstance3D=root.get_node("StaticStructure")
+		for index in 8:points.append(body.global_transform*body.mesh.get_aabb().get_endpoint(index))
+	var roof:=float(asset_bounds[str(region.row.core_asset)][1])*1.2
+	for slot in region.slots:
+		if slot.status=="empty":continue
+		var bounds:Array=asset_bounds[visual_path(slot)]
+		roof=maxf(roof,float(bounds[1])*BUILDING_SCALE)
+		var node:Node3D=slot_nodes[int(slot.id)]
+		for x in [-0.5,0.5]:
+			for z in [-0.5,0.5]:
+				for y in [0.0,1.0]:points.append(node.global_transform*(Vector3(float(bounds[0])*x,float(bounds[1])*y,float(bounds[2])*z)*BUILDING_SCALE))
+	# Headquarters has its own audited bottom/center adapter.
+	var core_body:MeshInstance3D=core.find_child("Structure",true,false)
+	for index in 8:points.append(core_body.global_transform*core_body.mesh.get_aabb().get_endpoint(index))
+	for point in points:
+		var projected:=project_world(point)
+		low=low.min(projected);high=high.max(projected)
+	var center:Vector2=(low+high)*0.5
 	frame_origin=Vector2(center.x*0.707107+center.y*1.224745,-center.x*0.707107+center.y*1.224745)
-	var half_extent := (high-low)*0.5+Vector2(5,6)
-	var aspect := maxf(0.5,size.x/maxf(1,size.y))
-	return maxf(95,2.0*maxf(half_extent.y,half_extent.x/aspect))
+	# Static flight envelope: no camera motion or structure rebuild when a boat moves.
+	for slot in region.slots:
+		if slot.status not in ["active","upgrading"]:continue
+		var origin:=dock(int(slot.id))
+		for x in [-5.0,5.0]:
+			for z in [-5.0,5.0]:
+				var projected:=project_world(Vector3(origin.x+x,(roof+7.0)*1.25+2.2,origin.z+z))
+				low=low.min(projected);high=high.max(projected)
+	var half:Vector2=(center-low).max(high-center)
+	var usable:=Vector2(maxf(1,size.x-40),maxf(1,size.y-78))
+	var units_per_pixel:=maxf(1.0/8.96,maxf(2*half.x/usable.x,2*half.y/usable.y))
+	return size.y*units_per_pixel
+
+func project_world(point:Vector3) -> Vector2:
+	return Vector2((point.x-point.z)*0.707107,(point.x+point.z)*0.408248-point.y*0.816497)
 
 func visual_path(slot: Dictionary) -> String:
 	var key := str(slot.get("type",""))
@@ -406,11 +431,13 @@ func refresh() -> void:
 				model_paths[id]=path
 			var building=node.get_node_or_null("Building")
 			if changed:
+				update_construction_route(id)
+				city.update_mount(id,path,node,asset_bounds.get(path,[10,6,10]),str(slot.planned_type))
 				if int(construction[id].level)<int(slot.level):construction[id].flash=0.55
 				construction[id].level=int(slot.level)
 				construction[id].height=-1.0
 				if building!=null:set_construction_material(building,slot.status=="constructing")
-				node.get_node("SurveyFootprint").visible=slot.status=="empty"
+				node.get_node("SurveyFootprint").visible=slot.status=="empty" and city.active_groups[city_layout.slot_group[id]]
 				construction[id].ring.visible=slot.status in ["constructing","upgrading"]
 				if slot.status=="upgrading":construction[id].upper.position.y=0.4
 				for post in construction[id].posts:post.visible=slot.status!="upgrading"
@@ -421,21 +448,27 @@ func refresh() -> void:
 				if part is Node3D and slot.status!="constructing":activity.append(part)
 			next_lane_states.append("planned" if slot.status=="empty" else "building" if slot.status=="constructing" else "operating")
 		if next_lane_states!=lane_states:
-			transit.rebuild(region.layout_snapshot())
+			refresh_city_routes()
 			lane_states=next_lane_states
 			route_revision=building_revision
+		if city.refresh_states(region):
+			for slot in region.slots:
+				var id:=int(slot.id)
+				slot_nodes[id].get_node("SurveyFootprint").visible=slot.status=="empty" and city.active_groups[city_layout.slot_group[id]]
+		layout()
 	sync_transports()
 	refresh_construction()
 func desired_transport_count(built_count: int) -> int:
 	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
 func sync_transports() -> void:
 	var built_count: int=region.slots.filter(func(slot):return slot.status in ["active","upgrading"]).size()
-	var count := desired_transport_count(built_count) if not transit.active_edges.is_empty() else 0
+	var count := desired_transport_count(built_count) if built_count>0 else 0
 	while transports.size()>count:transports.pop_back().node.free()
 	var first := transports.size()
 	while transports.size()<count:
 		var ship := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
 		ship.visible=false
+		ship.scale=Vector3.ONE*2.0
 		world.add_child(ship)
 		var delay := maxf(0,setting("transport_initial_delay",1.4))+(transports.size()-first)*maxf(0,setting("transport_departure_interval",0.8))
 		transports.append({"node":ship,"curve":Curve3D.new(),"phase":1.0,"duration":1.0,"reverse":false,"depart_at":visual_clock+delay})
@@ -444,15 +477,49 @@ func dock(id: int) -> Vector3:
 	var socket=node.find_child("DockSocket",true,false)
 	return socket.global_position if socket is Node3D else node.global_position+Vector3(0,2,0)
 func new_route(item: Dictionary) -> void:
-	if transit.active_edges.is_empty():
+	var destinations: Array[int]=[-1]
+	var roof := float(asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])[1])*1.2
+	for slot in region.slots:
+		if slot.status not in ["active","upgrading"]:continue
+		destinations.append(int(slot.id))
+		roof=maxf(roof,float(asset_bounds[visual_path(slot)][1])*BUILDING_SCALE)
+	if destinations.size()<2:
 		item.node.visible=false;item.phase=0.0;item.duration=1.0
 		return
-	var id: int=transit.active_edges[rng.randi_range(0,transit.active_edges.size()-1)]
-	item.curve=transit.curves[id]
-	item.reverse=rng.randf()<0.5
-	item.phase=0.0
-	item.duration=maxf(4,item.curve.get_baked_length()/5)
+	var source: int=int(item.get("destination",destinations[rng.randi_range(0,destinations.size()-1)]))
+	if not destinations.has(source):source=destinations[0]
+	destinations.erase(source)
+	var target: int=destinations[rng.randi_range(0,destinations.size()-1)]
+	var start:=dock(source);var finish:=dock(target)
+	var across:=(finish-start).cross(Vector3.UP).normalized()*rng.randf_range(-2.0,2.0)
+	var cruise:=roof+5.0+rng.randf_range(0.0,2.0)
+	var first:=start+across;first.y=cruise*1.25
+	var last:=finish+across;last.y=cruise*1.25
+	# Reuse one curve per boat; rebuild only on departure, independently of pipes.
+	item.curve.clear_points()
+	item.curve.add_point(start,Vector3.ZERO,first-start)
+	item.curve.add_point(finish,last-finish,Vector3.ZERO)
+	item.source=source;item.destination=target;item.cruise_height=cruise
+	item.reverse=false;item.phase=0.0
+	item.duration=maxf(6.0,item.curve.get_baked_length()/7.0)
 	item.node.visible=true
+
+func update_construction_route(id:int) -> void:
+	var curve:Curve3D=transit.curves.get(id,Curve3D.new())
+	curve.clear_points()
+	var start:=dock(-1);var finish:=dock(id)
+	var first:=start;first.y=22.0
+	var last:=finish;last.y=22.0
+	curve.add_point(start,Vector3.ZERO,first-start);curve.add_point(finish,last-finish,Vector3.ZERO)
+	transit.curves[id]=curve
+
+func refresh_city_routes() -> void:
+	# Visible flight paths only; Region still owns construction work and prerequisites.
+	transit.active_edges.clear()
+	for slot in region.slots:
+		var id:=int(slot.id)
+		if not transit.curves.has(id):update_construction_route(id)
+		if slot.status in ["active","upgrading"]:transit.active_edges.append(id)
 
 func update_explorers() -> void:
 	var targets: Array=region.slots.filter(func(slot):return slot.status=="constructing")
@@ -541,6 +608,7 @@ func pick(position_in_control: Vector2) -> int:
 	if ground==null:return -1
 	for plan in region.blueprint.nodes:
 		var node: Node3D=slot_nodes[int(plan.id)]
+		if region.slots[int(plan.id)].status=="empty" and not node.get_node("SurveyFootprint").visible:continue
 		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
 		if absf(ground.x-node.position.x)<=half.x and absf(ground.z-node.position.z)<=half.y:return int(plan.id)
 	return -1

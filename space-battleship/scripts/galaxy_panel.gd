@@ -91,7 +91,7 @@ func setup(owner) -> void:
 	activity_bar.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	activity_bar.add_theme_constant_override("separation",20)
 	map_stack.add_child(activity_bar)
-	for key in ["explorers","traffic"]:
+	for key in ["explorers"]:
 		var caption := Label.new()
 		caption.text=UIText.t("galaxy.card_"+key)
 		caption.add_theme_font_size_override("font_size",18)
@@ -217,7 +217,6 @@ func refresh() -> void:
 	set_text(cards.max_level,str(region.max_level_count))
 	set_text(cards.crew,UIText.t("galaxy.crew_count",{"count":map.crew_count}))
 	set_text(cards.explorers,str(map.explorers.size()))
-	set_text(cards.traffic,str(map.transports.filter(func(item):return item.node.visible).size()))
 	game.galaxy.effects.refresh(game.galaxy)
 	var effect: Dictionary=game.galaxy.effects.cache[selected]
 	var rates: Dictionary=game.galaxy.effects.rates(game,game.galaxy,selected)
