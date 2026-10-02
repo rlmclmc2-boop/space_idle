@@ -1,0 +1,340 @@
+diff --git a/space-battleship/scripts/progress_writer.gd b/space-battleship/scripts/progress_writer.gd
+index 4e4adde..32bc478 100644
+--- a/space-battleship/scripts/progress_writer.gd
++++ b/space-battleship/scripts/progress_writer.gd
+@@ -56,16 +56,39 @@ func clear_files() -> Error:
+ 			if error != OK:return error
+ 	return OK
+ 
++static func _import_owner_running(pid: int) -> bool:
++	if pid==OS.get_process_id():return true
++	# Godot's process tracker only knows this process and its children.
++	if OS.get_name()=="Linux":return DirAccess.dir_exists_absolute("/proc/"+str(pid))
++	var output: Array=[]
++	if OS.get_name()=="Windows":
++		var error:=OS.execute("tasklist",["/FI","PID eq "+str(pid),"/FO","CSV","/NH"],output,true)
++		return error!=0 or output.any(func(line):return str(line).contains('","'+str(pid)+'",'))
++	return OS.execute("/bin/kill",["-0",str(pid)],output,true)==0
++
+ static func read_progress(path: String) -> Variant:
+ 	# Interrupted import installation keeps the previous committed primary here.
+ 	# Never read .import-new: it is uncommitted, even if it parses successfully.
++	var marker := path+".import-active"
++	var active := false
++	if FileAccess.file_exists(marker):
++		var owner = JSON.parse_string(FileAccess.get_file_as_string(marker))
++		# Conservatively retain unrecognized ownership; our marker is atomically written.
++		var pid = owner.get("pid") if owner is Dictionary else null
++		active = true
++		if (pid is float or pid is int) and is_finite(float(pid)) and pid==floorf(float(pid)) and pid>0 and pid<9.22e18:
++			active = _import_owner_running(int(pid))
++		if not active:DirAccess.remove_absolute(marker)
+ 	var previous := path+".import-prev"
+-	if FileAccess.file_exists(previous):
+-		if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
+-			if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
+-		if _read_progress_file(path)!=null:
+-			DirAccess.remove_absolute(previous)
+-			if FileAccess.file_exists(path+".import-new"):DirAccess.remove_absolute(path+".import-new")
++	if not active:
++		if FileAccess.file_exists(previous):
++			if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
++				if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
++			if _read_progress_file(path)!=null:DirAccess.remove_absolute(previous)
++		# Also covers interruption after staging new bytes, before moving the old primary.
++		# An uncommitted incoming file must never replace a valid committed primary.
++		if _read_progress_file(path)!=null and FileAccess.file_exists(path+".import-new"):
++			DirAccess.remove_absolute(path+".import-new")
+ 	for suffix in ["", ".import-prev", ".bak"]:
+ 		var data = _read_progress_file(path + suffix)
+ 		if data != null:return data
+diff --git a/space-battleship/scripts/save_transfer.gd b/space-battleship/scripts/save_transfer.gd
+index f3e7c76..1378a84 100644
+--- a/space-battleship/scripts/save_transfer.gd
++++ b/space-battleship/scripts/save_transfer.gd
+@@ -60,22 +60,48 @@ static func clean(value: Variant, spec: Variant) -> Variant:
+   elif spec.has("*"):result[key]=clean(value[key],spec["*"])
+  return result
+ 
+-static func blueprint_valid(raw: Dictionary) -> bool:
++static func blueprint_valid(raw: Dictionary, builds: Dictionary) -> bool:
+  if not raw.has("blueprint"):return true
+  var plan: Dictionary=raw.blueprint
+- if plan.get("layout_version")!=Layout.VERSION or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
++ if plan.get("layout_version")!=Layout.VERSION or plan.get("core_id")!="core" or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
+  var nodes: Array=plan.nodes
+- if nodes.is_empty() or nodes.size()>10000:return false
++ if nodes.is_empty() or nodes.size()>10000 or plan.edges.size()!=nodes.size():return false
++ var identities := {}
++ var connections := {}
+  for i in range(-1,nodes.size()):
+   var node: Dictionary=plan.core if i<0 else nodes[i]
+   for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
+    if not node.has(key):return false
+   if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
+-  if i>=0 and (not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i):return false
+-  for dep in node.requires:
+-   if dep!="core" and (not dep.begins_with("node_") or not dep.trim_prefix("node_").is_valid_int() or int(dep.trim_prefix("node_"))<0 or int(dep.trim_prefix("node_"))>=i):return false
++  if node.footprint[0]<=0 or node.footprint[1]<=0:return false
++  if i<0:
++   if node.type!="core" or node.get("planned_type","core")!="core" or node.parent_id!=-1 or node.depth!=0 or not node.requires.is_empty():return false
++  else:
++   if not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i:return false
++   for type in [node.type,node.get("planned_type",node.type)]:
++    if not str(type).is_empty() and not builds.has(type):return false
++   if not str(node.type).is_empty() and not str(node.get("planned_type","")).is_empty() and node.type!=node.planned_type:return false
++   var parent: Dictionary=plan.core if int(node.parent_id)<0 else nodes[int(node.parent_id)]
++   if node.depth!=parent.depth+1 or node.requires!=[parent.node_id]:return false
++  identities[node.node_id]=node
++  connections[node.node_id]=[]
++ var destinations := {}
+  for edge in plan.edges:
+-  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width"):return false
++  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width") or edge.width<=0:return false
++  if not identities.has(edge.from) or not identities.has(edge.to) or edge.to=="core" or destinations.has(edge.to):return false
++  if identities[edge.to].requires!=[edge.from]:return false
++  destinations[edge.to]=true
++  connections[edge.from].append(edge.to);connections[edge.to].append(edge.from)
++ for id in identities:
++  var expected: Array=connections[id]
++  var actual: Array=identities[id].connections
++  if actual.size()!=expected.size() or not expected.all(func(ref):return actual.has(ref)):return false
++ for i in raw.get("slots",[]).size():
++  var slot: Dictionary=raw.slots[i]
++  if i>=nodes.size() or slot.get("id",i)!=i or slot.get("node_id",nodes[i].node_id)!=nodes[i].node_id:return false
++  for type in [slot.get("type",""),slot.get("planned_type","")]:
++   if not str(type).is_empty() and not builds.has(type):return false
++  if not str(nodes[i].type).is_empty() and not str(slot.get("type","")).is_empty() and nodes[i].type!=slot.type:return false
+  return true
+ 
+ func prepare(path: String, db: ShipDatabase) -> Dictionary:
+@@ -93,8 +119,15 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
+  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,BattleGame.SAVE_VERSION]:return {"error":"version"}
+  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
+  if not shape(raw,schema()):return {"error":"format"}
+- for region in raw.get("galaxies",{}).values():
+-  if region.get("version",0)>3 or not blueprint_valid(region):return {"error":"format"}
++ for key in raw.get("galaxies",{}):
++  var region: Dictionary=raw.galaxies[key]
++  if region.get("version",0)>3:return {"error":"format"}
++  # Older galaxy saves regenerate their layout; preserve that migration path.
++  if region.get("version",0)<3:continue
++  var builds := {}
++  for build in db.data.get("galaxy_build",{}).values():
++   if build.galaxy_key==key:builds[build.key]=build
++  if not blueprint_valid(region,builds):return {"error":"format"}
+  # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
+  var candidate:=BattleGame.new(db,false)
+  candidate.load_progress_data(clean(raw,schema()))
+@@ -104,7 +137,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
+ func export_progress(game: BattleGame, path: String) -> Error:
+  var target:=ProjectSettings.globalize_path(path).simplify_path()
+  var primary:=game.progress_writer.path.simplify_path()
+- if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new"]:return ERR_INVALID_PARAMETER
++ if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak"]:return ERR_INVALID_PARAMETER
+  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ 
+ func write_file(path: String, bytes: PackedByteArray) -> Error:
+@@ -115,6 +148,17 @@ func rename(from: String,to: String) -> Error:
+  return DirAccess.rename_absolute(from,to)
+ 
+ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
++ # Install ownership before staging bytes, so startup in another process cannot
++ # mistake an in-flight transaction for an interrupted import.
++ var marker: String=game.progress_writer.path+".import-active"
++ if FileAccess.file_exists(marker) or DirAccess.dir_exists_absolute(marker):return {"error":ERR_ALREADY_IN_USE}
++ var error:=write_file(marker,JSON.stringify({"pid":OS.get_process_id()}).to_utf8_buffer())
++ if error!=OK:return {"error":error}
++ var transaction:=_commit_import(game,raw)
++ DirAccess.remove_absolute(marker)
++ return transaction
++
++func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
+  var prepared:=prepare_data(raw,game.db)
+  if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
+  var primary: String=game.progress_writer.path
+diff --git a/test/README.md b/test/README.md
+index 524a4fe..7c460d0 100644
+--- a/test/README.md
++++ b/test/README.md
+@@ -32,7 +32,7 @@
+ | 全局装备强化 | `test_shared_enhancement_ranks.gd` 检查共享0/9/10/19/20与分支位置边界、重排停用/恢复、保存和六种显式详情（图形模式验证点击）；`test_enhancements.gd` 检查共享顺序/共享强化门槛/全局事件/费用/MAX/分支；`test_enhancement_branches.gd` 检查36选项、状态/组合/实际恢复/共同抗性；`test_enhancement_branch_attacks.gd` 检查四武器、规范攻击计数、单次连锁与有界连发；`test_deferred_enhancements.gd` 检查延迟队列、全局清除和时序；`test_neutral_memory_protection.gd` 检查无抗性临时保护、原始伤害溢出和延迟交互；`test_enhancement_save.gd` 检查旧档清理/余额/新档/重铸；`test_enhancement_furnace.gd` 检查碎片生产不递归；`test_percentage_expected_damage.gd` 检查整数/紧凑百分比、模块暴击期望、计时增益仅战斗生效且不触发面板刷新；`test_enhance_config.py` 校验唯一配置表和非法输入；`test_enhancement_cost.gd --headless` 检查指数单价、几何批量/MAX、赠送级免计费和超大余额。旧宝石背包/合成/镶嵌专项已被替代，不作新系统验收入口。 |
+ | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
+ | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
+-| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
++| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。`python test_save_import_recovery.py --project 隔离工程 --output 日志目录` 通过真实进程死亡与新进程启动检查四种恢复状态、三种存活事务保护（Linux）。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
+ | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
+ | 音乐与开关偏好 | `test_bgm.gd` |
+ | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
+diff --git a/test/test_save_import_recovery.gd b/test/test_save_import_recovery.gd
+new file mode 100644
+index 0000000..d7376d7
+--- /dev/null
++++ b/test/test_save_import_recovery.gd
+@@ -0,0 +1,58 @@
++extends SceneTree
++const Transfer := preload("res://scripts/save_transfer.gd")
++class Interrupted extends Transfer:
++ var phase: String
++ func stop() -> void:
++  print("INTERRUPTION: "+phase)
++  OS.kill(OS.get_process_id())
++  while true:OS.delay_msec(10)
++ func write_file(path: String,bytes: PackedByteArray) -> Error:
++  var error:=super.write_file(path,bytes)
++  if error==OK and path.ends_with(".import-new") and phase=="staged":stop()
++  return error
++ func rename(from: String,to: String) -> Error:
++  var error:=super.rename(from,to)
++  if error==OK and ((phase=="moved" and to.ends_with(".import-prev")) or (phase=="installed" and from.ends_with(".import-new"))):stop()
++  return error
++var checks:=0
++var failures:=0
++func check(ok: bool,label: String) -> void:
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL: "+label)
++func _initialize() -> void:call_deferred("run")
++func run() -> void:
++ var args:=OS.get_cmdline_user_args()
++ var mode:=args[0]
++ var phase:=args[1]
++ var db:=ShipDatabase.new();db.config.offlineMax=0
++ var game:=BattleGame.new(db,mode!="interrupt")
++ if mode=="interrupt":
++  game.load_progress_data(JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)))
++  var raw:=game.portable_save_data();raw.resources["1"]=333;raw.resources["2"]=444
++  var service:=Interrupted.new();service.phase=phase
++  var result:=service.commit_import(game,raw)
++  printerr("Expected interruption, got "+str(result));quit(1);return
++ var primary:=ProjectSettings.globalize_path(BattleGame.SAVE_PATH)
++ check(OS.get_user_data_dir().contains("test/work"),"Isolated fresh-process user directory")
++ var expected:=333 if phase=="installed" else 111
++ check(game.profile.resources["1"]==expected,"Fresh startup loads committed progress at "+phase)
++ var before:=FileAccess.get_file_as_bytes(primary) if FileAccess.file_exists(primary) else PackedByteArray()
++ var recovery:=FileAccess.get_file_as_bytes(primary+".bak")
++ var previous:=FileAccess.get_file_as_bytes(primary+".import-prev") if FileAccess.file_exists(primary+".import-prev") else PackedByteArray()
++ var incoming:=FileAccess.get_file_as_bytes(primary+".import-new") if FileAccess.file_exists(primary+".import-new") else PackedByteArray()
++ if mode=="active":
++  check(FileAccess.file_exists(primary+".import-active") and not incoming.is_empty(),"Startup retains live-owner staging")
++  var blocked:=Transfer.new().commit_import(game,game.portable_save_data())
++  check(blocked.error==ERR_ALREADY_IN_USE,"Another import cannot take live transaction ownership")
++  check((FileAccess.get_file_as_bytes(primary) if FileAccess.file_exists(primary) else PackedByteArray())==before and FileAccess.get_file_as_bytes(primary+".import-new")==incoming and (FileAccess.get_file_as_bytes(primary+".import-prev") if FileAccess.file_exists(primary+".import-prev") else PackedByteArray())==previous,"Live transaction files stay byte-identical")
++ else:
++  check(not FileAccess.file_exists(primary+".import-active") and not FileAccess.file_exists(primary+".import-new") and not FileAccess.file_exists(primary+".import-prev"),"Fresh startup removes abandoned staging and ownership")
++  var raw:=game.portable_save_data();raw.resources["1"]=555
++  var service:=Transfer.new();var transaction:=service.commit_import(game,raw)
++  check(transaction.error==OK,"Subsequent import succeeds after "+phase)
++  if transaction.error==OK:
++   check(FileAccess.get_file_as_bytes(transaction.backup+"/original-progress.json")==before,"Subsequent import backs up exact recovered primary")
++   check(service.rollback(transaction)==OK and FileAccess.get_file_as_bytes(primary)==before,"Subsequent import rollback preserves recovered primary")
++ check(FileAccess.get_file_as_bytes(primary+".bak")==recovery,"Startup/import preserve committed recovery copy")
++ print("IMPORT RECOVERY "+mode+" "+phase+": %d checks, %d failures"%[checks,failures])
++ quit(1 if failures else 0)
+diff --git a/test/test_save_import_recovery.py b/test/test_save_import_recovery.py
+new file mode 100644
+index 0000000..820b725
+--- /dev/null
++++ b/test/test_save_import_recovery.py
+@@ -0,0 +1,66 @@
++"""Real process death and fresh Godot startup, using a caller-owned isolated copy."""
++import argparse
++import json
++import os
++from pathlib import Path
++import subprocess
++
++parser = argparse.ArgumentParser()
++parser.add_argument("--project", required=True)
++parser.add_argument("--output", required=True)
++parser.add_argument("--godot", default="godot")
++parser.add_argument("--case", help="Run one named scenario, e.g. legacy-staged")
++args = parser.parse_args()
++project = Path(args.project).resolve()
++output = Path(args.output).resolve()
++output.mkdir(parents=True, exist_ok=True)
++assert "/test/work/" in str(project), "Use an isolated test/work project"
++old = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 111, "2": 222}}).encode()
++new = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 333, "2": 444}}).encode()
++failures = 0
++scenarios = [("legacy", "staged"), *(('interrupt', p) for p in ["staged", "moved", "installed"]), *(('active', p) for p in ["staged", "moved", "installed"])]
++if args.case:
++    scenarios = [(mode, phase) for mode, phase in scenarios if f"{mode}-{phase}" == args.case]
++    assert scenarios, "Unknown scenario"
++for mode, phase in scenarios:
++    case = project.parent / "userdata" / "import-recovery" / f"{mode}-{phase}"
++    env = {**os.environ, "XDG_DATA_HOME": str(case / "data"), "XDG_CONFIG_HOME": str(case / "config"), "XDG_CACHE_HOME": str(case / "cache")}
++    user = case / "data/godot/app_userdata/太空战舰 · 深空远征"
++    user.mkdir(parents=True, exist_ok=True)
++    primary = user / "progress.json"
++    for suffix in ["", ".bak", ".import-prev", ".import-new", ".import-active", ".import-active.tmp", ".import-active.bak"]:
++        (user / ("progress.json" + suffix)).unlink(missing_ok=True)
++    primary.write_bytes(old)
++    (user / "progress.json.bak").write_bytes(old + b"\n")
++    cmd = [args.godot, "--headless", "--path", str(project), "--script", "../test/test_save_import_recovery.gd", "--"]
++    if mode == "interrupt":
++        stopped = subprocess.run(cmd + [mode, phase], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)
++        (output / f"{mode}-{phase}-interrupted.log").write_bytes(stopped.stdout)
++        (output / f"{mode}-{phase}-interrupted.exit").write_text(str(stopped.returncode) + "\n")
++        if os.name == "posix":
++            assert stopped.returncode == -9, "Expected actual SIGKILL process death"
++        assert stopped.returncode != 0 and f"INTERRUPTION: {phase}".encode() in stopped.stdout, stopped.stdout.decode()
++        assert (user / "progress.json.import-active").exists(), "The killed process leaves ownership"
++    else:
++        (user / "progress.json.import-new").write_bytes(new)
++        if phase in ["moved", "installed"]:
++            primary.rename(user / "progress.json.import-prev")
++        if phase == "installed":
++            primary.write_bytes(new)
++        if mode == "active":
++            (user / "progress.json.import-active").write_text(json.dumps({"pid": os.getpid()}))
++    startup = subprocess.run(cmd + [("active" if mode == "active" else "recover"), phase], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)
++    (output / f"{mode}-{phase}-startup.log").write_bytes(startup.stdout)
++    (output / f"{mode}-{phase}.exit").write_text(str(startup.returncode) + "\n")
++    print(startup.stdout.decode(), end="")
++    if startup.returncode != 0:
++        failures += 1
++    if mode != "active":
++        assert json.loads(primary.read_bytes())["resources"]["1"] == (333 if phase == "installed" else 111)
++        if phase != "installed":
++            assert primary.read_bytes() == old, "Abandoned incoming never replaces committed original"
++    else:
++        assert (user / "progress.json.import-active").exists()
++        assert (user / "progress.json.import-new").read_bytes() == new
++print(f"FRESH PROCESS IMPORT RECOVERY: {len(scenarios)} scenarios, {failures} failures")
++raise SystemExit(bool(failures))
+diff --git a/test/test_save_transfer.gd b/test/test_save_transfer.gd
+index f7d6b2a..cc8b8fe 100644
+--- a/test/test_save_transfer.gd
++++ b/test/test_save_transfer.gd
+@@ -39,6 +39,31 @@ func run() -> void:
+   check(not transfer.prepare("user://transfer-bad.json",db).error.is_empty(),"Reject damaged/truncated/wrong JSON")
+  var damaged:=raw.duplicate(true);damaged.galaxies[damaged.galaxies.keys()[0]].blueprint={"layout_version":1}
+  check(not transfer.prepare_data(damaged,db).error.is_empty(),"Reject incomplete galaxy layout before loader")
++ var galaxy_key: String=raw.galaxies.keys()[0]
++ var disk_before:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
++ for kind in ["edge_to","edge_from","edge_core","unknown_type","unknown_planned","node_id","parent","connection"]:
++  var malformed:=raw.duplicate(true)
++  var region: Dictionary=malformed.galaxies[galaxy_key]
++  match kind:
++   "edge_to":region.blueprint.edges[0].to="node_999"
++   "edge_from":region.blueprint.edges[0].from="node_999"
++   "edge_core":region.blueprint.edges[0].to="core"
++   "unknown_type":
++    region.blueprint.nodes[0].type="unknown_construct"
++    region.blueprint.nodes[0].planned_type="unknown_construct"
++    region.slots[0].type="unknown_construct"
++   "unknown_planned":region.blueprint.nodes[0].planned_type="unknown_construct"
++   "node_id":region.blueprint.nodes[0].node_id="node_999"
++   "parent":region.blueprint.nodes[1].parent_id=0 if region.blueprint.nodes[1].parent_id==-1 else -1
++   "connection":region.blueprint.core.connections.append("node_999")
++  write_json("user://transfer-bad-graph.json",malformed)
++  check(not transfer.prepare("user://transfer-bad-graph.json",db).error.is_empty(),"Reject malformed galaxy file before confirmation: "+kind)
++  check(transfer.commit_import(g,malformed).error==ERR_INVALID_DATA and g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==disk_before,"Rejected galaxy cannot replace disk/runtime: "+kind)
++ for version in [1,2]:
++  var legacy:=raw.duplicate(true);legacy.version=2 if version==1 else 3
++  legacy.galaxies[galaxy_key].version=version
++  legacy.galaxies[galaxy_key].erase("blueprint")
++  check(transfer.prepare_data(legacy,db).error.is_empty(),"Legal old galaxy regenerates layout: "+str(version))
+  check(g.profile==before,"All rejected imports preserve live state")
+  var original:="{\"version\":4,\"resources\":{\"1\":111,\"2\":222},\"highestLevel\":1}"
+  var original_file:=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE);original_file.store_string(original);original_file.close()

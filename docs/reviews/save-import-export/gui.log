@@ -4,7 +4,3 @@ WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by 
 OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
 
 SAVE TRANSFER UI: 22 checks, 0 failures
-WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
-   at: cleanup (core/object/object.cpp:2663)
-ERROR: 1 resources still in use at exit (run with --verbose for details).
-   at: clear (core/io/resource.cpp:810)
