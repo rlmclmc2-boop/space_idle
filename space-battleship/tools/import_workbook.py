@@ -294,6 +294,7 @@ def validate_projection(data, *, check_level_ratios=True):
         positive(row.get('base_level'),f'battle_design {key} base level')
         upgrade=row.get('min_upgrade')
         if type(row['base_level']) not in (int,float) or row['base_level']!=int(row['base_level']) or type(upgrade) not in (int,float) or upgrade!=int(upgrade) or upgrade not in (0,1,2,3):raise ValueError(f'battle_design {key}: invalid upgrade baseline')
+    validate_attack_pairs(data)
     for enemy in enemies.values():
         eid = enemy['id']
         size = enemy['size']
@@ -670,6 +671,56 @@ def full_import(source, target):
     finally:
         if temporary.exists(): temporary.unlink()
     return data
+
+def validate_attack_pairs(data):
+    """Optional source metadata separates enemy attacks from player counters."""
+    fields = ('pair_id', 'attack_variant', 'attack_type', 'paired_group_id')
+    pairs = {}
+    groups, enemies = data['groups'], data['enemies']
+    for key, row in data.get('battle_design', {}).items():
+        if not any(row.get(f) is not None for f in fields):
+            continue  # Existing unpaired workbooks remain valid.
+        if any(row.get(f) is None for f in fields) or not isinstance(row['pair_id'], str) or not row['pair_id'].strip():
+            raise ValueError(f'battle_design {key}: incomplete attack pair')
+        expected = {'energy_attack': 1, 'physical_attack': 2}.get(row['attack_variant'])
+        if type(row['attack_type']) not in (int, float) or row['attack_type'] != expected:
+            raise ValueError(f'battle_design {key}: invalid attack variant/type')
+        partner = row['paired_group_id']
+        if type(partner) not in (int, float) or not math.isfinite(partner) or partner != int(partner) or str(int(partner)) not in groups:
+            raise ValueError(f'battle_design {key}: missing paired group')
+        pairs.setdefault(row['pair_id'], []).append(row)
+        for eid in groups[str(row['group_id'])]['slots']:
+            if eid is None:
+                continue
+            for mount in enemies[str(eid)]['equipment']:
+                name = mount['name']
+                base = name.replace('_mon', '').replace('-mon', '')
+                weapon = data['equipment'].get(name, [{}])[0]
+                damage_type = weapon.get('dmgtype')
+                if damage_type is None:
+                    fallback = data['equipment'].get(base, [{}])[0]
+                    damage_type = data.get('enemy_weapon_base', {}).get(base, {}).get('dmgtype', fallback.get('dmgtype'))
+                if type(damage_type) not in (int, float) or damage_type != expected:
+                    raise ValueError(f'battle_design {key}: declared attack type differs from actual weapon')
+    identity = ('tier', 'counter', 'base_level', 'min_upgrade', 'target_seconds')
+    defence = ('health', 'size', 'armourType', 'shield', 'shieldType', 'shieldRecovery', 'shieldDelay', 'drops')
+    for pair, rows in pairs.items():
+        if len(rows) != 2 or {r['attack_variant'] for r in rows} != {'energy_attack', 'physical_attack'}:
+            raise ValueError(f'battle_design {pair}: expected one energy and one physical member')
+        a, b = rows
+        if a['paired_group_id'] != b['group_id'] or b['paired_group_id'] != a['group_id'] or any(a[f] != b[f] for f in identity):
+            raise ValueError(f'battle_design {pair}: inconsistent pair identity')
+        sa, sb = groups[str(a['group_id'])]['slots'], groups[str(b['group_id'])]['slots']
+        if len(sa) != len(sb):
+            raise ValueError(f'battle_design {pair}: formation length differs')
+        for ea, eb in zip(sa, sb):
+            if (ea is None) != (eb is None):
+                raise ValueError(f'battle_design {pair}: formation differs')
+            if ea is not None:
+                ma, mb = enemies[str(ea)], enemies[str(eb)]
+                if any(ma.get(f) != mb.get(f) for f in defence) or len(ma['equipment']) != len(mb['equipment']):
+                    raise ValueError(f'battle_design {pair}: defence identity or mount count differs')
+
 
 def main():
     if hasattr(sys.stdout,"reconfigure"):

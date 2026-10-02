@@ -58,6 +58,8 @@
 
 ## 运行
 
+敌方攻击配对模板：`test_enemy_attack_pairs.py` 核对40模板、20配对、原组保留及四源表一致性；`test_enemy_attack_pairs.gd --headless` 验证实际武器类型及真实弹体命中后的能盾/复合装甲响应。小样本战斗不代表新增20组数值验收。
+
 从工作区根目录执行一个专项：
 
 ```powershell

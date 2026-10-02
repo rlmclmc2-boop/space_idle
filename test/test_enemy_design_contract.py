@@ -17,10 +17,10 @@ from import_workbook import validate_projection
 data = json.loads((PROJECT / "data/game_data.json").read_text())
 validate_projection(data)
 records = data["battle_design"]
-assert len(records) == 20
+assert len(records) == 40
 assert {tier: sum(r["tier"] == tier for r in records.values())
         for tier in ("normal", "elite", "boss", "ultimate")} == {
-            "normal": 8, "elite": 8, "boss": 2, "ultimate": 2}
+            "normal": 16, "elite": 16, "boss": 4, "ultimate": 4}
 signatures = set()
 for record in records.values():
     slots = data["groups"][str(record["group_id"])]["slots"]
@@ -50,7 +50,7 @@ for name in ("equipment", "mon", "monGroup", "level", "weapon_motion"):
     old_bytes = subprocess.check_output(["git", "show", f"{BASE}:{relative}"], cwd=ROOT)
     old = openpyxl.load_workbook(io.BytesIO(old_bytes)).active
     new = openpyxl.load_workbook(ROOT / relative).active
-    allowed = {"E8", "G8", "G12"} if name == "equipment" else set()
+    allowed = {"E8", "G8", "G12", "B9", "B11"} if name == "equipment" else set()
     for row in old:
         for cell in row:
             assert cell.value == new[cell.coordinate].value or cell.coordinate in allowed, (name, cell.coordinate)
@@ -77,4 +77,4 @@ for value in (True, 1.5, -1, 4):
     invalid = copy.deepcopy(data)
     invalid["battle_design"]["normal_laser"]["min_upgrade"] = value
     rejects(invalid)
-print("Enemy design contract: 20 unique symmetric groups, size rules, legacy rows, growth, level/motion bytes, malformed drafts passed")
+print("Enemy design contract: 40 unique symmetric groups, size rules, legacy rows, growth, level/motion bytes, malformed drafts passed")

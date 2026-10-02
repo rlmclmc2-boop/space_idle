@@ -25,7 +25,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 8
+CACHE_VERSION = 9
 
 
 def sha(value):
