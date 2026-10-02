@@ -63,9 +63,14 @@ def main():
         print((area / (label + ".log")).read_text(encoding="utf-8", errors="replace"))
         return result.returncode
 
+    godot = str(args.godot.resolve())
+    if args.test == "test_weapon_config.py":
+        env["SPACE_BATTLESHIP_GODOT"] = godot
+        code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
+        if code:
+            return code
     if args.test.endswith(".py"):
         return run([sys.executable, str(isolated_tests / args.test)], "test")
-    godot = str(args.godot.resolve())
     code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
     if code:
         return code

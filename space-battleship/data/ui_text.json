@@ -8844,7 +8844,7 @@
   },
   {
     "key": "equipment.description.missile",
-    "text": "追踪多个敌人；齐射数量受目标数量限制。",
+    "text": "按存活目标轮转分配；目标不足仍发满表设整批，逐枚离管。",
     "params": "",
     "category": "weapon",
     "note": "依据当前装备机制的简短说明"

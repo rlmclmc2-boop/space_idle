@@ -12,6 +12,10 @@ static func parameters(data: Dictionary) -> Array:
 	for section in ["config","defaults"]:
 		for key in data[section]:
 			if data[section][key] is float or data[section][key] is int:result.append([section,str(key)])
+	# BalanceGame reads these common fields; presentation-only guidance stays
+	# outside its scan catalog rather than offering parameters it cannot apply.
+	for key in ["player_projectile_pixels_per_unit","enemy_projectile_pixels_per_unit","chain_carrier_speed"]:
+		if data.get("weapon_motion",{}).has(key):result.append(["weapon_motion",key,"value"])
 	for index in data.levels.size():
 		for field in LEVEL_FIELDS:result.append(["levels",index,field])
 	for key in BattleGame.EQUIPMENT:
@@ -33,7 +37,11 @@ static func identifier(path: Array) -> String:
 	return "/".join(parts)
 
 static func valid_value(path: Array, value: float) -> bool:
-	if not is_finite(value) or value < 0:return false
+	if not is_finite(value):return false
+	if path[0]=="weapon_motion":
+		if path[1]=="missile_launch_forward_y":return value>=-1 and value<=0
+		return value>=0 if path[1] in ["missile_ejection_gap","missile_departure_angle","missile_ignition_at","missile_seek_start"] else value>0
+	if value < 0:return false
 	var field := str(path.back())
 	if field == "cd" or path[0] == "levels":return value > 0
 	# Zero flight speed creates stationary projectiles that cannot reach a

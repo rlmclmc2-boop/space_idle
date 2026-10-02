@@ -15,7 +15,7 @@ from galaxy_config import validate as validate_galaxy
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff", "enhance_config":"enhance_config"}
 DEFAULTS = {"autoCollectDelay":5.0,"loopDelay":6.0,"deathRetreatDistance":300.0,"deathRetreatDuration":1.2,"projectilePixelsPerUnit":28.0,"startingIron":0.0,"startingTitanium":0.0}
-SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config')})
+SECTIONS.update({name:name for name in ('galaxy','galaxy_build','galaxy_config','weapon_motion','enemy_weapon_base')})
 FALLBACKS = {"enemyWeaponMissingLevel":"Use player weapon row 1 when the enemy weapon row is missing.","enemyCannonMissingDamageAndCooldown":"Use player cannon row 1 for missing fields."}
 
 def clean(value):
@@ -30,6 +30,14 @@ def read_rows(sheet):
     return [{key:value for key,value in zip(header,row) if key is not None} for row in values if row and row[0] is not None]
 
 def convert_sheet(name, rows):
+    if name in ('weapon_motion', 'enemy_weapon_base'):
+        result = {}
+        for row in rows:
+            key = row.get('id')
+            if not isinstance(key,str) or not key.strip() or key in result:
+                raise ValueError(f'{name}: missing or duplicate ID {key}')
+            result[key] = row
+        return result
     if name in ('galaxy','galaxy_build','galaxy_config'):
         result = {}
         for source in rows:
@@ -175,7 +183,48 @@ def validate_description(row, field='description', section='hightech'):
                 raise ValueError(ui_text('debug.import_workbook.message_125', label=label))
 
 
+def validate_weapon_motion(data):
+    motion = data.get('weapon_motion', {})
+    expected = {'player_projectile_pixels_per_unit','enemy_projectile_pixels_per_unit','player_cannon_speed_multiplier','chain_carrier_speed','missile_ejection_gap','missile_launch_speed','missile_turn_rate','missile_orphan_lifetime','missile_reacquire_interval','missile_departure_angle','missile_ignition_at','missile_seek_start','missile_cruise_at','missile_lifetime','missile_brake_range','missile_brake_angle','missile_min_guided_speed','missile_brake_factor','missile_hit_radius','missile_launch_edge_margin','missile_launch_forward_y'}
+    if not isinstance(motion,dict):raise ValueError('weapon_motion: expected table')
+    if 'weapon_motion' in data and set(motion) != expected:
+        raise ValueError(f'weapon_motion: missing {sorted(expected-set(motion))}; unknown {sorted(set(motion)-expected)}')
+    for key,row in motion.items():
+        value = row.get('value')
+        if type(value) not in (int,float):raise ValueError(f'weapon_motion {key}: expected numeric value')
+        if key == 'missile_launch_forward_y':
+            if type(value) not in (int,float) or not math.isfinite(value) or not -1 <= value <= 0:
+                raise ValueError(f'weapon_motion {key}: expected finite direction in [-1,0]')
+        else:
+            positive(value, f'weapon_motion {key}', key in ('missile_ejection_gap','missile_departure_angle','missile_ignition_at','missile_seek_start'))
+        if not str(row.get('unit','')).strip() or not str(row.get('description','')).strip():
+            raise ValueError(f'weapon_motion {key}: unit and description required')
+    if motion and float(motion['missile_cruise_at']['value']) <= float(motion['missile_ignition_at']['value']):
+        raise ValueError('weapon_motion: cruise_at must exceed ignition_at')
+    enemy_base=data.get('enemy_weapon_base',{})
+    if 'enemy_weapon_base' in data and (not isinstance(enemy_base,dict) or set(enemy_base)!={'laser','missile','cannon','longLaser'}):raise ValueError('enemy_weapon_base: require all four base weapons')
+    if motion:
+        salvo=data['equipment']['missile'][0].get('para1')
+        if type(salvo) not in (int,float) or not math.isfinite(salvo) or salvo<1 or salvo!=int(salvo):raise ValueError('equipment missile.para1: expected positive integer salvo quantity')
+    for key,row in enemy_base.items():
+        for field in ('dmg','cd','dmgtype'):
+            positive(row.get(field), f'enemy_weapon_base {key}.{field}')
+        # Require consumed fields, while retaining nullable unused parameters
+        # and the beam's intentionally optional charge duration.
+        required = ('para1','para2') if key in ('missile','longLaser') else ('para1',)
+        for field in required:
+            positive(row.get(field), f'enemy_weapon_base {key}.{field}', key == 'longLaser' and field == 'para1')
+        if key == 'longLaser' and 'para3' not in row:
+            raise ValueError('enemy_weapon_base longLaser.para3: charge column required (nullable)')
+        for field in ('para1','para2','para3'):
+            if row.get(field) is not None:positive(row[field], f'enemy_weapon_base {key}.{field}', True)
+    if motion:
+        data.get('defaults',{}).pop('projectilePixelsPerUnit',None)
+    if enemy_base:
+        data.setdefault('fallbacks',{}).update({'enemyWeaponMissingLevel':'Use enemy_weapon_base when the enemy weapon row is missing.','enemyCannonMissingDamageAndCooldown':'Use enemy_weapon_base for missing hostile weapon fields.'})
+
 def validate_projection(data, *, check_level_ratios=True):
+    validate_weapon_motion(data)
     validate_galaxy(data)
     validate_crew(data)
     validate_unlocks(data)
@@ -589,7 +638,7 @@ def full_import(source, target):
     try:
         for name,section in SECTIONS.items():
             if name not in book.sheetnames:
-                if name in ('ship','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','enhance_config'):
+                if name in ('ship','unlock','crew','crew_assignment','crew_config','planet','planet_build','planet_buff','enhance_config','weapon_motion','enemy_weapon_base'):
                     continue  # Older master workbooks predate optional projections.
                 raise ValueError(ui_text('debug.import_workbook.message_15', name=name))
             data[section]=convert_sheet(name,read_rows(book[name]))

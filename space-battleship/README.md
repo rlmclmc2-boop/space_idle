@@ -22,6 +22,10 @@ AI 入口：[AGENTS](AGENTS.md)。本页只列操作；规则、定位和测试�
 
 编辑源为 `config_excel/*.xlsx`，运行投影为 `data/game_data.json`。日常流程：修改对应分表，在表格软件中计算并保存 → QA「读取配置」→ 成功后「重启游戏」。导入不计算 Excel 公式；缓存缺失时回表格软件保存。Python 需 `openpyxl/lxml`，可用 `SPACE_BATTLESHIP_PYTHON` 指定。
 
+武器调参：`equipment.xlsx` 的玩家武器一级行拥有基础伤害 `dmg`、成长 `dmgMulti`、冷却 `cd`；导弹 `para1` 是每批数量，`para2` 是巡航速度（单位/秒）。导弹已回填当前有效一级值，不再额外乘伤害或强制改批量。目标不足时按存活目标轮转发满整批。
+
+`weapon_motion.xlsx` 提供正式战场的逐枚间隔、初速、加速/制导时间、转向率、寿命、近目标减速、命中半径、火炮速度倍率与连锁载体速度；每行标明单位和影响范围。玩家与敌方像素换算分别独立；玩家巡航像素速度＝`para2 × player_projectile_pixels_per_unit`，玩家火炮速度＝`para1 × player_projectile_pixels_per_unit × player_cannon_speed_multiplier`。`enemy_weapon_base.xlsx` 只拥有敌方缺行/空字段的基础回退；玩家改表不更改这些值。旧 JSON 缺少新表时保留旧运动默认值与迁移前导弹投影；旧存档的模块等级仍按现行一级行成长，不新增存档字段。
+
 不要手改运行 JSON，也不要先用旧总表同步。仅明确要以所选旧总表**替换**分表时，才用「拆分／同步 Excel」；先备份并核对差异。它不合并两处编辑。旧表字段缺口见 [STATUS U-018](docs/STATUS.md)；关卡编辑器的校验与恢复见 [LEVEL_EDITOR](docs/LEVEL_EDITOR.md)。
 
 ## Windows 单文件发布

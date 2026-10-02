@@ -88,8 +88,7 @@ func run():
  g.tick_projectiles(0);report(g,events,"ordinary_projectile",0,10)
  g=fixture();events=capture(g);g.enhancement_buffers={0:10.0,1:10.0};g.state=BattleGame.State.COMBAT;g.spawn_group()
  enemy=g.enemies[0];enemy.equipment=[{"name":"longLaser-mon"}];enemy.dmgMultiple=1.0
- g.db.equipment.longLaser=[{"name":"longLaser","level":1,"dmg":10,"dmgtype":1,"cd":.2,"para1":1.0,"para2":1.0,"para3":0.0,"unlock":0}]
- g.db.equipment.erase("longLaser-mon")
+ g.db.equipment["longLaser-mon"]=[{"name":"longLaser-mon","level":1,"dmg":10,"dmgtype":1,"cd":.2,"para1":1.0,"para2":1.0,"para3":0.0,"unlock":0}]
  g.lock_long_laser(enemy,g.db.enemy_weapon("longLaser-mon"),true,0,enemy.equipment[0])
  g.tick_long_laser(g.projectiles.back(),0);report(g,events,"continuous_beam",0,10)
  g=fixture();events=capture(g);g.enhancement_buffers={0:10.0,1:10.0}

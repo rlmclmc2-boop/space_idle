@@ -10,7 +10,7 @@ func check(ok: bool, message: String) -> void:
 		printerr("FAIL ",message)
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
-	for path in [["defaults","projectilePixelsPerUnit"],["equipment","laser",0,"para1"],["equipment","cannon",0,"para1"],["equipment","missile",0,"para2"]]:
+	for path in [["defaults","projectilePixelsPerUnit"],["weapon_motion","player_projectile_pixels_per_unit","value"],["weapon_motion","enemy_projectile_pixels_per_unit","value"],["equipment","laser",0,"para1"],["equipment","cannon",0,"para1"],["equipment","missile",0,"para2"]]:
 		check(not Scan.valid_value(path,0) and Scan.valid_value(path,1),"reject stationary projectile scan "+str(path))
 	check(Scan.valid_value(["equipment","longLaser",0,"para1"],0),"zero beam ramp remains valid")
 	var timeline := Timeline.new()
