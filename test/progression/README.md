@@ -7,16 +7,11 @@ Experimental branch only. Source baseline: main b3767d1452ab0a4c100f3bc4f26d51c7
 
 ## Independent reproduction
 
-Requires Python 3 and Godot 4.6.3 (official 7d41c59c4); package builder uses standard library only. Build copies only the reachable game-rule scripts and JSON, never assets, engine, credentials or player saves. Configuration edits require openpyxl 3.1.5 and the formal import command below.
+Requires Python 3 and Godot 4.6.3 (official 7d41c59c4); package builder uses standard library only. Default builds copy reachable rule scripts and JSON. Formal scene acceptance requires `--scene`, which also includes authored scene/assets dependencies. Neither build includes engine, credentials or player saves. Configuration edits require openpyxl 3.1.5 and the formal import command below.
 
 ```sh
-python test/progression/build_qa.py --output /tmp/progression-qa
-export XDG_DATA_HOME=/tmp/progression-qa/userdata
-export XDG_CONFIG_HOME=/tmp/progression-qa/config
-export XDG_CACHE_HOME=/tmp/progression-qa/cache
-godot --headless --editor --path /tmp/progression-qa --import --quit
-export PROGRESSION_OPTIONS='{"label":"baseline120","duration":10800,"stop_clear":10,"seed":20261002,"visit_seconds":120,"teaching_seconds":10,"strategy":"BALANCED"}'
-godot --headless --path /tmp/progression-qa --script qa/progression_probe.gd
+python test/progression/build_qa.py --output /tmp/progression-qa --scene
+python test/progression/run_qa.py --project /tmp/progression-qa --label fresh120 --engine formal --scene --duration 64800 --stop-clear 20 --visit-seconds 120 --seed 20261002 --thematic --bulk --timeout 10000
 ```
 
 Runs are EXACT original-rule fixed 1/60 X1 steps. QA acceleration saves wall time only. Results include fingerprints, settings, engine, action JSONL, wave/state durations, clear times, resource/growth state, RNG and checkpoints. Each label must be unique; preserve failed results. A save checkpoint resumes according to formal journey rules, not arbitrary enemy/projectile state.
@@ -41,6 +36,18 @@ python space-battleship/tools/config_workbooks.py import
 ```
 
 Evidence categories: diagnosis, checkpoint regression, full fresh run; facts versus hypotheses; numeric fixes versus experience recommendations. Every candidate records reason, affected stages/systems, prior failure and retest. The parent independently runs this package; this branch does not claim that happened.
+
+## Formal v9 milestone (not full acceptance)
+
+Frozen v9 source at9efd2c4, formal+scene package fingerprint `c4d5fa9b18efea35d89b1fc0a4a3af6408019b4d1eff2eaf7506989dbc619607`, seed20261002: first5 clear737.5667s, clear10 at8408.65s (2.336h). Teaching intervals2.07–3.04min. Before clear10:114 active action sessions and784 API events, not mouse clicks. The same fresh run continues through20; same-package300/900s visit sensitivity is running. This is one seed/strategy proof, not validated human experience or full0–galaxy acceptance.
+
+v9 changes11–20 income coefficient .1 with exponent9 per stage, enemy exponent13 retained; existing hightech cost-growth threshold400→50. First planet reforge effect levels25 equipment/20 research; later15/10 remain provisional. Numeric21+ still contains unaccepted earlier prototypes. See `evidence/v9-freeze.json` and `evidence/formal-scene-v9-milestone10/`.
+
+Parent reports independently executing native Presented/adapter actual-scene comparison1800s through6-5, identical every second; local proof executes900s through6-4. Both scopes are limited. Controlled basic clock151 checks do not establish actual scene/frame/boost equivalence. New `formal_scene_clock.gd` checks actual provider geometry plus main.advance_game_time at60/144fps andX1/X10; it is a diagnostic, not full GUI execution.
+
+Private actual-scene compensation for the known6 inherited early wins restores the adjacent loss/win gates at physical-pair damage factors1.4 beam elite,1.3 neutral1 elite,1.5 physical Boss,1.8 energy region Boss. No source compensation has been applied yet; remaining groups and target timing still require checking.
+
+First reforge QA strategy now allows action after clear32 plus existing ready conditions; this is no gameplay gate change. Successful reforge clears stale farm/best-won state. That policy change is not injected into the frozen in-progress v9 package; below30 outcomes are unaffected.
 
 ## Clock repair and version boundary
 

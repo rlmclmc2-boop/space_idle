@@ -1,6 +1,7 @@
 extends SceneTree
 const Game=preload("res://qa/presented_balance_game.gd")
 const Driver=preload("res://qa/scene_driver.gd")
+const Metrics=preload("res://scripts/balance_metrics.gd")
 func _initialize():call_deferred("run")
 func run_case(boost:float,fps:int)->Dictionary:
 	var db=ShipDatabase.new()
@@ -8,12 +9,12 @@ func run_case(boost:float,fps:int)->Dictionary:
 	db.levels[0].groups=[{"id":1002,"position":0.0},{"id":1002,"position":0.99}]
 	db.levels[0].atkRatio=1.0;db.levels[0].lifeRatio=1.0;db.levels[0].resRatio=1.0
 	var g=Game.new(db);g.rng.seed=1701;g.speed=boost
-	var metrics=BalanceMetrics.new();g.metrics=metrics;metrics.initialize(g)
+	var metrics=Metrics.new();g.metrics=metrics;metrics.initialize(g)
 	g.profile.selectedShip="Destroyer";g.profile.grantedUnlocks=[db.unlock_id("ship","Destroyer")]
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.loadout={"weapons":[],"defence":[]}
 	for i in 4:g.profile.loadout.weapons.append({"key":"missile","level":13})
 	g.profile.loadout.defence=[{"key":"shield","level":13},{"key":"armour","level":13}]
-	g.stat_cache_enabled=true;g.reset_player();g.start(1,false);g.profile.loop=true
+	g.stat_cache_enabled=true;g.reset_player();g.start(1,false);g.toggle_loop()
 	var driver=Driver.new();driver.setup(self,g)
 	var frames:int=int(round(600.0/boost*fps))
 	for frame in frames:
