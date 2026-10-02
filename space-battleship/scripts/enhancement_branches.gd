@@ -43,6 +43,14 @@ func defense(g,index: int) -> Dictionary:
 func reconcile(g) -> void:
  # Eligibility is shared by every module in this synchronous reconciliation.
  # Resolve common choices/gates once here; retain no state across calls/ticks.
+ var common_count: int=g.shared_enhancement_effect_count()
+ var weapon_entries: Array=g.weapon_entries()
+ var defense_entries: Array=g.defense_entries()
+ var defense_order: Array=g.profile.enhancementOrder.get("defence",[])
+ var defense_effects={}
+ for effect in ["adaptation","memory_material","delayed_damage"]:
+  var rank: int=defense_order.find(effect)
+  defense_effects[effect]=rank>=0 and rank<common_count
  var weapon_ready={}
  var weapon_order: Array=g.profile.enhancementOrder.get("weapons",[])
  var proficiency_index:=weapon_order.find("proficiency")
@@ -51,9 +59,9 @@ func reconcile(g) -> void:
   for pair in [["proficiency",1],["critical",1],["critical",2]]:
    weapon_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("weapons",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("weapons",pair[0],pair[1])
  for index in weapons.keys():
-  if int(index)>=g.weapon_entries().size():weapons.erase(index);continue
+  if int(index)>=weapon_entries.size():weapons.erase(index);continue
   var data: Dictionary=weapon(g,int(index));var entry: Dictionary=data.entry
-  var count: int=g.active_enhancement_effect_count(entry) if str(entry.get("key","")) in g.WEAPON_KEYS and (weapon_ready.proficiency1 or weapon_ready.critical1 or weapon_ready.critical2) else 0
+  var count: int=common_count if str(entry.get("key","")) in g.WEAPON_KEYS and (weapon_ready.proficiency1 or weapon_ready.critical1 or weapon_ready.critical2) else 0
   var proficiency_active:=proficiency_index>=0 and proficiency_index<count
   var critical_active:=critical_index>=0 and critical_index<count
   if not weapon_ready.proficiency1 or not proficiency_active:data.target={};data.dwell=0.0
@@ -63,13 +71,13 @@ func reconcile(g) -> void:
  for pair in [["adaptation",2],["memory_material",2],["memory_material",1],["delayed_damage",1],["adaptation",1]]:
   defense_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("defence",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("defence",pair[0],pair[1])
  for index in defenses.keys():
-  if int(index)>=g.defense_entries().size():defenses.erase(index);continue
+  if int(index)>=defense_entries.size():defenses.erase(index);continue
   var data: Dictionary=defense(g,int(index));var entry: Dictionary=data.entry
-  if not defense_ready.adaptation2 or not g.has_enhancement_effect(entry,"adaptation"):data.cover=0.0;data.cover_time=0.0;data.cover_elapsed=0.0
-  if not defense_ready.memory_material2 or not g.has_enhancement_effect(entry,"memory_material"):data.resistance_type=0;data.resistance_time=0.0;data.lockout=0.0
- if not defense_ready.memory_material1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"memory_material")):memory_reduction_remaining=0.0
- if not defense_ready.delayed_damage1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"delayed_damage")):clear_reduction_remaining=0.0
- if not defense_ready.adaptation1 or not g.defense_entries().any(func(entry):return g.has_enhancement_effect(entry,"adaptation")):incoming_sources.clear()
+  if not defense_ready.adaptation2 or (str(entry.get("key","")) not in g.DEFENSE_KEYS or not defense_effects.adaptation):data.cover=0.0;data.cover_time=0.0;data.cover_elapsed=0.0
+  if not defense_ready.memory_material2 or (str(entry.get("key","")) not in g.DEFENSE_KEYS or not defense_effects.memory_material):data.resistance_type=0;data.resistance_time=0.0;data.lockout=0.0
+ if not defense_ready.memory_material1 or not (defense_effects.memory_material and defense_entries.any(func(entry):return str(entry.get("key","")) in g.DEFENSE_KEYS)):memory_reduction_remaining=0.0
+ if not defense_ready.delayed_damage1 or not (defense_effects.delayed_damage and defense_entries.any(func(entry):return str(entry.get("key","")) in g.DEFENSE_KEYS)):clear_reduction_remaining=0.0
+ if not defense_ready.adaptation1 or not (defense_effects.adaptation and defense_entries.any(func(entry):return str(entry.get("key","")) in g.DEFENSE_KEYS)):incoming_sources.clear()
 
 func advance_weapons(g,dt: float) -> void:
  reconcile(g)
