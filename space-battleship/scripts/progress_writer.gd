@@ -64,7 +64,13 @@ static func _import_owner_running(pid: int) -> bool:
 	if OS.get_name()=="Windows":
 		var error:=OS.execute("tasklist",["/FI","PID eq "+str(pid),"/FO","CSV","/NH"],output,true)
 		return error!=0 or output.any(func(line):return str(line).contains('","'+str(pid)+'",'))
-	return OS.execute("/bin/kill",["-0",str(pid)],output,true)==0
+	var error:=OS.execute("/bin/ps",["-p",str(pid),"-o","pid="],output,true)
+	return _import_owner_ps_result(error,output)
+
+static func _import_owner_ps_result(error: int, output: Array) -> bool:
+	# POSIX ps: exit 1 with no output means no matching PID. Diagnostics or an
+	# execution failure leave ownership unknown, so retain the transaction.
+	return error!=1 or output.any(func(line):return not str(line).strip_edges().is_empty())
 
 static func read_progress(path: String) -> Variant:
 	# Interrupted import installation keeps the previous committed primary here.

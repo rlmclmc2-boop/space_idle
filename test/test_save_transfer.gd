@@ -15,6 +15,9 @@ func write_json(path: String,value: Variant) -> void:
  var file:=FileAccess.open(path,FileAccess.WRITE);file.store_string(JSON.stringify(value));file.close()
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
+ var writer:=preload("res://scripts/progress_writer.gd")
+ for query in [[0,["123"]],[1,[]],[1,["permission denied"]],[-1,[]],[2,["invalid option"]]]:
+  check(writer._import_owner_ps_result(query[0],query[1])!=(query[0]==1 and query[1].is_empty()),"Failed ownership query is retained; only confirmed absence is cleared")
  var db:=ShipDatabase.new();db.config.offlineMax=0
  var g:=BattleGame.new(db,false);g.profile.cleared=range(1,40);g.rebuild_unlocks();g.resume_progress();g.paused=true
  g.profile.resources={"1":{"m":9.7,"e":400.0},"2":321.0};g.profile.enhancementLevel=31;g.profile.planets["1"].conquered=true;g.profile.planets["1"].degree={"m":1.2,"e":350.0}

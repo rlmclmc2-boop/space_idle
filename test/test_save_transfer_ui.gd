@@ -26,8 +26,17 @@ func click(control: Control,local: Vector2) -> void:
   await process_frame
  await process_frame
 func open_settings() -> void:
- # Existing entry setup; transfer controls, file selection and confirmation use input below.
- scene.show_save_settings();await process_frame;await process_frame
+ await activate(scene.guard_settings)
+ var menu: PopupMenu=scene.guard_settings.get_popup()
+ check(menu.visible,"Real Settings header input opens menu")
+ if not menu.visible:quit(1);return
+ menu.set_focused_item(menu.get_item_index(30))
+ await capture("settings-menu")
+ for down in [true,false]:
+  var event:=InputEventKey.new();event.keycode=KEY_ENTER;event.pressed=down
+  Input.parse_input_event(event);await process_frame
+ await process_frame
+ check(not menu.visible and is_instance_valid(scene.save_settings_dialog) and scene.save_settings_dialog.visible,"Real menu confirmation opens Save settings")
 func item_lists(node: Node) -> Array:
  var result: Array=[]
  if node is ItemList:result.append(node)
