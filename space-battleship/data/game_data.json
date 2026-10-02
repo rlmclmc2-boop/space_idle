@@ -16181,7 +16181,7 @@
       "baseTime": 60,
       "baseExp": 150,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.0017,\"cloudSpeed\":0.0022,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/t587e_surface.png\",\"cloudTexture\":\"res://assets/planets/t587e_surface.png\",\"radiusScale\":1.05,\"axisRatio\":0.93,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.0075,\"cloudOpacity\":0.12,\"shadowStrength\":0.53,\"glowStrength\":0.38,\"atmosphereColor\":\"e8d3a2\",\"coronaWidth\":0.035}",
       "reforgeStartLevel": 10,
       "minTime": 5
     },
@@ -16192,7 +16192,7 @@
       "baseTime": 60,
       "baseExp": 200,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.3,\"radiusScale\":0.83,\"detailScale\":3.2,\"detailStrength\":0.7,\"surfaceSpeed\":0.002,\"cloudSpeed\":0.0028,\"surfaceTint\":\"fff4c9\",\"shadowTint\":\"d49642\",\"atmosphereColor\":\"ffdda0\",\"coronaWidth\":0.085,\"glowStrength\":0.56,\"flareStrength\":0.12}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.3,\"radiusScale\":0.83,\"detailScale\":1.2,\"detailStrength\":0.9,\"surfaceSpeed\":0.0065,\"cloudSpeed\":0.008,\"surfaceTint\":\"fff4c9\",\"shadowTint\":\"d49642\",\"atmosphereColor\":\"ffdda0\",\"coronaWidth\":0.085,\"glowStrength\":0.56,\"flareStrength\":0.12}",
       "reforgeStartLevel": 15,
       "minTime": 5
     },
@@ -16203,7 +16203,7 @@
       "baseTime": 60,
       "baseExp": 250,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.1,\"radiusScale\":1.22,\"detailScale\":0.55,\"detailStrength\":1,\"surfaceSpeed\":0.0007,\"cloudSpeed\":0.0011,\"surfaceTint\":\"ff8539\",\"shadowTint\":\"6b100c\",\"atmosphereColor\":\"ee6333\",\"coronaWidth\":0.2,\"glowStrength\":0.27,\"pulseStrength\":0.009,\"pulseSpeed\":0.05}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.1,\"radiusScale\":1.22,\"detailScale\":0.55,\"detailStrength\":1,\"surfaceSpeed\":0.0035,\"cloudSpeed\":0.0045,\"surfaceTint\":\"ff8539\",\"shadowTint\":\"6b100c\",\"atmosphereColor\":\"ee6333\",\"coronaWidth\":0.2,\"glowStrength\":0.27,\"pulseStrength\":0.009,\"pulseSpeed\":0.05}",
       "reforgeStartLevel": 20,
       "minTime": 5
     },
@@ -16214,7 +16214,7 @@
       "baseTime": 60,
       "baseExp": 300,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.6,\"radiusScale\":0.22,\"detailScale\":2,\"detailStrength\":0.06,\"surfaceSpeed\":0.006,\"cloudSpeed\":0.009,\"surfaceTint\":\"f6ffff\",\"shadowTint\":\"a0d9ff\",\"atmosphereColor\":\"96ceff\",\"coronaWidth\":0.065,\"glowStrength\":0.8}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.6,\"radiusScale\":0.22,\"detailScale\":1.0,\"detailStrength\":0.8,\"surfaceSpeed\":0.008,\"cloudSpeed\":0.01,\"surfaceTint\":\"f6ffff\",\"shadowTint\":\"a0d9ff\",\"atmosphereColor\":\"96ceff\",\"coronaWidth\":0.065,\"glowStrength\":0.8}",
       "reforgeStartLevel": 25,
       "minTime": 5
     },
@@ -16225,7 +16225,7 @@
       "baseTime": 60,
       "baseExp": 350,
       "tags": "",
-      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.7,\"radiusScale\":0.16,\"detailStrength\":0.12,\"surfaceSpeed\":0.35,\"cloudSpeed\":0.42,\"surfaceTint\":\"edffff\",\"shadowTint\":\"8bc9ff\",\"atmosphereColor\":\"6fbfff\",\"coronaWidth\":0.12,\"glowStrength\":0.8,\"beamLength\":7.5,\"beamWidth\":0.2,\"beamSpeed\":1.6,\"magnetosphere\":0.55}",
+      "visual": "{\"surfaceTexture\":\"res://assets/planets/stellar_plasma.png\",\"cloudOpacity\":0,\"shadowStrength\":0,\"emission\":1.7,\"radiusScale\":0.16,\"detailStrength\":0.85,\"surfaceSpeed\":0.02,\"cloudSpeed\":0.025,\"surfaceTint\":\"edffff\",\"shadowTint\":\"8bc9ff\",\"atmosphereColor\":\"6fbfff\",\"coronaWidth\":0.12,\"glowStrength\":0.8,\"beamLength\":7.5,\"beamWidth\":0.2,\"beamSpeed\":1.6,\"magnetosphere\":0.55,\"detailScale\":1.0}",
       "reforgeStartLevel": 30,
       "minTime": 5
     }

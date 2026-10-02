@@ -54,6 +54,8 @@
 
 磁轨主炮表现：`test_railgun_presentation.gd` 使用合成配装检查实际基础/强化发射节奏、主命中、激光共存、炮口、暂停与表参数读取；需图形环境。`RAILGUN_RECORD=1` 留存原尺寸 PNG 帧，按每帧 0.1 游戏秒回放；不是实时性能测量。`test_weapon_config_validation.py` 检查八项表现参数的正式 Excel 导出路径。
 
+星球表面可读性：`test_celestial_rotation_readability.gd` 在实际主界面逐颗检查球体内部纹理位移、完整一周接缝、暂停与隐藏恢复；需图形环境。`PLANET_ROTATION_RECORD=1` 输出每颗 12 游戏秒、10 fps 的原尺寸帧，供逐个回放；不作为实时性能基准。
+
 ## 运行
 
 从工作区根目录执行一个专项：
