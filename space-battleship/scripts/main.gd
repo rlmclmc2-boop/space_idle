@@ -1324,7 +1324,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	rng.seed = int(enemy.get("uid",slot))*7919+slot*104729
 	var phase := rng.randf()*TAU
 	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
-	var large := game.is_boss_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
+	var large := game.is_final_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
 	var columns:=int(enemy.get("formation_columns",10))
 	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
 	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
@@ -1342,8 +1342,8 @@ func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
 func enemy_render_width(enemy: Dictionary) -> float:
-	var tier := 1.85 if game.is_boss_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
-	var width_limit := 78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
+	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
+	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
 	return base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,enemy_depth(enemy))*float(enemy_pose(enemy).variance)
 
@@ -1352,7 +1352,7 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
 	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
 	var player_front := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)-absf(float(battle_visual.player_idle_y))-player_half_height
-	var enemy_half_height := (78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
+	var enemy_half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
 	# The legacy cap fits one row. Fifteen-slot groups need the third row;
 	# retain the same measured clearance from the player hull.
 	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
@@ -1369,7 +1369,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
 	# Shared approach distance keeps each column separated even during entry.
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-float(battle_visual.enemy_entry_distance)*(1.0-enter))+hover*enter
-	var half_height := (78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
+	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
 	# Clamp the final animated position, so hover, entry and ship changes cannot
 	# cross the front line. Logical entity coordinates remain untouched.
 	position.y=clampf(position.y,half_height+8.0,floorf(enemy_frontline_y_limit(enemy)))
@@ -2388,8 +2388,8 @@ func draw_vertical_battle_hud() -> void:
 		text_at(neutral_caption,Vector2(44,155 if not protection_state.is_empty() else 166),17,SHELL_PRESENTATION.PAPER)
 		if not protection_state.is_empty():text_at(protection_state,Vector2(44,176),15,MUTED)
 		bar(Rect2(44,180 if not protection_state.is_empty() else 174,524,4),GrowthNumber.ratio(game.enhancement_protection_current(),GrowthNumber.maximum(1,game.enhancement_protection_capacity())),Color("b5c1bc"))
-	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
-		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(268,129),14,ORANGE)
+	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
+		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(268,129),14,ORANGE)
 	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
 	text_at(UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))}),Vector2(44,1162),15,INK)
 	bar(Rect2(44,1174,524,7),GrowthNumber.ratio(game.player.armour,GrowthNumber.maximum(1,game.stat("armour"))),ORANGE)

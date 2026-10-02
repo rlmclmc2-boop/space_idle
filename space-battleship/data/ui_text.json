@@ -12388,5 +12388,29 @@
     "text": "定时保存",
     "params": "",
     "category": "settings"
+  },
+  {
+    "key": "battle.encounter_tier.elite",
+    "text": "精英战",
+    "params": "",
+    "category": "battle",
+    "note": "Runtime encounter tier, independent of final battle point",
+    "source": "battlefield.gd:draw_vertical_battle_hud"
+  },
+  {
+    "key": "battle.encounter_tier.boss",
+    "text": "Boss战",
+    "params": "",
+    "category": "battle",
+    "note": "Runtime encounter tier, independent of final battle point",
+    "source": "battlefield.gd:draw_vertical_battle_hud"
+  },
+  {
+    "key": "battle.encounter_tier.ultimate",
+    "text": "地区Boss战",
+    "params": "",
+    "category": "battle",
+    "note": "Runtime encounter tier, independent of final battle point",
+    "source": "battlefield.gd:draw_vertical_battle_hud"
   }
 ]

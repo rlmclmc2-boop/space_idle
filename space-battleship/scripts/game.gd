@@ -1815,9 +1815,17 @@ func is_active() -> bool:
 func ratio(kind: String) -> float:
 	return db.ratio(stage, maxi(0, group_index - 1), kind)
 
-func is_boss_encounter() -> bool:
-	# group_index points to the next encounter after spawn_group increments it.
+func is_final_encounter() -> bool:
+	# Completion belongs to the final battle point, independently of enemy tier.
 	return group_index > 0 and group_index == db.levels[stage - 1].groups.size()
+
+func encounter_tier() -> String:
+	if group_index<=0 or group_index>db.levels[stage-1].groups.size():return "normal"
+	var encounter:Dictionary=db.levels[stage-1].groups[group_index-1]
+	return str(db.groups[str(int(encounter.id))].get("combatTier","boss" if is_final_encounter() else "normal"))
+
+func is_boss_encounter() -> bool:
+	return encounter_tier() in ["boss","ultimate"]
 
 func spawn_group(keep_distance := false) -> void:
 	guard_engaged = true
@@ -1851,8 +1859,9 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.shield_updated_at = enemy_shield_time
 		enemy.shield_hit_at = enemy_shield_time
 		enemy.res_ratio = ratio("resRatio")
-		# Legacy hull flag controls drawing/weapon offsets, not stage completion.
-		enemy.boss = float(row.size) > 1
+		# Wave tier is independent of hull size and final-wave completion.
+		enemy.combat_tier = encounter_tier()
+		enemy.boss = enemy.combat_tier in ["boss","ultimate"]
 		enemy.cooldowns = []
 		for entry in row.equipment:
 			enemy.cooldowns.append(float(db.enemy_weapon(entry.name).cd))
@@ -1861,7 +1870,7 @@ func spawn_group(keep_distance := false) -> void:
 		profile.bossSeen.append(stage)
 		save_dirty = true
 	change_state(State.COMBAT)
-	event.emit("encounter", {"boss":is_boss_encounter()})
+	event.emit("encounter", {"boss":is_boss_encounter(),"tier":encounter_tier(),"final":is_final_encounter()})
 
 func boss_info() -> String:
 	if not profile.get("bossSeen", []).has(stage) and not profile.cleared.has(stage):
@@ -2151,7 +2160,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
 		break_beam_chain_target(enemy)
-		if is_boss_encounter() and targets().is_empty():
+		if is_final_encounter() and targets().is_empty():
 			projectiles.clear()
 		event.emit("explode", enemy)
 		jewel_kill_drop(enemy)
@@ -2497,7 +2506,7 @@ func tick(dt: float) -> void:
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 	if state == State.COMBAT and not has_alive_enemy():
 		if guarding_here():
-			if guard_engaged and is_boss_encounter():
+			if guard_engaged and is_final_encounter():
 				guard_engaged = false
 				projectiles.clear()
 				clear_level()
@@ -2507,7 +2516,7 @@ func tick(dt: float) -> void:
 			if guard_elapsed >= guard_interval():
 				respawn_guard()
 			return
-		if is_boss_encounter():
+		if is_final_encounter():
 			projectiles.clear()
 			clear_level()
 		else:

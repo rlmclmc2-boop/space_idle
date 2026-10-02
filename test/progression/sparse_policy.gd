@@ -21,15 +21,22 @@ func module_sum(g) -> int:
 	return total
 func preferred(stage: int) -> String:
 	return {1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(stage,"")
+func manual_upgrade_sweep(g,levels:int)->bool:
+	# The real toolbar selects +1/+10/MAX per card; no manual all-modules button.
+	var changed:=false
+	for category in ["weapons","defence"]:
+		for index in g.loadout_entries(category).size():
+			if g.upgrade_slot(category,index,levels):changed=true
+	return changed
 func act(g: BattleGame, elapsed: float) -> bool:
 	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
 	respect_guard=true
 	var changed: bool = super.act(g,elapsed)
 	if use_bulk and g.stage>=6:
-		# Existing all-module x10/x1 buttons consume accumulated money in a few clicks.
+		# Declared optional strategy: visit each real module card at +10/+1.
 		for attempt in range(3):
-			if g.upgrade_equipment_batch("10"):record(g,"bulk_upgrade",{"mode":"10"})
-			elif g.upgrade_equipment_batch("1"):record(g,"bulk_upgrade",{"mode":"1"})
+			if manual_upgrade_sweep(g,10):record(g,"manual_card_sweep",{"mode":"10"})
+			elif manual_upgrade_sweep(g,1):record(g,"manual_card_sweep",{"mode":"1"})
 			else:break
 	# Activate each explicitly ready building; reserve idle crews for exploration/building first.
 	for id in g.profile.planets:
@@ -54,10 +61,11 @@ func act(g: BattleGame, elapsed: float) -> bool:
 			if g.reforge_planet(str(id)):
 				farm={};best_won={};deaths_seen=int(g.metrics.deaths)
 				record(g,"reforge",{"planet":id});recovering=true
-				if use_bulk:
-					for attempt in range(24):
-						if not g.upgrade_equipment_batch("10"):break
-						record(g,"reforge_bulk_upgrade",{"mode":"10"})
+				# Major reforge visit: rebuild with existing +10 card actions.
+				# Every successful card emits its own upgrade event for operation counts.
+				for attempt in range(24):
+					if not manual_upgrade_sweep(g,10):break
+					record(g,"reforge_card_sweep",{"mode":"10"})
 	# Conquered explorers can be recalled through the same manual player action.
 	if g.galaxy.available():
 		for id in g.profile.planets:

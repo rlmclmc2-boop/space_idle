@@ -115,7 +115,15 @@ def convert_sheet(name, rows):
             result[str(row["id"])]=row
         return result
     if name=="monGroup":
-        return {str(r["id"]):{"description":r["des"],"slots":[None if v.strip()=="null" else int(v) for v in clean(r["mon"]).split(",")]} for r in rows}
+        result={}
+        for row in rows:
+            group={"description":row["des"],"slots":[None if v.strip()=="null" else int(v) for v in clean(row["mon"]).split(",")]}
+            tier=row.get("combatTier")
+            if tier not in (None, ""):
+                if tier not in ("normal","elite","boss","ultimate"):raise ValueError(f"monGroup {row['id']}: invalid combatTier")
+                group["combatTier"]=tier
+            result[str(row["id"])]=group
+        return result
     if name=="level":
         for row in rows:
             ratio = row.get("jewelRatio", 1)

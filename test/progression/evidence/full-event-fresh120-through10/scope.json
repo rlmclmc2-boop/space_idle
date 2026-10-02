@@ -1,0 +1,16 @@
+{
+  "result": "fresh full-event 0\u201310 passes timing budget for120s visit assumption",
+  "x1_hours": 2.231143518509425,
+  "seed": 20261002,
+  "first5_seconds": [
+    124.216666666661,
+    144.90000000008996,
+    147.44999999986504,
+    138.916666666541,
+    228.99999999979195
+  ],
+  "operation_sessions": 116,
+  "action_events": 800,
+  "limits": "Teaching10s/normal120s test assumption, domain API events not literal mouse clicks; no 20/forge/galaxy acceptance",
+  "version": "v11 numerical config, full-event driver package90ae6d0761212feb5ccd892aad8724c275e0d4f50a1100b351d318c5809072e8"
+}

@@ -6,11 +6,16 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--first-reforge-steps',default='8,16,32,48,68');p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);a=p.parse_args()
 from source_lock import acquire
 _source_lock=acquire(ROOT)
 data=json.loads((SRC/'data/game_data.json').read_text())
 books={n:openpyxl.load_workbook(CFG/(n+'.xlsx')) for n in ['level','mon','monGroup']}
+groups_sheet=books['monGroup'].active
+if 'combatTier' not in [cell.value for cell in groups_sheet[1]]:
+ groups_sheet.cell(1,groups_sheet.max_column+1,'combatTier')
+ groups_sheet.cell(2,groups_sheet.max_column,'Runtime wave tier, separate from final-wave completion')
+ groups_sheet.cell(3,groups_sheet.max_column,'string')
 sheets={n:b.active for n,b in books.items()};headers={n:{c.value:c.column for c in s[1] if c.value is not None} for n,s in sheets.items()}
 indices={n:{s.cell(r,headers[n]["id"]).value:r for r in range(4,s.max_row+1)} for n,s in sheets.items()}
 def replace(n,key,row):
@@ -20,6 +25,8 @@ def replace(n,key,row):
 def source_row(n,key):
  s=sheets[n];h=headers[n];ri=indices[n][key]
  return {k:s.cell(ri,c).value for k,c in h.items()}
+for design in data['battle_design'].values():
+ replace('monGroup',int(design['group_id']),{'combatTier':design['tier']})
 themes=['laser','missile','cannon','neutral1','neutral2','longLaser','laser','missile','cannon','neutral3']
 themes += ['neutral1','missile','neutral2','laser','cannon','neutral4','longLaser','neutral3','missile','laser']
 # Later levels normally mix themes; beam has no fixed tutorial slot after10.
@@ -36,7 +43,8 @@ if a.through>20:
  # Provisional future budget. Every value is subject to segment regression.
  ratios += [1.2**(190+a.future_growth_step*i) for i in range(1,11)]
  resources += [resources[19]*1.2**(a.future_income_step*i)*a.future_income_coefficient for i in range(1,11)]
- first_steps=[8,16,32,48,68]
+ first_steps=[float(value) for value in a.first_reforge_steps.split(",")]
+ if len(first_steps)!=5:raise ValueError("First reforge requires five stage growth steps")
  first_income=[0,0,4,4,10]
  ratios += [ratios[29]*1.2**i for i in first_steps]
  resources += [resources[29]*1.2**i for i in first_income]
@@ -59,7 +67,7 @@ for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
   for slot,eid in enumerate(original['slots']):
    if eid is None:slots.append('null');continue
    newid=40000+stage*1000+node*20+slot;row=source_row('mon',eid);row['id']=newid
-   row['des']=f'校准{a.version}-关{stage}-层{node}-'+str(row['des'])
+   row['des']=str(row['des'])
    if a.themed_beam_bosses and theme=='longLaser' and tier in ['boss','ultimate']:
     # Same authored recovery rule as the level's ordinary/elite enemies.
     # Split total base defence; keep every attack variant and formation intact.
@@ -71,7 +79,7 @@ for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
    row['dmgMultiple']=float(row['dmgMultiple'])*.1454
    # Normalize attacks with HP for original level10 -> early-game scaling; keep actual damage types.
    replace('mon',newid,row);slots.append(str(newid))
-  replace('monGroup',newgid,{'id':newgid,'des':f'校准{a.version}-关{stage}-层{node}-{tier}-{theme}-{variant}','mon':'{'+','.join(slots)+'}'})
+  replace('monGroup',newgid,{'id':newgid,'des':f'第{stage}关第{node}战点','combatTier':tier,'mon':'{'+','.join(slots)+'}'})
   groups.append((newgid,node*.9/len(tiers)))
   manifest.append({'stage':stage,'node':node,'tier':tier,'theme':theme,'source_group':gid,'group':newgid,'variant':variant,'suggested':stage in [4,5],'themed_recovery_shield':a.themed_beam_bosses and theme=='longLaser' and tier in ['boss','ultimate']})
  row=source_row('level',stage)

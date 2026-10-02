@@ -632,8 +632,8 @@ func draw_vertical_battle_hud()->void:
 	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
 	battle_meter(Rect2(44,188,524,5),game.distance/maxf(1,float(db.levels[game.stage-1].length)),BATTLE_TEAL)
-	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
-		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(315,132),14,BATTLE_WARM)
+	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
+		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(315,132),14,BATTLE_WARM)
 	battle_panel(Rect2(30,1132,552,114))
 	var status := game.enhancement_protection_status()
 	var layers := defense_hud_layers(status)
