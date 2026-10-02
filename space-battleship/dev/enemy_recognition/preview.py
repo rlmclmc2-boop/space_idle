@@ -10,7 +10,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--godot', default='godot')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--mode', choices=['board', 'small', 'recovery'], default='board')
+    parser.add_argument('--mode', choices=['board', 'small', 'recovery', 'weapons'], default='board')
+    parser.add_argument('--gray', action='store_true', help='Render grayscale directly in Godot')
     parser.add_argument('--frames', type=int, default=0)
     args = parser.parse_args()
     here = Path(__file__).resolve().parent
@@ -48,8 +49,11 @@ script = ExtResource("1")
         env[key] = str(stage / '.user' / key)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     subprocess.run([args.godot, '--headless', '--path', str(stage), '--editor', '--import'], env=env, check=True)
-    subprocess.run([args.godot, '--path', str(stage), '--', '--mode='+args.mode,
-                    '--output='+str(output), '--frames='+str(args.frames)], env=env, check=True)
+    command = [args.godot, '--path', str(stage), '--audio-driver', 'Dummy', '--', '--mode='+args.mode,
+               '--output='+str(output), '--frames='+str(args.frames)]
+    if args.gray:
+        command.append('--gray')
+    subprocess.run(command, env=env, check=True, timeout=60)
 
 
 if __name__ == '__main__':
