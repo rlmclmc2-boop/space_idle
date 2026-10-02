@@ -16,7 +16,21 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets/galaxy/v3'
 MATS = {}
 FAMILIES = ('colony_ring', 'orbital_shipyard', 'stellar_energy_array', 'interstellar_refinery', 'crystal_refinery', 'heavy_element_refinery')
-PALETTE = {'Armor': ((0.74, 0.72, 0.66), 0.1, 0.48, 0), 'Panel': ((0.34, 0.41, 0.49), 0.18, 0.46, 0), 'Navy': ((0.045, 0.075, 0.12), 0.2, 0.48, 0), 'Metal': ((0.13, 0.19, 0.26), 0.32, 0.34, 0), 'Glass': ((0.025, 0.33, 0.41), 0.22, 0.21, 0.015), 'Reflection': ((0.25, 0.67, 0.72), 0.15, 0.24, 0.02), 'Amber': ((1, 0.53, 0.13), 0.05, 0.34, 0.12), 'Mark': ((0.68, 0.4, 0.1), 0.08, 0.48, 0), 'Crystal': ((0.16, 0.54, 0.64), 0.22, 0.28, 0.02)}
+# Large, matte color masses stay distinct in the normal whole-galaxy view.
+PALETTE = {
+    'Armor': ((0.86, 0.88, 0.83), 0.04, 0.64, 0),
+    'Panel': ((0.25, 0.38, 0.49), 0.08, 0.62, 0),
+    'Navy': ((0.055, 0.095, 0.15), 0.08, 0.62, 0),
+    'Metal': ((0.12, 0.20, 0.28), 0.16, 0.58, 0),
+    'Glass': ((0.025, 0.46, 0.57), 0.08, 0.43, 0.015),
+    'Reflection': ((0.30, 0.70, 0.75), 0.05, 0.48, 0.02),
+    'Amber': ((0.95, 0.46, 0.10), 0.04, 0.52, 0.06),
+    'Mark': ((0.62, 0.31, 0.08), 0.04, 0.60, 0),
+    'Crystal': ((0.18, 0.65, 0.75), 0.10, 0.40, 0.02),
+    'Solar': ((0.035, 0.32, 0.64), 0.06, 0.48, 0),
+    'Foundry': ((0.78, 0.39, 0.14), 0.08, 0.62, 0),
+    'Pressure': ((0.20, 0.37, 0.47), 0.10, 0.58, 0),
+}
 
 def materials():
     for name, (rgb, metal, roughness, emission) in PALETTE.items():
@@ -155,9 +169,6 @@ def pipe(name, points, r, mat, parent):
 def window(name, xyz, dims, parent, angle=0):
     box(name + 'Recess', xyz, (dims[0] * 1.1, dims[1] * 1.12, dims[2] * 1.1), 'Metal', parent, 0.12, angle)
     box(name, (xyz[0], xyz[1], xyz[2] + 0.018), dims, 'Glass', parent, 0.12, angle)
-    x, y, z = xyz
-    dy = -dims[1] * 0.18
-    box(name + 'Reflection', (x - dy * math.sin(angle), y + dy * math.cos(angle), z + dims[2] * 0.51 + 0.023), (dims[0] * 0.62, dims[1] * 0.1, 0.025), 'Reflection', parent, 0.012, angle)
 
 def hull_plate(name, width, depth, z0, z1, mat, root, taper=0.86):
     outline = [(-0.5, -0.31), (-0.31, -0.5), (0.31, -0.5), (0.5, -0.31), (0.5, 0.31), (0.31, 0.5), (-0.31, 0.5), (-0.5, 0.31)]
@@ -174,22 +185,11 @@ def hull_plate(name, width, depth, z0, z1, mat, root, taper=0.86):
     bpy.ops.object.modifier_apply(modifier=mod.name)
     return obj
 
-def docking_collar(root, xyz, r=0.34, side=1):
-    frame = empty('ServiceCollarFrame', xyz, root)
-    frame.rotation_euler.y = side * math.pi / 2
-    cyl('ServiceCollar', (0, 0, 0), r, 0.22, 'Panel', frame, 24, 0.04)
-    cyl('ServiceRecess', (0, 0, 0.13), r * 0.71, 0.035, 'Navy', frame, 24, 0.012)
-    box('ServiceTealMark', (0, 0, 0.154), (r * 0.63, 0.09, 0.02), 'Glass', frame, 0.009)
-
 def pad(root, width, depth):
-    """An octagonal floating hull with tapered underside and service collars."""
+    """An octagonal floating hull with a broad, quiet armor rim."""
     hull_plate('FloatingNavyHull', width, depth, 0, 0.72, 'Navy', root, 0.76)
     hull_plate('PearlHullArmor', width * 0.99, depth * 0.99, 0.7, 0.9, 'Armor', root, 0.97)
     hull_plate('IntegratedWorkingBay', width * 0.85, depth * 0.82, 0.9, 0.98, 'Metal', root, 0.98)
-    for sign in (-1, 1):
-        docking_collar(root, (sign * width * 0.495, -depth * 0.19, 0.46), 0.32, sign)
-        docking_collar(root, (sign * width * 0.495, depth * 0.19, 0.46), 0.26, sign)
-        box('UndersideServiceSlot', (sign * width * 0.34, -depth * 0.394, 0.19), (0.77, 0.12, 0.19), 'Metal', root, 0.05)
 
 def horizontal_vessel(root, xyz, r, length):
     """A low enclosed pressure barrel aligned along the station transfer axis."""
@@ -199,7 +199,6 @@ def horizontal_vessel(root, xyz, r, length):
     for sign in (-1, 1):
         local_arc('PressureBarrelCollar', (0, 0), r, 0.15, 0.23, sign * length * 0.32, 'Armor', frame)
         cap = lathe('PressureBarrelEnd', [(0, sign * length * 0.41), (r * 0.94, sign * length * 0.41), (r * 0.83, sign * length * 0.52), (0, sign * length * 0.55)], 'Armor', frame, 28)
-    local_arc('BarrelStatusBand', (0, 0), r * 1.005, 0.04, 0.09, 0, 'Glass', frame)
 
 def tower(root, xyz, r, height):
     x, y, z = xyz
@@ -226,17 +225,10 @@ def habitat_band(root, r, z, w, clasps):
     for i in range(clasps):
         a = i * math.tau / clasps
         arc('SoftHabitatClasp', r, w + 0.4, 1.28, z + 0.05, 'Armor', root, start=a - 0.095, end=a + 0.095)
-        lamp = empty('ClaspSocket', ((r + w * 0.62) * math.cos(a), (r + w * 0.62) * math.sin(a), z + 0.1), root)
-        lamp.rotation_euler.z = a
-        box('LampRecess', (0, 0, 0), (0.1, 0.48, 0.23), 'Navy', lamp, 0.045)
-        box('WarmLamp', (0.057, 0, 0), (0.065, 0.3, 0.13), 'Amber', lamp, 0.035)
-    for i in range(clasps):
-        a = (i + 0.38) * math.tau / clasps
-        arc('BandReflection', r + w * 0.542, 0.023, 0.21, z + 0.16, 'Reflection', root, start=a, end=a + 0.15)
 
 def colony(root, level):
     r = 3.3 + 0.12 * (level - 1)
-    habitat_band(root, r, 1.12, 1.08 + 0.055 * (level - 1), 4 + (level >= 3) * 2)
+    habitat_band(root, r, 1.12, 1.08 + 0.055 * (level - 1), 4)
     for i in range(2 + (level >= 2)):
         a = i * math.tau / (2 + (level >= 2)) + math.pi / 6
         box('TransitSpoke', (r * 0.43 * math.cos(a), r * 0.43 * math.sin(a), 1.22), (r * 0.94, 0.54, 0.46), 'Navy', root, 0.18, a)
@@ -265,17 +257,15 @@ def foundry(root, level):
     depth = 5.3 + 0.3 * (level - 1)
     pad(root, width, depth)
     box('CompactFurnaceHull', (-0.55, 0, 1.77), (3.3, 3.85, 1.83), 'Navy', root, 0.36)
-    box('BroadFurnaceArmor', (-0.55, 0, 2.77), (3.48, 4, 0.49), 'Armor', root, 0.23)
+    box('BroadFurnaceArmor', (-0.55, 0, 2.77), (3.48, 4, 0.49), 'Foundry', root, 0.23)
     box('HeatVentRecess', (-0.55, 0, 3.04), (2.2, 2.35, 0.11), 'Navy', root, 0.05)
-    for x in (-1.2, -0.55, 0.1):
-        box('WarmHeatSlot', (x, 0, 3.1), (0.26, 2.05, 0.07), 'Mark', root, 0.03)
+    for x in (-1.15, 0.05):
+        box('WarmHeatSlot', (x, 0, 3.1), (0.4, 2.05, 0.09), 'Mark', root, 0.03)
     box('FurnaceMouth', (-0.55, -1.97, 1.6), (1.94, 0.16, 0.7), 'Metal', root, 0.14)
     box('AmberSmeltOpening', (-0.55, -2.065, 1.6), (1.43, 0.055, 0.35), 'Amber', root, 0.045)
     box('CargoIntakeHull', (-0.55, -2.48, 0.81), (2.12, 1.18, 0.7), 'Navy', root, 0.25)
     box('CargoIntakeArmor', (-0.55, -2.47, 1.18), (2.16, 1.16, 0.19), 'Armor', root, 0.085)
     box('CargoIntakeRecess', (-0.55, -2.51, 1.3), (1.48, 0.75, 0.07), 'Metal', root, 0.03)
-    for x in (-1.18, 0.08):
-        box('CargoBerthGuide', (x, -2.5, 1.35), (0.09, 0.55, 0.035), 'Mark', root, 0.015)
     for i in range(1 + (level >= 3)):
         x = -0.55 if level < 3 else -1.36 + i * 1.62
         horizontal_vessel(root, (x, 0.31, 3.33), 0.4 + 0.02 * (level - 1), 2.76 + 0.1 * (level - 1))
@@ -329,17 +319,15 @@ def shipyard(root, level):
         window('DockRailGlazing', (x, 0, 1.46), (0.59, length * 0.56, 0.13), root)
     box('DockCrossSpine', (0, length * 0.43, 0.78), (width, 1.18, 1.23), 'Navy', root, 0.26)
     box('DockCrossArmor', (0, length * 0.43, 1.49), (width, 1.28, 0.29), 'Armor', root, 0.14)
-    count = 2 + (level >= 2) + (level >= 4)
+    count = 2 + (level >= 4)
     for i in range(count):
         y = -length * 0.32 + i * (length * 0.64 / max(1, count - 1))
         for sign in (-1, 1):
             x = sign * width * 0.43
             box('BerthSupport', (x * 0.82, y, 0.97), (1.87, 0.44, 0.46), 'Metal', root, 0.14)
             box('GantryFoot', (x, y, 1.45), (0.58, 0.69, 0.43), 'Panel', root, 0.14)
-            box('GantryUpright', (x, y, 2.25), (0.31, 0.31, 1.54), 'Armor', root, 0.13)
-            box('GantryReach', (x * 0.8, y, 3.06), (width * 0.29, 0.36, 0.35), 'Armor', root, 0.15)
-            box('ServiceTool', (x * 0.61, y, 2.77), (0.32, 0.39, 0.67), 'Metal', root, 0.13)
-            box('ServiceLamp', (x * 0.61, y, 2.44), (0.25, 0.28, 0.1), 'Amber', root, 0.04)
+            box('GantryUpright', (x, y, 2.25), (0.55, 0.55, 1.54), 'Armor', root, 0.13)
+            box('GantryReach', (x * 0.8, y, 3.06), (width * 0.29, 0.62, 0.55), 'Armor', root, 0.15)
     ship_hull(root, (0, -0.35, 1.03), 0.88 + 0.07 * (level - 1))
     tower(root, (0, length * 0.43, 1.52), 0.68, 1.36 + 0.16 * (level - 1))
     if level >= 3:
@@ -351,7 +339,7 @@ def shipyard(root, level):
     empty('DockSocket', (0, -length * 0.55, 1.1), root)
 
 def energy(root, level):
-    count = (3, 4, 5, 6, 8)[level - 1]
+    count = (3, 3, 4, 4, 5)[level - 1]
     outer = 3.65 + 0.19 * (level - 1)
     cyl('ArrayHub', (0, 0, 0.7), 1.15, 1.4, 'Navy', root)
     arc('ArrayHubRoof', 1.01, 0.53, 0.34, 1.57, 'Armor', root)
@@ -359,13 +347,10 @@ def energy(root, level):
     for i in range(count):
         a = i * math.tau / count
         start = a + 0.11
-        end = a + min(0.75, math.tau / count - 0.13)
+        end = a + min(1.15, math.tau / count - 0.20)
         box('PanelRadialSpar', (outer * 0.6 * math.cos(a + 0.36), outer * 0.6 * math.sin(a + 0.36), 0.76), (outer * 1.04, 0.31, 0.37), 'Panel', root, 0.12, a + 0.36)
         arc('IvoryPaddleFrame', outer - 0.64, 2.08, 0.3, 1, 'Armor', root, start=start, end=end)
-        arc('BroadTealSolarPane', outer - 0.64, 1.79, 0.13, 1.21, 'Glass', root, start=start + 0.025, end=end - 0.025)
-        for ratio in (0.31, 0.65):
-            arc('PaddleCellDivider', outer - 1.47 + 1.68 * ratio, 0.05, 0.035, 1.29, 'Metal', root, start=start + 0.03, end=end - 0.03)
-        arc('PaddleReflection', outer - 0.4, 0.095, 0.025, 1.3, 'Reflection', root, start=start + 0.06, end=end - 0.04)
+        arc('BroadTealSolarPane', outer - 0.64, 1.79, 0.13, 1.21, 'Solar', root, start=start + 0.025, end=end - 0.025)
     if level >= 3:
         arc('HubInductionCollar', 1.12, 0.29, 0.33, 1.99, 'Panel', root)
     if level == 5:
@@ -376,11 +361,11 @@ def crystal(root, level):
     pad(root, 5.8 + 0.42 * (level - 1), 5.3 + 0.34 * (level - 1))
     cyl('PrismProcessBed', (0, 0, 1.15), 1.54, 0.7, 'Navy', root)
     local_arc('PrismCreamCradle', (0, 0), 1.45, 0.39, 0.35, 1.55, 'Armor', root)
-    positions = [(0, 0.1, 0.76, 2.45 + 0.27 * (level - 1))]
+    positions = [(0, 0.1, 0.98, 2.45 + 0.27 * (level - 1))]
     if level >= 2:
-        positions.append((-1.9, -0.54, 0.45, 1.83 + 0.1 * (level - 1)))
+        positions.append((-1.9, -0.54, 0.60, 1.83 + 0.1 * (level - 1)))
     if level >= 3:
-        positions.append((1.82, -0.63, 0.48, 2.04 + 0.12 * (level - 1)))
+        positions.append((1.82, -0.63, 0.60, 2.04 + 0.12 * (level - 1)))
     if level >= 4:
         positions.append((0.12, 1.9, 0.42, 1.64 + 0.1 * (level - 1)))
     for x, y, r, height in positions:
@@ -391,12 +376,11 @@ def crystal(root, level):
         faces = [(row * 6 + i, row * 6 + (i + 1) % 6, (row + 1) * 6 + (i + 1) % 6, (row + 1) * 6 + i) for row in range(3) for i in range(6)]
         surface('FacetedCrystalBillet', verts, faces, 'Crystal', root, False)
         for sign in (-1, 1):
-            box('CrystalClamp', (x + sign * r * 0.98, y, 1.75), (0.24, r * 0.93, 0.56), 'Armor', root, 0.1)
-    for x in (-2.28, 2.28):
-        box('ProcessorUpright', (x, 0.77, 2.06), (0.45, 0.59, 2.18 + 0.16 * (level - 1)), 'Navy', root, 0.18)
-        box('ProcessorOuterArmor', (x, 0.77, 2.09), (0.53, 0.38, 1.81 + 0.16 * (level - 1)), 'Armor', root, 0.15)
-    box('ProcessingCrosshead', (0, 0.77, 3.2 + 0.16 * (level - 1)), (4.95, 0.78, 0.54), 'Armor', root, 0.24)
-    box('ScannerUnderside', (0, 0.73, 2.89 + 0.16 * (level - 1)), (1.26, 0.61, 0.15), 'Glass', root, 0.06)
+            box('CrystalClamp', (x + sign * r * 0.98, y, 1.75), (0.38, r * 0.93, 0.62), 'Armor', root, 0.1)
+    for x in (-2.55, 2.55):
+        box('ProcessorUpright', (x, 1.7, 1.67), (0.66, 0.72, 1.42 + 0.12 * (level - 1)), 'Navy', root, 0.18)
+        box('ProcessorOuterArmor', (x, 1.7, 1.7), (0.70, 0.5, 1.1 + 0.12 * (level - 1)), 'Armor', root, 0.15)
+    box('ProcessingCrosshead', (0, 1.7, 2.40 + 0.12 * (level - 1)), (5.6, 0.78, 0.54), 'Armor', root, 0.24)
     box('CrystalControl', (0, -2.16, 1.48), (2.71, 1.05, 1.08), 'Armor', root, 0.23)
     window('CrystalControlPane', (0, -2.19, 2.1), (1.87, 0.67, 0.19), root)
     if level == 5:
@@ -406,19 +390,13 @@ def crystal(root, level):
 
 def tank(root, x, y, r, h):
     z = 0.93
-    body = lathe('PressureVessel', [(0, z), (r * 0.7, z), (r, z + 0.3), (r, z + h - 0.38), (r * 0.91, z + h - 0.12), (r * 0.58, z + h + 0.19), (0, z + h + 0.25)], 'Navy', root)
+    body = lathe('PressureVessel', [(0, z), (r * 0.7, z), (r, z + 0.3), (r, z + h - 0.38), (r * 0.91, z + h - 0.12), (r * 0.58, z + h + 0.19), (0, z + h + 0.25)], 'Pressure', root)
     body.location.x = x
     body.location.y = y
     cap = lathe('PearlPressureCap', [(0, z + h - 0.12), (r * 0.96, z + h - 0.12), (r * 1.01, z + h + 0.03), (r * 0.92, z + h + 0.27), (r * 0.62, z + h + 0.46), (0, z + h + 0.5)], 'Armor', root)
     cap.location.x = x
     cap.location.y = y
-    for zz in (z + 0.47, z + h * 0.55):
-        local_arc('PressureCollar', (x, y), r, 0.21, 0.26, zz, 'Armor', root)
-    for a in (0, math.pi / 2, math.pi, math.pi * 1.5):
-        box('PressureArmorRib', (x + r * 0.94 * math.cos(a), y + r * 0.94 * math.sin(a), z + h * 0.51), (0.17, 0.23, h * 0.72), 'Panel', root, 0.07, a)
-    cyl('TankValve', (x, y, z + h + 0.6), r * 0.26, 0.27, 'Metal', root, 20)
-    box('TankValveMark', (x, y, z + h + 0.79), (r * 0.54, 0.14, 0.12), 'Mark', root, 0.045)
-    local_arc('PressureGauge', (x, y), r * 1.014, 0.034, 0.18, z + h * 0.76, 'Glass', root, start=-2.16, end=-0.97)
+    local_arc('BroadPressureCollar', (x, y), r, 0.26, 0.48, z + h * 0.48, 'Armor', root)
 
 def heavy(root, level):
     pad(root, 6.1 + 0.41 * (level - 1), 5.5 + 0.3 * (level - 1))
