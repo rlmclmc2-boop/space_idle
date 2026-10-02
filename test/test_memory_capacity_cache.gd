@@ -136,6 +136,13 @@ func _initialize()->void:
 	compare(a,b,"direct path")
 	# Exercise public invalidation paths after warming both capacity caches.
 	a=fixture(true);b=fixture(false)
+	# Memory's third branch includes its shared-order threshold. Keep this
+	# fixture eligible so the later branch switch really changes and clamps caps.
+	var memory_rank: int=a.profile.enhancementOrder.defence.find("memory_material")
+	var public_level: int=int(a.db.data.enhance_config.branch_threshold_3.value)+int(a.db.data.enhance_config["threshold_%d" % (memory_rank+1)].value)
+	for g in [a,b]:
+		g.profile.enhancementLevel=public_level
+		g.invalidate_stat_cache();g.reset_player()
 	compare(a,b,"public paths warm")
 	for g in [a,b]:
 		g.profile.jewelFragments=1e40
@@ -166,7 +173,7 @@ func _initialize()->void:
 		g.invalidate_stat_cache();g.enhancement_protection_status()
 		g.load_progress();g.reset_player()
 	compare(a,b,"load into warmed objects")
-	check(a.profile.enhancementLevel==31 and b.profile.enhancementLevel==31,"purchased level survives save/load")
+	check(a.profile.enhancementLevel==public_level+1 and b.profile.enhancementLevel==public_level+1,"purchased level survives save/load")
 	# Conquest grants an effective enhancement level through the permanent modifier source.
 	a=fixture(true);b=fixture(false)
 	compare(a,b,"gifted level warm")
