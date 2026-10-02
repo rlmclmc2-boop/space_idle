@@ -1,0 +1,7 @@
+Observed original verification run (Godot 4.6.3, headless, isolated synthetic fixture):
+reviewed-candidate-boundaries: 1 (expected failure; 166 checks, 19 failures)
+original-main-business: 0 (71 checks, 0 failures)
+fixed-feedback: 0 (166 checks, 0 failures)
+neutral-memory: 0 (33 checks, 0 failures)
+deferred-regression: 0 (31 checks, 0 failures)
+verify.py overall: 0; all 24 cases x 11 business fields equal

@@ -1,0 +1,22 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: History fraction is nonzero: 0.04
+FAIL: History fraction is nonzero: 0.01
+FAIL: History fraction is nonzero: 0.001
+FAIL: Fractional buffer spending is nonzero in history
+FAIL: huge_incoming_10000000000000000.0 reports actual protection consumption
+FAIL: huge_incoming_10000000000000000.0 absorption label matches consumed protection
+FAIL: huge_incoming_10000000000000000.0 history distinguishes absorption from body loss
+FAIL: huge_deferred_10000000000000000.0 reports actual protection consumption
+FAIL: huge_deferred_10000000000000000.0 absorption label matches consumed protection
+FAIL: huge_deferred_10000000000000000.0 history distinguishes absorption from body loss
+FAIL: huge_incoming_{ "m": 1.0, "e": 400.0 } reports actual protection consumption
+FAIL: huge_incoming_{ "m": 1.0, "e": 400.0 } absorption label matches consumed protection
+FAIL: huge_incoming_{ "m": 1.0, "e": 400.0 } history distinguishes absorption from body loss
+FAIL: huge_deferred_{ "m": 1.0, "e": 400.0 } reports actual protection consumption
+FAIL: huge_deferred_{ "m": 1.0, "e": 400.0 } absorption label matches consumed protection
+FAIL: huge_deferred_{ "m": 1.0, "e": 400.0 } history distinguishes absorption from body loss
+FAIL: Scheduled full absorption keeps its positive fraction in history
+FAIL: debt_tick_partial reports actual protection consumption
+FAIL: Scheduled partial absorption keeps its positive fraction in history
+PROTECTION FEEDBACK: 166 checks, 19 failures; baseline=false speed=1
