@@ -304,6 +304,8 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="beam_started" and is_instance_valid(ship_view) and info.has("shot") and not bool(info.shot.hostile):
+		ship_view.steady_carrier_after_fire(int(info.shot.get("mount",-1)))
 	if kind=="projectile_impact" and info.shot.get("chain_hop",false):return
 	if kind=="hit" and bool(info.get("player",false)):
 		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
@@ -444,6 +446,8 @@ func _is_simple_enemy(shot:Dictionary)->bool:
 
 
 func weapon_launch(shot:Dictionary,spread:=0.0)->void:
+	if is_instance_valid(ship_view) and not bool(shot.get("hostile",false)):
+		ship_view.steady_carrier_after_fire(shot_mount(shot))
 	enemy_launch_context=_is_simple_enemy(shot)
 	missile_launch_context=_is_own_missile(shot)
 	rail_launch_context=_is_own_rail(shot)
