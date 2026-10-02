@@ -284,22 +284,22 @@ func effect_overview_text(key: String, value: Variant, unit := "%") -> String:
 	return PARAMETER_TEXT.render(key,{"value":FORMAT.percentage(value)},{"value":{"role":"effect","unit":unit}})
 
 func effect_overview(kind: String) -> String:
-	var runtime: Dictionary = game.call("enhancement_effect_runtime",kind) if game.has_method("enhancement_effect_runtime") else {}
-	var level := game.enhancement_effective_level()
+	var runtime: Dictionary = game.enhancement_effect_runtime(kind)
+	var level := int(runtime.effective_level)
 	match kind:
 		"proficiency","adaptation":
-			var count := int(game.profile.get("enhancementAttacks" if kind=="proficiency" else "enhancementHits",0))
-			var bonus := roundf(parameter(kind+"_growth")*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
+			var count := int(runtime.history)
+			var bonus := roundf(float(runtime.growth)*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
 			return effect_overview_text("enhance.overview."+kind,bonus*100)
 		"repeat":
-			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("repeat_probability")*100)),"multiplier":FORMAT.percentage(100.0+float(runtime.get("damage_percent",parameter("repeat_growth")*level*100)))},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
+			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(100.0+float(runtime.damage_percent))},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"critical":
-			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(runtime.get("eligible_modules",0))>0
-			var values := {"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("base_critical_rate")*100)),"multiplier":FORMAT.percentage(N.multiply(runtime.get("damage_multiplier",parameter("base_critical_multiplier")+parameter("critical_growth")*level),100.0))}
-			if guaranteed:values.underlying=FORMAT.percentage(runtime.get("underlying_probability_percent",parameter("base_critical_rate")*100))
+			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(runtime.eligible_modules)>0
+			var values := {"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(N.multiply(runtime.damage_multiplier,100.0))}
+			if guaranteed:values.underlying=FORMAT.percentage(runtime.underlying_probability_percent)
 			return PARAMETER_TEXT.render("enhance.overview.critical_guaranteed" if guaranteed else "enhance.overview.critical",values,{"chance":{"role":"effect","unit":"%"},"underlying":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
-		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.get("heal_percent",parameter("memory_heal_fraction")*level*100))/parameter("memory_interval"),"%/秒")
-		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"chance":FORMAT.percentage(runtime.get("probability_percent",parameter("deferred_clear_probability")*100))},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
+		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.heal_percent)/float(runtime.interval),"%/秒")
+		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.percentage(runtime.fraction_percent),"chance":FORMAT.percentage(runtime.probability_percent)},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
 	return UIText.t("enhance.description.pending")
 
 func eligible_count(category: String, index: int) -> int:
