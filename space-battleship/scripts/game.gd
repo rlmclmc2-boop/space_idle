@@ -1291,7 +1291,7 @@ func load_planets(raw) -> void:
 			progress.elapsed=minf(float(item.get("elapsed",0)),planet_duration(str(id))) if nonnegative_number(item.get("elapsed")) else 0.0
 		for row in planet_buildings.rows(self,str(id)):
 			var building: Dictionary=progress.buildings[str(row.id)]
-			var old = item.get("buildings",{}).get(str(row.id),{}) if item.get("buildings") is Dictionary else {}
+			var old = item.get("buildings",{}).get(str(row.id),item.get("buildings",{}).get(str(row.get("previous_id","")),{})) if item.get("buildings") is Dictionary else {}
 			if building.status!="building" or not old is Dictionary or not old.get("crew") is Array:continue
 			for member_id in old.crew:
 				if building.crew.size()<int(row.extra_crew) and idle_planet_crew(str(member_id)):building.crew.append(str(member_id))

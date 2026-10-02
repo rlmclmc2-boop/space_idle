@@ -1,0 +1,6 @@
+{
+  "scope": "Calibration tooling failure, not game failure",
+  "cause": "A second source import ran while the future generator had saved formulas but not recalculated their caches, producing missing cache D64",
+  "corrected": "Future generator completed; reforge import rerun succeeded; final canonical source validation passed",
+  "prevention": "All calibration source-mutating scripts now acquire one process lock through source_lock.py"
+}

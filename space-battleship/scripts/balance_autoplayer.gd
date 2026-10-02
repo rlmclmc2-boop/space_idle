@@ -4,6 +4,7 @@ const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
 var strategy := "BALANCED"
 var forced_weapon := ""
+var respect_guard := false
 var random := RandomNumberGenerator.new()
 var last_refit := -60.0
 var unlocked_count := 0
@@ -27,7 +28,7 @@ func weapon_value(game: BattleGame, key: String, level: int) -> float:
 func act(game: BattleGame, elapsed: float) -> bool:
 	if not game.pending_unlocks.is_empty():game.acknowledge_unlocks()
 	if game.state == BattleGame.State.MAIN_MENU:game.start(1,false)
-	elif game.state == BattleGame.State.LEVEL_CLEAR:game.advance_after_clear()
+	elif game.state == BattleGame.State.LEVEL_CLEAR and not (respect_guard and game.guarding_here()):game.advance_after_clear()
 	if strategy == "ECONOMY_FIRST":buy_scientist(game,0.5)
 	# Select an unlocked hull only if both enabled module counts are no worse.
 	for ship in game.db.ships:

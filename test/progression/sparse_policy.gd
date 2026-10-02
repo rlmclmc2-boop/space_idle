@@ -9,6 +9,8 @@ var deaths_seen := 0
 var last_progress := 0.0
 var furthest := 1
 var best_won := {}
+var galaxy_crew_target := 6
+var cap_stage := 0
 var journal: Callable
 func record(g, kind: String, extra: Dictionary = {}) -> void:
 	if journal.is_valid():journal.call(kind,extra)
@@ -21,6 +23,7 @@ func preferred(stage: int) -> String:
 	return {1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(stage,"")
 func act(g: BattleGame, elapsed: float) -> bool:
 	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
+	respect_guard=true
 	var changed: bool = super.act(g,elapsed)
 	if use_bulk and g.stage>=6:
 		# Existing all-module x10/x1 buttons consume accumulated money in a few clicks.
@@ -57,6 +60,15 @@ func act(g: BattleGame, elapsed: float) -> bool:
 			var planet: Dictionary=g.planet_progress(str(id))
 			if planet.get("conquered",false) and not str(planet.crewId).is_empty():
 				if g.cancel_planet_exploration(str(id)):record(g,"recall_conquered_explorer",{"planet":id})
+		# Declared QA allocation assumption: after the last planet is conquered,
+		# move up to six unlocked, legally unoccupied crew to first-galaxy work.
+		# Obey authored maxCrew and preserve other growth assignments.
+		var available:Array=g.profile.crew.filter(func(member):return g.crew.unlocked(g,str(member.crewId)) and g.crew_exploration(str(member.crewId)).is_empty())
+		var target:int=mini(mini(galaxy_crew_target,int(g.crew.assignments(g).galaxy_explore.maxCrew)),maxi(1,available.size()-2))
+		for member in available:
+			if g.galaxy.crew_count(g,"galaxy_1")>=target:break
+			if str(member.assignmentType)=="galaxy_explore":continue
+			if g.assign_crew(str(member.crewId),"galaxy_explore","galaxy_1"):record(g,"reallocate_galaxy",{"crew":member.crewId,"target":target})
 	# Keep two idle for future planets until galaxy unlock.
 	var idle: Array=g.profile.crew.filter(func(member):return g.idle_planet_crew(str(member.crewId)))
 	for member in idle.slice(0 if g.galaxy.available() else 2):
@@ -84,6 +96,9 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		g.start(chosen_stage,false)
 		g.toggle_loop()
 		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target})
+	if cap_stage>0 and (g.stage>cap_stage or (g.stage==cap_stage and g.profile.cleared.has(cap_stage) and not g.profile.loop)):
+		g.start(cap_stage,false);g.toggle_loop();farm={}
+		record(g,"farm_after_progression_cap",{"stage":cap_stage,"node":1})
 	deaths_seen=int(g.metrics.deaths)
 	# A push/return can change stage after the initial transaction pass.
 	# Fit that newly chosen stage during this same real visit, never on a hidden tick.

@@ -1,0 +1,23 @@
+{
+  "source": "Parent reported independent runs; exact full evidence retained in parent environment, not uploaded here",
+  "commit": "756ad15",
+  "seed": 20261004,
+  "runs": [
+    {
+      "visit_seconds": 300,
+      "clear10_seconds": 9265,
+      "clear20_seconds": 16416.95,
+      "retreats": 246,
+      "sessions": 86,
+      "domain_events": 968
+    },
+    {
+      "visit_seconds": 900,
+      "clear20_seconds": 21512.53,
+      "retreats": 338,
+      "sessions": 57,
+      "domain_events": 710
+    }
+  ],
+  "result": "Both fail20 target12\u201318h; not caused by one visit frequency"
+}

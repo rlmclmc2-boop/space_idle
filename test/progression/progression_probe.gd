@@ -94,6 +94,7 @@ func run() -> void:
 	policy.thematic=bool(options.get("thematic",false))
 	policy.allow_reforge=bool(options.get("allow_reforge",true))
 	policy.use_bulk=bool(options.get("bulk",false))
+	policy.cap_stage=60 if bool(options.get("stop_galaxy",false)) else 0
 	policy.journal=func(kind, extra):
 		if kind in ["travel_to_farm_point","begin_farm_guard","resume_push"]:actions+=1
 		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":kind,"stage":game.stage,"payload":extra}));trace.flush()
@@ -131,6 +132,7 @@ func run() -> void:
 		if game.galaxy.regions.has("galaxy_1") and game.galaxy.regions.galaxy_1.is_complete() and galaxy_completion<0:
 			galaxy_completion=game.simulated_time;snapshot("galaxy_all_max")
 		if bool(options.get("stop_galaxy",false)) and galaxy_completion>=0:break
+		if int(options.get("stop_reach",0))>0 and game.stage>=int(options.stop_reach):break
 		var current := str(game.stage)+":"+str(game.group_index)+":"+str(game.state)
 		if current!=wave_key:
 			if not wave_key.is_empty():

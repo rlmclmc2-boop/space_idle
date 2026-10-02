@@ -13,6 +13,13 @@ func _initialize() -> void:
 		assert(planet.buildings.shipyard_later==old)
 		g.planet_buildings.sync(g,"2")
 		assert(planet.buildings.shipyard_later==old)
+		# The formal load path clears crew before migration, then restores occupation.
+		# Validate the old ID can still resolve its in-flight builder on actual import.
+		var raw:Dictionary=g.portable_save_data()
+		raw.planets["2"].buildings={"shipyard":old.duplicate(true)}
+		var imported=Game.new(ShipDatabase.new(),false)
+		imported.load_progress_data(raw)
+		assert(imported.planet_buildings.state(imported,"2","shipyard_later")==old)
 		cases+=1
 	var first=Game.new(ShipDatabase.new(),false)
 	first.profile.cleared=range(1,31);first.profile.highestLevel=31;first.rebuild_unlocks()

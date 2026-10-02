@@ -5,6 +5,8 @@ import openpyxl
 ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship';CFG=SRC/'config_excel'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
+from source_lock import acquire
+_source_lock=acquire(ROOT)
 changes=[]
 def edit(name,key_column,targets):
  w=openpyxl.load_workbook(CFG/(name+'.xlsx'));s=w.active;h={c.value:c.column for c in s[1] if c.value is not None}

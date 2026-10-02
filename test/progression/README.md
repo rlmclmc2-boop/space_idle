@@ -76,3 +76,12 @@ Structural generation now covers all220 levels: teaching5 nodes; later9;20/25/â€
 Checkpoint experiments require `--resume PATH`; data mismatch requires explicit `--allow-version-change`, and run metadata labels all resumed experiments diagnostic. They restore formal journey behavior, not live projectile state, and assign zero offline interval. Final acceptance must still start fresh on one frozen version. `--stop-galaxy --stop-clear220` ends only when first galaxy all buildings are max. Reforge/reach checkpoints and phase timestamps are now collected.
 
 Operation measurement now counts each batch once and includes manual collect/scientist events. It remains an API event estimate, not literal mouse clicks; old event totals are retained with their measurement version.
+
+
+## Future prototype v6 / outstanding gates
+
+The provisional30â€“60 budget replaces inherited tenfold difficulty steps with explicit staged curves. First reforge bonus candidate+15 equipment/+10 research effect levels (formerly+5/+5), retaining existing mechanisms and later original preparation times. Nothing beyond20 is accepted. A fresh no-reforge run stops on first reaching34; use that same-version checkpoint for the12h stall diagnostic, then replay the eligible reforge and return/35 timing.
+
+Sparse first-normal farming now respects guarding during clear settlement. The formal old-ID shipyard import path now restores builders through previous_id, not only direct state sync; negative reproduction on the previous code fails, corrected full-import cases pass. Six legally unlocked crew can be assigned in a controlled60/six-conquered fixture; this proves capacity/action validity only. Final galaxy strategy respects authored maxCrew6 and retains other growth assignments.
+
+v5 40-template rule matrix uses exact BattleGame geometry (not the earlier Presented fixture). Paired copies show early wins across additional elites/Bosses, so private factor diagnostics are running before any source compensation. Ordinary+3 guarantee and target bands require complete matrix and retest.
