@@ -1,0 +1,17 @@
+Exact approved blob: space-battleship/scripts/equipment_card.gd
+Exact approved blob: space-battleship/scripts/enhancement_branches.gd
+Exact approved blob: space-battleship/data/ui_text.json
+Exact approved blob: space-battleship/data/ui_text_contract.json
+Exact approved blob: test/test_equipment_refit_popup.gd
+Exact approved blob: test/test_protection_hit_feedback.gd
+Exact approved blob: test/test_resource_hover_pickup.gd
+Exact approved blob: test/test_furnace_income.gd
+Exact approved blob: test/test_jewels.gd
+Exact approved block union: space-battleship/scripts/main.gd
+Exact approved block union: space-battleship/scripts/game.gd
+Included ancestor: 31933e2
+Included ancestor: 2d6e3d0
+Included ancestor: 1103ff7
+Included ancestor: 87869fc
+Included ancestor: a3a4d81
+Assets, equipment_tab and review files unchanged on main.
