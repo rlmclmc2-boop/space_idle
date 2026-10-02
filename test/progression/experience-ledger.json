@@ -88,6 +88,24 @@
       "topic": "Stage26–30 each only a few minutes after slower21–25",
       "evidence": "evidence/full-event-v12-segment20-to30",
       "impact": "Candidate pacing accelerates sharply; exact candidate source and cross-version scope must accompany conclusions."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "open investigation; no battle-rule change",
+      "topic": "Native chrono budget matches but combat trajectory differs from continuousX1",
+      "evidence": "evidence/native-chrono-budget700",
+      "measurements": {
+        "baseline_kills": 885,
+        "boosted_kills": 883,
+        "x1_seconds_each": 700,
+        "boosted_start_reserve": 600,
+        "boosted_wall_seconds": 100,
+        "remaining_reserve": 0,
+        "iron_each": 0,
+        "uranium_each": 63
+      },
+      "impact": "Do not claim exact RNG/kill equivalence from time-budget proof. Render-frame pose/recoil is a suspected cause, not yet isolated."
     }
   ]
 }

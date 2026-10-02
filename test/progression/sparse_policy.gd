@@ -1,9 +1,10 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v6-recovery-cards-branchA"
+const VERSION="sparse-v7-losses-across-visits"
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
+var scientist_batch_mode := false
 var recovering := false
 var recovery_end_stage := 0
 var farm := {}
@@ -30,7 +31,19 @@ func manual_upgrade_sweep(g,levels:int)->bool:
 		for index in g.loadout_entries(category).size():
 			if g.upgrade_slot(category,index,levels):changed=true
 	return changed
+func buy_scientist(g:BattleGame,fraction:float)->void:
+	# Optional sparse-visit assumption: existing +10 button, same reserve cap.
+	if scientist_batch_mode and g.stage>=6:
+		var purchase:Dictionary=g.scientist_purchase(10)
+		var cheap:bool=int(purchase.count)==10
+		for id in purchase.costs:
+			if float(purchase.costs[id])>float(g.profile.resources.get(id,0))*fraction:cheap=false
+		if cheap and g.generate_scientist(10):
+			record(g,"scientist_batch",{"amount":10,"reserve_fraction":fraction});return
+	super.buy_scientist(g,fraction)
 func act(g: BattleGame, elapsed: float) -> bool:
+	if int(g.profile.highestLevel)>furthest:
+		furthest=int(g.profile.highestLevel);deaths_seen=int(g.metrics.deaths)
 	if recovering and g.profile.cleared.has(recovery_end_stage):recovering=false
 	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
 	respect_guard=true
@@ -74,7 +87,7 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		if allow_reforge and reforge_ready_progress and g.can_reforge_planet(str(id)):
 			if g.reforge_planet(str(id)):
 				farm={};best_won={};deaths_seen=int(g.metrics.deaths)
-				record(g,"reforge",{"planet":id});recovering=true;recovery_end_stage=35+5*(int(id)-1)
+				record(g,"reforge",{"planet":id});recovering=true;recovery_end_stage=35+5*(int(id)-1);furthest=int(g.profile.highestLevel)
 				# Major reforge visit: rebuild with existing +10 card actions.
 				# Every successful card emits its own upgrade event for operation counts.
 				for attempt in range(24):
@@ -114,18 +127,17 @@ func act(g: BattleGame, elapsed: float) -> bool:
 			g.toggle_loop();record(g,"begin_farm_guard",{"stage":g.stage,"node":g.group_index})
 		if module_sum(g)>=int(farm.modules)+5 or elapsed-float(farm.since)>=900:
 			var target: int=int(farm.target)
-			g.start(target,false);record(g,"resume_push",{"target":target});farm={}
+			g.start(target,false);record(g,"resume_push",{"target":target});farm={};deaths_seen=int(g.metrics.deaths)
 	elif g.stage>=6 and g.metrics.deaths-deaths_seen>=2 and g.profile.cleared.has(g.stage-1):
 		var node: int=int(best_won.get(str(g.stage),0))
 		var chosen_stage: int=g.stage if node>0 else g.stage-1
 		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g),"node":1}
 		g.start(chosen_stage,false)
 		g.toggle_loop()
-		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target})
+		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target});deaths_seen=int(g.metrics.deaths)
 	if cap_stage>0 and (g.stage>cap_stage or (g.stage==cap_stage and g.profile.cleared.has(cap_stage) and not g.profile.loop)):
 		g.start(cap_stage,false);g.toggle_loop();farm={}
 		record(g,"farm_after_progression_cap",{"stage":cap_stage,"node":1})
-	deaths_seen=int(g.metrics.deaths)
 	# A push/return can change stage after the initial transaction pass.
 	# Fit that newly chosen stage during this same real visit, never on a hidden tick.
 	if thematic:

@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SPARSE_SCIENTIST_BATCH_PASS purchased=10 real_button_supported=true reserve_fraction=0.1 scope=optional sparse-visit assumption; no teaching change

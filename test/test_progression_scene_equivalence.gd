@@ -43,6 +43,7 @@ func run():
 	if scene_mode:
 		for game in [a,b]:
 			var driver=Driver.new();driver.setup(self,game);driver.scene.automation_args=[];drivers.append(driver);scenes.append(driver.scene)
+	if scene_mode and not OS.get_environment("PROGRESSION_COMPARE_UI_SECONDS").is_empty():drivers[0].ui_refresh_seconds=float(OS.get_environment("PROGRESSION_COMPARE_UI_SECONDS"))
 	var policies=[Policy.new(),Policy.new()]
 	for policy in policies:policy.configure("BALANCED",20261002)
 	var duration:=int(OS.get_environment("PROGRESSION_COMPARE_DURATION"))
@@ -67,6 +68,6 @@ func run():
 				var f=FileAccess.open("res://.runtime/formal-adapter-mismatch.json",FileAccess.WRITE);f.store_string(JSON.stringify({"second":(step+1)/60,"adapter":left,"native":right},"\t"));f.close()
 				printerr("FORMAL_ADAPTER_MISMATCH second=",(step+1)/60);quit(1);return
 		if (step+1)%36000==0:print("FORMAL_COMPARE_HEARTBEAT seconds=",(step+1)/60," stage=",a.stage)
-	print("FORMAL_ADAPTER_PASS seconds=",duration," scene_providers=",scene_mode," stage=",a.stage," node=",a.group_index," scope=full scene event hook; driver versus native production frame; same sparse decisions; every-second state/resources/RNG/research/queue check")
+	print("FORMAL_ADAPTER_PASS seconds=",duration," scene_providers=",scene_mode," stage=",a.stage," node=",a.group_index," ui_seconds=",drivers[0].ui_refresh_seconds if scene_mode else 0," scope=full scene event hook; driver versus native production frame; same sparse decisions; every-second state/resources/RNG/research/queue check")
 	for scene in scenes:scene.queue_free()
 	quit()

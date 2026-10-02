@@ -37,7 +37,7 @@ func snapshot(label: String) -> void:
 	var projection:Dictionary={"armour":game.stat("armour"),"shield":game.stat("shield"),"reactor_weapons":game.reactor_multiplier("weapons"),"reactor_defence":game.reactor_multiplier("defence"),"reactor_smelting":game.reactor_multiplier("smelting"),"weapons":[]}
 	for entry in game.weapon_entries():
 		projection.weapons.append({"key":entry.key,"actual_level":entry.level,"effective_level":game.effective_equipment_level(int(entry.level)),"equipment_damage":0 if str(entry.key).is_empty() else game.equipment_stat(str(entry.key),int(entry.level))})
-	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"combat_projection":projection,"projection_scope":"Current ordinary capacities/damage; excludes per-hit critical/channel counters","rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen,"recovering":policy.recovering,"recovery_end_stage":policy.recovery_end_stage,"version":Policy.VERSION},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
+	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"combat_projection":projection,"projection_scope":"Current ordinary capacities/damage; excludes per-hit critical/channel counters","rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen,"furthest":policy.furthest,"recovering":policy.recovering,"recovery_end_stage":policy.recovery_end_stage,"version":Policy.VERSION},"state":int(game.state),"metrics_deaths":metrics.deaths,"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind=="encounter":
 		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
@@ -99,11 +99,15 @@ func run() -> void:
 	policy.thematic=bool(options.get("thematic",false))
 	policy.allow_reforge=bool(options.get("allow_reforge",true))
 	policy.use_bulk=bool(options.get("bulk",false))
+	if policy.get("scientist_batch_mode")!=null:policy.scientist_batch_mode=bool(options.get("scientist_batch",false))
+	elif bool(options.get("scientist_batch",false)):
+		printerr("Frozen policy does not support scientist-batch assumption");quit(2);return
 	policy.cap_stage=60 if bool(options.get("stop_galaxy",false)) else 0
 	policy.journal=func(kind, extra):
 		if kind in ["travel_to_farm_point","begin_farm_guard","resume_push"]:actions+=1
 		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":kind,"stage":game.stage,"payload":extra}));trace.flush()
-	var initial_scope := "fresh"
+	var manifest:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))
+	var initial_scope := "fresh" if manifest.get("policy_ref")==null else "fresh under explicit frozen policy override; no default-strategy acceptance"
 	if not str(options.get("resume","")).is_empty():
 		var checkpoint=JSON.parse_string(FileAccess.get_file_as_string(str(options.resume)))
 		if not checkpoint is Dictionary or not checkpoint.get("save") is Dictionary:
@@ -120,12 +124,17 @@ func run() -> void:
 		game.resume_progress();game.rng.state=int(str(checkpoint.rng_state))
 		var old:Dictionary=checkpoint.get("policy",{})
 		if old.has("random_state"):policy.random.state=int(str(old.random_state))
-		for field in ["last_refit","unlocked_count","farm","best_won","deaths_seen","recovering","recovery_end_stage"]:
+		for field in ["last_refit","unlocked_count","farm","best_won","deaths_seen","recovering","recovery_end_stage","furthest"]:
 			if old.has(field):policy.set(field,old[field])
+		# Metrics restart for this diagnostic; preserve outstanding loss count,
+		# rather than copying an old cumulative counter into the new baseline.
+		policy.deaths_seen=int(old.get("deaths_seen",0))-int(checkpoint.get("metrics_deaths",old.get("deaths_seen",0)))
+		policy.furthest=int(old.get("furthest",game.profile.highestLevel))
 		next_visit=game.simulated_time
 	game.event.connect(observe)
 	if bool(options.get("scene",false)):
 		scene_driver=load("res://qa/scene_driver.gd").new()
+		scene_driver.ui_refresh_seconds=float(options.get("ui_refresh_seconds",0.0))
 		scene_driver.setup(self,game)
 	write_json("run.json",{"policy_version":Policy.VERSION,"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","combat_engine":str(options.get("engine","formal")),"geometry_scope":"Formal scene providers" if bool(options.get("scene",false)) else "Logical default launch/targets only","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
 	snapshot("0")

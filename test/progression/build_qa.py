@@ -5,6 +5,7 @@ ROOT = Path(__file__).resolve().parents[2]
 p = argparse.ArgumentParser()
 p.add_argument('--output', type=Path, required=True)
 p.add_argument('--scene',action='store_true',help='Include formal scene dependencies for canonical muzzle/target integration')
+p.add_argument('--policy-ref',help='Explicit diagnostic sparse policy from a frozen Git ref; recorded in manifest')
 p.add_argument('--data-ref', help='Use the exact game_data.json of a frozen ref with current QA code')
 a = p.parse_args(); out=a.output.resolve(); source=ROOT/'space-battleship'
 if out.exists(): raise SystemExit('Output exists; use a new directory to preserve evidence')
@@ -31,6 +32,8 @@ if a.data_ref:
  (out/'data/game_data.json').write_bytes(subprocess.check_output(['git','show',a.data_ref+':space-battleship/data/game_data.json'],cwd=ROOT))
 (out/'.runtime').mkdir(); (out/'qa').mkdir(); 
 for script in Path(__file__).parent.glob('*.gd'):shutil.copy2(script,out/'qa'/script.name)
+if a.policy_ref:
+ (out/"qa/sparse_policy.gd").write_bytes(subprocess.check_output(["git","show",a.policy_ref+":test/progression/sparse_policy.gd"],cwd=ROOT))
 if a.scene:
  shutil.copy2(ROOT/'test/test_enemy_design_probe.gd',out/'qa/enemy_design_probe.gd')
  shutil.copy2(ROOT/'test/test_progression_scene_equivalence.gd',out/'qa/test_progression_scene_equivalence.gd')
@@ -46,7 +49,7 @@ if a.scene:
 else:
  (out/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Progression QA isolated"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n')
 commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
-manifest={'scene_dependencies':a.scene,'source_commit':commit,'data_ref':a.data_ref,'dirty':subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True),'files':{}}
+manifest={'scene_dependencies':a.scene,'source_commit':commit,'data_ref':a.data_ref,'policy_ref':a.policy_ref,'dirty':subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True),'files':{}}
 for f in sorted(out.rglob('*')):
  if f.is_file():manifest['files'][f.relative_to(out).as_posix()]=hashlib.sha256(f.read_bytes()).hexdigest()
 manifest['fingerprint']=hashlib.sha256(json.dumps(manifest['files'],sort_keys=True).encode()).hexdigest()

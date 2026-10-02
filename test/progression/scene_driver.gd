@@ -2,6 +2,8 @@ extends RefCounted
 ## Canonical pre-simulation carrier pose and real scene muzzle/target providers.
 ## Mirrors battlefield._process and main._process ordering at X1 1/60.
 var scene
+var ui_refresh_seconds:=0.0
+var ui_elapsed:=0.0
 func setup(tree:SceneTree,game):
 	scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
 	tree.root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false
@@ -45,6 +47,8 @@ func after_tick(dt:float):
 	scene.rail_events=scene.rail_events.filter(func(e):return scene.fx_time-float(e.born)<maxf(scene.rail_vfx.flash_seconds,scene.rail_vfx.impact_seconds))
 	scene.enemy_impacts=scene.enemy_impacts.filter(func(e):return scene.fx_time-float(e.born)<.12)
 	scene.pulse_events=scene.pulse_events.filter(func(e):return scene.fx_time-float(e.born)<.14)
-	scene.refresh_visible_cards(dt);scene.refresh_navigation()
+	ui_elapsed+=dt
+	if ui_refresh_seconds<=0.0 or ui_elapsed+0.000001>=ui_refresh_seconds:
+		scene.refresh_visible_cards(ui_elapsed);scene.refresh_navigation();ui_elapsed=0.0
 func close():
 	if is_instance_valid(scene):scene.queue_free()
