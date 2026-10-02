@@ -198,6 +198,62 @@ func run() -> void:
 	click(viewport,screen)
 	await process_frame
 	check(map.selected_slot==id and panel.detail_slot==id,"Real click inspects building")
+	var preview_events := [0]
+	var count_preview := func(_id):preview_events[0]+=1
+	map.slot_selected.connect(count_preview)
+	var other_position: Vector2=map.camera.unproject_position(map.slot_nodes[3].global_position)*map.size/Vector2(map.view.size)
+	var hover := InputEventMouseMotion.new()
+	hover.position=map.get_global_transform()*other_position
+	for _i in 20:viewport.push_input(hover,true)
+	await process_frame
+	check(map.selected_slot==id and panel.detail_slot==id and map.highlight.position.is_equal_approx(node.position+Vector3(0,0.1,0)),"Hover cannot replace a clicked building's detail or highlight")
+	var held_events: int=preview_events[0]
+	check(preview_events[0]==0,"Repeated movement over a building emits no redundant detail refresh")
+	await capture(viewport,"galaxy-selection-held-ui.png")
+	map.mouse_exited.emit()
+	check(panel.detail_slot==id and map.highlight.visible,"Leaving map preserves clicked selection")
+	# Blank-space click clears a pinned selection; preview resumes on hover.
+	click(viewport,map.get_global_transform()*Vector2(12,40));await process_frame
+	check(map.selected_slot==-1 and not panel.detail_frame.visible,"Blank map click clears selection and detail")
+	viewport.push_input(hover,true);await process_frame
+	check(panel.detail_slot==3,"Unpinned hover previews the building")
+	var preview_count: int=preview_events[0]
+	for _i in 20:viewport.push_input(hover,true)
+	check(preview_events[0]==preview_count,"Stationary preview identity does not refresh its detail repeatedly")
+	map.mouse_exited.emit()
+	check(panel.detail_slot==-1 and not panel.detail_frame.visible and not map.highlight.visible,"Leaving map clears unpinned preview")
+	map.slot_selected.disconnect(count_preview)
+	var roof_hits := 0
+	var roof_total := 0
+	for slot in region.slots:
+		var bounds: Array=map.asset_bounds[map.visual_path(slot)]
+		for offset in [Vector2.ZERO,Vector2(-0.3,-0.3),Vector2(-0.3,0.3),Vector2(0.3,-0.3),Vector2(0.3,0.3)]:
+			var roof: Vector3=map.slot_nodes[int(slot.id)].global_transform*(Vector3(float(bounds[0])*offset.x,float(bounds[1])*0.9,float(bounds[2])*offset.y)*map.BUILDING_SCALE)
+			var point: Vector2=map.camera.unproject_position(roof)*map.size/Vector2(map.view.size)
+			roof_total+=1
+			if map.pick(point)==int(slot.id):roof_hits+=1
+	check(roof_hits==roof_total,"Upper building volumes are clickable across all six families")
+	print("GALAXY PICK roof_hits=",roof_hits,"/",roof_total," pinned_hover_events=",held_events)
+	click(viewport,screen);await process_frame
+	scene.select_system(0);await process_frame
+	scene.select_system(8);await process_frame
+	check(map.selected_slot==id and panel.detail_slot==id,"Selection survives hiding and reopening the galaxy")
+	g.paused=true;panel.refresh_sample(0)
+	var paused_ticks: int=map.visual_ticks
+	click(viewport,map.get_global_transform()*other_position)
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused selection requests exactly one render")
+	await capture(viewport,"galaxy-paused-selection-ui.png")
+	check(map.selected_slot==3 and panel.detail_slot==3 and map.visual_ticks==paused_ticks,"Paused selection changes detail without animation")
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED,"Paused selection returns to dormant rendering")
+	var paused_zoom: float=map.zoom
+	viewport.push_input(wheel,true)
+	check(map.zoom>paused_zoom and map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused zoom requests one image")
+	wheel.pressed=false;viewport.push_input(wheel,true)
+	await process_frame;await RenderingServer.frame_post_draw
+	check(map.visual_ticks==paused_ticks and map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED,"Paused zoom does not restart animation")
+	map.zoom=1.0;map.layout()
+	g.paused=false;panel.refresh_sample(0)
+	click(viewport,screen);await process_frame
 	var cached_node: int=node.get_node("Building").get_instance_id()
 	var cached_updates: int=map.draw_updates
 	panel.refresh()
@@ -291,6 +347,9 @@ func capture(viewport: Viewport,filename: String) -> void:
 	viewport.get_texture().get_image().save_png("res://../"+filename)
 
 func click(viewport: Viewport,position: Vector2) -> void:
+	var move := InputEventMouseMotion.new()
+	move.position=position
+	viewport.push_input(move,true)
 	for pressed in [true,false]:
 		var input := InputEventMouseButton.new()
 		input.position=position;input.button_index=MOUSE_BUTTON_LEFT;input.pressed=pressed
