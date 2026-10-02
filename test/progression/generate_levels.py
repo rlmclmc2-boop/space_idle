@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--roster-through',type=int,default=20);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');a=p.parse_args()
 from source_lock import acquire
 _source_lock=acquire(ROOT)
 data=json.loads((SRC/'data/game_data.json').read_text())
@@ -29,6 +29,8 @@ ratios=[1,1.5,2,3,4.5,1.2**15]+[1.2**(30+10*i) for i in range(4)]
 ratios += [1.2**(60+13*i) for i in range(1,11)]
 resources=[1.4**i for i in range(5)]+[12*1.2**(10*i) for i in range(5)]
 resources += [resources[9]*1.2**(13*i)*a.late_income for i in range(1,11)]
+if a.smooth_income_floor:
+ for index in range(10,20):resources[index]=max(resources[index],resources[index-1]*1.4)
 if a.through>20:
  # Provisional future budget. Every value is subject to segment regression.
  ratios += [1.2**(190+8*i) for i in range(1,11)]
@@ -77,5 +79,5 @@ for n,b in books.items():b.save(CFG/(n+'.xlsx'))
 recache_level(CFG/"level.xlsx",sheets["level"],subprocess.check_output(["git","show","04a5a307bcef9325efa9026e1ca94affa577e10d:space-battleship/config_excel/level.xlsx"],cwd=ROOT))
 result=incremental_import(CFG,SRC/'data/game_data.json')
 evidence=ROOT/'test/progression/candidates';evidence.mkdir(exist_ok=True)
-(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'roster_range':[1,max(a.through,a.roster_through)],'reason':'Segmented candidate; v4 diagnostic cleared20 at4.79h, far below12–18h. Late income coefficient is explicit and must be tested from a fresh profile; stage4/5 remain suggestions. Original40 templates retained; downstream Excel formula dependencies are recalculated and unaccepted.','health_normalization':.1454,'ratios':ratios,'resource_ratios':resources,'late_income_coefficient':a.late_income,'affected':'Generated numeric range plus later formula dependencies. Future candidate is provisional until segmented and single-version full fresh tests.','waves':manifest,'import':result},indent=2,ensure_ascii=False))
+(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'roster_range':[1,max(a.through,a.roster_through)],'reason':'Segmented candidate; v4 diagnostic cleared20 at4.79h, far below12–18h. Late income coefficient is explicit and must be tested from a fresh profile; stage4/5 remain suggestions. Original40 templates retained; downstream Excel formula dependencies are recalculated and unaccepted.','health_normalization':.1454,'ratios':ratios,'resource_ratios':resources,'late_income_coefficient':a.late_income,'smooth_income_floor':a.smooth_income_floor,'affected':'Generated numeric range plus later formula dependencies. Future candidate is provisional until segmented and single-version full fresh tests.','waves':manifest,'import':result},indent=2,ensure_ascii=False))
 print(json.dumps(result))

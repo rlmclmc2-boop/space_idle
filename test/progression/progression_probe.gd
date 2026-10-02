@@ -1,5 +1,6 @@
 extends SceneTree
-const Game = preload("res://scripts/balance_game.gd")
+const BasicGame = preload("res://scripts/balance_game.gd")
+const FormalGame = preload("res://qa/presented_balance_game.gd")
 const Database = preload("res://scripts/balance_database.gd")
 const Policy = preload("res://qa/sparse_policy.gd")
 const Metrics = preload("res://scripts/balance_metrics.gd")
@@ -27,12 +28,13 @@ var reached := {}
 var reforges := []
 var current_reforge := -1
 var galaxy_completion := -1.0
+var scene_driver = null
 func _initialize() -> void: call_deferred("run")
 func write_json(name: String, value) -> void:
 	var f := FileAccess.open(output+"/"+name,FileAccess.WRITE)
 	f.store_string(JSON.stringify(value,"\t")); f.close()
 func snapshot(label: String) -> void:
-	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json")})
+	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind=="encounter":
 		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
@@ -87,7 +89,7 @@ func run() -> void:
 	output = ProjectSettings.globalize_path("res://results/"+str(options.get("label","baseline")))
 	DirAccess.make_dir_recursive_absolute(output)
 	trace = FileAccess.open(output+"/actions.jsonl",FileAccess.WRITE)
-	game = Game.new(Database.new());game.rng.seed=int(options.seed)
+	game = (BasicGame if str(options.get("engine","formal"))=="basic" else FormalGame).new(Database.new());game.rng.seed=int(options.seed)
 	game.stat_cache_enabled=bool(options.get("stat_cache",true))
 	game.metrics=metrics;metrics.initialize(game)
 	policy.configure(str(options.strategy),int(options.seed))
@@ -103,7 +105,7 @@ func run() -> void:
 		var checkpoint=JSON.parse_string(FileAccess.get_file_as_string(str(options.resume)))
 		if not checkpoint is Dictionary or not checkpoint.get("save") is Dictionary:
 			printerr("Invalid diagnostic checkpoint");quit(2);return
-		if checkpoint.get("data_sha256","")!=FileAccess.get_sha256("res://data/game_data.json") and not bool(options.get("allow_version_change",false)):
+		if (checkpoint.get("data_sha256","")!=FileAccess.get_sha256("res://data/game_data.json") or checkpoint.get("combat_engine","basic")!=str(options.get("engine","formal"))) and not bool(options.get("allow_version_change",false)):
 			printerr("Checkpoint data differs: explicitly allow diagnostic version change");quit(2);return
 		initial_scope="checkpoint diagnostic; formal journey reload; no full fresh acceptance"
 		game.simulated_time=float(checkpoint.x1_seconds)
@@ -118,7 +120,10 @@ func run() -> void:
 			if old.has(field):policy.set(field,old[field])
 		next_visit=game.simulated_time
 	game.event.connect(observe)
-	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
+	if bool(options.get("scene",false)):
+		scene_driver=load("res://qa/scene_driver.gd").new()
+		scene_driver.setup(self,game)
+	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","combat_engine":str(options.get("engine","formal")),"geometry_scope":"Formal scene providers" if bool(options.get("scene",false)) else "Logical default launch/targets only","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
 	snapshot("0")
 	var started := Time.get_ticks_usec()
 	var steps := 0
@@ -126,6 +131,7 @@ func run() -> void:
 		if game.simulated_time+0.000001 >= next_visit:
 			visit()
 			next_visit=game.simulated_time+(float(options.teaching_seconds) if int(game.profile.highestLevel)<=5 else float(options.visit_seconds))
+		if scene_driver!=null:scene_driver.before_tick(STEP)
 		game.tick(STEP);steps+=1
 		if game.stage in [30,32,34,35,40,45,50,55,60] and not reached.has(str(game.stage)):
 			reached[str(game.stage)]=game.simulated_time;snapshot("reach_"+str(game.stage))
@@ -148,5 +154,6 @@ func run() -> void:
 		if clears.has(str(int(options.stop_clear))):break
 	snapshot("end")
 	write_json("summary.json",{"options":options,"x1_seconds":game.simulated_time,"steps":steps,"clears":clears,"highest":game.profile.highestLevel,"deaths":metrics.deaths,"action_sessions":action_sessions,"action_events":actions,"action_intervals":action_gaps,"completed_waves":completed_waves,"reached":reached,"reforges":reforges,"galaxy_all_max_seconds":galaxy_completion,"operation_scope":"Observed API domain events; batch upgrades counted once, explicit manual collects included. Not literal mouse clicks.","metrics":metrics.report(game),"wall_seconds":(Time.get_ticks_usec()-started)/1e6,"profile":game.profile,"waves":wave_rows})
+	if scene_driver!=null:scene_driver.close()
 	trace.close();print("RESULT ",output," clears=",clears," deaths=",metrics.deaths," sessions=",action_sessions)
 	quit()

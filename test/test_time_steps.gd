@@ -49,19 +49,20 @@ func run() -> void:
 			var total := 0.0
 			for step in game.steps:
 				total += step
-			var max_expected_step := 1.0/15.0 if speed>=3.0 else 1.0/60.0
-			check(is_equal_approx(total,expected_real*speed),"Simulation delta clamp and speed: %s/%s" % [speed,delta])
-			check(game.steps.all(func(step):return step>0 and step<=max_expected_step),"Simulation substep uses the selected speed mode: %s/%s" % [speed,delta])
+			var max_expected_step := 1.0/60.0
+			check(is_equal_approx(total+scene.game_time_remainder,expected_real*speed),"Processed ticks plus pending frame tail equal budget: %s/%s" % [speed,delta])
+			check(game.steps.all(func(step):return is_equal_approx(step,max_expected_step)),"Simulation substep uses the selected speed mode: %s/%s" % [speed,delta])
 			check(scene.accelerated_visual_mode==(speed>=3.0),"Accelerated presentation starts at 3x: %s/%s" % [speed,delta])
-			check(is_equal_approx(game.distance,game.ship_movement()*expected_real*speed),"Travel follows simulated time: %s/%s" % [speed,delta])
-			check(is_equal_approx(game.planet_seconds,expected_real*speed) and is_equal_approx(game.research_seconds,expected_real*speed) and is_equal_approx(game.production_seconds,expected_real*speed),"Exploration, research and production share game time: %s/%s" % [speed,delta])
-			check(is_equal_approx(game.resource_prune_elapsed,expected_real),"Resource history pruning interval follows online real time: %s/%s" % [speed,delta])
+			check(is_equal_approx(game.distance,game.ship_movement()*total),"Travel follows simulated time: %s/%s" % [speed,delta])
+			check(is_equal_approx(game.planet_seconds,total) and is_equal_approx(game.research_seconds,total) and is_equal_approx(game.production_seconds,total),"Exploration, research and production share game time: %s/%s" % [speed,delta])
+			check(is_equal_approx(game.resource_prune_elapsed,total/speed),"Resource history pruning interval follows online real time: %s/%s" % [speed,delta])
 			check(is_equal_approx(float(game.profile.chronoParticles),game.chrono_capacity()-expected_real*game.chrono_cost(speed)),"Particle cost follows real time once: %s/%s" % [speed,delta])
 			check(is_equal_approx(scene.clock-clock_before,expected_real),"UI clock uses clamped real time: %s/%s" % [speed,delta])
 			game.state = BattleGame.State.LEVEL_CLEAR
 			game.clear_timer = 100.0
+			var tick_count_before := game.steps.size()
 			scene._process(delta)
-			check(is_equal_approx(100.0-game.clear_timer,expected_real*speed),"Countdown follows the same game time: %s/%s" % [speed,delta])
+			check(is_equal_approx(100.0-game.clear_timer,(game.steps.size()-tick_count_before)/60.0),"Countdown follows the same game time: %s/%s" % [speed,delta])
 			game.paused = true
 			var before := {"profile":game.profile.duplicate(true),"player":game.player.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"distance":game.distance,"prune_elapsed":game.resource_prune_elapsed}
 			game.steps.clear()
@@ -72,6 +73,13 @@ func run() -> void:
 	scene.game = exact_steps
 	scene.advance_game_time(10.0/60.0)
 	check(exact_steps.steps.size()==10,"10x exact frame has no floating-point residue tick")
+	for fps in [45,60,144]:
+		for multiplier in [1.0,10.0]:
+			var frame_probe := ObservedGame.new(scene.db,false)
+			scene.game=frame_probe
+			for frame in fps:scene.advance_game_time(multiplier/fps)
+			check(frame_probe.steps.size()==int(multiplier*60),"Frame-rate-independent step count %s/%s" % [fps,multiplier])
+			check(scene.game_time_remainder<.000000001,"Frame tails settle at exact budget %s/%s" % [fps,multiplier])
 	var cooldown_probe := BattleGame.new(scene.db,false)
 	cooldown_probe.speed = 3.0
 	check(is_equal_approx(cooldown_probe.weapon_cooldown_after_shot(0.1,1.0/6.0,0.5),0.5),"3x cooldown retains the same X1 attack schedule")

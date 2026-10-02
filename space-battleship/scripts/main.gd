@@ -108,6 +108,8 @@ var floats: Array[Dictionary] = []
 var pickup_effects: Array[Dictionary] = []
 var resource_hover_feedback: Array[Dictionary] = []
 var clock := 0.0
+var game_time_remainder := 0.0
+var time_step_game_id := 0
 var star_travel := 0.0
 var star_streak := 0.0
 # Immutable star seeds own this geometry until the scene is freed.
@@ -435,13 +437,18 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func advance_game_time(seconds: float) -> void:
-	var remaining := seconds
-	# Floating-point residue after a full step must not run another near-zero tick.
-	while remaining > 0.000000001:
-		var max_step := 1.0/60.0
-		var step := minf(remaining, max_step)
-		game.tick(step)
-		remaining -= step
+	if game == null or not is_finite(seconds) or seconds <= 0:return
+	var instance := game.get_instance_id()
+	if instance != time_step_game_id:
+		time_step_game_id = instance
+		game_time_remainder = 0.0
+	# Carry frame tails: X1 and boosts share the same game-time tick sequence
+	# at every render rate. At most one fixed step remains pending on screen.
+	game_time_remainder += seconds
+	const STEP := 1.0/60.0
+	while game_time_remainder + 0.0000000001 >= STEP:
+		game.tick(STEP)
+		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
 
 func fast_mode_enabled() -> bool:
 	return game != null and game.speed >= FAST_MODE_MIN_SPEED

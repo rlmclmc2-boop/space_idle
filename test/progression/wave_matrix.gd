@@ -8,8 +8,8 @@ func run_wave(record:Dictionary,weapon:String,delta:int,factor:=1.0) -> Dictiona
 	for ratio in ["atkRatio","lifeRatio","resRatio"]:db.levels[0][ratio]=1.0
 	var seen := {}
 	for eid in db.groups[str(int(record.group_id))].slots:
-		if eid!=null and not seen.has(str(eid)):
-			seen[str(eid)]=true;db.enemies[str(eid)].dmgMultiple*=factor
+		if eid!=null and not seen.has(str(int(eid))):
+			seen[str(int(eid))]=true;db.enemies[str(int(eid))].dmgMultiple*=factor
 	var g=Game.new(db);g.rng.seed=1701;g.stat_cache_enabled=true
 	g.profile.selectedShip="Destroyer";g.profile.grantedUnlocks=[db.unlock_id("ship","Destroyer")]
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.crew=[];g.profile.enhancementLevel=0

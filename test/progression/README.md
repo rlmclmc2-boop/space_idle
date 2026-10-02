@@ -1,5 +1,8 @@
 # Progression calibration evidence
 
+**Correctness boundary:** earlier exact runs inherit base BattleGame. Actual main uses PresentedBattleGame (real missile ejection/retarget and rail motion). All earlier progression timings are base-rule diagnostics, not formal player acceptance. New default `--engine formal`; add builder/runner `--scene` for actual scene providers. The initial formal-vs-native scene comparison passed900 seconds through6-4. Full formal long-run timing is pending.
+
+
 Experimental branch only. Source baseline: main b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f plus enemy-pair candidate 04a5a307bcef9325efa9026e1ca94affa577e10d. The inherited 6/32 loss-to-win changes remain unresolved baseline evidence; paired copies are not equivalent difficulty.
 
 ## Independent reproduction
@@ -85,3 +88,19 @@ The provisional30–60 budget replaces inherited tenfold difficulty steps with e
 Sparse first-normal farming now respects guarding during clear settlement. The formal old-ID shipyard import path now restores builders through previous_id, not only direct state sync; negative reproduction on the previous code fails, corrected full-import cases pass. Six legally unlocked crew can be assigned in a controlled60/six-conquered fixture; this proves capacity/action validity only. Final galaxy strategy respects authored maxCrew6 and retains other growth assignments.
 
 v5 40-template rule matrix uses exact BattleGame geometry (not the earlier Presented fixture). Paired copies show early wins across additional elites/Bosses, so private factor diagnostics are running before any source compensation. Ordinary+3 guarantee and target bands require complete matrix and retest.
+
+
+## Reproduce the formal scene path
+
+```sh
+python test/progression/build_qa.py --output /tmp/formal-qa --scene
+python test/progression/run_qa.py --project /tmp/formal-qa --label fresh-formal --engine formal --scene --duration 64800 --stop-clear 20 --visit-seconds 300 --seed 20261004 --thematic --bulk
+```
+
+Use actual spaced CLI forms (`--duration 64800 --stop-clear 20 --visit-seconds 300 --seed 20261004`). The core no-scene package remains small; optional scene dependencies copy authored project assets/scripts and exclude engine, Blender source, credentials and player saves. Source fingerprint includes every dependency.
+
+`PROGRESSION_COMPARE_SCENE=1 PROGRESSION_COMPARE_DURATION=900 python test/run.py test_progression_scene_equivalence.gd --godot /usr/local/bin/godot --headless --timeout 1800` independently compares adapter/native Presented class, actual scene providers, same sparse operations, every-second state/RNG/resources/research/queue. This tests the adapter and selected scene update path; it is not a claim of all viewport/frame-rate equivalence.
+
+Main now carries frame tails in a fixed1/60 accumulator. Prior1/60 maximum still performed shorter tail ticks each render frame, allowing144fps X1/X10 combat drift even with equal production clocks.151 checks pass including45/60/144fps budgets, pause/background and original particle accounting. Runtime pending time is under1/60 second; save/reload does not persist that substep.
+
+Source v7 smooths11–13 income with at least1.4× preceding income, eliminating the99% reward drop;14–20 coefficient remains prior v5 until next linked adjustment. Source/import transaction locks avoid intermediate formula-cache reads.

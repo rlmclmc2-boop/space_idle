@@ -43,6 +43,10 @@ def main():
     if args.test in {"test_galaxy_ui.gd", "one_times_ablation.gd"}:
         shutil.copytree(tests / "fixtures", isolated_tests / "fixtures")
     (game / ".runtime").mkdir()
+    if args.test == "test_progression_scene_equivalence.gd":
+        (game / "qa").mkdir()
+        adapter=(source/"scripts/balance_game.gd").read_text().replace("extends BattleGame",'extends "res://scripts/presented_battle_game.gd"',1)
+        (game/"qa/presented_balance_game.gd").write_text(adapter)
     env = os.environ.copy()
     env["APPDATA"] = str(area / "userdata/roaming")
     env["LOCALAPPDATA"] = str(area / "userdata/local")
