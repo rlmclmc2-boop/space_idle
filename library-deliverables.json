@@ -1,0 +1,65 @@
+{
+  "full_image": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/galaxy-city-ui(3).png",
+    "file_id": "file_0000000066e082308b9284594965262d",
+    "library_file_id": "libfile_778dce2923b48191987d071614e644d4",
+    "file_name": "galaxy-city-ui(3).png",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "image/png",
+    "library_artifact_type": "image",
+    "file_size_bytes": 596798,
+    "external_connectors_accessed": false
+  },
+  "video": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/individual-city-runtime.mp4",
+    "file_id": "file_000000001dac8230aeed1c272671de40",
+    "library_file_id": "libfile_dd76c115d4f48191855e23130aa3202f",
+    "file_name": "individual-city-runtime.mp4",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "video/mp4",
+    "library_artifact_type": "other",
+    "file_size_bytes": 384529,
+    "external_connectors_accessed": false
+  },
+  "flight_gif": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/individual-flight-1x.gif",
+    "file_id": "file_000000002e8c81f9a0b092127c41f4a2",
+    "library_file_id": "libfile_2165d6d8ce9c8191881bd4fbe8147c4d",
+    "file_name": "individual-flight-1x.gif",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "image/gif",
+    "library_artifact_type": "image",
+    "file_size_bytes": 419534,
+    "external_connectors_accessed": false
+  }
+}

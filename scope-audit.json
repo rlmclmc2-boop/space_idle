@@ -1,0 +1,75 @@
+{
+  "base_main": "10360c57f1057c51ba7106f84581fdd5b1383c62",
+  "json_changes": [
+    {
+      "path": "/galaxy_config/max_transport_ships/value",
+      "before": 12,
+      "after": 6
+    },
+    {
+      "path": "/galaxy_config/camera_zoom_min/value",
+      "before": 0.6,
+      "after": 0.4
+    },
+    {
+      "path": "/galaxy_config/camera_zoom_max/value",
+      "before": 2.8,
+      "after": 0.6
+    },
+    {
+      "path": "/galaxy_config/transport_buildings_per_ship/value",
+      "before": 3,
+      "after": 5
+    }
+  ],
+  "excel_changes": [
+    {
+      "sheet": "galaxy_config",
+      "cell": "B10",
+      "before": 12,
+      "after": 6
+    },
+    {
+      "sheet": "galaxy_config",
+      "cell": "B12",
+      "before": 0.6,
+      "after": 0.4
+    },
+    {
+      "sheet": "galaxy_config",
+      "cell": "B13",
+      "before": 2.8,
+      "after": 0.6
+    },
+    {
+      "sheet": "galaxy_config",
+      "cell": "B14",
+      "before": 3,
+      "after": 5
+    }
+  ],
+  "glb_gameplay_save_planet_files_unchanged": true,
+  "static_structural_meshes": 63,
+  "subviewports_added": 0,
+  "candidate": "8f8d68422633d93d9caa2468d63eea41cabbbdf6",
+  "changed_files": [
+    "space-battleship/assets/galaxy/v3/README.md",
+    "space-battleship/config_excel/galaxy_config.xlsx",
+    "space-battleship/data/game_data.json",
+    "space-battleship/dev/cosmic_city_block/README.md",
+    "space-battleship/dev/cosmic_city_block/block_sample.gd",
+    "space-battleship/dev/cosmic_city_block/preview.gd",
+    "space-battleship/dev/cosmic_city_individual/README.md",
+    "space-battleship/dev/cosmic_city_individual/direction.gd",
+    "space-battleship/dev/cosmic_city_individual/modules.gd",
+    "space-battleship/dev/cosmic_city_individual/preview.gd",
+    "space-battleship/docs/GALAXY.md",
+    "space-battleship/scripts/galaxy_city_layout.gd",
+    "space-battleship/scripts/galaxy_city_modules.gd",
+    "space-battleship/scripts/galaxy_city_structure.gd",
+    "space-battleship/scripts/galaxy_map.gd",
+    "space-battleship/scripts/galaxy_panel.gd",
+    "test/README.md",
+    "test/test_galaxy_ui.gd"
+  ]
+}

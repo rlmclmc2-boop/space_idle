@@ -1,0 +1,1689 @@
+{
+  "fixture": "isolated first-galaxy plan, 30 completed nodes with mixed levels",
+  "frames": [
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00000.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -4.60299062728882,
+            17.2239780426025,
+            -42.3370704650879
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            30.9397449493408,
+            19.0799407958984,
+            55.3122253417969
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            58.232837677002,
+            16.3147487640381,
+            10.7332649230957
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -4.32320880889893,
+            14.4853925704956,
+            -45.0721054077148
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -2.49148845672607,
+            9.30477523803711,
+            41.3682594299316
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            39.9782028198242,
+            4.49342155456543,
+            20.995361328125
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 0.342048,
+      "traffic_visible": 6,
+      "visual_clock": 6.26666666666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00001.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -5.52249145507812,
+            17.3840236663818,
+            -42.3370895385742
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            31.5820560455322,
+            19.0420341491699,
+            54.6364059448242
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            57.8199272155762,
+            16.6630191802979,
+            11.4943418502808
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -4.83078527450562,
+            15.0994253158569,
+            -45.558032989502
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -2.97017049789429,
+            9.95540237426758,
+            40.9008712768555
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            39.5519866943359,
+            5.30151605606079,
+            20.8059101104736
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 0.804847,
+      "traffic_visible": 6,
+      "visual_clock": 6.4
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00002.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -6.52301120758057,
+            17.5464839935303,
+            -42.336799621582
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            32.2733001708984,
+            18.9263725280762,
+            53.904483795166
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            57.365966796875,
+            17.0088024139404,
+            12.3320064544678
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -5.40921878814697,
+            15.7149209976196,
+            -46.1180267333984
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -3.51533102989197,
+            10.6216707229614,
+            40.3660202026367
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            39.0239906311035,
+            6.13279104232788,
+            20.5670986175537
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 1.13366,
+      "traffic_visible": 6,
+      "visual_clock": 6.54480333333334
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00003.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -7.4163122177124,
+            17.6815490722656,
+            -42.3362808227539
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            32.8806838989258,
+            18.7587585449219,
+            53.2572708129883
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            56.957088470459,
+            17.2890682220459,
+            13.0872802734375
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -5.94680452346802,
+            16.2154865264893,
+            -46.6437568664551
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -4.0204963684082,
+            11.1814022064209,
+            39.8684310913086
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            38.5045318603516,
+            6.83245611190796,
+            20.3292827606201
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 1.537696,
+      "traffic_visible": 6,
+      "visual_clock": 6.67386833333333
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00004.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -8.37612819671631,
+            17.8165435791016,
+            -42.33544921875
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            33.5198822021484,
+            18.5124549865723,
+            52.5718421936035
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            56.5145721435547,
+            17.5613803863525,
+            13.9054651260376
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -6.54418039321899,
+            16.6999893188477,
+            -47.2332572937012
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -4.58007192611694,
+            11.7473802566528,
+            39.3153839111328
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            37.9039115905762,
+            7.54057502746582,
+            20.0518684387207
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 2.071689,
+      "traffic_visible": 6,
+      "visual_clock": 6.812335
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00005.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -9.30213069915771,
+            17.9370975494385,
+            -42.3343963623047
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            34.1204223632812,
+            18.2112331390381,
+            51.9235534667969
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            56.0849761962891,
+            17.7965869903564,
+            14.7005062103271
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -7.13763761520386,
+            17.1130676269531,
+            -47.8239326477051
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -5.13416862487793,
+            12.2604160308838,
+            38.7661247253418
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            37.2895927429199,
+            8.18305110931396,
+            19.7661457061768
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 2.41796,
+      "traffic_visible": 6,
+      "visual_clock": 6.94573866666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00006.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -10.1966619491577,
+            18.0447902679443,
+            -42.3331527709961
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            34.6830596923828,
+            17.8632659912109,
+            51.3121299743652
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            55.667854309082,
+            17.9986610412598,
+            15.4731130599976
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -7.72460317611694,
+            17.459981918335,
+            -48.4127006530762
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -5.68101263046265,
+            12.7266283035278,
+            38.2226867675781
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            36.6686897277832,
+            8.76769161224365,
+            19.4757843017578
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 2.80746,
+      "traffic_visible": 6,
+      "visual_clock": 7.074453
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00007.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -11.140998840332,
+            18.1493053436279,
+            -42.3315925598145
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            35.2558288574219,
+            17.4374809265137,
+            50.6852607727051
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            55.2256507873535,
+            18.1860160827637,
+            16.2928657531738
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -8.35627746582031,
+            17.7696704864502,
+            -49.051025390625
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -6.26902866363525,
+            13.1890172958374,
+            37.6369895935059
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            35.9888381958008,
+            9.34938049316406,
+            19.1564445495605
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 3.392893,
+      "traffic_visible": 6,
+      "visual_clock": 7.21018266666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00008.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -12.112889289856,
+            18.24729347229,
+            -42.3297348022461
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            35.8202095031738,
+            16.9397621154785,
+            50.0627479553223
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            54.7688980102539,
+            18.3514556884766,
+            17.1402912139893
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -9.01659774780273,
+            18.0264282226562,
+            -49.7232437133789
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -6.8841495513916,
+            13.6347999572754,
+            37.0229911804199
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            35.266975402832,
+            9.91247653961182,
+            18.8160495758057
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 3.851638,
+      "traffic_visible": 6,
+      "visual_clock": 7.349729
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00009.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -12.9280166625977,
+            18.3221187591553,
+            -42.3279838562012
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            36.2720031738281,
+            16.477725982666,
+            49.560489654541
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            54.3847961425781,
+            18.4691562652588,
+            17.8534736633301
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -9.57627105712891,
+            18.1927852630615,
+            -50.2967872619629
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -7.40686655044556,
+            13.9863128662109,
+            36.5002937316895
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            34.646842956543,
+            10.3590002059937,
+            18.5227241516113
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 4.360029,
+      "traffic_visible": 6,
+      "visual_clock": 7.46666666666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00010.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -13.9038228988647,
+            18.4030475616455,
+            -42.3256568908691
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            36.7856063842773,
+            15.8751659393311,
+            48.9847450256348
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            53.9240570068359,
+            18.5853366851807,
+            18.7095813751221
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -10.2507095336914,
+            18.3329696655273,
+            -50.9923973083496
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -8.03983020782471,
+            14.3814134597778,
+            35.8663024902344
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            33.8894805908203,
+            10.8650007247925,
+            18.1635322570801
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 4.800943,
+      "traffic_visible": 6,
+      "visual_clock": 7.606547
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00011.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -14.8408432006836,
+            18.4720401763916,
+            -42.3232002258301
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            37.2492828369141,
+            15.2490749359131,
+            48.4598960876465
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            53.4809646606445,
+            18.6718940734863,
+            19.5335388183594
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -10.9003448486328,
+            18.4062576293945,
+            -51.6669845581055
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -8.65407752990723,
+            14.7359304428101,
+            35.250072479248
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            33.1489677429199,
+            11.3236865997314,
+            17.8114585876465
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 5.191221,
+      "traffic_visible": 6,
+      "visual_clock": 7.74077033333334
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00012.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -15.7202596664429,
+            18.5290966033936,
+            -42.320686340332
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            37.6572799682617,
+            14.6227083206177,
+            47.993408203125
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            53.064754486084,
+            18.7309856414795,
+            20.3080577850342
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -11.509467124939,
+            18.420768737793,
+            -52.3035125732422
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -9.23564147949219,
+            15.0473928451538,
+            34.6657943725586
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            32.4438171386719,
+            11.7317180633545,
+            17.4755020141602
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 5.61879,
+      "traffic_visible": 6,
+      "visual_clock": 7.86666666666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00013.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -16.7111892700195,
+            18.5846118927002,
+            -42.317626953125
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            38.0843124389648,
+            13.8754453659058,
+            47.4994926452637
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            52.5956382751465,
+            18.7721366882324,
+            21.181676864624
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -12.1924066543579,
+            18.3736629486084,
+            -53.0218620300293
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -9.89610385894775,
+            15.3749485015869,
+            34.0013542175293
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            31.639030456543,
+            12.1672849655151,
+            17.091344833374
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 6.112359,
+      "traffic_visible": 6,
+      "visual_clock": 8.00845133333334
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00014.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -17.7009391784668,
+            18.630880355835,
+            -42.314323425293
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            38.4758377075195,
+            13.0896863937378,
+            47.0404319763184
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            52.1272315979004,
+            18.7864971160889,
+            22.0546550750732
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -12.868049621582,
+            18.2604713439941,
+            -53.7374572753906
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -10.5605945587158,
+            15.6784000396729,
+            33.3319664001465
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            30.8258361816406,
+            12.5786399841309,
+            16.7024745941162
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 6.473714,
+      "traffic_visible": 6,
+      "visual_clock": 8.15
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00015.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -18.5170001983643,
+            18.6621799468994,
+            -42.3114204406738
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            38.7722282409668,
+            12.4153337478638,
+            46.6880035400391
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            51.7413482666016,
+            18.7783145904541,
+            22.7743339538574
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -13.4180164337158,
+            18.1170120239258,
+            -54.3237342834473
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -11.1116752624512,
+            15.9115114212036,
+            32.7761840820312
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            30.1491298675537,
+            12.901065826416,
+            16.3783950805664
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 6.89231,
+      "traffic_visible": 6,
+      "visual_clock": 8.26666666666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00016.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -19.5602550506592,
+            18.6932849884033,
+            -42.3074760437012
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            39.1164665222168,
+            11.5223636627197,
+            46.271900177002
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            51.2487411499023,
+            18.7414894104004,
+            23.6937198638916
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -14.1090364456177,
+            17.8692989349365,
+            -55.0653648376465
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -11.8199043273926,
+            16.1879482269287,
+            32.0611267089844
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            29.2768363952637,
+            13.2927484512329,
+            15.9600610733032
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 7.28782,
+      "traffic_visible": 6,
+      "visual_clock": 8.41577066666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00017.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -20.4648132324219,
+            18.7121639251709,
+            -42.3038444519043
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            39.3838233947754,
+            10.7234573364258,
+            45.9422187805176
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            50.8225212097168,
+            18.6855602264404,
+            24.4898128509521
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -14.6946935653687,
+            17.5965251922607,
+            -55.698558807373
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -12.4369812011719,
+            16.4087829589844,
+            31.4374046325684
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            28.5146980285645,
+            13.614893913269,
+            15.5940723419189
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 7.818854,
+      "traffic_visible": 6,
+      "visual_clock": 8.545023
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00018.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -21.3803672790527,
+            18.7236862182617,
+            -42.2999649047852
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            39.6254920959473,
+            9.89458274841309,
+            45.6376190185547
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            50.3922233581543,
+            18.6060848236084,
+            25.2940979003906
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -15.2723112106323,
+            17.2666244506836,
+            -56.327564239502
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -13.0641040802002,
+            16.6149463653564,
+            30.802906036377
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            27.7383766174316,
+            13.925386428833,
+            15.2208452224731
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 8.267661,
+      "traffic_visible": 6,
+      "visual_clock": 8.675829
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00019.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -22.3045253753662,
+            18.7276058197021,
+            -42.2958488464355
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            39.8405799865723,
+            9.04004001617432,
+            45.3593063354492
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            49.9592742919922,
+            18.5023040771484,
+            26.103946685791
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -15.8376064300537,
+            16.8799743652344,
+            -56.9478569030762
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -13.6994123458862,
+            16.8060455322266,
+            30.1595153808594
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            26.9502582550049,
+            14.2238683700562,
+            14.8415384292603
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 8.853614,
+      "traffic_visible": 6,
+      "visual_clock": 8.807855
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00020.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -23.2581977844238,
+            18.7234802246094,
+            -42.2913856506348
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            40.0330352783203,
+            8.14218139648438,
+            45.1020469665527
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            49.5142517089844,
+            18.3702392578125,
+            26.93701171875
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -16.3998622894287,
+            16.426025390625,
+            -57.5699462890625
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -14.3571615219116,
+            16.9858818054199,
+            29.4927825927734
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            26.1326656341553,
+            14.5169773101807,
+            14.4476461410522
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 9.34924,
+      "traffic_visible": 6,
+      "visual_clock": 8.94409733333334
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00021.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -24.1161022186279,
+            18.712718963623,
+            -42.2871856689453
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            40.181396484375,
+            7.32271862030029,
+            44.8958625793457
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            49.1157150268555,
+            18.229398727417,
+            27.6836261749268
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -16.8855266571045,
+            15.9717607498169,
+            -58.1118812561035
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -14.9505367279053,
+            17.1329002380371,
+            28.890775680542
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            25.3937740325928,
+            14.7684049606323,
+            14.0913438796997
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 9.829434,
+      "traffic_visible": 6,
+      "visual_clock": 9.06666666666667
+    },
+    {
+      "built": 30,
+      "construction_progress": 1.0,
+      "crew": 0,
+      "file": "frame_00022.jpg",
+      "fleet": [
+        {
+          "destination": 19,
+          "position": [
+            -25.1002864837646,
+            18.6921081542969,
+            -42.2821464538574
+          ],
+          "source": 15,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            40.3237457275391,
+            6.37121200561523,
+            44.6878318786621
+          ],
+          "source": 12,
+          "visible": true
+        },
+        {
+          "destination": 21,
+          "position": [
+            48.6609535217285,
+            18.0417499542236,
+            28.5362586975098
+          ],
+          "source": 18,
+          "visible": true
+        },
+        {
+          "destination": 3,
+          "position": [
+            -17.4170951843262,
+            15.3993282318115,
+            -58.7106018066406
+          ],
+          "source": 8,
+          "visible": true
+        },
+        {
+          "destination": 4,
+          "position": [
+            -15.6330051422119,
+            17.2847442626953,
+            28.1977920532227
+          ],
+          "source": 7,
+          "visible": true
+        },
+        {
+          "destination": 6,
+          "position": [
+            24.5424728393555,
+            15.0432281494141,
+            13.6804761886597
+          ],
+          "source": 9,
+          "visible": true
+        }
+      ],
+      "paused": false,
+      "running": true,
+      "time_s": 10.264286,
+      "traffic_visible": 6,
+      "visual_clock": 9.20729733333334
+    }
+  ],
+  "height": 558,
+  "source": "actual native game root framebuffer, every rendered frame, real wall-clock timestamps",
+  "speed": 1.0,
+  "wall_seconds": 10.264286,
+  "width": 815
+}
