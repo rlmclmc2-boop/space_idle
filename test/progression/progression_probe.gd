@@ -34,6 +34,7 @@ func observe(kind: String, payload: Dictionary) -> void:
 		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
 	elif not encounter.is_empty() and ((kind=="explode" and not game.has_alive_enemy()) or kind=="retreat"):
 		encounter.end=game.simulated_time;encounter.seconds=game.simulated_time-float(encounter.start);encounter.status="win" if kind=="explode" else "loss"
+		if encounter.status=="win":policy.best_won[str(encounter.stage)]=maxi(int(policy.best_won.get(str(encounter.stage),0)),int(encounter.node))
 		trace.store_line(JSON.stringify({"kind":"wave_result","wave":encounter}));trace.flush();completed_waves+=1;encounter={}
 
 	if kind in ["upgrade","module_changed","ship_changed","scientist_generated","reactor_changed","enhancement_changed","planet_changed","planet_reforged"]:

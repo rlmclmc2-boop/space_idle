@@ -8,6 +8,7 @@ var farm := {}
 var deaths_seen := 0
 var last_progress := 0.0
 var furthest := 1
+var best_won := {}
 var journal: Callable
 func record(g, kind: String, extra: Dictionary = {}) -> void:
 	if journal.is_valid():journal.call(kind,extra)
@@ -50,9 +51,15 @@ func act(g: BattleGame, elapsed: float) -> bool:
 					for attempt in range(24):
 						if not g.upgrade_equipment_batch("10"):break
 						record(g,"reforge_bulk_upgrade",{"mode":"10"})
-	# Assign actual idle crews, once systems are unlocked. Keep two available for future planets.
+	# Conquered explorers can be recalled through the same manual player action.
+	if g.galaxy.available():
+		for id in g.profile.planets:
+			var planet: Dictionary=g.planet_progress(str(id))
+			if planet.get("conquered",false) and not str(planet.crewId).is_empty():
+				if g.cancel_planet_exploration(str(id)):record(g,"recall_conquered_explorer",{"planet":id})
+	# Keep two idle for future planets until galaxy unlock.
 	var idle: Array=g.profile.crew.filter(func(member):return g.idle_planet_crew(str(member.crewId)))
-	for member in idle.slice(2):
+	for member in idle.slice(0 if g.galaxy.available() else 2):
 		var crew_id := str(member.crewId)
 		if g.galaxy.available():
 			for key in g.galaxy.regions:
@@ -60,15 +67,21 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		else:
 			for pair in [["equipment_upgrade","equipment"],["hightech_scientists","hightech"],["reactor_upgrade","reactor"],["jewel_auto","jewels"]]:
 				if g.assign_crew(crew_id,pair[0],pair[1]):record(g,"assign_crew",{"crew":crew_id,"assignment":pair[0]});break
-	# Two deaths between visits trigger farming an already cleared level's first battle point.
+	# Two deaths trigger return to a won normal point; physically travel before guarding.
 	# Resume on five real module levels (meaningful batch), or reconsider after 15min.
 	if not farm.is_empty():
+		if not g.profile.loop and g.stage==int(farm.target) and g.group_index>=int(farm.node) and g.state==BattleGame.State.COMBAT:
+			g.toggle_loop();record(g,"begin_farm_guard",{"stage":g.stage,"node":g.group_index})
 		if module_sum(g)>=int(farm.modules)+5 or elapsed-float(farm.since)>=900:
 			var target: int=int(farm.target)
 			g.start(target,false);record(g,"resume_push",{"target":target});farm={}
 	elif g.stage>=6 and g.metrics.deaths-deaths_seen>=2 and g.profile.cleared.has(g.stage-1):
-		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g)}
-		g.start(g.stage-1,false);g.toggle_loop();record(g,"farm_battle_point",{"stage":g.stage,"node":g.profile.guardIndex,"target":farm.target})
+		var node: int=int(best_won.get(str(g.stage),0))
+		var chosen_stage: int=g.stage if node>0 else g.stage-1
+		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g),"node":maxi(1,mini(node,5))}
+		g.start(chosen_stage,false)
+		if chosen_stage!=int(farm.target):g.toggle_loop()
+		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target})
 	deaths_seen=int(g.metrics.deaths)
 	# A push/return can change stage after the initial transaction pass.
 	# Fit that newly chosen stage during this same real visit, never on a hidden tick.
