@@ -7,7 +7,6 @@ const CYAN := Color("64adb9")
 const PORT_WIDTH := 5.2
 const PORT_Y := -0.9
 var ports := {}
-var materials := {}
 var connections: Array = []
 var material := StandardMaterial3D.new()
 
@@ -17,12 +16,16 @@ func _init() -> void:
 	material.cull_mode=BaseMaterial3D.CULL_DISABLED
 
 func box(parent:Node3D,at:Vector3,dimensions:Vector3,color:Color) -> MeshInstance3D:
-	var mesh:=BoxMesh.new();mesh.size=dimensions
-	if not materials.has(color):
-		var created:=StandardMaterial3D.new();created.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;created.albedo_color=color
-		materials[color]=created
-	var mat:StandardMaterial3D=materials[color]
-	var node:=MeshInstance3D.new();node.mesh=mesh;node.material_override=mat;node.position=at;parent.add_child(node)
+	var mesh:=ImmediateMesh.new();mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES,material)
+	var h:=dimensions*0.5
+	var vertices:Array[Vector3]=[Vector3(-h.x,-h.y,-h.z),Vector3(h.x,-h.y,-h.z),Vector3(h.x,-h.y,h.z),Vector3(-h.x,-h.y,h.z),Vector3(-h.x,h.y,-h.z),Vector3(h.x,h.y,-h.z),Vector3(h.x,h.y,h.z),Vector3(-h.x,h.y,h.z)]
+	var faces:=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[3,2,1,0]]
+	for index in faces.size():
+		mesh.surface_set_color(color.darkened([0.0,0.15,0.30,0.22,0.12,0.4][index]))
+		var f:Array=faces[index]
+		for vertex in [f[0],f[1],f[2],f[0],f[2],f[3]]:mesh.surface_add_vertex(vertices[vertex])
+	mesh.surface_end()
+	var node:=MeshInstance3D.new();node.mesh=mesh;node.position=at;parent.add_child(node)
 	return node
 
 func slab(parent:Node3D,width:float,depth:float,top:float,bottom:float,bevel:float,color:Color) -> void:
@@ -44,19 +47,29 @@ func port(parent:Node3D,key:String,side:Vector3,half:float) -> Marker3D:
 	root.position=side*half+Vector3(0,PORT_Y,0)
 	root.basis=Basis(Vector3.UP,atan2(side.x,side.z))
 	# Local +Z is outward. Open frame: no plate or wall crosses the aperture.
-	box(root,Vector3(-2.56,0,0),Vector3(0.3,2.25,0.65),DECK)
-	box(root,Vector3(2.56,0,0),Vector3(0.3,2.25,0.65),DECK)
-	box(root,Vector3(0,1.02,0),Vector3(5.4,0.22,0.65),EDGE)
-	box(root,Vector3(0,-1.02,0),Vector3(5.4,0.22,0.65),EDGE)
-	for sign in [-1,1]:box(root,Vector3(sign*2.54,0.42,0.36),Vector3(0.14,0.46,0.08),CYAN)
+	box(root,Vector3(-2.72,0,0),Vector3(0.52,2.5,0.95),EDGE)
+	box(root,Vector3(2.72,0,0),Vector3(0.52,2.5,0.95),EDGE)
+	box(root,Vector3(0,1.02,0),Vector3(5.65,0.34,0.95),EDGE)
+	box(root,Vector3(0,-1.02,0),Vector3(5.65,0.34,0.95),EDGE)
+	# Paired shoulders and a raised crown make the flange readable from above.
+	for sign in [-1,1]:
+		box(root,Vector3(sign*2.8,0.2,0),Vector3(0.65,2.2,0.62),DECK)
+		box(root,Vector3(sign*2.8,1.4,0),Vector3(0.72,0.32,0.9),DECK)
+		box(root,Vector3(sign*2.8,1.59,0),Vector3(0.34,0.07,0.34),Color("bf9d64"))
+	box(root,Vector3(0,1.22,0),Vector3(4.8,0.22,0.5),DECK)
 	var anchor:=Marker3D.new();anchor.name="PipeSocket";root.add_child(anchor);ports[key]=anchor
 	return anchor
 
 func platform(key:String,at:Vector3,used:Array,rotation_y:=0.0) -> Node3D:
 	var node:=Node3D.new();node.name=key;add_child(node);node.position=at;node.rotation.y=rotation_y
 	# Building contact plane Y=0; load-bearing hollow hull extends below it.
-	slab(node,16,16,0,-0.3,1.4,DECK)
-	slab(node,15.5,15.5,-2.8,-3.2,1.2,HULL)
+	slab(node,16,16,-0.22,-0.68,1.4,EDGE)
+	slab(node,15.8,15.8,0,-0.24,1.35,DECK)
+	# Four restrained deck seams terminate at the structural perimeter.
+	for sign in [-1,1]:
+		box(node,Vector3(sign*5.5,0.016,0),Vector3(0.055,0.025,13.0),Color("9daea9"))
+		box(node,Vector3(0,0.017,sign*5.5),Vector3(13.0,0.025,0.055),Color("9daea9"))
+	slab(node,15.5,15.5,-2.8,-3.2,1.2,EDGE)
 	for side in [Vector3.RIGHT,Vector3.LEFT,Vector3.FORWARD,Vector3.BACK]:
 		var wall:=Node3D.new();node.add_child(wall);wall.position=side*7.72;wall.basis=Basis(Vector3.UP,atan2(side.x,side.z))
 		if used.has(side):
@@ -64,7 +77,11 @@ func platform(key:String,at:Vector3,used:Array,rotation_y:=0.0) -> Node3D:
 			for sign in [-1,1]:box(wall,Vector3(sign*5.25,-1.55,0),Vector3(4.9,2.5,0.45),HULL)
 			box(wall,Vector3(0,-2.3,0),Vector3(PORT_WIDTH,1.0,0.45),HULL)
 		else:box(wall,Vector3(0,-1.55,0),Vector3(13.2,2.5,0.45),HULL)
-		for sign in [-1,1]:box(wall,Vector3(sign*5.3,-0.48,0.3),Vector3(2.0,0.18,0.1),CYAN)
+		for sign in [-1,1]:
+			box(wall,Vector3(sign*5.3,-1.4,0.31),Vector3(2.5,1.25,0.26),EDGE)
+			box(wall,Vector3(sign*5.3,-1.37,0.47),Vector3(1.85,0.62,0.08),HULL)
+			box(wall,Vector3(sign*5.3,-0.76,0.5),Vector3(1.5,0.12,0.13),DECK)
+			box(wall,Vector3(sign*6.65,-1.45,0.22),Vector3(0.5,2.35,0.65),DECK.darkened(0.18))
 	for x in [-5.9,5.9]:
 		for z in [-5.9,5.9]:
 			box(node,Vector3(x,-3.25,z),Vector3(1.15,2.1,1.15),EDGE)
@@ -89,7 +106,11 @@ func bridge(a:Marker3D,b:Marker3D) -> void:
 	box(node,Vector3(0,0.79,0),Vector3(4.8,0.22,span),DECK.darkened(0.1))
 	for sign in [-1,1]:
 		box(node,Vector3(sign*2.32,0.17,0),Vector3(0.14,0.32,span),CYAN)
-		box(node,Vector3(sign*2.25,1.06,0),Vector3(0.28,0.32,maxf(0.1,span-0.7)),EDGE)
+		box(node,Vector3(sign*2.25,1.06,0),Vector3(0.48,0.58,maxf(0.1,span-1.05)),DECK)
+	if span>3:
+		for z in [-span*0.23,span*0.23]:
+			box(node,Vector3(0,0.925,z),Vector3(4.2,0.045,0.085),EDGE)
+			for sign in [-1,1]:box(node,Vector3(sign*2.48,-0.05,z),Vector3(0.34,1.7,0.4),EDGE)
 	connections.append({"a":a,"b":b,"mesh":node,"span":span})
 
 func elbow(at:Vector3) -> Node3D:
@@ -102,8 +123,7 @@ func elbow(at:Vector3) -> Node3D:
 	port(node,"junction/north",Vector3.FORWARD,3)
 	port(node,"junction/east",Vector3.RIGHT,3)
 	# One solid junction shares the exact bridge cross-section and deck elevation.
-	box(node,Vector3(0,0.1,0),Vector3(2.4,0.2,2.4),HULL)
-	box(node,Vector3(0,0.23,0),Vector3(1.4,0.08,1.4),CYAN)
+	maintenance_hatch(node,Vector3.ZERO)
 	return node
 
 func build(map) -> void:
@@ -115,11 +135,46 @@ func build(map) -> void:
 	for entry in specs:
 		var model:Node3D=map.asset("assets/galaxy/v3/buildings/%s/%s_lv%d.glb"%[entry[1],entry[1],entry[2]])
 		model.name="ExistingBuilding";model.scale=Vector3.ONE*1.4;entry[0].add_child(model)
-		# Broad service hatch and cargo unit, not a scatter of micro-details.
-		box(entry[0],Vector3(-5.8,0.1,5.4),Vector3(1.7,0.2,1.7),EDGE)
-		box(entry[0],Vector3(5.8,0.55,5.6),Vector3(1.4,1.1,1.4),HULL)
+		var bounds:Array=map.asset_bounds["assets/galaxy/v3/buildings/%s/%s_lv%d.glb"%[entry[1],entry[1],entry[2]]]
+		if entry[1]=="colony_ring":round_mount(entry[0],float(bounds[0])*0.7)
+		else:mounting_collar(entry[0],Vector2(float(bounds[0]),float(bounds[2]))*1.4)
+		maintenance_hatch(entry[0],Vector3(-5.8,0,5.6))
 	elbow(Vector3(-9,0,18))
 	bridge(anchor("Habitat",Vector3.RIGHT),anchor("Refinery",Vector3.LEFT))
 	bridge(anchor("Refinery",Vector3.BACK),anchor("Pressure",Vector3.RIGHT))
 	bridge(anchor("Habitat",Vector3.BACK),ports["junction/north"])
 	bridge(ports["junction/east"],anchor("Pressure",Vector3.FORWARD))
+
+func maintenance_hatch(parent:Node3D,at:Vector3) -> void:
+	var root:=Node3D.new();parent.add_child(root);root.position=at
+	slab(root,2.1,2.1,0.12,0.01,0.28,EDGE)
+	slab(root,1.65,1.65,0.28,0.12,0.2,DECK.darkened(0.12))
+	for sign in [-1,1]:box(root,Vector3(sign*0.57,0.34,0),Vector3(0.2,0.12,0.55),EDGE)
+
+func mounting_collar(parent:Node3D,dimensions:Vector2) -> void:
+	# An open mounting curb meets the original foundation without lifting the GLB.
+	for sign in [-1,1]:
+		box(parent,Vector3(sign*(dimensions.x*0.5+0.14),0.14,0),Vector3(0.32,0.28,dimensions.y+0.6),EDGE)
+		box(parent,Vector3(0,0.14,sign*(dimensions.y*0.5+0.14)),Vector3(dimensions.x+0.6,0.28,0.32),EDGE)
+		for other in [-1,1]:
+			box(parent,Vector3(sign*(dimensions.x*0.5+0.08),0.31,other*(dimensions.y*0.5+0.08)),Vector3(0.72,0.38,0.72),DECK.darkened(0.08))
+
+func round_mount(parent:Node3D,radius:float) -> void:
+	var mesh:=ImmediateMesh.new();mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES,material)
+	for index in 32:
+		var a:=TAU*index/32.0;var b:=TAU*(index+1)/32.0
+		var inner_a:=Vector3(cos(a)*(radius-0.32),0.32,sin(a)*(radius-0.32))
+		var inner_b:=Vector3(cos(b)*(radius-0.32),0.32,sin(b)*(radius-0.32))
+		var outer_a:=Vector3(cos(a)*(radius+0.12),0.32,sin(a)*(radius+0.12))
+		var outer_b:=Vector3(cos(b)*(radius+0.12),0.32,sin(b)*(radius+0.12))
+		mesh.surface_set_color(EDGE)
+		for vertex in [inner_a,inner_b,outer_b,inner_a,outer_b,outer_a]:mesh.surface_add_vertex(vertex)
+		mesh.surface_set_color(HULL)
+		for edge in [[outer_a,outer_b],[inner_b,inner_a]]:
+			var p:Vector3=edge[0];var q:Vector3=edge[1];var d:=Vector3(0,0.31,0)
+			for vertex in [p,q,q-d,p,q-d,p-d]:mesh.surface_add_vertex(vertex)
+	mesh.surface_end()
+	var node:=MeshInstance3D.new();node.mesh=mesh;parent.add_child(node)
+	for index in 4:
+		var angle:=PI*index/2
+		var shoe:=box(parent,Vector3(cos(angle)*radius,0.34,sin(angle)*radius),Vector3(0.75,0.5,0.7),DECK.darkened(0.08));shoe.rotation.y=-angle
