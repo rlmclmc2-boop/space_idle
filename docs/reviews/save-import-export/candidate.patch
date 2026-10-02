@@ -1,0 +1,795 @@
+diff --git a/space-battleship/data/ui_text.json b/space-battleship/data/ui_text.json
+index 9f3d244..c98f6a7 100644
+--- a/space-battleship/data/ui_text.json
++++ b/space-battleship/data/ui_text.json
+@@ -12262,5 +12262,101 @@
+     "text": "武器无人机 · {page}/{pages} 页 · 共 {count} 架",
+     "params": "{page},{pages},{count}",
+     "category": "ship"
++  },
++  {
++    "key": "save.export",
++    "text": "导出存档",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import",
++    "text": "导入存档",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.file_filter",
++    "text": "太空战舰存档",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.transfer_hint",
++    "text": "导出当前进度为 JSON 文件。导入会替换当前进度，并先保留可重新导入的备份。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.web_unavailable",
++    "text": "文件导入导出暂支持桌面版；网页版无法通过此文件选择器访问本机文件。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.export_success",
++    "text": "已导出当前进度：{file}",
++    "params": "{file}",
++    "category": "settings"
++  },
++  {
++    "key": "save.transfer_failed",
++    "text": "操作失败（{error}），当前进度未替换。",
++    "params": "{error}",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_invalid_read",
++    "text": "无法读取所选文件，当前进度未替换。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_invalid_size",
++    "text": "所选文件为空或超过 16 MB，当前进度未替换。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_invalid_format",
++    "text": "文件损坏或不是有效存档，当前进度未替换。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_invalid_version",
++    "text": "存档版本不兼容；支持版本 2、3、4，当前进度未替换。",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_title",
++    "text": "确认导入存档",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_replace",
++    "text": "备份并替换进度",
++    "params": "",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_confirmation",
++    "text": "已校验：{file}\n可进入第 {stage} 关。\n\n导入将替换当前全部进度，并重新加载游戏。确认前会备份当前进度；取消不会导入。",
++    "params": "{file},{stage}",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_success",
++    "text": "导入成功。原进度备份：{backup}\n如需恢复，可通过“导入存档”选择此文件。",
++    "params": "{backup}",
++    "category": "settings"
++  },
++  {
++    "key": "save.import_reload_failed",
++    "text": "重新加载失败（{error}）；恢复结果：{rollback}。原进度备份：{backup}",
++    "params": "{error},{rollback},{backup}",
++    "category": "settings"
+   }
+ ]
+diff --git a/space-battleship/data/ui_text_contract.json b/space-battleship/data/ui_text_contract.json
+index 3f8e414..9006e45 100644
+--- a/space-battleship/data/ui_text_contract.json
++++ b/space-battleship/data/ui_text_contract.json
+@@ -6513,6 +6513,67 @@
+         "damage",
+         "absorbed"
+       ]
++    },
++    "save.export": {
++      "params": []
++    },
++    "save.import": {
++      "params": []
++    },
++    "save.file_filter": {
++      "params": []
++    },
++    "save.transfer_hint": {
++      "params": []
++    },
++    "save.web_unavailable": {
++      "params": []
++    },
++    "save.export_success": {
++      "params": [
++        "file"
++      ]
++    },
++    "save.transfer_failed": {
++      "params": [
++        "error"
++      ]
++    },
++    "save.import_invalid_read": {
++      "params": []
++    },
++    "save.import_invalid_size": {
++      "params": []
++    },
++    "save.import_invalid_format": {
++      "params": []
++    },
++    "save.import_invalid_version": {
++      "params": []
++    },
++    "save.import_title": {
++      "params": []
++    },
++    "save.import_replace": {
++      "params": []
++    },
++    "save.import_confirmation": {
++      "params": [
++        "file",
++        "stage"
++      ]
++    },
++    "save.import_success": {
++      "params": [
++        "backup"
++      ]
++    },
++    "save.import_reload_failed": {
++      "params": [
++        "error",
++        "rollback",
++        "backup"
++      ]
+     }
+   },
+   "bindings": {
+diff --git a/space-battleship/scripts/game.gd b/space-battleship/scripts/game.gd
+index dd34e48..98cfafe 100644
+--- a/space-battleship/scripts/game.gd
++++ b/space-battleship/scripts/game.gd
+@@ -214,11 +214,14 @@ func empty_loadout(key: String) -> Dictionary:
+ 	return {"weapons":weapons, "defence":defence}
+ 
+ func load_progress() -> void:
++	var raw = progress_writer.read_progress(SAVE_PATH)
++	if raw is Dictionary:load_progress_data(raw)
++
++func load_progress_data(raw: Dictionary) -> void:
++	# Also used on an isolated fresh game to validate portable imports.
+ 	invalidate_stat_cache()
+ 	login_chrono_particles = 0.0
+-	var raw = progress_writer.read_progress(SAVE_PATH)
+-	if not raw is Dictionary or int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:
+-		return
++	if int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:return
+ 	var interval_value = raw.get("saveIntervalMinutes", 1)
+ 	var interval := parse_save_interval(str(interval_value))
+ 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
+@@ -543,8 +546,20 @@ func _build_save_data() -> Dictionary:
+ 	profile.resourceSamples = resource_samples
+ 	profile.chronoSavedAt = float(profile.hightechSavedAt)
+ 	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
+-	# Compatibility projection only; never install name-based levels in runtime.
+-	var saved := profile.duplicate()
++	return _compose_save_data(profile.duplicate())
++
++func portable_save_data() -> Dictionary:
++	# Export and import backup must leave unsaved runtime progress unchanged.
++	var saved := profile.duplicate(true)
++	var now := Time.get_unix_time_from_system()
++	saved.hightechOrder = hightech_slots()
++	saved.hightechSavedAt = now
++	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0).duplicate(true)
++	saved.chronoSavedAt = now
++	saved.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false)).duplicate(true)
++	return _compose_save_data(saved)
++
++func _compose_save_data(saved: Dictionary) -> Dictionary:
+ 	saved.saveIntervalMinutes = str(save_interval_minutes)
+ 	saved.galaxies=galaxy.save_data()
+ 	saved.grantedUnlocks = granted_unlocks()
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index 4b8e2c2..2ccfafc 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -190,8 +190,15 @@ var save_interval_input: LineEdit
+ var save_interval_feedback: Label
+ var last_save_label: Label
+ var save_status_label: Label
++var save_transfer := preload("res://scripts/save_transfer.gd").new()
++var save_file_dialog: FileDialog
++var save_import_confirmation: ConfirmationDialog
++var save_transfer_feedback: Label
++var pending_import: Dictionary = {}
++var import_committing := false
+ 
+ func _ready() -> void:
++	var from_save_import := get_tree().has_meta("save_import_backup")
+ 	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
+ 	position.x = -VIEW_CROP_LEFT
+ 	for side in [-1.0,1.0]:
+@@ -265,6 +272,10 @@ func _ready() -> void:
+ 		music.play()
+ 	game.resume_progress()
+ 	build_ui()
++	if get_tree().has_meta("save_import_backup"):
++		var backup: String=get_tree().get_meta("save_import_backup")
++		get_tree().remove_meta("save_import_backup")
++		call_deferred("save_transfer_message",UIText.t("save.import_success",{"backup":backup}))
+ 	if automation_args.has("--capture"):
+ 		game.start(1, false)
+ 		game.distance = 99.8
+@@ -281,7 +292,7 @@ func _ready() -> void:
+ 		build_ui()
+ 	get_window().min_size = Vector2i(960,540)
+ 	if game.save_enabled:
+-		call_deferred("show_chrono_login_report")
++		if not from_save_import:call_deferred("show_chrono_login_report")
+ 	elif OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
+ 		call_deferred("show_qa_tools")
+ 
+@@ -778,6 +789,7 @@ func show_save_settings() -> void:
+ 		save_settings_dialog.theme = Theme.new()
+ 		save_settings_dialog.theme.default_font = font
+ 		save_settings_dialog.theme.default_font_size = 18
++		save_settings_dialog.exclusive = true
+ 		add_child(save_settings_dialog)
+ 		var content := VBoxContainer.new()
+ 		content.custom_minimum_size = Vector2(580,280)
+@@ -815,6 +827,22 @@ func show_save_settings() -> void:
+ 		manual.disabled = not game.save_enabled
+ 		manual.pressed.connect(manual_save)
+ 		content.add_child(manual)
++		var transfer_row := HBoxContainer.new()
++		transfer_row.add_theme_constant_override("separation",12)
++		content.add_child(transfer_row)
++		for mode in ["export","import"]:
++			var transfer_button := Button.new()
++			transfer_button.name = "ExportSave" if mode=="export" else "ImportSave"
++			transfer_button.text = UIText.t("save."+mode)
++			transfer_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
++			transfer_button.disabled = OS.has_feature("web") or (mode=="import" and not game.save_enabled)
++			transfer_button.pressed.connect(open_save_file.bind(mode))
++			transfer_row.add_child(transfer_button)
++		save_transfer_feedback = Label.new()
++		save_transfer_feedback.custom_minimum_size.x = 580
++		save_transfer_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
++		save_transfer_feedback.text = UIText.t("save.web_unavailable" if OS.has_feature("web") else "save.transfer_hint")
++		content.add_child(save_transfer_feedback)
+ 		var warning := Label.new()
+ 		warning.custom_minimum_size.x = 580
+ 		warning.size.x = 580
+@@ -824,7 +852,84 @@ func show_save_settings() -> void:
+ 	save_interval_input.text = str(game.save_interval_minutes)
+ 	save_interval_feedback.text = UIText.t("save.interval_hint")
+ 	refresh_save_status()
+-	save_settings_dialog.popup_centered(Vector2i(620,360))
++	save_settings_dialog.popup_centered(Vector2i(660,470))
++
++func create_save_file_picker() -> FileDialog:
++	var picker := FileDialog.new()
++	picker.use_native_dialog = true
++	return picker
++
++func open_save_file(mode: String) -> void:
++	if OS.has_feature("web") or import_committing:return
++	pending_import.clear()
++	if not is_instance_valid(save_file_dialog):
++		save_file_dialog = create_save_file_picker()
++		save_file_dialog.name = "SaveTransferFile"
++		save_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
++		save_file_dialog.exclusive = true
++		save_file_dialog.add_filter("*.json",UIText.t("save.file_filter"))
++		save_file_dialog.file_selected.connect(save_file_selected)
++		save_file_dialog.canceled.connect(func():save_file_dialog.hide();pending_import.clear();show_save_settings())
++		add_child(save_file_dialog)
++	save_file_dialog.set_meta("mode",mode)
++	save_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if mode=="export" else FileDialog.FILE_MODE_OPEN_FILE
++	save_file_dialog.current_file = "space-battleship-progress.json" if mode=="export" else ""
++	save_settings_dialog.hide()
++	save_file_dialog.popup_centered(Vector2i(860,560))
++
++func save_file_selected(path: String) -> void:
++	save_file_dialog.hide()
++	if save_file_dialog.get_meta("mode")=="export":
++		var error: Error=save_transfer.export_progress(game,path)
++		save_transfer_message(UIText.t("save.export_success",{"file":path.get_file()}) if error==OK else UIText.t("save.transfer_failed",{"error":error_string(error)}))
++		return
++	var prepared: Dictionary=save_transfer.prepare(path,db)
++	if not prepared.error.is_empty():
++		save_transfer_message(UIText.t("save.import_invalid_"+str(prepared.error)))
++		return
++	pending_import=prepared.data
++	if not is_instance_valid(save_import_confirmation):
++		save_import_confirmation=ConfirmationDialog.new()
++		save_import_confirmation.name="ConfirmSaveImport"
++		save_import_confirmation.title=UIText.t("save.import_title")
++		save_import_confirmation.ok_button_text=UIText.t("save.import_replace")
++		save_import_confirmation.exclusive=true
++		preload("res://scripts/dialog_presentation.gd").dialog(save_import_confirmation)
++		save_import_confirmation.confirmed.connect(confirm_save_import)
++		save_import_confirmation.canceled.connect(func():save_import_confirmation.hide();pending_import.clear();show_save_settings())
++		add_child(save_import_confirmation)
++	save_import_confirmation.dialog_text=UIText.t("save.import_confirmation",{"file":path.get_file(),"stage":str(prepared.stage)})
++	save_import_confirmation.popup_centered(Vector2i(680,300))
++
++func save_transfer_message(message: String) -> void:
++	show_save_settings()
++	save_transfer_feedback.text=message
++
++func confirm_save_import() -> void:
++	save_import_confirmation.hide()
++	if import_committing or pending_import.is_empty():return
++	import_committing=true
++	var transaction: Dictionary=save_transfer.commit_import(game,pending_import)
++	pending_import.clear()
++	if transaction.error!=OK:
++		import_committing=false
++		save_transfer_message(UIText.t("save.transfer_failed",{"error":error_string(transaction.error)}))
++		return
++	# Explicit global replacement uses the same fresh load/cache/UI path as startup.
++	var was_saving: bool=game.save_enabled
++	game.save_enabled=false
++	set_process(false)
++	var scene_tree:=get_tree()
++	var error:=scene_tree.reload_current_scene()
++	if error!=OK:
++		var rollback_error: Error=save_transfer.rollback(transaction)
++		game.save_enabled=was_saving
++		set_process(true)
++		import_committing=false
++		save_transfer_message(UIText.t("save.import_reload_failed",{"error":error_string(error),"backup":str(transaction.backup),"rollback":error_string(rollback_error)}))
++		return
++	save_transfer.finish(transaction)
++	scene_tree.set_meta("save_import_backup",str(transaction.backup)+"/current-progress.json")
+ 
+ func apply_save_interval() -> void:
+ 	if not game.set_save_interval(save_interval_input.text):
+diff --git a/space-battleship/scripts/progress_writer.gd b/space-battleship/scripts/progress_writer.gd
+index ac5f9e4..4e4adde 100644
+--- a/space-battleship/scripts/progress_writer.gd
++++ b/space-battleship/scripts/progress_writer.gd
+@@ -57,7 +57,16 @@ func clear_files() -> Error:
+ 	return OK
+ 
+ static func read_progress(path: String) -> Variant:
+-	for suffix in ["", ".bak"]:
++	# Interrupted import installation keeps the previous committed primary here.
++	# Never read .import-new: it is uncommitted, even if it parses successfully.
++	var previous := path+".import-prev"
++	if FileAccess.file_exists(previous):
++		if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
++			if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
++		if _read_progress_file(path)!=null:
++			DirAccess.remove_absolute(previous)
++			if FileAccess.file_exists(path+".import-new"):DirAccess.remove_absolute(path+".import-new")
++	for suffix in ["", ".import-prev", ".bak"]:
+ 		var data = _read_progress_file(path + suffix)
+ 		if data != null:return data
+ 	return null
+diff --git a/space-battleship/scripts/save_transfer.gd b/space-battleship/scripts/save_transfer.gd
+new file mode 100644
+index 0000000..f3e7c76
+--- /dev/null
++++ b/space-battleship/scripts/save_transfer.gd
+@@ -0,0 +1,168 @@
++extends RefCounted
++## Desktop portable progress, validated before any live state or file replacement.
++const Writer := preload("res://scripts/progress_writer.gd")
++const Layout := preload("res://scripts/galaxy_layout.gd")
++const MAX_BYTES := 16 * 1024 * 1024
++const BACKUP_ROOT := "user://save-import-backups"
++
++static func schema() -> Dictionary:
++ var building := {"status":"s","build_progress":"g","crew":["s"]}
++ var planet := {"degree":"g","unlocked":"b","conquered":"b","auto_explore":"b","crewId":"s","elapsed":"n","buildings":{"*":building}}
++ var node := {"id":"i","parent_id":"i","depth":"i","planned_type":"s","node_id":"s","type":"s","world_pos":"p","footprint":"p","rotation_y":"n","connections":["s"],"requires":["s"],"visual_seed":"i"}
++ var edge := {"from":"s","to":"s","width":"n","path":["p"]}
++ var blueprint := {"layout_version":"i","core_id":"s","units":"s","core":node,"nodes":[node],"edges":[edge]}
++ var slot := {"id":"n","node_id":"s","world_pos":"p","unlock_progress":"n","status":"s","type":"s","level":"i","work":"n","construction":"n","upgrade_progress":"n","visual_seed":"i","planned_type":"s","parent_id":"i"}
++ var galaxy := {"version":"i","status":"s","explore_work":"n","upgrade_work":"n","slot_seed":"i","build_elapsed":"n","bag":["s"],"rounds":"i","special_due":"b","rng_state":"s","map_rng_state":"s","owned":"s","blueprint":blueprint,"slots":[slot],"pending_online_time":"n","pending_crew_count":"i"}
++ var result := {"version":"i","resources":{"*":"g"},"selectedShip":"s","loadout":{"*": [{"key":"s","level":"i"}]},"unlocked":["s"],"levels":{"*":"n"},"planets":{"*":planet},"galaxies":{"*":galaxy},"crew":[{"crewId":"s","level":"i","exp":"n","assignmentType":"s","targetId":"s","upgradeMode":"s","equipmentSlots":["empty"]}],"crewEquipment":{},"jewels":[],"jewelFragments":"currency","saveIntervalMinutes":"interval","onboarding":{"version":"i","intro":"b","equipped":"b","upgraded":"b","completed":"b","dismissed":"b"},"journey":{"stage":"n","groupIndex":"n","state":"n","distance":"n","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"]},"enhancementOrder":{"*": ["s"]},"enhancementBranches":{"*":{"*":{"*":"s"}}}}
++ for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","jewelFurnaceElapsed","jewelFurnaceIncomePeak","chronoParticles","chronoSavedAt","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","guardDeath","loopLevel","guardStage","guardIndex","guardDistance","reactorLevel"]:result[key]="n"
++ for key in ["cleared","bossSeen"]:result[key]=["n"]
++ for key in ["grantedUnlocks","seenUnlocks","hightechOrder"]:result[key]=["s"]
++ for key in ["hightechLevels","scientistAssignments","reactorAllocation"]:result[key]={"*":"i"}
++ result.techPoints={"*":"n"}
++ for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
++ result.loop="b"
++ result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
++ result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
++ return result
++
++static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
++ if depth>48:return false
++ if spec is String:
++  match spec:
++   "s":return value is String
++   "b":return value is bool
++   "n":return (value is int or value is float) and is_finite(float(value))
++   "i":return (value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)) and absf(float(value))<9.22e18
++   "g":return GrowthNumber.valid(value)
++   "currency":return GrowthNumber.valid(value) or (value is Dictionary and value.values().all(func(n):return GrowthNumber.valid(n)))
++   "interval":return BattleGame.parse_save_interval(str(value))>0 and (value is String or value is int or value is float)
++   "p":return value is Array and value.size()==2 and value.all(func(n):return (n is float or n is int) and is_finite(float(n)))
++   "empty":return value==null
++  return false
++ if spec is Array:
++  if not value is Array:return false
++  if spec.is_empty():return true # Retired jewel bag is ignored by the existing migration.
++  return value.all(func(item):return shape(item,spec[0],depth+1))
++ if not value is Dictionary:return false
++ for key in value:
++  if spec.has(key) and not shape(value[key],spec[key],depth+1):return false
++  if spec.has("*") and not shape(value[key],spec["*"],depth+1):return false
++ return true
++
++static func clean(value: Variant, spec: Variant) -> Variant:
++ # Strip unrelated/unknown fields rather than transporting local metadata.
++ if spec is String:return value.duplicate(true) if value is Dictionary or value is Array else value
++ if spec is Array:
++  return value.map(func(item):return clean(item,spec[0])) if not spec.is_empty() else []
++ var result := {}
++ for key in value:
++  if spec.has(key):result[key]=clean(value[key],spec[key])
++  elif spec.has("*"):result[key]=clean(value[key],spec["*"])
++ return result
++
++static func blueprint_valid(raw: Dictionary) -> bool:
++ if not raw.has("blueprint"):return true
++ var plan: Dictionary=raw.blueprint
++ if plan.get("layout_version")!=Layout.VERSION or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
++ var nodes: Array=plan.nodes
++ if nodes.is_empty() or nodes.size()>10000:return false
++ for i in range(-1,nodes.size()):
++  var node: Dictionary=plan.core if i<0 else nodes[i]
++  for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
++   if not node.has(key):return false
++  if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
++  if i>=0 and (not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i):return false
++  for dep in node.requires:
++   if dep!="core" and (not dep.begins_with("node_") or not dep.trim_prefix("node_").is_valid_int() or int(dep.trim_prefix("node_"))<0 or int(dep.trim_prefix("node_"))>=i):return false
++ for edge in plan.edges:
++  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width"):return false
++ return true
++
++func prepare(path: String, db: ShipDatabase) -> Dictionary:
++ var file:=FileAccess.open(path,FileAccess.READ)
++ if file==null:return {"error":"read"}
++ if file.get_length()<=0 or file.get_length()>MAX_BYTES:return {"error":"size"}
++ var bytes:=file.get_buffer(file.get_length())
++ if file.get_error()!=OK:return {"error":"read"}
++ file.close()
++ var parser:=JSON.new()
++ if parser.parse(bytes.get_string_from_utf8())!=OK or not parser.data is Dictionary:return {"error":"format"}
++ return prepare_data(parser.data,db)
++
++func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
++ if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,BattleGame.SAVE_VERSION]:return {"error":"version"}
++ if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
++ if not shape(raw,schema()):return {"error":"format"}
++ for region in raw.get("galaxies",{}).values():
++  if region.get("version",0)>3 or not blueprint_valid(region):return {"error":"format"}
++ # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
++ var candidate:=BattleGame.new(db,false)
++ candidate.load_progress_data(clean(raw,schema()))
++ candidate.reset_player()
++ return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip}
++
++func export_progress(game: BattleGame, path: String) -> Error:
++ var target:=ProjectSettings.globalize_path(path).simplify_path()
++ var primary:=game.progress_writer.path.simplify_path()
++ if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new"]:return ERR_INVALID_PARAMETER
++ return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
++
++func write_file(path: String, bytes: PackedByteArray) -> Error:
++ var writer:=Writer.new();writer.path=path
++ return writer.write_progress(bytes)
++
++func rename(from: String,to: String) -> Error:
++ return DirAccess.rename_absolute(from,to)
++
++func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
++ var prepared:=prepare_data(raw,game.db)
++ if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
++ var primary: String=game.progress_writer.path
++ var previous:=primary+".import-prev"
++ var incoming:=primary+".import-new"
++ if FileAccess.file_exists(previous) or DirAccess.dir_exists_absolute(previous) or FileAccess.file_exists(incoming) or DirAccess.dir_exists_absolute(incoming):return {"error":ERR_ALREADY_IN_USE}
++ var backup:=ProjectSettings.globalize_path(BACKUP_ROOT)+"/%d-%d"%[int(Time.get_unix_time_from_system()),Time.get_ticks_usec()]
++ var error:=DirAccess.make_dir_recursive_absolute(backup)
++ if error!=OK:return {"error":error}
++ error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
++ if error!=OK:return {"error":error}
++ for suffix in ["", ".bak"]:
++  if FileAccess.file_exists(primary+suffix):
++   var original_file:=FileAccess.open(primary+suffix,FileAccess.READ)
++   if original_file==null:return {"error":FileAccess.get_open_error()}
++   var bytes:=original_file.get_buffer(original_file.get_length())
++   if original_file.get_error()!=OK:return {"error":ERR_FILE_CANT_READ}
++   original_file.close()
++   error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
++   if error!=OK:return {"error":error}
++ var candidate:=BattleGame.new(game.db,false)
++ candidate.load_progress_data(prepared.data);candidate.reset_player()
++ error=write_file(incoming,JSON.stringify(clean(candidate.portable_save_data(),schema()),"\t").to_utf8_buffer())
++ if error!=OK:return {"error":error}
++ var had_primary:=FileAccess.file_exists(primary)
++ if had_primary:
++  error=rename(primary,previous)
++  if error!=OK:DirAccess.remove_absolute(incoming);return {"error":error}
++ error=rename(incoming,primary)
++ if error!=OK:
++  if had_primary:rename(previous,primary)
++  DirAccess.remove_absolute(incoming)
++  return {"error":error,"backup":backup}
++ return {"error":OK,"backup":backup,"primary":primary,"had_primary":had_primary}
++
++func rollback(transaction: Dictionary) -> Error:
++ var primary: String=transaction.primary
++ if transaction.had_primary and not FileAccess.file_exists(primary+".import-prev"):
++  var backup_file:=FileAccess.open(str(transaction.backup)+"/original-progress.json",FileAccess.READ)
++  if backup_file==null:return FileAccess.get_open_error()
++  var bytes:=backup_file.get_buffer(backup_file.get_length())
++  if backup_file.get_error()!=OK:return ERR_FILE_CANT_READ
++  backup_file.close()
++  var restored:=write_file(primary+".import-prev",bytes)
++  if restored!=OK:return restored
++ var error:=DirAccess.remove_absolute(primary)
++ if error!=OK:return error
++ return rename(primary+".import-prev",primary) if transaction.had_primary else OK
++
++func finish(transaction: Dictionary) -> void:
++ if transaction.had_primary:DirAccess.remove_absolute(str(transaction.primary)+".import-prev")
+diff --git a/test/README.md b/test/README.md
+index fb8e981..524a4fe 100644
+--- a/test/README.md
++++ b/test/README.md
+@@ -32,6 +32,7 @@
+ | 全局装备强化 | `test_shared_enhancement_ranks.gd` 检查共享0/9/10/19/20与分支位置边界、重排停用/恢复、保存和六种显式详情（图形模式验证点击）；`test_enhancements.gd` 检查共享顺序/共享强化门槛/全局事件/费用/MAX/分支；`test_enhancement_branches.gd` 检查36选项、状态/组合/实际恢复/共同抗性；`test_enhancement_branch_attacks.gd` 检查四武器、规范攻击计数、单次连锁与有界连发；`test_deferred_enhancements.gd` 检查延迟队列、全局清除和时序；`test_neutral_memory_protection.gd` 检查无抗性临时保护、原始伤害溢出和延迟交互；`test_enhancement_save.gd` 检查旧档清理/余额/新档/重铸；`test_enhancement_furnace.gd` 检查碎片生产不递归；`test_percentage_expected_damage.gd` 检查整数/紧凑百分比、模块暴击期望、计时增益仅战斗生效且不触发面板刷新；`test_enhance_config.py` 校验唯一配置表和非法输入；`test_enhancement_cost.gd --headless` 检查指数单价、几何批量/MAX、赠送级免计费和超大余额。旧宝石背包/合成/镶嵌专项已被替代，不作新系统验收入口。 |
+ | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
+ | 时间、超时空与离线 | `test_time_steps.gd`、`test_offline_resources.gd`；页面用 `test_chrono_ui.gd`，启动结算弹窗用 `test_chrono_login.gd` |
++| 存档导入导出 | `test_save_transfer.gd --headless` 检查迁移、大数、只读预览、验证拒绝、备份/安装失败、回滚与中断恢复；`test_save_transfer_ui.gd` 使用实际按钮/文件列表/确认输入，`SAVE_TRANSFER_DEMO` 指向 v4 星系演示 JSON，`SAVE_TRANSFER_EVIDENCE` 可指定截图目录，验证导出、取消、正常重载、星系导航、往返与备份导入。图形专项验证 Godot 内置文件窗口；原生 Windows 文件窗口及 Web 不在此验证范围。 |
+ | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
+ | 音乐与开关偏好 | `test_bgm.gd` |
+ | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
+diff --git a/test/test_save_transfer.gd b/test/test_save_transfer.gd
+new file mode 100644
+index 0000000..f7d6b2a
+--- /dev/null
++++ b/test/test_save_transfer.gd
+@@ -0,0 +1,71 @@
++extends SceneTree
++const Transfer := preload("res://scripts/save_transfer.gd")
++class FailInstall extends Transfer:
++ func rename(from: String,to: String) -> Error:
++  return ERR_FILE_CANT_WRITE if from.ends_with(".import-new") else super.rename(from,to)
++class FailBackup extends Transfer:
++ func write_file(path: String,bytes: PackedByteArray) -> Error:
++  return ERR_FILE_CANT_WRITE if path.ends_with("current-progress.json") else super.write_file(path,bytes)
++var checks:=0
++var failures:=0
++func check(ok: bool,label: String) -> void:
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL: "+label)
++func write_json(path: String,value: Variant) -> void:
++ var file:=FileAccess.open(path,FileAccess.WRITE);file.store_string(JSON.stringify(value));file.close()
++func _initialize() -> void:call_deferred("run")
++func run() -> void:
++ var db:=ShipDatabase.new();db.config.offlineMax=0
++ var g:=BattleGame.new(db,false);g.profile.cleared=range(1,40);g.rebuild_unlocks();g.resume_progress();g.paused=true
++ g.profile.resources={"1":{"m":9.7,"e":400.0},"2":321.0};g.profile.enhancementLevel=31;g.profile.planets["1"].conquered=true;g.profile.planets["1"].degree={"m":1.2,"e":350.0}
++ g.profile.external_credentials="never-export";g.profile.planets["1"].absolute_path="/private/not-portable"
++ var transfer:=Transfer.new();var before:=g.profile.duplicate(true);var rng:=g.rng.state
++ var exported:="user://transfer-export.json"
++ check(transfer.export_progress(g,exported)==OK,"Export portable current progress")
++ check(g.profile==before and g.rng.state==rng,"Export does not mutate runtime profile or RNG")
++ var text:=FileAccess.get_file_as_string(exported);var raw: Dictionary=JSON.parse_string(text)
++ check(not text.contains("never-export") and not text.contains("/private") and not raw.has("config"),"Export strips metadata and keeps configuration separate")
++ var preview:=transfer.prepare(exported,db)
++ if not preview.error.is_empty():printerr("Export preview rejected: "+preview.error);quit(1);return
++ check(preview.error.is_empty() and preview.data.resources["1"]==raw.resources["1"],"Export prepares with huge GrowthNumber intact")
++ check(g.profile==before,"Preparing import is read-only")
++ for version in [2,3,4]:
++  var legacy:=raw.duplicate(true);legacy.version=version
++  check(transfer.prepare_data(legacy,db).error.is_empty(),"Existing version migration accepts "+str(version))
++ for bad in [{}, {"version":5,"resources":{"1":0,"2":0},"highestLevel":1}, {"version":4,"resources":[],"highestLevel":1}, {"version":4,"resources":{"1":{},"2":0},"highestLevel":1}]:
++  check(not transfer.prepare_data(bad,db).error.is_empty(),"Reject invalid type/structure/future version")
++ for value in ["", "{", "[]", "{\"version\":4}", "not a save"]:
++  var file:=FileAccess.open("user://transfer-bad.json",FileAccess.WRITE);file.store_string(value);file.close()
++  check(not transfer.prepare("user://transfer-bad.json",db).error.is_empty(),"Reject damaged/truncated/wrong JSON")
++ var damaged:=raw.duplicate(true);damaged.galaxies[damaged.galaxies.keys()[0]].blueprint={"layout_version":1}
++ check(not transfer.prepare_data(damaged,db).error.is_empty(),"Reject incomplete galaxy layout before loader")
++ check(g.profile==before,"All rejected imports preserve live state")
++ var original:="{\"version\":4,\"resources\":{\"1\":111,\"2\":222},\"highestLevel\":1}"
++ var original_file:=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE);original_file.store_string(original);original_file.close()
++ var recovery:=FileAccess.open(BattleGame.SAVE_PATH+".bak",FileAccess.WRITE);recovery.store_string(original+"\n");recovery.close()
++ for service in [FailBackup.new(),FailInstall.new()]:
++  var failed: Dictionary=service.commit_import(g,preview.data)
++  check(failed.error!=OK and g.profile==before,"Failed backup/install preserves runtime")
++  check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original and FileAccess.get_file_as_string(BattleGame.SAVE_PATH+".bak")==original+"\n","Failed backup/install preserves exact primary and recovery bytes")
++ var transaction:=transfer.commit_import(g,preview.data)
++ check(transaction.error==OK,"Confirmed import installs canonical progress")
++ check(FileAccess.get_file_as_string(transaction.backup+"/original-progress.json")==original,"Persistent backup retains exact previous on-disk bytes")
++ var live_backup:=transfer.prepare(transaction.backup+"/current-progress.json",db)
++ check(live_backup.error.is_empty() and live_backup.data.resources["1"]==raw.resources["1"],"Current unsaved progress has a reimportable persistent backup")
++ var restored:=BattleGame.new(db,true)
++ check(restored.profile.resources==g.profile.resources and restored.profile.enhancementLevel==31 and restored.profile.planets["1"].conquered and GrowthNumber.compare(restored.profile.planets["1"].degree,g.profile.planets["1"].degree)==0,"Existing load restores big numbers, permanent planet state and enhancement")
++ check(transfer.rollback(transaction)==OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Reload failure rollback restores exact original primary")
++ var first:=transfer.commit_import(g,preview.data);transfer.finish(first)
++ var second:=transfer.commit_import(g,preview.data);transfer.finish(second)
++ check(first.error==OK and second.error==OK and first.backup!=second.backup,"Repeated import creates separate durable backups")
++ var repeat:=BattleGame.new(db,true)
++ check(repeat.profile.resources==restored.profile.resources,"Repeated import replaces rather than duplicates progress")
++ check(transfer.export_progress(g,BattleGame.SAVE_PATH)==ERR_INVALID_PARAMETER,"Export cannot overwrite active progress path")
++ # Recovery of a process interruption between old-primary move and installation.
++ FileAccess.open(BattleGame.SAVE_PATH+".import-prev",FileAccess.WRITE).store_string(original)
++ DirAccess.remove_absolute(BattleGame.SAVE_PATH)
++ FileAccess.open(BattleGame.SAVE_PATH+".import-new",FileAccess.WRITE).store_string('{"version":4}')
++ var recovered: Variant=preload("res://scripts/progress_writer.gd").read_progress(BattleGame.SAVE_PATH)
++ check(recovered.resources["1"]==111 and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Interrupted installation restores the previous committed file on startup")
++ check(not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev") and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-new"),"Recovered interruption clears owned staging files for retry")
++ print("SAVE TRANSFER: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
+diff --git a/test/test_save_transfer_ui.gd b/test/test_save_transfer_ui.gd
+new file mode 100644
+index 0000000..6f071b2
+--- /dev/null
++++ b/test/test_save_transfer_ui.gd
+@@ -0,0 +1,124 @@
++extends SceneTree
++## Real button and picker/confirmation input with isolated synthetic progress.
++class IsolatedUI extends "res://scripts/battlefield.gd":
++ func create_battle_game(_persist: bool) -> BattleGame:return super.create_battle_game(false)
++ func show_qa_tools() -> void:pass
++ func create_save_file_picker() -> FileDialog:
++  var picker:=super.create_save_file_picker();picker.use_native_dialog=false;return picker
++var checks:=0
++var failures:=0
++var scene
++func check(ok: bool,label: String) -> void:
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL: "+label)
++func _initialize() -> void:call_deferred("run")
++func activate(control: BaseButton) -> void:
++ await click(control,control.size*.5)
++func click(control: Control,local: Vector2) -> void:
++ var point:=root.get_final_transform()*(control.get_screen_transform()*local)
++ DisplayServer.warp_mouse(point)
++ var motion:=InputEventMouseMotion.new();motion.position=point;motion.global_position=point
++ Input.parse_input_event(motion)
++ await process_frame
++ for down in [true,false]:
++  var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;event.position=point;event.global_position=point
++  Input.parse_input_event(event)
++  await process_frame
++ await process_frame
++func open_settings() -> void:
++ # Existing entry setup; transfer controls, file selection and confirmation use input below.
++ scene.show_save_settings();await process_frame;await process_frame
++func item_lists(node: Node) -> Array:
++ var result: Array=[]
++ if node is ItemList:result.append(node)
++ for child in node.get_children(true):result.append_array(item_lists(child))
++ return result
++func choose(path: String) -> void:
++ if scene.save_file_dialog.file_mode==FileDialog.FILE_MODE_OPEN_FILE:
++  scene.save_file_dialog.current_dir=ProjectSettings.globalize_path(path).get_base_dir()
++  scene.save_file_dialog.current_file=""
++ else:scene.save_file_dialog.current_path=ProjectSettings.globalize_path(path)
++ await process_frame;await process_frame
++ if scene.save_file_dialog.file_mode==FileDialog.FILE_MODE_OPEN_FILE:
++  for list in item_lists(scene.save_file_dialog):
++   for i in list.item_count:
++    if list.get_item_tooltip(i)==path.get_file() or list.get_item_text(i)==path.get_file():
++     list.ensure_current_is_visible()
++     await click(list,list.get_item_rect(i).get_center())
++ await capture("picker")
++ await activate(scene.save_file_dialog.get_ok_button())
++func capture(name: String) -> void:
++ var folder:=OS.get_environment("SAVE_TRANSFER_EVIDENCE")
++ if folder.is_empty():return
++ await process_frame;await process_frame;await RenderingServer.frame_post_draw
++ root.get_texture().get_image().save_png(folder+"/"+name+".png")
++func freeze() -> void:
++ scene=current_scene;scene.set_process(false);scene.game.paused=true
++ scene.refresh_navigation()
++func run() -> void:
++ for path in ["user://ui-export.json","user://ui-galaxy-roundtrip.json"]:
++  if FileAccess.file_exists(path):DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
++ root.size=Vector2i(1373,883);root.position=Vector2i.ZERO
++ scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"]
++ root.add_child(scene);current_scene=scene;scene.automation_args=[];freeze()
++ var g=scene.game;g.profile.onboarding.completed=true;g.pending_unlocks.clear();scene.refresh_navigation();g.progress_writer.clear_files();g.save_enabled=true;g.profile.resources={"1":99.0,"2":88.0};g.save_progress();g.profile.resources={"1":789.0,"2":456.0}
++ var original:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH);var before: Dictionary=g.profile.duplicate(true);var scene_id: int=scene.get_instance_id()
++ await process_frame;await process_frame
++ await open_settings()
++ check(is_instance_valid(scene.save_settings_dialog) and scene.save_settings_dialog.visible,"Existing save settings dialog opens")
++ check(scene.save_settings_dialog.find_child("ExportSave",true,false)!=null and scene.save_settings_dialog.find_child("ImportSave",true,false)!=null,"Transfer actions live in existing dialog")
++ await capture("settings")
++ await activate(scene.save_settings_dialog.find_child("ExportSave",true,false))
++ check(scene.save_file_dialog.visible and scene.save_file_dialog.file_mode==FileDialog.FILE_MODE_SAVE_FILE,"Export button opens save-file picker")
++ await activate(scene.save_file_dialog.get_cancel_button())
++ check(g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==original,"Export picker cancellation has no progress/file side effects")
++ await activate(scene.save_settings_dialog.find_child("ExportSave",true,false))
++ await choose("user://ui-export.json")
++ check(FileAccess.file_exists("user://ui-export.json") and scene.save_transfer_feedback.text.contains("ui-export.json"),"Actual export selection produces portable file and visible success")
++ check(g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==original,"Export preserves actual primary and unsaved runtime")
++ var bad:=FileAccess.open("user://ui-future.json",FileAccess.WRITE);bad.store_string('{"version":999,"highestLevel":1,"resources":{"1":1,"2":2}}');bad.close()
++ await activate(scene.save_settings_dialog.find_child("ImportSave",true,false));await choose("user://ui-future.json")
++ check(scene.save_transfer_feedback.text==UIText.t("save.import_invalid_version") and scene.pending_import.is_empty(),"Future version is rejected before replacement confirmation")
++ check(g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==original,"Rejected file leaves disk/runtime unchanged")
++ var demo:=OS.get_environment("SAVE_TRANSFER_DEMO")
++ check(not demo.is_empty() and FileAccess.file_exists(demo),"External galaxy review demo is available")
++ if demo.is_empty():quit(1);return
++ await activate(scene.save_settings_dialog.find_child("ImportSave",true,false));await choose(demo)
++ check(scene.save_import_confirmation.visible and not scene.pending_import.is_empty(),"Real galaxy demo selection reaches explicit replacement confirmation")
++ check(g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==original and scene.get_instance_id()==scene_id,"Import preview leaves current runtime and original file untouched")
++ await capture("confirmation")
++ await activate(scene.save_import_confirmation.get_cancel_button())
++ check(scene.pending_import.is_empty() and g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==original,"Confirmation cancellation is side-effect free")
++ var old_backups:=DirAccess.get_directories_at(preload("res://scripts/save_transfer.gd").BACKUP_ROOT)
++ await activate(scene.save_settings_dialog.find_child("ImportSave",true,false));await choose(demo);await activate(scene.save_import_confirmation.get_ok_button())
++ await process_frame;await process_frame;freeze()
++ check(scene.get_instance_id()!=scene_id and scene.game.profile.cleared.has(75) and scene.game.galaxy.available(),"Confirmed UI import reloads normally with real galaxy unlock")
++ check(scene.save_settings_dialog.visible and scene.save_transfer_feedback.text.contains("current-progress.json"),"Fresh scene shows import success and durable recovery location")
++ var added:=Array(DirAccess.get_directories_at(preload("res://scripts/save_transfer.gd").BACKUP_ROOT)).filter(func(name):return not old_backups.has(name))
++ check(added.size()==1,"One confirmation creates exactly one backup set")
++ var recovery_path:=preload("res://scripts/save_transfer.gd").BACKUP_ROOT+"/"+str(added[0])+"/current-progress.json"
++ check(JSON.parse_string(FileAccess.get_file_as_string(recovery_path)).resources["1"]==789,"Backup captures latest unsaved progress rather than only old on-disk file")
++ await activate(scene.save_settings_dialog.get_ok_button());await activate(scene.system_nav_buttons[8])
++ check(scene.equipment_tabs.current_tab==8 and scene.galaxy_panel.visible and scene.galaxy_panel.map.visible,"Native navigation enters the imported galaxy page")
++ root.gui_release_focus()
++ var play:=InputEventKey.new();play.keycode=KEY_SPACE;play.pressed=true;Input.parse_input_event(play)
++ await process_frame
++ play=InputEventKey.new();play.keycode=KEY_SPACE;play.pressed=false;Input.parse_input_event(play)
++ scene.set_process(true)
++ await process_frame;await process_frame
++ check(scene.galaxy_panel.map.view.render_target_update_mode==SubViewport.UPDATE_ALWAYS,"Unpaused imported galaxy uses normal live map rendering")
++ await capture("galaxy-imported")
++ freeze()
++ await open_settings();await activate(scene.save_settings_dialog.find_child("ExportSave",true,false))
++ scene.save_file_dialog.use_native_dialog=false
++ await choose("user://ui-galaxy-roundtrip.json")
++ var exported: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("user://ui-galaxy-roundtrip.json"))
++ check(exported.galaxies.has("galaxy_1") and exported.galaxies.galaxy_1.slots.size()==30,"Imported galaxy exports with all 30 real building slots")
++ await activate(scene.save_settings_dialog.find_child("ImportSave",true,false));await choose("user://ui-galaxy-roundtrip.json");await activate(scene.save_import_confirmation.get_ok_button())
++ await process_frame;await process_frame;freeze()
++ check(scene.game.galaxy.available() and scene.game.galaxy.regions.galaxy_1.slots.size()==30,"Exported demo reimports through full UI flow")
++ await activate(scene.save_settings_dialog.find_child("ImportSave",true,false));scene.save_file_dialog.use_native_dialog=false;await choose(recovery_path);await activate(scene.save_import_confirmation.get_ok_button())
++ await process_frame;await process_frame;freeze()
++ check(scene.game.profile.resources["1"]==789 and scene.game.profile.resources["2"]==456,"Persistent backup restores prior unsaved progress through normal import UI")
++ check(OS.get_user_data_dir().contains("test/work"),"All file operations stayed in isolated user directory")
++ print("SAVE TRANSFER UI: %d checks, %d failures"%[checks,failures]);scene.queue_free();await process_frame;quit(1 if failures else 0)

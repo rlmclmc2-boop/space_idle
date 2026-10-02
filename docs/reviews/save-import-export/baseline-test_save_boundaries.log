@@ -1,0 +1,7 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: Load grants particles and saves before resetting player
+FAIL: Load persists particle credit and removes old charge
+FAIL: Reactor upgrade saves immediately
+FAIL: Saved reactor level and uranium match
+Save boundaries: 20 checks, 4 failures
