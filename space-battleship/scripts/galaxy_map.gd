@@ -47,6 +47,7 @@ var dragging := false
 var drag_distance := 0.0
 var selected_slot := -1
 var hover_slot := -1
+var inspected_slot := -1
 var running := true
 var highlight: MeshInstance3D
 var cyan: StandardMaterial3D
@@ -111,12 +112,13 @@ func _ready() -> void:
 	backdrop.material_override=space_material
 	backdrop.position.y=-5
 	world.add_child(backdrop)
-	highlight=ring(6.8,cyan)
+	highlight=ring(7.6,cyan,0.35)
 	world.add_child(highlight)
 	highlight.visible=false
 	resized.connect(layout)
 	get_viewport().size_changed.connect(layout)
 	visibility_changed.connect(sync_visibility)
+	mouse_exited.connect(clear_hover)
 	layout()
 	sync_visibility()
 
@@ -126,11 +128,11 @@ func material(color: Color) -> StandardMaterial3D:
 	result.emission_enabled=false
 	result.roughness=0.78
 	return result
-func ring(radius: float, mat: Material) -> MeshInstance3D:
+func ring(radius: float, mat: Material, thickness: float = 0.12) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
 	var mesh := TorusMesh.new()
-	mesh.inner_radius=radius-0.12
-	mesh.outer_radius=radius+0.12
+	mesh.inner_radius=radius-thickness
+	mesh.outer_radius=radius+thickness
 	mesh.rings=32
 	mesh.ring_segments=6
 	node.mesh=mesh
@@ -200,6 +202,7 @@ func select(value) -> void:
 	transit.clear()
 	selected_slot=-1
 	hover_slot=-1
+	inspected_slot=-1
 	highlight.visible=false
 	zoom=1
 	pan=Vector2.ZERO
@@ -287,6 +290,7 @@ func layout() -> void:
 	var target := Vector3(frame_origin.x+pan.x,0,frame_origin.y+pan.y)
 	camera.position=target+Vector3(130,130,130)
 	camera.look_at(target,Vector3.UP)
+	request_visual_frame()
 func fit_size() -> float:
 	if region==null:frame_origin=Vector2.ZERO;return 120.0
 	var low := Vector2(INF,INF)
@@ -504,27 +508,69 @@ func ground_at(position_in_control: Vector2):
 	var origin := camera.project_ray_origin(position_in_control*Vector2(view.size)/size)
 	var direction := camera.project_ray_normal(position_in_control*Vector2(view.size)/size)
 	return Plane(Vector3.UP,0).intersects_ray(origin,direction)
+func model_hit(node: Node3D, bounds: Array, scale_factor: float, origin: Vector3, direction: Vector3, height: float = -1.0):
+	var extent := Vector3(float(bounds[0]),float(bounds[1]),float(bounds[2]))*scale_factor
+	if height>=0:extent.y=minf(extent.y,height)
+	var box := AABB(Vector3(-extent.x*0.5,0,-extent.z*0.5),extent)
+	var inverse := node.global_transform.affine_inverse()
+	var hit=box.intersects_ray(inverse*origin,inverse.basis*direction)
+	return node.global_transform*hit if hit!=null else null
+
 func pick(position_in_control: Vector2) -> int:
 	if region==null:return -1
-	var hit=ground_at(position_in_control)
-	if hit==null:return -1
+	var pixel := position_in_control*Vector2(view.size)/size
+	var origin := camera.project_ray_origin(pixel)
+	var direction := camera.project_ray_normal(pixel)
+	var closest := INF
+	var result := -1
+	# Test building volume before the ground footprint. Nearest volume wins;
+	# the hollow headquarters is not an opaque box that masks nearby buildings.
+	for slot in region.slots:
+		if slot.status=="empty":continue
+		var id := int(slot.id)
+		var height := float(construction[id].height) if slot.status=="constructing" else -1.0
+		var hit=model_hit(slot_nodes[id],asset_bounds.get(visual_path(slot),[10.0,6.0,10.0]),BUILDING_SCALE,origin,direction,height)
+		if hit!=null and origin.distance_squared_to(hit)<closest:
+			closest=origin.distance_squared_to(hit)
+			result=id
+	if closest<INF:return result
+	var ground=ground_at(position_in_control)
+	if ground==null:return -1
 	for plan in region.blueprint.nodes:
 		var node: Node3D=slot_nodes[int(plan.id)]
 		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
-		if absf(hit.x-node.position.x)<=half.x and absf(hit.z-node.position.z)<=half.y:return int(plan.id)
+		if absf(ground.x-node.position.x)<=half.x and absf(ground.z-node.position.z)<=half.y:return int(plan.id)
 	return -1
 
+func request_visual_frame() -> void:
+	# Paused input still needs one image, without restarting animation.
+	if not running and is_visible_in_tree() and region!=null:
+		view.render_target_update_mode=SubViewport.UPDATE_ONCE
+		await RenderingServer.frame_post_draw
+		if not running:view.render_target_update_mode=SubViewport.UPDATE_DISABLED
+
+func clear_hover() -> void:
+	hover_slot=-1
+	update_highlight()
+
 func update_highlight() -> void:
-	var id := hover_slot if hover_slot>=0 else selected_slot
+	var id := selected_slot if selected_slot>=0 else hover_slot
+	if inspected_slot==id:return
+	inspected_slot=id
 	highlight.visible=id>=0
 	if id>=0:highlight.position=slot_nodes[id].position+Vector3(0,0.1,0)
+	request_visual_frame()
+	slot_selected.emit(id)
 func _gui_input(input: InputEvent) -> void:
 	if region==null:return
 	if input is InputEventMouseButton:
 		if input.button_index==MOUSE_BUTTON_LEFT:
 			dragging=input.pressed
 			if input.pressed:drag_distance=0
-			elif drag_distance<5:selected_slot=pick(input.position);slot_selected.emit(selected_slot);update_highlight()
+			elif drag_distance<5:
+				selected_slot=pick(input.position)
+				hover_slot=selected_slot
+				update_highlight()
 		if input.pressed and input.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
 			zoom=clampf(zoom*(1.15 if input.button_index==MOUSE_BUTTON_WHEEL_UP else 1.0/1.15),setting("camera_zoom_min",0.6),setting("camera_zoom_max",2.8))
 			layout()
@@ -538,6 +584,6 @@ func _gui_input(input: InputEvent) -> void:
 				pan+=Vector2(previous.x-current.x,previous.z-current.z)
 			pan=pan.clamp(Vector2(-100,-100),Vector2(100,100))
 			layout()
+			return
 		hover_slot=pick(input.position)
 		update_highlight()
-		if hover_slot>=0:slot_selected.emit(hover_slot)
