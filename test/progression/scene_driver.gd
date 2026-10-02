@@ -37,8 +37,9 @@ func after_tick(dt:float):
 	scene.pickup_effects=scene.pickup_effects.filter(func(effect):return effect.life>0)
 	scene.flush_damage_numbers();scene.shake=maxf(0,scene.shake-dt*18);scene.message_time=maxf(0,scene.message_time-dt)
 	scene.destruction_events=scene.destruction_events.filter(func(e):return scene.fx_time-float(e.born)<.65)
-	for field in ["missile_events","pulse_events","rail_events","enemy_impacts"]:
-		var events:Array=scene.get(field)
-		scene.set(field,events.filter(func(e):return scene.fx_time-float(e.born)<float(e.get("duration",1.0))))
+	scene.missile_events=scene.missile_events.filter(func(e):return scene.fx_time-float(e.born)<float(e.get("duration",.25)))
+	scene.rail_events=scene.rail_events.filter(func(e):return scene.fx_time-float(e.born)<maxf(scene.rail_vfx.flash_seconds,scene.rail_vfx.impact_seconds))
+	scene.enemy_impacts=scene.enemy_impacts.filter(func(e):return scene.fx_time-float(e.born)<.12)
+	scene.pulse_events=scene.pulse_events.filter(func(e):return scene.fx_time-float(e.born)<.14)
 func close():
 	if is_instance_valid(scene):scene.queue_free()
