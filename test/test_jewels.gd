@@ -160,9 +160,7 @@ func run() -> void:
 	check(game.drops.filter(func(d):return d.has("jewel")).size()==1,"Drop entry itself rejects repeated death notifications")
 	var drop: Dictionary=jewel_drops[0]
 	game.collect_near(Vector2(drop.x,drop.y),false)
-	check(game.drops.has(drop),"Fragments require click rather than hover")
-	game.collect_near(Vector2(drop.x,drop.y),true)
-	check(not game.drops.has(drop),"Manual click picks fragment")
+	check(not game.drops.has(drop),"Hover picks fragments in full")
 	var count_before: float=game.profile.jewelFragments
 	game.collect(drop,true)
 	check(game.profile.jewelFragments==count_before,"Repeated pickup cannot duplicate fragments")

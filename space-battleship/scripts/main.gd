@@ -469,10 +469,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if is_instance_valid(balance_lab) and balance_lab.visible:return
-	if event is InputEventMouseMotion and battle_clip.get_global_rect().has_point(event.position):
-		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions())
-	if event is InputEventMouseButton and event.pressed and battle_clip.get_global_rect().has_point(event.position):
-		game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),event.button_index == MOUSE_BUTTON_LEFT,drop_pickup_positions())
+	if (event is InputEventMouseMotion or event is InputEventMouseButton) and not resource_input_blocked():
+		var field := battle_clip.get_global_rect()
+		if event is InputEventMouseMotion and field.has_point(event.position):
+			var previous: Vector2 = event.position-event.relative
+			# Sweep only within the battlefield; GUI-consumed events never reach here.
+			var start: Variant = battle_logical_point(battle_layer.to_local(previous)) if field.has_point(previous) else null
+			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions(),start)
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and field.has_point(event.position):
+			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),true,drop_pickup_positions())
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F1:
 			show_qa_tools()
@@ -484,6 +489,15 @@ func _unhandled_input(event: InputEvent) -> void:
 				refresh_navigation()
 			else:
 				game.paused = not game.paused
+
+func resource_input_blocked() -> bool:
+	if help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
+	var viewport := get_viewport()
+	if not get_window().has_focus():return true
+	if viewport.gui_get_hovered_control()!=null:return true
+	for window in viewport.get_embedded_subwindows():
+		if window.exclusive or window.popup_window:return true
+	return false
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:

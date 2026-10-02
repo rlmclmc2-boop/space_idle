@@ -2106,15 +2106,13 @@ func settle_drops() -> void:
 	for drop in drops.duplicate():
 		collect(drop, false)
 
-func collect_near(pos: Vector2, clicked := false, position_overrides: Dictionary = {}) -> void:
+func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionary = {}, path_start: Variant = null) -> void:
 	if paused:
 		return
 	for drop in drops.duplicate():
-		var core: bool = drop.get("hightech",false) and drop.has("jewel")
-		if (drop.get("hightech", false) or drop.has("jewel")) and not clicked and not core:
-			continue
 		var drop_pos: Vector2 = position_overrides.get(int(drop.uid),Vector2(drop.x,drop.y))
-		if drop_pos.distance_to(pos) < 55:
+		var nearest := Geometry2D.get_closest_point_to_segment(drop_pos,path_start,pos) if path_start is Vector2 else pos
+		if drop_pos.distance_to(nearest) < 55:
 			collect(drop, true)
 
 func clear_level() -> void:
