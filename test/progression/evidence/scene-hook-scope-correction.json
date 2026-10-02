@@ -1,0 +1,14 @@
+{
+  "finding": "Replacing scene.game omitted newgame.event -> scene.on_event; real main connects it. weapon_launch updates target/recoil and affects canonical muzzle. Parent Native-only hook comparison first differs435s at3-5.",
+  "scope_override": "ALL earlier formal+scene progression, clock and enemy matrix runs lacked event hook. Preserve as missing-hook approximations, not formal acceptance. Prior native-versus-adapter comparisons missed this hook in both and only prove selected common code path.",
+  "parent_counterexample_seconds": 435,
+  "stopped": [],
+  "stopped_heartbeat": {
+    "deaths": 174,
+    "highest": 20,
+    "stage": 20,
+    "wall_seconds": 2912.058213,
+    "x1_seconds": 35340.0000001313
+  },
+  "required": "Reconnect full event hook or prove equivalent minimal presentation state; source matrix/teaching/progression/clock fresh regressions then required."
+}

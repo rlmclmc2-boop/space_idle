@@ -1,3 +1,5 @@
+> 2026-10-02 scope correction: all earlier formal+scene progression and wave results omitted the scene event hook and are retained as approximations only. See `evidence/scene-hook-scope-correction.json`. The corrected driver connects the production event handler; new acceptance requires native-frame equivalence and fresh reruns.
+
 # Progression calibration evidence
 
 **Correctness boundary:** earlier exact runs inherit base BattleGame. Actual main uses PresentedBattleGame (real missile ejection/retarget and rail motion). All earlier progression timings are base-rule diagnostics, not formal player acceptance. New default `--engine formal`; add builder/runner `--scene` for actual scene providers. The initial formal-vs-native scene comparison passed900 seconds through6-4. Full formal long-run timing is pending.

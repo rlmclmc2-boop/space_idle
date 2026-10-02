@@ -136,6 +136,7 @@ func run() -> void:
 			next_visit=game.simulated_time+(float(options.teaching_seconds) if int(game.profile.highestLevel)<=5 else float(options.visit_seconds))
 		if scene_driver!=null:scene_driver.before_tick(STEP)
 		game.tick(STEP);steps+=1
+		if scene_driver!=null:scene_driver.after_tick(STEP)
 		if game.stage in [30,32,34,35,40,45,50,55,60] and not reached.has(str(game.stage)):
 			reached[str(game.stage)]=game.simulated_time;snapshot("reach_"+str(game.stage))
 		if game.galaxy.regions.has("galaxy_1") and game.galaxy.regions.galaxy_1.is_complete() and galaxy_completion<0:

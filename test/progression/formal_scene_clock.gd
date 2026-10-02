@@ -20,6 +20,7 @@ func run_case(boost:float,fps:int)->Dictionary:
 	for frame in frames:
 		driver.before_tick(1.0/fps)
 		driver.scene.advance_game_time(boost/fps)
+		driver.after_tick(1.0/fps)
 	var result={"boost":boost,"fps":fps,"x1_seconds":g.simulated_time,"pending":driver.scene.game_time_remainder,"resources":g.profile.resources,"rng":str(g.rng.state),"kills":metrics.kills,"deaths":metrics.deaths,"state":g.state,"node":g.group_index,"furnace_peak":g.profile.furnaceIncomePeak,"motion_clock":g.motion_clock,"scope":"Controlled missile farming; actual scene providers and advance_game_time; pose/turret update once per emulated render frame, no GUI side effects"}
 	driver.close();return result
 func run():
