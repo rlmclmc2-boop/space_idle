@@ -87,7 +87,8 @@ static func read_progress(path: String) -> Variant:
 			if _read_progress_file(path)!=null:DirAccess.remove_absolute(previous)
 		# Also covers interruption after staging new bytes, before moving the old primary.
 		# An uncommitted incoming file must never replace a valid committed primary.
-		if _read_progress_file(path)!=null and FileAccess.file_exists(path+".import-new"):
+		# First import may have no primary yet; abandoned bytes are still uncommitted.
+		if FileAccess.file_exists(path+".import-new"):
 			DirAccess.remove_absolute(path+".import-new")
 	for suffix in ["", ".import-prev", ".bak"]:
 		var data = _read_progress_file(path + suffix)

@@ -18,7 +18,7 @@ assert "/test/work/" in str(project), "Use an isolated test/work project"
 old = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 111, "2": 222}}).encode()
 new = json.dumps({"version": 4, "highestLevel": 1, "resources": {"1": 333, "2": 444}}).encode()
 failures = 0
-scenarios = [("legacy", "staged"), *(('interrupt', p) for p in ["staged", "moved", "installed"]), *(('active', p) for p in ["staged", "moved", "installed"])]
+scenarios = [("legacy", "staged"), ("interrupt", "first-save"), *(('interrupt', p) for p in ["staged", "moved", "installed"]), *(('active', p) for p in ["staged", "moved", "installed"])]
 if args.case:
     scenarios = [(mode, phase) for mode, phase in scenarios if f"{mode}-{phase}" == args.case]
     assert scenarios, "Unknown scenario"
@@ -32,6 +32,9 @@ for mode, phase in scenarios:
         (user / ("progress.json" + suffix)).unlink(missing_ok=True)
     primary.write_bytes(old)
     (user / "progress.json.bak").write_bytes(old + b"\n")
+    if phase == "first-save":
+        primary.unlink()
+        (user / "progress.json.bak").unlink()
     cmd = [args.godot, "--headless", "--path", str(project), "--script", "../test/test_save_import_recovery.gd", "--"]
     if mode == "interrupt":
         stopped = subprocess.run(cmd + [mode, phase], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)
@@ -55,7 +58,9 @@ for mode, phase in scenarios:
     print(startup.stdout.decode(), end="")
     if startup.returncode != 0:
         failures += 1
-    if mode != "active":
+    if phase == "first-save":
+        assert not primary.exists(), "No original disk save must remain absent after rollback"
+    elif mode != "active":
         assert json.loads(primary.read_bytes())["resources"]["1"] == (333 if phase == "installed" else 111)
         if phase != "installed":
             assert primary.read_bytes() == old, "Abandoned incoming never replaces committed original"
