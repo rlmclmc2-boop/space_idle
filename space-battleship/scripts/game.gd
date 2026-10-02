@@ -3272,8 +3272,8 @@ func jewel_hit_player(raw, type: int) -> void:
 	var capacities := sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	since_hit=0.0
-	var after_cover = enhancement_branches.consume_cover(self,raw)
-	var feedback := {"absorbed":N.subtract(raw,after_cover)}
+	var feedback := {"absorbed":0.0}
+	var after_cover = enhancement_branches.consume_cover(self,raw,feedback)
 	var rest = consume_enhancement_protection(after_cover,type,false,feedback)
 	var loss = 0.0
 	# A capped module can leave raw overflow while other shield modules still
@@ -3369,8 +3369,8 @@ func queue_enhancement_deferred(key: String, amount) -> void:
 func apply_enhancement_deferred(_key: String, amount) -> void:
 	# This debt was already mitigated at the incoming event; protection and body
 	# consume it 1:1 with no new resistance, deferral or incoming-history event.
-	var after_cover = enhancement_branches.consume_cover(self,amount)
-	var feedback := {"absorbed":N.subtract(amount,after_cover)}
+	var feedback := {"absorbed":0.0}
+	var after_cover = enhancement_branches.consume_cover(self,amount,feedback)
 	var rest = consume_enhancement_protection(after_cover,0,true,feedback)
 	var loss = 0.0
 	var layers := ["shield","armour"] # Origin is accounting metadata, not a bypass of current shields.

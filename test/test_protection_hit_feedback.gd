@@ -37,7 +37,7 @@ func capture(g: BattleGame) -> Array:
   if kind=="hit" and payload.player:events.append(payload.duplicate(true)))
  return events
 func report(g: BattleGame,events: Array,label: String,loss,absorbed):
- var quiet_deferred: bool=baseline and label=="deferred_full"
+ var quiet_deferred: bool=baseline and label in ["deferred_full","debt_tick_full"]
  check(events.size()==(0 if quiet_deferred else 1),label+" produces expected feedback event")
  var info: Dictionary={"x":g.player.x,"y":g.player.y,"amount":0,"player":true,"type":0} if quiet_deferred else events.back()
  check(N.compare(info.amount,loss)==0,label+" preserves immediate body loss")
@@ -49,7 +49,7 @@ func report(g: BattleGame,events: Array,label: String,loss,absorbed):
   check(text.contains("吸收")== (N.compare(absorbed,0)>0),label+" absorption label matches consumed protection")
   if N.compare(absorbed,0)>0 and N.compare(loss,0)==0:check(not text.begins_with("0"),label+" full absorption is not shown as zero damage")
   check(ui.damage_history.back().contains(ui.call("damage_feedback_text",loss,absorbed,true)),label+" history distinguishes absorption from body loss")
- rows.append({"case":label,"body":info.amount,"absorbed":info.get("absorbed",0),"text":text,"shield":g.player.shield,"armour":g.player.armour,"buffers":g.enhancement_buffers.duplicate(true),"cover":g.enhancement_branches.defense(g,0).cover,"hits":g.profile.enhancementHits,"rng":str(g.rng.state),"debt":g.enhancement_deferred.duplicate(true)})
+ rows.append({"case":label,"body":info.amount,"absorbed":info.get("absorbed",0),"text":text,"history":ui.damage_history.back() if not quiet_deferred else "no_event","shield":g.player.shield,"armour":g.player.armour,"buffers":g.enhancement_buffers.duplicate(true),"cover":g.enhancement_branches.defense(g,0).cover,"hits":g.profile.enhancementHits,"rng":str(g.rng.state),"debt":g.enhancement_deferred.duplicate(true),"module_damage":g.jewel_defence_damage.duplicate(true),"state":g.state,"since_hit":g.since_hit})
  ui.free()
 func _initialize():call_deferred("run")
 func run():
@@ -107,6 +107,46 @@ func run():
   check(ui.damage_pending.size()==1 and ui.damage_pending[0].amount==3 and ui.damage_pending[0].absorbed==15,"Coalescing keeps body loss and absorption separate")
   check(ui.damage_pending[0].text=="3 · 吸收 15","Merged label does not report absorption as body loss")
   ui.free()
+ # These positive fractions must survive both the floating label and history.
+ for value in [.04,.01,.001]:
+  g=fixture();events=capture(g);g.enhancement_branches.defense(g,0).cover=value
+  g.hit_player(value,0);report(g,events,"fraction_cover_"+str(value),0,value)
+  if not baseline:
+   var fractional_ui:=FeedbackUI.new();fractional_ui.game=g
+   fractional_ui.queue_damage_number(events.back())
+   check(fractional_ui.damage_pending.back().text=="吸收 "+str(value),"Floating fraction is nonzero: "+str(value))
+   check(fractional_ui.damage_history.back().contains("吸收 "+str(value)),"History fraction is nonzero: "+str(value))
+   fractional_ui.free()
+ g=fixture();events=capture(g);g.enhancement_buffers={0:.001}
+ g.hit_player(.001,0);report(g,events,"fraction_buffer",0,.001)
+ if not baseline:check(rows.back().history.contains("吸收 0.001"),"Fractional buffer spending is nonzero in history")
+ for raw in [1e16,{"m":1.0,"e":400.0}]:
+  for delayed in [false,true]:
+   g=fixture();events=capture(g);g.enhancement_branches.defense(g,0).cover=1
+   if delayed:g.apply_enhancement_deferred("shield",raw)
+   else:g.hit_player(raw,0)
+   report(g,events,("huge_deferred_" if delayed else "huge_incoming_")+str(raw),200,1)
+   check(g.enhancement_branches.defense(g,0).cover==0,"Large hit spends the unit cover")
+ # A real incoming hit creates nonempty debt, then scheduled payments consume
+ # fractional cover without a second incoming hit or altered RNG rolls.
+ g=fixture();g.profile.enhancementOrder.defence=["delayed_damage","adaptation","memory_material"]
+ g.db.data.enhance_config.deferred_clear_probability.value=0
+ g.reset_player();g.enhancement_buffers.clear();g.state=BattleGame.State.COMBAT;events=capture(g)
+ g.hit_player(.8,0);report(g,events,"debt_source",.4,0)
+ check(not g.enhancement_deferred.is_empty() and is_equal_approx(float(g.enhancement_deferred_total()),.4),"Real fractional hit creates its deferred debt")
+ var expected_rng:=RandomNumberGenerator.new();expected_rng.state=g.rng.state
+ expected_rng.randf()
+ g.enhancement_branches.defense(g,0).cover=.04
+ events.clear();g.advance_enhancement_deferred_tick();report(g,events,"debt_tick_full",0,.04)
+ if not baseline:check(rows.back().history.contains("吸收 0.04"),"Scheduled full absorption keeps its positive fraction in history")
+ check(is_equal_approx(float(g.enhancement_deferred_total()),.36) and g.enhancement_deferred.size()>0,"Covered scheduled payment consumes only its due bucket")
+ check(is_equal_approx(g.player.shield,99.6) and g.profile.enhancementHits==1 and g.rng.state==expected_rng.state,"Covered debt preserves body, incoming count and the one clearance roll")
+ expected_rng.randf()
+ g.enhancement_branches.defense(g,0).cover=.01;g.enhancement_buffers.clear()
+ events.clear();g.advance_enhancement_deferred_tick();report(g,events,"debt_tick_partial",1,.01)
+ if not baseline:check(rows.back().history.contains("吸收 0.01"),"Scheduled partial absorption keeps its positive fraction in history")
+ check(is_equal_approx(g.player.shield,99.57) and is_equal_approx(float(g.enhancement_deferred_total()),.32),"Partial scheduled absorption leaves exactly the fractional body payment and remaining debt")
+ check(g.profile.enhancementHits==1 and g.rng.state==expected_rng.state,"Partial debt does not recount hits or add RNG rolls")
  FileAccess.open("res://feedback-results.json",FileAccess.WRITE).store_string(JSON.stringify(rows))
  print("PROTECTION FEEDBACK: %d checks, %d failures; baseline=%s speed=1" % [checks,failures,baseline])
  quit(1 if failures else 0)

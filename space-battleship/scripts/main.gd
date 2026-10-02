@@ -2122,7 +2122,7 @@ func set_damage_mode(mode: int) -> void:
 func damage_feedback_text(amount, absorbed = 0, exact := false) -> String:
 	var damage_text := GrowthNumber.text(amount) if exact else NUMBER_FORMAT.damage(amount)
 	if GrowthNumber.compare(absorbed,0)<=0:return damage_text
-	var absorbed_text := GrowthNumber.text(absorbed) if exact else NUMBER_FORMAT.damage(absorbed)
+	var absorbed_text := GrowthNumber.text(absorbed) if exact and GrowthNumber.compare(absorbed,1)>=0 else NUMBER_FORMAT.damage(absorbed)
 	if GrowthNumber.compare(amount,0)<=0:
 		return UIText.t("battle.damage_absorbed",{"absorbed":absorbed_text})
 	return UIText.t("battle.damage_with_absorption",{"damage":damage_text,"absorbed":absorbed_text})
