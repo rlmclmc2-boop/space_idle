@@ -1,0 +1,11 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+GALAXY UI SETUP status=available hidden=false
+CITY SCALE node_span=(0.486919, 0.4106) zoom=0.6
+GALAXY PICK roof_hits=150/150 pinned_hover_events=0
+GALAXY PAUSED LIFECYCLE visual_ticks_delta=0
+GALAXY 3D UI checks=339 failures=0 visual_nodes=18 buildings=30 actual_fps=9.0
+GALAXY_REALTIME_RECORD frames=83 seconds=12.124817 size=1372x883 speed=1.0

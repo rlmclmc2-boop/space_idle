@@ -1,0 +1,32 @@
+{
+  "base": "10360c57f1057c51ba7106f84581fdd5b1383c62",
+  "changed_json_sections": [
+    "galaxy_config"
+  ],
+  "visual_config_changes": {
+    "max_transport_ships": {
+      "before": 12,
+      "after": 6
+    },
+    "camera_zoom_min": {
+      "before": 0.6,
+      "after": 0.4
+    },
+    "camera_zoom_max": {
+      "before": 2.8,
+      "after": 0.6
+    },
+    "transport_buildings_per_ship": {
+      "before": 3,
+      "after": 5
+    }
+  },
+  "changed_workbook_cells": [
+    "B10",
+    "B12",
+    "B13",
+    "B14"
+  ],
+  "all_model_assets_unchanged": true,
+  "gameplay_and_planet_data_unchanged": true
+}
