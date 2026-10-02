@@ -1,0 +1,44 @@
+{
+  "flight": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/flight-closeup-1x.gif",
+    "file_id": "file_000000005e1081f580784c1f9b90657d",
+    "library_file_id": "libfile_1b198cd5115881918b5be2acb208d115",
+    "file_name": "flight-closeup-1x.gif",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "image/gif",
+    "library_artifact_type": "image",
+    "file_size_bytes": 270018,
+    "external_connectors_accessed": false
+  },
+  "bridge": {
+    "operation": "create_library_file",
+    "status": "succeeded",
+    "path": "/service-bridge-joint.png",
+    "file_id": "file_0000000084f0820cb9a4d3fe7d91c98f",
+    "library_file_id": "libfile_df5874c685188191bb58383e803f56d4",
+    "file_name": "service-bridge-joint.png",
+    "current_version_number": 0,
+    "restored_from_version_number": null,
+    "xattrs": [
+      {
+        "name": "user.library-file-version",
+        "value": "0"
+      }
+    ],
+    "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+    "mime_type": "image/png",
+    "library_artifact_type": "image",
+    "file_size_bytes": 152228,
+    "external_connectors_accessed": false
+  }
+}
