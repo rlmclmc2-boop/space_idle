@@ -7,6 +7,7 @@ const MIN_SIZE := Vector2(310,176)
 const ACTION_SIZE := Vector2(246,56)
 const INK := Color("243d50")
 const MUTED := Color("546c74")
+const Chrome := preload("res://scripts/dialog_presentation.gd")
 static var fonts: Dictionary = {}
 var host: Node
 var panel: Control
@@ -56,6 +57,13 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	name_button = OptionButton.new()
 	name_button.flat = true
 	name_button.fit_to_longest_item = false
+	Chrome.option(name_button,false)
+	var menu := name_button.get_popup()
+	menu.add_theme_font_override("font",face(500))
+	menu.add_theme_font_size_override("font_size",23)
+	menu.add_theme_color_override("font_disabled_color",MUTED)
+	menu.add_theme_constant_override("v_separation",12)
+	menu.about_to_popup.connect(func():call_deferred("place_refit_menu"))
 	name_button.set_meta("action_id","swap_module")
 	name_button.tooltip_text = UIText.t("equipment.swap")
 	name_button.add_theme_font_override("font",face(650))
@@ -157,18 +165,41 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 
 func refresh_options(item: Dictionary) -> void:
 	var state := [item.category,item.index,item.key,item.locked,host.game.profile.unlocked.duplicate()]
-	if options_state==state:return
+	if options_state==state and name_button.selected==equipment_options.find(item.key):
+		host.set_ui_value(name_button,"text",item.name)
+		return
 	options_state=state
 	if equipment_options.is_empty():
 		equipment_options = [""]
 		equipment_options.append_array(BattleGame.WEAPON_KEYS if item.category=="weapons" else BattleGame.DEFENSE_KEYS)
 		for key in equipment_options:name_button.add_item("")
-	var prefix := ("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2)
 	for index in equipment_options.size():
 		var key: String = equipment_options[index]
-		var title := prefix+" "+str(host.NAMES.get(key,UIText.t("equipment.vacant")))
+		var title := str(host.NAMES.get(key,UIText.t("equipment.vacant")))
 		if name_button.get_item_text(index)!=title:name_button.set_item_text(index,title)
 		var blocked: bool = item.locked or (not key.is_empty() and not host.game.profile.unlocked.has(key))
 		if name_button.is_item_disabled(index)!=blocked:name_button.set_item_disabled(index,blocked)
 	var current := equipment_options.find(item.key)
 	if name_button.selected!=current:name_button.select(current)
+	# The card retains its slot identity; native menu rows contain equipment names.
+	host.set_ui_value(name_button,"text",item.name)
+
+func place_refit_menu() -> void:
+	var menu := name_button.get_popup()
+	if not menu.visible:return
+	# Same screen space for anchor and playable viewport, including window offset
+	# and letterboxing. Native OptionButton still owns selection and radio marks.
+	var transform := name_button.get_screen_transform()
+	var anchor := transform * Rect2(Vector2.ZERO,name_button.size)
+	var viewport_transform := transform * name_button.get_global_transform_with_canvas().affine_inverse()
+	var bounds := (viewport_transform * name_button.get_viewport_rect()).grow(-8.0)
+	var width := maxf(menu.get_contents_minimum_size().x,size.x*transform.get_scale().x)
+	menu.max_size = Vector2i(bounds.size)
+	menu.min_size = Vector2i(ceili(minf(width,bounds.size.x)),0)
+	menu.size = Vector2i(ceili(minf(width,bounds.size.x)),ceili(minf(menu.get_contents_minimum_size().y,bounds.size.y)))
+	var extent := Vector2(menu.size)
+	var point := Vector2(anchor.position.x,anchor.end.y+4.0)
+	if point.y+extent.y>bounds.end.y:point.y=anchor.position.y-extent.y-4.0
+	point.x=clampf(point.x,bounds.position.x,maxf(bounds.position.x,bounds.end.x-extent.x))
+	point.y=clampf(point.y,bounds.position.y,maxf(bounds.position.y,bounds.end.y-extent.y))
+	menu.position=Vector2i(point)
