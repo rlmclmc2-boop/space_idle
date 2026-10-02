@@ -1,0 +1,171 @@
+From a3a4d819b514d3111c7b234a27d486102ea91f3f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=9B=B7=E6=98=8E=E6=99=A8?= <rlmclmc2@gmail.com>
+Date: Fri, 2 Oct 2026 06:19:37 +0000
+Subject: [PATCH] Clip resource hover sweeps in rendered space around GUI
+ occlusion
+
+---
+ space-battleship/scripts/main.gd   | 79 +++++++++++++++++++++++++-----
+ test/test_resource_hover_pickup.gd | 36 ++++++++++++--
+ 2 files changed, 99 insertions(+), 16 deletions(-)
+
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index f2d6f9d..7c80d0d 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -469,15 +469,8 @@ func _unhandled_input(event: InputEvent) -> void:
+ 		get_viewport().set_input_as_handled()
+ 		return
+ 	if is_instance_valid(balance_lab) and balance_lab.visible:return
+-	if (event is InputEventMouseMotion or event is InputEventMouseButton) and not resource_input_blocked():
+-		var field := battle_clip.get_global_rect()
+-		if event is InputEventMouseMotion and field.has_point(event.position):
+-			var previous: Vector2 = event.position-event.relative
+-			# Sweep only within the battlefield; GUI-consumed events never reach here.
+-			var start: Variant = battle_logical_point(battle_layer.to_local(previous)) if field.has_point(previous) else null
+-			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),false,drop_pickup_positions(),start)
+-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and field.has_point(event.position):
+-			game.collect_near(battle_logical_point(battle_layer.to_local(event.position)),true,drop_pickup_positions())
++	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
++		collect_render_path(event.position,event.position)
+ 	if event is InputEventKey and event.pressed and not event.echo:
+ 		if event.keycode == KEY_F1:
+ 			show_qa_tools()
+@@ -490,15 +483,75 @@ func _unhandled_input(event: InputEvent) -> void:
+ 			else:
+ 				game.paused = not game.paused
+ 
++func _input(event: InputEvent) -> void:
++	# Motion may end on a GUI control after crossing exposed battlefield space.
++	if event is InputEventMouseMotion and is_instance_valid(battle_clip):
++		collect_render_path(event.position-event.relative,event.position)
++
+ func resource_input_blocked() -> bool:
+-	if help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
+-	var viewport := get_viewport()
++	if game.paused or help_open or not game.pending_unlocks.is_empty() or not battle_layer.visible:return true
++	if is_instance_valid(balance_lab) and balance_lab.visible:return true
+ 	if not get_window().has_focus():return true
+-	if viewport.gui_get_hovered_control()!=null:return true
+-	for window in viewport.get_embedded_subwindows():
++	for window in get_viewport().get_embedded_subwindows():
+ 		if window.exclusive or window.popup_window:return true
+ 	return false
+ 
++func clip_pickup_path(from: Vector2, to: Vector2, rect: Rect2) -> Array[Vector2]:
++	var low := 0.0
++	var high := 1.0
++	var delta := to-from
++	for axis in 2:
++		if is_zero_approx(delta[axis]):
++			if from[axis]<rect.position[axis] or from[axis]>rect.end[axis]:return []
++		else:
++			var a: float=(rect.position[axis]-from[axis])/delta[axis]
++			var b: float=(rect.end[axis]-from[axis])/delta[axis]
++			low=maxf(low,minf(a,b));high=minf(high,maxf(a,b))
++			if low>high:return []
++	return [from+delta*low,from+delta*high]
++
++func pickup_control_rects(control: Control, field: Rect2, clip: Rect2, result: Array[Rect2]) -> void:
++	if not control.is_visible_in_tree():return
++	var rect: Rect2=(control.get_global_transform_with_canvas()*Rect2(Vector2.ZERO,control.size)).intersection(clip)
++	if control.mouse_filter!=Control.MOUSE_FILTER_IGNORE and rect.intersects(field):result.append(rect.intersection(field))
++	if control.clip_contents:
++		clip=rect
++		if not clip.intersects(field):return
++	for child in control.get_children():
++		if child is Control:pickup_control_rects(child,field,clip,result)
++
++func collect_render_path(from: Vector2, to: Vector2) -> void:
++	if game.drops.is_empty() or resource_input_blocked():return
++	var field: Rect2=battle_clip.get_global_transform_with_canvas()*Rect2(Vector2.ZERO,battle_clip.size)
++	var clipped := clip_pickup_path(from,to,field)
++	if clipped.is_empty():return
++	var covers: Array[Rect2]=[]
++	for child in get_children():
++		if child is Control:pickup_control_rects(child,field,field,covers)
++	var paths: Array=[clipped]
++	for cover in covers:
++		var exposed: Array=[]
++		for path in paths:
++			var cut := clip_pickup_path(path[0],path[1],cover)
++			if cut.is_empty():exposed.append(path)
++			else:
++				if path[0].distance_to(cut[0])>0.001:exposed.append([path[0],cut[0]])
++				if path[1].distance_to(cut[1])>0.001:exposed.append([cut[1],path[1]])
++		paths=exposed
++		if paths.is_empty():return
++	recover_death_drop_positions()
++	var transform := battle_layer.get_global_transform_with_canvas()
++	var inverse := transform.affine_inverse()
++	for drop in game.drops.duplicate():
++		var point := drop_render_position(drop)
++		var screen_point: Vector2=transform*point
++		if not field.has_point(screen_point) or covers.any(func(rect):return rect.has_point(screen_point)):continue
++		for path in paths:
++			var nearest := Geometry2D.get_closest_point_to_segment(point,inverse*path[0],inverse*path[1])
++			if point.distance_to(nearest)<55:
++				game.collect(drop,true)
++				break
++
+ func on_event(kind: String, info: Dictionary) -> void:
+ 	match kind:
+ 		"galaxy_unlocked":
+diff --git a/test/test_resource_hover_pickup.gd b/test/test_resource_hover_pickup.gd
+index 818deaf..a7c3ff2 100644
+--- a/test/test_resource_hover_pickup.gd
++++ b/test/test_resource_hover_pickup.gd
+@@ -20,10 +20,13 @@ func drop(id: String,point := Vector2(300,350),furnace := false) -> Dictionary:
+  return entry
+ func screen(point: Vector2) -> Vector2:
+  return root.get_final_transform()*scene.battle_layer.get_global_transform()*scene.battle_point(point)
+-func motion(point: Vector2,from: Variant = null) -> void:
+- var event:=InputEventMouseMotion.new();event.position=screen(point);event.global_position=event.position
+- event.relative=event.position-screen(from) if from is Vector2 else Vector2.ZERO
++func motion_render(point: Vector2,from: Variant = null) -> void:
++ var transform: Transform2D=root.get_final_transform()*scene.battle_layer.get_global_transform()
++ var event:=InputEventMouseMotion.new();event.position=transform*point;event.global_position=event.position
++ event.relative=event.position-transform*from if from is Vector2 else Vector2.ZERO
+  Input.parse_input_event(event);await process_frame;await process_frame
++func motion(point: Vector2,from: Variant = null) -> void:
++ await motion_render(scene.battle_point(point),scene.battle_point(from) if from is Vector2 else null)
+ func capture(name: String) -> void:
+  var folder:=OS.get_environment("RESOURCE_HOVER_EVIDENCE")
+  if folder.is_empty():return
+@@ -55,6 +58,33 @@ func run() -> void:
+  await motion(Vector2(510,350),Vector2(90,350))
+  check(not g.drops.has(first) and not g.drops.has(second) and g.profile.resources["1"]==iron+17 and g.profile.resources["2"]==uranium+17,"One fast motion collects multiple crossed drops")
+  await capture("after-hover")
++ var entering:=drop("1",Vector2(80,350))
++ await motion(Vector2(500,350),Vector2(-100,350))
++ check(not g.drops.has(entering),"Outside-to-inside motion collects crossed edge resource")
++ var leaving:=drop("1",Vector2(500,350))
++ await motion(Vector2(700,350),Vector2(100,350))
++ check(not g.drops.has(leaving),"Inside-to-outside motion collects crossed edge resource")
++ var crossing:=drop("2",Vector2(300,350))
++ await motion(Vector2(700,350),Vector2(-100,350))
++ check(not g.drops.has(crossing),"Two outside endpoints still sweep the clipped battlefield")
++ var diagonal:=drop("1",Vector2(341.2,420))
++ await motion_render(Vector2(562,900),Vector2(10,250))
++ check(not g.drops.has(diagonal),"Rendered diagonal picks the nonlinear-map regression resource without radius inflation")
++ var partial:=ColorRect.new();partial.color=Color(0.15,0.3,0.4);partial.mouse_filter=Control.MOUSE_FILTER_STOP;partial.z_index=100
++ partial.position=scene.battle_layer.get_global_transform()*scene.battle_point(Vector2(300,350))-Vector2(60,60);partial.size=Vector2(120,120)
++ scene.add_child(partial);await process_frame
++ var under:=drop("1",Vector2(300,350));var before_cover:=drop("1",Vector2(100,350));var after_cover:=drop("2",Vector2(500,350))
++ await capture("partial-cover-before")
++ await motion(Vector2(560,350),Vector2(10,350))
++ check(g.drops.has(under) and not g.drops.has(before_cover) and not g.drops.has(after_cover),"Uncovered endpoints cannot collect through partial GUI cover; exposed drops still collect")
++ await capture("partial-cover-after")
++ var ending_on_gui:=drop("1",Vector2(100,350))
++ await motion(Vector2(300,350),Vector2(10,350))
++ check(g.drops.has(under) and not g.drops.has(ending_on_gui),"Motion ending on GUI retains its exposed path")
++ var starting_on_gui:=drop("1",Vector2(500,350))
++ await motion(Vector2(560,350),Vector2(300,350))
++ check(g.drops.has(under) and not g.drops.has(starting_on_gui),"Motion starting on GUI retains its exposed path")
++ partial.queue_free();await process_frame;g.drops.erase(under)
+  var blocked:=drop("1")
+  scene.help_open=true;scene.refresh_navigation();await motion(Vector2(300,350))
+  check(g.drops.has(blocked),"Help overlay blocks hover")
+-- 
+2.52.0
+
