@@ -1,0 +1,15 @@
+{
+  "finding": [
+    "Absolute-time mod10 enhancement gate can suppress purchases forever after checkpoint resume",
+    "Old sparse policy never selected unlocked enhancement branches",
+    "Old bulk action proxy used internal all-card API not a manual toolbar button"
+  ],
+  "old_results": "Preserve as their exact policy behavior; checkpoint and forge timing is conservative policy diagnosis, not human/final acceptance",
+  "new_policy": "sparse-v5-phase-safe-cards-branchA",
+  "new_assumptions": [
+    "Try affordable enhancement at each real visit",
+    "Select first displayed A option once per unlocked branch, never respec between visits",
+    "Forge repurchase uses existing per-card+10 actions, every successful card counted"
+  ],
+  "requirements": "Recalibrate key budgets with the new declared strategy and eventually run single-version fresh full journey; alternative branches remain sensitivity, not user-prescribed A choices"
+}

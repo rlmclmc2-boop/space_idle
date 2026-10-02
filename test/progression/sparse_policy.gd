@@ -1,5 +1,6 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
+const VERSION="sparse-v5-phase-safe-cards-branchA"
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
@@ -32,6 +33,17 @@ func act(g: BattleGame, elapsed: float) -> bool:
 	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
 	respect_guard=true
 	var changed: bool = super.act(g,elapsed)
+	# Each real visit can process an affordable enhancement; resume-clock phase
+	# does not define player permissions. Base policy may already have done it.
+	if g.enhancement_unlocked():
+		g.upgrade_enhancement(-1)
+		# Explicit human-proxy assumption: choose the first displayed option once
+		# when a branch opens. Never optimize or respec it between visits.
+		for category in g.default_enhancement_order():
+			for effect in g.default_enhancement_order()[category]:
+				for node in [1,2,3]:
+					if g.enhancement_branch_unlocked(category,effect,node) and g.enhancement_branch_choice(category,effect,node).is_empty():
+						if g.set_enhancement_branch(category,effect,node,"A"):record(g,"choose_enhancement_branch",{"category":category,"effect":effect,"node":node,"choice":"A","assumption":"first option, no automatic respec"})
 	if use_bulk and g.stage>=6:
 		# Declared optional strategy: visit each real module card at +10/+1.
 		for attempt in range(3):

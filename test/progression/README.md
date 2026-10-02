@@ -1,9 +1,8 @@
-> 2026-10-02 scope correction: all earlier formal+scene progression and wave results omitted the scene event hook and are retained as approximations only. See `evidence/scene-hook-scope-correction.json`. The corrected driver connects the production event handler; new acceptance requires native-frame equivalence and fresh reruns.
-
 # Progression calibration evidence
 
-**Correctness boundary:** earlier exact runs inherit base BattleGame. Actual main uses PresentedBattleGame (real missile ejection/retarget and rail motion). All earlier progression timings are base-rule diagnostics, not formal player acceptance. New default `--engine formal`; add builder/runner `--scene` for actual scene providers. The initial formal-vs-native scene comparison passed900 seconds through6-4. Full formal long-run timing is pending.
+Current evidence: full production event-hook fresh0–10 passes at8032.1167 X1 seconds for seed20261002 and120s visits; full native-frame comparison includes projectile/queue/drop contents for900s. Source40 critical176 and normal+3 64 fixtures pass. Runtime220-stage/1960-point tier and final-only completion checks pass. These are separate scoped checks, not a full0–galaxy journey.
 
+Earlier basic-BattleGame results and all pre-hook formal+scene results remain approximate diagnostics. Scope corrections and negative results are preserved under `evidence/`. Current stage20, numeric34 stall, reforge recovery and all-buildings50–60h acceptance remain pending.
 
 Experimental branch only. Source baseline: main b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f plus enemy-pair candidate 04a5a307bcef9325efa9026e1ca94affa577e10d. The inherited 6/32 loss-to-win changes remain unresolved baseline evidence; paired copies are not equivalent difficulty.
 
@@ -13,12 +12,12 @@ Requires Python 3 and Godot 4.6.3 (official 7d41c59c4); package builder uses sta
 
 ```sh
 python test/progression/build_qa.py --output /tmp/progression-qa --scene
-python test/progression/run_qa.py --project /tmp/progression-qa --label fresh120 --engine formal --scene --duration 64800 --stop-clear 20 --visit-seconds 120 --seed 20261002 --thematic --bulk --timeout 10000
+python test/progression/run_qa.py --project /tmp/progression-qa --label fresh120 --engine formal --scene --duration 64800 --stop-clear 20 --visit-seconds 120 --seed 20261002 --thematic --timeout 15000
 ```
 
 Runs are EXACT original-rule fixed 1/60 X1 steps. QA acceleration saves wall time only. Results include fingerprints, settings, engine, action JSONL, wave/state durations, clear times, resource/growth state, RNG and checkpoints. Each label must be unique; preserve failed results. A save checkpoint resumes according to formal journey rules, not arbitrary enemy/projectile state.
 
-Current pilot policy is a documented diagnostic proxy: 10s teaching visits; post-teaching 120/300/900s sensitivity assumptions, never a user-required cadence. Each visit uses the existing BALANCED transaction policy (bounded 12 module purchases, mixed unlocked weapons, danger-sensitive defense). This policy still chooses purchases algorithmically and is NOT a validated human playthrough. Manual drops are collected only at visits; unlock acknowledgment delays and automatic collection loss remain. Planet, builder, reforge and legal crew handling use existing action APIs; legal full journey remains unverified. Per-second legacy autoplayer is only an optimistic diagnostic comparison.
+Current pilot policy is a documented diagnostic proxy: 10s teaching visits; post-teaching 120/300/900s sensitivity assumptions, never a user-required cadence. Each visit uses the existing BALANCED transaction policy (bounded 12 module purchases, mixed unlocked weapons, danger-sensitive defense). This policy still chooses purchases algorithmically and is NOT a validated human playthrough. Manual drops are collected only at visits; unlock acknowledgment delays and automatic collection loss remain. Optional `--bulk` now means real per-card+10/+1 sweeps, not an imaginary manual all-module button. Major reforge recovery uses per-card+10 actions and counts every successful card. Planet, builder, reforge and legal crew handling use existing action APIs; legal full journey remains unverified. Per-second legacy autoplayer is only an optimistic diagnostic comparison.
 
 ## Ordered work and acceptance gates
 

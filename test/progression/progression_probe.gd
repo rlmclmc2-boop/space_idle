@@ -126,7 +126,7 @@ func run() -> void:
 	if bool(options.get("scene",false)):
 		scene_driver=load("res://qa/scene_driver.gd").new()
 		scene_driver.setup(self,game)
-	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","combat_engine":str(options.get("engine","formal")),"geometry_scope":"Formal scene providers" if bool(options.get("scene",false)) else "Logical default launch/targets only","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
+	write_json("run.json",{"policy_version":Policy.VERSION,"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","combat_engine":str(options.get("engine","formal")),"geometry_scope":"Formal scene providers" if bool(options.get("scene",false)) else "Logical default launch/targets only","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
 	snapshot("0")
 	var started := Time.get_ticks_usec()
 	var steps := 0

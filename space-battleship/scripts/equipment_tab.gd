@@ -384,6 +384,16 @@ func refresh_slots(changed: Array) -> void:
 		return
 	var detail_changed := dirty or changed.is_empty() or changed.has(selected)
 	var structure_changed := false
+	# A reforge replaces the stored module array; remove only obsolete cards.
+	for id in items.keys():
+		var item:Dictionary=items[id]
+		if not host.game.module_entry(item.category,item.index).is_empty():continue
+		if cards.has(id):
+			var card:Control=cards[id]
+			card.get_parent().remove_child(card);card.queue_free();cards.erase(id)
+		items.erase(id);stats_dirty.erase(id);structure_changed=true;sort_dirty=true
+		if selected==id:
+			selected="";selected_slot=-1;pending_key="";draft_context=[];picker_open=false
 	var quotes := {}
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():

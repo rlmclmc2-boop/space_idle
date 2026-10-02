@@ -11,7 +11,11 @@ func setup(tree:SceneTree,game):
 	scene.enemy_poses.clear();scene.turret_visuals.clear();scene.fx_time=0.0;scene.demo_time=0.0
 	scene.ship_view.set_hull(scene.current_hull);scene.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"));scene._set_reference_dimensions()
 	game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point
+	# Fixture replacement is a global model reset: rebuild its dependent UI once.
+	scene.build_ui()
 func before_tick(dt:float):
+	if scene.ui_rebuild_pending and not scene.get_viewport().gui_is_dragging():
+		scene.ui_rebuild_pending=false;scene.build_ui()
 	scene.ship_view.set_accelerated_quality(scene.game.speed>=10.0)
 	if scene.current_hull!=str(scene.game.profile.selectedShip):
 		scene.current_hull=str(scene.game.profile.selectedShip);scene.ship_view.set_hull(scene.current_hull);scene._set_reference_dimensions()
@@ -41,5 +45,6 @@ func after_tick(dt:float):
 	scene.rail_events=scene.rail_events.filter(func(e):return scene.fx_time-float(e.born)<maxf(scene.rail_vfx.flash_seconds,scene.rail_vfx.impact_seconds))
 	scene.enemy_impacts=scene.enemy_impacts.filter(func(e):return scene.fx_time-float(e.born)<.12)
 	scene.pulse_events=scene.pulse_events.filter(func(e):return scene.fx_time-float(e.born)<.14)
+	scene.refresh_visible_cards(dt);scene.refresh_navigation()
 func close():
 	if is_instance_valid(scene):scene.queue_free()
