@@ -1,0 +1,7 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+BASE TIMING period=4.25 cannon_fires=[4.26666666666666, 8.53333333333334] laser_fires=38 cannon_impacts=2
+RAIL PRESENTATION checks=27 failures=0 period=4.25 cannon_fires=[12.9833333333336, 15.966666666667, 18.9500000000002] laser_fires=88 cannon_impacts=4

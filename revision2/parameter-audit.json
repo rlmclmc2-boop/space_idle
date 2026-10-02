@@ -1,0 +1,59 @@
+{
+  "base": "a96190c5e3deac454c77bb8d6ddc317b12179174",
+  "workbook_changes": {
+    "equipment": {
+      "changes": [],
+      "sha256": "da819b05eb54511863401fd2d9e4821dbe84712a6b28ebf5704fad03effeb088",
+      "byte_identical": true
+    },
+    "weapon_motion": {
+      "changes": [
+        {
+          "cell": "B26",
+          "before": 20,
+          "after": 28
+        },
+        {
+          "cell": "B28",
+          "before": 10,
+          "after": 28
+        },
+        {
+          "cell": "B31",
+          "before": 24,
+          "after": 32
+        }
+      ],
+      "sha256": "7a686c2f8c34e4c584f1e208525be87dc7828f37291e03432d93ffc50fb2fa5c",
+      "byte_identical": false,
+      "changed_zip_parts": [
+        "xl/worksheets/sheet1.xml"
+      ]
+    }
+  },
+  "projection_changes": {
+    "rail_charge_radius": {
+      "before": 20,
+      "after": 28
+    },
+    "rail_trail_width": {
+      "before": 10,
+      "after": 28
+    },
+    "rail_impact_radius": {
+      "before": 24,
+      "after": 32
+    }
+  },
+  "retained": {
+    "cannon_cd": 3.5,
+    "cannon_damage": 350,
+    "cannon_speed": 40,
+    "speed_multiplier": 1,
+    "charge_seconds": 0.9,
+    "trail_length": 138,
+    "flash_seconds": 0.09,
+    "impact_seconds": 0.16,
+    "growth_equipment_json_identical": true
+  }
+}
