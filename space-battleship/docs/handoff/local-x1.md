@@ -1,8 +1,8 @@
 # 本机 X1 检查与修复交接
 
 - id: `local-x1`
-- owner: 本地 Windows Codex（待认领）
-- status: `ready`
+- owner: 本地 Windows Codex
+- status: `running`
 - base: `e16abb40f12ca25a547d381b4ac643b979124cb0`
 - branch: `codex/local-x1`
 - tested_commit: 未测
