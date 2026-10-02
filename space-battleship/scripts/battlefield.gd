@@ -70,6 +70,7 @@ var pulse_fire_count := 0
 var pulse_hit_count := 0
 var pulse_origin_max_error := 0.0
 var pulse_fire_slots: Dictionary = {}
+var beam_contacts:Dictionary={} # Value-only last-hit snapshots, keyed by beam serial.
 var beam_full_started:Dictionary={}
 var beam_full_cue_count:=0
 var hull_opaque_bounds: Dictionary = {}
@@ -250,6 +251,10 @@ func _draw_muzzle_cues() -> void:
 		pulse_layer.draw_line(point,point+direction*(9.0+6.0*fade),color,2.0,true)
 		pulse_layer.draw_line(point+direction*3.0-across*3.0*fade,point+direction*3.0+across*3.0*fade,Color(1,1,1,fade),1.5,true)
 
+	for contact in beam_contacts.values():
+		if contact.has("retired_at"):
+			CONTINUOUS_BEAM_VFX.finish(pulse_layer,battle_point(contact.start),battle_point(contact.end),fx_time-float(contact.retired_at),float(contact.width),float(contact.power))
+
 	for event in destruction_events:
 		var age:=fx_time-float(event.born)
 		var progress:=clampf(age/0.65,0.0,1.0)
@@ -330,8 +335,12 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="projectile_impact" and bool(info.shot.get("prototype_missile",false)):
 		weapon_impact(info.shot,Vector2(info.pos));return
 	if prototype_enabled and continuous_beam_enabled and kind in ["beam_started","beam_hit"] and info.has("shot") and not bool(info.shot.hostile):
-		# The active beam draws its own emitter/contact. Do not enqueue legacy
-		# endpoint flashes or a cache that creates a shrinking tail on shutdown.
+		# Capture the real hit before damage can remove its target in this frame.
+		# No entity/shot references survive in the presentation snapshot.
+		if kind=="beam_hit" and not fast_mode_enabled():
+			var shot:Dictionary=info.shot
+			var style:=beam_style(shot)
+			beam_contacts[int(shot.serial)]={"start":visual_muzzle(shot),"end":battle_logical_point(entity_render_position(shot.target)),"width":float(style.width),"power":float(style.power)}
 		if kind=="beam_started" and not fast_mode_enabled() and int(info.shot.mount)>=0:
 			turret_pose(int(info.shot.mount)).fired_at=fx_time
 		return
@@ -339,6 +348,17 @@ func on_event(kind:String,info:Dictionary)->void:
 
 
 func sync_beam_visuals()->void:
+	if fast_mode_enabled() or not prototype_enabled or not continuous_beam_enabled:
+		beam_contacts.clear()
+	else:
+		var live:Dictionary={}
+		for shot in game.projectiles:
+			if shot.get("beam",false) and not shot.hostile and game.long_laser_valid(shot):live[int(shot.serial)]=true
+		for serial in beam_contacts.keys():
+			var contact:Dictionary=beam_contacts[serial]
+			if live.has(serial):continue
+			if not contact.has("retired_at"):contact.retired_at=fx_time
+			if fx_time-float(contact.retired_at)>=CONTINUOUS_BEAM_VFX.FINISH_SECONDS:beam_contacts.erase(serial)
 	if prototype_enabled and continuous_beam_enabled:
 		beam_visuals=beam_visuals.filter(func(v):return bool(v.shot.hostile))
 	super.sync_beam_visuals()

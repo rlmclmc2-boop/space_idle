@@ -4,6 +4,8 @@ extends RefCounted
 ## and beam_style width/power/pulse. No targeting, timing, damage or RNG here.
 const ENERGY := Color("8deaff")
 const CORE := Color("edfff9")
+const FINISH_SECONDS := 0.22
+const FINISH_HOLD_SECONDS := 0.10
 
 static func charge(surface: CanvasItem, muzzle: Vector2, target: Vector2, amount: float, clock: float) -> void:
 	if not muzzle.is_finite() or not target.is_finite() or not is_finite(amount) or not is_finite(clock):
@@ -87,3 +89,17 @@ static func _contact(surface: CanvasItem, point: Vector2, direction: Vector2, wi
 		var shift := sin(clock * 3.0 + side) * 0.8
 		var tip: Vector2 = point + across * side * radius * 1.3 - direction * (1.5 + shift)
 		surface.draw_line(point + across * side * radius * 0.65, tip, Color(energy, 0.4 + pulse * 0.25), 1.0, true)
+
+static func finish(surface:CanvasItem,muzzle:Vector2,target:Vector2,age:float,width:float,power:float)->void:
+	if age<0.0 or age>=FINISH_SECONDS or not muzzle.is_finite() or not target.is_finite():return
+	# Keep the complete real hit visible briefly, then fade at its final position.
+	# A frozen value snapshot cannot follow a dead target or retain chain links.
+	var fade:=1.0-clampf((age-FINISH_HOLD_SECONDS)/(FINISH_SECONDS-FINISH_HOLD_SECONDS),0.0,1.0)
+	var energy:=ramp_color(power)
+	var body:=maxf(0.7,width)*lerpf(0.65,1.8,clampf(power,0.0,1.0))
+	surface.draw_line(muzzle,target,Color(energy,0.48*fade),body,true)
+	surface.draw_line(muzzle,target,Color(CORE,0.85*fade),maxf(0.5,body*0.3),true)
+	surface.draw_circle(target,4.5,Color(energy,0.20*fade))
+	surface.draw_circle(target,1.8,Color(CORE,fade))
+	var across:=(target-muzzle).normalized().orthogonal()
+	surface.draw_line(target-across*5.0,target+across*5.0,Color(energy,0.8*fade),1.2,true)
