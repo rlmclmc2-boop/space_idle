@@ -43,7 +43,6 @@ func _init(database:ShipDatabase,persist:=true)->void:
 
 func tick(dt:float)->void:
 	if paused:return
-	begin_enhancement_rule_context()
 	var remaining:=maxf(0.0,dt)
 	while remaining>0.000000001:
 		var step:=minf(remaining,1.0/60.0)
@@ -57,7 +56,6 @@ func tick(dt:float)->void:
 			for shot in boss_survivors:
 				if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
 		remaining-=step
-	end_enhancement_rule_context()
 
 func reset_player()->void:
 	event.emit("prototype_missile_reset",{})
