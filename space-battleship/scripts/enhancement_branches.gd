@@ -223,11 +223,12 @@ func advance_defense(g,dt: float) -> void:
     data.cover_time=g.enhancement_parameter("adaptation_b2_duration")
     data.cover=N.multiply(N.add(g.jewel_equipment_stat(entry),g.enhancement_module_protection_capacity(index)),g.enhancement_parameter("adaptation_b2_capacity_multiplier"))
 
-func consume_cover(g,amount) -> Variant:
+func consume_cover(g,amount,feedback: Dictionary = {}) -> Variant:
  var rest=amount
  for index in g.defense_entries().size():
   var data:=defense(g,index)
   var consumed=N.minimum(data.cover,rest);data.cover=N.subtract(data.cover,consumed);rest=N.subtract(rest,consumed)
+  if feedback.has("absorbed"):feedback.absorbed=N.add(feedback.absorbed,consumed)
   if N.compare(rest,0)<=0:break
  return rest
 

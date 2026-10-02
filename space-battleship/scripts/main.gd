@@ -2119,9 +2119,18 @@ func set_damage_mode(mode: int) -> void:
 	floats = floats.filter(func(f):return not f.get("damage",false))
 	battle_layer.queue_redraw()
 
+func damage_feedback_text(amount, absorbed = 0, exact := false) -> String:
+	var damage_text := GrowthNumber.text(amount) if exact else NUMBER_FORMAT.damage(amount)
+	if GrowthNumber.compare(absorbed,0)<=0:return damage_text
+	var absorbed_text := GrowthNumber.text(absorbed) if exact and GrowthNumber.compare(absorbed,1)>=0 else NUMBER_FORMAT.damage(absorbed)
+	if GrowthNumber.compare(amount,0)<=0:
+		return UIText.t("battle.damage_absorbed",{"absorbed":absorbed_text})
+	return UIText.t("battle.damage_with_absorption",{"damage":damage_text,"absorbed":absorbed_text})
+
 func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
-	var exact := GrowthNumber.text(info.amount)
+	var absorbed = info.get("absorbed",0)
+	var exact := damage_feedback_text(info.amount,absorbed,true)
 	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
 	if damage_history.size()>40:damage_history.pop_front()
 	if not show_damage_numbers:return
@@ -2132,7 +2141,8 @@ func queue_damage_number(info: Dictionary) -> void:
 		for entry in entries:
 			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
 				entry.amount = GrowthNumber.add(entry.amount,info.amount)
-				entry.text = NUMBER_FORMAT.damage(entry.amount)
+				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
+				entry.text = damage_feedback_text(entry.amount,entry.absorbed)
 				if entry.pos!=Vector2.ZERO:
 					var adjusted := damage_text_position(entry.origin,entry.text,entry.size,entry)
 					if adjusted!=Vector2.INF:
@@ -2149,7 +2159,7 @@ func queue_damage_number(info: Dictionary) -> void:
 				height = enemy_render_width(enemy)
 				anchor = enemy_render_position(enemy)
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"text":NUMBER_FORMAT.damage(info.amount),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":damage_feedback_text(info.amount,absorbed),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
 	flush_damage_numbers()
 

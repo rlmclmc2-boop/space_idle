@@ -7815,6 +7815,20 @@
     "note": "伤害详情单条记录"
   },
   {
+    "key": "battle.damage_absorbed",
+    "text": "吸收 {absorbed}",
+    "params": "{absorbed}",
+    "category": "battle",
+    "note": "实际消耗临时防护的受击反馈"
+  },
+  {
+    "key": "battle.damage_with_absorption",
+    "text": "{damage} · 吸收 {absorbed}",
+    "params": "{damage},{absorbed}",
+    "category": "battle",
+    "note": "即时本体损失与实际临时防护消耗分别显示"
+  },
+  {
     "key": "main.offline_rewards",
     "text": "离线收益：{rewards}",
     "params": "{rewards}",
