@@ -129,9 +129,18 @@ func run():
 	for scene in [a,b]:
 		scene.equipment_panel.detail_frame.hide()
 		scene.equipment_panel.open_picker(scene.game.slot_id("weapons",0))
-	compare(a,b,"picker opens latest",true)
+	check(not b.equipment_panel.detail_frame.visible and b.equipment_panel.cards[b.game.slot_id("weapons",0)].name_button.get_popup().visible,"Inline picker opens without the inspector")
+	compare(a,b,"picker opens latest",false)
 	for scene in [a,b]:
-		scene.select_system(4);scene.game.record_enhancement_attack();scene.select_system(0);scene.equipment_panel.refresh_pending()
+		var panel=scene.equipment_panel
+		panel.cards[scene.game.slot_id("weapons",0)].name_button.get_popup().hide()
+		scene.select_system(4)
+		await process_frame
+		scene.game.record_enhancement_attack()
+		scene.select_system(0)
+		await process_frame
+		panel.refresh_pending()
+		panel.show_inspector() # Inline refit now keeps the inspector closed; open it explicitly.
 	compare(a,b,"page hide/reveal",true)
 	for scene in [a,b]:
 		scene.equipment_panel.toggle_details()

@@ -1,0 +1,26 @@
+diff --git a/space-battleship/scripts/equipment_tab.gd b/space-battleship/scripts/equipment_tab.gd
+index a02beb2..c3900a2 100644
+--- a/space-battleship/scripts/equipment_tab.gd
++++ b/space-battleship/scripts/equipment_tab.gd
+@@ -421,6 +421,8 @@ func refresh_pending() -> void:
+ 	refresh_stats()
+ 	if detail_dirty and detail_frame.is_visible_in_tree():refresh_detail()
+ func invalidate_stats(info: Dictionary) -> void:
++	# Shared modifiers also change inspector text when the numeric projection is unchanged.
++	if info.get("detail",false):detail_dirty=true
+ 	if not is_visible_in_tree():
+ 		dirty = true
+ 		return
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index b8c5296..dce420d 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -489,7 +489,7 @@ func invalidate_equipment_projections() -> void:
+ 	if not is_instance_valid(equipment_panel):return
+ 	# Coalesce repeated modifier events with equipment_stats in refresh_pending.
+ 	for category in ["weapons","defence"]:
+-		equipment_panel.invalidate_stats({"category":category})
++		equipment_panel.invalidate_stats({"category":category,"detail":true})
+ 
+ func on_event(kind: String, info: Dictionary) -> void:
+ 	match kind:
