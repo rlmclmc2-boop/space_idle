@@ -1,0 +1,21 @@
+Candidate: f78a2e2458d8512a43a55f7581a0706aaa5d57b3
+Branch: ui/galaxy-building-readability
+Base/final fetched main: 0ce79d3 (includes cbf33ce weapon tuning integration)
+Scope: galaxy_map.gd and test_galaxy_ui.gd only. No economic/config/save/asset edits.
+Star-system map = independent core plus six functional building families with five levels.
+Planet four orbital assets e16abb40 retained; inspected approved 1b2ffa9 screenshot.
+Changes: rotated building-volume ray picking before ground footprint; nearest functional volume wins. Headquarters is hollow and is not treated as a solid opaque box. Picking uses conservative bounds, not pixel-exact mesh silhouettes.
+Click pins detail/highlight; blank click clears; unpinned hover previews and mouse exit clears. Stable identity suppresses duplicate detail signals. Drag does not change inspection.
+Selected ring radius 6.8 -> 7.6 and half width 0.12 -> 0.35 world units. Building geometry and scale unchanged.
+Paused selection and camera input request one render then disable rendering, without visual animation ticks.
+Baseline original UI suite: 253 checks, 0 failures.
+Added regression on old code: 262 checks, 6 expected failures; upper volume samples 60/150; 20 repeated hover events caused repeated detail signals and changed the pinned target.
+Final on current main: 267 checks, 0 failures; upper volume samples 150/150; 20 pinned hover events emit 0 detail signals.
+The old regression log's pinned_hover_events=22 includes two subsequent preview transitions; final log counts the initial 20 hover events only.
+Environment: Godot 4.6.3, Debian 13, Xvfb from official Debian repository unpacked into /tmp, Mesa llvmpipe OpenGL compatibility. No system package installation.
+Initial direct graphical launch failed without DISPLAY; recovered using Xvfb :91. No game assertion was weakened for environment recovery.
+Fixture wheel event now includes release, to avoid a held synthetic wheel retaining mouse capture and invalidating later crew clicks. Click helper moves pointer before press/release.
+Coverage: real main.tscn isolated test fixture; default/1280/2560 sizing; zoom/pan/picking; six-family full-build; construction/upgrade; hidden/reveal and selection retention; pause/one-shot rendering; crew popup reuse/cancel/dispatch/recall; other UI/model/route reuse.
+No new SubViewport, physics body, per-frame picking or scene rebuild. Selection refresh count is the only paired optimization measurement. No Windows FPS or X1 claim.
+Screenshots are native framebuffers using synthetic test state only. No user saves or private images included.
+Library screenshot: libfile_6db1d02bab4081919afc0c234185a927 (image/png).
