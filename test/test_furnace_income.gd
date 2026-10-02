@@ -15,6 +15,8 @@ func _initialize() -> void:
 
 func run() -> void:
 	var db := ShipDatabase.new()
+	db.unlock_row("hightech",F).level=0
+	db.data.hightech[F].para1=30.0
 	db.data.hightech[F].para2=0.5
 	db.config.autoCollectReduce=0.5
 	var g := BattleGame.new(db,false)
@@ -70,11 +72,10 @@ func run() -> void:
 	interactive.advance_hightech(30)
 	var block: Dictionary=interactive.drops[0]
 	check(block.amount==16,"Furnace output rounds up")
-	interactive.collect_near(Vector2(block.x,block.y))
 	interactive.settle_drops()
-	check(interactive.drops.has(block) and interactive.profile.resources["1"]==0,"Furnace is neither hovered nor auto-settled")
-	interactive.collect_near(Vector2(block.x,block.y),true)
-	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Click grants full furnace amount")
+	check(interactive.drops.has(block) and interactive.profile.resources["1"]==0,"Furnace cannot be auto-settled before expiry")
+	interactive.collect_near(Vector2(block.x,block.y))
+	check(not interactive.drops.has(block) and interactive.profile.resources["1"]==16,"Hover grants full furnace amount")
 	interactive.advance_hightech(30)
 	block=interactive.drops[0]
 	interactive.advance_hightech(9.5)
