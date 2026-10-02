@@ -89,6 +89,10 @@ var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
 var enhancement_branches := preload("res://scripts/enhancement_branches.gd").new()
 var enhancement_attack_contexts: Dictionary = {}
+# Rules only; owned by one PresentedBattleGame outer tick. Signals invalidate
+# before consumer callbacks; no state survives into the next outer call.
+var _enhancement_rule_context: Dictionary = {}
+var _enhancement_rule_scope_depth := 0
 var enhancement_buffers: Dictionary = {}
 var enhancement_buffer_owners: Dictionary = {}
 var enhancement_memory_elapsed := 0.0
@@ -104,6 +108,8 @@ func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
 func _init(database: ShipDatabase, persist := true) -> void:
+	# Register before crew.attach and all caller/UI signal connections.
+	event.connect(_enhancement_rules_event)
 	db = database
 	speed = default_speed()
 	save_enabled = persist
@@ -455,6 +461,7 @@ func load_hightech(raw: Dictionary) -> void:
 				drops.append(restored)
 
 func rebuild_unlocks() -> void:
+	invalidate_enhancement_rule_context()
 	profile.highestLevel = 1
 	for n in profile.cleared:
 		profile.highestLevel = mini(db.levels.size(), maxi(profile.highestLevel, int(n) + 1))
@@ -607,6 +614,7 @@ func stat(key: String) -> Variant:
 	return total
 
 func invalidate_stat_cache() -> void:
+	invalidate_enhancement_rule_context()
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
 
@@ -1335,6 +1343,7 @@ func reforge_planet(id: String) -> bool:
 	next.resources=profile.resources.duplicate(true)
 	# Chrono particles are a persistent reserve, independent of run progress.
 	next.chronoParticles=profile.chronoParticles
+	invalidate_enhancement_rule_context()
 	profile=next
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
@@ -2553,26 +2562,60 @@ func default_enhancement_branches() -> Dictionary:
 		for effect in default_enhancement_order()[category]:result[category][effect]={}
 	return result
 
+func invalidate_enhancement_rule_context() -> void:
+	_enhancement_rule_context.clear()
+
+func _enhancement_rules_event(_kind: String, _payload: Dictionary) -> void:
+	# Signal emission is synchronous. The first observer invalidates even for
+	# direct profile/database edits made by a later callback in this same tick.
+	invalidate_enhancement_rule_context()
+
+func begin_enhancement_rule_context() -> void:
+	_enhancement_rule_scope_depth+=1
+	invalidate_enhancement_rule_context()
+	# Reentrant calls and uncached simulators use the original readers.
+	if _enhancement_rule_scope_depth!=1 or not stat_cache_enabled or not enhancement_unlocked():return
+	for category in ["weapons","defence"]:
+		if not valid_enhancement_order(category,profile.enhancementOrder.get(category,[])):return
+	var level := enhancement_effective_level()
+	var thresholds: Array=[]
+	var branch_thresholds: Array=[]
+	var count := 0
+	for index in 3:
+		var threshold := enhancement_effect_threshold(index)
+		thresholds.append(threshold)
+		branch_thresholds.append(enhancement_parameter("branch_threshold_%d" % (index+1)))
+		if level>=threshold:count+=1
+	_enhancement_rule_context={"level":level,"count":count,"thresholds":thresholds,"branch_thresholds":branch_thresholds,"orders":profile.enhancementOrder.duplicate(true),"choices":profile.enhancementBranches.duplicate(true)}
+
+func end_enhancement_rule_context() -> void:
+	invalidate_enhancement_rule_context()
+	_enhancement_rule_scope_depth=maxi(0,_enhancement_rule_scope_depth-1)
+
 func enhancement_effect_threshold(index: int) -> int:
 	return int(enhancement_parameter("threshold_%d" % (index+1))) if index in [0,1,2] else -1
 
 func enhancement_branch_threshold(node: int, category: String, effect: String) -> int:
 	if node not in [1,2,3]:return -1
-	var index: int=profile.enhancementOrder.get(category,[]).find(effect)
+	var order: Array=profile.enhancementOrder.get(category,[]) if _enhancement_rule_context.is_empty() else _enhancement_rule_context.orders.get(category,[])
+	var index: int=order.find(effect)
 	if index<0:return -1
+	if not _enhancement_rule_context.is_empty():return int(_enhancement_rule_context.branch_thresholds[node-1])+int(_enhancement_rule_context.thresholds[index])
 	return int(enhancement_parameter("branch_threshold_%d" % node))+enhancement_effect_threshold(index)
 
 func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
 	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
 
 func enhancement_branch_unlocked(category: String, effect: String, node: int) -> bool:
+	if not _enhancement_rule_context.is_empty():return valid_enhancement_branch(category,effect,node) and int(_enhancement_rule_context.level)>=enhancement_branch_threshold(node,category,effect)
 	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node,category,effect)
 
 func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
 	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
 
 func enhancement_branch_choice(category: String, effect: String, node: int) -> String:
-	return str(profile.enhancementBranches.get(category,{}).get(effect,{}).get(str(node),""))
+	var choices: Dictionary=profile.enhancementBranches if _enhancement_rule_context.is_empty() else _enhancement_rule_context.choices
+	return str(choices.get(category,{}).get(effect,{}).get(str(node),""))
 
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
@@ -2761,6 +2804,7 @@ func available_effect_count(entry: Dictionary) -> int:
 	return shared_enhancement_effect_count()
 
 func shared_enhancement_effect_count() -> int:
+	if not _enhancement_rule_context.is_empty():return int(_enhancement_rule_context.count)
 	if not enhancement_unlocked():return 0
 	var count := 0
 	var shared_level := enhancement_effective_level()
@@ -2816,7 +2860,7 @@ func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
 	var count := active_enhancement_effect_count(entry)
 	if count<=0:return -1
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
-	var order: Array = profile.enhancementOrder.get(category,[])
+	var order: Array = profile.enhancementOrder.get(category,[]) if _enhancement_rule_context.is_empty() else _enhancement_rule_context.orders.get(category,[])
 	for i in count:
 		if str(order[i])==kind:return i
 	return -1

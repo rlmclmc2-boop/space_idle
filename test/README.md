@@ -27,6 +27,7 @@
 | 反应炉 | `test_reactor.gd`；页面用 `test_reactor_ui.gd`，能源分配交互用 `test_reactor_allocation_ui.gd`；依赖刷新、隐藏恢复、焦点和暂停用 `test_reactor_refresh.gd` |
 | 护盾先扣 / 延迟伤害分层 | `test_shield_first.gd --headless` 检查实际扣款先盾后生命、恢复/移除护盾、溢出与零生命死亡；队列与临时防护用 `test_deferred_enhancements.gd`、`test_neutral_memory_protection.gd`。 |
 | 恢复缓冲成员校验 | `test_memory_buffer_membership.gd --headless` 对照原始路径，覆盖缓存开关、共享强化边界、记忆顺序、模块归属及容量裁剪。 |
+| 外层 tick 强化资格 | `test_tick_enhancement_rules.gd --headless` 对照规则边界、混合分支、同步回调直接修改/重入、重铸替换和实际导弹/光束 tick 状态及 RNG。 |
 | 攻击快照 / 连发继承 / 光束周期 | `test_main_attack_snapshot.gd --headless` 检查批次计数、冻结属性、派生继承与取消、批次共享连锁；配合 `test_enhancement_branch_attacks.gd`，`test_chain_projectiles.gd` 检查跳弹到达结算、失锁/清场及光束固定连线。旧 `test_attack_effect_reuse.gd` 的逐弹 RNG 等价断言不适用于批次快照规则。 |
 | 全局装备强化 | `test_shared_enhancement_ranks.gd` 检查共享0/9/10/19/20与分支位置边界、重排停用/恢复、保存和六种显式详情（图形模式验证点击）；`test_enhancements.gd` 检查共享顺序/共享强化门槛/全局事件/费用/MAX/分支；`test_enhancement_branches.gd` 检查36选项、状态/组合/实际恢复/共同抗性；`test_enhancement_branch_attacks.gd` 检查四武器、规范攻击计数、单次连锁与有界连发；`test_deferred_enhancements.gd` 检查延迟队列、全局清除和时序；`test_neutral_memory_protection.gd` 检查无抗性临时保护、原始伤害溢出和延迟交互；`test_enhancement_save.gd` 检查旧档清理/余额/新档/重铸；`test_enhancement_furnace.gd` 检查碎片生产不递归；`test_percentage_expected_damage.gd` 检查整数/紧凑百分比、模块暴击期望、计时增益仅战斗生效且不触发面板刷新；`test_enhance_config.py` 校验唯一配置表和非法输入；`test_enhancement_cost.gd --headless` 检查指数单价、几何批量/MAX、赠送级免计费和超大余额。旧宝石背包/合成/镶嵌专项已被替代，不作新系统验收入口。 |
 | 解锁 | `test_unlock_table.gd` / `test_unlock_ui.gd`；解锁 ID 查找、门槛实时变更、源表替换和有界留存用 `test_unlock_lookup.gd --headless`；页签显隐用 `test_tab_unlocks.gd` |
