@@ -1,0 +1,2448 @@
+{
+	"data_sha256": "dac45045c6336f779fcfd884078b7a4fcfdf3625dab2988f60ebc6c382e002ff",
+	"engine": {
+		"build": "official",
+		"hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+		"hex": 263683,
+		"major": 4,
+		"minor": 6,
+		"patch": 3,
+		"status": "stable",
+		"string": "4.6.3-stable (official)",
+		"timestamp": 0
+	},
+	"galaxy": [
+		{
+			"all_max_seconds": 66600.0,
+			"crew": 1,
+			"full_build_seconds": 16200.0,
+			"scope": "controlled GalaxyRegion phase; bypasses unlock and crew economy",
+			"slots": [
+				{
+					"construction": 0.0,
+					"id": 0,
+					"level": 5,
+					"node_id": "node_000",
+					"parent_id": -1,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2540585198,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 1,
+					"level": 5,
+					"node_id": "node_001",
+					"parent_id": -1,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2967889042,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 2,
+					"level": 5,
+					"node_id": "node_002",
+					"parent_id": -1,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3742669742,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 3,
+					"level": 5,
+					"node_id": "node_003",
+					"parent_id": -1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2094529347,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 4,
+					"level": 5,
+					"node_id": "node_004",
+					"parent_id": 0,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4122975946,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 5,
+					"level": 5,
+					"node_id": "node_005",
+					"parent_id": 0,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 241195129,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 6,
+					"level": 5,
+					"node_id": "node_006",
+					"parent_id": 0,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3674321502,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 7,
+					"level": 5,
+					"node_id": "node_007",
+					"parent_id": 1,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3348784888,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 8,
+					"level": 5,
+					"node_id": "node_008",
+					"parent_id": 1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3678553777,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 9,
+					"level": 5,
+					"node_id": "node_009",
+					"parent_id": 2,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4127777431,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 10,
+					"level": 5,
+					"node_id": "node_010",
+					"parent_id": 2,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4275612885,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 11,
+					"level": 5,
+					"node_id": "node_011",
+					"parent_id": 3,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2855848888,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 12,
+					"level": 5,
+					"node_id": "node_012",
+					"parent_id": 4,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1723271941,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 13,
+					"level": 5,
+					"node_id": "node_013",
+					"parent_id": 4,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2480943216,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 14,
+					"level": 5,
+					"node_id": "node_014",
+					"parent_id": 4,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4010670777,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 15,
+					"level": 5,
+					"node_id": "node_015",
+					"parent_id": 5,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3162181320,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 16,
+					"level": 5,
+					"node_id": "node_016",
+					"parent_id": 6,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3737848542,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 17,
+					"level": 5,
+					"node_id": "node_017",
+					"parent_id": 7,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2001899221,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 18,
+					"level": 5,
+					"node_id": "node_018",
+					"parent_id": 7,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4030393879,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 19,
+					"level": 5,
+					"node_id": "node_019",
+					"parent_id": 8,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3461022743,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 20,
+					"level": 5,
+					"node_id": "node_020",
+					"parent_id": 9,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2308099977,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 21,
+					"level": 5,
+					"node_id": "node_021",
+					"parent_id": 9,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2628454166,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 22,
+					"level": 5,
+					"node_id": "node_022",
+					"parent_id": 10,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1623096846,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 23,
+					"level": 5,
+					"node_id": "node_023",
+					"parent_id": 11,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 625483024,
+					"work": 1000.0,
+					"world_pos": [
+						-78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 24,
+					"level": 5,
+					"node_id": "node_024",
+					"parent_id": 12,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3751353908,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-104.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 25,
+					"level": 5,
+					"node_id": "node_025",
+					"parent_id": 12,
+					"planned_type": "heavy_element_refinery",
+					"status": "active",
+					"type": "heavy_element_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2704509045,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 26,
+					"level": 5,
+					"node_id": "node_026",
+					"parent_id": 12,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2798386597,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 27,
+					"level": 5,
+					"node_id": "node_027",
+					"parent_id": 13,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1858751189,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 28,
+					"level": 5,
+					"node_id": "node_028",
+					"parent_id": 14,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 99248821,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 29,
+					"level": 5,
+					"node_id": "node_029",
+					"parent_id": 15,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 425417104,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						-26.0
+					]
+				}
+			],
+			"status": "complete"
+		},
+		{
+			"all_max_seconds": 38940.0,
+			"crew": 3,
+			"full_build_seconds": 8700.0,
+			"scope": "controlled GalaxyRegion phase; bypasses unlock and crew economy",
+			"slots": [
+				{
+					"construction": 0.0,
+					"id": 0,
+					"level": 5,
+					"node_id": "node_000",
+					"parent_id": -1,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2540585198,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 1,
+					"level": 5,
+					"node_id": "node_001",
+					"parent_id": -1,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2967889042,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 2,
+					"level": 5,
+					"node_id": "node_002",
+					"parent_id": -1,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3742669742,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 3,
+					"level": 5,
+					"node_id": "node_003",
+					"parent_id": -1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2094529347,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 4,
+					"level": 5,
+					"node_id": "node_004",
+					"parent_id": 0,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4122975946,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 5,
+					"level": 5,
+					"node_id": "node_005",
+					"parent_id": 0,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 241195129,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 6,
+					"level": 5,
+					"node_id": "node_006",
+					"parent_id": 0,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3674321502,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 7,
+					"level": 5,
+					"node_id": "node_007",
+					"parent_id": 1,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3348784888,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 8,
+					"level": 5,
+					"node_id": "node_008",
+					"parent_id": 1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3678553777,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 9,
+					"level": 5,
+					"node_id": "node_009",
+					"parent_id": 2,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4127777431,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 10,
+					"level": 5,
+					"node_id": "node_010",
+					"parent_id": 2,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4275612885,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 11,
+					"level": 5,
+					"node_id": "node_011",
+					"parent_id": 3,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2855848888,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 12,
+					"level": 5,
+					"node_id": "node_012",
+					"parent_id": 4,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1723271941,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 13,
+					"level": 5,
+					"node_id": "node_013",
+					"parent_id": 4,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2480943216,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 14,
+					"level": 5,
+					"node_id": "node_014",
+					"parent_id": 4,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4010670777,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 15,
+					"level": 5,
+					"node_id": "node_015",
+					"parent_id": 5,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3162181320,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 16,
+					"level": 5,
+					"node_id": "node_016",
+					"parent_id": 6,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3737848542,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 17,
+					"level": 5,
+					"node_id": "node_017",
+					"parent_id": 7,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2001899221,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 18,
+					"level": 5,
+					"node_id": "node_018",
+					"parent_id": 7,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4030393879,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 19,
+					"level": 5,
+					"node_id": "node_019",
+					"parent_id": 8,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3461022743,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 20,
+					"level": 5,
+					"node_id": "node_020",
+					"parent_id": 9,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2308099977,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 21,
+					"level": 5,
+					"node_id": "node_021",
+					"parent_id": 9,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2628454166,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 22,
+					"level": 5,
+					"node_id": "node_022",
+					"parent_id": 10,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1623096846,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 23,
+					"level": 5,
+					"node_id": "node_023",
+					"parent_id": 11,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 625483024,
+					"work": 1000.0,
+					"world_pos": [
+						-78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 24,
+					"level": 5,
+					"node_id": "node_024",
+					"parent_id": 12,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3751353908,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-104.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 25,
+					"level": 5,
+					"node_id": "node_025",
+					"parent_id": 12,
+					"planned_type": "heavy_element_refinery",
+					"status": "active",
+					"type": "heavy_element_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2704509045,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 26,
+					"level": 5,
+					"node_id": "node_026",
+					"parent_id": 12,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2798386597,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 27,
+					"level": 5,
+					"node_id": "node_027",
+					"parent_id": 13,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1858751189,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 28,
+					"level": 5,
+					"node_id": "node_028",
+					"parent_id": 14,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 99248821,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 29,
+					"level": 5,
+					"node_id": "node_029",
+					"parent_id": 15,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 425417104,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						-26.0
+					]
+				}
+			],
+			"status": "complete"
+		},
+		{
+			"all_max_seconds": 27800.0,
+			"crew": 5,
+			"full_build_seconds": 6200.0,
+			"scope": "controlled GalaxyRegion phase; bypasses unlock and crew economy",
+			"slots": [
+				{
+					"construction": 0.0,
+					"id": 0,
+					"level": 5,
+					"node_id": "node_000",
+					"parent_id": -1,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2540585198,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 1,
+					"level": 5,
+					"node_id": "node_001",
+					"parent_id": -1,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2967889042,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 2,
+					"level": 5,
+					"node_id": "node_002",
+					"parent_id": -1,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3742669742,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 3,
+					"level": 5,
+					"node_id": "node_003",
+					"parent_id": -1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2094529347,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 4,
+					"level": 5,
+					"node_id": "node_004",
+					"parent_id": 0,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4122975946,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 5,
+					"level": 5,
+					"node_id": "node_005",
+					"parent_id": 0,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 241195129,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 6,
+					"level": 5,
+					"node_id": "node_006",
+					"parent_id": 0,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3674321502,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 7,
+					"level": 5,
+					"node_id": "node_007",
+					"parent_id": 1,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3348784888,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 8,
+					"level": 5,
+					"node_id": "node_008",
+					"parent_id": 1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3678553777,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 9,
+					"level": 5,
+					"node_id": "node_009",
+					"parent_id": 2,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4127777431,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 10,
+					"level": 5,
+					"node_id": "node_010",
+					"parent_id": 2,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4275612885,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 11,
+					"level": 5,
+					"node_id": "node_011",
+					"parent_id": 3,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2855848888,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 12,
+					"level": 5,
+					"node_id": "node_012",
+					"parent_id": 4,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1723271941,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 13,
+					"level": 5,
+					"node_id": "node_013",
+					"parent_id": 4,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2480943216,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 14,
+					"level": 5,
+					"node_id": "node_014",
+					"parent_id": 4,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4010670777,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 15,
+					"level": 5,
+					"node_id": "node_015",
+					"parent_id": 5,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3162181320,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 16,
+					"level": 5,
+					"node_id": "node_016",
+					"parent_id": 6,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3737848542,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 17,
+					"level": 5,
+					"node_id": "node_017",
+					"parent_id": 7,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2001899221,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 18,
+					"level": 5,
+					"node_id": "node_018",
+					"parent_id": 7,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4030393879,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 19,
+					"level": 5,
+					"node_id": "node_019",
+					"parent_id": 8,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3461022743,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 20,
+					"level": 5,
+					"node_id": "node_020",
+					"parent_id": 9,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2308099977,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 21,
+					"level": 5,
+					"node_id": "node_021",
+					"parent_id": 9,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2628454166,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 22,
+					"level": 5,
+					"node_id": "node_022",
+					"parent_id": 10,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1623096846,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 23,
+					"level": 5,
+					"node_id": "node_023",
+					"parent_id": 11,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 625483024,
+					"work": 1000.0,
+					"world_pos": [
+						-78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 24,
+					"level": 5,
+					"node_id": "node_024",
+					"parent_id": 12,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3751353908,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-104.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 25,
+					"level": 5,
+					"node_id": "node_025",
+					"parent_id": 12,
+					"planned_type": "heavy_element_refinery",
+					"status": "active",
+					"type": "heavy_element_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2704509045,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 26,
+					"level": 5,
+					"node_id": "node_026",
+					"parent_id": 12,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2798386597,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 27,
+					"level": 5,
+					"node_id": "node_027",
+					"parent_id": 13,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1858751189,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 28,
+					"level": 5,
+					"node_id": "node_028",
+					"parent_id": 14,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 99248821,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 29,
+					"level": 5,
+					"node_id": "node_029",
+					"parent_id": 15,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 425417104,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						-26.0
+					]
+				}
+			],
+			"status": "complete"
+		},
+		{
+			"all_max_seconds": 16530.0,
+			"crew": 10,
+			"full_build_seconds": 3930.0,
+			"scope": "controlled GalaxyRegion phase; bypasses unlock and crew economy",
+			"slots": [
+				{
+					"construction": 0.0,
+					"id": 0,
+					"level": 5,
+					"node_id": "node_000",
+					"parent_id": -1,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2540585198,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 1,
+					"level": 5,
+					"node_id": "node_001",
+					"parent_id": -1,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2967889042,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 2,
+					"level": 5,
+					"node_id": "node_002",
+					"parent_id": -1,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3742669742,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 3,
+					"level": 5,
+					"node_id": "node_003",
+					"parent_id": -1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2094529347,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 4,
+					"level": 5,
+					"node_id": "node_004",
+					"parent_id": 0,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4122975946,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 5,
+					"level": 5,
+					"node_id": "node_005",
+					"parent_id": 0,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 241195129,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 6,
+					"level": 5,
+					"node_id": "node_006",
+					"parent_id": 0,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3674321502,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 7,
+					"level": 5,
+					"node_id": "node_007",
+					"parent_id": 1,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3348784888,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 8,
+					"level": 5,
+					"node_id": "node_008",
+					"parent_id": 1,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3678553777,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 9,
+					"level": 5,
+					"node_id": "node_009",
+					"parent_id": 2,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4127777431,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 10,
+					"level": 5,
+					"node_id": "node_010",
+					"parent_id": 2,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4275612885,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 11,
+					"level": 5,
+					"node_id": "node_011",
+					"parent_id": 3,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2855848888,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 12,
+					"level": 5,
+					"node_id": "node_012",
+					"parent_id": 4,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1723271941,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 13,
+					"level": 5,
+					"node_id": "node_013",
+					"parent_id": 4,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2480943216,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 14,
+					"level": 5,
+					"node_id": "node_014",
+					"parent_id": 4,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4010670777,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 15,
+					"level": 5,
+					"node_id": "node_015",
+					"parent_id": 5,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3162181320,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 16,
+					"level": 5,
+					"node_id": "node_016",
+					"parent_id": 6,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3737848542,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 17,
+					"level": 5,
+					"node_id": "node_017",
+					"parent_id": 7,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2001899221,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 18,
+					"level": 5,
+					"node_id": "node_018",
+					"parent_id": 7,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 4030393879,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 19,
+					"level": 5,
+					"node_id": "node_019",
+					"parent_id": 8,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3461022743,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 20,
+					"level": 5,
+					"node_id": "node_020",
+					"parent_id": 9,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2308099977,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 21,
+					"level": 5,
+					"node_id": "node_021",
+					"parent_id": 9,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2628454166,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 22,
+					"level": 5,
+					"node_id": "node_022",
+					"parent_id": 10,
+					"planned_type": "orbital_shipyard",
+					"status": "active",
+					"type": "orbital_shipyard",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1623096846,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						26.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 23,
+					"level": 5,
+					"node_id": "node_023",
+					"parent_id": 11,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 625483024,
+					"work": 1000.0,
+					"world_pos": [
+						-78.0,
+						0.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 24,
+					"level": 5,
+					"node_id": "node_024",
+					"parent_id": 12,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 3751353908,
+					"work": 1000.0,
+					"world_pos": [
+						0.0,
+						-104.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 25,
+					"level": 5,
+					"node_id": "node_025",
+					"parent_id": 12,
+					"planned_type": "heavy_element_refinery",
+					"status": "active",
+					"type": "heavy_element_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2704509045,
+					"work": 1000.0,
+					"world_pos": [
+						26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 26,
+					"level": 5,
+					"node_id": "node_026",
+					"parent_id": 12,
+					"planned_type": "interstellar_refinery",
+					"status": "active",
+					"type": "interstellar_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 2798386597,
+					"work": 1000.0,
+					"world_pos": [
+						-26.0,
+						-78.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 27,
+					"level": 5,
+					"node_id": "node_027",
+					"parent_id": 13,
+					"planned_type": "crystal_refinery",
+					"status": "active",
+					"type": "crystal_refinery",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 1858751189,
+					"work": 1000.0,
+					"world_pos": [
+						52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 28,
+					"level": 5,
+					"node_id": "node_028",
+					"parent_id": 14,
+					"planned_type": "colony_ring",
+					"status": "active",
+					"type": "colony_ring",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 99248821,
+					"work": 1000.0,
+					"world_pos": [
+						-52.0,
+						-52.0
+					]
+				},
+				{
+					"construction": 0.0,
+					"id": 29,
+					"level": 5,
+					"node_id": "node_029",
+					"parent_id": 15,
+					"planned_type": "stellar_energy_array",
+					"status": "active",
+					"type": "stellar_energy_array",
+					"unlock_progress": 0.0,
+					"upgrade_progress": 0.0,
+					"visual_seed": 425417104,
+					"work": 1000.0,
+					"world_pos": [
+						78.0,
+						-26.0
+					]
+				}
+			],
+			"status": "complete"
+		}
+	],
+	"planet": [
+		{
+			"actions": [
+				{
+					"action": "explore",
+					"time": 0.0
+				},
+				{
+					"action": "explore",
+					"time": 69.9999999999973
+				},
+				{
+					"action": "activate",
+					"building": "station",
+					"time": 140.000000000004
+				},
+				{
+					"action": "explore",
+					"time": 140.000000000004
+				},
+				{
+					"action": "activate",
+					"building": "refinery",
+					"time": 1529.99999999894
+				},
+				{
+					"action": "activate",
+					"building": "workshop",
+					"time": 3630.00000001861
+				},
+				{
+					"action": "assign_builder",
+					"time": 3630.00000001861
+				},
+				{
+					"action": "activate",
+					"building": "shipyard",
+					"time": 14429.9999998742
+				}
+			],
+			"cadence": 10.0,
+			"construction_ready": 14423.9666665409,
+			"construction_seconds": 10802.9999998558,
+			"construction_share": 0.748647783956126,
+			"construction_start": 3620.96666668516,
+			"planet": {
+				"auto_explore": true,
+				"buildings": {
+					"refinery": {
+						"build_progress": 5.0,
+						"crew": [],
+						"status": "built"
+					},
+					"shipyard": {
+						"build_progress": 180.0,
+						"crew": [],
+						"status": "built"
+					},
+					"station": {
+						"build_progress": 1,
+						"crew": [],
+						"status": "built"
+					},
+					"workshop": {
+						"build_progress": 10.0,
+						"crew": [],
+						"status": "built"
+					}
+				},
+				"conquered": false,
+				"crewId": "navigator",
+				"degree": 240.0,
+				"elapsed": 6.04999999999998,
+				"unlocked": true
+			},
+			"ready_for_reforge": true,
+			"scope": "controlled stage30 exploration fixture; no combat income or legal30 journey claim",
+			"total_seconds": 14430.0166665408
+		},
+		{
+			"actions": [
+				{
+					"action": "explore",
+					"time": 0.0
+				},
+				{
+					"action": "explore",
+					"time": 119.999999999994
+				},
+				{
+					"action": "activate",
+					"building": "station",
+					"time": 240.000000000083
+				},
+				{
+					"action": "explore",
+					"time": 240.000000000083
+				},
+				{
+					"action": "activate",
+					"building": "refinery",
+					"time": 1679.9999999988
+				},
+				{
+					"action": "activate",
+					"building": "workshop",
+					"time": 3780.00000002052
+				},
+				{
+					"action": "assign_builder",
+					"time": 3780.00000002052
+				},
+				{
+					"action": "activate",
+					"building": "shipyard",
+					"time": 14579.999999872
+				}
+			],
+			"cadence": 60.0,
+			"construction_ready": 14523.9666665395,
+			"construction_seconds": 10802.999999853,
+			"construction_share": 0.740945655065407,
+			"construction_start": 3720.96666668643,
+			"planet": {
+				"auto_explore": true,
+				"buildings": {
+					"refinery": {
+						"build_progress": 5.0,
+						"crew": [],
+						"status": "built"
+					},
+					"shipyard": {
+						"build_progress": 180.0,
+						"crew": [],
+						"status": "built"
+					},
+					"station": {
+						"build_progress": 1,
+						"crew": [],
+						"status": "built"
+					},
+					"workshop": {
+						"build_progress": 10.0,
+						"crew": [],
+						"status": "built"
+					}
+				},
+				"conquered": false,
+				"crewId": "navigator",
+				"degree": 240.0,
+				"elapsed": 56.0499999999981,
+				"unlocked": true
+			},
+			"ready_for_reforge": true,
+			"scope": "controlled stage30 exploration fixture; no combat income or legal30 journey claim",
+			"total_seconds": 14580.0166665386
+		},
+		{
+			"actions": [
+				{
+					"action": "explore",
+					"time": 0.0
+				},
+				{
+					"action": "explore",
+					"time": 300.000000000056
+				},
+				{
+					"action": "activate",
+					"building": "station",
+					"time": 599.999999999783
+				},
+				{
+					"action": "explore",
+					"time": 599.999999999783
+				},
+				{
+					"action": "activate",
+					"building": "refinery",
+					"time": 2099.99999999913
+				},
+				{
+					"action": "activate",
+					"building": "workshop",
+					"time": 4200.00000002303
+				},
+				{
+					"action": "assign_builder",
+					"time": 4200.00000002303
+				},
+				{
+					"action": "activate",
+					"building": "shipyard",
+					"time": 14999.9999998659
+				}
+			],
+			"cadence": 300.0,
+			"construction_ready": 14943.9833332,
+			"construction_seconds": 10863.016666509,
+			"construction_share": 0.724200306440069,
+			"construction_start": 4080.96666669102,
+			"planet": {
+				"auto_explore": true,
+				"buildings": {
+					"refinery": {
+						"build_progress": 5.0,
+						"crew": [],
+						"status": "built"
+					},
+					"shipyard": {
+						"build_progress": 180.0,
+						"crew": [],
+						"status": "built"
+					},
+					"station": {
+						"build_progress": 1,
+						"crew": [],
+						"status": "built"
+					},
+					"workshop": {
+						"build_progress": 10.0,
+						"crew": [],
+						"status": "built"
+					}
+				},
+				"conquered": false,
+				"crewId": "navigator",
+				"degree": 241.0,
+				"elapsed": 56.0333333333314,
+				"unlocked": true
+			},
+			"ready_for_reforge": true,
+			"scope": "controlled stage30 exploration fixture; no combat income or legal30 journey claim",
+			"total_seconds": 15000.0166665325
+		}
+	]
+}

@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--roster-through',type=int,default=20);a=p.parse_args()
 data=json.loads((SRC/'data/game_data.json').read_text())
 books={n:openpyxl.load_workbook(CFG/(n+'.xlsx')) for n in ['level','mon','monGroup']}
 sheets={n:b.active for n,b in books.items()};headers={n:{c.value:c.column for c in s[1] if c.value is not None} for n,s in sheets.items()}
@@ -20,12 +20,15 @@ def source_row(n,key):
  return {k:s.cell(ri,c).value for k,c in h.items()}
 themes=['laser','missile','cannon','neutral1','neutral2','longLaser','laser','missile','cannon','neutral3']
 themes += ['neutral1','missile','neutral2','laser','cannon','neutral4','longLaser','neutral3','missile','laser']
+# Later levels normally mix themes; beam has no fixed tutorial slot after10.
+cycle=['neutral2','cannon','neutral4','missile','laser','neutral1','longLaser','neutral3','cannon','neutral4','missile','neutral2','laser','neutral3','longLaser','neutral1']
+while len(themes)<a.roster_through:themes.extend(cycle)
 ratios=[1,1.5,2,3,4.5,1.2**15]+[1.2**(30+10*i) for i in range(4)]
 ratios += [1.2**(60+13*i) for i in range(1,11)]
 resources=[1.4**i for i in range(5)]+[12*1.2**(10*i) for i in range(5)]
-resources += [resources[9]*1.2**(13*i)*.10 for i in range(1,11)]
+resources += [resources[9]*1.2**(13*i)*a.late_income for i in range(1,11)]
 manifest=[]
-for stage,theme in enumerate(themes[:a.through],1):
+for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
  tiers=['normal']*4+['elite'] if stage<=5 else ['normal']*5+['elite']*3+['boss']
  if stage>=20 and ((stage<=70 and stage%5==0) or (stage>70 and stage%10==0)):tiers=['elite']*5+['boss']*3+['ultimate']
  groups=[]
@@ -49,11 +52,14 @@ for stage,theme in enumerate(themes[:a.through],1):
   replace('monGroup',newgid,{'id':newgid,'des':f'校准{a.version}-关{stage}-层{node}-{tier}-{theme}-{variant}','mon':'{'+','.join(slots)+'}'})
   groups.append((newgid,node*.9/len(tiers)))
   manifest.append({'stage':stage,'node':node,'tier':tier,'theme':theme,'source_group':gid,'group':newgid,'variant':variant,'suggested':stage in [4,5]})
- row=source_row('level',stage);row.update(length=4000 if stage<=5 else 1000,monGroup='{'+','.join(f'{g}|{pos:.6f}' for g,pos in groups)+'}',atkRatio=ratios[stage-1],lifeRatio=ratios[stage-1],resRatio=resources[stage-1],planetExpRatio=0)
+ row=source_row('level',stage)
+ row.update(length=4000 if stage<=5 else 1000,monGroup='{'+','.join(f'{g}|{pos:.6f}' for g,pos in groups)+'}')
+ if stage<=a.through:row.update(atkRatio=ratios[stage-1],lifeRatio=ratios[stage-1],resRatio=resources[stage-1],planetExpRatio=0)
+ # Uncalibrated future numeric cells/formulas retain their identity, not old cached values.
  replace('level',stage,row)
 for n,b in books.items():b.save(CFG/(n+'.xlsx'))
 recache_level(CFG/"level.xlsx",sheets["level"],subprocess.check_output(["git","show","04a5a307bcef9325efa9026e1ca94affa577e10d:space-battleship/config_excel/level.xlsx"],cwd=ROOT))
 result=incremental_import(CFG,SRC/'data/game_data.json')
 evidence=ROOT/'test/progression/candidates';evidence.mkdir(exist_ok=True)
-(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'reason':'Initial teaching roster and economy candidate after 49-second stage1 / 398-second teaching baseline; not accepted balance. Stage4/5 themes are suggestions. Retain 40 original templates.','health_normalization':.1454,'ratios':ratios,'waves':manifest,'import':result},indent=2,ensure_ascii=False))
+(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'roster_range':[1,max(a.through,a.roster_through)],'reason':'Segmented candidate; v4 diagnostic cleared20 at4.79h, far below12–18h. Late income coefficient is explicit and must be tested from a fresh profile; stage4/5 remain suggestions. Original40 templates retained; downstream Excel formula dependencies are recalculated and unaccepted.','health_normalization':.1454,'ratios':ratios,'resource_ratios':resources,'late_income_coefficient':a.late_income,'affected':'Generated1–20 plus all later formula-dependent ratios; future progression remains unaccepted.','waves':manifest,'import':result},indent=2,ensure_ascii=False))
 print(json.dumps(result))

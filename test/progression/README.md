@@ -63,3 +63,16 @@ Galaxy unlock is60 with existing six-conquered-planet condition; first galaxy wo
 
 
 Sparse policy v4c returns to a normal point actually won in the current stage, travels there normally and only toggles guarding at a visit after arrival. Previous-level-first-point failures remain retained. Conquered explorers are manually recalled after galaxy unlock; the two-idle-crew reserve then ends. All are test strategy assumptions. Parent independently compared formal BattleGame and exact BalanceGame on d41d622 for3600 seconds, same config/seed/purchases, each-second combat/resources/RNG/research: identical through6-3; no later-system extrapolation.
+
+
+## v4 failures / v5 pending
+
+v4c current-stage farming cleared10 at7583.05s (2.11h),20 at12773.40s (3.55h),144 retreats. Independent parent756ad15 seed20261004/300s visits cleared10 at9265s (2.574h),20 at16416.95s (4.56h),246 retreats. Both fail20 timing; bulk exposed overly fast real growth. v5 lowers11–20 drop income coefficient from0.1 to0.001, without restricting purchase frequency. Numeric gates still pending.
+
+The sparse node5 selection can overshoot into elite/Boss before the next visit. v5b selects a previously won current-stage first normal point at departure, using normal start/toggle actions and real travel. This removes that strategy error; fresh retest is running. Saved evidence is immutable.
+
+Structural generation now covers all220 levels: teaching5 nodes; later9;20/25/…70 special;80/90/…220 special. Numeric calibration stops at20; uncalibrated later formulas are recomputed rather than silently retaining stale caches. Stage4/5 suggested topics remain in candidate metadata.
+
+Checkpoint experiments require `--resume PATH`; data mismatch requires explicit `--allow-version-change`, and run metadata labels all resumed experiments diagnostic. They restore formal journey behavior, not live projectile state, and assign zero offline interval. Final acceptance must still start fresh on one frozen version. `--stop-galaxy --stop-clear220` ends only when first galaxy all buildings are max. Reforge/reach checkpoints and phase timestamps are now collected.
+
+Operation measurement now counts each batch once and includes manual collect/scientist events. It remains an API event estimate, not literal mouse clicks; old event totals are retained with their measurement version.

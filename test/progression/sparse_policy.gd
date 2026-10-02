@@ -67,7 +67,9 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		else:
 			for pair in [["equipment_upgrade","equipment"],["hightech_scientists","hightech"],["reactor_upgrade","reactor"],["jewel_auto","jewels"]]:
 				if g.assign_crew(crew_id,pair[0],pair[1]):record(g,"assign_crew",{"crew":crew_id,"assignment":pair[0]});break
-	# Two deaths trigger return to a won normal point; physically travel before guarding.
+	# Two deaths trigger current-stage first-normal farming if already won.
+	# Toggle at departure legally selects first point and preserves real travel.
+	# This avoids a sparse visit overshooting node5 into an elite/Boss.
 	# Resume on five real module levels (meaningful batch), or reconsider after 15min.
 	if not farm.is_empty():
 		if not g.profile.loop and g.stage==int(farm.target) and g.group_index>=int(farm.node) and g.state==BattleGame.State.COMBAT:
@@ -78,9 +80,9 @@ func act(g: BattleGame, elapsed: float) -> bool:
 	elif g.stage>=6 and g.metrics.deaths-deaths_seen>=2 and g.profile.cleared.has(g.stage-1):
 		var node: int=int(best_won.get(str(g.stage),0))
 		var chosen_stage: int=g.stage if node>0 else g.stage-1
-		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g),"node":maxi(1,mini(node,5))}
+		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g),"node":1}
 		g.start(chosen_stage,false)
-		if chosen_stage!=int(farm.target):g.toggle_loop()
+		g.toggle_loop()
 		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target})
 	deaths_seen=int(g.metrics.deaths)
 	# A push/return can change stage after the initial transaction pass.

@@ -23,12 +23,16 @@ var last_heartbeat := 0
 var in_visit := false
 var encounter := {}
 var completed_waves := 0
+var reached := {}
+var reforges := []
+var current_reforge := -1
+var galaxy_completion := -1.0
 func _initialize() -> void: call_deferred("run")
 func write_json(name: String, value) -> void:
 	var f := FileAccess.open(output+"/"+name,FileAccess.WRITE)
 	f.store_string(JSON.stringify(value,"\t")); f.close()
 func snapshot(label: String) -> void:
-	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json")})
+	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen},"state":int(game.state),"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json")})
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind=="encounter":
 		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
@@ -37,10 +41,21 @@ func observe(kind: String, payload: Dictionary) -> void:
 		if encounter.status=="win":policy.best_won[str(encounter.stage)]=maxi(int(policy.best_won.get(str(encounter.stage),0)),int(encounter.node))
 		trace.store_line(JSON.stringify({"kind":"wave_result","wave":encounter}));trace.flush();completed_waves+=1;encounter={}
 
-	if kind in ["upgrade","module_changed","ship_changed","scientist_generated","reactor_changed","enhancement_changed","planet_changed","planet_reforged"]:
-		if in_visit:actions += 1
+	if kind=="planet_reforged":
+		reforges.append({"planet":payload.get("id",""),"start":game.simulated_time,"return34":null,"clear_next_planet":null})
+		current_reforge=reforges.size()-1
+		snapshot("reforge_"+str(payload.get("id","")))
+	if kind in ["upgrade","upgrades_completed","module_changed","ship_changed","scientists_changed","reactor_changed","enhancement_changed","planet_changed","planet_reforged","crew_changed"]:
+		if in_visit and not (kind=="upgrade" and payload.get("batch",false)):actions += 1
 		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":kind,"actor":"visit" if in_visit else "automatic","stage":game.stage,"payload":payload})); trace.flush()
 	if kind == "state" and game.state == BattleGame.State.LEVEL_CLEAR:
+		if current_reforge>=0:
+			var phase:Dictionary=reforges[current_reforge]
+			var planet:int=int(phase.planet)
+			if game.stage==34+5*(planet-1) and phase.return34==null:
+				phase.return34=game.simulated_time;snapshot("reforge_return_"+str(planet))
+			if game.stage==35+5*(planet-1) and phase.clear_next_planet==null:
+				phase.clear_next_planet=game.simulated_time;snapshot("reforge_clear_"+str(planet))
 		if not clears.has(str(game.stage)):
 			clears[str(game.stage)] = game.simulated_time
 			print("CLEAR stage=",game.stage," x1_seconds=",game.simulated_time)
@@ -50,7 +65,9 @@ func visit() -> void:
 	var before: int = actions
 	var pending: Array = game.pending_unlocks.duplicate()
 	# Manual collection only while actually visiting; auto losses remain between visits.
-	for drop in game.drops.duplicate():game.collect(drop,true)
+	for drop in game.drops.duplicate():
+		game.collect(drop,true);actions+=1
+		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":"manual_collect","id":drop.id}))
 	policy.act(game,game.simulated_time)
 	var acknowledged: Array=pending.filter(func(id):return not game.pending_unlocks.has(id))
 	if not acknowledged.is_empty():
@@ -73,15 +90,34 @@ func run() -> void:
 	game = Game.new(Database.new());game.rng.seed=int(options.seed)
 	game.stat_cache_enabled=bool(options.get("stat_cache",true))
 	game.metrics=metrics;metrics.initialize(game)
-	game.event.connect(observe)
 	policy.configure(str(options.strategy),int(options.seed))
 	policy.thematic=bool(options.get("thematic",false))
 	policy.allow_reforge=bool(options.get("allow_reforge",true))
 	policy.use_bulk=bool(options.get("bulk",false))
 	policy.journal=func(kind, extra):
-		actions+=1
+		if kind in ["travel_to_farm_point","begin_farm_guard","resume_push"]:actions+=1
 		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":kind,"stage":game.stage,"payload":extra}));trace.flush()
-	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","initial_state":"fresh","qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
+	var initial_scope := "fresh"
+	if not str(options.get("resume","")).is_empty():
+		var checkpoint=JSON.parse_string(FileAccess.get_file_as_string(str(options.resume)))
+		if not checkpoint is Dictionary or not checkpoint.get("save") is Dictionary:
+			printerr("Invalid diagnostic checkpoint");quit(2);return
+		if checkpoint.get("data_sha256","")!=FileAccess.get_sha256("res://data/game_data.json") and not bool(options.get("allow_version_change",false)):
+			printerr("Checkpoint data differs: explicitly allow diagnostic version change");quit(2);return
+		initial_scope="checkpoint diagnostic; formal journey reload; no full fresh acceptance"
+		game.simulated_time=float(checkpoint.x1_seconds)
+		var raw:Dictionary=checkpoint.save.duplicate(true)
+		raw.chronoSavedAt=Time.get_unix_time_from_system()
+		game.load_progress_data(raw)
+		game.profile.chronoParticles=float(raw.get("chronoParticles",0));game.login_chrono_particles=0
+		game.resume_progress();game.rng.state=int(str(checkpoint.rng_state))
+		var old:Dictionary=checkpoint.get("policy",{})
+		if old.has("random_state"):policy.random.state=int(str(old.random_state))
+		for field in ["last_refit","unlocked_count","farm","best_won","deaths_seen"]:
+			if old.has(field):policy.set(field,old[field])
+		next_visit=game.simulated_time
+	game.event.connect(observe)
+	write_json("run.json",{"options":options,"engine":Engine.get_version_info(),"step_seconds":STEP,"mode":"exact","initial_state":initial_scope,"qa_manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))})
 	snapshot("0")
 	var started := Time.get_ticks_usec()
 	var steps := 0
@@ -90,6 +126,11 @@ func run() -> void:
 			visit()
 			next_visit=game.simulated_time+(float(options.teaching_seconds) if int(game.profile.highestLevel)<=5 else float(options.visit_seconds))
 		game.tick(STEP);steps+=1
+		if game.stage in [30,32,34,35,40,45,50,55,60] and not reached.has(str(game.stage)):
+			reached[str(game.stage)]=game.simulated_time;snapshot("reach_"+str(game.stage))
+		if game.galaxy.regions.has("galaxy_1") and game.galaxy.regions.galaxy_1.is_complete() and galaxy_completion<0:
+			galaxy_completion=game.simulated_time;snapshot("galaxy_all_max")
+		if bool(options.get("stop_galaxy",false)) and galaxy_completion>=0:break
 		var current := str(game.stage)+":"+str(game.group_index)+":"+str(game.state)
 		if current!=wave_key:
 			if not wave_key.is_empty():
@@ -104,6 +145,6 @@ func run() -> void:
 				last_heartbeat=int(game.simulated_time);print("HEARTBEAT x1_seconds=",game.simulated_time," stage=",game.stage," deaths=",metrics.deaths)
 		if clears.has(str(int(options.stop_clear))):break
 	snapshot("end")
-	write_json("summary.json",{"options":options,"x1_seconds":game.simulated_time,"steps":steps,"clears":clears,"highest":game.profile.highestLevel,"deaths":metrics.deaths,"action_sessions":action_sessions,"action_events":actions,"action_intervals":action_gaps,"completed_waves":completed_waves,"metrics":metrics.report(game),"wall_seconds":(Time.get_ticks_usec()-started)/1e6,"profile":game.profile,"waves":wave_rows})
+	write_json("summary.json",{"options":options,"x1_seconds":game.simulated_time,"steps":steps,"clears":clears,"highest":game.profile.highestLevel,"deaths":metrics.deaths,"action_sessions":action_sessions,"action_events":actions,"action_intervals":action_gaps,"completed_waves":completed_waves,"reached":reached,"reforges":reforges,"galaxy_all_max_seconds":galaxy_completion,"operation_scope":"Observed API domain events; batch upgrades counted once, explicit manual collects included. Not literal mouse clicks.","metrics":metrics.report(game),"wall_seconds":(Time.get_ticks_usec()-started)/1e6,"profile":game.profile,"waves":wave_rows})
 	trace.close();print("RESULT ",output," clears=",clears," deaths=",metrics.deaths," sessions=",action_sessions)
 	quit()
