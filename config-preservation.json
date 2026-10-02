@@ -1,0 +1,39 @@
+{
+  "base": "8b631374a4c8f217af0ce3c68bd1a233ad289b6c",
+  "workbooks": {
+    "equipment": {
+      "existing_cell_changes": [
+        {
+          "cell": "G8",
+          "before": 2,
+          "after": 3.5
+        }
+      ],
+      "appended_rows": 0,
+      "changed_zip_parts": [
+        "xl/worksheets/sheet1.xml"
+      ]
+    },
+    "weapon_motion": {
+      "existing_cell_changes": [],
+      "appended_rows": 8,
+      "changed_zip_parts": [
+        "xl/worksheets/sheet1.xml"
+      ]
+    }
+  },
+  "projection_changed_sections": [
+    "equipment",
+    "source_files",
+    "weapon_motion"
+  ],
+  "latest_user_values_preserved": {
+    "cannon_damage": 350,
+    "missile_damage": 200,
+    "missile_volley": 4,
+    "missile_cruise": 30,
+    "cannon_speed_multiplier": 1,
+    "missile_ejection_gap": 0.12,
+    "missile_launch_speed": 240
+  }
+}

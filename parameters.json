@@ -1,0 +1,33 @@
+{
+  "cannon": {
+    "name": "cannon",
+    "des": "火炮武器，与激光一样，发射一个炮弹攻击锁定目标敌人，para1是飞行速度/S",
+    "level": 1,
+    "dmgtype": 2,
+    "dmg": 350,
+    "dmgMulti": 0.2,
+    "cd": 3.5,
+    "res_1": 1,
+    "cost_1": 50,
+    "costMulti_1": 0.2,
+    "res_2": null,
+    "cost_2": null,
+    "costMulti_2": null,
+    "para1": 40,
+    "para2": null,
+    "para3": null,
+    "para4": null
+  },
+  "weapon_motion": {
+    "rail_charge_seconds": 0.9,
+    "rail_charge_radius": 20,
+    "rail_trail_length": 138,
+    "rail_trail_width": 10,
+    "rail_flash_seconds": 0.09,
+    "rail_impact_seconds": 0.16,
+    "rail_impact_radius": 24,
+    "rail_penetration_length": 80,
+    "player_cannon_speed_multiplier": 1,
+    "player_projectile_pixels_per_unit": 28
+  }
+}

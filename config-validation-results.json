@@ -1,0 +1,91 @@
+[
+  {
+    "case": "legacy missing sections",
+    "status": "accepted"
+  },
+  {
+    "case": "unused parameters and optional beam charge null",
+    "status": "accepted"
+  },
+  {
+    "case": "laser.para1 null",
+    "error": "enemy_weapon_base laser.para1: expected positive number, got None"
+  },
+  {
+    "case": "laser.para1 missing",
+    "error": "enemy_weapon_base laser.para1: expected positive number, got None"
+  },
+  {
+    "case": "missile.para1 null",
+    "error": "enemy_weapon_base missile.para1: expected positive number, got None"
+  },
+  {
+    "case": "missile.para1 missing",
+    "error": "enemy_weapon_base missile.para1: expected positive number, got None"
+  },
+  {
+    "case": "missile.para2 null",
+    "error": "enemy_weapon_base missile.para2: expected positive number, got None"
+  },
+  {
+    "case": "missile.para2 missing",
+    "error": "enemy_weapon_base missile.para2: expected positive number, got None"
+  },
+  {
+    "case": "cannon.para1 null",
+    "error": "enemy_weapon_base cannon.para1: expected positive number, got None"
+  },
+  {
+    "case": "cannon.para1 missing",
+    "error": "enemy_weapon_base cannon.para1: expected positive number, got None"
+  },
+  {
+    "case": "longLaser.para1 null",
+    "error": "enemy_weapon_base longLaser.para1: expected nonnegative number, got None"
+  },
+  {
+    "case": "longLaser.para1 missing",
+    "error": "enemy_weapon_base longLaser.para1: expected nonnegative number, got None"
+  },
+  {
+    "case": "longLaser.para2 null",
+    "error": "enemy_weapon_base longLaser.para2: expected positive number, got None"
+  },
+  {
+    "case": "longLaser.para2 missing",
+    "error": "enemy_weapon_base longLaser.para2: expected positive number, got None"
+  },
+  {
+    "case": "empty weapon_motion",
+    "error": "weapon_motion: missing ['chain_carrier_speed', 'enemy_projectile_pixels_per_unit', 'missile_brake_angle', 'missile_brake_factor', 'missile_brake_range', 'missile_cruise_at', 'missile_departure_angle', 'missile_ejection_gap', 'missile_hit_radius', 'missile_ignition_at', 'missile_launch_edge_margin', 'missile_launch_forward_y', 'missile_launch_speed', 'missile_lifetime', 'missile_min_guided_speed', 'missile_orphan_lifetime', 'missile_reacquire_interval', 'missile_seek_start', 'missile_turn_rate', 'player_cannon_speed_multiplier', 'player_projectile_pixels_per_unit', 'rail_charge_radius', 'rail_charge_seconds', 'rail_flash_seconds', 'rail_impact_radius', 'rail_impact_seconds', 'rail_penetration_length', 'rail_trail_length', 'rail_trail_width']; unknown []",
+    "projection_unchanged": true
+  },
+  {
+    "case": "empty enemy_weapon_base",
+    "error": "enemy_weapon_base: require all four base weapons",
+    "projection_unchanged": true
+  },
+  {
+    "case": "null missile speed",
+    "error": "enemy_weapon_base missile.para2: expected positive number, got None",
+    "projection_unchanged": true
+  },
+  {
+    "case": "deleted missile speed column",
+    "error": "enemy_weapon_base missile.para2: expected positive number, got None",
+    "projection_unchanged": true
+  },
+  {
+    "case": "all eight rail controls exported from Excel",
+    "values": {
+      "rail_charge_seconds": 0.675,
+      "rail_charge_radius": 15.0,
+      "rail_trail_length": 103.5,
+      "rail_trail_width": 7.5,
+      "rail_flash_seconds": 0.0675,
+      "rail_impact_seconds": 0.12,
+      "rail_impact_radius": 18.0,
+      "rail_penetration_length": 60.0
+    }
+  }
+]
