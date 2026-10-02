@@ -1,0 +1,821 @@
+{
+	"runs": [
+		{
+			"all_constructed_at": 51240.0,
+			"complete": true,
+			"crew": 1,
+			"explore_work": 100000.0,
+			"levels": [
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "heavy_element_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				}
+			],
+			"max_level_count": 30,
+			"seconds": 191220.0,
+			"slots": 30,
+			"step": 60.0,
+			"upgrade_work": 210000.0
+		},
+		{
+			"all_constructed_at": 26220.0,
+			"complete": true,
+			"crew": 3,
+			"explore_work": 100000.0,
+			"levels": [
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "heavy_element_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				}
+			],
+			"max_level_count": 30,
+			"seconds": 110220.0,
+			"slots": 30,
+			"step": 60.0,
+			"upgrade_work": 210000.0
+		},
+		{
+			"all_constructed_at": 17880.0,
+			"complete": true,
+			"crew": 5,
+			"explore_work": 100000.0,
+			"levels": [
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "heavy_element_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				}
+			],
+			"max_level_count": 30,
+			"seconds": 77880.0,
+			"slots": 30,
+			"step": 60.0,
+			"upgrade_work": 210000.0
+		},
+		{
+			"all_constructed_at": 10320.0,
+			"complete": true,
+			"crew": 10,
+			"explore_work": 100000.0,
+			"levels": [
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "heavy_element_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				}
+			],
+			"max_level_count": 30,
+			"seconds": 45300.0,
+			"slots": 30,
+			"step": 60.0,
+			"upgrade_work": 210000.0
+		},
+		{
+			"all_constructed_at": 26200.0,
+			"complete": true,
+			"crew": 3,
+			"explore_work": 100000.0,
+			"levels": [
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "orbital_shipyard"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "heavy_element_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "interstellar_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "crystal_refinery"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "colony_ring"
+				},
+				{
+					"level": 5,
+					"status": "active",
+					"type": "stellar_energy_array"
+				}
+			],
+			"max_level_count": 30,
+			"seconds": 110200.0,
+			"slots": 30,
+			"step": 10.0,
+			"upgrade_work": 210000.0
+		}
+	],
+	"scope": "direct formal GalaxyRegion fixed crew stage diagnostic, bypassed unlock; not new save end-to-end proof",
+	"source_commit": "04a5a307bcef9325efa9026e1ca94affa577e10d"
+}

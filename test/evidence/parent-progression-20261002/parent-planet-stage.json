@@ -1,0 +1,369 @@
+{
+	"runs": [
+		{
+			"actions": 14,
+			"buildings": {
+				"refinery": {
+					"build_progress": 5.0,
+					"crew": [],
+					"status": "built"
+				},
+				"shipyard": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				},
+				"station": {
+					"build_progress": 3.0,
+					"crew": [],
+					"status": "built"
+				},
+				"workshop": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				}
+			},
+			"can_reforge": true,
+			"decision_interval": 10.0,
+			"degree": 160.0,
+			"game_seconds": 4740.01666668184,
+			"milestones": [
+				{
+					"building": "station",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "refinery",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "workshop",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "shipyard",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "station",
+					"degree": 5.0,
+					"status": "building",
+					"time": 307.000000000049
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "ready",
+					"time": 483.999999999888
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "built",
+					"time": 490.999999999882
+				},
+				{
+					"building": "refinery",
+					"degree": 20.0,
+					"status": "building",
+					"time": 1079.99999999935
+				},
+				{
+					"building": "refinery",
+					"degree": 25.0,
+					"status": "ready",
+					"time": 1298.99999999915
+				},
+				{
+					"building": "refinery",
+					"degree": 25.0,
+					"status": "built",
+					"time": 1300.99999999915
+				},
+				{
+					"building": "workshop",
+					"degree": 50.0,
+					"status": "building",
+					"time": 2233.00000000082
+				},
+				{
+					"building": "workshop",
+					"degree": 60.0,
+					"status": "ready",
+					"time": 2547.00000000482
+				},
+				{
+					"building": "workshop",
+					"degree": 60.0,
+					"status": "built",
+					"time": 2551.00000000487
+				},
+				{
+					"building": "shipyard",
+					"degree": 150.0,
+					"status": "building",
+					"time": 4569.00000001766
+				},
+				{
+					"building": "shipyard",
+					"degree": 160.0,
+					"status": "ready",
+					"time": 4737.00000001521
+				}
+			]
+		},
+		{
+			"actions": 14,
+			"buildings": {
+				"refinery": {
+					"build_progress": 5.0,
+					"crew": [],
+					"status": "built"
+				},
+				"shipyard": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				},
+				"station": {
+					"build_progress": 3.0,
+					"crew": [],
+					"status": "built"
+				},
+				"workshop": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				}
+			},
+			"can_reforge": true,
+			"decision_interval": 60.0,
+			"degree": 160.0,
+			"game_seconds": 4800.01666668096,
+			"milestones": [
+				{
+					"building": "station",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "refinery",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "workshop",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "shipyard",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "station",
+					"degree": 5.0,
+					"status": "building",
+					"time": 357.000000000004
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "ready",
+					"time": 533.999999999843
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "built",
+					"time": 540.999999999837
+				},
+				{
+					"building": "refinery",
+					"degree": 20.0,
+					"status": "building",
+					"time": 1129.9999999993
+				},
+				{
+					"building": "refinery",
+					"degree": 25.0,
+					"status": "ready",
+					"time": 1348.9999999991
+				},
+				{
+					"building": "refinery",
+					"degree": 25.0,
+					"status": "built",
+					"time": 1380.99999999907
+				},
+				{
+					"building": "workshop",
+					"degree": 50.0,
+					"status": "building",
+					"time": 2283.00000000146
+				},
+				{
+					"building": "workshop",
+					"degree": 60.0,
+					"status": "ready",
+					"time": 2597.00000000546
+				},
+				{
+					"building": "workshop",
+					"degree": 61.0,
+					"status": "built",
+					"time": 2641.00000000602
+				},
+				{
+					"building": "shipyard",
+					"degree": 150.0,
+					"status": "building",
+					"time": 4619.00000001693
+				},
+				{
+					"building": "shipyard",
+					"degree": 160.0,
+					"status": "ready",
+					"time": 4787.00000001449
+				}
+			]
+		},
+		{
+			"actions": 14,
+			"buildings": {
+				"refinery": {
+					"build_progress": 5.0,
+					"crew": [],
+					"status": "built"
+				},
+				"shipyard": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				},
+				"station": {
+					"build_progress": 3.0,
+					"crew": [],
+					"status": "built"
+				},
+				"workshop": {
+					"build_progress": 10.0,
+					"crew": [],
+					"status": "built"
+				}
+			},
+			"can_reforge": true,
+			"decision_interval": 300.0,
+			"degree": 176.0,
+			"game_seconds": 6900.01666665041,
+			"milestones": [
+				{
+					"building": "station",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "refinery",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "workshop",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "shipyard",
+					"degree": 0,
+					"status": "locked",
+					"time": 1.0
+				},
+				{
+					"building": "station",
+					"degree": 5.0,
+					"status": "building",
+					"time": 1256.99999999919
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "ready",
+					"time": 2153.99999999982
+				},
+				{
+					"building": "station",
+					"degree": 8.0,
+					"status": "built",
+					"time": 2401.00000000296
+				},
+				{
+					"building": "refinery",
+					"degree": 20.0,
+					"status": "building",
+					"time": 2990.00000001046
+				},
+				{
+					"building": "refinery",
+					"degree": 25.0,
+					"status": "ready",
+					"time": 3209.00000001325
+				},
+				{
+					"building": "refinery",
+					"degree": 27.0,
+					"status": "built",
+					"time": 3301.00000001442
+				},
+				{
+					"building": "workshop",
+					"degree": 50.0,
+					"status": "building",
+					"time": 4143.00000002386
+				},
+				{
+					"building": "workshop",
+					"degree": 60.0,
+					"status": "ready",
+					"time": 4457.00000001929
+				},
+				{
+					"building": "workshop",
+					"degree": 61.0,
+					"status": "built",
+					"time": 4501.00000001865
+				},
+				{
+					"building": "shipyard",
+					"degree": 150.0,
+					"status": "building",
+					"time": 6478.99999998987
+				},
+				{
+					"building": "shipyard",
+					"degree": 167.0,
+					"status": "ready",
+					"time": 6759.99999998578
+				}
+			]
+		}
+	],
+	"scope": "controlled fresh first planet at granted clears1–30, existing config, two available crew reserved, direct exact planet advance only; not whole-game elapsed proof",
+	"source_commit": "04a5a307bcef9325efa9026e1ca94affa577e10d"
+}
