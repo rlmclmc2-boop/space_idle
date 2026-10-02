@@ -26,6 +26,9 @@ func run() -> void:
 	for i in 4:await process_frame
 	var panel=scene.galaxy_panel
 	panel.detail_slot=-1;panel.refresh()
+	if panel.cards.has("traffic"):
+		var value=panel.cards.traffic
+		value.get_parent().get_child(value.get_index()-1).hide();value.hide()
 	var map=panel.map
 	map.set_process(false)
 	for child in map.world.get_children():
