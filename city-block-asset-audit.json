@@ -1,0 +1,622 @@
+[
+  {
+    "aircraft_dock": [
+      0.0,
+      3.85999965667725,
+      13.4000005722046
+    ],
+    "bottom_y": 0.0900000333786011,
+    "key": "galaxy_core",
+    "level": 0.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.432355880737305,
+      1.19500064849854
+    ],
+    "scaled_bounds": [
+      28.8896530151367,
+      13.2840009212494,
+      29.7719993591309
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.969999969005585,
+      3.95000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "colony_ring",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.3099584579468,
+      4.29939980506897,
+      11.3099584579468
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.969999969005585,
+      4.07000017166138
+    ],
+    "bottom_y": 0.0,
+    "key": "colony_ring",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.7228837966919,
+      4.74039988517761,
+      12.4039995193481
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.969999969005585,
+      4.19000005722046
+    ],
+    "bottom_y": 0.0,
+    "key": "colony_ring",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.135809135437,
+      5.18139963150024,
+      12.7400005340576
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.969999969005585,
+      4.30999994277954
+    ],
+    "bottom_y": 0.0,
+    "key": "colony_ring",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.5487344741821,
+      5.62240037918091,
+      13.076000213623
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.969999969005585,
+      4.42999982833862
+    ],
+    "bottom_y": 0.0,
+    "key": "colony_ring",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.9616598129272,
+      6.06340045928955,
+      13.4119998931885
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.03999996185303,
+      4.29315090179443
+    ],
+    "bottom_y": 0.0,
+    "key": "orbital_shipyard",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.5027997970581,
+      4.59703979492187,
+      10.9568235397339
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.03999996185303,
+      4.44765090942383
+    ],
+    "bottom_y": 0.0,
+    "key": "orbital_shipyard",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      -0.000000119209289550781,
+      0.000000476837158203125
+    ],
+    "scaled_bounds": [
+      10.9709597110748,
+      4.87927989959717,
+      11.3474239349365
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.03999996185303,
+      4.60215091705322
+    ],
+    "bottom_y": 0.0,
+    "key": "orbital_shipyard",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.000000238418579101562,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.4391209602356,
+      5.16152000427246,
+      11.7380229949951
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.03999996185303,
+      4.75665092468262
+    ],
+    "bottom_y": 0.0,
+    "key": "orbital_shipyard",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.000000238418579101562,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.9560006141663,
+      5.44375977516174,
+      12.1286220550537
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.03999996185303,
+      4.91115093231201
+    ],
+    "bottom_y": 0.0,
+    "key": "orbital_shipyard",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.4880001068115,
+      5.72600021362305,
+      12.5192237854004
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0101182460784912,
+      0.829999983310699,
+      1.35439109802246
+    ],
+    "bottom_y": 0.0,
+    "key": "stellar_energy_array",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.2997940063477,
+      4.33439993858337,
+      10.8424477577209
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0105929374694824,
+      0.829999983310699,
+      1.3405225276947
+    ],
+    "bottom_y": 0.0,
+    "key": "stellar_energy_array",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      11.8299076080322,
+      4.56371994018555,
+      11.3668703079224
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.829999983310699,
+      1.52999997138977
+    ],
+    "bottom_y": 0.0,
+    "key": "stellar_energy_array",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.3290311813354,
+      4.79303994178772,
+      12.3290311813354
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      0.829999983310699,
+      1.52999997138977
+    ],
+    "bottom_y": 0.0,
+    "key": "stellar_energy_array",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      12.8578163146973,
+      5.02235994338989,
+      12.8578163146973
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0121009349822998,
+      0.829999983310699,
+      1.59282875061035
+    ],
+    "bottom_y": 0.0,
+    "key": "stellar_energy_array",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.000000476837158203125
+    ],
+    "scaled_bounds": [
+      13.4204833984375,
+      5.25167994499207,
+      13.6438035964966
+    ]
+  },
+  {
+    "aircraft_dock": [
+      -0.550000011920929,
+      1.12999999523163,
+      2.71779918670654
+    ],
+    "bottom_y": 0.0,
+    "key": "interstellar_refinery",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.25768566131592,
+      5.23790693283081,
+      7.94583740234375
+    ]
+  },
+  {
+    "aircraft_dock": [
+      -0.550000011920929,
+      1.12999999523163,
+      2.94244718551636
+    ],
+    "bottom_y": 0.0,
+    "key": "interstellar_refinery",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.92592124938965,
+      5.2621554851532,
+      8.15485286712646
+    ]
+  },
+  {
+    "aircraft_dock": [
+      -0.550000011920929,
+      1.12999999523163,
+      3.16713047027588
+    ],
+    "bottom_y": 0.0,
+    "key": "interstellar_refinery",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      9.59458541870117,
+      5.2864043712616,
+      8.36396446228027
+    ]
+  },
+  {
+    "aircraft_dock": [
+      -0.550000131130219,
+      1.12999999523163,
+      3.39184427261353
+    ],
+    "bottom_y": 0.0,
+    "key": "interstellar_refinery",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.000000238418579101562,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.2636301040649,
+      5.31065292358398,
+      8.57316417694092
+    ]
+  },
+  {
+    "aircraft_dock": [
+      -0.550000011920929,
+      1.12999999523163,
+      3.54999995231628
+    ],
+    "bottom_y": 0.0,
+    "key": "interstellar_refinery",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.9372136116028,
+      5.4195188999176,
+      8.96935081481934
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.12000000476837,
+      3.19822597503662
+    ],
+    "bottom_y": 0.0,
+    "key": "crystal_refinery",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.11999959945679,
+      5.4600001335144,
+      7.40103254318237
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.12000000476837,
+      3.24000000953674
+    ],
+    "bottom_y": 0.0,
+    "key": "crystal_refinery",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.56389961242676,
+      5.83800010681152,
+      7.76863842010498
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.12000000476837,
+      3.24000000953674
+    ],
+    "bottom_y": 0.0,
+    "key": "crystal_refinery",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      -0.000000238418579101562,
+      0.0
+    ],
+    "scaled_bounds": [
+      9.14875545501709,
+      6.21600008010864,
+      8.24235820770264
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.12000000476837,
+      3.24000000953674
+    ],
+    "bottom_y": 0.0,
+    "key": "crystal_refinery",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      9.73392639160156,
+      6.59400005340576,
+      8.71630096435547
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.12000000476837,
+      3.24000000953674
+    ],
+    "bottom_y": 0.0,
+    "key": "crystal_refinery",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.3263818740845,
+      6.97200002670288,
+      9.19013223648071
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.07000005245209,
+      3.45000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "heavy_element_refinery",
+    "level": 1.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.39685974121094,
+      6.1600001335144,
+      7.5737868309021
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.07000005245209,
+      3.45000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "heavy_element_refinery",
+    "level": 2.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      8.96769523620605,
+      6.4399998664856,
+      7.99177837371826
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.07000005245209,
+      3.45000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "heavy_element_refinery",
+    "level": 3.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      9.53884048461914,
+      6.72000026702881,
+      8.40995416641235
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.07000005245209,
+      3.45000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "heavy_element_refinery",
+    "level": 4.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.116597366333,
+      7.0,
+      8.82817134857178
+    ]
+  },
+  {
+    "aircraft_dock": [
+      0.0,
+      1.07000005245209,
+      3.45000004768372
+    ],
+    "bottom_y": 0.0,
+    "key": "heavy_element_refinery",
+    "level": 5.0,
+    "pipe_socket_exists": false,
+    "planar_center": [
+      0.0,
+      0.0
+    ],
+    "scaled_bounds": [
+      10.6880216598511,
+      7.27999973297119,
+      9.24673633575439
+    ]
+  }
+]

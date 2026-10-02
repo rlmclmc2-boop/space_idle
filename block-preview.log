@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+ASSET AUDIT buildings_and_core=31
+BLOCK SAMPLE platforms=3 families=3 connections=4 port_height=-0.9
+SOCKET ServicePort_Habitat_(1_0, 0_0, 0_0) -> ServicePort_Refinery_(-1_0, 0_0, 0_0) span=2.0 height_delta=0.0
+SOCKET ServicePort_Refinery_(0_0, 0_0, 1_0) -> ServicePort_Pressure_(1_0, 0_0, 0_0) span=2.0 height_delta=0.0
+SOCKET ServicePort_Habitat_(0_0, 0_0, 1_0) -> ServicePort_junction_north span=7.0 height_delta=0.0
+SOCKET ServicePort_junction_east -> ServicePort_Pressure_(0_0, 0_0, -1_0) span=7.0 height_delta=0.0
+INTERFACE_CHECK maximum_endpoint_gap=0.00000004371139
