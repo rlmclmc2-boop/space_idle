@@ -168,18 +168,18 @@ func run() -> void:
 		var edge: Dictionary=region.blueprint.edges[int(plan.id)]
 		check(Vector2(route.get_point_position(0).x,route.get_point_position(0).z).is_equal_approx(Vector2(edge.path[0][0],edge.path[0][1])),"Construction navigation starts on authoritative path")
 		check(Vector2(route.get_point_position(route.point_count-1).x,route.get_point_position(route.point_count-1).z).is_equal_approx(Vector2(edge.path[-1][0],edge.path[-1][1])),"Construction navigation ends on authoritative path")
-	# Default framing must keep complete reserved footprints and tallest model bounds.
+	# Default framing must keep the current models completely visible.
 	for plan in [region.blueprint.core]+region.blueprint.nodes:
 		var visual: Node3D=map.core if int(plan.id)<0 else map.slot_nodes[int(plan.id)]
 		var bounds: Array=map.asset_bounds[str(region.row.core_asset)] if int(plan.id)<0 else map.asset_bounds[map.visual_path(region.slots[int(plan.id)])]
 		var height: float=float(bounds[1])*(1.2 if int(plan.id)<0 else map.BUILDING_SCALE)
 		var fits := true
-		for x in [-float(plan.footprint[0])*0.5,float(plan.footprint[0])*0.5]:
-			for z in [-float(plan.footprint[1])*0.5,float(plan.footprint[1])*0.5]:
+		for x in [-float(bounds[0])*0.5,float(bounds[0])*0.5]:
+			for z in [-float(bounds[2])*0.5,float(bounds[2])*0.5]:
 				for y in [0.0,height]:
-					var point: Vector2=map.camera.unproject_position(visual.position+Vector3(x,y,z))
+					var point: Vector2=map.camera.unproject_position(visual.position+Vector3(x*(1.2 if int(plan.id)<0 else map.BUILDING_SCALE),y,z*(1.2 if int(plan.id)<0 else map.BUILDING_SCALE)).rotated(Vector3.UP,float(plan.get("rotation_y",0))))
 					fits=fits and Rect2(Vector2.ZERO,Vector2(map.view.size)).grow(-10).has_point(point)
-		check(fits,"Complete footprint and upper model bounds fit default camera")
+		check(fits,"Complete current model bounds fit default camera id=%s"%plan.id)
 	check(JSON.stringify(region.blueprint)==saved_before,"Renderer does not mutate blueprint")
 	check(map.transports.size()==map.desired_transport_count(30),"Complete galaxy builds only its graduated display pool")
 	check(map.transports[0].depart_at<map.transports[1].depart_at,"Transport departures are staggered")
@@ -343,6 +343,7 @@ func run() -> void:
 	await process_frame
 	check(map.draw_updates==dormant_updates and map.visual_ticks==dormant_ticks,"Final hidden page stops all changed visual work")
 	await paused_lifecycle(viewport,scene,panel)
+	await adaptive_framing(viewport,scene,panel,fixture)
 	print("GALAXY 3D UI checks=",checks," failures=",failures," visual_nodes=",map.world.get_child_count()," buildings=",region.occupied_count," actual_fps=",Engine.get_frames_per_second())
 	if OS.get_environment("GALAXY_RECORD_SECONDS").to_float()>0 and failures==0:
 		await record_construction(viewport,scene,panel,fixture,OS.get_environment("GALAXY_RECORD_SECONDS").to_float())
@@ -456,6 +457,38 @@ func crew_click(viewport: Viewport,panel,button: Button) -> void:
 	click(viewport,Vector2(panel.crew_dialog.position)+panel.crew_dialog.get_ok_button().get_global_rect().get_center())
 	await process_frame
 	check(not panel.crew_dialog.visible,"Real close button dismisses crew popup")
+
+func adaptive_framing(viewport: Viewport,scene,panel,fixture: Dictionary) -> void:
+	var g=scene.game
+	g.galaxy.load_state(g,{"galaxy_1":fixture.save})
+	scene.select_system(8)
+	var region=g.galaxy.regions.galaxy_1
+	var previous_width := 0.0
+	var core_pixels := 0.0
+	for count in [0,1,5,30]:
+		for slot in region.slots:
+			slot.status="active" if int(slot.id)<count else "empty"
+			slot.level=1 if int(slot.id)<count else 0
+		region.refresh_counts();region.building_revision+=1
+		panel.detail_slot=-1;panel.refresh()
+		panel.map.zoom=1.0;panel.map.pan=Vector2.ZERO;panel.map.layout()
+		for _i in 4:await process_frame
+		var map=panel.map
+		var width:float=map.size.x
+		check(width>=previous_width-1,"Canvas expands with existing construction bounds")
+		previous_width=width
+		var diameter:float=map.camera.unproject_position(map.core.position+Vector3(10,0,0)).distance_to(map.camera.unproject_position(map.core.position-Vector3(10,0,0)))
+		if count==0:core_pixels=diameter
+		check(diameter<=core_pixels*1.05,"Sparse city cannot inflate individual model scale")
+		for item in map.transports:
+			map.new_route(item)
+			var safe:=Rect2(Vector2(4,4),Vector2(map.view.size)-Vector2(8,8))
+			var fits:=true
+			for sample in 101:fits=fits and safe.has_point(map.camera.unproject_position(item.curve.sample_baked(item.curve.get_baked_length()*sample/100.0)))
+			check(fits,"Complete airborne route remains inside fitted viewport")
+		print("ADAPTIVE CITY buildings=",count," canvas=",map.size," core_sample_px=",diameter)
+		await capture(viewport,"galaxy-fit-%d.png"%count)
+	check(panel.map.size.x<panel.size.x*0.95,"Full city canvas no longer fills empty page width")
 
 func record_construction(viewport: Viewport,scene,panel,fixture: Dictionary,seconds: float) -> void:
 	if DisplayServer.get_name()=="headless":push_error("Real-time recording requires the native game viewport");return

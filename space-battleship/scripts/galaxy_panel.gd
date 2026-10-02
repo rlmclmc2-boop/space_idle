@@ -75,11 +75,12 @@ func setup(owner) -> void:
 	for key in ["exploration","buildings","max_level","crew"]:make_card(summary,key,true)
 	setup_crew_dialog()
 	var map_frame := PanelContainer.new()
-	map_frame.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	map_frame.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+	map_frame.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
 	map_frame.add_theme_stylebox_override("panel",CHROME.surface(CHROME.NAVY,CHROME.NAVY,3))
 	box.add_child(map_frame)
 	var map_stack := Control.new()
-	map_stack.custom_minimum_size=Vector2(300,330)
+	map_stack.custom_minimum_size=Vector2(300,200)
 	map_stack.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	map_frame.add_child(map_stack)
 	map.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

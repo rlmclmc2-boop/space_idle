@@ -2,6 +2,7 @@ extends Control
 ## Independent, bounded 3D presentation. No gameplay mutation or saved visual state.
 signal slot_selected(id: int)
 const BUILDING_SCALE := 1.4
+const WORLD_PIXEL_LIMIT := 5.0
 var region
 var settings := {}
 var view := SubViewport.new()
@@ -288,7 +289,7 @@ func layout() -> void:
 	zoom=clampf(zoom,setting("camera_zoom_min",0.4),setting("camera_zoom_max",0.6))
 	view.mesh_lod_threshold=clampf(4.0/(zoom*zoom),1.0,4.0)
 	frame_size=fit_size()
-	camera.size=frame_size/zoom
+	camera.size=frame_size*setting("camera_zoom_max",0.6)/zoom
 	# Fixed isometric framing: 45-degree azimuth, 35.26-degree downward pitch.
 	var target := Vector3(frame_origin.x+pan.x,0,frame_origin.y+pan.y)
 	camera.position=target+Vector3(130,130,130)
@@ -298,27 +299,44 @@ func fit_size() -> float:
 	if region==null:frame_origin=Vector2.ZERO;return 120.0
 	var low := Vector2(INF,INF)
 	var high := Vector2(-INF,-INF)
+	var points: Array[Vector3]=[]
+	var roof := float(asset_bounds[str(region.row.core_asset)][1])*1.2
+	for slot in region.slots:
+		if slot.status!="empty":roof=maxf(roof,float(asset_bounds[visual_path(slot)][1])*BUILDING_SCALE)
 	for plan in [region.blueprint.core]+region.blueprint.nodes:
-		var position := Vector2(float(plan.world_pos[0]),float(plan.world_pos[1]))
-		var half := Vector2(float(plan.footprint[0]),float(plan.footprint[1]))*0.5
-		var core_bounds: Array=asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])
-		var height := float(core_bounds[1])*1.2
-		if int(plan.id)>=0:
-			var definition: Dictionary=region.builds[str(plan.planned_type)]
-			var bounds: Array=asset_bounds.get(str(definition.asset_lv5),[10.0,6.0,10.0])
-			height=float(bounds[1])*BUILDING_SCALE
+		var id := int(plan.id)
+		if id>=0 and region.slots[id].status=="empty":continue
+		var path := str(region.row.core_asset) if id<0 else visual_path(region.slots[id])
+		var bounds: Array=asset_bounds[path]
+		var scale_value := 1.2 if id<0 else BUILDING_SCALE
+		var half := Vector2(float(bounds[0]),float(bounds[2]))*scale_value*0.5
+		var height := float(bounds[1])*scale_value
+		var origin := Vector3(float(plan.world_pos[0]),0,float(plan.world_pos[1]))
 		for x in [-half.x,half.x]:
 			for z in [-half.y,half.y]:
-				var point := position+Vector2(x,z)
-				for y in [0.0,height]:
-					var projected := Vector2((point.x-point.y)*0.707107,(point.x+point.y)*0.408248-y*0.816497)
-					low=low.min(projected);high=high.max(projected)
-	# Center the actual asymmetric saved plan, including upper model bounds.
-	var center := (low+high)*0.5
+				for y in [0.0,height]:points.append(origin+Vector3(x,y,z).rotated(Vector3.UP,float(plan.get("rotation_y",0))))
+		if region.slots.any(func(slot):return slot.status!="empty"):
+			# The Bezier control hull bounds every possible flight without tracking boats.
+			for x in [-6.0,6.0]:
+				for z in [-6.0,6.0]:points.append(Vector3(dock(id).x+x,(roof+10.0)*1.4+2.0,dock(id).z+z))
+		if id>=0:
+			for point in region.blueprint.edges[id].path:points.append(Vector3(float(point[0]),0,float(point[1])))
+	for point in points:
+		var projected := Vector2((point.x-point.z)*0.707107,(point.x+point.z)*0.408248-point.y*0.816497)
+		low=low.min(projected);high=high.max(projected)
+	# Keep a bounded model scale. Grow the canvas with the built city, not future lots.
+	var extent := high-low
+	var available_width := maxf(300,get_parent().get_parent().get_parent().size.x-12)
+	var pixels_per_unit := minf(WORLD_PIXEL_LIMIT,minf((available_width-48)/maxf(1,extent.x),550/maxf(1,extent.y)))
+	var wanted := (extent*pixels_per_unit+Vector2(48,100)).ceil().max(Vector2(300,200))
+	if not get_parent().custom_minimum_size.is_equal_approx(wanted):get_parent().custom_minimum_size=wanted
+	# Asymmetric room for the existing top count and bottom selection strip.
+	var padding := Vector2(24,50)/pixels_per_unit
+	var center := (low+high)*0.5+Vector2(0,18/pixels_per_unit)
 	frame_origin=Vector2(center.x*0.707107+center.y*1.224745,-center.x*0.707107+center.y*1.224745)
-	var half_extent := (high-low)*0.5+Vector2(5,6)
 	var aspect := maxf(0.5,size.x/maxf(1,size.y))
-	return maxf(95,2.0*maxf(half_extent.y,half_extent.x/aspect))
+	var half_extent := extent*0.5+padding
+	return maxf(size.y/WORLD_PIXEL_LIMIT,2.0*maxf(half_extent.y,half_extent.x/aspect))
 
 func visual_path(slot: Dictionary) -> String:
 	var key := str(slot.get("type",""))
@@ -424,6 +442,7 @@ func refresh() -> void:
 			transit.rebuild(region.layout_snapshot(),float(asset_bounds[str(region.row.core_asset)][0])*1.2*0.43)
 			lane_states=next_lane_states
 			route_revision=building_revision
+		layout()
 	sync_transports()
 	refresh_construction()
 func desired_transport_count(built_count: int) -> int:
