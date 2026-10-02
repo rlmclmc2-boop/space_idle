@@ -1,0 +1,21 @@
+{
+  "operation": "create_library_file",
+  "status": "succeeded",
+  "path": "/individual-city-full-ui.png",
+  "file_id": "file_000000000a1c81f5b9670d612ad409c8",
+  "library_file_id": "libfile_3e17c7719cd481919555ec6407a722f4",
+  "file_name": "individual-city-full-ui.png",
+  "current_version_number": 0,
+  "restored_from_version_number": null,
+  "xattrs": [
+    {
+      "name": "user.library-file-version",
+      "value": "0"
+    }
+  ],
+  "directory_id": "libdir_609c66a34ad88191ab722afaa56a9c52",
+  "mime_type": "image/png",
+  "library_artifact_type": "image",
+  "file_size_bytes": 594152,
+  "external_connectors_accessed": false
+}
