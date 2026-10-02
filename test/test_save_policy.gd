@@ -44,19 +44,20 @@ func activate(control: BaseButton) -> void:
 		control.pressed.emit()
 		return
 	await process_frame
-	var viewport := control.get_viewport()
+	var point := root.get_final_transform()*(control.get_screen_transform()*(control.size*.5))
+	DisplayServer.warp_mouse(point)
 	var motion := InputEventMouseMotion.new()
-	motion.position = control.get_global_rect().get_center()
-	if viewport is Window and viewport != root:
-		motion.position += Vector2(viewport.position)
-		viewport = root
-	viewport.push_input(motion,true)
+	motion.position = point
+	motion.global_position = point
+	Input.parse_input_event(motion)
+	await process_frame
 	for pressed in [true,false]:
 		var input := InputEventMouseButton.new()
-		input.position = motion.position
+		input.position = point
+		input.global_position = point
 		input.button_index = MOUSE_BUTTON_LEFT
 		input.pressed = pressed
-		viewport.push_input(input,true)
+		Input.parse_input_event(input)
 		await process_frame
 
 func run() -> void:
@@ -209,10 +210,13 @@ func run() -> void:
 		await activate(scene.guard_settings)
 		check(scene.guard_settings.get_popup().visible,"Real header click opens settings without overlapping another button")
 		scene.guard_settings.get_popup().hide()
-	scene.guard_settings.get_popup().id_pressed.emit(30)
-	var dialog_id := scene.save_settings_dialog.get_instance_id()
-	var apply := scene.save_settings_dialog.find_child("ApplySaveInterval",true,false) as Button
-	var manual := scene.save_settings_dialog.find_child("ManualSave",true,false) as Button
+	scene.help_open = false
+	scene.refresh_navigation()
+	scene.show_save_page()
+	await process_frame
+	var dialog_id := scene.save_panel.get_instance_id()
+	var apply := scene.save_panel.find_child("ApplySaveInterval",true,false) as Button
+	var manual := scene.save_panel.find_child("ManualSave",true,false) as Button
 	scene.save_interval_input.text = "0"
 	await activate(apply)
 	check(scene.game.save_interval_minutes==2 and scene.game.attempts==0 and scene.save_interval_feedback.text==UIText.t("save.invalid_interval"),"Invalid UI interval has visible feedback and no save")
@@ -233,11 +237,12 @@ func run() -> void:
 	scene.equipment_tabs.current_tab = 1
 	scene.refresh_navigation()
 	scene._process(0.016)
-	check(scene.game.attempts==ui_attempts and scene.game.builds==ui_attempts and scene.save_settings_dialog.get_instance_id()==dialog_id,"Focus/tab/close/frame refresh do not save or rebuild the settings dialog")
+	check(scene.game.attempts==ui_attempts and scene.game.builds==ui_attempts and scene.save_panel.get_instance_id()==dialog_id,"Focus/tab/close/frame refresh do not save or rebuild the save page")
 	if DisplayServer.get_name()!="headless":
+		scene.show_save_page()
 		await process_frame
 		await RenderingServer.frame_post_draw
-		check(scene.save_settings_dialog.size.y < 600 and scene.save_settings_dialog.get_ok_button().is_visible_in_tree(),"Settings remain compact with visible confirmation and failure warning")
+		check(scene.save_panel.is_visible_in_tree() and manual.is_visible_in_tree(),"Save page keeps manual action and failure warning visible")
 		scene.get_viewport().get_texture().get_image().save_png("res://.runtime/preview-save-settings.png")
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
 	saved = FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)

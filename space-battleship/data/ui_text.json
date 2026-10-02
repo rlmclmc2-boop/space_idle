@@ -12358,5 +12358,35 @@
     "text": "重新加载失败（{error}）；恢复结果：{rollback}。原进度备份：{backup}",
     "params": "{error},{rollback},{backup}",
     "category": "settings"
+  },
+  {
+    "key": "save.tab",
+    "text": "保存",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.current_title",
+    "text": "当前进度",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.export_description",
+    "text": "将当前进度导出为 JSON 文件，可留作备份或在另一台电脑继续游戏。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.import_description",
+    "text": "导入将替换当前全部进度并重新加载游戏。确认后先备份原进度；取消不会替换。",
+    "params": "",
+    "category": "settings"
+  },
+  {
+    "key": "save.automatic_title",
+    "text": "定时保存",
+    "params": "",
+    "category": "settings"
   }
 ]

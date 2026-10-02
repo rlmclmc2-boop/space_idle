@@ -15,7 +15,8 @@ const ICONS := [
 	preload("res://assets/ui/shell/crew.svg"),
 	preload("res://assets/ui/shell/planet.svg"),
 	preload("res://assets/ui/shell/chrono.svg"),
-	preload("res://assets/ui/shell/galaxy.svg")
+	preload("res://assets/ui/shell/galaxy.svg"),
+	preload("res://assets/ui/shell/save.svg")
 ]
 
 static func face(weight: int) -> Font:
