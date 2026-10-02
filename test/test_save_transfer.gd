@@ -39,6 +39,31 @@ func run() -> void:
   check(not transfer.prepare("user://transfer-bad.json",db).error.is_empty(),"Reject damaged/truncated/wrong JSON")
  var damaged:=raw.duplicate(true);damaged.galaxies[damaged.galaxies.keys()[0]].blueprint={"layout_version":1}
  check(not transfer.prepare_data(damaged,db).error.is_empty(),"Reject incomplete galaxy layout before loader")
+ var galaxy_key: String=raw.galaxies.keys()[0]
+ var disk_before:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+ for kind in ["edge_to","edge_from","edge_core","unknown_type","unknown_planned","node_id","parent","connection"]:
+  var malformed:=raw.duplicate(true)
+  var region: Dictionary=malformed.galaxies[galaxy_key]
+  match kind:
+   "edge_to":region.blueprint.edges[0].to="node_999"
+   "edge_from":region.blueprint.edges[0].from="node_999"
+   "edge_core":region.blueprint.edges[0].to="core"
+   "unknown_type":
+    region.blueprint.nodes[0].type="unknown_construct"
+    region.blueprint.nodes[0].planned_type="unknown_construct"
+    region.slots[0].type="unknown_construct"
+   "unknown_planned":region.blueprint.nodes[0].planned_type="unknown_construct"
+   "node_id":region.blueprint.nodes[0].node_id="node_999"
+   "parent":region.blueprint.nodes[1].parent_id=0 if region.blueprint.nodes[1].parent_id==-1 else -1
+   "connection":region.blueprint.core.connections.append("node_999")
+  write_json("user://transfer-bad-graph.json",malformed)
+  check(not transfer.prepare("user://transfer-bad-graph.json",db).error.is_empty(),"Reject malformed galaxy file before confirmation: "+kind)
+  check(transfer.commit_import(g,malformed).error==ERR_INVALID_DATA and g.profile==before and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==disk_before,"Rejected galaxy cannot replace disk/runtime: "+kind)
+ for version in [1,2]:
+  var legacy:=raw.duplicate(true);legacy.version=2 if version==1 else 3
+  legacy.galaxies[galaxy_key].version=version
+  legacy.galaxies[galaxy_key].erase("blueprint")
+  check(transfer.prepare_data(legacy,db).error.is_empty(),"Legal old galaxy regenerates layout: "+str(version))
  check(g.profile==before,"All rejected imports preserve live state")
  var original:="{\"version\":4,\"resources\":{\"1\":111,\"2\":222},\"highestLevel\":1}"
  var original_file:=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE);original_file.store_string(original);original_file.close()

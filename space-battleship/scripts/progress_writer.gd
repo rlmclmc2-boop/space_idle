@@ -56,16 +56,39 @@ func clear_files() -> Error:
 			if error != OK:return error
 	return OK
 
+static func _import_owner_running(pid: int) -> bool:
+	if pid==OS.get_process_id():return true
+	# Godot's process tracker only knows this process and its children.
+	if OS.get_name()=="Linux":return DirAccess.dir_exists_absolute("/proc/"+str(pid))
+	var output: Array=[]
+	if OS.get_name()=="Windows":
+		var error:=OS.execute("tasklist",["/FI","PID eq "+str(pid),"/FO","CSV","/NH"],output,true)
+		return error!=0 or output.any(func(line):return str(line).contains('","'+str(pid)+'",'))
+	return OS.execute("/bin/kill",["-0",str(pid)],output,true)==0
+
 static func read_progress(path: String) -> Variant:
 	# Interrupted import installation keeps the previous committed primary here.
 	# Never read .import-new: it is uncommitted, even if it parses successfully.
+	var marker := path+".import-active"
+	var active := false
+	if FileAccess.file_exists(marker):
+		var owner = JSON.parse_string(FileAccess.get_file_as_string(marker))
+		# Conservatively retain unrecognized ownership; our marker is atomically written.
+		var pid = owner.get("pid") if owner is Dictionary else null
+		active = true
+		if (pid is float or pid is int) and is_finite(float(pid)) and pid==floorf(float(pid)) and pid>0 and pid<9.22e18:
+			active = _import_owner_running(int(pid))
+		if not active:DirAccess.remove_absolute(marker)
 	var previous := path+".import-prev"
-	if FileAccess.file_exists(previous):
-		if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
-			if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
-		if _read_progress_file(path)!=null:
-			DirAccess.remove_absolute(previous)
-			if FileAccess.file_exists(path+".import-new"):DirAccess.remove_absolute(path+".import-new")
+	if not active:
+		if FileAccess.file_exists(previous):
+			if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
+				if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
+			if _read_progress_file(path)!=null:DirAccess.remove_absolute(previous)
+		# Also covers interruption after staging new bytes, before moving the old primary.
+		# An uncommitted incoming file must never replace a valid committed primary.
+		if _read_progress_file(path)!=null and FileAccess.file_exists(path+".import-new"):
+			DirAccess.remove_absolute(path+".import-new")
 	for suffix in ["", ".import-prev", ".bak"]:
 		var data = _read_progress_file(path + suffix)
 		if data != null:return data

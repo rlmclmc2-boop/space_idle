@@ -60,22 +60,48 @@ static func clean(value: Variant, spec: Variant) -> Variant:
   elif spec.has("*"):result[key]=clean(value[key],spec["*"])
  return result
 
-static func blueprint_valid(raw: Dictionary) -> bool:
+static func blueprint_valid(raw: Dictionary, builds: Dictionary) -> bool:
  if not raw.has("blueprint"):return true
  var plan: Dictionary=raw.blueprint
- if plan.get("layout_version")!=Layout.VERSION or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
+ if plan.get("layout_version")!=Layout.VERSION or plan.get("core_id")!="core" or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
  var nodes: Array=plan.nodes
- if nodes.is_empty() or nodes.size()>10000:return false
+ if nodes.is_empty() or nodes.size()>10000 or plan.edges.size()!=nodes.size():return false
+ var identities := {}
+ var connections := {}
  for i in range(-1,nodes.size()):
   var node: Dictionary=plan.core if i<0 else nodes[i]
   for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
    if not node.has(key):return false
   if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
-  if i>=0 and (not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i):return false
-  for dep in node.requires:
-   if dep!="core" and (not dep.begins_with("node_") or not dep.trim_prefix("node_").is_valid_int() or int(dep.trim_prefix("node_"))<0 or int(dep.trim_prefix("node_"))>=i):return false
+  if node.footprint[0]<=0 or node.footprint[1]<=0:return false
+  if i<0:
+   if node.type!="core" or node.get("planned_type","core")!="core" or node.parent_id!=-1 or node.depth!=0 or not node.requires.is_empty():return false
+  else:
+   if not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i:return false
+   for type in [node.type,node.get("planned_type",node.type)]:
+    if not str(type).is_empty() and not builds.has(type):return false
+   if not str(node.type).is_empty() and not str(node.get("planned_type","")).is_empty() and node.type!=node.planned_type:return false
+   var parent: Dictionary=plan.core if int(node.parent_id)<0 else nodes[int(node.parent_id)]
+   if node.depth!=parent.depth+1 or node.requires!=[parent.node_id]:return false
+  identities[node.node_id]=node
+  connections[node.node_id]=[]
+ var destinations := {}
  for edge in plan.edges:
-  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width"):return false
+  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width") or edge.width<=0:return false
+  if not identities.has(edge.from) or not identities.has(edge.to) or edge.to=="core" or destinations.has(edge.to):return false
+  if identities[edge.to].requires!=[edge.from]:return false
+  destinations[edge.to]=true
+  connections[edge.from].append(edge.to);connections[edge.to].append(edge.from)
+ for id in identities:
+  var expected: Array=connections[id]
+  var actual: Array=identities[id].connections
+  if actual.size()!=expected.size() or not expected.all(func(ref):return actual.has(ref)):return false
+ for i in raw.get("slots",[]).size():
+  var slot: Dictionary=raw.slots[i]
+  if i>=nodes.size() or slot.get("id",i)!=i or slot.get("node_id",nodes[i].node_id)!=nodes[i].node_id:return false
+  for type in [slot.get("type",""),slot.get("planned_type","")]:
+   if not str(type).is_empty() and not builds.has(type):return false
+  if not str(nodes[i].type).is_empty() and not str(slot.get("type","")).is_empty() and nodes[i].type!=slot.type:return false
  return true
 
 func prepare(path: String, db: ShipDatabase) -> Dictionary:
@@ -93,8 +119,15 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,BattleGame.SAVE_VERSION]:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
- for region in raw.get("galaxies",{}).values():
-  if region.get("version",0)>3 or not blueprint_valid(region):return {"error":"format"}
+ for key in raw.get("galaxies",{}):
+  var region: Dictionary=raw.galaxies[key]
+  if region.get("version",0)>3:return {"error":"format"}
+  # Older galaxy saves regenerate their layout; preserve that migration path.
+  if region.get("version",0)<3:continue
+  var builds := {}
+  for build in db.data.get("galaxy_build",{}).values():
+   if build.galaxy_key==key:builds[build.key]=build
+  if not blueprint_valid(region,builds):return {"error":"format"}
  # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
  var candidate:=BattleGame.new(db,false)
  candidate.load_progress_data(clean(raw,schema()))
@@ -104,7 +137,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  var primary:=game.progress_writer.path.simplify_path()
- if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new"]:return ERR_INVALID_PARAMETER
+ if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak"]:return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:
@@ -115,6 +148,17 @@ func rename(from: String,to: String) -> Error:
  return DirAccess.rename_absolute(from,to)
 
 func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
+ # Install ownership before staging bytes, so startup in another process cannot
+ # mistake an in-flight transaction for an interrupted import.
+ var marker: String=game.progress_writer.path+".import-active"
+ if FileAccess.file_exists(marker) or DirAccess.dir_exists_absolute(marker):return {"error":ERR_ALREADY_IN_USE}
+ var error:=write_file(marker,JSON.stringify({"pid":OS.get_process_id()}).to_utf8_buffer())
+ if error!=OK:return {"error":error}
+ var transaction:=_commit_import(game,raw)
+ DirAccess.remove_absolute(marker)
+ return transaction
+
+func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  var prepared:=prepare_data(raw,game.db)
  if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
  var primary: String=game.progress_writer.path
