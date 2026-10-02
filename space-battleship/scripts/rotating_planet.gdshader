@@ -59,9 +59,11 @@ void fragment() {
         rgb += vec3(0.93, 0.94, 0.81) * pow(max(0.0, illumination), 12.0) * 0.08;
         rgb += atmosphere_color.rgb * pow(1.0 - normal.z, 3.5) * glow_strength * (0.2 + 0.8 * day);
         if (emission > 0.0) {
-            vec2 star_uv = uv * max(0.1, detail_scale);
-            float cells = map_sample(surface_map, star_uv + vec2(phase.x, 0.0)).r;
-            float detail = map_sample(surface_map, star_uv * 1.73 + vec2(phase.y, phase.x * 0.3)).r;
+            // Both detail layers belong to the same turning surface. Integer longitude
+            // repeats keep a full rotation seamless even with fractional detail scale.
+            vec2 star_uv = vec2((uv.x + phase.x) * max(1.0, round(detail_scale)), uv.y * max(0.1, detail_scale));
+            float cells = map_sample(surface_map, star_uv).r;
+            float detail = map_sample(surface_map, vec2(star_uv.x + 0.37, star_uv.y * 1.73)).r;
             float granules = clamp(mix(0.78, cells * 0.78 + detail * 0.22, detail_strength), 0.0, 1.0);
             granules = mix(granules, 0.32 + smoothstep(0.36, 0.53, granules) * 0.36
                 + smoothstep(0.64, 0.78, granules) * 0.24, 0.65);
