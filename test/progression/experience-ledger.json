@@ -1,0 +1,93 @@
+{
+  "scope": "Facts and hypotheses kept separate; bug repairs versus numeric target failures versus UX suggestions. No full-journey claim.",
+  "items": [
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Formal scene simulation omitted game.event -> scene.on_event",
+      "evidence": "evidence/scene-hook-scope-correction.json",
+      "impact": "Invalidates earlier formal timing claims; original failures retained."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Queued equipment stats after native reforge referenced removed module cards",
+      "evidence": "evidence/native-reforge-confirm-v16",
+      "impact": "8 old cards become5; surviving card instance retained, removed selection reset."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Fractional resource reload rounded balances upward",
+      "evidence": "evidence/fractional-save-fixed14",
+      "impact": "Formal save restore must preserve balances; current controlled14 checks pass."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "failed numeric target; tuning pending",
+      "topic": "First preparation advances31 and32 too early",
+      "evidence": "formal-scene-v15b-recovery/forge30-to35-phase-safe (ongoing segment)",
+      "measurements": {
+        "30_to31_seconds": 1021.433333333,
+        "30_to32_seconds": 2984.166667275
+      },
+      "impact": "Both stages clear in49.74min rather than being distributed through~4h preparation."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "fixed in hint candidate",
+      "topic": "Reforge confirmation misstated deletion of chrono and stopping exploration",
+      "evidence": "evidence/native-reforge-confirm-v16",
+      "impact": "Correct retained iron/U/chrono/crew/planet/galaxy state and ongoing exploration; permanent rewards read from source table."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "test policy repaired",
+      "topic": "Restored-clock enhancement attempts depended on elapsed-time modulo10",
+      "evidence": "evidence/sparse-v6-phase-branches",
+      "impact": "Legacy0 vs actual-visit13 enhancement levels in1M-fragment fixture; unlocked first A branches selected. BranchA is a test assumption."
+    },
+    {
+      "priority": "P1",
+      "kind": "hypothesis",
+      "status": "experience review pending",
+      "topic": "Large reforge visit may require excessive per-card upgrade input",
+      "evidence": "sparse_policy.gd uses at most24 sweeps; each successful card action journaled",
+      "impact": "Measure actual successful upgrades after forge before estimating human clicks; no manual all-module button exists."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "delegated enemy-identification task",
+      "topic": "Generated enemy IDs lack authored UI name bindings",
+      "evidence": "UI text bindings cover original IDs; generated roster IDs differ",
+      "impact": "Display cleanup belongs to dedicated art/identification task, kept separate."
+    },
+    {
+      "priority": "P2",
+      "kind": "fact",
+      "status": "review growth distribution",
+      "topic": "Stage7 takes largest share of0–10 budget",
+      "evidence": "evidence/full-ui-fresh120-through10/summary.json",
+      "measurements": {
+        "stage7_seconds": 3152.7166666555,
+        "clear10_seconds": 8032.11666663393
+      },
+      "impact": "Repeated farming/growth rather than one long battle; boredom remains a human-experience hypothesis, not proven by automated timing."
+    },
+    {
+      "priority": "P2",
+      "kind": "fact",
+      "status": "numeric reanchor done; pacing review pending",
+      "topic": "Stage26–30 each only a few minutes after slower21–25",
+      "evidence": "evidence/full-event-v12-segment20-to30",
+      "impact": "Candidate pacing accelerates sharply; exact candidate source and cross-version scope must accompany conclusions."
+    }
+  ]
+}

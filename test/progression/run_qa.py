@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse,json,os,subprocess,sys
 p=argparse.ArgumentParser();p.add_argument('--project',type=Path,required=True);p.add_argument('--godot',default='godot');p.add_argument('--label',required=True);p.add_argument('--duration',type=int,default=10800);p.add_argument('--engine',choices=['formal','basic'],default='formal');p.add_argument('--scene',action='store_true');p.add_argument('--stop-clear',type=int,default=10);p.add_argument('--stop-reach',type=int,default=0);p.add_argument('--visit-seconds',type=int,default=120);p.add_argument('--teaching-seconds',type=int,default=10);p.add_argument('--seed',type=int,default=20261002);p.add_argument('--thematic',action='store_true');p.add_argument('--no-reforge',action='store_true');p.add_argument('--bulk',action='store_true');p.add_argument('--stop-galaxy',action='store_true');p.add_argument('--resume',type=Path);p.add_argument('--allow-version-change',action='store_true');p.add_argument('--timeout',type=int,default=3600);a=p.parse_args()
+if a.resume and not a.resume.is_file():raise SystemExit('Resume checkpoint does not exist: '+str(a.resume))
 project=a.project.resolve();result=project/'results'/a.label
 if result.exists():raise SystemExit('Result label already exists; preserve evidence and choose a new label')
 if not (project/'qa-manifest.json').exists():raise SystemExit('Build a package first')

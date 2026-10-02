@@ -11473,7 +11473,7 @@
     "key": "planet.reforge_confirm",
     "category": "planet",
     "source": "planet_panel.gd",
-    "text": "确认重铸新船？\n\n将永久清除装备、AI工厂、装备强化与攻击历史、充能（反应炉与时空粒子）、战舰系统成长进度。新一轮从第{level}关开始，并恢复该关及此前已获得的解锁项目。\n\n保留所有船员及等级、星球永久进度、自动探索设置和历史最高关卡经验倍率。当前探索停止。已经历的解锁提示不再重复。\n\n该星球仅能重铸一次。征服后，该星球每次探索经验同步给予所有船员。",
+    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、自动探索设置及历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n每颗星球只能重铸一次。",
     "params": "{level}"
   },
   {
@@ -12412,5 +12412,12 @@
     "category": "battle",
     "note": "Runtime encounter tier, independent of final battle point",
     "source": "battlefield.gd:draw_vertical_battle_hud"
+  },
+  {
+    "key": "planet.reforge_rewards",
+    "category": "planet",
+    "source": "planet_panel.gd",
+    "text": "本次永久收益：\n{rewards}\n新星球仍需满足对应关卡的解锁条件。",
+    "params": "{rewards}"
   }
 ]

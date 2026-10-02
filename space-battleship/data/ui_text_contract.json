@@ -6598,6 +6598,11 @@
     },
     "battle.encounter_tier.ultimate": {
       "params": []
+    },
+    "planet.reforge_rewards": {
+      "params": [
+        "rewards"
+      ]
     }
   },
   "bindings": {

@@ -17,7 +17,14 @@ func run():
  assert(g.planet_buildings.activate(g,"1","shipyard"));assert(g.can_reforge_planet("1"))
  # Valid queued projection invalidation, as occurs after reactor/research changes.
  scene.equipment_panel.invalidate_stats({"category":"weapons"})
- assert(g.reforge_planet("1"))
+ scene.planet_panel._confirm_reforge("1")
+ var dialogs=scene.planet_panel.get_children().filter(func(child):return child is ConfirmationDialog)
+ assert(dialogs.size()==1)
+ var dialog=dialogs[0]
+ assert(dialog.dialog_text.contains("装备效果等级 +35"));assert(dialog.dialog_text.contains("AI工厂效果等级 +25"))
+ assert(dialog.dialog_text.contains("保留铁与铀余额、时空粒子"));assert(dialog.dialog_text.contains("进行中的星球探索继续"))
+ dialog.confirmed.emit();assert(g.planet_progress("1").get("conquered",false))
+ print("NATIVE_REFORGE_CONFIRM_PASS rewards_from_source=true reserve_and_exploration_text_correct=true")
  var expected:int=g.module_entries("weapons").size()+g.module_entries("defence").size()
  var after:int=scene.equipment_panel.cards.size()
  print("NATIVE_REFORGE_MODULES before=",before," after=",after," expected=",expected," pending_rebuild=",scene.ui_rebuild_pending)
