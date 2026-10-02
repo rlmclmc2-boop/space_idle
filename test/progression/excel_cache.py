@@ -1,9 +1,19 @@
 """Recalculate the arithmetic-only level workbook formulas without dropping formulas."""
 import ast, math, re, zipfile, io
 from xml.etree import ElementTree as ET
+import openpyxl
 
 def recache_level(path, sheet, original_bytes=None):
-    cache = {}; busy = set()
+    cache = {}; busy = set(); changed_cache = {}
+    old_sheet = openpyxl.load_workbook(io.BytesIO(original_bytes),data_only=False).active if original_bytes else None
+    old_values = openpyxl.load_workbook(io.BytesIO(original_bytes),data_only=True).active if original_bytes else None
+    def changed(ref):
+        if ref in changed_cache:return changed_cache[ref]
+        current=sheet[ref].value
+        result=old_sheet is None or current!=old_sheet[ref].value
+        if not result and isinstance(current,str) and current.startswith('='):
+            result=any(changed(m.replace('$','')) for m in re.findall(r'\$?[A-Z]{1,3}\$?\d+(?![0-9(])',current))
+        changed_cache[ref]=result;return result
     def excel_round(x, n=0):
         scale=10.0**int(n)
         return math.copysign(math.floor(abs(x)*scale+.5)/scale,x)
@@ -13,7 +23,9 @@ def recache_level(path, sheet, original_bytes=None):
         if ref in cache:return cache[ref]
         if ref in busy:raise ValueError('Circular formula '+ref)
         busy.add(ref); val=sheet[ref].value
-        if isinstance(val,str) and val.startswith('='):
+        if isinstance(val,str) and val.startswith('=') and not changed(ref) and old_values[ref].value is not None:
+            val=old_values[ref].value
+        elif isinstance(val,str) and val.startswith('='):
             expression=re.sub(r'\$?[A-Z]{1,3}\$?\d+(?![0-9(])',lambda m:repr(value(m.group())),val[1:]).replace('^','**')
             tree=ast.parse(expression,mode='eval')
             allowed=(ast.Expression,ast.Constant,ast.BinOp,ast.UnaryOp,ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow,ast.USub,ast.UAdd,ast.Call,ast.Name,ast.Load)
@@ -32,14 +44,6 @@ def recache_level(path, sheet, original_bytes=None):
             v=cell.find('m:v',ns)
             if v is None:v=ET.SubElement(cell,'{'+ns['m']+'}v')
             v.text=repr(computed[cell.attrib['r']])
-    if original_bytes is not None:
-        with zipfile.ZipFile(io.BytesIO(original_bytes)) as z: old=ET.fromstring(z.read('xl/worksheets/sheet1.xml'))
-        prior={c.attrib['r']:c.find('m:v',ns).text for c in old.findall('.//m:c',ns) if c.find('m:f',ns) is not None and c.find('m:v',ns) is not None}
-        for cell in root.findall('.//m:c',ns):
-            ref=cell.attrib['r']
-            # Stage20 is a literal anchor; formulas from21 onward do not depend on1–10.
-            if int(re.search(r'\d+',ref).group())>=24 and ref in prior and cell.find('m:f',ns) is not None:
-                cell.find('m:v',ns).text=prior[ref]
     files['xl/worksheets/sheet1.xml']=ET.tostring(root,encoding='utf-8',xml_declaration=True)
     with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED) as z:
         for n,content in files.items():z.writestr(n,content)

@@ -6,27 +6,32 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='early-v3');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);a=p.parse_args()
 data=json.loads((SRC/'data/game_data.json').read_text())
 books={n:openpyxl.load_workbook(CFG/(n+'.xlsx')) for n in ['level','mon','monGroup']}
 sheets={n:b.active for n,b in books.items()};headers={n:{c.value:c.column for c in s[1] if c.value is not None} for n,s in sheets.items()}
+indices={n:{s.cell(r,headers[n]["id"]).value:r for r in range(4,s.max_row+1)} for n,s in sheets.items()}
 def replace(n,key,row):
- s=sheets[n]; h=headers[n]; col=h['id']; ri=next((r for r in range(4,s.max_row+1) if s.cell(r,col).value==key),s.max_row+1)
+ s=sheets[n]; h=headers[n]; ri=indices[n].get(key,s.max_row+1); indices[n][key]=ri
  for k,v in row.items():
   if k in h:s.cell(ri,h[k],v)
 def source_row(n,key):
- s=sheets[n];h=headers[n];ri=next(r for r in range(4,s.max_row+1) if s.cell(r,h['id']).value==key)
+ s=sheets[n];h=headers[n];ri=indices[n][key]
  return {k:s.cell(ri,c).value for k,c in h.items()}
 themes=['laser','missile','cannon','neutral1','neutral2','longLaser','laser','missile','cannon','neutral3']
-ratios=[1,1.5,2,3,4.5]+[1.2**(20+10*i) for i in range(5)]
+themes += ['neutral1','missile','neutral2','laser','cannon','neutral4','longLaser','neutral3','missile','laser']
+ratios=[1,1.5,2,3,4.5,1.2**15]+[1.2**(30+10*i) for i in range(4)]
+ratios += [1.2**(60+13*i) for i in range(1,11)]
 resources=[1.4**i for i in range(5)]+[12*1.2**(10*i) for i in range(5)]
+resources += [resources[9]*1.2**(13*i)*.10 for i in range(1,11)]
 manifest=[]
-for stage,theme in enumerate(themes,1):
+for stage,theme in enumerate(themes[:a.through],1):
  tiers=['normal']*4+['elite'] if stage<=5 else ['normal']*5+['elite']*3+['boss']
+ if stage>=20 and ((stage<=70 and stage%5==0) or (stage>70 and stage%10==0)):tiers=['elite']*5+['boss']*3+['ultimate']
  groups=[]
  for node,tier in enumerate(tiers,1):
   variant='physical_attack' if (stage+node)%2==0 else 'energy_attack'
-  if tier=='boss':key='boss_energy' if theme in ['missile','cannon'] else 'boss_physical'
+  if tier in ['boss','ultimate']:key=tier+('_energy' if theme in ['missile','cannon'] else '_physical')
   else:key=tier+'_'+theme
   # Neutral elites carry numeric suffix; their source IDs exist.
   gid=int(data['battle_design'][key]['group_id'])+(1000 if variant=='physical_attack' else 0)
@@ -50,5 +55,5 @@ for n,b in books.items():b.save(CFG/(n+'.xlsx'))
 recache_level(CFG/"level.xlsx",sheets["level"],subprocess.check_output(["git","show","04a5a307bcef9325efa9026e1ca94affa577e10d:space-battleship/config_excel/level.xlsx"],cwd=ROOT))
 result=incremental_import(CFG,SRC/'data/game_data.json')
 evidence=ROOT/'test/progression/candidates';evidence.mkdir(exist_ok=True)
-(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,10],'reason':'Initial teaching roster and economy candidate after 49-second stage1 / 398-second teaching baseline; not accepted balance. Stage4/5 themes are suggestions. Retain 40 original templates.','health_normalization':.1454,'ratios':ratios,'waves':manifest,'import':result},indent=2,ensure_ascii=False))
+(evidence/(a.version+'.json')).write_text(json.dumps({'version':a.version,'stage_range':[1,a.through],'reason':'Initial teaching roster and economy candidate after 49-second stage1 / 398-second teaching baseline; not accepted balance. Stage4/5 themes are suggestions. Retain 40 original templates.','health_normalization':.1454,'ratios':ratios,'waves':manifest,'import':result},indent=2,ensure_ascii=False))
 print(json.dumps(result))

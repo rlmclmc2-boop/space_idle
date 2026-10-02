@@ -1,0 +1,124 @@
+{
+  "reason": "Bound reactor growth for long-run integer capacity and prevent late free power runaway; first-planet 1h preparation +3h construction; preserve later original prep as undecided; bound exploration multipliers; reserve 6–10h galaxy budget after60 instead of old 12–53h. Not accepted before segmented tests.",
+  "changes": [
+    {
+      "sheet": "config",
+      "id": "reactorEnergyGrowth",
+      "field": "para_1",
+      "old": 1.06,
+      "new": 1.06
+    },
+    {
+      "sheet": "planet",
+      "id": 1,
+      "field": "baseTime",
+      "old": 60,
+      "new": 60
+    },
+    {
+      "sheet": "planet",
+      "id": 1,
+      "field": "minTime",
+      "old": 60,
+      "new": 60
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "planet_rule",
+      "old": "only",
+      "new": "only"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "planet_value",
+      "old": "1",
+      "new": "1"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "unlock_explore",
+      "old": 60,
+      "new": 60
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "build_explore",
+      "old": 180,
+      "new": 180
+    },
+    {
+      "sheet": "unlock",
+      "id": "feature/galaxy",
+      "field": "level",
+      "old": 60,
+      "new": 60
+    },
+    {
+      "sheet": "galaxy",
+      "id": "galaxy_1",
+      "field": "explore_work_total",
+      "old": 30000,
+      "new": 30000
+    },
+    {
+      "sheet": "galaxy",
+      "id": "galaxy_1",
+      "field": "upgrade_cost_lv2",
+      "old": 360,
+      "new": 360
+    },
+    {
+      "sheet": "galaxy",
+      "id": "galaxy_1",
+      "field": "upgrade_cost_lv3",
+      "old": 540,
+      "new": 540
+    },
+    {
+      "sheet": "galaxy",
+      "id": "galaxy_1",
+      "field": "upgrade_cost_lv4",
+      "old": 720,
+      "new": 720
+    },
+    {
+      "sheet": "galaxy",
+      "id": "galaxy_1",
+      "field": "upgrade_cost_lv5",
+      "old": 900,
+      "new": 900
+    }
+  ],
+  "shipyard_later": "original150/10 retained; previous_id preserves old completed/in-flight building identity",
+  "first_shipyard_budget": {
+    "preparation_trips": 60,
+    "construction_trips": 180,
+    "seconds_per_trip": 60
+  },
+  "galaxy_total_upgrade_work": 75600,
+  "import": {
+    "ok": true,
+    "action": "import",
+    "changed": [
+      "config",
+      "unlock",
+      "planet",
+      "planet_build",
+      "planet_buff",
+      "galaxy"
+    ],
+    "parsed": [
+      "config",
+      "unlock",
+      "planet",
+      "planet_build",
+      "planet_buff",
+      "galaxy"
+    ],
+    "message": "导入成功：更新 config、unlock、planet、planet_build、planet_buff、galaxy；其余配置保持不变。"
+  }
+}

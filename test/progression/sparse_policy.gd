@@ -70,4 +70,11 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g)}
 		g.start(g.stage-1,false);g.toggle_loop();record(g,"farm_battle_point",{"stage":g.stage,"node":g.profile.guardIndex,"target":farm.target})
 	deaths_seen=int(g.metrics.deaths)
+	# A push/return can change stage after the initial transaction pass.
+	# Fit that newly chosen stage during this same real visit, never on a hidden tick.
+	if thematic:
+		var chosen:=preferred(g.stage)
+		if not chosen.is_empty() and g.profile.unlocked.has(chosen):
+			for index in g.weapon_entries().size():
+				if str(g.weapon_entries()[index].key)!=chosen:g.equip_slot("weapons",index,chosen)
 	return changed

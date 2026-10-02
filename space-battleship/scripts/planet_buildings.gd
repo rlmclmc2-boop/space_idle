@@ -58,7 +58,12 @@ func sync(g, planet_id: String) -> void:
 	if not progress.has("buildings"):progress.buildings = {}
 	for row in rows(g,planet_id):
 		var id := str(row.id)
-		if not progress.buildings.has(id):progress.buildings[id] = {"status":"locked","build_progress":0,"crew":[]}
+		if not progress.buildings.has(id):
+			var previous := str(row.get("previous_id",""))
+			if not previous.is_empty() and progress.buildings.has(previous):
+				progress.buildings[id]=progress.buildings[previous].duplicate(true)
+				progress.buildings.erase(previous)
+			else:progress.buildings[id] = {"status":"locked","build_progress":0,"crew":[]}
 		var item: Dictionary = progress.buildings[id]
 		if item.status=="locked" and N.compare(progress.degree,row.unlock_explore)>=0:
 			item.status = "building"
