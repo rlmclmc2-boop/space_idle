@@ -18,8 +18,11 @@ if 'combatTier' not in [cell.value for cell in groups_sheet[1]]:
  groups_sheet.cell(3,groups_sheet.max_column,'string')
 sheets={n:b.active for n,b in books.items()};headers={n:{c.value:c.column for c in s[1] if c.value is not None} for n,s in sheets.items()}
 indices={n:{s.cell(r,headers[n]["id"]).value:r for r in range(4,s.max_row+1)} for n,s in sheets.items()}
+next_rows={n:s.max_row+1 for n,s in sheets.items()}
 def replace(n,key,row):
- s=sheets[n]; h=headers[n]; ri=indices[n].get(key,s.max_row+1); indices[n][key]=ri
+ s=sheets[n]; h=headers[n]
+ if key in indices[n]:ri=indices[n][key]
+ else:ri=next_rows[n];next_rows[n]+=1;indices[n][key]=ri
  for k,v in row.items():
   if k in h:s.cell(ri,h[k],v)
 def source_row(n,key):

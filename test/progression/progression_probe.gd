@@ -108,8 +108,9 @@ func run() -> void:
 		var checkpoint=JSON.parse_string(FileAccess.get_file_as_string(str(options.resume)))
 		if not checkpoint is Dictionary or not checkpoint.get("save") is Dictionary:
 			printerr("Invalid diagnostic checkpoint");quit(2);return
-		if (checkpoint.get("data_sha256","")!=FileAccess.get_sha256("res://data/game_data.json") or checkpoint.get("combat_engine","basic")!=str(options.get("engine","formal"))) and not bool(options.get("allow_version_change",false)):
-			printerr("Checkpoint data differs: explicitly allow diagnostic version change");quit(2);return
+		var current_fingerprint:String=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint
+		if (checkpoint.get("data_sha256","")!=FileAccess.get_sha256("res://data/game_data.json") or checkpoint.get("combat_engine","basic")!=str(options.get("engine","formal")) or checkpoint.get("code_fingerprint","")!=current_fingerprint) and not bool(options.get("allow_version_change",false)):
+			printerr("Checkpoint data, code or engine differs: explicitly allow diagnostic version change");quit(2);return
 		initial_scope="checkpoint diagnostic; formal journey reload; no full fresh acceptance"
 		game.simulated_time=float(checkpoint.x1_seconds)
 		var raw:Dictionary=checkpoint.save.duplicate(true)

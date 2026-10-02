@@ -124,3 +124,10 @@ The v15 first-preparation segment cleared31 at42985.1667 and32 at44947.9000 from
 
 
 The v16 hint candidate fixes the reforge dialog to match formal retained chrono/resources and ongoing exploration; it displays ordered conquest reward descriptions directly from `planet_buff` and reminds players that next-planet stage gates still apply. Source building/unlock hints now say iron/U rather than ambiguously all materials. Native actual-dialog confirmation plus queued module invalidation passes with no script errors; catalog1761 and protected543-source-row/normal-import checks pass. These text fixes do not change numerics and do not modify frozen parent evidence. `experience-ledger.json` tracks observed defects, numeric failures and separate hypotheses.
+
+
+## v16 preparation-only numerical candidate
+
+Source31–34 growth steps relative30 change28/42/54/76 ->38/52/66/86;35 endpoint100, all income, reforge benefits and stages36–60 remain unchanged. Normal exported JSON differs only in eight attack/life cells; protected543 rows and original header positions pass. Stage35 intermediate points inherit the changed34 endpoint via the existing interpolation rule. `prep31-32-v16` is a cross-version checkpoint segment, pending measurement; final fresh acceptance is still pending. The workbook generator now caches next row indices instead of rescanning worksheet max_row on every replacement. Interrupted pre-export attempt and premature unused package are recorded; no result uses that package.
+
+Checkpoint reload now checks package code fingerprint alongside data/engine. Same-data different-code reload rejects without override; explicitly allowed1s diagnostic records its scope. Source and failed guard logs remain under `evidence/code-version-guard`. Parent separately reports676 frozen seed20261004/300 fresh20 at45796.62s (12.721h),264 retreats/206 visits, old enhancement policy; this is independent reported evidence, not this environment's run and not acceptance for ec827 policy.
