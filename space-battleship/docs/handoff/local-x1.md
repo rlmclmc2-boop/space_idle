@@ -2,7 +2,7 @@
 
 - id: `local-x1`
 - owner: 本地 Windows Codex
-- status: `review`
+- status: `changes_requested`
 - base: `e16abb40f12ca25a547d381b4ac643b979124cb0`
 - branch: `codex/local-x1`
 - tested_commit: `5b7542db115783c51dbd7ce89587f53e28f97a71`
@@ -41,3 +41,13 @@
 - 残余：撤退切换仍有约 30 ms 尖峰；归因样本中对应主循环约 7.0 ms、渲染 CPU 约 1.5 ms、GPU 约 0.2 ms，剩余帧间隔尚未确定为呈现等待还是系统调度。第二次修改后定时保存帧为 25.658 ms，另两次同场景保存帧约 16.7 ms；同步安全写入的偶发耗时未安全定位到可改步骤。不能宣称稳定 60 FPS。未做超过一分钟的连续采样、其他 GPU 或不同画质测量。
 - 四建筑：`test_orbital_blender_assets.gd` 32 项通过，导入退出码 0；`test_planet_orbit_acceptance.gd` 图形运行 39 项通过、退出码 0，核对四类实际界面、轨道转动、暂停/隐藏和点击。旧夹具只授予解锁门槛，却未设置后续星球所需的前置征服，原先访问第二张卡片时报错；补齐夹具进度，保留全部有效断言。`test_performance_ui.gd` 15 项通过、`test_percentage_expected_damage.gd` 66 项通过，均退出码 0。后三项用隔离工程执行 `Godot --path <隔离工程> --script <隔离测试脚本>`；建筑模型用 `python test/run.py test_orbital_blender_assets.gd --timeout 300`。日志仅有 Godot 读取系统根证书库失败及嵌套工具工程忽略提示，无相关脚本或导入错误。
 - 证据：[汇总 JSON](../../../test/performance_evidence/local-x1/summary.json)、[实际界面截图](../../../test/performance_evidence/local-x1/orbit-interface.png)。正式存档与原工作区未写入；未上传存档或原始临时目录。
+
+## 独立审查与返工（2026-10-02）
+
+审查结论：暂不合入 main，status 为 `changes_requested`。原结果、既有授权和范围继续保留；以下是本轮必要返工，不需要用户重复描述任务。
+
+1. **P2：已打开装备详情滞后。** 被测提交 `5b7542db115783c51dbd7ce89587f53e28f97a71` 的 `main.gd:488–541` 将共享强化事件降为投影失效，`equipment_tab.gd:415–460` 仅在 current/next 数值变化时刷新详情。独立 Godot 4.6.3 隔离复现：护盾模块 Lv10，强化 30→31，受击 0，两次数值投影均为 2600；记忆材料说明应从 30%/300% 更新为 31%/310%。`stats_dirty` 清空后详情刷新增量为 0，强制刷新才更新。共享修饰事件应同时合并标记详情依赖，保留延迟合批。补真实说明文本回归：已开详情、隐藏后恢复、多事件合并只刷新一次；不能只断言 dirty 已清空。
+2. **采样来源与提交对应关系待证明。** 这不等于造假或已证实存在实质差异。`summary.json` 的 before 哈希对应基线 CRLF；after/after2 的 `main_sha256` 为 `35e167ec55ca2d8b85c7f3cbc292b1fb0eb184c24983d4cb3e46fffcac415665`，不同于 tested_commit 的 Git LF `4d5e797aefe7176d359b4da941d3a2bdaa49b4a40987acc31842b206dad73161` 或全 CRLF `16f3012dbec95893955a04c2e61cc28b8a8175595dd1cd91e51993f5e1eb3661`。提供实际采样脚本、准确命令、before/after 测量源码与提交的可审差异及对应关系，以及可重算指标的脱敏逐帧时间和关联事件数据。不要上传存档、凭据或完整临时目录；不能只改 summary 哈希。
+3. **最终版本复测与报告。** 修正后先提交实现，更新完整准确的 `tested_commit`，对最终实现做上述必要回归及同场景本机 X1 测量；保留原报告并追加修订结果。约 30 ms 撤退尖峰与偶发保存尖峰仍未解决，继续准确列明，不能宣称稳定 60 FPS。最新 main `546fa5b6a9735e7e31240498018abc8400dd8392` 已含云端三修；本轮不要求扩大合并范围，先修本分支已发现问题。
+
+本轮认领与回传：本地下一次 fetch `codex/local-x1`，确认本文件仍为 `changes_requested` 且没有其他人认领，再将 status 改为 `running`，提交并普通 push 同一分支，继续此任务。认领后仍由本地单写；若出现冲突，不覆盖。完成实现、必要验证和来源补证后，依原流程回传同分支 `review`，等待验收；不推 main、不 force。Git push 不承诺自动唤醒，本地需 fetch 读取本条审查意见。
