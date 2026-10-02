@@ -11,6 +11,8 @@ const PURPLE := Color("b3a0ff")
 const RESOURCE_ART := preload("res://scripts/resource_art.gd")
 const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],2:["reactor"],4:["jewel"],8:["galaxy"]}
 const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",2:"reactor.tab",4:"enhance.tab",8:"galaxy.tab"}
+const BATTLE_INVERSE_STEPS := 20
+const BATTLE_LINEAR_INVERSE_OFFSET := 110.0 / (1 << BATTLE_INVERSE_STEPS)
 const RIGHT_UI_OFFSET := 608.0
 const CHROME_HEIGHT := 78.0
 const VIEW_CROP_LEFT := 20.0
@@ -1285,9 +1287,16 @@ func drop_pickup_positions() -> Dictionary:
 	return positions
 
 func battle_logical_point(point: Vector2) -> Vector2:
+	# In these affine regions all original comparisons take the same branch.
+	# Preserve the finite-bisection midpoint bias, rather than replacing it
+	# with the mathematical inverse and moving missile collision coordinates.
+	if point.y>=-512.0 and point.y<=220.0:
+		return Vector2(point.x,point.y-BATTLE_LINEAR_INVERSE_OFFSET)
+	if point.y>=640.0 and point.y<=2048.0:
+		return Vector2(point.x,point.y-220.0+BATTLE_LINEAR_INVERSE_OFFSET)
 	var low := point.y-220.0
 	var high := point.y
-	for iteration in 20:
+	for iteration in BATTLE_INVERSE_STEPS:
 		var middle := (low+high)*0.5
 		if battle_point(Vector2(0,middle)).y<point.y:low=middle
 		else:high=middle

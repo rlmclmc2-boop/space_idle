@@ -17,6 +17,7 @@
 | 入门指引 | `test_beginner_guide.gd` 检查首次引导、自动完成、关闭不复弹、帮助入口回看及正常存读档；图形运行核对入口和交互 |
 | UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
 | 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
+| 战场坐标反算 | `test_battle_coordinate_inverse.gd --headless` 对照原20轮反算的精确输出，覆盖线性区边界、非线性区和回退范围。 |
 | 战场表现 | `test_weapon_fx.gd`、`test_turret_rotation.gd`、`test_player_visual_scale.gd`、`test_muzzle_visibility.gd`、`test_damage_numbers.gd`、`test_battle_transition_ui.gd`；含长模拟的 `test_portrait_presentation.gd` 仅按 `full` 选择 |
 | 船员 | `test_crew.gd`；等级改造用 `test_crew_levels.gd` / `test_crew_levels_ui.gd`，经验缩写/精确悬停/升级临界值用 `test_crew_experience_display.gd`；装备/科研/宝石/反应炉岗位分别用 `test_crew_equipment.gd` / `test_crew_scientists.gd` / `test_crew_jewels.gd` / `test_crew_reactor.gd`；解锁用 `test_crew_unlock.gd`，界面用 `test_crew_ui.gd` |
 | 星系殖民 | `test_galaxy.gd --headless` 覆盖配置门槛+星球条件解锁、预生成连通蓝图与占地走廊、近层随机施工、零船员暂停、派遣批处理、并行升级、效果、防递归和存档迁移；`test_galaxy_ui.gd` 覆盖紧凑船员弹层的重复开/关闭/取消/空员/派遣召回、全景占地/缩放/拖动/点选、分阶段错峰交通、暂停、隐藏3D停绘与在线批处理；`test_galaxy_assets.gd` 检查六类五级GLB、独立核心、顶点着色、占地和缺模型回退；`test_galaxy_config.py` 检查三表及废弃字段。图形运行可用 `GALAXY_RENDER_SAMPLE=1` 输出五秒软件渲染样本；`GALAXY_RECORD_SECONDS=10` 在断言通过后从真实正常游戏帧缓冲录下半满建设测试阶段及墙钟时间戳，帧目录在隔离工程旁。仅短小规则夹具，不做时间校准模拟。 |
