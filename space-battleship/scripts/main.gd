@@ -485,6 +485,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				game.paused = not game.paused
 
+func invalidate_equipment_projections() -> void:
+	if not is_instance_valid(equipment_panel):return
+	# Coalesce repeated modifier events with equipment_stats in refresh_pending.
+	for category in ["weapons","defence"]:
+		equipment_panel.invalidate_stats({"category":category})
+
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
 		"galaxy_unlocked":
@@ -526,14 +532,13 @@ func on_event(kind: String, info: Dictionary) -> void:
 			if is_instance_valid(crew_panel):crew_panel.invalidate()
 			if is_instance_valid(enhancement_panel):enhancement_panel.invalidate()
 			if info.has("reward") or info.has("activated"):
-				# A shared modifier changes all module projections together. Refresh
-				# that dependency once, instead of repeating filtering/detail work per slot.
-				if is_instance_valid(equipment_panel):equipment_panel.refresh()
+				# Shared modifiers change projections, not equipment structure or costs.
+				invalidate_equipment_projections()
 		"equipment_stats":
 			if is_instance_valid(equipment_panel):equipment_panel.invalidate_stats(info)
 		"enhancement_changed":
 			if is_instance_valid(enhancement_panel):enhancement_panel.invalidate()
-			if is_instance_valid(equipment_panel):equipment_panel.refresh()
+			invalidate_equipment_projections()
 		"jewels_changed":
 			if is_instance_valid(enhancement_panel):
 				enhancement_panel.inventory_changed()

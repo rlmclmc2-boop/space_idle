@@ -82,9 +82,16 @@ func run() -> void:
 	await process_frame
 	check(hud_draws[0]==1 and background_draws[0]==0,"Player health redraws HUD without static background")
 	var cards: Dictionary=scene.equipment_panel.cards.duplicate()
+	scene.equipment_panel.stats_dirty.clear()
 	scene.on_event("planet_changed",{"id":"1","reward":1.0})
 	check(scene.equipment_panel.cards==cards and scene.equipment_tabs.get_instance_id()==tab_id and scene.builds==builds,"Shared planet modifier refresh preserves equipment controls")
+	check(scene.equipment_panel.stats_dirty.size()==scene.equipment_panel.items.size(),"Shared planet modifier defers equipment projections to the visible refresh")
 	scene._process(0)
+	check(scene.equipment_panel.stats_dirty.is_empty(),"Visible equipment projections catch up after planet payout")
+	scene.on_event("enhancement_changed",{"purchased":1})
+	check(scene.equipment_panel.stats_dirty.size()==scene.equipment_panel.items.size(),"Enhancement change coalesces equipment projections")
+	scene._process(0)
+	check(scene.equipment_panel.stats_dirty.is_empty(),"Visible equipment projections catch up after enhancement")
 	await process_frame
 	scene.writes=0
 	for i in 3:scene._process(0)
