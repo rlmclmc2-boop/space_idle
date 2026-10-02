@@ -198,6 +198,62 @@ func run() -> void:
 	click(viewport,screen)
 	await process_frame
 	check(map.selected_slot==id and panel.detail_slot==id,"Real click inspects building")
+	var preview_events := [0]
+	var count_preview := func(_id):preview_events[0]+=1
+	map.slot_selected.connect(count_preview)
+	var other_position: Vector2=map.camera.unproject_position(map.slot_nodes[3].global_position)*map.size/Vector2(map.view.size)
+	var hover := InputEventMouseMotion.new()
+	hover.position=map.get_global_transform()*other_position
+	for _i in 20:viewport.push_input(hover,true)
+	await process_frame
+	check(map.selected_slot==id and panel.detail_slot==id and map.highlight.position.is_equal_approx(node.position+Vector3(0,0.1,0)),"Hover cannot replace a clicked building's detail or highlight")
+	var held_events: int=preview_events[0]
+	check(preview_events[0]==0,"Repeated movement over a building emits no redundant detail refresh")
+	await capture(viewport,"galaxy-selection-held-ui.png")
+	map.mouse_exited.emit()
+	check(panel.detail_slot==id and map.highlight.visible,"Leaving map preserves clicked selection")
+	# Blank-space click clears a pinned selection; preview resumes on hover.
+	click(viewport,map.get_global_transform()*Vector2(12,40));await process_frame
+	check(map.selected_slot==-1 and not panel.detail_frame.visible,"Blank map click clears selection and detail")
+	viewport.push_input(hover,true);await process_frame
+	check(panel.detail_slot==3,"Unpinned hover previews the building")
+	var preview_count: int=preview_events[0]
+	for _i in 20:viewport.push_input(hover,true)
+	check(preview_events[0]==preview_count,"Stationary preview identity does not refresh its detail repeatedly")
+	map.mouse_exited.emit()
+	check(panel.detail_slot==-1 and not panel.detail_frame.visible and not map.highlight.visible,"Leaving map clears unpinned preview")
+	map.slot_selected.disconnect(count_preview)
+	var roof_hits := 0
+	var roof_total := 0
+	for slot in region.slots:
+		var bounds: Array=map.asset_bounds[map.visual_path(slot)]
+		for offset in [Vector2.ZERO,Vector2(-0.3,-0.3),Vector2(-0.3,0.3),Vector2(0.3,-0.3),Vector2(0.3,0.3)]:
+			var roof: Vector3=map.slot_nodes[int(slot.id)].global_transform*(Vector3(float(bounds[0])*offset.x,float(bounds[1])*0.9,float(bounds[2])*offset.y)*map.BUILDING_SCALE)
+			var point: Vector2=map.camera.unproject_position(roof)*map.size/Vector2(map.view.size)
+			roof_total+=1
+			if map.pick(point)==int(slot.id):roof_hits+=1
+	check(roof_hits==roof_total,"30 level-five buildings each accept five upper-volume sample points")
+	print("GALAXY PICK roof_hits=",roof_hits,"/",roof_total," pinned_hover_events=",held_events)
+	click(viewport,screen);await process_frame
+	scene.select_system(0);await process_frame
+	scene.select_system(8);await process_frame
+	check(map.selected_slot==id and panel.detail_slot==id,"Selection survives hiding and reopening the galaxy")
+	g.paused=true;panel.refresh_sample(0)
+	var paused_ticks: int=map.visual_ticks
+	click(viewport,map.get_global_transform()*other_position)
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused selection requests exactly one render")
+	await capture(viewport,"galaxy-paused-selection-ui.png")
+	check(map.selected_slot==3 and panel.detail_slot==3 and map.visual_ticks==paused_ticks,"Paused selection changes detail without animation")
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED,"Paused selection returns to dormant rendering")
+	var paused_zoom: float=map.zoom
+	viewport.push_input(wheel,true)
+	check(map.zoom>paused_zoom and map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused zoom requests one image")
+	wheel.pressed=false;viewport.push_input(wheel,true)
+	await process_frame;await RenderingServer.frame_post_draw
+	check(map.visual_ticks==paused_ticks and map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED,"Paused zoom does not restart animation")
+	map.zoom=1.0;map.layout()
+	g.paused=false;panel.refresh_sample(0)
+	click(viewport,screen);await process_frame
 	var cached_node: int=node.get_node("Building").get_instance_id()
 	var cached_updates: int=map.draw_updates
 	panel.refresh()
@@ -266,6 +322,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	check(map.draw_updates==dormant_updates and map.visual_ticks==dormant_ticks,"Final hidden page stops all changed visual work")
+	await paused_lifecycle(viewport,scene,panel)
 	print("GALAXY 3D UI checks=",checks," failures=",failures," visual_nodes=",map.world.get_child_count()," buildings=",region.occupied_count," actual_fps=",Engine.get_frames_per_second())
 	if OS.get_environment("GALAXY_RECORD_SECONDS").to_float()>0 and failures==0:
 		await record_construction(viewport,scene,panel,fixture,OS.get_environment("GALAXY_RECORD_SECONDS").to_float())
@@ -283,6 +340,60 @@ func run() -> void:
 	await process_frame
 	current_scene=null
 	quit(1 if failures else 0)
+func paused_lifecycle(viewport: Viewport,scene,panel) -> void:
+	var map=panel.map
+	var game=scene.game
+	game.paused=true
+	scene.select_system(8);panel.refresh_sample(0)
+	await process_frame;await process_frame
+	map.zoom=1.0;map.pan=Vector2.ZERO;map.layout()
+	await process_frame;await RenderingServer.frame_post_draw
+	check(map.pick(Vector2(12,40))==-1,"Paused preview clear-click targets empty map space")
+	click(viewport,map.get_global_transform()*Vector2(12,40))
+	await process_frame
+	var point: Vector2=map.camera.unproject_position(map.slot_nodes[2].global_position)*map.size/Vector2(map.view.size)
+	var hover := InputEventMouseMotion.new()
+	hover.position=map.get_global_transform()*point
+	viewport.push_input(hover,true)
+	await capture(viewport,"galaxy-paused-preview-before-hide-ui.png")
+	check(map.selected_slot==-1 and map.hover_slot==2 and map.highlight.visible,"Paused unpinned preview fixture is visible")
+	var preview: PackedByteArray=map.view.get_texture().get_image().get_data()
+	var ticks: int=map.visual_ticks
+	scene.select_system(0)
+	await process_frame;await RenderingServer.frame_post_draw
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and map.visual_ticks==ticks,"Paused hidden map does not render or animate")
+	check(map.hover_slot==-1 and not map.highlight.visible,"Hiding clears unpinned hover state")
+	scene.select_system(8)
+	await process_frame
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused reveal schedules one fresh image")
+	await capture(viewport,"galaxy-paused-reopened-ui.png")
+	check(not panel.detail_frame.visible and not map.highlight.visible,"Paused reveal has no stale hover detail or ring")
+	check(map.view.get_texture().get_image().get_data()!=preview,"Paused reveal framebuffer removes the old preview ring")
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and map.visual_ticks==ticks,"Paused reveal returns to dormant rendering without animation")
+	# Only galaxy_1 is configured. Exercise region replacement with a detached
+	# empty region, without inventing a playable galaxy or editing profile data.
+	var original=map.region
+	var saved: String=JSON.stringify(game.profile.galaxies)
+	var replacement=preload("res://scripts/galaxy_region.gd").new()
+	replacement.setup(original.row,original.builds,original.chunk_size)
+	var previous: PackedByteArray=map.view.get_texture().get_image().get_data()
+	map.select(replacement)
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused region replacement retains its requested frame through visibility sync")
+	await process_frame;await process_frame;await RenderingServer.frame_post_draw
+	map.view.get_texture().get_image().save_png("res://../galaxy-paused-replacement-map.png")
+	check(map.view.get_texture().get_image().get_data()!=previous,"Paused replacement framebuffer displays the new empty region")
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and not map.is_processing() and map.visual_ticks==ticks,"Paused replacement renders once and stays dormant")
+	var empty_frame: PackedByteArray=map.view.get_texture().get_image().get_data()
+	map.select(original)
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused return to original region requests a fresh image")
+	await capture(viewport,"galaxy-paused-region-restored-ui.png")
+	check(map.region==original and map.view.get_texture().get_image().get_data()!=empty_frame,"Paused return replaces the empty framebuffer with the original region")
+	var stationary: PackedByteArray=map.view.get_texture().get_image().get_data()
+	for _i in 3:await process_frame
+	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and map.view.get_texture().get_image().get_data()==stationary and map.visual_ticks==ticks,"No-change paused frames remain dormant and identical")
+	check(JSON.stringify(game.profile.galaxies)==saved,"Detached region presentation does not mutate game profile")
+	print("GALAXY PAUSED LIFECYCLE visual_ticks_delta=",map.visual_ticks-ticks)
+
 func capture(viewport: Viewport,filename: String) -> void:
 	if is_instance_valid(current_scene):current_scene.refresh_fps_label(true)
 	await process_frame
@@ -291,6 +402,9 @@ func capture(viewport: Viewport,filename: String) -> void:
 	viewport.get_texture().get_image().save_png("res://../"+filename)
 
 func click(viewport: Viewport,position: Vector2) -> void:
+	var move := InputEventMouseMotion.new()
+	move.position=position
+	viewport.push_input(move,true)
 	for pressed in [true,false]:
 		var input := InputEventMouseButton.new()
 		input.position=position;input.button_index=MOUSE_BUTTON_LEFT;input.pressed=pressed

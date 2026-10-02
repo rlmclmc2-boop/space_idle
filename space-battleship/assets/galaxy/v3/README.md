@@ -6,7 +6,7 @@ GLB is the runtime authority. The separate central headquarters anchors 30 funct
 
 All geometry and the static [space field](galaxy_field.svg) are original, repository-authored work. No downloaded models, textures, add-ons or external license dependencies are used. The core's selected rounded concept is modeled by [galaxy_core_stylized.py](../../../tools/galaxy_core_stylized.py) with [baked shading](../../../tools/galaxy_core_detail.py). It remains a separate headquarters, never a functional slot.
 
-All six functional families have five unique progressive levels: habitat rings, open-rail shipyards, solar paddles, orbital alloy foundries, clamped crystal processing rigs and heavy-element pressure vessels. Broad ivory armor, navy hulls, teal glazing and restrained amber service lamps match the accepted ship world. Floating hulls, cargo berths and service collars keep the stations orbital; no ground stairs, smoke or terrain are baked into them.
+All six functional families have five unique progressive levels: habitat rings, open-rail shipyards, solar paddles, orbital alloy foundries, clamped crystal processing rigs and heavy-element pressure vessels. Broad matte ivory armor and navy hulls match the accepted ship world. Blue solar paddles, cyan crystals and warm foundry roofs separate the functional families at normal map size; open shipyard frames and pressure vessels omit subpixel fittings. Headquarters keeps its rounded silhouette with the same ivory/navy/teal palette. Floating hulls, cargo berths and service collars keep the stations orbital; no ground stairs, smoke or terrain are baked into them.
 
 From the project directory with Blender 4.3 or newer:
 

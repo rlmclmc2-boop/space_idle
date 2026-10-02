@@ -9,8 +9,8 @@ b=openpyxl.load_workbook(p/'config_excel/enhance_config.xlsx',data_only=True,rea
 rows=read_rows(b['enhance_config']);projection=convert_sheet('enhance_config',rows);b.close()
 assert projection==d['enhance_config']
 validate_projection(d)
-assert len(rows)==65 and all(r['des'] and r['unit'] for r in rows)
-invalid_cases=[('repeat_probability',2),('memory_interval',0),('cost_base',-1),('deferred_clear_probability',-1),('counter_log_base',1),('threshold_1',-1),('threshold_1',False),('threshold_1',.5),('threshold_2',0),('cost_base',1.5),('cost_growth',1.5),('cost_growth',0),('cost_growth',-1),('cost_growth',True),('branch_threshold_2',9),('memory_b1_probability',2),('memory_b2_duration',0),('repeat_b2_repeats',1.5),('repeat_b1_targets',11),('critical_b2_duration',-1)]
+assert len(rows)==68 and all(r['des'] and r['unit'] for r in rows)
+invalid_cases=[('repeat_probability',2),('memory_interval',0),('cost_base',-1),('deferred_clear_probability',-1),('counter_log_base',1),('threshold_1',0),('branch_position_offset_1',-1),('branch_position_offset_2',0),('branch_position_offset_2',1.5),('threshold_1',-1),('threshold_1',False),('threshold_1',.5),('threshold_2',0),('cost_base',1.5),('cost_growth',1.5),('cost_growth',0),('cost_growth',-1),('cost_growth',True),('branch_threshold_2',9),('memory_b1_probability',2),('memory_b2_duration',0),('repeat_b2_repeats',1.5),('repeat_b1_targets',11),('critical_b2_duration',-1)]
 for key,value in invalid_cases:
  broken=copy.deepcopy(d);broken['enhance_config'][key]['value']=value
  try:validate_projection(broken)
@@ -27,4 +27,4 @@ for name in ['crew_assignment','planet_buff']:
  assert convert_sheet(name,read_rows(b[name]))==d[name];b.close()
 assert all(row['value']==1 for row in d['planet_buff'].values() if row['target']=='enhancement')
 assert d['crew_assignment']['jewel_auto']['effectType']=='AUTO_COMBINE'
-print(f'ENHANCE CONFIG: passed; {len(invalid_cases)} invalid inputs rejected; growth1/2 valid; 65 rows match workbook')
+print(f'ENHANCE CONFIG: passed; {len(invalid_cases)} invalid inputs rejected; growth1/2 valid; 68 rows match workbook')
