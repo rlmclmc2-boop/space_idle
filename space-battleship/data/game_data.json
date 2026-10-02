@@ -16999,7 +16999,7 @@
     },
     "max_transport_ships": {
       "key": "max_transport_ships",
-      "value": 12,
+      "value": 6,
       "type": "int",
       "des": "交通艇池上限"
     },
@@ -17011,19 +17011,19 @@
     },
     "camera_zoom_min": {
       "key": "camera_zoom_min",
-      "value": 0.6,
+      "value": 0.4,
       "type": "float",
       "des": "最小相机缩放"
     },
     "camera_zoom_max": {
       "key": "camera_zoom_max",
-      "value": 2.8,
+      "value": 0.6,
       "type": "float",
       "des": "最大相机缩放"
     },
     "transport_buildings_per_ship": {
       "key": "transport_buildings_per_ship",
-      "value": 3,
+      "value": 5,
       "type": "float",
       "des": "每艇对应已建成功能建筑（座/艇）"
     },

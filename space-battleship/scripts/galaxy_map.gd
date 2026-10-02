@@ -284,8 +284,8 @@ func layout() -> void:
 	var screen_scale := (get_viewport().get_final_transform()*get_screen_transform()).get_scale().abs()
 	var pixel_size := Vector2i((size*screen_scale.min(Vector2.ONE)).ceil()).max(Vector2i.ONE)
 	if view.size!=pixel_size:view.size=pixel_size
-	# Whole-city overview tolerates small detail; inspecting at 2x restores the
-	# default one-pixel LOD threshold. Animation and building levels are untouched.
+	# Keep the configured overview cap for wheel input, resize and restored views.
+	zoom=clampf(zoom,setting("camera_zoom_min",0.4),setting("camera_zoom_max",0.6))
 	view.mesh_lod_threshold=clampf(4.0/(zoom*zoom),1.0,4.0)
 	frame_size=fit_size()
 	camera.size=frame_size/zoom
@@ -421,7 +421,7 @@ func refresh() -> void:
 				if part is Node3D and slot.status!="constructing":activity.append(part)
 			next_lane_states.append("planned" if slot.status=="empty" else "building" if slot.status=="constructing" else "operating")
 		if next_lane_states!=lane_states:
-			transit.rebuild(region.layout_snapshot())
+			transit.rebuild(region.layout_snapshot(),float(asset_bounds[str(region.row.core_asset)][0])*1.2*0.43)
 			lane_states=next_lane_states
 			route_revision=building_revision
 	sync_transports()
@@ -430,12 +430,13 @@ func desired_transport_count(built_count: int) -> int:
 	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
 func sync_transports() -> void:
 	var built_count: int=region.slots.filter(func(slot):return slot.status in ["active","upgrading"]).size()
-	var count := desired_transport_count(built_count) if not transit.active_edges.is_empty() else 0
+	var count := desired_transport_count(built_count) if built_count>0 else 0
 	while transports.size()>count:transports.pop_back().node.free()
 	var first := transports.size()
 	while transports.size()<count:
 		var ship := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
 		ship.visible=false
+		ship.scale=Vector3.ONE*2.0
 		world.add_child(ship)
 		var delay := maxf(0,setting("transport_initial_delay",1.4))+(transports.size()-first)*maxf(0,setting("transport_departure_interval",0.8))
 		transports.append({"node":ship,"curve":Curve3D.new(),"phase":1.0,"duration":1.0,"reverse":false,"depart_at":visual_clock+delay})
@@ -444,14 +445,31 @@ func dock(id: int) -> Vector3:
 	var socket=node.find_child("DockSocket",true,false)
 	return socket.global_position if socket is Node3D else node.global_position+Vector3(0,2,0)
 func new_route(item: Dictionary) -> void:
-	if transit.active_edges.is_empty():
+	var destinations: Array[int]=[-1]
+	var roof := float(asset_bounds.get(str(region.row.core_asset),[25.0,11.16,25.0])[1])*1.2
+	for slot in region.slots:
+		if slot.status not in ["active","upgrading"]:continue
+		destinations.append(int(slot.id))
+		roof=maxf(roof,float(asset_bounds[visual_path(slot)][1])*BUILDING_SCALE)
+	if destinations.size()<2:
 		item.node.visible=false;item.phase=0.0;item.duration=1.0
 		return
-	var id: int=transit.active_edges[rng.randi_range(0,transit.active_edges.size()-1)]
-	item.curve=transit.curves[id]
-	item.reverse=rng.randf()<0.5
-	item.phase=0.0
-	item.duration=maxf(4,item.curve.get_baked_length()/5)
+	var source: int=int(item.get("destination",destinations[rng.randi_range(0,destinations.size()-1)]))
+	if not destinations.has(source):source=destinations[0]
+	destinations.erase(source)
+	var target: int=destinations[rng.randi_range(0,destinations.size()-1)]
+	var start:=dock(source);var finish:=dock(target)
+	var across:=(finish-start).cross(Vector3.UP).normalized()*rng.randf_range(-4.0,4.0)
+	var cruise:=roof+7.0+rng.randf_range(0.0,3.0)
+	var first:=start.lerp(finish,0.28)+across;first.y=cruise*1.4
+	var last:=start.lerp(finish,0.72)+across;last.y=cruise*1.4
+	# Reuse one curve per boat; rebuild only on departure, independently of pipes.
+	item.curve.clear_points()
+	item.curve.add_point(start,Vector3.ZERO,first-start)
+	item.curve.add_point(finish,last-finish,Vector3.ZERO)
+	item.source=source;item.destination=target;item.cruise_height=cruise
+	item.reverse=false;item.phase=0.0
+	item.duration=maxf(6.0,item.curve.get_baked_length()/7.0)
 	item.node.visible=true
 
 func update_explorers() -> void:

@@ -78,7 +78,7 @@ func run() -> void:
 	for built in [0,1,5,15,30]:
 		var expected := mini(int(g.db.data.galaxy_config.max_transport_ships.value),ceili(float(built)/float(g.db.data.galaxy_config.transport_buildings_per_ship.value)))
 		var count: int=map.desired_transport_count(built)
-		check(count==expected and count>=previous_count and count<=12,"0/1/5/15/30 building traffic grows monotonically within cap")
+		check(count==expected and count>=previous_count and count<=int(g.db.data.galaxy_config.max_transport_ships.value),"0/1/5/15/30 building traffic grows monotonically within cap")
 		previous_count=count
 	check(map.transports.is_empty() and map.transit.active_edges.is_empty(),"Unbuilt galaxy has no normal display traffic")
 	check(map.view.own_world_3d and map.camera.projection==Camera3D.PROJECTION_ORTHOGONAL,"Independent orthographic world")
@@ -95,6 +95,7 @@ func run() -> void:
 	check(map.view.size.x<=ceili(map.size.x) and map.view.size.y<=ceili(map.size.y),"Large window does not raise the original render budget")
 	root.size=window_size
 	await process_frame;await process_frame
+	map.zoom=map.setting("camera_zoom_min",0.4);map.layout()
 	var old_zoom: float=map.zoom
 	var position: Vector2=map.get_global_rect().get_center()
 	var wheel := InputEventMouseButton.new()
@@ -165,8 +166,8 @@ func run() -> void:
 		check(Rect2(Vector2.ZERO,Vector2(map.view.size)).grow(-10).has_point(screen_position),"Complete blueprint fits default camera")
 		var route: Curve3D=map.transit.curves[int(plan.id)]
 		var edge: Dictionary=region.blueprint.edges[int(plan.id)]
-		check(Vector2(route.get_point_position(0).x,route.get_point_position(0).z).is_equal_approx(Vector2(edge.path[0][0],edge.path[0][1])),"Traffic starts on authoritative path")
-		check(Vector2(route.get_point_position(route.point_count-1).x,route.get_point_position(route.point_count-1).z).is_equal_approx(Vector2(edge.path[-1][0],edge.path[-1][1])),"Traffic ends on authoritative path")
+		check(Vector2(route.get_point_position(0).x,route.get_point_position(0).z).is_equal_approx(Vector2(edge.path[0][0],edge.path[0][1])),"Construction navigation starts on authoritative path")
+		check(Vector2(route.get_point_position(route.point_count-1).x,route.get_point_position(route.point_count-1).z).is_equal_approx(Vector2(edge.path[-1][0],edge.path[-1][1])),"Construction navigation ends on authoritative path")
 	# Default framing must keep complete reserved footprints and tallest model bounds.
 	for plan in [region.blueprint.core]+region.blueprint.nodes:
 		var visual: Node3D=map.core if int(plan.id)<0 else map.slot_nodes[int(plan.id)]
@@ -184,11 +185,29 @@ func run() -> void:
 	check(map.transports[0].depart_at<map.transports[1].depart_at,"Transport departures are staggered")
 	await create_timer(9.0).timeout
 	panel.refresh()
+	check(not panel.cards.has("traffic") and panel.cards.has("explorers"),"Only gameplay construction-vessel count is exposed")
+	map.zoom=100.0;map.pan=Vector2.ZERO;map.layout()
+	check(is_equal_approx(map.zoom,map.setting("camera_zoom_max",0.6)),"All camera paths enforce the configured maximum city scale")
+	var projected:=Rect2(map.camera.unproject_position(map.core.global_position),Vector2.ZERO)
+	for node in map.slot_nodes.values():projected=projected.expand(map.camera.unproject_position(node.global_position))
+	print("CITY SCALE node_span=",projected.size/Vector2(map.view.size)," zoom=",map.zoom)
+	for plan in region.blueprint.nodes:
+		var pipe:Curve3D=map.transit.pipe_curves[int(plan.id)]
+		var expected:=Vector3(float(plan.world_pos[0]),0.35,float(plan.world_pos[1]))
+		check(pipe.get_point_position(pipe.point_count-1).is_equal_approx(expected),"Pipe terminates inside the destination foundation")
+	var route_before:Mesh=map.transit.network.mesh
+	for item in map.transports:
+		map.new_route(item)
+		check(item.source!=item.destination,"Air transport connects distinct completed buildings")
+		check(item.curve.get_point_position(0).is_equal_approx(map.dock(int(item.source))) and item.curve.get_point_position(1).is_equal_approx(map.dock(int(item.destination))),"Air route uses actual model docks")
+		check(not map.transit.curves.values().has(item.curve),"Decorative air route is independent of pipe/navigation curves")
+		check(item.curve.sample_baked(item.curve.get_baked_length()*0.5).y>float(item.cruise_height)*0.9,"Mid-flight crosses above the tallest city roofs")
+	check(map.transit.network.mesh==route_before,"Air departures never rebuild static pipe geometry")
 	await capture(viewport,"galaxy-complete-ui.png")
 	if OS.get_environment("GALAXY_RENDER_SAMPLE")=="1":await render_sample(map)
 	# The representative cluster uses the exact first four nodes and their planned types.
 	map.zoom=2.4;map.pan=-map.frame_origin;map.layout()
-	check(is_equal_approx(map.view.mesh_lod_threshold,1.0),"Inspecting restores one-pixel geometric detail")
+	check(is_equal_approx(map.zoom,map.setting("camera_zoom_max",0.6)) and is_equal_approx(map.view.mesh_lod_threshold,4.0),"City overview cap retains its geometric detail budget")
 	await capture(viewport,"galaxy-hub-cluster-ui.png")
 	map.zoom=1.0;map.pan=Vector2.ZERO;map.layout()
 	var id := 2
@@ -245,6 +264,7 @@ func run() -> void:
 	await capture(viewport,"galaxy-paused-selection-ui.png")
 	check(map.selected_slot==3 and panel.detail_slot==3 and map.visual_ticks==paused_ticks,"Paused selection changes detail without animation")
 	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED,"Paused selection returns to dormant rendering")
+	map.zoom=map.setting("camera_zoom_min",0.4);map.layout()
 	var paused_zoom: float=map.zoom
 	viewport.push_input(wheel,true)
 	check(map.zoom>paused_zoom and map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused zoom requests one image")
@@ -443,14 +463,15 @@ func record_construction(viewport: Viewport,scene,panel,fixture: Dictionary,seco
 	g.galaxy.load_state(g,{"galaxy_1":fixture.save})
 	var region=g.galaxy.regions.galaxy_1
 	for slot in region.slots:
-		var built: bool=int(slot.id)<15
+		var built: bool=OS.get_environment("GALAXY_CITY_RECORD")=="1" or int(slot.id)<15
 		slot.status="active" if built else "empty"
 		slot.level=1 if built else 0
 		slot.work=region.work_cost() if built else 0.0
 		slot.construction=0.0;slot.upgrade_progress=0.0
-	region.slots[15].status="constructing";region.slots[15].level=1
-	region.slots[15].work=region.work_cost()*0.425
-	region.slots[15].construction=float(region.row.construction_time)
+	if OS.get_environment("GALAXY_CITY_RECORD")!="1":
+		region.slots[15].status="constructing";region.slots[15].level=1
+		region.slots[15].work=region.work_cost()*0.425
+		region.slots[15].construction=float(region.row.construction_time)
 	region.state.status="exploring"
 	region.state.explore_work=region.work_cost()*15.425
 	region.refresh_counts();region.building_revision+=1;g.galaxy.effect_generation+=1
@@ -462,7 +483,7 @@ func record_construction(viewport: Viewport,scene,panel,fixture: Dictionary,seco
 	# Let the actual native game bring the staggered five-boat city traffic online.
 	await create_timer(6.0).timeout
 	panel.refresh()
-	await capture(viewport,"galaxy-half-build-ui.png")
+	await capture(viewport,"galaxy-city-ui.png" if OS.get_environment("GALAXY_CITY_RECORD")=="1" else "galaxy-half-build-ui.png")
 	var directory := ProjectSettings.globalize_path("res://../galaxy-realtime-frames")
 	DirAccess.make_dir_recursive_absolute(directory)
 	var frames: Array=[]
@@ -475,9 +496,9 @@ func record_construction(viewport: Viewport,scene,panel,fixture: Dictionary,seco
 		var frame_image := viewport.get_texture().get_image()
 		image_size=frame_image.get_size()
 		frame_image.save_jpg(directory+"/"+filename,0.96)
-		frames.append({"file":filename,"time_s":elapsed,"construction_progress":region.node_progress(region.slots[15]),"built":region.slots.filter(func(slot):return slot.status=="active").size(),"traffic_visible":panel.map.transports.filter(func(item):return item.node.visible).size()})
+		frames.append({"file":filename,"time_s":elapsed,"construction_progress":region.node_progress(region.slots[15]),"built":region.slots.filter(func(slot):return slot.status in ["active","upgrading"]).size(),"traffic_visible":panel.map.transports.filter(func(item):return item.node.visible).size()})
 		if elapsed>=seconds:break
-	var metadata := {"fixture":"isolated logic-owned first-galaxy plan, 15 level-1 completed nodes and node 15 constructing","source":"actual native game root framebuffer, every rendered frame, real wall-clock timestamps","wall_seconds":frames[-1].time_s,"width":image_size.x,"height":image_size.y,"speed":g.speed,"frames":frames}
+	var metadata := {"fixture":"isolated logic-owned first-galaxy plan, 30 completed nodes" if OS.get_environment("GALAXY_CITY_RECORD")=="1" else "isolated logic-owned first-galaxy plan, 15 level-1 completed nodes and node 15 constructing","source":"actual native game root framebuffer, every rendered frame, real wall-clock timestamps","wall_seconds":frames[-1].time_s,"width":image_size.x,"height":image_size.y,"speed":g.speed,"frames":frames}
 	var output := FileAccess.open(directory+"/recording.json",FileAccess.WRITE)
 	output.store_string(JSON.stringify(metadata,"  "));output.close()
 	scene.set_process(false)
