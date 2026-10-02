@@ -8,6 +8,15 @@ var muzzle_flash := 0.8
 var trail_length := 52.0
 var trail_lifetime := 0.065
 var impact_intensity := 0.8
+var player_charge_time := 0.9
+
+func configure(db) -> void:
+	player_charge_time=db.weapon_motion_value("rail_charge_seconds",player_charge_time)
+
+func player_charge(remaining: float, cooldown_multiplier: float, base_period: float) -> float:
+	var window := minf(player_charge_time,base_period)*cooldown_multiplier
+	return clampf(1.0-remaining/maxf(0.001,window),0.0,1.0) if remaining>0.0 else 0.0
+
 const ICE := Color("9eeaff")
 
 func charge(remaining: float, speed: float) -> float:
