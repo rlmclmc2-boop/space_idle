@@ -1,0 +1,11 @@
+# V29 bounded closing checks
+
+Source evidence2bcdee6d23c787d51f4923606a30416c83913376, prerequisiteb2a604606a60d8d6e885e6a0d177bae7237258e9. progression-v29-bounded-closeout.bundle.base64 decodes63989bytes; SHA25658c54123eb65dcfb6a40ea8e44002f176e0ca6b563155f9a29b74d993fd876c5. Local git bundle verify passed. Game source stays frozenb485/FP19c494, same774? File count764 (the typo774 is not used).
+
+Root actualfresh32 checkpoint71186.5333383007: nativeX1/nativeX10 signatures match all360 shared boundaries,54offlinechrono+6online=60X1seconds, checkpointfinal71246.5333382867; fullcombat/economy/RNG/research/crew/planet signatures. Galaxy locked at this checkpoint; activegalaxy equivalence remains separate. Command: `PROGRESSION_CHRONO_CHECKPOINT=/absolute/save_32.json python test/progression/run_entry.py --project /absolute/exact-v29-package --entry res://qa/native_chrono_late_equivalence.gd --label unique-native32 --timeout 1800`. For an activegalaxy native checkpoint use same command with that genuine source file, not a synthetic maxgalaxy fixture. Use --skip-import only after that package's own completed import marker.
+
+Root actualfreshclear20 checkpoint46144.6166689992, publicrefit preservingcardlevels, coldseed1701 Boss9: longLaser60.4500000123s,laser119.6500000244,missile141.2000000288,cannon102.2166666875, allwin. ActualsamefreshmixedBoss9was134.5333333607s. Beam is0.45s above nominal60 budget; bounded result retained, no frozen numeric edit. Diagnostic checkpoint replay is not a replacement for fullfresh duration. Exactrun settings and rawoutput/manifest/logs included in evidencefolder.
+
+Firstforge root actualfresh71850.0000048129 visit114operation-domain events,109upgrade events; domain events≠mouseclicks and human clicktime not modeled. Genuinewall12h110moduleupgrades are AUTOMATIC researcher events; maximumactualgap870.25s,median355.0333s. QA summary unaffordable is a false-placeholder reporting artifact and checkpointfirstgap includes absoluteclock; use rawtrajectory instead of inferring12h purewaiting. Scope correction persisted separately; no runtimechange.
+
+Parent actualV29clear60=166609.416649417s=46.28039h; nextmanualvisit167339.99998258 assigns6crew into firstgalaxy,forge6=168239.99998237 afterward. All30Lv5 endpoint still pending. Lateracceleratingreturns accepteduser17:30UTC; no slow-down tuning.
