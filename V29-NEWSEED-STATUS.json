@@ -1,6 +1,6 @@
 {
   "milestones": {
-    "utc": "2026-10-03T21:24:43.898507+00:00",
+    "utc": "2026-10-03T21:39:27.127170+00:00",
     "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
     "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
     "milestones": {
@@ -57,6 +57,12 @@
         "hours": 44.800652773330555,
         "rng": "3434044622128688313",
         "save_sha256": "e03f1d4ea5f3a841e31d2309c4424173eb0c1967000ed2120358b69f36ef796f"
+      },
+      "60": {
+        "x1_seconds": 167488.433315879,
+        "hours": 46.524564809966385,
+        "rng": "-8981544298734564755",
+        "save_sha256": "b4c57a4fb3e9d8c75c27e4a6a8c8c68532f171197f36218cfcbbc85236dd7c42"
       }
     },
     "firstshipyard_events": [
@@ -104,11 +110,11 @@
       }
     ],
     "latest_heartbeat": {
-      "deaths": 1638,
-      "highest": 56,
-      "stage": 56,
-      "wall_seconds": 17243.562464,
-      "x1_seconds": 161999.999983823
+      "deaths": 1750,
+      "highest": 61,
+      "stage": 60,
+      "wall_seconds": 18126.916837,
+      "x1_seconds": 168599.999982287
     },
     "global_acceptance": "pending",
     "errors_to_date": {
@@ -181,12 +187,32 @@
       "save_sha256": "64cb5960de85c5af8f768f37a95a013e0ad629cb571b79139d0ee48a6988de54"
     }
   },
+  "direct_galaxy": {
+    "utc": "2026-10-03T21:39:27.127170+00:00",
+    "scope": "Own continuous V29 seed0305 actualclear60 previsit snapshot + next genuinevisit native events. Lockedatprevisit is pendingnotification, not extraconguest gate. Allocation requiresrecalledactualcrew; no injected people. Finalall30Lv5stillpending.",
+    "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+    "clear60_x1": 167488.433315879,
+    "clear60_rng": "-8981544298734564755",
+    "clear60_save_sha256": "b4c57a4fb3e9d8c75c27e4a6a8c8c68532f171197f36218cfcbbc85236dd7c42",
+    "previsit_galaxy_status": "locked",
+    "planet6_conquered_at_clear60": false,
+    "first_actual_galaxy_visit_x1": 168239.99998237,
+    "real_allocated_crew_ids": [
+      "crew_04",
+      "crew_05",
+      "crew_06",
+      "engineer",
+      "navigator",
+      "researcher"
+    ],
+    "sixth_reforge_not_yet_observed": true
+  },
   "private_zip": {
     "file": "/workspace/independent-sol-high-transport/Independent-Sol-High-Evidence-20261003.zip",
-    "size": 33328501,
-    "sha256": "a542d611f29d292d34eb98c339f4e4cef4ea905b4ff728fcbe35c1eab58ab9e2",
-    "native_head": "30ee30a710dd597008990a57e9d1783dc4df12b8",
-    "archived_files": 308
+    "size": 36001802,
+    "sha256": "326123bf7b12b5622b1c733f471ba8d89aed2d40fd133b82fa2e07ba7dde4869",
+    "native_head": "7995cfe6a55e12796239f876ffb8ad2bc176aab5",
+    "archived_files": 311
   },
   "acceptance_update": {
     "recorded_utc": "2026-10-03T17:24:44.500947+00:00",
