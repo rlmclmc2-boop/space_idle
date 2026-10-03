@@ -40,9 +40,10 @@ func snapshot(label: String) -> void:
 	write_json("save_"+label+".json", {"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"combat_projection":projection,"projection_scope":"Current ordinary capacities/damage; excludes per-hit critical/channel counters","rng_state":str(game.rng.state),"policy":{"random_state":str(policy.random.state),"last_refit":policy.last_refit,"unlocked_count":policy.unlocked_count,"farm":policy.farm,"best_won":policy.best_won,"deaths_seen":policy.deaths_seen,"furthest":policy.furthest,"recovering":policy.recovering,"recovery_end_stage":policy.recovery_end_stage,"version":Policy.VERSION},"state":int(game.state),"metrics_deaths":metrics.deaths,"metrics_income":metrics.income,"metrics_spending":metrics.spending,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"combat_engine":str(options.get("engine","formal")),"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint})
 func observe(kind: String, payload: Dictionary) -> void:
 	if kind=="encounter":
-		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true)}
+		encounter={"start":game.simulated_time,"stage":game.stage,"node":game.group_index,"group":game.db.levels[game.stage-1].groups[game.group_index-1].id,"loadout":game.profile.loadout.duplicate(true),"initial_income":metrics.income.duplicate(true),"initial_player":{"armour":game.player.armour,"shield":game.player.shield,"armour_capacity":game.stat("armour"),"shield_capacity":game.max_shield()}}
 	elif not encounter.is_empty() and ((kind=="explode" and not game.has_alive_enemy()) or kind=="retreat"):
 		encounter.end=game.simulated_time;encounter.seconds=game.simulated_time-float(encounter.start);encounter.status="win" if kind=="explode" else "loss"
+		encounter.final_player={"armour":game.player.armour,"shield":game.player.shield}
 		if encounter.status=="win":policy.best_won[str(encounter.stage)]=maxi(int(policy.best_won.get(str(encounter.stage),0)),int(encounter.node))
 		trace.store_line(JSON.stringify({"kind":"wave_result","wave":encounter}));trace.flush();completed_waves+=1;encounter={}
 
@@ -68,6 +69,7 @@ func observe(kind: String, payload: Dictionary) -> void:
 func visit() -> void:
 	in_visit=true
 	var before: int = actions
+	var reforges_before:int=reforges.size()
 	var pending: Array = game.pending_unlocks.duplicate()
 	# Manual collection only while actually visiting; auto losses remain between visits.
 	for drop in game.drops.duplicate():
@@ -86,6 +88,9 @@ func visit() -> void:
 		action_gaps.append(game.simulated_time-last_action)
 		last_action = game.simulated_time
 	trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":"visit","actions":actions-before,"stage":game.stage,"resources":game.profile.resources,"loadout":game.profile.loadout}));trace.flush()
+	# The native reforge event snapshot precedes the remaining legal rebuild
+	# actions in this visit. Preserve both boundaries, never overwrite either.
+	for index in range(reforges_before,reforges.size()):snapshot("reforge_post_visit_"+str(reforges[index].planet))
 func run() -> void:
 	options = {"duration":10800,"stop_clear":10,"seed":20261002,"visit_seconds":120,"teaching_seconds":10,"strategy":"BALANCED"}
 	var raw_options := OS.get_environment("PROGRESSION_OPTIONS")

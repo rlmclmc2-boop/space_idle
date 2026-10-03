@@ -1,0 +1,33 @@
+{
+  "scope": "v23 only removes v21/v22 added Ult attack1.8, returns1.0 retaining Ult health.11, all level growth/income unchanged. Same old legal261 cleared35 profile in v22 full-health beam node9 loses2.283s; v20 sameprofile wins107.483s. Not accepted corrected regional duration until actual v23 diagnostic/legal completed35. Older runs immutable.",
+  "changed": {
+    "enemies": [
+      "65187",
+      "70187",
+      "75187",
+      "80187",
+      "85187",
+      "90187",
+      "95187",
+      "100187",
+      "105187",
+      "110187",
+      "120187",
+      "130187",
+      "140187",
+      "150187",
+      "160187",
+      "170187",
+      "180187",
+      "190187",
+      "200187",
+      "210187",
+      "220187",
+      "230187",
+      "240187",
+      "250187",
+      "260187"
+    ]
+  },
+  "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d"
+}
