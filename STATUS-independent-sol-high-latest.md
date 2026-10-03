@@ -1,9 +1,11 @@
-# Own independent Sol high latest aggregate
+# Independent Sol high current aggregate
 
-Two supplied-legal34 beam diagnostics both finished12 additional X1 hours49913.4500031003→93113.4499998621 with clears={}, no reforge, highest34, best won node5.1armour2shield37deaths/267domain events;3armour24deaths/334events; both144visits, native2592000steps, exit0/SCRIPT ERROR0/engine ERROR0. Parent independently downloaded and verified private v1 raw saves/gz logs/exits; input SHA4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a.
+Own actual Godot4.6.3 full-scene runs; frozen1d8/V23. No main merge or numeric/Excel/art edits.
 
-Own continuous frozen1d8 fresh clear35=99338.5499984128; actual first reforge78150.0000033461, postforge5.885708331962972h. Available73650.0000043938 versus delayed click. Source/data unchanged, all same-version fresh; global first galaxy30buildingsLv5 still uncompleted. Own second reforge110639.999995781, actual preparation after35 about3.139291666h; later cycle still running.
+Fresh clear35/40/45 after forge:5.885708332/5.291828702/2.548916666h; third cycle is below4–6h. Current fresh remains incomplete; no global50–60h acceptance claim.
 
-Observed-income farming paired diagnostic is now actually running, sourcefa9b4708f3cdc95f1c76e92bbd4aaff2596ae292, numeric V23 unchanged. Same supplied input/seed/beam/positive defence/MAX300, only farm policy differs. It measures known previous-cleared33 firstpoint itself, then selects its actual observed iron/time4.66–4.94× current34 firstpoint at early visits. These are observations before those choices, not prior experiment data injected or unseen reward/RNG predictions. Uranium source-attributed rates0; automatic research excluded; not a demonstrated joint uranium optimization. No clear34 or12h outcome yet. Guard changes only at300s visits, real native travel, no node teleport; preserves original5-module/900second retry. Exact optional QA patch/control logs in private Library v2.
+Old legal34 paired checkpoint diagnostics: beam1armour2shield12h37retreats; beam3armour12h24retreats; observed direct-enemy-income prototype12h38retreats. All144visits, no34clear/no reforge, exit0/noSCRIPT orengineERROR. These are cross-version diagnostics, not fresh or parent V26 evidence.
 
-Full raw evidence is privately retained in Library file Independent-Sol-High-Evidence-20261003.zip version2. Earlier public raw carrier12276b6 remains an older snapshot; new branch commits only update small aggregate text/JSON. Public raw upload was rejected automatic approval; parent said private verified delivery suffices and no public retry is needed. No main or middle-candidate writes.
+Source-only high direct loot is not high total growth: measured full12h iron almost unchanged and uranium lower. Corrected total-income farming uses all actual receipts, actual next scientist prices and already-won points. Its clean600s actual smoke verifies ledger equals Metrics exactly; its independent12h run is active.
+
+Private Library same named ZIP v3 holds current raw saves/compressed traces/native bundle/exact QA diffs/failures. Older public REPLAY/raw carrier remains an earlier partial; no new public raw upload.

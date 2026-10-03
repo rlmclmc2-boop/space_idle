@@ -1,183 +1,161 @@
 {
   "own_results_only": true,
-  "no_spliced_acceptance": true,
-  "fresh": {
-    "scope": "fresh",
-    "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
-    "code_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd",
-    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "input_rng_state": "7064421032684940846",
-    "start_x1_seconds": 0,
-    "end_x1_seconds": 114479.999994887,
-    "elapsed_hours": 31.79999999857972,
-    "stage_or_highest": 38,
-    "deaths": 1038,
-    "process_exit": null,
-    "log_errors": {
-      "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
+  "numeric_version": "V23 unchanged",
+  "fresh_source": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
+  "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
+  "fresh_partial_x1": 150899.999986408,
+  "fresh_stage": 49,
+  "fresh_clears": {
+    "5": 744.016666666319,
+    "10": 9780.71666660849,
+    "20": 46160.6666690024,
+    "30": 57010.6500045462,
+    "32": 77499.1666701643,
+    "34": 84442.2333352144,
+    "35": 99338.5499984128,
+    "40": 129690.583324679,
+    "45": 146816.099987359
+  },
+  "fresh_reforges": [
+    {
+      "planet": 1,
+      "start": 78150.0000033461,
+      "post_visit": 78150.0000033461,
+      "post_visit_hours_after_forge": 0,
+      "return": 80988.0833360186,
+      "return_hours_after_forge": 0.7883564812979158,
+      "clear_wall": 84442.2333352144,
+      "clear_wall_hours_after_forge": 1.7478425921856413,
+      "clear_next": 99338.5499984128,
+      "clear_next_hours_after_forge": 5.885708331962972
+    },
+    {
+      "planet": 2,
+      "start": 110639.999995781,
+      "post_visit": 110639.999995781,
+      "post_visit_hours_after_forge": 0,
+      "return": 114857.949994799,
+      "return_hours_after_forge": 1.1716527775049972,
+      "clear_wall": 119789.699993651,
+      "clear_wall_hours_after_forge": 2.5415833327416637,
+      "clear_next": 129690.583324679,
+      "clear_next_hours_after_forge": 5.291828702471665
+    },
+    {
+      "planet": 3,
+      "start": 137639.999989495,
+      "post_visit": 137639.999989495,
+      "post_visit_hours_after_forge": 0,
+      "return": 140009.06665561,
+      "return_hours_after_forge": 0.6580740739208301,
+      "clear_wall": 142341.516655067,
+      "clear_wall_hours_after_forge": 1.3059768515477803,
+      "clear_next": 146816.099987359,
+      "clear_next_hours_after_forge": 2.54891666607333
+    }
+  ],
+  "global30buildings_level5_completed": false,
+  "cross_version_diagnostics": {
+    "strong34_diagnostic": {
+      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
+      "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
+      "start_x1_seconds": 49913.4500031003,
+      "end_x1_seconds": 93113.4499998621,
+      "elapsed_hours": 11.9999999991005,
+      "deaths": 37,
+      "status": "completed",
+      "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 267,
+      "process_exit": {
+        "exit_code": 0,
+        "ended_utc": "2026-10-03T11:30:56.104861+00:00"
       },
-      "own-fresh-v23-fixed-zero-armour-max900-allmax-run.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
+      "log_errors": {
+        "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        },
+        "own-supplied34-v23-beam-positive-defence-max300-noforge12h-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
       }
     },
-    "status": "running or partial; no completion claim",
-    "own_clear_milestones_x1_seconds": {
-      "5": 744.016666666319,
-      "10": 9780.71666660849,
-      "20": 46160.6666690024,
-      "30": 57010.6500045462,
-      "32": 77499.1666701643,
-      "34": 84442.2333352144,
-      "35": 99338.5499984128
-    },
-    "reforges": [
-      {
-        "planet": 1,
-        "start": 78150.0000033461,
-        "post_visit": 78150.0000033461,
-        "post_visit_hours_after_forge": 0,
-        "return": 80988.0833360186,
-        "return_hours_after_forge": 0.7883564812979158,
-        "clear_wall": 84442.2333352144,
-        "clear_wall_hours_after_forge": 1.7478425921856413,
-        "clear_next": 99338.5499984128,
-        "clear_next_hours_after_forge": 5.885708331962972
+    "matched34_all_armour_diagnostic": {
+      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
+      "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
+      "start_x1_seconds": 49913.4500031003,
+      "end_x1_seconds": 93113.4499998621,
+      "elapsed_hours": 11.9999999991005,
+      "deaths": 24,
+      "status": "completed",
+      "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 334,
+      "process_exit": {
+        "exit_code": 0,
+        "script_errors": 0,
+        "parse_errors": 0,
+        "ended_utc": "2026-10-03T11:56:52.819488+00:00"
       },
-      {
-        "planet": 2,
-        "start": 110639.999995781,
-        "post_visit": 110639.999995781,
-        "post_visit_hours_after_forge": 0
+      "log_errors": {
+        "own-supplied34-v23-beam-allarmour-max300-noforge12h-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
       }
-    ],
-    "first_galaxy_end_state": {
-      "status": null,
-      "slots": 0,
-      "level5": 0,
-      "levels": []
+    },
+    "observed_income_farm34_diagnostic": {
+      "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
+      "code_fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
+      "start_x1_seconds": 49913.4500031003,
+      "end_x1_seconds": 93113.4499998621,
+      "elapsed_hours": 11.9999999991005,
+      "deaths": 38,
+      "status": "completed",
+      "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 373,
+      "process_exit": {
+        "exit_code": 0,
+        "script_errors": 0,
+        "parse_errors": 0,
+        "ended_utc": "2026-10-03T14:17:02.684377+00:00"
+      },
+      "log_errors": {
+        "own-supplied34-v23-observed-income-beam-shields-max300-noforge12h-r2-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
+      }
+    },
+    "observed_total_income_farm34_diagnostic": {
+      "source_commit": "a2efe4bdcfe5da461f5c4231d80e974a96d84b5c",
+      "code_fingerprint": "5bba6cd71990ee8ce7094d8b3eb9efb7d67048312626d4702a68fee5a4345235",
+      "start_x1_seconds": 49913.4500031003,
+      "end_x1_seconds": 55853.4500043104,
+      "elapsed_hours": 1.650000000336139,
+      "deaths": 10,
+      "status": "running or partial; no completion claim",
+      "clears": null,
+      "action_sessions": null,
+      "domain_events_not_mouse_clicks": null,
+      "process_exit": null,
+      "log_errors": {
+        "own-supplied34-v23-observed-total-income-beam-shields-max300-noforge12h-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
+      }
     }
   },
-  "strong34_diagnostic": {
-    "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
-    "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
-    "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
-    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "input_rng_state": "7315605390541974786",
-    "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 93113.4499998621,
-    "elapsed_hours": 11.9999999991005,
-    "stage_or_highest": 34,
-    "deaths": 37,
-    "process_exit": {
-      "exit_code": 0,
-      "ended_utc": "2026-10-03T11:30:56.104861+00:00"
-    },
-    "log_errors": {
-      "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
-      },
-      "own-supplied34-v23-beam-positive-defence-max300-noforge12h-run.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
-      }
-    },
-    "status": "completed",
-    "own_clear_milestones_x1_seconds": {},
-    "clears": {},
-    "reforges": [],
-    "action_sessions": 144,
-    "domain_events_not_mouse_clicks": 267,
-    "galaxy_all_max_seconds": -1,
-    "no_reforge_verified": true,
-    "clear34_hours_after_input": null,
-    "tested_strategy_12h_stall": true,
-    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
-  },
-  "matched34_all_armour_diagnostic": {
-    "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
-    "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
-    "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
-    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "input_rng_state": "7315605390541974786",
-    "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 93113.4499998621,
-    "elapsed_hours": 11.9999999991005,
-    "stage_or_highest": 34,
-    "deaths": 24,
-    "process_exit": {
-      "exit_code": 0,
-      "script_errors": 0,
-      "parse_errors": 0,
-      "ended_utc": "2026-10-03T11:56:52.819488+00:00"
-    },
-    "log_errors": {
-      "own-supplied34-v23-beam-allarmour-max300-noforge12h-run.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
-      }
-    },
-    "status": "completed",
-    "own_clear_milestones_x1_seconds": {},
-    "clears": {},
-    "reforges": [],
-    "action_sessions": 144,
-    "domain_events_not_mouse_clicks": 334,
-    "galaxy_all_max_seconds": -1,
-    "no_reforge_verified": true,
-    "clear34_hours_after_input": null,
-    "tested_strategy_12h_stall": true,
-    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
-  },
-  "observed_income_farm34_diagnostic": {
-    "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
-    "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
-    "code_fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
-    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "input_rng_state": "7315605390541974786",
-    "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 54473.4500040293,
-    "elapsed_hours": 1.2666666669247226,
-    "stage_or_highest": 33,
-    "deaths": 6,
-    "process_exit": null,
-    "log_errors": {
-      "own-supplied34-v23-observed-income-beam-shields-max300-noforge12h-r2-run.log": {
-        "script_errors": 0,
-        "parse_errors": 0,
-        "engine_errors": 0
-      }
-    },
-    "status": "running or partial; no completion claim",
-    "own_clear_milestones_x1_seconds": {},
-    "reforges": []
-  },
-  "remote_scope": "Small aggregate status only. Latest raw remains private Library Independent-Sol-High-Evidence-20261003.zip version2, includes fresh clear35, two completed fixed12h, observed-farm exact QA patch and early partial. No public raw retry needed per parent.",
-  "observed_farm_early_findings": {
-    "scope": "Own ongoing same supplied legal34/beam1armour2shield/MAX300/12h paired diagnostic; no clear34 conclusion yet",
-    "input_sha256": "4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a",
-    "input_rng": "7315605390541974786",
-    "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
-    "fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
-    "measured33_first_over34_first_iron_rates": [
-      {
-        "at": 52313.4500035892,
-        "ratio": 4.66186110906996
-      },
-      {
-        "at": 53813.4500038948,
-        "ratio": 4.936941921794323
-      }
-    ],
-    "rules": "Observed source-attributed collected income and elapsed periods only, no automatic furnace attributed, unobserved/unwon point ineligible, one actual measurement of already-cleared33 firstpoint, public travel/guard at300s visits. This input has attributable uranium0; ranking effectively iron/time.",
-    "source_code_delivery": "Private Library v2: apply qa-fixed-defence-exact.patch (base1d8 to07fd), then qa-observed-income-farm-exact.patch (07fd tofa9). No Excel/numeric/art changes."
-  }
+  "source_only_limit": "Actual direct enemy iron4.7-4.9x is not total growth. Completed12h iron income1.000286x baseline but uranium0.80532x; no34clear. Total-income corrected prototype remains separate and unfinished.",
+  "durable_delivery": "Private Library same named Independent-Sol-High-Evidence-20261003.zip v3, full native raw and exact QA patches. Public raw uploads not retried. Public branch texts are aggregates only; older REPLAY raw carrier is stale.",
+  "not_main": true
 }
