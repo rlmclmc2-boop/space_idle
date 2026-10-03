@@ -1,12 +1,12 @@
 {
-  "captured_utc": "2026-10-03T10:03:18.414045+00:00",
+  "captured_utc": "2026-10-03T10:05:35.682927+00:00",
   "own_run": true,
   "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
   "scope": "Continuous frozen fresh run; partial until own summary and exit recorded",
   "files": {
     "heartbeat.json": {
-      "sha256": "6512f643f5e5d4c888a90ee87fe986ee7125e36f26423d72649a737fd103b063",
-      "bytes": 107
+      "sha256": "8ad06f0294e5c77c1c2efd076b281ce506f24f1886073b9b287032c850a3d133",
+      "bytes": 110
     },
     "run.json": {
       "sha256": "eb8e132422cb445ad1a02e4d667afd1fe2dffa85adf074f9342c7a55e1459b8f",
@@ -16,14 +16,18 @@
       "sha256": "8df944535da6393bcfb8fed09fd2651d8f32ac7d10247ca9b86ccb3dd279114f",
       "bytes": 45078
     },
+    "save_10.json": {
+      "sha256": "25c217a38062abdc049e1d4c21a6964f9cc8072a926e3a271be81270744971c0",
+      "bytes": 52342
+    },
     "save_5.json": {
       "sha256": "f1a9d40930379d79a5ff3ae408a2f0733daaf36623083883eebae5571f25fc45",
       "bytes": 47812
     },
     "actions.jsonl": {
-      "sha256": "fb57806f3bc764d530eee424e1450eb6815de9032f76de64de9304e6f50ae7d1",
-      "bytes": 482229,
-      "gzip_bytes": 28605
+      "sha256": "2492771696b266a105e21f9f444caf9e4d1ad9c3ed4e1a3b270fdf115eb36b18",
+      "bytes": 622030,
+      "gzip_bytes": 38012
     },
     "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
       "sha256": "5d4e9ddd95039110b28cb3710c5301b0ac00fe87c018ba83230d612431a2e4bc",
@@ -31,9 +35,9 @@
       "gzip_bytes": 5070
     },
     "own-fresh-v23-fixed-zero-armour-max900-allmax-run.log": {
-      "sha256": "8d67d5c420d8d233d0dcc8a8e5e8853ea78545270ab2ef1669e54a5b4b70c774",
-      "bytes": 1037,
-      "gzip_bytes": 331
+      "sha256": "0bc41650c7d192097e5b11602b2894bf0245d808c604cfb8bd59175878529c63",
+      "bytes": 1389,
+      "gzip_bytes": 409
     }
   }
 }
