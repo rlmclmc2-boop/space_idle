@@ -25,5 +25,8 @@ func run():
 	assert(absf(boosted.x1_seconds-700.0)<0.00001)
 	assert(absf(baseline.x1_seconds-700.0)<0.00001)
 	assert(absf(boosted.remaining_chrono)<0.00001)
-	print("NATIVE_CHRONO_BUDGET ",JSON.stringify({"boosted":boosted,"baseline":baseline,"budget_pass":true,"scope":"Native scene _process, controlled missile farm; no player actions; 600 stored offline seconds plus100 real seconds yields700 X1 seconds. Resource/combat outputs are observations, not asserted universal frame-rate equivalence."}))
+	var output={"boosted":boosted,"baseline":baseline,"budget_pass":true,"combat_pass":boosted.kills==baseline.kills and boosted.deaths==baseline.deaths and boosted.rng==baseline.rng and boosted.resources==baseline.resources,"scope":"Native scene _process, controlled missile farm; no actions; stored600 plus real100 yields700 X1 seconds. Exact kills/deaths/RNG/resources comparison in this fixture, not universal equivalence."}
+	var file=FileAccess.open("res://.runtime/native-chrono-budget.json",FileAccess.WRITE);file.store_string(JSON.stringify(output,"\t"));file.close()
+	print("NATIVE_CHRONO_BUDGET ",JSON.stringify(output))
+	assert(output.combat_pass)
 	quit()

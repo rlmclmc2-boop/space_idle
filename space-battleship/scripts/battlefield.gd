@@ -162,6 +162,29 @@ func _sync_parameters() -> void:
 		ship_view.apply_parameters(settings,toon_enabled,rim_enabled)
 
 
+func uses_logical_battle_pose() -> bool:
+	return true
+
+func before_logical_game_tick(dt:float) -> void:
+	# Combat providers consume the same carrier/target/turret sequence at every
+	# speed. Keep the historical X1 order: pose first, then fx/turrets, then tick.
+	if game.paused:return
+	# Initialize every formation member at the previous logical boundary, just
+	# as X1 presentation does after spawning; lazy render visits must not set age.
+	for enemy in game.enemies:enemy_pose(enemy)
+	if is_instance_valid(ship_view):
+		if current_hull != str(game.profile.selectedShip):
+			current_hull=str(game.profile.selectedShip)
+			ship_view.set_hull(current_hull);_set_reference_dimensions()
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+		demo_time+=dt
+		var aim:Vector2=player_render_position()+Vector2(0,-450)
+		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
+		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
+	shield_before_hit=game.player.shield
+	fx_time+=dt
+	advance_turrets(dt)
+
 func _process(delta: float) -> void:
 	if is_instance_valid(ship_view):
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
@@ -173,13 +196,6 @@ func _process(delta: float) -> void:
 				return
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
-	# Update the canonical carrier pose before simulation asks for release points.
-	if is_instance_valid(ship_view) and not game.paused:
-		demo_time+=delta
-		var aim:Vector2=player_render_position()+Vector2(0,-450)
-		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,delta)
-	shield_before_hit = game.player.shield
 	super._process(delta)
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}

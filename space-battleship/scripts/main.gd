@@ -393,9 +393,10 @@ func _process(delta: float) -> void:
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:
-		fx_time += dt
+		if not uses_logical_battle_pose():
+			fx_time += dt
+			advance_turrets(dt)
 		wave_hint = maxf(0,wave_hint-dt)
-		advance_turrets(dt)
 		var boosted := game.chrono_affordable_seconds(dt)
 		advance_game_time(boosted * game.speed)
 		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
@@ -447,8 +448,15 @@ func advance_game_time(seconds: float) -> void:
 	game_time_remainder += seconds
 	const STEP := 1.0/60.0
 	while game_time_remainder + 0.0000000001 >= STEP:
+		before_logical_game_tick(STEP)
 		game.tick(STEP)
 		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
+
+func uses_logical_battle_pose() -> bool:
+	return false
+
+func before_logical_game_tick(_dt:float) -> void:
+	pass
 
 func fast_mode_enabled() -> bool:
 	return game != null and game.speed >= FAST_MODE_MIN_SPEED
@@ -696,9 +704,9 @@ func on_event(kind: String, info: Dictionary) -> void:
 				impact=straight_projectile_point(info.pos,visual)
 			weapon_impact(info.shot,impact)
 		"fire":
-			if fast_mode_enabled():return
 			if info.has("shot"):
 				weapon_launch(info.shot,float(info.get("spread",0)))
+			if fast_mode_enabled():return
 			if info.has("shot") and weapon_key(info.shot)=="cannon":railgun_sound("release")
 			else:beep(620 if info.type == 1 else 200)
 		"collect":
@@ -1438,7 +1446,6 @@ func battle_logical_point(point: Vector2) -> Vector2:
 	return Vector2(point.x,(low+high)*0.5)
 
 func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
-	if fast_mode_enabled():return
 	var key := weapon_key(shot)
 	if key=="longLaser":return
 	var mount := shot_mount(shot)
@@ -1448,6 +1455,8 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			pose.target = shot.target
 			pose.fired_at = fx_time
 		if key=="cannon":pose.recoil = 0.13
+	# Mount target feeds canonical missile release geometry even in fast mode.
+	if fast_mode_enabled():return
 	if key=="cannon" and bool(shot.hostile):
 		var nearest: Dictionary = {}
 		var nearest_distance := INF

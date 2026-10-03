@@ -37,6 +37,7 @@ func case(speed:float,force_quality:bool)->Dictionary:
 		return point
 	for frame in int(6.0/speed*60):scene._process(1.0/60.0)
 	var result={"speed":speed,"force_quality_x1":force_quality,"ticks":ticks,"calls":calls,"x1":g.simulated_time,"rng":str(g.rng.state)}
+	g.tick_observer=Callable();g.launch_provider=Callable();g.target_provider=Callable()
 	driver.close();return result
 func difference(a:Array,b:Array,fields:Array)->Dictionary:
 	for index in mini(a.size(),b.size()):
@@ -47,6 +48,8 @@ func run():
 	var baseline=case(1.0,false);await process_frame
 	var boosted=case(10.0,false);await process_frame
 	var controlled=case(10.0,true);await process_frame
-	var output={"seed":1701,"scope":"Native scene._process; captures actual provider calls and read-only logical tick inputs. Forced X1 ship quality is diagnostic only. No extra provider sampling, actions or RNG calls.","baseline":baseline,"boosted":boosted,"quality_control":controlled,"first_tick_input_difference":difference(baseline.ticks,boosted.ticks,["demo","fx","angles","player","quality"]),"first_geometry_difference":difference(baseline.calls,boosted.calls,["kind","x1","slot","ordinal","aim","position","direction","point"]),"first_geometry_difference_quality_control":difference(baseline.calls,controlled.calls,["kind","x1","slot","ordinal","aim","position","direction","point"])}
+	var output={"seed":1701,"scope":"Native scene._process; captures actual provider calls and read-only logical tick inputs. Forced X1 ship quality is diagnostic only. No extra provider sampling, actions or RNG calls.","baseline":baseline,"boosted":boosted,"quality_control":controlled,"first_kinematic_input_difference":difference(baseline.ticks,boosted.ticks,["demo","fx","angles","player"]),"first_tick_input_difference":difference(baseline.ticks,boosted.ticks,["demo","fx","angles","player","quality"]),"first_geometry_difference":difference(baseline.calls,boosted.calls,["kind","x1","slot","ordinal","aim","position","direction","point"]),"first_geometry_difference_quality_control":difference(baseline.calls,controlled.calls,["kind","x1","slot","ordinal","aim","position","direction","point"])}
 	var file=FileAccess.open("res://.runtime/native-chrono-provider-trace.json",FileAccess.WRITE);file.store_string(JSON.stringify(output,"\t"));file.close()
+	if OS.get_environment("CHRONO_EXPECT_EQ")=="1" and (output.first_geometry_difference.has("field") or output.first_geometry_difference_quality_control.has("field")):
+		printerr("Native chrono provider equivalence failed");quit(1);return
 	print("CHRONO_PROVIDER_TRACE ",JSON.stringify({"tick":output.first_tick_input_difference,"geometry":output.first_geometry_difference,"quality_control":output.first_geometry_difference_quality_control}));quit()
