@@ -32,10 +32,10 @@
     },
     "input_rng_state": "7064421032684940846",
     "start_x1_seconds": 0,
-    "end_x1_seconds": 26639.9999996965,
-    "elapsed_hours": 7.3999999999156945,
-    "stage_or_highest": 17,
-    "deaths": 350,
+    "end_x1_seconds": 40980.0000012803,
+    "elapsed_hours": 11.383333333688972,
+    "stage_or_highest": 20,
+    "deaths": 494,
     "process_exit": null,
     "log_errors": {
       "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
@@ -99,10 +99,10 @@
     },
     "input_rng_state": "7315605390541974786",
     "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 57893.450004726,
-    "elapsed_hours": 2.216666667118251,
+    "end_x1_seconds": 69713.4500053104,
+    "elapsed_hours": 5.500000000613917,
     "stage_or_highest": 34,
-    "deaths": 14,
+    "deaths": 29,
     "process_exit": null,
     "log_errors": {
       "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
@@ -111,6 +111,59 @@
         "engine_errors": 0
       },
       "own-supplied34-v23-beam-positive-defence-max300-noforge12h-run.log": {
+        "script_errors": 0,
+        "parse_errors": 0,
+        "engine_errors": 0
+      }
+    },
+    "status": "running or partial; no completion claim",
+    "own_clear_milestones_x1_seconds": {},
+    "reforges": []
+  },
+  "matched34_all_armour_diagnostic": {
+    "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
+    "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
+    "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
+    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
+    "options": {
+      "allow_reforge": false,
+      "allow_version_change": true,
+      "bulk": true,
+      "duration": 43200,
+      "engine": "formal",
+      "fixed_defence": [
+        "armour",
+        "armour",
+        "armour"
+      ],
+      "fixed_defence_from_stage": 34,
+      "fixed_weapon": "longLaser",
+      "fixed_weapon_from_stage": 34,
+      "label": "own-supplied34-v23-beam-allarmour-max300-noforge12h",
+      "resume": "/workspace/space-idle-independent-sol-high/test/progression/evidence/independent-sol-high-20261003/inputs/supplied-v15-legal-save34.json",
+      "scene": true,
+      "scientist_batch": false,
+      "scientist_max": true,
+      "seed": 20261004,
+      "single_unlock_per_visit": false,
+      "stop_clear": 34,
+      "stop_galaxy": false,
+      "stop_reach": 0,
+      "strategy": "BALANCED",
+      "teaching_seconds": 10,
+      "thematic": true,
+      "ui_refresh_seconds": 1,
+      "visit_seconds": 300
+    },
+    "input_rng_state": "7315605390541974786",
+    "start_x1_seconds": 49913.4500031003,
+    "end_x1_seconds": 54473.4500040293,
+    "elapsed_hours": 1.2666666669247226,
+    "stage_or_highest": 34,
+    "deaths": 6,
+    "process_exit": null,
+    "log_errors": {
+      "own-supplied34-v23-beam-allarmour-max300-noforge12h-run.log": {
         "script_errors": 0,
         "parse_errors": 0,
         "engine_errors": 0
