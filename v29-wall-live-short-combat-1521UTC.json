@@ -1,0 +1,165 @@
+{
+  "utc": "2026-10-03T15:20:27.295813+00:00",
+  "scope": "LIVE counterfactual olderfresh32 ->V29actual34; notyet12h, notgenuineallfresh29 input",
+  "heartbeat": {
+    "deaths": 289,
+    "highest": 34,
+    "stage": 32,
+    "wall_seconds": 7821.991766,
+    "x1_seconds": 115432.833327999
+  },
+  "waves": [
+    {
+      "stage": 32,
+      "node": 1,
+      "status": "win",
+      "count": 4779,
+      "min": 3.1333333326038,
+      "median": 3.8499999991036,
+      "max": 10.2166666642879
+    },
+    {
+      "stage": 34,
+      "node": 1,
+      "status": "win",
+      "count": 217,
+      "min": 2.99999999930151,
+      "median": 5.44999999873107,
+      "max": 8.81666666461388
+    },
+    {
+      "stage": 34,
+      "node": 2,
+      "status": "loss",
+      "count": 148,
+      "min": 1.41666666633682,
+      "median": 2.41666666610399,
+      "max": 5.4166666654055
+    },
+    {
+      "stage": 34,
+      "node": 2,
+      "status": "win",
+      "count": 78,
+      "min": 6.78333333175397,
+      "median": 14.3333333299961,
+      "max": 25.249999994121
+    },
+    {
+      "stage": 34,
+      "node": 3,
+      "status": "loss",
+      "count": 49,
+      "min": 1.96666666620877,
+      "median": 2.99999999930151,
+      "max": 8.16666666476522
+    },
+    {
+      "stage": 34,
+      "node": 3,
+      "status": "win",
+      "count": 62,
+      "min": 9.56666666443925,
+      "median": 15.258333329780701,
+      "max": 23.9499999944237
+    },
+    {
+      "stage": 34,
+      "node": 4,
+      "status": "loss",
+      "count": 14,
+      "min": 3.41666666587116,
+      "median": 4.41666666563833,
+      "max": 9.41666666447418
+    },
+    {
+      "stage": 34,
+      "node": 4,
+      "status": "win",
+      "count": 81,
+      "min": 11.3333333306946,
+      "median": 15.2499999964493,
+      "max": 28.3333333267365
+    },
+    {
+      "stage": 34,
+      "node": 5,
+      "status": "loss",
+      "count": 37,
+      "min": 2.48333333275514,
+      "median": 6.09999999857973,
+      "max": 7.64999999821885
+    },
+    {
+      "stage": 34,
+      "node": 5,
+      "status": "win",
+      "count": 41,
+      "min": 13.7666666634614,
+      "median": 16.9333333293907,
+      "max": 26.7499999937718
+    },
+    {
+      "stage": 34,
+      "node": 6,
+      "status": "loss",
+      "count": 41,
+      "min": 1.23333333304618,
+      "median": 1.23333333304618,
+      "max": 1.23333333304618
+    }
+  ],
+  "visits": 126,
+  "last_visit": {
+    "actions": 2,
+    "kind": "visit",
+    "loadout": {
+      "defence": [
+        {
+          "key": "armour",
+          "level": 262
+        },
+        {
+          "key": "shield",
+          "level": 262
+        },
+        {
+          "key": "armour",
+          "level": 262
+        }
+      ],
+      "weapons": [
+        {
+          "key": "longLaser",
+          "level": 263
+        },
+        {
+          "key": "longLaser",
+          "level": 262
+        },
+        {
+          "key": "longLaser",
+          "level": 262
+        },
+        {
+          "key": "longLaser",
+          "level": 262
+        },
+        {
+          "key": "longLaser",
+          "level": 262
+        },
+        {
+          "key": "longLaser",
+          "level": 262
+        }
+      ]
+    },
+    "resources": {
+      "1": 2.7705962897836234e+22,
+      "2": 9.673933544747655e+18
+    },
+    "stage": 32,
+    "x1_seconds": 115192.833328055
+  }
+}
