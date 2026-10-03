@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
-p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--first-reforge-steps',default='8,16,32,48,68');p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);p.add_argument("--boss-health-factor",type=float,default=1.0);p.add_argument("--boss-damage-factor",type=float,default=1.0);p.add_argument("--boss-factor-from",type=int,default=11);p.add_argument("--boss-factor-through",type=int,default=20);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--first-reforge-steps',default='8,16,32,48,68');p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);p.add_argument('--later-cycle-steps',default='6,12,18,30,50');p.add_argument("--boss-health-factor",type=float,default=1.0);p.add_argument("--boss-damage-factor",type=float,default=1.0);p.add_argument("--boss-factor-from",type=int,default=11);p.add_argument("--boss-factor-through",type=int,default=20);a=p.parse_args()
 from source_lock import acquire
 _source_lock=acquire(ROOT)
 data=json.loads((SRC/'data/game_data.json').read_text())
@@ -51,9 +51,11 @@ if a.through>20:
  first_income=[0,0,4,4,10]
  ratios += [ratios[29]*1.2**i for i in first_steps]
  resources += [resources[29]*1.2**i for i in first_income]
+ later_steps=[float(value) for value in a.later_cycle_steps.split(",")]
+ if len(later_steps)!=5:raise ValueError("Later cycles require five stage growth steps")
  for planet_cycle in range(5):
   base_ratio=ratios[-1];base_income=resources[-1]
-  ratios += [base_ratio*1.2**i for i in [6,12,18,30,50]]
+  ratios += [base_ratio*1.2**i for i in later_steps]
   resources += [base_income*1.2**i for i in [4,8,12,20,32]]
 manifest=[]
 for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
