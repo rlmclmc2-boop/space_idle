@@ -1,0 +1,9 @@
+# V29 genuine-fresh checkpoint wall completed
+
+Frozen source b4855e35dae1fcaf476f9949b9280671c57ae67e, fingerprint19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e, seed2026100304. Root separately resumed parent's genuine same-version pre-forge actual34 native save (clock71380.8000049222), preserved native RNG, fullUI1. 43200X1seconds completed: end114580.799994864, no clear34,316retreats,144visits,499operation-domain events; EXACT same end and counts parent independently reported fullUI0. Won34normal max28.333333s, median11.333333s; earned32point1 farming median3.85s. Wholebeam/reserve+10/manual scientist batch/300s visits are declared test policy; no universal strategy claim. Domain events are not literal mouse clicks.
+
+Raw archive includes run.json, qa-manifest, native save0/reach32/reach34/end, full actions.jsonl.gz, summary, both unmodified original import/run log bytes named .log.txt, review, SHA256 manifest. Wrapper exit0 observed execsession1020/chunk7777a3; runner checks native return code, no separate persisted native waitpid receipt. Both logs no SCRIPT ERROR/Parse Error/ERROR.
+
+Restore progression-v29-genuine-fresh34-wall.bundle.base64 with base64 decode. Decoded456134bytes SHA25646df7c382a9338011fd267a72fbf45c380d77693702e3779cbf93272122ce7ee. Prerequisite2cbaf8950ad61176366cbcf0ec916b8454c4b73a (repaired rawlog source), targetb2a604606a60d8d6e885e6a0d177bae7237258e9 refrefs/heads/evidence-v29-genuinewall-completed. `git bundle verify` passed locally. Independent evidence source, never main.
+
+User update2026-10-03 17:30UTC / BeijingOct4 01:30: accelerating later returns accepted. No further edits to force45/50/55back to4–6h. First return35 and totalall30buildingsLv5 budget still required. Latest parent actual55=160319.666650881, forge5=157439.999984885, postforge.799907h. Unified V29 60/allmax pending; root completefresh continues separately.
