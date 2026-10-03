@@ -15664,8 +15664,8 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.3991,
-      "health": 45801,
+      "dmgMultiple": 4.7982,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -18689,12 +18689,12 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5994,
-      "health": 2181,
+      "dmgMultiple": 3.1988,
+      "health": 567,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
-      "shield": 43620,
+      "shield": 11341,
       "shieldType": 1,
       "shieldRecovery": 0,
       "shieldDelay": 0,
@@ -19464,8 +19464,8 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.3991,
-      "health": 45801,
+      "dmgMultiple": 4.7982,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -21739,8 +21739,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5994,
-      "health": 45801,
+      "dmgMultiple": 3.1988,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -22114,12 +22114,12 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.55904,
-      "health": 2181,
+      "dmgMultiple": 5.118080000000001,
+      "health": 567,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
-      "shield": 43620,
+      "shield": 11341,
       "shieldType": 1,
       "shieldRecovery": 0,
       "shieldDelay": 0,
@@ -22889,8 +22889,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5994,
-      "health": 45801,
+      "dmgMultiple": 3.1988,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -23514,12 +23514,12 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.3991,
-      "health": 22900,
+      "dmgMultiple": 4.7982,
+      "health": 5954,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
-      "shield": 22900,
+      "shield": 5954,
       "shieldType": 2,
       "shieldRecovery": 0.2,
       "shieldDelay": 0.3,
@@ -24289,8 +24289,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5994,
-      "health": 45801,
+      "dmgMultiple": 3.1988,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -27314,12 +27314,12 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.55904,
-      "health": 2181,
+      "dmgMultiple": 5.118080000000001,
+      "health": 567,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
-      "shield": 43620,
+      "shield": 11341,
       "shieldType": 1,
       "shieldRecovery": 0,
       "shieldDelay": 0,
@@ -29214,8 +29214,8 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.3991,
-      "health": 45801,
+      "dmgMultiple": 4.7982,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -29239,8 +29239,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5994,
-      "health": 45801,
+      "dmgMultiple": 3.1988,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -29264,8 +29264,8 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.3991,
-      "health": 45801,
+      "dmgMultiple": 4.7982,
+      "health": 11908,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 5,
@@ -29289,8 +29289,8 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.9596399999999999,
-      "health": 113082,
+      "dmgMultiple": 1.91928,
+      "health": 29401,
       "armourType": 2,
       "res": "{1,120,1}",
       "size": 6,
@@ -307429,8 +307429,8 @@
       "id": 31,
       "length": 1000,
       "monGroup": "{30311|0.100000,30312|0.200000,30313|0.300000,30314|0.400000,30315|0.500000,30316|0.600000,30317|0.700000,30318|0.800000,30319|0.900000}",
-      "atkRatio": 2.442439318663683e+24,
-      "lifeRatio": 2.442439318663683e+24,
+      "atkRatio": 1.512294048887176e+25,
+      "lifeRatio": 1.512294048887176e+25,
       "resRatio": 9704565562037236,
       "jewelRatio": 7,
       "planetExpRatio": 1.037137289336648,
@@ -307477,8 +307477,8 @@
       "id": 32,
       "length": 1000,
       "monGroup": "{30321|0.100000,30322|0.200000,30323|0.300000,30324|0.400000,30325|0.500000,30326|0.600000,30327|0.700000,30328|0.800000,30329|0.900000}",
-      "atkRatio": 3.135892939772448e+25,
-      "lifeRatio": 3.135892939772448e+25,
+      "atkRatio": 1.941662253193607e+26,
+      "lifeRatio": 1.941662253193607e+26,
       "resRatio": 9704565562037236,
       "jewelRatio": 7.2,
       "planetExpRatio": 1.07565375693257,
