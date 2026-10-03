@@ -1,4 +1,4 @@
-# Actual status 2026-10-03 13:32 UTC
+# Actual status 2026-10-03 13:24 UTC (filename timestamp was typed incorrectly)
 Frozen V29 source b4855e35dae1fcaf476f9949b9280671c57ae67e, exact clean checkout build fingerprint 19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e verified. Do not continue numerical drift pending comparisons.
 Source increment progression-v29-short-wave-budgets.bundle.base64 uploaded commit21b1d1ed432d0b58591ba71c33d1637646c121b9; replay/dependency/SHA/economic inheritance doc REPLAY-v29-frozen-source-economic-inheritance.md commitec02fe6c1c292e09ca2514b0d36388f778e050f7; genuine actual34 v29-actual-no-forge-arrival34-native.json commit370a6fe25998c79977b06aebd77b35af4bdb173c. Parent can now independently replay.
 
@@ -9,7 +9,7 @@ Cold diagnostic held3laser+3beam clone, seed1701: normal5=10.833333s,elite6=20.6
 Singleweapon cold screen laser8.266667/17.583333 onnormal5/elite6;beamBoss24.8. Stop extra fine tuning around exact10/20/30 thresholds.
 
 ActualV29arrival34 stronger earned32farm/+10reserve/300s/noForge12h running: at79072.8333364646 (23min afterarrival),43retreats, currently32 earnedfarm. No12hclaim.
-FrozenV29 fullfresh0->all30slotsLv5 started13:30, seed2026100304, actual900sec visits/teaching10/MAX/thematictrue/UI1, stopgalaxy216000budget. Explicit900testassumption, notuser-requiredcadence. Thiswillbefinalconsistentversioncandidate, notpriorsegmentsplice.
+FrozenV29 fullfresh0->all30slotsLv5 started13:22, seed2026100304, actual900sec visits/teaching10/MAX/thematictrue/UI1, stopgalaxy216000budget. Explicit900testassumption, notuser-requiredcadence. Thiswillbefinalconsistentversioncandidate, notpriorsegmentsplice.
 
 Completed matchedV25 wholebeam onlyfromactual33 actual34=97101.4166656003, clear33=97098.3999989343,17retreats66visits231events. Its elapsed32->34=5.44507h.
 V26 identicalwholebeam-policy/inputactual33 arrival34=78357.7166699644,14.30917min,0retreats3visits10events; parentindependentlyexactmatched. ThismatchedcomparisonisolatesV25->26HP/Bossdamage changes.
