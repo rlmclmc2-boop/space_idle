@@ -1,0 +1,65 @@
+[
+  {
+    "path": "test/progression/deliverables/progression-7159cf3.bundle.base64",
+    "sha256": "b6cef0620f3e9ea78ea75d336a58ca9b17a8354be53bffe8d1b10b25503d1e22",
+    "bytes": 539255,
+    "refs": [
+      "7159cf3e1df6550d9b1af7776aabebd7f9d1b0eb refs/heads/candidate/progression-longrun-calibration"
+    ],
+    "verify": "The bundle contains this ref:\n7159cf3e1df6550d9b1af7776aabebd7f9d1b0eb refs/heads/candidate/progression-longrun-calibration\nThe bundle requires this ref:\n8e648d122385e648f198679f1059f92d1a75338f \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-7159cf3.bundle is okay\n"
+  },
+  {
+    "path": "test/progression/deliverables/progression-v21-source.bundle.base64",
+    "sha256": "a952a1dd2ab407c78087dbe98806604c767740df17dabaaf462affa2a4a96a93",
+    "bytes": 494776,
+    "refs": [
+      "52af7167ce2402de76d2f398a2ba6071248081bf refs/heads/evidence/v21-calibration-source"
+    ],
+    "verify": "The bundle contains this ref:\n52af7167ce2402de76d2f398a2ba6071248081bf refs/heads/evidence/v21-calibration-source\nThe bundle requires this ref:\n7159cf3e1df6550d9b1af7776aabebd7f9d1b0eb \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-v21-source.bundle is okay\n"
+  },
+  {
+    "path": "test/progression/deliverables/progression-v22-source-increment.bundle.base64",
+    "sha256": "bba965aa69b48ef250573bee59f021ac9baf7cc046431281c1dc86405e8105f0",
+    "bytes": 51867,
+    "refs": [
+      "971917f23cc4519de4ac4ee8f370e37b55bb0496 refs/heads/evidence/v22-calibration-source"
+    ],
+    "verify": "The bundle contains this ref:\n971917f23cc4519de4ac4ee8f370e37b55bb0496 refs/heads/evidence/v22-calibration-source\nThe bundle requires this ref:\n52af7167ce2402de76d2f398a2ba6071248081bf \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-v22-source-increment.bundle is okay\n"
+  },
+  {
+    "path": "test/progression/deliverables/progression-v10-policy-increment.bundle.base64",
+    "sha256": "ece1149a15fe1af6605dc20d91e335cbd3021943328321207dc1983eaa046ed9",
+    "bytes": 9039,
+    "refs": [
+      "56aed23cbe7a5cf69b74ce0918e9d1dfbd3b94e1 refs/heads/evidence/v10-notification-policy"
+    ],
+    "verify": "The bundle contains this ref:\n56aed23cbe7a5cf69b74ce0918e9d1dfbd3b94e1 refs/heads/evidence/v10-notification-policy\nThe bundle requires this ref:\n971917f23cc4519de4ac4ee8f370e37b55bb0496 \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-v10-policy-increment.bundle is okay\n"
+  },
+  {
+    "path": "test/progression/deliverables/progression-v23-frozen-increment.bundle.base64",
+    "sha256": "f751de47cf0cd132af7cc2b818283ed1de422035f2f8d499f1055480fa792ef7",
+    "bytes": 450149,
+    "refs": [
+      "d9a11bca9f809fa92e892929985261942e69cae1 refs/heads/evidence/v23-frozen-fresh-source"
+    ],
+    "verify": "The bundle contains this ref:\nd9a11bca9f809fa92e892929985261942e69cae1 refs/heads/evidence/v23-frozen-fresh-source\nThe bundle requires this ref:\n56aed23cbe7a5cf69b74ce0918e9d1dfbd3b94e1 \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-v23-frozen-increment.bundle is okay\n"
+  },
+  {
+    "path": "progression-v11-strategy-increment.bundle.base64",
+    "sha256": "284e9af759a27cead703aafe098cdd0eff58cdc5affd971fe8d7319ebda033d2",
+    "bytes": 3168,
+    "refs": [
+      "30de7ce62aae3f390184729b0c79dfbe6aa419a0 refs/heads/evidence/v11-fixed-weapon-source"
+    ],
+    "verify": "The bundle contains this ref:\n30de7ce62aae3f390184729b0c79dfbe6aa419a0 refs/heads/evidence/v11-fixed-weapon-source\nThe bundle requires this ref:\nd9a11bca9f809fa92e892929985261942e69cae1 \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-v11-strategy-increment.bundle is okay\n"
+  },
+  {
+    "path": "progression-zero-armour-fix.bundle.base64",
+    "sha256": "b4a4f5db943f2cc21e9f880d4e3a1b8617ecb7764c2b3b9be9703242275ae328",
+    "bytes": 5942,
+    "refs": [
+      "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0 refs/heads/evidence/zero-armour-consistency-source"
+    ],
+    "verify": "The bundle contains this ref:\n1d8dc45b6346f0d18dfa5ed993fa046a64525fd0 refs/heads/evidence/zero-armour-consistency-source\nThe bundle requires this ref:\n30de7ce62aae3f390184729b0c79dfbe6aa419a0 \nThe bundle uses this hash algorithm: sha1\n/workspace/independent-sol-high-transport/progression-zero-armour-fix.bundle is okay\n"
+  }
+]
