@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+TIME_EQUIVALENCE {"failures":0,"x1":{"hud_last_real_minute":831.0,"peak":650.0,"production_clock":599.999999999783,"production_window":600.0,"research":{"超时空炼铁炉":1},"resources":{"1":7854.0,"2":0.0}},"x10":{"hud_last_real_minute":7854.0,"peak":650.0,"production_clock":599.999999999783,"production_window":600.0,"research":{"超时空炼铁炉":1},"resources":{"1":7854.0,"2":0.0}}}

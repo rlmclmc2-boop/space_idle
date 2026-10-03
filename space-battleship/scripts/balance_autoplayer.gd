@@ -3,6 +3,9 @@ extends RefCounted
 const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
 var strategy := "BALANCED"
+var forced_weapon := ""
+var respect_guard := false
+var unlock_acknowledgements_per_visit := 1
 var random := RandomNumberGenerator.new()
 var last_refit := -60.0
 var unlocked_count := 0
@@ -16,7 +19,7 @@ func configure(name: String, seed_value: int) -> void:
 func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	var row := game.db.equip(key,level)
 	if row.is_empty() or float(row.get("cd",0)) <= 0:return 0.0
-	var value := game.equipment_stat(key,level)/float(row.cd)*(float(row.para1) if key == "missile" else 1.0)
+	var value: float = game.equipment_stat(key,level)/float(row.cd)*(float(row.para1) if key == "missile" else 1.0)
 	if key == "longLaser":
 		# Six-second target horizon. Read the real beam multiplier, not a second damage formula.
 		var active := maxf(0,6.0-float(row.get("para3",row.cd)))
@@ -24,9 +27,11 @@ func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	return value
 
 func act(game: BattleGame, elapsed: float) -> bool:
-	if not game.pending_unlocks.is_empty():game.acknowledge_unlocks()
+	for notification in clampi(unlock_acknowledgements_per_visit,0,32):
+		if game.pending_unlocks.is_empty():break
+		game.acknowledge_unlocks()
 	if game.state == BattleGame.State.MAIN_MENU:game.start(1,false)
-	elif game.state == BattleGame.State.LEVEL_CLEAR:game.advance_after_clear()
+	elif game.state == BattleGame.State.LEVEL_CLEAR and not (respect_guard and game.guarding_here()):game.advance_after_clear()
 	if strategy == "ECONOMY_FIRST":buy_scientist(game,0.5)
 	# Select an unlocked hull only if both enabled module counts are no worse.
 	for ship in game.db.ships:
@@ -52,6 +57,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 		if strategy == "BALANCED" and not available.is_empty():best = available[(index+maxi(0,available.size()-game.weapon_entries().size())) % available.size()]
 		elif strategy == "RANDOM_VALID":
 			best = available[random.randi_range(0,available.size()-1)] if refit_due and not available.is_empty() else str(entry.key)
+		if not forced_weapon.is_empty() and game.profile.unlocked.has(forced_weapon):best=forced_weapon
 		if not best.is_empty() and best != str(entry.key):game.equip_slot("weapons",index,best)
 	for index in game.defense_entries().size():
 		var entry: Dictionary = game.defense_entries()[index]
@@ -68,7 +74,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 	for _purchase in MAX_PURCHASES:
 		var best := {}
 		var best_score := 0.0
-		var danger := float(game.player.armour) < game.stat("armour")*0.5 or game.state == BattleGame.State.RETREAT
+		var danger: bool = float(game.player.armour) < game.stat("armour")*0.5 or game.state == BattleGame.State.RETREAT
 		for category in ["weapons","defence"]:
 			for index in game.loadout_entries(category).size():
 				var entry := game.slot_entry(category,index)
@@ -77,7 +83,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 				var costs := game.slot_upgrade_cost(category,index)
 				for id in costs:
 					cost += float(costs[id])/maxf(float(game.profile.resources.get(id,0)),1.0)
-				var before := game.jewel_equipment_stat(entry)
+				var before: float = game.jewel_equipment_stat(entry)
 				var gain := maxf(0,game.jewel_equipment_stat(entry,int(entry.level)+1)-before)/maxf(before,1.0)
 				if gain <= 0:continue
 				affordable = true

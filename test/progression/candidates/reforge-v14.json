@@ -1,0 +1,108 @@
+{
+  "scope": "Provisional 30–60 numerical candidate; no new mechanics. No acceptance until real34 stall/replay/35 and full galaxy journey tests.",
+  "reason": "Explicit numerical benefit candidate; actual reset losses and recovery require segmented tests. Later preparation durations remain undecided.",
+  "parameters": {
+    "version": "reforge-v14",
+    "equipment": 15,
+    "hightech": 10,
+    "first_equipment": 35,
+    "first_hightech": 25
+  },
+  "changes": [
+    {
+      "id": 1,
+      "planet": 1,
+      "target": "equipment",
+      "old": 25,
+      "new": 35
+    },
+    {
+      "id": 2,
+      "planet": 1,
+      "target": "hightech",
+      "old": 20,
+      "new": 25
+    },
+    {
+      "id": 11,
+      "planet": 2,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 12,
+      "planet": 2,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 15,
+      "planet": 3,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 16,
+      "planet": 3,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 19,
+      "planet": 4,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 20,
+      "planet": 4,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 23,
+      "planet": 5,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 24,
+      "planet": 5,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 27,
+      "planet": 6,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 28,
+      "planet": 6,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    }
+  ],
+  "import": {
+    "ok": true,
+    "action": "import",
+    "changed": [
+      "planet_buff"
+    ],
+    "parsed": [
+      "planet_buff"
+    ],
+    "message": "导入成功：更新 planet_buff；其余配置保持不变。"
+  }
+}

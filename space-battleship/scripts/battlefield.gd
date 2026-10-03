@@ -161,6 +161,29 @@ func _sync_parameters() -> void:
 		ship_view.apply_parameters(settings,toon_enabled,rim_enabled)
 
 
+func uses_logical_battle_pose() -> bool:
+	return true
+
+func before_logical_game_tick(dt:float) -> void:
+	# Combat providers consume the same carrier/target/turret sequence at every
+	# speed. Keep the historical X1 order: pose first, then fx/turrets, then tick.
+	if game.paused:return
+	# Initialize every formation member at the previous logical boundary, just
+	# as X1 presentation does after spawning; lazy render visits must not set age.
+	for enemy in game.enemies:enemy_pose(enemy)
+	if is_instance_valid(ship_view):
+		if current_hull != str(game.profile.selectedShip):
+			current_hull=str(game.profile.selectedShip)
+			ship_view.set_hull(current_hull);_set_reference_dimensions()
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+		demo_time+=dt
+		var aim:Vector2=player_render_position()+Vector2(0,-450)
+		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
+		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
+	shield_before_hit=game.player.shield
+	fx_time+=dt
+	advance_turrets(dt)
+
 func _process(delta: float) -> void:
 	if is_instance_valid(ship_view):
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
@@ -172,13 +195,6 @@ func _process(delta: float) -> void:
 				return
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
-	# Update the canonical carrier pose before simulation asks for release points.
-	if is_instance_valid(ship_view) and not game.paused:
-		demo_time+=delta
-		var aim:Vector2=player_render_position()+Vector2(0,-450)
-		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,delta)
-	shield_before_hit = game.player.shield
 	super._process(delta)
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}
@@ -626,8 +642,8 @@ func draw_vertical_battle_hud()->void:
 	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
 	battle_meter(Rect2(44,188,524,5),game.distance/maxf(1,float(db.levels[game.stage-1].length)),BATTLE_TEAL)
-	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
-		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(315,132),14,BATTLE_WARM)
+	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
+		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(315,132),14,BATTLE_WARM)
 	battle_panel(Rect2(30,1132,552,114))
 	var status := game.enhancement_protection_status()
 	var layers := defense_hud_layers(status)

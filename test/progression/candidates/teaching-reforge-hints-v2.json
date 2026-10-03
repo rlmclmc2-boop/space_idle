@@ -1,0 +1,39 @@
+{
+  "scope": "Text correction only; source Excel normal export; reforge rules unchanged",
+  "changes": [
+    {
+      "sheet": "unlock",
+      "id": "planet/1",
+      "field": "desc",
+      "old": "通关30后可派遣空闲船员探索首颗星球。探索中建设新型船坞，并派入建筑要求的额外船员；建成后领取设施，开启重铸。重铸保留资源与永久探索奖励，重置本轮养成，从第5关再出发。",
+      "new": "通关30后可派遣空闲船员探索首颗星球。探索中建设新型船坞，并派入建筑要求的额外船员；建成后领取设施，开启重铸。重铸保留铁与铀余额与永久探索奖励，重置本轮养成，从第5关再出发。"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "des",
+      "old": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有资源与永久星球奖励。",
+      "new": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有铁与铀余额与永久星球奖励。"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard_later",
+      "field": "des",
+      "old": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有资源与永久星球奖励。",
+      "new": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有铁与铀余额与永久星球奖励。"
+    }
+  ],
+  "import": {
+    "ok": true,
+    "action": "import",
+    "changed": [
+      "unlock",
+      "planet_build"
+    ],
+    "parsed": [
+      "unlock",
+      "planet_build"
+    ],
+    "message": "导入成功：更新 unlock、planet_build；其余配置保持不变。"
+  }
+}

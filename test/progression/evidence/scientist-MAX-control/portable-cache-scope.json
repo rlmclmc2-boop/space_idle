@@ -1,0 +1,8 @@
+{
+  "old_fingerprint": "caa520d7d41032cdc939de3abbbda7841fa1e686d0582d4401ce201344f828b6",
+  "rebuilt_fingerprint": "60c48fa2fe0b5e98495e3736d0e7bc3602520045b941f26e0dfbf15641a7c9cd",
+  "only_different_file": [
+    "data/.import_state.json"
+  ],
+  "reason": "Python exporter local fingerprint cache; no Godot reader. Excluded from future bundles to make bare-Git rebuild deterministic. All gameplay code/data/assets unchanged."
+}

@@ -1,0 +1,21 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SCRIPT ERROR: Invalid access to property or key 'level' on a base object of type 'Dictionary'.
+          at: decide (res://scripts/beginner_guide.gd:107)
+          GDScript backtrace (most recent call first):
+              [0] decide (res://scripts/beginner_guide.gd:107)
+              [1] refresh (res://scripts/beginner_guide.gd:150)
+              [2] setup (res://scripts/beginner_guide.gd:61)
+              [3] build_ui (res://scripts/main.gd:1845)
+              [4] setup (res://qa/scene_driver.gd:15)
+              [5] case (res://qa/native_chrono_budget.gd:17)
+              [6] run (res://qa/native_chrono_budget.gd:22)
+SCRIPT ERROR: Invalid access to property or key 'phase' on a base object of type 'Dictionary'.
+          at: refresh (res://scripts/beginner_guide.gd:163)
+          GDScript backtrace (most recent call first):
+              [0] refresh (res://scripts/beginner_guide.gd:163)
+              [1] setup (res://scripts/beginner_guide.gd:61)
+              [2] build_ui (res://scripts/main.gd:1845)
+              [3] setup (res://qa/scene_driver.gd:15)
+              [4] case (res://qa/native_chrono_budget.gd:17)
+              [5] run (res://qa/native_chrono_budget.gd:22)

@@ -44,6 +44,7 @@ func conquered(g) -> int:
 
 func condition_met(g, definition: Dictionary) -> bool:
 	match str(definition.unlock_type):
+		"stage_cleared":return g.profile.cleared.has(int(definition.unlock_value))
 		"conquered_planet_count":return conquered(g)>=int(definition.unlock_value)
 		"galaxy_complete":return regions.has(str(definition.unlock_value)) and regions[str(definition.unlock_value)].state.status=="complete"
 	return false
@@ -89,7 +90,7 @@ func advance(g, dt: float) -> void:
 			var amount=g.N.multiply(rates[pair[0]],income_elapsed)
 			if g.N.compare(amount,0)>0:
 				g.profile.resources[pair[1]]=g.N.add(g.profile.resources.get(pair[1],0),amount)
-				g.resource_samples.append({"time":g.economy_time(),"id":pair[1],"amount":amount,"origin":"galaxy"})
+				g.resource_samples.append({"time":g.economy_time(),"production_time":g.production_time(),"id":pair[1],"amount":amount,"origin":"galaxy"})
 				g.event.emit("galaxy_income",{"id":pair[1],"amount":amount})
 		income_elapsed=0
 	for key in regions:

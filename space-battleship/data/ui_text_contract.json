@@ -6589,6 +6589,23 @@
     },
     "save.automatic_title": {
       "params": []
+    },
+    "battle.encounter_tier.elite": {
+      "params": []
+    },
+    "battle.encounter_tier.boss": {
+      "params": []
+    },
+    "battle.encounter_tier.ultimate": {
+      "params": []
+    },
+    "planet.reforge_rewards": {
+      "params": [
+        "rewards"
+      ]
+    },
+    "battle.zero_armour": {
+      "params": []
     }
   },
   "bindings": {

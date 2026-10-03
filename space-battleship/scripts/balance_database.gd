@@ -35,6 +35,3 @@ func enemy_weapon(key: String) -> Dictionary:
 		enemy_rows[key] = super.enemy_weapon(key)
 	return enemy_rows[key].duplicate(true)
 
-func jewel_effect(id: String) -> String:
-	if not effect_names.has(id):effect_names[id] = super.jewel_effect(id)
-	return str(effect_names[id])

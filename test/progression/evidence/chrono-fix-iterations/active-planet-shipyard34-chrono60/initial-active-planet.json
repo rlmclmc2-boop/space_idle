@@ -1,0 +1,284 @@
+{
+  "x1": 49913.4500031003,
+  "planet1": {
+    "auto_explore": true,
+    "buildings": {
+      "refinery": {
+        "build_progress": 5.0,
+        "crew": [],
+        "status": "built"
+      },
+      "shipyard": {
+        "build_progress": 69.0,
+        "crew": [
+          "engineer"
+        ],
+        "status": "building"
+      },
+      "station": {
+        "build_progress": 1,
+        "crew": [],
+        "status": "built"
+      },
+      "workshop": {
+        "build_progress": 10.0,
+        "crew": [],
+        "status": "built"
+      }
+    },
+    "conquered": false,
+    "crewId": "navigator",
+    "degree": 130.0,
+    "elapsed": 27.5999999999997,
+    "unlocked": true
+  },
+  "scientists": 209,
+  "scientist_assignments": {
+    "宝石熔炼炉": 52,
+    "正电子聚焦装置": 52,
+    "简并态装甲": 52,
+    "超时空炼铁炉": 53
+  },
+  "crew": [
+    {
+      "assignmentType": "",
+      "crewId": "navigator",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 1499.0,
+      "level": 18,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "engineer",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "equipment_upgrade",
+      "crewId": "researcher",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "equipment",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_04",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_05",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_06",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_07",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_08",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_09",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_10",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_11",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_12",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_13",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_14",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_15",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_16",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_17",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_18",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_19",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    },
+    {
+      "assignmentType": "",
+      "crewId": "crew_20",
+      "equipmentSlots": [
+        null,
+        null
+      ],
+      "exp": 0.0,
+      "level": 0,
+      "targetId": "",
+      "upgradeMode": "1"
+    }
+  ]
+}

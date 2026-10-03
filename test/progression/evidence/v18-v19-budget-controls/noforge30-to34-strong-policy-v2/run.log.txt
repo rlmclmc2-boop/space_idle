@@ -1,0 +1,71 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+CLEAR stage=30 x1_seconds=41963.7333348141
+HEARTBEAT x1_seconds=42023.7333348263 stage=30 deaths=0
+HEARTBEAT x1_seconds=42623.7333349486 stage=31 deaths=2
+CLEAR stage=31 x1_seconds=42985.1666683555
+HEARTBEAT x1_seconds=43223.7333350708 stage=32 deaths=6
+HEARTBEAT x1_seconds=43823.733335193 stage=32 deaths=13
+HEARTBEAT x1_seconds=44423.7333353153 stage=32 deaths=17
+CLEAR stage=32 x1_seconds=44947.9000020887
+HEARTBEAT x1_seconds=45023.7333354375 stage=33 deaths=17
+HEARTBEAT x1_seconds=45623.7333355597 stage=33 deaths=21
+HEARTBEAT x1_seconds=46223.733335682 stage=33 deaths=23
+HEARTBEAT x1_seconds=46823.7333358042 stage=33 deaths=25
+HEARTBEAT x1_seconds=47423.7333359264 stage=33 deaths=28
+HEARTBEAT x1_seconds=48023.7333360487 stage=33 deaths=32
+HEARTBEAT x1_seconds=48623.7333361709 stage=33 deaths=35
+HEARTBEAT x1_seconds=49223.7333362932 stage=33 deaths=36
+HEARTBEAT x1_seconds=49823.7333364154 stage=33 deaths=37
+CLEAR stage=33 x1_seconds=49910.4333364331
+HEARTBEAT x1_seconds=50423.7333365376 stage=34 deaths=37
+HEARTBEAT x1_seconds=51023.7333366599 stage=34 deaths=38
+HEARTBEAT x1_seconds=51623.7333367821 stage=34 deaths=38
+HEARTBEAT x1_seconds=52223.7333369043 stage=34 deaths=40
+HEARTBEAT x1_seconds=52823.7333370266 stage=34 deaths=41
+HEARTBEAT x1_seconds=53423.7333371488 stage=34 deaths=42
+HEARTBEAT x1_seconds=54023.733337271 stage=34 deaths=43
+HEARTBEAT x1_seconds=54623.7333373933 stage=34 deaths=45
+HEARTBEAT x1_seconds=55223.7333375155 stage=34 deaths=46
+HEARTBEAT x1_seconds=55823.7333376378 stage=34 deaths=48
+HEARTBEAT x1_seconds=56423.73333776 stage=34 deaths=50
+HEARTBEAT x1_seconds=57023.7333378822 stage=34 deaths=52
+HEARTBEAT x1_seconds=57623.7333380045 stage=34 deaths=55
+HEARTBEAT x1_seconds=58223.7333381267 stage=34 deaths=57
+HEARTBEAT x1_seconds=58823.7333382489 stage=34 deaths=60
+HEARTBEAT x1_seconds=59423.7333383712 stage=34 deaths=63
+HEARTBEAT x1_seconds=60023.7333384934 stage=34 deaths=66
+HEARTBEAT x1_seconds=60623.7333386156 stage=34 deaths=69
+HEARTBEAT x1_seconds=61223.7333387379 stage=34 deaths=73
+HEARTBEAT x1_seconds=61823.7333388601 stage=34 deaths=77
+HEARTBEAT x1_seconds=62423.7333389823 stage=34 deaths=80
+HEARTBEAT x1_seconds=63023.7333391046 stage=34 deaths=85
+HEARTBEAT x1_seconds=63623.7333392268 stage=34 deaths=89
+HEARTBEAT x1_seconds=64223.7333393491 stage=34 deaths=93
+HEARTBEAT x1_seconds=64823.7333394713 stage=34 deaths=98
+HEARTBEAT x1_seconds=65423.7333395935 stage=34 deaths=103
+HEARTBEAT x1_seconds=66023.7333395028 stage=34 deaths=105
+HEARTBEAT x1_seconds=66623.7333393631 stage=34 deaths=105
+HEARTBEAT x1_seconds=67223.7333392234 stage=34 deaths=110
+HEARTBEAT x1_seconds=67823.7333390837 stage=34 deaths=110
+HEARTBEAT x1_seconds=68423.733338944 stage=34 deaths=113
+HEARTBEAT x1_seconds=69023.7333388043 stage=34 deaths=113
+HEARTBEAT x1_seconds=69623.7333386646 stage=34 deaths=117
+HEARTBEAT x1_seconds=70223.733338525 stage=34 deaths=117
+HEARTBEAT x1_seconds=70823.7333383853 stage=34 deaths=120
+HEARTBEAT x1_seconds=71423.7333382456 stage=34 deaths=120
+HEARTBEAT x1_seconds=72023.7333381059 stage=34 deaths=123
+HEARTBEAT x1_seconds=72623.7333379662 stage=34 deaths=123
+HEARTBEAT x1_seconds=73223.7333378265 stage=34 deaths=126
+HEARTBEAT x1_seconds=73823.7333376868 stage=34 deaths=126
+HEARTBEAT x1_seconds=74423.7333375471 stage=34 deaths=130
+HEARTBEAT x1_seconds=75023.7333374074 stage=34 deaths=130
+HEARTBEAT x1_seconds=75623.7333372677 stage=34 deaths=134
+HEARTBEAT x1_seconds=76223.733337128 stage=34 deaths=134
+HEARTBEAT x1_seconds=76823.7333369883 stage=34 deaths=138
+HEARTBEAT x1_seconds=77423.7333368486 stage=34 deaths=138
+HEARTBEAT x1_seconds=78023.7333367089 stage=34 deaths=140
+HEARTBEAT x1_seconds=78623.7333365692 stage=34 deaths=140
+HEARTBEAT x1_seconds=79223.7333364295 stage=34 deaths=141
+CLEAR stage=34 x1_seconds=79324.7000030726
+RESULT /workspace/space_idle/test/work/formal-scene-v16-policy/results/noforge30-to34-strong-policy-v2 clears={ "30": 41963.7333348141, "31": 42985.1666683555, "32": 44947.9000020887, "33": 49910.4333364331, "34": 79324.7000030726 } deaths=141 sessions=257

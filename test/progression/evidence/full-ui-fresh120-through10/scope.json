@@ -1,0 +1,10 @@
+{
+  "scope": "fresh full scene, event hook and UI rebuild, sparse-v5; stops at10; no all-galaxy acceptance",
+  "seed": 20261002,
+  "teaching_visit_seconds": 10,
+  "normal_visit_seconds": 120,
+  "data_version": "progression-v15-prep-wall",
+  "source_commit": "ec82741",
+  "package_fingerprint": "6f1265bd00d537eb9218e6b8324fbd44f1e5d4cabb0906ca3fbe434fba8e44e2",
+  "branch_choice_observation": "No branch reached by10 in this run; controlled fixture separately proves A selection when eligible."
+}

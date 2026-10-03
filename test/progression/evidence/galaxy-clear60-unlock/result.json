@@ -1,0 +1,26 @@
+{
+	"checks": [
+		"reached61 without clear60 stays locked",
+		"six conquests do not replace clear60",
+		"clear60 with zero conquests opens feature",
+		"clear60 with zero conquests makes first galaxy available",
+		"clear60 permits actual exploration start",
+		"later conquest condition still requires its count",
+		"later conquest condition still accepts its count",
+		"later galaxy completion condition remains closed",
+		"later galaxy completion condition still opens"
+	],
+	"data_sha256": "347bba1e8926e060633dc26ef5dd0fdf9e4790e8e110d0cad8724135ec88dabb",
+	"engine": {
+		"build": "official",
+		"hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+		"hex": 263683,
+		"major": 4,
+		"minor": 6,
+		"patch": 3,
+		"status": "stable",
+		"string": "4.6.3-stable (official)",
+		"timestamp": 0
+	},
+	"scope": "controlled production Game/ShipDatabase unlock contract; no fresh journey or all-max timing claim"
+}

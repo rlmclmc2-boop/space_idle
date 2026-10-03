@@ -1,0 +1,18 @@
+{
+  "pids": [
+    36744,
+    43482,
+    44129,
+    45073,
+    46132,
+    46469
+  ],
+  "started_utc": "2026-10-03T01:11:37Z",
+  "reason": "4-core CPU priority for final native chrono/scene regressions; SIGCONT within15min watchdog; X1 clocks unchanged",
+  "status": "resumed",
+  "resumed_primary": [
+    46132,
+    46469
+  ],
+  "ended_utc": "2026-10-03T01:20:11Z"
+}

@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SPARSE_LOSS_INTERVAL_PASS visits120_and240 one_loss_each second_visit_farms=false version=sparse-v6-recovery-cards-branchA scope=controlled retreat-counter fixture, legal start/toggle actions

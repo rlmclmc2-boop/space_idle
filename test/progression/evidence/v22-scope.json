@@ -1,0 +1,32 @@
+{
+  "version": "v22",
+  "scope": "Measured v20 cycle36 clear+2.064h and37+3.565h motivates preparation-only hypothesis. First3 stages per later cycle growth8/16/24\u21924/8/12, wall42/end70 and all income unchanged. Not accepted fresh chain. v21 QA packages remain immutable.",
+  "changed_tables_and_ids": {
+    "levels": [
+      36,
+      37,
+      38,
+      41,
+      42,
+      43,
+      46,
+      47,
+      48,
+      51,
+      52,
+      53,
+      56,
+      57,
+      58
+    ]
+  },
+  "data_sha256": "600bdb8c8fef41bdb8da2a671f88d4acf2ed749cef65799c5bf86c006820dfd7",
+  "parent_data_sha256": "30bc187eba417730a49a5e6d56f10420d6fc99f82a5cf1fa3deb0a84f28ad9b7",
+  "verification": {
+    "normal_export_protected543_before_byte_preservation": "PASS",
+    "cache_refresh_check_after_restoring_semantically_unchanged_mon_workbooks": "first check expected no import changes but cache refreshed mon/monGroup; assertion failure retained here, no semantic data delta",
+    "data_sha256_after_cache_refresh": "600bdb8c8fef41bdb8da2a671f88d4acf2ed749cef65799c5bf86c006820dfd7",
+    "stable_second_check": "PASS normal_projection valid, normal_import no changes, protected543, all old field positions"
+  },
+  "comparison_limits": "v22 later run uses same legal v20clear35 input as prior v20 cycle diagnostic, but v21 source income/Ult/first35 changes are also present: not a pure 15-row causal pair versus v20. Pure data diff v22 versus v21 is exactly listed15 rows."
+}

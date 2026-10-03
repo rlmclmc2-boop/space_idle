@@ -1,5 +1,6 @@
 extends SceneTree
 const Presented=preload("res://scripts/presented_battle_game.gd")
+const Driver=preload("res://qa/scene_driver.gd")
 const N=preload("res://scripts/growth_number.gd")
 class ProbeGame extends "res://scripts/presented_battle_game.gd":
  var incoming_by_source: Dictionary={}
@@ -10,6 +11,7 @@ class ProbeGame extends "res://scripts/presented_battle_game.gd":
 var output: Array=[]
 var options: Dictionary={}
 var scene
+var driver=Driver.new()
 func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
  var db:=ShipDatabase.new()
  for key in options.get("weapon_damage",{}):db.equipment[key][0].dmg=options.weapon_damage[key]
@@ -36,8 +38,12 @@ func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
  for key in game.profile.reactorAllocation:game.profile.reactorAllocation[key]=0
  game.stat_cache_enabled=true;game.reset_player();game.start(1,false);game.spawn_group()
  if options.get("presentation",false):
+  if scene.game.event.is_connected(scene.on_event):scene.game.event.disconnect(scene.on_event)
   scene.db=db;scene.game=game;scene.current_hull="Destroyer"
+  game.event.connect(scene.on_event)
   scene.enemy_poses.clear();scene.turret_visuals.clear();scene.fx_time=0.0;scene.demo_time=0.0
+  for field in ["particles","floats","pickup_effects","damage_pending","destruction_events","missile_events","pulse_events","rail_events","enemy_impacts"]:scene.get(field).clear()
+  scene.projectile_visuals.clear();scene.beam_visuals.clear()
   scene.ship_view.set_hull("Destroyer")
   # Reused scene must start every match with the same carrier phase and pose.
   scene.ship_view.orbit_elapsed=0.0
@@ -47,19 +53,14 @@ func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
   scene._set_reference_dimensions()
   game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point
  return game
-func presentation_before_tick(dt:float):
- scene.demo_time+=dt
- var aim:Vector2=scene.player_render_position()+Vector2(0,-450)
- if not scene.game.enemies.is_empty():aim=scene.enemy_render_position(scene.game.enemies[0])
- scene.ship_view.set_pose(scene.player_render_position()+scene.reference_offset,scene.reference_height,0.0,aim,scene.demo_time,scene.shield_enabled,false,dt)
- scene.fx_time+=dt;scene.advance_turrets(dt)
 func _initialize():call_deferred("run")
 func run():
  var args:=OS.get_cmdline_user_args()
  if not args.is_empty():options=JSON.parse_string(FileAccess.get_file_as_string(args[0]))
+ elif not OS.get_environment("ENEMY_DESIGN_OPTIONS").is_empty():options=JSON.parse_string(OS.get_environment("ENEMY_DESIGN_OPTIONS"))
  if options.get("presentation",false):
   scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
-  root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false
+  root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false;driver.scene=scene
   if not is_instance_valid(scene.ship_view):
    printerr("Fixture initialization failed: ship view unavailable");quit(1);return
  var records:Dictionary=ShipDatabase.new().data.battle_design
@@ -77,8 +78,9 @@ func run():
     var game=fixture(record,weapon,int(upgrade),seed_value)
     var elapsed:=0.0;var result:Variant=null
     for step in 7200:
-     if options.get("presentation",false):presentation_before_tick(1.0/60.0)
+     if options.get("presentation",false):driver.before_tick(1.0/60.0)
      game.tick(1.0/60.0);elapsed+=1.0/60.0
+     if options.get("presentation",false):driver.after_tick(1.0/60.0)
      if game.state==BattleGame.State.LEVEL_CLEAR:result=true;break
      if game.state==BattleGame.State.TRAVEL and not game.has_alive_enemy():result=true;break
      if game.state==BattleGame.State.RETREAT or N.compare(game.player.armour,0)<=0:result=false;break

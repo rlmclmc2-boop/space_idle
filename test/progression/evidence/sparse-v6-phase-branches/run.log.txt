@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SPARSE_PHASE_PASS legacy_missed=0 corrected_bought=13 version=sparse-v6-recovery-cards-branchA branchA_verified=true scope=eligible fragments at restored clock remainder4; actual visit action

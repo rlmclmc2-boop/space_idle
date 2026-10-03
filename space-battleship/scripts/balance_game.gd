@@ -280,11 +280,12 @@ func begin_retreat() -> void:
 
 func generate_scientist(amount := 1) -> bool:
 	var before: Dictionary = profile.resources.duplicate()
+	var previous_count:int=int(profile.scientists)
 	var result := super.generate_scientist(amount)
 	if result and metrics != null:
 		for id in before:before[id] = float(before[id])-float(profile.resources[id])
 		metrics.spend("scientists",before)
-		metrics.use("scientists",amount)
+		metrics.use("scientists",int(profile.scientists)-previous_count)
 	return result
 
 func upgrade_reactor(amount: int) -> bool:

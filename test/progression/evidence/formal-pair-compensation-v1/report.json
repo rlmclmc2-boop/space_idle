@@ -1,0 +1,15 @@
+{
+  "status": "Private exact Presented+scene diagnostics passed; source-export regression remains pending",
+  "critical_matches": 176,
+  "adjacent_gate_deviations": 0,
+  "normal_plus3_matches": 64,
+  "normal_plus3_wins": 64,
+  "ultimate60_additional_matches": 4,
+  "ultimate60_seconds": 60.0833333333312,
+  "source_input": "Original40 source template values unchanged in prior9efd2c4 data; frozen full-project native32 fixture data SHA is in every result row",
+  "seeds": {
+    "critical": 1701,
+    "normal_plus3": 20261002
+  },
+  "scope": "Pair IDs/formations/attack types retained; recorded damage factors compensate physical mitigation. Physical ultimate HP changes paired with original to shorten69s to60s while maintaining+2loss/+3win. No full fresh progression acceptance."
+}

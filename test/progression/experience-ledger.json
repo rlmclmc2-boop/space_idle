@@ -1,0 +1,201 @@
+{
+  "scope": "Facts and hypotheses kept separate; bug repairs versus numeric target failures versus UX suggestions. No full-journey claim.",
+  "items": [
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Formal scene simulation omitted game.event -> scene.on_event",
+      "evidence": "evidence/scene-hook-scope-correction.json",
+      "impact": "Invalidates earlier formal timing claims; original failures retained."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Queued equipment stats after native reforge referenced removed module cards",
+      "evidence": "evidence/native-reforge-confirm-v16",
+      "impact": "8 old cards become5; surviving card instance retained, removed selection reset."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "fixed",
+      "topic": "Fractional resource reload rounded balances upward",
+      "evidence": "evidence/fractional-save-fixed14",
+      "impact": "Formal save restore must preserve balances; current controlled14 checks pass."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "failed numeric target; tuning pending",
+      "topic": "First preparation advances31 and32 too early",
+      "evidence": "formal-scene-v15b-recovery/forge30-to35-phase-safe (ongoing segment)",
+      "measurements": {
+        "30_to31_seconds": 1021.433333333,
+        "30_to32_seconds": 2984.166667275
+      },
+      "impact": "Both stages clear in49.74min rather than being distributed through~4h preparation."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "fixed in hint candidate",
+      "topic": "Reforge confirmation misstated deletion of chrono and stopping exploration",
+      "evidence": "evidence/native-reforge-confirm-v16",
+      "impact": "Correct retained iron/U/chrono/crew/planet/galaxy state and ongoing exploration; permanent rewards read from source table."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "test policy repaired",
+      "topic": "Restored-clock enhancement attempts depended on elapsed-time modulo10",
+      "evidence": "evidence/sparse-v6-phase-branches",
+      "impact": "Legacy0 vs actual-visit13 enhancement levels in1M-fragment fixture; unlocked first A branches selected. BranchA is a test assumption."
+    },
+    {
+      "priority": "P1",
+      "kind": "hypothesis",
+      "status": "experience review pending",
+      "topic": "Large reforge visit may require excessive per-card upgrade input",
+      "evidence": "sparse_policy.gd uses at most24 sweeps; each successful card action journaled",
+      "impact": "Measure actual successful upgrades after forge before estimating human clicks; no manual all-module button exists."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "delegated enemy-identification task",
+      "topic": "Generated enemy IDs lack authored UI name bindings",
+      "evidence": "UI text bindings cover original IDs; generated roster IDs differ",
+      "impact": "Display cleanup belongs to dedicated art/identification task, kept separate."
+    },
+    {
+      "priority": "P2",
+      "kind": "fact",
+      "status": "review growth distribution",
+      "topic": "Stage7 takes largest share of0–10 budget",
+      "evidence": "evidence/full-ui-fresh120-through10/summary.json",
+      "measurements": {
+        "stage7_seconds": 3152.7166666555,
+        "clear10_seconds": 8032.11666663393
+      },
+      "impact": "Repeated farming/growth rather than one long battle; boredom remains a human-experience hypothesis, not proven by automated timing."
+    },
+    {
+      "priority": "P2",
+      "kind": "fact",
+      "status": "numeric reanchor done; pacing review pending",
+      "topic": "Stage26–30 each only a few minutes after slower21–25",
+      "evidence": "evidence/full-event-v12-segment20-to30",
+      "impact": "Candidate pacing accelerates sharply; exact candidate source and cross-version scope must accompany conclusions."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "open investigation; no battle-rule change",
+      "topic": "Native chrono budget matches but combat trajectory differs from continuousX1",
+      "evidence": "evidence/native-chrono-budget700",
+      "measurements": {
+        "baseline_kills": 885,
+        "boosted_kills": 883,
+        "x1_seconds_each": 700,
+        "boosted_start_reserve": 600,
+        "boosted_wall_seconds": 100,
+        "remaining_reserve": 0,
+        "iron_each": 0,
+        "uranium_each": 63
+      },
+      "impact": "Do not claim exact RNG/kill equivalence from time-budget proof. Render-frame pose/recoil is a suspected cause, not yet isolated."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "candidate fixed; bounded native/driver/active-planet regression passed",
+      "topic": "Native chrono rendering clocks and skipped firing target updates changed combat geometry",
+      "evidence": "evidence/native-chrono-provider-trace; evidence/chrono-fix-iterations",
+      "measurements": {
+        "old_X1_kills": 885,
+        "old_X10_kills": 883,
+        "fixed_X1_kills": 885,
+        "fixed_X10_kills": 885,
+        "fixed_combat_rng_resources_equal": true,
+        "fixed_actual_provider_calls_equal": 1301,
+        "fixed_kinematic_ticks_equal": 360
+      },
+      "impact": "Logical pose clocks, canonical formation-age initialization and retained fast-mode firing targets. Original X1 providers/RNG preserved;700-second budget/full outputs and fresh/late900 native-vs-Driver pass. Active exploration/shipyard/scientist/researcher60s nativeX1/X10 passes360 shared boundaries. No active-galaxy or full-journey acceptance."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "failed numeric target; v18 tuning running",
+      "topic": "First reforge clears35 too quickly under two phase-safe policies",
+      "evidence": "evidence/v17-segment-results/forge30-to35-phase-safe; formal-v19-forge-accelerated/firstforge-v15-data-v7policy-ui1",
+      "measurements": {
+        "preparation_hours": 4.066666667,
+        "v5_enter34_hours": 0.458337963,
+        "v5_clear35_hours": 2.005819445,
+        "v7_enter34_hours": 0.46475463,
+        "v7_clear35_hours": 2.152944445
+      },
+      "impact": "Return34 meets≤2h, but35 must be4–6h separately. v18 changes first35 offset100→112 and dependent36–60 enemy-strength base, not first34. Existing Excel dependencies also recalculate61–220; those stages remain uncalibrated, not accepted."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "strategy sensitivity measured; not user requirement",
+      "topic": "Sparse visits need meaningful upgrade bundles and real farming actions",
+      "evidence": "evidence/v17-segment-results/fresh900-meaningful-batch10",
+      "measurements": {
+        "strong_900_clear10_hours": 2.979578704,
+        "strong_action_events": 480,
+        "strong_sessions": 67,
+        "weaker_900_clear10_hours": 4.498097222
+      },
+      "impact": "Strategies also differ in across-visit loss handling, so do not attribute the entire difference to scientist+10 alone. Fifteen-minute visits are a test assumption; teaching remains10s. Actual per-card+10 actions counted; no invisible per-second buys."
+    },
+    {
+      "priority": "P2",
+      "kind": "suggestion",
+      "status": "reviewable UX recommendation; no new mechanism implemented",
+      "topic": "Teach meaningful +10 science/module bundles when income supports them",
+      "evidence": "Sparse strategy sensitivity and controlled real-button batch tests",
+      "impact": "Explain current controls and upgrade priorities to reduce avoidable waiting; retain manual claims/queues/refits in operation traces rather than assume continuous optimization."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "operation burden observed; recommendation pending",
+      "topic": "Reforge recovery upgrade burst is large even with sparse visits",
+      "evidence": "evidence/v17-segment-results/operation-burden.json",
+      "impact": "Per-card+10 sweeps retain real successful action events. Report session maxima rather than treating an instantaneous scripted visit as one literal click; review existing MAX/+10 controls and presentation before adding any new mechanic."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numerical budget; candidate pending",
+      "topic": "Later cycles collapse and can skip expected reforge",
+      "evidence": "evidence/parent-reported-b2dc.json",
+      "measurements": {
+        "clear60_hours": 25.986875,
+        "55_to60_seconds_parent": 311
+      },
+      "impact": "Parent actual frozen fresh run is25.987h at60; not all buildings maximum endpoint."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numerical duration",
+      "topic": "Advantage beam stage35 final wave is238.450s",
+      "evidence": "evidence/v18-v19-budget-controls/completed35-waves.json",
+      "impact": "Must calibrate durability and growth/income jointly; cannot pad cumulative time with long battles."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numeric gate; current candidate pending",
+      "topic": "Old noforge34 cleared after8.17h",
+      "evidence": "evidence/v18-v19-budget-controls/noforge30-to34-strong-policy-v2",
+      "impact": "Intermediate still-stalled measurements cannot establish12h acceptance. More powerful sparse real-button policies pending separately."
+    }
+  ]
+}

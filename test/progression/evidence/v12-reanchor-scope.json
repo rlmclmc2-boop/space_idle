@@ -1,0 +1,8 @@
+{
+  "source_numeric_scope": "21\u201360 levels resource ratios; 1\u201320 levels and all generated enemy numeric fields byte-equivalent after ignoring descriptions; metadata descriptions updated",
+  "reason": "Recompute later resource budget using current R20 instead of stale v6 anchor",
+  "r20": 1837408781.122872,
+  "r21": 31602085758.1002,
+  "ratio": 17.199267839999994,
+  "status": "provisional segment diagnosis, not acceptance"
+}

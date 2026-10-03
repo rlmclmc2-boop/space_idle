@@ -126,7 +126,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":SAVE_VERSION, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
@@ -167,7 +167,7 @@ func unlock_condition_available(id: String) -> bool:
 	if profile.get("grantedUnlocks", []).has(id):return true
 	if row.get("type")=="feature" and row.get("target")=="galaxy":
 		var definitions: Array=db.data.get("galaxy",{}).values()
-		if definitions.is_empty() or not definitions.any(func(definition):return definition.unlock_type=="conquered_planet_count" and galaxy.conquered(self)>=int(definition.unlock_value)):return false
+		if definitions.is_empty() or not definitions.any(func(definition):return galaxy.condition_met(self,definition)):return false
 	var gate := int(row.level)
 	if gate == 0:return true
 	# Reached-mode preserves the former highestLevel semantics, including gaps.
@@ -253,7 +253,8 @@ func load_progress_data(raw: Dictionary) -> void:
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if N.valid(value):
-			profile.resources[id] = N.ceiling(value)
+			# Restoring a balance must not mint the remainder of a fractional unit.
+			profile.resources[id] = value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -414,7 +415,7 @@ func load_hightech(raw: Dictionary) -> void:
 			raw.erase(field)
 	if raw.get("hightechOrder") is Array:
 		profile.hightechOrder = raw.hightechOrder.filter(func(key):return key is String)
-	for field in ["hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed", "furnaceIncomePeak", "jewelFurnaceIncomePeak"]:
+	for field in ["productionElapsed", "hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed", "furnaceIncomePeak", "jewelFurnaceIncomePeak"]:
 		if nonnegative_number(raw.get(field)):
 			profile[field] = float(raw[field])
 	if raw.get("hightechLevels") is Dictionary:
@@ -435,12 +436,14 @@ func load_hightech(raw: Dictionary) -> void:
 			profile.techPoints[key] = float(points)
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
-			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and float(sample.time) > float(profile.hightechSavedAt) - 60.0:
+			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
 				# Legacy samples have no reliable source; keep totals but exclude them
 				# from furnace input until this short rolling window expires.
-				resource_samples.append({"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))})
-	profile.furnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt))
-	profile.jewelFurnaceIncomePeak = furnace_income_peak(float(profile.hightechSavedAt),true)
+				var restored := {"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))}
+				if nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time():restored.production_time=float(sample.production_time)
+				resource_samples.append(restored)
+	profile.furnaceIncomePeak = furnace_income_peak()
+	profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
 	if raw.get("hightechDrops") is Array:
 		for drop in raw.hightechDrops:
 			if drop is Dictionary and nonnegative_number(drop.get("age")) and float(drop.age) < 10 and nonnegative_number(drop.get("amount")) and nonnegative_number(drop.get("x")) and nonnegative_number(drop.get("y")):
@@ -557,7 +560,7 @@ func portable_save_data() -> Dictionary:
 	var now := Time.get_unix_time_from_system()
 	saved.hightechOrder = hightech_slots()
 	saved.hightechSavedAt = now
-	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0).duplicate(true)
+	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0 or (sample.has("production_time") and float(sample.production_time)>production_time()-60.0)).duplicate(true)
 	saved.chronoSavedAt = now
 	saved.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false)).duplicate(true)
 	return _compose_save_data(saved)
@@ -739,6 +742,11 @@ func apply_refit_health() -> void:
 	sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	enhancement_branches.reconcile(self)
+	# Armour is the existing life pool. An allowed zero-armour refit must
+	# resolve death, rather than make hostile projectiles ignore a live ship.
+	if state in [State.TRAVEL,State.COMBAT,State.LEVEL_CLEAR] and N.compare(player.get("armour",0),0)<=0:
+		begin_retreat()
+		event.emit("battle_blocked",{"reason":"zero_armour"})
 
 func invalidate_module_attack(index: int) -> void:
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
@@ -1289,7 +1297,7 @@ func load_planets(raw) -> void:
 			progress.elapsed=minf(float(item.get("elapsed",0)),planet_duration(str(id))) if nonnegative_number(item.get("elapsed")) else 0.0
 		for row in planet_buildings.rows(self,str(id)):
 			var building: Dictionary=progress.buildings[str(row.id)]
-			var old = item.get("buildings",{}).get(str(row.id),{}) if item.get("buildings") is Dictionary else {}
+			var old = item.get("buildings",{}).get(str(row.id),item.get("buildings",{}).get(str(row.get("previous_id","")),{})) if item.get("buildings") is Dictionary else {}
 			if building.status!="building" or not old is Dictionary or not old.get("crew") is Array:continue
 			for member_id in old.crew:
 				if building.crew.size()<int(row.extra_crew) and idle_planet_crew(str(member_id)):building.crew.append(str(member_id))
@@ -1353,6 +1361,7 @@ func reforge_planet(id: String) -> bool:
 	next.resources=profile.resources.duplicate(true)
 	# Chrono particles are a persistent reserve, independent of run progress.
 	next.chronoParticles=profile.chronoParticles
+	next.productionElapsed=production_time()
 	profile=next
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
@@ -1452,8 +1461,9 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 	if real_dt < 0:
 		real_dt = dt
 	if end_time < 0:
-		end_time = economy_time()
-	var wall_per_step := real_dt / dt if dt > 0 else 1.0
+		end_time = production_time()
+	# All furnace production boundaries use game time; no wall-window speed amplification.
+	var wall_per_step := 1.0
 	var rates := {}
 	var active := active_research(rates)
 	# Huge point budgets cannot be settled one level/event at a time.
@@ -1548,8 +1558,26 @@ func hightech_bulk_cost(key: String, level: int, count: int) -> float:
 		factor *= factor
 	return total
 
+func production_time() -> float:
+	return float(profile.get("productionElapsed",0.0))
+
 func prune_resource_samples(now: float) -> void:
-	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0)
+	# HUD receipts use real time; production inputs use X1 game time.
+	var game_now := production_time()
+	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0 or (sample.has("production_time") and float(sample.production_time)>game_now-60.0))
+
+func production_minute_total(id: String, at := -1.0) -> Variant:
+	var game_now := production_time()
+	if at < 0:at=game_now
+	var wall_now := economy_time()
+	var total = 0.0
+	for sample in resource_samples:
+		if sample.get("origin","drop")!="drop" or str(sample.id)!=id:continue
+		# Old explicit-origin samples keep their remaining X1 window on migration.
+		# Their old acceleration history is unavailable; persisted peaks are retained.
+		var stamp := float(sample.get("production_time",game_now-(wall_now-float(sample.time))))
+		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.get("production_base",sample.amount))
+	return total
 
 func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
 	if now < 0:
@@ -1563,7 +1591,7 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 	return total
 
 func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(resource_minute_total("jewel" if jewel else "1",now,true)))
+	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(production_minute_total("jewel" if jewel else "1",now)))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -1744,6 +1772,9 @@ func next_stage() -> int:
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if level < 1 or level > int(profile.highestLevel):
 		return false
+	if N.compare(stat("armour"),0)<=0:
+		event.emit("battle_blocked",{"reason":"zero_armour"})
+		return false
 	settle_drops()
 	stage = level
 	distance = 0
@@ -1787,14 +1818,22 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	return true
 
 func is_active() -> bool:
-	return state in [State.TRAVEL, State.COMBAT]
+	return state in [State.TRAVEL, State.COMBAT] and N.compare(player.get("armour",0),0)>0
 
 func ratio(kind: String) -> float:
 	return db.ratio(stage, maxi(0, group_index - 1), kind)
 
-func is_boss_encounter() -> bool:
-	# group_index points to the next encounter after spawn_group increments it.
+func is_final_encounter() -> bool:
+	# Completion belongs to the final battle point, independently of enemy tier.
 	return group_index > 0 and group_index == db.levels[stage - 1].groups.size()
+
+func encounter_tier() -> String:
+	if group_index<=0 or group_index>db.levels[stage-1].groups.size():return "normal"
+	var encounter:Dictionary=db.levels[stage-1].groups[group_index-1]
+	return str(db.groups[str(int(encounter.id))].get("combatTier","boss" if is_final_encounter() else "normal"))
+
+func is_boss_encounter() -> bool:
+	return encounter_tier() in ["boss","ultimate"]
 
 func spawn_group(keep_distance := false) -> void:
 	guard_engaged = true
@@ -1828,8 +1867,9 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.shield_updated_at = enemy_shield_time
 		enemy.shield_hit_at = enemy_shield_time
 		enemy.res_ratio = ratio("resRatio")
-		# Legacy hull flag controls drawing/weapon offsets, not stage completion.
-		enemy.boss = float(row.size) > 1
+		# Wave tier is independent of hull size and final-wave completion.
+		enemy.combat_tier = encounter_tier()
+		enemy.boss = enemy.combat_tier in ["boss","ultimate"]
 		enemy.cooldowns = []
 		for entry in row.equipment:
 			enemy.cooldowns.append(float(db.enemy_weapon(entry.name).cd))
@@ -1838,7 +1878,7 @@ func spawn_group(keep_distance := false) -> void:
 		profile.bossSeen.append(stage)
 		save_dirty = true
 	change_state(State.COMBAT)
-	event.emit("encounter", {"boss":is_boss_encounter()})
+	event.emit("encounter", {"boss":is_boss_encounter(),"tier":encounter_tier(),"final":is_final_encounter()})
 
 func boss_info() -> String:
 	if not profile.get("bossSeen", []).has(stage) and not profile.cleared.has(stage):
@@ -2128,7 +2168,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	if enemy.hp <= 0:
 		break_beam_chain_target(enemy)
-		if is_boss_encounter() and targets().is_empty():
+		if is_final_encounter() and targets().is_empty():
 			projectiles.clear()
 		event.emit("explode", enemy)
 		jewel_kill_drop(enemy)
@@ -2170,7 +2210,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
-	resource_samples.append({"time":economy_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
@@ -2327,13 +2367,9 @@ func leave(next: State) -> void:
 	paused = false
 	change_state(next)
 
-func weapon_cooldown_after_shot(remaining_before: float, dt: float, interval: float) -> float:
-	if speed < 3.0 or interval <= 0:
-		return interval
-	# Coarse accelerated ticks retain the fraction elapsed after a scheduled shot.
-	var overrun := maxf(0.0,dt-remaining_before)
-	var remainder := fposmod(overrun,interval)
-	return interval if remainder <= 0.000000001 else interval-remainder
+func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: float) -> float:
+	# Every multiplier uses the same fixed-step attack schedule as X1.
+	return interval
 
 func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
 	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
@@ -2351,6 +2387,7 @@ func advance_enemy_shields(dt: float) -> void:
 func tick(dt: float) -> void:
 	if paused:
 		return
+	profile.productionElapsed=production_time()+dt
 	enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
@@ -2391,6 +2428,11 @@ func tick(dt: float) -> void:
 		if retreat_elapsed >= duration:
 			distance = retreat_target
 			reset_player()
+			if N.compare(player.armour,0)<=0:
+				change_state(State.LEVEL_SELECT)
+				event.emit("battle_blocked",{"reason":"zero_armour"})
+				save_dirty=true
+				return
 			change_state(State.TRAVEL)
 			if profile.loop and int(profile.get("guardDeath", 0)) == 2:
 				guard_index = mini(group_index, db.levels[stage-1].groups.size()-1)
@@ -2477,7 +2519,7 @@ func tick(dt: float) -> void:
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 	if state == State.COMBAT and not has_alive_enemy():
 		if guarding_here():
-			if guard_engaged and is_boss_encounter():
+			if guard_engaged and is_final_encounter():
 				guard_engaged = false
 				projectiles.clear()
 				clear_level()
@@ -2487,7 +2529,7 @@ func tick(dt: float) -> void:
 			if guard_elapsed >= guard_interval():
 				respawn_guard()
 			return
-		if is_boss_encounter():
+		if is_final_encounter():
 			projectiles.clear()
 			clear_level()
 		else:
@@ -2616,7 +2658,7 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> flo
 	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and earned > 0:
-		resource_samples.append({"time":economy_time(),"id":"jewel","amount":earned,"origin":source})
+		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
 		profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned

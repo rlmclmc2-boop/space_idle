@@ -1,0 +1,9284 @@
+{
+	"action_events": 332,
+	"action_intervals": [
+		41963.7333348141,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447,
+		120.000000024447
+	],
+	"action_sessions": 59,
+	"clears": {
+		"30": 41963.7333348141,
+		"31": 44015.0166685653,
+		"32": 49276.933336304
+	},
+	"completed_waves": 616,
+	"deaths": 33,
+	"galaxy_all_max_seconds": -1.0,
+	"highest": 33,
+	"metrics": {
+		"anomalies": [
+			{
+				"code": "upgrade_gap",
+				"value": 41964.7333348143
+			},
+			{
+				"code": "unaffordable",
+				"value": 7260.0
+			},
+			{
+				"code": "resource_surplus",
+				"key": "2",
+				"value": 2760.0
+			}
+		],
+		"boss_kills": 2,
+		"boss_ttk": 170.858333368142,
+		"combat_dps": 1630111253906151929204965376.0,
+		"combat_seconds": 6638.68333332088,
+		"damage": {
+			"cannon": 2340150758091120830063073820672.0,
+			"laser": 3299209269325543974716619882496.0,
+			"longLaser": 1661813690720548011514229948416.0,
+			"missile": 3520618694628350363517031809024.0
+		},
+		"defence": {
+			"damage_received": 242370917116799379913110978560.0,
+			"deaths": 33,
+			"first_death": {
+				"stage": 31,
+				"time": 42486.766668254,
+				"wave": 6
+			},
+			"health_lost": 159748414560635786952129380352.0,
+			"min_health": 0.0,
+			"min_shield": 0.0,
+			"shield_absorbed": 82622502556163241117260709888.0
+		},
+		"dps": 219611726624894927633383424.0,
+		"equipment_unused_seconds": {
+			"armour": 53.2000000108383,
+			"cannon": 53.2000000108383,
+			"laser": 53.2000000108383,
+			"longLaser": 53.2000000108383,
+			"missile": 53.2000000108383,
+			"shield": 53.2000000108383
+		},
+		"equipment_utilization": {
+			"armour": 0.147330596862677,
+			"cannon": 0.147330596862677,
+			"laser": 0.147330596862677,
+			"longLaser": 0.147330596862677,
+			"missile": 0.147330596862677,
+			"shield": 0.147330596862677
+		},
+		"final_stage": 32,
+		"game_seconds": 49276.933336304,
+		"highest_stage": 33,
+		"kills": 2939,
+		"longest_upgrade_gap": 41964.7333348143,
+		"normal_kills": 2937,
+		"normal_ttk": 6.75944274340409,
+		"resources": {
+			"balance": {
+				"1": 396814239641241649152.0,
+				"2": 957091677376331648.0,
+				"jewel_fragments": 470673.85
+			},
+			"by_system": {
+				"defence": {
+					"1": 26798000000000000524288.0,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				},
+				"enhancements": {
+					"jewel_fragments": 3072000.0
+				},
+				"jewels": {
+					"1": 0.0,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				},
+				"reactor": {
+					"1": 0.0,
+					"2": 4478374890444599296.0,
+					"jewel_fragments": 0.0
+				},
+				"scientists": {
+					"1": 12287065282443159552.0,
+					"2": 614353264122153472.0,
+					"jewel_fragments": 0.0
+				},
+				"weapons": {
+					"1": 64417713612491776327680.0,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				}
+			},
+			"income": {
+				"1": 91622424774120734457856.0,
+				"2": 5944046406747786240.0,
+				"jewel_fragments": 3364960.97000001
+			},
+			"per_minute": {
+				"1": 111560219239478575104.0,
+				"2": 7237519875087606.0,
+				"jewel_fragments": 4097.20419941912
+			},
+			"spending": {
+				"1": 91228000677774227406848.0,
+				"2": 5092728154566752256.0,
+				"jewel_fragments": 3072000.0
+			},
+			"system_share": {
+				"defence": {
+					"1": 0.293747531469565,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				},
+				"enhancements": {
+					"jewel_fragments": 1.0
+				},
+				"jewels": {
+					"1": 0.0,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				},
+				"reactor": {
+					"1": 0.0,
+					"2": 0.879366570239715,
+					"jewel_fragments": 0.0
+				},
+				"scientists": {
+					"1": 0.000134685241276329,
+					"2": 0.120633429760285,
+					"jewel_fragments": 0.0
+				},
+				"weapons": {
+					"1": 0.706117783289158,
+					"2": 0.0,
+					"jewel_fragments": 0.0
+				}
+			}
+		},
+		"system_unused_seconds": {
+			"enhancement_levels": 833.200000169745,
+			"equipment_equip": 49276.933336304,
+			"jewel_pickup": 16.9333333367831,
+			"reactor_levels": 1193.20000024309,
+			"research": 28.433333339126,
+			"scientists": 1313.20000026753,
+			"ship_switch": 49276.933336304,
+			"upgrade": 25.9166666719466
+		},
+		"system_uses": {
+			"enhancement_levels": 4.0,
+			"equipment_equip": 1.0,
+			"jewel_pickup": 969.0,
+			"reactor_levels": 13.0,
+			"research": 15.0,
+			"scientists": 51.0,
+			"ship_switch": 1.0,
+			"upgrade": 439.0
+		},
+		"thresholds": {
+			"dominance": 0.7,
+			"idle_seconds": 300.0,
+			"surplus_minutes": 30.0,
+			"ttk_high": 60.0,
+			"ttk_low": 0.25,
+			"unused": 0.01
+		},
+		"timeline": {
+			"choices": {
+				"equipment/armour": 0.0,
+				"equipment/cannon": 41963.7333348141,
+				"equipment/laser": 0.0,
+				"equipment/longLaser": 41963.7333348141,
+				"equipment/missile": 41963.7333348141,
+				"equipment/shield": 41963.7333348141,
+				"jewels": 41963.7333348141,
+				"reactor": 41963.7333348141,
+				"research/宝石熔炼炉": 41963.7333348141,
+				"research/正电子聚焦装置": 41963.7333348141,
+				"research/简并态装甲": 41963.7333348141,
+				"research/超时空炼铁炉": 41963.7333348141,
+				"ship/Battleship": 41963.7333348141,
+				"ship/Cruiser": 41963.7333348141,
+				"ship/Destroyer": 41963.7333348141,
+				"ship/Frigate": 0.0
+			},
+			"decision_density": {
+				"actions": {
+					"ENHANCEMENT_UPGRADE": 4,
+					"EQUIP": 2,
+					"NEW_WEAPON": 3,
+					"PURCHASE": 51,
+					"REACTOR_UPGRADE": 12,
+					"UNLOCK_SYSTEM": 10,
+					"UPGRADE": 439
+				},
+				"average_interval": 19.1770614074157,
+				"count": 381,
+				"longest_gap": 41964.7333348143,
+				"longest_growth_gap": 41964.7333348143,
+				"per_10_minutes": {
+					"0": 1,
+					"1": 0,
+					"10": 0,
+					"11": 0,
+					"12": 0,
+					"13": 0,
+					"14": 0,
+					"15": 0,
+					"16": 0,
+					"17": 0,
+					"18": 0,
+					"19": 0,
+					"2": 0,
+					"20": 0,
+					"21": 0,
+					"22": 0,
+					"23": 0,
+					"24": 0,
+					"25": 0,
+					"26": 0,
+					"27": 0,
+					"28": 0,
+					"29": 0,
+					"3": 0,
+					"30": 0,
+					"31": 0,
+					"32": 0,
+					"33": 0,
+					"34": 0,
+					"35": 0,
+					"36": 0,
+					"37": 0,
+					"38": 0,
+					"39": 0,
+					"4": 0,
+					"40": 0,
+					"41": 0,
+					"42": 0,
+					"43": 0,
+					"44": 0,
+					"45": 0,
+					"46": 0,
+					"47": 0,
+					"48": 0,
+					"49": 0,
+					"5": 0,
+					"50": 0,
+					"51": 0,
+					"52": 0,
+					"53": 0,
+					"54": 0,
+					"55": 0,
+					"56": 0,
+					"57": 0,
+					"58": 0,
+					"59": 0,
+					"6": 0,
+					"60": 0,
+					"61": 0,
+					"62": 0,
+					"63": 0,
+					"64": 0,
+					"65": 0,
+					"66": 0,
+					"67": 0,
+					"68": 0,
+					"69": 37,
+					"7": 0,
+					"70": 176,
+					"71": 29,
+					"72": 26,
+					"73": 17,
+					"74": 16,
+					"75": 13,
+					"76": 13,
+					"77": 13,
+					"78": 12,
+					"79": 12,
+					"8": 0,
+					"80": 9,
+					"81": 6,
+					"82": 1,
+					"9": 0
+				},
+				"per_window": {
+					"0": 1,
+					"1": 0,
+					"10": 0,
+					"11": 0,
+					"12": 0,
+					"13": 0,
+					"14": 0,
+					"15": 0,
+					"16": 0,
+					"17": 0,
+					"18": 0,
+					"19": 0,
+					"2": 0,
+					"20": 0,
+					"21": 0,
+					"22": 0,
+					"23": 0,
+					"24": 0,
+					"25": 0,
+					"26": 0,
+					"27": 0,
+					"28": 0,
+					"29": 0,
+					"3": 0,
+					"30": 0,
+					"31": 0,
+					"32": 0,
+					"33": 0,
+					"34": 0,
+					"35": 0,
+					"36": 0,
+					"37": 0,
+					"38": 0,
+					"39": 0,
+					"4": 0,
+					"40": 0,
+					"41": 0,
+					"42": 0,
+					"43": 0,
+					"44": 0,
+					"45": 0,
+					"46": 0,
+					"47": 0,
+					"48": 0,
+					"49": 0,
+					"5": 0,
+					"50": 0,
+					"51": 0,
+					"52": 0,
+					"53": 0,
+					"54": 0,
+					"55": 0,
+					"56": 0,
+					"57": 0,
+					"58": 0,
+					"59": 0,
+					"6": 0,
+					"60": 0,
+					"61": 0,
+					"62": 0,
+					"63": 0,
+					"64": 0,
+					"65": 0,
+					"66": 0,
+					"67": 0,
+					"68": 0,
+					"69": 37,
+					"7": 0,
+					"70": 176,
+					"71": 29,
+					"72": 26,
+					"73": 17,
+					"74": 16,
+					"75": 13,
+					"76": 13,
+					"77": 13,
+					"78": 12,
+					"79": 12,
+					"8": 0,
+					"80": 9,
+					"81": 6,
+					"82": 1,
+					"9": 0
+				},
+				"window_seconds": 600.0
+			},
+			"dropped_events": 0,
+			"event_count": 557,
+			"events": [
+				{
+					"count": 1,
+					"data": {
+						"key": "equipment/shield"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "equipment/missile"
+					},
+					"kind": "NEW_WEAPON",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "equipment/cannon"
+					},
+					"kind": "NEW_WEAPON",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "equipment/longLaser"
+					},
+					"kind": "NEW_WEAPON",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "jewels"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "reactor"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "research/超时空炼铁炉"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "research/正电子聚焦装置"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "research/简并态装甲"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "research/宝石熔炼炉"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "ship/Destroyer"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "ship/Cruiser"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"key": "ship/Battleship"
+					},
+					"kind": "UNLOCK_SYSTEM",
+					"stage": 30,
+					"time": 41963.7333348141
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "ship_switch"
+					},
+					"kind": "EQUIP",
+					"stage": 30,
+					"time": 0.0
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "equipment_equip"
+					},
+					"kind": "EQUIP",
+					"stage": 30,
+					"time": 0.0
+				},
+				{
+					"count": 12,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 0.0
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 30,
+					"time": 0.0
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 2,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 30,
+					"time": 0.0
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41964.7333348143
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41965.7333348145
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41966.7333348147
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41967.7333348149
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41968.7333348151
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41969.7333348153
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41970.7333348155
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41971.7333348157
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41972.7333348159
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41973.7333348161
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41974.7333348163
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41975.7333348165
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41976.7333348167
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41977.7333348169
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41978.7333348172
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41979.7333348174
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41980.7333348176
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41981.7333348178
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41982.733334818
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41983.7333348182
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41984.7333348184
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41985.7333348186
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41986.7333348188
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41987.733334819
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41988.7333348192
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41989.7333348194
+				},
+				{
+					"count": 9,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41990.7333348196
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41991.7333348198
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41992.73333482
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41993.7333348202
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41994.7333348204
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41995.7333348206
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41996.7333348208
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41997.733334821
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41998.7333348212
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 41999.7333348214
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42000.7333348216
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42001.7333348218
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42002.733334822
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42003.7333348222
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42004.7333348224
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42005.7333348227
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42006.7333348229
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42007.7333348231
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42008.7333348233
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42009.7333348235
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42010.7333348237
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42011.7333348239
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42012.7333348241
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42013.7333348243
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42014.7333348245
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42015.7333348247
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42016.7333348249
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42017.7333348251
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42018.7333348253
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42019.7333348255
+				},
+				{
+					"count": 9,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42020.7333348257
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42021.7333348259
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42022.7333348261
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42023.7333348263
+				},
+				{
+					"count": 1,
+					"data": {
+						"seconds": 60.0
+					},
+					"kind": "RESOURCE_BLOCKED",
+					"stage": 30,
+					"time": 42023.7333348263
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42024.7333348265
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42025.7333348267
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42026.7333348269
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42027.7333348271
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42028.7333348273
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42029.7333348275
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42030.7333348277
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42031.7333348279
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42032.7333348282
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42033.7333348284
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42034.7333348286
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42035.7333348288
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42036.733334829
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42037.7333348292
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42038.7333348294
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42039.7333348296
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42040.7333348298
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42041.73333483
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42042.7333348302
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42043.7333348304
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42044.7333348306
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42045.7333348308
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42046.733334831
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42047.7333348312
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42048.7333348314
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42049.7333348316
+				},
+				{
+					"count": 7,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42050.7333348318
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42051.733334832
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42052.7333348322
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42053.7333348324
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42054.7333348326
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42055.7333348328
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42056.733334833
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42057.7333348332
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42058.7333348335
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42059.7333348337
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42060.7333348339
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42061.7333348341
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42062.7333348343
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42063.7333348345
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42064.7333348347
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42065.7333348349
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42066.7333348351
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42067.7333348353
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42068.7333348355
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42069.7333348357
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42070.7333348359
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42071.7333348361
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42072.7333348363
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42073.7333348365
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42074.7333348367
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42075.7333348369
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42076.7333348371
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42077.7333348373
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42078.7333348375
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42079.7333348377
+				},
+				{
+					"count": 6,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42080.7333348379
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42081.7333348381
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42082.7333348383
+				},
+				{
+					"count": 13,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42083.7333348385
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 30,
+					"time": 42083.7333348385
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42084.7333348387
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42085.733334839
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42086.7333348392
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42087.7333348394
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42088.7333348396
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42089.7333348398
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42090.73333484
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42091.7333348402
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42092.7333348404
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42093.7333348406
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42094.7333348408
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42095.733334841
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42096.7333348412
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42097.7333348414
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42098.7333348416
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42099.7333348418
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42100.733334842
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42101.7333348422
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42102.7333348424
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42103.7333348426
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42104.7333348428
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42105.733334843
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42106.7333348432
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42107.7333348434
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42108.7333348436
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42109.7333348438
+				},
+				{
+					"count": 4,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42110.733334844
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42111.7333348442
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42112.7333348445
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42113.7333348447
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42114.7333348449
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42115.7333348451
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42116.7333348453
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42117.7333348455
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42118.7333348457
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42119.7333348459
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42120.7333348461
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42121.7333348463
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42122.7333348465
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42123.7333348467
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42124.7333348469
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42125.7333348471
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42126.7333348473
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42127.7333348475
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42128.7333348477
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42129.7333348479
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42130.7333348481
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42131.7333348483
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42132.7333348485
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42133.7333348487
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42134.7333348489
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42135.7333348491
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42136.7333348493
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42137.7333348495
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42138.7333348497
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42139.73333485
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42140.7333348502
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42141.7333348504
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42142.7333348506
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42143.7333348508
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42144.733334851
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42145.7333348512
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42146.7333348514
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42147.7333348516
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42148.7333348518
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42149.733334852
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42150.7333348522
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42151.7333348524
+				},
+				{
+					"count": 4,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42171.0166681897
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42172.0166681899
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42201.0166681958
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42202.016668196
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42203.0166681962
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 30,
+					"time": 42203.733334863
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42231.0166682019
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42232.0166682021
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42261.016668208
+				},
+				{
+					"count": 4,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42291.0166682141
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 30,
+					"time": 42321.0166682202
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42323.7333348874
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42350.933334893
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42381.0166682324
+				},
+				{
+					"count": 5,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42411.0166682386
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42441.0166682447
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42443.7333349119
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 42443.7333349119
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42458.0166682481
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42471.0166682508
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 42486.766668254
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42501.0166682569
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42531.016668263
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42560.3333349356
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42563.7333349363
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 42563.7333349363
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "enhancement_levels"
+					},
+					"kind": "ENHANCEMENT_UPGRADE",
+					"stage": 31,
+					"time": 42563.7333349363
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 42574.0166682718
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42591.0166682752
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42620.2333349478
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 42647.10000162
+				},
+				{
+					"count": 4,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42650.0833349539
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42681.0166682936
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42683.7333349608
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 42683.7333349608
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42692.5833349626
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42710.9833349663
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42741.0166683058
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42770.1500016451
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42781.316668314
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42800.7000016513
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42803.7333349852
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 42803.7333349852
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42830.9166683241
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42860.2500016634
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42891.0166683363
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 42903.6333350056
+				},
+				{
+					"count": 4,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42921.0166683425
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 42923.7333350097
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42951.0166683486
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 42960.3666683505
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42974.7166683534
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 42980.3500016879
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43011.0166683608
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 43018.4000016956
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43041.0166683669
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43043.7333350341
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 43043.7333350341
+				},
+				{
+					"count": 3,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43071.016668373
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43098.550001712
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43101.0166683791
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43130.9333350519
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43160.2833350579
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43163.7333350586
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43191.0166683975
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43221.0166684036
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43250.5500017429
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 43254.6666684104
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43281.0166684158
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43283.733335083
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 43301.76666842
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43311.0166684219
+				},
+				{
+					"count": 2,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43341.016668428
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 31,
+					"time": 43355.1000017642
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43371.0166684341
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43400.5166684401
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43403.7333351075
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 43403.7333351075
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43430.4666684462
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43461.0166684525
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43491.0166684586
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43520.0333351312
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43523.7333351319
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43550.1833351373
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43580.3833351435
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43610.7000018163
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43640.316668489
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43641.3166684892
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43643.7333351564
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "enhancement_levels"
+					},
+					"kind": "ENHANCEMENT_UPGRADE",
+					"stage": 31,
+					"time": 43643.7333351564
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43670.2166684951
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43701.0166685014
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43730.9000018408
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43760.1833351801
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43763.7333351808
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43791.0166685197
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43851.0166685319
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 9
+					},
+					"kind": "BOSS",
+					"stage": 31,
+					"time": 43860.3500018672
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43881.016668538
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 43883.7333352053
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 31,
+					"time": 43883.7333352053
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 43941.0166685503
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 31,
+					"time": 44001.0166685625
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 31,
+					"time": 44003.7333352297
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44031.0166685686
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44091.0166685808
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44123.7333352541
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44151.016668593
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44181.0166685991
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44241.0166686114
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44243.7333352786
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44269.2833352838
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44301.0166686236
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44331.0166686297
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44363.733335303
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44391.0166686419
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44411.9166686462
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44451.0166686542
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44481.0166686603
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44483.7333353275
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 32,
+					"time": 44483.7333353275
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44541.0166686725
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44543.7333353397
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44600.9333353514
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44603.7333353519
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44631.0166686908
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44666.2000020313
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44691.0166687031
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44723.7333353764
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44751.0166687153
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44781.0166687214
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44789.9833353899
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44841.0166687336
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44843.7333354008
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44901.0166687458
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 44904.8000020799
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 44961.0166687581
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 44963.7333354253
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45018.3833354364
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45021.0000021036
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45081.0166687825
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45083.7333354497
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 32,
+					"time": 45083.7333354497
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45126.2500021251
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45141.0166687947
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45201.016668807
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45203.7333354742
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45224.300002145
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45291.0166688253
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45320.783335498
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45323.7333354986
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "enhancement_levels"
+					},
+					"kind": "ENHANCEMENT_UPGRADE",
+					"stage": 32,
+					"time": 45323.7333354986
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45370.4500021748
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45441.0166688558
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45443.7333355231
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45501.0166688681
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45563.7333355475
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45563.7333355475
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45651.0166688986
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45683.733335572
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45710.6166689108
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45801.0166689292
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45803.7333355964
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45819.8500022664
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45861.0166689414
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 45883.8666689461
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 45923.7333356209
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 45951.0166689597
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46011.016668972
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46043.7333356453
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 32,
+					"time": 46043.7333356453
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46073.8500023181
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46160.4000023357
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46163.7333356697
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46250.2833356874
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46283.7333356942
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46311.0166690331
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 46386.3000023818
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46401.0166690514
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46403.7333357186
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 46439.2166690592
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46491.0166690698
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 46492.3000024034
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46523.7333357431
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46580.7833357547
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46641.0166691003
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46643.7333357675
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46724.733335784
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46763.733335792
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46791.0166691309
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46850.9500024764
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 46883.7333358164
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 46911.0166691553
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 46970.3500025007
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47001.0166691737
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47003.7333358409
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 47017.2333358436
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47061.0166691859
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 47072.0833358548
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 47121.9166691983
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47123.7333358653
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47151.0166692042
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47240.7166692225
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47243.7333358898
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47331.0166692409
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47363.7333359142
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47420.9166692592
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47483.7333359387
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47511.0166692776
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47600.3166692958
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47603.7333359631
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 47680.8666693122
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47691.0166693142
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 47720.7666693203
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47723.7333359876
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47781.0166693326
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47843.733336012
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47871.0166693509
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 47961.0166693692
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "scientists"
+					},
+					"kind": "PURCHASE",
+					"stage": 32,
+					"time": 47963.7333360365
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48051.0166693876
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "reactor_levels"
+					},
+					"kind": "REACTOR_UPGRADE",
+					"stage": 32,
+					"time": 48083.7333360609
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48140.9000027392
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48231.0166694242
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 48270.7666694323
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 6
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 48313.3333361077
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48321.0166694426
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48410.0333361274
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "enhancement_levels"
+					},
+					"kind": "ENHANCEMENT_UPGRADE",
+					"stage": 32,
+					"time": 48443.7333361342
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48470.2500028063
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48560.2166694913
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48651.0166695098
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48741.0166695281
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48831.0166695465
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 48921.0166695648
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 8
+					},
+					"kind": "DEATH",
+					"stage": 32,
+					"time": 48946.5500029034
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 49011.0166695832
+				},
+				{
+					"count": 1,
+					"data": {
+						"wave": 9
+					},
+					"kind": "BOSS",
+					"stage": 32,
+					"time": 49089.8833362659
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 49131.0166696076
+				},
+				{
+					"count": 1,
+					"data": {
+						"count": 1,
+						"system": "upgrade"
+					},
+					"kind": "UPGRADE",
+					"stage": 32,
+					"time": 49251.016669632
+				}
+			],
+			"interval_seconds": 30.0,
+			"max_samples": 1200,
+			"samples": []
+		},
+		"ttk": 6.8711126247411,
+		"unfinished_enemies": 0,
+		"unlocked": [
+			"armour",
+			"laser",
+			"shield",
+			"missile",
+			"cannon",
+			"longLaser"
+		],
+		"upgrade_interval": 112.445243537973,
+		"upgrades": 439,
+		"wave": 9,
+		"weapon_damage_share": {
+			"cannon": 0.216244284572548,
+			"laser": 0.304867173891983,
+			"longLaser": 0.15356177861629,
+			"missile": 0.325326762919179
+		}
+	},
+	"operation_scope": "Observed API domain events; batch upgrades counted once, explicit manual collects included. Not literal mouse clicks.",
+	"options": {
+		"allow_reforge": false,
+		"allow_version_change": true,
+		"bulk": false,
+		"duration": 21600.0,
+		"engine": "formal",
+		"label": "prep31-32-v16",
+		"resume": "/workspace/space_idle/test/work/formal-scene-v12-future/results/segment20-to30-eventful120/save_30.json",
+		"scene": true,
+		"seed": 20261002.0,
+		"stop_clear": 32.0,
+		"stop_galaxy": false,
+		"stop_reach": 0.0,
+		"strategy": "BALANCED",
+		"teaching_seconds": 10.0,
+		"thematic": true,
+		"visit_seconds": 120.0
+	},
+	"profile": {
+		"bossSeen": [
+			1,
+			2,
+			3,
+			4,
+			5,
+			6,
+			7,
+			8,
+			9,
+			10,
+			11,
+			12,
+			13,
+			14,
+			15,
+			16,
+			17,
+			18,
+			19,
+			20,
+			21,
+			22,
+			23,
+			24,
+			25,
+			26,
+			27,
+			28,
+			29,
+			30,
+			31,
+			32
+		],
+		"chronoParticles": 0.0,
+		"cleared": [
+			1,
+			2,
+			3,
+			4,
+			5,
+			6,
+			7,
+			8,
+			9,
+			10,
+			11,
+			12,
+			13,
+			14,
+			15,
+			16,
+			17,
+			18,
+			19,
+			20,
+			21,
+			22,
+			23,
+			24,
+			25,
+			26,
+			27,
+			28,
+			29,
+			30,
+			31,
+			32
+		],
+		"crew": [
+			{
+				"assignmentType": "",
+				"crewId": "navigator",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 2130.0,
+				"level": 17,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "engineer",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "equipment_upgrade",
+				"crewId": "researcher",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "equipment",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_04",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_05",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_06",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_07",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_08",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_09",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_10",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_11",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_12",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_13",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_14",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_15",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_16",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_17",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_18",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_19",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_20",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			}
+		],
+		"crewEquipment": {
+
+		},
+		"enhancementAttacks": 183003,
+		"enhancementBranches": {
+			"defence": {
+				"adaptation": {
+					"1": "A"
+				},
+				"delayed_damage": {
+
+				},
+				"memory_material": {
+
+				}
+			},
+			"weapons": {
+				"critical": {
+
+				},
+				"proficiency": {
+					"1": "A"
+				},
+				"repeat": {
+
+				}
+			}
+		},
+		"enhancementHits": 215160,
+		"enhancementLevel": 15,
+		"enhancementOrder": {
+			"defence": [
+				"adaptation",
+				"memory_material",
+				"delayed_damage"
+			],
+			"weapons": [
+				"proficiency",
+				"repeat",
+				"critical"
+			]
+		},
+		"enhancementVersion": 1,
+		"furnaceElapsed": 6.93333333267991,
+		"furnaceIncomePeak": 137020439265633173504.0,
+		"galaxies": {
+			"galaxy_1": {
+				"bag": [
+					"orbital_shipyard"
+				],
+				"blueprint": {
+					"core": {
+						"connections": [
+							"node_000",
+							"node_001",
+							"node_002",
+							"node_003"
+						],
+						"depth": 0,
+						"footprint": [
+							32.0,
+							32.0
+						],
+						"id": -1,
+						"node_id": "core",
+						"parent_id": -1,
+						"planned_type": "core",
+						"requires": [],
+						"rotation_y": 0.0,
+						"type": "core",
+						"world_pos": [
+							0.0,
+							0.0
+						]
+					},
+					"core_id": "core",
+					"edges": [
+						{
+							"from": "core",
+							"path": [
+								[
+									0.0,
+									-16.0
+								],
+								[
+									0.0,
+									-19.0
+								]
+							],
+							"to": "node_000",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									16.0,
+									0.0
+								],
+								[
+									19.0,
+									0.0
+								]
+							],
+							"to": "node_001",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									0.0,
+									16.0
+								],
+								[
+									0.0,
+									19.0
+								]
+							],
+							"to": "node_002",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									-16.0,
+									0.0
+								],
+								[
+									-19.0,
+									0.0
+								]
+							],
+							"to": "node_003",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									0.0,
+									-33.0
+								],
+								[
+									0.0,
+									-45.0
+								]
+							],
+							"to": "node_004",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									7.0,
+									-26.0
+								],
+								[
+									19.0,
+									-26.0
+								]
+							],
+							"to": "node_005",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									-7.0,
+									-26.0
+								],
+								[
+									-19.0,
+									-26.0
+								]
+							],
+							"to": "node_006",
+							"width": 2.0
+						},
+						{
+							"from": "node_001",
+							"path": [
+								[
+									33.0,
+									0.0
+								],
+								[
+									45.0,
+									0.0
+								]
+							],
+							"to": "node_007",
+							"width": 2.0
+						},
+						{
+							"from": "node_001",
+							"path": [
+								[
+									26.0,
+									7.0
+								],
+								[
+									26.0,
+									19.0
+								]
+							],
+							"to": "node_008",
+							"width": 2.0
+						},
+						{
+							"from": "node_002",
+							"path": [
+								[
+									0.0,
+									33.0
+								],
+								[
+									0.0,
+									45.0
+								]
+							],
+							"to": "node_009",
+							"width": 2.0
+						},
+						{
+							"from": "node_002",
+							"path": [
+								[
+									-7.0,
+									26.0
+								],
+								[
+									-19.0,
+									26.0
+								]
+							],
+							"to": "node_010",
+							"width": 2.0
+						},
+						{
+							"from": "node_003",
+							"path": [
+								[
+									-33.0,
+									0.0
+								],
+								[
+									-45.0,
+									0.0
+								]
+							],
+							"to": "node_011",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									0.0,
+									-59.0
+								],
+								[
+									0.0,
+									-71.0
+								]
+							],
+							"to": "node_012",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									7.0,
+									-52.0
+								],
+								[
+									19.0,
+									-52.0
+								]
+							],
+							"to": "node_013",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									-7.0,
+									-52.0
+								],
+								[
+									-19.0,
+									-52.0
+								]
+							],
+							"to": "node_014",
+							"width": 2.0
+						},
+						{
+							"from": "node_005",
+							"path": [
+								[
+									33.0,
+									-26.0
+								],
+								[
+									45.0,
+									-26.0
+								]
+							],
+							"to": "node_015",
+							"width": 2.0
+						},
+						{
+							"from": "node_006",
+							"path": [
+								[
+									-33.0,
+									-26.0
+								],
+								[
+									-45.0,
+									-26.0
+								]
+							],
+							"to": "node_016",
+							"width": 2.0
+						},
+						{
+							"from": "node_007",
+							"path": [
+								[
+									59.0,
+									0.0
+								],
+								[
+									71.0,
+									0.0
+								]
+							],
+							"to": "node_017",
+							"width": 2.0
+						},
+						{
+							"from": "node_007",
+							"path": [
+								[
+									52.0,
+									7.0
+								],
+								[
+									52.0,
+									19.0
+								]
+							],
+							"to": "node_018",
+							"width": 2.0
+						},
+						{
+							"from": "node_008",
+							"path": [
+								[
+									26.0,
+									33.0
+								],
+								[
+									26.0,
+									45.0
+								]
+							],
+							"to": "node_019",
+							"width": 2.0
+						},
+						{
+							"from": "node_009",
+							"path": [
+								[
+									0.0,
+									59.0
+								],
+								[
+									0.0,
+									71.0
+								]
+							],
+							"to": "node_020",
+							"width": 2.0
+						},
+						{
+							"from": "node_009",
+							"path": [
+								[
+									-7.0,
+									52.0
+								],
+								[
+									-19.0,
+									52.0
+								]
+							],
+							"to": "node_021",
+							"width": 2.0
+						},
+						{
+							"from": "node_010",
+							"path": [
+								[
+									-33.0,
+									26.0
+								],
+								[
+									-45.0,
+									26.0
+								]
+							],
+							"to": "node_022",
+							"width": 2.0
+						},
+						{
+							"from": "node_011",
+							"path": [
+								[
+									-59.0,
+									0.0
+								],
+								[
+									-71.0,
+									0.0
+								]
+							],
+							"to": "node_023",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									0.0,
+									-85.0
+								],
+								[
+									0.0,
+									-97.0
+								]
+							],
+							"to": "node_024",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									7.0,
+									-78.0
+								],
+								[
+									19.0,
+									-78.0
+								]
+							],
+							"to": "node_025",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									-7.0,
+									-78.0
+								],
+								[
+									-19.0,
+									-78.0
+								]
+							],
+							"to": "node_026",
+							"width": 2.0
+						},
+						{
+							"from": "node_013",
+							"path": [
+								[
+									33.0,
+									-52.0
+								],
+								[
+									45.0,
+									-52.0
+								]
+							],
+							"to": "node_027",
+							"width": 2.0
+						},
+						{
+							"from": "node_014",
+							"path": [
+								[
+									-33.0,
+									-52.0
+								],
+								[
+									-45.0,
+									-52.0
+								]
+							],
+							"to": "node_028",
+							"width": 2.0
+						},
+						{
+							"from": "node_015",
+							"path": [
+								[
+									59.0,
+									-26.0
+								],
+								[
+									71.0,
+									-26.0
+								]
+							],
+							"to": "node_029",
+							"width": 2.0
+						}
+					],
+					"layout_version": 1,
+					"nodes": [
+						{
+							"connections": [
+								"core",
+								"node_004",
+								"node_005",
+								"node_006"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 0,
+							"node_id": "node_000",
+							"parent_id": -1,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "crystal_refinery",
+							"visual_seed": 2540585198,
+							"world_pos": [
+								0.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_007",
+								"node_008"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 1,
+							"node_id": "node_001",
+							"parent_id": -1,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2967889042,
+							"world_pos": [
+								26.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_009",
+								"node_010"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 2,
+							"node_id": "node_002",
+							"parent_id": -1,
+							"planned_type": "colony_ring",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 0.0,
+							"type": "colony_ring",
+							"visual_seed": 3742669742,
+							"world_pos": [
+								0.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_011"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 3,
+							"node_id": "node_003",
+							"parent_id": -1,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"core"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 2094529347,
+							"world_pos": [
+								-26.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_012",
+								"node_013",
+								"node_014"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 4,
+							"node_id": "node_004",
+							"parent_id": 0,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "stellar_energy_array",
+							"visual_seed": 4122975946,
+							"world_pos": [
+								0.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_015"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 5,
+							"node_id": "node_005",
+							"parent_id": 0,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 241195129,
+							"world_pos": [
+								26.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_016"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 6,
+							"node_id": "node_006",
+							"parent_id": 0,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 3674321502,
+							"world_pos": [
+								-26.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_001",
+								"node_017",
+								"node_018"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 7,
+							"node_id": "node_007",
+							"parent_id": 1,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_001"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 3348784888,
+							"world_pos": [
+								52.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_001",
+								"node_019"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 8,
+							"node_id": "node_008",
+							"parent_id": 1,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_001"
+							],
+							"rotation_y": 0.0,
+							"type": "orbital_shipyard",
+							"visual_seed": 3678553777,
+							"world_pos": [
+								26.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_002",
+								"node_020",
+								"node_021"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 9,
+							"node_id": "node_009",
+							"parent_id": 2,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_002"
+							],
+							"rotation_y": 0.0,
+							"type": "colony_ring",
+							"visual_seed": 4127777431,
+							"world_pos": [
+								0.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_002",
+								"node_022"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 10,
+							"node_id": "node_010",
+							"parent_id": 2,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_002"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 4275612885,
+							"world_pos": [
+								-26.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_003",
+								"node_023"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 11,
+							"node_id": "node_011",
+							"parent_id": 3,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_003"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 2855848888,
+							"world_pos": [
+								-52.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_024",
+								"node_025",
+								"node_026"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 12,
+							"node_id": "node_012",
+							"parent_id": 4,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "stellar_energy_array",
+							"visual_seed": 1723271941,
+							"world_pos": [
+								0.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_027"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 13,
+							"node_id": "node_013",
+							"parent_id": 4,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2480943216,
+							"world_pos": [
+								26.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_028"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 14,
+							"node_id": "node_014",
+							"parent_id": 4,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 4010670777,
+							"world_pos": [
+								-26.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_005",
+								"node_029"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 15,
+							"node_id": "node_015",
+							"parent_id": 5,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_005"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 3162181320,
+							"world_pos": [
+								52.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_006"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 16,
+							"node_id": "node_016",
+							"parent_id": 6,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_006"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 3737848542,
+							"world_pos": [
+								-52.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_007"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 17,
+							"node_id": "node_017",
+							"parent_id": 7,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_007"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 2001899221,
+							"world_pos": [
+								78.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_007"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 18,
+							"node_id": "node_018",
+							"parent_id": 7,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_007"
+							],
+							"rotation_y": 0.0,
+							"type": "interstellar_refinery",
+							"visual_seed": 4030393879,
+							"world_pos": [
+								52.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_008"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 19,
+							"node_id": "node_019",
+							"parent_id": 8,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_008"
+							],
+							"rotation_y": 0.0,
+							"type": "orbital_shipyard",
+							"visual_seed": 3461022743,
+							"world_pos": [
+								26.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_009"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 20,
+							"node_id": "node_020",
+							"parent_id": 9,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_009"
+							],
+							"rotation_y": 0.0,
+							"type": "stellar_energy_array",
+							"visual_seed": 2308099977,
+							"world_pos": [
+								0.0,
+								78.0
+							]
+						},
+						{
+							"connections": [
+								"node_009"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 21,
+							"node_id": "node_021",
+							"parent_id": 9,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_009"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2628454166,
+							"world_pos": [
+								-26.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_010"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 22,
+							"node_id": "node_022",
+							"parent_id": 10,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_010"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 1623096846,
+							"world_pos": [
+								-52.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_011"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 23,
+							"node_id": "node_023",
+							"parent_id": 11,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_011"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 625483024,
+							"world_pos": [
+								-78.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 24,
+							"node_id": "node_024",
+							"parent_id": 12,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "colony_ring",
+							"visual_seed": 3751353908,
+							"world_pos": [
+								0.0,
+								-104.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 25,
+							"node_id": "node_025",
+							"parent_id": 12,
+							"planned_type": "heavy_element_refinery",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "heavy_element_refinery",
+							"visual_seed": 2704509045,
+							"world_pos": [
+								26.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 26,
+							"node_id": "node_026",
+							"parent_id": 12,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2798386597,
+							"world_pos": [
+								-26.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_013"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 27,
+							"node_id": "node_027",
+							"parent_id": 13,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_013"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 1858751189,
+							"world_pos": [
+								52.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_014"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 28,
+							"node_id": "node_028",
+							"parent_id": 14,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_014"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 99248821,
+							"world_pos": [
+								-52.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_015"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 29,
+							"node_id": "node_029",
+							"parent_id": 15,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_015"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 425417104,
+							"world_pos": [
+								78.0,
+								-26.0
+							]
+						}
+					],
+					"units": "godot_world_xz"
+				},
+				"build_elapsed": 0.0,
+				"explore_work": 0.0,
+				"rounds": 5,
+				"slot_seed": 20260929,
+				"slots": [
+					{
+						"construction": 0.0,
+						"id": 0,
+						"level": 0,
+						"node_id": "node_000",
+						"parent_id": -1,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2540585198,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 1,
+						"level": 0,
+						"node_id": "node_001",
+						"parent_id": -1,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2967889042,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 2,
+						"level": 0,
+						"node_id": "node_002",
+						"parent_id": -1,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3742669742,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 3,
+						"level": 0,
+						"node_id": "node_003",
+						"parent_id": -1,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2094529347,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 4,
+						"level": 0,
+						"node_id": "node_004",
+						"parent_id": 0,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4122975946,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 5,
+						"level": 0,
+						"node_id": "node_005",
+						"parent_id": 0,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 241195129,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 6,
+						"level": 0,
+						"node_id": "node_006",
+						"parent_id": 0,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3674321502,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 7,
+						"level": 0,
+						"node_id": "node_007",
+						"parent_id": 1,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3348784888,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 8,
+						"level": 0,
+						"node_id": "node_008",
+						"parent_id": 1,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3678553777,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 9,
+						"level": 0,
+						"node_id": "node_009",
+						"parent_id": 2,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4127777431,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 10,
+						"level": 0,
+						"node_id": "node_010",
+						"parent_id": 2,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4275612885,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 11,
+						"level": 0,
+						"node_id": "node_011",
+						"parent_id": 3,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2855848888,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 12,
+						"level": 0,
+						"node_id": "node_012",
+						"parent_id": 4,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1723271941,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 13,
+						"level": 0,
+						"node_id": "node_013",
+						"parent_id": 4,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2480943216,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 14,
+						"level": 0,
+						"node_id": "node_014",
+						"parent_id": 4,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4010670777,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 15,
+						"level": 0,
+						"node_id": "node_015",
+						"parent_id": 5,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3162181320,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 16,
+						"level": 0,
+						"node_id": "node_016",
+						"parent_id": 6,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3737848542,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 17,
+						"level": 0,
+						"node_id": "node_017",
+						"parent_id": 7,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2001899221,
+						"work": 0.0,
+						"world_pos": [
+							78.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 18,
+						"level": 0,
+						"node_id": "node_018",
+						"parent_id": 7,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4030393879,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 19,
+						"level": 0,
+						"node_id": "node_019",
+						"parent_id": 8,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3461022743,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 20,
+						"level": 0,
+						"node_id": "node_020",
+						"parent_id": 9,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2308099977,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 21,
+						"level": 0,
+						"node_id": "node_021",
+						"parent_id": 9,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2628454166,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 22,
+						"level": 0,
+						"node_id": "node_022",
+						"parent_id": 10,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1623096846,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 23,
+						"level": 0,
+						"node_id": "node_023",
+						"parent_id": 11,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 625483024,
+						"work": 0.0,
+						"world_pos": [
+							-78.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 24,
+						"level": 0,
+						"node_id": "node_024",
+						"parent_id": 12,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3751353908,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-104.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 25,
+						"level": 0,
+						"node_id": "node_025",
+						"parent_id": 12,
+						"planned_type": "heavy_element_refinery",
+						"status": "empty",
+						"type": "heavy_element_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2704509045,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 26,
+						"level": 0,
+						"node_id": "node_026",
+						"parent_id": 12,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2798386597,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 27,
+						"level": 0,
+						"node_id": "node_027",
+						"parent_id": 13,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1858751189,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 28,
+						"level": 0,
+						"node_id": "node_028",
+						"parent_id": 14,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 99248821,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 29,
+						"level": 0,
+						"node_id": "node_029",
+						"parent_id": 15,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 425417104,
+						"work": 0.0,
+						"world_pos": [
+							78.0,
+							-26.0
+						]
+					}
+				],
+				"special_due": false,
+				"status": "locked",
+				"upgrade_work": 0.0,
+				"version": 3
+			}
+		},
+		"grantedUnlocks": [
+			"armour",
+			"shield",
+			"laser",
+			"missile",
+			"cannon",
+			"longLaser",
+			"ship/Frigate",
+			"ship/Destroyer",
+			"ship/Cruiser",
+			"ship/Battleship",
+			"reactor",
+			"hightech/超时空炼铁炉",
+			"hightech/正电子聚焦装置",
+			"hightech/简并态装甲",
+			"hightech/宝石熔炼炉",
+			"feature/jewels",
+			"crew/navigator",
+			"crew/engineer",
+			"crew/researcher",
+			"crew/crew_04",
+			"planet/1",
+			"feature/crew_level",
+			"reactor_module/condensation"
+		],
+		"guardDeath": 0,
+		"guardDistance": 100.0,
+		"guardIndex": 0,
+		"guardStage": 32,
+		"highestLevel": 33,
+		"hightechLevels": {
+			"宝石熔炼炉": 76,
+			"正电子聚焦装置": 77,
+			"简并态装甲": 76,
+			"超时空炼铁炉": 77
+		},
+		"hightechOrder": [
+			"超时空炼铁炉",
+			"正电子聚焦装置",
+			"简并态装甲",
+			"宝石熔炼炉",
+			"",
+			""
+		],
+		"hightechSavedAt": 1790978135.5743,
+		"hightechVersion": 2,
+		"jewelFragments": 470673.85,
+		"jewelFurnaceElapsed": 6.93333333361083,
+		"jewelFurnaceIncomePeak": 13276.82,
+		"jewels": [],
+		"lifetime_max_stage": 33,
+		"loadout": {
+			"defence": [
+				{
+					"key": "armour",
+					"level": 247
+				},
+				{
+					"key": "shield",
+					"level": 247
+				},
+				{
+					"key": "armour",
+					"level": 247
+				}
+			],
+			"weapons": [
+				{
+					"key": "laser",
+					"level": 249
+				},
+				{
+					"key": "missile",
+					"level": 248
+				},
+				{
+					"key": "cannon",
+					"level": 248
+				},
+				{
+					"key": "longLaser",
+					"level": 248
+				},
+				{
+					"key": "laser",
+					"level": 248
+				},
+				{
+					"key": "missile",
+					"level": 247
+				}
+			]
+		},
+		"loop": false,
+		"loopLevel": 0,
+		"moduleVersion": 1,
+		"onboarding": {
+			"completed": false,
+			"dismissed": false,
+			"equipped": true,
+			"intro": true,
+			"upgraded": true,
+			"version": 1
+		},
+		"planets": {
+			"1": {
+				"auto_explore": true,
+				"buildings": {
+					"refinery": {
+						"build_progress": 5.0,
+						"crew": [],
+						"status": "built"
+					},
+					"shipyard": {
+						"build_progress": 58.0,
+						"crew": [
+							"engineer"
+						],
+						"status": "building"
+					},
+					"station": {
+						"build_progress": 1,
+						"crew": [],
+						"status": "built"
+					},
+					"workshop": {
+						"build_progress": 10.0,
+						"crew": [],
+						"status": "built"
+					}
+				},
+				"conquered": false,
+				"crewId": "navigator",
+				"degree": 119.0,
+				"elapsed": 51.316666666665,
+				"unlocked": true
+			},
+			"2": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0.0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"3": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0.0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"4": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0.0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"5": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0.0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"6": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0.0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0.0,
+				"elapsed": 0.0,
+				"unlocked": false
+			}
+		},
+		"productionElapsed": 49276.9333361967,
+		"reactorAllocation": {
+			"condensation": 54741,
+			"defence": 54741,
+			"smelting": 54741,
+			"weapons": 54741
+		},
+		"reactorLevel": 133,
+		"resources": {
+			"1": 396814239641241649152.0,
+			"2": 957091677376331648.0
+		},
+		"scientistAssignments": {
+			"宝石熔炼炉": 51,
+			"正电子聚焦装置": 52,
+			"简并态装甲": 52,
+			"超时空炼铁炉": 52
+		},
+		"scientists": 207,
+		"seenUnlocks": [
+			"missile",
+			"reactor",
+			"shield",
+			"cannon",
+			"hightech/超时空炼铁炉",
+			"hightech/正电子聚焦装置",
+			"hightech/简并态装甲",
+			"longLaser",
+			"feature/jewels",
+			"ship/Destroyer",
+			"crew/navigator",
+			"hightech/宝石熔炼炉",
+			"reactor_module/condensation",
+			"ship/Cruiser",
+			"crew/engineer",
+			"crew/researcher",
+			"ship/Battleship",
+			"crew/crew_04",
+			"planet/1",
+			"feature/crew_level"
+		],
+		"selectedShip": "Battleship",
+		"techPoints": {
+			"宝石熔炼炉": 45974.800000549,
+			"正电子聚焦装置": 1479.00000031939,
+			"简并态装甲": 99728.0000001595,
+			"超时空炼铁炉": 14835.5000002423
+		},
+		"unlocked": [
+			"armour",
+			"laser",
+			"shield",
+			"missile",
+			"cannon",
+			"longLaser"
+		],
+		"version": 4
+	},
+	"reached": {
+		"30": 41963.7500014808,
+		"32": 44018.0333352326
+	},
+	"reforges": [],
+	"steps": 438792,
+	"wall_seconds": 2899.765074,
+	"waves": [
+		{
+			"end_x1_seconds": 42323.7500015541,
+			"key": "30:9:4",
+			"seconds": 360.000000073342
+		},
+		{
+			"end_x1_seconds": 42325.7500015545,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42332.5166682226,
+			"key": "31:1:3",
+			"seconds": 6.76666666804522
+		},
+		{
+			"end_x1_seconds": 42334.516668223,
+			"key": "31:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42352.9833348934,
+			"key": "31:2:3",
+			"seconds": 18.4666666704288
+		},
+		{
+			"end_x1_seconds": 42355.0000015605,
+			"key": "31:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42387.2333349004,
+			"key": "31:3:3",
+			"seconds": 32.2333333399001
+		},
+		{
+			"end_x1_seconds": 42389.2500015675,
+			"key": "31:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42432.1833349095,
+			"key": "31:4:3",
+			"seconds": 42.93333334208
+		},
+		{
+			"end_x1_seconds": 42434.2000015766,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42483.8166682534,
+			"key": "31:5:3",
+			"seconds": 49.6166666767749
+		},
+		{
+			"end_x1_seconds": 42485.8166682538,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42486.766668254,
+			"key": "31:6:3",
+			"seconds": 0.95000000019354
+		},
+		{
+			"end_x1_seconds": 42487.9666682542,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 42487.9833349209,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 42525.0000015951,
+			"key": "31:4:3",
+			"seconds": 37.016666674208
+		},
+		{
+			"end_x1_seconds": 42527.0166682622,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42570.9833349378,
+			"key": "31:5:3",
+			"seconds": 43.9666666756239
+		},
+		{
+			"end_x1_seconds": 42572.9833349382,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42574.0166682718,
+			"key": "31:6:3",
+			"seconds": 1.03333333354385
+		},
+		{
+			"end_x1_seconds": 42575.216668272,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 42575.2333349387,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 42607.2666682785,
+			"key": "31:4:3",
+			"seconds": 32.0333333398594
+		},
+		{
+			"end_x1_seconds": 42609.2833349456,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42644.066668286,
+			"key": "31:5:3",
+			"seconds": 34.7833333404196
+		},
+		{
+			"end_x1_seconds": 42646.0666682864,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42647.10000162,
+			"key": "31:6:3",
+			"seconds": 1.03333333354385
+		},
+		{
+			"end_x1_seconds": 42648.3000016202,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 42648.3166682869,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 42676.2333349593,
+			"key": "31:4:3",
+			"seconds": 27.916666672354
+		},
+		{
+			"end_x1_seconds": 42678.2500016263,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42683.7500016274,
+			"key": "31:5:3",
+			"seconds": 5.5000000011205
+		},
+		{
+			"end_x1_seconds": 42685.7500016279,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42803.7500016519,
+			"key": "31:1:3",
+			"seconds": 118.00000002404
+		},
+		{
+			"end_x1_seconds": 42805.7500016523,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42812.3500016536,
+			"key": "31:1:3",
+			"seconds": 6.6000000013446
+		},
+		{
+			"end_x1_seconds": 42814.3500016541,
+			"key": "31:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42825.716668323,
+			"key": "31:2:3",
+			"seconds": 11.3666666689824
+		},
+		{
+			"end_x1_seconds": 42827.7333349901,
+			"key": "31:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42846.2000016605,
+			"key": "31:3:3",
+			"seconds": 18.4666666704288
+		},
+		{
+			"end_x1_seconds": 42848.2166683276,
+			"key": "31:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42870.2000016654,
+			"key": "31:4:3",
+			"seconds": 21.9833333378119
+		},
+		{
+			"end_x1_seconds": 42872.2166683325,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42900.1833350049,
+			"key": "31:5:3",
+			"seconds": 27.9666666723642
+		},
+		{
+			"end_x1_seconds": 42902.1833350053,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42903.6333350056,
+			"key": "31:6:3",
+			"seconds": 1.4500000002954
+		},
+		{
+			"end_x1_seconds": 42904.8333350058,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 42904.8500016725,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 42926.8333350103,
+			"key": "31:4:3",
+			"seconds": 21.9833333378119
+		},
+		{
+			"end_x1_seconds": 42928.8500016774,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 42956.6833350164,
+			"key": "31:5:3",
+			"seconds": 27.8333333390037
+		},
+		{
+			"end_x1_seconds": 42958.6833350168,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 42960.3666683505,
+			"key": "31:6:3",
+			"seconds": 1.68333333367627
+		},
+		{
+			"end_x1_seconds": 42961.5666683507,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 42961.5833350174,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 42987.0833350226,
+			"key": "31:4:3",
+			"seconds": 25.500000005195
+		},
+		{
+			"end_x1_seconds": 42989.1000016897,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43014.6000016949,
+			"key": "31:5:3",
+			"seconds": 25.500000005195
+		},
+		{
+			"end_x1_seconds": 43016.6000016953,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43018.4000016956,
+			"key": "31:6:3",
+			"seconds": 1.80000000036671
+		},
+		{
+			"end_x1_seconds": 43019.6000016959,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 43019.6166683625,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 43040.7833350335,
+			"key": "31:4:3",
+			"seconds": 21.1666666709789
+		},
+		{
+			"end_x1_seconds": 43042.8000017006,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43043.7500017008,
+			"key": "31:5:3",
+			"seconds": 0.95000000019354
+		},
+		{
+			"end_x1_seconds": 43045.7500017012,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43163.7500017252,
+			"key": "31:1:3",
+			"seconds": 118.00000002404
+		},
+		{
+			"end_x1_seconds": 43165.7500017256,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43172.4666683937,
+			"key": "31:1:3",
+			"seconds": 6.71666666803503
+		},
+		{
+			"end_x1_seconds": 43174.4666683941,
+			"key": "31:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43185.7333350631,
+			"key": "31:2:3",
+			"seconds": 11.266666668962
+		},
+		{
+			"end_x1_seconds": 43187.7500017301,
+			"key": "31:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43203.8000017334,
+			"key": "31:3:3",
+			"seconds": 16.0500000032698
+		},
+		{
+			"end_x1_seconds": 43205.8166684005,
+			"key": "31:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43226.0000017379,
+			"key": "31:4:3",
+			"seconds": 20.1833333374452
+		},
+		{
+			"end_x1_seconds": 43228.016668405,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43248.3000017425,
+			"key": "31:5:3",
+			"seconds": 20.2833333374656
+		},
+		{
+			"end_x1_seconds": 43250.3000017429,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43254.6666684104,
+			"key": "31:6:3",
+			"seconds": 4.36666666755627
+		},
+		{
+			"end_x1_seconds": 43255.8666684107,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 43255.8833350773,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 43271.9166684139,
+			"key": "31:4:3",
+			"seconds": 16.0333333365998
+		},
+		{
+			"end_x1_seconds": 43273.933335081,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43295.1166684187,
+			"key": "31:5:3",
+			"seconds": 21.1833333376489
+		},
+		{
+			"end_x1_seconds": 43297.1166684191,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43301.76666842,
+			"key": "31:6:3",
+			"seconds": 4.65000000094733
+		},
+		{
+			"end_x1_seconds": 43302.9666684203,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 43302.9833350869,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 43323.1500017577,
+			"key": "31:4:3",
+			"seconds": 20.1666666707752
+		},
+		{
+			"end_x1_seconds": 43325.1666684248,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43346.6500017625,
+			"key": "31:5:3",
+			"seconds": 21.4833333377101
+		},
+		{
+			"end_x1_seconds": 43348.6500017629,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43355.1000017642,
+			"key": "31:6:3",
+			"seconds": 6.45000000131404
+		},
+		{
+			"end_x1_seconds": 43356.3000017645,
+			"key": "31:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 43356.3166684311,
+			"key": "31:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 43374.8333351016,
+			"key": "31:4:3",
+			"seconds": 18.516666670439
+		},
+		{
+			"end_x1_seconds": 43376.8500017687,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43397.7833351063,
+			"key": "31:5:3",
+			"seconds": 20.933333337598
+		},
+		{
+			"end_x1_seconds": 43399.7833351067,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43403.7500017741,
+			"key": "31:6:3",
+			"seconds": 3.96666666747478
+		},
+		{
+			"end_x1_seconds": 43405.7500017745,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43643.750001823,
+			"key": "31:1:3",
+			"seconds": 238.000000048487
+		},
+		{
+			"end_x1_seconds": 43645.7500018234,
+			"key": "31:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43652.4000018248,
+			"key": "31:1:3",
+			"seconds": 6.65000000135478
+		},
+		{
+			"end_x1_seconds": 43654.4000018252,
+			"key": "31:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43665.8333351609,
+			"key": "31:2:3",
+			"seconds": 11.4333333356626
+		},
+		{
+			"end_x1_seconds": 43667.8500018279,
+			"key": "31:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43680.8000018306,
+			"key": "31:3:3",
+			"seconds": 12.9500000026383
+		},
+		{
+			"end_x1_seconds": 43682.8166684977,
+			"key": "31:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43696.5833351671,
+			"key": "31:4:3",
+			"seconds": 13.7666666694713
+		},
+		{
+			"end_x1_seconds": 43698.6000018342,
+			"key": "31:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 43714.9333351709,
+			"key": "31:5:3",
+			"seconds": 16.3333333366609
+		},
+		{
+			"end_x1_seconds": 43716.9333351713,
+			"key": "31:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43759.6000018466,
+			"key": "31:6:3",
+			"seconds": 42.666666675359
+		},
+		{
+			"end_x1_seconds": 43761.600001847,
+			"key": "31:6:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43806.7333351896,
+			"key": "31:7:3",
+			"seconds": 45.1333333425282
+		},
+		{
+			"end_x1_seconds": 43808.73333519,
+			"key": "31:7:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 43858.3500018667,
+			"key": "31:8:3",
+			"seconds": 49.6166666767749
+		},
+		{
+			"end_x1_seconds": 43860.3500018672,
+			"key": "31:8:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44015.0166685653,
+			"key": "31:9:3",
+			"seconds": 154.666666698176
+		},
+		{
+			"end_x1_seconds": 44018.0333352326,
+			"key": "31:9:4",
+			"seconds": 3.01666666728124
+		},
+		{
+			"end_x1_seconds": 44020.0500018997,
+			"key": "32:0:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44034.833335236,
+			"key": "32:1:3",
+			"seconds": 14.7833333363451
+		},
+		{
+			"end_x1_seconds": 44036.8333352364,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44068.6166685763,
+			"key": "32:2:3",
+			"seconds": 31.7833333398085
+		},
+		{
+			"end_x1_seconds": 44070.6333352433,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44120.0166685867,
+			"key": "32:3:3",
+			"seconds": 49.383333343394
+		},
+		{
+			"end_x1_seconds": 44122.0333352538,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44186.4500019336,
+			"key": "32:4:3",
+			"seconds": 64.4166666797901
+		},
+		{
+			"end_x1_seconds": 44188.4666686007,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44266.0333352831,
+			"key": "32:5:3",
+			"seconds": 77.5666666824691
+		},
+		{
+			"end_x1_seconds": 44268.0333352835,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44269.2833352838,
+			"key": "32:6:3",
+			"seconds": 1.25000000025466
+		},
+		{
+			"end_x1_seconds": 44270.483335284,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44270.5000019507,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44328.1166686291,
+			"key": "32:4:3",
+			"seconds": 57.6166666784047
+		},
+		{
+			"end_x1_seconds": 44330.1333352962,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44408.6666686455,
+			"key": "32:5:3",
+			"seconds": 78.5333333493327
+		},
+		{
+			"end_x1_seconds": 44410.6666686459,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44411.9166686462,
+			"key": "32:6:3",
+			"seconds": 1.25000000025466
+		},
+		{
+			"end_x1_seconds": 44413.1166686464,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44413.1333353131,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44467.1500019908,
+			"key": "32:4:3",
+			"seconds": 54.0166666776713
+		},
+		{
+			"end_x1_seconds": 44469.1666686579,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44540.483335339,
+			"key": "32:5:3",
+			"seconds": 71.3166666811958
+		},
+		{
+			"end_x1_seconds": 44542.4833353395,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44543.7333353397,
+			"key": "32:6:3",
+			"seconds": 1.25000000025466
+		},
+		{
+			"end_x1_seconds": 44544.93333534,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44544.9500020066,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44599.7000020178,
+			"key": "32:4:3",
+			"seconds": 54.750000011154
+		},
+		{
+			"end_x1_seconds": 44601.7166686849,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44662.9500020307,
+			"key": "32:5:3",
+			"seconds": 61.2333333458082
+		},
+		{
+			"end_x1_seconds": 44664.9500020311,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44666.2000020313,
+			"key": "32:6:3",
+			"seconds": 1.25000000025466
+		},
+		{
+			"end_x1_seconds": 44667.4000020316,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44667.4166686982,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44723.4833353763,
+			"key": "32:4:3",
+			"seconds": 56.0666666780889
+		},
+		{
+			"end_x1_seconds": 44725.5000020434,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44786.7333353892,
+			"key": "32:5:3",
+			"seconds": 61.2333333458082
+		},
+		{
+			"end_x1_seconds": 44788.7333353896,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44789.9833353899,
+			"key": "32:6:3",
+			"seconds": 1.25000000025466
+		},
+		{
+			"end_x1_seconds": 44791.1833353901,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44791.2000020568,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44839.0166687332,
+			"key": "32:4:3",
+			"seconds": 47.8166666764082
+		},
+		{
+			"end_x1_seconds": 44841.0333354003,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 44901.4000020792,
+			"key": "32:5:3",
+			"seconds": 60.366666678965
+		},
+		{
+			"end_x1_seconds": 44903.4000020797,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 44904.8000020799,
+			"key": "32:6:3",
+			"seconds": 1.40000000028522
+		},
+		{
+			"end_x1_seconds": 44906.0000020802,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 44906.0166687469,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 44955.3833354236,
+			"key": "32:4:3",
+			"seconds": 49.366666676724
+		},
+		{
+			"end_x1_seconds": 44957.4000020907,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45014.9833354357,
+			"key": "32:5:3",
+			"seconds": 57.5833333450646
+		},
+		{
+			"end_x1_seconds": 45016.9833354361,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45018.3833354364,
+			"key": "32:6:3",
+			"seconds": 1.40000000028522
+		},
+		{
+			"end_x1_seconds": 45019.5833354367,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45019.6000021033,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45068.91666878,
+			"key": "32:4:3",
+			"seconds": 49.3166666767138
+		},
+		{
+			"end_x1_seconds": 45070.9333354471,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45122.8500021244,
+			"key": "32:5:3",
+			"seconds": 51.9166666772435
+		},
+		{
+			"end_x1_seconds": 45124.8500021248,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45126.2500021251,
+			"key": "32:6:3",
+			"seconds": 1.40000000028522
+		},
+		{
+			"end_x1_seconds": 45127.4500021253,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45127.466668792,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45167.4833354668,
+			"key": "32:4:3",
+			"seconds": 40.0166666748191
+		},
+		{
+			"end_x1_seconds": 45169.5000021339,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45220.9000021443,
+			"key": "32:5:3",
+			"seconds": 51.4000000104716
+		},
+		{
+			"end_x1_seconds": 45222.9000021447,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45224.300002145,
+			"key": "32:6:3",
+			"seconds": 1.40000000028522
+		},
+		{
+			"end_x1_seconds": 45225.5000021453,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45225.5166688119,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45267.9666688206,
+			"key": "32:4:3",
+			"seconds": 42.4500000086482
+		},
+		{
+			"end_x1_seconds": 45269.9833354877,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45317.3833354973,
+			"key": "32:5:3",
+			"seconds": 47.4000000096567
+		},
+		{
+			"end_x1_seconds": 45319.3833354977,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45320.783335498,
+			"key": "32:6:3",
+			"seconds": 1.40000000028522
+		},
+		{
+			"end_x1_seconds": 45321.9833354983,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45322.0000021649,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45323.7500021653,
+			"key": "32:4:3",
+			"seconds": 1.75000000035652
+		},
+		{
+			"end_x1_seconds": 45325.7500021657,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45683.7500022386,
+			"key": "32:1:3",
+			"seconds": 358.000000072934
+		},
+		{
+			"end_x1_seconds": 45685.750002239,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45694.1000022407,
+			"key": "32:1:3",
+			"seconds": 8.35000000170112
+		},
+		{
+			"end_x1_seconds": 45696.1000022411,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45713.9000022448,
+			"key": "32:2:3",
+			"seconds": 17.8000000036263
+		},
+		{
+			"end_x1_seconds": 45715.9166689119,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45740.7500022502,
+			"key": "32:3:3",
+			"seconds": 24.8333333383925
+		},
+		{
+			"end_x1_seconds": 45742.7666689173,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45776.1000022574,
+			"key": "32:4:3",
+			"seconds": 33.3333333401242
+		},
+		{
+			"end_x1_seconds": 45778.1166689245,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45815.6000022655,
+			"key": "32:5:3",
+			"seconds": 37.4833333409697
+		},
+		{
+			"end_x1_seconds": 45817.6000022659,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45819.8500022664,
+			"key": "32:6:3",
+			"seconds": 2.25000000045839
+		},
+		{
+			"end_x1_seconds": 45821.0500022666,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45821.0666689333,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45846.3166689384,
+			"key": "32:4:3",
+			"seconds": 25.2500000051441
+		},
+		{
+			"end_x1_seconds": 45848.3333356055,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45879.6166689452,
+			"key": "32:5:3",
+			"seconds": 31.2833333397066
+		},
+		{
+			"end_x1_seconds": 45881.6166689456,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 45883.8666689461,
+			"key": "32:6:3",
+			"seconds": 2.25000000045839
+		},
+		{
+			"end_x1_seconds": 45885.0666689463,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 45885.083335613,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 45909.1333356179,
+			"key": "32:4:3",
+			"seconds": 24.0500000048996
+		},
+		{
+			"end_x1_seconds": 45911.150002285,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 45923.7500022875,
+			"key": "32:5:3",
+			"seconds": 12.600000002567
+		},
+		{
+			"end_x1_seconds": 45925.7500022879,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46283.7500023609,
+			"key": "32:1:3",
+			"seconds": 358.000000072934
+		},
+		{
+			"end_x1_seconds": 46285.7500023613,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46293.0166690294,
+			"key": "32:1:3",
+			"seconds": 7.26666666814708
+		},
+		{
+			"end_x1_seconds": 46295.0166690298,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46308.3500023659,
+			"key": "32:2:3",
+			"seconds": 13.3333333360497
+		},
+		{
+			"end_x1_seconds": 46310.366669033,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46328.3833357033,
+			"key": "32:3:3",
+			"seconds": 18.0166666703371
+		},
+		{
+			"end_x1_seconds": 46330.4000023704,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46352.2166690415,
+			"key": "32:4:3",
+			"seconds": 21.8166666711113
+		},
+		{
+			"end_x1_seconds": 46354.2333357086,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46381.9000023809,
+			"key": "32:5:3",
+			"seconds": 27.6666666723031
+		},
+		{
+			"end_x1_seconds": 46383.9000023813,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46386.3000023818,
+			"key": "32:6:3",
+			"seconds": 2.40000000048894
+		},
+		{
+			"end_x1_seconds": 46387.500002382,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 46387.5166690487,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 46407.4166690527,
+			"key": "32:4:3",
+			"seconds": 19.9000000040542
+		},
+		{
+			"end_x1_seconds": 46409.4333357198,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46434.8166690583,
+			"key": "32:5:3",
+			"seconds": 25.3833333385046
+		},
+		{
+			"end_x1_seconds": 46436.8166690587,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46439.2166690592,
+			"key": "32:6:3",
+			"seconds": 2.40000000048894
+		},
+		{
+			"end_x1_seconds": 46440.4166690595,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 46440.4333357261,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 46460.3666690635,
+			"key": "32:4:3",
+			"seconds": 19.9333333373943
+		},
+		{
+			"end_x1_seconds": 46462.3833357306,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46487.9000024025,
+			"key": "32:5:3",
+			"seconds": 25.5166666718651
+		},
+		{
+			"end_x1_seconds": 46489.9000024029,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46492.3000024034,
+			"key": "32:6:3",
+			"seconds": 2.40000000048894
+		},
+		{
+			"end_x1_seconds": 46493.5000024036,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 46493.5166690703,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 46514.0833357411,
+			"key": "32:4:3",
+			"seconds": 20.5666666708566
+		},
+		{
+			"end_x1_seconds": 46516.1000024082,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46523.7500024098,
+			"key": "32:5:3",
+			"seconds": 7.65000000155851
+		},
+		{
+			"end_x1_seconds": 46525.7500024102,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46883.7500024831,
+			"key": "32:1:3",
+			"seconds": 358.000000072934
+		},
+		{
+			"end_x1_seconds": 46885.7500024835,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46890.7166691512,
+			"key": "32:1:3",
+			"seconds": 4.96666666767851
+		},
+		{
+			"end_x1_seconds": 46892.7166691516,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46902.850002487,
+			"key": "32:2:3",
+			"seconds": 10.1333333353978
+		},
+		{
+			"end_x1_seconds": 46904.8666691541,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46917.8333358234,
+			"key": "32:3:3",
+			"seconds": 12.9666666693083
+		},
+		{
+			"end_x1_seconds": 46919.8500024905,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46940.4166691613,
+			"key": "32:4:3",
+			"seconds": 20.5666666708566
+		},
+		{
+			"end_x1_seconds": 46942.4333358284,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 46964.9500024996,
+			"key": "32:5:3",
+			"seconds": 22.5166666712539
+		},
+		{
+			"end_x1_seconds": 46966.9500025001,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 46970.3500025007,
+			"key": "32:6:3",
+			"seconds": 3.40000000069267
+		},
+		{
+			"end_x1_seconds": 46971.550002501,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 46971.5666691677,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 46989.8666691714,
+			"key": "32:4:3",
+			"seconds": 18.3000000037282
+		},
+		{
+			"end_x1_seconds": 46991.8833358385,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47011.8333358425,
+			"key": "32:5:3",
+			"seconds": 19.9500000040643
+		},
+		{
+			"end_x1_seconds": 47013.8333358429,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47017.2333358436,
+			"key": "32:6:3",
+			"seconds": 3.40000000069267
+		},
+		{
+			"end_x1_seconds": 47018.4333358439,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 47018.4500025105,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 47039.3333358481,
+			"key": "32:4:3",
+			"seconds": 20.8833333375878
+		},
+		{
+			"end_x1_seconds": 47041.3500025152,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47066.6833358537,
+			"key": "32:5:3",
+			"seconds": 25.3333333384944
+		},
+		{
+			"end_x1_seconds": 47068.6833358541,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47072.0833358548,
+			"key": "32:6:3",
+			"seconds": 3.40000000069267
+		},
+		{
+			"end_x1_seconds": 47073.283335855,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 47073.3000025217,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 47092.683335859,
+			"key": "32:4:3",
+			"seconds": 19.3833333372822
+		},
+		{
+			"end_x1_seconds": 47094.7000025261,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47116.5166691972,
+			"key": "32:5:3",
+			"seconds": 21.8166666711113
+		},
+		{
+			"end_x1_seconds": 47118.5166691976,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47121.9166691983,
+			"key": "32:6:3",
+			"seconds": 3.40000000069267
+		},
+		{
+			"end_x1_seconds": 47123.1166691985,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 47123.1333358652,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 47123.750002532,
+			"key": "32:4:3",
+			"seconds": 0.616666666792298
+		},
+		{
+			"end_x1_seconds": 47125.7500025324,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47603.7500026298,
+			"key": "32:1:3",
+			"seconds": 478.000000097381
+		},
+		{
+			"end_x1_seconds": 47605.7500026302,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47610.6833359645,
+			"key": "32:1:3",
+			"seconds": 4.93333333433839
+		},
+		{
+			"end_x1_seconds": 47612.6833359649,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47620.7500026332,
+			"key": "32:2:3",
+			"seconds": 8.06666666831006
+		},
+		{
+			"end_x1_seconds": 47622.7666693003,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47633.1500026358,
+			"key": "32:3:3",
+			"seconds": 10.3833333354487
+		},
+		{
+			"end_x1_seconds": 47635.1666693029,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47650.616669306,
+			"key": "32:4:3",
+			"seconds": 15.4500000031476
+		},
+		{
+			"end_x1_seconds": 47652.6333359731,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47674.4666693109,
+			"key": "32:5:3",
+			"seconds": 21.8333333377814
+		},
+		{
+			"end_x1_seconds": 47676.4666693113,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47680.8666693122,
+			"key": "32:6:3",
+			"seconds": 4.4000000008964
+		},
+		{
+			"end_x1_seconds": 47682.0666693124,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 47682.0833359791,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 47696.3666693153,
+			"key": "32:4:3",
+			"seconds": 14.2833333362432
+		},
+		{
+			"end_x1_seconds": 47698.3833359824,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 47714.366669319,
+			"key": "32:5:3",
+			"seconds": 15.9833333365896
+		},
+		{
+			"end_x1_seconds": 47716.3666693194,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 47720.7666693203,
+			"key": "32:6:3",
+			"seconds": 4.4000000008964
+		},
+		{
+			"end_x1_seconds": 47721.9666693205,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 47721.9833359872,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 47723.7500026542,
+			"key": "32:4:3",
+			"seconds": 1.76666666702658
+		},
+		{
+			"end_x1_seconds": 47725.7500026546,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48203.750002752,
+			"key": "32:1:3",
+			"seconds": 478.000000097381
+		},
+		{
+			"end_x1_seconds": 48205.7500027524,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48210.7166694201,
+			"key": "32:1:3",
+			"seconds": 4.96666666767851
+		},
+		{
+			"end_x1_seconds": 48212.7166694205,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48219.9833360887,
+			"key": "32:2:3",
+			"seconds": 7.26666666814708
+		},
+		{
+			"end_x1_seconds": 48222.0000027557,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48230.7333360909,
+			"key": "32:3:3",
+			"seconds": 8.73333333511255
+		},
+		{
+			"end_x1_seconds": 48232.7500027579,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48245.5666694272,
+			"key": "32:4:3",
+			"seconds": 12.8166666692778
+		},
+		{
+			"end_x1_seconds": 48247.5833360943,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48262.3666694306,
+			"key": "32:5:3",
+			"seconds": 14.7833333363451
+		},
+		{
+			"end_x1_seconds": 48264.366669431,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48270.7666694323,
+			"key": "32:6:3",
+			"seconds": 6.40000000130385
+		},
+		{
+			"end_x1_seconds": 48271.9666694326,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 48271.9833360993,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 48284.7833361019,
+			"key": "32:4:3",
+			"seconds": 12.8000000026077
+		},
+		{
+			"end_x1_seconds": 48286.8000027689,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48304.933336106,
+			"key": "32:5:3",
+			"seconds": 18.1333333370276
+		},
+		{
+			"end_x1_seconds": 48306.9333361064,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48313.3333361077,
+			"key": "32:6:3",
+			"seconds": 6.40000000130385
+		},
+		{
+			"end_x1_seconds": 48314.5333361079,
+			"key": "32:3:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 48314.5500027746,
+			"key": "32:3:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 48323.7500027765,
+			"key": "32:4:3",
+			"seconds": 9.20000000187429
+		},
+		{
+			"end_x1_seconds": 48325.7500027769,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48803.7500028743,
+			"key": "32:1:3",
+			"seconds": 478.000000097381
+		},
+		{
+			"end_x1_seconds": 48805.7500028747,
+			"key": "32:0:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48809.7666695422,
+			"key": "32:1:3",
+			"seconds": 4.01666666748497
+		},
+		{
+			"end_x1_seconds": 48811.7666695426,
+			"key": "32:1:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48819.3166695441,
+			"key": "32:2:3",
+			"seconds": 7.55000000153814
+		},
+		{
+			"end_x1_seconds": 48821.3333362112,
+			"key": "32:2:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48830.9833362131,
+			"key": "32:3:3",
+			"seconds": 9.65000000196596
+		},
+		{
+			"end_x1_seconds": 48833.0000028802,
+			"key": "32:3:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48843.7833362157,
+			"key": "32:4:3",
+			"seconds": 10.7833333355302
+		},
+		{
+			"end_x1_seconds": 48845.8000028828,
+			"key": "32:4:2",
+			"seconds": 2.01666666707752
+		},
+		{
+			"end_x1_seconds": 48857.0666695518,
+			"key": "32:5:3",
+			"seconds": 11.266666668962
+		},
+		{
+			"end_x1_seconds": 48859.0666695522,
+			"key": "32:5:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48896.1000028931,
+			"key": "32:6:3",
+			"seconds": 37.033333340878
+		},
+		{
+			"end_x1_seconds": 48898.1000028935,
+			"key": "32:6:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48936.1500029012,
+			"key": "32:7:3",
+			"seconds": 38.0500000077518
+		},
+		{
+			"end_x1_seconds": 48938.1500029016,
+			"key": "32:7:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 48946.5500029034,
+			"key": "32:8:3",
+			"seconds": 8.40000000171131
+		},
+		{
+			"end_x1_seconds": 48947.7500029036,
+			"key": "32:5:7",
+			"seconds": 1.20000000024447
+		},
+		{
+			"end_x1_seconds": 48947.7666695703,
+			"key": "32:5:2",
+			"seconds": 0.0166666666700621
+		},
+		{
+			"end_x1_seconds": 48990.2500029123,
+			"key": "32:6:3",
+			"seconds": 42.4833333419883
+		},
+		{
+			"end_x1_seconds": 48992.2500029127,
+			"key": "32:6:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 49032.4333362542,
+			"key": "32:7:3",
+			"seconds": 40.1833333415198
+		},
+		{
+			"end_x1_seconds": 49034.4333362546,
+			"key": "32:7:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 49087.8833362655,
+			"key": "32:8:3",
+			"seconds": 53.4500000108892
+		},
+		{
+			"end_x1_seconds": 49089.8833362659,
+			"key": "32:8:2",
+			"seconds": 2.00000000040745
+		},
+		{
+			"end_x1_seconds": 49276.933336304,
+			"key": "32:9:3",
+			"seconds": 187.050000038107
+		}
+	],
+	"x1_seconds": 49276.933336304
+}

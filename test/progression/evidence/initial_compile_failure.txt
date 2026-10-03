@@ -1,0 +1,26 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Function "jewel_effect()" not found in base ShipDatabase.
+          at: GDScript::reload (res://scripts/balance_database.gd:39)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "value" variable because the value doesn't have a set type.
+          at: GDScript::reload (res://scripts/balance_autoplayer.gd:19)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "danger" variable because the value doesn't have a set type.
+          at: GDScript::reload (res://scripts/balance_autoplayer.gd:71)
+SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)
+          at: GDScript::reload (res://scripts/balance_autoplayer.gd:80)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://qa/progression_probe.gd:0)
+ERROR: Failed to load script "res://qa/progression_probe.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:2907)
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+          at: @implicit_new (res://qa/progression_probe.gd:8)
+          GDScript backtrace (most recent call first):
+              [0] @implicit_new (res://qa/progression_probe.gd:8)
+ERROR: Parse JSON failed. Error at line 0: Unknown error getting token
+   at: parse_string (core/io/json.cpp:624)
+   GDScript backtrace (most recent call first):
+       [0] run (res://qa/progression_probe.gd:54)
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+          at: run (res://qa/progression_probe.gd:59)
+          GDScript backtrace (most recent call first):
+              [0] run (res://qa/progression_probe.gd:59)

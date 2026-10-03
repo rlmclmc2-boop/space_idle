@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+MANUAL_CARD_UPGRADE_PASS same_resources_loadout_player=true actual_card_actions=6 scope=controlled per-card+10 equivalence to old internal batch; no fictitious manual all-module button

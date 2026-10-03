@@ -1,0 +1,4 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FORMAL_COMPARE_CHECKPOINT diagnostic=/workspace/space_idle/test/work/formal-scene-v12-future/results/segment20-to30-eventful120/save_30.json input_seconds=41963.7333348141 config_sha256=eade255d477b1348c6bd95d6f512c19920f022b68dfbba6fc4e2263ae9923cbe
+FORMAL_ADAPTER_PASS seconds=120 scene_providers=true stage=30 node=9 ui_seconds=1.0 scope=full scene event hook; driver versus native production frame; same sparse decisions; every-second state/resources/RNG/research/queue check

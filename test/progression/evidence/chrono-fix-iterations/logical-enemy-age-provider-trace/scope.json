@@ -1,0 +1,6 @@
+{
+  "status": "invalid infrastructure run; rejected by runner",
+  "reason": "Copied Godot cache did not match destination SVG import records; resource loader SCRIPT ERROR. Own full editor import then separate diagnostic succeeds. Failed runtime payload overwritten by retry; only original failure log/manifest retained. No numerical or equivalence acceptance.",
+  "followup": "logical-enemy-age-imported-trace",
+  "prevention": "skip-import now requires matching own-project successful import marker"
+}

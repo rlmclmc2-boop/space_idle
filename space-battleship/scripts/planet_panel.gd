@@ -830,8 +830,12 @@ func _confirm_reforge(id: String) -> void:
 	if not host.game.can_reforge_planet(id):return
 	var dialog := ConfirmationDialog.new()
 	dialog.title=UIText.t("planet.reforge")
-	dialog.dialog_text=UIText.t("planet.reforge_confirm", {"level":host.game.planet_reforge_start(id)})
-	dialog.min_size=Vector2i(650,340)
+	var rewards: Array=host.game.db.data.get("planet_buff",{}).values().filter(func(row):return str(int(row.planet_id))==id and str(row.source)=="conquer")
+	rewards.sort_custom(func(a,b):return float(a.order)<float(b.order) if a.order!=b.order else int(a.id)<int(b.id))
+	var descriptions: PackedStringArray=[]
+	for row in rewards:descriptions.append(str(row.des))
+	dialog.dialog_text=UIText.t("planet.reforge_confirm", {"level":host.game.planet_reforge_start(id)})+"\n\n"+UIText.t("planet.reforge_rewards",{"rewards":"\n".join(descriptions)})
+	dialog.min_size=Vector2i(650,540)
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)
 	dialog.confirmed.connect(func():host.game.reforge_planet(id);dialog.queue_free())

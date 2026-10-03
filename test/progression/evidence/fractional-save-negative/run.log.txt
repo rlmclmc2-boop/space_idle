@@ -1,0 +1,5 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: Offline settlement grants no resources
+FAIL: Committed settlement still has no offline resource grant
+OFFLINE_SETTLEMENT_CONTRACT checks=12 failures=2 scope=manual/timed save contract; unsaved snapshot reload is a replay, not cumulative earning

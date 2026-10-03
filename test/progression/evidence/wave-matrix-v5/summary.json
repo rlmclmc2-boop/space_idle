@@ -1,0 +1,9 @@
+{
+  "scope": "Exact BattleGame rule fixture, seed1701, Destroyer4 same weapons, shield+armour, Lv10+0..3, no crew/research/reactor/enhancement. Not Presented geometry.",
+  "rows": 640,
+  "normal_plus3": {
+    "checks": 64,
+    "failures": 0
+  },
+  "status": "Ordinary reserve passes this fixture; paired elite/Boss threshold differences remain, factor trials pending; no blanket40 acceptance."
+}

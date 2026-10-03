@@ -1,0 +1,36 @@
+{
+  "changes": [
+    {
+      "sheet": "unlock",
+      "id": "longLaser",
+      "field": "desc",
+      "old": "我知道你会喜欢这个...一束会不断增强的光束,并撕碎所有的物理形态",
+      "new": "第6关会遇到持续恢复护盾的敌舰。光束保持锁定时伤害逐渐增强，可突破恢复；短促攻击可能被恢复抵消。"
+    },
+    {
+      "sheet": "unlock",
+      "id": "planet/1",
+      "field": "desc",
+      "old": "我们发现了一个新的行星系,并抵达了可探索的新行星，可派遣空闲船员探索。",
+      "new": "通关30后可派遣空闲船员探索首颗星球。探索中建设新型船坞，并派入建筑要求的额外船员；建成后领取设施，开启重铸。重铸保留资源与永久探索奖励，重置本轮养成，从第5关再出发。"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard",
+      "field": "des",
+      "old": "施工需额外船员，建成后可在此星球重铸一次。重铸将获得大量提升,并解锁新的星球.",
+      "new": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有资源与永久星球奖励。"
+    },
+    {
+      "sheet": "planet_build",
+      "id": "shipyard_later",
+      "field": "des",
+      "old": "施工需额外船员，建成后可在此星球重铸一次。重铸将获得大量提升,并解锁新的星球.",
+      "new": "后续星球的新型船坞：达到探索条件并完成建设后可重铸。建成后领取设施，再选择重铸。"
+    }
+  ],
+  "scope": "Source-data teaching and real reforge condition hints; no UI layout/art changes",
+  "suggested_teaching_4": "Defence pairing against physical/energy outgoing attacks",
+  "suggested_teaching_5": "Income farming and batched upgrades across growing systems",
+  "later_planets": "Prep duration remains undecided; preserve original numeric settings"
+}

@@ -1,0 +1,9 @@
+{
+  "scope": "Candidate generation attempt interrupted before export; no QA run used its premature package",
+  "pid": 38171,
+  "signal": "SIGTERM",
+  "reason": "Found openpyxl max_row recomputed in default expression on every existing-row replacement; quadratic repeated scan",
+  "data_sha256_before_termination": "c6c140e04a5038be19f17d65e5301f22730c5a802d6e3672230c6454aaee5777",
+  "premature_package": "test/work/formal-scene-v16-prep",
+  "premature_package_scope": "Still contains v15 data; not used for v16 measurements"
+}

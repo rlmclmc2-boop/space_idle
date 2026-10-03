@@ -1,0 +1,7 @@
+{
+  "budget": "PASS actual native _process consumes600 retained seconds once; real100 plusreserve600 = X1 700; reserve0, speed1",
+  "strict_combat_equivalence": "NOT PASS;885 vs883 kills, RNGdiff; Iron0 U63 same",
+  "seed": 1701,
+  "fixture": "Default starter hull/loadout slot structure; all active weapon keys missile level13; armor13; repeated original1002 group; no player actions",
+  "rules_scope": "Controlled reserved-chrono diagnostic, not general offline-play equivalence. Fresh long-run calibration always speed1."
+}

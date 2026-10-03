@@ -110,6 +110,8 @@ var floats: Array[Dictionary] = []
 var pickup_effects: Array[Dictionary] = []
 var resource_hover_feedback: Array[Dictionary] = []
 var clock := 0.0
+var game_time_remainder := 0.0
+var time_step_game_id := 0
 var star_travel := 0.0
 var star_streak := 0.0
 # Immutable star seeds own this geometry until the scene is freed.
@@ -393,9 +395,10 @@ func _process(delta: float) -> void:
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:
-		fx_time += dt
+		if not uses_logical_battle_pose():
+			fx_time += dt
+			advance_turrets(dt)
 		wave_hint = maxf(0,wave_hint-dt)
-		advance_turrets(dt)
 		var boosted := game.chrono_affordable_seconds(dt)
 		advance_game_time(boosted * game.speed)
 		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
@@ -437,13 +440,25 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func advance_game_time(seconds: float) -> void:
-	var remaining := seconds
-	# Floating-point residue after a full step must not run another near-zero tick.
-	while remaining > 0.000000001:
-		var max_step := FAST_MODE_GAME_STEP if fast_mode_enabled() else 1.0/60.0
-		var step := minf(remaining, max_step)
-		game.tick(step)
-		remaining -= step
+	if game == null or not is_finite(seconds) or seconds <= 0:return
+	var instance := game.get_instance_id()
+	if instance != time_step_game_id:
+		time_step_game_id = instance
+		game_time_remainder = 0.0
+	# Carry frame tails: X1 and boosts share the same game-time tick sequence
+	# at every render rate. At most one fixed step remains pending on screen.
+	game_time_remainder += seconds
+	const STEP := 1.0/60.0
+	while game_time_remainder + 0.0000000001 >= STEP:
+		before_logical_game_tick(STEP)
+		game.tick(STEP)
+		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
+
+func uses_logical_battle_pose() -> bool:
+	return false
+
+func before_logical_game_tick(_dt:float) -> void:
+	pass
 
 func fast_mode_enabled() -> bool:
 	return game != null and game.speed >= FAST_MODE_MIN_SPEED
@@ -629,6 +644,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			for slot in info.get("slots",[]):refresh_equipment_cards(str(slot))
 		"jewel_error":
 			toast(str(info.message))
+		"battle_blocked":
+			if str(info.get("reason",""))=="zero_armour":toast(UIText.t("battle.zero_armour"))
 		"jewel_pickup":
 			if is_instance_valid(enhancement_panel):enhancement_panel.pickup_feedback(info)
 			resource_pickup_feedback(info)
@@ -691,9 +708,9 @@ func on_event(kind: String, info: Dictionary) -> void:
 				impact=straight_projectile_point(info.pos,visual)
 			weapon_impact(info.shot,impact)
 		"fire":
-			if fast_mode_enabled():return
 			if info.has("shot"):
 				weapon_launch(info.shot,float(info.get("spread",0)))
+			if fast_mode_enabled():return
 			if info.has("shot") and weapon_key(info.shot)=="cannon":railgun_sound("release")
 			else:beep(620 if info.type == 1 else 200)
 		"collect":
@@ -1322,7 +1339,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	rng.seed = int(enemy.get("uid",slot))*7919+slot*104729
 	var phase := rng.randf()*TAU
 	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
-	var large := game.is_boss_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
+	var large := game.is_final_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
 	var columns:=int(enemy.get("formation_columns",10))
 	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
 	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
@@ -1340,8 +1357,8 @@ func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
 func enemy_render_width(enemy: Dictionary) -> float:
-	var tier := 1.85 if game.is_boss_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
-	var width_limit := 78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
+	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
+	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
 	return base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,enemy_depth(enemy))*float(enemy_pose(enemy).variance)
 
@@ -1350,7 +1367,7 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
 	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
 	var player_front := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)-absf(float(battle_visual.player_idle_y))-player_half_height
-	var enemy_half_height := (78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
+	var enemy_half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
 	# The legacy cap fits one row. Fifteen-slot groups need the third row;
 	# retain the same measured clearance from the player hull.
 	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
@@ -1367,7 +1384,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
 	# Shared approach distance keeps each column separated even during entry.
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-float(battle_visual.enemy_entry_distance)*(1.0-enter))+hover*enter
-	var half_height := (78.0 if game.is_boss_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
+	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
 	# Clamp the final animated position, so hover, entry and ship changes cannot
 	# cross the front line. Logical entity coordinates remain untouched.
 	position.y=clampf(position.y,half_height+8.0,floorf(enemy_frontline_y_limit(enemy)))
@@ -1436,7 +1453,6 @@ func battle_logical_point(point: Vector2) -> Vector2:
 	return Vector2(point.x,(low+high)*0.5)
 
 func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
-	if fast_mode_enabled():return
 	var key := weapon_key(shot)
 	if key=="longLaser":return
 	var mount := shot_mount(shot)
@@ -1446,6 +1462,8 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			pose.target = shot.target
 			pose.fired_at = fx_time
 		if key=="cannon":pose.recoil = 0.13
+	# Mount target feeds canonical missile release geometry even in fast mode.
+	if fast_mode_enabled():return
 	if key=="cannon" and bool(shot.hostile):
 		var nearest: Dictionary = {}
 		var nearest_distance := INF
@@ -2399,8 +2417,8 @@ func draw_vertical_battle_hud() -> void:
 		text_at(neutral_caption,Vector2(44,155 if not protection_state.is_empty() else 166),17,SHELL_PRESENTATION.PAPER)
 		if not protection_state.is_empty():text_at(protection_state,Vector2(44,176),15,MUTED)
 		bar(Rect2(44,180 if not protection_state.is_empty() else 174,524,4),GrowthNumber.ratio(game.enhancement_protection_current(),GrowthNumber.maximum(1,game.enhancement_protection_capacity())),Color("b5c1bc"))
-	if game.state==BattleGame.State.COMBAT and game.is_boss_encounter():
-		text_at(UIText.t("battle.draw_battle.text_02"),Vector2(268,129),14,ORANGE)
+	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
+		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(268,129),14,ORANGE)
 	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
 	text_at(UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))}),Vector2(44,1162),15,INK)
 	bar(Rect2(44,1174,524,7),GrowthNumber.ratio(game.player.armour,GrowthNumber.maximum(1,game.stat("armour"))),ORANGE)

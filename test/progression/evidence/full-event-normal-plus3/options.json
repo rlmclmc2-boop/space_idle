@@ -1,0 +1,26 @@
+{
+  "presentation": true,
+  "upgrades": [
+    3
+  ],
+  "seed": 20261002,
+  "groups": [
+    "normal_laser",
+    "normal_missile",
+    "normal_cannon",
+    "normal_longLaser",
+    "normal_neutral1",
+    "normal_neutral2",
+    "normal_neutral3",
+    "normal_neutral4",
+    "normal_laser_physical_attack",
+    "normal_missile_physical_attack",
+    "normal_cannon_physical_attack",
+    "normal_longLaser_physical_attack",
+    "normal_neutral1_physical_attack",
+    "normal_neutral2_physical_attack",
+    "normal_neutral3_physical_attack",
+    "normal_neutral4_physical_attack"
+  ],
+  "output": "/workspace/space_idle/test/work/formal-scene-v12b-eventful/diagnostics/full-hook-normal64/enemy-results.json"
+}

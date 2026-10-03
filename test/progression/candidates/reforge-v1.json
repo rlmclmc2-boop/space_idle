@@ -1,0 +1,101 @@
+{
+  "scope": "Provisional 30–60 numerical candidate; no new mechanics. No acceptance until real34 stall/replay/35 and full galaxy journey tests.",
+  "reason": "Existing +5/+5 needs evaluation against >=12h numeric34 stall and <=2h return; +15/+10 is a test candidate approximating18 effective power levels. Later preparation durations retain original settings and remain undecided.",
+  "changes": [
+    {
+      "id": 1,
+      "planet": 1,
+      "target": "equipment",
+      "old": 15,
+      "new": 25
+    },
+    {
+      "id": 2,
+      "planet": 1,
+      "target": "hightech",
+      "old": 10,
+      "new": 20
+    },
+    {
+      "id": 11,
+      "planet": 2,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 12,
+      "planet": 2,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 15,
+      "planet": 3,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 16,
+      "planet": 3,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 19,
+      "planet": 4,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 20,
+      "planet": 4,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 23,
+      "planet": 5,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 24,
+      "planet": 5,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    },
+    {
+      "id": 27,
+      "planet": 6,
+      "target": "equipment",
+      "old": 15,
+      "new": 15
+    },
+    {
+      "id": 28,
+      "planet": 6,
+      "target": "hightech",
+      "old": 10,
+      "new": 10
+    }
+  ],
+  "import": {
+    "ok": true,
+    "action": "import",
+    "changed": [
+      "planet_buff"
+    ],
+    "parsed": [
+      "planet_buff"
+    ],
+    "message": "导入成功：更新 planet_buff；其余配置保持不变。"
+  }
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "fixture": "legal-qa-firstforge-v15.json",
+    "origin": "test/work/formal-scene-v15b-recovery/results/forge30-to35-phase-safe/save_reforge_1.json",
+    "x1_seconds": 56603.7333377967,
+    "rng_state": "3269175353856554078",
+    "source_data_sha256": "c77e02ba98ebe02d0cfbae69e9df2f00b0a1158168f1d67e6abbdfeec74e7a72",
+    "source_code_fingerprint": "1f7c66b196eb9a1a2a9cb76ee83ba6e4138f609589f263360f0c64bcd051d8d9",
+    "origin_run_seed": 20261002.0,
+    "policy_version": "sparse-v5-phase-safe-cards-branchA",
+    "scope": "Synthetic QA-played legal journey checkpoint, not personal save; older numerical source. Current resume explicitly diagnostic with version override."
+  },
+  {
+    "fixture": "legal-qa30-v15.json",
+    "origin": "test/work/formal-scene-v16-policy/results/noforge30-to34-strong-policy-v2/save_30.json",
+    "x1_seconds": 41963.7333348141,
+    "rng_state": "-7312478232177149176",
+    "source_data_sha256": "c77e02ba98ebe02d0cfbae69e9df2f00b0a1158168f1d67e6abbdfeec74e7a72",
+    "source_code_fingerprint": "97cb263a92252ea8137d87fa7dcce01b9f2f66ae57dd8d96da3b0ee7d82c1783",
+    "origin_run_seed": 20261002.0,
+    "policy_version": "sparse-v6-recovery-cards-branchA",
+    "scope": "Synthetic QA-played legal journey checkpoint, not personal save; older numerical source. Current resume explicitly diagnostic with version override."
+  },
+  {
+    "fixture": "legal-qa34-v15.json",
+    "origin": "test/work/formal-scene-v16-policy/results/noforge30-to34-strong-policy-v2/save_reach_34.json",
+    "x1_seconds": 49913.4500031003,
+    "rng_state": "7315605390541974786",
+    "source_data_sha256": "c77e02ba98ebe02d0cfbae69e9df2f00b0a1158168f1d67e6abbdfeec74e7a72",
+    "source_code_fingerprint": "97cb263a92252ea8137d87fa7dcce01b9f2f66ae57dd8d96da3b0ee7d82c1783",
+    "origin_run_seed": 20261002.0,
+    "policy_version": "sparse-v6-recovery-cards-branchA",
+    "scope": "Synthetic QA-played legal journey checkpoint, not personal save; older numerical source. Current resume explicitly diagnostic with version override."
+  }
+]

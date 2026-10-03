@@ -1,0 +1,4 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FORMAL_COMPARE_HEARTBEAT seconds=600 stage=4
+FORMAL_ADAPTER_PASS seconds=900 scene_providers=true stage=6 node=3 ui_seconds=0.0 scope=full scene event hook; driver versus native production frame; same sparse decisions; every-second state/resources/RNG/research/queue check
