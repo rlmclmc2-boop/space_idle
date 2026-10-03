@@ -168,6 +168,26 @@
       "topic": "Reforge recovery upgrade burst is large even with sparse visits",
       "evidence": "evidence/v17-segment-results/operation-burden.json",
       "impact": "Per-card+10 sweeps retain real successful action events. Report session maxima rather than treating an instantaneous scripted visit as one literal click; review existing MAX/+10 controls and presentation before adding any new mechanic."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numerical budget; candidate pending",
+      "topic": "Later cycles collapse and can skip expected reforge",
+      "evidence": "evidence/parent-reported-b2dc.json",
+      "measurements": {
+        "clear60_hours": 25.986875,
+        "55_to60_seconds_parent": 311
+      },
+      "impact": "Parent actual frozen fresh run is25.987h at60; not all buildings maximum endpoint."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numerical duration",
+      "topic": "Advantage beam stage35 final wave is238.450s",
+      "evidence": "evidence/v18-v19-budget-controls/completed35-waves.json",
+      "impact": "Must calibrate durability and growth/income jointly; cannot pad cumulative time with long battles."
     }
   ]
 }
