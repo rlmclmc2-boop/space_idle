@@ -1,36 +1,55 @@
 {
-  "utc": "2026-10-03T17:15:15.779694+00:00",
-  "scope": "Own V29 seed2026100305 sameversion fresh sensitivity. Active/pending; cannot replace old1d8 complete result or claim globalpass. No resume/patch/code or numeric insertion.",
-  "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-  "preimport_fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
-  "postimport_runtime_fingerprint": "642e78f827fa3e69237b14cea1b57f00e83701c73a3e04bc4e80699aa336b9a0",
-  "checked_files": 764,
-  "data_sha256": "eb9dba486b24b3441b329062f598fa80915513d8c45595d5df6dfaaabbffbd6f",
-  "classified_glb_import_normalization_count": 16,
-  "unclassified_changes": [],
-  "code_and_numeric_frozen_verified": true,
-  "godot_pid": 31460,
-  "runner_pid": 31221,
-  "heartbeat": {
-    "deaths": 408,
-    "highest": 19,
-    "stage": 19,
-    "wall_seconds": 2278.148674,
-    "x1_seconds": 33719.9999998013
-  },
-  "initial_rng": "4239956699905930447",
-  "errors": {
-    "import": {
-      "script_errors": 0,
-      "engine_errors": 0
+  "utc": "2026-10-03T18:21:24.130526+00:00",
+  "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
+  "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+  "milestones": {
+    "5": {
+      "x1_seconds": 744.016666666319,
+      "hours": 0.2066712962961997,
+      "rng": "9020444621043946701",
+      "save_sha256": "48abaed8fb011ebc057e5e494bf63259426d14e6ff7ac8a5a4390dcdb607e909"
     },
-    "run": {
-      "script_errors": 0,
-      "engine_errors": 0
+    "10": {
+      "x1_seconds": 9780.69999994182,
+      "hours": 2.71686111109495,
+      "rng": "-7558366899358837669",
+      "save_sha256": "813a73119ab7dcbf7b427e7774228844da137aa1e064cd13d6edb8ee48e9b1b0"
+    },
+    "20": {
+      "x1_seconds": 46124.9333356618,
+      "hours": 12.812481482128279,
+      "rng": "-1572605078882353459",
+      "save_sha256": "bacf0f3d73ebe34b6b4d0642cb664291ca8454c49166c2839e63eccd08660ef3"
+    },
+    "30": {
+      "x1_seconds": 56611.3000044648,
+      "hours": 15.725361112351333,
+      "rng": "545482741041983987",
+      "save_sha256": "486b2a99a8553fc9c7e38043b3bfa96acedf34a0c0476f31089334c00564d015"
     }
   },
-  "clear10_x1": 9780.69999994182,
-  "clear10_hours": 2.71686111109495,
-  "global_acceptance": "pending; nativefullfresh activelyrunning",
-  "source_no_changes": true
+  "firstshipyard_events": [
+    {
+      "kind": "assign_builder",
+      "payload": {
+        "building": "shipyard",
+        "crew": "engineer",
+        "planet": "1"
+      },
+      "stage": 31,
+      "x1_seconds": 61050.0000053691
+    }
+  ],
+  "reforge_events": [],
+  "latest_heartbeat": {
+    "deaths": 675,
+    "highest": 32,
+    "stage": 32,
+    "wall_seconds": 6250.011141,
+    "x1_seconds": 68700.0000055463
+  },
+  "global_acceptance": "pending",
+  "private_library_version": 8,
+  "private_zip_sha256": "6ee9a80dcc06f9552448c27e901299dc13fa22dabb170a036b3f03593eee8d61",
+  "revised_criteria": "Laterreforge times maydecrease, notfailurebyitself. Firstforge return34<=2h/clear35 4–6h; reasonable34noforge12h, prepabout4h and global50–60h stillrequired. Closingdeadline0321UTC enforced."
 }
