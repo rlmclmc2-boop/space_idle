@@ -1,6 +1,6 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v8-optional-scientist-max"
+const VERSION="sparse-v9-building-crew-reallocation"
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
@@ -32,6 +32,29 @@ func manual_upgrade_sweep(g,levels:int)->bool:
 		for index in g.loadout_entries(category).size():
 			if g.upgrade_slot(category,index,levels):changed=true
 	return changed
+func recall_conquered_for_preparation(g:BattleGame,planet_id:String,building_id:String="")->bool:
+	# One explicit recall at a real visit; permanent conquered bonuses remain,
+	# but the recalled planet loses continuing exploration and its partial trip.
+	for member in g.profile.crew:
+		if g.idle_planet_crew(str(member.crewId)):return false
+	for source_id in g.profile.planets:
+		var progress:Dictionary=g.planet_progress(str(source_id))
+		var crew_id:=str(progress.get("crewId",""))
+		if str(source_id)==planet_id or not progress.get("conquered",false) or crew_id.is_empty():continue
+		var elapsed_before:float=float(progress.get("elapsed",0))
+		if g.cancel_planet_exploration(str(source_id)):
+			record(g,"recall_conquered_for_building" if not building_id.is_empty() else "recall_conquered_for_exploration",{"planet":source_id,"crew":crew_id,"target_planet":planet_id,"building":building_id,"forfeited_trip_seconds":elapsed_before,"tradeoff":"stops this planet's continuing exploration; no free replacement crew"})
+			return true
+	# Fixed sensitivity assumption if no conquered explorer can be recalled:
+	# move one existing growth worker, preserving the real lost automation.
+	for assignment in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
+		for member in g.profile.crew:
+			if str(member.assignmentType)!=assignment or not g.crew.unlocked(g,str(member.crewId)):continue
+			var previous:Dictionary=member.duplicate(true)
+			if g.assign_crew(str(member.crewId),"",""):
+				record(g,"reassign_growth_for_preparation",{"crew":member.crewId,"previous":previous,"target_planet":planet_id,"building":building_id,"tradeoff":"old growth assignment stops; same existing crew, fixed jewel/reactor/science/equipment priority"})
+				return true
+	return false
 func buy_scientist(g:BattleGame,fraction:float)->void:
 	# Independent sensitivity assumption: existing MAX button, no hidden buys.
 	# It may spend most uranium; measure progression AND construction blocking.
@@ -80,12 +103,15 @@ func act(g: BattleGame, elapsed: float) -> bool:
 			if g.planet_buildings.state(g,str(id),str(row.id)).get("status","")=="ready":
 				if g.planet_buildings.activate(g,str(id),str(row.id)):record(g,"activate_building",{"planet":id,"building":row.id})
 		if g.planet_progress(str(id)).crewId.is_empty() and not g.planet_progress(str(id)).get("conquered",false):
+			recall_conquered_for_preparation(g,str(id))
 			for member in g.profile.crew:
 				if g.idle_planet_crew(str(member.crewId)) and g.start_planet_exploration(str(id),str(member.crewId)):
 					record(g,"start_exploration",{"planet":id,"crew":member.crewId});break
 		for row in g.planet_buildings.rows(g,str(id)):
 			var state: Dictionary=g.planet_buildings.state(g,str(id),str(row.id))
 			if state.get("status","")!="building":continue
+			if state.crew.size()<int(row.extra_crew) and not g.planet_progress(str(id)).get("conquered",false):
+				recall_conquered_for_preparation(g,str(id),str(row.id))
 			for member in g.profile.crew:
 				if state.crew.size()>=int(row.extra_crew):break
 				if g.idle_planet_crew(str(member.crewId)) and g.planet_buildings.assign(g,str(id),str(row.id),str(member.crewId)):record(g,"assign_builder",{"planet":id,"building":row.id,"crew":member.crewId})

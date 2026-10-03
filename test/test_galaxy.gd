@@ -17,14 +17,15 @@ func _initialize() -> void:
 	var g := BattleGame.new(db,false)
 	var r=g.galaxy.regions.galaxy_1
 	check(r.cells.size()==40000 and r.owned_count==100 and r.slots.size()==30,"Compact map and independent 30 slots")
-	g.profile.cleared=range(1,int(db.data.unlock["feature/galaxy"].level)+1)
+	g.profile.cleared=range(1,int(db.data.unlock["feature/galaxy"].level))
 	for id in ["1","2","3","4","5"]:g.profile.planets[id].conquered=true
 	g.galaxy.refresh_unlocks(g)
-	check(not g.galaxy.available(),"Five planets remain locked")
-	g.profile.planets['6'].conquered=true
+	check(not g.galaxy.available(),"Before clear60 first galaxy remains locked")
+	for progress in g.profile.planets.values():progress.conquered=false
+	g.profile.cleared.append(int(db.data.unlock["feature/galaxy"].level))
 	g.rebuild_unlocks()
 	g.galaxy.refresh_unlocks(g)
-	check(r.state.status=="available","Configured level plus six planets unlock")
+	check(r.state.status=="available","Clear60 opens first galaxy with zero conquered planets")
 	var gated := BattleGame.new(db,false)
 	for p in gated.profile.planets.values():p.conquered=true
 	gated.galaxy.refresh_unlocks(gated)

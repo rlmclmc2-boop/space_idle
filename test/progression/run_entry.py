@@ -19,6 +19,7 @@ if a.skip_import:
 result=project/'diagnostics'/a.label
 if result.exists():raise SystemExit('Label exists; preserve evidence and choose another')
 result.mkdir(parents=True);env=os.environ.copy()
+env['QA_DIAGNOSTIC_RESULT_DIR']=str(result)
 for key,folder in [('XDG_DATA_HOME','data'),('XDG_CONFIG_HOME','config'),('XDG_CACHE_HOME','cache'),('APPDATA','roaming'),('LOCALAPPDATA','local')]:
  path=project/'userdata'/a.label/folder;path.mkdir(parents=True,exist_ok=True);env[key]=str(path)
 if a.options:

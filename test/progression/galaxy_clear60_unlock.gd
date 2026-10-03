@@ -20,6 +20,12 @@ func run()->void:
 	check("clear60 with zero conquests opens feature",g.content_unlocked("feature","galaxy"))
 	check("clear60 with zero conquests makes first galaxy available",g.galaxy.regions.galaxy_1.state.status=="available")
 	check("clear60 permits actual exploration start",g.galaxy.start(g,"galaxy_1"))
+	var saved:Dictionary=g.portable_save_data()
+	saved.chronoSavedAt=Time.get_unix_time_from_system()
+	var restored=Game.new(ShipDatabase.new());restored.save_enabled=false
+	restored.load_progress_data(saved)
+	check("clear60 feature survives actual save restore",restored.content_unlocked("feature","galaxy"))
+	check("active first galaxy survives actual save restore",restored.galaxy.regions.galaxy_1.state.status=="exploring")
 	check("later conquest condition still requires its count",not g.galaxy.condition_met(g,{"unlock_type":"conquered_planet_count","unlock_value":2}))
 	g.profile.planets["1"].conquered=true;g.profile.planets["2"].conquered=true
 	check("later conquest condition still accepts its count",g.galaxy.condition_met(g,{"unlock_type":"conquered_planet_count","unlock_value":2}))

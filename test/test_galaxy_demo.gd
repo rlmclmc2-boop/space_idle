@@ -97,7 +97,7 @@ func run() -> void:
 	quit(1 if failures else 0)
 func verify_demo(g, phase: String) -> void:
 	check(g.content_unlocked("feature","galaxy"),phase+": real galaxy prerequisite remains satisfied")
-	check(g.galaxy.conquered(g)>=int(g.db.data.galaxy.galaxy_1.unlock_value),phase+": conquered planets survive loading")
+	check(g.galaxy.conquered(g)==g.profile.planets.size(),phase+": demo conquered planets survive loading")
 	var region=g.galaxy.regions.galaxy_1
 	check(region.state.status=="developing" and region.occupied_count==int(region.row.building_slot_count),phase+": all configured buildings load")
 	var levels := {};var families := {}
