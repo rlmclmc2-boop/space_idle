@@ -1,8 +1,9 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v12-explicit-later-preparation-study"
+const VERSION="sparse-v13-explicit-earned-farm-study"
 var unlock_visit_limit := 32
 var later_preparation_stages := 3
+var fixed_farm_stage := 0
 var fixed_weapon_from_stage := 0
 var fixed_weapon_key := ""
 var fixed_weapon_active := false
@@ -201,10 +202,11 @@ func act(g: BattleGame, elapsed: float) -> bool:
 	elif g.stage>=6 and g.metrics.deaths-deaths_seen>=2 and g.profile.cleared.has(g.stage-1):
 		var node: int=int(best_won.get(str(g.stage),0))
 		var chosen_stage: int=g.stage if node>0 else g.stage-1
+		if fixed_farm_stage>0 and g.profile.cleared.has(fixed_farm_stage):chosen_stage=fixed_farm_stage
 		farm={"target":g.stage,"since":elapsed,"modules":module_sum(g),"node":1}
 		g.start(chosen_stage,false)
 		g.toggle_loop()
-		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target});deaths_seen=int(g.metrics.deaths)
+		record(g,"travel_to_farm_point",{"stage":chosen_stage,"node":farm.node,"target":farm.target,"fixed_earned_stage_assumption":fixed_farm_stage});deaths_seen=int(g.metrics.deaths)
 	if cap_stage>0 and (g.stage>cap_stage or (g.stage==cap_stage and g.profile.cleared.has(cap_stage) and not g.profile.loop)):
 		g.start(cap_stage,false);g.toggle_loop();farm={}
 		record(g,"farm_after_progression_cap",{"stage":cap_stage,"node":1})
