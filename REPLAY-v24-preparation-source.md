@@ -1,0 +1,10 @@
+# V24 stage33-only preparation candidate
+
+Requires V11 source30de7ce62aae3f390184729b0c79dfbe6aa419a0. Decode progression-v24-preparation.bundle.base64: binary50562 bytes SHA256b7d79fb753a00ff2e6c83922cf76fa39077d279616f3d230a732080541707b21. Verify bundle/fetch refs/heads/evidence/v24-preparation-source; exactsource494926e1a7af8e5e8c8f7a721596b860909c02a6. V24data SHA256dabd7c762cd33009df09c956c13e8247b4b886f330ddff01ed40ac78d4a23bcd; fullscene QA fingerprint f931444d5d490eec379f07aa318849ec2badf39b24522ed3f734a1d524d4792e.
+
+Only ONE semantic levels row33 changes growthoffset70→64. First48/58/64/98/126; later4/8/12/42/70 unchanged; V23 Ult damage1 and health.11 unchanged. Original40 enemy identities/config unchanged. NormalExcel export and543 protectedrows/headers passed. Crossenvironment source_files absolute-path metadata may cause first cold no-change assertion; inspect onlymetadata diff and preserve cold failure/warm result; do not mutate an already-running package.
+
+python test/progression/build_qa.py --output /tmp/v24-scene --scene
+python test/progression/run_qa.py --project /tmp/v24-scene --label legal32-enter34 --scene --thematic --engine formal --duration10800 --stop-clear0 --stop-reach34 --visit-seconds300 --teaching-seconds10 --seed20261004 --bulk --scientist-max --ui-refresh-seconds1 --no-reforge --resume /ABS/legal32.json --allow-version-change --fixed-weapon-from-stage34 --fixed-weapon longLaser --timeout8000
+
+(Add spaces between each numeric option/value in the compact transcription above.) Root exactlegal32 input comes from V22/MAX300/V10 prior preparation: x1=57212.1833379206, oldresume RNGseed02state preserved; seedarg04 does not replace saved RNG. Evidence bundle contains this unchanged file at evidence/v22-preparation33-priority-stop/save_32.json. Current growthchain running; not a completefresh or12h34 PASS. Root V23 frozenfresh continues unchanged, parent independent V23 source also unchanged. V24 fourweapon early33 screen on same legal32 input: all4 lose node6 in1.5s and node9 in2.316667s. No claim that weapon choice alone fixes early survival.
