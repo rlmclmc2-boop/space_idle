@@ -1,0 +1,164 @@
+{
+  "scope": "completedcounterfactualinputwall, notfullfreshV29; notuniversalstrategyproof",
+  "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+  "fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+  "start": 77692.8333367859,
+  "end": 120892.833326728,
+  "elapsed": 43199.999989942095,
+  "steps": 2592000,
+  "clears": {},
+  "deaths": 314,
+  "action_sessions": 144,
+  "action_events": 651,
+  "wall_seconds": 8490.418883,
+  "final_loadout": {
+    "defence": [
+      {
+        "key": "armour",
+        "level": 263
+      },
+      {
+        "key": "shield",
+        "level": 263
+      },
+      {
+        "key": "armour",
+        "level": 263
+      }
+    ],
+    "weapons": [
+      {
+        "key": "longLaser",
+        "level": 263
+      },
+      {
+        "key": "longLaser",
+        "level": 263
+      },
+      {
+        "key": "longLaser",
+        "level": 263
+      },
+      {
+        "key": "longLaser",
+        "level": 263
+      },
+      {
+        "key": "longLaser",
+        "level": 263
+      },
+      {
+        "key": "longLaser",
+        "level": 263
+      }
+    ]
+  },
+  "final_hightech": {
+    "宝石熔炼炉": 90,
+    "正电子聚焦装置": 90,
+    "简并态装甲": 90,
+    "超时空炼铁炉": 90
+  },
+  "final_reactor": 141,
+  "waves": [
+    {
+      "stage": 32,
+      "node": 1,
+      "status": "win",
+      "count": 5667,
+      "min": 2.99999999930151,
+      "median": 3.8499999991036,
+      "max": 10.2166666642879
+    },
+    {
+      "stage": 34,
+      "node": 1,
+      "status": "win",
+      "count": 220,
+      "min": 2.99999999930151,
+      "median": 5.44999999873107,
+      "max": 8.81666666461388
+    },
+    {
+      "stage": 34,
+      "node": 2,
+      "status": "loss",
+      "count": 148,
+      "min": 1.41666666633682,
+      "median": 2.41666666610399,
+      "max": 5.4166666654055
+    },
+    {
+      "stage": 34,
+      "node": 2,
+      "status": "win",
+      "count": 81,
+      "min": 6.09999999857973,
+      "median": 14.1333333300427,
+      "max": 25.249999994121
+    },
+    {
+      "stage": 34,
+      "node": 3,
+      "status": "loss",
+      "count": 49,
+      "min": 1.96666666620877,
+      "median": 2.99999999930151,
+      "max": 8.16666666476522
+    },
+    {
+      "stage": 34,
+      "node": 3,
+      "status": "win",
+      "count": 65,
+      "min": 8.89999999792781,
+      "median": 14.883333329868,
+      "max": 23.9499999944237
+    },
+    {
+      "stage": 34,
+      "node": 4,
+      "status": "loss",
+      "count": 14,
+      "min": 3.41666666587116,
+      "median": 4.41666666563833,
+      "max": 9.41666666447418
+    },
+    {
+      "stage": 34,
+      "node": 4,
+      "status": "win",
+      "count": 108,
+      "min": 10.5666666642064,
+      "median": 14.1333333300427,
+      "max": 28.3333333267365
+    },
+    {
+      "stage": 34,
+      "node": 5,
+      "status": "loss",
+      "count": 37,
+      "min": 2.48333333275514,
+      "median": 6.09999999857973,
+      "max": 7.64999999821885
+    },
+    {
+      "stage": 34,
+      "node": 5,
+      "status": "win",
+      "count": 67,
+      "min": 11.8833333305665,
+      "median": 15.1833333297982,
+      "max": 26.7499999937718
+    },
+    {
+      "stage": 34,
+      "node": 6,
+      "status": "loss",
+      "count": 66,
+      "min": 1.23333333304618,
+      "median": 1.23333333304618,
+      "max": 1.23333333304618
+    }
+  ]
+}
