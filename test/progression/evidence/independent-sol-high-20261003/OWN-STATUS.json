@@ -1,9 +1,26 @@
 {
-  "utc": "2026-10-03 14:56:41 UTC",
   "own_results_only": true,
-  "frozen": "1d8/V23; no V29 insertion",
-  "numeric_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-  "native_fresh_cycles": [
+  "status": "all own planned native runs completed",
+  "frozen_source": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
+  "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
+  "preimport_scene_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd",
+  "final_runtime_fingerprint": "e32bbbe48e4e6b7d03ab728646fc0ba2a927be4ee26132bda599b84398695d2b",
+  "global_x1_seconds": 202529.999974387,
+  "global_hours": 56.25833332621861,
+  "first_galaxy30_active_lv5": true,
+  "native_steps": 12151800,
+  "battle_seed": 20261004,
+  "final_rng": "4253587583597990178",
+  "scheduled_visits": 309,
+  "visits_with_actions": 284,
+  "domain_api_events_not_mouse_clicks": 4664,
+  "process_exit": {
+    "exit_code": 0,
+    "ended_utc": "2026-10-03T16:12:34.993276+00:00"
+  },
+  "script_errors": 0,
+  "engine_errors": 0,
+  "cycles": [
     {
       "planet": 1,
       "actual_forge_x1": 78150.0000033461,
@@ -15,7 +32,10 @@
       "clear_wall_hours_after_forge": 1.7478425921856413,
       "clear_next_x1": 99338.5499984128,
       "clear_next_hours_after_forge": 5.885708331962972,
-      "whole_five_stage_cycle_hours": 11.757749998296276
+      "whole_five_stage_cycle_hours": 11.757749998296276,
+      "next_stage": 35,
+      "global_first_clear_next_x1": 99338.5499984128,
+      "next_stage_already_cleared_before_this_forge": false
     },
     {
       "planet": 2,
@@ -28,7 +48,10 @@
       "clear_wall_hours_after_forge": 2.5415833327416637,
       "clear_next_x1": 129690.583324679,
       "clear_next_hours_after_forge": 5.291828702471665,
-      "whole_five_stage_cycle_hours": 8.431120368407278
+      "whole_five_stage_cycle_hours": 8.431120368407278,
+      "next_stage": 40,
+      "global_first_clear_next_x1": 129690.583324679,
+      "next_stage_already_cleared_before_this_forge": false
     },
     {
       "planet": 3,
@@ -41,7 +64,10 @@
       "clear_wall_hours_after_forge": 1.3059768515477803,
       "clear_next_x1": 146816.099987359,
       "clear_next_hours_after_forge": 2.54891666607333,
-      "whole_five_stage_cycle_hours": 4.757087961855553
+      "whole_five_stage_cycle_hours": 4.757087961855553,
+      "next_stage": 45,
+      "global_first_clear_next_x1": 146816.099987359,
+      "next_stage_already_cleared_before_this_forge": false
     },
     {
       "planet": 4,
@@ -54,57 +80,54 @@
       "clear_wall_hours_after_forge": 0.8154999998099972,
       "clear_next_x1": 160253.54998423,
       "clear_next_hours_after_forge": 1.5315416663099959,
-      "whole_five_stage_cycle_hours": 3.7326249991308336
+      "whole_five_stage_cycle_hours": 3.7326249991308336,
+      "next_stage": 50,
+      "global_first_clear_next_x1": 160253.54998423,
+      "next_stage_already_cleared_before_this_forge": false
+    },
+    {
+      "planet": 5,
+      "actual_forge_x1": 168239.99998237,
+      "event_rng": "-514552491262702228",
+      "prep_after_previous_unlock_hours": 2.2184583328166707,
+      "return_x1": 169669.399982038,
+      "return_hours_after_forge": 0.3970555554633352,
+      "clear_wall_x1": 170130.283315264,
+      "clear_wall_hours_after_forge": 0.5250787035816675,
+      "clear_next_x1": 171222.899981676,
+      "clear_next_hours_after_forge": 0.8285833331405512,
+      "whole_five_stage_cycle_hours": 3.047041665957222,
+      "next_stage": 55,
+      "global_first_clear_next_x1": 171222.899981676,
+      "next_stage_already_cleared_before_this_forge": false
+    },
+    {
+      "planet": 6,
+      "actual_forge_x1": 179039.999979856,
+      "event_rng": "6245107666779179818",
+      "prep_after_previous_unlock_hours": 2.1714166661611105,
+      "return_x1": 184595.133311896,
+      "return_hours_after_forge": 1.5430925922333376,
+      "clear_wall_x1": 185466.183311693,
+      "clear_wall_hours_after_forge": 1.785050925510279,
+      "clear_next_x1": 188092.566644415,
+      "clear_next_hours_after_forge": 2.5146018512663915,
+      "whole_five_stage_cycle_hours": 4.686018517427502,
+      "next_stage": 60,
+      "global_first_clear_next_x1": 177384.499980241,
+      "next_stage_already_cleared_before_this_forge": true,
+      "qualification": "Post-unlock reforge and replay, not a first-unlock five-stage cycle. First clear60 occurred before sixth reforge; clear_next is a later native replay clear.",
+      "first_unlock_five_stage_cycle_hours": 1.711555555156948
     }
   ],
-  "active": {
-    "fresh": {
-      "pid": 1165,
-      "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
-      "code_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd",
-      "end_x1_seconds": 166439.999982789,
-      "elapsed_hours": 46.233333328552504,
-      "stage_or_highest": 55,
-      "deaths": 1495,
-      "log_errors": {
-        "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
-          "script_errors": 0,
-          "parse_errors": 0,
-          "engine_errors": 0
-        },
-        "own-fresh-v23-fixed-zero-armour-max900-allmax-run.log": {
-          "script_errors": 0,
-          "parse_errors": 0,
-          "engine_errors": 0
-        }
-      },
-      "status": "running or partial; no completion claim"
-    },
-    "observed_total_income": {
-      "pid": 17408,
-      "source_commit": "a2efe4bdcfe5da461f5c4231d80e974a96d84b5c",
-      "code_fingerprint": "5bba6cd71990ee8ce7094d8b3eb9efb7d67048312626d4702a68fee5a4345235",
-      "end_x1_seconds": 73373.4500044582,
-      "elapsed_hours": 6.51666666704386,
-      "stage_or_highest": 34,
-      "deaths": 30,
-      "log_errors": {
-        "own-supplied34-v23-observed-total-income-beam-shields-max300-noforge12h-run.log": {
-          "script_errors": 0,
-          "parse_errors": 0,
-          "engine_errors": 0
-        }
-      },
-      "status": "running or partial; no completion claim"
-    }
-  },
-  "completed_diagnostics": {
+  "diagnostics": {
     "strong34_diagnostic": {
-      "end_x1_seconds": 93113.4499998621,
+      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
       "elapsed_hours": 11.9999999991005,
       "deaths": 37,
-      "action_sessions": 144,
       "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 267,
       "process_exit": {
         "exit_code": 0,
         "ended_utc": "2026-10-03T11:30:56.104861+00:00"
@@ -120,14 +143,16 @@
           "parse_errors": 0,
           "engine_errors": 0
         }
-      }
+      },
+      "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
     },
     "matched34_all_armour_diagnostic": {
-      "end_x1_seconds": 93113.4499998621,
+      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
       "elapsed_hours": 11.9999999991005,
       "deaths": 24,
-      "action_sessions": 144,
       "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 334,
       "process_exit": {
         "exit_code": 0,
         "script_errors": 0,
@@ -140,14 +165,16 @@
           "parse_errors": 0,
           "engine_errors": 0
         }
-      }
+      },
+      "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
     },
     "observed_income_farm34_diagnostic": {
-      "end_x1_seconds": 93113.4499998621,
+      "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
       "elapsed_hours": 11.9999999991005,
       "deaths": 38,
-      "action_sessions": 144,
       "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 373,
       "process_exit": {
         "exit_code": 0,
         "script_errors": 0,
@@ -160,11 +187,42 @@
           "parse_errors": 0,
           "engine_errors": 0
         }
-      }
+      },
+      "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
+    },
+    "observed_total_income_farm34_diagnostic": {
+      "source_commit": "a2efe4bdcfe5da461f5c4231d80e974a96d84b5c",
+      "elapsed_hours": 11.9999999991005,
+      "deaths": 37,
+      "clears": {},
+      "action_sessions": 144,
+      "domain_events_not_mouse_clicks": 248,
+      "process_exit": {
+        "exit_code": 0,
+        "script_errors": 0,
+        "parse_errors": 0,
+        "ended_utc": "2026-10-03T15:32:02.303121+00:00"
+      },
+      "log_errors": {
+        "own-supplied34-v23-observed-total-income-beam-shields-max300-noforge12h-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
+      },
+      "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
     }
   },
-  "blockers": "none; two100%CPU native Godot processes; actual full scene",
-  "private_evidence": "same named Independent-Sol-High-Evidence-20261003.zip v3 available; v4 now preparing; full saves/compressed actions/native bundle/exact QA patch; no new public raw upload",
-  "no_main_merge": true,
-  "scope": "Completed34 cases use supplied older legal profile, explicit cross-version diagnosis. No new-draft global acceptance or universal12h proof. Source-only high loot does not imply high total growth."
+  "full_spec_pass": false,
+  "latestV29_acceptance": false,
+  "main_merge": false,
+  "formal_numeric_excel_art_edits": false,
+  "limits": [
+    "Later postforge45/50/55 clears2.549/1.532/.829h below4–6h.",
+    "First shipyard3h, only31clear insideconstruction;32later.",
+    "33 diagnostic normal5win73.4167s vs elite6loss.9833s on explicit older input.",
+    "Four12h34 failures declared older-profile strategies only; no universal/latestsource stall proof."
+  ],
+  "older34_activation_scope": "Total12h noforge legal strategies: originalpositivearmor300s, newdeclareddefense11h55m afteractualencounter/visit; no12hpre-equippedclaim.",
+  "durable_delivery": "FINAL private Library same named ZIP v6 available,20,627,048bytes; ZIPsha74a02c49119dd7c28ea2dac1d9f8f273613c87661de2ab74cd3f31e0dea87d04. Nativebundlehead679b09eb5474458139a23b933826ec50d3fbe04f, SHA178633f83a30ecb8b8c68725c3f459f7d30d6b70846db385e85256456855d700, prerequisite5a533527ceeb62f785ef09e7ce284728963dc5f8 in ownpublicbranchhistory. Allraw/inputs/end/allmax/failedsmokes/exactQApatches; no publicrawretry or blocker."
 }
