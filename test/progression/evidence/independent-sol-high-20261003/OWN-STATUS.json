@@ -1,72 +1,110 @@
 {
+  "utc": "2026-10-03 14:56:41 UTC",
   "own_results_only": true,
-  "numeric_version": "V23 unchanged",
-  "fresh_source": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
-  "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-  "fresh_partial_x1": 150899.999986408,
-  "fresh_stage": 49,
-  "fresh_clears": {
-    "5": 744.016666666319,
-    "10": 9780.71666660849,
-    "20": 46160.6666690024,
-    "30": 57010.6500045462,
-    "32": 77499.1666701643,
-    "34": 84442.2333352144,
-    "35": 99338.5499984128,
-    "40": 129690.583324679,
-    "45": 146816.099987359
-  },
-  "fresh_reforges": [
+  "frozen": "1d8/V23; no V29 insertion",
+  "numeric_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
+  "native_fresh_cycles": [
     {
       "planet": 1,
-      "start": 78150.0000033461,
-      "post_visit": 78150.0000033461,
-      "post_visit_hours_after_forge": 0,
-      "return": 80988.0833360186,
+      "actual_forge_x1": 78150.0000033461,
+      "event_rng": "-4631566495336707156",
+      "prep_after_previous_unlock_hours": 5.872041666333304,
+      "return_x1": 80988.0833360186,
       "return_hours_after_forge": 0.7883564812979158,
-      "clear_wall": 84442.2333352144,
+      "clear_wall_x1": 84442.2333352144,
       "clear_wall_hours_after_forge": 1.7478425921856413,
-      "clear_next": 99338.5499984128,
-      "clear_next_hours_after_forge": 5.885708331962972
+      "clear_next_x1": 99338.5499984128,
+      "clear_next_hours_after_forge": 5.885708331962972,
+      "whole_five_stage_cycle_hours": 11.757749998296276
     },
     {
       "planet": 2,
-      "start": 110639.999995781,
-      "post_visit": 110639.999995781,
-      "post_visit_hours_after_forge": 0,
-      "return": 114857.949994799,
+      "actual_forge_x1": 110639.999995781,
+      "event_rng": "7744158520502725034",
+      "prep_after_previous_unlock_hours": 3.139291665935614,
+      "return_x1": 114857.949994799,
       "return_hours_after_forge": 1.1716527775049972,
-      "clear_wall": 119789.699993651,
+      "clear_wall_x1": 119789.699993651,
       "clear_wall_hours_after_forge": 2.5415833327416637,
-      "clear_next": 129690.583324679,
-      "clear_next_hours_after_forge": 5.291828702471665
+      "clear_next_x1": 129690.583324679,
+      "clear_next_hours_after_forge": 5.291828702471665,
+      "whole_five_stage_cycle_hours": 8.431120368407278
     },
     {
       "planet": 3,
-      "start": 137639.999989495,
-      "post_visit": 137639.999989495,
-      "post_visit_hours_after_forge": 0,
-      "return": 140009.06665561,
+      "actual_forge_x1": 137639.999989495,
+      "event_rng": "2171018293425935442",
+      "prep_after_previous_unlock_hours": 2.208171295782223,
+      "return_x1": 140009.06665561,
       "return_hours_after_forge": 0.6580740739208301,
-      "clear_wall": 142341.516655067,
+      "clear_wall_x1": 142341.516655067,
       "clear_wall_hours_after_forge": 1.3059768515477803,
-      "clear_next": 146816.099987359,
-      "clear_next_hours_after_forge": 2.54891666607333
+      "clear_next_x1": 146816.099987359,
+      "clear_next_hours_after_forge": 2.54891666607333,
+      "whole_five_stage_cycle_hours": 4.757087961855553
+    },
+    {
+      "planet": 4,
+      "actual_forge_x1": 154739.999985514,
+      "event_rng": "-2695395868493139394",
+      "prep_after_previous_unlock_hours": 2.2010833328208377,
+      "return_x1": 156856.566651687,
+      "return_hours_after_forge": 0.5879351850480533,
+      "clear_wall_x1": 157675.79998483,
+      "clear_wall_hours_after_forge": 0.8154999998099972,
+      "clear_next_x1": 160253.54998423,
+      "clear_next_hours_after_forge": 1.5315416663099959,
+      "whole_five_stage_cycle_hours": 3.7326249991308336
     }
   ],
-  "global30buildings_level5_completed": false,
-  "cross_version_diagnostics": {
+  "active": {
+    "fresh": {
+      "pid": 1165,
+      "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
+      "code_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd",
+      "end_x1_seconds": 166439.999982789,
+      "elapsed_hours": 46.233333328552504,
+      "stage_or_highest": 55,
+      "deaths": 1495,
+      "log_errors": {
+        "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        },
+        "own-fresh-v23-fixed-zero-armour-max900-allmax-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
+      },
+      "status": "running or partial; no completion claim"
+    },
+    "observed_total_income": {
+      "pid": 17408,
+      "source_commit": "a2efe4bdcfe5da461f5c4231d80e974a96d84b5c",
+      "code_fingerprint": "5bba6cd71990ee8ce7094d8b3eb9efb7d67048312626d4702a68fee5a4345235",
+      "end_x1_seconds": 73373.4500044582,
+      "elapsed_hours": 6.51666666704386,
+      "stage_or_highest": 34,
+      "deaths": 30,
+      "log_errors": {
+        "own-supplied34-v23-observed-total-income-beam-shields-max300-noforge12h-run.log": {
+          "script_errors": 0,
+          "parse_errors": 0,
+          "engine_errors": 0
+        }
+      },
+      "status": "running or partial; no completion claim"
+    }
+  },
+  "completed_diagnostics": {
     "strong34_diagnostic": {
-      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
-      "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
-      "start_x1_seconds": 49913.4500031003,
       "end_x1_seconds": 93113.4499998621,
       "elapsed_hours": 11.9999999991005,
       "deaths": 37,
-      "status": "completed",
-      "clears": {},
       "action_sessions": 144,
-      "domain_events_not_mouse_clicks": 267,
+      "clears": {},
       "process_exit": {
         "exit_code": 0,
         "ended_utc": "2026-10-03T11:30:56.104861+00:00"
@@ -85,16 +123,11 @@
       }
     },
     "matched34_all_armour_diagnostic": {
-      "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
-      "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
-      "start_x1_seconds": 49913.4500031003,
       "end_x1_seconds": 93113.4499998621,
       "elapsed_hours": 11.9999999991005,
       "deaths": 24,
-      "status": "completed",
-      "clears": {},
       "action_sessions": 144,
-      "domain_events_not_mouse_clicks": 334,
+      "clears": {},
       "process_exit": {
         "exit_code": 0,
         "script_errors": 0,
@@ -110,16 +143,11 @@
       }
     },
     "observed_income_farm34_diagnostic": {
-      "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
-      "code_fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
-      "start_x1_seconds": 49913.4500031003,
       "end_x1_seconds": 93113.4499998621,
       "elapsed_hours": 11.9999999991005,
       "deaths": 38,
-      "status": "completed",
-      "clears": {},
       "action_sessions": 144,
-      "domain_events_not_mouse_clicks": 373,
+      "clears": {},
       "process_exit": {
         "exit_code": 0,
         "script_errors": 0,
@@ -133,29 +161,10 @@
           "engine_errors": 0
         }
       }
-    },
-    "observed_total_income_farm34_diagnostic": {
-      "source_commit": "a2efe4bdcfe5da461f5c4231d80e974a96d84b5c",
-      "code_fingerprint": "5bba6cd71990ee8ce7094d8b3eb9efb7d67048312626d4702a68fee5a4345235",
-      "start_x1_seconds": 49913.4500031003,
-      "end_x1_seconds": 55853.4500043104,
-      "elapsed_hours": 1.650000000336139,
-      "deaths": 10,
-      "status": "running or partial; no completion claim",
-      "clears": null,
-      "action_sessions": null,
-      "domain_events_not_mouse_clicks": null,
-      "process_exit": null,
-      "log_errors": {
-        "own-supplied34-v23-observed-total-income-beam-shields-max300-noforge12h-run.log": {
-          "script_errors": 0,
-          "parse_errors": 0,
-          "engine_errors": 0
-        }
-      }
     }
   },
-  "source_only_limit": "Actual direct enemy iron4.7-4.9x is not total growth. Completed12h iron income1.000286x baseline but uranium0.80532x; no34clear. Total-income corrected prototype remains separate and unfinished.",
-  "durable_delivery": "Private Library same named Independent-Sol-High-Evidence-20261003.zip v3, full native raw and exact QA patches. Public raw uploads not retried. Public branch texts are aggregates only; older REPLAY raw carrier is stale.",
-  "not_main": true
+  "blockers": "none; two100%CPU native Godot processes; actual full scene",
+  "private_evidence": "same named Independent-Sol-High-Evidence-20261003.zip v3 available; v4 now preparing; full saves/compressed actions/native bundle/exact QA patch; no new public raw upload",
+  "no_main_merge": true,
+  "scope": "Completed34 cases use supplied older legal profile, explicit cross-version diagnosis. No new-draft global acceptance or universal12h proof. Source-only high loot does not imply high total growth."
 }
