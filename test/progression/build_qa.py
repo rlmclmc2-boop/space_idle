@@ -27,7 +27,7 @@ if a.scene:
  for folder in ['scripts','assets','addons','dev']:
   shutil.copytree(source/folder,out/folder,dirs_exist_ok=True,ignore=shutil.ignore_patterns('*.blend','*.blend1','__pycache__'))
  for filename in ['main.tscn','level_editor.tscn']:shutil.copy2(source/filename,out/filename)
-shutil.copytree(source/'data',out/'data')
+shutil.copytree(source/'data',out/'data',ignore=shutil.ignore_patterns('.import_state.json'))
 if a.data_ref:
  (out/'data/game_data.json').write_bytes(subprocess.check_output(['git','show',a.data_ref+':space-battleship/data/game_data.json'],cwd=ROOT))
 (out/'.runtime').mkdir(); (out/'qa').mkdir(); 

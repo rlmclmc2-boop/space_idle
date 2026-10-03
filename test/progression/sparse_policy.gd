@@ -1,10 +1,11 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v7-losses-across-visits"
+const VERSION="sparse-v8-optional-scientist-max"
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
 var scientist_batch_mode := false
+var scientist_max_mode := false
 var recovering := false
 var recovery_end_stage := 0
 var farm := {}
@@ -32,6 +33,13 @@ func manual_upgrade_sweep(g,levels:int)->bool:
 			if g.upgrade_slot(category,index,levels):changed=true
 	return changed
 func buy_scientist(g:BattleGame,fraction:float)->void:
+	# Independent sensitivity assumption: existing MAX button, no hidden buys.
+	# It may spend most uranium; measure progression AND construction blocking.
+	if scientist_max_mode and g.stage>=6:
+		var purchase:Dictionary=g.scientist_purchase(-1)
+		if int(purchase.count)>0 and g.generate_scientist(-1):
+			record(g,"scientist_max",{"amount":purchase.count,"costs":purchase.costs,"assumption":"one actual MAX click per sparse visit; no reserve cap"})
+		return
 	# Optional sparse-visit assumption: existing +10 button, same reserve cap.
 	if scientist_batch_mode and g.stage>=6:
 		var purchase:Dictionary=g.scientist_purchase(10)

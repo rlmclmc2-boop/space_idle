@@ -102,6 +102,9 @@ func run() -> void:
 	if policy.get("scientist_batch_mode")!=null:policy.scientist_batch_mode=bool(options.get("scientist_batch",false))
 	elif bool(options.get("scientist_batch",false)):
 		printerr("Frozen policy does not support scientist-batch assumption");quit(2);return
+	if policy.get("scientist_max_mode")!=null:policy.scientist_max_mode=bool(options.get("scientist_max",false))
+	elif bool(options.get("scientist_max",false)):
+		printerr("Frozen policy does not support scientist MAX assumption");quit(2);return
 	policy.cap_stage=60 if bool(options.get("stop_galaxy",false)) else 0
 	policy.journal=func(kind, extra):
 		if kind in ["travel_to_farm_point","begin_farm_guard","resume_push"]:actions+=1
