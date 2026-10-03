@@ -1,6 +1,6 @@
 {
   "milestones": {
-    "utc": "2026-10-03T20:02:31.274668+00:00",
+    "utc": "2026-10-03T20:33:35.020267+00:00",
     "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
     "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
     "milestones": {
@@ -39,6 +39,12 @@
         "hours": 33.51994907225333,
         "rng": "8265442845096587607",
         "save_sha256": "cc94d8d99d2a41e46e0da9362cf589ddc81a8fb941cc0e65994361a415ff0110"
+      },
+      "45": {
+        "x1_seconds": 136975.666656316,
+        "hours": 38.04879629342111,
+        "rng": "-7172809706787049873",
+        "save_sha256": "9e8cddc742f6373fb3822fa378789953bf03af82cfca8bb4b3890a2cae82a56b"
       }
     },
     "firstshipyard_events": [
@@ -65,30 +71,25 @@
         "x1_seconds": 101639.999997877,
         "rng": "7736309681171105193",
         "save_sha256": "8784742fdd7d1c7303bc77808f4c9215483dddcff8c6ac33ff41d7ed3e57c04b"
+      },
+      {
+        "file": "save_reforge_3.json",
+        "x1_seconds": 128639.99999159,
+        "rng": "-5662185679321586305",
+        "save_sha256": "06871af889f9f279fd0f6222d3d787df9ba7584143a71ae895a2281cd5e4da50"
       }
     ],
     "latest_heartbeat": {
-      "deaths": 1277,
-      "highest": 41,
-      "stage": 41,
-      "wall_seconds": 12311.850443,
-      "x1_seconds": 121499.999993253
+      "deaths": 1401,
+      "highest": 46,
+      "stage": 46,
+      "wall_seconds": 14179.206947,
+      "x1_seconds": 137999.999989411
     },
     "global_acceptance": "pending",
-    "current_health": {
-      "pid": 31460,
+    "errors_to_date": {
       "SCRIPT_ERROR": 0,
-      "engine_ERROR": 0,
-      "terminal": false,
-      "remaining_estimate_x1_hours": [
-        20,
-        23
-      ],
-      "remaining_estimate_wall_hours": [
-        2,
-        4
-      ],
-      "estimate_qualification": "Estimate based currentthroughput and parentreported endpoint; no guaranteedtermination. No newrun or expandedmatrix."
+      "engine_ERROR": 0
     }
   },
   "first_preparation": {
@@ -158,10 +159,10 @@
   },
   "private_zip": {
     "file": "/workspace/independent-sol-high-transport/Independent-Sol-High-Evidence-20261003.zip",
-    "size": 25278227,
-    "sha256": "7a9bb78069051164bb987e20567dfadc9e0bb78f9205b49db55341e4fdfc96c0",
-    "native_head": "cdcb4b5a1023eaefe2377d8c91a436a93e0070ea",
-    "archived_files": 287
+    "size": 29318592,
+    "sha256": "5b08604f6f192a114ae71b1fc1e3bf0cc5da3418c336759229dd90d565ebd19c",
+    "native_head": "fae663481ce487c5264dac831bb42ade3bb6a477",
+    "archived_files": 294
   },
   "acceptance_update": {
     "recorded_utc": "2026-10-03T17:24:44.500947+00:00",
