@@ -8,10 +8,10 @@
     "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
     "input_rng_state": "7064421032684940846",
     "start_x1_seconds": 0,
-    "end_x1_seconds": 89340.0000007407,
-    "elapsed_hours": 24.81666666687242,
-    "stage_or_highest": 35,
-    "deaths": 881,
+    "end_x1_seconds": 114479.999994887,
+    "elapsed_hours": 31.79999999857972,
+    "stage_or_highest": 38,
+    "deaths": 1038,
     "process_exit": null,
     "log_errors": {
       "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
@@ -32,7 +32,8 @@
       "20": 46160.6666690024,
       "30": 57010.6500045462,
       "32": 77499.1666701643,
-      "34": 84442.2333352144
+      "34": 84442.2333352144,
+      "35": 99338.5499984128
     },
     "reforges": [
       {
@@ -43,7 +44,15 @@
         "return": 80988.0833360186,
         "return_hours_after_forge": 0.7883564812979158,
         "clear_wall": 84442.2333352144,
-        "clear_wall_hours_after_forge": 1.7478425921856413
+        "clear_wall_hours_after_forge": 1.7478425921856413,
+        "clear_next": 99338.5499984128,
+        "clear_next_hours_after_forge": 5.885708331962972
+      },
+      {
+        "planet": 2,
+        "start": 110639.999995781,
+        "post_visit": 110639.999995781,
+        "post_visit_hours_after_forge": 0
       }
     ],
     "first_galaxy_end_state": {
@@ -51,8 +60,7 @@
       "slots": 0,
       "level5": 0,
       "levels": []
-    },
-    "post_import_fingerprint": "e32bbbe48e4e6b7d03ab728646fc0ba2a927be4ee26132bda599b84398695d2b"
+    }
   },
   "strong34_diagnostic": {
     "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
@@ -91,9 +99,7 @@
     "no_reforge_verified": true,
     "clear34_hours_after_input": null,
     "tested_strategy_12h_stall": true,
-    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies.",
-    "declared_strategy": "longLaser/armour,shield,shield/MAX300 per-card bulk/no-reforge/held through farming",
-    "post_import_fingerprint": "f0077301e712639a6b8ff03e3796d4ad77d720806ac6647a30a0ba0cbed9dcab"
+    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
   },
   "matched34_all_armour_diagnostic": {
     "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
@@ -129,11 +135,49 @@
     "no_reforge_verified": true,
     "clear34_hours_after_input": null,
     "tested_strategy_12h_stall": true,
-    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies.",
-    "declared_strategy": "longLaser/armour,armour,armour/MAX300 per-card bulk/no-reforge/held through farming",
-    "post_import_fingerprint": "f0077301e712639a6b8ff03e3796d4ad77d720806ac6647a30a0ba0cbed9dcab"
+    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies."
   },
-  "remote_scope": "Aggregate numerical simulation status only. Latest complete diagnostic raw files privately saved in Library filename Independent-Sol-High-Evidence-20261003.zip version1; fresh raw in v1 through return34. Public raw-bundle update rejected automatic approval pending explicit authorization; old carrier raw remains old.",
-  "diagnostic_input_sha256": "4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a",
-  "fingerprint_qualification": "code_fingerprint is build manifest before own editor import; only16 glb.import files lost three import-setting lines. Other enumerated assets/scenes/code/data unchanged."
+  "observed_income_farm34_diagnostic": {
+    "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
+    "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
+    "code_fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
+    "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
+    "input_rng_state": "7315605390541974786",
+    "start_x1_seconds": 49913.4500031003,
+    "end_x1_seconds": 54473.4500040293,
+    "elapsed_hours": 1.2666666669247226,
+    "stage_or_highest": 33,
+    "deaths": 6,
+    "process_exit": null,
+    "log_errors": {
+      "own-supplied34-v23-observed-income-beam-shields-max300-noforge12h-r2-run.log": {
+        "script_errors": 0,
+        "parse_errors": 0,
+        "engine_errors": 0
+      }
+    },
+    "status": "running or partial; no completion claim",
+    "own_clear_milestones_x1_seconds": {},
+    "reforges": []
+  },
+  "remote_scope": "Small aggregate status only. Latest raw remains private Library Independent-Sol-High-Evidence-20261003.zip version2, includes fresh clear35, two completed fixed12h, observed-farm exact QA patch and early partial. No public raw retry needed per parent.",
+  "observed_farm_early_findings": {
+    "scope": "Own ongoing same supplied legal34/beam1armour2shield/MAX300/12h paired diagnostic; no clear34 conclusion yet",
+    "input_sha256": "4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a",
+    "input_rng": "7315605390541974786",
+    "source_commit": "fa9b4708f3cdc95f1c76e92bbd4aaff2596ae292",
+    "fingerprint": "04f2940e5e5f76ca86145fd7ea13305674bad387f1ed895ba8308977a80ee519",
+    "measured33_first_over34_first_iron_rates": [
+      {
+        "at": 52313.4500035892,
+        "ratio": 4.66186110906996
+      },
+      {
+        "at": 53813.4500038948,
+        "ratio": 4.936941921794323
+      }
+    ],
+    "rules": "Observed source-attributed collected income and elapsed periods only, no automatic furnace attributed, unobserved/unwon point ineligible, one actual measurement of already-cleared33 firstpoint, public travel/guard at300s visits. This input has attributable uranium0; ranking effectively iron/time.",
+    "source_code_delivery": "Private Library v2: apply qa-fixed-defence-exact.patch (base1d8 to07fd), then qa-observed-income-farm-exact.patch (07fd tofa9). No Excel/numeric/art changes."
+  }
 }
