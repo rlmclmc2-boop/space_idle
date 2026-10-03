@@ -106,6 +106,68 @@
         "uranium_each": 63
       },
       "impact": "Do not claim exact RNG/kill equivalence from time-budget proof. Render-frame pose/recoil is a suspected cause, not yet isolated."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "candidate fixed; bounded native/driver/active-planet regression passed",
+      "topic": "Native chrono rendering clocks and skipped firing target updates changed combat geometry",
+      "evidence": "evidence/native-chrono-provider-trace; evidence/chrono-fix-iterations",
+      "measurements": {
+        "old_X1_kills": 885,
+        "old_X10_kills": 883,
+        "fixed_X1_kills": 885,
+        "fixed_X10_kills": 885,
+        "fixed_combat_rng_resources_equal": true,
+        "fixed_actual_provider_calls_equal": 1301,
+        "fixed_kinematic_ticks_equal": 360
+      },
+      "impact": "Logical pose clocks, canonical formation-age initialization and retained fast-mode firing targets. Original X1 providers/RNG preserved;700-second budget/full outputs and fresh/late900 native-vs-Driver pass. Active exploration/shipyard/scientist/researcher60s nativeX1/X10 passes360 shared boundaries. No active-galaxy or full-journey acceptance."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "failed numeric target; v18 tuning running",
+      "topic": "First reforge clears35 too quickly under two phase-safe policies",
+      "evidence": "evidence/v17-segment-results/forge30-to35-phase-safe; formal-v19-forge-accelerated/firstforge-v15-data-v7policy-ui1",
+      "measurements": {
+        "preparation_hours": 4.066666667,
+        "v5_enter34_hours": 0.458337963,
+        "v5_clear35_hours": 2.005819445,
+        "v7_enter34_hours": 0.46475463,
+        "v7_clear35_hours": 2.152944445
+      },
+      "impact": "Return34 meets≤2h, but35 must be4–6h separately. v18 changes first35 offset100→112 and dependent36–60 enemy-strength base, not first34. Existing Excel dependencies also recalculate61–220; those stages remain uncalibrated, not accepted."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "strategy sensitivity measured; not user requirement",
+      "topic": "Sparse visits need meaningful upgrade bundles and real farming actions",
+      "evidence": "evidence/v17-segment-results/fresh900-meaningful-batch10",
+      "measurements": {
+        "strong_900_clear10_hours": 2.979578704,
+        "strong_action_events": 480,
+        "strong_sessions": 67,
+        "weaker_900_clear10_hours": 4.498097222
+      },
+      "impact": "Strategies also differ in across-visit loss handling, so do not attribute the entire difference to scientist+10 alone. Fifteen-minute visits are a test assumption; teaching remains10s. Actual per-card+10 actions counted; no invisible per-second buys."
+    },
+    {
+      "priority": "P2",
+      "kind": "suggestion",
+      "status": "reviewable UX recommendation; no new mechanism implemented",
+      "topic": "Teach meaningful +10 science/module bundles when income supports them",
+      "evidence": "Sparse strategy sensitivity and controlled real-button batch tests",
+      "impact": "Explain current controls and upgrade priorities to reduce avoidable waiting; retain manual claims/queues/refits in operation traces rather than assume continuous optimization."
+    },
+    {
+      "priority": "P1",
+      "kind": "fact",
+      "status": "operation burden observed; recommendation pending",
+      "topic": "Reforge recovery upgrade burst is large even with sparse visits",
+      "evidence": "evidence/v17-segment-results/operation-burden.json",
+      "impact": "Per-card+10 sweeps retain real successful action events. Report session maxima rather than treating an instantaneous scripted visit as one literal click; review existing MAX/+10 controls and presentation before adding any new mechanic."
     }
   ]
 }

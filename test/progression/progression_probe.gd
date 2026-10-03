@@ -131,6 +131,8 @@ func run() -> void:
 		policy.deaths_seen=int(old.get("deaths_seen",0))-int(checkpoint.get("metrics_deaths",old.get("deaths_seen",0)))
 		policy.furthest=int(old.get("furthest",game.profile.highestLevel))
 		next_visit=game.simulated_time
+	# A resumed segment starts its operation-gap clock at its actual entry time.
+	last_action=game.simulated_time
 	game.event.connect(observe)
 	if bool(options.get("scene",false)):
 		scene_driver=load("res://qa/scene_driver.gd").new()
