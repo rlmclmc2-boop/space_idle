@@ -14,9 +14,10 @@ func run()->void:
 	var commits:Array=[];var changes:Array=[]
 	p.journal=func(kind,payload):
 		if kind=="fixed_defence_commit":commits.append(payload.duplicate(true))
-	g.event.connect(func(kind,payload):
+	var observer:Callable=func(kind,payload):
 		if kind=="encounter":p.observe_progress_stage(g.stage)
-		if kind=="module_changed":changes.append(payload.duplicate(true)))
+		if kind=="module_changed":changes.append(payload.duplicate(true))
+	g.event.connect(observer)
 	g.start(33,false);p.act(g,0)
 	var driver=Driver.new();driver.ui_refresh_seconds=1.0;driver.setup(self,g)
 	assert(not p.fixed_defence_active)
@@ -39,4 +40,8 @@ func run()->void:
 	var result={"pass":true,"scope":"Synthetic progress, actual Presented/main scene encounter and public sparse refits; activation/churn control only, no growth timing claim","commits":commits,"module_changes":changes,"retained_layout":p.fixed_defence_layout,"levels":levels,"x1_seconds":g.simulated_time,"rng_state":str(g.rng.state)}
 	var dir:=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR");assert(not dir.is_empty())
 	FileAccess.open(dir.path_join("fixed-stage-defence.json"),FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
-	driver.close();print("FIXED_STAGE_DEFENCE_PASS ",JSON.stringify(result));quit()
+	g.event.disconnect(observer);observer=Callable()
+	g.launch_provider=Callable();g.target_provider=Callable()
+	driver.close();await process_frame
+	driver=null;g=null;p=null;await process_frame
+	print("FIXED_STAGE_DEFENCE_PASS ",JSON.stringify(result));quit()

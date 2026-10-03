@@ -1,11 +1,16 @@
 """Persist this task's own raw checkpoints and compressed traces; never touch source."""
 from pathlib import Path
-import datetime, fcntl, gzip, hashlib, json, shutil, subprocess, time
+import argparse, datetime, fcntl, gzip, hashlib, json, shutil, subprocess, time
 
 ROOT = Path(__file__).resolve().parents[4]
 EVIDENCE = Path(__file__).resolve().parent
-PROJECT = Path('/workspace/independent-sol-high-qa')
-LABEL = 'own-fresh-v23-fixed-zero-armour-max900-allmax'
+parser = argparse.ArgumentParser()
+parser.add_argument('--project', type=Path, default=Path('/workspace/independent-sol-high-qa'))
+parser.add_argument('--label', default='own-fresh-v23-fixed-zero-armour-max900-allmax')
+parser.add_argument('--completion-marker', type=Path, default=EVIDENCE / 'fresh-exit.json')
+args = parser.parse_args()
+PROJECT = args.project
+LABEL = args.label
 RESULT = PROJECT / 'results' / LABEL
 DEST = EVIDENCE / LABEL
 DEST.mkdir(exist_ok=True)
@@ -34,8 +39,8 @@ def persist():
         return
     (DEST / 'archive.json').write_text(json.dumps({
         'captured_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        'own_run': True, 'source_commit': '1d8dc45b6346f0d18dfa5ed993fa046a64525fd0',
-        'scope': 'Continuous frozen fresh run; partial until own summary and exit recorded',
+        'own_run': True, 'source_commit': json.loads((PROJECT / 'qa-manifest.json').read_text())['source_commit'],
+        'scope': 'Own raw run evidence; use run.json initial_state to distinguish fresh from checkpoint diagnostics; partial until summary and exit recorded',
         'files': records,
     }, indent=2))
     with LOCK.open('w') as lock:
@@ -52,7 +57,7 @@ if __name__ == '__main__':
     last = 0.0
     while True:
         milestones = set(RESULT.glob('save_*.json'))
-        done = (EVIDENCE / 'fresh-exit.json').exists()
+        done = args.completion_marker.exists()
         if milestones != previous or time.monotonic() - last >= 180 or done:
             persist()
             last = time.monotonic()

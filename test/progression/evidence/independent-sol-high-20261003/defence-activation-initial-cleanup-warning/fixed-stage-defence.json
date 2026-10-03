@@ -1,0 +1,54 @@
+{
+	"commits": [
+		{
+			"actual_visit_stage": 34,
+			"assumption": "fixed positive-armour defence only after an observed encounter and real visit; retained during farming; public refits; no transient default-layout churn",
+			"from_stage": 34,
+			"layout": [
+				"armour",
+				"shield",
+				"shield"
+			]
+		}
+	],
+	"levels": [
+		1,
+		1,
+		1
+	],
+	"module_changes": [
+		{
+			"slot": "weapons_1"
+		},
+		{
+			"slot": "weapons_2"
+		},
+		{
+			"slot": "weapons_3"
+		},
+		{
+			"slot": "weapons_4"
+		},
+		{
+			"slot": "weapons_5"
+		},
+		{
+			"slot": "defence_1"
+		},
+		{
+			"slot": "defence_2"
+		},
+		{
+			"slot": "defence_2"
+		}
+	],
+	"pass": true,
+	"retained_layout": [
+		"armour",
+		"shield",
+		"shield"
+	],
+	"rng_state": "7064421032684940846",
+	"scope": "Synthetic progress, actual Presented/main scene encounter and public sparse refits; activation/churn control only, no growth timing claim",
+	"x1_seconds": 2.01666666666666
+}

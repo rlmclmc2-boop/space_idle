@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "script_errors": 0,
+  "cleanup_errors": "19 resources still in use; retained initial fixture cleanup warning",
+  "scope": "Activation/persistence assertions pass; fixture cleanup under repair"
+}
