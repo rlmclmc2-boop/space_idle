@@ -1,12 +1,12 @@
 {
-  "captured_utc": "2026-10-03T10:14:31.723458+00:00",
+  "captured_utc": "2026-10-03T10:17:34.552149+00:00",
   "own_run": true,
   "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
   "scope": "Own raw run evidence; use run.json initial_state to distinguish fresh from checkpoint diagnostics; partial until summary and exit recorded",
   "files": {
     "heartbeat.json": {
-      "sha256": "db28005268a344876c4763fec7ca4b983ddcb1bf19efc9af5cb5482f150d353c",
-      "bytes": 107
+      "sha256": "e91a8e05970509fd87e93e66f769b7629457ae9932b132451d2f30089cb08abd",
+      "bytes": 108
     },
     "run.json": {
       "sha256": "f78a8890bdac3417b5b89be2af8ef59a27a8d137ebb52d312fc33d0478a5bec9",
@@ -21,9 +21,9 @@
       "bytes": 50937
     },
     "actions.jsonl": {
-      "sha256": "23b9bb7e8de285d3cf7fb346dac8fb4930b9e878061bd67769daaedb14d8a5d2",
-      "bytes": 41013,
-      "gzip_bytes": 3923
+      "sha256": "e1964a7b1c0f8ffe4dede46bee2dab2769e3dc6d1c4d4329167c6040e784e2b0",
+      "bytes": 70193,
+      "gzip_bytes": 6064
     },
     "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
       "sha256": "9572934ad4d57fbab2c09b2c82f3821584fba7ba71d7e1dec5055bc7fa531f3f",
@@ -31,9 +31,9 @@
       "gzip_bytes": 348
     },
     "own-supplied34-v23-beam-positive-defence-max300-noforge12h-run.log": {
-      "sha256": "be3208b29e7ec9dc3da000d698a618fbfc55f796cbea263fd1826376020921bb",
-      "bytes": 296,
-      "gzip_bytes": 167
+      "sha256": "1af190eedf76407c93b2a9edb69b269889ab57b5f4884e1700fe5dcecd611eae",
+      "bytes": 464,
+      "gzip_bytes": 193
     }
   },
   "log_errors": {
