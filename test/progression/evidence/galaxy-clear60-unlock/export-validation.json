@@ -1,0 +1,22 @@
+[
+  {
+    "input": "0",
+    "rejected": "galaxy: invalid galaxy_1.unlock_value: 0"
+  },
+  {
+    "input": "1.5",
+    "rejected": "galaxy: invalid galaxy_1.unlock_value: 1.5"
+  },
+  {
+    "input": "221",
+    "rejected": "galaxy: cleared stage must exist"
+  },
+  {
+    "input": "60",
+    "rejected": "galaxy: invalid galaxy_1.unlock_value: 60"
+  },
+  {
+    "input": "nan",
+    "rejected": "galaxy: invalid galaxy_1.unlock_value: nan"
+  }
+]

@@ -167,7 +167,7 @@ func unlock_condition_available(id: String) -> bool:
 	if profile.get("grantedUnlocks", []).has(id):return true
 	if row.get("type")=="feature" and row.get("target")=="galaxy":
 		var definitions: Array=db.data.get("galaxy",{}).values()
-		if definitions.is_empty() or not definitions.any(func(definition):return definition.unlock_type=="conquered_planet_count" and galaxy.conquered(self)>=int(definition.unlock_value)):return false
+		if definitions.is_empty() or not definitions.any(func(definition):return galaxy.condition_met(self,definition)):return false
 	var gate := int(row.level)
 	if gate == 0:return true
 	# Reached-mode preserves the former highestLevel semantics, including gaps.

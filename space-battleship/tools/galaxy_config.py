@@ -26,6 +26,9 @@ def validate(data):
             if not 0<row[f'start_{axis}']<=row[f'map_{axis}'] or (row[f'map_{axis}']-row[f'start_{axis}'])%2:raise ValueError('galaxy: invalid centered map')
         if row.get('next_galaxy') and row['next_galaxy'] not in galaxies:raise ValueError('galaxy: unknown successor')
         if row.get('unlock_type')=='conquered_planet_count':num(row.get('unlock_value'),f'{key}.unlock_value',zero=True,integer=True)
+        elif row.get('unlock_type')=='stage_cleared':
+            num(row.get('unlock_value'),f'{key}.unlock_value',integer=True)
+            if not any(level.get('id')==int(row['unlock_value']) for level in data.get('levels',[])):raise ValueError('galaxy: cleared stage must exist')
         elif row.get('unlock_type')!='galaxy_complete' or row.get('unlock_value') not in galaxies:raise ValueError('galaxy: unsupported unlock')
         seen={key};following=row.get('next_galaxy')
         while following:

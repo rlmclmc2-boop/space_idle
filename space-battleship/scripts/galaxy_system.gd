@@ -44,6 +44,7 @@ func conquered(g) -> int:
 
 func condition_met(g, definition: Dictionary) -> bool:
 	match str(definition.unlock_type):
+		"stage_cleared":return g.profile.cleared.has(int(definition.unlock_value))
 		"conquered_planet_count":return conquered(g)>=int(definition.unlock_value)
 		"galaxy_complete":return regions.has(str(definition.unlock_value)) and regions[str(definition.unlock_value)].state.status=="complete"
 	return false
