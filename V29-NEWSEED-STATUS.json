@@ -1,6 +1,6 @@
 {
   "milestones": {
-    "utc": "2026-10-03T19:02:01.099794+00:00",
+    "utc": "2026-10-03T20:02:31.274668+00:00",
     "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
     "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
     "milestones": {
@@ -33,6 +33,12 @@
         "hours": 25.344453703786584,
         "rng": "-458448518410110119",
         "save_sha256": "69e6b2b0b670a4d35b97a306cfc0007b355f7149d9db2843aec48b437cf5b303"
+      },
+      "40": {
+        "x1_seconds": 120671.816660112,
+        "hours": 33.51994907225333,
+        "rng": "8265442845096587607",
+        "save_sha256": "cc94d8d99d2a41e46e0da9362cf589ddc81a8fb941cc0e65994361a415ff0110"
       }
     },
     "firstshipyard_events": [
@@ -47,15 +53,43 @@
         "x1_seconds": 61050.0000053691
       }
     ],
-    "reforge_events": [],
+    "reforge_events": [
+      {
+        "file": "save_reforge_1.json",
+        "x1_seconds": 72750.0000046034,
+        "rng": "4551390551225587637",
+        "save_sha256": "9abb01cfa92e64b48d62523f71d2f6f1007f28a195bd7ba7927bc1fde12b825e"
+      },
+      {
+        "file": "save_reforge_2.json",
+        "x1_seconds": 101639.999997877,
+        "rng": "7736309681171105193",
+        "save_sha256": "8784742fdd7d1c7303bc77808f4c9215483dddcff8c6ac33ff41d7ed3e57c04b"
+      }
+    ],
     "latest_heartbeat": {
-      "deaths": 1062,
-      "highest": 36,
-      "stage": 36,
-      "wall_seconds": 8684.925331,
-      "x1_seconds": 92340.0000000422
+      "deaths": 1277,
+      "highest": 41,
+      "stage": 41,
+      "wall_seconds": 12311.850443,
+      "x1_seconds": 121499.999993253
     },
-    "global_acceptance": "pending"
+    "global_acceptance": "pending",
+    "current_health": {
+      "pid": 31460,
+      "SCRIPT_ERROR": 0,
+      "engine_ERROR": 0,
+      "terminal": false,
+      "remaining_estimate_x1_hours": [
+        20,
+        23
+      ],
+      "remaining_estimate_wall_hours": [
+        2,
+        4
+      ],
+      "estimate_qualification": "Estimate based currentthroughput and parentreported endpoint; no guaranteedtermination. No newrun or expandedmatrix."
+    }
   },
   "first_preparation": {
     "utc": "2026-10-03T19:02:01.099794+00:00",
@@ -124,10 +158,10 @@
   },
   "private_zip": {
     "file": "/workspace/independent-sol-high-transport/Independent-Sol-High-Evidence-20261003.zip",
-    "size": 25448310,
-    "sha256": "3b0de3bf7a3ee4bcd24f8da852af02c1625c92840f1751ae60f97fb81f0ece62",
-    "native_head": "1a54ec83b4840f2509fc0f24a5ee300a31b18ffe",
-    "archived_files": 280
+    "size": 25278227,
+    "sha256": "7a9bb78069051164bb987e20567dfadc9e0bb78f9205b49db55341e4fdfc96c0",
+    "native_head": "cdcb4b5a1023eaefe2377d8c91a436a93e0070ea",
+    "archived_files": 287
   },
   "acceptance_update": {
     "recorded_utc": "2026-10-03T17:24:44.500947+00:00",

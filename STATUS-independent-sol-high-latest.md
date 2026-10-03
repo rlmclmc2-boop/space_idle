@@ -1,11 +1,11 @@
 # Independent Sol high own evidence
 
-Updated 2026-10-03 19:04 UTC. Own continuous V29 source b4855e35dae1fcaf476f9949b9280671c57ae67e, seed2026100305, formal PresentedBattleGame/full scene hooks, native MAX scientist/bulk real visit900s (teaching10s). Same running process; no resume or injected profile.
+Updated2026-10-03 20:04UTC. Own continuous V29 source b4855e35dae1fcaf476f9949b9280671c57ae67e, seed2026100305, formal PresentedBattleGame/fullscene/event/muzzle/target hooks, native MAX scientist/bulk realvisit900s(teaching10s). Same originalPID31460, no resume/injectedprofile/newrun.
 
-Own clear10=2.716861h;20=12.812481h;30=15.725361h;35=25.344454h total X1.
-First shipyard construction3h, available4.232972h after30, actual firstforge4.482972h after30 (0.25h policy wait). Cleared31 and32 beforeforge;32clear226.7s after shipyard ready retained as approximate timing qualification.
-Actual postforge34 return0.553630h; firstpostforge35=5.136120h, passes first4–6h target. Earlier preforge34 arrival is separately retained. Logs0SCRIPT ERROR/0engineERROR at19:01; process stillrunning36. Firstgalaxy30activeLv5 GLOBAL acceptance pending.
+Own clear10=2.716861h;20=12.812481h;30=15.725361h;35=25.344454h;40=33.519949h totalX1. Firstforge availability4.232972h after30, actualclick4.482972h;shipyardconstruction3h. Actualpostforge34 return0.553630h;firstpostforge35=5.136120h PASS4–6h. Raw32clear226.7s aftershipyardready retained as approximate qualification.
 
-Latest user1722 allows faster laterreforge cycles; historical latecycle failure labels are superseded. Deadline2026-10-04 03:21 UTC; no new rounds/extension. No numeric/Excel/art/main/middlecandidate edits. Parent results are not our executions.
+20:02 actualheartbeat121139.999993s(33.650h),highest41,1277retreats,0SCRIPT/0engineERROR; process+worker+deadlineguardhealthy. Roughremaining20–23X1h/~2–4wallhours, not guaranteed; global30Lv5pending. Newer20:02:31checkpoint121499.999993s actual41 retainedinJSON. Parent53.258333h completion is parentexecution, not ours.
 
-Private complete native evidence archive updated (version10; raw35/forge/return boundary saves+logs+source verification+old completed cases). ZIP SHA256 3b0de3bf7a3ee4bcd24f8da852af02c1625c92840f1751ae60f97fb81f0ece62; exact own native evidence head 1a54ec83b4840f2509fc0f24a5ee300a31b18ffe. Existing Library identity retained. Public branch contains aggregates; native history in verified private Git bundle. Old V23 fullfresh56.258333h remains separate historical evidence, never spliced into V29.
+Latest1722allows quickerlatercycles. No newruns/expandedmatrix underlatestparentinstruction. Continue untilterminalor2026-10-04 03:21UTC, noextension. No numerical/Excel/art/main/middlecandidate edits.
+
+PrivateLibraryartifactversion11 retains originalthrough40/checkpoints/trajectory/logs/sourceproof +oldcompleteddiagnostics. ZIP SHA256 7a9bb78069051164bb987e20567dfadc9e0bb78f9205b49db55341e4fdfc96c0, own nativehead cdcb4b5a1023eaefe2377d8c91a436a93e0070ea. Publicbranchaggregatesonly;verifiednativebundle inprivateartifact. OldV23 fullfresh56.258333h staysseparate, never spliced intoV29.
