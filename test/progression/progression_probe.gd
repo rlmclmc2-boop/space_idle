@@ -76,7 +76,9 @@ func visit() -> void:
 	policy.act(game,game.simulated_time)
 	var acknowledged: Array=pending.filter(func(id):return not game.pending_unlocks.has(id))
 	if not acknowledged.is_empty():
-		actions += acknowledged.size()
+		for id in acknowledged:
+			actions+=1
+			trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":"acknowledge_unlock","actor":"visit","id":id}))
 		trace.store_line(JSON.stringify({"x1_seconds":game.simulated_time,"kind":"acknowledge_unlocks","count":acknowledged.size(),"ids":acknowledged}))
 	in_visit=false
 	if actions > before:
@@ -99,6 +101,7 @@ func run() -> void:
 	policy.thematic=bool(options.get("thematic",false))
 	policy.allow_reforge=bool(options.get("allow_reforge",true))
 	policy.use_bulk=bool(options.get("bulk",false))
+	if policy.get("unlock_visit_limit")!=null:policy.unlock_visit_limit=1 if bool(options.get("single_unlock_per_visit",false)) else 32
 	if policy.get("scientist_batch_mode")!=null:policy.scientist_batch_mode=bool(options.get("scientist_batch",false))
 	elif bool(options.get("scientist_batch",false)):
 		printerr("Frozen policy does not support scientist-batch assumption");quit(2);return

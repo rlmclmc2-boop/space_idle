@@ -5,6 +5,7 @@ const MAX_PURCHASES := 12
 var strategy := "BALANCED"
 var forced_weapon := ""
 var respect_guard := false
+var unlock_acknowledgements_per_visit := 1
 var random := RandomNumberGenerator.new()
 var last_refit := -60.0
 var unlocked_count := 0
@@ -26,7 +27,9 @@ func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	return value
 
 func act(game: BattleGame, elapsed: float) -> bool:
-	if not game.pending_unlocks.is_empty():game.acknowledge_unlocks()
+	for notification in clampi(unlock_acknowledgements_per_visit,0,32):
+		if game.pending_unlocks.is_empty():break
+		game.acknowledge_unlocks()
 	if game.state == BattleGame.State.MAIN_MENU:game.start(1,false)
 	elif game.state == BattleGame.State.LEVEL_CLEAR and not (respect_guard and game.guarding_here()):game.advance_after_clear()
 	if strategy == "ECONOMY_FIRST":buy_scientist(game,0.5)

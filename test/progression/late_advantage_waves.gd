@@ -12,9 +12,16 @@ func run():
 	var node_text:=OS.get_environment("PROGRESSION_WAVE_NODES")
 	if node_text.is_empty():node_text="9"
 	var rows:Array=[]
+	var weapon_text:=OS.get_environment("PROGRESSION_WAVE_WEAPONS")
+	if weapon_text.is_empty():weapon_text="mixed,longLaser,laser"
+	var weapons:=weapon_text.split(",")
+	for weapon in weapons:assert(weapon=="mixed" or weapon in BattleGame.WEAPON_KEYS)
+	var result_dir:=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
+	if result_dir.is_empty():result_dir="res://.runtime"
+	DirAccess.make_dir_recursive_absolute(result_dir)
 	for node_string in node_text.split(","):
 		var node:int=int(node_string)
-		for weapon in ["mixed","longLaser","laser"]:
+		for weapon in weapons:
 			var g=Game.new(ShipDatabase.new());g.stat_cache_enabled=true;g.simulated_time=float(checkpoint.x1_seconds)
 			var raw:Dictionary=checkpoint.save.duplicate(true);raw.chronoSavedAt=Time.get_unix_time_from_system()
 			g.load_progress_data(raw);g.profile.chronoParticles=float(raw.get("chronoParticles",0));g.login_chrono_particles=0
@@ -37,6 +44,6 @@ func run():
 				if not g.has_alive_enemy():status="win";break
 			var row:Dictionary={"stage":stage,"node":node,"weapon":weapon,"status":status,"seconds":g.simulated_time-began,"seed":1701,"initial":initial,"final_loadout":g.profile.loadout.duplicate(true),"final_hightech":g.profile.hightechLevels.duplicate(true),"rng":str(g.rng.state)}
 			rows.append(row);print("LATE_ADVANTAGE_WAVE ",JSON.stringify(row))
-			FileAccess.open("res://.runtime/late-advantage-waves.json",FileAccess.WRITE).store_string(JSON.stringify({"checkpoint":path,"checkpoint_data":checkpoint.data_sha256,"current_data":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Legal profile cloned into a selected battle point; public weapon refits preserve slot levels; full scene/event hook; no manual upgrades during wave, existing automatic growth retained; diagnostic only, no fresh-run timing claim","rows":rows},"\t"))
+			FileAccess.open(result_dir.path_join("late-advantage-waves.json"),FileAccess.WRITE).store_string(JSON.stringify({"checkpoint":path,"checkpoint_data":checkpoint.data_sha256,"current_data":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Legal profile cloned into a selected battle point; public weapon refits preserve slot levels; full scene/event hook; no manual upgrades during wave, existing automatic growth retained; diagnostic only, no fresh-run timing claim","rows":rows},"\t"))
 			driver.close();await process_frame
 	quit()

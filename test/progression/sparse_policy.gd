@@ -1,6 +1,7 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v9-building-crew-reallocation"
+const VERSION="sparse-v10-bounded-unlock-visit"
+var unlock_visit_limit := 32
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
@@ -23,6 +24,12 @@ func module_sum(g) -> int:
 	for category in ["weapons","defence"]:
 		for entry in g.loadout_entries(category):total+=int(entry.level)
 	return total
+func acknowledge_pending_in_visit(g:BattleGame)->int:
+	var count:=0
+	for notification in clampi(unlock_visit_limit,1,32):
+		if g.pending_unlocks.is_empty():break
+		g.acknowledge_unlocks();count+=1
+	return count
 func preferred(stage: int) -> String:
 	return {1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(stage,"")
 func manual_upgrade_sweep(g,levels:int)->bool:
@@ -73,6 +80,13 @@ func buy_scientist(g:BattleGame,fraction:float)->void:
 			record(g,"scientist_batch",{"amount":10,"reserve_fraction":fraction});return
 	super.buy_scientist(g,fraction)
 func act(g: BattleGame, elapsed: float) -> bool:
+	# One visit may read several already queued notifications, each via the
+	# actual one-page API. Legacy limit1 keeps the old act ordering exactly.
+	unlock_acknowledgements_per_visit=1
+	if unlock_visit_limit>1:
+		var count:=acknowledge_pending_in_visit(g)
+		unlock_acknowledgements_per_visit=0
+		if count>0:record(g,"notification_visit_batch",{"acknowledged":count,"limit":32,"remaining":g.pending_unlocks.size(),"assumption":"several real confirmations during the same actual visit"})
 	if int(g.profile.highestLevel)>furthest:
 		furthest=int(g.profile.highestLevel);deaths_seen=int(g.metrics.deaths)
 	if recovering and g.profile.cleared.has(recovery_end_stage):recovering=false
