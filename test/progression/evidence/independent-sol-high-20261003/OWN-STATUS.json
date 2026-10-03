@@ -32,10 +32,10 @@
     },
     "input_rng_state": "7064421032684940846",
     "start_x1_seconds": 0,
-    "end_x1_seconds": 40980.0000012803,
-    "elapsed_hours": 11.383333333688972,
-    "stage_or_highest": 20,
-    "deaths": 494,
+    "end_x1_seconds": 50400.0000031994,
+    "elapsed_hours": 14.000000000888722,
+    "stage_or_highest": 22,
+    "deaths": 551,
     "process_exit": null,
     "log_errors": {
       "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
@@ -52,7 +52,8 @@
     "status": "running or partial; no completion claim",
     "own_clear_milestones_x1_seconds": {
       "5": 744.016666666319,
-      "10": 9780.71666660849
+      "10": 9780.71666660849,
+      "20": 46160.6666690024
     },
     "reforges": [],
     "first_galaxy_end_state": {
@@ -99,10 +100,10 @@
     },
     "input_rng_state": "7315605390541974786",
     "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 69713.4500053104,
-    "elapsed_hours": 5.500000000613917,
+    "end_x1_seconds": 79313.4500030752,
+    "elapsed_hours": 8.166666666659694,
     "stage_or_highest": 34,
-    "deaths": 29,
+    "deaths": 33,
     "process_exit": null,
     "log_errors": {
       "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
@@ -157,10 +158,10 @@
     },
     "input_rng_state": "7315605390541974786",
     "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 54473.4500040293,
-    "elapsed_hours": 1.2666666669247226,
+    "end_x1_seconds": 64553.4500060829,
+    "elapsed_hours": 4.066666667495168,
     "stage_or_highest": 34,
-    "deaths": 6,
+    "deaths": 15,
     "process_exit": null,
     "log_errors": {
       "own-supplied34-v23-beam-allarmour-max300-noforge12h-run.log": {

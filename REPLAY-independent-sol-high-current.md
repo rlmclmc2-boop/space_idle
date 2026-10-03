@@ -4,11 +4,14 @@ Own evidence of the second independent Sol high task; no main or middle candidat
 Git CLI authentication failed after 5a533527ceeb62f785ef09e7ce284728963dc5f8; connected GitHub API carries subsequent native commits.
 The own fresh run and two matched strong34 Godot diagnostics keep their frozen packages. This is partial evidence, not an all-max or twelve-hour pass.
 
-Bundle: test/progression/deliverables/independent-sol-high-current.bundle.base64.
-Base64-decode; binary 531237 bytes; SHA256 5bb30e29cd5630092654731ca5ff5f9b973ac8978ade641d494ce18bf8aeff0e.
+Bundle is now split into these exact three files:
+- test/progression/deliverables/independent-sol-high-current.bundle.base64.part1
+- test/progression/deliverables/independent-sol-high-current.bundle.base64.part2
+- test/progression/deliverables/independent-sol-high-current.bundle.base64.part3
+Concatenate in listed order without adding characters, then base64-decode; binary 884935 bytes; SHA256 4017213a540accad9723653cdf2dbc8159836584694e3f6a9c61800e41ae1a7b.
 Prerequisite: 5a533527ceeb62f785ef09e7ce284728963dc5f8, present in this branch history.
 Run git bundle verify, then fetch refs/heads/qa/independent-sol-high-20261003 into your own new QA ref/worktree.
-Exact transported native head: 1f98c8dee4ac3da05081bee03de8d21d6e7b1dfa. API carrier head differs from native bundled head.
+Exact transported native head: 1df3a6b659268188f5c677987e9b955652c6027b. API carrier head differs from native bundled head.
 
 Read test/progression/evidence/independent-sol-high-20261003/OWN-STATUS.json, per-run run.json/archive.json, native saves and actions.jsonl.gz.
 Fresh source1d8dc45b6346f0d18dfa5ed993fa046a64525fd0; full-scene fingerprint918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd.
@@ -26,3 +29,5 @@ Seven energy impacts request raw2.0405755839901725e28 before own HP damage. This
 No same-input causality claim between different profiles. No numerical configuration/art edit; no V24/V25 in either running package.
 
 Matched additional strong34 label: own-supplied34-v23-beam-allarmour-max300-noforge12h. Same source07fd45e/package825d923/supplied34/saved RNG/beam/MAX300, only fixed defence changes to3armour. Successfully imported immutable package marker checked; direct Presented progression_probe with isolated own user directories, no repeated editor import. Command/options and raw traces saved separately. All three runs unfinished in this transport.
+
+Own frozen fresh20 completed at46160.6666690024 X1 seconds; saved battle RNG-5234037621064864386. Included raw save_20.json and action/log archives. Node time matches separately reported parent's1d8 and oldd9; that comparison is not a claim of parent raw signature verification. Scope validation covers48 incremental commits, every changed file version within this task-created evidence folder and decompressed traces, zero credential-pattern findings. Repository is verified selected origin/public repo with connected push permission.
