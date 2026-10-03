@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "all_shield_equip_allowed": true,
+      "armour": 0.0,
+      "feedback": "装甲生命为0，无法战斗。请装备装甲后重试。",
+      "shield": 6.236478753781788e+27,
+      "start_allowed": false,
+      "weapon": "mixed"
+    },
+    {
+      "all_shield_equip_allowed": true,
+      "armour": 0.0,
+      "feedback": "装甲生命为0，无法战斗。请装备装甲后重试。",
+      "shield": 6.236478753781788e+27,
+      "start_allowed": false,
+      "weapon": "laser"
+    },
+    {
+      "all_shield_equip_allowed": true,
+      "armour": 0.0,
+      "feedback": "装甲生命为0，无法战斗。请装备装甲后重试。",
+      "shield": 6.236478753781788e+27,
+      "start_allowed": false,
+      "weapon": "missile"
+    },
+    {
+      "all_shield_equip_allowed": true,
+      "armour": 0.0,
+      "feedback": "装甲生命为0，无法战斗。请装备装甲后重试。",
+      "shield": 6.236478753781788e+27,
+      "start_allowed": false,
+      "weapon": "cannon"
+    },
+    {
+      "all_shield_equip_allowed": true,
+      "armour": 0.0,
+      "feedback": "装甲生命为0，无法战斗。请装备装甲后重试。",
+      "shield": 6.236478753781788e+27,
+      "start_allowed": false,
+      "weapon": "longLaser"
+    },
+    {
+      "no_combat_or_clear_while_zero_hp": true,
+      "one_native_retreat": true,
+      "public_armour_refit_restart": true,
+      "scope": "live last-armour refit"
+    }
+  ],
+  "checkpoint": "/workspace/space_idle/test/work/formal-v51-v22-prep-v10/results/v22-preparation30-to34-MAX-v10/save_32.json",
+  "pass": true,
+  "scope": "Native public refits/start; full-shield layout remains selectable, zero life cannot fight; no injected HP/resources/immunity. Existing crew automation during2s retreat retained.",
+  "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
+  "package_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd"
+}
