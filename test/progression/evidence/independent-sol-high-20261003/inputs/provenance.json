@@ -1,0 +1,11 @@
+{
+  "source_commit": "78f547ab3d3d8e7f709db4f07a47096fbd446c64",
+  "source_path": "test/progression/evidence/v22-preparation33-priority-stop/save_32.json",
+  "file_sha256": "e60229fdc000b3054171c38886defd157cc81312954984d19977c5e3c574a232",
+  "bundle_sha256": "8d724cad08713e7227cc0a773a0f73feaa929c91e8ce2feec0cc7fed05754c77",
+  "x1_seconds": 57212.1833379206,
+  "input_data_sha256": "600bdb8c8fef41bdb8da2a671f88d4acf2ed749cef65799c5bf86c006820dfd7",
+  "input_code_fingerprint": "b5f212d62d21f3e14ed2e826264ce55974cfc3c831f7cfa67a31df297394e85f",
+  "rng_state": "-869109424522807834",
+  "classification": "Supplied legal checkpoint; independent rerun diagnostic across source/policy versions; never part of own fresh acceptance"
+}
