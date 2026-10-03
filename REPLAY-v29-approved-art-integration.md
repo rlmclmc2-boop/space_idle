@@ -22,7 +22,7 @@ Existing native provider trace: entire output identical across packages, includi
 
 Stronger external native15slot probe: nativeX1 andnativeX10 each360logicaltick signatures/1301provider calls/finalstate exact across frozen and integrated. Covers15alive enemies,7dead, slot14,34projectiles,9queuedshots. No target provider call to an already-dead entity observed (do not invent such coverage). Candidate cleanup removes stale deadpose caches max7→0; expected presentation difference, not combat divergence. Explicit recognition projection audits4734+470=5204 leave full combat/resources/RNG state unchanged. Actual launch/mount/target vectors, projectile/queue contents and timing hashes identical.
 
-Same genuine freshclear20 checkpoint, preserved levels/public refits: all4fullwave rows exact across packages, including incoming hits, outgoingdamage, RNG, projectile-settled result and times. Beam60.4500000123s, laser119.6500000244s, missile141.2000000288s, cannon102.2166666875s. Beam remains0.45s above nominal60; no numeric edit. Zero-armour public equip/start/live retreat/recovery cases pass integrated candidate.
+Same genuine freshclear20 checkpoint, preserved levels/public refits: all4fullwave rows exact across packages, including incoming hits, outgoingdamage, RNG, outcome and times. Beam60.4500000123s, laser119.6500000244s, missile141.2000000288s, cannon102.2166666875s. Beam remains0.45s above nominal60; no numeric edit. Zero-armour public equip/start/live retreat/recovery cases pass integrated candidate.
 
 Actual unchanged approved renderer test:112checks/0failures/103realframes, ordinary actual scene on OpenGL4.5 Mesa llvmpipe, temporary Xvfb. Confirms geometry/paused/recovery/hit/death/15slotcleanup and renderer leaves game/RNG unchanged. Controlled in-memory encounter/profile, not fullfresh screenshots or device performance benchmark.
 
@@ -34,7 +34,7 @@ python test/progression/build_qa.py --scene --output /absolute/new-package
 CHRONO_EXPECT_EQ=1 python test/progression/run_entry.py --project /absolute/new-package --entry res://qa/native_chrono_provider_trace.gd --label unique-provider --timeout 900
 python test/progression/run_entry.py --project /absolute/new-package --entry /absolute/evidence-source/test/progression/evidence/v29-approved-art-integration/integration_scene_trace.gd --label unique-native15 --skip-import --timeout 1200
 ```
-Use the SAME standalone probe bytes on frozen and integrated packages. Compare native15 result `cases[i].ticks`, `.calls`, `.final` exactly; cache observations/projection audit counts intentionally differ. Probe content hash is in both raw results and manifest. Nothing changes running fullfresh package. Source evidence lives belowevidence, so building evidence9f93 instead30d46 produces same798file fingerprint.
+Use the SAME standalone probe bytes on frozen and integrated packages. Compare native15 result `cases[i].ticks`, `.calls`, `.final` exactly; cache observations/projection audit counts intentionally differ. Probe content hash is in both raw results and the evidence SHA manifest. Nothing changes running fullfresh package. Source evidence lives belowevidence, so building evidence9f93 instead30d46 produces same798file fingerprint.
 
 Realcheckpoint wave:
 ```
