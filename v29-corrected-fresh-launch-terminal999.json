@@ -1,0 +1,39 @@
+{
+  "utc": "2026-10-03T15:23:22.375042+00:00",
+  "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+  "initial_state": "fresh",
+  "options": {
+    "allow_reforge": true,
+    "allow_version_change": false,
+    "bulk": true,
+    "duration": 216000.0,
+    "engine": "formal",
+    "fixed_farm_stage": 0.0,
+    "fixed_weapon": "",
+    "fixed_weapon_from_stage": 0.0,
+    "label": "v29-frozen-fresh-MAX900-thematic-terminal999-allmax",
+    "later_preparation_stages": 3.0,
+    "resume": "",
+    "scene": true,
+    "scientist_batch": false,
+    "scientist_max": true,
+    "seed": 2026100304.0,
+    "single_unlock_per_visit": false,
+    "stop_clear": 999.0,
+    "stop_galaxy": true,
+    "stop_reach": 0.0,
+    "strategy": "BALANCED",
+    "teaching_seconds": 10.0,
+    "thematic": true,
+    "ui_refresh_seconds": 1.0,
+    "visit_seconds": 900.0
+  },
+  "fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+  "heartbeat": {
+    "deaths": 47,
+    "highest": 7,
+    "stage": 7,
+    "wall_seconds": 564.240276,
+    "x1_seconds": 5160.00000000906
+  }
+}
