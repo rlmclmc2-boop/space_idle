@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-03T16:43:36.726972+00:00",
+  "scope": "Own V29 seed2026100305 sameversion fresh sensitivity. Active/pending; cannot replace old1d8 complete result or claim globalpass. No resume/patch/code or numeric insertion.",
+  "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+  "preimport_fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+  "postimport_runtime_fingerprint": "642e78f827fa3e69237b14cea1b57f00e83701c73a3e04bc4e80699aa336b9a0",
+  "checked_files": 764,
+  "data_sha256": "eb9dba486b24b3441b329062f598fa80915513d8c45595d5df6dfaaabbffbd6f",
+  "classified_glb_import_normalization_count": 16,
+  "unclassified_changes": [],
+  "code_and_numeric_frozen_verified": true,
+  "godot_pid": 31460,
+  "runner_pid": 31221,
+  "heartbeat": {
+    "deaths": 63,
+    "highest": 7,
+    "stage": 7,
+    "wall_seconds": 381.120275,
+    "x1_seconds": 5999.99999999684
+  },
+  "initial_rng": "4239956699905930447",
+  "errors": {
+    "import": {
+      "script_errors": 0,
+      "engine_errors": 0
+    },
+    "run": {
+      "script_errors": 0,
+      "engine_errors": 0
+    }
+  },
+  "clear5_x1": 744.016666666319,
+  "raw_persistence": "Own local native QA branch,180s and milestone saves; old1d8v6complete kept. Next combinedprivatev7preparing; no publicrawretry."
+}
