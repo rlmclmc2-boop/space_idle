@@ -1,242 +1,129 @@
 {
-  "milestones": {
-    "utc": "2026-10-03T21:39:27.127170+00:00",
-    "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
-    "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-    "milestones": {
-      "5": {
-        "x1_seconds": 744.016666666319,
-        "hours": 0.2066712962961997,
-        "rng": "9020444621043946701",
-        "save_sha256": "48abaed8fb011ebc057e5e494bf63259426d14e6ff7ac8a5a4390dcdb607e909"
+  "v29_stopped_partial": {
+    "utc": "2026-10-03T22:13:47.294957+00:00",
+    "scope": "Own V29 seed2026100305 originally uninterrupted native fresh until parentexplicitearlystop22:11:54. Controlled termination and PARTIAL proof only, no newrun/resume/restart/tail splice and no firstgalaxyallmax/globalpass claim.",
+    "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+    "engine": "4.6.3.stable.official.7d41c59c4",
+    "preimport_scene_fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+    "postimport_runtime_fingerprint": "642e78f827fa3e69237b14cea1b57f00e83701c73a3e04bc4e80699aa336b9a0",
+    "runtime_matches_initial": true,
+    "data_sha256": "eb9dba486b24b3441b329062f598fa80915513d8c45595d5df6dfaaabbffbd6f",
+    "original_godot_pid": 31460,
+    "stop_request": {
+      "utc": "2026-10-03T22:11:54.604282+00:00",
+      "reason": "Explicit parent earlyclose instruction: terminate original run at currentnativeboundary; no fresh restart/resume/tail splicing.",
+      "signal": "SIGTERM",
+      "exact_pid": 31460,
+      "actual_cmdline": "godot --headless --path /workspace/independent-sol-high-v29-seed0305-qa --script qa/progression_probe.gd ",
+      "pre_signal_process": "    PID     ELAPSED %CPU   RSS COMMAND\n  31460    05:34:45  100 847452 godot --headless --path /workspace/independent-sol-high-v29-seed0305-qa --script qa/progression_probe.gd\n",
+      "last_native_heartbeat_before_signal": {
+        "deaths": 1876,
+        "highest": 61,
+        "stage": 60,
+        "wall_seconds": 20076.107657,
+        "x1_seconds": 183539.999978808
       },
-      "10": {
-        "x1_seconds": 9780.69999994182,
-        "hours": 2.71686111109495,
-        "rng": "-7558366899358837669",
-        "save_sha256": "813a73119ab7dcbf7b427e7774228844da137aa1e064cd13d6edb8ee48e9b1b0"
-      },
-      "20": {
-        "x1_seconds": 46124.9333356618,
-        "hours": 12.812481482128279,
-        "rng": "-1572605078882353459",
-        "save_sha256": "bacf0f3d73ebe34b6b4d0642cb664291ca8454c49166c2839e63eccd08660ef3"
-      },
-      "30": {
-        "x1_seconds": 56611.3000044648,
-        "hours": 15.725361112351333,
-        "rng": "545482741041983987",
-        "save_sha256": "486b2a99a8553fc9c7e38043b3bfa96acedf34a0c0476f31089334c00564d015"
-      },
-      "35": {
-        "x1_seconds": 91240.0333336317,
-        "hours": 25.344453703786584,
-        "rng": "-458448518410110119",
-        "save_sha256": "69e6b2b0b670a4d35b97a306cfc0007b355f7149d9db2843aec48b437cf5b303"
-      },
-      "40": {
-        "x1_seconds": 120671.816660112,
-        "hours": 33.51994907225333,
-        "rng": "8265442845096587607",
-        "save_sha256": "cc94d8d99d2a41e46e0da9362cf589ddc81a8fb941cc0e65994361a415ff0110"
-      },
-      "45": {
-        "x1_seconds": 136975.666656316,
-        "hours": 38.04879629342111,
-        "rng": "-7172809706787049873",
-        "save_sha256": "9e8cddc742f6373fb3822fa378789953bf03af82cfca8bb4b3890a2cae82a56b"
-      },
-      "50": {
-        "x1_seconds": 150325.116653208,
-        "hours": 41.75697684811334,
-        "rng": "-6108671114347814361",
-        "save_sha256": "6a2370ff2aeb4221d666e3f54b1e031e943c543e3a197587d3d9828f8190d6f4"
-      },
-      "55": {
-        "x1_seconds": 161282.34998399,
-        "hours": 44.800652773330555,
-        "rng": "3434044622128688313",
-        "save_sha256": "e03f1d4ea5f3a841e31d2309c4424173eb0c1967000ed2120358b69f36ef796f"
-      },
-      "60": {
-        "x1_seconds": 167488.433315879,
-        "hours": 46.524564809966385,
-        "rng": "-8981544298734564755",
-        "save_sha256": "b4c57a4fb3e9d8c75c27e4a6a8c8c68532f171197f36218cfcbbc85236dd7c42"
-      }
+      "native_save_end_before_signal": false,
+      "native_summary_before_signal": false
     },
-    "firstshipyard_events": [
-      {
-        "kind": "assign_builder",
-        "payload": {
-          "building": "shipyard",
-          "crew": "engineer",
-          "planet": "1"
-        },
-        "stage": 31,
-        "x1_seconds": 61050.0000053691
-      }
-    ],
-    "reforge_events": [
-      {
-        "file": "save_reforge_1.json",
-        "x1_seconds": 72750.0000046034,
-        "rng": "4551390551225587637",
-        "save_sha256": "9abb01cfa92e64b48d62523f71d2f6f1007f28a195bd7ba7927bc1fde12b825e"
-      },
-      {
-        "file": "save_reforge_2.json",
-        "x1_seconds": 101639.999997877,
-        "rng": "7736309681171105193",
-        "save_sha256": "8784742fdd7d1c7303bc77808f4c9215483dddcff8c6ac33ff41d7ed3e57c04b"
-      },
-      {
-        "file": "save_reforge_3.json",
-        "x1_seconds": 128639.99999159,
-        "rng": "-5662185679321586305",
-        "save_sha256": "06871af889f9f279fd0f6222d3d787df9ba7584143a71ae895a2281cd5e4da50"
-      },
-      {
-        "file": "save_reforge_4.json",
-        "x1_seconds": 144839.999987819,
-        "rng": "2875372135059321281",
-        "save_sha256": "6eb2382b8896b0f35468f48504776c2d3355260b7a049cba89c3a350ea9c50a9"
-      },
-      {
-        "file": "save_reforge_5.json",
-        "x1_seconds": 158339.999984675,
-        "rng": "8177650187440758619",
-        "save_sha256": "e0ed71b3e2b5c9ad0b1977cb4b9ca271bfc07e2f1caef5f2b9eff3f9aa627080"
-      }
-    ],
-    "latest_heartbeat": {
-      "deaths": 1750,
+    "confirmed_original_process_absent": true,
+    "supervisor_exit": {
+      "exit_code": 1,
+      "ended_utc": "2026-10-03T22:11:54.695119+00:00"
+    },
+    "exit_qualification": "OriginalGodot receivedrequestedSIGTERM andisabsent; outerQA runner/supervisorreturned1 dueexternaltermination. Not successfulnaturalcompletion/exit0. Nativecode-specificexitstatusnotcaptured by supervisor.",
+    "disconnect_qualification": "Parentreporteddisconnectnotice2154, but our2155,2200and2211 tool/file/nativePIDchecks successful andoriginalPIDuptimecontinued. No nativeprocessrestart or resumedsegment observed. Causeofparentnoticeunknown.",
+    "last_native_heartbeat": {
+      "deaths": 1876,
       "highest": 61,
       "stage": 60,
-      "wall_seconds": 18126.916837,
-      "x1_seconds": 168599.999982287
+      "wall_seconds": 20076.107657,
+      "x1_seconds": 183539.999978808
     },
-    "global_acceptance": "pending",
-    "errors_to_date": {
-      "SCRIPT_ERROR": 0,
-      "engine_ERROR": 0
-    }
-  },
-  "first_preparation": {
-    "utc": "2026-10-03T19:02:01.099794+00:00",
-    "scope": "Own V29 seed0305 continuous sameversion fresh native firstpreparation. No injected profiles. Laterdecreasing cycles permitted; observe firstrecovery endpoints separately.",
-    "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-    "clear30_x1": 56611.3000044648,
-    "shipyard_assign_event": {
-      "kind": "assign_builder",
-      "payload": {
-        "building": "shipyard",
-        "crew": "engineer",
-        "planet": "1"
+    "max_original_flushed_trace_x1": 183587.08331213,
+    "last_trace_time_is_not_a_saved_final_state": true,
+    "original_trace_rows": 296240,
+    "native_script_errors": 0,
+    "native_engine_errors": 0,
+    "native_summary_exists": false,
+    "native_save_end_exists": false,
+    "native_allmax_snapshot_exists": false,
+    "global50to60_firstgalaxy_all30level5": "NOT_COMPLETED",
+    "latest_original_serialized_checkpoint": {
+      "file": "save_reforge_clear_6.json",
+      "sha256": "839093eebf749b884b9ab61fdbf22ba9559cf2a62b40f7d03ef78dec30e5619c",
+      "x1_seconds": 178200.916646718,
+      "rng": "-8225139626180265687",
+      "galaxy_status": "developing",
+      "slots": 30,
+      "level_counts": {
+        "1": 7,
+        "2": 15,
+        "3": 4,
+        "4": 2,
+        "5": 2
       },
-      "stage": 31,
-      "x1_seconds": 61050.0000053691
-    },
-    "shipyard_ready_event": {
-      "kind": "activate_building",
-      "payload": {
-        "building": "shipyard",
-        "planet": "1"
+      "slot_status_counts": {
+        "active": 28,
+        "upgrading": 2
       },
-      "stage": 32,
-      "x1_seconds": 71850.0000048129
+      "qualification": "Nativecapturedstate at178200.916647s, not buildingsstate at laterstop. Do not extrapolate allmax."
     },
-    "construction_hours": 2.999999999845501,
-    "available_after_clear30_hours": 4.232972222318917,
-    "clear31": 63123.9666724583,
-    "clear32": 72076.7000047601,
-    "clear32_after_shipyard_ready_seconds": 226.69999994720274,
-    "qualification_buildwindow": "Native32clear is~226.7s aftershipyardready, report rawtiming without declaring automatic failure for fewminutes under approximate preparation target. Both31/32cleared beforeactualforge.",
-    "actual_first_reforge": 72750.0000046034,
-    "actual_first_reforge_rng": "4551390551225587637",
-    "actual_prep_after_clear30_hours": 4.482972222260721,
-    "strategy_delay_after_available_hours": 0.24999999994180447,
-    "preforge_first_arrival34_x1": 72241.2000047218,
-    "preforge_arrival34_rng": "7262613457697795877",
-    "preforge_arrival34_planet1_conquered": false,
-    "reach34_save_sha256": "db55e9cc0a996fa5e29f9333b043b2433e46afd070b01fb8f58725aaab904e34",
-    "postforge_return34": {
-      "x1_seconds": 74743.066670806,
-      "hours_after_first_reforge": 0.5536296295007237,
-      "rng": "7223379246571350605",
-      "not_the_earlier_preforge_arrival": true
+    "native_clear60_proof": {
+      "utc": "2026-10-03T21:39:27.127170+00:00",
+      "scope": "Own continuous V29 seed0305 actualclear60 previsit snapshot + next genuinevisit native events. Lockedatprevisit is pendingnotification, not extraconguest gate. Allocation requiresrecalledactualcrew; no injected people. Finalall30Lv5stillpending.",
+      "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+      "clear60_x1": 167488.433315879,
+      "clear60_rng": "-8981544298734564755",
+      "clear60_save_sha256": "b4c57a4fb3e9d8c75c27e4a6a8c8c68532f171197f36218cfcbbc85236dd7c42",
+      "previsit_galaxy_status": "locked",
+      "planet6_conquered_at_clear60": false,
+      "first_actual_galaxy_visit_x1": 168239.99998237,
+      "real_allocated_crew_ids": [
+        "crew_04",
+        "crew_05",
+        "crew_06",
+        "engineer",
+        "navigator",
+        "researcher"
+      ],
+      "sixth_reforge_not_yet_observed": true
     },
-    "postforge_clear35": {
-      "x1_seconds": 91240.0333336317,
-      "hours_after_first_reforge": 5.136120369174528,
-      "rng": "-458448518410110119",
-      "save_sha256": "69e6b2b0b670a4d35b97a306cfc0007b355f7149d9db2843aec48b437cf5b303",
-      "first_4_to_6_hours": true
+    "first_preparation": {
+      "construction_hours": 2.999999999845501,
+      "available_after_clear30_hours": 4.232972222318917,
+      "actual_prep_after_clear30_hours": 4.482972222260721,
+      "strategy_delay_after_available_hours": 0.24999999994180447,
+      "postforge_return34": {
+        "x1_seconds": 74743.066670806,
+        "hours_after_first_reforge": 0.5536296295007237,
+        "rng": "7223379246571350605",
+        "not_the_earlier_preforge_arrival": true
+      },
+      "postforge_clear35": {
+        "x1_seconds": 91240.0333336317,
+        "hours_after_first_reforge": 5.136120369174528,
+        "rng": "-458448518410110119",
+        "save_sha256": "69e6b2b0b670a4d35b97a306cfc0007b355f7149d9db2843aec48b437cf5b303",
+        "first_4_to_6_hours": true
+      }
     },
-    "global_acceptance": "pending",
-    "heartbeat": {
-      "deaths": 1062,
-      "highest": 36,
-      "stage": 36,
-      "wall_seconds": 8684.925331,
-      "x1_seconds": 92340.0000000422
-    },
-    "postforge_clear34_wall": {
-      "x1_seconds": 77644.1500034639,
-      "rng": "-8049604080888513847",
-      "save_sha256": "64cb5960de85c5af8f768f37a95a013e0ad629cb571b79139d0ee48a6988de54"
-    }
-  },
-  "direct_galaxy": {
-    "utc": "2026-10-03T21:39:27.127170+00:00",
-    "scope": "Own continuous V29 seed0305 actualclear60 previsit snapshot + next genuinevisit native events. Lockedatprevisit is pendingnotification, not extraconguest gate. Allocation requiresrecalledactualcrew; no injected people. Finalall30Lv5stillpending.",
-    "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-    "clear60_x1": 167488.433315879,
-    "clear60_rng": "-8981544298734564755",
-    "clear60_save_sha256": "b4c57a4fb3e9d8c75c27e4a6a8c8c68532f171197f36218cfcbbc85236dd7c42",
-    "previsit_galaxy_status": "locked",
-    "planet6_conquered_at_clear60": false,
-    "first_actual_galaxy_visit_x1": 168239.99998237,
-    "real_allocated_crew_ids": [
-      "crew_04",
-      "crew_05",
-      "crew_06",
-      "engineer",
-      "navigator",
-      "researcher"
-    ],
-    "sixth_reforge_not_yet_observed": true
+    "code_excel_data_art_mutation": false,
+    "main_merge": false,
+    "parent_requested_no_additional_run_or_wait": true
   },
   "private_zip": {
     "file": "/workspace/independent-sol-high-transport/Independent-Sol-High-Evidence-20261003.zip",
-    "size": 36001802,
-    "sha256": "326123bf7b12b5622b1c733f471ba8d89aed2d40fd133b82fa2e07ba7dde4869",
-    "native_head": "7995cfe6a55e12796239f876ffb8ad2bc176aab5",
-    "archived_files": 311
+    "size": 37536523,
+    "sha256": "4982b28bdadc300e83cf913dbebaa9651e5e331c48a2169e790b9e72b7775109",
+    "native_head": "463a3920d0681ef6e57e401c265f6076afd644db",
+    "archived_files": 324
   },
-  "acceptance_update": {
-    "recorded_utc": "2026-10-03T17:24:44.500947+00:00",
-    "user_authority": "Parent relayed user17:21/17:22: later reforges may get quicker; maximum10h finishwindow, discuss gaps atnextreport ratherthan extend.",
-    "supersedes": "Later45/50/55 declining postforge times alone are NOT failure; preserved historicaloldreports retain originalcriteria context.",
-    "still_required": [
-      "firstreforge return34<=2h",
-      "firstpostforgeclear35 4–6h",
-      "no-reforge34>=12h under reasonable strongstrategies, nohardlock",
-      "preparation about4h",
-      "sameversionfresh firstgalaxy30activeLv5 global50–60h",
-      "no realblocking/anomalies"
-    ],
-    "frozen_source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-    "only_active_fresh_seed": 2026100305,
-    "last_allowed_work_utc": "2026-10-04T03:21:00+00:00",
-    "no_new_tuning_to_enforce_constant_later_cycles": true,
-    "no_main_merge": true,
-    "latest_native_heartbeat": {
-      "deaths": 434,
-      "highest": 19,
-      "stage": 19,
-      "wall_seconds": 2845.60957,
-      "x1_seconds": 38460.0000007669
-    }
+  "native_bundle": {
+    "native_head": "463a3920d0681ef6e57e401c265f6076afd644db",
+    "required_base": "5a533527ceeb62f785ef09e7ce284728963dc5f8",
+    "bytes": 25451494,
+    "sha256": "9002d3f8f5408e11286bfcdc28fad8712c1431017390f9cb7f6657d6e0664c7a",
+    "ref": "refs/heads/qa/independent-sol-high-20261003"
   }
 }
