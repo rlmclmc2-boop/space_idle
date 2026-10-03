@@ -1,11 +1,11 @@
 {
-  "captured_utc": "2026-10-03T10:14:31.757550+00:00",
+  "captured_utc": "2026-10-03T10:17:37.177541+00:00",
   "own_run": true,
   "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
   "scope": "Own raw run evidence; use run.json initial_state to distinguish fresh from checkpoint diagnostics; partial until summary and exit recorded",
   "files": {
     "heartbeat.json": {
-      "sha256": "39a372f1c828ffebd89ddc7ba059e70849a0e014fb73fa998d18eeaf6aae81d6",
+      "sha256": "be79ba9ee4f53eace3fc696c6cf68d1cb32dcca35b7b43b60f268813a96f3858",
       "bytes": 111
     },
     "run.json": {
@@ -25,9 +25,9 @@
       "bytes": 47812
     },
     "actions.jsonl": {
-      "sha256": "697ce9d999584145243227a991f5119f480403912828b743f4e9506f1329a16f",
-      "bytes": 1346731,
-      "gzip_bytes": 79507
+      "sha256": "ee759bffee27c6f34c2a9a46d69938d3c2378a3b3dc11a1aed68125702a78e75",
+      "bytes": 1622537,
+      "gzip_bytes": 93710
     },
     "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
       "sha256": "5d4e9ddd95039110b28cb3710c5301b0ac00fe87c018ba83230d612431a2e4bc",
@@ -35,9 +35,9 @@
       "gzip_bytes": 5070
     },
     "own-fresh-v23-fixed-zero-armour-max900-allmax-run.log": {
-      "sha256": "b104e7be17c63a0e26a6600bdb64ebea4693e15b5a533d414fb38ee4c602e287",
-      "bytes": 2212,
-      "gzip_bytes": 556
+      "sha256": "227f2b1c1104bc8aa3796197eaf00fe07d25201592a21097426ef6efc02b4e98",
+      "bytes": 2486,
+      "gzip_bytes": 609
     }
   },
   "log_errors": {
