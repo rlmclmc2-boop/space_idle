@@ -12419,5 +12419,13 @@
     "source": "planet_panel.gd",
     "text": "本次永久收益：\n{rewards}\n新星球仍需满足对应关卡的解锁条件。",
     "params": "{rewards}"
+  },
+  {
+    "key": "battle.zero_armour",
+    "text": "装甲生命为0，无法战斗。请装备装甲后重试。",
+    "deleted": false,
+    "params": "",
+    "category": "battle",
+    "note": "装甲是现有生命池；零生命配置仍可编辑，但不能战斗"
   }
 ]

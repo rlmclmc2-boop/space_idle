@@ -742,6 +742,11 @@ func apply_refit_health() -> void:
 	sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	enhancement_branches.reconcile(self)
+	# Armour is the existing life pool. An allowed zero-armour refit must
+	# resolve death, rather than make hostile projectiles ignore a live ship.
+	if state in [State.TRAVEL,State.COMBAT,State.LEVEL_CLEAR] and N.compare(player.get("armour",0),0)<=0:
+		begin_retreat()
+		event.emit("battle_blocked",{"reason":"zero_armour"})
 
 func invalidate_module_attack(index: int) -> void:
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
@@ -1767,6 +1772,9 @@ func next_stage() -> int:
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if level < 1 or level > int(profile.highestLevel):
 		return false
+	if N.compare(stat("armour"),0)<=0:
+		event.emit("battle_blocked",{"reason":"zero_armour"})
+		return false
 	settle_drops()
 	stage = level
 	distance = 0
@@ -1810,7 +1818,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	return true
 
 func is_active() -> bool:
-	return state in [State.TRAVEL, State.COMBAT]
+	return state in [State.TRAVEL, State.COMBAT] and N.compare(player.get("armour",0),0)>0
 
 func ratio(kind: String) -> float:
 	return db.ratio(stage, maxi(0, group_index - 1), kind)
@@ -2420,6 +2428,11 @@ func tick(dt: float) -> void:
 		if retreat_elapsed >= duration:
 			distance = retreat_target
 			reset_player()
+			if N.compare(player.armour,0)<=0:
+				change_state(State.LEVEL_SELECT)
+				event.emit("battle_blocked",{"reason":"zero_armour"})
+				save_dirty=true
+				return
 			change_state(State.TRAVEL)
 			if profile.loop and int(profile.get("guardDeath", 0)) == 2:
 				guard_index = mini(group_index, db.levels[stage-1].groups.size()-1)

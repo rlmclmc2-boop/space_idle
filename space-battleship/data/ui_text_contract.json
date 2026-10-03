@@ -6603,6 +6603,9 @@
       "params": [
         "rewards"
       ]
+    },
+    "battle.zero_armour": {
+      "params": []
     }
   },
   "bindings": {

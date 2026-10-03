@@ -642,6 +642,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			for slot in info.get("slots",[]):refresh_equipment_cards(str(slot))
 		"jewel_error":
 			toast(str(info.message))
+		"battle_blocked":
+			if str(info.get("reason",""))=="zero_armour":toast(UIText.t("battle.zero_armour"))
 		"jewel_pickup":
 			if is_instance_valid(enhancement_panel):enhancement_panel.pickup_feedback(info)
 			resource_pickup_feedback(info)
