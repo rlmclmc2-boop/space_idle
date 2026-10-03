@@ -11,6 +11,8 @@ func run():
 	if stage<=0:stage=20
 	var node_text:=OS.get_environment("PROGRESSION_WAVE_NODES")
 	if node_text.is_empty():node_text="9"
+	var limit_seconds:=OS.get_environment("PROGRESSION_WAVE_LIMIT_SECONDS").to_float()
+	if limit_seconds<=0:limit_seconds=600.0
 	var rows:Array=[]
 	var weapon_text:=OS.get_environment("PROGRESSION_WAVE_WEAPONS")
 	if weapon_text.is_empty():weapon_text="mixed,longLaser,laser"
@@ -38,11 +40,11 @@ func run():
 			for enemy in g.enemies:initial.enemies.append({"id":enemy.id,"hp":enemy.hp,"shield":enemy.shield,"armour_type":enemy.armourType,"shield_type":enemy.shieldType})
 			var began:float=g.simulated_time
 			var status:="timeout"
-			for step in 36000:
+			for step in ceili(limit_seconds*60.0):
 				driver.before_tick(1.0/60.0);g.tick(1.0/60.0);driver.after_tick(1.0/60.0)
 				if g.state==BattleGame.State.RETREAT:status="loss";break
 				if not g.has_alive_enemy():status="win";break
-			var row:Dictionary={"stage":stage,"node":node,"weapon":weapon,"status":status,"seconds":g.simulated_time-began,"seed":1701,"initial":initial,"final_loadout":g.profile.loadout.duplicate(true),"final_hightech":g.profile.hightechLevels.duplicate(true),"rng":str(g.rng.state)}
+			var row:Dictionary={"stage":stage,"node":node,"weapon":weapon,"status":status,"limit_seconds":limit_seconds,"seconds":g.simulated_time-began,"seed":1701,"initial":initial,"final_loadout":g.profile.loadout.duplicate(true),"final_hightech":g.profile.hightechLevels.duplicate(true),"rng":str(g.rng.state)}
 			rows.append(row);print("LATE_ADVANTAGE_WAVE ",JSON.stringify(row))
 			FileAccess.open(result_dir.path_join("late-advantage-waves.json"),FileAccess.WRITE).store_string(JSON.stringify({"checkpoint":path,"checkpoint_data":checkpoint.data_sha256,"current_data":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Legal profile cloned into a selected battle point; public weapon refits preserve slot levels; full scene/event hook; no manual upgrades during wave, existing automatic growth retained; diagnostic only, no fresh-run timing claim","rows":rows},"\t"))
 			driver.close();await process_frame

@@ -1,7 +1,11 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v10-bounded-unlock-visit"
+const VERSION="sparse-v11-fixed-stage-weapon-study"
 var unlock_visit_limit := 32
+var fixed_weapon_from_stage := 0
+var fixed_weapon_key := ""
+var fixed_weapon_active := false
+var fixed_weapon_stage_seen := false
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
@@ -30,6 +34,14 @@ func acknowledge_pending_in_visit(g:BattleGame)->int:
 		if g.pending_unlocks.is_empty():break
 		g.acknowledge_unlocks();count+=1
 	return count
+func observe_progress_stage(stage:int)->void:
+	if fixed_weapon_from_stage>0 and stage>=fixed_weapon_from_stage:fixed_weapon_stage_seen=true
+func commit_fixed_weapon_in_visit(g:BattleGame)->void:
+	if fixed_weapon_active or fixed_weapon_from_stage<=0 or fixed_weapon_key.is_empty():return
+	if g.stage<fixed_weapon_from_stage and not fixed_weapon_stage_seen:return
+	assert(g.profile.unlocked.has(fixed_weapon_key))
+	fixed_weapon_active=true
+	record(g,"fixed_weapon_commit",{"weapon":fixed_weapon_key,"from_stage":fixed_weapon_from_stage,"frontier":g.profile.highestLevel,"actual_visit_stage":g.stage,"assumption":"one declared whole-stage weapon choice after actual arrival, retained while farming; no per-enemy or hidden-tick choice"})
 func preferred(stage: int) -> String:
 	return {1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(stage,"")
 func manual_upgrade_sweep(g,levels:int)->bool:
@@ -87,10 +99,12 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		var count:=acknowledge_pending_in_visit(g)
 		unlock_acknowledgements_per_visit=0
 		if count>0:record(g,"notification_visit_batch",{"acknowledged":count,"limit":32,"remaining":g.pending_unlocks.size(),"assumption":"several real confirmations during the same actual visit"})
+		if not g.pending_unlocks.is_empty():return count>0
+	commit_fixed_weapon_in_visit(g)
 	if int(g.profile.highestLevel)>furthest:
 		furthest=int(g.profile.highestLevel);deaths_seen=int(g.metrics.deaths)
 	if recovering and g.profile.cleared.has(recovery_end_stage):recovering=false
-	forced_weapon=preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else ""
+	forced_weapon=fixed_weapon_key if fixed_weapon_active else (preferred(g.next_stage() if g.state==BattleGame.State.LEVEL_CLEAR and g.pending_unlocks.is_empty() else g.stage) if thematic else "")
 	respect_guard=true
 	var changed: bool = super.act(g,elapsed)
 	# Each real visit can process an affordable enhancement; resume-clock phase
@@ -188,8 +202,9 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		record(g,"farm_after_progression_cap",{"stage":cap_stage,"node":1})
 	# A push/return can change stage after the initial transaction pass.
 	# Fit that newly chosen stage during this same real visit, never on a hidden tick.
-	if thematic:
-		var chosen:=preferred(g.stage)
+	commit_fixed_weapon_in_visit(g)
+	if thematic or fixed_weapon_active:
+		var chosen:=fixed_weapon_key if fixed_weapon_active else preferred(g.stage)
 		if not chosen.is_empty() and g.profile.unlocked.has(chosen):
 			for index in g.weapon_entries().size():
 				if str(g.weapon_entries()[index].key)!=chosen:g.equip_slot("weapons",index,chosen)
