@@ -1,0 +1,30 @@
+{
+  "utc": "2026-10-03T15:59:55.787021+00:00",
+  "observed_wrapper_exec_session": 71053,
+  "observed_tool_chunk_id": "d85209",
+  "observed_wrapper_exit_code": 0,
+  "wrapper_output_scope": "Completed runner printed final summary and Evidence path; direct write_stdin result observed, not inferred from summary.json.",
+  "engine_exit_code": 0,
+  "engine_exit_code_evidence_kind": "inferred_from_checked_runner_success; original subprocess returncode not separately persisted",
+  "engine_inference": "Frozen run_qa.py raises SystemExit on r.returncode nonzero or SCRIPT ERROR/Parse Error; final runner exit0 therefore entails import/run returncode0. Do not call this a separately persisted Godot process receipt.",
+  "logs": [
+    {
+      "name": "v29-real34-heldbeam-earned32-reserve300-noforge12h-import.log.txt",
+      "bytes": 50372,
+      "sha256": "9902ec1efec9e07d7d92bdbe1d1cc53914ef033ad176135cf08536783cea8d25",
+      "script_error_count": 0,
+      "parse_error_count": 0,
+      "other_error_count": 0,
+      "original_name": "v29-real34-heldbeam-earned32-reserve300-noforge12h-import.log"
+    },
+    {
+      "name": "v29-real34-heldbeam-earned32-reserve300-noforge12h-run.log.txt",
+      "bytes": 4402,
+      "sha256": "08e63634a0a9d53cde7986659bd6778f065c1f2c80ac12c96bd898095f8467c6",
+      "script_error_count": 0,
+      "parse_error_count": 0,
+      "other_error_count": 0,
+      "original_name": "v29-real34-heldbeam-earned32-reserve300-noforge12h-run.log"
+    }
+  ]
+}
