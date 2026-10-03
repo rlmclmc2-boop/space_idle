@@ -1,0 +1,65 @@
+{
+  "utc": "2026-10-03T18:38:21.943513+00:00",
+  "frozen_source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+  "fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+  "root_live": {
+    "deaths": 1086,
+    "highest": 36,
+    "stage": 36,
+    "wall_seconds": 11959.122227,
+    "x1_seconds": 96179.9999991482
+  },
+  "root_actual_nodes": {
+    "10": 9780.73333327515,
+    "20": 46144.6166689992,
+    "30": 55845.4666709755,
+    "32": 71186.5333383007,
+    "35": 90376.716667166,
+    "reach34_beforeforge": 71380.8000049222,
+    "forge1": 71850.0000048129,
+    "return34_afterforge": 73888.0666710051,
+    "clear34": 76715.95000368
+  },
+  "parent_actual_later_nodes": {
+    "40": 119783.249993653,
+    "45": 136074.599989859,
+    "50": 149424.966653418,
+    "55": 160319.666650881,
+    "60": 166609.416649417,
+    "galaxy6crew_actual_visit": 167339.99998258,
+    "forge6_after60": 168239.99998237
+  },
+  "root_genuine_wall_12h_complete": {
+    "end": 114580.799994864,
+    "retreats": 316,
+    "visits": 144,
+    "operation_events": 499,
+    "parent_ui0_matches_root_ui1": true,
+    "scope": "Declared beam/reserve300/cleared32farm, not all strategies"
+  },
+  "parent_additional_MAX_wall": "same exact genuine34input12h noforge running, previous+10wall retained, no frozen source edits",
+  "art_integration_source": "30d46fcbd5e6f5227c2d1d9b6215f186fb253b79",
+  "art_integration_evidence_source": "9f93dd822623811804a33b2a2ced635e1a688e8e",
+  "art_fingerprint": "dc2005d733cd0f1314c917252f7c33f7dfd1dd016eb08d699b9b1b5fbd3bb843",
+  "art_status": "bounded native15dead/projectile/queue/geometry equivalence pluszeroarmour/20wave and112actualrenderer checks pass; not an integrated wholefresh run; no main merge",
+  "user_later_scope": "Accelerating later returns accepted; do not tune to4–6h. Firstforge target andallmax50–60h remain. Laterplanetrepeat4h decision still pending",
+  "remaining": "Parent sameV29MAX34wall running; directly relevant activegalaxy chrono equivalence; root independent fullfresh continues. Parent approved-art native15 regression independently confirmed; parent actual20wave comparison running.",
+  "deadline_utc": "2026-10-04T03:21:00Z",
+  "parent_actual_complete": {
+    "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
+    "fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
+    "actual_terminal_seconds": 191729.999976901,
+    "hours": 53.25833332691694,
+    "galaxy_1": "complete",
+    "slots": 30,
+    "all_slot_levels": 5,
+    "all_slot_status": "active",
+    "retreats": 1889,
+    "visits": 272,
+    "domain_events": 4656,
+    "wall_seconds": 17953.8,
+    "exit_code": 0,
+    "no_SCRIPT_ERROR": true,
+    "scope": "Parent explicitly reports actual frozen V29 execution and inspection of terminal30Lv5; root independently matched through35 and completed12hwall. Root ownallmax notyet."
+  }
+}
