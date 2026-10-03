@@ -1,0 +1,15 @@
+{
+  "entry": "res://qa/late_advantage_waves.gd",
+  "environment": {
+    "PROGRESSION_WAVE_CHECKPOINT": "/workspace/space-idle-independent-sol-high/test/progression/evidence/independent-sol-high-20261003/inputs/supplied-v22-legal-save32.json",
+    "PROGRESSION_WAVE_STAGE": "33",
+    "PROGRESSION_WAVE_NODES": "5,6",
+    "PROGRESSION_WAVE_WEAPONS": "longLaser",
+    "PROGRESSION_WAVE_DEFENCE_SETS": "armour,shield,shield;armour,armour,shield",
+    "PROGRESSION_WAVE_LIMIT_SECONDS": "120"
+  },
+  "seed": 1701,
+  "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
+  "exit_code": 0,
+  "script_errors": 0
+}

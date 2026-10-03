@@ -1,11 +1,15 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v11-fixed-stage-weapon-study"
+const VERSION="sparse-v11-independent-fixed-defence-v1"
 var unlock_visit_limit := 32
 var fixed_weapon_from_stage := 0
 var fixed_weapon_key := ""
 var fixed_weapon_active := false
 var fixed_weapon_stage_seen := false
+var fixed_defence_from_stage := 0
+var fixed_defence_layout: Array = []
+var fixed_defence_active := false
+var fixed_defence_stage_seen := false
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
@@ -36,6 +40,15 @@ func acknowledge_pending_in_visit(g:BattleGame)->int:
 	return count
 func observe_progress_stage(stage:int)->void:
 	if fixed_weapon_from_stage>0 and stage>=fixed_weapon_from_stage:fixed_weapon_stage_seen=true
+	if fixed_defence_from_stage>0 and stage>=fixed_defence_from_stage:fixed_defence_stage_seen=true
+func commit_fixed_defence_in_visit(g:BattleGame)->void:
+	if fixed_defence_active or not fixed_defence_stage_seen or fixed_defence_layout.is_empty():return
+	assert(fixed_defence_layout.size()==g.defense_entries().size())
+	assert(fixed_defence_layout.has("armour"))
+	for key in fixed_defence_layout:assert(key in ["armour","shield"] and g.profile.unlocked.has(key))
+	fixed_defence_active=true
+	forced_defence=fixed_defence_layout.duplicate()
+	record(g,"fixed_defence_commit",{"layout":fixed_defence_layout,"from_stage":fixed_defence_from_stage,"actual_visit_stage":g.stage,"assumption":"fixed positive-armour defence only after an observed encounter and real visit; retained during farming; public refits; no transient default-layout churn"})
 func commit_fixed_weapon_in_visit(g:BattleGame)->void:
 	if fixed_weapon_active or fixed_weapon_from_stage<=0 or fixed_weapon_key.is_empty():return
 	if g.stage<fixed_weapon_from_stage and not fixed_weapon_stage_seen:return
@@ -101,6 +114,7 @@ func act(g: BattleGame, elapsed: float) -> bool:
 		if count>0:record(g,"notification_visit_batch",{"acknowledged":count,"limit":32,"remaining":g.pending_unlocks.size(),"assumption":"several real confirmations during the same actual visit"})
 		if not g.pending_unlocks.is_empty():return count>0
 	commit_fixed_weapon_in_visit(g)
+	commit_fixed_defence_in_visit(g)
 	if int(g.profile.highestLevel)>furthest:
 		furthest=int(g.profile.highestLevel);deaths_seen=int(g.metrics.deaths)
 	if recovering and g.profile.cleared.has(recovery_end_stage):recovering=false

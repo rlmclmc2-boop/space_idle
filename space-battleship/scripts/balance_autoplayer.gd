@@ -4,6 +4,7 @@ const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
 var strategy := "BALANCED"
 var forced_weapon := ""
+var forced_defence: Array = [] # Optional declared private QA layout, public refits only.
 var respect_guard := false
 var unlock_acknowledgements_per_visit := 1
 var random := RandomNumberGenerator.new()
@@ -62,7 +63,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 	for index in game.defense_entries().size():
 		var entry: Dictionary = game.defense_entries()[index]
 		if not str(entry.key).is_empty() and strategy not in ["BALANCED","DEFENSE_FIRST","RANDOM_VALID"]:continue
-		var preferred := "armour" if index % 2 == 0 else "shield"
+		var preferred := str(forced_defence[index]) if index < forced_defence.size() else ("armour" if index % 2 == 0 else "shield")
 		if strategy == "RANDOM_VALID":
 			if not refit_due and not str(entry.key).is_empty():continue
 			preferred = "shield" if index > 0 and random.randf() < 0.5 else "armour"

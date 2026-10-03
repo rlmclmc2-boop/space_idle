@@ -113,6 +113,9 @@ func run() -> void:
 		policy.fixed_weapon_key=str(options.get("fixed_weapon",""))
 	elif int(options.get("fixed_weapon_from_stage",0))>0:
 		printerr("Frozen policy does not support a fixed stage weapon study");quit(2);return
+	if policy.get("fixed_defence_from_stage")!=null:
+		policy.fixed_defence_from_stage=int(options.get("fixed_defence_from_stage",0))
+		policy.fixed_defence_layout=options.get("fixed_defence",[])
 	if policy.get("scientist_batch_mode")!=null:policy.scientist_batch_mode=bool(options.get("scientist_batch",false))
 	elif bool(options.get("scientist_batch",false)):
 		printerr("Frozen policy does not support scientist-batch assumption");quit(2);return
