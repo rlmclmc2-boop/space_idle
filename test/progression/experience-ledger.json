@@ -188,6 +188,14 @@
       "topic": "Advantage beam stage35 final wave is238.450s",
       "evidence": "evidence/v18-v19-budget-controls/completed35-waves.json",
       "impact": "Must calibrate durability and growth/income jointly; cannot pad cumulative time with long battles."
+    },
+    {
+      "priority": "P0",
+      "kind": "fact",
+      "status": "failed numeric gate; current candidate pending",
+      "topic": "Old noforge34 cleared after8.17h",
+      "evidence": "evidence/v18-v19-budget-controls/noforge30-to34-strong-policy-v2",
+      "impact": "Intermediate still-stalled measurements cannot establish12h acceptance. More powerful sparse real-button policies pending separately."
     }
   ]
 }
