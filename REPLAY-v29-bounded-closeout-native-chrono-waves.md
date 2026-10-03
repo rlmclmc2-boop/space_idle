@@ -1,6 +1,6 @@
 # V29 bounded closing checks
 
-Source evidence2bcdee6d23c787d51f4923606a30416c83913376, prerequisiteb2a604606a60d8d6e885e6a0d177bae7237258e9. progression-v29-bounded-closeout.bundle.base64 decodes63989bytes; SHA25658c54123eb65dcfb6a40ea8e44002f176e0ca6b563155f9a29b74d993fd876c5. Local git bundle verify passed. Game source stays frozenb485/FP19c494, same774? File count764 (the typo774 is not used).
+Source evidence2bcdee6d23c787d51f4923606a30416c83913376, prerequisiteb2a604606a60d8d6e885e6a0d177bae7237258e9. progression-v29-bounded-closeout.bundle.base64 decodes63989bytes; SHA25658c54123eb65dcfb6a40ea8e44002f176e0ca6b563155f9a29b74d993fd876c5. Local git bundle verify passed. Game source stays frozenb485/FP19c494, 764 files.
 
 Root actualfresh32 checkpoint71186.5333383007: nativeX1/nativeX10 signatures match all360 shared boundaries,54offlinechrono+6online=60X1seconds, checkpointfinal71246.5333382867; fullcombat/economy/RNG/research/crew/planet signatures. Galaxy locked at this checkpoint; activegalaxy equivalence remains separate. Command: `PROGRESSION_CHRONO_CHECKPOINT=/absolute/save_32.json python test/progression/run_entry.py --project /absolute/exact-v29-package --entry res://qa/native_chrono_late_equivalence.gd --label unique-native32 --timeout 1800`. For an activegalaxy native checkpoint use same command with that genuine source file, not a synthetic maxgalaxy fixture. Use --skip-import only after that package's own completed import marker.
 
