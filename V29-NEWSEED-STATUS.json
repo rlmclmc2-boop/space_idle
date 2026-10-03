@@ -1,6 +1,6 @@
 {
   "milestones": {
-    "utc": "2026-10-03T21:00:39.148865+00:00",
+    "utc": "2026-10-03T21:24:43.898507+00:00",
     "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
     "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
     "milestones": {
@@ -51,6 +51,12 @@
         "hours": 41.75697684811334,
         "rng": "-6108671114347814361",
         "save_sha256": "6a2370ff2aeb4221d666e3f54b1e031e943c543e3a197587d3d9828f8190d6f4"
+      },
+      "55": {
+        "x1_seconds": 161282.34998399,
+        "hours": 44.800652773330555,
+        "rng": "3434044622128688313",
+        "save_sha256": "e03f1d4ea5f3a841e31d2309c4424173eb0c1967000ed2120358b69f36ef796f"
       }
     },
     "firstshipyard_events": [
@@ -89,14 +95,20 @@
         "x1_seconds": 144839.999987819,
         "rng": "2875372135059321281",
         "save_sha256": "6eb2382b8896b0f35468f48504776c2d3355260b7a049cba89c3a350ea9c50a9"
+      },
+      {
+        "file": "save_reforge_5.json",
+        "x1_seconds": 158339.999984675,
+        "rng": "8177650187440758619",
+        "save_sha256": "e0ed71b3e2b5c9ad0b1977cb4b9ca271bfc07e2f1caef5f2b9eff3f9aa627080"
       }
     ],
     "latest_heartbeat": {
-      "deaths": 1521,
-      "highest": 51,
-      "stage": 50,
-      "wall_seconds": 15806.745392,
-      "x1_seconds": 150779.999986436
+      "deaths": 1638,
+      "highest": 56,
+      "stage": 56,
+      "wall_seconds": 17243.562464,
+      "x1_seconds": 161999.999983823
     },
     "global_acceptance": "pending",
     "errors_to_date": {
@@ -171,10 +183,10 @@
   },
   "private_zip": {
     "file": "/workspace/independent-sol-high-transport/Independent-Sol-High-Evidence-20261003.zip",
-    "size": 30153799,
-    "sha256": "d8e8726932fbed85e04230a7043070ae4a73516782d28561f08efb75bcb25794",
-    "native_head": "dea8bae17ad017141fccc42b5e92ad1f36a124aa",
-    "archived_files": 301
+    "size": 33328501,
+    "sha256": "a542d611f29d292d34eb98c339f4e4cef4ea905b4ff728fcbe35c1eab58ab9e2",
+    "native_head": "30ee30a710dd597008990a57e9d1783dc4df12b8",
+    "archived_files": 308
   },
   "acceptance_update": {
     "recorded_utc": "2026-10-03T17:24:44.500947+00:00",
