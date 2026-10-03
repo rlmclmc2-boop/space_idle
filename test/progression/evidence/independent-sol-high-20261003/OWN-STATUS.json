@@ -6,36 +6,12 @@
     "source_commit": "1d8dc45b6346f0d18dfa5ed993fa046a64525fd0",
     "code_fingerprint": "918af5124bfcfb2588f7a0297bed168f48d7482aae23100f516316baf3ea9acd",
     "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "options": {
-      "allow_reforge": true,
-      "allow_version_change": false,
-      "bulk": true,
-      "duration": 216000,
-      "engine": "formal",
-      "fixed_weapon": "",
-      "fixed_weapon_from_stage": 0,
-      "label": "own-fresh-v23-fixed-zero-armour-max900-allmax",
-      "resume": "",
-      "scene": true,
-      "scientist_batch": false,
-      "scientist_max": true,
-      "seed": 20261004,
-      "single_unlock_per_visit": false,
-      "stop_clear": 0,
-      "stop_galaxy": true,
-      "stop_reach": 0,
-      "strategy": "BALANCED",
-      "teaching_seconds": 10,
-      "thematic": true,
-      "ui_refresh_seconds": 1,
-      "visit_seconds": 900
-    },
     "input_rng_state": "7064421032684940846",
     "start_x1_seconds": 0,
-    "end_x1_seconds": 50400.0000031994,
-    "elapsed_hours": 14.000000000888722,
-    "stage_or_highest": 22,
-    "deaths": 551,
+    "end_x1_seconds": 89340.0000007407,
+    "elapsed_hours": 24.81666666687242,
+    "stage_or_highest": 35,
+    "deaths": 881,
     "process_exit": null,
     "log_errors": {
       "own-fresh-v23-fixed-zero-armour-max900-allmax-import.log": {
@@ -53,58 +29,46 @@
     "own_clear_milestones_x1_seconds": {
       "5": 744.016666666319,
       "10": 9780.71666660849,
-      "20": 46160.6666690024
+      "20": 46160.6666690024,
+      "30": 57010.6500045462,
+      "32": 77499.1666701643,
+      "34": 84442.2333352144
     },
-    "reforges": [],
+    "reforges": [
+      {
+        "planet": 1,
+        "start": 78150.0000033461,
+        "post_visit": 78150.0000033461,
+        "post_visit_hours_after_forge": 0,
+        "return": 80988.0833360186,
+        "return_hours_after_forge": 0.7883564812979158,
+        "clear_wall": 84442.2333352144,
+        "clear_wall_hours_after_forge": 1.7478425921856413
+      }
+    ],
     "first_galaxy_end_state": {
       "status": null,
       "slots": 0,
       "level5": 0,
       "levels": []
-    }
+    },
+    "post_import_fingerprint": "e32bbbe48e4e6b7d03ab728646fc0ba2a927be4ee26132bda599b84398695d2b"
   },
   "strong34_diagnostic": {
     "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
     "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
     "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
     "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "options": {
-      "allow_reforge": false,
-      "allow_version_change": true,
-      "bulk": true,
-      "duration": 43200,
-      "engine": "formal",
-      "fixed_defence": [
-        "armour",
-        "shield",
-        "shield"
-      ],
-      "fixed_defence_from_stage": 34,
-      "fixed_weapon": "longLaser",
-      "fixed_weapon_from_stage": 34,
-      "label": "own-supplied34-v23-beam-positive-defence-max300-noforge12h",
-      "resume": "/workspace/space-idle-independent-sol-high/test/progression/evidence/independent-sol-high-20261003/inputs/supplied-v15-legal-save34.json",
-      "scene": true,
-      "scientist_batch": false,
-      "scientist_max": true,
-      "seed": 20261004,
-      "single_unlock_per_visit": false,
-      "stop_clear": 34,
-      "stop_galaxy": false,
-      "stop_reach": 0,
-      "strategy": "BALANCED",
-      "teaching_seconds": 10,
-      "thematic": true,
-      "ui_refresh_seconds": 1,
-      "visit_seconds": 300
-    },
     "input_rng_state": "7315605390541974786",
     "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 79313.4500030752,
-    "elapsed_hours": 8.166666666659694,
+    "end_x1_seconds": 93113.4499998621,
+    "elapsed_hours": 11.9999999991005,
     "stage_or_highest": 34,
-    "deaths": 33,
-    "process_exit": null,
+    "deaths": 37,
+    "process_exit": {
+      "exit_code": 0,
+      "ended_utc": "2026-10-03T11:30:56.104861+00:00"
+    },
     "log_errors": {
       "own-supplied34-v23-beam-positive-defence-max300-noforge12h-import.log": {
         "script_errors": 0,
@@ -117,52 +81,37 @@
         "engine_errors": 0
       }
     },
-    "status": "running or partial; no completion claim",
+    "status": "completed",
     "own_clear_milestones_x1_seconds": {},
-    "reforges": []
+    "clears": {},
+    "reforges": [],
+    "action_sessions": 144,
+    "domain_events_not_mouse_clicks": 267,
+    "galaxy_all_max_seconds": -1,
+    "no_reforge_verified": true,
+    "clear34_hours_after_input": null,
+    "tested_strategy_12h_stall": true,
+    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies.",
+    "declared_strategy": "longLaser/armour,shield,shield/MAX300 per-card bulk/no-reforge/held through farming",
+    "post_import_fingerprint": "f0077301e712639a6b8ff03e3796d4ad77d720806ac6647a30a0ba0cbed9dcab"
   },
   "matched34_all_armour_diagnostic": {
     "scope": "checkpoint diagnostic; formal journey reload; no full fresh acceptance",
     "source_commit": "07fd45e50f109b2e73259f2dd92098d37cedb466",
     "code_fingerprint": "825d923eb48d886e042d200a4b736a16a12494b8cf0114ee85189b97dc4624fd",
     "data_sha256": "4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d",
-    "options": {
-      "allow_reforge": false,
-      "allow_version_change": true,
-      "bulk": true,
-      "duration": 43200,
-      "engine": "formal",
-      "fixed_defence": [
-        "armour",
-        "armour",
-        "armour"
-      ],
-      "fixed_defence_from_stage": 34,
-      "fixed_weapon": "longLaser",
-      "fixed_weapon_from_stage": 34,
-      "label": "own-supplied34-v23-beam-allarmour-max300-noforge12h",
-      "resume": "/workspace/space-idle-independent-sol-high/test/progression/evidence/independent-sol-high-20261003/inputs/supplied-v15-legal-save34.json",
-      "scene": true,
-      "scientist_batch": false,
-      "scientist_max": true,
-      "seed": 20261004,
-      "single_unlock_per_visit": false,
-      "stop_clear": 34,
-      "stop_galaxy": false,
-      "stop_reach": 0,
-      "strategy": "BALANCED",
-      "teaching_seconds": 10,
-      "thematic": true,
-      "ui_refresh_seconds": 1,
-      "visit_seconds": 300
-    },
     "input_rng_state": "7315605390541974786",
     "start_x1_seconds": 49913.4500031003,
-    "end_x1_seconds": 64553.4500060829,
-    "elapsed_hours": 4.066666667495168,
+    "end_x1_seconds": 93113.4499998621,
+    "elapsed_hours": 11.9999999991005,
     "stage_or_highest": 34,
-    "deaths": 15,
-    "process_exit": null,
+    "deaths": 24,
+    "process_exit": {
+      "exit_code": 0,
+      "script_errors": 0,
+      "parse_errors": 0,
+      "ended_utc": "2026-10-03T11:56:52.819488+00:00"
+    },
     "log_errors": {
       "own-supplied34-v23-beam-allarmour-max300-noforge12h-run.log": {
         "script_errors": 0,
@@ -170,8 +119,21 @@
         "engine_errors": 0
       }
     },
-    "status": "running or partial; no completion claim",
+    "status": "completed",
     "own_clear_milestones_x1_seconds": {},
-    "reforges": []
-  }
+    "clears": {},
+    "reforges": [],
+    "action_sessions": 144,
+    "domain_events_not_mouse_clicks": 334,
+    "galaxy_all_max_seconds": -1,
+    "no_reforge_verified": true,
+    "clear34_hours_after_input": null,
+    "tested_strategy_12h_stall": true,
+    "scope_limit": "One supplied older legal no-reforge profile under explicit code/data version change; one declared beam/positive-armour strategy; not a fresh acceptance or proof over all reasonable strategies.",
+    "declared_strategy": "longLaser/armour,armour,armour/MAX300 per-card bulk/no-reforge/held through farming",
+    "post_import_fingerprint": "f0077301e712639a6b8ff03e3796d4ad77d720806ac6647a30a0ba0cbed9dcab"
+  },
+  "remote_scope": "Aggregate numerical simulation status only. Latest complete diagnostic raw files privately saved in Library filename Independent-Sol-High-Evidence-20261003.zip version1; fresh raw in v1 through return34. Public raw-bundle update rejected automatic approval pending explicit authorization; old carrier raw remains old.",
+  "diagnostic_input_sha256": "4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a",
+  "fingerprint_qualification": "code_fingerprint is build manifest before own editor import; only16 glb.import files lost three import-setting lines. Other enumerated assets/scenes/code/data unchanged."
 }
