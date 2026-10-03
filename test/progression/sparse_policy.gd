@@ -1,7 +1,8 @@
 extends "res://scripts/balance_autoplayer.gd"
 ## QA assumptions only. Every change uses the public player action APIs.
-const VERSION="sparse-v11-fixed-stage-weapon-study"
+const VERSION="sparse-v12-explicit-later-preparation-study"
 var unlock_visit_limit := 32
+var later_preparation_stages := 3
 var fixed_weapon_from_stage := 0
 var fixed_weapon_key := ""
 var fixed_weapon_active := false
@@ -36,6 +37,13 @@ func acknowledge_pending_in_visit(g:BattleGame)->int:
 	return count
 func observe_progress_stage(stage:int)->void:
 	if fixed_weapon_from_stage>0 and stage>=fixed_weapon_from_stage:fixed_weapon_stage_seen=true
+func reforge_progress_ready(g:BattleGame,planet_id:int)->bool:
+	if planet_id==1:return g.profile.highestLevel>=33
+	if later_preparation_stages==2:
+		var unlocked_after_clear:int=25+5*planet_id
+		return g.profile.cleared.has(unlocked_after_clear+1) and g.profile.cleared.has(unlocked_after_clear+2)
+	# Retain the historical three-clear/actual-stage strategy for comparison.
+	return g.stage>=34+5*(planet_id-1)
 func commit_fixed_weapon_in_visit(g:BattleGame)->void:
 	if fixed_weapon_active or fixed_weapon_from_stage<=0 or fixed_weapon_key.is_empty():return
 	if g.stage<fixed_weapon_from_stage and not fixed_weapon_stage_seen:return
@@ -145,11 +153,11 @@ func act(g: BattleGame, elapsed: float) -> bool:
 				if g.idle_planet_crew(str(member.crewId)) and g.planet_buildings.assign(g,str(id),str(row.id),str(member.crewId)):record(g,"assign_builder",{"planet":id,"building":row.id,"crew":member.crewId})
 		# First preparation is evaluated after two further clears (30 -> 32).
 		# This is a QA action strategy, not an added gameplay unlock condition.
-		var reforge_ready_progress: bool = g.profile.highestLevel>=33 if int(id)==1 else g.stage>=34+5*(int(id)-1)
+		var reforge_ready_progress: bool = reforge_progress_ready(g,int(id))
 		if allow_reforge and reforge_ready_progress and g.can_reforge_planet(str(id)):
 			if g.reforge_planet(str(id)):
 				farm={};best_won={};deaths_seen=int(g.metrics.deaths)
-				record(g,"reforge",{"planet":id});recovering=true;recovery_end_stage=35+5*(int(id)-1);furthest=int(g.profile.highestLevel)
+				record(g,"reforge",{"planet":id,"preparation_stage_assumption":2 if int(id)==1 else later_preparation_stages});recovering=true;recovery_end_stage=35+5*(int(id)-1);furthest=int(g.profile.highestLevel)
 				# Major reforge visit: rebuild with existing +10 card actions.
 				# Every successful card emits its own upgrade event for operation counts.
 				for attempt in range(24):
