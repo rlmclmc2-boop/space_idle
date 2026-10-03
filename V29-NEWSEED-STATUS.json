@@ -1,55 +1,57 @@
 {
-  "utc": "2026-10-03T18:21:24.130526+00:00",
-  "scope": "Own V29 seed0305 sameversion native fresh actualmilestones, partial until firstgalaxy30activeLv5/exit. No restart/resume/crossversion. Parent0304reports are not our executions. Laterdecreasing reforgetime allowed by revised1722criteria.",
+  "utc": "2026-10-03T18:39:35.186962+00:00",
+  "scope": "Own V29 seed0305 continuous sameversion fresh native firstpreparation. No injected profiles. Laterdecreasing cycles permitted; observe firstrecovery endpoints separately.",
   "source": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
-  "milestones": {
-    "5": {
-      "x1_seconds": 744.016666666319,
-      "hours": 0.2066712962961997,
-      "rng": "9020444621043946701",
-      "save_sha256": "48abaed8fb011ebc057e5e494bf63259426d14e6ff7ac8a5a4390dcdb607e909"
+  "clear30_x1": 56611.3000044648,
+  "shipyard_assign_event": {
+    "kind": "assign_builder",
+    "payload": {
+      "building": "shipyard",
+      "crew": "engineer",
+      "planet": "1"
     },
-    "10": {
-      "x1_seconds": 9780.69999994182,
-      "hours": 2.71686111109495,
-      "rng": "-7558366899358837669",
-      "save_sha256": "813a73119ab7dcbf7b427e7774228844da137aa1e064cd13d6edb8ee48e9b1b0"
-    },
-    "20": {
-      "x1_seconds": 46124.9333356618,
-      "hours": 12.812481482128279,
-      "rng": "-1572605078882353459",
-      "save_sha256": "bacf0f3d73ebe34b6b4d0642cb664291ca8454c49166c2839e63eccd08660ef3"
-    },
-    "30": {
-      "x1_seconds": 56611.3000044648,
-      "hours": 15.725361112351333,
-      "rng": "545482741041983987",
-      "save_sha256": "486b2a99a8553fc9c7e38043b3bfa96acedf34a0c0476f31089334c00564d015"
-    }
+    "stage": 31,
+    "x1_seconds": 61050.0000053691
   },
-  "firstshipyard_events": [
-    {
-      "kind": "assign_builder",
-      "payload": {
-        "building": "shipyard",
-        "crew": "engineer",
-        "planet": "1"
-      },
-      "stage": 31,
-      "x1_seconds": 61050.0000053691
-    }
-  ],
-  "reforge_events": [],
-  "latest_heartbeat": {
-    "deaths": 675,
-    "highest": 32,
+  "shipyard_ready_event": {
+    "kind": "activate_building",
+    "payload": {
+      "building": "shipyard",
+      "planet": "1"
+    },
     "stage": 32,
-    "wall_seconds": 6250.011141,
-    "x1_seconds": 68700.0000055463
+    "x1_seconds": 71850.0000048129
   },
+  "construction_hours": 2.999999999845501,
+  "available_after_clear30_hours": 4.232972222318917,
+  "clear31": 63123.9666724583,
+  "clear32": 72076.7000047601,
+  "clear32_after_shipyard_ready_seconds": 226.69999994720274,
+  "qualification_buildwindow": "Native32clear is~226.7s aftershipyardready, report rawtiming without declaring automatic failure for fewminutes under approximate preparation target. Both31/32cleared beforeactualforge.",
+  "actual_first_reforge": 72750.0000046034,
+  "actual_first_reforge_rng": "4551390551225587637",
+  "actual_prep_after_clear30_hours": 4.482972222260721,
+  "strategy_delay_after_available_hours": 0.24999999994180447,
+  "preforge_first_arrival34_x1": 72241.2000047218,
+  "preforge_arrival34_rng": "7262613457697795877",
+  "preforge_arrival34_planet1_conquered": false,
+  "reach34_save_sha256": "db55e9cc0a996fa5e29f9333b043b2433e46afd070b01fb8f58725aaab904e34",
+  "postforge_return34": {
+    "x1_seconds": 74743.066670806,
+    "hours_after_first_reforge": 0.5536296295007237,
+    "rng": "7223379246571350605",
+    "not_the_earlier_preforge_arrival": true
+  },
+  "postforge_clear35": "pending",
   "global_acceptance": "pending",
-  "private_library_version": 8,
-  "private_zip_sha256": "6ee9a80dcc06f9552448c27e901299dc13fa22dabb170a036b3f03593eee8d61",
-  "revised_criteria": "Laterreforge times maydecrease, notfailurebyitself. Firstforge return34<=2h/clear35 4–6h; reasonable34noforge12h, prepabout4h and global50–60h stillrequired. Closingdeadline0321UTC enforced."
+  "heartbeat": {
+    "deaths": 901,
+    "highest": 35,
+    "stage": 35,
+    "wall_seconds": 7340.207583,
+    "x1_seconds": 79740.0000029759
+  },
+  "private_library_version": 9,
+  "private_zip_sha256": "f54a58ee5a3872b01ad6b62652b192bfd8fe99e2888a866371600a48afa3e4ca",
+  "updated_criteria": "Later decreasing cycles allowed; first35 nominal4–6h andglobal50–60h remain; 0321UTCcutoff."
 }
