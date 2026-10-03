@@ -1,5 +1,5 @@
 {
-  "utc": "2026-10-03T16:43:36.726972+00:00",
+  "utc": "2026-10-03T16:51:45.569018+00:00",
   "scope": "Own V29 seed2026100305 sameversion fresh sensitivity. Active/pending; cannot replace old1d8 complete result or claim globalpass. No resume/patch/code or numeric insertion.",
   "source_commit": "b4855e35dae1fcaf476f9949b9280671c57ae67e",
   "preimport_fingerprint": "19c494391ea34a32c4c93b05d41b5f6df04af09c6a5374a2daa8e085657ecc3e",
@@ -12,11 +12,11 @@
   "godot_pid": 31460,
   "runner_pid": 31221,
   "heartbeat": {
-    "deaths": 63,
-    "highest": 7,
-    "stage": 7,
-    "wall_seconds": 381.120275,
-    "x1_seconds": 5999.99999999684
+    "deaths": 177,
+    "highest": 14,
+    "stage": 14,
+    "wall_seconds": 872.355068,
+    "x1_seconds": 14459.9999998737
   },
   "initial_rng": "4239956699905930447",
   "errors": {
@@ -29,6 +29,8 @@
       "engine_errors": 0
     }
   },
-  "clear5_x1": 744.016666666319,
-  "raw_persistence": "Own local native QA branch,180s and milestone saves; old1d8v6complete kept. Next combinedprivatev7preparing; no publicrawretry."
+  "clear10_x1": 9780.69999994182,
+  "clear10_hours": 2.71686111109495,
+  "clear10_rng": "-7558366899358837669",
+  "private_snapshot": "Same named combinedLibraryZIPv7 available, retains all oldv6 plus newV29through10; ZIPsha3dff1a495c554f4249768a1a823eec85eec7121acbb4ba4f0cca069248ed5e42"
 }
