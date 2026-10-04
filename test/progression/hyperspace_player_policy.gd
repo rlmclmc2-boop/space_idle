@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v3-visible-counter-earned-T3"
+const VERSION="hyperspace-player-v4-stable-encounter-earned-T3"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -13,9 +13,10 @@ var known_weapons:Array=[]
 var wanted_weapons:Array=[]
 var wanted_defences:Array=[]
 var seen_encounter:=""
-var seen_count:=0
-var seen_palette:=""
-var seen_inventory:=""
+var encounter_plans:Dictionary={}
+var pending_encounters:Dictionary={}
+var encounter_failures:Dictionary={}
+var encounter_started:=0.0
 var wanted_weapon:=""
 var weapon_losses:Dictionary={}
 var last_weapon_change:=-1000.0
@@ -39,16 +40,38 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
    if attacks.has(int(attack_kind)):attacks[int(attack_kind)]+=1
   visible.append({"uid":enemy.uid,"resistance":kind,"shown_attacks":shown_attacks,"drawn_repair_modules":bool(status.repair)})
  if visible.is_empty():return {}
- var encounter:String=str([g.profile.hyperspace.round_id,g.manual_hyperspace.active,g.stage,g.group_index])
+ var route:String=str(g.profile.hyperspace.active.get("route","")) if g.manual_hyperspace.active else "main"
+ var encounter:String=str([g.profile.hyperspace.round_id,route,g.stage,g.group_index])
  for key in tutorials:
   if not known_weapons.has(str(key)):known_weapons.append(str(key))
  for entry in g.weapon_entries():
   if not known_weapons.has(str(entry.key)):known_weapons.append(str(entry.key))
  var allowed:Array=known_weapons.filter(func(key):return g.content_unlocked("equipment",str(key)))
- var palette:String=str([resist,attacks,repairs])
- var inventory:String=str([allowed,g.profile.selectedShip,g.active_slot_count("weapons"),g.active_slot_count("defence")])
- if encounter==seen_encounter and visible.size()<=seen_count and inventory==seen_inventory and (palette==seen_palette or now-last_weapon_change<10.0):return {}
- seen_encounter=encounter;seen_count=visible.size();seen_palette=palette;seen_inventory=inventory
+ # A plan belongs to an observed battle point, not to its shrinking survivor list.
+ if encounter_plans.has(encounter):
+  var cached:Dictionary=encounter_plans[encounter]
+  wanted_weapons=expanded_plan(cached.weapons,g.active_slot_count("weapons"))
+  wanted_defences=expanded_plan(cached.defences,g.active_slot_count("defence"))
+  if encounter==seen_encounter:return {}
+  seen_encounter=encounter;encounter_started=now
+  return {"encounter":encounter,"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"visible_only":cached.visible_only,"failures_seen":int(encounter_failures.get(encounter,0)),"reason":"Reuse remembered initial visible encounter plan; survivors or dropped shields do not change it"}
+ if not pending_encounters.has(encounter):
+  pending_encounters[encounter]={"actors":{},"last_arrival":now}
+  seen_encounter=encounter;encounter_started=now
+ var pending:Dictionary=pending_encounters[encounter]
+ for actor in visible:
+  if not pending.actors.has(str(actor.uid)):
+   pending.actors[str(actor.uid)]=actor.duplicate(true);pending.last_arrival=now
+ # Observe arrival for at least three X1 seconds without a newly visible actor.
+ # Initial protection/repair evidence remains after deaths or shield loss.
+ if now-float(pending.last_arrival)<3.0:return {}
+ visible=pending.actors.values();resist={1:0,2:0};attacks={1:0,2:0};repairs=0
+ for actor in visible:
+  if resist.has(int(actor.resistance)):resist[int(actor.resistance)]+=1
+  if bool(actor.drawn_repair_modules):repairs+=1
+  for attack_kind in actor.shown_attacks:
+   if attacks.has(int(attack_kind)):attacks[int(attack_kind)]+=1
+ seen_encounter=encounter;encounter_started=now
  var physical:String="missile" if visible.size()>=4 else "cannon"
  var energy:String="laser" if visible.size()>=4 else "longLaser"
  for id in g.profile.hyperspace.inventory.equipped:
@@ -68,7 +91,19 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
   var shield:bool=index>0 and g.content_unlocked("equipment","shield") and (int(attacks[1])>int(attacks[2]) or (int(attacks[1])==int(attacks[2]) and (int(attacks[1])==0 or index%2==1)))
   wanted_defences.append("shield" if shield else "armour")
  last_weapon_change=now
- return {"encounter":encounter,"visible_only":visible,"allowed_from_seen_tutorials_or_owned":allowed,"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"reason":"Read drawn live protection/attack colors, repair glyphs and visible target count; no future group lookup; native refits on equipment page"}
+ encounter_plans[encounter]={"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"visible_only":visible.duplicate(true)}
+ pending_encounters.erase(encounter)
+ return {"encounter":encounter,"visible_only":visible,"allowed_from_seen_tutorials_or_owned":allowed,"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"reason":"Freeze initial observed protection/attack/repair evidence after arrival; no within-wave survivor or shield-driven refit; native equipment page only"}
+func expanded_plan(plan:Array,count:int)->Array:
+ var result:Array=[]
+ for index in count:result.append(plan[mini(index,plan.size()-1)] if not plan.is_empty() else "")
+ return result
+func observe_failure(now:float)->Dictionary:
+ if seen_encounter.is_empty():return {}
+ var failed:String=seen_encounter
+ encounter_failures[failed]=int(encounter_failures.get(failed,0))+1
+ pending_encounters.erase(failed);seen_encounter=""
+ return {"encounter":failed,"failures":encounter_failures[failed],"combat_observed_seconds":now-encounter_started,"reason":"Actual failed attempt recorded; retain remembered plan for retry and earned growth, no unobserved enemy weakening"}
 func pick_crew(g)->String:
  if not reserved_crew.is_empty() and Permission.crew_available(g,reserved_crew):return reserved_crew
  for member in g.profile.crew:
