@@ -8,7 +8,7 @@ SAVING
 
 PROGRESSION
 - Loop: cruise -> encounter -> auto-combat -> resources/growth -> unlock. May hold/replay or jump to cleared/current level. Each cruise/retreat segment and guard respawn interval is at most 3 X1 game-seconds; faster natural travel stays faster. Normal clear waits 3 game-seconds; immediate clear available.
-- unlock.xlsx is sole threshold source: cleared=specified level cleared; reached=highest enterable level exceeds threshold; gems retain level-8 availability. Granted unlocks persist across threshold edits; notices acknowledged individually, no replay duplicates.
+- unlock.xlsx is sole threshold source: cleared=specified level cleared; reached=highest enterable level exceeds threshold; gems retain level-8 availability. Granted unlocks persist across threshold edits. Notices confirm individually after 3 monotonic UI seconds or manually; each next notice gets a new interval, independent of pause/speed/page. Tutorial archive uses earned unlock IDs and current table title/desc, grouped by system; previously earned entries survive reforge. Separate readUnlocks flags clear entry/category/entrance badges only when the player opens an entry, persist through saves/import/reforge, and migrate old earned entries as unread without rewards or notice replay.
 - Level atkRatio/lifeRatio/resRatio interpolate by battle-point index: the first point inherits the previous level's final value (level 1 starts at 1), and the last point reaches the current level value.
 
 EQUIPMENT

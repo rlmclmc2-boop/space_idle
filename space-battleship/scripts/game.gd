@@ -143,6 +143,7 @@ func fresh_profile() -> Dictionary:
 	profile.enhancementHits = 0
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
+	profile.readUnlocks = []
 	profile.jewelFragments = 0.0
 	profile.jewelFurnaceElapsed = 0.0
 	profile.jewelFurnaceIncomePeak = 0.0
@@ -192,6 +193,23 @@ func available_unlocks() -> Array[String]:
 	for id in db.data.get("unlock", {}):
 		if unlock_available(str(id)):result.append(str(id))
 	return result
+
+func tutorial_unlocks() -> Array[String]:
+	# Seen notices also retain earned knowledge through a reforge's new run.
+	var result: Array[String] = []
+	for id in db.data.get("unlock", {}):
+		if unlock_available(str(id)) or profile.get("seenUnlocks", []).has(id):result.append(str(id))
+	return result
+
+func unread_tutorial_unlocks() -> Array[String]:
+	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
+
+func read_tutorial_unlock(id: String) -> bool:
+	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
+	profile.readUnlocks.append(id)
+	save_dirty = true
+	event.emit("tutorial_read", {"id":id})
+	return true
 
 func default_loadout(key: String, unlocked: Array) -> Dictionary:
 	var loadout := empty_loadout(key)
@@ -281,6 +299,11 @@ func load_progress_data(raw: Dictionary) -> void:
 			if key is String and not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
 	if profile.has("journey"):
 		profile.journey.pendingUnlocks = profile.journey.get("pendingUnlocks",[]).filter(func(key):return not profile.seenUnlocks.has(key))
+	# A notification acknowledgement is not a tutorial read. Old saves backfill
+	# earned entries as unread, without replaying notices or granting rewards.
+	if raw.get("readUnlocks") is Array:
+		for id in raw.readUnlocks:
+			if id is String and tutorial_unlocks().has(id) and not profile.readUnlocks.has(id):profile.readUnlocks.append(id)
 	var selected = raw.get("loopLevel", 0)
 	profile.loopLevel = int(selected) if (selected is int or selected is float) and profile.cleared.has(int(selected)) else 0
 	var guard_stage = raw.get("guardStage", 0)
@@ -1349,6 +1372,7 @@ func reforge_planet(id: String) -> bool:
 	next.galaxies = profile.get("galaxies",{})
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
+	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
 	for gate_id in available_unlocks():
 		var gate: Dictionary = db.data.unlock[gate_id]
 		if not next.seenUnlocks.has(gate_id):next.seenUnlocks.append(gate_id)

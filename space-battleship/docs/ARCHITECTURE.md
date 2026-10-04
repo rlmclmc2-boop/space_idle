@@ -9,6 +9,7 @@ Paths relative to project root. Operations: [README](../README.md).
 | ship hulls / weapon presentation | assets/ships/*, data/ship_weapon_visuals.json -> scripts/weapon_visual.gd -> scripts/main.gd draw/muzzle; logic remains in scripts/game.gd |
 | cfg/stat projection | scripts/database.gd: ShipDatabase |
 | equipment/ships/enhancement | scripts/equipment_tab.gd, equipment_card.gd, ship_panel.gd, enhancement_panel.gd |
+| tutorial / unlock notices | scripts/main.gd owns notice UI clock; scripts/unlock_tutorial.gd projects system archive; scripts/game.gd owns earned IDs/readUnlocks; save_transfer.gd includes read flags |
 | crew/planet/reactor/chrono | scripts/crew_system.gd, crew_panel.gd, planet_buildings.gd, planet_buffs.gd, planet_panel.gd, reactor_panel.gd, chrono_panel.gd; growth_number.gd extends quantities beyond float range |
 | hightech | scripts/hightech_workshop.gd (page owner), hightech_workshop_room.gd, hightech_workshop_construction.gd, hightech_construction.gd; main.gd (tab entry) |
 | galaxy | scripts/galaxy_system.gd owns profile.galaxies and online scheduling; galaxy_region.gd work/compact frontier/macro slots; galaxy_effect_aggregator.gd sole effect cache; galaxy_panel.gd Control cards + galaxy_map.gd independent 3D viewport; config_excel/galaxy*.xlsx; [rules](GALAXY.md), [GLB pipeline](../assets/galaxy/v3/README.md) |

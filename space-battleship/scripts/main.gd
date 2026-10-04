@@ -125,6 +125,9 @@ var help_surface: StyleBoxFlat = preload("res://scripts/dialog_presentation.gd")
 var unlock_scroll: ScrollContainer
 var unlock_title: Label
 var unlock_description: Label
+var unlock_notice_id := ""
+var unlock_notice_started_ms := -1
+var unlock_tutorial: Control
 var sound_on := false
 var audio: AudioStreamPlayer
 var music_on := true
@@ -379,6 +382,7 @@ func _notification(what: int) -> void:
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
+	advance_unlock_notice()
 	game.check_timed_save()
 	if fast_mode_enabled():
 		for voice in railgun_audio.values():
@@ -1871,6 +1875,9 @@ func build_ui() -> void:
 	beginner_guide = preload("res://scripts/beginner_guide.gd").new()
 	ui.add_child(beginner_guide)
 	beginner_guide.setup(self)
+	unlock_tutorial = preload("res://scripts/unlock_tutorial.gd").new()
+	ui.add_child(unlock_tutorial)
+	unlock_tutorial.setup(self)
 	refresh_draw_layers(0)
 
 func apply_readable_fonts(node: Node) -> void:
@@ -2098,12 +2105,29 @@ func layout_overlay_controls() -> void:
 func refresh_unlock_content() -> void:
 	if not is_instance_valid(unlock_scroll):return
 	var key := str(game.pending_unlocks[0]) if not game.pending_unlocks.is_empty() else ""
+	if key != unlock_notice_id:
+		unlock_notice_id = key
+		unlock_notice_started_ms = Time.get_ticks_msec() if not key.is_empty() else -1
+	if not key.is_empty():
+		var seconds := maxi(1,ceili((3000.0-(Time.get_ticks_msec()-unlock_notice_started_ms))/1000.0))
+		set_ui_value(continue_button,"text",UIText.t("unlock.auto_confirm",{"seconds":str(seconds)}))
 	var row: Dictionary = db.data.unlock.get(key,{})
 	if not ui_state_changed(unlock_scroll,[key,row.get("title",""),row.get("desc","")]):return
 	set_ui_value(unlock_scroll,"visible",not key.is_empty())
 	set_ui_value(unlock_title,"text",str(row.get("title","")))
 	set_ui_value(unlock_description,"text",str(row.get("desc","")))
 	unlock_scroll.scroll_vertical = 0
+
+func advance_unlock_notice(now_ms := -1) -> void:
+	# Monotonic UI time, independent of pause, simulation multiplier or page.
+	if now_ms < 0:now_ms = Time.get_ticks_msec()
+	if game == null or game.pending_unlocks.is_empty() or unlock_notice_started_ms < 0:return
+	if str(game.pending_unlocks[0]) != unlock_notice_id:return
+	if not is_instance_valid(unlock_scroll) or not unlock_scroll.is_visible_in_tree():return
+	if now_ms-unlock_notice_started_ms < 3000:return
+	game.acknowledge_unlocks()
+	# Each next page starts a new interval; a late frame never drains the queue.
+	refresh_unlock_content()
 
 func on_viewport_resized() -> void:
 	if is_instance_valid(background_layer):background_layer.queue_redraw()
@@ -2116,6 +2140,7 @@ func refresh_navigation() -> void:
 		return
 	var unlocking := not game.pending_unlocks.is_empty()
 	refresh_unlock_content()
+	if is_instance_valid(unlock_tutorial):unlock_tutorial.refresh()
 	# These explicit groups share visibility dependencies, not just a parent.
 	# Their local snapshots expire with their controls on explicit UI rebuild.
 	if ui_state_changed(help_button,[unlocking]):
@@ -2994,6 +3019,9 @@ func draw_help() -> void:
 	draw_surface.draw_set_transform(panel.position,0,Vector2.ONE*scale_value)
 	draw_surface.draw_style_box(help_surface,Rect2(Vector2.ZERO,Vector2(820,551)))
 	text_at(UIText.t("main.draw_help.text_01"),Vector2(50,60),30,SHELL_PRESENTATION.NAVY)
+	if is_instance_valid(unlock_tutorial) and unlock_tutorial.showing_archive:
+		draw_surface.draw_set_transform(Vector2.ZERO)
+		return
 	var lines := [UIText.t("main.draw_help.text_02"), UIText.t("main.draw_help.text_03"), UIText.t("main.draw_help.text_04"), UIText.t("main.draw_help.text_05"), UIText.t("main.draw_help.text_06"), UIText.t("main.draw_help.text_07"), UIText.t("main.draw_help.text_08"), UIText.t("main.draw_help.text_09"), UIText.t("main.draw_help.text_10")]
 	for i in range(lines.size()):
 		text_at(lines[i],Vector2(50,107+i*39),18,SHELL_PRESENTATION.NAVY)

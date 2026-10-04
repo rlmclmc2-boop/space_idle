@@ -12427,5 +12427,18 @@
     "params": "",
     "category": "battle",
     "note": "装甲是现有生命池；零生命配置仍可编辑，但不能战斗"
-  }
+  },
+  {"note":"解锁教程与自动确认","text":"基础教程","key":"tutorial.basics","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"选择条目查看解锁说明。红点表示尚未阅读；自动确认不会标为已读。","key":"tutorial.select_entry","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"船员","key":"tutorial.system.crew","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"强化","key":"tutorial.system.enhancement","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"装备","key":"tutorial.system.equipment","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"星系","key":"tutorial.system.galaxy","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"科技","key":"tutorial.system.hightech","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"其他系统","key":"tutorial.system.other","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"行星","key":"tutorial.system.planets","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"反应炉","key":"tutorial.system.reactor","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"战舰","key":"tutorial.system.ships","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"系统解锁","key":"tutorial.unlocks","category":"tutorial","params":""},
+  {"note":"解锁教程与自动确认","text":"确认（{seconds}秒后自动）","key":"unlock.auto_confirm","category":"tutorial","params":"{seconds}"}
 ]

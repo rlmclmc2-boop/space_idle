@@ -1,5 +1,18 @@
 {
   "entries": {
+    "tutorial.basics": {"params": []},
+    "tutorial.select_entry": {"params": []},
+    "tutorial.system.crew": {"params": []},
+    "tutorial.system.enhancement": {"params": []},
+    "tutorial.system.equipment": {"params": []},
+    "tutorial.system.galaxy": {"params": []},
+    "tutorial.system.hightech": {"params": []},
+    "tutorial.system.other": {"params": []},
+    "tutorial.system.planets": {"params": []},
+    "tutorial.system.reactor": {"params": []},
+    "tutorial.system.ships": {"params": []},
+    "tutorial.unlocks": {"params": []},
+    "unlock.auto_confirm": {"params": ["seconds"]},
     "crew.page_hint": {
       "params": []
     },
