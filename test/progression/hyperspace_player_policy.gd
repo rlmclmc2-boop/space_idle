@@ -79,7 +79,9 @@ func space_action(g,now:float)->Dictionary:
   var operations:Array=[]
   if d.affixes.size()<Bag.affix_limit(d,h.config):operations.append("add_affix")
   # T3 is a minimum planning goal after any reforge, never a cap or injected value.
-  if int(bag.reforge_count)>0 and d.affixes.any(func(a):return not a.locked and int(a.tier)>3):operations.append("promote_affix")
+  if int(bag.reforge_count)>0 and d.affixes.any(func(a):return not a.locked and int(a.tier)>3):
+   if not d.omen:operations.append("enable_omen")
+   operations.append("promote_affix")
   if int(d.hanging_slots)<Bag.hanging_limit(d,h.config) and not unlocked.is_empty():operations.append("add_hanging_slot")
   operations.append("modernize")
   if int(s.ultimate_cores)>0 and chosen.find(id)==0:operations.append("ultimate")
@@ -143,11 +145,17 @@ func planet_action(g)->Dictionary:
 func galaxy_action(g)->Dictionary:
  if not g.galaxy.available():return {}
  for key in g.galaxy.regions:
-  if not g.profile.galaxies.get(key,{}).get("started",false):return {"domain":true,"kind":"galaxy_start","galaxy":str(key)}
+  if g.galaxy.regions[key].state.status=="available":return {"domain":true,"kind":"galaxy_start","galaxy":str(key)}
+  if g.galaxy.regions[key].state.status not in ["exploring","developing"]:continue
   var target:int=mini(6,maxi(1,g.profile.crew.size()-2))
   if g.galaxy.crew_count(g,str(key))<target:
    for member in g.profile.crew:
     if g.idle_planet_crew(str(member.crewId)) and g.crew.can_assign(g,str(member.crewId),"galaxy_explore",str(key)):return {"domain":true,"kind":"galaxy_crew","galaxy":str(key),"crew":str(member.crewId)}
+   for planet in g.profile.planets:
+    var progress:Dictionary=g.planet_progress(str(planet))
+    if progress.conquered and not str(progress.crewId).is_empty():return {"domain":true,"kind":"planet_recall","planet":str(planet)}
+   for member in g.profile.crew:
+    if str(member.assignmentType) in ["jewel_auto","reactor_upgrade"]:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First galaxy work needs crew, old growth automation stops"}
  return {}
 func execute(g,choice:Dictionary,now:float)->bool:
  match choice.kind:
@@ -167,6 +175,7 @@ func execute(g,choice:Dictionary,now:float)->bool:
    return str(g.hyperspace.forge(g,choice.request).error).is_empty()
   "planet_activate":return g.planet_buildings.activate(g,choice.planet,choice.building)
   "planet_builder":return g.planet_buildings.assign(g,choice.planet,choice.building,choice.crew)
+  "planet_recall":return g.cancel_planet_exploration(choice.planet)
   "planet_explore":return g.start_planet_exploration(choice.planet,choice.crew)
   "planet_reforge":return g.reforge_planet(choice.planet,choice.keep)
   "crew_release":return g.assign_crew(choice.crew,"","")
