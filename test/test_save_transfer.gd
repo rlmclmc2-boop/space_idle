@@ -35,7 +35,7 @@ func run() -> void:
  for version in [2,3,4]:
   var legacy:=raw.duplicate(true);legacy.version=version
   check(transfer.prepare_data(legacy,db).error.is_empty(),"Existing version migration accepts "+str(version))
- for bad in [{}, {"version":5,"resources":{"1":0,"2":0},"highestLevel":1}, {"version":4,"resources":[],"highestLevel":1}, {"version":4,"resources":{"1":{},"2":0},"highestLevel":1}]:
+ for bad in [{}, {"version":6,"resources":{"1":0,"2":0},"highestLevel":1}, {"version":4,"resources":[],"highestLevel":1}, {"version":4,"resources":{"1":{},"2":0},"highestLevel":1}]:
   check(not transfer.prepare_data(bad,db).error.is_empty(),"Reject invalid type/structure/future version")
  for value in ["", "{", "[]", "{\"version\":4}", "not a save"]:
   var file:=FileAccess.open("user://transfer-bad.json",FileAccess.WRITE);file.store_string(value);file.close()
