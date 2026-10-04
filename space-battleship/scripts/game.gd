@@ -19,6 +19,7 @@ const RailGeometry=preload("res://scripts/rail_geometry.gd")
 var rail_geometry_provider:=Callable()
 var rail_target_point_provider:=Callable()
 var player_launch_payload: Dictionary={}
+var max_upgrade_quote_cache:Dictionary={}
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
@@ -745,6 +746,8 @@ func slot_upgrade_cost(category: String, index: int, levels := 1) -> Dictionary:
 	return {} if entry.is_empty() else upgrade_costs_for_level(module_cost_key(category), int(entry.level), levels)
 
 func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictionary:
+	var cached:Dictionary=max_upgrade_quote_cache.get(str([key,current]),{})
+	if not cached.is_empty() and int(cached.amount)==levels and cached.signature==upgrade_quote_signature(key):return cached.costs.duplicate()
 	var total := {}
 	if levels <= 0 or current + levels > db.max_equipment_level(key):
 		return total
@@ -2498,14 +2501,24 @@ func max_upgrade_amount(key: String) -> int:
 		return 0
 	return max_upgrade_amount_slot("weapons" if WEAPON_KEYS.has(key) else "defence", (weapon_entries() if WEAPON_KEYS.has(key) else defense_entries()).find(entry))
 
+func upgrade_quote_signature(key:String)->Array:
+	# Value copies catch purchases, load/config replacement, and in-place edits.
+	# Separate from combat stat invalidation: attack counters do not change prices.
+	return [profile.resources.duplicate(true),db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
+
 func max_upgrade_amount_slot(category: String, index: int) -> int:
 	var entry := slot_entry(category,index)
 	var key := module_cost_key(category)
 	if entry.is_empty():
 		return 0
-	var available: Dictionary = profile.resources.duplicate()
-	var amount := 0
 	var current := int(entry.level)
+	var cache_key:String=str([key,current])
+	var signature:Array=upgrade_quote_signature(key)
+	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
+	if not cached.is_empty() and cached.signature==signature:return int(cached.amount)
+	var available: Dictionary = profile.resources.duplicate()
+	var total:Dictionary={}
+	var amount := 0
 	var level := current + 1
 	while level <= db.max_equipment_level(key):
 		var costs := upgrade_cost_for_level(key, level)
@@ -2518,8 +2531,11 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 			break
 		for id in costs:
 			available[id] = N.subtract(available.get(id,0),costs[id])
+			total[id]=float(total.get(id,0))+float(costs[id])
 		amount += 1
 		level += 1
+	if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
+	max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
