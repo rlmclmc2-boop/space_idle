@@ -146,6 +146,9 @@ func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:D
 func chain_target_point(target:Dictionary)->Vector2:
 	return target_point(target)
 
+func projectile_target_point(shot:Dictionary)->Vector2:
+	return super.projectile_target_point(shot) if bool(shot.hostile) else target_point(shot.target)
+
 func target_point(target:Dictionary)->Vector2:
 	if target_provider.is_valid():return target_provider.call(target)
 	return Vector2(target.x,target.y)

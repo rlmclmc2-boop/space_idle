@@ -2777,6 +2777,9 @@ func tick(dt: float) -> void:
 	elif state == State.COMBAT:
 		guard_elapsed = 0
 
+func projectile_target_point(shot:Dictionary)->Vector2:
+	return Vector2(shot.target.x,shot.target.y)
+
 func tick_projectiles(dt: float) -> void:
 	# Overrides select pending launches at step start; only this base advances
 	# the shield clock, before resolving scheduled periods and boundary hits.
@@ -2806,7 +2809,8 @@ func tick_projectiles(dt: float) -> void:
 				# Keep the last heading; a missile never acquires a replacement target.
 				shot.target = {}
 		if not shot.target.is_empty():
-			var delta := Vector2(shot.target.x - shot.x, shot.target.y - shot.y)
+			var impact_point:Vector2=projectile_target_point(shot)
+			var delta := impact_point-Vector2(shot.x,shot.y)
 			var homing: bool = str(shot.key).replace("_mon", "").replace("-mon", "") == "missile"
 			if homing:shot.direction = delta.normalized()
 			# Ordinary rounds keep their launch direction. A moving target must
@@ -2815,7 +2819,7 @@ func tick_projectiles(dt: float) -> void:
 			var intersects := along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
 			if (delta.length() <= shot.speed*dt) if homing else intersects:
 				shot.dead = true
-				event.emit("projectile_impact", {"shot":shot,"pos":Vector2(shot.target.x,shot.target.y)})
+				event.emit("projectile_impact", {"shot":shot,"pos":impact_point})
 				if shot.hostile:
 					hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
 				else:
