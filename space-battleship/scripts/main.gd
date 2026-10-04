@@ -1347,6 +1347,9 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var columns:=int(enemy.get("formation_columns",10))
 	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
 	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
+	if enemy.get("size_formation",false):
+		anchor = battle_point(Vector2(enemy.x,enemy.y))
+		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
 	target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
@@ -1364,7 +1367,9 @@ func enemy_render_width(enemy: Dictionary) -> float:
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
-	return base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,enemy_depth(enemy))*float(enemy_pose(enemy).variance)
+	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,enemy_depth(enemy))*float(enemy_pose(enemy).variance)
+	# Full five-column fleets reserve space for hover and protection outlines.
+	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Measure empty firing space between hull envelopes, not entity centres.
@@ -1386,6 +1391,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
+	if enemy.get("size_formation",false):hover *= 0.25
 	# Shared approach distance keeps each column separated even during entry.
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-float(battle_visual.enemy_entry_distance)*(1.0-enter))+hover*enter
 	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
