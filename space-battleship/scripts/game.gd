@@ -423,7 +423,7 @@ func set_speed(multiplier: float) -> bool:
 	return true
 
 func chrono_capacity() -> float:
-	return float(db.config.offlineMax) * 3600.0 * float(db.config.chronoParticlesPerSecond) * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
+	return float(db.config.offlineMax) * 3600.0 * float(db.config.chronoParticlesPerSecond)
 
 func accrue_chrono_particles(saved_at: Variant, now: float) -> float:
 	if not nonnegative_number(saved_at):
@@ -990,7 +990,7 @@ func reactor_unlocked() -> bool:
 
 func reactor_energy(level := -1) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max")
+	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max") * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
 
 func reactor_capacity() -> int:
 	return maxi(0, int(floor(reactor_energy())))
@@ -3200,7 +3200,7 @@ func finish_enhancement_attack(index: int) -> void:
 func endless_source() -> Dictionary:
 	if stat_cache.has("hyperspace_endless_source"):return stat_cache.hyperspace_endless_source
 	var best: Dictionary={}
-	for entry in combat_weapon_entries():
+	for entry in weapon_entries():
 		if entry.key!="longLaser":continue
 		if best.is_empty() or int(entry.level)>int(best.level):best=entry
 	stat_cache.hyperspace_endless_source=best;return best

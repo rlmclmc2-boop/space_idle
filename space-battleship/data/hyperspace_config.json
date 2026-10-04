@@ -504,7 +504,7 @@
       "effect_growth": 0.1,
       "unlock_stage": 0,
       "effects": [
-        "chrono_cap"
+        "reactor_energy_cap"
       ]
     },
     "gem_refiner": {

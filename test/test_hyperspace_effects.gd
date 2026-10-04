@@ -83,7 +83,9 @@ func _initialize() -> void:
 	check(g.projectiles.filter(func(p):return p.get("prism_tower",false)).size()==1,"one simultaneous prism tower")
 	check(g.projectiles[0].attack_instance.chain.links.size()==5,"prism chooses five secondary targets")
 	g=prepared("endless_beam");g.enemies=[target(1),target(2)]
-	g.lock_long_laser(g.player,g.player_weapon_row(g.combat_entry(g.weapon_entries().size())),false,g.weapon_entries().size(),g.combat_entry(g.weapon_entries().size()));var beam: Dictionary=g.projectiles.back()
+	check(g.equip_slot("weapons",0,"longLaser"),"endless ordinary module installs")
+	check(is_same(g.endless_source(),g.weapon_entries()[0]) and int(g.combat_entry(g.weapon_entries().size()).level)>int(g.endless_source().level),"higher quality drone cannot replace highest ordinary module")
+	g.lock_long_laser(g.player,g.player_weapon_row(g.combat_entry(0)),false,0,g.combat_entry(0));var beam: Dictionary=g.projectiles.back()
 	var dead_uid: int=beam.target.uid;beam.elapsed=5.0;beam.target.hp=0;g.advance_long_laser(beam,0.1)
 	check(beam.target.uid!=dead_uid and beam.target.hp>0 and is_equal_approx(beam.elapsed,5.1) and not beam.dead,"highest beam changes dead target without losing growth")
 	g.change_state(g.State.TRAVEL);g.advance_long_laser(beam,0.1)
