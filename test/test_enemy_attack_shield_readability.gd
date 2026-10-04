@@ -9,6 +9,7 @@ var checks:=0
 var failures:=0
 var records:Array=[]
 var alpha_cache:Dictionary={}
+var hull_envelopes:Array[Rect2]=[]
 var folder:=ProjectSettings.globalize_path("res://../readability-evidence")
 func check(ok:bool,label:String)->void:
 	checks+=1
@@ -33,6 +34,7 @@ func spawn(sizes:Array,physical:bool,source_id:="")->void:
 	for enemy in g.enemies:scene.enemy_pose(enemy).born=0.0
 func audit(label:String)->void:
 	var g=scene.game
+	hull_envelopes.clear()
 	var snapshot:Array=g.enemies.duplicate(true)
 	var rng_state:int=g.rng.state
 	for enemy in g.enemies:
@@ -57,7 +59,22 @@ func audit(label:String)->void:
 			var mounted:=PackedVector2Array()
 			for point in scene.enemy_recognition.mount_corners(descriptor,width,15.0/packet.scale):mounted.append((Vector2(pose.origin)+point.rotated(pose.angle)).rotated(-PI-scene.enemy_render_angle(enemy)))
 			check(GEO.min_clearance(mounted,packet.inner)*float(packet.scale)-float(packet.shield_stroke)*float(packet.scale)*0.5-0.5>=1.99,label+": actual mounted attack parts fit protection")
-		records.append({"label":label,"size":enemy.size,"width":dimensions.x,"clock":scene.fx_time,"screen_scale":packet.scale,"hull_gap_pixels":clearance,"hull_points":hull_points.size(),"position":str(scene.enemy_render_position(enemy)),"angle":scene.enemy_render_angle(enemy)})
+		var centre:Vector2=scene.enemy_render_position(enemy)
+		var hull_envelope:=Rect2(centre,Vector2.ZERO)
+		for point in hull_points:hull_envelope=hull_envelope.expand(centre+Vector2(point).rotated(PI+scene.enemy_render_angle(enemy)))
+		for other in hull_envelopes:check(not hull_envelope.intersects(other),label+": animated source hulls do not overlap")
+		hull_envelopes.append(hull_envelope)
+		var outlines:Array=[packet.inner]
+		if float(enemy.get("max_shield",0))>0:
+			outlines.append(packet.outer)
+			if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
+		var top:=centre.y
+		for outline in outlines:
+			for point in outline:top=minf(top,centre.y+Vector2(point).rotated(PI+scene.enemy_render_angle(enemy)).y)
+		check(top>=4.0/float(packet.scale),label+": entire shield stays inside battlefield top")
+		check(top-16.0>=6.0,label+": both meters fit above full protection without stacking")
+		check(centre.y<=floorf(scene.enemy_frontline_y_limit(enemy))+0.01,label+": existing player clearance preserved")
+		records.append({"label":label,"size":enemy.size,"width":dimensions.x,"clock":scene.fx_time,"screen_scale":packet.scale,"hull_gap_pixels":clearance,"hull_points":hull_points.size(),"protection_top":top,"health_top":top-9.0,"shield_top":top-16.0,"position":str(centre),"angle":scene.enemy_render_angle(enemy)})
 	check(g.enemies==snapshot and g.rng.state==rng_state,label+": presentation does not mutate combat")
 func capture(name:String)->void:
 	scene.refresh_draw_layers(0.0);scene.battle_layer.queue_redraw()
@@ -70,6 +87,7 @@ func run()->void:
 	scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI)
 	scene.music_on=false;scene.sound_on=false;scene.automation_args=["--capture"]
 	root.add_child(scene);current_scene=scene;scene.set_process(false);scene.automation_args=[]
+	check(scene.BATTLE_HEADER_RECT.end.y<=scene.BATTLE_ORIGIN.y-4.0,"battle header clears battlefield by 4 logical px")
 	var g=scene.game;g.save_enabled=false;g.rng.seed=12345
 	g.profile.onboarding.completed=true;scene.beginner_guide.hide()
 	g.profile.cleared=range(1,76);g.rebuild_unlocks();g.profile.selectedShip="Frigate"
@@ -86,14 +104,14 @@ func run()->void:
 			check(scene.enemy_attack_types(enemy)==[int(design.attack_type)],"all 40 designs use actual outgoing attack type, independently of protection")
 	for physical in [false,true]:
 		spawn([1,2,3,4,5,6],physical)
-		for clock in [0.0,5.0,8.0]:
+		for clock in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
 			scene.fx_time=clock
-			var label:="%s-%s"%["physical" if physical else "energy","entry" if clock==0 else "stable" if clock==5 else "drift"]
+			var label:="%s-%s"%["physical" if physical else "energy","entry" if clock==0 else "stable" if clock==5 else "drift" if clock==8 else "entry-%.2f"%clock]
 			audit(label);await capture(label)
 	for size in [4,5,6]:
 		spawn([size],false)
-		for clock in [0.0,5.0,8.0]:
-			scene.fx_time=clock;var label:="large-%d-%s"%[size,"entry" if clock==0 else "stable" if clock==5 else "drift"]
+		for clock in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+			scene.fx_time=clock;var label:="large-%d-%s"%[size,"entry" if clock==0 else "stable" if clock==5 else "drift" if clock==8 else "entry-%.2f"%clock]
 			audit(label);await capture(label)
 		# Recovery and extra front layer remain driven by the actual shield state.
 		var enemy:Dictionary=g.enemies[0]
@@ -107,10 +125,20 @@ func run()->void:
 				audit("large-%d-source-%s-yaw-%s"%[size,source_id,str(yaw)])
 			await capture("large-%d-source-%s"%[size,source_id])
 		g.group_index=2
-		audit("large-%d-final-wave-scale"%size);await capture("large-%d-final-wave-scale"%size)
+		for clock in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+			scene.fx_time=clock;var label:="large-%d-final-wave-%.2f"%[size,clock]
+			audit(label);await capture(label)
+	spawn([1,1,2,2,3,3,4,4,4,5,5,5,6,6,6],false)
+	for clock in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+		scene.fx_time=clock;var label:="full-fleet-%.2f"%clock
+		audit(label);await capture(label)
 	if DisplayServer.get_name()!="headless":
 		DisplayServer.window_set_size(Vector2i(960,540));await process_frame;await process_frame
-		for size in [4,5,6]:spawn([size],false);audit("small-window-%d"%size);await capture("small-window-%d"%size)
+		for size in [4,5,6]:
+			spawn([size],false);g.group_index=2
+			for clock in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+				scene.fx_time=clock;var label:="small-window-%d-%.2f"%[size,clock]
+				audit(label);await capture(label)
 	var file:=FileAccess.open(folder+"/audit.json",FileAccess.WRITE);file.store_string(JSON.stringify({"checks":checks,"failures":failures,"records":records},"  "));file.close()
 	print("ATTACK / SHIELD READABILITY checks=",checks," failures=",failures," evidence=",folder)
 	g.launch_provider=Callable();g.target_provider=Callable();scene.queue_free();await process_frame;quit(1 if failures else 0)

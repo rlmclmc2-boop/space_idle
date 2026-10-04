@@ -618,6 +618,7 @@ const BATTLE_CREAM := Color("eeeede")
 const BATTLE_TEAL := Color("70b8bd")
 const BATTLE_NAVY := Color("172c3b")
 const BATTLE_WARM := Color("d9a477")
+const BATTLE_HEADER_RECT := Rect2(30,100,552,56)
 
 func battle_panel(rect:Rect2)->void:
 	var style:=StyleBoxFlat.new()
@@ -644,14 +645,14 @@ func draw_background()->void:
 	draw_surface.draw_rect(Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE),Color("0d202e"))
 
 func draw_vertical_battle_hud()->void:
-	battle_panel(Rect2(30,100,552,98))
+	battle_panel(BATTLE_HEADER_RECT)
 	draw_surface.draw_rect(Rect2(44,115,4,24),BATTLE_TEAL)
 	text_at(UIText.t("battle.stage",{"stage":str(int(game.stage))}),Vector2(60,134),23,BATTLE_CREAM)
 	var state_key:="hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"
 	if game.paused and game.pending_unlocks.is_empty():state_key="hud.state.paused"
 	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
-	battle_meter(Rect2(44,188,524,5),game.distance/maxf(1,float(db.levels[game.stage-1].length)),BATTLE_TEAL)
+	battle_meter(Rect2(44,147,524,5),game.distance/maxf(1,float(db.levels[game.stage-1].length)),BATTLE_TEAL)
 	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
 		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(315,132),14,BATTLE_WARM)
 	battle_panel(Rect2(30,1132,552,114))

@@ -1376,12 +1376,40 @@ func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
 func enemy_render_width(enemy: Dictionary) -> float:
+	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
+
+func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
-	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,enemy_depth(enemy))*float(enemy_pose(enemy).variance)
+	var depth := clampf((y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
+	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*float(enemy_pose(enemy).variance)
 	# Full five-column fleets reserve space for hover and protection outlines.
 	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
+
+func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
+	var pose:=enemy_pose(enemy)
+	if not pose.has("top_geometry"):pose.top_geometry={}
+	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_render_width_at_y(enemy,y),enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometry,enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	var outlines:Array=[packet.inner]
+	if float(enemy.get("max_shield",0))>0:
+		outlines.append(packet.outer)
+		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
+	var top:=0.0
+	for outline in outlines:
+		for point in outline:top=minf(top,Vector2(point).rotated(PI+enemy_render_angle(enemy)).y)
+	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
+	var status_space:=28.0 if game.is_boss_encounter() else 16.0
+	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
+
+func enemy_safe_entry_distance()->float:
+	var distance:=float(battle_visual.enemy_entry_distance)
+	for enemy in game.enemies:
+		var pose:=enemy_pose(enemy)
+		var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
+		var hover_margin:=float(battle_visual.enemy_idle_y)*(0.25 if enemy.get("size_formation",false) else 1.0)
+		distance=minf(distance,maxf(0.0,target.y-enemy_display_top_clearance(enemy,target.y)-hover_margin))
+	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Measure empty firing space between hull envelopes, not entity centres.
@@ -1405,11 +1433,15 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
 	if enemy.get("size_formation",false):hover *= 0.25
 	# Shared approach distance keeps each column separated even during entry.
-	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-float(battle_visual.enemy_entry_distance)*(1.0-enter))+hover*enter
+	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-enemy_safe_entry_distance()*(1.0-enter))+hover*enter
 	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
 	# Clamp the final animated position, so hover, entry and ship changes cannot
 	# cross the front line. Logical entity coordinates remain untouched.
-	position.y=clampf(position.y,half_height+8.0,floorf(enemy_frontline_y_limit(enemy)))
+	var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
+	# Width changes slightly with depth; solve the local top bound without moving
+	# other rows or altering the existing player clearance cap.
+	for iteration in 3:minimum_y=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
+	position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 
