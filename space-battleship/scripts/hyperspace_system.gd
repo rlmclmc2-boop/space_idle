@@ -45,6 +45,8 @@ func snapshot(g) -> Dictionary:
 	result.auto.crew_level=Permission.crew_level(g,str(result.auto.crew_id))
 	result.next_command={"round_id":result.round_id,"command_seq":result.command_seq}
 	result.combat={"disabled_drones":g.drone_combat.disabled.duplicate(),"rebuild_stacks":g.drone_combat.rebuild_stacks}
+	result.manual_ready=g.manual_hyperspace.production_accepted
+	result.manual_error=g.manual_hyperspace.last_error
 	return result
 
 func publish(g,next: Dictionary,kind: String) -> void:

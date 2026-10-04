@@ -1,7 +1,10 @@
 extends RefCounted
 ## Route IDs are injected from the final encounter owner, never borrowed from mainline.
 const View=preload("res://scripts/hyperspace_encounter_database.gd")
+const Loader=preload("res://scripts/hyperspace_route_loader.gd")
 var route_ids: Dictionary={}
+var registry: Dictionary={}
+var production_accepted:=false
 var base_db: ShipDatabase
 var return_journey: Dictionary={}
 var round_id:=0
@@ -9,8 +12,18 @@ var run_id:=0
 var active:=false
 var initializing:=false
 var last_error:=""
-func configure(g,routes: Dictionary) -> bool:
+func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
+	if active:return false
+	route_ids={};registry={};production_accepted=false
+	var loader:=Loader.new()
+	var prepared: Dictionary=loader.load_files(g) if binding==null and candidate==null else loader.prepare(g,binding,candidate)
+	if prepared.is_empty():last_error=loader.last_error;return false
+	if not configure(g,prepared.routes,prepared):return false
+	production_accepted=true;return true
+func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 	if active or routes.size()!=4:return false
+	var groups: Dictionary=g.db.groups if separate.is_empty() else separate.groups
+	var enemies: Dictionary=g.db.enemies if separate.is_empty() else separate.enemies
 	var main_ids: Dictionary={}
 	for level in g.db.levels:
 		for point in level.groups:main_ids[str(int(point.id))]=true
@@ -19,22 +32,24 @@ func configure(g,routes: Dictionary) -> bool:
 		if not routes.get(route) is Array or routes[route].size()!=10:return false
 		for i in 10:
 			if not preload("res://scripts/hyperspace_config.gd").integer(routes[route][i]):last_error="encounter_spec_invalid";return false
-			var id=str(int(routes[route][i]));var row: Dictionary=g.db.groups.get(id,{})
+			var id=str(int(routes[route][i]));var row: Dictionary=groups.get(id,{})
 			if main_ids.has(id) or seen.has(id) or row.is_empty():last_error="new_encounter_ids_required";return false
 			var expected: String="normal" if i<4 else "elite" if i<8 else "boss" if i==8 else "ultimate"
 			if row.get("combatTier")!=expected or not row.get("slots") is Array or not row.has("formation_positions"):last_error="encounter_spec_invalid";return false
+			for slot in row.slots:
+				if slot!=null and (not preload("res://scripts/hyperspace_config.gd").integer(slot) or not enemies.has(str(int(slot)))):last_error="encounter_enemy_missing";return false
 			var resolver=preload("res://scripts/enemy_formation.gd").new()
 			if not resolver.has_method("explicit_error"):last_error="formation_support_required";return false
-			if not str(resolver.call("explicit_error",row.slots,g.db.enemies,row.formation_positions)).is_empty():last_error="encounter_spec_invalid";return false
+			if not str(resolver.call("explicit_error",row.slots,enemies,row.formation_positions)).is_empty():last_error="encounter_spec_invalid";return false
 			seen[id]=true
-	route_ids=routes.duplicate(true);last_error="";return true
+	route_ids=routes.duplicate(true);registry=separate.duplicate(true);production_accepted=false;last_error="";return true
 func start(g,route: String,level: int) -> bool:
 	if active or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var checkpoint: Dictionary={"stage":g.stage,"distance":g.retreat_target if g.state==g.State.RETREAT else g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}
 	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual")
 	if receipt.is_empty():return false
 	base_db=g.db;return_journey=checkpoint;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
-	var view:=View.new();view.configure(base_db,level,route_ids[route])
+	var view:=View.new();view.configure(base_db,level,route_ids[route],registry)
 	g.profile.hyperspace.active.return_journey=checkpoint.duplicate(true)
 	g.db=view;active=true;initializing=true
 	var started: bool=g.start(level,false)

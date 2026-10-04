@@ -132,6 +132,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 		save_dirty = true
 	reset_player()
 	reset_save_timer()
+	if persist:manual_hyperspace.load_production(self)
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
@@ -1867,6 +1868,9 @@ func resume_guard() -> void:
 
 func configure_hyperspace_routes(routes: Dictionary) -> bool:
 	return manual_hyperspace.configure(self,routes)
+
+func load_hyperspace_routes(binding: Variant=null,candidate: Variant=null) -> bool:
+	return manual_hyperspace.load_production(self,binding,candidate)
 
 func start_hyperspace(route: String,level: int) -> bool:
 	return manual_hyperspace.start(self,route,level)
