@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v5-failure-driven-stable-plan"
+const VERSION="hyperspace-player-v7-initial-visible-majority-stable-plan"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -81,9 +81,11 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
  if not allowed.has(physical):physical="cannon" if allowed.has("cannon") else "missile" if allowed.has("missile") else ""
  if not allowed.has(energy):energy="longLaser" if allowed.has("longLaser") else "laser" if allowed.has("laser") else ""
  wanted_weapons=[];wanted_defences=[]
+ var mixed:bool=int(resist[1])>0 and int(resist[2])>0
+ var physical_slots:int=clampi(roundi(float(g.active_slot_count("weapons")*int(resist[1]))/float(maxi(1,int(resist[1])+int(resist[2])))),1,g.active_slot_count("weapons")-1) if mixed else 0
  for index in g.active_slot_count("weapons"):
   var desired:String=physical if int(resist[1])>int(resist[2]) else energy if int(resist[2])>int(resist[1]) else physical if not physical.is_empty() else energy
-  if int(resist[1])>0 and int(resist[2])>0:desired=physical if index%2==0 else energy
+  if mixed:desired=physical if index<physical_slots else energy
   # The permanent repair-module glyph is visible feedback; the unlocked beam tutorial teaches sustained damage.
   if repairs>0 and allowed.has("longLaser"):desired="longLaser"
   if desired.is_empty():desired=str(g.slot_entry("weapons",index).key)

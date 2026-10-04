@@ -1,6 +1,6 @@
 extends RefCounted
 ## QA only: current-round wins, real UI navigation, earned five-level growth.
-const VERSION="safe-first-normal-v1-earned-five-levels"
+const VERSION="safe-first-normal-v2-from-four-earned-five-levels"
 var round_seen:=-1
 var known:Dictionary={}
 var failed:Dictionary={}
@@ -44,7 +44,7 @@ func observe(g,kind:String,payload:Dictionary,now:float)->Dictionary:
  return {}
 func consider(g,now:float)->Dictionary:
  if g.manual_hyperspace.active:return {}
- if phase=="idle" and attempted_stage>=6 and int(failed.get(attempted_stage,0))>=2:
+ if phase=="idle" and attempted_stage>=4 and int(failed.get(attempted_stage,0))>=2:
   var chosen:=0
   if known.has(attempted_stage) and (g.stage==attempted_stage or g.profile.cleared.has(attempted_stage)):chosen=attempted_stage
   elif known.has(attempted_stage-1) and g.profile.cleared.has(attempted_stage-1):chosen=attempted_stage-1
