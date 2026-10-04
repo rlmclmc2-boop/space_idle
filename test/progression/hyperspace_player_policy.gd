@@ -36,7 +36,7 @@ func keep(g)->Array:
  var bag:Dictionary=g.profile.hyperspace.inventory
  var ids:Array=bag.warehouse.duplicate()
  ids.sort_custom(func(a,b):return score(bag.drones[a])>score(bag.drones[b]) if score(bag.drones[a])!=score(bag.drones[b]) else str(a)<str(b))
- return ids.slice(0,Bag.retention_capacity(bag,g.hyperspace.config))
+ return ids.slice(0,Bag.retention_capacity(bag,g.hyperspace.config)+int(g.hyperspace.config.retention_capacity_gain))
 func forge_request(g,id:String,op:String,args:Dictionary={})->Dictionary:
  var s:Dictionary=g.profile.hyperspace
  return {"round_id":int(s.round_id),"command_seq":int(s.command_seq),"drone_id":id,"operation":op,"expected_revision":int(s.inventory.drones[id].forge_revision),"args":args}
@@ -49,7 +49,7 @@ func space_action(g,now:float)->Dictionary:
  var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
  if not s.active.is_empty():
   if s.active.status=="completed_pending" and Bag.has_space(bag,h.config):return {"domain":true,"kind":"space_claim","round":s.active.round_id,"run":s.active.run_id}
-  return {}
+  if s.active.mode=="manual":return {}
  # Return only sealed drones whose real planet gate was regained in this run.
  for id in bag.sealed:
   if int(g.profile.highestLevel)>=int(bag.sealed[id]):return {"domain":true,"kind":"space_unseal","id":id}
@@ -88,6 +88,8 @@ func space_action(g,now:float)->Dictionary:
   for op in operations:
    var choice:Dictionary=forge_choice(g,id,str(op))
    if not choice.is_empty():return choice
+ # Storage/equipment/forge remain legal while pure-progress auto is active.
+ if not s.active.is_empty():return {}
  # Enable pure-progress automation immediately after the first genuine record.
  if not s.auto.enabled:
   for route in h.config.routes:
@@ -135,9 +137,13 @@ func planet_action(g)->Dictionary:
    for member in g.profile.crew:
     if g.idle_planet_crew(str(member.crewId)):return {"domain":true,"kind":"planet_explore","planet":str(id),"crew":str(member.crewId)}
   if g.can_reforge_planet(str(id)) and int(g.profile.highestLevel)>=33+5*(int(id)-1):return {"domain":true,"kind":"planet_reforge","planet":str(id),"keep":keep(g)}
- # Reallocate one growth worker only when an actual unlocked planet needs a worker.
+ # Reallocate one growth worker for either exploration or a blocked building.
  for id in g.profile.planets:
-  if g.planet_unlocked(str(id)) and not g.planet_progress(str(id)).conquered and str(g.planet_progress(str(id)).crewId).is_empty():
+  var building_needs_worker:=false
+  for row in g.planet_buildings.rows(g,str(id)):
+   var state:Dictionary=g.planet_buildings.state(g,str(id),str(row.id))
+   if state.get("status","")=="building" and state.crew.size()<int(row.extra_crew):building_needs_worker=true
+  if g.planet_unlocked(str(id)) and (building_needs_worker or (not g.planet_progress(str(id)).conquered and str(g.planet_progress(str(id)).crewId).is_empty())):
    for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
     for member in g.profile.crew:
      if member.assignmentType==job:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"Current planet construction/exploration need"}
