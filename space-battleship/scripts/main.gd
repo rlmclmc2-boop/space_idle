@@ -1389,8 +1389,14 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 
 func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	var pose:=enemy_pose(enemy)
-	if not pose.has("top_geometry"):pose.top_geometry={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_render_width_at_y(enemy,y),enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometry,enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	var width:=enemy_render_width_at_y(enemy,y)
+	var scale_value:=enemy_recognition_screen_scale()
+	var key:=Vector2(ceili(width*scale_value/2.0),scale_value)
+	if not pose.has("top_geometries"):pose.top_geometries={}
+	# The target and top-bound solver sample different width buckets; keep each
+	# cached separately so stationary frames never rebuild alternating envelopes.
+	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
+	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
 	var outlines:Array=[packet.inner]
 	if float(enemy.get("max_shield",0))>0:
 		outlines.append(packet.outer)
