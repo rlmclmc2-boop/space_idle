@@ -60,11 +60,11 @@ func configure(options: Dictionary) -> void:
 	for key in weapons + defences:
 		var entry := {"key":key,"level":int(options.module_level)}
 		var row := db.equip(key,int(options.module_level))
-		var value := rules.jewel_equipment_stat(entry)
+		var value:Variant = rules.jewel_equipment_stat(entry)
 		var stats := {"value":value,"burst":0.0,"sustained":0.0,"attack_rate":0.0,"multi_target":0.0}
 		if weapons.has(key) and float(row.cd)>0:
 			var critical := rules.jewel_critical(entry)
-			var expected := value * (1.0 + critical.x * (critical.y - 1.0))
+			var expected:Variant = value * (1.0 + critical.x * (critical.y - 1.0))
 			var salvo := int(row.para1) if key == "missile" else 1
 			stats.burst = expected * salvo
 			stats.attack_rate = 1.0 / float(row.cd)
@@ -135,13 +135,13 @@ func sample(candidate_seed: int, mode: String, options: Dictionary) -> Dictionar
 	for index in range(loadout.defence.size()):
 		loadout.defence[index] = {"key":"armour" if index==0 else defences[random.randi_range(0,defences.size()-1)],"level":int(options.module_level)}
 	shuffle(loadout.weapons,random)
-	shuffle(loadout.defence,random)
+	shuffle(loadout.defence,random,1)
 	if not rules.valid_loadout(ship,loadout):return {}
 	return {"ship":ship,"equipment":loadout}
 
-static func shuffle(values: Array, random: RandomNumberGenerator) -> void:
-	for index in range(values.size()-1,0,-1):
-		var other := random.randi_range(0,index)
+static func shuffle(values: Array, random: RandomNumberGenerator, first := 0) -> void:
+	for index in range(values.size()-1,first,-1):
+		var other := random.randi_range(first,index)
 		var value = values[index]
 		values[index] = values[other]
 		values[other] = value

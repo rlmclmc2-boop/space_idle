@@ -147,6 +147,13 @@ func run()->void:
 	g.profile.resources={"1":1e20,"2":1e20};panel.refresh();panel.refresh_detail({},true)
 	check(not card.upgrade_button.disabled and not panel.detail.upgrade.disabled,"Inline and inspector upgrade controls remain enabled")
 	await capture("fixed-armour-slot")
+	var generator=preload("res://scripts/player_loadout_generator.gd").new(ShipDatabase.new())
+	var options:Dictionary=generator.default_options()
+	options.available_ships=["Heavy_Battleship"];options.cleared_through=75;options.module_level=10
+	generator.configure(options)
+	for seed_value in 20:
+		var sampled:Dictionary=generator.sample(seed_value,"random",options)
+		check(not sampled.is_empty() and sampled.equipment.defence[0].key=="armour" and generator.rules.valid_loadout(sampled.ship,sampled.equipment),"Actual private sampler retains fixed armour and a valid complete loadout")
 	var report={"checks":checks,"failures":failures,"engine":Engine.get_version_info(),"scope":"Controlled real scene and isolated save boundary fixtures; no progression replay","cases":cases}
 	FileAccess.open(folder+"/results.json",FileAccess.WRITE).store_string(JSON.stringify(report,"\t"))
 	print("RAIL HIT / ARMOUR LOCK checks=",checks," failures=",failures," evidence=",folder)
