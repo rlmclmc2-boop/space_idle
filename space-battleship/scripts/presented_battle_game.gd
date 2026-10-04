@@ -173,8 +173,20 @@ func tick_projectiles(dt:float)->void:
 
 func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_spread:float)->void:
 	if bool(shot.hostile):return
-	if str(shot.key)=="cannon":shot.speed=float(shot.speed)*RAIL_SPEED_FACTOR;return
-	if str(shot.key)!="missile" or release_context.is_empty():return
+	if str(shot.key)!="missile":
+		var aim:Vector2=target_point(shot.target)
+		var entry:Dictionary=shot.get("entry",{})
+		var pose:Dictionary={}
+		if entry.has("drone_id"):
+			if drone_launch_provider.is_valid():pose=drone_launch_provider.call(str(entry.drone_id),aim,int(shot.get("salvo_ordinal",0)))
+		elif launch_provider.is_valid() and shot.has("mount"):pose=launch_provider.call(int(shot.mount),aim,int(shot.get("salvo_ordinal",0)))
+		if not pose.is_empty():
+			shot.x=pose.position.x;shot.y=pose.position.y
+			shot.launch_point=pose.position
+			shot.direction=(aim-Vector2(shot.x,shot.y)).normalized()
+		if str(shot.key)=="cannon":shot.speed=float(shot.speed)*RAIL_SPEED_FACTOR
+		return
+	if release_context.is_empty():return
 	var packet:=release_context
 	var target_alive:bool=missile_target_live(shot.target)
 	var aim:Vector2=target_point(shot.target) if target_alive else Vector2(packet.aim)

@@ -2089,7 +2089,7 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	projectile_serial += 1
 	shot.serial = projectile_serial
 	shot.source_uid=int(source.get("uid",0))
-	if not hostile and key=="cannon" and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
+	if not hostile and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	prepare_projectile(shot,source,weapon,visual_spread)
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
@@ -2121,7 +2121,21 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 	var offset := enemy_weapon_offset(source, mount) if hostile else player_weapon_offset(mount)
 	if repeated:
 		offset.x += 6.0
+	var previous_payload: Dictionary=player_launch_payload
+	var launch_snapshot:Dictionary={}
+	if not hostile:
+		if repeated:
+			launch_snapshot=inherited_snapshot
+			record_enhancement_attack()
+		else:
+			begin_enhancement_attack(mount,target)
+			record_enhancement_attack()
+			jewel_attack(mount)
+			launch_snapshot=enhancement_attack_contexts[mount].snapshot
+			finish_enhancement_attack(mount)
+		player_launch_payload={"entry":entry,"mount":mount,"salvo_ordinal":0,"beam":true,"combat_context":CombatContext.derive(launch_snapshot.combat_context,"repeat_or_secondary") if repeated else launch_snapshot.combat_context}
 	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
+	player_launch_payload=previous_payload
 	var shot: Dictionary = projectiles.back()
 	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "repeat_depth":repeat_depth, "repeat_origin_multiplier":repeat_origin_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
 	if not hostile and not repeated:
@@ -2130,15 +2144,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		shot.repeat_origin_multiplier=shot.charged_multiplier
 		jewel_charged.erase(id)
 	if not hostile:
-		if repeated:
-			shot.attack_snapshot=inherited_snapshot
-			record_enhancement_attack()
-		else:
-			begin_enhancement_attack(mount,target)
-			record_enhancement_attack()
-			jewel_attack(mount)
-			shot.attack_snapshot=enhancement_attack_contexts[mount].snapshot
-			finish_enhancement_attack(mount)
+		shot.attack_snapshot=launch_snapshot
 		shot.main_attack_id=shot.attack_snapshot.id
 		shot.attack_instance=new_attack_instance(shot.attack_snapshot) if repeated else shot.attack_snapshot.instance
 		shot.attack_instance_id=shot.attack_instance.id
@@ -3334,7 +3340,7 @@ func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vect
 func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
 	var previous_payload: Dictionary=player_launch_payload
 	var key: String=str(combat_entry(index).key)
-	player_launch_payload={"combat_context":attack.get("combat_context",{}),"rail_width_multiplier":1.0} if key=="cannon" else {}
+	player_launch_payload={"combat_context":attack.get("combat_context",{}),"entry":combat_entry(index),"mount":index,"main_attack_id":attack.get("main_attack_id",0),"attack_instance_id":attack.get("attack_instance_id",0),"jewelEffects":attack.effects,"critical":attack.critical,"critical_bonus_applied":attack.get("critical_bonus_applied",attack.critical),"rail_width_multiplier":1.0,"salvo_ordinal":_salvo_index}
 	if key=="cannon" and CombatContext.can_trigger(player_launch_payload.combat_context):
 		var higgs: Dictionary=hyperspace_totals().legendary.get("higgs_cannon",{})
 		if not higgs.is_empty():
