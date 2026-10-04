@@ -6706,9 +6706,192 @@
     "hyperspace.condition_min_level": {"params": []},
     "hyperspace.condition_affix": {"params": []},
     "hyperspace.condition_legendary": {"params": []},
-    "hyperspace.condition_ultimate": {"params": []}
+    "hyperspace.condition_ultimate": {"params": []},
+    "hyperspace.section_explore": {"params": []},
+    "hyperspace.section_drones": {"params": []},
+    "hyperspace.section_forge": {"params": []},
+    "hyperspace.section_rules": {"params": []},
+    "hyperspace.route_reward": {"params": ["material"]},
+    "hyperspace.degenerate_matter": {"params": []},
+    "hyperspace.glueball": {"params": []},
+    "hyperspace.antiproton": {"params": []},
+    "hyperspace.zero_point_energy": {"params": []},
+    "hyperspace.explore_hint": {"params": []},
+    "hyperspace.energy_heading": {"params": []},
+    "hyperspace.mission_heading": {"params": []},
+    "hyperspace.inventory_heading": {"params": []},
+    "hyperspace.equipped_heading": {"params": []},
+    "hyperspace.selected_heading": {"params": []},
+    "hyperspace.none_selected": {"params": []},
+    "hyperspace.no_flags": {"params": []},
+    "hyperspace.unprotected": {"params": []},
+    "hyperspace.no_hangings": {"params": []},
+    "hyperspace.unknown_affix": {"params": []},
+    "hyperspace.unknown_effect": {"params": []},
+    "hyperspace.unknown_hanging": {"params": []},
+    "hyperspace.no_items": {"params": []},
+    "hyperspace.go_warehouse": {"params": []},
+    "hyperspace.forge_selected": {"params": []},
+    "hyperspace.forge_available_hint": {"params": []},
+    "hyperspace.forge_not_ready": {"params": []},
+    "hyperspace.filter_and": {"params": []},
+    "hyperspace.filter_or": {"params": []},
+    "hyperspace.yes": {"params": []},
+    "hyperspace.no": {"params": []},
+    "hyperspace.string_tools": {"params": []},
+    "hyperspace.string_import": {"params": []},
+    "hyperspace.string_copy": {"params": []},
+    "hyperspace.string_title": {"params": []},
+    "hyperspace.filter_preview": {"params": []},
+    "hyperspace.filter_disabled": {"params": []},
+    "hyperspace.filter_draft_hint": {"params": []},
+    "hyperspace.rule_none": {"params": []},
+    "hyperspace.affix_catalog_wait": {"params": []},
+    "hyperspace.remaining_adapter": {"params": []},
+    "hyperspace.percent": {"params": ["value"]},
+    "hyperspace.times": {"params": ["value"]},
+    "hyperspace.tier_value": {"params": ["value"]},
+    "hyperspace.condition_tier": {"params": ["tier"]},
+    "hyperspace.number": {"params": ["value"]},
+    "hyperspace.rule_error_length": {"params": []},
+    "hyperspace.rule_error_schema": {"params": []},
+    "hyperspace.rule_error_conditions": {"params": []},
+    "hyperspace.rule_error_condition": {"params": []},
+    "hyperspace.rule_error_weapon": {"params": []},
+    "hyperspace.rule_error_quality": {"params": []},
+    "hyperspace.rule_error_level": {"params": []},
+    "hyperspace.rule_error_affix": {"params": []},
+    "hyperspace.rule_error_tier": {"params": []},
+    "hyperspace.rule_error_flag": {"params": []},
+    "hyperspace.rule_error_enum": {"params": []},
+    "hyperspace.affix_name.global_damage": {"params": []},
+    "hyperspace.affix_name.global_crit_rate": {"params": []},
+    "hyperspace.affix_name.global_crit_damage": {"params": []},
+    "hyperspace.affix_name.global_burst_chance": {"params": []},
+    "hyperspace.affix_name.extra_chain_count": {"params": []},
+    "hyperspace.affix_name.global_attack_speed": {"params": []},
+    "hyperspace.affix_name.armour_hp": {"params": []},
+    "hyperspace.affix_name.shield_energy": {"params": []},
+    "hyperspace.affix_name.global_defense": {"params": []},
+    "hyperspace.affix_name.laser_damage": {"params": []},
+    "hyperspace.affix_name.missile_damage": {"params": []},
+    "hyperspace.affix_name.cannon_damage": {"params": []},
+    "hyperspace.affix_name.longLaser_damage": {"params": []},
+    "hyperspace.effect_name.higgs_particle_cannon": {"params": []},
+    "hyperspace.effect_name.scatter_pulse_laser": {"params": []},
+    "hyperspace.effect_name.precision_guidance": {"params": []},
+    "hyperspace.effect_name.prism_tower": {"params": []},
+    "hyperspace.effect_name.exotic_matter": {"params": []},
+    "hyperspace.effect_name.laser_charge": {"params": []},
+    "hyperspace.effect_name.random_missiles": {"params": []},
+    "hyperspace.effect_name.endless_beam": {"params": []},
+    "hyperspace.effect_name.dodge_counter": {"params": []},
+    "hyperspace.effect_name.drone_master": {"params": []},
+    "hyperspace.effect_name.black_hole_bomb": {"params": []},
+    "hyperspace.effect_name.drone_reassembly": {"params": []},
+    "hyperspace.hanging_name.resource_collector": {"params": []},
+    "hyperspace.hanging_name.distributed_algorithm": {"params": []},
+    "hyperspace.hanging_name.energy_storage": {"params": []},
+    "hyperspace.hanging_name.jewel_refiner": {"params": []},
+    "hyperspace.hanging_name.hyperspace_charge": {"params": []}
   },
   "bindings": {
+    "hyperspace_affixes": {
+      "global_damage": {
+        "name": "hyperspace.affix_name.global_damage"
+      },
+      "global_crit_rate": {
+        "name": "hyperspace.affix_name.global_crit_rate"
+      },
+      "global_crit_damage": {
+        "name": "hyperspace.affix_name.global_crit_damage"
+      },
+      "global_burst_chance": {
+        "name": "hyperspace.affix_name.global_burst_chance"
+      },
+      "extra_chain_count": {
+        "name": "hyperspace.affix_name.extra_chain_count"
+      },
+      "global_attack_speed": {
+        "name": "hyperspace.affix_name.global_attack_speed"
+      },
+      "armour_hp": {
+        "name": "hyperspace.affix_name.armour_hp"
+      },
+      "shield_energy": {
+        "name": "hyperspace.affix_name.shield_energy"
+      },
+      "global_defense": {
+        "name": "hyperspace.affix_name.global_defense"
+      },
+      "laser_damage": {
+        "name": "hyperspace.affix_name.laser_damage"
+      },
+      "missile_damage": {
+        "name": "hyperspace.affix_name.missile_damage"
+      },
+      "cannon_damage": {
+        "name": "hyperspace.affix_name.cannon_damage"
+      },
+      "longLaser_damage": {
+        "name": "hyperspace.affix_name.longLaser_damage"
+      }
+    },
+    "hyperspace_legendary_effects": {
+      "higgs_particle_cannon": {
+        "name": "hyperspace.effect_name.higgs_particle_cannon"
+      },
+      "scatter_pulse_laser": {
+        "name": "hyperspace.effect_name.scatter_pulse_laser"
+      },
+      "precision_guidance": {
+        "name": "hyperspace.effect_name.precision_guidance"
+      },
+      "prism_tower": {
+        "name": "hyperspace.effect_name.prism_tower"
+      },
+      "exotic_matter": {
+        "name": "hyperspace.effect_name.exotic_matter"
+      },
+      "laser_charge": {
+        "name": "hyperspace.effect_name.laser_charge"
+      },
+      "random_missiles": {
+        "name": "hyperspace.effect_name.random_missiles"
+      },
+      "endless_beam": {
+        "name": "hyperspace.effect_name.endless_beam"
+      },
+      "dodge_counter": {
+        "name": "hyperspace.effect_name.dodge_counter"
+      },
+      "drone_master": {
+        "name": "hyperspace.effect_name.drone_master"
+      },
+      "black_hole_bomb": {
+        "name": "hyperspace.effect_name.black_hole_bomb"
+      },
+      "drone_reassembly": {
+        "name": "hyperspace.effect_name.drone_reassembly"
+      }
+    },
+    "hyperspace_hangings": {
+      "resource_collector": {
+        "name": "hyperspace.hanging_name.resource_collector"
+      },
+      "distributed_algorithm": {
+        "name": "hyperspace.hanging_name.distributed_algorithm"
+      },
+      "energy_storage": {
+        "name": "hyperspace.hanging_name.energy_storage"
+      },
+      "jewel_refiner": {
+        "name": "hyperspace.hanging_name.jewel_refiner"
+      },
+      "hyperspace_charge": {
+        "name": "hyperspace.hanging_name.hyperspace_charge"
+      }
+    },
     "resources": {
       "1": {
         "name": "inventory.resources.1.name"

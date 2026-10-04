@@ -12617,7 +12617,7 @@
   },
   {
     "key": "hyperspace.card",
-    "text": "{weapon} · Lv.{level}\n原品质 {quality} · {flags}",
+    "text": "{weapon} · 等级 {level}\n{quality} · {flags}",
     "params": "{weapon},{level},{quality},{flags}",
     "category": "hyperspace"
   },
@@ -12803,7 +12803,7 @@
   },
   {
     "key": "hyperspace.filter_valid",
-    "text": "有效规则：{count} 条 · {mode}",
+    "text": "规则校验通过：{count} 条条件 · {mode}",
     "params": "{count},{mode}",
     "category": "hyperspace"
   },
@@ -12941,7 +12941,7 @@
   },
   {
     "key": "hyperspace.condition_min_level",
-    "text": "最低等级",
+    "text": "等级下限",
     "params": "",
     "category": "hyperspace"
   },
@@ -12960,6 +12960,528 @@
   {
     "key": "hyperspace.condition_ultimate",
     "text": "究极状态",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.section_explore",
+    "text": "探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.section_drones",
+    "text": "无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.section_forge",
+    "text": "改造",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.section_rules",
+    "text": "筛选与预设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.route_reward",
+    "text": "路线材料：{material}",
+    "params": "{material}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.degenerate_matter",
+    "text": "简并态物质",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.glueball",
+    "text": "胶球",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.antiproton",
+    "text": "反质子",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.zero_point_energy",
+    "text": "零点能",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.explore_hint",
+    "text": "选择路线与等级后开始探索；胜利奖励保留至领取。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.energy_heading",
+    "text": "探索能源",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.mission_heading",
+    "text": "当前探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.inventory_heading",
+    "text": "收纳与保护",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.equipped_heading",
+    "text": "当前配装",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.selected_heading",
+    "text": "无人机详情",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.none_selected",
+    "text": "未选择无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_flags",
+    "text": "普通",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.unprotected",
+    "text": "未受保护",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_hangings",
+    "text": "暂无挂设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.unknown_affix",
+    "text": "未识别词条",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.unknown_effect",
+    "text": "未识别传说效果",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.unknown_hanging",
+    "text": "未识别挂设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_items",
+    "text": "当前筛选下没有无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.go_warehouse",
+    "text": "选择无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_selected",
+    "text": "改造对象",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_available_hint",
+    "text": "选择改造项目后，显示领域提供的实际报价与可执行条件。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_not_ready",
+    "text": "改造报价尚未接入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_and",
+    "text": "且（全部满足）",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_or",
+    "text": "或（任一满足）",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.yes",
+    "text": "是",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no",
+    "text": "否",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.string_tools",
+    "text": "导入 / 导出字符串",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.string_import",
+    "text": "校验导入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.string_copy",
+    "text": "复制字符串",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.string_title",
+    "text": "筛选规则字符串",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_preview",
+    "text": "预览条件",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_disabled",
+    "text": "自动筛选尚未启用",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_draft_hint",
+    "text": "当前为规则草稿；保存和新获得无人机的筛选待领域接入。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_none",
+    "text": "尚未设置条件",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_catalog_wait",
+    "text": "词条目录尚未接入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.remaining_adapter",
+    "text": "此功能等待领域接入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.percent",
+    "text": "{value}%",
+    "params": "{value}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.times",
+    "text": "{value} 次",
+    "params": "{value}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.tier_value",
+    "text": "等级 {value}",
+    "params": "{value}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_tier",
+    "text": "T{tier} 或更高",
+    "params": "{tier}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.number",
+    "text": "{value}",
+    "params": "{value}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_length",
+    "text": "字符串超过长度限制",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_schema",
+    "text": "版本或结构不正确",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_conditions",
+    "text": "最多五个条件",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_condition",
+    "text": "条件结构不正确",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_weapon",
+    "text": "武器种类不正确",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_quality",
+    "text": "原品质不正确",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_level",
+    "text": "等级须为合法整数",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_affix",
+    "text": "词条不在合法目录内",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_tier",
+    "text": "阶级须为 T1 至 T5",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_flag",
+    "text": "状态须为是或否",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.rule_error_enum",
+    "text": "条件种类不正确",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_damage",
+    "text": "全局伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_crit_rate",
+    "text": "全局暴击率",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_crit_damage",
+    "text": "全局暴击伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_burst_chance",
+    "text": "全局连发概率",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.extra_chain_count",
+    "text": "额外连锁次数",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_attack_speed",
+    "text": "全局攻速",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.armour_hp",
+    "text": "复合装甲耐久值",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.shield_energy",
+    "text": "偏转护盾能量值",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.global_defense",
+    "text": "全局防御效果提升",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.laser_damage",
+    "text": "全局脉冲激光伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.missile_damage",
+    "text": "全局导弹伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.cannon_damage",
+    "text": "全局磁轨炮伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix_name.longLaser_damage",
+    "text": "全局持续激光伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.higgs_particle_cannon",
+    "text": "希格斯粒子炮",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.scatter_pulse_laser",
+    "text": "散射脉冲激光",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.precision_guidance",
+    "text": "精确制导",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.prism_tower",
+    "text": "光棱塔",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.exotic_matter",
+    "text": "奇异物质",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.laser_charge",
+    "text": "激光充能",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.random_missiles",
+    "text": "乱射导弹",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.endless_beam",
+    "text": "无尽持续",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.dodge_counter",
+    "text": "闪避反击",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.drone_master",
+    "text": "无人机达人",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.black_hole_bomb",
+    "text": "黑洞炸弹",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.drone_reassembly",
+    "text": "无人机重组",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging_name.resource_collector",
+    "text": "资源收集器",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging_name.distributed_algorithm",
+    "text": "分布式算法",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging_name.energy_storage",
+    "text": "额外储能罐",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging_name.jewel_refiner",
+    "text": "宝石提炼装置",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging_name.hyperspace_charge",
+    "text": "异空间充能",
     "params": "",
     "category": "hyperspace"
   }

@@ -24,7 +24,7 @@ func capture(name: String) -> void:
  await process_frame;await process_frame;await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png(OS.get_environment("HYPERSPACE_UI_EVIDENCE")+"/"+name+".png")
 func run() -> void:
- var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);root.add_child(scene);current_scene=scene;scene.set_process(false)
+ var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);root.add_child(scene);current_scene=scene;scene.set_process(false);root.gui_embed_subwindows=true
  scene.music.stop();scene.music.stream=null
  var g=scene.game;g.save_enabled=false;g.paused=true;g.pending_unlocks.clear();g.profile.onboarding.completed=true
  g.profile.highestLevel=6;scene.refresh_tab_visibility();check(scene.equipment_tabs.is_tab_hidden(9),"Exploration locked before seven")
@@ -40,24 +40,37 @@ func run() -> void:
  for i in 200:
   var d={"id":"ui:%d"%i,"origin_quality":"gold","weapon":["laser","missile","cannon","longLaser"][i%4],"level":20,"legendary":false,"ultimate":false,"blue_source_bonus":false,"legendary_effect":{},"ultimate_affix":{},"affixes":[{"key":"global_damage","tier":2,"value":65.5,"locked":false}],"hangings":[]}
   check(Bag.insert(s.inventory,d,g.hyperspace.config),"Fixture insert")
- g.hyperspace.publish(g,s,"fixture");p.refresh();var refreshes=p.list_refreshes
+ g.hyperspace.publish(g,s,"fixture");p.refresh();p.select_section(1);await process_frame;var refreshes=p.list_refreshes
  for i in 120:p.refresh_progress()
  check(p.list_refreshes==refreshes,"Progress never refreshes warehouse")
  var cards=p.cards.duplicate();var profile=JSON.stringify(g.profile)
- p.scroll.ensure_control_visible(p.next);await process_frame;await process_frame
  await click(p.next);check(p.page==1 and p.cards[0].get_meta("drone_id")=="ui:8","Native pagination follows stable IDs")
  check(JSON.stringify(g.profile)==profile,"Pagination is read-only")
- p.scroll.ensure_control_visible(p.cards[0]);await process_frame;await process_frame
- await click(p.cards[0]);p.scroll.ensure_control_visible(p.favorite);await process_frame;await process_frame;await click(p.favorite);p.refresh();check(g.profile.hyperspace.inventory.favorites.has("ui:8"),"Favorite uses domain command")
+ await click(p.cards[0]);await click(p.favorite);p.refresh();check(g.profile.hyperspace.inventory.favorites.has("ui:8"),"Favorite uses domain command")
  check(p.cards[0]==cards[0],"Favorite reuses card instance")
  await capture("warehouse-page2")
  p.page=24;p.refresh_list();check(p.next.disabled and p.cards[7].get_meta("drone_id")=="ui:199","Last page bounded")
  await capture("warehouse-last-page")
- p.scroll.ensure_control_visible(p.filter_text);await process_frame;await process_frame;await capture("filter-and-forge")
+ await click(p.section_buttons[3]);await capture("filter-and-presets")
+ check(not p.filter_text.is_visible_in_tree(),"String editor stays in hidden dialog")
+ await click(p.section_buttons[1])
  var filter_profile=JSON.stringify(g.profile)
  p.weapon_filter.select(3);p.weapon_filter.item_selected.emit(3);check(p.page==0 and p.cards[0].get_meta("drone_id")=="ui:2","Local weapon filter projects inventory")
  check(JSON.stringify(g.profile)==filter_profile,"Local filters never execute auto-destroy")
  p.weapon_filter.select(0);p.weapon_filter.item_selected.emit(0)
+ await click(p.section_buttons[3])
+ # Dropdown rule editing stays localized; valid import is preview-only.
+ p.filter_kinds[0].select(1);p.configure_condition(0);p.condition_values[0].select(2)
+ p.filter_mode.select(1);p.build_filter_draft()
+ check(p.filter_result.text.contains("或") and not p.filter_result.text.contains("or"),"Rule mode localized")
+ var string_profile=JSON.stringify(g.profile)
+ await click(p.string_button);check(p.filter_text.is_visible_in_tree(),"Strings visible only after explicit dialog open")
+ if DisplayServer.get_name()!="headless" and not OS.get_environment("HYPERSPACE_UI_EVIDENCE").is_empty():
+  await process_frame;await process_frame;await RenderingServer.frame_post_draw
+  p.string_dialog.get_texture().get_image().save_png(OS.get_environment("HYPERSPACE_UI_EVIDENCE")+"/filter-string-window.png")
+ p.filter_text.text='{"version":1,"mode":"and","conditions":[{"kind":"quality","value":"blue"},{"kind":"min_level","value":40}]}'
+ p.import_filter_draft();check(not p.string_dialog.visible and p.filter_kinds[0].get_item_metadata(p.filter_kinds[0].selected)=="quality" and p.condition_levels[1].value==40,"Validated import populates localized controls")
+ check(JSON.stringify(g.profile)==string_profile,"String import never mutates profile")
  var focus=p.preset_names[0];focus.text="草稿";focus.grab_focus();var list_count=p.list_refreshes
  p.refresh();check(p.preset_names[0].text=="草稿" and root.gui_get_focus_owner()==focus,"Refresh preserves draft and focus")
  check(p.list_refreshes==list_count,"Unchanged refresh does not rebuild list")
@@ -73,7 +86,7 @@ func run() -> void:
  g.switch_ship("Heavy_Battleship")
  for entry in g.weapon_entries():entry.key="laser"
  var next_state=g.hyperspace.snapshot(g);next_state.inventory.equipped=["ui:0","ui:1","ui:2","ui:3","ui:4"];next_state.inventory.generation+=1;g.hyperspace.publish(g,next_state,"fixture")
- scene._process(0);var visual=scene.hyperspace_visual
+ p.select_section(1);scene._process(0);var visual=scene.hyperspace_visual
  check(visual.nodes.size()==5 and scene.ship_view.carriers.size()==3 and scene.ship_view.viewport.get_parent()==scene.ship_view,"Five models share existing fleet viewport")
  var rebuilds=visual.rebuilds
  g.profile.hyperspace.inventory.drones["ui:0"].level=21;visual.sync(g.profile.hyperspace.inventory)
@@ -82,7 +95,27 @@ func run() -> void:
  var active=g.hyperspace.start(g,"alpha",5,"manual");var reward_drone=g.profile.hyperspace.inventory.drones["ui:0"].duplicate(true);reward_drone.level=5
  check(g.hyperspace.complete(g,int(active.round_id),int(active.run_id),true,{"drone":reward_drone,"materials":{"degenerate_matter":1}}),"Pending reward from formal completion")
  p.refresh();check(scene.system_nav_buttons[9].get_node("ActivationBadge").visible,"Pending reward lights navigation badge")
- await click(p.claim_button);p.refresh();check(g.profile.hyperspace.inventory.overflow.size()==1 and g.profile.hyperspace.active.is_empty(),"Formal claim enters fixed overflow cache")
+ p.select_section(0);await click(p.claim_button);p.refresh();check(g.profile.hyperspace.inventory.overflow.size()==1 and g.profile.hyperspace.active.is_empty(),"Formal claim enters fixed overflow cache")
+ check(p.protection_flags("ui:8")==p.t("favorite"),"Protection excludes legendary and ultimate status")
+ check(p.flags("ui:8",{"legendary":true,"ultimate":true}).contains(p.t("legendary")) and p.flags("ui:8",{"legendary":true,"ultimate":true}).contains(p.t("ultimate")),"Legendary and ultimate remain separate flags")
+ # Common window sizes use actual framebuffer captures and bounding rectangles.
+ for resolution in [Vector2i(1280,720),Vector2i(1440,900),Vector2i(1920,1080)]:
+  root.size=resolution;await process_frame;await process_frame;await process_frame
+  for section in range(4):
+   p.select_section(section);await process_frame;await process_frame
+   await capture("section%d-%dx%d"%[section,resolution.x,resolution.y])
+   var bounds:Rect2=p.sections[section].get_global_rect()
+   for candidate in p.sections[section].find_children("*","Button",true,false):
+    if candidate.is_visible_in_tree():
+     var rect:Rect2=candidate.get_global_rect()
+     check(rect.position.y>=bounds.position.y-2 and rect.end.y<=bounds.end.y+2,"Visible section button stays inside content bounds")
+   if section==1:
+    var viewport_rect=Rect2(Vector2.ZERO,Vector2(root.size))
+    for control in [p.next,p.previous,p.favorite,p.equip]:
+     var physical=root.get_final_transform()*control.get_global_rect().get_center()
+     check(viewport_rect.has_point(physical),"Warehouse action stays on screen")
+    check(p.favorite.get_global_rect().get_center().distance_to(p.detail_title.get_global_rect().get_center())<220,"Selection and actions remain adjacent")
+  check(not p.details.text.contains("global_damage") and p.details.text.contains("全局伤害") and p.details.text.contains("65.5%"),"Chinese affix labels and percentage units")
  g.profile.hyperspace.inventory.equipped=[];visual.sync(g.profile.hyperspace.inventory);check(visual.nodes.is_empty(),"Unequipped source removes visuals")
  scene.music.stop();scene.music.stream=null;scene.queue_free();await process_frame;await process_frame
  print("HYPERSPACE UI ",checks-failures,"/",checks," display=",DisplayServer.get_name());quit(1 if failures else 0)

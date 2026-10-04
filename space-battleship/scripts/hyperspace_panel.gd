@@ -1,21 +1,29 @@
 extends Control
-## Owns selection and bounded controls only; all durable commands go through hyperspace.
+## Persistent section controls; commands remain owned by the hyperspace domain.
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Codec=preload("res://scripts/drone_filter_preview.gd")
 const PAGE_SIZE=8
 const FAMILIES={"laser":"pulse","missile":"missile","cannon":"rail","longLaser":"beam"}
+const QUALITIES=["white","blue","gold","legendary"]
+const KINDS=["none","weapon","quality","min_level","affix","legendary","ultimate"]
+const COUNT_AFFIXES=["extra_chain_count"]
 var host
 var manual_adapter: Callable
 var crew_adapter: Callable
 var hull_capacity_provider: Callable
 var preset_adapter: Callable
 var affix_catalog_provider: Callable
+var affix_display_provider: Callable
+var effect_display_provider: Callable
+var hanging_display_provider: Callable
 var weapon_filter: OptionButton
 var quality_filter: OptionButton
 var sort_order: OptionButton
 var filter_mode: OptionButton
 var filter_kinds: Array[OptionButton]=[]
-var filter_values: Array[LineEdit]=[]
+var condition_values: Array[OptionButton]=[]
+var condition_levels: Array[SpinBox]=[]
+var condition_tiers: Array[OptionButton]=[]
 var bag: Dictionary={}
 var generation=-1
 var round_id=-1
@@ -23,13 +31,20 @@ var page=0
 var selected_id=""
 var list_refreshes=0
 var route="alpha"
-var scroll: ScrollContainer
+var section_index=0
+var section_buttons: Array[Button]=[]
+var sections: Array[Control]=[]
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
+var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
 var cards: Array[Button]=[]
 var card_icons: Array[TextureRect]=[]
+var card_titles: Array[Label]=[]
+var card_subtitles: Array[Label]=[]
+var card_flags: Array[Label]=[]
 var level: SpinBox
 var energy: Label
+var energy_bar: ProgressBar
 var best: Label
 var status: Label
 var progress: ProgressBar
@@ -43,15 +58,25 @@ var page_label: Label
 var previous: Button
 var next: Button
 var details: Label
+var detail_title: Label
+var detail_icon: TextureRect
 var equip: Button
 var favorite: Button
 var unseal: Button
+var empty: Label
+var drone_locked: Label
 var preset_names: Array[LineEdit]=[]
 var preset_apply: Array[Button]=[]
 var filter_text: TextEdit
 var filter_result: Label
+var string_dialog: AcceptDialog
+var string_button: Button
+var forge_title: Label
+var forge_details: Label
+var forge_icon: TextureRect
 var routes: Array[Button]=[]
 var dirty=true
+var inventory_dirty=true
 
 func t(key: String,params: Dictionary={}) -> String:return UIText.t("hyperspace."+key,params)
 func put(control: Object,key: StringName,value: Variant) -> void:
@@ -60,86 +85,168 @@ func label(parent: Node,text: String,font_size=22) -> Label:
  var n=Label.new();n.text=text;n.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  n.add_theme_font_size_override("font_size",font_size);n.add_theme_color_override("font_color",Color("243d50"));parent.add_child(n);return n
 func button(parent: Node,key: String,action: Callable) -> Button:
- var n=Button.new();n.text=t(key);n.custom_minimum_size=Vector2(130,44)
+ var n=Button.new();n.text=t(key);n.custom_minimum_size=Vector2(116,44)
  preload("res://scripts/dialog_presentation.gd").button_skin(n,false)
  parent.add_child(n);n.pressed.connect(action);return n
 func row(parent: Node) -> HBoxContainer:
  var n=HBoxContainer.new();n.add_theme_constant_override("separation",12);parent.add_child(n);return n
+func box(parent: Node,separation=12) -> VBoxContainer:
+ var n=VBoxContainer.new();n.add_theme_constant_override("separation",separation);n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;parent.add_child(n);return n
+func surface(parent: Node) -> VBoxContainer:
+ var p=PanelContainer.new();p.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ p.add_theme_stylebox_override("panel",preload("res://scripts/dialog_presentation.gd").surface(Color("e4e8da"),Color("849e9c"),18));parent.add_child(p);return box(p)
+func thumbnail(parent: Node,width: float) -> TextureRect:
+ var n=TextureRect.new();n.custom_minimum_size=Vector2(width,width);n.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;n.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;n.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(n);return n
+func option(parent: Node) -> OptionButton:
+ var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
- host=owner
- theme=preload("res://scripts/dialog_presentation.gd").theme()
- add_theme_font_override("font",host.font)
+ host=owner;theme=preload("res://scripts/dialog_presentation.gd").theme();add_theme_font_override("font",host.font)
  var panel=PanelContainer.new();panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- panel.offset_left=24;panel.offset_right=-24;panel.offset_top=24;panel.offset_bottom=-24
+ panel.offset_left=20;panel.offset_right=-20;panel.offset_top=20;panel.offset_bottom=-20
  panel.add_theme_stylebox_override("panel",preload("res://scripts/dialog_presentation.gd").surface());add_child(panel)
- var margin=MarginContainer.new()
- for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,24)
- panel.add_child(margin)
- scroll=ScrollContainer.new();scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;margin.add_child(scroll)
- root_box=VBoxContainer.new();root_box.size_flags_horizontal=Control.SIZE_EXPAND_FILL;root_box.add_theme_constant_override("separation",16);scroll.add_child(root_box)
- label(root_box,t("title"),34);label(root_box,t("routes"))
- var route_row=row(root_box)
+ root_box=box(panel,18)
+ var heading=label(root_box,t("title"),32);heading.autowrap_mode=TextServer.AUTOWRAP_OFF
+ var tabs=row(root_box)
+ for key in ["section_explore","section_drones","section_forge","section_rules"]:
+  var index=section_buttons.size();var b=button(tabs,key,func():select_section(index));b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;section_buttons.append(b)
+ var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
+ for i in 4:
+  var content=VBoxContainer.new();content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);content.add_theme_constant_override("separation",14);stack.add_child(content);sections.append(content)
+ build_exploration(sections[0]);build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
+ host.game.event.connect(on_event);visibility_changed.connect(func():
+  if is_visible_in_tree():refresh())
+ select_section(0);set_process(true);refresh()
+func select_section(index: int) -> void:
+ section_index=clampi(index,0,3)
+ for i in 4:
+  put(sections[i],"visible",i==section_index)
+  skin_selection(section_buttons[i],i==section_index)
+ if host!=null and not bag.is_empty():refresh()
+func build_exploration(parent: Node) -> void:
+ label(parent,t("routes"),26)
+ var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",14);grid.add_theme_constant_override("v_separation",14);parent.add_child(grid)
  for key in host.game.hyperspace.config.routes:
-  var b=button(route_row,str(key),func():route=str(key);refresh_status());b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;routes.append(b)
- var levels=row(root_box);var level_label=label(levels,t("level"));level_label.custom_minimum_size.x=160;level_label.autowrap_mode=TextServer.AUTOWRAP_OFF;level=SpinBox.new();level.min_value=5;level.max_value=5;level.step=1;level.custom_minimum_size.x=170;levels.add_child(level);level.get_line_edit().add_theme_color_override("font_color",Color("243d50"));level.get_line_edit().add_theme_stylebox_override("normal",preload("res://scripts/dialog_presentation.gd").surface());level.value_changed.connect(func(_v):refresh_status())
- energy=label(root_box,"");best=label(root_box,"")
- var commands=row(root_box)
- start_button=button(commands,"start",start_manual);crew_button=button(commands,"crew",func():
+  var b=button(grid,str(key),func():route=str(key);refresh_status());b.text="";b.custom_minimum_size.y=140;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+  var margin=MarginContainer.new();margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+  for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,14)
+  margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(margin)
+  var content=row(margin);content.mouse_filter=Control.MOUSE_FILTER_IGNORE
+  var config: Dictionary=host.game.hyperspace.config.routes[key];var icon=thumbnail(content,98);icon.texture=load("res://assets/hyperspace/icons/"+FAMILIES[config.weapon]+".png")
+  var text=box(content,10);text.mouse_filter=Control.MOUSE_FILTER_IGNORE
+  label(text,t(str(key)),25).mouse_filter=Control.MOUSE_FILTER_IGNORE
+  label(text,t("route_reward",{"material":t(config.material)}),20).mouse_filter=Control.MOUSE_FILTER_IGNORE
+  routes.append(b)
+ var levels=row(parent);var title=label(levels,t("level"));title.custom_minimum_size.x=160;title.autowrap_mode=TextServer.AUTOWRAP_OFF
+ level=SpinBox.new();level.min_value=5;level.max_value=5;level.step=1;level.custom_minimum_size.x=160;levels.add_child(level);input_skin(level.get_line_edit());level.value_changed.connect(func(_v):refresh_status())
+ var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
+ label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
+ label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
+ var commands=row(parent);start_button=button(commands,"start",start_manual);crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
- claim_button=button(commands,"claim",claim)
- label(root_box,t("auto_hint"),18)
- status=label(root_box,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;root_box.add_child(progress)
- first_win=label(root_box,t("first_win"),20)
- inventory_box=VBoxContainer.new();inventory_box.add_theme_constant_override("separation",12);root_box.add_child(inventory_box)
- label(inventory_box,t("warehouse"),28);capacity=label(inventory_box,"");budgets=label(inventory_box,"")
- var selectors=row(inventory_box)
- weapon_filter=OptionButton.new();weapon_filter.add_item(t("all"))
+ label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
+ first_win=label(parent,t("first_win"),22)
+func build_inventory(parent: Node) -> void:
+ capacity=label(parent,"");budgets=label(parent,"")
+ drone_locked=label(parent,t("first_win"),24)
+ inventory_box=box(parent);inventory_box.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ var split=row(inventory_box);split.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ var list=box(split);list.size_flags_stretch_ratio=1.55
+ var selectors=row(list);weapon_filter=option(selectors);weapon_filter.add_item(t("all"))
  for key in FAMILIES:weapon_filter.add_item(t(key))
- quality_filter=OptionButton.new();quality_filter.add_item(t("all"))
- for key in ["white","blue","gold","legendary"]:quality_filter.add_item(t(key))
- sort_order=OptionButton.new()
+ quality_filter=option(selectors);quality_filter.add_item(t("all"))
+ for key in QUALITIES:quality_filter.add_item(t(key))
+ sort_order=option(selectors)
  for key in ["sort_acquired","sort_level","sort_quality"]:sort_order.add_item(t(key))
- for selector in [weapon_filter,quality_filter,sort_order]:
-  preload("res://scripts/dialog_presentation.gd").option(selector);selector.size_flags_horizontal=Control.SIZE_EXPAND_FILL;selectors.add_child(selector);selector.item_selected.connect(func(_i):page=0;refresh_list())
- var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",12);grid.add_theme_constant_override("v_separation",12);inventory_box.add_child(grid)
+ for selector in [weapon_filter,quality_filter,sort_order]:selector.item_selected.connect(func(_i):page=0;refresh_list())
+ var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10);list.add_child(grid)
  for i in PAGE_SIZE:
-  var b=Button.new();b.custom_minimum_size=Vector2(270,104);b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_constant_override("outline_size",0)
-  b.add_theme_font_size_override("font_size",19);b.add_theme_color_override("font_color",Color("243d50"));b.add_theme_color_override("font_hover_color",Color("243d50"));grid.add_child(b)
-  var icon=TextureRect.new();icon.position=Vector2(8,8);icon.size=Vector2(76,88);icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(icon)
-  b.add_theme_stylebox_override("normal",preload("res://scripts/dialog_presentation.gd").surface());b.pressed.connect(func():selected_id=str(b.get_meta("drone_id",""));refresh_details());cards.append(b);card_icons.append(icon)
- var paging=row(inventory_box);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=130;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
- details=label(inventory_box,t("choose"),20)
- var actions=row(inventory_box);equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id))
- label(inventory_box,t("summary"),18)
- label(inventory_box,t("presets"),26)
+  var b=button(grid,"none_selected",func():pass);b.text="";b.custom_minimum_size=Vector2(250,136);b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+  var margin=MarginContainer.new();margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+  for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,10)
+  margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(margin)
+  var content=row(margin);content.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_icons.append(thumbnail(content,62))
+  var text=box(content,3);text.mouse_filter=Control.MOUSE_FILTER_IGNORE
+  var title=label(text,"",21);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_titles.append(title)
+  var quality=label(text,"",19);quality.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_subtitles.append(quality)
+  var flags_label=label(text,"",18);flags_label.max_lines_visible=2;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
+  b.pressed.connect(func():selected_id=str(b.get_meta("drone_id",""));refresh_details());cards.append(b)
+ empty=label(list,t("no_items"),24)
+ var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
+ var detail=surface(split);detail.custom_minimum_size.x=360;detail.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ label(detail,t("selected_heading"),25)
+ var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
+ equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2))
+ scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
+ details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ label(detail,t("summary"),19)
+func build_forge(parent: Node) -> void:
+ var selected=surface(parent);label(selected,t("forge_selected"),25)
+ var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
+ button(selected,"go_warehouse",func():select_section(1))
+ label(parent,t("forge_available_hint"),21)
+ var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",12);grid.add_theme_constant_override("v_separation",12);parent.add_child(grid)
+ for operation in ["upgrade","reroll","hanging","lock","tier","reset","future","legend","modern","ultimate"]:
+  var b=button(grid,"forge_"+operation,func():pass);b.custom_minimum_size.y=64;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;b.disabled=true;b.tooltip_text=t("remaining_adapter")
+ label(parent,t("forge_not_ready"),22)
+func build_rules(parent: Node) -> void:
+ label(parent,t("presets"),25)
  for index in 3:
-  var pr=row(inventory_box);var name_field=LineEdit.new();name_field.placeholder_text=t("preset_name");name_field.max_length=96;input_skin(name_field);name_field.size_flags_horizontal=Control.SIZE_EXPAND_FILL;pr.add_child(name_field);preset_names.append(name_field)
+  var pr=row(parent);var name_field=LineEdit.new();name_field.placeholder_text=t("preset_name");name_field.max_length=96;input_skin(name_field);name_field.size_flags_horizontal=Control.SIZE_EXPAND_FILL;pr.add_child(name_field);preset_names.append(name_field)
   button(pr,"save_preset",func():host.game.hyperspace.set_preset(host.game,index,name_field.text,bag.equipped))
   var apply=button(pr,"apply_preset",func():
    if preset_adapter.is_valid():preset_adapter.call(index))
-  preset_apply.append(apply)
-  button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
- label(inventory_box,t("filter"),26);label(inventory_box,t("filter_hint"),18)
- filter_mode=OptionButton.new();filter_mode.add_item("AND");filter_mode.add_item("OR");preload("res://scripts/dialog_presentation.gd").option(filter_mode);inventory_box.add_child(filter_mode)
+  preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
+ label(parent,t("filter"),25);label(parent,t("filter_draft_hint"),20)
+ var modes=row(parent);filter_mode=option(modes);filter_mode.add_item(t("filter_and"));filter_mode.add_item(t("filter_or"));string_button=button(modes,"string_tools",show_strings)
  for i in 5:
-  var fr=row(inventory_box);var kind=OptionButton.new()
-  for key in ["none","weapon","quality","min_level","affix","legendary","ultimate"]:
-   kind.add_item(t("condition_"+key));kind.set_item_metadata(kind.item_count-1,key)
-  kind.custom_minimum_size.x=160;preload("res://scripts/dialog_presentation.gd").option(kind);fr.add_child(kind);filter_kinds.append(kind)
-  var value=LineEdit.new();input_skin(value);value.size_flags_horizontal=Control.SIZE_EXPAND_FILL;fr.add_child(value);filter_values.append(value)
- button(inventory_box,"preview",build_filter_draft)
- filter_text=TextEdit.new();filter_text.custom_minimum_size.y=110;input_skin(filter_text);filter_text.text='{"version":1,"mode":"and","conditions":[]}';inventory_box.add_child(filter_text)
- var filters=row(inventory_box);button(filters,"preview",preview_filter);button(filters,"export",func():
-  var parsed=Codec.parse(filter_text.text,affix_catalog_provider.call() if affix_catalog_provider.is_valid() else [])
+  var fr=row(parent);var kind=option(fr);kind.custom_minimum_size.x=175
+  for key in KINDS:kind.add_item(t("condition_"+key));kind.set_item_metadata(kind.item_count-1,key)
+  filter_kinds.append(kind)
+  var value=option(fr);value.custom_minimum_size.x=230;condition_values.append(value)
+  var lev=SpinBox.new();lev.min_value=5;lev.max_value=1000000;lev.step=1;lev.custom_minimum_size.x=230;input_skin(lev.get_line_edit());fr.add_child(lev);condition_levels.append(lev)
+  var tier=option(fr)
+  for n in range(1,6):tier.add_item(t("condition_tier",{"tier":str(n)}))
+  condition_tiers.append(tier)
+  kind.item_selected.connect(func(_n):configure_condition(i));configure_condition(i)
+ button(parent,"filter_preview",build_filter_draft);filter_result=label(parent,t("rule_none"),22)
+ string_dialog=AcceptDialog.new();string_dialog.title=t("string_title");string_dialog.min_size=Vector2i(750,480);string_dialog.size=Vector2i(860,520);add_child(string_dialog);preload("res://scripts/dialog_presentation.gd").dialog(string_dialog)
+ var dialog_content=VBoxContainer.new();string_dialog.add_child(dialog_content);dialog_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog_content.offset_left=20;dialog_content.offset_right=-20;dialog_content.offset_top=20;dialog_content.offset_bottom=-60
+ filter_text=TextEdit.new();input_skin(filter_text);filter_text.size_flags_vertical=Control.SIZE_EXPAND_FILL;filter_text.text='{"version":1,"mode":"and","conditions":[]}';dialog_content.add_child(filter_text)
+ var actions=row(dialog_content);button(actions,"string_import",import_filter_draft);button(actions,"string_copy",func():
+  var parsed=Codec.parse(filter_text.text,affix_catalog())
   if parsed.ok:DisplayServer.clipboard_set(JSON.stringify(parsed.rule)))
- filter_result=label(inventory_box,"")
- label(inventory_box,t("forge"),26);label(inventory_box,t("forge_hint"),18)
- var forge=GridContainer.new();forge.columns=3;inventory_box.add_child(forge)
- for operation in ["upgrade","reroll","hanging","lock","tier","reset","future","legend","modern","ultimate"]:
-  var b=button(forge,"forge_"+operation,func():pass);b.disabled=true;b.tooltip_text=t("adapter")
- host.game.event.connect(on_event);visibility_changed.connect(func():
-  if is_visible_in_tree():refresh())
- set_process(true);refresh()
+func affix_catalog() -> Array:
+ return affix_catalog_provider.call() if affix_catalog_provider.is_valid() else []
+func configure_condition(index: int) -> void:
+ var kind=str(filter_kinds[index].get_item_metadata(filter_kinds[index].selected));var value=condition_values[index];value.clear();put(condition_levels[index],"visible",kind=="min_level");put(condition_tiers[index],"visible",kind=="affix");put(value,"visible",kind!="min_level")
+ var keys: Array=[]
+ if kind=="weapon":keys=FAMILIES.keys()
+ elif kind=="quality":keys=QUALITIES
+ elif kind in ["legendary","ultimate"]:keys=[true,false]
+ elif kind=="affix":keys=affix_catalog()
+ for key in keys:
+  var name=t(str(key)) if kind in ["weapon","quality"] else (t("yes") if key else t("no")) if kind in ["legendary","ultimate"] else affix_name(str(key))
+  value.add_item(name);value.set_item_metadata(value.item_count-1,key)
+ if keys.is_empty():value.add_item(t("affix_catalog_wait") if kind=="affix" else t("condition_none"))
+ value.disabled=keys.is_empty()
+func show_strings() -> void:
+ build_filter_draft()
+ string_dialog.popup_centered(Vector2i(860,520))
+func import_filter_draft() -> void:
+ var parsed=Codec.parse(filter_text.text,affix_catalog())
+ if not parsed.ok:preview_filter();return
+ var rule:Dictionary=parsed.rule;filter_mode.select(0 if rule.mode=="and" else 1)
+ for i in 5:
+  var condition:Dictionary=rule.conditions[i] if i<rule.conditions.size() else {"kind":"none"}
+  filter_kinds[i].select(KINDS.find(condition.kind));configure_condition(i)
+  if condition.kind=="min_level":condition_levels[i].value=condition.value
+  elif condition.kind!="none":
+   var target=condition.value.key if condition.kind=="affix" else condition.value
+   for n in condition_values[i].item_count:
+    if condition_values[i].get_item_metadata(n)==target:condition_values[i].select(n);break
+   if condition.kind=="affix":condition_tiers[i].select(int(condition.value.max_tier)-1)
+ preview_filter();string_dialog.hide()
 func on_event(kind: String,_payload: Dictionary) -> void:
  if kind in ["hyperspace_changed","unlocks_changed","ship_changed"]:
   dirty=true
@@ -147,29 +254,26 @@ func on_event(kind: String,_payload: Dictionary) -> void:
 func _process(_delta: float) -> void:
  if not is_visible_in_tree():return
  if dirty:refresh()
- refresh_progress()
+ if section_index==0:refresh_progress()
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
-  bag=s.inventory.duplicate(true);generation=int(bag.generation);round_id=int(s.round_id);refresh_list()
- elif dirty:
-  # Preset commands in stage1 do not increment inventory generation.
-  var changed=bag.presets!=s.inventory.presets
-  bag.presets=s.inventory.presets.duplicate(true)
-  if changed:
-   for b in cards:
-    var id=str(b.get_meta("drone_id",""))
-    if bag.drones.has(id):
-     var d:Dictionary=bag.drones[id]
-     put(b,"text","                  "+t("card",{"weapon":t(d.weapon),"level":str(d.level),"quality":t(d.origin_quality),"flags":flags(id,d)}).replace("\n","\n                  "))
-  refresh_details()
- put(inventory_box,"visible",bool(s.unlocked_drones))
- put(first_win,"visible",not bool(s.unlocked_drones))
- for i in 3:
-  put(preset_apply[i],"disabled",not preset_adapter.is_valid() or i>=bag.presets.size())
-  if i<bag.presets.size() and not preset_names[i].has_focus():put(preset_names[i],"text",str(bag.presets[i].name))
- refresh_status();refresh_progress();dirty=false
+  bag=s.inventory.duplicate(true);generation=int(bag.generation);round_id=int(s.round_id);inventory_dirty=true
+ elif dirty and bag.presets!=s.inventory.presets:
+  bag.presets=s.inventory.presets.duplicate(true);inventory_dirty=true
+ if section_index==0:
+  put(first_win,"visible",not bool(s.unlocked_drones));refresh_status();refresh_progress()
+ elif section_index==1:
+  put(inventory_box,"visible",bool(s.unlocked_drones));put(drone_locked,"visible",not bool(s.unlocked_drones))
+  if inventory_dirty:refresh_list()
+  else:refresh_details()
+ elif section_index==2:refresh_details()
+ elif section_index==3:
+  for i in 3:
+   put(preset_apply[i],"disabled",not preset_adapter.is_valid() or i>=bag.presets.size())
+   if i<bag.presets.size() and not preset_names[i].has_focus():put(preset_names[i],"text",str(bag.presets[i].name))
+ dirty=false
 func refresh_status() -> void:
  if host==null:return
  var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
@@ -182,7 +286,7 @@ func refresh_status() -> void:
  put(start_button,"disabled",not manual_adapter.is_valid() or not h.eligible_level(g,route,int(level.value)) or not s.active.is_empty() or float(s.energy)<float(h.config.ticket))
  put(start_button,"tooltip_text","" if manual_adapter.is_valid() else t("adapter"))
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
- for i in routes.size():put(routes[i],"modulate",Color("80edfa") if str(h.config.routes.keys()[i])==route else Color.WHITE)
+ for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
  var text=t("idle");var fill=0.0
@@ -195,6 +299,7 @@ func refresh_progress() -> void:
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
  put(start_button,"disabled",not manual_adapter.is_valid() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
+ put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))
  var ticket=float(host.game.hyperspace.config.ticket) if a.is_empty() else float(a.ticket)
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(host.game.hyperspace.config.energy_cap),"ticket":"%.0f"%ticket}))
 func refresh_list() -> void:
@@ -210,7 +315,12 @@ func refresh_list() -> void:
   if index>=ids.size():continue
   var id=str(ids[index]);var d: Dictionary=bag.drones[id];b.set_meta("drone_id",id)
   put(card_icons[i],"texture",load("res://assets/hyperspace/icons/"+FAMILIES[d.weapon]+".png"))
-  put(b,"text","                  "+t("card",{"weapon":t(d.weapon),"level":str(d.level),"quality":t(d.origin_quality),"flags":flags(id,d)}).replace("\n","\n                  "))
+  put(card_titles[i],"text",t("card",{"weapon":t(d.weapon),"level":str(d.level),"quality":"","flags":""}).split("\n")[0])
+  put(card_subtitles[i],"text",t(d.origin_quality))
+  put(card_flags[i],"text",flags(id,d) if not flags(id,d).is_empty() else t("no_flags"))
+  skin_selection(b,id==selected_id)
+ put(empty,"visible",ids.is_empty())
+ inventory_dirty=false
  put(previous,"disabled",page==0);put(next,"disabled",page==pages-1);put(page_label,"text",t("page",{"page":str(page+1),"pages":str(pages)}))
  put(capacity,"text",t("capacity",{"used":str(bag.warehouse.size()),"cap":str(Bag.capacity(bag,host.game.hyperspace.config)),"overflow":str(bag.overflow.size()),"retention":str(Bag.retention_capacity(bag,host.game.hyperspace.config))}))
  var legendary=0;var ultimate=0
@@ -222,6 +332,11 @@ func flags(id: String,d: Dictionary) -> String:
  var names: Array[String]=[]
  if d.legendary:names.append(t("legendary"))
  if d.ultimate:names.append(t("ultimate"))
+ var protection=protection_flags(id)
+ if not protection.is_empty():names.append(protection)
+ return " · ".join(names)
+func protection_flags(id: String) -> String:
+ var names: Array[String]=[]
  if bag.equipped.has(id):names.append(t("equipped"))
  if bag.favorites.has(id):names.append(t("favorite"))
  if bag.sealed.has(id):names.append(t("sealed"))
@@ -229,13 +344,53 @@ func flags(id: String,d: Dictionary) -> String:
   if p.drone_ids.has(id):names.append(t("preset"));break
  return " · ".join(names)
 func refresh_details() -> void:
+ if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
- put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id));put(favorite,"disabled",not valid);put(unseal,"disabled",not valid or not bag.sealed.has(selected_id) or int(host.game.profile.highestLevel)<int(bag.sealed.get(selected_id,0)))
- if not valid:put(details,"text",t("choose"));return
- var d: Dictionary=bag.drones[selected_id];var lines: Array[String]=[t("card",{"weapon":t(d.weapon),"level":str(d.level),"quality":t(d.origin_quality),"flags":flags(selected_id,d)}),t("protect",{"flags":flags(selected_id,d)})]
- for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):lines.append(t("affix",{"key":str(a.key),"tier":str(a.tier),"value":"%.1f"%float(a.value),"locked":t("locked") if a.locked else ""}))
- if d.legendary:lines.append(t("legend_effect",{"effect":str(d.legendary_effect.get("effect_id","")),"value":str(d.legendary_effect.get("value",""))}))
- lines.append(t("hanging",{"items":" · ".join(d.hangings)}));put(details,"text","\n".join(lines))
+ if section_index==2:
+  put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
+  put(forge_details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
+  put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
+  return
+ if section_index!=1:return
+ put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
+ put(favorite,"disabled",not valid)
+ put(unseal,"disabled",not valid or not bag.sealed.has(selected_id) or int(host.game.profile.highestLevel)<int(bag.sealed.get(selected_id,0)))
+ put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
+ put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":""}))
+ put(detail_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
+ for b in cards:skin_selection(b,b.get_meta("drone_id","")==selected_id)
+func drone_description(d: Dictionary) -> String:
+ var protection=protection_flags(str(d.id))
+ var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
+ for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
+  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES or key==t("affix_name.extra_chain_count") else t("percent",{"value":"%.1f"%float(a.value)})
+  if affix_display_provider.is_valid():
+   var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
+   if projection is Dictionary:
+    value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
+  lines.append(t("affix",{"key":name_text,"tier":str(a.tier),"value":value_text,"locked":t("locked") if a.locked else ""}))
+ if d.legendary:
+  var effect:Dictionary=d.legendary_effect
+  lines.append(t("legend_effect",{"effect":effect_name(str(effect.get("effect_id",""))),"value":t("percent",{"value":"%.1f"%float(effect.get("value",0))})}))
+ var hangings: Array[String]=[]
+ for key in d.hangings:hangings.append(hanging_name(str(key)))
+ lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
+ return "\n".join(lines)
+func catalog_name(group: String,key: String,fallback: String) -> String:
+ if not UIText.loaded:UIText.reload_catalog()
+ var bindings:Dictionary=UIText.bindings.get(group,{})
+ if bindings.has(key):return UIText.t(str(bindings[key].get("name","")))
+ for binding in bindings.values():
+  if key==UIText.t(str(binding.get("name",""))):return key
+ return t(fallback)
+func affix_name(key: String) -> String:
+ return catalog_name("hyperspace_affixes",key,"unknown_affix")
+func effect_name(key: String) -> String:
+ if effect_display_provider.is_valid():return str(effect_display_provider.call(key))
+ return catalog_name("hyperspace_legendary_effects",key,"unknown_effect")
+func hanging_name(key: String) -> String:
+ if hanging_display_provider.is_valid():return str(hanging_display_provider.call(key))
+ return catalog_name("hyperspace_hangings",key,"unknown_hanging")
 func toggle_equipped() -> void:
  if not hull_capacity_provider.is_valid():return
  var ids: Array=bag.equipped.duplicate()
@@ -254,21 +409,25 @@ func start_manual() -> void:
  # Adapter owns start+encounter setup atomically; no paid receipt without a battlefield.
  if manual_adapter.is_valid():manual_adapter.call(route,int(level.value))
 func preview_filter() -> void:
- var parsed=Codec.parse(filter_text.text,affix_catalog_provider.call() if affix_catalog_provider.is_valid() else [])
- put(filter_result,"text",t("filter_valid",{"count":str(parsed.rule.conditions.size()),"mode":parsed.rule.mode}) if parsed.ok else t("filter_invalid",{"reason":parsed.reason}))
-
+ var parsed=Codec.parse(filter_text.text,affix_catalog())
+ var text=t("filter_valid",{"count":str(parsed.rule.conditions.size()),"mode":t("filter_and") if parsed.rule.mode=="and" else t("filter_or")}) if parsed.ok else t("filter_invalid",{"reason":t("rule_error_"+str(parsed.reason))})
+ put(filter_result,"text",text)
 func build_filter_draft() -> void:
  var conditions: Array=[]
  for i in 5:
-  var kind=filter_kinds[i].get_item_metadata(filter_kinds[i].selected)
+  var kind=str(filter_kinds[i].get_item_metadata(filter_kinds[i].selected))
   if kind=="none":continue
-  var raw=filter_values[i].text.strip_edges();var value: Variant=raw
-  if kind in ["min_level","legendary","ultimate","affix"]:value=JSON.parse_string(raw)
+  var value:Variant=int(condition_levels[i].value) if kind=="min_level" else condition_values[i].get_item_metadata(condition_values[i].selected)
+  if kind=="affix":value={"key":value,"max_tier":condition_tiers[i].selected+1}
   conditions.append({"kind":kind,"value":value})
  filter_text.text=JSON.stringify({"version":1,"mode":"and" if filter_mode.selected==0 else "or","conditions":conditions})
  preview_filter()
-
 func input_skin(field: Control) -> void:
  field.add_theme_color_override("font_color",Color("243d50"))
  field.add_theme_color_override("font_placeholder_color",Color("637782"))
  for state in ["normal","focus","read_only"]:field.add_theme_stylebox_override(state,preload("res://scripts/dialog_presentation.gd").surface(Color("ecebdc"),Color("243d50"),6))
+
+func skin_selection(control: Button,selected: bool) -> void:
+ if not control.has_meta("hyperspace_selected") or bool(control.get_meta("hyperspace_selected"))!=selected:
+  control.set_meta("hyperspace_selected",selected)
+  preload("res://scripts/dialog_presentation.gd").button_skin(control,selected)
