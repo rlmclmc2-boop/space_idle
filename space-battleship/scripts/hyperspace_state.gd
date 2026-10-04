@@ -4,7 +4,7 @@ const Bag=preload("res://scripts/drone_inventory.gd")
 const R=preload("res://scripts/hyperspace_random.gd")
 const Filter=preload("res://scripts/hyperspace_filter.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
-const VERSION:=3
+const VERSION:=4
 
 static func fresh(c: Dictionary) -> Dictionary:
 	var materials: Dictionary={}
@@ -15,7 +15,7 @@ static func schema() -> Dictionary:
 	var affix: Dictionary={"key":"s","tier":"i","value":"n","locked":"b"}
 	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","planet_id":"s","hanging_slots":"i","preserved_hanging_slots":"i","omen":"b","forge_revision":"i","forge_rng_state":"s","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","parameters":{"*":"n"}},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
 	var reward: Dictionary={"drone":drone,"materials":{"*":"i"},"ultimate_cores":"i","hanging_rewards":{"*":"i"}}
-	return {"version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":{"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","ticket":"n","duration":"n","work":"n","reward":reward},"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
+	return {"version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":{"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","return_journey":{"stage":"i","distance":"n","groupIndex":"i","state":"i","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"],"loop":"b"},"ticket":"n","duration":"n","work":"n","reward":reward},"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
 
 static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool:
 	if not c.routes.has(route) or not reward.get("drone") is Dictionary or not reward.get("materials") is Dictionary or not reward.get("hanging_rewards") is Dictionary:return false
@@ -79,6 +79,7 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 		if not a.get("status") in ["started","completed_pending"] or not a.get("mode") in ["manual","auto"] or not c.routes.has(a.get("route")) or a.level<int(c.minimum_level) or a.level>max_stage:return false
 		for key in ["ticket","duration","work"]:
 			if not C.number(a.get(key)) or a[key]<0:return false
+		if not a.get("return_journey") is Dictionary:return false
 		if not a.get("crew_id") is String or (a.mode=="auto" and a.crew_id.is_empty()):return false
 		if not a.get("reward") is Dictionary:return false
 		if a.mode=="auto" and (a.duration<float(c.minimum_duration) or a.work>a.duration):return false

@@ -21,6 +21,7 @@ var MISSILE_BRAKE_FACTOR := 0.70
 var MISSILE_HIT_RADIUS := 5.0
 var MISSILE_LAUNCH_EDGE_MARGIN := 55.0
 var MISSILE_LAUNCH_FORWARD_Y := -0.12
+var drone_launch_provider:=Callable()
 var launch_provider:Callable
 var target_provider:Callable
 var missile_queue:Array[Dictionary]=[]
@@ -122,22 +123,25 @@ func missile_retarget_candidate(type:int)->Dictionary:
 	return {}
 
 func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:Dictionary,offset:Vector2,spread:float,salvo_index:int=0,salvo_count:int=1)->void:
-	if str(slot_entry("weapons",index).key)=="cannon":
+	if str(combat_entry(index).key)=="cannon":
 		if target.is_empty() or target.hp<=0 or not enemies.has(target):return
-		# The discharge already crosses its target in this launch frame. Build
-		# the canonical committed payload first, then settle one primary hit.
 		super.launch_player_attack(index,target,weapon,attack,offset,spread,salvo_index,salvo_count)
 		var shot:Dictionary=projectiles.back()
+		if shot.has("higgs"):
+			# The rendered rail spans the battlefield on this launch frame.
+			advance_higgs_projectile(shot,(BATTLE_SIZE.length()+128.0)/maxf(float(shot.speed),0.001))
+			shot.dead=true;projectiles.erase(shot)
+			return
 		shot.dead=true
-		projectiles.erase(shot) # Remove before hit callbacks or final-kill cleanup.
+		projectiles.erase(shot)
 		event.emit("projectile_impact",{"shot":shot,"pos":target_point(target)})
-		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)))
+		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 		return
-	if str(slot_entry("weapons",index).key)!="missile":
+	if str(combat_entry(index).key)!="missile":
 		super.launch_player_attack(index,target,weapon,attack,offset,spread,salvo_index,salvo_count);return
 	# Payload is resolved now, exactly once. Delayed ejection does not reroll gems/crit.
 	var aim:=target_point(target)
-	missile_queue.append({"mount":index,"entry":slot_entry("weapons",index),"source":player,"target":target,"aim":aim,"weapon":weapon.duplicate(true),"attack":attack,"offset":offset,"spread":spread,"ordinal":salvo_index,"count":salvo_count,"due":motion_clock+float(salvo_index)*EJECTION_GAP})
+	missile_queue.append({"mount":index,"entry":combat_entry(index),"source":player,"target":target,"aim":aim,"weapon":weapon.duplicate(true),"attack":attack,"offset":offset,"spread":spread,"ordinal":salvo_index,"count":salvo_count,"due":motion_clock+float(salvo_index)*EJECTION_GAP})
 
 func chain_target_point(target:Dictionary)->Vector2:
 	return target_point(target)
@@ -150,7 +154,7 @@ func tick_projectiles(dt:float)->void:
 	for packet in missile_queue.duplicate():
 		if float(packet.due)>motion_clock+0.000000001:continue
 		missile_queue.erase(packet)
-		if not is_same(packet.source,player) or not is_same(slot_entry("weapons",int(packet.mount)),packet.entry) or str(packet.entry.key)!="missile" or N.compare(player.armour,0)<=0:
+		if not is_same(packet.source,player) or not is_same(combat_entry(int(packet.mount)),packet.entry) or str(packet.entry.key)!="missile" or N.compare(player.armour,0)<=0:
 			cancelled_ejections+=1;continue
 		if not missile_target_live(packet.target):
 			packet.target=missile_retarget_candidate(int(packet.weapon.dmgtype))
@@ -174,7 +178,10 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	var packet:=release_context
 	var target_alive:bool=missile_target_live(shot.target)
 	var aim:Vector2=target_point(shot.target) if target_alive else Vector2(packet.aim)
-	var pose:Dictionary=launch_provider.call(int(packet.mount),aim,int(packet.ordinal)) if launch_provider.is_valid() else {"position":Vector2(shot.x,shot.y),"direction":(aim-Vector2(shot.x,shot.y)).normalized()}
+	var pose:Dictionary={"position":Vector2(shot.x,shot.y),"direction":(aim-Vector2(shot.x,shot.y)).normalized()}
+	if packet.entry.has("drone_id"):
+		if drone_launch_provider.is_valid():pose=drone_launch_provider.call(str(packet.entry.drone_id),aim,int(packet.ordinal))
+	elif launch_provider.is_valid():pose=launch_provider.call(int(packet.mount),aim,int(packet.ordinal))
 	var origin:Vector2=pose.position
 	var direction:Vector2=pose.direction
 	var side:float=-1.0 if int(packet.ordinal)%2==0 else 1.0
@@ -229,7 +236,7 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 			if hit_records.size()>=2048:hit_records.pop_front()
 			hit_records.append({"time":motion_clock,"serial":int(shot.serial),"target_uid":int(shot.target.get("uid",-1)),"target_alive":float(shot.target.hp)>0,"damage":shot.damage})
 			event.emit("projectile_impact",{"shot":shot,"pos":aim})
-			hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)))
+			hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 			return true
 	else:
 		shot.orphan_age=float(shot.orphan_age)+dt

@@ -12,6 +12,7 @@ static func charge(s: Dictionary,c: Dictionary,dt: float) -> void:
 func advance(owner,g,dt: float) -> void:
 	var c: Dictionary=owner.config
 	if not is_finite(dt) or dt<=0 or g.paused or int(g.profile.highestLevel)<int(c.unlock_stage):return
+	c=owner.online_config(g)
 	var remaining:=dt+float(g.profile.hyperspace.pending_time)
 	g.profile.hyperspace.pending_time=0.0
 	var completions:=0

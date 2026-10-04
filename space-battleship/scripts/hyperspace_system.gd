@@ -16,6 +16,16 @@ func configure(c: Dictionary) -> bool:
 	if not C.valid(c):return false
 	config=c.duplicate(true);scheduler.reset();return true
 
+func online_config(g) -> Dictionary:
+	if g.stat_cache_enabled and g.stat_cache.has("hyperspace_energy_config"):return g.stat_cache.hyperspace_energy_config
+	if g.profile.hyperspace.inventory.equipped.is_empty():return config
+	var multiplier:=1.0+float(g.hyperspace_totals().hangings.get("hyperspace_charge",0))
+	if multiplier==1.0:return config
+	var next: Dictionary=config.duplicate()
+	next.energy_cap=float(config.energy_cap)*multiplier;next.energy_rate=float(config.energy_rate)*multiplier
+	if g.stat_cache_enabled:g.stat_cache.hyperspace_energy_config=next
+	return next
+
 func fresh() -> Dictionary:
 	return S.fresh(config)
 
@@ -24,17 +34,25 @@ func load_state(g,raw: Variant) -> bool:
 	if raw==null:g.profile.hyperspace=fresh();return true
 	if not raw is Dictionary or not S.valid(raw,config,g.db.levels.size()):
 		last_error="invalid_hyperspace_save";return false
-	g.profile.hyperspace=raw.duplicate(true);return true
+	g.profile.hyperspace=raw.duplicate(true)
+	var receipt: Dictionary=g.profile.hyperspace.active
+	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":complete(g,int(receipt.round_id),int(receipt.run_id),false)
+	return true
 
 func snapshot(g) -> Dictionary:
 	var result: Dictionary=g.profile.hyperspace.duplicate(true)
 	result.hull_capacity=Permission.hull_capacity(g,config)
 	result.auto.crew_level=Permission.crew_level(g,str(result.auto.crew_id))
 	result.next_command={"round_id":result.round_id,"command_seq":result.command_seq}
+	result.combat={"disabled_drones":g.drone_combat.disabled.duplicate(),"rebuild_stacks":g.drone_combat.rebuild_stacks}
 	return result
 
 func publish(g,next: Dictionary,kind: String) -> void:
+	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
+	if refit:g.capture_refit_health()
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
+	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
+	if refit:g.apply_refit_health()
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})
 
 func eligible_level(g,route: String,level: int) -> bool:
@@ -49,7 +67,7 @@ func start(g,route: String,level: int,mode: String,crew_id: String="") -> Dictio
 	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or not generation_ready():return {}
 	var duration:=0.0;var ticket:=float(config.ticket)
 	if mode=="auto":
-		if not Bag.has_space(s.inventory,config) or float(s.energy)<float(config.energy_cap):return {}
+		if not Bag.has_space(s.inventory,config) or float(s.energy)<float(online_config(g).energy_cap):return {}
 		var best:=best_x1(g,route,level)
 		if best<=0 or not Permission.crew_available(g,crew_id):return {}
 		var crew_level:=Permission.crew_level(g,crew_id)
@@ -58,7 +76,7 @@ func start(g,route: String,level: int,mode: String,crew_id: String="") -> Dictio
 	if float(s.energy)<ticket:return {}
 	var next: Dictionary=s.duplicate(true)
 	next.energy=float(s.energy)-ticket;next.blocked=false
-	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
+	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":{},"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
 	next.next_run+=1;publish(g,next,"started")
 	return next.active.duplicate(true)
 
@@ -134,11 +152,23 @@ func complete_auto(g) -> bool:
 func advance(g,dt: float) -> void:
 	scheduler.advance(self,g,dt)
 
+func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=null) -> bool:
+	if bag.is_empty():bag=g.profile.hyperspace.inventory
+	var count:=0;var higgs:=false
+	for entry in (g.weapon_entries() if ordinary==null else ordinary):
+		if entry.key=="cannon":count+=1
+	for id in ids:
+		if not bag.drones.has(id):return false
+		var d: Dictionary=bag.drones[id]
+		if d.weapon=="cannon":count+=1
+		if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":higgs=true
+	return not higgs or count<=int(config.legendary_effects.higgs_cannon.constants.maximum_cannon_sources)
+
 func set_equipped(g,ids: Array,hull_capacity: int=-1) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
 	var actual:=Permission.hull_capacity(g,config)
 	if hull_capacity!=-1 and hull_capacity!=actual:return false
-	if not Bag.equipment_valid(next.inventory,ids,actual,config):return false
+	if not Bag.equipment_valid(next.inventory,ids,actual,config) or not equipment_constraints(g,ids,next.inventory):return false
 	next.inventory.equipped=ids.duplicate();next.inventory.generation+=1
 	publish(g,next,"equipment_changed");return true
 
@@ -206,6 +236,7 @@ func forge(g,request: Dictionary) -> Dictionary:
 	if not result.error.is_empty():return result
 	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
 	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
+	if not equipment_constraints(g,next.inventory.equipped,next.inventory):return Forge.error("equipment_constraint")
 	publish(g,next,"forge_"+str(request.operation));return result
 
 func preview_forge(g,request: Dictionary) -> Dictionary:
@@ -249,7 +280,7 @@ func apply_preset(g,index: int) -> bool:
 	if index<0 or index>=next.inventory.presets.size():return false
 	var preset: Dictionary=next.inventory.presets[index]
 	var ids: Array=preset.drone_ids.filter(func(id):return next.inventory.drones.has(id) and not next.inventory.sealed.has(id) and next.inventory.warehouse.has(id))
-	if not Bag.equipment_valid(next.inventory,ids,Permission.hull_capacity(g,config),config):return false
+	if not Bag.equipment_valid(next.inventory,ids,Permission.hull_capacity(g,config),config) or not equipment_constraints(g,ids,next.inventory):return false
 	for id in ids:
 		var d: Dictionary=next.inventory.drones[id]
 		if not d.ultimate:d.hangings=preset.hanging_loadouts.get(id,d.hangings).duplicate()
