@@ -111,9 +111,7 @@
     "omen_scope": "drone",
     "legendary_selection": "strongest_primary_stable_id",
     "sealed_unlock": "reached_planet_stage",
-    "legendary_repeat_action": null,
-    "keep_hanging_growth_on_reforge": true,
-    "filter_action": null
+    "legendary_repeat_action": null
   },
   "forge_costs": {
     "add_affix": {
@@ -563,7 +561,7 @@
         "stack_multiplier": 1.5,
         "stack_limit_enabled": false,
         "stack_limit": 0,
-        "counting_policy": null
+        "counting_policy": "first_hit_per_batch_per_target"
       }
     },
     "prism_tower": {

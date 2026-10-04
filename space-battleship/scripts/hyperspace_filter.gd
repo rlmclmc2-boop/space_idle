@@ -1,12 +1,13 @@
 extends RefCounted
 const C=preload("res://scripts/hyperspace_config.gd")
-const PREFIX:="SPACE-FILTER-v1:"
+const PREFIX:="SPACE-FILTER-v2:"
 
 static func fresh() -> Dictionary:
-	return {"version":1,"enabled":false,"mode":"all","conditions":[]}
+	return {"version":2,"enabled":false,"mode":"all","action":"keep_matches","conditions":[]}
 
 static func valid(f: Dictionary,c: Dictionary) -> bool:
-	if f.get("version")!=1 or not f.get("enabled") is bool or f.get("mode") not in ["all","any"] or not f.get("conditions") is Array or f.conditions.size()>int(c.maximum_filter_conditions):return false
+	if f.get("version")!=2 or not f.get("enabled") is bool or f.get("action") not in ["keep_matches","clear_matches"] or f.get("mode") not in ["all","any"] or not f.get("conditions") is Array or f.conditions.size()>int(c.maximum_filter_conditions):return false
+	if f.enabled and f.conditions.is_empty():return false
 	for condition in f.conditions:
 		if not condition is Dictionary:return false
 		match condition.get("field"):

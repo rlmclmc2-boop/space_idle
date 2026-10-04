@@ -75,7 +75,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 	if not generated.error.is_empty():last_error=generated.error;return false
 	var frozen: Dictionary=generated.reward;next.random_state=generated.random_state
 	var filter_match: bool=not frozen.drone.is_empty() and Filter.matches(frozen.drone,next.filter)
-	var filtered: bool=next.filter.enabled and ((config.policies.filter_action=="keep_matches" and not filter_match) or (config.policies.filter_action=="clear_matches" and filter_match))
+	var filtered: bool=next.filter.enabled and ((next.filter.action=="keep_matches" and not filter_match) or (next.filter.action=="clear_matches" and filter_match))
 	if not frozen.drone.is_empty() and filtered:
 		var rng:=R.restore(frozen.drone.forge_rng_state)
 		var dismantled:=Rewards.dismantle(frozen.drone,config,rng)
@@ -188,8 +188,6 @@ func reforge_state(g,keep_ids: Array,claim_stages: Dictionary) -> Dictionary:
 	if bag.is_empty():return {}
 	var next:=fresh();next.round_id=int(old.round_id)+1;next.inventory=bag
 	next.history=old.history.duplicate(true);next.unlocked_drones=old.unlocked_drones
-	if config.policies.keep_hanging_growth_on_reforge==null and old.hanging_modules.values().any(func(m):return m.unlocked or m.level>0 or m.exp>0):last_error="reforge_growth_policy_required";return {}
-	if config.policies.keep_hanging_growth_on_reforge==true:next.hanging_modules=old.hanging_modules.duplicate(true)
 	return next
 
 func generation_ready() -> bool:
@@ -227,7 +225,6 @@ func attach_hangings(g,id: String,keys: Array) -> bool:
 	next.inventory.generation+=1;publish(g,next,"hangings_changed");return true
 
 func set_filter(g,filter: Dictionary) -> bool:
-	if filter.get("enabled")==true and config.policies.filter_action not in ["keep_matches","clear_matches"]:last_error="filter_action_policy_required";return false
 	if not Filter.valid(filter,config):return false
 	var next: Dictionary=g.profile.hyperspace.duplicate(true);next.filter=filter.duplicate(true)
 	publish(g,next,"filter_changed");return true

@@ -17,7 +17,6 @@ func opened(db):
 	# Explicit test fixture policies; production nulls remain decision gates.
 	c.policies.core_reward="additional";c.policies.promotion_success="weighted_draw_stronger"
 	c.policies.omen_scope="drone";c.policies.legendary_repeat_action="reroll_effect"
-	c.policies.keep_hanging_growth_on_reforge=true;c.policies.filter_action="keep_matches"
 	g.hyperspace.configure(c);g.profile.hyperspace=g.hyperspace.fresh()
 	return g
 func add(g,id: String,quality: String="blue") -> Dictionary:
@@ -84,12 +83,13 @@ func _initialize() -> void:
 	var module: String=h.config.hanging_modules.keys()[0]
 	check(Rewards.credit_modules(g.profile.hyperspace,h.config,{module:1}) and g.profile.hyperspace.hanging_modules[module].level==0,"first module drop unlocks")
 	check(Rewards.credit_modules(g.profile.hyperspace,h.config,{module:1}) and g.profile.hyperspace.hanging_modules[module].level==1,"repeat module drop growth")
-	var f: Dictionary={"version":1,"enabled":true,"mode":"all","conditions":[{"field":"weapon","value":"laser"},{"field":"affix","key":"global_damage","tier":5}]}
+	var f: Dictionary={"version":2,"enabled":true,"mode":"all","action":"keep_matches","conditions":[{"field":"weapon","value":"laser"},{"field":"affix","key":"global_damage","tier":5}]}
 	check(h.set_filter(g,f) and Filter.matches(d,f),"filter all")
 	var encoded: String=h.export_filter(g);check(h.import_filter(g,encoded) and not h.import_filter(g,encoded+"!"),"canonical filter codec")
 	check(Transfer.new().prepare_data(g.portable_save_data(),db).error=="","filter and forge export schema")
 	var reforge: Dictionary=h.reforge_state(g,["forge"],{})
 	check(not reforge.is_empty() and reforge.inventory.sealed.forge==30 and Bag.retention_capacity(reforge.inventory,h.config)==10,"first reforge ten slots authoritative seal")
+	check(reforge.hanging_modules.values().all(func(m):return not m.unlocked and m.level==0 and m.exp==0),"reforge resets hanging unlock and all growth")
 	check(h.reforge_state(g,["forge"],{"forge":1}).is_empty(),"forged sealed thresholds refused")
 	var invalid: Dictionary=g.portable_save_data();invalid.hyperspace=reforge.duplicate(true);invalid.hyperspace.inventory.sealed.forge=1
 	check(Transfer.new().prepare_data(invalid,db).error=="format","forged threshold rejected on import")
@@ -147,11 +147,25 @@ func _initialize() -> void:
 	check(absf(hanging_count/20000.0-(0.2+0.05+0.0125+0.003125))<0.015,"independent hanging probabilities distribution")
 	check(absf(affix_count/20000.0-(1.0+0.25+0.0625))<0.02,"independent affix probabilities distribution")
 	var reforged_game=opened(db);add(reforged_game,"retained")
+	var retained_module: String=reforged_game.hyperspace.config.hanging_modules.keys()[0]
+	Rewards.credit_modules(reforged_game.profile.hyperspace,reforged_game.hyperspace.config,{retained_module:2})
+	reforged_game.profile.hyperspace.inventory.drones.retained.hanging_slots=1
+	check(reforged_game.hyperspace.attach_hangings(reforged_game,"retained",[retained_module]),"retained drone hanging fixture")
 	reforged_game.profile.resources={"1":1234.0,"2":5678.0};reforged_game.profile.chronoParticles=123
 	reforged_game.profile.planets["1"].degree=400;reforged_game.planet_buildings.sync(reforged_game,"1");reforged_game.profile.planets["1"].buildings.shipyard.status="built"
 	check(reforged_game.reforge_planet("1",["retained"]),"actual root reforge command")
 	check(reforged_game.profile.resources=={"1":1234.0,"2":5678.0} and reforged_game.profile.chronoParticles==123 and reforged_game.profile.planets["1"].conquered,"root permanent growth preserved")
 	check(reforged_game.profile.hyperspace.inventory.sealed.retained==30 and reforged_game.profile.hyperspace.round_id==2,"root reforge sealed namespace")
+	check(reforged_game.profile.hyperspace.inventory.drones.retained.hangings==[retained_module] and not reforged_game.profile.hyperspace.hanging_modules[retained_module].unlocked and reforged_game.profile.hyperspace.hanging_modules[retained_module].level==0,"sealed layout retained but current global unlock and growth reset")
+	for action in ["keep_matches","clear_matches"]:
+		var filtered_game=opened(db);var filtered_config: Dictionary=filtered_game.hyperspace.config.duplicate(true)
+		filtered_config.quality_weights={"white":1.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":0.0};filtered_game.hyperspace.configure(filtered_config)
+		check(filtered_game.hyperspace.set_filter(filtered_game,{"version":2,"enabled":true,"mode":"all","action":action,"conditions":[{"field":"weapon","value":"laser"}]}),"explicit filter action applies")
+		var receipt: Dictionary=filtered_game.hyperspace.start(filtered_game,"alpha",5,"manual")
+		check(filtered_game.hyperspace.complete(filtered_game,receipt.round_id,receipt.run_id,true),"explicit filter completion")
+		check(filtered_game.profile.hyperspace.active.reward.drone.is_empty()==(action=="clear_matches"),"filter action controls actual frozen reward")
+		var roundtrip_filter:=Filter.import_string(filtered_game.hyperspace.export_filter(filtered_game),filtered_config)
+		check(roundtrip_filter.action==action,"action roundtrips in rule string")
 	var start:=Time.get_ticks_usec()
 	for i in 6000:full.hyperspace.advance(full,0.016)
 	print("IDLE_US ",Time.get_ticks_usec()-start," namespace_bytes ",JSON.stringify(full.profile.hyperspace).length())
