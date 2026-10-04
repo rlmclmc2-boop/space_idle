@@ -4,6 +4,10 @@ const GEOMETRY := preload("res://scripts/enemy_protection_geometry.gd")
 const N := preload("res://scripts/growth_number.gd")
 const PHYSICAL := Color("ffaf61")
 const ENERGY := Color("64b5ff")
+const NEUTRAL := Color("c6ced2")
+
+static func shield_color(shield_type:int)->Color:
+	return PHYSICAL if shield_type==2 else ENERGY if shield_type==1 else NEUTRAL
 var hull_profiles: Dictionary = {}
 var hull_scans := 0
 var envelope_builds := 0
@@ -125,12 +129,12 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 	var hull_type := int(enemy.get("armourType",0))
 	var shield_type := int(enemy.get("shieldType",0))
 	var hull_visible: bool=status.show_hull and hull_type in [1,2]
-	if not hull_visible and not status.repair and not (status.active and shield_type in [1,2]):return PackedVector2Array()
+	if not hull_visible and not status.repair and not (status.active and shield_type in [0,1,2]):return PackedVector2Array()
 	var outline: PackedVector2Array=packet.inner
 	if hull_visible:closed(surface,outline,Color(PHYSICAL if hull_type==2 else ENERGY,0.8),packet.hull_stroke)
-	if status.active and shield_type in [1,2]:
+	if status.active and shield_type in [0,1,2]:
 		outline=packet.outer if hull_visible else packet.inner
-		var color := PHYSICAL if shield_type==2 else ENERGY
+		var color := shield_color(shield_type)
 		if status.repair:
 			# Capacity contour remains closed; recovery is still the segmented layer.
 			closed(surface,outline,Color(color,0.20),packet.shield_stroke)
@@ -146,7 +150,7 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 			surface.draw_polyline(PackedVector2Array([front[5],front[0],front[1]]),Color(ENERGY,0.85),packet.shield_stroke,true)
 			outline=front
 	if status.repair:
-		var color := PHYSICAL if shield_type==2 else ENERGY
+		var color := shield_color(shield_type)
 		for i in 3:
 			var a := -PI/2+float(i)*TAU/3
 			var center := Vector2(cos(a)*width*0.45,sin(a)*width*0.55)

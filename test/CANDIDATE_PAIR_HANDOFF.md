@@ -106,11 +106,17 @@ the actual health/shield/above-bar caption rectangles without changing drawing
 coordinates; the old validator wrongly assumed the base main.gd side caption.
 main.gd intersects the visual thread's geometry helpers; preserve both sets.
 
-Local checks: three import tests and seven geometry regression checks pass.
+Local checks: three import tests and nine geometry/colour regression checks pass.
 Godot4.7.2 actual main/Presented preflight has80 rows/0 rejections. All40
 candidates also pass actual graphical entry/drift checks in ordinary and small
 windows (40/0 each);160 original entry/steady PNGs inspected via16 contacts,
 plus preserved-coordinate N01/N02 and N35/N39 final template captures.
+H neutral shields now have a complete grey-white contour, grey-white recovery
+markers and grey-white shield meters. Orangephysical/blueenergy meanings stay
+unchanged. Baseline enemy rows contain no active neutral shields, so this does
+not change an old40 shield's appearance. All eight H groups pass native/small
+window checks and have full/empty/recovering PNGs; numeric stats stay unchanged.
+The final80/0 headless check includes this fix.
 The original crowded N35 still rejects (131 component collisions), proving
 real overlaps are not being ignored. AABB overlap alone no longer rejects:
 body/protection polygons, actual health/shield rectangles and above-bar font

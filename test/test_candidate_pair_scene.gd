@@ -154,6 +154,18 @@ func run():
        scene.refresh_draw_layers(0.0);scene.battle_layer.queue_redraw()
        await process_frame;await RenderingServer.frame_post_draw
        root.get_texture().get_image().save_png(str(options.capture_directory)+"/"+id+"-"+str(clock)+".png")
+      if options.get("capture_neutral_states",false):
+       var neutral:Array=game.enemies.filter(func(enemy):return int(enemy.shieldType)==0 and float(enemy.max_shield)>0)
+       for visual_state in ["empty","recovering"]:
+        for enemy in neutral:enemy.shield=0.0 if visual_state=="empty" else float(enemy.max_shield)*0.5
+        game.enemy_shield_time=1.0
+        for enemy in neutral:scene.enemy_recognition.state(enemy,game.enemy_shield_time,false,scene.enemy_pose(enemy))
+        if visual_state=="recovering":
+         game.enemy_shield_time=1.1
+         for enemy in neutral:enemy.shield=float(enemy.max_shield)*0.6
+        scene.fx_time=5.0;scene.refresh_draw_layers(0.0);scene.battle_layer.queue_redraw()
+        await process_frame;await RenderingServer.frame_post_draw
+        root.get_texture().get_image().save_png(str(options.capture_directory)+"/"+id+"-neutral-"+visual_state+".png")
      result_file.store_line(JSON.stringify(row));result_file.flush();count+=1
      if count%8==0:print("PAIRED SCENE: ",count," rows; no balance acceptance claim");await process_frame
  result_file.close()

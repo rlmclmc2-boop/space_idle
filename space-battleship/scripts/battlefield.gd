@@ -761,7 +761,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var layout:=enemy_status_layout(enemy,pos,width,angle,outline)
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
-		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.PHYSICAL if int(enemy.get("shieldType",0))==2 else ENEMY_RECOGNITION.ENERGY)
+		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
 	if boss_battle:text_at(layout.caption,layout.caption_position,12,BATTLE_CREAM)
 
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:

@@ -11,7 +11,7 @@ static func parts(scene,enemy:Dictionary,centre:Vector2,angle:float)->Array[Dict
 	var shield:bool=float(enemy.max_shield)>0
 	var hull_visible:bool=int(enemy.armourType) in [1,2]
 	var repair:bool=shield and float(enemy.shieldRecovery)>0
-	var typed_shield:bool=shield and int(enemy.shieldType) in [1,2]
+	var typed_shield:bool=shield and int(enemy.shieldType) in [0,1,2]
 	var outline:=PackedVector2Array()
 	if hull_visible or repair or typed_shield:outline=packet.inner
 	# Include the full- and empty-shield layers, since shield settlement must not
