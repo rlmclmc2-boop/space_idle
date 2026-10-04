@@ -1,6 +1,8 @@
 extends RefCounted
 ## Route IDs are injected from the final encounter owner, never borrowed from mainline.
 const View=preload("res://scripts/hyperspace_encounter_database.gd")
+const RewardBinding=preload("res://scripts/hyperspace_reward_binding.gd")
+var reward_binder:RefCounted
 const Loader=preload("res://scripts/hyperspace_route_loader.gd")
 var route_ids: Dictionary={}
 var registry: Dictionary={}
@@ -14,11 +16,20 @@ var initializing:=false
 var last_error:=""
 func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 	if active:return false
-	route_ids={};registry={};production_accepted=false
+	route_ids={};registry={};production_accepted=false;reward_binder=null
 	var loader:=Loader.new()
 	var prepared: Dictionary=loader.load_files(g) if binding==null and candidate==null else loader.prepare(g,binding,candidate)
 	if prepared.is_empty():last_error=loader.last_error;return false
 	if not configure(g,prepared.routes,prepared):return false
+	if prepared.get("requires_reward_binding",false):
+		reward_binder=RewardBinding.new()
+		if not reward_binder.load_contract():last_error=reward_binder.last_error;route_ids={};registry={};return false
+		# Validate all forty at unlock and current reach; selected levels rebind before charge.
+		var levels:Array=[7]
+		var reached:int=clampi(int(g.profile.highestLevel),7,g.db.levels.size())
+		if reached!=7:levels.append(reached)
+		for level in levels:
+			if reward_binder.bind(g.db,registry,level).is_empty():last_error=reward_binder.last_error;route_ids={};registry={};reward_binder=null;return false
 	production_accepted=true;return true
 func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 	if active or routes.size()!=4:return false
@@ -45,11 +56,15 @@ func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 	route_ids=routes.duplicate(true);registry=separate.duplicate(true);production_accepted=false;last_error="";return true
 func start(g,route: String,level: int) -> bool:
 	if active or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
+	var bound_registry:Dictionary=registry
+	if reward_binder!=null:
+		bound_registry=reward_binder.bind(g.db,registry,level)
+		if bound_registry.is_empty():last_error=reward_binder.last_error;return false
 	var checkpoint: Dictionary={"stage":g.stage,"distance":g.retreat_target if g.state==g.State.RETREAT else g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}
 	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual")
 	if receipt.is_empty():return false
 	base_db=g.db;return_journey=checkpoint;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
-	var view:=View.new();view.configure(base_db,level,route_ids[route],registry)
+	var view:=View.new();view.configure(base_db,level,route_ids[route],bound_registry)
 	g.profile.hyperspace.active.return_journey=checkpoint.duplicate(true)
 	g.db=view;active=true;initializing=true
 	var started: bool=g.start(level,false)

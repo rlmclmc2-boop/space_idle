@@ -51,4 +51,4 @@ func prepare(g,binding: Variant,candidate: Variant) -> Dictionary:
 				if not C.integer(id) or candidate.groups.get(str(int(id)),{}).get("combatTier")!=tier:return fail("space_route_tier_invalid")
 				routes[route].append(int(id))
 	last_error=""
-	return {"routes":routes,"groups":candidate.groups.duplicate(true),"enemies":candidate.enemies.duplicate(true)}
+	return {"routes":routes,"groups":candidate.groups.duplicate(true),"enemies":candidate.enemies.duplicate(true),"requires_reward_binding":candidate.has("reward_data") or candidate.groups.values().any(func(row):return row.has("rewardBinding")) or candidate.enemies.values().any(func(row):return row.has("jewelDropRolls") or row.has("rewardDrops"))}

@@ -1958,6 +1958,11 @@ func is_boss_encounter() -> bool:
 func spawn_group(keep_distance := false) -> void:
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
+	if manual_hyperspace.active and manual_hyperspace.reward_binder!=null:
+		var reward_error:String=preload("res://scripts/candidate_rewards.gd").binding_error(str(int(encounter.id)),db.groups,db.enemies,db.levels,stage,float(db.levels[stage-1].resRatio),jewel_ratio())
+		if not reward_error.is_empty():
+			manual_hyperspace.last_error="space_reward_binding_invalid: "+reward_error
+			manual_hyperspace.finish(self,false);return
 	if not keep_distance:
 		distance = float(encounter.position) * float(db.levels[stage - 1].length)
 	group_index += 1
@@ -2894,10 +2899,13 @@ func jewel_kill_drop(enemy: Dictionary) -> void:
 	if enemy.get("jewelDropChecked", false):
 		return
 	enemy.jewelDropChecked = true
-	if not jewels_unlocked() or rng.randf() >= float(db.config.get("jewelDrop",0)):
-		return
-	uid += 1
-	drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
+	if not jewels_unlocked():return
+	var roll_count:int=preload("res://scripts/candidate_rewards.gd").rolls(enemy.get("jewelDropRolls",1))
+	if roll_count<0:return
+	for roll in roll_count:
+		if rng.randf()>=float(db.config.get("jewelDrop",0)):continue
+		uid += 1
+		drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
 func default_enhancement_order() -> Dictionary:
 	return {"weapons":["proficiency","repeat","critical"],"defence":["adaptation","memory_material","delayed_damage"]}

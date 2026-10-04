@@ -1,0 +1,1761 @@
+{
+  "schema_version": 1,
+  "groups": {
+    "7001": [
+      {
+        "slot": 0,
+        "enemy_id": 700020,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700021,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7002": [
+      {
+        "slot": 0,
+        "enemy_id": 700040,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700041,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700042,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7003": [
+      {
+        "slot": 0,
+        "enemy_id": 700060,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700061,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700062,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700063,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7004": [
+      {
+        "slot": 0,
+        "enemy_id": 700080,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700081,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          2,
+          3
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700082,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          4,
+          5
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700083,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          6,
+          7
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700084,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          8
+        ]
+      }
+    ],
+    "7005": [
+      {
+        "slot": 0,
+        "enemy_id": 700100,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700101,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          3,
+          4
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700102,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          5,
+          6
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700103,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          7,
+          8
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700104,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          9,
+          10
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700105,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          11,
+          12
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 800106,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          13,
+          14
+        ]
+      }
+    ],
+    "7006": [
+      {
+        "slot": 0,
+        "enemy_id": 700120,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700121,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7007": [
+      {
+        "slot": 0,
+        "enemy_id": 700140,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700141,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          2,
+          3
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700142,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700143,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          5
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700144,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          6
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700145,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          7
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700146,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          8
+        ]
+      }
+    ],
+    "7008": [
+      {
+        "slot": 0,
+        "enemy_id": 700160,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700161,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700162,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7009": [
+      {
+        "slot": 0,
+        "enemy_id": 700180,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700181,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700182,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700183,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7010": [
+      {
+        "slot": 0,
+        "enemy_id": 700200,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700201,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700202,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700203,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700204,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 800205,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7011": [
+      {
+        "slot": 0,
+        "enemy_id": 700220,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700221,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700222,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700223,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7012": [
+      {
+        "slot": 0,
+        "enemy_id": 700240,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700241,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700242,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700243,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700244,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700245,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 800246,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7013": [
+      {
+        "slot": 0,
+        "enemy_id": 700260,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700261,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700262,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7014": [
+      {
+        "slot": 0,
+        "enemy_id": 700280,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700281,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700282,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700283,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700284,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7015": [
+      {
+        "slot": 0,
+        "enemy_id": 700300,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700301,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700302,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700303,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7016": [
+      {
+        "slot": 0,
+        "enemy_id": 700320,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700321,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          2,
+          3
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700322,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          4,
+          5
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700323,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          6,
+          7
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700324,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          8,
+          9
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700325,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          10,
+          11
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700326,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          12,
+          13
+        ]
+      },
+      {
+        "slot": 7,
+        "enemy_id": 700327,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          14
+        ]
+      }
+    ],
+    "7017": [
+      {
+        "slot": 0,
+        "enemy_id": 700340,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700341,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700342,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      }
+    ],
+    "7018": [
+      {
+        "slot": 0,
+        "enemy_id": 701800,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 701801,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 701802,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 701803,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 701804,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 701805,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 701806,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 7,
+        "enemy_id": 701807,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7019": [
+      {
+        "slot": 0,
+        "enemy_id": 700380,
+        "jewelDropRolls": 6,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700381,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700382,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700383,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          12
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700384,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          13
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700385,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          14
+        ]
+      }
+    ],
+    "7020": [
+      {
+        "slot": 0,
+        "enemy_id": 700400,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700401,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700402,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700403,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700404,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7021": [
+      {
+        "slot": 0,
+        "enemy_id": 700420,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700421,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700422,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700423,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700424,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700425,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700426,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7022": [
+      {
+        "slot": 0,
+        "enemy_id": 700440,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700441,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700442,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      }
+    ],
+    "7023": [
+      {
+        "slot": 0,
+        "enemy_id": 700460,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700461,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700462,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700463,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700464,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700465,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7024": [
+      {
+        "slot": 0,
+        "enemy_id": 700480,
+        "jewelDropRolls": 4,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700481,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700482,
+        "jewelDropRolls": 3,
+        "reference_member_ordinals_for_resource_blocks": [
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700483,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          10
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700484,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          11
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700485,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          12
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700486,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          13
+        ]
+      },
+      {
+        "slot": 7,
+        "enemy_id": 700487,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          14
+        ]
+      }
+    ],
+    "7025": [
+      {
+        "slot": 0,
+        "enemy_id": 700500,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700501,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700502,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700503,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7026": [
+      {
+        "slot": 0,
+        "enemy_id": 700520,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700521,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700522,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700523,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700524,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7027": [
+      {
+        "slot": 0,
+        "enemy_id": 700540,
+        "jewelDropRolls": 5,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700541,
+        "jewelDropRolls": 4,
+        "reference_member_ordinals_for_resource_blocks": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700542,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          9,
+          10
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700543,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          11
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700544,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          12
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700545,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          13
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700546,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          14
+        ]
+      }
+    ],
+    "7028": [
+      {
+        "slot": 0,
+        "enemy_id": 700560,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700561,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700562,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700563,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7029": [
+      {
+        "slot": 0,
+        "enemy_id": 700580,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700581,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700582,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700583,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700584,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700585,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7030": [
+      {
+        "slot": 0,
+        "enemy_id": 700600,
+        "jewelDropRolls": 4,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700601,
+        "jewelDropRolls": 4,
+        "reference_member_ordinals_for_resource_blocks": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700602,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          8,
+          9
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700603,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          10
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700604,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          11
+        ]
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700605,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          12
+        ]
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700606,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          13
+        ]
+      },
+      {
+        "slot": 7,
+        "enemy_id": 700607,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          14
+        ]
+      }
+    ],
+    "7031": [
+      {
+        "slot": 0,
+        "enemy_id": 700620,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700621,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          1
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700622,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700623,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700624,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7032": [
+      {
+        "slot": 0,
+        "enemy_id": 700640,
+        "jewelDropRolls": 2,
+        "reference_member_ordinals_for_resource_blocks": [
+          0,
+          1
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700641,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          2
+        ]
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700642,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          3
+        ]
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700643,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          4
+        ]
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700644,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700645,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7033": [
+      {
+        "slot": 0,
+        "enemy_id": 703300,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 703301,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 703302,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 703303,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 703304,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 703305,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7034": [
+      {
+        "slot": 0,
+        "enemy_id": 700680,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700681,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700682,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700683,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7035": [
+      {
+        "slot": 0,
+        "enemy_id": 700700,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700701,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700702,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700703,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700704,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700705,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700706,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7036": [
+      {
+        "slot": 0,
+        "enemy_id": 703600,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 703601,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 703602,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 703603,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 703604,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 703605,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 703606,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 7,
+        "enemy_id": 703607,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 8,
+        "enemy_id": 703608,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 9,
+        "enemy_id": 703609,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7037": [
+      {
+        "slot": 0,
+        "enemy_id": 703700,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 703701,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 703702,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 703703,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 703704,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 703705,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 703706,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 7,
+        "enemy_id": 703707,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7038": [
+      {
+        "slot": 0,
+        "enemy_id": 703800,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 703801,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 703802,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 703803,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 703804,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 703805,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 703806,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 7,
+        "enemy_id": 703807,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 8,
+        "enemy_id": 703808,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 9,
+        "enemy_id": 703809,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 10,
+        "enemy_id": 703810,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7039": [
+      {
+        "slot": 0,
+        "enemy_id": 700780,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700781,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700782,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700783,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700784,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ],
+    "7040": [
+      {
+        "slot": 0,
+        "enemy_id": 700800,
+        "jewelDropRolls": 1,
+        "reference_member_ordinals_for_resource_blocks": [
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "enemy_id": 700801,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 2,
+        "enemy_id": 700802,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 3,
+        "enemy_id": 700803,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 4,
+        "enemy_id": 700804,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 5,
+        "enemy_id": 700805,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      },
+      {
+        "slot": 6,
+        "enemy_id": 700806,
+        "jewelDropRolls": 0,
+        "reference_member_ordinals_for_resource_blocks": []
+      }
+    ]
+  }
+}

@@ -23,7 +23,11 @@ func _initialize() -> void:
 	var g:=BattleGame.new(db,false);g.profile.cleared=range(1,7);g.rebuild_unlocks()
 	var f:=fixture();var groups_before:=JSON.stringify(db.groups);var enemies_before:=JSON.stringify(db.enemies)
 	check(not g.hyperspace.snapshot(g).manual_ready,"absent production files stay disabled")
-	check(not g.load_hyperspace_routes() and g.manual_hyperspace.last_error in ["space_data_missing","space_data_not_accepted"],"missing or actual review files cannot enable production")
+	var live_binding:Variant=JSON.parse_string(FileAccess.get_file_as_string("res://data/space_enemy_routes.json")) if FileAccess.file_exists("res://data/space_enemy_routes.json") else null
+	var live_loaded:bool=g.load_hyperspace_routes()
+	if live_binding is Dictionary and live_binding.get("data_status")=="accepted_all40":
+		check(live_loaded and g.hyperspace.snapshot(g).manual_ready,"accepted production includes reward readiness")
+	else:check(not live_loaded and g.manual_hyperspace.last_error in ["space_data_missing","space_data_not_accepted"],"missing or unaccepted review cannot enable production")
 	var review: Dictionary=f.binding.duplicate(true);review.data_status="review_candidate_not_all40_accepted"
 	check(not g.load_hyperspace_routes(review,f.candidates) and not g.hyperspace.snapshot(g).manual_ready,"review candidate never enables production")
 	var energy: float=g.profile.hyperspace.energy
