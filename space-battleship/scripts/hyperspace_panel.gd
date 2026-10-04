@@ -1,12 +1,12 @@
 extends Control
 ## Persistent section controls; commands remain owned by the hyperspace domain.
 const Bag=preload("res://scripts/drone_inventory.gd")
-const Codec=preload("res://scripts/drone_filter_preview.gd")
+const Codec=preload("res://scripts/hyperspace_filter.gd")
 const PAGE_SIZE=8
 const FAMILIES={"laser":"pulse","missile":"missile","cannon":"rail","longLaser":"beam"}
 const QUALITIES=["white","blue","gold","legendary"]
-const KINDS=["none","weapon","quality","min_level","affix","legendary","ultimate"]
-const COUNT_AFFIXES=["extra_chain_count"]
+const KINDS=["none","weapon","quality","minimum_level","affix","legendary_effect"]
+const COUNT_AFFIXES=["chain_count"]
 var host
 var manual_adapter: Callable
 var crew_adapter: Callable
@@ -75,6 +75,10 @@ var forge_title: Label
 var forge_details: Label
 var forge_icon: TextureRect
 var routes: Array[Button]=[]
+var commands=preload("res://scripts/hyperspace_commands.gd").new()
+var filter_enabled: CheckBox
+var filter_action: OptionButton
+var filter_save: Button
 var dirty=true
 var inventory_dirty=true
 
@@ -100,7 +104,12 @@ func thumbnail(parent: Node,width: float) -> TextureRect:
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
- host=owner;theme=preload("res://scripts/dialog_presentation.gd").theme();add_theme_font_override("font",host.font)
+ host=owner;commands.setup(self)
+ crew_adapter=commands.show_crew
+ hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
+ preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
+ affix_catalog_provider=func():return host.game.hyperspace.config.affixes.keys()
+ theme=preload("res://scripts/dialog_presentation.gd").theme();add_theme_font_override("font",host.font)
  var panel=PanelContainer.new();panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  panel.offset_left=20;panel.offset_right=-20;panel.offset_top=20;panel.offset_bottom=-20
  panel.add_theme_stylebox_override("panel",preload("res://scripts/dialog_presentation.gd").surface());add_child(panel)
@@ -169,14 +178,14 @@ func build_inventory(parent: Node) -> void:
   var title=label(text,"",21);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_titles.append(title)
   var quality=label(text,"",19);quality.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_subtitles.append(quality)
   var flags_label=label(text,"",18);flags_label.max_lines_visible=2;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
-  b.pressed.connect(func():selected_id=str(b.get_meta("drone_id",""));refresh_details());cards.append(b)
+  b.pressed.connect(func():selected_id=str(b.get_meta("drone_id",""));commands.configure_operation();refresh_details());cards.append(b)
  empty=label(list,t("no_items"),24)
  var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
  var detail=surface(split);detail.custom_minimum_size.x=360;detail.size_flags_vertical=Control.SIZE_EXPAND_FILL
  label(detail,t("selected_heading"),25)
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
- equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2))
+ equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));button(actions,"module_manage",commands.show_modules)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  label(detail,t("summary"),19)
@@ -184,11 +193,7 @@ func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
  var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
  button(selected,"go_warehouse",func():select_section(1))
- label(parent,t("forge_available_hint"),21)
- var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",12);grid.add_theme_constant_override("v_separation",12);parent.add_child(grid)
- for operation in ["upgrade","reroll","hanging","lock","tier","reset","future","legend","modern","ultimate"]:
-  var b=button(grid,"forge_"+operation,func():pass);b.custom_minimum_size.y=64;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;b.disabled=true;b.tooltip_text=t("remaining_adapter")
- label(parent,t("forge_not_ready"),22)
+ commands.build_forge(parent)
 func build_rules(parent: Node) -> void:
  label(parent,t("presets"),25)
  for index in 3:
@@ -197,56 +202,68 @@ func build_rules(parent: Node) -> void:
   var apply=button(pr,"apply_preset",func():
    if preset_adapter.is_valid():preset_adapter.call(index))
   preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
- label(parent,t("filter"),25);label(parent,t("filter_draft_hint"),20)
+ label(parent,t("filter"),25);label(parent,t("filter_domain_hint"),20)
  var modes=row(parent);filter_mode=option(modes);filter_mode.add_item(t("filter_and"));filter_mode.add_item(t("filter_or"));string_button=button(modes,"string_tools",show_strings)
+ var policy=row(parent);filter_enabled=CheckBox.new();filter_enabled.text=t("filter_auto");policy.add_child(filter_enabled);filter_action=option(policy)
+ for action in ["keep_matches","clear_matches"]:filter_action.add_item(t("filter_action_"+action));filter_action.set_item_metadata(filter_action.item_count-1,action)
  for i in 5:
   var fr=row(parent);var kind=option(fr);kind.custom_minimum_size.x=175
   for key in KINDS:kind.add_item(t("condition_"+key));kind.set_item_metadata(kind.item_count-1,key)
   filter_kinds.append(kind)
   var value=option(fr);value.custom_minimum_size.x=230;condition_values.append(value)
-  var lev=SpinBox.new();lev.min_value=5;lev.max_value=1000000;lev.step=1;lev.custom_minimum_size.x=230;input_skin(lev.get_line_edit());fr.add_child(lev);condition_levels.append(lev)
+  var lev=SpinBox.new();lev.min_value=0;lev.max_value=1000000;lev.allow_greater=true;lev.step=1;lev.custom_minimum_size.x=230;input_skin(lev.get_line_edit());fr.add_child(lev);condition_levels.append(lev)
   var tier=option(fr)
   for n in range(1,6):tier.add_item(t("condition_tier",{"tier":str(n)}))
   condition_tiers.append(tier)
   kind.item_selected.connect(func(_n):configure_condition(i));configure_condition(i)
- button(parent,"filter_preview",build_filter_draft);filter_result=label(parent,t("rule_none"),22)
+ var rule_actions=row(parent);button(rule_actions,"filter_preview",build_filter_draft);filter_save=button(rule_actions,"filter_save",save_filter);filter_result=label(parent,t("rule_none"),22)
  string_dialog=AcceptDialog.new();string_dialog.title=t("string_title");string_dialog.min_size=Vector2i(750,480);string_dialog.size=Vector2i(860,520);add_child(string_dialog);preload("res://scripts/dialog_presentation.gd").dialog(string_dialog)
  var dialog_content=VBoxContainer.new();string_dialog.add_child(dialog_content);dialog_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog_content.offset_left=20;dialog_content.offset_right=-20;dialog_content.offset_top=20;dialog_content.offset_bottom=-60
- filter_text=TextEdit.new();input_skin(filter_text);filter_text.size_flags_vertical=Control.SIZE_EXPAND_FILL;filter_text.text='{"version":1,"mode":"and","conditions":[]}';dialog_content.add_child(filter_text)
+ filter_text=TextEdit.new();input_skin(filter_text);filter_text.size_flags_vertical=Control.SIZE_EXPAND_FILL;filter_text.text=Codec.export_string(host.game.profile.hyperspace.filter,host.game.hyperspace.config);dialog_content.add_child(filter_text)
  var actions=row(dialog_content);button(actions,"string_import",import_filter_draft);button(actions,"string_copy",func():
-  var parsed=Codec.parse(filter_text.text,affix_catalog())
-  if parsed.ok:DisplayServer.clipboard_set(JSON.stringify(parsed.rule)))
+  var parsed=Codec.import_string(filter_text.text,host.game.hyperspace.config)
+  if valid_draft(parsed):DisplayServer.clipboard_set(filter_text.text))
 func affix_catalog() -> Array:
  return affix_catalog_provider.call() if affix_catalog_provider.is_valid() else []
 func configure_condition(index: int) -> void:
- var kind=str(filter_kinds[index].get_item_metadata(filter_kinds[index].selected));var value=condition_values[index];value.clear();put(condition_levels[index],"visible",kind=="min_level");put(condition_tiers[index],"visible",kind=="affix");put(value,"visible",kind!="min_level")
+ var kind=str(filter_kinds[index].get_item_metadata(filter_kinds[index].selected));var value=condition_values[index];value.clear();put(condition_levels[index],"visible",kind=="minimum_level");put(condition_tiers[index],"visible",kind=="affix");put(value,"visible",kind!="minimum_level")
  var keys: Array=[]
  if kind=="weapon":keys=FAMILIES.keys()
- elif kind=="quality":keys=QUALITIES
- elif kind in ["legendary","ultimate"]:keys=[true,false]
+ elif kind=="quality":keys=QUALITIES+["ultimate"]
+ elif kind=="legendary_effect":keys=host.game.hyperspace.config.legendary_effects.keys()
  elif kind=="affix":keys=affix_catalog()
  for key in keys:
-  var name=t(str(key)) if kind in ["weapon","quality"] else (t("yes") if key else t("no")) if kind in ["legendary","ultimate"] else affix_name(str(key))
+  var name=t(str(key)) if kind in ["weapon","quality"] else effect_name(str(key)) if kind=="legendary_effect" else affix_name(str(key))
   value.add_item(name);value.set_item_metadata(value.item_count-1,key)
  if keys.is_empty():value.add_item(t("affix_catalog_wait") if kind=="affix" else t("condition_none"))
  value.disabled=keys.is_empty()
 func show_strings() -> void:
  build_filter_draft()
  string_dialog.popup_centered(Vector2i(860,520))
+func valid_draft(rule: Dictionary) -> bool:
+ return not rule.is_empty() and rule.get("action","") in ["keep_matches","clear_matches"] and Codec.valid(rule,host.game.hyperspace.config)
 func import_filter_draft() -> void:
- var parsed=Codec.parse(filter_text.text,affix_catalog())
- if not parsed.ok:preview_filter();return
- var rule:Dictionary=parsed.rule;filter_mode.select(0 if rule.mode=="and" else 1)
+ var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
+ if not valid_draft(rule):preview_filter();return
+ filter_mode.select(0 if rule.mode=="all" else 1);filter_enabled.button_pressed=rule.enabled;filter_action.select(0 if rule.action=="keep_matches" else 1)
  for i in 5:
-  var condition:Dictionary=rule.conditions[i] if i<rule.conditions.size() else {"kind":"none"}
-  filter_kinds[i].select(KINDS.find(condition.kind));configure_condition(i)
-  if condition.kind=="min_level":condition_levels[i].value=condition.value
-  elif condition.kind!="none":
-   var target=condition.value.key if condition.kind=="affix" else condition.value
+  var condition:Dictionary=rule.conditions[i] if i<rule.conditions.size() else {"field":"none"}
+  filter_kinds[i].select(KINDS.find(condition.field));configure_condition(i)
+  if condition.field=="minimum_level":condition_levels[i].value=condition.value
+  elif condition.field!="none":
+   var target=condition.key if condition.field=="affix" else condition.value
    for n in condition_values[i].item_count:
     if condition_values[i].get_item_metadata(n)==target:condition_values[i].select(n);break
-   if condition.kind=="affix":condition_tiers[i].select(int(condition.value.max_tier)-1)
+   if condition.field=="affix":condition_tiers[i].select(int(condition.tier)-1)
  preview_filter();string_dialog.hide()
+func save_filter() -> void:
+ build_filter_draft()
+ var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
+ # Core v2 has a global policy placeholder. Do not silently substitute it for a user action.
+ if not host.game.hyperspace.fresh().filter.has("action"):
+  filter_result.text=t("filter_action_wait");return
+ if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
+ else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
  if kind in ["hyperspace_changed","unlocks_changed","ship_changed"]:
   dirty=true
@@ -278,8 +295,7 @@ func refresh_status() -> void:
  if host==null:return
  var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
  put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
- var ticket=float(h.config.ticket)
- if not s.active.is_empty():ticket=float(s.active.ticket)
+ var ticket=display_ticket(s)
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.config.energy_cap),"ticket":"%.0f"%ticket}))
  var best_time=float(h.best_x1(g,route,int(level.value)))
  put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
@@ -287,6 +303,11 @@ func refresh_status() -> void:
  put(start_button,"tooltip_text","" if manual_adapter.is_valid() else t("adapter"))
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
  for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
+func display_ticket(s: Dictionary) -> float:
+ if not s.active.is_empty():return float(s.active.ticket)
+ var h=host.game.hyperspace
+ if s.auto.enabled:return float(h.config.ticket)*20.0/(20.0+h.Permission.crew_level(host.game,str(s.auto.crew_id)))
+ return float(h.config.ticket)
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
  var text=t("idle");var fill=0.0
@@ -300,7 +321,7 @@ func refresh_progress() -> void:
  put(start_button,"disabled",not manual_adapter.is_valid() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
  put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))
- var ticket=float(host.game.hyperspace.config.ticket) if a.is_empty() else float(a.ticket)
+ var ticket=display_ticket(s)
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(host.game.hyperspace.config.energy_cap),"ticket":"%.0f"%ticket}))
 func refresh_list() -> void:
  list_refreshes+=1
@@ -348,7 +369,7 @@ func refresh_details() -> void:
  var valid=bag.drones.has(selected_id)
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
-  put(forge_details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
+  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(bag.drones[selected_id].hanging_slots),"revision":str(bag.drones[selected_id].forge_revision)}))
   put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
   return
  if section_index!=1:return
@@ -363,7 +384,7 @@ func drone_description(d: Dictionary) -> String:
  var protection=protection_flags(str(d.id))
  var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES or key==t("affix_name.extra_chain_count") else t("percent",{"value":"%.1f"%float(a.value)})
+  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES or key==t("affix_name.extra_chain_count") else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
   if affix_display_provider.is_valid():
    var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
    if projection is Dictionary:
@@ -371,7 +392,8 @@ func drone_description(d: Dictionary) -> String:
   lines.append(t("affix",{"key":name_text,"tier":str(a.tier),"value":value_text,"locked":t("locked") if a.locked else ""}))
  if d.legendary:
   var effect:Dictionary=d.legendary_effect
-  lines.append(t("legend_effect",{"effect":effect_name(str(effect.get("effect_id",""))),"value":t("percent",{"value":"%.1f"%float(effect.get("value",0))})}))
+  lines.append(effect_name(str(effect.get("effect_id",""))))
+  for parameter in effect.get("parameters",{}):lines.append(t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(effect.parameters[parameter])*100.0)}))
  var hangings: Array[String]=[]
  for key in d.hangings:hangings.append(hanging_name(str(key)))
  lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
@@ -409,19 +431,17 @@ func start_manual() -> void:
  # Adapter owns start+encounter setup atomically; no paid receipt without a battlefield.
  if manual_adapter.is_valid():manual_adapter.call(route,int(level.value))
 func preview_filter() -> void:
- var parsed=Codec.parse(filter_text.text,affix_catalog())
- var text=t("filter_valid",{"count":str(parsed.rule.conditions.size()),"mode":t("filter_and") if parsed.rule.mode=="and" else t("filter_or")}) if parsed.ok else t("filter_invalid",{"reason":t("rule_error_"+str(parsed.reason))})
- put(filter_result,"text",text)
+ var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
+ put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")}) if valid_draft(rule) else t("filter_string_invalid"))
 func build_filter_draft() -> void:
  var conditions: Array=[]
  for i in 5:
   var kind=str(filter_kinds[i].get_item_metadata(filter_kinds[i].selected))
   if kind=="none":continue
-  var value:Variant=int(condition_levels[i].value) if kind=="min_level" else condition_values[i].get_item_metadata(condition_values[i].selected)
-  if kind=="affix":value={"key":value,"max_tier":condition_tiers[i].selected+1}
-  conditions.append({"kind":kind,"value":value})
- filter_text.text=JSON.stringify({"version":1,"mode":"and" if filter_mode.selected==0 else "or","conditions":conditions})
- preview_filter()
+  if kind=="affix":conditions.append({"field":kind,"key":condition_values[i].get_item_metadata(condition_values[i].selected),"tier":condition_tiers[i].selected+1})
+  else:conditions.append({"field":kind,"value":int(condition_levels[i].value) if kind=="minimum_level" else condition_values[i].get_item_metadata(condition_values[i].selected)})
+ var rule={"version":1,"enabled":filter_enabled.button_pressed,"mode":"all" if filter_mode.selected==0 else "any","action":filter_action.get_item_metadata(filter_action.selected),"conditions":conditions}
+ filter_text.text=Codec.export_string(rule,host.game.hyperspace.config);preview_filter()
 func input_skin(field: Control) -> void:
  field.add_theme_color_override("font_color",Color("243d50"))
  field.add_theme_color_override("font_placeholder_color",Color("637782"))

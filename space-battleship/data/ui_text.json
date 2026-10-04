@@ -12428,19 +12428,97 @@
     "category": "battle",
     "note": "装甲是现有生命池；零生命配置仍可编辑，但不能战斗"
   },
-  {"note":"解锁教程与自动确认","text":"基础教程","key":"tutorial.basics","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"选择条目查看解锁说明。红点表示尚未阅读；自动确认不会标为已读。","key":"tutorial.select_entry","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"船员","key":"tutorial.system.crew","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"强化","key":"tutorial.system.enhancement","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"装备","key":"tutorial.system.equipment","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"星系","key":"tutorial.system.galaxy","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"科技","key":"tutorial.system.hightech","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"其他系统","key":"tutorial.system.other","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"行星","key":"tutorial.system.planets","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"反应炉","key":"tutorial.system.reactor","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"战舰","key":"tutorial.system.ships","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"系统解锁","key":"tutorial.unlocks","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"确认（{seconds}秒后自动）","key":"unlock.auto_confirm","category":"tutorial","params":"{seconds}"},
+  {
+    "note": "解锁教程与自动确认",
+    "text": "基础教程",
+    "key": "tutorial.basics",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "选择条目查看解锁说明。红点表示尚未阅读；自动确认不会标为已读。",
+    "key": "tutorial.select_entry",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "船员",
+    "key": "tutorial.system.crew",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "强化",
+    "key": "tutorial.system.enhancement",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "装备",
+    "key": "tutorial.system.equipment",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "星系",
+    "key": "tutorial.system.galaxy",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "科技",
+    "key": "tutorial.system.hightech",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "其他系统",
+    "key": "tutorial.system.other",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "行星",
+    "key": "tutorial.system.planets",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "反应炉",
+    "key": "tutorial.system.reactor",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "战舰",
+    "key": "tutorial.system.ships",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "系统解锁",
+    "key": "tutorial.unlocks",
+    "category": "tutorial",
+    "params": ""
+  },
+  {
+    "note": "解锁教程与自动确认",
+    "text": "确认（{seconds}秒后自动）",
+    "key": "unlock.auto_confirm",
+    "category": "tutorial",
+    "params": "{seconds}"
+  },
   {
     "key": "hyperspace.tab",
     "text": "异空间",
@@ -12833,7 +12911,7 @@
   },
   {
     "key": "hyperspace.auto_hint",
-    "text": "自动探索仅显示进度；船员派遣等待岗位接口",
+    "text": "自动探索仅显示进度；派遣占用船员，能量满后启动。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13403,7 +13481,7 @@
   },
   {
     "key": "hyperspace.effect_name.prism_tower",
-    "text": "光棱塔",
+    "text": "棱镜塔",
     "params": "",
     "category": "hyperspace"
   },
@@ -13427,7 +13505,7 @@
   },
   {
     "key": "hyperspace.effect_name.endless_beam",
-    "text": "无尽持续",
+    "text": "无尽光束",
     "params": "",
     "category": "hyperspace"
   },
@@ -13439,7 +13517,7 @@
   },
   {
     "key": "hyperspace.effect_name.drone_master",
-    "text": "无人机达人",
+    "text": "无人机大师",
     "params": "",
     "category": "hyperspace"
   },
@@ -13482,6 +13560,624 @@
   {
     "key": "hyperspace.hanging_name.hyperspace_charge",
     "text": "异空间充能",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.quote",
+    "text": "预览改造",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.commit_forge",
+    "text": "执行此报价",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.quote_first",
+    "text": "先预览：费用与随机次数由改造领域计算。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.quote_ready",
+    "text": "报价可执行；条件变化后需重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.quote_result",
+    "text": "消耗：{cost}\n抽取次数：{draws}",
+    "params": "cost,draws",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.cost_item",
+    "text": "{material} {cost}（持有 {available}）",
+    "params": "material,cost,available",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_cost",
+    "text": "无材料消耗",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.random_choice",
+    "text": "随机目标",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.guaranteed_max",
+    "text": "保证数值最大",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_done",
+    "text": "改造已完成。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_attempt_failed",
+    "text": "本次升阶未成功，已按报价消耗材料。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_failed",
+    "text": "操作未通过领域校验，请检查当前条件。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_summary",
+    "text": "词条 {affixes} 项 · 挂设槽 {slots} 个 · 改造版本 {revision}",
+    "params": "affixes,slots,revision",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_enable",
+    "text": "开启自动探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_disable",
+    "text": "停止自动探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.crew_choice",
+    "text": "{name} · 等级 {level} · {status}",
+    "params": "name,level,status",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.crew_available",
+    "text": "可派遣",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.crew_occupied",
+    "text": "正在其他岗位",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_crew",
+    "text": "暂无可派遣船员",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_projection",
+    "text": "实际门票 {ticket}\n预计耗时 {duration} 秒\n{status}；无 X1 记录时不能开启。",
+    "params": "ticket,duration,status",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_enabled",
+    "text": "自动探索已开启",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_disabled",
+    "text": "自动探索已关闭",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_manage",
+    "text": "管理挂设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_slots",
+    "text": "挂设 {used} / {cap}（同架不可重复）",
+    "params": "used,cap",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_choice",
+    "text": "{name} · 等级 {level} · 经验 {exp}",
+    "params": "name,level,exp",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_apply",
+    "text": "应用挂设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_rejected",
+    "text": "挂设未通过领域校验",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_domain_hint",
+    "text": "最多五条件；导入先预览，保存后才交给领域。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_auto",
+    "text": "自动处理新掉落",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_action_keep_matches",
+    "text": "保留匹配项",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_action_clear_matches",
+    "text": "销毁匹配项",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_save",
+    "text": "保存筛选规则",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_action_wait",
+    "text": "筛选动作接口待核心补齐；当前仅预览，未启用自动处理。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_saved",
+    "text": "筛选规则已保存。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_string_invalid",
+    "text": "字符串版本、长度、枚举或动作不合法。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_minimum_level",
+    "text": "最低等级",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_legendary_effect",
+    "text": "传说效果",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.ultimate_cores",
+    "text": "究极核心",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.collection_manage",
+    "text": "传说收藏",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.collection_apply",
+    "text": "保存传说收藏",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.collection_empty",
+    "text": "尚未发现传说效果。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.collection_hint",
+    "text": "仅已发现效果可收藏；保底传说化使用收藏列表。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_add_affix",
+    "text": "添加词条",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_replace_affix",
+    "text": "替换未锁词条",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_add_hanging_slot",
+    "text": "添加挂设槽",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_lock_affix",
+    "text": "随机锁定未锁词条",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_promote_affix",
+    "text": "升阶一阶",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_reroll_values",
+    "text": "重随机数值",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_enable_omen",
+    "text": "开启未来预兆",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_disable_omen",
+    "text": "关闭未来预兆",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_legendary",
+    "text": "传说化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_modernize",
+    "text": "现代化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_ultimate",
+    "text": "究极化 +5",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_restore_ultimate",
+    "text": "还原究极",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.operation_dismantle",
+    "text": "拆解无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_stale_round",
+    "text": "轮次已变，请重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_stale_command",
+    "text": "其他改造已执行，请重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_command_conflict",
+    "text": "报价命令冲突，请重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_stale_drone",
+    "text": "无人机已变化，请重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_unavailable_drone",
+    "text": "无人机不可用或仍在封存中。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_protected_drone",
+    "text": "装备、收藏或预设中的无人机不能拆解。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_ultimate_modification_forbidden",
+    "text": "究极状态只允许还原或拆解。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_insufficient_materials",
+    "text": "材料不足；报价显示实际所需材料。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_affix_limit",
+    "text": "已到品质词条上限。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_hanging_limit",
+    "text": "已到品质挂设槽上限。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_no_unlocked_affix",
+    "text": "没有可抽取的未锁词条。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_already_highest_tier",
+    "text": "已到最高阶。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_forecast_limit",
+    "text": "保底抽取超过领域上限。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_cost_limit",
+    "text": "消耗超过领域允许范围。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_no_new_record",
+    "text": "同路线没有更高等级首胜记录。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_stale_modernization_target",
+    "text": "现代化目标变化，请重新预览。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_legendary_not_collected",
+    "text": "目标传说效果尚未收藏。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_legendary_repeat_policy_required",
+    "text": "重复传说化规则尚未确定。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_invalid_arguments",
+    "text": "参数不合法。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_invalid_affix",
+    "text": "词条与武器不兼容。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_invalid_legendary",
+    "text": "传说效果与武器不兼容。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_no_unlocked_values",
+    "text": "没有可重随机的数值。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_omen_already_enabled",
+    "text": "未来预兆已经开启。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_already_ultimate",
+    "text": "已经是究极无人机。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_not_ultimate",
+    "text": "只有究极无人机可还原。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_invalid_result",
+    "text": "领域结果未通过校验。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_unknown_operation",
+    "text": "改造操作不可用。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_promotion_policy_required",
+    "text": "升阶规则未确定。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_omen_policy_required",
+    "text": "预兆规则未确定。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.command_error_module_value_limit",
+    "text": "模块成长值超过允许范围。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.higgs_cannon",
+    "text": "希格斯加农炮",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.scatter_pulse",
+    "text": "散射脉冲",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.precise_guidance",
+    "text": "精确制导",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.strange_matter",
+    "text": "奇异物质",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.wild_missile",
+    "text": "狂野导弹",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.black_hole",
+    "text": "黑洞",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_name.drone_rebuild",
+    "text": "无人机重组",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_damage_bonus",
+    "text": "伤害加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_area_bonus",
+    "text": "范围加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_single_target_bonus",
+    "text": "单体加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_maximum_multiplier_bonus",
+    "text": "最大倍率加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_damage_multiplier",
+    "text": "伤害倍率",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_maximum_bonus",
+    "text": "最大加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_maximum_dodge",
+    "text": "最大闪避",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_counter_damage_bonus",
+    "text": "反击伤害加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_maximum_reduction",
+    "text": "最大减伤",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.effect_parameter_damage_and_defence_bonus",
+    "text": "伤害与防御加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_confirm",
+    "text": "拆解将移除此无人机，并按领域规则发放材料与挂设奖励。继续？",
     "params": "",
     "category": "hyperspace"
   }
