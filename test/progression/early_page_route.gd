@@ -13,6 +13,8 @@ var pending_picker:Dictionary={}
 var scientist_context:=""
 var reactor_context:=""
 var rejected_inputs:=0
+var progress_guard=PlayerInput.ProgressGuard.new()
+var input_failure:Dictionary={}
 var driver
 var trace:FileAccess
 var output:String
@@ -102,7 +104,10 @@ func crew_action()->Dictionary:
 	return {}
 func action() -> Dictionary:
 	if not pending_picker.is_empty():
-		if is_instance_valid(pending_picker.picker) and pending_picker.picker.get_popup().visible:return {"kind":"option_select","picker":pending_picker.picker,"index":pending_picker.index,"origin":pending_picker.origin}
+		if is_instance_valid(pending_picker.picker) and pending_picker.picker.get_popup().visible:
+			var request:Dictionary=pending_picker.duplicate()
+			request["kind"]="option_select" if pending_picker.picker.get_popup().get_focused_item()==int(pending_picker.index) else "option_focus"
+			return request
 		pending_picker.clear()
 	if not player_input.modal_windows().is_empty():return {"kind":"dismiss_modal"}
 	if not game.pending_unlocks.is_empty():return {}
@@ -124,7 +129,9 @@ func action() -> Dictionary:
 				if not desired.is_empty() and str(game.slot_entry(category,index).key)!=desired:
 					var option:int=card.equipment_options.find(desired)
 					var choice:=picker_action("refit_open",card.name_button,option)
-					if not choice.is_empty():return choice
+					if not choice.is_empty():
+						choice.merge({"category":category,"slot_index":index,"target_key":desired})
+						return choice
 		var choices:Array=[]
 		for id in panel.cards:
 			var card=panel.cards[id]
@@ -160,9 +167,12 @@ func action() -> Dictionary:
 func click_button(choice:Dictionary) -> void:
 	var before:Dictionary=game.profile.resources.duplicate(true)
 	var before_loadout:Dictionary=game.profile.loadout.duplicate(true)
+	var before_ship:String=str(game.profile.selectedShip)
+	var before_profile:Dictionary=game.profile.duplicate(true)
 	var ok:=false
 	match choice.kind:
 		"pickup":ok=await player_input.pickup(choice.drop)
+		"option_focus":ok=await player_input.popup_focus_step(choice.picker.get_popup(),int(choice.index))
 		"option_select":
 			ok=await player_input.popup_choice(choice.picker.get_popup(),int(choice.index))
 			ok=ok and choice.picker.selected==int(choice.index)
@@ -171,14 +181,32 @@ func click_button(choice:Dictionary) -> void:
 			for down in [true,false]:
 				var event:=InputEventKey.new();event.keycode=KEY_ESCAPE;event.pressed=down
 				Input.parse_input_event(event);await process_frame
-			ok=true
+			ok=player_input.modal_windows().is_empty()
 		"scroll":ok=await player_input.scroll(choice.control,choice.container)
 		_:
 			ok=await player_input.press(choice.control)
 			if ok and choice.has("index") and choice.control is OptionButton:
-				pending_picker={"picker":choice.control,"index":choice.index,"origin":choice.kind}
+				ok=choice.control.get_popup().visible
+				if ok:
+					pending_picker={"picker":choice.control,"index":choice.index,"origin":choice.kind}
+					for key in ["category","slot_index","target_key"]:
+						if choice.has(key):pending_picker[key]=choice[key]
 			if ok and choice.kind=="distribute_scientists":scientist_context=choice.context
 			if ok and choice.kind=="reactor_balance":reactor_context=choice.context
+	# Selection must change the actual module, not merely close a menu or set
+	# its visual selected index. Opening the same failed request never clears
+	# its failure count. Focus movement is observable native UI progress.
+	if choice.kind=="option_select" and choice.get("origin","")=="refit_open":
+		ok=ok and before_loadout!=game.profile.loadout and str(game.slot_entry(choice.category,int(choice.slot_index)).key)==str(choice.target_key)
+	if choice.kind=="upgrade_slot":ok=ok and before_loadout!=game.profile.loadout
+	if choice.kind=="switch_ship":ok=ok and before_ship!=str(game.profile.selectedShip)
+	for action_key in {"scientist_max":"scientists","reactor_max":"reactorLevel","enhancement_max":"enhancementLevel","crew_assign":"crew"}:
+		if choice.kind==action_key:
+			var profile_key:String=str({"scientist_max":"scientists","reactor_max":"reactorLevel","enhancement_max":"enhancementLevel","crew_assign":"crew"}[action_key])
+			ok=ok and before_profile.get(profile_key)!=game.profile.get(profile_key)
+	var signature:String=str(choice.kind)+":"+str(choice.get("origin",choice.kind))+":"+str(choice.get("index",-1))+":"+str(choice.get("key",""))+":"+JSON.stringify(before_loadout)
+	if choice.has("picker"):signature+=":"+str(choice.picker.get_parent().name)
+	if choice.has("control"):signature+=":"+str(choice.control.get_parent().name)
 	var info:Dictionary={}
 	for key in choice:
 		if key not in ["control","picker","drop","container"]:info[key]=choice[key]
@@ -186,7 +214,12 @@ func click_button(choice:Dictionary) -> void:
 	info["resources_before"]=before;info["resources_after"]=game.profile.resources.duplicate(true)
 	info["loadout_before"]=before_loadout;info["loadout_after"]=game.profile.loadout.duplicate(true)
 	if not ok:
-		rejected_inputs+=1;record("input_rejected",info);return
+		rejected_inputs+=1;record("input_rejected",info)
+		if progress_guard.observe(signature,false):
+			input_failure=info.duplicate(true);input_failure["reason"]="Three repeated rejected or ineffective inputs for the same request/state"
+			record("input_failure_stop",input_failure);trace.flush()
+		return
+	progress_guard.observe(signature,true)
 	clicks+=1;row(game.stage).clicks+=1;record("click",info)
 func visit_page(index:int) -> void:
 	var before:int=driver.scene.equipment_tabs.current_tab
@@ -194,7 +227,12 @@ func visit_page(index:int) -> void:
 	var ok:bool=await player_input.press(driver.scene.system_nav_buttons[index])
 	page=driver.scene.equipment_tabs.current_tab
 	if not ok or page!=index:
-		rejected_inputs+=1;record("navigation_rejected",{"requested":index,"input_gate":player_input.last_gate});return
+		rejected_inputs+=1;record("navigation_rejected",{"requested":index,"input_gate":player_input.last_gate})
+		if progress_guard.observe("navigation:"+str(before)+":"+str(index),false):
+			input_failure={"reason":"Three repeated rejected navigation inputs","requested":index,"input_gate":player_input.last_gate}
+			record("input_failure_stop",input_failure);trace.flush()
+		return
+	progress_guard.observe("navigation:"+str(before)+":"+str(index),true)
 	visits+=1;clicks+=1;row(game.stage).page_visits+=1;row(game.stage).clicks+=1
 	record("page_visit",{"tour":touring,"input_gate":player_input.last_gate})
 func check_page() -> void:
@@ -264,8 +302,9 @@ func run() -> void:
 	var limit:=float(OS.get_environment("EARLY_ROUTE_SECONDS"))
 	if limit<=0:limit=10800.0
 	var started:=Time.get_ticks_usec();var heartbeat:=0
-	while game.simulated_time<limit and not clears.has("10"):
+	while game.simulated_time<limit and not clears.has("10") and input_failure.is_empty():
 		await step_controller()
+		if not input_failure.is_empty():break
 		var before:int=game.stage;var state:int=game.state
 		driver.before_tick(STEP);game.tick(STEP);driver.after_tick(STEP)
 		var key:String="travel" if state==BattleGame.State.TRAVEL else "combat" if state==BattleGame.State.COMBAT else "retreat" if state==BattleGame.State.RETREAT else "clear_notice" if state==BattleGame.State.LEVEL_CLEAR else "other"
@@ -277,7 +316,7 @@ func run() -> void:
 	for segment in segments:
 		if segment.state==BattleGame.State.TRAVEL:maximum_travel=maxf(maximum_travel,segment.seconds)
 		if segment.state==BattleGame.State.RETREAT:maximum_retreat=maxf(maximum_retreat,segment.seconds)
-	var result={"scope":"Genuine new profile, formal scene providers, exact X1 1/60 ticks; only stages 1-10. No resource injection, no stat changes, no cross-page oracle, Actual native mouse/keyboard input; visible/enabled controls and GUI hit tests; modal blocking and viewport-clipped pickup gestures. Refits only to actually exposed unlocked weapon tutorials; no hidden enemy inspection.","assumptions":{"idle_check_seconds":IDLE_CHECK,"tour_start_seconds":PAGE_TOUR,"button_seconds":BUTTON_TIME,"button_mode":"lowest module first; select x10 when affordable otherwise x1; native popup open/select, scrolling, crew selection and confirmation are each separate0.3s actual input gestures; scientist/reactor/enhancement use actual MAX buttons; disabled controls never dispatched","navigation":"Current page checks every3s; tour starts about every10s, empty pages cost0.3s, same-page affordable buttons drain before next page; return to equipment; delays recorded","unlock":"actual production UI countdown called with exact-X1 QA UI clock; each queued ID exposed3s independently; real wall/X10 verified by test_unlock_tutorial, not this accelerated study","ui_refresh":"Production refresh_visible_cards/refresh_navigation every logical1/60 step; no one-second artificial throttle. Hightech production _process uses the same logical UI dt.","later":"This entry stops at clear10; existing later sparse policy remains untouched"},"status":"complete" if clears.has("10") else "bounded_partial","x1_seconds":game.simulated_time,"clears":clears,"stage":game.stage,"deaths":deaths,"checks":checks,"empty_checks":empty_checks,"clicks":clicks,"rejected_inputs":rejected_inputs,"page_visits":visits,"unlock_confirmations":unlock_confirmations,"burst_seconds":bursts,"tour_seconds":tour_durations,"observed_weapon_tutorials":observed_weapons,"rows":rows,"segments":segments,"maximum_travel_seconds":maximum_travel,"maximum_retreat_seconds":maximum_retreat,"loadout":game.profile.loadout,"resources":game.profile.resources,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"wall_seconds":float(Time.get_ticks_usec()-started)/1e6}
+	var result={"scope":"Genuine new profile, formal scene providers, exact X1 1/60 ticks; only stages 1-10. No resource injection, no stat changes, no cross-page oracle, Actual native mouse/keyboard input; visible/enabled controls and GUI hit tests; modal blocking and viewport-clipped pickup gestures. Refits only to actually exposed unlocked weapon tutorials; no hidden enemy inspection.","assumptions":{"idle_check_seconds":IDLE_CHECK,"tour_start_seconds":PAGE_TOUR,"button_seconds":BUTTON_TIME,"button_mode":"lowest module first; select x10 when affordable otherwise x1; native popup open/select, scrolling, crew selection and confirmation are each separate0.3s actual input gestures; scientist/reactor/enhancement use actual MAX buttons; disabled controls never dispatched","navigation":"Current page checks every3s; tour starts about every10s, empty pages cost0.3s, same-page affordable buttons drain before next page; return to equipment; delays recorded","unlock":"actual production UI countdown called with exact-X1 QA UI clock; each queued ID exposed3s independently; real wall/X10 verified by test_unlock_tutorial, not this accelerated study","ui_refresh":"Production refresh_visible_cards/refresh_navigation every logical1/60 step; no one-second artificial throttle. Hightech production _process uses the same logical UI dt.","later":"This entry stops at clear10; existing later sparse policy remains untouched"},"status":"input_failure" if not input_failure.is_empty() else "complete" if clears.has("10") else "bounded_partial","input_failure":input_failure,"x1_seconds":game.simulated_time,"clears":clears,"stage":game.stage,"deaths":deaths,"checks":checks,"empty_checks":empty_checks,"clicks":clicks,"rejected_inputs":rejected_inputs,"page_visits":visits,"unlock_confirmations":unlock_confirmations,"burst_seconds":bursts,"tour_seconds":tour_durations,"observed_weapon_tutorials":observed_weapons,"rows":rows,"segments":segments,"maximum_travel_seconds":maximum_travel,"maximum_retreat_seconds":maximum_retreat,"loadout":game.profile.loadout,"resources":game.profile.resources,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"wall_seconds":float(Time.get_ticks_usec()-started)/1e6}
 	FileAccess.open(output+"/early-page-route.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
 	print("EARLY_ROUTE_DONE ",result.status," t=",game.simulated_time," checks=",checks," clicks=",clicks," visits=",visits)
-	driver.close();await process_frame;quit()
+	driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)

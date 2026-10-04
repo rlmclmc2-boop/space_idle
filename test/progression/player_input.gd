@@ -61,25 +61,26 @@ func press(control)->bool:
 		event.position=tree.root.get_final_transform()*point
 		Input.parse_input_event(event);await tree.process_frame
 	return true
+func popup_focus_step(menu:PopupMenu,index:int)->bool:
+	last_gate={"path":str(menu.get_path()),"index":index,"focused_before":menu.get_focused_item(),"visible":menu.visible,"modal_owner":modal_windows().has(menu)}
+	if not menu.visible or not modal_windows().has(menu) or index<0 or index>=menu.item_count or menu.is_item_disabled(index) or menu.is_item_separator(index):return false
+	var key:int=KEY_DOWN if menu.get_focused_item()<index else KEY_UP
+	var window_id:int=tree.root.get_window_id() if menu.is_embedded() else menu.get_window_id()
+	for down in [true,false]:
+		var event:=InputEventKey.new();event.keycode=key;event.pressed=down;event.window_id=window_id
+		Input.parse_input_event(event);await tree.process_frame
+	last_gate["focused_after"]=menu.get_focused_item();last_gate["key"]=key
+	return menu.get_focused_item()!=int(last_gate.focused_before)
 func popup_choice(menu:PopupMenu,index:int)->bool:
 	last_gate={"path":str(menu.get_path()),"visible":menu.visible,"enabled":index>=0 and index<menu.item_count and not menu.is_item_disabled(index),"modal_owner":modal_windows().has(menu),"index":index}
 	if not last_gate.visible or not last_gate.enabled or not last_gate.modal_owner:return false
-	var style:=menu.get_theme_stylebox("panel")
-	var row_height:float=(menu.get_contents_minimum_size().y-style.get_minimum_size().y)/menu.item_count
-	var point:=Vector2(menu.size.x*.5,style.get_content_margin(SIDE_TOP)+row_height*(index+.5))
-	last_gate["in_viewport"]=Rect2(Vector2.ZERO,Vector2(menu.size)).has_point(point)
-	if not last_gate.in_viewport:return false
-	# Route via the real window input path. push_input on PopupMenu's viewport
-	# does not deliver Window's native window_input notification.
+	last_gate["focused_item"]=menu.get_focused_item()
+	if menu.get_focused_item()!=index or menu.is_item_separator(index):return false
+	# Use the actual highlighted native item. Arrow keys skip separators and
+	# scroll long menus; Enter activates it without estimating row geometry.
 	var window_id:int=tree.root.get_window_id() if menu.is_embedded() else menu.get_window_id()
-	var input_point:Vector2=tree.root.get_final_transform()*(Vector2(menu.position)+point) if menu.is_embedded() else menu.get_final_transform()*point
-	last_gate["point"]=point;last_gate["input_point"]=input_point;last_gate["embedded"]=menu.is_embedded();last_gate["position"]=menu.position
-	var motion_event:=InputEventMouseMotion.new();motion_event.position=input_point;motion_event.window_id=window_id
-	Input.parse_input_event(motion_event);await tree.process_frame
-	if menu.is_embedded():cursor=Vector2(menu.position)+point
-	last_gate["focused_after_motion"]=menu.get_focused_item()
 	for down in [true,false]:
-		var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;event.position=input_point;event.window_id=window_id
+		var event:=InputEventKey.new();event.keycode=KEY_ENTER;event.pressed=down;event.window_id=window_id
 		Input.parse_input_event(event);await tree.process_frame
 	last_gate["closed_after_input"]=not menu.visible
 	return not menu.visible
@@ -113,3 +114,12 @@ func pickup(drop:Dictionary)->bool:
 	if point==null:return false
 	await motion(point)
 	return not scene.game.drops.any(func(item):return item.uid==drop.uid)
+
+class ProgressGuard extends RefCounted:
+	var failures:Dictionary={}
+	func observe(signature:String,progress:bool)->bool:
+		if progress:
+			failures.erase(signature)
+			return false
+		failures[signature]=int(failures.get(signature,0))+1
+		return int(failures[signature])>=3
