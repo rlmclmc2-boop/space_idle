@@ -245,7 +245,7 @@ func load_progress() -> void:
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
 	# Reject a future/corrupt subsystem before changing any authoritative balance.
-	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,db.levels.size())):
+	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,hyperspace.config)):
 		hyperspace.last_error="invalid_hyperspace_save"
 		return
 	invalidate_stat_cache()
@@ -842,6 +842,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	capture_refit_health()
 	var old_weapon_count := active_slot_count("weapons")
 	profile.selectedShip = key
+	hyperspace.fit_hull(self)
 	invalidate_stat_cache()
 	for category in ["weapons","defence"]:
 		var entries := module_entries(category)
@@ -1347,7 +1348,7 @@ func load_planets(raw) -> void:
 
 func idle_planet_crew(id: String) -> bool:
 	var member := crew.entry(self,id)
-	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty()
+	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(profile.hyperspace)!=id
 
 func planet_duration_from(row: Dictionary, degree) -> float:
 	var base := float(row.get("baseTime",0))

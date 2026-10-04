@@ -239,6 +239,7 @@ func valid_target(g, assignment: String, id: String, include_inactive := false) 
 func can_assign(g, id: String, assignment: String, target: String, restoring := false) -> bool:
 	if entry(g,id).is_empty() or (not restoring and not unlocked(g,id)):return false
 	if not assignment.is_empty() and not restoring:
+		if preload("res://scripts/hyperspace_permissions.gd").reserved_crew(g.profile.hyperspace)==id:return false
 		if not g.crew_exploration(id).is_empty():return false
 	if assignment.is_empty():return target.is_empty()
 	if not valid_target(g,assignment,target,restoring):return false

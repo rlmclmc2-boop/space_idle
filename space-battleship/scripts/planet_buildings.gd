@@ -112,7 +112,7 @@ func assign(g, planet_id: String, building_id: String, crew_id: String) -> bool:
 		item.crew.erase(crew_id)
 	else:
 		var member: Dictionary = g.crew.entry(g,crew_id)
-		if item.crew.size()>=int(row.extra_crew) or member.is_empty() or not g.crew.unlocked(g,crew_id) or not str(member.assignmentType).is_empty() or not occupied(g,crew_id).is_empty():return false
+		if item.crew.size()>=int(row.extra_crew) or member.is_empty() or not g.crew.unlocked(g,crew_id) or not str(member.assignmentType).is_empty() or not occupied(g,crew_id).is_empty() or preload("res://scripts/hyperspace_permissions.gd").reserved_crew(g.profile.hyperspace)==crew_id:return false
 		item.crew.append(crew_id)
 	g.save_dirty = true
 	g.event.emit("planet_changed",{"id":planet_id})

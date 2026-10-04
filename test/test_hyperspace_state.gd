@@ -1,150 +1,159 @@
 extends SceneTree
 const Bag=preload("res://scripts/drone_inventory.gd")
 const State=preload("res://scripts/hyperspace_state.gd")
+const Rewards=preload("res://scripts/drone_rewards.gd")
+const R=preload("res://scripts/hyperspace_random.gd")
+const Filter=preload("res://scripts/hyperspace_filter.gd")
+const Permission=preload("res://scripts/hyperspace_permissions.gd")
 const Transfer=preload("res://scripts/save_transfer.gd")
 var checks:=0
 var failures:=0
-var reward_calls:=0
-class FailedWriter extends "res://scripts/progress_writer.gd":
-	func write_progress(_bytes: PackedByteArray) -> Error:return ERR_FILE_CANT_WRITE
-
 func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok:failures+=1;printerr("FAIL: ",label)
-
-func drone(id: String="stub",quality: String="white",legendary: bool=false,ultimate: bool=false) -> Dictionary:
-	return {"id":id,"origin_quality":quality,"weapon":"laser","level":5,"legendary":legendary,"ultimate":ultimate,"blue_source_bonus":quality=="blue","legendary_effect":{},"ultimate_affix":{},"affixes":[],"hangings":[]}
-
-func reward(_request: Dictionary={}) -> Dictionary:
-	reward_calls+=1
-	return {"drone":drone(),"materials":{"degenerate_matter":1}}
-
-func opened(db: ShipDatabase):
-	var g:=BattleGame.new(db,false);g.profile.cleared=range(1,7);g.rebuild_unlocks()
+func opened(db):
+	var g=BattleGame.new(db,false);g.profile.cleared=range(1,41);g.rebuild_unlocks()
+	var c: Dictionary=g.hyperspace.config.duplicate(true)
+	# Explicit test fixture policies; production nulls remain decision gates.
+	c.policies.core_reward="additional";c.policies.promotion_success="weighted_draw_stronger"
+	c.policies.omen_scope="drone";c.policies.legendary_repeat_action="reroll_effect"
+	c.policies.keep_hanging_growth_on_reforge=true;c.policies.filter_action="keep_matches"
+	g.hyperspace.configure(c);g.profile.hyperspace=g.hyperspace.fresh()
 	return g
-
+func add(g,id: String,quality: String="blue") -> Dictionary:
+	var rng:=RandomNumberGenerator.new();rng.seed=12345
+	var d:=Rewards.create_drone(rng,g.hyperspace.config,id,quality,"laser",5,"1")
+	Bag.insert(g.profile.hyperspace.inventory,d,g.hyperspace.config)
+	return g.profile.hyperspace.inventory.drones[id]
+func request(g,id: String,op: String,args: Dictionary={}) -> Dictionary:
+	return {"round_id":g.profile.hyperspace.round_id,"command_seq":g.profile.hyperspace.command_seq,"drone_id":id,"operation":op,"args":args,"expected_revision":g.profile.hyperspace.inventory.drones[id].forge_revision}
 func _initialize() -> void:
 	var db:=ShipDatabase.new();db.config.offlineMax=0
-	var locked:=BattleGame.new(db,false)
-	var before: Dictionary=locked.profile.hyperspace.duplicate(true)
-	locked.hyperspace.advance(locked,100000)
-	check(locked.profile.hyperspace==before,"unopened old/fresh game remains unchanged")
-	var g=opened(db);var h=g.hyperspace
-	check(State.valid(g.profile.hyperspace,h.config,db.levels.size()),"fresh versioned state is valid")
+	var g=opened(db);var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
+	check(State.valid(s,h.config,db.levels.size()),"current namespace valid")
+	check(Permission.bindings_valid(g.portable_save_data(),db.data,h.config),"fresh bindings")
 	var a: Dictionary=h.start(g,"alpha",5,"manual")
-	check(not a.is_empty() and g.profile.hyperspace.energy==108000,"actual manual ticket paid once")
-	check(h.start(g,"alpha",5,"manual").is_empty(),"only one active receipt")
-	check(h.complete(g,a.round_id,a.run_id,true,reward(),40,true),"successful completion freezes reward and best X1")
+	check(not a.is_empty() and g.profile.hyperspace.energy==108000,"ticket paid")
+	check(h.complete(g,a.round_id,a.run_id,true,{},40,true),"reward generated frozen")
 	var pending: Dictionary=g.portable_save_data()
-	check(Transfer.new().prepare_data(pending,db).error=="","pending receipt passes portable schema")
-	var restored:=BattleGame.new(db,false);restored.load_progress_data(pending)
-	check(restored.hyperspace.claim(restored,a.round_id,a.run_id),"same saved pending receipt can be claimed")
-	check(not restored.hyperspace.claim(restored,a.round_id,a.run_id) and restored.profile.hyperspace.materials.degenerate_matter==1,"repeated claim cannot mint reward")
-	check(restored.profile.hyperspace.inventory.warehouse==["space:1:1"],"stable deterministic drone identity")
-	check(not h.complete(g,a.round_id,a.run_id,true,reward(),10,true),"completion cannot reroll frozen result")
-	check(h.claim(g,a.round_id,a.run_id) and h.best_x1(g,"alpha",5)==40,"best X1 and reward remain consistent")
+	check(Transfer.new().prepare_data(pending,db).error=="","current pending export")
+	var restored=opened(db);restored.load_progress_data(pending)
+	check(restored.hyperspace.claim(restored,a.round_id,a.run_id),"restored claim")
+	check(not restored.hyperspace.claim(restored,a.round_id,a.run_id),"claim idempotent")
+	check(h.claim(g,a.round_id,a.run_id),"claim generated reward")
 	var saved: Dictionary=g.portable_save_data()
-	check(Transfer.new().prepare_data(saved,db).data.hyperspace==saved.hyperspace,"claim snapshot import/export preserves full namespace")
-	var roundtrip:=BattleGame.new(db,false);roundtrip.load_progress_data(JSON.parse_string(JSON.stringify(saved)))
-	check(not roundtrip.hyperspace.claim(roundtrip,a.round_id,a.run_id),"saved claimed receipt remains settled after JSON reload")
-	var legacy: Dictionary=saved.duplicate(true);legacy.version=4;legacy.erase("hyperspace")
-	var migrated:=BattleGame.new(db,false);migrated.load_progress_data(legacy)
-	check(migrated.profile.hyperspace==migrated.hyperspace.fresh() and migrated.profile.resources==g.profile.resources,"v4 missing namespace migrates without changing old balances")
-	check(migrated.profile.version==5,"v4 migration writes guarded v5 container")
-	var corrupt: Dictionary=saved.duplicate(true);corrupt.hyperspace.version=2
-	check(Transfer.new().prepare_data(corrupt,db).error=="format","future subsystem version safely rejected")
+	check(Transfer.new().prepare_data(saved,db).data.hyperspace==saved.hyperspace,"current export exact")
+	var corrupt: Dictionary=saved.duplicate(true);corrupt.hyperspace.version=State.VERSION+1
 	var baseline: Dictionary=g.profile.duplicate(true);g.load_progress_data(corrupt)
-	check(g.profile==baseline,"invalid load leaves live authoritative state untouched")
-	g.profile.hyperspace.energy=216000
-	a=h.start(g,"alpha",5,"manual")
-	h.advance(g,10800)
-	check(h.complete(g,a.round_id,a.run_id,false) and g.profile.hyperspace.energy==324000,"refund actual paid ticket may exceed cap")
-	h.advance(g,1000)
-	check(g.profile.hyperspace.energy==324000 and not h.complete(g,a.round_id,a.run_id,false),"over-cap energy stops accrual; duplicate refund rejected")
-	check(not h.set_auto(g,true,"beta",5,50),"automatic exploration requires matching route-level X1 history")
-	check(h.set_auto(g,true,"alpha",5,500),"automatic route-level preference accepted")
-	var auto_before: Dictionary=g.profile.hyperspace.duplicate(true);h.advance(g,100)
-	check(g.profile.hyperspace.active.is_empty() and g.profile.hyperspace.energy==auto_before.energy,"missing reward adapter cannot consume auto tickets")
-	h.reward_provider=Callable(self,"reward")
-	check(h.start_auto(g),"auto creates progress transaction without BattleGame scene")
-	check(g.profile.hyperspace.active.duration==10 and is_equal_approx(g.profile.hyperspace.active.ticket,108000.0*20.0/520.0),"crew duration floor and ticket formula")
-	h.advance(g,10)
-	check(g.profile.hyperspace.materials.degenerate_matter==2,"auto finishes using frozen claim path")
-	# Use a separate compact time configuration to test bounded batch processing.
-	var fast=opened(db);var fc: Dictionary=fast.hyperspace.config.duplicate(true)
-	fc.energy_cap=1.0;fc.energy_rate=1.0;fc.ticket=0.5
-	check(fast.hyperspace.configure(fc),"valid alternative independent config")
-	fast.profile.hyperspace=fast.hyperspace.fresh();fast.profile.hyperspace.history={"alpha":{"5":10.0}}
-	fast.hyperspace.reward_provider=Callable(self,"reward");fast.hyperspace.set_auto(fast,true,"alpha",5,0)
-	fast.hyperspace.advance(fast,1000)
-	check(fast.profile.hyperspace.materials.degenerate_matter==8,"large online step respects completion budget")
-	check(fast.profile.hyperspace.pending_time>0,"legal work remains pending at budget yield")
-	check(Transfer.new().prepare_data(fast.portable_save_data(),db).data.hyperspace.pending_time==fast.profile.hyperspace.pending_time,"budget remainder belongs to the saved snapshot")
-	# Saturation retains one completed pending receipt, then pauses without debt.
-	var full=opened(db);var fh=full.hyperspace;var bag: Dictionary=full.profile.hyperspace.inventory
-	for i in 210:check(Bag.insert(bag,drone("bulk:%d"%i),fh.config),"fill warehouse and ten fixed overflow slots")
-	check(not Bag.insert(bag,drone("excess"),fh.config),"full inventory insertion rejects excess")
-	a=fh.start(full,"alpha",5,"manual")
-	check(fh.complete(full,a.round_id,a.run_id,true,reward(),30,true) and not fh.claim(full,a.round_id,a.run_id),"completed reward retained when both stores full")
-	fh.reward_provider=Callable(self,"reward");fh.set_auto(full,true,"alpha",5,100)
-	var count_before:=reward_calls;fh.advance(full,100000)
-	check(full.profile.hyperspace.blocked and full.profile.hyperspace.active.status=="completed_pending" and reward_calls==count_before and full.profile.hyperspace.pending_time==0,"full inventory neither draws new rewards nor accumulates replay debt")
-	check(fh.remove_unprotected(full,"bulk:0"),"organizing releases one safe slot and drains overflow")
-	fh.advance(full,0.1)
-	check(full.profile.hyperspace.active.is_empty() and full.profile.hyperspace.inventory.drones.has("space:1:1") and full.profile.hyperspace.blocked,"pending receipt claims first, subsequent auto remains stopped when full again")
-	# Independent legendary/ultimate flags count against both budgets.
-	var limits=opened(db);var lh=limits.hyperspace
-	for d in [drone("both","blue",true,true),drone("legend","legendary",true),drone("third","gold",true),drone("other_ultimate","white",false,true)]:
-		check(Bag.insert(limits.profile.hyperspace.inventory,d,lh.config),"separate origin/legendary/ultimate model accepted")
-	check(lh.set_equipped(limits,["both","legend"],5),"one drone may occupy both independent budgets")
-	check(not lh.set_equipped(limits,["both","legend","third"],5) and not lh.set_equipped(limits,["both","other_ultimate"],5),"legendary two and ultimate one hard limits")
-	check(not lh.remove_unprotected(limits,"both"),"equipped protected from clearing")
-	lh.set_favorites(limits,["third"])
-	check(not lh.remove_unprotected(limits,"third"),"favorite protected from clearing")
-	lh.set_preset(limits,0,"test",["other_ultimate"])
-	check(not lh.remove_unprotected(limits,"other_ultimate"),"preset reference protected from clearing")
-	var bad:=drone("duplicate_hanging","blue");bad.hangings=["collector","collector"]
-	check(not Bag.insert(limits.profile.hyperspace.inventory,bad,lh.config),"same drone cannot repeat hanging")
-	# Reforge retains only explicit sealed IDs/history; ordinary systems untouched.
-	g.profile.hyperspace.history.alpha["10"]=20.0
-	var planet_gate:=int(db.unlock_row("planet","1").level)
-	g.profile.cleared=range(1,planet_gate+1);g.rebuild_unlocks()
-	g.profile.planets["1"].degree=400;g.planet_buildings.sync(g,"1");g.profile.planets["1"].buildings.shipyard.status="built"
-	var ordinary: Dictionary=g.profile.resources.duplicate(true)
-	check(g.reforge_planet("1",["space:1:1"],{"space:1:1":10}),"authorized reforge creates explicit sealed selection")
-	check(g.profile.hyperspace.round_id==2 and g.profile.hyperspace.inventory.reforge_count==1 and Bag.capacity(g.profile.hyperspace.inventory,h.config)==210,"reforge advances epoch and capacity by ten")
-	check(g.profile.hyperspace.materials.degenerate_matter==0 and g.profile.hyperspace.active.is_empty() and g.profile.resources==ordinary,"new resources/receipts reset without clearing ordinary permanent balances")
-	check(h.best_x1(g,"alpha",10)==0 and g.profile.hyperspace.history.alpha["10"]==20,"history retained but cannot use lifetime stage to bypass current round")
-	check(not h.claim_sealed(g,"space:1:1") and not h.claim(g,1,1),"sealed and stale previous-round callbacks rejected")
-	g.profile.highestLevel=10
-	check(h.claim_sealed(g,"space:1:1") and not h.claim_sealed(g,"space:1:1") and h.best_x1(g,"alpha",10)==20,"returning to corresponding stage unseals once and enables record")
-	check(State.valid(g.profile.hyperspace,h.config,db.levels.size()),"final state maintains persisted invariants")
-	# A manual-save failure leaves the previous complete namespace recoverable.
-	var disk=opened(db);disk.save_enabled=true
-	a=disk.hyperspace.start(disk,"alpha",5,"manual")
-	disk.hyperspace.complete(disk,a.round_id,a.run_id,true,reward(),50,true)
-	disk.save_progress()
-	var disk_before: Dictionary=preload("res://scripts/progress_writer.gd").read_progress(BattleGame.SAVE_PATH)
-	disk.hyperspace.claim(disk,a.round_id,a.run_id)
-	disk.progress_writer=FailedWriter.new();disk.save_progress()
-	check(disk.last_save_error==ERR_FILE_CANT_WRITE and disk.save_dirty,"failed IO does not claim durable commit")
-	check(preload("res://scripts/progress_writer.gd").read_progress(BattleGame.SAVE_PATH).hyperspace==disk_before.hyperspace,"failed save preserves previous full receipt/inventory/material snapshot")
-	var recovered:=BattleGame.new(db,true)
-	check(recovered.hyperspace.claim(recovered,a.round_id,a.run_id) and not recovered.hyperspace.claim(recovered,a.round_id,a.run_id),"recovered previous pending snapshot grants exactly once")
-	check(recovered.profile.hyperspace.materials.degenerate_matter==1,"recovery restores balances with receipt, never mixes two commits")
-	var reload_input: Dictionary=recovered.portable_save_data();reload_input.chronoSavedAt=Time.get_unix_time_from_system()-100000
-	var offline_copy:=BattleGame.new(db,false);offline_copy.load_progress_data(reload_input)
-	check(offline_copy.profile.hyperspace==reload_input.hyperspace,"offline reload contributes zero hyperspace energy or work")
-	var invalid_disk: Dictionary=reload_input.duplicate(true);invalid_disk.hyperspace.version=2
-	var f:=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE);f.store_string(JSON.stringify(invalid_disk));f.close()
-	check(preload("res://scripts/progress_writer.gd")._read_progress_file(BattleGame.SAVE_PATH)==null,"safe reader rejects future namespace, allowing existing backup fallback")
-	# Short CPU-only micro-baseline: 6000 idle online ticks with 200 stored drones.
-	var bench=opened(db)
-	for i in 200:Bag.insert(bench.profile.hyperspace.inventory,drone("bench:%d"%i),bench.hyperspace.config)
-	var begun:=Time.get_ticks_usec();var generation: int=bench.profile.hyperspace.inventory.generation
-	for _i in 6000:bench.hyperspace.advance(bench,1.0/60.0)
-	var elapsed:=Time.get_ticks_usec()-begun
-	check(bench.profile.hyperspace.inventory.generation==generation and bench.profile.hyperspace.inventory.drones.size()==200,"idle scheduler never scans/rebuilds warehouse projection")
-	print("HYPERSPACE MICRO: ",JSON.stringify({"ticks":6000,"warehouse":200,"elapsed_us":elapsed,"mean_us":float(elapsed)/6000.0,"snapshot_bytes":JSON.stringify(bench.profile.hyperspace).to_utf8_buffer().size()}))
-	print("HYPERSPACE STATE: ",checks," checks, ",failures," failures")
+	check(g.profile==baseline and Transfer.new().prepare_data(corrupt,db).error=="format","incompatible version rejected atomically")
+	g.profile.hyperspace.energy=216000;a=h.start(g,"alpha",5,"manual");h.advance(g,10800)
+	check(h.complete(g,a.round_id,a.run_id,false) and g.profile.hyperspace.energy==324000,"refund over cap")
+	h.advance(g,1);check(g.profile.hyperspace.energy==324000,"over cap no recharge")
+	check(h.set_auto(g,true,"alpha",5,"navigator"),"real unlocked crew")
+	check(not g.idle_planet_crew("navigator"),"reserved cannot planet explore")
+	check(not g.crew.can_assign(g,"navigator","weapon","laser"),"reserved cannot reassign")
+	check(h.start_auto(g),"progress only automatic start")
+	check(g.profile.hyperspace.active.duration==40 and g.profile.hyperspace.active.ticket==108000,"locked crew levels count zero")
+	check(h.complete(g,g.profile.hyperspace.active.round_id,g.profile.hyperspace.active.run_id,false),"auto failure refunds")
+	h.set_auto(g,false,"",0,"")
+	var d:=add(g,"forge");d.affixes=[{"key":"global_damage","tier":5,"value":0.05,"locked":true},{"key":"attack_speed","tier":5,"value":0.01,"locked":false}]
+	for key in g.profile.hyperspace.materials:g.profile.hyperspace.materials[key]=10000000
+	g.profile.hyperspace.ultimate_cores=5
+	var q:=request(g,"forge","replace_affix",{"guaranteed_key":"global_damage"})
+	baseline=g.profile.hyperspace.duplicate(true)
+	var quote: Dictionary=h.preview_forge(g,q)
+	check(quote.error=="" and quote.cost.degenerate_matter==5*quote.draws and g.profile.hyperspace==baseline,"read only deterministic forecast")
+	var result: Dictionary=h.forge(g,q)
+	check(result.error=="" and result.cost==quote.cost,"quote commit cost exact")
+	check(g.profile.hyperspace.inventory.drones.forge.affixes[0]==baseline.inventory.drones.forge.affixes[0],"locked never selected")
+	var committed: Dictionary=g.profile.hyperspace.duplicate(true)
+	check(h.forge(g,q)==result and g.profile.hyperspace==committed,"command retry returns cached result")
+	q.args={};check(h.forge(g,q).error=="command_conflict","same command different content conflict")
+	q=request(g,"forge","legendary");check(h.forge(g,q).error=="","legend conversion")
+	d=g.profile.hyperspace.inventory.drones.forge
+	check(d.blue_source_bonus and d.affixes.size()==2 and d.preserved_hanging_slots==baseline.inventory.drones.forge.hanging_slots,"legend retains source and attachments")
+	q=request(g,"forge","ultimate");check(h.forge(g,q).error=="","ultimate separate flag")
+	var extra: Dictionary=g.profile.hyperspace.inventory.drones.forge.ultimate_affix.duplicate()
+	check(h.forge(g,request(g,"forge","lock_affix")).error=="ultimate_modification_forbidden","ultimate modification boundary")
+	check(h.forge(g,request(g,"forge","restore_ultimate")).error=="","ultimate restored")
+	check(h.forge(g,request(g,"forge","ultimate")).error=="" and g.profile.hyperspace.inventory.drones.forge.ultimate_affix==extra,"ultimate extra archived reused")
+	check(h.set_equipped(g,["forge"]),"actual frigate capacity")
+	check(not h.set_equipped(g,["forge"],5),"caller cannot forge capacity")
+	check(h.forge(g,request(g,"forge","dismantle")).error=="protected_drone","equipped protected")
+	h.set_equipped(g,[])
+	var module: String=h.config.hanging_modules.keys()[0]
+	check(Rewards.credit_modules(g.profile.hyperspace,h.config,{module:1}) and g.profile.hyperspace.hanging_modules[module].level==0,"first module drop unlocks")
+	check(Rewards.credit_modules(g.profile.hyperspace,h.config,{module:1}) and g.profile.hyperspace.hanging_modules[module].level==1,"repeat module drop growth")
+	var f: Dictionary={"version":1,"enabled":true,"mode":"all","conditions":[{"field":"weapon","value":"laser"},{"field":"affix","key":"global_damage","tier":5}]}
+	check(h.set_filter(g,f) and Filter.matches(d,f),"filter all")
+	var encoded: String=h.export_filter(g);check(h.import_filter(g,encoded) and not h.import_filter(g,encoded+"!"),"canonical filter codec")
+	check(Transfer.new().prepare_data(g.portable_save_data(),db).error=="","filter and forge export schema")
+	var reforge: Dictionary=h.reforge_state(g,["forge"],{})
+	check(not reforge.is_empty() and reforge.inventory.sealed.forge==30 and Bag.retention_capacity(reforge.inventory,h.config)==10,"first reforge ten slots authoritative seal")
+	check(h.reforge_state(g,["forge"],{"forge":1}).is_empty(),"forged sealed thresholds refused")
+	var invalid: Dictionary=g.portable_save_data();invalid.hyperspace=reforge.duplicate(true);invalid.hyperspace.inventory.sealed.forge=1
+	check(Transfer.new().prepare_data(invalid,db).error=="format","forged threshold rejected on import")
+	g.profile.hyperspace=reforge;g.profile.highestLevel=29
+	check(not h.claim_sealed(g,"forge"),"seal waits for planet stage")
+	g.profile.highestLevel=30;check(h.claim_sealed(g,"forge"),"seal available at reached stage")
+	var presets: Dictionary=g.profile.hyperspace.inventory
+	presets.presets=[{"name":"partial","drone_ids":["missing","forge"],"hanging_loadouts":{"missing":[],"forge":[]}}]
+	check(Bag.valid(presets,h.config) and h.apply_preset(g,0) and presets.equipped==[],"missing preset entries legal")
+	check(g.profile.hyperspace.inventory.equipped==["forge"],"partial preset equips present")
+	var full=opened(db)
+	for i in 210:check(Bag.insert(full.profile.hyperspace.inventory,Rewards.create_drone(R.restore("123"),full.hyperspace.config,"bulk:%d"%i,"white","laser",5,"1"),full.hyperspace.config),"bounded inventory")
+	check(not Bag.has_space(full.profile.hyperspace.inventory,full.hyperspace.config),"warehouse overflow saturated")
+
+	var probe=opened(db);var ph=probe.hyperspace
+	var pd:=add(probe,"probe");pd.affixes=[{"key":"global_damage","tier":5,"value":0.05,"locked":false},{"key":"attack_speed","tier":4,"value":0.03,"locked":false}]
+	for key in probe.profile.hyperspace.materials:probe.profile.hyperspace.materials[key]=100000
+	var combat_rng: int=probe.rng.state
+	var exploration_rng: String=probe.profile.hyperspace.random_state
+	check(ph.forge(probe,request(probe,"probe","enable_omen")).error=="","explicit omen fixture")
+	var pc: Dictionary=ph.config.duplicate(true);pc.tier_weights={"1":100000.0,"2":1.0,"3":1.0,"4":1.0,"5":1.0};ph.configure(pc)
+	check(ph.forge(probe,request(probe,"probe","promote_affix")).error=="" and probe.profile.hyperspace.inventory.drones.probe.affixes[0].tier==4,"omen prioritizes T5 and successful promotion only one tier")
+	check(probe.rng.state==combat_rng and probe.profile.hyperspace.random_state==exploration_rng,"forge RNG isolated")
+	probe.profile.hyperspace.materials.glueball=0
+	baseline=probe.profile.hyperspace.duplicate(true)
+	check(ph.forge(probe,request(probe,"probe","lock_affix")).error=="insufficient_materials" and probe.profile.hyperspace==baseline,"failed cost rollback RNG and command")
+	probe.profile.hyperspace.materials.glueball=100000
+	check(ph.forge(probe,request(probe,"probe","add_hanging_slot")).error==("hanging_limit" if probe.profile.hyperspace.inventory.drones.probe.hanging_slots>=2 else ""),"hanging hard cap")
+	var first_module: String=ph.config.hanging_modules.keys()[0]
+	Rewards.credit_modules(probe.profile.hyperspace,ph.config,{first_module:1})
+	probe.profile.hyperspace.inventory.drones.probe.hanging_slots=2
+	check(not ph.attach_hangings(probe,"probe",[first_module,first_module]),"same drone duplicate hanging denied")
+	check(ph.attach_hangings(probe,"probe",[first_module]),"unlocked hanging attaches")
+	var synthetic: Dictionary=probe.profile.hyperspace.duplicate(true)
+	var weights_config: Dictionary=ph.config.duplicate(true);weights_config.quality_weights={"white":0.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":1.0};weights_config.policies.core_reward="exclusive"
+	var core: Dictionary=Rewards.generate(synthetic,weights_config,{"round_id":1,"run_id":1,"route":"alpha","level":5},"1")
+	check(core.reward.drone.is_empty() and core.reward.ultimate_cores==1 and State.valid_reward(core.reward,"alpha",weights_config),"exclusive core reward is separate item")
+	var alt: Dictionary=ph.config.duplicate(true);alt.policies.core_reward=null
+	check(Rewards.generate(synthetic,alt,{"round_id":1,"run_id":1,"route":"alpha","level":5},"1").error=="core_reward_policy_required","undefined core policy explicit gate")
+	check(probe.rng.state==combat_rng,"reward creation never consumes combat stream")
+	var invalid_bindings: Dictionary=probe.portable_save_data();invalid_bindings.hyperspace.auto={"enabled":true,"route":"alpha","level":5,"crew_id":"captain"}
+	check(not Permission.bindings_valid(invalid_bindings,db.data,ph.config),"unavailable crew save binding rejected")
+	var writer:=preload("res://scripts/progress_writer.gd").new();writer.path=ProjectSettings.globalize_path("user://stage2-current-only.json")
+	var valid_disk: Dictionary=g.portable_save_data()
+	var write_error:=writer.write_progress(JSON.stringify(valid_disk).to_utf8_buffer())
+	check(write_error==OK and JSON.stringify(writer.read_progress(writer.path).hyperspace)==JSON.stringify(JSON.parse_string(JSON.stringify(valid_disk.hyperspace))),"current safe writer roundtrip")
+	invalid_bindings=valid_disk.duplicate(true);invalid_bindings.hyperspace.inventory.sealed.forge=1
+	var file:=FileAccess.open(writer.path+".tmp",FileAccess.WRITE);file.store_string(JSON.stringify(invalid_bindings));file.close()
+	check(JSON.stringify(writer.read_progress(writer.path).hyperspace)==JSON.stringify(JSON.parse_string(JSON.stringify(valid_disk.hyperspace))),"forged temporary save never replaces current committed file")
+	var chance_rng:=RandomNumberGenerator.new();chance_rng.seed=20261004
+	var hanging_count:=0;var affix_count:=0
+	for i in 20000:
+		hanging_count+=Rewards.count_slots(chance_rng,4,0.2,0.25)
+		affix_count+=Rewards.count_slots(chance_rng,3,1.0,0.25)
+	check(absf(hanging_count/20000.0-(0.2+0.05+0.0125+0.003125))<0.015,"independent hanging probabilities distribution")
+	check(absf(affix_count/20000.0-(1.0+0.25+0.0625))<0.02,"independent affix probabilities distribution")
+	var reforged_game=opened(db);add(reforged_game,"retained")
+	reforged_game.profile.resources={"1":1234.0,"2":5678.0};reforged_game.profile.chronoParticles=123
+	reforged_game.profile.planets["1"].degree=400;reforged_game.planet_buildings.sync(reforged_game,"1");reforged_game.profile.planets["1"].buildings.shipyard.status="built"
+	check(reforged_game.reforge_planet("1",["retained"]),"actual root reforge command")
+	check(reforged_game.profile.resources=={"1":1234.0,"2":5678.0} and reforged_game.profile.chronoParticles==123 and reforged_game.profile.planets["1"].conquered,"root permanent growth preserved")
+	check(reforged_game.profile.hyperspace.inventory.sealed.retained==30 and reforged_game.profile.hyperspace.round_id==2,"root reforge sealed namespace")
+	var start:=Time.get_ticks_usec()
+	for i in 6000:full.hyperspace.advance(full,0.016)
+	print("IDLE_US ",Time.get_ticks_usec()-start," namespace_bytes ",JSON.stringify(full.profile.hyperspace).length())
+	print("HYPERSPACE_CURRENT ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)

@@ -1,29 +1,53 @@
 extends RefCounted
 const C=preload("res://scripts/hyperspace_config.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
-const VERSION:=1
+const R=preload("res://scripts/hyperspace_random.gd")
+const Filter=preload("res://scripts/hyperspace_filter.gd")
+const Rewards=preload("res://scripts/drone_rewards.gd")
+const VERSION:=2
 
 static func fresh(c: Dictionary) -> Dictionary:
 	var materials: Dictionary={}
 	for route in c.routes.values():materials[route.material]=0
-	return {"version":VERSION,"round_id":1,"next_run":1,"settled_run":0,"energy":float(c.energy_cap),"pending_time":0.0,"materials":materials,"history":{},"inventory":Bag.fresh(),"active":{},"auto":{"enabled":false,"route":"","level":0,"crew_level":0},"unlocked_drones":false,"blocked":false}
+	return {"version":VERSION,"round_id":1,"next_run":1,"settled_run":0,"energy":float(c.energy_cap),"pending_time":0.0,"materials":materials,"history":{},"inventory":Bag.fresh(),"active":{},"auto":{"enabled":false,"route":"","level":0,"crew_id":""},"unlocked_drones":false,"blocked":false,"ultimate_cores":0,"hanging_modules":Rewards.module_progress(c),"random_state":R.initial_state(),"command_seq":1,"last_command":{},"filter":Filter.fresh(),"legendary_seen":[],"legendary_collection":[]}
 
 static func schema() -> Dictionary:
 	var affix: Dictionary={"key":"s","tier":"i","value":"n","locked":"b"}
-	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","value":"n"},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
-	var reward: Dictionary={"drone":drone,"materials":{"*":"i"}}
-	return {"version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":{"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","ticket":"n","duration":"n","work":"n","reward":reward},"auto":{"enabled":"b","route":"s","level":"i","crew_level":"i"},"unlocked_drones":"b","blocked":"b"}
+	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","planet_id":"s","hanging_slots":"i","preserved_hanging_slots":"i","omen":"b","forge_revision":"i","forge_rng_state":"s","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","parameters":{"*":"n"}},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
+	var reward: Dictionary={"drone":drone,"materials":{"*":"i"},"ultimate_cores":"i","hanging_rewards":{"*":"i"}}
+	return {"version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":{"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","ticket":"n","duration":"n","work":"n","reward":reward},"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
 
 static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool:
-	if not c.routes.has(route) or not reward.get("drone") is Dictionary or not Bag.valid_drone(reward.drone,c) or reward.drone.weapon!=c.routes[route].weapon:return false
-	if not reward.get("materials") is Dictionary:return false
-	# Success-only dedicated material; ordinary drops remain the combat owner's job.
+	if not c.routes.has(route) or not reward.get("drone") is Dictionary or not reward.get("materials") is Dictionary or not reward.get("hanging_rewards") is Dictionary:return false
+	if not reward.drone.is_empty() and (not Bag.valid_drone(reward.drone,c) or reward.drone.weapon!=c.routes[route].weapon):return false
+	if not C.integer(reward.get("ultimate_cores")) or reward.ultimate_cores<0 or reward.ultimate_cores>1:return false
 	for key in reward.materials:
 		if key!=c.routes[route].material or not C.integer(reward.materials[key]) or reward.materials[key]<0:return false
+	for key in reward.hanging_rewards:
+		if not c.hanging_modules.has(key) or not C.integer(reward.hanging_rewards[key]) or reward.hanging_rewards[key]<0 or reward.hanging_rewards[key]>10:return false
 	return true
 
 static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	if s.get("version")!=VERSION:return false
+	if not R.valid_state(s.get("random_state")) or not C.integer(s.get("ultimate_cores")) or s.ultimate_cores<0 or not C.integer(s.get("command_seq")) or s.command_seq<1:return false
+	if not s.get("last_command") is Dictionary or not s.get("filter") is Dictionary or not Filter.valid(s.filter,c):return false
+	if not s.last_command.is_empty():
+		if not C.integer(s.last_command.get("seq")) or s.last_command.seq!=s.command_seq-1 or not s.last_command.get("fingerprint") is String or not s.last_command.get("result_json") is String or s.last_command.result_json.length()>65536:return false
+		if not JSON.parse_string(s.last_command.result_json) is Dictionary:return false
+	if not s.get("hanging_modules") is Dictionary or s.hanging_modules.size()!=c.hanging_modules.size():return false
+	for key in s.hanging_modules:
+		var progress=s.hanging_modules[key]
+		if not c.hanging_modules.has(key) or not progress is Dictionary or not progress.get("unlocked") is bool or not C.integer(progress.get("level")) or progress.level<0 or not C.number(progress.get("exp")) or progress.exp<0:return false
+		var needed:=float(c.hanging_modules[key].base_exp)*pow(1.0+float(c.hanging_modules[key].exp_growth),int(progress.level))
+		if not is_finite(needed) or progress.exp>=needed:return false
+	for field in ["legendary_seen","legendary_collection"]:
+		if not s.get(field) is Array:return false
+		var seen: Dictionary={}
+		for key in s[field]:
+			if not c.legendary_effects.has(key) or seen.has(key):return false
+			seen[key]=true
+	for key in s.legendary_collection:
+		if not s.legendary_seen.has(key):return false
 	for key in ["round_id","next_run","settled_run"]:
 		if not C.integer(s.get(key)):return false
 	if s.round_id<1 or s.next_run<1 or s.settled_run<0 or s.settled_run>=s.next_run:return false
@@ -37,13 +61,15 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	for key in s.materials:
 		if not known_materials.has(key) or not C.integer(s.materials[key]) or s.materials[key]<0:return false
 	if not Bag.valid(s.inventory,c):return false
+	for drone in s.inventory.drones.values():
+		if int(drone.level)>max_stage:return false
 	for route in s.history:
 		if not c.routes.has(route) or not s.history[route] is Dictionary:return false
 		for level in s.history[route]:
 			if not level is String or not level.is_valid_int() or str(int(level))!=level or int(level)<int(c.minimum_level) or int(level)>max_stage or not C.number(s.history[route][level]) or s.history[route][level]<=0:return false
 	var auto: Dictionary=s.auto
-	if not auto.get("enabled") is bool or not auto.get("route") is String or not C.integer(auto.get("level")) or not C.integer(auto.get("crew_level")) or auto.crew_level<0:return false
-	if auto.enabled and (not c.routes.has(auto.route) or auto.level<int(c.minimum_level) or auto.level>max_stage):return false
+	if not auto.get("enabled") is bool or not auto.get("route") is String or not C.integer(auto.get("level")) or not auto.get("crew_id") is String:return false
+	if auto.enabled and (not c.routes.has(auto.route) or auto.level<int(c.minimum_level) or auto.level>max_stage or auto.crew_id.is_empty()):return false
 	if s.next_run!=s.settled_run+(1 if s.active.is_empty() else 2):return false
 	if not s.active.is_empty():
 		var a: Dictionary=s.active
@@ -53,8 +79,11 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 		if not a.get("status") in ["started","completed_pending"] or not a.get("mode") in ["manual","auto"] or not c.routes.has(a.get("route")) or a.level<int(c.minimum_level) or a.level>max_stage:return false
 		for key in ["ticket","duration","work"]:
 			if not C.number(a.get(key)) or a[key]<0:return false
+		if not a.get("crew_id") is String or (a.mode=="auto" and a.crew_id.is_empty()):return false
 		if not a.get("reward") is Dictionary:return false
 		if a.mode=="auto" and (a.duration<float(c.minimum_duration) or a.work>a.duration):return false
 		if a.status=="started" and not a.reward.is_empty():return false
-		if a.status=="completed_pending" and (not valid_reward(a.reward,a.route,c) or a.reward.drone.level!=a.level or a.reward.drone.id!="space:%d:%d"%[int(a.round_id),int(a.run_id)]):return false
+		if a.status=="completed_pending":
+			if not valid_reward(a.reward,a.route,c):return false
+			if not a.reward.drone.is_empty() and (a.reward.drone.level!=a.level or a.reward.drone.id!="space:%d:%d"%[int(a.round_id),int(a.run_id)]):return false
 	return true

@@ -30,6 +30,7 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
  if depth>48:return false
  if spec is String:
   match spec:
+   "filter_value":return value is String or ((value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)))
    "s":return value is String
    "b":return value is bool
    "n":return (value is int or value is float) and is_finite(float(value))
@@ -121,6 +122,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
+ if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
  for key in raw.get("galaxies",{}):
   var region: Dictionary=raw.galaxies[key]
   if region.get("version",0)>3:return {"error":"format"}

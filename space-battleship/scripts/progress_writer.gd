@@ -111,5 +111,7 @@ static func _read_progress_file(path: String) -> Variant:
 		if (version is int or version is float) and (version == 2 or version == 3 or version == 4 or version == 5):
 			if data.has("hyperspace"):
 				if not data.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(data.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),2147483647):return null
+				var definitions=JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
+				if not definitions is Dictionary or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(data,definitions,preload("res://scripts/hyperspace_config.gd").load_config()):return null
 			return data
 	return null

@@ -3,9 +3,13 @@ extends RefCounted
 const C=preload("res://scripts/hyperspace_config.gd")
 const S=preload("res://scripts/hyperspace_state.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
+const R=preload("res://scripts/hyperspace_random.gd")
+const Rewards=preload("res://scripts/drone_rewards.gd")
+const Forge=preload("res://scripts/drone_forge.gd")
+const Filter=preload("res://scripts/hyperspace_filter.gd")
+const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var config: Dictionary=C.load_config()
 var scheduler:=preload("res://scripts/hyperspace_scheduler.gd").new()
-var reward_provider: Callable
 var last_error:=""
 
 func configure(c: Dictionary) -> bool:
@@ -23,7 +27,11 @@ func load_state(g,raw: Variant) -> bool:
 	g.profile.hyperspace=raw.duplicate(true);return true
 
 func snapshot(g) -> Dictionary:
-	return g.profile.hyperspace.duplicate(true)
+	var result: Dictionary=g.profile.hyperspace.duplicate(true)
+	result.hull_capacity=Permission.hull_capacity(g,config)
+	result.auto.crew_level=Permission.crew_level(g,str(result.auto.crew_id))
+	result.next_command={"round_id":result.round_id,"command_seq":result.command_seq}
+	return result
 
 func publish(g,next: Dictionary,kind: String) -> void:
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
@@ -36,20 +44,21 @@ func best_x1(g,route: String,level: int) -> float:
 	if not eligible_level(g,route,level):return 0.0
 	return float(g.profile.hyperspace.history.get(route,{}).get(str(level),0.0))
 
-func start(g,route: String,level: int,mode: String,crew_level: int=0) -> Dictionary:
+func start(g,route: String,level: int,mode: String,crew_id: String="") -> Dictionary:
 	var s: Dictionary=g.profile.hyperspace
-	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or crew_level<0:return {}
+	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or not generation_ready():return {}
 	var duration:=0.0;var ticket:=float(config.ticket)
 	if mode=="auto":
 		if not Bag.has_space(s.inventory,config) or float(s.energy)<float(config.energy_cap):return {}
 		var best:=best_x1(g,route,level)
-		if best<=0 or not reward_provider.is_valid():return {}
+		if best<=0 or not Permission.crew_available(g,crew_id):return {}
+		var crew_level:=Permission.crew_level(g,crew_id)
 		duration=maxf(float(config.minimum_duration),best*100.0/(100.0+crew_level))
 		ticket*=20.0/(20.0+crew_level)
 	if float(s.energy)<ticket:return {}
 	var next: Dictionary=s.duplicate(true)
 	next.energy=float(s.energy)-ticket;next.blocked=false
-	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
+	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
 	next.next_run+=1;publish(g,next,"started")
 	return next.active.duplicate(true)
 
@@ -61,11 +70,18 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 	if not success:
 		next.energy=float(next.energy)+float(a.ticket);next.settled_run=run_id;next.active={};next.blocked=false;next.pending_time=0.0
 		scheduler.reset();publish(g,next,"refunded");return true
-	var frozen: Dictionary=reward.duplicate(true)
-	if frozen.get("drone") is Dictionary:
-		frozen.drone.id="space:%d:%d"%[round_id,run_id]
-	if not S.valid_reward(frozen,str(a.route),config) or int(frozen.drone.level)!=int(a.level):
-		last_error="invalid_reward";return false
+	if not reward.is_empty():last_error="external_reward_forbidden";return false
+	var generated:=Rewards.generate(next,config,a,Permission.planet_for_level(g.db.data,int(a.level)))
+	if not generated.error.is_empty():last_error=generated.error;return false
+	var frozen: Dictionary=generated.reward;next.random_state=generated.random_state
+	var filter_match: bool=not frozen.drone.is_empty() and Filter.matches(frozen.drone,next.filter)
+	var filtered: bool=next.filter.enabled and ((config.policies.filter_action=="keep_matches" and not filter_match) or (config.policies.filter_action=="clear_matches" and filter_match))
+	if not frozen.drone.is_empty() and filtered:
+		var rng:=R.restore(frozen.drone.forge_rng_state)
+		var dismantled:=Rewards.dismantle(frozen.drone,config,rng)
+		for key in dismantled.materials:frozen.materials[key]=int(frozen.materials.get(key,0))+int(dismantled.materials[key])
+		frozen.hanging_rewards=dismantled.hanging_rewards;frozen.drone={}
+	if not S.valid_reward(frozen,str(a.route),config):last_error="invalid_reward";return false
 	if record_x1 and (a.mode!="manual" or not C.number(x1_seconds) or x1_seconds<=0):return false
 	next.active.status="completed_pending";next.active.reward=frozen;next.unlocked_drones=true
 	if record_x1:
@@ -73,51 +89,56 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 		var old:=float(history.get(str(int(a.level)),0.0))
 		history[str(int(a.level))]=minf(old,x1_seconds) if old>0 else x1_seconds
 		next.history[a.route]=history
-	next.blocked=not Bag.has_space(next.inventory,config)
+	next.blocked=not frozen.drone.is_empty() and not Bag.has_space(next.inventory,config)
 	publish(g,next,"completed_pending");return true
 
 func claim(g,round_id: int,run_id: int) -> bool:
 	var s: Dictionary=g.profile.hyperspace;var a: Dictionary=s.active
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="completed_pending":return false
-	if not Bag.has_space(s.inventory,config):s.blocked=true;return false
+	if not a.reward.drone.is_empty() and not Bag.has_space(s.inventory,config):s.blocked=true;return false
 	var next: Dictionary=s.duplicate(true)
-	if not Bag.insert(next.inventory,a.reward.drone,config):return false
+	if not a.reward.drone.is_empty():
+		if not Bag.insert(next.inventory,a.reward.drone,config):return false
+		if a.reward.drone.legendary and not next.legendary_seen.has(a.reward.drone.legendary_effect.effect_id):next.legendary_seen.append(a.reward.drone.legendary_effect.effect_id)
 	for key in a.reward.materials:
 		var amount:=int(next.materials[key])+int(a.reward.materials[key])
 		if not C.integer(amount):return false
 		next.materials[key]=amount
+	next.ultimate_cores+=int(a.reward.ultimate_cores)
+	if not Rewards.credit_modules(next,config,a.reward.hanging_rewards):return false
 	next.settled_run=run_id;next.active={};next.blocked=not Bag.has_space(next.inventory,config)
 	publish(g,next,"claimed");return true
 
-func set_auto(g,enabled: bool,route: String,level: int,crew_level: int) -> bool:
-	if enabled and (not eligible_level(g,route,level) or best_x1(g,route,level)<=0 or crew_level<0):return false
+func set_auto(g,enabled: bool,route: String,level: int,crew_id: String) -> bool:
+	var active: Dictionary=g.profile.hyperspace.active
+	if enabled and not active.is_empty() and active.mode=="auto" and active.crew_id!=crew_id:return false
+	if enabled and (not eligible_level(g,route,level) or best_x1(g,route,level)<=0 or not Permission.crew_available(g,crew_id)):return false
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
 	next.pending_time=0.0
-	next.auto={"enabled":enabled,"route":route if enabled else "","level":level if enabled else 0,"crew_level":crew_level if enabled else 0}
+	next.auto={"enabled":enabled,"route":route if enabled else "","level":level if enabled else 0,"crew_id":crew_id if enabled else ""}
 	scheduler.reset();publish(g,next,"auto_changed");return true
 
 func auto_eligible(g) -> bool:
 	var auto: Dictionary=g.profile.hyperspace.auto
-	return auto.enabled and reward_provider.is_valid() and best_x1(g,str(auto.route),int(auto.level))>0
+	return auto.enabled and generation_ready() and best_x1(g,str(auto.route),int(auto.level))>0 and Permission.crew_available(g,str(auto.crew_id))
 
 func start_auto(g) -> bool:
 	var auto: Dictionary=g.profile.hyperspace.auto
-	return not start(g,str(auto.route),int(auto.level),"auto",int(auto.crew_level)).is_empty()
+	return not start(g,str(auto.route),int(auto.level),"auto",str(auto.crew_id)).is_empty()
 
 func complete_auto(g) -> bool:
 	var a: Dictionary=g.profile.hyperspace.active
-	if a.is_empty() or a.mode!="auto" or float(a.work)<float(a.duration) or not reward_provider.is_valid():return false
-	var reward=reward_provider.call(a.duplicate(true))
-	var ok: bool=reward is Dictionary and complete(g,int(a.round_id),int(a.run_id),true,reward)
-	if not ok:reward_provider=Callable() # A broken adapter must be explicitly replaced.
-	return ok
+	if a.is_empty() or a.mode!="auto" or float(a.work)<float(a.duration):return false
+	return complete(g,int(a.round_id),int(a.run_id),true)
 
 func advance(g,dt: float) -> void:
 	scheduler.advance(self,g,dt)
 
-func set_equipped(g,ids: Array,hull_capacity: int) -> bool:
+func set_equipped(g,ids: Array,hull_capacity: int=-1) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
-	if hull_capacity<0 or not Bag.equipment_valid(next.inventory,ids,hull_capacity,config):return false
+	var actual:=Permission.hull_capacity(g,config)
+	if hull_capacity!=-1 and hull_capacity!=actual:return false
+	if not Bag.equipment_valid(next.inventory,ids,actual,config):return false
 	next.inventory.equipped=ids.duplicate();next.inventory.generation+=1
 	publish(g,next,"equipment_changed");return true
 
@@ -152,14 +173,98 @@ func remove_unprotected(g,id: String) -> bool:
 
 func claim_sealed(g,id: String) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
-	if not next.inventory.sealed.has(id) or int(g.profile.highestLevel)<int(next.inventory.sealed[id]):return false
+	if not next.inventory.sealed.has(id):return false
+	var actual:=Permission.planet_stage(g.db.data,str(next.inventory.drones[id].planet_id))
+	if actual<1 or int(next.inventory.sealed[id])!=actual or int(g.profile.highestLevel)<actual:return false
 	next.inventory.sealed.erase(id);next.inventory.generation+=1
 	publish(g,next,"unsealed");return true
 
 func reforge_state(g,keep_ids: Array,claim_stages: Dictionary) -> Dictionary:
 	var old: Dictionary=g.profile.hyperspace
-	var bag:=Bag.reforge(old.inventory,keep_ids,claim_stages,config)
+	var actual:=Permission.claim_stages(old,keep_ids,g.db.data)
+	if not keep_ids.is_empty() and actual.is_empty():return {}
+	if not claim_stages.is_empty() and claim_stages!=actual:return {}
+	var bag:=Bag.reforge(old.inventory,keep_ids,actual,config)
 	if bag.is_empty():return {}
 	var next:=fresh();next.round_id=int(old.round_id)+1;next.inventory=bag
 	next.history=old.history.duplicate(true);next.unlocked_drones=old.unlocked_drones
+	if config.policies.keep_hanging_growth_on_reforge==null and old.hanging_modules.values().any(func(m):return m.unlocked or m.level>0 or m.exp>0):last_error="reforge_growth_policy_required";return {}
+	if config.policies.keep_hanging_growth_on_reforge==true:next.hanging_modules=old.hanging_modules.duplicate(true)
 	return next
+
+func generation_ready() -> bool:
+	return config.policies.core_reward in ["exclusive","additional"]
+
+func forge(g,request: Dictionary) -> Dictionary:
+	var s: Dictionary=g.profile.hyperspace
+	if request.get("round_id")!=s.round_id:return Forge.error("stale_round")
+	if not request.get("args",{}) is Dictionary:return Forge.error("invalid_arguments")
+	var fingerprint:=JSON.stringify({"operation":request.get("operation"),"drone_id":request.get("drone_id"),"args":request.get("args",{}),"expected_revision":request.get("expected_revision")},"",true,true)
+	if not s.last_command.is_empty() and request.get("command_seq")==s.last_command.seq:
+		return Forge.restore_result(s.last_command.result_json) if fingerprint==s.last_command.fingerprint else Forge.error("command_conflict")
+	if request.get("command_seq")!=s.command_seq:return Forge.error("stale_command")
+	var next: Dictionary=s.duplicate(true)
+	var result:=Forge.plan(next,config,request,g)
+	if not result.error.is_empty():return result
+	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
+	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
+	publish(g,next,"forge_"+str(request.operation));return result
+
+func preview_forge(g,request: Dictionary) -> Dictionary:
+	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+	var result:=Forge.plan(next,config,request,g)
+	return {"error":result.error,"cost":result.get("cost",{}),"draws":result.get("draws",0),"revision":g.profile.hyperspace.inventory.drones.get(request.get("drone_id"),{}).get("forge_revision",0)}
+
+func attach_hangings(g,id: String,keys: Array) -> bool:
+	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+	if not next.inventory.drones.has(id) or next.inventory.sealed.has(id):return false
+	var d: Dictionary=next.inventory.drones[id]
+	if d.ultimate:return false
+	for key in keys:
+		if not config.hanging_modules.has(key) or not next.hanging_modules[key].unlocked or int(g.profile.highestLevel)<int(config.hanging_modules[key].unlock_stage):return false
+	d.hangings=keys.duplicate()
+	if not Bag.valid_drone(d,config):return false
+	next.inventory.generation+=1;publish(g,next,"hangings_changed");return true
+
+func set_filter(g,filter: Dictionary) -> bool:
+	if filter.get("enabled")==true and config.policies.filter_action not in ["keep_matches","clear_matches"]:last_error="filter_action_policy_required";return false
+	if not Filter.valid(filter,config):return false
+	var next: Dictionary=g.profile.hyperspace.duplicate(true);next.filter=filter.duplicate(true)
+	publish(g,next,"filter_changed");return true
+
+func export_filter(g) -> String:
+	return Filter.export_string(g.profile.hyperspace.filter,config)
+
+func import_filter(g,value: String) -> bool:
+	var filter:=Filter.import_string(value,config)
+	return not filter.is_empty() and set_filter(g,filter)
+
+func set_legendary_collection(g,ids: Array) -> bool:
+	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+	var seen: Dictionary={}
+	for id in ids:
+		if not next.legendary_seen.has(id) or seen.has(id):return false
+		seen[id]=true
+	next.legendary_collection=ids.duplicate();publish(g,next,"legendary_collection_changed");return true
+
+func apply_preset(g,index: int) -> bool:
+	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+	if index<0 or index>=next.inventory.presets.size():return false
+	var preset: Dictionary=next.inventory.presets[index]
+	var ids: Array=preset.drone_ids.filter(func(id):return next.inventory.drones.has(id) and not next.inventory.sealed.has(id) and next.inventory.warehouse.has(id))
+	if not Bag.equipment_valid(next.inventory,ids,Permission.hull_capacity(g,config),config):return false
+	for id in ids:
+		var d: Dictionary=next.inventory.drones[id]
+		if not d.ultimate:d.hangings=preset.hanging_loadouts.get(id,d.hangings).duplicate()
+		for key in d.hangings:
+			if not next.hanging_modules[key].unlocked or int(g.profile.highestLevel)<int(config.hanging_modules[key].unlock_stage):return false
+		if not Bag.valid_drone(d,config):return false
+	next.inventory.equipped=ids;next.inventory.generation+=1
+	publish(g,next,"preset_applied");return true
+
+func fit_hull(g) -> void:
+	var maximum:=Permission.hull_capacity(g,config)
+	if g.profile.hyperspace.inventory.equipped.size()<=maximum:return
+	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+	next.inventory.equipped=next.inventory.equipped.slice(0,maximum);next.inventory.generation+=1
+	publish(g,next,"hull_capacity_changed")
