@@ -28,7 +28,7 @@ func save_snapshot(label:String)->void:
  snapshots[label]=path
 func observe(kind:String,payload:Dictionary)->void:
  if kind=="retreat" or (kind=="hyperspace_manual" and not bool(payload.active) and not bool(payload.success)):
-  var failure_feedback:Dictionary=space_policy.observe_failure(game.simulated_time)
+  var failure_feedback:Dictionary=space_policy.observe_failure(game,game.simulated_time)
   if not failure_feedback.is_empty():record("visible_loadout_failure",failure_feedback)
  var manual:bool=game.manual_hyperspace.active
  if kind=="state" and manual:

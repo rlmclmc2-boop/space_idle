@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v4-stable-encounter-earned-T3"
+const VERSION="hyperspace-player-v5-failure-driven-stable-plan"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -72,11 +72,12 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
   for attack_kind in actor.shown_attacks:
    if attacks.has(int(attack_kind)):attacks[int(attack_kind)]+=1
  seen_encounter=encounter;encounter_started=now
+ var higgs:=false
  var physical:String="missile" if visible.size()>=4 else "cannon"
  var energy:String="laser" if visible.size()>=4 else "longLaser"
  for id in g.profile.hyperspace.inventory.equipped:
   var d:Dictionary=g.profile.hyperspace.inventory.drones[id]
-  if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":physical="missile"
+  if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":physical="missile";higgs=true
  if not allowed.has(physical):physical="cannon" if allowed.has("cannon") else "missile" if allowed.has("missile") else ""
  if not allowed.has(energy):energy="longLaser" if allowed.has("longLaser") else "laser" if allowed.has("laser") else ""
  wanted_weapons=[];wanted_defences=[]
@@ -91,19 +92,62 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
   var shield:bool=index>0 and g.content_unlocked("equipment","shield") and (int(attacks[1])>int(attacks[2]) or (int(attacks[1])==int(attacks[2]) and (int(attacks[1])==0 or index%2==1)))
   wanted_defences.append("shield" if shield else "armour")
  last_weapon_change=now
- encounter_plans[encounter]={"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"visible_only":visible.duplicate(true)}
+ encounter_plans[encounter]={"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"visible_only":visible.duplicate(true),"allowed":allowed.duplicate(),"growth":growth_stamp(g),"revision":0,"last_revision_failure":0,"higgs":higgs}
  pending_encounters.erase(encounter)
  return {"encounter":encounter,"visible_only":visible,"allowed_from_seen_tutorials_or_owned":allowed,"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"reason":"Freeze initial observed protection/attack/repair evidence after arrival; no within-wave survivor or shield-driven refit; native equipment page only"}
 func expanded_plan(plan:Array,count:int)->Array:
  var result:Array=[]
  for index in count:result.append(plan[mini(index,plan.size()-1)] if not plan.is_empty() else "")
  return result
-func observe_failure(now:float)->Dictionary:
+func growth_stamp(g)->String:
+ var levels:Array=[]
+ for category in ["weapons","defence"]:
+  for index in g.active_slot_count(category):levels.append([category,index,g.slot_entry(category,index).level])
+ return str(levels)
+func failed_plan_alternative(plan:Dictionary)->Dictionary:
+ var weapons:Array=plan.weapons.duplicate();var counts:Dictionary={1:0,2:0};var repair:=false
+ for actor in plan.visible_only:
+  if counts.has(int(actor.resistance)):counts[int(actor.resistance)]+=1
+  repair=repair or bool(actor.drawn_repair_modules)
+ var physical:Array=[];var energy:Array=[]
+ for index in weapons.size():
+  if str(weapons[index]) in ["missile","cannon"]:physical.append(index)
+  if str(weapons[index]) in ["laser","longLaser"]:energy.append(index)
+ # Repeated real defeat despite upgrades justifies one slot correction toward
+ # the initially seen majority; do not discard both coverage types.
+ if int(counts[1])>0 and int(counts[2])>0 and not physical.is_empty() and not energy.is_empty():
+  var desired_physical:int=clampi(roundi(float(weapons.size()*int(counts[1]))/float(int(counts[1])+int(counts[2]))),1,weapons.size()-1)
+  if physical.size()>desired_physical:
+   var index:int=physical.back();weapons[index]=weapons[energy[0]]
+   return {"weapons":weapons,"changed_slot":index,"reason":"Repeated defeat after earned upgrades: initially seen physical protection is the majority, add one energy slot while retaining physical coverage"}
+  if physical.size()<desired_physical:
+   var index:int=energy.back();weapons[index]=weapons[physical[0]]
+   return {"weapons":weapons,"changed_slot":index,"reason":"Repeated defeat after earned upgrades: initially seen energy protection is the majority, add one physical slot while retaining energy coverage"}
+ # A second bounded trial changes one burst/sustained weapon within its
+ # observed damage family. A repair glyph keeps the taught sustained beam.
+ for index in weapons.size():
+  var current:String=str(weapons[index])
+  var alternative:String={"missile":"cannon","cannon":"missile","laser":"longLaser","longLaser":"laser"}.get(current,"")
+  if alternative.is_empty() or not plan.allowed.has(alternative):continue
+  if repair and current=="longLaser":continue
+  if alternative=="cannon" and bool(plan.get("higgs",false)):continue
+  weapons[index]=alternative
+  return {"weapons":weapons,"changed_slot":index,"reason":"Repeated defeat after further earned upgrades: try one known same-family burst/sustained alternative, keep the remaining stable plan"}
+ return {}
+func observe_failure(g,now:float)->Dictionary:
  if seen_encounter.is_empty():return {}
  var failed:String=seen_encounter
  encounter_failures[failed]=int(encounter_failures.get(failed,0))+1
+ var feedback:Dictionary={"encounter":failed,"failures":encounter_failures[failed],"combat_observed_seconds":now-encounter_started,"reason":"Actual failed attempt; remembered plan is stable between failures"}
+ if encounter_plans.has(failed):
+  var plan:Dictionary=encounter_plans[failed];var growth:String=growth_stamp(g)
+  if int(plan.revision)<2 and int(encounter_failures[failed])-int(plan.last_revision_failure)>=3 and growth!=str(plan.growth):
+   var alternative:Dictionary=failed_plan_alternative(plan)
+   if not alternative.is_empty():
+    feedback.alternative=alternative;feedback.before_weapons=plan.weapons.duplicate();feedback.earned_growth_before=plan.growth;feedback.earned_growth_now=growth
+    plan.weapons=alternative.weapons;plan.revision+=1;plan.last_revision_failure=encounter_failures[failed];plan.growth=growth
  pending_encounters.erase(failed);seen_encounter=""
- return {"encounter":failed,"failures":encounter_failures[failed],"combat_observed_seconds":now-encounter_started,"reason":"Actual failed attempt recorded; retain remembered plan for retry and earned growth, no unobserved enemy weakening"}
+ return feedback
 func pick_crew(g)->String:
  if not reserved_crew.is_empty() and Permission.crew_available(g,reserved_crew):return reserved_crew
  for member in g.profile.crew:
