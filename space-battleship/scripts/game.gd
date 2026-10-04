@@ -2,6 +2,7 @@ class_name BattleGame
 extends RefCounted
 
 const CLEAR_ADVANCE_DELAY := 3.0
+const MAX_TRAVEL_SECONDS := 3.0
 
 signal event(kind: String, payload: Dictionary)
 
@@ -43,6 +44,7 @@ var _upgrade_costs: Dictionary = {}
 var state: State = State.MAIN_MENU
 var stage := 1
 var distance := 0.0
+var travel_origin := INF
 var group_index := 0
 var enemies: Array[Dictionary] = []
 var projectiles: Array[Dictionary] = []
@@ -639,6 +641,13 @@ func invalidate_equipment_counter(key: String) -> void:
 
 func ship_movement() -> float:
 	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
+
+func travel_movement() -> float:
+	var groups: Array = db.levels[stage-1].groups
+	if group_index >= groups.size():return ship_movement()
+	var destination := float(groups[group_index].position)*float(db.levels[stage-1].length)
+	var origin := distance if is_inf(travel_origin) else travel_origin
+	return maxf(ship_movement(),maxf(0.0,destination-origin)/MAX_TRAVEL_SECONDS)
 
 func ship_name() -> String:
 	return UIText.data_text("ship",str(profile.get("selectedShip",first_ship())),"des")
@@ -1695,6 +1704,7 @@ func change_state(next: State) -> void:
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false))
 	if next == State.TRAVEL:
+		travel_origin = INF
 		cooldowns.clear()
 		for index in range(weapon_entries().size()):
 			var entry: Dictionary = weapon_entries()[index]
@@ -1744,7 +1754,7 @@ func guard_interval() -> float:
 	var encounters: Array = db.levels[stage-1].groups
 	var previous := 0.0 if guard_index == 0 else float(encounters[guard_index-1].position)
 	var gap := float(encounters[guard_index].position) * float(db.levels[stage-1].length) - previous * float(db.levels[stage-1].length)
-	return gap / ship_movement() if ship_movement() > 0 else INF
+	return minf(MAX_TRAVEL_SECONDS,gap / ship_movement() if ship_movement() > 0 else INF)
 
 func respawn_guard() -> void:
 	guard_elapsed = 0
@@ -2423,7 +2433,7 @@ func tick(dt: float) -> void:
 	if state == State.RETREAT:
 		tick_projectiles(dt)
 		retreat_elapsed += dt
-		var duration := float(db.defaults.get("deathRetreatDuration", 1.2))
+		var duration := clampf(float(db.defaults.get("deathRetreatDuration", 1.2)),0.001,MAX_TRAVEL_SECONDS)
 		distance = lerpf(retreat_from, retreat_target, clampf(retreat_elapsed / duration, 0, 1))
 		if retreat_elapsed >= duration:
 			distance = retreat_target
@@ -2460,9 +2470,10 @@ func tick(dt: float) -> void:
 			retreat_boss_pending = false
 			spawn_group(true)
 			return
-		distance += ship_movement() * dt
+		if is_inf(travel_origin):travel_origin=distance
+		distance += travel_movement() * dt
 		var level: Dictionary = db.levels[stage - 1]
-		if group_index < level.groups.size() and distance >= float(level.groups[group_index].position)*float(level.length):
+		if group_index < level.groups.size() and distance+0.000001 >= float(level.groups[group_index].position)*float(level.length):
 			spawn_group()
 		return
 	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p))

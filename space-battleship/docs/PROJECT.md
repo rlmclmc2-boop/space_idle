@@ -7,7 +7,7 @@ SAVING
 - Timed/manual saves synchronously validate a flushed temporary file before safe replacement, preserve the previous file on failure and accept its backup on load. Failure reports explicitly without reverting business results or advancing the successful-save timestamp; retry only at the next deadline or a manual save. No asynchronous candidate is enabled.
 
 PROGRESSION
-- Loop: cruise -> encounter -> auto-combat -> resources/growth -> unlock. May hold/replay or jump to cleared/current level. Normal clear waits 3 game-seconds; immediate clear available.
+- Loop: cruise -> encounter -> auto-combat -> resources/growth -> unlock. May hold/replay or jump to cleared/current level. Each cruise/retreat segment and guard respawn interval is at most 3 X1 game-seconds; faster natural travel stays faster. Normal clear waits 3 game-seconds; immediate clear available.
 - unlock.xlsx is sole threshold source: cleared=specified level cleared; reached=highest enterable level exceeds threshold; gems retain level-8 availability. Granted unlocks persist across threshold edits; notices acknowledged individually, no replay duplicates.
 - Level atkRatio/lifeRatio/resRatio interpolate by battle-point index: the first point inherits the previous level's final value (level 1 starts at 1), and the last point reaches the current level value.
 

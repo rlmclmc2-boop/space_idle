@@ -407,7 +407,7 @@ func _process(delta: float) -> void:
 		if not accelerated_visual_mode:
 			sync_beam_visuals()
 			advance_projectile_visuals(dt)
-		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.ship_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
+		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.travel_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
 		# Blend the star-only travel effect instead of toggling 200 trails at once.
 		star_streak = move_toward(star_streak,1.0 if game.state == BattleGame.State.TRAVEL else 0.0,dt*4.0)
 		if not accelerated_visual_mode:

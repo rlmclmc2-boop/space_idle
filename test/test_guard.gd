@@ -30,18 +30,18 @@ func run() -> void:
 	check(g.state == BattleGame.State.TRAVEL and not g.guarding_here(), "Cruise arms next encounter")
 	g.tick(5)
 	check(g.guarding_here() and g.distance == 100 and g.group_index == 1, "Arrive and guard first encounter")
-	check(g.guard_interval() == 5, "First interval starts at stage origin")
+	check(g.guard_interval() == 3, "First interval respects the three-second travel cap")
 	g.profile.unlocked = []
 	for enemy in g.enemies:
 		enemy.equipment = []
 	g.tick(8)
 	check(g.guard_elapsed == 0 and g.distance == 100, "No timer or movement while enemies remain")
 	empty_wave(g)
-	g.tick(4)
-	check(g.targets().is_empty() and g.guard_elapsed == 4, "Timer begins only once empty")
+	g.tick(2)
+	check(g.targets().is_empty() and g.guard_elapsed == 2, "Timer begins only once empty")
 	g.paused = true
 	g.tick(100)
-	check(g.guard_elapsed == 4, "Pause freezes respawn timer")
+	check(g.guard_elapsed == 2, "Pause freezes respawn timer")
 	g.paused = false
 	g.tick(1)
 	check(not g.targets().is_empty() and g.group_index == 1 and g.distance == 100, "Respawn same group without moving")
@@ -52,9 +52,9 @@ func run() -> void:
 	g.group_index = 1
 	g.spawn_group()
 	g.toggle_loop()
-	check(g.guard_interval() == 10 and g.distance == 300, "Unequal adjacent spacing controls interval")
-	g.db.ships[g.profile.selectedShip].movement = 40
-	check(g.guard_interval() == 5, "Movement speed controls interval")
+	check(g.guard_interval() == 3 and g.distance == 300, "Unequal spacing cannot exceed the cap")
+	g.db.ships[g.profile.selectedShip].movement = 100
+	check(g.guard_interval() == 2, "Faster natural movement preserves shorter interval")
 	for mode in [0,1,2]:
 		g = fixture()
 		g.group_index = 1
