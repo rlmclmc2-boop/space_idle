@@ -1847,7 +1847,8 @@ func spawn_group(keep_distance := false) -> void:
 		profile.guardDistance = distance
 	enemies.clear()
 	var slots: Array = db.groups[str(int(encounter.id))].slots
-	var formation_columns := 5 if slots.size()==15 else 10
+	var placement := preload("res://scripts/enemy_formation.gd").positions(slots,db.enemies)
+	var formation_columns := 5
 	for slot in range(slots.size()):
 		if slots[slot] == null:
 			continue
@@ -1857,7 +1858,9 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.uid = uid
 		enemy.slot = slot
 		enemy.formation_columns = formation_columns
-		var slot_position := enemy_slot_position(slot,formation_columns)
+		enemy.size_formation = true
+		enemy.formation_count = placement.size()
+		var slot_position: Vector2 = placement[slot]
 		enemy.x = slot_position.x
 		enemy.y = slot_position.y
 		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
