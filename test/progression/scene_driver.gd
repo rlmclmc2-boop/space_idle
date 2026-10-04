@@ -4,6 +4,8 @@ extends RefCounted
 var scene
 var ui_refresh_seconds:=0.0
 var ui_elapsed:=0.0
+var production_ui_ticks:=false
+var enhancement_ui_elapsed:=0.0
 func setup(tree:SceneTree,game):
 	scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
 	tree.root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false
@@ -15,9 +17,11 @@ func setup(tree:SceneTree,game):
 	game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point
 	# Fixture replacement is a global model reset: rebuild its dependent UI once.
 	scene.build_ui()
+	if production_ui_ticks:scene.hightech_page.set_process(false)
 func before_tick(dt:float):
 	if scene.ui_rebuild_pending and not scene.get_viewport().gui_is_dragging():
 		scene.ui_rebuild_pending=false;scene.build_ui()
+		if production_ui_ticks:scene.hightech_page.set_process(false)
 	scene.ship_view.set_accelerated_quality(scene.game.speed>=10.0)
 	if scene.current_hull!=str(scene.game.profile.selectedShip):
 		scene.current_hull=str(scene.game.profile.selectedShip);scene.ship_view.set_hull(scene.current_hull);scene._set_reference_dimensions()
@@ -50,5 +54,19 @@ func after_tick(dt:float):
 	ui_elapsed+=dt
 	if ui_refresh_seconds<=0.0 or ui_elapsed+0.000001>=ui_refresh_seconds:
 		scene.refresh_visible_cards(ui_elapsed);scene.refresh_navigation();ui_elapsed=0.0
+	if production_ui_ticks:
+		# The workshop owns its0.2s sampling; use its actual production process
+		# with logical UI dt instead of sampling the accelerated test's wall time.
+		scene.hightech_page.set_process(false);scene.hightech_page._process(dt)
+		# The enhancement metric timer is a UI-only1s sampler bound to refresh.
+		# Event invalidation remains production-owned. No gameplay timer is driven.
+		if is_instance_valid(scene.enhancement_panel):
+			scene.enhancement_panel.metrics_timer.stop()
+			if scene.enhancement_panel.visible:
+				enhancement_ui_elapsed+=dt
+				if enhancement_ui_elapsed>=scene.enhancement_panel.metrics_timer.wait_time:
+					enhancement_ui_elapsed=fmod(enhancement_ui_elapsed,scene.enhancement_panel.metrics_timer.wait_time)
+					scene.enhancement_panel.refresh()
+			else:enhancement_ui_elapsed=0.0
 func close():
 	if is_instance_valid(scene):scene.queue_free()
