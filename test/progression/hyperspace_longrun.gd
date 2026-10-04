@@ -42,6 +42,10 @@ func observe(kind:String,payload:Dictionary)->void:
   save_snapshot("reach_%d_round_%d"%[last_frontier,int(game.profile.hyperspace.round_id)])
 func crew_action()->Dictionary:
  var reserved:String=space_policy.pick_crew(game) if int(game.profile.highestLevel)>=7 else ""
+ if reserved.is_empty() and not game.profile.hyperspace.history.is_empty() and not game.profile.hyperspace.auto.enabled:
+  for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
+   for member in game.profile.crew:
+    if str(member.assignmentType)==job:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First earned space record needs an actual worker; old automation stops"}
  var panel=driver.scene.crew_panel
  for member in game.profile.crew:
   var id:=str(member.crewId)
