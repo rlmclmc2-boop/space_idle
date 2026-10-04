@@ -3217,6 +3217,7 @@ func layout_reactor_page() -> void:
 	set_ui_value(equipment_tabs,"size",WORK_CONTENT_RECT.size)
 
 func confirm_unequip(category: String, index: int) -> void:
+	if game.slot_equipment_locked(category,index):return
 	var entry := game.slot_entry(category,index).duplicate()
 	if entry.is_empty() or str(entry.key).is_empty():
 		return

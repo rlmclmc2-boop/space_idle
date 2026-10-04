@@ -122,6 +122,17 @@ func missile_retarget_candidate(type:int)->Dictionary:
 	return {}
 
 func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:Dictionary,offset:Vector2,spread:float,salvo_index:int=0,salvo_count:int=1)->void:
+	if str(slot_entry("weapons",index).key)=="cannon":
+		if target.is_empty() or target.hp<=0 or not enemies.has(target):return
+		# The discharge already crosses its target in this launch frame. Build
+		# the canonical committed payload first, then settle one primary hit.
+		super.launch_player_attack(index,target,weapon,attack,offset,spread,salvo_index,salvo_count)
+		var shot:Dictionary=projectiles.back()
+		shot.dead=true
+		projectiles.erase(shot) # Remove before hit callbacks or final-kill cleanup.
+		event.emit("projectile_impact",{"shot":shot,"pos":target_point(target)})
+		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)))
+		return
 	if str(slot_entry("weapons",index).key)!="missile":
 		super.launch_player_attack(index,target,weapon,attack,offset,spread,salvo_index,salvo_count);return
 	# Payload is resolved now, exactly once. Delayed ejection does not reroll gems/crit.

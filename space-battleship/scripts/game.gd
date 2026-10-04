@@ -217,12 +217,14 @@ func default_loadout(key: String, unlocked: Array) -> Dictionary:
 	var loadout := empty_loadout(key)
 	var weapons: Array = loadout.weapons
 	var defence: Array = loadout.defence
+	if not defence.is_empty():defence[0].key="armour"
 	for equip_key in unlocked:
 		if WEAPON_KEYS.has(str(equip_key)):
 			var empty := weapons.find_custom(func(entry):return str(entry.key).is_empty())
 			if empty >= 0:
 				weapons[empty].key = str(equip_key)
 		elif DEFENSE_KEYS.has(str(equip_key)):
+			if str(equip_key)=="armour" and not defence.is_empty():continue
 			var empty_defence := defence.find_custom(func(entry):return str(entry.key).is_empty())
 			if empty_defence >= 0:
 				defence[empty_defence].key = str(equip_key)
@@ -333,7 +335,9 @@ func load_progress_data(raw: Dictionary) -> void:
 			var entry := first_equipment_entry(key)
 			var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
 			if not entry.is_empty():
-				entry.level = clampi(int(value),1,db.max_equipment_level(key)) if value is float or value is int else 1
+				var migrated := clampi(int(value),1,db.max_equipment_level(key)) if value is float or value is int else 1
+				# Keep any explicit slot investment when a legacy name-level map is older.
+				entry.level = maxi(int(entry.level),migrated)
 	profile.moduleVersion = 1
 	load_jewels(raw)
 	load_hightech(raw)
@@ -529,6 +533,7 @@ func ensure_loadout() -> void:
 			var level := int(entry.get("level", 1)) if entry is Dictionary and (entry.get("level", 1) is int or entry.get("level", 1) is float) else 1
 			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
 				equip_key = ""
+			if slot_equipment_locked(category,i):equip_key="armour"
 			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, 2147483647)}
 			normalized.append(normalized_entry)
 		profile.loadout[category] = normalized
@@ -761,6 +766,7 @@ func valid_loadout(key: String, loadout: Dictionary) -> bool:
 			if not entry is Dictionary:
 				return false
 			var equip_key := str(entry.get("key", ""))
+			if category=="defence" and is_same(entry,entries[0]) and equip_key!="armour":return false
 			if equip_key.is_empty():
 				continue
 			if not allowed.has(equip_key) or not profile.unlocked.has(equip_key):
@@ -798,7 +804,11 @@ func invalidate_module_attack(index: int) -> void:
 	else:
 		cooldowns[slot_id("weapons",index)] = float(db.equip(str(entry.key),int(entry.level)).cd)
 
+func slot_equipment_locked(category: String, index: int) -> bool:
+	return category=="defence" and index==0
+
 func equip_slot(category: String, index: int, key: String) -> bool:
+	if slot_equipment_locked(category,index) and key!="armour":return false
 	if category not in ["weapons","defence"]:return false
 	var allowed: Array = WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS
 	var entry := slot_entry(category,index)
@@ -817,6 +827,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	return true
 
 func unequip_slot(category: String, index: int) -> bool:
+	if slot_equipment_locked(category,index):return false
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
 	capture_refit_health()

@@ -68,7 +68,7 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	name_button.tooltip_text = UIText.t("equipment.swap")
 	name_button.add_theme_font_override("font",face(650))
 	name_button.add_theme_font_size_override("font_size",23)
-	for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+	for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:
 		name_button.add_theme_color_override(state,INK)
 	name_button.item_selected.connect(func(index: int):
 		if index>=0 and index<equipment_options.size():equipment_selected.emit(str(equipment_options[index])))
@@ -128,7 +128,7 @@ func layout_contents() -> void:
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false)]
+	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state
@@ -143,7 +143,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	upgrade_button.set_meta("slot_id",slot_id)
 	equip_button.set_meta("slot_id",slot_id)
 	name_button.set_meta("slot_id",slot_id)
-	host.set_ui_value(name_button,"disabled",item.locked)
+	host.set_ui_value(name_button,"disabled",item.locked or item.get("refit_locked",false))
 	host.set_ui_value(fields.title,"text",item.name)
 	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
@@ -164,7 +164,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
 func refresh_options(item: Dictionary) -> void:
-	var options: Array = panel.equipment_choices(item.category)
+	var options: Array = panel.equipment_choices(item.category,int(item.index))
 	var state := [item.category,item.index,item.key,item.locked,options]
 	if options_state==state and name_button.selected==equipment_options.find(item.key):
 		host.set_ui_value(name_button,"text",item.name)

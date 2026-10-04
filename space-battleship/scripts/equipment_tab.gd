@@ -55,7 +55,8 @@ func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
 	return UIText.t(key)
 
-func equipment_choices(category: String) -> Array:
+func equipment_choices(category: String,index: int = -1) -> Array:
+	if host.game.slot_equipment_locked(category,index):return ["armour"]
 	var options: Array = [""]
 	for key in BattleGame.WEAPON_KEYS if category=="weapons" else BattleGame.DEFENSE_KEYS:
 		if host.game.content_unlocked("equipment",key):options.append(key)
@@ -325,7 +326,7 @@ func refresh_confirm() -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
 	host.set_ui_value(detail.equip,"text",UIText.t("equipment.action.remove" if pending_key.is_empty() and not item.key.is_empty() else "equipment.confirm_free"))
-	host.set_ui_value(detail.equip,"disabled",item.locked or pending_key==item.key or (not pending_key.is_empty() and not host.game.profile.unlocked.has(pending_key)))
+	host.set_ui_value(detail.equip,"disabled",item.locked or item.get("refit_locked",false) or pending_key==item.key or (not pending_key.is_empty() and not host.game.profile.unlocked.has(pending_key)))
 
 func confirm_equipment() -> void:
 	if detail.equip.disabled:return
@@ -373,7 +374,7 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	return {"id":host.game.slot_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
 		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
-		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,
+		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
 		"slots":[index],"mainStatLabel":UIText.t("weapon.expected_damage" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
@@ -580,7 +581,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var key := str(entry.key)
 	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
 	selected_next_stat = next_projection.expected
-	var options := equipment_choices(category)
+	var options := equipment_choices(category,selected_slot)
 	if host.ui_state_changed(detail.slots,options):
 		detail.slots.clear()
 		for option in options:
@@ -593,7 +594,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		draft_context=context
 	if detail.slots.selected!=options.find(pending_key):detail.slots.select(options.find(pending_key))
 	refresh_confirm()
-	host.set_ui_value(detail.slots,"disabled",item.locked)
+	host.set_ui_value(detail.slots,"disabled",item.locked or item.get("refit_locked",false))
 	host.set_ui_value(detail.icon,"texture",item.icon)
 	host.set_ui_value(detail.title,"text",item.name)
 	host.set_ui_value(detail.meta,"text",UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+" · "+UIText.t("weapon.tab" if category=="weapons" else "defense.tab"))
@@ -607,7 +608,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(category,selected_slot,10 if action=="ten" else 1))
 	host.set_ui_value(detail.equip,"visible",not picker_open)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
-	host.set_ui_value(detail.remove,"disabled",item.locked)
+	host.set_ui_value(detail.remove,"disabled",item.locked or item.get("refit_locked",false))
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
