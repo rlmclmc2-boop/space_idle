@@ -164,20 +164,21 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
 func refresh_options(item: Dictionary) -> void:
-	var state := [item.category,item.index,item.key,item.locked,host.game.profile.unlocked.duplicate()]
+	var options: Array = panel.equipment_choices(item.category)
+	var state := [item.category,item.index,item.key,item.locked,options]
 	if options_state==state and name_button.selected==equipment_options.find(item.key):
 		host.set_ui_value(name_button,"text",item.name)
 		return
 	options_state=state
-	if equipment_options.is_empty():
-		equipment_options = [""]
-		equipment_options.append_array(BattleGame.WEAPON_KEYS if item.category=="weapons" else BattleGame.DEFENSE_KEYS)
+	if equipment_options!=options:
+		equipment_options = options
+		name_button.clear()
 		for key in equipment_options:name_button.add_item("")
 	for index in equipment_options.size():
 		var key: String = equipment_options[index]
 		var title := str(host.NAMES.get(key,UIText.t("equipment.vacant")))
 		if name_button.get_item_text(index)!=title:name_button.set_item_text(index,title)
-		var blocked: bool = item.locked or (not key.is_empty() and not host.game.profile.unlocked.has(key))
+		var blocked: bool = item.locked
 		if name_button.is_item_disabled(index)!=blocked:name_button.set_item_disabled(index,blocked)
 	var current := equipment_options.find(item.key)
 	if name_button.selected!=current:name_button.select(current)

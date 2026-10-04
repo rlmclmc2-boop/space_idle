@@ -55,6 +55,12 @@ func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
 	return UIText.t(key)
 
+func equipment_choices(category: String) -> Array:
+	var options: Array = [""]
+	for key in BattleGame.WEAPON_KEYS if category=="weapons" else BattleGame.DEFENSE_KEYS:
+		if host.game.content_unlocked("equipment",key):options.append(key)
+	return options
+
 func label(parent: Control, value: String, rect: Rect2, font_size := 12, color := Color("e0ecf4")) -> Label:
 	return host.equipment_card_label(parent,value,rect,font_size,color)
 
@@ -574,16 +580,14 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var key := str(entry.key)
 	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
 	selected_next_stat = next_projection.expected
-	var options: Array = [""]
-	options.append_array(BattleGame.WEAPON_KEYS if category=="weapons" else BattleGame.DEFENSE_KEYS)
-	if host.ui_state_changed(detail.slots,[options,host.game.profile.unlocked]):
+	var options := equipment_choices(category)
+	if host.ui_state_changed(detail.slots,options):
 		detail.slots.clear()
 		for option in options:
 			detail.slots.add_item(host.NAMES.get(option,UIText.t("equipment.vacant")))
-			detail.slots.set_item_disabled(detail.slots.item_count-1,not str(option).is_empty() and not host.game.profile.unlocked.has(option))
 		slot_options = options
 	var context: Array = [selected,key,item.locked]
-	var draft_valid: bool = options.has(pending_key) and (pending_key.is_empty() or host.game.profile.unlocked.has(pending_key))
+	var draft_valid: bool = options.has(pending_key)
 	if draft_context!=context or not draft_valid:
 		pending_key=key
 		draft_context=context
