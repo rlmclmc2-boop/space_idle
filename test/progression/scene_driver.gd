@@ -15,6 +15,9 @@ func setup(tree:SceneTree,game):
 	scene.enemy_poses.clear();scene.turret_visuals.clear();scene.fx_time=0.0;scene.demo_time=0.0
 	scene.ship_view.set_hull(scene.current_hull);scene.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"));scene._set_reference_dimensions()
 	game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point
+	game.drone_launch_provider=scene._prototype_drone_launch_pose
+	game.rail_geometry_provider=scene._rail_geometry
+	game.rail_target_point_provider=scene.entity_render_position
 	# Fixture replacement is a global model reset: rebuild its dependent UI once.
 	scene.build_ui()
 	if production_ui_ticks:scene.hightech_page.set_process(false)
@@ -23,15 +26,8 @@ func before_tick(dt:float):
 		scene.ui_rebuild_pending=false;scene.build_ui()
 		if production_ui_ticks:scene.hightech_page.set_process(false)
 	scene.ship_view.set_accelerated_quality(scene.game.speed>=10.0)
-	if scene.current_hull!=str(scene.game.profile.selectedShip):
-		scene.current_hull=str(scene.game.profile.selectedShip);scene.ship_view.set_hull(scene.current_hull);scene._set_reference_dimensions()
-	scene.ship_view.set_loadout(scene.game.weapon_entries(),scene.game.active_slot_count("weapons"))
-	scene.demo_time+=dt
-	var aim:Vector2=scene.player_render_position()+Vector2(0,-450)
-	if not scene.game.enemies.is_empty():aim=scene.enemy_render_position(scene.game.enemies[0])
-	scene.ship_view.set_pose(scene.player_render_position()+scene.reference_offset,scene.reference_height,0.0,aim,scene.demo_time,scene.shield_enabled,false,dt)
-	scene.shield_before_hit=scene.game.player.shield
-	scene.clock+=dt;scene.fx_time+=dt;scene.wave_hint=maxf(0,scene.wave_hint-dt);scene.advance_turrets(dt)
+	scene.before_logical_game_tick(dt)
+	scene.clock+=dt;scene.wave_hint=maxf(0,scene.wave_hint-dt)
 func after_tick(dt:float):
 	# Retain the full production event handler. Mirror its bounded VFX cleanup;
 	# none of these containers own game projectiles or enemy health.
