@@ -1,5 +1,6 @@
 {
   "entries": {
+    "hyperspace.exit_manual": {"params": []},
     "tutorial.basics": {"params": []},
     "tutorial.select_entry": {"params": []},
     "tutorial.system.crew": {"params": []},

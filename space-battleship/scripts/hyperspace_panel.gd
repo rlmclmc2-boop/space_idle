@@ -12,6 +12,7 @@ var manual_adapter: Callable
 var manual_ready_provider: Callable
 var manual_projection: Dictionary={}
 var manual_snapshot_reads=0
+var exit_button: Button
 var manual_reason: Label
 var crew_adapter: Callable
 var hull_capacity_provider: Callable
@@ -159,7 +160,7 @@ func build_exploration(parent: Node) -> void:
  var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
  label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
  label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
- var commands=row(parent);start_button=button(commands,"start",start_manual);crew_button=button(commands,"crew",func():
+ var commands=row(parent);start_button=button(commands,"start",start_manual);exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
  manual_reason=label(parent,"",20)
  label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
@@ -327,6 +328,7 @@ func refresh_progress() -> void:
   else:text=t("manual")
  put(status,"text",text);put(status,"modulate",Color("ff7979") if s.blocked or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
+ put(exit_button,"visible",host.game.manual_hyperspace.active)
  put(start_button,"disabled",not manual_ready() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
  put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))

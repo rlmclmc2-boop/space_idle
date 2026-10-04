@@ -14295,4 +14295,6 @@
     "params": "",
     "category": "hyperspace"
   }
+,
+  {"key":"hyperspace.exit_manual","text":"退出探索","params":"","category":"hyperspace"}
 ]
