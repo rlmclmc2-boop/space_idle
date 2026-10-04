@@ -19,6 +19,9 @@ var peak_missile_queue:=0
 var model_rebuilds:=0
 var last_domain_rejection:=""
 var domain_rejections:=0
+var operator_stopped:=false
+var stop_request_path:=""
+var next_stop_poll:=0
 func save_snapshot(label:String)->void:
  var path:String=output+"/save_"+label+".json"
  FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":space_policy.VERSION,"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint,"options":options,"page":page,"clears":clears,"rows":rows},"\t"))
@@ -142,6 +145,8 @@ func run()->void:
  if parsed is Dictionary:options.merge(parsed,true)
  output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
  if output.is_empty():printerr("Isolated output required");quit(2);return
+ stop_request_path=OS.get_environment("QA_STOP_REQUEST_FILE")
+ if stop_request_path.is_empty():stop_request_path=output+"/STOP"
  DirAccess.make_dir_recursive_absolute(output)
  trace=FileAccess.open(output+"/actions.jsonl",FileAccess.WRITE)
  game=Game.new(ShipDatabase.new());game.rng.seed=int(options.seed);game.stat_cache_enabled=true
@@ -165,6 +170,13 @@ func run()->void:
    row(before_stage)[state_key]+=STEP
   peak_projectiles=maxi(peak_projectiles,game.projectiles.size());peak_missile_queue=maxi(peak_missile_queue,game.missile_queue.size())
   var wall_now:int=Time.get_ticks_usec()
+  # Wall-clock file polling never advances logical time or changes a normal run.
+  if wall_now>=next_stop_poll:
+   next_stop_poll=wall_now+1000000
+   if FileAccess.file_exists(stop_request_path):
+    operator_stopped=true
+    record("operator_stop",{"request_file":stop_request_path,"x1_seconds":game.simulated_time})
+    break
   if wall_now-last_wall_report>=30000000:
    last_wall_report=wall_now
    var status:Dictionary={"x1_seconds":game.simulated_time,"wall_seconds":float(wall_now-wall_started)/1e6,"stage":game.stage,"frontier":game.profile.highestLevel,"clears":clears,"deaths":deaths,"clicks":clicks,"space_runs":space_runs.size(),"drones":game.profile.hyperspace.inventory.drones.size(),"round":game.profile.hyperspace.round_id,"projectiles_peak":peak_projectiles,"missile_queue_peak":peak_missile_queue,"data_sha256":FileAccess.get_sha256("res://data/game_data.json")}
@@ -172,7 +184,7 @@ func run()->void:
    await process_frame
   if game.simulated_time-last_state_report>=1800.0:last_state_report=game.simulated_time;save_snapshot("periodic_%d"%int(game.simulated_time))
  state_change();save_snapshot("final");trace.close()
- var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "galaxy_complete" if galaxy_complete() else "bounded_partial","options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Reforge T3 is paid planning goal, no cap."}
+ var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Reforge T3 is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
  driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)
