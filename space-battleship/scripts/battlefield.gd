@@ -751,6 +751,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
+	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
 	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)

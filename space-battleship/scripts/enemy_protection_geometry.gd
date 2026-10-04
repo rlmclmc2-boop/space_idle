@@ -2,14 +2,15 @@ extends RefCounted
 ## Presentation-only convex envelope; gap is measured perpendicular to every edge.
 const ASPECT := 1.6
 
-static func fit(points: PackedVector2Array, gap: float) -> PackedVector2Array:
+static func fit(points: PackedVector2Array, gap: float, tip_fraction := 0.5) -> PackedVector2Array:
 	var half_width := 0.0
-	var slope_normal_length := sqrt(0.25+1.0/(ASPECT*ASPECT))
+	var slope_normal_length := sqrt(tip_fraction*tip_fraction+1.0/(ASPECT*ASPECT))
 	for point in points:
 		half_width=maxf(half_width,absf(point.x)+gap)
-		half_width=maxf(half_width,absf(point.x)*0.5+absf(point.y)/ASPECT+gap*slope_normal_length)
+		half_width=maxf(half_width,absf(point.x)*tip_fraction+absf(point.y)/ASPECT+gap*slope_normal_length)
 	var height := half_width*ASPECT
-	return PackedVector2Array([Vector2(0,-height),Vector2(half_width,-height*0.5),Vector2(half_width,height*0.5),Vector2(0,height),Vector2(-half_width,height*0.5),Vector2(-half_width,-height*0.5)])
+	var shoulder := height*(1.0-tip_fraction)
+	return PackedVector2Array([Vector2(0,-height),Vector2(half_width,-shoulder),Vector2(half_width,shoulder),Vector2(0,height),Vector2(-half_width,shoulder),Vector2(-half_width,-shoulder)])
 
 static func alpha_boundary(image: Image) -> PackedVector2Array:
 	image.convert(Image.FORMAT_RGBA8)

@@ -1127,6 +1127,17 @@ func enemy_weapon_components(enemy: Dictionary) -> Array:
 		pose.components=compose_weapon_components(ship_key,entries,"enemy")
 	return pose.components
 
+func enemy_attack_types(enemy: Dictionary) -> Array:
+	var pose := enemy_pose(enemy)
+	enemy_weapon_components(enemy)
+	if pose.get("attack_signature","")!=pose.components_signature:
+		pose.attack_signature=pose.components_signature
+		pose.attack_types=[]
+		for entry in enemy.equipment:
+			var damage_type:=int(db.enemy_weapon(str(entry.name)).get("dmgtype",0))
+			if damage_type in [1,2] and not pose.attack_types.has(damage_type):pose.attack_types.append(damage_type)
+	return pose.attack_types
+
 func turret_pose(index: int) -> Dictionary:
 	if turret_ship!=str(game.profile.selectedShip):
 		turret_visuals.clear()
@@ -2819,6 +2830,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	enemy_recognition.draw_attack_deck(draw_surface,dimensions.x,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,pose)
 	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,dimensions.x,packet,status,game.enemy_shield_time)
@@ -2961,7 +2973,7 @@ func enemy_recognition_screen_scale() -> float:
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var components := enemy_weapon_components(enemy)
-	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale())
+	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):

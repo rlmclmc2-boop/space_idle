@@ -46,7 +46,7 @@ func swept_mount(points: PackedVector2Array, mount: Dictionary, width: float, mi
 	var origin := Vector2(mount.pos)*width
 	var limit := float(mount.limit)
 	var base := float(mount.base)
-	var normals := [Vector2(1,0),Vector2(-1,0),Vector2(0.8,1),Vector2(-0.8,1),Vector2(0.8,-1),Vector2(-0.8,-1)]
+	var normals := [Vector2(1,0),Vector2(-1,0),Vector2(0.8,1),Vector2(-0.8,1),Vector2(0.8,-1),Vector2(-0.8,-1),Vector2(0.32,1),Vector2(-0.32,1),Vector2(0.32,-1),Vector2(-0.32,-1)]
 	for corner in mount_corners(mount,width,min_width):
 		for aim in [-limit,limit]:points.append(origin+corner.rotated(base+aim))
 		# Include exact support extrema of each corner's allowed arc for all six edges.
@@ -54,14 +54,14 @@ func swept_mount(points: PackedVector2Array, mount: Dictionary, width: float, mi
 			var aim := wrapf(Vector2(normal).angle()-corner.angle()-base,-PI,PI)
 			if aim>=-limit and aim<=limit:points.append(origin+corner.rotated(base+aim))
 
-func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cache: Dictionary, scale_value: float) -> Dictionary:
+func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cache: Dictionary, scale_value: float, large := false) -> Dictionary:
 	var scale_safe := maxf(0.1,scale_value)
 	var bucket := ceili(width*scale_safe/2.0)
 	var low := maxf(0.1,float(bucket-1)*2.0/scale_safe)
 	var high := float(bucket)*2.0/scale_safe
 	var gap := float(ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0))/scale_safe
 	var layer_gap := float(ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5))/scale_safe
-	var signature := [texture.get_instance_id(),bucket,scale_safe,gap,layer_gap,repair,mounts]
+	var signature := [texture.get_instance_id(),bucket,scale_safe,gap,layer_gap,repair,mounts,large]
 	if cache.get("recognition_signature",[])==signature:return cache.recognition_geometry
 	var profile := hull_profile(texture)
 	var min_width := 15.0/scale_safe
@@ -72,6 +72,8 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 		if crossing>low and crossing<high and not widths.has(crossing):widths.append(crossing)
 	for sample_width in widths:
 		for point in profile:points.append(point*sample_width)
+		if not mounts.is_empty():
+			for point in [Vector2(-0.22,-0.02),Vector2(0.22,-0.02),Vector2(0.22,0.53),Vector2(-0.22,0.53)]:points.append(point*sample_width)
 		for mount in mounts:swept_mount(points,mount,sample_width,min_width)
 		if repair:
 			for i in 3:
@@ -80,10 +82,13 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 				for p in [Vector2(-1,-1),Vector2(1,-1),Vector2(1,1),Vector2(-1,1)]:points.append(center+p*sample_width*0.075)
 	var hull_stroke := maxf(1.1/scale_safe,high*0.020)
 	var shield_stroke := maxf(1.3/scale_safe,high*0.026)
-	var inner := GEOMETRY.fit(points,gap+shield_stroke*0.5+0.5/scale_safe)
-	var outer := GEOMETRY.fit(inner,layer_gap+shield_stroke+0.5/scale_safe)
-	var front := GEOMETRY.fit(outer,layer_gap+shield_stroke+0.5/scale_safe)
-	var single_front := GEOMETRY.fit(inner,layer_gap+shield_stroke+0.5/scale_safe)
+	# Short tips follow large hulls closely while enclosing the same actual
+	# alpha, decorative deck and legal weapon-turn envelope.
+	var tip_fraction := 0.2 if large else 0.5
+	var inner := GEOMETRY.fit(points,gap+shield_stroke*0.5+0.5/scale_safe,tip_fraction)
+	var outer := GEOMETRY.fit(inner,layer_gap+shield_stroke+0.5/scale_safe,tip_fraction)
+	var front := GEOMETRY.fit(outer,layer_gap+shield_stroke+0.5/scale_safe,tip_fraction)
+	var single_front := GEOMETRY.fit(inner,layer_gap+shield_stroke+0.5/scale_safe,tip_fraction)
 	var result := {"inner":inner,"outer":outer,"front":front,"single_front":single_front,"hull_stroke":hull_stroke,"shield_stroke":shield_stroke,"scale":scale_safe,"audit_points":points}
 	cache.recognition_signature=signature.duplicate(true)
 	cache.recognition_geometry=result
@@ -127,6 +132,8 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 		outline=packet.outer if hull_visible else packet.inner
 		var color := PHYSICAL if shield_type==2 else ENERGY
 		if status.repair:
+			# Capacity contour remains closed; recovery is still the segmented layer.
+			closed(surface,outline,Color(color,0.20),packet.shield_stroke)
 			for i in 6:
 				var a := outline[(i+2)%6]
 				var b := outline[(i+3)%6]
@@ -152,6 +159,29 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 				var cross := toward.orthogonal()*width*0.035
 				surface.draw_polyline(PackedVector2Array([p-toward*width*0.045+cross,p,p-toward*width*0.045-cross]),Color(color,1.0-pulse*0.55),maxf(1.0/packet.scale,width*0.025),true)
 	return outline
+
+func draw_attack_deck(surface:CanvasItem,width:float,damage_types:Array)->void:
+	# Persistent structure reads independently of orange/blue protection colors.
+	# Kept on the dorsal centerline, behind existing functional weapon mounts.
+	var metal:=Color("c2c9c9")
+	var dark:=Color("17212a")
+	var y:=width*0.23
+	if damage_types.has(2):
+		var plate:=Rect2(-width*0.18,y-width*0.19,width*0.36,width*0.48)
+		surface.draw_rect(plate,dark)
+		for sign_value in [-1,1]:
+			var x:=float(sign_value)*width*0.10
+			surface.draw_rect(Rect2(x-width*0.035,y-width*0.14,width*0.07,width*0.33),metal)
+			surface.draw_rect(Rect2(x-width*0.022,y+width*0.12,width*0.044,width*0.055),Color("080d13"))
+		for stripe in 3:surface.draw_line(Vector2(-width*0.15,y+width*(0.21+stripe*0.025)),Vector2(width*0.15,y+width*(0.21+stripe*0.025)),Color("757f83"),maxf(0.8,width*0.018),true)
+	if damage_types.has(1):
+		var lens:=PackedVector2Array([Vector2(0,y-width*0.22),Vector2(width*0.17,y),Vector2(0,y+width*0.22),Vector2(-width*0.17,y)])
+		surface.draw_colored_polygon(lens,dark)
+		var glass:=PackedVector2Array([Vector2(0,y-width*0.15),Vector2(width*0.12,y),Vector2(0,y+width*0.15),Vector2(-width*0.12,y)])
+		surface.draw_colored_polygon(glass,Color("b8a2d8"))
+		for sign_value in [-1,1]:
+			var x:=float(sign_value)*width*0.19
+			surface.draw_polyline(PackedVector2Array([Vector2(x*0.65,y-width*0.24),Vector2(x,y-width*0.13),Vector2(x,y+width*0.13),Vector2(x*0.65,y+width*0.24)]),metal,maxf(1.0,width*0.045),true)
 
 func draw_weapon(surface: CanvasItem, pos: Vector2, pose: Dictionary, damage_type: int, scale_value: float) -> void:
 	var physical := damage_type==2
