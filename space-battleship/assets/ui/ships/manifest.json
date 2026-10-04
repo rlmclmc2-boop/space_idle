@@ -149,7 +149,7 @@
     "res://dev/toon_ship/hulls/heavy_battleship.glb": "db0fb37147f254436ff503eff83bb8e33c97d409231151c0d3b908e1d33aaab2",
     "res://dev/toon_ship/hulls/weapon_drone.glb": "e8efc40255e87e5a373d4110e2e849c82a90beab56b54dc33d3da34adc4b1d5b",
     "res://dev/toon_ship/hybrid_manifest.json": "57ad665790cc8cfedc223d86da36b93dc52a0f3159bf2ea30e8461e8236055bf",
-    "res://scripts/battlefield.gd": "c451b7390edda87185fdef4f6844af92175756d9c3102968b3ea197b548b731b",
+    "res://scripts/battlefield.gd": "1f292771bf8a85bb0584997fb59fc73b6ff55a203d7f6648c18ff8d925c8dd28",
     "res://scripts/presented_ship_view.gd": "2fc30bf2a6da5d64f6a6fcdb110eb5128899f564fddcafc2a692b696c0c651f7"
   }
 }

@@ -12440,5 +12440,527 @@
   {"note":"解锁教程与自动确认","text":"反应炉","key":"tutorial.system.reactor","category":"tutorial","params":""},
   {"note":"解锁教程与自动确认","text":"战舰","key":"tutorial.system.ships","category":"tutorial","params":""},
   {"note":"解锁教程与自动确认","text":"系统解锁","key":"tutorial.unlocks","category":"tutorial","params":""},
-  {"note":"解锁教程与自动确认","text":"确认（{seconds}秒后自动）","key":"unlock.auto_confirm","category":"tutorial","params":"{seconds}"}
+  {"note":"解锁教程与自动确认","text":"确认（{seconds}秒后自动）","key":"unlock.auto_confirm","category":"tutorial","params":"{seconds}"},
+  {
+    "key": "hyperspace.tab",
+    "text": "异空间",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.title",
+    "text": "异空间探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.routes",
+    "text": "探索路线",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.alpha",
+    "text": "Α · 脉冲激光",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.beta",
+    "text": "Β · 导弹",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.gamma",
+    "text": "Γ · 磁轨炮",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.delta",
+    "text": "Δ · 持续光束",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.level",
+    "text": "探索等级",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.energy",
+    "text": "能量 {current} / {cap} · 实际门票 {ticket}",
+    "params": "{current},{cap},{ticket}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.best",
+    "text": "历史最佳 X1：{time}",
+    "params": "{time}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.none",
+    "text": "尚无成绩",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.start",
+    "text": "手动开始",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.crew",
+    "text": "自动船员管理",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.adapter",
+    "text": "等待领域接入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.progress",
+    "text": "{work} / {duration} 秒",
+    "params": "{work},{duration}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.idle",
+    "text": "等待探索",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.manual",
+    "text": "手动探索进行中",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.pending",
+    "text": "● 奖励待领取",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.blocked",
+    "text": "● 满仓暂停 · 整理后领取",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.claim",
+    "text": "领取奖励",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.warehouse",
+    "text": "无人机仓库",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.first_win",
+    "text": "首次探索胜利后解锁无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.capacity",
+    "text": "仓库 {used}/{cap} · 缓存 {overflow}/10 · 保留名额 {retention}",
+    "params": "{used},{cap},{overflow},{retention}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.budgets",
+    "text": "已装备 {equipped}/{cap} · 传说 {legendary}/2 · 究极 {ultimate}/1",
+    "params": "{equipped},{cap},{legendary},{ultimate}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.page",
+    "text": "{page} / {pages}",
+    "params": "{page},{pages}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.previous",
+    "text": "上一页",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.next",
+    "text": "下一页",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.empty",
+    "text": "仓库暂无无人机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.choose",
+    "text": "点击无人机查看词条与保护状态",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.card",
+    "text": "{weapon} · Lv.{level}\n原品质 {quality} · {flags}",
+    "params": "{weapon},{level},{quality},{flags}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.white",
+    "text": "白色",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.blue",
+    "text": "蓝色",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.gold",
+    "text": "金色",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.legendary",
+    "text": "传说",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.ultimate",
+    "text": "究极",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.laser",
+    "text": "脉冲",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.missile",
+    "text": "导弹",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.cannon",
+    "text": "磁轨",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.longLaser",
+    "text": "光束",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.equipped",
+    "text": "已装备",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.favorite",
+    "text": "收藏",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.sealed",
+    "text": "封存",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.preset",
+    "text": "预设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.equip",
+    "text": "装备 / 卸下",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.favorite_action",
+    "text": "收藏 / 取消",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.unseal",
+    "text": "领取封存机",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.protect",
+    "text": "保护：{flags}",
+    "params": "{flags}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.affix",
+    "text": "{key} · T{tier} · {value} {locked}",
+    "params": "{key},{tier},{value},{locked}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.locked",
+    "text": "已锁定",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.hanging",
+    "text": "挂设：{items}",
+    "params": "{items}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.legend_effect",
+    "text": "传说效果：{effect} · {value}",
+    "params": "{effect},{value}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.presets",
+    "text": "配装预设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.save_preset",
+    "text": "保存当前配置",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.apply_preset",
+    "text": "应用预设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.clear_preset",
+    "text": "清除预设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.preset_name",
+    "text": "预设名称",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter",
+    "text": "自动筛选规则",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_hint",
+    "text": "最多五条件；导入仅预览，保存与新机筛选等待领域接入",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.preview",
+    "text": "校验并预览",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.export",
+    "text": "导出规则",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_valid",
+    "text": "有效规则：{count} 条 · {mode}",
+    "params": "{count},{mode}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.filter_invalid",
+    "text": "规则无效：{reason}",
+    "params": "{reason}",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge",
+    "text": "无人机改造",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_hint",
+    "text": "选择无人机后由领域提供报价和合法操作",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.summary",
+    "text": "模块总加成：等待权威统计接口",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_hint",
+    "text": "自动探索仅显示进度；船员派遣等待岗位接口",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_upgrade",
+    "text": "升级",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_reroll",
+    "text": "强化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_hanging",
+    "text": "增设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_lock",
+    "text": "固化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_tier",
+    "text": "零件提升",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_reset",
+    "text": "零件重设",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_future",
+    "text": "未来预兆",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_legend",
+    "text": "传说化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_modern",
+    "text": "现代化",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_ultimate",
+    "text": "究极化 / 还原",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.all",
+    "text": "全部",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.sort_acquired",
+    "text": "获得顺序",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.sort_level",
+    "text": "等级降序",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.sort_quality",
+    "text": "原品质降序",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_none",
+    "text": "不使用",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_weapon",
+    "text": "武器种类",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_quality",
+    "text": "原品质",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_min_level",
+    "text": "最低等级",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_affix",
+    "text": "词条与阶级",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_legendary",
+    "text": "传说效果",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.condition_ultimate",
+    "text": "究极状态",
+    "params": "",
+    "category": "hyperspace"
+  }
 ]

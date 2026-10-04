@@ -16,6 +16,7 @@ const ICONS := [
 	preload("res://assets/ui/shell/planet.svg"),
 	preload("res://assets/ui/shell/chrono.svg"),
 	preload("res://assets/ui/shell/galaxy.svg"),
+	preload("res://assets/ui/shell/hyperspace.svg"),
 	preload("res://assets/ui/shell/save.svg")
 ]
 

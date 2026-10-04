@@ -54,7 +54,7 @@ const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
 const RESOURCE_STRIP_PRESENTATION := preload("res://scripts/resource_strip_presentation.gd")
 const SHELL_PRESENTATION := preload("res://scripts/shell_presentation.gd")
 const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎","◷","✧"]
-const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab","save.tab"]
+const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab","hyperspace.tab","save.tab"]
 var NAMES: Dictionary = {}
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
@@ -149,6 +149,7 @@ var crew_panel: Control
 var planet_panel: Control
 var chrono_panel: Control
 var galaxy_panel: Control
+var hyperspace_panel: Control
 var background_unfocused := false
 var equipment_page := 0
 var equipment_tabs: TabContainer
@@ -1940,7 +1941,7 @@ func build_workspace_shell() -> void:
 		navigation.pressed.connect(select_system.bind(index))
 		navigation_list.add_child(navigation)
 		system_nav_buttons.append(navigation)
-		if index == 6:
+		if index in [6,9]:
 			var dot := Control.new()
 			dot.name = "ActivationBadge"
 			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1963,9 +1964,16 @@ func refresh_planet_activation_badge() -> void:
 	var dot := system_nav_buttons[6].get_node_or_null("ActivationBadge")
 	if is_instance_valid(dot):set_ui_value(dot, "visible", game.planet_buildings.has_ready(game))
 
+func refresh_hyperspace_badge() -> void:
+	if system_nav_buttons.size()<=9:return
+	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
+	var s:Dictionary=game.profile.hyperspace
+	if is_instance_valid(dot):set_ui_value(dot,"visible",bool(s.blocked) or s.active.get("status","")=="completed_pending")
+
 func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
 	refresh_planet_activation_badge()
+	refresh_hyperspace_badge()
 	var selected := equipment_tabs.current_tab
 	for index in system_nav_buttons.size():
 		var navigation := system_nav_buttons[index]
@@ -2044,6 +2052,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())
+	pages.append(int(game.profile.highestLevel)>=int(game.hyperspace.config.unlock_stage))
 	pages.append(true) # Save is always the final page, independent of unlocks.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
@@ -3142,6 +3151,11 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.add_child(galaxy_panel)
 	equipment_tabs.set_tab_title(8,UIText.t("galaxy.tab"))
 	galaxy_panel.setup(self)
+	hyperspace_panel=preload("res://scripts/hyperspace_panel.gd").new()
+	hyperspace_panel.name="Hyperspace"
+	equipment_tabs.add_child(hyperspace_panel)
+	equipment_tabs.set_tab_title(9,UIText.t("hyperspace.tab"))
+	hyperspace_panel.setup(self)
 	# Append after every gameplay page so unlocks never place a tab below Save.
 	save_panel = preload("res://scripts/save_panel.gd").new()
 	save_panel.name = "Save"
