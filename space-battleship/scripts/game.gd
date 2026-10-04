@@ -15,6 +15,10 @@ const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
+const RailGeometry=preload("res://scripts/rail_geometry.gd")
+var rail_geometry_provider:=Callable()
+var rail_target_point_provider:=Callable()
+var player_launch_payload: Dictionary={}
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
@@ -2085,6 +2089,7 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	projectile_serial += 1
 	shot.serial = projectile_serial
 	shot.source_uid=int(source.get("uid",0))
+	if not hostile and key=="cannon" and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	prepare_projectile(shot,source,weapon,visual_spread)
 	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
@@ -2338,22 +2343,36 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 
 	if CombatContext.can_trigger(context):launch_enhancement_chain(enemy,base_raw,type,effects,critical,chain_origin,context)
 
-func advance_higgs_projectile(shot: Dictionary,dt: float) -> bool:
+func freeze_higgs_geometry(shot: Dictionary) -> void:
+	if not shot.has("higgs"):return
+	var geometry: Dictionary={"origin":Vector2(shot.x,shot.y),"aim":chain_target_point(shot.target),"bounds":BATTLE_SIZE}
+	if rail_geometry_provider.is_valid():geometry=rail_geometry_provider.call(shot)
+	if geometry.has("full_width"):shot.higgs.full_width=float(geometry.full_width)
+	var origin: Vector2=geometry.origin
+	var direction: Vector2=(Vector2(geometry.aim)-origin).normalized()
+	shot.higgs.origin=origin;shot.higgs.end=RailGeometry.exit_point(origin,direction,geometry.bounds,float(shot.higgs.full_width))
+	shot.higgs.points={}
+	for target in enemies:
+		if N.compare(target.hp,0)>0:shot.higgs.points[str(target.uid)]=rail_target_point_provider.call(target) if rail_target_point_provider.is_valid() else chain_target_point(target)
+
+func advance_higgs_projectile(shot: Dictionary,_dt: float) -> bool:
 	if not shot.has("higgs"):return false
-	var origin:=Vector2(shot.x,shot.y);var next:=origin+Vector2(shot.direction)*float(shot.speed)*dt
+	if shot.higgs.get("completed",false):return true
+	if not shot.higgs.has("origin"):freeze_higgs_geometry(shot)
+	shot.higgs.completed=true
+	var origin: Vector2=shot.higgs.origin;var end: Vector2=shot.higgs.end
 	var candidates: Array=[]
 	for target in enemies:
 		if N.compare(target.hp,0)<=0 or shot.higgs.hit_uids.has(str(target.uid)):continue
-		var point:=chain_target_point(target)
-		if Geometry2D.get_closest_point_to_segment(point,origin,next).distance_to(point)<=float(shot.higgs.half_width):candidates.append(target)
-	candidates.sort_custom(func(a,b):return chain_target_point(a).distance_squared_to(origin)<chain_target_point(b).distance_squared_to(origin))
+		var point: Vector2=shot.higgs.points.get(str(target.uid),Vector2.INF)
+		if RailGeometry.contains(point,origin,end,float(shot.higgs.full_width)):candidates.append(target)
+	candidates.sort_custom(func(a,b):return Vector2(shot.higgs.points[str(a.uid)]).distance_squared_to(origin)<Vector2(shot.higgs.points[str(b.uid)]).distance_squared_to(origin))
 	for target in candidates:
 		if not projectiles.has(shot):break
 		shot.higgs.hit_uids[str(target.uid)]=true
 		event.emit("projectile_impact",{"shot":shot,"pos":chain_target_point(target)})
 		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.combat_context)
-	shot.x=next.x;shot.y=next.y
-	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
+	shot.dead=true
 	return true
 
 func guided_missile_damage(enemy: Dictionary,raw,context: Dictionary) -> Variant:
@@ -3313,11 +3332,18 @@ func jewel_fire(index: int, target: Dictionary, weapon: Dictionary, offset: Vect
 	launch_player_attack(index,target,weapon,attack,offset,visual_spread,salvo_index,salvo_count)
 
 func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, attack: Dictionary, offset: Vector2, visual_spread: float, _salvo_index: int = 0, _salvo_count: int = 1) -> void:
-	fire(player,target,weapon,attack.damage,false,str(combat_entry(index).key),offset,visual_spread)
-	projectiles.back().combat_context=attack.get("combat_context",{})
-	if str(combat_entry(index).key)=="cannon" and CombatContext.can_trigger(projectiles.back().combat_context):
+	var previous_payload: Dictionary=player_launch_payload
+	var key: String=str(combat_entry(index).key)
+	player_launch_payload={"combat_context":attack.get("combat_context",{}),"rail_width_multiplier":1.0} if key=="cannon" else {}
+	if key=="cannon" and CombatContext.can_trigger(player_launch_payload.combat_context):
 		var higgs: Dictionary=hyperspace_totals().legendary.get("higgs_cannon",{})
-		if not higgs.is_empty():projectiles.back().higgs={"half_width":0.5*(1.0+float(higgs.parameters.area_bonus)),"hit_uids":{}}
+		if not higgs.is_empty():
+			player_launch_payload.rail_width_multiplier=1.0+float(higgs.parameters.area_bonus)
+			player_launch_payload.higgs={"full_width":RailGeometry.width(db.weapon_motion_value("rail_trail_width",28.0),float(player_launch_payload.rail_width_multiplier)),"hit_uids":{}}
+	fire(player,target,weapon,attack.damage,false,key,offset,visual_spread)
+	player_launch_payload=previous_payload
+	projectiles.back().combat_context=attack.get("combat_context",{})
+	freeze_higgs_geometry(projectiles.back())
 	projectiles.back().main_attack_id = attack.get("main_attack_id",0)
 	projectiles.back().attack_instance_id = attack.get("attack_instance_id",0)
 	projectiles.back().jewelEffects = attack.effects

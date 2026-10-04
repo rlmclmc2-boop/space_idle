@@ -112,7 +112,12 @@ func create_battle_game(persist:bool)->BattleGame:
 	db=prototype.db
 	prototype.launch_provider=_prototype_launch_pose
 	prototype.target_provider=_prototype_target_point
+	prototype.rail_geometry_provider=_rail_geometry
+	prototype.rail_target_point_provider=entity_render_position
 	return prototype
+
+func _rail_geometry(shot: Dictionary) -> Dictionary:
+	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":battle_clip.size,"full_width":rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0)))}
 
 
 func _prototype_target_point(target:Dictionary)->Vector2:
@@ -302,7 +307,7 @@ func _draw_muzzle_cues() -> void:
 			var point:=battle_point(Vector2(event.position))
 			if event.kind=="fire":
 				rail_vfx.flash(pulse_layer,point,event.direction,age,budget)
-				rail_vfx.penetration(pulse_layer,point,battle_point(Vector2(event.aim)),event.direction,age,budget,battle_clip.size)
+				rail_vfx.penetration(pulse_layer,point,battle_point(Vector2(event.aim)),event.direction,age,budget,battle_clip.size,float(event.get("full_width",rail_vfx.discharge_width())))
 			else:rail_vfx.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
 
 	if missile_vfx_enabled:
@@ -484,7 +489,7 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 		var aim: Vector2 = game.target_point(shot.target) if not shot.target.is_empty() else origin+Vector2(shot.direction)*100.0
 		# Snapshot the real projected shot path. Target death cannot truncate this event.
 		direction = (battle_point(aim)-battle_point(origin)).normalized()
-		rail_events.append({"kind":"fire","position":origin,"aim":aim,"direction":direction,"born":fx_time,"critical":false})
+		rail_events.append({"kind":"fire","position":origin,"aim":aim,"direction":direction,"born":fx_time,"critical":false,"full_width":rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0)))})
 		rail_fire_count+=1
 		rail_fire_slots[int(visual.get("mount",-1))]=true
 		rail_origin_max_error=maxf(rail_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))

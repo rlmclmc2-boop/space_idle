@@ -1,5 +1,6 @@
 extends SceneTree
 const Loader=preload("res://scripts/hyperspace_route_loader.gd")
+const CC=preload("res://scripts/combat_context.gd")
 var checks:=0
 var failures:=0
 func check(ok: bool,label: String) -> void:
@@ -32,6 +33,18 @@ func _initialize() -> void:
 	check(JSON.stringify(db.groups)==groups_before and JSON.stringify(db.enemies)==enemies_before,"loader never registers candidates in mainline")
 	check(g.start_hyperspace("alpha",5) and not is_same(g.db.enemies,db.enemies),"manual session switches to independent enemy registry")
 	g.spawn_group();check(g.enemies.size()==1 and g.enemies[0].id==909101 and g.enemies[0].drops.size()==1,"spawn uses candidate enemies and authored ordinary drops")
+	var probe:=RandomNumberGenerator.new();probe.seed=112233
+	var first:=probe.randf();var second:=probe.randf();var chance: float=(first+second)*0.5
+	var expected: Array=[]
+	if first<chance:expected.append("1")
+	if second<chance:expected.append("2")
+	var victim: Dictionary=g.enemies[0];victim.jewelDropChecked=true
+	victim.drops=[{"resourceId":1,"chance":chance,"amount":10.0},{"resourceId":2,"chance":chance,"amount":20.0}]
+	g.rng.seed=112233;var reward_rng: String=g.profile.hyperspace.random_state
+	g.hit_enemy(victim,1e30,0,[],false,CC.root(1,"resource_fixture",""))
+	check(expected.size()==1 and g.drops.map(func(drop):return drop.id)==expected,"iron and uranium use separate rolls even with same chance")
+	check(g.rng.state==probe.state,"ordinary resources consume exactly their two independent rolls")
+	check(g.profile.hyperspace.random_state==reward_rng,"ordinary loot never advances drone reward random stream")
 	check(not g.load_hyperspace_routes(f.binding,f.candidates),"active session cannot replace its registry")
 	g.manual_hyperspace.finish(g,false)
 	check(is_same(g.db,db) and JSON.stringify(db.groups)==groups_before and JSON.stringify(db.enemies)==enemies_before,"return restores original registries unchanged")

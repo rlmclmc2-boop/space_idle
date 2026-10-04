@@ -1,4 +1,5 @@
 extends RefCounted
+const Geometry=preload("res://scripts/rail_geometry.gd")
 ## Presentation only. A brief dark-red discharge leaves cyan laser packets readable.
 const ELECTRIC := Color("9e2438")
 const HOT := Color("d54b58")
@@ -40,30 +41,27 @@ func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critic
 func afterglow_seconds() -> float:
 	return maxf(flash_seconds,impact_seconds*3.5)
 
-func exit_point(origin:Vector2,direction:Vector2,bounds:Vector2)->Vector2:
-	var reach := INF
-	if direction.x>0.0001:reach=minf(reach,(bounds.x-origin.x)/direction.x)
-	elif direction.x<-0.0001:reach=minf(reach,-origin.x/direction.x)
-	if direction.y>0.0001:reach=minf(reach,(bounds.y-origin.y)/direction.y)
-	elif direction.y<-0.0001:reach=minf(reach,-origin.y/direction.y)
-	if not is_finite(reach):return origin
-	# Extend beyond the actual clipping rectangle, including the beam half-width.
-	return origin+direction*(maxf(0.0,reach)+trail_width)
+func discharge_width(multiplier:float=1.0)->float:
+	return Geometry.width(trail_width,multiplier)
+func exit_point(origin:Vector2,direction:Vector2,bounds:Vector2,full_width:float=-1.0)->Vector2:
+	return Geometry.exit_point(origin,direction,bounds,discharge_width() if full_width<0 else full_width)
 
-func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Vector2,age:float,budget:float,bounds:Vector2)->void:
+func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Vector2,age:float,budget:float,bounds:Vector2,full_width:float=-1.0)->void:
 	var lifetime := afterglow_seconds()
 	if age<0 or age>=lifetime:return
 	var direction := (contact-origin).normalized()
-	var end := exit_point(origin,direction,bounds)
+	full_width=discharge_width() if full_width<0 else full_width
+	var end := exit_point(origin,direction,bounds,full_width)
+	var decoration_width:=trail_width*full_width/discharge_width()
 	var side := direction.orthogonal()
 	var main_lifetime := minf(flash_seconds,0.09)
 	if age<main_lifetime:
 		var fade := pow(1.0-age/main_lifetime,0.65)
 		# A wide straight discharge crosses the hull and leaves the clipping area.
 		# Its lifetime is independent of the authoritative travelling projectile.
-		surface.draw_line(origin,end,Color(ELECTRIC,fade*budget),maxf(12.0,trail_width),true)
-		surface.draw_line(origin,end,Color(HOT,fade*budget*0.85),maxf(4.0,trail_width*0.32),true)
-	var kink := minf(trail_width*0.25,origin.distance_to(end)*0.015)
+		surface.draw_line(origin,end,Color(ELECTRIC,fade*budget),full_width,true)
+		surface.draw_line(origin,end,Color(HOT,fade*budget*0.85),maxf(4.0,decoration_width*0.32),true)
+	var kink := minf(decoration_width*0.25,origin.distance_to(end)*0.015)
 	var points := PackedVector2Array([origin,
 		origin.lerp(end,0.25)+side*kink*0.35,
 		origin.lerp(end,0.36)-side*kink,
@@ -72,5 +70,5 @@ func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Ve
 		origin.lerp(end,0.67)+side*kink*0.8,
 		origin.lerp(end,0.69)-side*kink*0.5,end])
 	var fade := pow(1.0-age/lifetime,1.4)
-	surface.draw_line(origin,end,Color(ELECTRIC,fade*budget*0.38),maxf(2.0,trail_width*0.22),true)
-	surface.draw_polyline(points,Color(HOT,fade*budget*0.85),maxf(1.5,trail_width*0.09),true)
+	surface.draw_line(origin,end,Color(ELECTRIC,fade*budget*0.38),maxf(2.0,decoration_width*0.22),true)
+	surface.draw_polyline(points,Color(HOT,fade*budget*0.85),maxf(1.5,decoration_width*0.09),true)
