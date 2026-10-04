@@ -209,7 +209,7 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(ship_view): return
 	missile_events = missile_events.filter(func(e):return fx_time-float(e.born)<float(e.get("duration",0.25)))
 	if accelerated_visual_mode:missile_events.clear()
-	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<maxf(rail_vfx.flash_seconds,rail_vfx.impact_seconds))
+	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<rail_vfx.afterglow_seconds())
 	if accelerated_visual_mode:rail_events.clear()
 	enemy_impacts=enemy_impacts.filter(func(e):return fx_time-float(e.born)<0.12)
 	if accelerated_visual_mode:enemy_impacts.clear()
@@ -294,10 +294,10 @@ func _draw_muzzle_cues() -> void:
 		for event in rail_events:
 			var age:=fx_time-float(event.born)
 			var point:=battle_point(Vector2(event.position))
-			if event.kind=="fire":rail_vfx.flash(pulse_layer,point,event.direction,age,budget)
-			else:
-				rail_vfx.penetration(pulse_layer,battle_point(Vector2(event.origin)),point,event.direction,age,budget,BATTLE_VIEW_SIZE)
-				rail_vfx.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
+			if event.kind=="fire":
+				rail_vfx.flash(pulse_layer,point,event.direction,age,budget)
+				rail_vfx.penetration(pulse_layer,point,battle_point(Vector2(event.aim)),event.direction,age,budget,battle_clip.size)
+			else:rail_vfx.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
 
 	if missile_vfx_enabled:
 		var budget:=clampf(2.0/sqrt(maxf(1.0,float(missile_events.size()))),0.45,1.0)
@@ -474,7 +474,11 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 	if rail_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
-		rail_events.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":direction,"born":fx_time,"critical":false})
+		var origin: Vector2 = visual.get("origin",visual_muzzle(shot))
+		var aim: Vector2 = game.target_point(shot.target) if not shot.target.is_empty() else origin+Vector2(shot.direction)*100.0
+		# Snapshot the real projected shot path. Target death cannot truncate this event.
+		direction = (battle_point(aim)-battle_point(origin)).normalized()
+		rail_events.append({"kind":"fire","position":origin,"aim":aim,"direction":direction,"born":fx_time,"critical":false})
 		rail_fire_count+=1
 		rail_fire_slots[int(visual.get("mount",-1))]=true
 		rail_origin_max_error=maxf(rail_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))
