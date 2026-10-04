@@ -150,6 +150,9 @@ static func export_groups(levels: Array,output_path: String,known_enemies: Dicti
 		var stage=levels[index]
 		if not stage is Dictionary or not stage.get("group_data") is Dictionary:return "invalid_group"
 		var group: Dictionary=stage.group_data
+		# The legacy generated workbook has no coordinate column. Refuse to lose
+		# an authored explicit layout; use the coordinate-aware source importer.
+		if group.has("formation_positions"):return "explicit_layout_export_not_supported"
 		if not group.get("slots") is Array or not group.slots.size() in SLOT_COUNTS:return "invalid_group"
 		var id: int=int(stage.get("enemy_group",0))
 		if id<1 or ids.has(id):return "invalid_group"

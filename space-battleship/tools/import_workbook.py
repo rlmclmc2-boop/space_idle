@@ -11,6 +11,7 @@ import re
 import sys
 import openpyxl
 from galaxy_config import validate as validate_galaxy
+from explicit_formation import validate as validate_explicit_formation
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SECTIONS = {"level":"levels", "equipment":"equipment", "mon":"enemies", "monGroup":"groups", "res":"resources", "config":"config", "ship":"ship", "hightech":"hightech", "unlock":"unlock", "crew":"crew", "crew_assignment":"crew_assignment", "crew_config":"crew_config", "planet":"planet", "planet_build":"planet_build", "planet_buff":"planet_buff", "enhance_config":"enhance_config"}
@@ -118,6 +119,9 @@ def convert_sheet(name, rows):
         result={}
         for row in rows:
             group={"description":row["des"],"slots":[None if v.strip()=="null" else int(v) for v in clean(row["mon"]).split(",")]}
+            coordinates=row.get("formation_positions")
+            if coordinates not in (None, ""):
+                group["formation_positions"]=json.loads(coordinates) if isinstance(coordinates,str) else coordinates
             tier=row.get("combatTier")
             if tier not in (None, ""):
                 if tier not in ("normal","elite","boss","ultimate"):raise ValueError(f"monGroup {row['id']}: invalid combatTier")
@@ -291,6 +295,7 @@ def validate_projection(data, *, check_level_ratios=True):
         for g in level['groups']:
             if str(g['id']) not in groups: raise ValueError(ui_text('debug.import_workbook.message_131', id=g["id"]))
     for gid,g in groups.items():
+        validate_explicit_formation(g,enemies)
         if len(g['slots']) not in (10,15): raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
         for enemy_id in g['slots']:
             if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(ui_text('debug.import_workbook.message_132', enemy_id=enemy_id))

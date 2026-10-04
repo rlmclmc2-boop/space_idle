@@ -721,6 +721,12 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"collect":
 			resource_pickup_feedback(info)
 		"encounter":
+			if game.enemies.any(func(enemy):return enemy.get("explicit_formation",false)):
+				var formation_errors:=validate_explicit_formation()
+				if not formation_errors.is_empty():
+					push_error("Explicit formation rejected: "+str(formation_errors))
+					game.change_state(BattleGame.State.RETREAT)
+					return
 			wave_hint = 0.8
 		"wave_clear":
 			wave_hint = 1.1
@@ -1364,7 +1370,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
-	target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
+	if not enemy.get("explicit_formation",false):target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
 	var pose := {"entity":enemy,"logical_position":Vector2(enemy.x,enemy.y),"target":target,"phase":phase,"born":fx_time,
 		"variance":rng.randf_range(battle_visual.enemy_scale_variance.x,battle_visual.enemy_scale_variance.y),
 		"rotation":deg_to_rad(rng.randf_range(-battle_visual.enemy_rotation_variance,battle_visual.enemy_rotation_variance)),
@@ -1426,6 +1432,9 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# The legacy cap fits one row. Fifteen-slot groups need the third row;
 	# retain the same measured clearance from the player hull.
 	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
+	# Explicit coordinates deliberately reserve the same authored battlefield
+	# depth budget; this does not claim or require five columns.
+	if enemy.get("explicit_formation",false):max_y=maxf(float(battle_visual.enemy_max_y),0.52)
 	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*float(battle_visual.enemy_player_min_gap)-enemy_half_height)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
@@ -1435,7 +1444,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-	target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
+	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
 	if enemy.get("size_formation",false):hover *= 0.25
 	# Shared approach distance keeps each column separated even during entry.
@@ -1447,7 +1456,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	# Width changes slightly with depth; solve the local top bound without moving
 	# other rows or altering the existing player clearance cap.
 	for iteration in 3:minimum_y=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
-	position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
+	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 
@@ -1455,6 +1464,35 @@ func entity_render_position(entity: Dictionary) -> Vector2:
 	if is_same(entity,game.player):return player_render_position()
 	if entity.has("slot"):return enemy_render_position(entity)
 	return battle_point(Vector2(entity.x,entity.y))
+
+func validate_explicit_formation() -> Array[String]:
+	# Inspect real width buckets, protection, meters and entry/drift. Never
+	# repair authored positions here. Returned errors block the encounter.
+	var errors:Array[String]=[]
+	var saved_time:=fx_time
+	for enemy in game.enemies:enemy_pose(enemy)
+	for sample in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+		fx_time=saved_time+sample
+		var envelopes:Array[Rect2]=[]
+		for enemy in game.enemies:
+			if not enemy.get("explicit_formation",false):continue
+			var centre:=enemy_render_position(enemy)
+			var packet:=enemy_recognition_geometry(enemy)
+			var polygon:PackedVector2Array=packet.outer if float(enemy.max_shield)>0 else packet.inner
+			if float(enemy.max_shield)>0 and int(enemy.shieldType)==1 and int(enemy.size)>=4:polygon=packet.front
+			var envelope:=Rect2(centre,Vector2.ZERO)
+			for angle in [enemy_render_angle(enemy),deg_to_rad(-float(battle_visual.enemy_rotation_variance)-float(battle_visual.enemy_idle_rotation)),deg_to_rad(float(battle_visual.enemy_rotation_variance)+float(battle_visual.enemy_idle_rotation))]:
+				for point in polygon:envelope=envelope.expand(centre+Vector2(point).rotated(PI+angle))
+			# Include both actual meters and boss-caption ascent above protection.
+			var ascent:=28.0 if game.is_boss_encounter() else 16.0
+			envelope=Rect2(envelope.position-Vector2(0,ascent),envelope.size+Vector2(0,ascent)).grow(4.0/enemy_recognition_screen_scale())
+			if envelope.position.x<0 or envelope.end.x>BATTLE_VIEW_SIZE.x or envelope.position.y<6.0 or centre.y>floorf(enemy_frontline_y_limit(enemy)):
+				errors.append("slot %d sample %.2f crosses display boundary/front line"%[int(enemy.slot),sample])
+			for previous in envelopes:
+				if envelope.intersects(previous):errors.append("slot %d sample %.2f overlaps hull/protection/meters"%[int(enemy.slot),sample])
+			envelopes.append(envelope)
+	fx_time=saved_time
+	return errors
 
 func visual_effect_point(point: Vector2) -> Vector2:
 	# Event-time snapshot in the existing FX coordinate space; no entity mutation.
