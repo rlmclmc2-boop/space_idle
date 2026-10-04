@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v1-earned-T3-after-reforge"
+const VERSION="hyperspace-player-v3-visible-counter-earned-T3"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -9,10 +9,66 @@ var forge_at:Dictionary={}
 var reserved_crew:=""
 var last_reforge:=0
 var reforge_since:=-1.0
+var known_weapons:Array=[]
+var wanted_weapons:Array=[]
+var wanted_defences:Array=[]
+var seen_encounter:=""
+var seen_count:=0
+var seen_palette:=""
+var seen_inventory:=""
 var wanted_weapon:=""
 var weapon_losses:Dictionary={}
 var last_weapon_change:=-1000.0
 var last_galaxy_state:=""
+var galaxy_needs_reserved_crew:=false
+func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
+ if g.state!=g.State.COMBAT:return {}
+ var visible:Array=[];var resist:Dictionary={1:0,2:0};var attacks:Dictionary={1:0,2:0};var repairs:=0
+ for enemy in g.enemies:
+  if g.N.compare(enemy.hp,0)<=0:continue
+  var point:Vector2=scene.enemy_render_position(enemy)
+  if not Rect2(Vector2.ZERO,scene.battle_clip.size).has_point(point):continue
+  var global_point:Vector2=scene.battle_clip.get_global_transform_with_canvas()*point
+  if not scene.get_viewport().get_visible_rect().has_point(global_point):continue
+  var kind:int=int(enemy.get("shieldType",0)) if g.N.compare(enemy.get("shield",0),0)>0 else int(enemy.get("armourType",0))
+  if resist.has(kind):resist[kind]+=1
+  var status:Dictionary=scene.enemy_recognition.state(enemy,g.enemy_shield_time,g.paused,scene.enemy_pose(enemy))
+  if bool(status.repair):repairs+=1
+  var shown_attacks:Array=scene.enemy_attack_types(enemy)
+  for attack_kind in shown_attacks:
+   if attacks.has(int(attack_kind)):attacks[int(attack_kind)]+=1
+  visible.append({"uid":enemy.uid,"resistance":kind,"shown_attacks":shown_attacks,"drawn_repair_modules":bool(status.repair)})
+ if visible.is_empty():return {}
+ var encounter:String=str([g.profile.hyperspace.round_id,g.manual_hyperspace.active,g.stage,g.group_index])
+ for key in tutorials:
+  if not known_weapons.has(str(key)):known_weapons.append(str(key))
+ for entry in g.weapon_entries():
+  if not known_weapons.has(str(entry.key)):known_weapons.append(str(entry.key))
+ var allowed:Array=known_weapons.filter(func(key):return g.content_unlocked("equipment",str(key)))
+ var palette:String=str([resist,attacks,repairs])
+ var inventory:String=str([allowed,g.profile.selectedShip,g.active_slot_count("weapons"),g.active_slot_count("defence")])
+ if encounter==seen_encounter and visible.size()<=seen_count and inventory==seen_inventory and (palette==seen_palette or now-last_weapon_change<10.0):return {}
+ seen_encounter=encounter;seen_count=visible.size();seen_palette=palette;seen_inventory=inventory
+ var physical:String="missile" if visible.size()>=4 else "cannon"
+ var energy:String="laser" if visible.size()>=4 else "longLaser"
+ for id in g.profile.hyperspace.inventory.equipped:
+  var d:Dictionary=g.profile.hyperspace.inventory.drones[id]
+  if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":physical="missile"
+ if not allowed.has(physical):physical="cannon" if allowed.has("cannon") else "missile" if allowed.has("missile") else ""
+ if not allowed.has(energy):energy="longLaser" if allowed.has("longLaser") else "laser" if allowed.has("laser") else ""
+ wanted_weapons=[];wanted_defences=[]
+ for index in g.active_slot_count("weapons"):
+  var desired:String=physical if int(resist[1])>int(resist[2]) else energy if int(resist[2])>int(resist[1]) else physical if not physical.is_empty() else energy
+  if int(resist[1])>0 and int(resist[2])>0:desired=physical if index%2==0 else energy
+  # The permanent repair-module glyph is visible feedback; the unlocked beam tutorial teaches sustained damage.
+  if repairs>0 and allowed.has("longLaser"):desired="longLaser"
+  if desired.is_empty():desired=str(g.slot_entry("weapons",index).key)
+  wanted_weapons.append(desired)
+ for index in g.active_slot_count("defence"):
+  var shield:bool=index>0 and g.content_unlocked("equipment","shield") and (int(attacks[1])>int(attacks[2]) or (int(attacks[1])==int(attacks[2]) and (int(attacks[1])==0 or index%2==1)))
+  wanted_defences.append("shield" if shield else "armour")
+ last_weapon_change=now
+ return {"encounter":encounter,"visible_only":visible,"allowed_from_seen_tutorials_or_owned":allowed,"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"reason":"Read drawn live protection/attack colors, repair glyphs and visible target count; no future group lookup; native refits on equipment page"}
 func pick_crew(g)->String:
  if not reserved_crew.is_empty() and Permission.crew_available(g,reserved_crew):return reserved_crew
  for member in g.profile.crew:
@@ -88,6 +144,10 @@ func space_action(g,now:float)->Dictionary:
   for op in operations:
    var choice:Dictionary=forge_choice(g,id,str(op))
    if not choice.is_empty():return choice
+ # Reallocation crosses pages through separate real commands, never a hidden cross-page action.
+ if galaxy_needs_reserved_crew:
+  if s.auto.enabled:return {"domain":true,"kind":"space_auto_pause","reason":"Six actual galaxy workers need the reserved exploration worker"}
+  return {}
  # Storage/equipment/forge remain legal while pure-progress auto is active.
  if not s.active.is_empty():return {}
  # Enable pure-progress automation immediately after the first genuine record.
@@ -153,15 +213,18 @@ func galaxy_action(g)->Dictionary:
  for key in g.galaxy.regions:
   if g.galaxy.regions[key].state.status=="available":return {"domain":true,"kind":"galaxy_start","galaxy":str(key)}
   if g.galaxy.regions[key].state.status not in ["exploring","developing"]:continue
-  var target:int=mini(6,maxi(1,g.profile.crew.size()-2))
+  var target:int=mini(6,maxi(1,g.profile.crew.size()))
   if g.galaxy.crew_count(g,str(key))<target:
    for member in g.profile.crew:
     if g.idle_planet_crew(str(member.crewId)) and g.crew.can_assign(g,str(member.crewId),"galaxy_explore",str(key)):return {"domain":true,"kind":"galaxy_crew","galaxy":str(key),"crew":str(member.crewId)}
    for planet in g.profile.planets:
     var progress:Dictionary=g.planet_progress(str(planet))
     if progress.conquered and not str(progress.crewId).is_empty():return {"domain":true,"kind":"planet_recall","planet":str(planet)}
-   for member in g.profile.crew:
-    if str(member.assignmentType) in ["jewel_auto","reactor_upgrade"]:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First galaxy work needs crew, old growth automation stops"}
+   for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
+    for member in g.profile.crew:
+     if str(member.assignmentType)==job:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First galaxy work needs crew, old growth automation stops"}
+   if not Permission.reserved_crew(g.profile.hyperspace).is_empty():galaxy_needs_reserved_crew=true
+  else:galaxy_needs_reserved_crew=false
  return {}
 func execute(g,choice:Dictionary,now:float)->bool:
  match choice.kind:
@@ -174,6 +237,7 @@ func execute(g,choice:Dictionary,now:float)->bool:
   "space_equip":return g.hyperspace.set_equipped(g,choice.ids)
   "space_favorite":return g.hyperspace.set_favorites(g,choice.ids)
   "space_preset":return g.hyperspace.set_preset(g,0,"Earned current fleet",choice.ids)
+  "space_auto_pause":return g.hyperspace.set_auto(g,false,"",0,"")
   "space_auto":return g.hyperspace.set_auto(g,true,choice.route,int(choice.level),choice.crew)
   "space_hangings":return g.hyperspace.attach_hangings(g,choice.id,choice.keys)
   "space_forge":

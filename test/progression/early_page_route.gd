@@ -102,6 +102,10 @@ func crew_action()->Dictionary:
 			# refresh; the existing-assignment branch sets it on the next visit.
 			if not panel.assign_button.disabled:return control_action("crew_assign",panel.assign_button,{"crew":id,"job":job})
 	return {}
+func preferred_weapon(_index:int, tutorial_weapon:String)->String:
+	return tutorial_weapon
+func preferred_defence(index:int)->String:
+	return "shield" if index>0 and game.content_unlocked("equipment","shield") else "armour"
 func action() -> Dictionary:
 	if not pending_picker.is_empty():
 		if is_instance_valid(pending_picker.picker) and pending_picker.picker.get_popup().visible:
@@ -124,7 +128,7 @@ func action() -> Dictionary:
 			for index in game.active_slot_count(category):
 				var id:String=game.slot_id(category,index)
 				if not panel.cards.has(id):continue
-				var desired:=weapon if category=="weapons" else "shield" if index>0 and game.content_unlocked("equipment","shield") else "armour"
+				var desired:String=preferred_weapon(index,weapon) if category=="weapons" else preferred_defence(index)
 				var card=panel.cards[id]
 				if not desired.is_empty() and str(game.slot_entry(category,index).key)!=desired:
 					var option:int=card.equipment_options.find(desired)

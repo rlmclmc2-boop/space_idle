@@ -13,6 +13,7 @@ var refeeds:Array=[]
 var operation_seconds:=0.0
 var space_seconds:=0.0
 var last_frontier:=1
+var round_clears:Dictionary={}
 var peak_projectiles:=0
 var peak_missile_queue:=0
 var model_rebuilds:=0
@@ -27,6 +28,12 @@ func observe(kind:String,payload:Dictionary)->void:
  if kind=="state" and manual:
   state_change()
  else:super.observe(kind,payload)
+ if kind=="state" and not manual and game.state==BattleGame.State.LEVEL_CLEAR:
+  var round_key:String=str(game.profile.hyperspace.round_id)
+  if not round_clears.has(round_key):round_clears[round_key]={}
+  if not round_clears[round_key].has(str(game.stage)):
+   round_clears[round_key][str(game.stage)]=game.simulated_time
+   record("round_first_clear",{"round":int(game.profile.hyperspace.round_id),"stage":game.stage,"x1_seconds":game.simulated_time})
  if kind=="hyperspace_manual":
   if bool(payload.active):active_space_record={"route":payload.route,"level":payload.level,"start":game.simulated_time,"loadout":game.profile.loadout.duplicate(true),"equipped":game.profile.hyperspace.inventory.equipped.duplicate(),"source_count":game.combat_weapon_entries().size()}
   elif not active_space_record.is_empty():
@@ -34,6 +41,7 @@ func observe(kind:String,payload:Dictionary)->void:
    space_runs.append(active_space_record.duplicate(true));record("space_actual_result",active_space_record);active_space_record={};save_snapshot("space_%d"%space_runs.size())
  if kind=="planet_reforged":
   refeeds.append({"planet":payload.id,"x1_seconds":game.simulated_time,"round":game.profile.hyperspace.round_id,"sealed":game.profile.hyperspace.inventory.sealed.duplicate()})
+  last_frontier=int(game.profile.highestLevel)
   save_snapshot("reforge_%d"%refeeds.size());next_tour=game.simulated_time;next_check=game.simulated_time
  if kind=="hyperspace_changed":record("space_feedback",{"payload":payload,"active":game.profile.hyperspace.active.duplicate(true),"energy":game.profile.hyperspace.energy,"warehouse":game.profile.hyperspace.inventory.warehouse.size(),"cores":game.profile.hyperspace.ultimate_cores})
  if kind=="retreat" or kind=="unlock":next_tour=minf(next_tour,game.simulated_time+0.3)
@@ -74,8 +82,14 @@ func crew_action()->Dictionary:
    # refresh; the existing-assignment branch sets it on the next visit.
    if not panel.assign_button.disabled:return control_action("crew_assign",panel.assign_button,{"crew":id,"job":job})
  return {}
+func preferred_weapon(index:int,tutorial_weapon:String)->String:
+ return str(space_policy.wanted_weapons[index]) if index<space_policy.wanted_weapons.size() else tutorial_weapon
+func preferred_defence(index:int)->String:
+ return str(space_policy.wanted_defences[index]) if index<space_policy.wanted_defences.size() else super.preferred_defence(index)
 func action()->Dictionary:
  if not pending_picker.is_empty() or not player_input.modal_windows().is_empty() or not game.pending_unlocks.is_empty():return super.action()
+ var feedback:Dictionary=space_policy.observe_visible(game,driver.scene,observed_weapons,game.simulated_time)
+ if not feedback.is_empty():record("visible_loadout_decision",feedback)
  if page==9:
   var choice:Dictionary=space_policy.space_action(game,game.simulated_time)
   if not choice.is_empty():return choice
@@ -158,7 +172,7 @@ func run()->void:
    await process_frame
   if game.simulated_time-last_state_report>=1800.0:last_state_report=game.simulated_time;save_snapshot("periodic_%d"%int(game.simulated_time))
  state_change();save_snapshot("final");trace.close()
- var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "galaxy_complete" if galaxy_complete() else "bounded_partial","options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"space_runs":space_runs,"reforges":refeeds,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Reforge T3 is paid planning goal, no cap."}
+ var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "galaxy_complete" if galaxy_complete() else "bounded_partial","options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Reforge T3 is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
  driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)
