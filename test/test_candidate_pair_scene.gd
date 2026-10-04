@@ -17,6 +17,27 @@ class ProbeGame extends "res://scripts/presented_battle_game.gd":
 var options:Dictionary={}
 var scene
 var driver=Driver.new()
+func geometry_record(game)->Array:
+ var geometry=preload("res://scripts/explicit_formation_geometry.gd")
+ var records:Array=[]
+ var saved_time:float=scene.fx_time
+ scene.fx_time=5.0
+ for enemy in game.enemies:
+  var original_y:float=enemy.y
+  var maximum:float=scene.enemy_frontline_y_limit(enemy)-3.0
+  enemy.y=scene.battle_logical_point(Vector2(enemy.x,maximum)).y
+  var centre:Vector2=scene.enemy_render_position(enemy)
+  var parts:Array=[]
+  for yaw in [-1,0,1]:
+   var angle:float=scene.enemy_render_angle(enemy) if yaw==0 else float(yaw)*deg_to_rad(float(scene.battle_visual.enemy_rotation_variance)+float(scene.battle_visual.enemy_idle_rotation))
+   for part in geometry.parts(scene,enemy,centre,angle):
+    var points:Array=[]
+    for point in part.polygon:points.append([point.x-centre.x,point.y-centre.y])
+    parts.append({"kind":part.kind,"points":points})
+  records.append({"slot":enemy.slot,"size":enemy.size,"frontline":maximum,"parts":parts})
+  enemy.y=original_y
+ scene.fx_time=saved_time
+ return records
 func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
  var db:=ShipDatabase.new()
  for key in options.get("candidate_groups",{}):db.groups[key]=options.candidate_groups[key].duplicate(true)
@@ -41,6 +62,7 @@ func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
  for i in 4:game.profile.loadout.weapons.append({"key":weapon,"level":level})
  game.profile.loadout.defence=[{"key":"armour","level":level},{"key":"shield","level":level}]
  game.profile.crew=[];game.profile.enhancementLevel=0;game.profile.enhancementBranches=game.default_enhancement_branches()
+ game.profile.onboarding.completed=true
  for key in game.profile.hightechLevels:game.profile.hightechLevels[key]=0
  for key in game.profile.reactorAllocation:game.profile.reactorAllocation[key]=0
  game.stat_cache_enabled=true;game.reset_player();game.start(1,false);game.spawn_group()
@@ -58,6 +80,7 @@ func fixture(record:Dictionary,weapon:String,upgrade:int,seed_value:int):
   scene.ship_view.loadout_signature=""
   scene.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
   scene._set_reference_dimensions()
+  if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide()
   game.launch_provider=scene._prototype_launch_pose;game.target_provider=scene._prototype_target_point
  return game
 func _initialize():call_deferred("run")
@@ -66,8 +89,10 @@ func run():
  if args.is_empty():printerr("A pinned options JSON is required");quit(2);return
  options=JSON.parse_string(FileAccess.get_file_as_string(args[0]))
  options.presentation=true
+ if options.has("window_size"):DisplayServer.window_set_size(Vector2i(int(options.window_size[0]),int(options.window_size[1])))
  scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
  root.add_child(scene);scene.set_process(false);scene.game.save_enabled=false;driver.scene=scene
+ await process_frame;await process_frame
  if not is_instance_valid(scene.ship_view):printerr("Real ship_view unavailable");quit(2);return
  var records:Dictionary=ShipDatabase.new().data.battle_design.duplicate(true)
  records.merge(options.candidate_records,true)
@@ -82,6 +107,13 @@ func run():
      var game=fixture(record,str(weapon),int(upgrade),int(seed_value))
      var armour_start=game.player.armour
      var shield_start=game.player.shield
+     var spawned_enemies:Array=game.enemies.duplicate()
+     var enemy_start:Array=[]
+     var enemy_hp_start=0.0
+     var enemy_shield_start=0.0
+     for enemy in spawned_enemies:
+      enemy_start.append({"uid":enemy.uid,"id":enemy.id,"slot":enemy.slot,"hp":enemy.hp,"shield":enemy.shield})
+      enemy_hp_start=N.add(enemy_hp_start,enemy.hp);enemy_shield_start=N.add(enemy_shield_start,enemy.shield)
      var geometry_errors:Array=scene.validate_explicit_formation() if id.begins_with("N") else []
      if id.begins_with("N"):
       var source_group:Dictionary=game.db.groups[str(int(record.group_id))]
@@ -99,6 +131,29 @@ func run():
      var points:Array=[]
      for enemy in game.enemies:points.append({"slot":enemy.slot,"logical":[enemy.x,enemy.y],"render":str(scene.enemy_render_position(enemy)),"explicit":enemy.get("explicit_formation",false)})
      var row:Dictionary={"id":id,"tier":record.tier,"group_id":record.group_id,"weapon":weapon,"upgrade":upgrade,"module_level":int(record.base_level)+int(upgrade),"seed":seed_value,"win":win,"seconds":elapsed,"geometry_errors":geometry_errors,"positions":points,"player_armour":game.player.armour,"player_shield":game.player.shield,"armour_start":armour_start,"shield_start":shield_start,"armour_damage":game.armour_damage,"shield_damage":game.shield_damage,"armour_remaining_ratio":N.ratio(game.player.armour,armour_start),"incoming_raw_by_source":game.incoming_by_source,"engine":Engine.get_version_info().string,"presentation_providers":game.launch_provider.is_valid() and game.target_provider.is_valid(),"state":game.state,"speed":game.speed,"source_sha256":FileAccess.get_sha256("res://data/game_data.json"),"input_sha256":FileAccess.get_sha256(args[0]),"status":"geometry_rejected" if not geometry_errors.is_empty() else "preflight_only" if options.get("phase","preflight")!="battle" else "timeout" if win==null else "measured"}
+     row.viewport_size=[root.size.x,root.size.y];row.window_size=[DisplayServer.window_get_size().x,DisplayServer.window_get_size().y];row.screen_scale=scene.enemy_recognition_screen_scale()
+     var enemy_remaining:Array=[]
+     var enemy_hp_remaining=0.0
+     var enemy_shield_remaining=0.0
+     var kills:=0
+     for enemy in spawned_enemies:
+      enemy_remaining.append({"uid":enemy.uid,"id":enemy.id,"slot":enemy.slot,"hp":enemy.hp,"shield":enemy.shield})
+      enemy_hp_remaining=N.add(enemy_hp_remaining,enemy.hp if N.compare(enemy.hp,0)>0 else 0.0)
+      enemy_shield_remaining=N.add(enemy_shield_remaining,enemy.shield if N.compare(enemy.shield,0)>0 else 0.0)
+      if N.compare(enemy.hp,0)<=0:kills+=1
+     row.enemy_initial=enemy_start;row.enemy_remaining=enemy_remaining
+     row.enemy_initial_hp=enemy_hp_start;row.enemy_initial_shield=enemy_shield_start
+     row.enemy_remaining_hp=enemy_hp_remaining;row.enemy_remaining_shield=enemy_shield_remaining
+     row.kills=kills;row.enemy_count=spawned_enemies.size()
+     row.enemy_hp_remaining_ratio=N.ratio(enemy_hp_remaining,enemy_hp_start) if N.compare(enemy_hp_start,0)>0 else null
+     if options.get("export_geometry",false) and id.begins_with("N"):row.geometry=geometry_record(game)
+     if options.has("capture_directory") and DisplayServer.get_name()!="headless":
+      DirAccess.make_dir_recursive_absolute(str(options.capture_directory))
+      for clock in options.get("capture_times",[0.0,0.5,5.0]):
+       scene.fx_time=float(clock);driver.before_tick(0.0)
+       scene.refresh_draw_layers(0.0);scene.battle_layer.queue_redraw()
+       await process_frame;await RenderingServer.frame_post_draw
+       root.get_texture().get_image().save_png(str(options.capture_directory)+"/"+id+"-"+str(clock)+".png")
      result_file.store_line(JSON.stringify(row));result_file.flush();count+=1
      if count%8==0:print("PAIRED SCENE: ",count," rows; no balance acceptance claim");await process_frame
  result_file.close()

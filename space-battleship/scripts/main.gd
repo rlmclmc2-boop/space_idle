@@ -1466,31 +1466,27 @@ func entity_render_position(entity: Dictionary) -> Vector2:
 	return battle_point(Vector2(entity.x,entity.y))
 
 func validate_explicit_formation() -> Array[String]:
-	# Inspect real width buckets, protection, meters and entry/drift. Never
-	# repair authored positions here. Returned errors block the encounter.
+	var geometry=preload("res://scripts/explicit_formation_geometry.gd")
 	var errors:Array[String]=[]
 	var saved_time:=fx_time
 	for enemy in game.enemies:enemy_pose(enemy)
 	for sample in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
 		fx_time=saved_time+sample
-		var envelopes:Array[Rect2]=[]
+		var previous:Array[Dictionary]=[]
 		for enemy in game.enemies:
 			if not enemy.get("explicit_formation",false):continue
 			var centre:=enemy_render_position(enemy)
-			var packet:=enemy_recognition_geometry(enemy)
-			var polygon:PackedVector2Array=packet.outer if float(enemy.max_shield)>0 else packet.inner
-			if float(enemy.max_shield)>0 and int(enemy.shieldType)==1 and int(enemy.size)>=4:polygon=packet.front
-			var envelope:=Rect2(centre,Vector2.ZERO)
-			for angle in [enemy_render_angle(enemy),deg_to_rad(-float(battle_visual.enemy_rotation_variance)-float(battle_visual.enemy_idle_rotation)),deg_to_rad(float(battle_visual.enemy_rotation_variance)+float(battle_visual.enemy_idle_rotation))]:
-				for point in polygon:envelope=envelope.expand(centre+Vector2(point).rotated(PI+angle))
-			# Include both actual meters and boss-caption ascent above protection.
-			var ascent:=28.0 if game.is_boss_encounter() else 16.0
-			envelope=Rect2(envelope.position-Vector2(0,ascent),envelope.size+Vector2(0,ascent)).grow(4.0/enemy_recognition_screen_scale())
-			if envelope.position.x<0 or envelope.end.x>BATTLE_VIEW_SIZE.x or envelope.position.y<6.0 or centre.y>floorf(enemy_frontline_y_limit(enemy)):
-				errors.append("slot %d sample %.2f crosses display boundary/front line"%[int(enemy.slot),sample])
-			for previous in envelopes:
-				if envelope.intersects(previous):errors.append("slot %d sample %.2f overlaps hull/protection/meters"%[int(enemy.slot),sample])
-			envelopes.append(envelope)
+			var parts:Array[Dictionary]=geometry.swept_parts(self,enemy,centre)
+			if centre.y>floorf(enemy_frontline_y_limit(enemy)):
+				errors.append("slot %d sample %.2f crosses front line"%[int(enemy.slot),sample])
+			for part in parts:
+				for point in part.polygon:
+					if point.x<0 or point.x>BATTLE_VIEW_SIZE.x or point.y<6.0 or point.y>BATTLE_VIEW_SIZE.y:
+						errors.append("slot %d %s sample %.2f crosses display boundary"%[int(enemy.slot),str(part.kind),sample]);break
+				for other in previous:
+					if geometry.overlap(part.polygon,other.polygon):
+						errors.append("slots %d/%d %s/%s sample %.2f independent-yaw overlap"%[int(enemy.slot),int(other.slot),str(part.kind),str(other.kind),sample])
+			for part in parts:previous.append({"slot":int(enemy.slot),"kind":part.kind,"polygon":part.polygon})
 	fx_time=saved_time
 	return errors
 

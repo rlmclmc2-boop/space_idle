@@ -18,9 +18,12 @@ python test/run_candidate_pair_scene.py --godot /absolute/path/to/Godot --phase 
 Preflight defaults to all80 groups, cannon/+0/seed1701. It performs no combat
 ticks. Exit3 means geometry rejected; inspect the JSONL and logs in the printed
 private directory. Candidate coordinates in `candidate_pair_options.json`
-are a NEW, clearly labelled proposal: X80..492, logical
-Y=130+0.7*(atlas-design-Y-100), then existing battle_point projection. They are
-not a validated layout and are never silently corrected at runtime. The PDF
+are explicitly authored logical positions, packed offline using real-scene
+footprints and the existing inverse battle_point projection. N01/N02 retain
+their original probe coordinates; all200 numeric/loadout rows are unchanged.
+The old130+0.7Y proposal was rejected and is superseded. The final40 pass local
+geometry checks; parentGodot4.6.3 must confirm. They are never silently repaired
+at runtime. The PDF
 design coordinates are not executable production positions. Input-invalid
 groups and empty spawns are also rejected, not counted as successes.
 
@@ -55,9 +58,12 @@ excluded from win/TTK acceptance, never counted as a loss or easy clear.
    overlaps. The runtime guards the current viewport; repeat after resizing.
 2. Initial320 matches: old40+new40 × four weapons × +0 × seed1701. Parent runs
    small explicit chunks. Any rejected geometry blocks that group's battle.
-3. If authorised,3840 matches: same80 × four weapons × N0..3 × seeds1701/1702/1703.
-   Search adjacent levels for failures near a progression boundary. This is a
-   bounded canonical comparison, not a claim of population win probability.
+3. Expand only genuine progression boundaries to adjacent levels and seeds.
+   The parent's completed old160 cells include78 wins and82 losses, no timeout;
+   preserve every failed cell. For failed cells compare enemy HP/shield progress,
+   kills and time-to-loss rather than inventing a clear TTK. Do not mechanically
+   run a3840-match grid. Seed expansion is reproducibility evidence, not a claim
+   of population win probability.
 4. Match each new group to old groups of the SAME tier AND hostile attack type;
    show the full corresponding old-tier distribution as well as the nearest
    structural comparator. Do not select a convenient weaker comparator. The
@@ -92,15 +98,25 @@ Excel editor retains optional headers/fields; adding that header to final
 authoritative candidate workbooks remains pending approved coordinates.
 
 Own touches: enemy_formation.gd, game.gd spawn metadata/rejection, main.gd
-encounter/pose/frontline/render/validator branches, mon_group_xlsx.gd export
+encounter/pose/frontline/render/validator branches, explicit_formation_geometry.gd,
+battlefield.gd shared enemy_status_layout, mon_group_xlsx.gd export
 guard, tools/import_workbook.py and explicit_formation.py; plus dedicated
-fixture/launcher/input/import checks. No changes to battlefield.gd in own
-commit; its header change comes only from the supplied visual dependency.
+fixture/launcher/input/import checks. battlefield.gd's shared helper extracts
+the actual health/shield/above-bar caption rectangles without changing drawing
+coordinates; the old validator wrongly assumed the base main.gd side caption.
 main.gd intersects the visual thread's geometry helpers; preserve both sets.
 
-Local checks: three import tests pass; Godot4.7.2 check-only probe and main
-parsers exit0 without script errors. No local battle/preflight/long run was
-started. ParentGodot4.6.3 execution, actual geometry acceptance, final source
-Excel authoring, balance tuning and refreshed atlas remain pending. Existing
+Local checks: three import tests and seven geometry regression checks pass.
+Godot4.7.2 actual main/Presented preflight has80 rows/0 rejections. All40
+candidates also pass actual graphical entry/drift checks in ordinary and small
+windows (40/0 each);160 original entry/steady PNGs inspected via16 contacts,
+plus preserved-coordinate N01/N02 and N35/N39 final template captures.
+The original crowded N35 still rejects (131 component collisions), proving
+real overlaps are not being ignored. AABB overlap alone no longer rejects:
+body/protection polygons, actual health/shield rectangles and above-bar font
+bounds are distinct parts, padded by2 actual pixels each; mixed yaw and lost
+shield status footprints are included. No local battle or long run started.
+ParentGodot4.6.3 confirmation, final source Excel authoring, balance tuning and
+refreshed atlas remain pending. Existing
 review PDF/ZIP are design evidence only and should not be sent as calibrated
 end-user output yet.

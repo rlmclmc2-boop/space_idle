@@ -758,7 +758,15 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
-	# Track the actual opaque silhouette instead of using the transverse width as height.
+	var layout:=enemy_status_layout(enemy,pos,width,angle,outline)
+	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
+	if float(enemy.get("max_shield",0))>0:
+		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.PHYSICAL if int(enemy.get("shieldType",0))==2 else ENEMY_RECOGNITION.ENERGY)
+	if boss_battle:text_at(layout.caption,layout.caption_position,12,BATTLE_CREAM)
+
+func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
+	# Shared actual draw/validation authority; preserve the existing pixel layout.
+	var dimensions:=Vector2(width,width*2.0)
 	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
@@ -768,11 +776,10 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	top-=9.0
 	var bar_width:=clampf(width*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
-	battle_meter(Rect2(left,maxf(6,top),bar_width,4),float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
-	if float(enemy.get("max_shield",0))>0:
-		battle_meter(Rect2(left,maxf(6,top-7),bar_width,4),float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.PHYSICAL if int(enemy.get("shieldType",0))==2 else ENEMY_RECOGNITION.ENERGY)
-	if boss_battle:
-		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),Vector2(left, maxf(20,top-5)),12,BATTLE_CREAM)
+	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
+	var caption_position:=Vector2(left,maxf(20,top-5))
+	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,12)
+	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(12)),Vector2(caption_size.x,font.get_ascent(12)+font.get_descent(12)))}
 
 func draw_environment_event(_offset:Vector2)->void:
 	# Distant geometry belongs to the background; combat space stays quiet.
