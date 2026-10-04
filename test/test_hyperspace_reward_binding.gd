@@ -48,5 +48,6 @@ func _initialize()->void:
  var ticket:float=float(g.profile.hyperspace.energy)
  g.db.levels[6].resRatio=-1
  check(not g.start_hyperspace("alpha",7) and g.profile.hyperspace.energy==ticket,"bad changed ratio rejected before ticket")
+ check(not g.hyperspace.snapshot(g).manual_ready,"failed rebinding clears readiness")
  print("REWARD_BINDING ",checks," checks ",failures," failures")
  quit(1 if failures else 0)

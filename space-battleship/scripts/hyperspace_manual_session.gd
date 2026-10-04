@@ -59,7 +59,8 @@ func start(g,route: String,level: int) -> bool:
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
 		bound_registry=reward_binder.bind(g.db,registry,level)
-		if bound_registry.is_empty():last_error=reward_binder.last_error;return false
+		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
+		production_accepted=true
 	var checkpoint: Dictionary={"stage":g.stage,"distance":g.retreat_target if g.state==g.State.RETREAT else g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}
 	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual")
 	if receipt.is_empty():return false
