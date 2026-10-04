@@ -129,7 +129,7 @@ func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:D
 		var shot:Dictionary=projectiles.back()
 		if shot.has("higgs"):
 			# The rendered rail spans the battlefield on this launch frame.
-			advance_higgs_projectile(shot,(BATTLE_SIZE.length()+128.0)/maxf(float(shot.speed),0.001))
+			advance_higgs_projectile(shot,0.0)
 			shot.dead=true;projectiles.erase(shot)
 			return
 		shot.dead=true
