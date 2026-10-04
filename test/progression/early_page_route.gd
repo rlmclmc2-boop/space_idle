@@ -22,7 +22,6 @@ var next_button:=0.0
 var tour:Array=[]
 var touring:=false
 var tour_started:=0.0
-var refit:Dictionary={}
 var observed_weapons:Array[String]=[]
 var tour_durations:Array=[]
 var busy:=false
@@ -213,6 +212,7 @@ func check_page() -> void:
 			touring=false;await visit_page(0);next_check=now+BUTTON_TIME;return
 		await visit_page(int(tour.pop_front()))
 	checks+=1;row(game.stage).checks+=1
+	await process_frame # Deferred container layout must be real before inspection.
 	var choice:=action();record("check",{"action_available":not choice.is_empty(),"tour":touring})
 	if choice.is_empty():
 		empty_checks+=1;row(game.stage).growth_blocked_checks+=1
@@ -242,6 +242,7 @@ func step_controller() -> void:
 	else:unlock_id=""
 	if busy:
 		if now+0.000001<next_button:return
+		await process_frame
 		var choice:=action()
 		if choice.is_empty():
 			bursts.append(now-burst_start);busy=false

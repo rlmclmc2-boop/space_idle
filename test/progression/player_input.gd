@@ -7,7 +7,10 @@ var last_gate:Dictionary={}
 func setup(owner,root_tree:SceneTree)->void:
 	scene=owner;tree=root_tree
 func modal_windows()->Array:
-	return scene.find_children("*","Window",true,false).filter(func(window):return window.visible and (window.exclusive or window.popup_window))
+	var windows:Array=tree.root.find_children("*","Window",true,false)
+	for window in scene.get_viewport().get_embedded_subwindows():
+		if not windows.has(window):windows.append(window)
+	return windows.filter(func(window):return window.visible and (window.exclusive or window.popup_window))
 func available(control)->bool:
 	return is_instance_valid(control) and control is Control and control.is_visible_in_tree() and (not control is BaseButton or not control.disabled)
 func clipped_rect(control:Control)->Rect2:
