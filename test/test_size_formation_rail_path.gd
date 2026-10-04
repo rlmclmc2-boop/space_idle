@@ -51,6 +51,9 @@ func protection(enemy:Dictionary)->PackedVector2Array:
 	for point in outline:result.append(scene.enemy_render_position(enemy)+point.rotated(PI+scene.enemy_render_angle(enemy)))
 	return result
 func capture(name:String)->void:
+	if DisplayServer.get_name()=="headless":
+		await process_frame
+		return
 	scene.battle_layer.queue_redraw();scene.pulse_layer.queue_redraw()
 	await process_frame;await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png(folder+"/"+name+".png")

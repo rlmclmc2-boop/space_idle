@@ -1387,7 +1387,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
-	if enemy.get("size_formation",false):hover *= 0.35
+	if enemy.get("size_formation",false):hover *= 0.25
 	# Shared approach distance keeps each column separated even during entry.
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-float(battle_visual.enemy_entry_distance)*(1.0-enter))+hover*enter
 	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06

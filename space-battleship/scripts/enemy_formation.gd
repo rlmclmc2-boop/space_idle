@@ -20,7 +20,7 @@ static func positions(slots: Array, enemies: Dictionary) -> Dictionary:
 		# Back is toward the top. Larger ships claim back rows and central berths.
 		# Logical Y is consumed by combat, then projected by the ordinary battle map.
 		var y := 140.0 if rows==1 else (110.0 if row==0 else 270.0 if row==1 else 350.0)
-		var spacing := minf(160.0,440.0/maxi(1,count-1))
+		var spacing := minf(160.0,456.0/maxi(1,count-1))
 		for column in columns:
 			result[int(members[cursor].slot)] = Vector2(286.0+(float(column)-(count-1)*0.5)*spacing,y)
 			cursor += 1
