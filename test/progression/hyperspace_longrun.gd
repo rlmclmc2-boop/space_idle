@@ -2,6 +2,9 @@ extends "res://qa/early_page_route.gd"
 ## Native early controls plus serial visible-page domain actions for newly integrated systems.
 const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
 var space_policy:=SpacePolicy.new()
+const SafeFarm=preload("res://qa/hyperspace_safe_farm.gd")
+var safe_farm:=SafeFarm.new()
+var farm_seconds:=0.0
 var options:Dictionary={}
 var snapshots:Dictionary={}
 var wall_started:=0
@@ -24,9 +27,11 @@ var stop_request_path:=""
 var next_stop_poll:=0
 func save_snapshot(label:String)->void:
  var path:String=output+"/save_"+label+".json"
- FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":space_policy.VERSION,"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint,"options":options,"page":page,"clears":clears,"rows":rows},"\t"))
+ FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":space_policy.VERSION,"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint,"options":options,"page":page,"clears":clears,"rows":rows,"safe_farm":safe_farm.snapshot()},"\t"))
  snapshots[label]=path
 func observe(kind:String,payload:Dictionary)->void:
+ var farm_event:Dictionary=safe_farm.observe(game,kind,payload,game.simulated_time)
+ if not farm_event.is_empty():record("safe_farm_event",farm_event)
  if kind=="retreat" or (kind=="hyperspace_manual" and not bool(payload.active) and not bool(payload.success)):
   var failure_feedback:Dictionary=space_policy.observe_failure(game,game.simulated_time)
   if not failure_feedback.is_empty():record("visible_loadout_failure",failure_feedback)
@@ -94,6 +99,15 @@ func preferred_defence(index:int)->String:
  return str(space_policy.wanted_defences[index]) if index<space_policy.wanted_defences.size() else super.preferred_defence(index)
 func action()->Dictionary:
  if not pending_picker.is_empty() or not player_input.modal_windows().is_empty() or not game.pending_unlocks.is_empty():return super.action()
+ var farm_event:Dictionary=safe_farm.consider(game,game.simulated_time)
+ if not farm_event.is_empty():record("safe_farm_event",farm_event)
+ var farm_command:Dictionary=safe_farm.next_command(game)
+ if not farm_command.is_empty():
+  if farm_command.kind=="farm_warp_open":
+   var picker:OptionButton=driver.scene.loop_select
+   var index:int=picker.get_item_index(int(farm_command.stage))
+   return picker_action("farm_warp_open",picker,index)
+  return control_action(str(farm_command.kind),driver.scene.loop_button)
  var feedback:Dictionary=space_policy.observe_visible(game,driver.scene,observed_weapons,game.simulated_time)
  if not feedback.is_empty():record("visible_loadout_decision",feedback)
  if page==9:
@@ -115,7 +129,14 @@ func action()->Dictionary:
 func click_button(choice:Dictionary)->void:
  operation_seconds+=BUTTON_TIME
  if not bool(choice.get("domain",false)):
-  await super.click_button(choice);return
+  var rejected_before:int=rejected_inputs
+  await super.click_button(choice)
+  if input_failure.is_empty() and rejected_inputs==rejected_before:
+   var effect:Dictionary=safe_farm.native_completed(game,choice,game.simulated_time)
+   if effect.has("error"):
+    input_failure={"kind":choice.kind,"reason":effect.error};record("input_failure_stop",input_failure)
+   elif not effect.is_empty():record("safe_farm_event",effect)
+  return
  var before:Dictionary={"resources":game.profile.resources.duplicate(true),"materials":game.profile.hyperspace.materials.duplicate(),"cores":game.profile.hyperspace.ultimate_cores,"energy":game.profile.hyperspace.energy,"round":game.profile.hyperspace.round_id}
  var ok:bool=game.set_enhancement_branch(choice.category,choice.effect,int(choice.node),choice.choice) if choice.kind=="enhancement_branch" else space_policy.execute(game,choice,game.simulated_time)
  if ok:
@@ -169,6 +190,7 @@ func run()->void:
   driver.before_tick(STEP);game.tick(STEP);driver.after_tick(STEP)
   if manual:space_seconds+=STEP
   else:
+   if safe_farm.phase!="idle":farm_seconds+=STEP
    var state_key:String="travel" if before_state==BattleGame.State.TRAVEL else "combat" if before_state==BattleGame.State.COMBAT else "retreat" if before_state==BattleGame.State.RETREAT else "clear_notice" if before_state==BattleGame.State.LEVEL_CLEAR else "other"
    row(before_stage)[state_key]+=STEP
   peak_projectiles=maxi(peak_projectiles,game.projectiles.size());peak_missile_queue=maxi(peak_missile_queue,game.missile_queue.size())
@@ -187,7 +209,7 @@ func run()->void:
    await process_frame
   if game.simulated_time-last_state_report>=1800.0:last_state_report=game.simulated_time;save_snapshot("periodic_%d"%int(game.simulated_time))
  state_change();save_snapshot("final");trace.close()
- var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Reforge T3 is paid planning goal, no cap."}
+ var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge T3 is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
  driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)
