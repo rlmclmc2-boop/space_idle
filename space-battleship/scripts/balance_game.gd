@@ -238,11 +238,11 @@ func spawn_group(keep_distance := false) -> void:
 		metrics.spawn_hp += float(enemy.max_hp)
 	if is_boss_encounter():metrics.timeline.record("BOSS",simulated_time,stage,{"wave":group_index})
 
-func hit_enemy(enemy: Dictionary, raw: float, type: int, effects: Array = [], critical: bool = false) -> void:
+func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
 	var before := float(enemy.hp)
 	var weapon := source_weapon
 	var boss := is_boss_encounter()
-	super.hit_enemy(enemy,raw,type,effects,critical)
+	super.hit_enemy(enemy,raw,type,effects,critical,context)
 	if simulation_mode == "fast" and before > 0 and enemy.hp <= 0 and boss and targets().is_empty():clear_pending_hits()
 	if metrics == null or before <= 0:return
 	metrics.add(metrics.damage,weapon,before-float(enemy.hp))
