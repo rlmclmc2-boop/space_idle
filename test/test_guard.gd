@@ -129,11 +129,9 @@ func run() -> void:
 	scene.queue_redraw()
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://guard.png")
-	for child in scene.ui.get_children():
-		if child is MenuButton and child.tooltip_text == "驻守死亡处理":
-			var menu: PopupMenu = child.get_popup()
-			check([0,1,2].all(func(mode):return menu.get_item_index(mode) >= 0 and menu.is_item_radio_checkable(menu.get_item_index(mode))), "Three death choices remain available alongside other settings")
-			child.get_popup().id_pressed.emit(2)
+	var menu: PopupMenu = scene.guard_settings.get_popup()
+	check([0,1,2].all(func(mode):return menu.get_item_index(mode) >= 0 and menu.is_item_radio_checkable(menu.get_item_index(mode))), "Three death choices remain available alongside other settings")
+	menu.id_pressed.emit(2)
 	check(scene.game.profile.guardDeath == 2, "Actual death settings signal")
 	print("Guard: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

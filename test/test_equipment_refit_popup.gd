@@ -60,7 +60,7 @@ func run() -> void:
  scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"]
  root.add_child(scene);current_scene=scene;scene.automation_args=[];scene.set_process(false)
  var g=scene.game;g.save_enabled=false;g.paused=true;g.profile.cleared=range(1,90);g.profile.highestLevel=90;g.rebuild_unlocks();g.pending_unlocks.clear()
- g.db.data.unlock[g.db.unlock_id("equipment","longLaser")].level=99;g.rebuild_unlocks();g.profile.resources={"1":1e28,"2":1e28};g.profile.onboarding.completed=true
+ g.profile.grantedUnlocks.clear();g.db.data.unlock[g.db.unlock_id("equipment","longLaser")].level=99;g.rebuild_unlocks();g.profile.resources={"1":1e28,"2":1e28};g.profile.onboarding.completed=true
  g.switch_ship("Heavy_Battleship");g.equip_slot("weapons",2,"missile")
  scene.refresh_tab_visibility();scene.equipment_tabs.current_tab=0
  await process_frame;await process_frame
