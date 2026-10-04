@@ -18,6 +18,8 @@ var module_choices: Array[CheckBox]=[]
 var module_id=""
 var collection_dialog: AcceptDialog
 var collection_choices: Array[CheckBox]=[]
+var totals_dialog: AcceptDialog
+var totals_label: Label
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p
@@ -27,7 +29,7 @@ func h():return game().hyperspace
 func build_forge(parent: Node) -> void:
  var controls=panel.row(parent);operation=panel.option(controls)
  for key in OPERATIONS:operation.add_item(t("operation_"+key));operation.set_item_metadata(operation.item_count-1,key)
- guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum)
+ guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum);panel.checkbox_skin(maximum)
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  quote_label=panel.label(parent,t("quote_first"),21);feedback=panel.label(parent,"",21)
@@ -128,14 +130,15 @@ func show_modules() -> void:
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(d.hanging_slots)}),22)
  for key in h().config.hanging_modules:
-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(progress.level),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);module_choices.append(choice)
+  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(progress.level),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
  panel.button(body,"module_apply",func():
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
   if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
   else:module_dialog.title=t("module_rejected"))
- module_dialog.popup_centered(Vector2i(740,470))
+ dialog_label(body,t("reforge_module_reset"),18)
+ module_dialog.popup_centered(Vector2i(740,510))
 
 func show_collection() -> void:
  if collection_dialog==null:collection_dialog=build_dialog("collection_manage")
@@ -144,7 +147,7 @@ func show_collection() -> void:
  collection_choices.clear();var body=content(collection_dialog);dialog_label(body,t("collection_hint"),21)
  var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);var choices=panel.box(sc)
  for key in game().profile.hyperspace.legendary_seen:
-  var choice=CheckBox.new();choice.text=panel.effect_name(key);choice.button_pressed=game().profile.hyperspace.legendary_collection.has(key);choice.set_meta("effect_id",key);choices.add_child(choice);collection_choices.append(choice)
+  var choice=CheckBox.new();choice.text=panel.effect_name(key);choice.button_pressed=game().profile.hyperspace.legendary_collection.has(key);choice.set_meta("effect_id",key);choices.add_child(choice);panel.checkbox_skin(choice);collection_choices.append(choice)
  if collection_choices.is_empty():dialog_label(choices,t("collection_empty"),21)
  panel.button(body,"collection_apply",func():
   var ids: Array=[]
@@ -152,3 +155,25 @@ func show_collection() -> void:
    if choice.button_pressed:ids.append(choice.get_meta("effect_id"))
   if h().set_legendary_collection(game(),ids):collection_dialog.hide();configure_operation())
  collection_dialog.popup_centered(Vector2i(740,490))
+
+func show_totals() -> void:
+ if totals_dialog==null:
+  totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);totals_label=dialog_label(sc,"",21)
+ refresh_totals();totals_dialog.popup_centered(Vector2i(740,510))
+func refresh_totals() -> void:
+ if totals_label==null:return
+ var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[t("totals_authority")]
+ for key in ["damage","critical_chance","critical_damage","repeat_chance","attack_speed","defence","armour","shield"]:
+  var value=float(totals[key]);var additive=value if key in ["critical_chance","repeat_chance"] else value-1.0
+  lines.append(t("total_"+key)+": "+t("percent",{"value":"%.1f"%(additive*100.0)}))
+ lines.append(t("total_chain_count")+": "+t("times",{"value":str(int(totals.chain_count))}))
+ for weapon in totals.weapon_damage:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%.1f"%((float(totals.weapon_damage[weapon])-1.0)*100.0)}))
+ lines.append(t("total_hangings"))
+ for key in totals.hangings:lines.append(panel.hanging_name(key)+": "+t("percent",{"value":"%.1f"%(float(totals.hangings[key])*100.0)}))
+ if totals.hangings.is_empty():lines.append(t("no_hangings"))
+ lines.append(t("total_legendary"))
+ for key in totals.legendary:
+  lines.append(panel.effect_name(key))
+  for parameter in totals.legendary[key].parameters:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(totals.legendary[key].parameters[parameter])*100.0)}))
+ if totals.legendary.is_empty():lines.append(t("no_active_legendary"))
+ totals_label.text="\n".join(lines)

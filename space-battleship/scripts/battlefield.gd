@@ -111,6 +111,7 @@ func create_battle_game(persist:bool)->BattleGame:
 	var prototype=PROTOTYPE_GAME.new(db,persist)
 	db=prototype.db
 	prototype.launch_provider=_prototype_launch_pose
+	prototype.drone_launch_provider=_prototype_drone_launch_pose
 	prototype.target_provider=_prototype_target_point
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
@@ -139,8 +140,32 @@ func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	return {"position":logical,"direction":(aim-logical).normalized()}
 
 
+func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary:
+	if not is_instance_valid(ship_view) or not is_instance_valid(hyperspace_visual):
+		var fallback:=Vector2(game.player.x,game.player.y)
+		return {"position":fallback,"direction":(aim-fallback).normalized()}
+	var point:Vector2=hyperspace_visual.screen_muzzle_for_drone(id,ordinal,ship_view)
+	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
+	var logical:=battle_logical_point(point)
+	return {"position":logical,"direction":(aim-logical).normalized()}
+
+
+func _visual_drone_id(shot:Dictionary)->String:
+	if bool(shot.get("hostile",false)):return ""
+	var entry_id:String=str(shot.get("entry",{}).get("drone_id",""))
+	if not entry_id.is_empty():return entry_id
+	var source_id:String=str(shot.get("combat_context",{}).get("source_id",""))
+	return source_id.trim_prefix("drone:") if source_id.begins_with("drone:") else ""
+
+func shot_mount(shot:Dictionary)->int:
+	# Independent combat sources never address an ordinary turret's visual state.
+	if not bool(shot.get("hostile",false)) and (not _visual_drone_id(shot).is_empty() or int(shot.get("mount",-1))>=game.weapon_entries().size()):return -1
+	return super.shot_mount(shot)
+
 func visual_muzzle(shot:Dictionary)->Vector2:
 	if bool(shot.get("prototype_missile",false)):return Vector2(shot.launch_point)
+	var id:String=_visual_drone_id(shot)
+	if not id.is_empty():return _prototype_drone_launch_pose(id,Vector2.ZERO,0).position
 	return super.visual_muzzle(shot)
 
 
@@ -189,6 +214,8 @@ func before_logical_game_tick(dt:float) -> void:
 		var aim:Vector2=player_render_position()+Vector2(0,-450)
 		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
+		hyperspace_visual.sync(game.profile.hyperspace.inventory)
+		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
 	advance_turrets(dt)
@@ -234,11 +261,11 @@ func _process(delta: float) -> void:
 		stable_center=stable_center.lerp(anchor,1.0-exp(-3.0*minf(delta,0.1)))
 	var target := player_render_position()+Vector2(0,-450)
 	if not game.enemies.is_empty(): target = enemy_render_position(game.enemies[0])
-	var pose_signature := str([current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
+	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
 	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
-	hyperspace_visual.pose(ship_view)
+	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
 	var angles: Array = []
@@ -353,7 +380,7 @@ func on_event(kind:String,info:Dictionary)->void:
 	if prototype_enabled and continuous_beam_enabled and kind in ["beam_started","beam_hit"] and info.has("shot") and not bool(info.shot.hostile):
 		# The active beam draws its own emitter/contact. Do not enqueue legacy
 		# endpoint flashes or a cache that creates a shrinking tail on shutdown.
-		if kind=="beam_started" and not fast_mode_enabled() and int(info.shot.mount)>=0:
+		if kind=="beam_started" and not fast_mode_enabled() and int(info.shot.mount)>=0 and int(info.shot.mount)<game.weapon_entries().size():
 			turret_pose(int(info.shot.mount)).fired_at=fx_time
 		return
 	super.on_event(kind,info)

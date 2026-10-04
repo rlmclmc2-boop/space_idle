@@ -13727,7 +13727,7 @@
   },
   {
     "key": "hyperspace.filter_domain_hint",
-    "text": "最多五条件；导入先预览，保存后才交给领域。",
+    "text": "最多五条件；导入先预览，保存后执行所选处理动作。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14178,6 +14178,120 @@
   {
     "key": "hyperspace.dismantle_confirm",
     "text": "拆解将移除此无人机，并按领域规则发放材料与挂设奖励。继续？",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.manual_not_ready",
+    "text": "探索路线尚未准备完毕，手动探索暂不可用。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.totals_manage",
+    "text": "查看总加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.totals_summary",
+    "text": "装备总加成：伤害 +{damage}%\n生效词条 {affixes} 类 · 挂设 {hangings} 类",
+    "params": "damage,affixes,hangings",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.totals_authority",
+    "text": "当前装备总加成（领域投影）",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_damage",
+    "text": "全局伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_critical_chance",
+    "text": "暴击概率",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_critical_damage",
+    "text": "暴击伤害",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_repeat_chance",
+    "text": "重复攻击概率",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_attack_speed",
+    "text": "攻击速度",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_defence",
+    "text": "全局防御",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_armour",
+    "text": "装甲容量",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_shield",
+    "text": "护盾容量",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_chain_count",
+    "text": "额外连锁",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_weapon",
+    "text": "{weapon}伤害",
+    "params": "weapon",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_hangings",
+    "text": "已生效挂设总加成",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.reforge_module_reset",
+    "text": "重铸重置模块解锁、等级与经验。\n保留挂设待本轮重新解锁后生效。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.total_legendary",
+    "text": "生效传说效果（领域择取）",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.manual_review_wait",
+    "text": "探索路线仍在校验，手动探索暂不可用。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.no_active_legendary",
+    "text": "暂无生效传说效果",
     "params": "",
     "category": "hyperspace"
   }

@@ -6896,7 +6896,26 @@
     "hyperspace.effect_parameter_counter_damage_bonus": {"params": []},
     "hyperspace.effect_parameter_maximum_reduction": {"params": []},
     "hyperspace.effect_parameter_damage_and_defence_bonus": {"params": []},
-    "hyperspace.dismantle_confirm": {"params": []}
+    "hyperspace.dismantle_confirm": {"params": []},
+    "hyperspace.manual_not_ready": {"params": []},
+    "hyperspace.totals_manage": {"params": []},
+    "hyperspace.totals_summary": {"params": ["damage", "affixes", "hangings"]},
+    "hyperspace.totals_authority": {"params": []},
+    "hyperspace.total_damage": {"params": []},
+    "hyperspace.total_critical_chance": {"params": []},
+    "hyperspace.total_critical_damage": {"params": []},
+    "hyperspace.total_repeat_chance": {"params": []},
+    "hyperspace.total_attack_speed": {"params": []},
+    "hyperspace.total_defence": {"params": []},
+    "hyperspace.total_armour": {"params": []},
+    "hyperspace.total_shield": {"params": []},
+    "hyperspace.total_chain_count": {"params": []},
+    "hyperspace.total_weapon": {"params": ["weapon"]},
+    "hyperspace.total_hangings": {"params": []},
+    "hyperspace.reforge_module_reset": {"params": []},
+    "hyperspace.total_legendary": {"params": []},
+    "hyperspace.manual_review_wait": {"params": []},
+    "hyperspace.no_active_legendary": {"params": []}
   },
   "bindings": {
     "hyperspace_affixes": {

@@ -9,6 +9,10 @@ const KINDS=["none","weapon","quality","minimum_level","affix","legendary_effect
 const COUNT_AFFIXES=["chain_count"]
 var host
 var manual_adapter: Callable
+var manual_ready_provider: Callable
+var manual_projection: Dictionary={}
+var manual_snapshot_reads=0
+var manual_reason: Label
 var crew_adapter: Callable
 var hull_capacity_provider: Callable
 var preset_adapter: Callable
@@ -65,6 +69,7 @@ var favorite: Button
 var unseal: Button
 var empty: Label
 var drone_locked: Label
+var totals_summary: Label
 var preset_names: Array[LineEdit]=[]
 var preset_apply: Array[Button]=[]
 var filter_text: TextEdit
@@ -105,6 +110,10 @@ func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
  host=owner;commands.setup(self)
+ manual_adapter=func(selected_route,selected_level):
+  if not host.game.start_hyperspace(selected_route,selected_level):status.text=t("command_failed")
+ manual_ready_provider=func():return bool(manual_projection.get("manual_ready",false))
+ refresh_manual_status()
  crew_adapter=commands.show_crew
  hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
  preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
@@ -152,6 +161,7 @@ func build_exploration(parent: Node) -> void:
  label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
  var commands=row(parent);start_button=button(commands,"start",start_manual);crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
+ manual_reason=label(parent,"",20)
  label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
  first_win=label(parent,t("first_win"),22)
 func build_inventory(parent: Node) -> void:
@@ -188,7 +198,7 @@ func build_inventory(parent: Node) -> void:
  equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));button(actions,"module_manage",commands.show_modules)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
- label(detail,t("summary"),19)
+ totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
  var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
@@ -204,7 +214,7 @@ func build_rules(parent: Node) -> void:
   preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
  label(parent,t("filter"),25);label(parent,t("filter_domain_hint"),20)
  var modes=row(parent);filter_mode=option(modes);filter_mode.add_item(t("filter_and"));filter_mode.add_item(t("filter_or"));string_button=button(modes,"string_tools",show_strings)
- var policy=row(parent);filter_enabled=CheckBox.new();filter_enabled.text=t("filter_auto");policy.add_child(filter_enabled);filter_action=option(policy)
+ var policy=row(parent);filter_enabled=CheckBox.new();filter_enabled.text=t("filter_auto");policy.add_child(filter_enabled);checkbox_skin(filter_enabled);filter_action=option(policy)
  for action in ["keep_matches","clear_matches"]:filter_action.add_item(t("filter_action_"+action));filter_action.set_item_metadata(filter_action.item_count-1,action)
  for i in 5:
   var fr=row(parent);var kind=option(fr);kind.custom_minimum_size.x=175
@@ -259,14 +269,12 @@ func import_filter_draft() -> void:
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- # Core v2 has a global policy placeholder. Do not silently substitute it for a user action.
- if not host.game.hyperspace.fresh().filter.has("action"):
-  filter_result.text=t("filter_action_wait");return
  if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
- if kind in ["hyperspace_changed","unlocks_changed","ship_changed"]:
+ if kind in ["hyperspace_changed","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
   dirty=true
+  if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
 func _process(_delta: float) -> void:
  if not is_visible_in_tree():return
@@ -276,7 +284,7 @@ func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
-  bag=s.inventory.duplicate(true);generation=int(bag.generation);round_id=int(s.round_id);inventory_dirty=true
+  refresh_manual_status()
  elif dirty and bag.presets!=s.inventory.presets:
   bag.presets=s.inventory.presets.duplicate(true);inventory_dirty=true
  if section_index==0:
@@ -299,9 +307,10 @@ func refresh_status() -> void:
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.config.energy_cap),"ticket":"%.0f"%ticket}))
  var best_time=float(h.best_x1(g,route,int(level.value)))
  put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
- put(start_button,"disabled",not manual_adapter.is_valid() or not h.eligible_level(g,route,int(level.value)) or not s.active.is_empty() or float(s.energy)<float(h.config.ticket))
- put(start_button,"tooltip_text","" if manual_adapter.is_valid() else t("adapter"))
+ put(start_button,"disabled",not manual_ready() or not h.eligible_level(g,route,int(level.value)) or not s.active.is_empty() or float(s.energy)<float(h.config.ticket))
+ put(start_button,"tooltip_text","" if manual_ready() else manual_error_text())
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
+ put(manual_reason,"visible",not manual_ready());put(manual_reason,"text",manual_error_text())
  for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
 func display_ticket(s: Dictionary) -> float:
  if not s.active.is_empty():return float(s.active.ticket)
@@ -318,7 +327,7 @@ func refresh_progress() -> void:
   else:text=t("manual")
  put(status,"text",text);put(status,"modulate",Color("ff7979") if s.blocked or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
- put(start_button,"disabled",not manual_adapter.is_valid() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
+ put(start_button,"disabled",not manual_ready() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
  put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))
  var ticket=display_ticket(s)
@@ -376,6 +385,8 @@ func refresh_details() -> void:
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
  put(unseal,"disabled",not valid or not bag.sealed.has(selected_id) or int(host.game.profile.highestLevel)<int(bag.sealed.get(selected_id,0)))
+ var totals:Dictionary=host.game.hyperspace_totals()
+ put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":""}))
  put(detail_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
@@ -427,9 +438,20 @@ func toggle_favorite() -> void:
 func claim() -> void:
  var a: Dictionary=host.game.profile.hyperspace.active
  if not a.is_empty():host.game.hyperspace.claim(host.game,int(a.round_id),int(a.run_id))
+func refresh_manual_status() -> void:
+ # A route load/reload or inventory generation boundary may refresh this snapshot; progress never does.
+ var projection:Dictionary=host.game.hyperspace.snapshot(host.game);manual_snapshot_reads+=1
+ manual_projection={"manual_ready":projection.manual_ready,"manual_error":projection.manual_error}
+ if generation!=int(projection.inventory.generation) or round_id!=int(projection.round_id) or bag.is_empty():
+  bag=projection.inventory;generation=int(bag.generation);round_id=int(projection.round_id);inventory_dirty=true
+ dirty=true
+func manual_error_text() -> String:
+ return t("manual_review_wait") if manual_projection.get("manual_error")=="space_data_not_accepted" else t("manual_not_ready")
+func manual_ready() -> bool:
+ return manual_adapter.is_valid() and manual_ready_provider.is_valid() and manual_ready_provider.call()
 func start_manual() -> void:
- # Adapter owns start+encounter setup atomically; no paid receipt without a battlefield.
- if manual_adapter.is_valid():manual_adapter.call(route,int(level.value))
+ # The formal session validates route groups before it charges a ticket.
+ if manual_ready():manual_adapter.call(route,int(level.value))
 func preview_filter() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
  put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")}) if valid_draft(rule) else t("filter_string_invalid"))
@@ -440,7 +462,7 @@ func build_filter_draft() -> void:
   if kind=="none":continue
   if kind=="affix":conditions.append({"field":kind,"key":condition_values[i].get_item_metadata(condition_values[i].selected),"tier":condition_tiers[i].selected+1})
   else:conditions.append({"field":kind,"value":int(condition_levels[i].value) if kind=="minimum_level" else condition_values[i].get_item_metadata(condition_values[i].selected)})
- var rule={"version":1,"enabled":filter_enabled.button_pressed,"mode":"all" if filter_mode.selected==0 else "any","action":filter_action.get_item_metadata(filter_action.selected),"conditions":conditions}
+ var rule={"version":host.game.profile.hyperspace.filter.version,"enabled":filter_enabled.button_pressed,"mode":"all" if filter_mode.selected==0 else "any","action":filter_action.get_item_metadata(filter_action.selected),"conditions":conditions}
  filter_text.text=Codec.export_string(rule,host.game.hyperspace.config);preview_filter()
 func input_skin(field: Control) -> void:
  field.add_theme_color_override("font_color",Color("243d50"))
@@ -451,3 +473,7 @@ func skin_selection(control: Button,selected: bool) -> void:
  if not control.has_meta("hyperspace_selected") or bool(control.get_meta("hyperspace_selected"))!=selected:
   control.set_meta("hyperspace_selected",selected)
   preload("res://scripts/dialog_presentation.gd").button_skin(control,selected)
+
+func checkbox_skin(control: CheckBox) -> void:
+ for key in ["font_color","font_pressed_color","font_hover_color","font_hover_pressed_color","font_focus_color"]:control.add_theme_color_override(key,Color("243d50"))
+ control.add_theme_color_override("font_disabled_color",Color("637782"))

@@ -34,10 +34,14 @@ func run() -> void:
  var g=scene.game;g.save_enabled=false;g.paused=true;g.pending_unlocks.clear();g.profile.onboarding.completed=true
  g.profile.highestLevel=6;scene.refresh_tab_visibility();check(scene.equipment_tabs.is_tab_hidden(9),"Exploration locked before seven")
  g.profile.highestLevel=80;g.profile.cleared=range(1,80);g.rebuild_unlocks();g.pending_unlocks.clear();scene.refresh_tab_visibility();scene.select_system(9);await process_frame
- var p=scene.hyperspace_panel;p.refresh();check(not scene.equipment_tabs.is_tab_hidden(9),"Exploration unlocks at seven")
+ var p=scene.hyperspace_panel;check(not g.load_hyperspace_routes(),"Missing formal accepted routes rejected")
+ p.refresh_manual_status();p.refresh();check(not scene.equipment_tabs.is_tab_hidden(9),"Exploration unlocks at seven")
  check(scene.equipment_tabs.get_tab_idx_from_control(scene.save_panel)==10,"Save remains last")
  check(p.level.min_value==5 and p.level.max_value==80,"Level uses this round highest")
- check(p.start_button.disabled and not p.crew_button.disabled,"Manual waits for battle; real crew manager available")
+ check(p.start_button.disabled and not p.crew_button.disabled,"Manual uses accepted-route snapshot; crew manager available")
+ check(not p.manual_projection.manual_ready and p.manual_projection.manual_error=="space_data_missing" and not p.manual_reason.text.contains("space_data"),"Player sees friendly readiness reason")
+ var ticket_energy=float(g.profile.hyperspace.energy);p.start_manual()
+ check(g.profile.hyperspace.active.is_empty() and g.profile.hyperspace.energy==ticket_energy,"Unready manual button never pays a ticket")
  check(p.cards.size()==8 and p.find_children("*","SubViewport",true,false).is_empty(),"Eight reusable cards, no card viewports")
  await capture("exploration")
  var Bag=preload("res://scripts/drone_inventory.gd")
@@ -47,9 +51,9 @@ func run() -> void:
   var d=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"ui:%d"%i,"gold",["laser","missile","cannon","longLaser"][i%4],20,"1")
   d.affixes=[{"key":"global_damage","tier":2,"value":0.655,"locked":false}]
   check(Bag.insert(s.inventory,d,g.hyperspace.config),"Fixture insert")
- g.hyperspace.publish(g,s,"fixture");p.refresh();p.select_section(1);await process_frame;var refreshes=p.list_refreshes
+ g.hyperspace.publish(g,s,"fixture");p.refresh();p.select_section(1);await process_frame;var refreshes=p.list_refreshes;var snapshots=p.manual_snapshot_reads
  for i in 120:p.refresh_progress()
- check(p.list_refreshes==refreshes,"Progress never refreshes warehouse")
+ check(p.list_refreshes==refreshes and p.manual_snapshot_reads==snapshots,"Progress refresh never clones namespace or warehouse")
  var cards=p.cards.duplicate();var profile=JSON.stringify(g.profile)
  await click(p.next);check(p.page==1 and p.cards[0].get_meta("drone_id")=="ui:8","Native pagination follows stable IDs")
  check(JSON.stringify(g.profile)==profile,"Pagination is read-only")
@@ -73,7 +77,7 @@ func run() -> void:
  var string_profile=JSON.stringify(g.profile)
  await click(p.string_button);check(p.filter_text.is_visible_in_tree(),"Strings visible only after explicit dialog open")
  await capture_window(p.string_dialog,"filter-string-window")
- p.filter_text.text=preload("res://scripts/hyperspace_filter.gd").export_string({"version":1,"enabled":false,"action":"clear_matches","mode":"all","conditions":[{"field":"quality","value":"blue"},{"field":"minimum_level","value":40}]},g.hyperspace.config)
+ p.filter_text.text=preload("res://scripts/hyperspace_filter.gd").export_string({"version":2,"enabled":false,"action":"clear_matches","mode":"all","conditions":[{"field":"quality","value":"blue"},{"field":"minimum_level","value":40}]},g.hyperspace.config)
  p.import_filter_draft();check(not p.string_dialog.visible and p.filter_kinds[0].get_item_metadata(p.filter_kinds[0].selected)=="quality" and p.condition_levels[1].value==40,"Validated import populates localized controls")
  check(JSON.stringify(g.profile)==string_profile,"String import never mutates profile")
  var focus=p.preset_names[0];focus.text="草稿";focus.grab_focus();var list_count=p.list_refreshes
@@ -82,13 +86,14 @@ func run() -> void:
  scene.select_system(0);await process_frame;p.dirty=true;p.refresh();check(p.list_refreshes==list_count,"Hidden page has no list writes")
  scene.select_system(9);await process_frame
  var Codec=preload("res://scripts/hyperspace_filter.gd")
- var rule={"version":1,"enabled":false,"action":"keep_matches","mode":"any","conditions":[{"field":"weapon","value":"cannon"}]}
+ var rule={"version":2,"enabled":false,"action":"keep_matches","mode":"any","conditions":[{"field":"weapon","value":"cannon"}]}
  check(p.valid_draft(Codec.import_string(Codec.export_string(rule,g.hyperspace.config),g.hyperspace.config)),"Domain versioned rule preview")
- for invalid in ['SPACE-FILTER-v2:AAAA','SPACE-FILTER-v1:????','x'.repeat(4097),'{"version":1}']:
+ for invalid in ['SPACE-FILTER-v1:AAAA','SPACE-FILTER-v1:????','x'.repeat(4097),'{"version":2}']:
   check(Codec.import_string(invalid,g.hyperspace.config).is_empty(),"Invalid version, encoding, length rejected")
  check(not p.filter_enabled.button_pressed,"Auto processing defaults off")
- var prior=JSON.stringify(g.profile.hyperspace.filter);p.save_filter()
- check(JSON.stringify(g.profile.hyperspace.filter)==prior and p.filter_result.text==p.t("filter_action_wait"),"Missing action authority cannot mutate filter")
+ p.filter_enabled.button_pressed=true;p.filter_action.select(1);p.save_filter()
+ check(g.profile.hyperspace.filter.enabled and g.profile.hyperspace.filter.action=="clear_matches" and p.filter_result.text==p.t("filter_saved"),"Explicit action saved through real domain")
+ check(g.hyperspace.export_filter(g).begins_with("SPACE-FILTER-v2:") and Codec.import_string(g.hyperspace.export_filter(g),g.hyperspace.config).action=="clear_matches","Action survives formal export and preview")
  # Real preset application and capacity use the domain, without injected adapters.
  g.switch_ship("Heavy_Battleship")
  check(g.hyperspace.set_equipped(g,["ui:8"]),"Equip through actual hull capacity")
@@ -127,6 +132,13 @@ func run() -> void:
  check(g.hyperspace.attach_hangings(g,"ui:8",["resource_collector"]),"Attach unlocked module")
  check(not g.hyperspace.attach_hangings(g,"ui:8",["resource_collector","resource_collector"]),"Domain rejects same-drone duplicate")
  p.commands.module_dialog.hide()
+ g.profile.hyperspace.hanging_modules.resource_collector.level=3;g.invalidate_stat_cache()
+ p.commands.show_totals();await capture_window(p.commands.totals_dialog,"equipped-totals")
+ check(p.commands.totals_label.text.contains(p.t("percent",{"value":"%.1f"%(float(g.hyperspace_totals().hangings.resource_collector)*100.0)})),"Installed module total comes from domain projection")
+ var totals_scroll=p.commands.totals_label.get_parent();totals_scroll.scroll_vertical=9999
+ await capture_window(p.commands.totals_dialog,"equipped-totals-modules")
+ check(p.commands.totals_label.text.contains("全局伤害") and not p.commands.totals_label.text.contains("chrono"),"Authoritative totals displayed without old storage target")
+ p.commands.totals_dialog.hide()
  g.profile.hyperspace.legendary_seen=["scatter_pulse"];p.commands.show_collection();await capture_window(p.commands.collection_dialog,"legendary-collection")
  check(p.commands.collection_choices.size()==1,"Collection only offers seen effects");p.commands.collection_dialog.hide()
  # Read-only visual integration: max hull + five drones + existing ordinary turrets.
@@ -135,6 +147,29 @@ func run() -> void:
  var next_state=g.hyperspace.snapshot(g);next_state.inventory.equipped=["ui:0","ui:1","ui:2","ui:3","ui:4"];next_state.inventory.generation+=1;g.hyperspace.publish(g,next_state,"fixture")
  p.select_section(1);scene._process(0);var visual=scene.hyperspace_visual
  check(visual.nodes.size()==5 and scene.ship_view.carriers.size()==3 and scene.ship_view.viewport.get_parent()==scene.ship_view,"Five models share existing fleet viewport")
+ for id in visual.identities:
+  check(visual.muzzles.has(id) and not visual.muzzles[id].is_empty(),"Each model owns an authored muzzle")
+ check(visual.muzzles["ui:1"].size()==2,"Twin missile bays are distinct authored muzzles")
+ var aim=Vector2(250,100);var sample=scene._prototype_drone_launch_pose("ui:1",aim,0)
+ var actual=scene.battle_logical_point(visual.screen_muzzle_for_drone("ui:1",0,scene.ship_view))
+ check(sample.position.distance_to(actual)<0.001,"Provider uses actual camera-projected mesh front")
+ scene.close_up=true;scene._process(0)
+ check(scene._prototype_drone_launch_pose("ui:1",aim,0).position.distance_to(sample.position)<0.001,"Inspection magnification preserves canonical launch point")
+ scene.close_up=false;scene._process(0)
+ check(scene._prototype_drone_launch_pose("ui:1",aim,1).position.distance_to(sample.position)>1.0,"Salvo alternates actual bay fronts")
+ var projectile_index=g.weapon_entries().size()+1
+ check(g.start(7,false),"Ordinary encounter fixture starts without hyperspace route injection");g.spawn_group()
+ var enemy=g.enemies[0];enemy.hp=1000000000.0;enemy.max_hp=1000000000.0
+ scene._process(0);sample=scene._prototype_drone_launch_pose("ui:1",aim,0)
+ g.refresh_missile_target_registry();g.begin_enhancement_attack(projectile_index,enemy)
+ var attack=g.jewel_attack(projectile_index);var weapon=g.player_weapon_row(g.combat_entry(projectile_index))
+ g.launch_player_attack(projectile_index,enemy,weapon,attack,g.player_weapon_offset(projectile_index),0.0,0,1);g.finish_enhancement_attack(projectile_index);g.tick_projectiles(0.0)
+ check(not g.projectiles.is_empty() and g.projectiles.back().get("prototype_missile",false) and g.projectiles.back().launch_point.distance_to(sample.position)<0.001,"Real queued missile launches from its visible drone bay")
+ await capture("actual-drone-missile-launch")
+ var beam_index=g.weapon_entries().size()+3;g.lock_long_laser(g.player,g.player_weapon_row(g.combat_entry(beam_index)),false,beam_index,g.combat_entry(beam_index))
+ var beam=g.projectiles.back();check(beam.get("beam",false) and scene.visual_muzzle(beam).distance_to(scene._prototype_drone_launch_pose("ui:3",aim,0).position)<0.001,"Actual drone beam displays its own optical emitter")
+ check(scene.shot_mount(beam)==-1 and scene.shot_mount(g.projectiles[0])==-1,"Drone shot visuals cannot index ordinary turret state")
+ g.enemies.clear();g.projectiles.clear();g.state=g.State.MAIN_MENU
  var rebuilds=visual.rebuilds
  g.profile.hyperspace.inventory.drones["ui:0"].level=21;visual.sync(g.profile.hyperspace.inventory)
  check(visual.rebuilds==rebuilds,"Numeric changes excluded from model signature")
