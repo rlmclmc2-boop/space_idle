@@ -108,5 +108,8 @@ static func _read_progress_file(path: String) -> Variant:
 	var data = parser.data
 	if data is Dictionary:
 		var version = data.get("version",0)
-		if (version is int or version is float) and (version == 2 or version == 3 or version == 4):return data
+		if (version is int or version is float) and (version == 2 or version == 3 or version == 4 or version == 5):
+			if data.has("hyperspace"):
+				if not data.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(data.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),2147483647):return null
+			return data
 	return null

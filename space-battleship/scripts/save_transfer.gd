@@ -23,6 +23,7 @@ static func schema() -> Dictionary:
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
+ result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
  return result
 
 static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
@@ -116,9 +117,10 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  return prepare_data(parser.data,db)
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
- if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,BattleGame.SAVE_VERSION]:return {"error":"version"}
+ if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,4,BattleGame.SAVE_VERSION]:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
+ if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  for key in raw.get("galaxies",{}):
   var region: Dictionary=raw.galaxies[key]
   if region.get("version",0)>3:return {"error":"format"}

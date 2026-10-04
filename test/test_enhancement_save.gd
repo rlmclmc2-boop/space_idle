@@ -19,7 +19,7 @@ func _initialize() -> void:
  for key in ["enhancementVersion","enhancementLevel","enhancementOrder","enhancementAttacks","enhancementHits"]:legacy.erase(key)
  write(legacy)
  var loaded:=BattleGame.new(db,true)
- check(loaded.profile.version==4 and loaded.profile.enhancementVersion==1,"save/schema version migration")
+ check(loaded.profile.version==5 and loaded.profile.enhancementVersion==1,"v5 save/schema migration preserves enhancement subversion")
  check(loaded.profile.resources==seed.profile.resources and loaded.profile.cleared==seed.profile.cleared,"unrelated progress preserved")
  check(loaded.profile.jewelFragments==4321.25 and loaded.profile.jewels.is_empty(),"one-time discard retains currency without refund")
  check(not loaded.profile.loadout.weapons[0].has("sockets") and not loaded.profile.loadout.weapons[0].has("attacks") and not loaded.profile.loadout.defence[0].has("hits"),"legacy socket/history discarded")

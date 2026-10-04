@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "unlock_stage": 7,
+  "minimum_level": 5,
+  "energy_rate": 10.0,
+  "energy_cap": 216000.0,
+  "ticket": 108000.0,
+  "minimum_duration": 10.0,
+  "warehouse_capacity": 200,
+  "overflow_capacity": 10,
+  "reforge_capacity_gain": 10,
+  "initial_retention_capacity": 0,
+  "retention_capacity_gain": 10,
+  "maximum_equipped": 5,
+  "maximum_legendary": 2,
+  "maximum_ultimate": 1,
+  "completion_budget": 8,
+  "routes": {
+    "alpha": {"weapon": "laser", "material": "degenerate_matter"},
+    "beta": {"weapon": "missile", "material": "glueball"},
+    "gamma": {"weapon": "cannon", "material": "antiproton"},
+    "delta": {"weapon": "longLaser", "material": "zero_point_energy"}
+  },
+  "quality_limits": {
+    "white": {"affixes": 0, "hangings": 4},
+    "blue": {"affixes": 2, "hangings": 2},
+    "gold": {"affixes": 3, "hangings": 1},
+    "legendary": {"affixes": 3, "hangings": 0}
+  },
+  "modernization_tier_weights": {"1": 10.0, "2": 5.0, "3": 3.0, "4": 1.0, "5": 0.5}
+}

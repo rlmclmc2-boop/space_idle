@@ -9,13 +9,14 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 4
+const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
+var hyperspace := preload("res://scripts/hyperspace_system.gd").new()
 const FURNACE := "超时空炼铁炉"
 const JEWEL_FURNACE := "宝石熔炼炉"
 const ENERGY_FOCUS := "正电子聚焦装置"
@@ -151,6 +152,7 @@ func fresh_profile() -> Dictionary:
 	profile.reactorLevel = int(db.config.reactorInitialLevel)
 	profile.reactorAllocation = {}
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
+	profile.hyperspace = hyperspace.fresh()
 	return profile
 
 func first_ship() -> String:
@@ -242,9 +244,13 @@ func load_progress() -> void:
 
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
+	# Reject a future/corrupt subsystem before changing any authoritative balance.
+	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,db.levels.size())):
+		hyperspace.last_error="invalid_hyperspace_save"
+		return
 	invalidate_stat_cache()
 	login_chrono_particles = 0.0
-	if int(raw.get("version",0)) not in [2,3,SAVE_VERSION]:return
+	if int(raw.get("version",0)) not in [2,3,4,SAVE_VERSION]:return
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
@@ -340,6 +346,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	var particles = raw.get("chronoParticles", 0)
 	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
 	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
+	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -1361,11 +1368,14 @@ func can_reforge_planet(id: String) -> bool:
 func planet_reforge_start(id: String) -> int:
 	return clampi(int(planet_row(id).get("reforgeStartLevel",1)),1,maxi(1,db.levels.size()))
 
-func reforge_planet(id: String) -> bool:
+func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
 	if not can_reforge_planet(id):return false
+	var next_hyperspace:=hyperspace.reforge_state(self,keep_drones,claim_stages)
+	if next_hyperspace.is_empty():return false
 	var start_level := planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
+	next.hyperspace=next_hyperspace
 	next.crew = profile.crew.duplicate(true)
 	next.crewEquipment = profile.get("crewEquipment",{}).duplicate(true)
 	next.planets = profile.planets.duplicate(true)
@@ -1396,6 +1406,7 @@ func reforge_planet(id: String) -> bool:
 	next.chronoParticles=profile.chronoParticles
 	next.productionElapsed=production_time()
 	profile=next
+	hyperspace.scheduler.reset()
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
 	resource_samples.clear()
@@ -2425,6 +2436,7 @@ func tick(dt: float) -> void:
 	if paused:
 		return
 	profile.productionElapsed=production_time()+dt
+	hyperspace.advance(self,dt)
 	enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
