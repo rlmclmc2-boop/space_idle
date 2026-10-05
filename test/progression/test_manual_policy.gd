@@ -1,15 +1,13 @@
-extends SceneTree
+extends "res://qa/hyperspace_longrun.gd"
 const Policy=preload("res://qa/hyperspace_player_policy.gd")
 const Game=preload("res://qa/presented_balance_game.gd")
 const Driver=preload("res://qa/scene_driver.gd")
 const PlayerInput=preload("res://qa/player_input.gd")
-var checks:=0
-var failures:=0
-var driver
-var game
+var test_checks:=0
+var test_failures:=0
 func check(ok:bool,label:String)->void:
- checks+=1
- if not ok:failures+=1;printerr("FAIL ",label)
+ test_checks+=1
+ if not ok:test_failures+=1;printerr("FAIL ",label)
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var g=Game.new(ShipDatabase.new());game=g
@@ -84,5 +82,27 @@ func run()->void:
  p.check_manual_budget(g,{"visible":{"hp":0.4,"shield":1.0}},600)
  check(str(p.manual_watch.exit_reason).is_empty(),"Observed damage keeps the attempt within its budget")
  g.manual_hyperspace.active=false
- driver.close()
- print("MANUAL_POLICY ",checks," checks ",failures," failures");quit(1 if failures else 0)
+ # Exercise the actual controller's queued dispatch and watchdog priority.
+ # Only fixture scheduling time is advanced; this is not a timing acceptance run.
+ space_policy=p;output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
+ trace=FileAccess.open(output+"/controller-actions.jsonl",FileAccess.WRITE)
+ g.event.connect(observe)
+ g.profile.hyperspace.active={};g.profile.hyperspace.auto.enabled=false
+ g.stage=32;g.group_index=8;g.state=g.State.TRAVEL;g.enemies.clear();g.profile.loop=false
+ p.manual_watch={};p.last_manual_boundary=""
+ p.manual_pending={"domain":true,"kind":"space_manual","route":"gamma","level":5,"round":1,"frontier":33}
+ g.simulated_time=2000;busy=false;touring=false;next_check=1000000;next_tour=1000000
+ await step_controller()
+ check(busy and not g.manual_hyperspace.active,"Controller arms a finite visible action at safe boundary")
+ g.simulated_time+=BUTTON_TIME
+ await step_controller()
+ check(g.manual_hyperspace.active and p.manual_pending.is_empty(),"Controller executes queued start after action delay")
+ p.manual_watch.start=g.simulated_time-Policy.MANUAL_BUDGET_SECONDS
+ p.manual_watch.next_check=g.simulated_time
+ driver.scene.hyperspace_panel.refresh();await process_frame;await process_frame
+ g.simulated_time+=BUTTON_TIME
+ await step_controller()
+ check(not g.manual_hyperspace.active and g.stage==32 and g.group_index==8,"Watchdog exits through native UI even when controller burst is busy")
+ check(input_failure.is_empty(),"Controller boundary/exit path has no rejected input")
+ trace.close();driver.close()
+ print("MANUAL_POLICY ",test_checks," checks ",test_failures," failures");quit(1 if test_failures else 0)
