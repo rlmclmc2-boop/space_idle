@@ -36,6 +36,15 @@ func run()->void:
  check(not p.safe_main_boundary(g),"Live actors still prevent a boundary dispatch")
  g.enemies.clear();g.pending_unlocks.clear()
  check(p.safe_main_boundary(g),"Travel after cleared battle point is safe")
+ var unchanged:String=JSON.stringify(g.profile);var unchanged_rng:String=str(g.rng.state)
+ for shots in [g.projectiles,g.missile_queue,g.jewel_repeats,g.drone_combat.delayed]:
+  shots.append({"boundary_only_sentinel":true})
+  check(not p.safe_main_boundary(g) and g.manual_hyperspace.boundary_reason(g)=="projectiles","Each real residual attack queue prevents QA dispatch before production rejection")
+  shots.clear()
+ check(JSON.stringify(g.profile)==unchanged and str(g.rng.state)==unchanged_rng,"Boundary checks do not clear attacks, charge tickets or mutate profile/RNG")
+ g.manual_hyperspace.queued={"route":"alpha","level":5,"round":1}
+ check(not p.safe_main_boundary(g),"Existing native queue prevents duplicate direct QA dispatch")
+ g.manual_hyperspace.queued={}
  g.group_index=0
  check(not p.safe_main_boundary(g),"Fresh stage before any ended point is not a boundary")
  g.group_index=8;g.profile.loop=true

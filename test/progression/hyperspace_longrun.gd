@@ -182,11 +182,15 @@ func click_button(choice:Dictionary)->void:
    elif not effect.is_empty():record("safe_farm_event",effect)
   return
  var before:Dictionary={"resources":game.profile.resources.duplicate(true),"materials":game.profile.hyperspace.materials.duplicate(),"cores":game.profile.hyperspace.ultimate_cores,"energy":game.profile.hyperspace.energy,"round":game.profile.hyperspace.round_id}
+ var dispatch_before:Dictionary={}
+ if choice.kind=="space_manual":
+  dispatch_before={"production_boundary_reason":game.manual_hyperspace.boundary_reason(game),"queued":game.manual_hyperspace.queued.duplicate(true),"state":game.state,"point":game.group_index,"live_enemies":game.enemies.filter(func(e):return game.N.compare(e.hp,0)>0).size(),"projectiles":game.projectiles.size(),"missile_queue":game.missile_queue.size(),"jewel_repeats":game.jewel_repeats.size(),"drone_delayed":game.drone_combat.delayed.size(),"eligible_level":game.hyperspace.eligible_level(game,str(choice.route),int(choice.level)),"production_accepted":game.manual_hyperspace.production_accepted,"armour_positive":game.N.compare(game.stat("armour"),0)>0}
  var ok:bool=game.set_enhancement_branch(choice.category,choice.effect,int(choice.node),choice.choice) if choice.kind=="enhancement_branch" else space_policy.execute(game,choice,game.simulated_time)
  if ok:
   clicks+=1;row(game.stage).clicks+=1;domain_rejections=0;last_domain_rejection=""
  else:
   rejected_inputs+=1
+  record("domain_refusal",{"choice":choice,"hyperspace_error":game.hyperspace.last_error,"manual_error":game.manual_hyperspace.last_error,"dispatch_before":dispatch_before,"production_boundary_reason_after":game.manual_hyperspace.boundary_reason(game),"energy_delta":float(game.profile.hyperspace.energy)-float(before.energy),"reason_may_be_empty":true,"no_inferred_cause":true})
   var signature:String=JSON.stringify(choice)
   domain_rejections=domain_rejections+1 if signature==last_domain_rejection else 1;last_domain_rejection=signature
   if domain_rejections>=3:

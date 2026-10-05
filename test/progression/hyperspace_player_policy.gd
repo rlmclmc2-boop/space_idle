@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v10-finite-serial-crew-transfer"
+const VERSION="hyperspace-player-v11-production-manual-boundary"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -31,7 +31,7 @@ func manual_retry_allowed(g,route:String,level:int,now:float)->bool:
 func main_boundary(g)->String:
  return str([g.profile.hyperspace.round_id,g.stage,g.group_index])
 func safe_main_boundary(g)->bool:
- if g.manual_hyperspace.active or g.profile.loop or not g.pending_unlocks.is_empty():return false
+ if not g.manual_hyperspace.queued.is_empty() or not g.manual_hyperspace.boundary_reason(g).is_empty():return false
  if g.state not in [g.State.TRAVEL,g.State.LEVEL_CLEAR] or g.group_index<=0:return false
  for enemy in g.enemies:
   if g.N.compare(enemy.hp,0)>0:return false
