@@ -484,6 +484,10 @@ func refresh_city_routes() -> void:
 
 func update_explorers() -> void:
 	var targets: Array=region.slots.filter(func(slot):return slot.status=="constructing")
+	# Crew can arrive while the page is hidden, before refresh prepared city routes.
+	for target in targets:
+		var id: int=int(target.id)
+		if not transit.curves.has(id) or transit.curves[id].point_count<2:update_construction_route(id)
 	var count := mini(12,crew_count*int(region.row.ship_per_crew)) if not targets.is_empty() else 0
 	while explorers.size()>count:explorers.pop_back().node.free()
 	while explorers.size()<count:
@@ -492,7 +496,7 @@ func update_explorers() -> void:
 		world.add_child(ship)
 		explorers.append({"node":ship,"curve":Curve3D.new(),"target":-1,"phase":1.0,"duration":4.0})
 	for item in explorers:
-		if float(item.phase)<1.0 and targets.any(func(slot):return int(slot.id)==int(item.target)):continue
+		if float(item.phase)<1.0 and targets.any(func(slot):return int(slot.id)==int(item.target)) and item.curve.point_count>=2:continue
 		var target: Dictionary=targets[rng.randi_range(0,targets.size()-1)]
 		item.target=int(target.id)
 		item.curve=transit.curves[int(target.id)]
@@ -528,6 +532,8 @@ func _process(dt: float) -> void:
 		if i<pulses.size():pulses[i].node.visible=false
 	explorer_tick+=dt
 	if explorer_tick>=setting("visible_tick",1):explorer_tick=0;update_explorers()
+	# Prepare an incomplete explorer route before the very first visual sample.
+	if explorers.any(func(item):return item.curve.point_count<2):update_explorers()
 	for item in explorers:
 		item.phase=minf(1,float(item.phase)+dt/float(item.duration))
 		var curve: Curve3D=item.curve
