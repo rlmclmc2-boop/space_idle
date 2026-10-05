@@ -163,7 +163,8 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  return transaction
 
 func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
- var prepared:=prepare_data(raw,game.db)
+ var source_db=game.manual_hyperspace.base_db if game.manual_hyperspace.active else game.db
+ var prepared:=prepare_data(raw,source_db)
  if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
  var primary: String=game.progress_writer.path
  var previous:=primary+".import-prev"
@@ -183,9 +184,14 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
    original_file.close()
    error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
    if error!=OK:return {"error":error}
- var candidate:=BattleGame.new(game.db,false)
- candidate.load_progress_data(prepared.data);candidate.reset_player()
- error=write_file(incoming,JSON.stringify(clean(candidate.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ var installed:Dictionary=prepared.data
+ var active:Dictionary=installed.get("hyperspace",{}).get("active",{})
+ # Current suspended receipts must survive staging: canonicalizing a refunded
+ # temporary game would drop its not-yet-applied runtime return snapshot.
+ if active.get("return_state",{}).is_empty():
+  var candidate:=BattleGame.new(source_db,false)
+  candidate.load_progress_data(prepared.data);candidate.reset_player();installed=candidate.portable_save_data()
+ error=write_file(incoming,JSON.stringify(clean(installed,schema()),"\t").to_utf8_buffer())
  if error!=OK:return {"error":error}
  var had_primary:=FileAccess.file_exists(primary)
  if had_primary:
