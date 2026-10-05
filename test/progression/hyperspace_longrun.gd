@@ -1,7 +1,10 @@
 extends "res://qa/early_page_route.gd"
 ## Native early controls plus serial visible-page domain actions for newly integrated systems.
 const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
+const NoNewManualPolicy=preload("res://qa/no_new_manual_policy.gd")
 var space_policy:=SpacePolicy.new()
+func configure_manual_policy()->void:
+ space_policy=SpacePolicy.new() if bool(options.get("allow_new_manual",true)) else NoNewManualPolicy.new()
 # Optional isolated stage profiler; frozen P2 policy behavior is unchanged.
 var stage_meter=null
 const Checkpoint=preload("res://qa/hyperspace_checkpoint.gd")
@@ -207,7 +210,7 @@ func galaxy_complete()->bool:
  var region=game.galaxy.regions.galaxy_1
  return region.slots.size()==30 and region.slots.all(func(slot):return int(slot.level)>=5)
 func run()->void:
- options={"seed":20261005,"duration":216000.0,"visit_seconds":300,"allow_reforge":true,"stop_clear":0,"wall_limit_seconds":36000.0,"checkpoint_wall_seconds":30.0}
+ options={"seed":20261005,"duration":216000.0,"visit_seconds":300,"allow_reforge":true,"stop_clear":0,"wall_limit_seconds":36000.0,"checkpoint_wall_seconds":30.0,"allow_new_manual":true}
  var parsed=JSON.parse_string(OS.get_environment("HYPERSPACE_LONGRUN_OPTIONS"))
  manifest=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))
  var resume_path:=OS.get_environment("HYPERSPACE_RESUME_PATH")
@@ -226,6 +229,7 @@ func run()->void:
    payload=recovery.payload
   options.merge(payload.get("options",{}),true)
  if parsed is Dictionary:options.merge(parsed,true)
+ configure_manual_policy()
  if float(options.get("checkpoint_wall_seconds",0))<=0:
   printerr("Checkpoint interval must be positive");quit(2);return
  output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
@@ -253,6 +257,7 @@ func run()->void:
   var link:Dictionary={"checkpoint":recovery.path,"source_x1":payload.x1_seconds,"origin_trace":payload.get("origin_trace","legacy parent trace"),"fallback_reason":recovery.get("fallback_reason",""),"discontinuities":restored}
   resume_lineage.append(link);record("checkpoint_resumed",link);save_snapshot("resumed")
  checkpoint_now()
+ if not bool(options.allow_new_manual):record("qa_policy_modifier",{"kind":"suppress_new_manual","history_and_gains_preserved":true,"existing_manual_watchdog_preserved":true,"base_policy":SpacePolicy.VERSION,"scope":"A/B experiment, not unchanged baseline player strategy"})
  record("run_start",{"initial_scope":initial_scope,"options":options,"source_commit":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).source_commit,"scene_provider_scope":"production before_logical_game_tick, ordinary/drone/rail/target callbacks, exact Presented fixed steps"})
  while game.simulated_time<float(options.duration) and input_failure.is_empty() and not galaxy_complete():
   if int(options.stop_clear)>0 and clears.has(str(int(options.stop_clear))):break
