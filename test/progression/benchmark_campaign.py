@@ -10,6 +10,9 @@ p.add_argument('--seconds',type=float,default=60)
 p.add_argument('--modes',default='full,decision-ui,cached')
 p.add_argument('--godot',default='godot')
 p.add_argument('--timeout',type=int,default=600)
+p.add_argument('--sample-seconds',type=float,default=1,help='Full-state log interval in X1 seconds; 0 logs initial/final only')
+p.add_argument('--max-samples',type=int,default=256,help='Hard full-state record cap including initial/final')
+p.add_argument('--checkpoint-wall-seconds',type=float,default=30,help='Atomic recovery checkpoint cadence in wall seconds')
 a=p.parse_args();project=a.project.resolve();out=a.output.resolve()
 if out.exists():raise SystemExit('Choose a new output; preserve evidence')
 old=json.loads(a.source_manifest.read_text());target=json.loads((project/'qa-manifest.json').read_text())
@@ -24,18 +27,18 @@ for name,value in target['files'].items():
  if hashlib.sha256((project/name).read_bytes()).hexdigest()!=value:raise SystemExit('Target frozen file changed: '+name)
 header_bytes,payload=a.checkpoint.read_bytes().split(b'\n',1);header=json.loads(header_bytes)
 if header.get('format')!=1 or header.get('bytes')!=len(payload) or header.get('sha256')!=hashlib.sha256(payload).hexdigest() or header.get('code_fingerprint')!=old['fingerprint']:raise SystemExit('Source checkpoint identity/checksum mismatch')
-if a.seconds<=0:raise SystemExit('Positive interval required')
+if a.seconds<=0 or a.sample_seconds<0 or a.max_samples<2 or a.checkpoint_wall_seconds<=0:raise SystemExit('Invalid duration/sampling/checkpoint controls')
 out.mkdir(parents=True);results=[];comparisons=[]
 for mode in a.modes.split(','):
  if mode not in {'full','decision-ui','cached'}:raise SystemExit('Unknown mode')
  folder=out/mode;folder.mkdir();branch=folder/'stage-checkpoint.bin'
  request={'source_manifest':str(a.source_manifest.resolve()),'checkpoint':str(a.checkpoint.resolve()),'mode':mode,'output':str(branch)}
- rp=folder/'prepare.json';rp.write_text(json.dumps(request,indent=2));env=os.environ.copy();env['QA_STAGE_PREPARE']=str(rp);env['QA_STAGE_MODE']=mode
+ rp=folder/'prepare.json';rp.write_text(json.dumps(request,indent=2));env=os.environ.copy();env['QA_STAGE_PREPARE']=str(rp);env['QA_STAGE_MODE']=mode;env['QA_STAGE_SAMPLE_SECONDS']=str(a.sample_seconds);env['QA_STAGE_MAX_SAMPLES']=str(a.max_samples)
  for key in ['XDG_DATA_HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','APPDATA','LOCALAPPDATA']:
   q=folder/'prepare-userdata'/key;q.mkdir(parents=True);env[key]=str(q)
  with (folder/'prepare.log').open('w') as f:r=subprocess.run([a.godot,'--headless','--path',str(project),'--script','res://qa/prepare_stage_checkpoint.gd'],stdout=f,stderr=subprocess.STDOUT,env=env,timeout=60)
  if r.returncode or 'SCRIPT ERROR:' in (folder/'prepare.log').read_text():raise SystemExit('Stage branch rejected: '+str(folder/'prepare.log'))
- options=folder/'options.json';options.write_text(json.dumps({'duration':header['x1_seconds']+a.seconds,'wall_limit_seconds':a.timeout-10,'stop_clear':0}))
+ options=folder/'options.json';options.write_text(json.dumps({'duration':header['x1_seconds']+a.seconds,'wall_limit_seconds':a.timeout-10,'stop_clear':0,'checkpoint_wall_seconds':a.checkpoint_wall_seconds}))
  label='stage-'+out.name+'-'+mode
  cmd=['python3',str(Path(__file__).with_name('run_entry.py')),'--project',str(project),'--entry','res://qa/stage_campaign.gd','--label',label,'--godot',a.godot,'--skip-import','--resume',str(branch),'--longrun-options',str(options),'--timeout',str(a.timeout)]
  start=time.perf_counter()
@@ -55,8 +58,9 @@ if base:
   y=[json.loads(s) for s in (Path(r['diagnostics'])/'stage-states.jsonl').read_text().splitlines()];diffs=[]
   for lhs,rhs in zip(x,y):
    changed=sorted(k for k in lhs['state'].keys()|rhs['state'].keys() if lhs['state'].get(k)!=rhs['state'].get(k))
+   if lhs['step']!=rhs['step']:changed.append('sample_step')
    if changed:diffs.append({'step':lhs['step'],'fields':changed})
-  comparisons.append({'mode':r['mode'],'samples':len(x),'exact_state_equal':len(x)==len(y) and not diffs,'first_mismatch':diffs[0] if diffs else None,'mismatched_samples':len(diffs),'native_actions_equal':actions(base)==actions(r),'speedup':base['wall_seconds']/r['wall_seconds'],'final_rng_equal':base['final_rng']==r['final_rng']})
-summary={'source_checkpoint':str(a.checkpoint),'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_x1':header['x1_seconds'],'source_manifest':old,'target_manifest':target,'results':results,'comparisons':comparisons,'scope':'Explicit same-production/data/P2 policy stage branch; formal battle regeneration, no grants/chrono/dt changes. Real native input/controller and cannon/missile/beam/drone/rail providers retained. Approximate headless combat is a separate passive probe.'}
+  comparisons.append({'mode':r['mode'],'samples':len(x),'sample_seconds':a.sample_seconds,'sample_cap':a.max_samples,'exact_state_equal':len(x)==len(y) and not diffs,'first_mismatch':diffs[0] if diffs else None,'mismatched_samples':len(diffs),'native_actions_equal':actions(base)==actions(r),'speedup':base['wall_seconds']/r['wall_seconds'],'final_rng_equal':base['final_rng']==r['final_rng']})
+summary={'sampling':{'seconds':a.sample_seconds,'max_samples':a.max_samples,'checkpoint_wall_seconds':a.checkpoint_wall_seconds,'coverage':'Initial/final and bounded sampled states; unsampled ticks are not claimed individually equal'},'source_checkpoint':str(a.checkpoint),'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_x1':header['x1_seconds'],'source_manifest':old,'target_manifest':target,'results':results,'comparisons':comparisons,'scope':'Explicit same-production/data/P2 policy stage branch; formal battle regeneration, no grants/chrono/dt changes. Real native input/controller and cannon/missile/beam/drone/rail providers retained. Approximate headless combat is a separate passive probe.'}
 (out/'summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(comparisons,indent=2))
 if any(not r['complete_interval'] for r in results) or any(not c['exact_state_equal'] or not c['native_actions_equal'] for c in comparisons):raise SystemExit('Native stage interval incomplete or exact invariants failed; evidence retained')

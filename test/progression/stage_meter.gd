@@ -22,19 +22,37 @@ var start:=0
 var state_times:Dictionary={}
 var stream:FileAccess
 var mode:=""
+var sample_ticks:=60
+var max_samples:=256
+var sample_count:=0
+var last_sample_tick:=-1
+var suppressed_samples:=0
+func sample(g)->void:
+ var now:=Time.get_ticks_usec()
+ stream.store_line(JSON.stringify({"step":ticks,"state":signature(g)},"",true))
+ timing.state_log_us+=Time.get_ticks_usec()-now
+ sample_count+=1;last_sample_tick=ticks
 func begin(output:String,variant:String,g)->void:
  mode=variant;start=Time.get_ticks_usec();stream=FileAccess.open(output+"/stage-states.jsonl",FileAccess.WRITE)
- stream.store_line(JSON.stringify({"step":0,"state":signature(g)},"",true))
+ var interval:=OS.get_environment("QA_STAGE_SAMPLE_SECONDS")
+ sample_ticks=maxi(1,int(round(float(interval)*60.0))) if not interval.is_empty() and float(interval)>0 else 0
+ if interval.is_empty():sample_ticks=60
+ var limit:=OS.get_environment("QA_STAGE_MAX_SAMPLES")
+ max_samples=maxi(2,int(limit)) if not limit.is_empty() else 256
+ sample(g)
 func tick(g,before_state:int,controller:int,pre:int,core:int,post:int)->void:
  if stream==null:return
  timing.controller_us+=controller;timing.before_tick_us+=pre;timing.game_tick_us+=core;timing.after_tick_us+=post;ticks+=1
  var kind:String="combat" if before_state==g.State.COMBAT else "noncombat"
  if not state_times.has(kind):state_times[kind]={"ticks":0,"wall_us":0}
  state_times[kind].ticks+=1;state_times[kind].wall_us+=pre+core+post
- if ticks%60==0:
-  var now:=Time.get_ticks_usec();stream.store_line(JSON.stringify({"step":ticks,"state":signature(g)},"",true));timing.state_log_us+=Time.get_ticks_usec()-now
+ if sample_ticks>0 and ticks%sample_ticks==0:
+  # Reserve the last slot for the final authoritative state.
+  if sample_count<max_samples-1:sample(g)
+  else:suppressed_samples+=1
 func finish(output:String,g)->void:
  if stream==null:return
+ if last_sample_tick!=ticks:sample(g)
  stream.close()
  var wall:float=float(Time.get_ticks_usec()-start)/1e6
- FileAccess.open(output+"/stage-performance.json",FileAccess.WRITE).store_string(JSON.stringify({"mode":mode,"wall_seconds":wall,"x1_seconds":float(ticks)/60.0,"x1_per_wall":float(ticks)/60.0/wall,"ticks":ticks,"timing":timing,"state_times":state_times,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state)},"\t"))
+ FileAccess.open(output+"/stage-performance.json",FileAccess.WRITE).store_string(JSON.stringify({"sample_seconds":float(sample_ticks)/60.0,"max_samples":max_samples,"samples":sample_count,"suppressed_samples":suppressed_samples,"first_and_final_included":true,"mode":mode,"wall_seconds":wall,"x1_seconds":float(ticks)/60.0,"x1_per_wall":float(ticks)/60.0/wall,"ticks":ticks,"timing":timing,"state_times":state_times,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state)},"\t"))
