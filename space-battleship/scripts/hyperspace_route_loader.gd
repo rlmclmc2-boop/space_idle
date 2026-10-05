@@ -27,7 +27,9 @@ func prepare(g,binding: Variant,candidate: Variant) -> Dictionary:
 		if not id is String or not id.is_valid_int() or str(int(id))!=id or int(id)<=0 or not row is Dictionary or not row.get("slots") is Array or not row.slots.any(func(slot):return slot!=null):return fail("space_group_invalid")
 	var policy=binding.get("selected_mainline_level_policy",{})
 	if not policy is Dictionary or policy.get("enemy_tier_offset")!=0:return fail("space_multiplier_policy_invalid")
-	for key in ["atkRatio","lifeRatio","resRatio"]:
+	for key in ["resRatio","jewelRatio"]:
+		if policy.get(key)!="inherit_latest_cleared_mainline_level":return fail("space_multiplier_policy_invalid")
+	for key in ["atkRatio","lifeRatio"]:
 		if policy.get(key)!="inherit_selected_mainline_level":return fail("space_multiplier_policy_invalid")
 	for id in candidate.enemies:
 		if not id is String or not id.is_valid_int() or str(int(id))!=id or int(id)<=0 or g.db.enemies.has(id):return fail("space_enemy_id_invalid")

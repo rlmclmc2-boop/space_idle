@@ -18,13 +18,22 @@ func load_contract()->bool:
  return not catalog.is_empty() and recipes.size()==40 and not sources.is_empty()
 func fail(code:String)->Dictionary:
  last_error=code;return {}
-func bind(base:ShipDatabase,registry:Dictionary,level:int)->Dictionary:
- if level<1 or level>base.levels.size():return fail("space_reward_level_invalid")
+static func latest_cleared_level(g)->int:
+ var latest:=1
+ for value in g.profile.cleared:
+  if C.integer(value) and int(value)>=1 and int(value)<=g.db.levels.size():latest=maxi(latest,int(value))
+ return latest
+func bind(base:ShipDatabase,registry:Dictionary,level:int,resource_level:int=-1)->Dictionary:
+ if resource_level<0:resource_level=level
+ if level<1 or level>base.levels.size() or resource_level<1 or resource_level>base.levels.size():return fail("space_reward_level_invalid")
  var selected:Dictionary=base.levels[level-1]
- for key in ["resRatio","jewelRatio"]:
-  if typeof(selected.get(key)) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(selected.get(key,0))) or selected[key]<0:return fail("space_reward_multiplier_invalid")
+ var resource_reference:Dictionary=base.levels[resource_level-1]
+ for pair in [[resource_reference,"resRatio"],[resource_reference,"jewelRatio"]]:
+  var row:Dictionary=pair[0];var key:String=pair[1]
+  if typeof(row.get(key)) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(row.get(key,0))) or row[key]<0:return fail("space_reward_multiplier_invalid")
  var result:Dictionary=registry.duplicate(true)
- var validation_row:Dictionary=selected.duplicate(true);validation_row.rewardReferenceGroups=[]
+ result.resource_reference_level=resource_level
+ var validation_row:Dictionary=selected.duplicate(true);validation_row.resRatio=float(resource_reference.resRatio);validation_row.jewelRatio=float(resource_reference.jewelRatio);validation_row.rewardReferenceGroups=[]
  var next_group:=900000000;var next_enemy:=900000000
  for gid in registry.groups:
   var group:Dictionary=result.groups[gid]
@@ -33,13 +42,13 @@ func bind(base:ShipDatabase,registry:Dictionary,level:int)->Dictionary:
   var recipe:Array=recipes.get(gid,[])
   if reference.is_empty() or recipe.is_empty():return fail("space_reward_reference_missing")
   var count:int=int(reference.reference_member_count)
-  var blocks:Array=reference.early_drop_blocks if level<=5 else reference.late_drop_blocks
+  var blocks:Array=reference.early_drop_blocks if resource_level<=5 else reference.late_drop_blocks
   if blocks.size()!=count:return fail("space_reward_budget_invalid")
   var ref_id:=-1
   for wave in sources:
-   if int(wave.stage)!=level or int(wave.source_group)!=int(reference.source_design_group_id):continue
+   if int(wave.stage)!=resource_level or int(wave.source_group)!=int(reference.source_design_group_id):continue
    var actual_id:String=str(int(wave.group))
-   if not base.groups.has(actual_id) or not selected.groups.any(func(point):return int(point.id)==int(wave.group)):continue
+   if not base.groups.has(actual_id) or not resource_reference.groups.any(func(point):return int(point.id)==int(wave.group)):continue
    var actual:Dictionary=base.groups[actual_id]
    var actual_blocks:Array=[]
    for id in actual.slots:
@@ -77,10 +86,10 @@ func bind(base:ShipDatabase,registry:Dictionary,level:int)->Dictionary:
    enemy.drops=drops;enemy.rewardDrops=drops.duplicate(true);enemy.res="";enemy.jewelDropRolls=int(member.jewelDropRolls)
    total_rolls+=int(member.jewelDropRolls)
   if seen.size()!=count or total_rolls!=count or assigned_slots.size()!=group.slots.filter(func(id):return id!=null).size():return fail("space_reward_roll_budget_invalid")
-  group.rewardBinding={"status":"BOUND","rewardReferenceDesignId":ref_key,"referenceGroupId":ref_id,"levelId":level,"resRatio":float(selected.resRatio),"jewelRatio":float(selected.jewelRatio)}
+  group.rewardBinding={"status":"BOUND","rewardReferenceDesignId":ref_key,"referenceGroupId":ref_id,"levelId":level,"resourceReferenceLevel":resource_level,"resRatio":float(resource_reference.resRatio),"jewelRatio":float(resource_reference.jewelRatio)}
  result.rewardReferenceGroups=validation_row.rewardReferenceGroups
  var validation_levels:Array=base.levels.duplicate();validation_levels[level-1]=validation_row
  for gid in registry.groups:
-  var error:String=Validator.binding_error(gid,result.groups,result.enemies,validation_levels,level,float(selected.resRatio),float(selected.jewelRatio))
+  var error:String=Validator.binding_error(gid,result.groups,result.enemies,validation_levels,level,float(resource_reference.resRatio),float(resource_reference.jewelRatio))
   if not error.is_empty():return fail("space_reward_binding_invalid: "+error)
  last_error="";return result

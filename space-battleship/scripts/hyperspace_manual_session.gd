@@ -35,7 +35,7 @@ func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 		var reached:int=clampi(int(g.profile.highestLevel),7,g.db.levels.size())
 		if reached!=7:levels.append(reached)
 		for level in levels:
-			if reward_binder.bind(g.db,registry,level).is_empty():last_error=reward_binder.last_error;route_ids={};registry={};reward_binder=null;return false
+			if reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g)).is_empty():last_error=reward_binder.last_error;route_ids={};registry={};reward_binder=null;return false
 	production_accepted=true;return true
 func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 	if active or routes.size()!=4:return false
@@ -98,7 +98,7 @@ func start(g,route: String,level: int) -> bool:
 	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket) or not boundary_reason(g).is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
-		bound_registry=reward_binder.bind(g.db,registry,level)
+		bound_registry=reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g))
 		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
 		production_accepted=true
 	# Existing earned drops settle by their ordinary rule, before freezing the main run.

@@ -8,7 +8,7 @@ func check(ok: bool,label: String) -> void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture() -> Dictionary:
 	var candidates: Dictionary={"schema_version":1,"scope":"space_only","status":"accepted_all40","groups":{},"enemies":{},"acceptance":{"accepted_under_original_limits":40,"unaccepted_group_ids":[]}}
-	var binding: Dictionary={"schema_version":1,"scope":"space_only","data_status":"accepted_all40","candidate_config":Loader.CANDIDATES_PATH,"routes":{},"acceptance":{"status":"accepted_all40","verified_under_specified_seed":40,"pending_group_ids":[]},"selected_mainline_level_policy":{"atkRatio":"inherit_selected_mainline_level","lifeRatio":"inherit_selected_mainline_level","resRatio":"inherit_selected_mainline_level","enemy_tier_offset":0}}
+	var binding: Dictionary={"schema_version":1,"scope":"space_only","data_status":"accepted_all40","candidate_config":Loader.CANDIDATES_PATH,"routes":{},"acceptance":{"status":"accepted_all40","verified_under_specified_seed":40,"pending_group_ids":[]},"selected_mainline_level_policy":{"atkRatio":"inherit_selected_mainline_level","lifeRatio":"inherit_selected_mainline_level","resRatio":"inherit_latest_cleared_mainline_level","jewelRatio":"inherit_latest_cleared_mainline_level","enemy_tier_offset":0}}
 	var id:=9100
 	for weapon in ["laser","missile","cannon","longLaser"]:
 		binding.routes[weapon]={"normal":[],"elite":[],"boss":[],"ultimate":[]}

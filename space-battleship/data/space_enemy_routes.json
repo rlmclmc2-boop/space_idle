@@ -88,7 +88,8 @@
   "selected_mainline_level_policy": {
     "atkRatio": "inherit_selected_mainline_level",
     "lifeRatio": "inherit_selected_mainline_level",
-    "resRatio": "inherit_selected_mainline_level",
+    "resRatio": "inherit_latest_cleared_mainline_level",
+    "jewelRatio": "inherit_latest_cleared_mainline_level",
     "enemy_tier_offset": 0
   },
   "binding_contract": {
