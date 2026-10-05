@@ -1979,7 +1979,7 @@ func spawn_group(keep_distance := false) -> void:
 		var reward_error:String=preload("res://scripts/candidate_rewards.gd").binding_error(str(int(encounter.id)),db.groups,db.enemies,db.levels,stage,float(db.levels[stage-1].resRatio),jewel_ratio())
 		if not reward_error.is_empty():
 			manual_hyperspace.last_error="space_reward_binding_invalid: "+reward_error
-			manual_hyperspace.finish(self,false);return
+			manual_hyperspace.finish(self,false,"setup_failed");return
 	if not keep_distance:
 		distance = float(encounter.position) * float(db.levels[stage - 1].length)
 	group_index += 1
@@ -2274,7 +2274,7 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 
 func begin_retreat() -> void:
 	if manual_hyperspace.active:
-		manual_hyperspace.finish(self,false);return
+		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
 	guard_arrived = false
 	guard_elapsed = 0
 	guard_engaged = false
@@ -2608,7 +2608,7 @@ func upgrade_max(key: String) -> bool:
 	return levels > 0 and upgrade(key, levels)
 
 func leave(next: State) -> void:
-	if manual_hyperspace.active:manual_hyperspace.finish(self,false)
+	if manual_hyperspace.active:manual_hyperspace.finish(self,false,"user_exit")
 	settle_drops()
 	projectiles.clear()
 	enemies.clear()

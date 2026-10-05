@@ -14398,5 +14398,11 @@
   {"key": "planet.reforge_zero_title", "text": "确认不保留任何无人机", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
   {"key": "planet.reforge_zero_warning", "text": "未选择保留，将删除全部 {count} 架无人机，包括收藏和已装备的无人机，并进行重铸。此操作无法撤销。", "params": "{count}", "category": "planet", "note": "零保留单独破坏性确认"},
   {"key": "planet.reforge_zero_confirm", "text": "删除全部并重铸", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
-  {"key": "planet.reforge_zero_cancel", "text": "返回选择", "params": "", "category": "planet", "note": "零保留单独破坏性确认"}
+  {"key": "planet.reforge_zero_cancel", "text": "返回选择", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
+  {"key": "hyperspace.recent_result", "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}", "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_success", "text": "探索成功", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_failed", "text": "探索结束", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_defeat", "text": "舰体耗尽，探索失败", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_user_exit", "text": "主动退出", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_setup_failed", "text": "探索未能正常启动", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"}
 ]

@@ -14,6 +14,7 @@ var manual_projection: Dictionary={}
 var manual_snapshot_reads=0
 var exit_button: Button
 var manual_reason: Label
+var recent_result: Label
 var crew_adapter: Callable
 var hull_capacity_provider: Callable
 var preset_adapter: Callable
@@ -164,6 +165,7 @@ func build_exploration(parent: Node) -> void:
  var commands=row(parent);start_button=button(commands,"queue_start",start_manual);cancel_queue_button=button(commands,"queue_cancel",func():host.game.cancel_hyperspace_request();refresh_progress());cancel_queue_button.visible=false;exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
  manual_reason=label(parent,"",20)
+ recent_result=label(parent,"",20);recent_result.visible=false
  label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
  first_win=label(parent,t("first_win"),22)
 func build_inventory(parent: Node) -> void:
@@ -332,6 +334,10 @@ func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
  var text=t("idle");var fill=0.0
  var session=host.game.manual_hyperspace
+ var result:Dictionary=session.last_result
+ put(recent_result,"visible",not result.is_empty())
+ if not result.is_empty():
+  put(recent_result,"text",t("recent_result",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"reason":t("result_"+str(result.reason)),"elapsed":"%.1f"%float(result.elapsed),"point":str(result.end_point),"refund":"%.0f"%float(result.refund),"stage":str(result.return_stage),"main_point":str(result.return_point)}))
  put(cancel_queue_button,"visible",not session.queued.is_empty())
  if not session.queued.is_empty():
   var waiting=session.boundary_reason(host.game)

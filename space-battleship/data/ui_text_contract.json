@@ -1,5 +1,11 @@
 {
   "entries": {
+    "hyperspace.recent_result": {"params": ["weapon", "level", "reason", "elapsed", "point", "refund", "stage", "main_point"]},
+    "hyperspace.result_success": {"params": []},
+    "hyperspace.result_failed": {"params": []},
+    "hyperspace.result_defeat": {"params": []},
+    "hyperspace.result_user_exit": {"params": []},
+    "hyperspace.result_setup_failed": {"params": []},
     "planet.reforge_zero_title": {"params": []},
     "planet.reforge_zero_warning": {"params": ["count"]},
     "planet.reforge_zero_confirm": {"params": []},

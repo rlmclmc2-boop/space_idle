@@ -19,6 +19,7 @@ var queued:Dictionary={}
 var queue_error:=""
 var return_state:Dictionary={}
 var loaded_return:Dictionary={}
+var last_result:Dictionary={}
 func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 	if active:return false
 	route_ids={};registry={};production_accepted=false;reward_binder=null
@@ -92,7 +93,7 @@ func dispatch_queued(g)->bool:
 func reset_for_load(g)->void:
 	cancel_queue(g,"reload")
 	if active:g.db=base_db
-	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={}
+	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={};last_result={}
 func start(g,route: String,level: int) -> bool:
 	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket) or not boundary_reason(g).is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
@@ -111,16 +112,20 @@ func start(g,route: String,level: int) -> bool:
 	g.db=view;active=true;initializing=true
 	var started: bool=g.start(level,false)
 	initializing=false
-	if not started:finish(g,false);return false
+	if not started:finish(g,false,"setup_failed");return false
 	g.event.emit("hyperspace_manual",{"active":true,"route":route,"level":level});return true
-func finish(g,success: bool) -> bool:
+func finish(g,success: bool,reason: String="failed") -> bool:
 	if not active:return false
 	g.settle_drops()
-	var elapsed: float=float(g.profile.hyperspace.active.get("work",0))
+	var receipt:Dictionary=g.profile.hyperspace.active.duplicate(true)
+	var energy_before:float=float(g.profile.hyperspace.energy)
+	var end_point:int=clampi(g.group_index,1,10)
+	var elapsed: float=float(receipt.get("work",0))
 	if not g.hyperspace.complete(g,round_id,run_id,success,{},elapsed,success):return false
 	active=false;g.db=base_db
 	var point=return_journey;var frozen=return_state
 	return_journey={};return_state={};base_db=null
+	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.groupIndex)}
 	Return.restore(g,frozen,point)
 	# A pending reward no longer owns a suspended main state after it has returned.
 	if not g.profile.hyperspace.active.is_empty():

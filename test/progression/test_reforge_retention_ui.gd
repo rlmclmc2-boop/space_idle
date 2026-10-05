@@ -57,7 +57,11 @@ func run()->void:
   check(preload("res://scripts/drone_inventory.gd").insert(bag,d,g.hyperspace.config),"Valid generated inventory fixture")
   ids.append(id)
   if index<2:bag.favorites.append(id)
- g.profile.hyperspace.materials.antiproton=7;g.profile.hyperspace.energy=1;g.profile.resources["1"]=12345
+ g.profile.hyperspace.materials.antiproton=7;g.profile.hyperspace.energy=g.hyperspace.config.energy_cap;g.profile.resources["1"]=12345
+ check(g.load_hyperspace_routes() and g.start_hyperspace("alpha",5),"Production manual begins from legal standby before reforge boundary")
+ var active_before=JSON.stringify(g.profile)
+ check(not g.can_reforge_planet("1") and not g.reforge_planet("1",[]) and JSON.stringify(g.profile)==active_before,"Active manual denies reforge without changing its receipt or retained inventory")
+ check(g.manual_hyperspace.finish(g,false) and g.request_hyperspace("alpha",5),"Actual return permits an unpaid queued request before reforge preview")
  scene.refresh_tab_visibility();scene.select_system(6);await process_frame
  var before:String=JSON.stringify(g.profile)
  scene.planet_panel._confirm_reforge("1");await process_frame;var dialog=current_dialog(scene.planet_panel)
@@ -69,7 +73,7 @@ func run()->void:
  if dialog.selected!=[ids[0]]:quit(1);return
  check(JSON.stringify(g.profile)==before,"Preview and checkbox do not mutate authoritative profile")
  await click(dialog.get_cancel_button());await process_frame
- check(JSON.stringify(g.profile)==before and current_dialog(scene.planet_panel)==null,"Native modal cancellation is zero change")
+ check(JSON.stringify(g.profile)==before and current_dialog(scene.planet_panel)==null and not g.manual_hyperspace.queued.is_empty(),"Native modal cancellation is zero change and preserves unpaid queue")
  scene.planet_panel._confirm_reforge("1");await process_frame;dialog=current_dialog(scene.planet_panel)
  await click(dialog.get_ok_button());await process_frame
  check(is_instance_valid(dialog.zero_confirmation) and JSON.stringify(g.profile)==before,"Zero selection opens separate destructive confirmation without mutation")
@@ -88,6 +92,7 @@ func run()->void:
  check(not dialog.get_ok_button().disabled and dialog.selected==[ids[0],ids[1]],"Two favorite drones explicitly selected within allowance")
  await click(dialog.get_ok_button());await process_frame
  var next:Dictionary=g.profile.hyperspace
+ check(g.manual_hyperspace.queued.is_empty(),"Actual successful reforge cancels unpaid request from the old round")
  check(next.round_id==2 and next.inventory.drones.size()==2 and next.inventory.sealed.size()==2 and next.inventory.equipped.is_empty(),"Native production confirm retains selected IDs only and seals/unloads them atomically")
  check(next.inventory.favorites==[ids[0],ids[1]] and next.materials.antiproton==0 and next.energy==g.hyperspace.config.energy_cap and g.profile.resources["1"]==12345,"Favorites persist; hyperspace materials reset and source-correct resource balances persist")
  check(preload("res://scripts/drone_inventory.gd").retention_capacity(next.inventory,g.hyperspace.config)==cap,"Committed allowance increases by source gain")

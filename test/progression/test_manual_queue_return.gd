@@ -83,6 +83,9 @@ func run()->void:
  check(g.enhancement_branches.weapon(g,0).next==2 and g.enhancement_branches.weapon(g,0).stacks==3 and g.enhancement_branches.weapon(g,0).stack_time==5.0 and g.enhancement_branches.defense(g,0).cover_time==3.0 and g.N.compare(g.memory_buffer(0),buffer)==0,"Critical charges/stacks, owned cover and Memory buffer are frozen and restored without free regeneration")
  check(g.profile.resources==balances and str(g.rng.state)==after_rng and int(g.profile.loadout.defence[0].level)==old_level+1,"Paid growth, resource balances and advanced global RNG survive return")
  check(g.profile.hyperspace.energy==refunded_energy and not g.manual_hyperspace.finish(g,false),"Voluntary failure refunds one ticket; duplicate finish cannot refund again")
+ var result=g.manual_hyperspace.last_result
+ check(result.reason=="user_exit" and is_equal_approx(float(result.refund),float(g.hyperspace.config.ticket)) and result.return_stage==g.stage and result.return_point==g.group_index,"Recent result records voluntary exit, actual ticket refund and returned main point")
+ check(panel.recent_result.visible and panel.recent_result.text.contains("主动退出") and panel.recent_result.text.contains("已退票"),"Actual exploration section shows recent result without a new page")
  await capture("03-restored-main")
  # Interrupted current-version save/read restores the same damage and debt exception.
  check(g.start_hyperspace("alpha",5),"Safe direct entry still available for domain/controller")
@@ -139,6 +142,9 @@ func run()->void:
   g.tick(0.001)
  check(not g.manual_hyperspace.active and g.profile.hyperspace.active.get("status","")=="completed_pending" and g.hyperspace.best_x1(g,"alpha",5)>0,"Actual ten-wave victory returns and keeps earned pending reward/history")
  check(g.enemies.is_empty() and g.uid>uid_before and g.profile.cleared==cleared_before and int(g.profile.highestLevel)==front_before and frozen_health(g)==success_health,"Success restores main health/debt, keeps monotonic UID and cannot clear mainline")
+ panel.refresh_progress()
+ check(g.manual_hyperspace.last_result.reason=="success" and g.manual_hyperspace.last_result.refund==0 and panel.recent_result.text.contains("探索成功"),"Success result keeps earned pending reward and reports zero refund")
+ await capture("06-success-result")
  var receipt=g.profile.hyperspace.active.duplicate(true)
  check(g.hyperspace.claim(g,int(receipt.round_id),int(receipt.run_id)),"Actual returned victory reward can be claimed")
  var claimed=JSON.stringify(g.profile.hyperspace)
@@ -149,6 +155,11 @@ func run()->void:
  check(g.unequip_slot("defence",1) and g.equip_slot("weapons",0,"missile"),"Real shield removal and weapon replacement while away")
  check(g.manual_hyperspace.finish(g,false) and g.player.shield==0 and g.N.compare(g.player.armour,g.N.minimum(old_armour,g.stat("armour")))==0,"Return clamps frozen shield to current zero capacity without filling armour")
  check(g.enhancement_branches.weapon(g,0).next==0 and g.cooldowns[g.slot_id("weapons",0)]==float(g.player_weapon_row(g.combat_entry(0)).cd),"Changed weapon gets normal full CD and no old module's charged attacks")
+ # Actual death exit, distinguished from the native voluntary exit.
+ check(g.start_hyperspace("alpha",5),"Safe entry for failure feedback")
+ g.player.armour=0;g.begin_retreat();panel.refresh_progress()
+ check(not g.manual_hyperspace.active and g.manual_hyperspace.last_result.reason=="defeat" and panel.recent_result.text.contains("舰体耗尽"),"Defeat exit reports real cause and keeps return without production timeout")
+ await capture("07-defeat-result")
  # Auto ownership may change while a request waits. Revalidation preserves that new owner.
  g.profile.hyperspace.energy=g.hyperspace.config.energy_cap
  check(g.request_hyperspace("alpha",5),"Request before a recorded auto run takes ownership")
