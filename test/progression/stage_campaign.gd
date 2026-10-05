@@ -6,7 +6,8 @@ var configured:=false
 func run()->void:
  stage_variant=OS.get_environment("QA_STAGE_MODE")
  if stage_variant not in ["full","decision-ui","cached"]:printerr("Unknown native stage mode");quit(2);return
- OS.set_environment("QA_STAGE_SCENE","res://qa/cached_battlefield.tscn" if stage_variant=="cached" else "")
+ var cached_scene:String="res://qa/vfx_probe_battlefield.tscn" if OS.get_environment("QA_STAGE_VFX_PROBE")=="1" else "res://qa/cached_battlefield.tscn"
+ OS.set_environment("QA_STAGE_SCENE",cached_scene if stage_variant=="cached" else "")
  stage_meter=Meter.new()
  await super.run()
 func refresh_decision_ui()->void:
