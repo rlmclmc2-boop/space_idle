@@ -2,8 +2,15 @@ extends "res://qa/early_page_route.gd"
 ## Native early controls plus serial visible-page domain actions for newly integrated systems.
 const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
 var space_policy:=SpacePolicy.new()
+const Checkpoint=preload("res://qa/hyperspace_checkpoint.gd")
 const SafeFarm=preload("res://qa/hyperspace_safe_farm.gd")
 var safe_farm:=SafeFarm.new()
+var resume_lineage:Array=[]
+var carried_wall_seconds:=0.0
+var checkpoint_due:=true
+var next_checkpoint_wall:=0
+var manifest:Dictionary={}
+var initial_scope:="fresh"
 var farm_seconds:=0.0
 var options:Dictionary={}
 var snapshots:Dictionary={}
@@ -27,8 +34,18 @@ var stop_request_path:=""
 var next_stop_poll:=0
 func save_snapshot(label:String)->void:
  var path:String=output+"/save_"+label+".json"
- FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":space_policy.VERSION,"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint,"options":options,"page":page,"clears":clears,"rows":rows,"safe_farm":safe_farm.snapshot()},"\t"))
+ var saved:Dictionary={"x1_seconds":game.simulated_time,"save":game.portable_save_data(),"rng_state":str(game.rng.state),"policy":space_policy.VERSION,"code_fingerprint":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).fingerprint,"options":options,"page":page,"clears":clears,"rows":rows,"safe_farm":{"version":safe_farm.VERSION,"round":safe_farm.round_seen,"phase":safe_farm.phase,"plan":safe_farm.plan.duplicate(true),"known_wins":safe_farm.known.duplicate(true),"actual_defeats":safe_farm.failed.duplicate(true)}}
+ var error:=Checkpoint.atomic_json(path,saved)
+ if error!=OK:input_failure={"kind":"snapshot_io","error":error,"path":path}
+ checkpoint_due=true
  snapshots[label]=path
+func checkpoint_now()->void:
+ trace.flush()
+ var error:=Checkpoint.write(output+"/checkpoint.bin",Checkpoint.capture(self,manifest),manifest)
+ if error!=OK:
+  input_failure={"kind":"checkpoint_io","error":error};record("checkpoint_write_failed",input_failure)
+ else:record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
+ checkpoint_due=false;next_checkpoint_wall=Time.get_ticks_usec()+int(float(options.get("checkpoint_wall_seconds",30))*1000000)
 func observe(kind:String,payload:Dictionary)->void:
  var farm_event:Dictionary=safe_farm.observe(game,kind,payload,game.simulated_time)
  if not farm_event.is_empty():record("safe_farm_event",farm_event)
@@ -164,9 +181,27 @@ func galaxy_complete()->bool:
  var region=game.galaxy.regions.galaxy_1
  return region.slots.size()==30 and region.slots.all(func(slot):return int(slot.level)>=5)
 func run()->void:
- options={"seed":20261005,"duration":216000.0,"visit_seconds":300,"allow_reforge":true,"stop_clear":0,"wall_limit_seconds":36000.0}
+ options={"seed":20261005,"duration":216000.0,"visit_seconds":300,"allow_reforge":true,"stop_clear":0,"wall_limit_seconds":36000.0,"checkpoint_wall_seconds":30.0}
  var parsed=JSON.parse_string(OS.get_environment("HYPERSPACE_LONGRUN_OPTIONS"))
+ manifest=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))
+ var resume_path:=OS.get_environment("HYPERSPACE_RESUME_PATH")
+ var recovery:Dictionary={};var payload:Dictionary={}
+ if not resume_path.is_empty():
+  if OS.get_environment("HYPERSPACE_RESUME_LEGACY")=="1":
+   var old:Variant=JSON.parse_string(FileAccess.get_file_as_string(resume_path))
+   var old_manifest:Variant=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("HYPERSPACE_RESUME_MANIFEST")))
+   if not old is Dictionary or not old.get("save") is Dictionary or not old_manifest is Dictionary or old.get("code_fingerprint","")!=old_manifest.get("fingerprint","") or Checkpoint.continuity(old_manifest)!=Checkpoint.continuity(manifest):
+    printerr("Legacy checkpoint/manifest continuity rejected");quit(2);return
+   payload=Checkpoint.legacy_payload(old);recovery={"path":resume_path,"legacy":true}
+  else:
+   recovery=Checkpoint.read_valid(resume_path)
+   if not recovery.error.is_empty() or recovery.header.get("code_fingerprint","")!=manifest.fingerprint or recovery.header.get("continuity_fingerprint","")!=Checkpoint.continuity(manifest):
+    printerr("Checkpoint integrity/version rejected: ",recovery);quit(2);return
+   payload=recovery.payload
+  options.merge(payload.get("options",{}),true)
  if parsed is Dictionary:options.merge(parsed,true)
+ if float(options.get("checkpoint_wall_seconds",0))<=0:
+  printerr("Checkpoint interval must be positive");quit(2);return
  output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
  if output.is_empty():printerr("Isolated output required");quit(2);return
  stop_request_path=OS.get_environment("QA_STOP_REQUEST_FILE")
@@ -178,9 +213,20 @@ func run()->void:
  driver=Driver.new();driver.ui_refresh_seconds=0.0;driver.production_ui_ticks=true;driver.setup(self,game)
  player_input=PlayerInput.new();player_input.setup(driver.scene,self)
  root.size=Vector2i(1373,883);root.grab_focus();await process_frame;await process_frame
- game.event.connect(observe);game.start(1,false);save_snapshot("fresh")
  wall_started=Time.get_ticks_usec();last_wall_report=wall_started
- record("run_start",{"options":options,"source_commit":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).source_commit,"scene_provider_scope":"production before_logical_game_tick, ordinary/drone/rail/target callbacks, exact Presented fixed steps"})
+ if resume_path.is_empty():
+  game.event.connect(observe);game.start(1,false);save_snapshot("fresh")
+ else:
+  var restored:=Checkpoint.restore(self,payload)
+  if not restored.error.is_empty():printerr("Production reload rejected: ",restored);trace.close();driver.close();quit(2);return
+  game.event.connect(observe)
+  page=clampi(page,0,driver.scene.equipment_tabs.get_tab_count()-1);driver.scene.equipment_tabs.current_tab=page
+  driver.scene.refresh_navigation();driver.scene.refresh_visible_cards();await process_frame;await process_frame
+  initial_scope="legacy_checkpoint_continuation_with_missing_tool_state" if recovery.get("legacy",false) else "checkpoint_continuation_with_formal_journey_regeneration"
+  var link:Dictionary={"checkpoint":recovery.path,"source_x1":payload.x1_seconds,"origin_trace":payload.get("origin_trace","legacy parent trace"),"fallback_reason":recovery.get("fallback_reason",""),"discontinuities":restored}
+  resume_lineage.append(link);record("checkpoint_resumed",link);save_snapshot("resumed")
+ checkpoint_now()
+ record("run_start",{"initial_scope":initial_scope,"options":options,"source_commit":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")).source_commit,"scene_provider_scope":"production before_logical_game_tick, ordinary/drone/rail/target callbacks, exact Presented fixed steps"})
  while game.simulated_time<float(options.duration) and input_failure.is_empty() and not galaxy_complete():
   if int(options.stop_clear)>0 and clears.has(str(int(options.stop_clear))):break
   if float(Time.get_ticks_usec()-wall_started)/1e6>=float(options.wall_limit_seconds):break
@@ -195,6 +241,7 @@ func run()->void:
    row(before_stage)[state_key]+=STEP
   peak_projectiles=maxi(peak_projectiles,game.projectiles.size());peak_missile_queue=maxi(peak_missile_queue,game.missile_queue.size())
   var wall_now:int=Time.get_ticks_usec()
+  if checkpoint_due or wall_now>=next_checkpoint_wall:checkpoint_now()
   # Wall-clock file polling never advances logical time or changes a normal run.
   if wall_now>=next_stop_poll:
    next_stop_poll=wall_now+1000000
@@ -208,8 +255,8 @@ func run()->void:
    FileAccess.open(output+"/heartbeat.json",FileAccess.WRITE).store_string(JSON.stringify(status,"\t"));trace.flush();print("LONGRUN_HEARTBEAT ",JSON.stringify(status))
    await process_frame
   if game.simulated_time-last_state_report>=1800.0:last_state_report=game.simulated_time;save_snapshot("periodic_%d"%int(game.simulated_time))
- state_change();save_snapshot("final");trace.close()
- var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge T3 is paid planning goal, no cap."}
+ state_change();save_snapshot("final");checkpoint_now();trace.close()
+ var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","initial_scope":initial_scope,"resume_lineage":resume_lineage,"cumulative_totals_complete":not resume_lineage.any(func(link):return not link.discontinuities.get("legacy_missing_state",[]).is_empty()),"cumulative_wall_seconds":carried_wall_seconds+float(Time.get_ticks_usec()-wall_started)/1e6,"stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge T3 is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
  driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)
