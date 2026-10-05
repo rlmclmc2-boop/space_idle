@@ -325,8 +325,10 @@ func refresh_start_reason() -> void:
  elif not s.active.is_empty():reason=t("manual_busy")
  elif not h.eligible_level(g,route,int(level.value)):reason=t("manual_level_unavailable")
  elif float(s.energy)<float(h.config.ticket):reason=t("manual_energy_needed",{"ticket":"%.0f"%float(h.config.ticket)})
- put(start_button,"disabled",not reason.is_empty());put(start_button,"tooltip_text",reason)
- put(manual_reason,"visible",not reason.is_empty());put(manual_reason,"text",reason)
+ var explanation=reason
+ if reason.is_empty() and g.manual_hyperspace.queue_error=="invalid_main_return":explanation=t("queue_failed_invalid_main_return")
+ put(start_button,"disabled",not reason.is_empty());put(start_button,"tooltip_text",explanation)
+ put(manual_reason,"visible",not explanation.is_empty());put(manual_reason,"text",explanation)
 func display_ticket(s: Dictionary) -> float:
  if not s.active.is_empty():return float(s.active.ticket)
  var h=host.game.hyperspace
