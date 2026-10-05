@@ -42,12 +42,26 @@ func run()->void:
   driver.setup(self,g)
   driver.ui_refresh_seconds=1.0 if request.mode=="ui1s" else 3600.0 if request.mode in ["minimal-vfx","cached"] else 0.0
   root.size=Vector2i(1373,883);await process_frame;await process_frame
+ var resize_results:Array=[]
  var stream:=FileAccess.open(str(request.output)+"/states.jsonl",FileAccess.WRITE)
  stream.store_line(JSON.stringify({"step":0,"state":signature(g)},"",true))
  var timing:Dictionary={"before_tick_us":0,"game_tick_us":0,"after_tick_us":0,"state_log_us":0,"controller_us":0,"yield_us":0}
  var state_times:Dictionary={};var start:=Time.get_ticks_usec();var budget_start:=start
  var ticks:=roundi(float(request.seconds)*60.0)
  for tick in ticks:
+  if request.get("resize_challenge",false) and driver!=null and tick%60==0:
+   var dimensions:Vector2i=[Vector2i(960,540),Vector2i(1920,1080),Vector2i(1373,883)][(tick/60)%3]
+   var fx:float=driver.scene.fx_time;var rng_before:String=str(g.rng.state)
+   # Prime at the old scale, then keep logical time fixed across layout frames.
+   for enemy in g.enemies:driver.scene.enemy_render_position(enemy)
+   root.size=dimensions;await process_frame;await process_frame
+   var error:=0.0
+   if request.mode=="cached":
+    var retained:Array=[]
+    for enemy in g.enemies:retained.append(driver.scene.enemy_render_position(enemy))
+    driver.scene.pose_results.clear()
+    for index in g.enemies.size():error=maxf(error,retained[index].distance_to(driver.scene.enemy_render_position(g.enemies[index])))
+   resize_results.append({"step":tick,"viewport":str(dimensions),"screen_scale":driver.scene.enemy_recognition_screen_scale(),"max_position_error":error,"fx_unchanged":driver.scene.fx_time==fx,"rng_unchanged":str(g.rng.state)==rng_before})
   var label:String="combat" if g.state==g.State.COMBAT else "noncombat"
   var a:=Time.get_ticks_usec()
   if driver!=null:driver.before_tick(STEP)
@@ -69,7 +83,10 @@ func run()->void:
   if Time.get_ticks_usec()-budget_start>=24000:
    var yielding:=Time.get_ticks_usec();await process_frame;timing.yield_us+=Time.get_ticks_usec()-yielding;budget_start=Time.get_ticks_usec()
  var wall:float=float(Time.get_ticks_usec()-start)/1e6;stream.close()
- var result:Dictionary={"mode":request.mode,"scenario":request.scenario,"x1_seconds":float(ticks)*STEP,"wall_seconds":wall,"x1_per_wall":float(ticks)*STEP/wall,"ticks":ticks,"fixed_step":STEP,"timing":timing,"state_times":state_times,"input":request,"source_x1":input.x1_seconds,"final_x1":g.simulated_time,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state),"modifications":modifications,"policy":"No new player actions; existing saved crew/auto systems continue through production tick","normal_reload":"Formal journey regeneration; interrupted manual receipt handled by original production loader","headless_scope":"No scene launch/target/drone/rail providers: approximate combat; compare error before use" if request.mode=="headless" else "Original Presented game/provider before_tick fixed1/60; post-tick UI/VFX variant requires measured pairing"}
+ var resize_exact:=true
+ for sample in resize_results:
+  if sample.max_position_error>0.000001 or not sample.fx_unchanged or not sample.rng_unchanged:resize_exact=false
+ var result:Dictionary={"resize_results":resize_results,"resize_exact":resize_exact,"mode":request.mode,"scenario":request.scenario,"x1_seconds":float(ticks)*STEP,"wall_seconds":wall,"x1_per_wall":float(ticks)*STEP/wall,"ticks":ticks,"fixed_step":STEP,"timing":timing,"state_times":state_times,"input":request,"source_x1":input.x1_seconds,"final_x1":g.simulated_time,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state),"modifications":modifications,"policy":"No new player actions; existing saved crew/auto systems continue through production tick","normal_reload":"Formal journey regeneration; interrupted manual receipt handled by original production loader","headless_scope":"No scene launch/target/drone/rail providers: approximate combat; compare error before use" if request.mode=="headless" else "Original Presented game/provider before_tick fixed1/60; post-tick UI/VFX variant requires measured pairing"}
  FileAccess.open(str(request.output)+"/result.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("STAGE_PROBE ",request.mode," ",request.scenario," x1=",result.x1_seconds," wall=",wall," speed=",result.x1_per_wall)
  if driver!=null:driver.close()

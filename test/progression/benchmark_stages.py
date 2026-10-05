@@ -11,6 +11,7 @@ p.add_argument('--modes',default='full,ui1s,minimal-vfx,headless')
 p.add_argument('--scenarios',default='combat,idle-growth')
 p.add_argument('--godot',default='godot')
 p.add_argument('--timeout',type=int,default=180)
+p.add_argument('--resize-challenge',action='store_true',help='Resize at fixed logical boundaries and compare cached poses with fresh original calculation')
 a=p.parse_args();project=a.project.resolve();out=a.output.resolve()
 if out.exists():raise SystemExit('Preserve prior evidence; choose a new output')
 if a.seconds<=0 or a.seconds*60>10_000_000:raise SystemExit('Positive bounded segment required')
@@ -34,7 +35,7 @@ for scenario in a.scenarios.split(','):
  for mode in a.modes.split(','):
   if mode not in {'full','ui1s','minimal-vfx','headless','cached'}:raise SystemExit('Unknown mode')
   folder=out/(scenario+'-'+mode);folder.mkdir()
-  request={'checkpoint':str(a.checkpoint.resolve()),'format':source_format,'seconds':a.seconds,'scenario':scenario,'mode':mode,'output':str(folder),'source_manifest':str(a.source_manifest.resolve()),'source_fingerprint':old['fingerprint'],'target_fingerprint':new['fingerprint'],'data_sha256':new['files']['data/game_data.json'],'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_phase':{'highest':source.get('save',{}).get('highestLevel'),'round':source.get('save',{}).get('hyperspace',{}).get('round_id')}}
+  request={'checkpoint':str(a.checkpoint.resolve()),'format':source_format,'seconds':a.seconds,'scenario':scenario,'mode':mode,'output':str(folder),'resize_challenge':a.resize_challenge,'source_manifest':str(a.source_manifest.resolve()),'source_fingerprint':old['fingerprint'],'target_fingerprint':new['fingerprint'],'data_sha256':new['files']['data/game_data.json'],'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_phase':{'highest':source.get('save',{}).get('highestLevel'),'round':source.get('save',{}).get('hyperspace',{}).get('round_id')}}
   rp=folder/'request.json';rp.write_text(json.dumps(request,indent=2));env=os.environ.copy();env['QA_STAGE_REQUEST']=str(rp)
   for key in ['XDG_DATA_HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','APPDATA','LOCALAPPDATA']:
    f=folder/'userdata'/key;f.mkdir(parents=True);env[key]=str(f)
@@ -58,3 +59,5 @@ for scenario in a.scenarios.split(','):
   comparisons.append({'scenario':scenario,'mode':r['mode'],'samples':len(base),'exact_equal':not diffs and len(base)==len(probe),'first_mismatch':diffs[0] if diffs else None,'mismatched_samples':len(diffs),'speedup_over_full':baseline['wall_seconds']/r['wall_seconds'],'final_rng_equal':r['final_rng']==baseline['final_rng']})
 summary={'source':str(a.checkpoint),'source_manifest':old['source_commit'],'target_commit':new['source_commit'],'results':results,'comparisons':comparisons,'scope':'Fixed1/60 passive stage probes. Same formal reload/profile/RNG, no new player actions. Idle-growth deliberately freezes combat only in isolated branches. Not native-input policy or full-campaign acceptance.'}
 (out/'summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(comparisons,indent=2))
+
+if a.resize_challenge and (any(not c['exact_equal'] or not c['final_rng_equal'] for c in comparisons if c['mode']=='cached') or any(not r.get('resize_exact',False) for r in results if r['mode']=='cached')):raise SystemExit('Resize exactness failed; evidence retained')

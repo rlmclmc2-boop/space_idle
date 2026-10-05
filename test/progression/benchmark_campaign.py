@@ -22,7 +22,7 @@ continuity={'early_page_route.gd','hyperspace_player_policy.gd','hyperspace_safe
 for name,value in old['files'].items():
  if not name.startswith('qa/') or name.removeprefix('qa/') in continuity:
   if target['files'].get(name)!=value:raise SystemExit('Production/data/policy mismatch: '+name)
-if old['files'].get('qa/scene_driver.gd')!='8a509c9d77e53c892bb1799dd62e9e7c74cdd87fd19120bd8cd72982d2d45154' and not (old['fingerprint']==target['fingerprint'] and old['files'].get('qa/scene_driver.gd')==target['files'].get('qa/scene_driver.gd')):raise SystemExit('Unverified source driver version')
+if old['files'].get('qa/scene_driver.gd') not in {'8a509c9d77e53c892bb1799dd62e9e7c74cdd87fd19120bd8cd72982d2d45154','030e28a9ce8f8a6581c243500c2742efd6224ad6a994876fee2f2232e1566900'} and not (old['fingerprint']==target['fingerprint'] and old['files'].get('qa/scene_driver.gd')==target['files'].get('qa/scene_driver.gd')):raise SystemExit('Unverified source driver version')
 for name,value in target['files'].items():
  if hashlib.sha256((project/name).read_bytes()).hexdigest()!=value:raise SystemExit('Target frozen file changed: '+name)
 header_bytes,payload=a.checkpoint.read_bytes().split(b'\n',1);header=json.loads(header_bytes)

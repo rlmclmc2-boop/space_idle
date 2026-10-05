@@ -7,7 +7,7 @@ for f in a.directory.rglob('save_*.json'):
  try:
   d=json.loads(f.read_text());s=d['save']
   if d['code_fingerprint']!=manifest['fingerprint']:continue
-  rows.append({'path':str(f.resolve()),'x1':d['x1_seconds'],'round':s['hyperspace']['round_id'],'highest':s['highestLevel'],'cleared':s['cleared'],'journey':s.get('journey',{}),'active_manual':s['hyperspace']['active'].get('mode')=='manual','reforges':s['hyperspace']['inventory']['reforge_count']})
+  rows.append({'path':str(f.resolve()),'x1':d['x1_seconds'],'round':s['hyperspace']['round_id'],'highest':s['highestLevel'],'cleared':s['cleared'],'journey':s.get('journey',{}),'saved_journey_stage':s.get('journey',{}).get('stage'),'saved_journey_group':s.get('journey',{}).get('groupIndex'),'position_scope':'Saved journey only; formal reload may regenerate current battle point. Highest/filename is not actual resumed stage.','active_manual':s['hyperspace']['active'].get('mode')=='manual','reforges':s['hyperspace']['inventory']['reforge_count']})
  except (KeyError,ValueError,OSError):continue
 rows.sort(key=lambda r:r['x1']);phases={}
 for round_id in sorted({int(r['round']) for r in rows}):

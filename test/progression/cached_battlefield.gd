@@ -3,7 +3,7 @@ extends "res://scripts/battlefield.gd"
 var pose_epoch:Array=[]
 var pose_results:Dictionary={}
 func enemy_render_position(enemy:Dictionary)->Vector2:
- var epoch:Array=[fx_time,game.state,game.stage,game.group_index,str(game.profile.selectedShip)]
+ var epoch:Array=[fx_time,game.state,game.stage,game.group_index,str(game.profile.selectedShip),enemy_recognition_screen_scale()]
  if epoch!=pose_epoch:pose_epoch=epoch;pose_results.clear()
  var uid:int=int(enemy.uid)
  var old:Dictionary=pose_results.get(uid,{})

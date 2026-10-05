@@ -6,7 +6,7 @@ func _initialize()->void:
  var old:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.source_manifest));var target:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))
  if ManifestCheck.manifest_digest(old)!=old.fingerprint or ManifestCheck.manifest_digest(target)!=target.fingerprint:
   printerr("Stage manifest/known driver identity rejected");quit(2);return
- var driver_ok:bool=old.files.get("qa/scene_driver.gd","")=="8a509c9d77e53c892bb1799dd62e9e7c74cdd87fd19120bd8cd72982d2d45154" or (old.fingerprint==target.fingerprint and old.files.get("qa/scene_driver.gd","")==target.files.get("qa/scene_driver.gd",""))
+ var driver_ok:bool=old.files.get("qa/scene_driver.gd","") in ["8a509c9d77e53c892bb1799dd62e9e7c74cdd87fd19120bd8cd72982d2d45154","030e28a9ce8f8a6581c243500c2742efd6224ad6a994876fee2f2232e1566900"] or (old.fingerprint==target.fingerprint and old.files.get("qa/scene_driver.gd","")==target.files.get("qa/scene_driver.gd",""))
  if not driver_ok:printerr("Unverified stage source driver");quit(2);return
  for name in target.files:
   if FileAccess.get_sha256("res://"+str(name))!=target.files[name]:printerr("Stage frozen target changed");quit(2);return
