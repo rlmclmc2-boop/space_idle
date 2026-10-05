@@ -14,6 +14,7 @@ var choices:Dictionary={}
 var summary:Label
 var feedback:Label
 var stale:=false
+var zero_confirmation:ConfirmationDialog
 func setup(g,id:String,rewards:String)->void:
  game=g;planet_id=id;round_id=int(g.profile.hyperspace.round_id)
  var bag:Dictionary=g.profile.hyperspace.inventory
@@ -74,12 +75,36 @@ func refresh_summary()->void:
  summary.text=Text.t("planet.reforge_selection",{"selected":str(selected.size()),"capacity":str(capacity),"discarded":str(candidates.size()-selected.size())})
  feedback.text=Text.t("planet.reforge_stale") if stale else Text.t("planet.reforge_over_capacity") if selected.size()>capacity else Text.t("planet.reforge_brief")
  get_ok_button().disabled=stale or selected.size()>capacity
-func commit()->void:
+func commit(allow_zero:=false)->void:
  # Recheck the snapshot and current permission before the authoritative transaction.
  if int(game.profile.hyperspace.round_id)!=round_id or int(game.profile.hyperspace.inventory.generation)!=generation:
   stale=true;refresh_summary();return
  if selected.size()>capacity or not game.can_reforge_planet(planet_id):
   feedback.text=Text.t("planet.reforge_failed");return
+ if selected.is_empty() and not candidates.is_empty() and not allow_zero:
+  confirm_zero_retention();return
  if not game.reforge_planet(planet_id,selected.duplicate()):
   feedback.text=Text.t("planet.reforge_failed");return
  queue_free()
+
+func confirm_zero_retention()->void:
+ if is_instance_valid(zero_confirmation):return
+ zero_confirmation=ConfirmationDialog.new()
+ zero_confirmation.title=Text.t("planet.reforge_zero_title")
+ zero_confirmation.dialog_text=Text.t("planet.reforge_zero_warning",{"count":str(candidates.size())})
+ zero_confirmation.ok_button_text=Text.t("planet.reforge_zero_confirm")
+ zero_confirmation.cancel_button_text=Text.t("planet.reforge_zero_cancel")
+ zero_confirmation.min_size=Vector2i(480,190)
+ zero_confirmation.size=Vector2i(600,220)
+ zero_confirmation.dialog_hide_on_ok=false
+ preload("res://scripts/dialog_presentation.gd").dialog(zero_confirmation)
+ add_child(zero_confirmation)
+ zero_confirmation.canceled.connect(close_zero_confirmation)
+ zero_confirmation.confirmed.connect(func():close_zero_confirmation();commit(true))
+ zero_confirmation.popup_centered()
+ # Default Enter returns to the draft; deletion requires focusing/clicking its explicit action.
+ zero_confirmation.get_cancel_button().grab_focus()
+func close_zero_confirmation()->void:
+ if is_instance_valid(zero_confirmation):zero_confirmation.queue_free()
+ zero_confirmation=null
+ if is_instance_valid(get_cancel_button()):get_cancel_button().grab_focus()

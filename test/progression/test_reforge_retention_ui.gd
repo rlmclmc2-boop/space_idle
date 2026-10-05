@@ -25,6 +25,9 @@ func click(control:Control)->void:
  for down in [true,false]:
   var event=InputEventMouseButton.new();event.position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down
   event.window_id=window_id;Input.parse_input_event(event);await process_frame
+func enter_key()->void:
+ for down in [true,false]:
+  var key=InputEventKey.new();key.keycode=KEY_ENTER;key.physical_keycode=KEY_ENTER;key.pressed=down;key.window_id=root.get_window_id();Input.parse_input_event(key);await process_frame
 func capture(dialog,label:String)->void:
  var folder:String=OS.get_environment("QA_RETENTION_EVIDENCE")
  if folder.is_empty() or DisplayServer.get_name()=="headless":return
@@ -68,6 +71,12 @@ func run()->void:
  await click(dialog.get_cancel_button());await process_frame
  check(JSON.stringify(g.profile)==before and current_dialog(scene.planet_panel)==null,"Native modal cancellation is zero change")
  scene.planet_panel._confirm_reforge("1");await process_frame;dialog=current_dialog(scene.planet_panel)
+ await click(dialog.get_ok_button());await process_frame
+ check(is_instance_valid(dialog.zero_confirmation) and JSON.stringify(g.profile)==before,"Zero selection opens separate destructive confirmation without mutation")
+ check(dialog.zero_confirmation.get_cancel_button().has_focus(),"Zero confirmation defaults focus to return, not delete")
+ await capture(dialog,"00-zero-confirmation")
+ await enter_key();await process_frame
+ check(not is_instance_valid(dialog.zero_confirmation) and current_dialog(scene.planet_panel)==dialog and JSON.stringify(g.profile)==before,"Default native Enter cancels destructive layer and preserves original selection draft")
  for id in ids:await click(dialog.choices[id])
  await capture(dialog,"02-over-capacity")
  check(dialog.selected.size()==cap+2 and dialog.get_ok_button().disabled,"Native selection over current upcoming capacity disables confirm")
@@ -104,4 +113,9 @@ func run()->void:
  dialog.commit();check(JSON.stringify(g.profile)==changed,"Stale direct confirm cannot delete or seal a changed inventory")
  await click(dialog.get_cancel_button());await process_frame
  check(JSON.stringify(g.profile)==changed,"Cancel stale draft leaves the independently committed change alone")
+ scene.planet_panel._confirm_reforge("2");await process_frame;dialog=current_dialog(scene.planet_panel)
+ await click(dialog.get_ok_button());await process_frame
+ check(is_instance_valid(dialog.zero_confirmation) and JSON.stringify(g.profile)==changed,"Zero keep remains available through explicit second confirmation")
+ await click(dialog.zero_confirmation.get_ok_button());await process_frame
+ check(g.profile.hyperspace.round_id==3 and g.profile.hyperspace.inventory.drones.is_empty() and current_dialog(scene.planet_panel)==null,"Explicit native delete-all performs one actual reforge and removes all drones")
  print("REFORGE_RETENTION_UI ",checks," checks ",failures," failures");quit(1 if failures else 0)

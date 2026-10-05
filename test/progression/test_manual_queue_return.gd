@@ -19,6 +19,7 @@ func click(control:Control)->void:
 func capture(name:String)->void:
  var folder=OS.get_environment("QA_MANUAL_EVIDENCE")
  if folder.is_empty() or DisplayServer.get_name()=="headless":return
+ current_scene.refresh_draw_layers(0.0)
  await process_frame;await process_frame;await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png(folder+"/"+name+".png")
 func frozen_health(g)->Dictionary:

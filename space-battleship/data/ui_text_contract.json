@@ -1,5 +1,9 @@
 {
   "entries": {
+    "planet.reforge_zero_title": {"params": []},
+    "planet.reforge_zero_warning": {"params": ["count"]},
+    "planet.reforge_zero_confirm": {"params": []},
+    "planet.reforge_zero_cancel": {"params": []},
     "hyperspace.queue_start": {"params": []},
     "hyperspace.queue_cancel": {"params": []},
     "hyperspace.queue_already": {"params": []},
