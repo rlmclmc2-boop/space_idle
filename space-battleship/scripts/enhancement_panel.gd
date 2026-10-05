@@ -60,6 +60,7 @@ func setup(owner_node: Node) -> void:
 	header.add_child(icon)
 
 	level_label = text_label(header,"",Rect2(148,24,500,44),34)
+	level_label.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverLabel)
 	level_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	bonus_label = text_label(header,"",Rect2(148,83,500,28),21,MUTED)
 	var fragment_icon := TextureRect.new()
@@ -151,6 +152,7 @@ func create_effect_card(parent: Node, rect: Rect2, category: String, index: int)
 	threshold.hide()
 	var description := PARAMETER_TEXT.create_label(card,Rect2(20,65,568,48),20,SHELL.face(500),NAVY)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	description.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverRichText)
 	description.mouse_filter = Control.MOUSE_FILTER_PASS
 	var state := text_label(card,"",Rect2(20,132,314,32),21,MUTED)
 	var up := button(card,"enhance.move_up",Rect2(484,12,50,38),func():move_effect(category,index,-1))
