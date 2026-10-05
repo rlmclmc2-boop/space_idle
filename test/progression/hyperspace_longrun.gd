@@ -254,6 +254,7 @@ func run()->void:
   driver.scene.refresh_navigation();driver.scene.refresh_visible_cards();await process_frame;await process_frame
   initial_scope="legacy_checkpoint_continuation_with_missing_tool_state" if recovery.get("legacy",false) else "checkpoint_continuation_with_formal_journey_regeneration"
   if payload.has("qa_policy_upgrade"):initial_scope="explicit_qa_policy_upgrade_with_formal_journey_regeneration"
+  if payload.has("candidate_transition"):initial_scope="explicit_production_candidate_transition_with_formal_journey_regeneration"
   var link:Dictionary={"checkpoint":recovery.path,"source_x1":payload.x1_seconds,"origin_trace":payload.get("origin_trace","legacy parent trace"),"fallback_reason":recovery.get("fallback_reason",""),"discontinuities":restored}
   resume_lineage.append(link);record("checkpoint_resumed",link);save_snapshot("resumed")
  checkpoint_now()

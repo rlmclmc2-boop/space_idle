@@ -112,4 +112,4 @@ static func restore(run:Object,payload:Dictionary)->Dictionary:
  run.segment_state=run.game.state;run.segment_stage=run.game.stage;run.segment_start=run.game.simulated_time
  if payload.has("legacy_missing_state"):
   run.observed_weapons.assign(run.game.WEAPON_KEYS.filter(func(key):return run.game.content_unlocked("equipment",str(key))))
- return {"error":"","battle_regenerated":true,"manual_failed_by_production_reload":bool(payload.get("manual_interrupted_on_reload",false)),"gui_drafts_reset":true,"legacy_missing_state":payload.get("legacy_missing_state",[]),"qa_policy_upgrade":payload.get("qa_policy_upgrade",{})}
+ return {"error":"","battle_regenerated":true,"manual_failed_by_production_reload":bool(payload.get("manual_interrupted_on_reload",false)),"gui_drafts_reset":true,"legacy_missing_state":payload.get("legacy_missing_state",[]),"qa_policy_upgrade":payload.get("qa_policy_upgrade",{}),"candidate_transition":payload.get("candidate_transition",{})}
