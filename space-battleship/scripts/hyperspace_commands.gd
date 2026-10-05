@@ -90,6 +90,7 @@ func execute_quote() -> void:
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var result: Dictionary=h().forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
+ if str(result.error).is_empty() and result.get("applied",false):quote_label.text=t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
  panel.dirty=true;panel.refresh()
 func build_dialog(title: String) -> AcceptDialog:

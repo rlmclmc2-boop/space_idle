@@ -14431,5 +14431,6 @@
   },
   {"key": "hyperspace.queue_failed_invalid_main_return", "text": "排队已取消：当前主线状态暂时无法保存，未扣票。请继续航行后再试；若重复出现，请保存并重新载入。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
   {"key": "hyperspace.queue_failed_setup_failed", "text": "排队已取消：当前无法开始探索，未扣票。请继续航行后再试。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
-  {"key": "hyperspace.promotion_risk_hint", "text": "随机选择一个未锁定词条尝试升阶；失败仍消耗报价材料，成功只升一阶并重新随机数值。凶兆开启时，仅从最差阶级的未锁定词条中选择。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"}
+  {"key": "hyperspace.promotion_risk_hint", "text": "随机选择一个未锁定词条尝试升阶；失败仍消耗报价材料，成功只升一阶并重新随机数值。凶兆开启时，仅从最差阶级的未锁定词条中选择。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
+  {"key": "hyperspace.forge_paid_summary", "text": "本次消耗：{cost}。再次改造前请重新预览。", "params": "cost", "category": "hyperspace", "note": "已执行报价及当前实际材料余额"}
 ]
