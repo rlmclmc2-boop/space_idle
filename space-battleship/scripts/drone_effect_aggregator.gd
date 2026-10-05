@@ -3,6 +3,8 @@ extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 static func empty() -> Dictionary:
 	return {"affixes":{},"hangings":{},"legendary":{},"damage":1.0,"critical_chance":0.0,"critical_damage":1.0,"repeat_chance":0.0,"attack_speed":1.0,"defence":1.0,"armour":1.0,"shield":1.0,"chain_count":0,"weapon_damage":{"laser":1.0,"missile":1.0,"cannon":1.0,"longLaser":1.0}}
+static func affix_value(a: Dictionary,d: Dictionary,c: Dictionary) -> float:
+ return float(a.value)*(pow(1.0+float(c.amplification_rate),int(d.level)-4) if c.affixes[a.key].amplified else 1.0)
 static func project(g) -> Dictionary:
 	var result:=empty()
 	if not g.profile.has("hyperspace"):return result
@@ -12,8 +14,7 @@ static func project(g) -> Dictionary:
 		var d: Dictionary=s.inventory.drones[id]
 		var affixes: Array=d.affixes+[d.ultimate_affix] if d.ultimate else d.affixes
 		for a in affixes:
-			var row: Dictionary=c.affixes[a.key]
-			var value: float=float(a.value)*(pow(1.0+float(c.amplification_rate),int(d.level)-4) if row.amplified else 1.0)
+			var value: float=affix_value(a,d,c)
 			result.affixes[a.key]=float(result.affixes.get(a.key,0))+value
 		for key in d.hangings:
 			var progress: Dictionary=s.hanging_modules[key]

@@ -14437,5 +14437,8 @@
   {"key": "hyperspace.auto_stopped", "text": "自动探索已停止；可开始手动探索。", "params": "", "category": "hyperspace"},
   {"key": "hyperspace.auto_waiting", "text": "自动探索已启用，等待满足开始条件。", "params": "", "category": "hyperspace"},
   {"key": "hyperspace.auto_waiting_energy", "text": "自动探索已启用，等待能量充满后开始。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.auto_waiting_warehouse", "text": "自动探索已启用，等待仓库空位。", "params": "", "category": "hyperspace"}
+  {"key": "hyperspace.auto_waiting_warehouse", "text": "自动探索已启用，等待仓库空位。", "params": "", "category": "hyperspace"},
+  {"key": "hyperspace.modernize_preview", "text": "现代化：等级 {before} → {after}\n词条效果：\n{effects}", "params": "before,after,effects", "category": "hyperspace", "note": "付款前只读目标和已有词条效果预览"},
+  {"key": "hyperspace.modernize_effect", "text": "{name}：{before} → {after}", "params": "name,before,after", "category": "hyperspace"},
+  {"key": "hyperspace.modernize_no_affixes", "text": "此无人机没有词条。", "params": "", "category": "hyperspace"}
 ]

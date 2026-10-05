@@ -71,11 +71,25 @@ func cost_text(cost: Dictionary) -> String:
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:
  return t("command_error_"+error) if UIText.entries.has("hyperspace.command_error_"+error) else t("command_failed")
+func modernization_text(request_data: Dictionary) -> String:
+ var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
+ if d.is_empty():return ""
+ var target: int=int(request_data.args.get("target_level",d.level))
+ var projected: Dictionary=d.duplicate(true);projected.level=target
+ var effects: Array[String]=[]
+ for a in d.affixes+([d.ultimate_affix] if d.ultimate and not d.ultimate_affix.is_empty() else []):
+  var before: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,h().config)
+  var after: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,projected,h().config)
+  var before_text: String=t("times",{"value":str(int(before))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(before*100.0)})
+  var after_text: String=t("times",{"value":str(int(after))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(after*100.0)})
+  effects.append(t("modernize_effect",{"name":panel.affix_name(str(a.key)),"before":before_text,"after":after_text}))
+ return t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
 func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
  var result: Dictionary=h().preview_forge(game(),quoted_request)
  quote_label.text=t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})
+ if quoted_request.operation=="modernize":quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("quote_ready")
  commit_button.disabled=not str(result.error).is_empty()
 func commit() -> void:
