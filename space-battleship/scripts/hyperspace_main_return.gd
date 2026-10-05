@@ -51,7 +51,7 @@ static func binding_valid(point:Dictionary,profile:Dictionary,data:Dictionary)->
 static func journey(g)->Dictionary:
  return {"stage":g.stage,"distance":g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}
 static func capture(g)->Dictionary:
- var out={"version":VERSION,"paused":g.paused,"armour":g.player.armour,"shield":g.player.shield,"since_hit":g.since_hit,"clear_timer":g.clear_timer,"travel_origin_ready":is_finite(g.travel_origin),"travel_origin":g.travel_origin if is_finite(g.travel_origin) else 0.0,"run_resources":g.run_resources.duplicate(true),"cooldowns":{},"charged":{},"defense_losses":{},"buffers":{},"weapons":{},"defenses":{},"incoming_sources":{},"enhancement_deferred":{},"drone":{}}
+ var out={"version":VERSION,"paused":g.paused,"armour":g.player.armour,"shield":g.player.shield,"since_hit":g.since_hit,"clear_timer":maxf(0.0,g.clear_timer) if is_finite(g.clear_timer) else g.clear_timer,"travel_origin_ready":is_finite(g.travel_origin),"travel_origin":g.travel_origin if is_finite(g.travel_origin) else 0.0,"run_resources":g.run_resources.duplicate(true),"cooldowns":{},"charged":{},"defense_losses":{},"buffers":{},"weapons":{},"defenses":{},"incoming_sources":{},"enhancement_deferred":{},"drone":{}}
  for index in g.combat_weapon_entries().size():
   var entry=g.combat_entry(index);var owner=g.slot_id("weapons",index)
   if g.cooldowns.has(owner):out.cooldowns[owner]={"key":str(entry.key),"remaining":g.cooldowns[owner]}
