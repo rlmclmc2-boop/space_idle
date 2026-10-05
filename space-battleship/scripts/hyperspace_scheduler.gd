@@ -7,7 +7,7 @@ func reset() -> void:
 	pass # All elapsed work belongs to the saved profile namespace.
 
 static func charge(s: Dictionary,c: Dictionary,dt: float) -> void:
-	if float(s.energy)<float(c.energy_cap):s.energy=minf(float(c.energy_cap),float(s.energy)+float(c.energy_rate)*dt)
+	s.energy=minf(float(c.energy_cap),float(s.energy)+float(c.energy_rate)*dt)
 
 func advance(owner,g,dt: float) -> void:
 	var c: Dictionary=owner.config
