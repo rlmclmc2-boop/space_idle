@@ -1444,7 +1444,10 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Explicit coordinates deliberately reserve the same authored battlefield
 	# depth budget; this does not claim or require five columns.
 	if enemy.get("explicit_formation",false):max_y=maxf(float(battle_visual.enemy_max_y),0.52)
-	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*float(battle_visual.enemy_player_min_gap)-enemy_half_height)
+	var min_gap:=float(battle_visual.enemy_player_min_gap)
+	if enemy.get("explicit_formation",false):
+		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
+	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
