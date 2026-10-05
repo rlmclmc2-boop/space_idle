@@ -22,6 +22,17 @@ func signature(g)->Dictionary:
  var result:Dictionary={"profile":p,"rng":str(g.rng.state),"galaxies":g.galaxy.save_data(),"branch_weapons":g.enhancement_branches.weapons,"branch_defenses":g.enhancement_branches.defenses,"branch_sources":g.enhancement_branches.incoming_sources}
  for key in ["stage","group_index","state","distance","player","enemies","projectiles","missile_queue","cooldowns","drops","motion_clock","pending_unlocks","since_hit","clear_timer","guard_elapsed","guard_index","guard_engaged","guard_arrived","retreat_from","retreat_target","retreat_elapsed","retreat_boss_pending","run_resources","uid","projectile_serial","main_attack_serial","attack_instance_serial","auto_gen_elapsed","resource_prune_elapsed","jewel_repeats","jewel_defence_times","jewel_defence_damage","jewel_charged","enhancement_attack_contexts","enhancement_buffers","enhancement_buffer_owners","enhancement_memory_elapsed","enhancement_defense_time","enhancement_deferred_elapsed","enhancement_deferred_tick","enhancement_deferred","enemy_shield_time","enemy_shield_hit_time"]:result[key]=g.get(key)
  return clean(result)
+var outcome:Dictionary={"outgoing_hit_damage":0.0,"incoming_hit_damage":0.0,"outgoing_hits":0,"incoming_hits":0,"enemy_kills":0,"wave_clears":0,"defeats":0}
+var dead_uids:Dictionary={}
+func observe_outcome(kind:String,info:Dictionary)->void:
+ if kind=="hit":
+  var side:String="incoming" if info.get("player",false) else "outgoing"
+  outcome[side+"_hit_damage"]=N.add(outcome[side+"_hit_damage"],info.get("amount",0))
+  outcome[side+"_hits"]+=1
+ elif kind=="explode" and info.has("uid") and not dead_uids.has(str(info.uid)):
+  dead_uids[str(info.uid)]=true;outcome.enemy_kills+=1
+ elif kind=="wave_clear":outcome.wave_clears+=1
+ elif kind=="state" and int(info.get("state",-1))==BattleGame.State.DEFEAT:outcome.defeats+=1
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var request:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("QA_STAGE_REQUEST")))
@@ -31,6 +42,9 @@ func run()->void:
  if not g.load_hyperspace_routes():printerr("Route loader rejected");quit(2);return
  g.load_progress_data(raw);g.profile.chronoParticles=float(raw.get("chronoParticles",0));g.login_chrono_particles=0
  g.resume_progress();g.rng.state=int(str(input.rng_state))
+ var initial_resources:Dictionary=g.profile.resources.duplicate(true)
+ var initial_cleared:Array=g.profile.cleared.duplicate()
+ g.event.connect(observe_outcome)
  var modifications:Array=[]
  if request.scenario=="idle-growth":
   g.enemies.clear();g.projectiles.clear();g.missile_queue.clear();g.cooldowns.clear();g.state=g.State.LEVEL_SELECT
@@ -86,7 +100,16 @@ func run()->void:
  var resize_exact:=true
  for sample in resize_results:
   if sample.max_position_error>0.000001 or not sample.fx_unchanged or not sample.rng_unchanged:resize_exact=false
- var result:Dictionary={"resize_results":resize_results,"resize_exact":resize_exact,"mode":request.mode,"scenario":request.scenario,"x1_seconds":float(ticks)*STEP,"wall_seconds":wall,"x1_per_wall":float(ticks)*STEP/wall,"ticks":ticks,"fixed_step":STEP,"timing":timing,"state_times":state_times,"input":request,"source_x1":input.x1_seconds,"final_x1":g.simulated_time,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state),"modifications":modifications,"policy":"No new player actions; existing saved crew/auto systems continue through production tick","normal_reload":"Formal journey regeneration; interrupted manual receipt handled by original production loader","headless_scope":"No scene launch/target/drone/rail providers: approximate combat; compare error before use" if request.mode=="headless" else "Original Presented game/provider before_tick fixed1/60; post-tick UI/VFX variant requires measured pairing"}
+ var income:Dictionary={}
+ for resource in g.profile.resources:
+  var current=g.profile.resources[resource];var initial=initial_resources.get(resource,0)
+  var sign:int=N.compare(current,initial)
+  income[resource]={"direction":sign,"amount":N.subtract(current,initial) if sign>=0 else N.subtract(initial,current)}
+ outcome.net_resource_change=income;outcome.pending_drops=clean(g.drops);outcome.run_resources=clean(g.run_resources)
+ outcome.new_cleared=g.profile.cleared.filter(func(stage):return not initial_cleared.has(stage))
+ outcome.final_stage=g.stage;outcome.final_group=g.group_index;outcome.final_state=g.state
+ outcome.final_player=clean(g.player);outcome.final_enemies=clean(g.enemies)
+ var result:Dictionary={"outcome":clean(outcome),"outcome_scope":"Recorded hit amounts include shield absorption/overkill, not capped health loss. Net resources include existing production; pending drops and run income reported separately. Kills from unique explode uid, clears from production cleared list.","resize_results":resize_results,"resize_exact":resize_exact,"mode":request.mode,"scenario":request.scenario,"x1_seconds":float(ticks)*STEP,"wall_seconds":wall,"x1_per_wall":float(ticks)*STEP/wall,"ticks":ticks,"fixed_step":STEP,"timing":timing,"state_times":state_times,"input":request,"source_x1":input.x1_seconds,"final_x1":g.simulated_time,"final_stage":g.stage,"final_group":g.group_index,"final_rng":str(g.rng.state),"modifications":modifications,"policy":"No new player actions; existing saved crew/auto systems continue through production tick","normal_reload":"Formal journey regeneration; interrupted manual receipt handled by original production loader","headless_scope":"No scene launch/target/drone/rail providers: approximate combat; compare error before use" if request.mode=="headless" else "Original Presented game/provider before_tick fixed1/60; post-tick UI/VFX variant requires measured pairing"}
  FileAccess.open(str(request.output)+"/result.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("STAGE_PROBE ",request.mode," ",request.scenario," x1=",result.x1_seconds," wall=",wall," speed=",result.x1_per_wall)
  if driver!=null:driver.close()

@@ -7,3 +7,7 @@
 `benchmark_stages.py --resize-challenge --scenarios combat --modes full,cached --seconds 4` 在每个整数X1秒边界切换960×540、1920×1080、1373×883，并保持布局更新期间逻辑时刻和RNG不变。cached坐标与清缓存后的原函数重算比较；连续固定步状态也进行配对。不替代晚期原生玩家操作覆盖。缓存epoch包含原函数使用的有效屏幕比例。
 
 阶段目录分别展示cleared、highest与保存journey的stage/group；保存位置不等同正式恢复后的实际战点。首次输出状态是该次实际恢复位置的证据，不能按save_reachN命名推断正在第N关战斗。
+
+可见强化页：cached继续按X1每1秒刷新生产指标，原生决策前额外刷新可见强化面板。放弃仅“游戏状态相等”推断展示全等；`enhancement_native_probe.gd` 留存实际导航、升级意图、可用性、逐秒指标与战斗状态供配对。夹具能源/碎片不足的拒绝意图不能当作成功购买覆盖。
+
+近似粗筛：`benchmark_stages.py` 默认参考为full、否则cached、否则首模式，可用`--baseline-mode`明确指定；单模式输出unpaired，无比较不等于通过。配对报告除字段差异外，还记录逐样本敌HP/盾及我方甲/盾误差、命中事件总伤害/次数、唯一击杀、战点结束、败退、资源净增减、待领取掉落及新通关列表。命中伤害含吸收和过量，不能解释为截断后的有效HP损失；资源包含生产，应连同run_resources和pending_drops评估。零参考相对误差为undefined，保留绝对误差。无场景按已校准机体、武器、区段与误差包络选择，只可粗筛，临界胜负/耗时必须回精确模式。
