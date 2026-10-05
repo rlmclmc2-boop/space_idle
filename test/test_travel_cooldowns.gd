@@ -36,8 +36,9 @@ func _initialize() -> void:
 	assert(is_equal_approx(g.cooldowns.weapons_0,float(db.equip("laser",1).cd)),"Starting a stage resets full interval")
 	for key in ["laser","cannon","missile"]:
 		var probe := BattleGame.new(db,false)
-		probe.profile.unlocked = [key]
+		probe.profile.unlocked = [key,"armour"]
 		probe.profile.loadout = probe.empty_loadout(probe.profile.selectedShip)
+		assert(probe.equip_slot("defence",0,"armour"),"Cooldown probe requires a live armoured ship")
 		probe.equip_slot("weapons",0,key)
 		probe.start(1,false)
 		var cd := float(db.equip(key,1).cd)
