@@ -1,10 +1,84 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v7-initial-visible-majority-stable-plan"
+const VERSION="hyperspace-player-v8-earned-retry-safe-boundary-budget"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
 var manual_failures:Dictionary={}
+var manual_pending:Dictionary={}
+var manual_watch:Dictionary={}
+var last_manual_boundary:=""
+const MANUAL_CHECK_SECONDS:=300.0
+const MANUAL_STALL_SECONDS:=600.0
+const MANUAL_BUDGET_SECONDS:=900.0
+func manual_key(g,route:String,level:int)->String:
+ return str([g.profile.hyperspace.round_id,route,level])
+static func manual_growth(profile:Dictionary)->Dictionary:
+ var levels:Dictionary={}
+ for category in ["weapons","defence"]:
+  for index in profile.loadout[category].size():levels[str([category,index])]=int(profile.loadout[category][index].level)
+ return {"levels":levels,"scientists":int(profile.scientists),"reactorLevel":int(profile.reactorLevel),"enhancementLevel":int(profile.enhancementLevel)}
+static func earned_manual_growth(before:Dictionary,after:Dictionary)->bool:
+ for key in before.get("levels",{}):
+  if int(after.get("levels",{}).get(key,0))>=int(before.levels[key])+5:return true
+ for key in ["scientists","reactorLevel","enhancementLevel"]:
+  if int(after.get(key,0))>int(before.get(key,0)):return true
+ return false
+func manual_retry_allowed(g,route:String,level:int,now:float)->bool:
+ var key:String=manual_key(g,route,level)
+ if now-float(last_attempt.get(key,-1000.0))<900.0:return false
+ return not manual_failures.has(key) or earned_manual_growth(manual_failures[key].growth,manual_growth(g.profile))
+func main_boundary(g)->String:
+ return str([g.profile.hyperspace.round_id,g.stage,g.group_index])
+func safe_main_boundary(g)->bool:
+ if g.manual_hyperspace.active or g.profile.loop or not g.pending_unlocks.is_empty():return false
+ if g.state not in [g.State.TRAVEL,g.State.LEVEL_CLEAR] or g.group_index<=0:return false
+ for enemy in g.enemies:
+  if g.N.compare(enemy.hp,0)>0:return false
+ return main_boundary(g)!=last_manual_boundary
+func pending_manual_action(g,now:float)->Dictionary:
+ if manual_pending.is_empty() or not safe_main_boundary(g) or not g.profile.hyperspace.active.is_empty():return {}
+ var choice:Dictionary=manual_pending
+ if int(choice.round)!=int(g.profile.hyperspace.round_id) or int(choice.frontier)!=int(g.profile.highestLevel):
+  manual_pending={};return {}
+ if not manual_retry_allowed(g,str(choice.route),int(choice.level),now):return {}
+ if not g.manual_hyperspace.production_accepted or not g.hyperspace.eligible_level(g,str(choice.route),int(choice.level)) or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):return {}
+ return choice.duplicate(true)
+func manual_started(g,route:String,level:int,now:float)->void:
+ manual_pending={}
+ manual_watch={"key":manual_key(g,route,level),"route":route,"level":level,"start":now,"next_check":now+MANUAL_CHECK_SECONDS,"last_progress":now,"group":-1,"bars":{},"exit_reason":""}
+func manual_finished(g,success:bool,now:float)->Dictionary:
+ if manual_watch.is_empty():return {}
+ var result:Dictionary={"key":manual_watch.key,"success":success,"seconds":now-float(manual_watch.start),"exit_reason":manual_watch.exit_reason}
+ if not success:manual_failures[str(manual_watch.key)]={"growth":manual_growth(g.profile),"failed_at":now,"reason":manual_watch.exit_reason}
+ else:manual_failures.erase(str(manual_watch.key))
+ manual_watch={};return result
+# Bars come only from actors actually drawn in the clipped viewport.
+func manual_visible_bars(g,scene)->Dictionary:
+ var bars:Dictionary={}
+ for enemy in g.enemies:
+  if g.N.compare(enemy.hp,0)<=0:continue
+  var point:Vector2=scene.enemy_render_position(enemy)
+  if not Rect2(Vector2.ZERO,scene.battle_clip.size).has_point(point):continue
+  if not scene.get_viewport().get_visible_rect().has_point(scene.battle_clip.get_global_transform_with_canvas()*point):continue
+  bars[str(enemy.uid)]={"hp":clampf(float(enemy.hp)/maxf(1.0,float(enemy.max_hp)),0,1),"shield":clampf(float(enemy.get("shield",0))/maxf(1.0,float(enemy.get("max_shield",0))),0,1)}
+ return bars
+func check_manual_budget(g,bars:Dictionary,now:float)->Dictionary:
+ if not g.manual_hyperspace.active or manual_watch.is_empty() or now<float(manual_watch.next_check):return {}
+ manual_watch.next_check=now+MANUAL_CHECK_SECONDS
+ var progressed:bool=int(g.group_index)>int(manual_watch.group)
+ for uid in bars:
+  if manual_watch.bars.has(uid):
+   for layer in ["hp","shield"]:
+    if float(manual_watch.bars[uid][layer])-float(bars[uid][layer])>=0.01:progressed=true
+ if progressed:manual_watch.last_progress=now
+ manual_watch.group=g.group_index
+ if progressed or manual_watch.bars.is_empty():manual_watch.bars=bars.duplicate(true)
+ var elapsed:float=now-float(manual_watch.start)
+ if elapsed>=MANUAL_BUDGET_SECONDS:manual_watch.exit_reason="900 X1 seconds manual budget reached; return to main"
+ elif not bars.is_empty() and now-float(manual_watch.last_progress)>=MANUAL_STALL_SECONDS:manual_watch.exit_reason="Visible bars/wave made no material progress for 600 X1 seconds"
+ return {"elapsed":elapsed,"visible_bars":bars,"group":g.group_index,"last_progress":manual_watch.last_progress,"exit_reason":manual_watch.exit_reason}
+
 var forge_at:Dictionary={}
 var reserved_crew:=""
 var last_reforge:=0
@@ -254,8 +328,10 @@ func space_action(g,now:float)->Dictionary:
   var target:int=int(h.config.minimum_level) if best_level==0 else int(g.profile.highestLevel)
   if best_level>0 and target<best_level+5 and not (target==60 and best_level<60):continue
   var key:String=str([s.round_id,route,target])
-  if now-float(last_attempt.get(key,-1000.0))<900.0:continue
-  if g.manual_hyperspace.production_accepted and float(s.energy)>=float(h.config.ticket):return {"domain":true,"kind":"space_manual","route":route,"level":target,"reason":"First earned record" if best_level==0 else "Frontier advanced five stages; no future enemy inspection"}
+  if not manual_retry_allowed(g,str(route),target,now):continue
+  if g.manual_hyperspace.production_accepted and float(s.energy)>=float(h.config.ticket):
+   manual_pending={"domain":true,"kind":"space_manual","route":route,"level":target,"round":int(s.round_id),"frontier":int(g.profile.highestLevel),"reason":"Earned retry eligibility; dispatch only after main battle point ends"}
+   return pending_manual_action(g,now)
  var best_route:="";var best_level:=0
  for route in ordered:
   for level in s.history.get(route,{}):
@@ -310,6 +386,8 @@ func galaxy_action(g)->Dictionary:
 func execute(g,choice:Dictionary,now:float)->bool:
  match choice.kind:
   "space_manual":
+   if pending_manual_action(g,now).is_empty():return false
+   last_manual_boundary=main_boundary(g)
    if g.profile.hyperspace.auto.enabled:g.hyperspace.set_auto(g,false,"",0,"")
    last_attempt[str([g.profile.hyperspace.round_id,choice.route,choice.level])]=now
    return g.start_hyperspace(choice.route,int(choice.level))

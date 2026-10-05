@@ -63,7 +63,15 @@ if a.options:
 commands=[('import',[a.godot,'--headless','--editor','--path',str(project),'--import','--quit']),('run',[a.godot,'--headless','--path',str(project),'--script',a.entry])]
 for label,cmd in commands[1:] if a.skip_import else commands:
  log=result/(label+'.log')
+ # Godot may remove obsolete importer options from tracked .import inputs.
+ # Retain the frozen input bytes after importing into the isolated engine cache.
+ import_inputs={name:(project/name).read_bytes() for name in manifest['files'] if name.endswith('.import')} if label=='import' else {}
  with log.open('w') as f:r=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT,timeout=a.timeout)
+ restored=[]
+ for name,original in import_inputs.items():
+  if (project/name).read_bytes()!=original:
+   (project/name).write_bytes(original);restored.append(name)
+ if restored:(result/'import-metadata-restored.json').write_text(json.dumps(restored,indent=2))
  text=log.read_text(errors='replace')
  if r.returncode or 'SCRIPT ERROR:' in text or 'Parse Error:' in text:raise SystemExit('Diagnostic failed; inspect '+str(log))
  if label=='import':(project/'.qa-import-complete.json').write_text(json.dumps({'project':str(project),'manifest_fingerprint':json.loads((project/'qa-manifest.json').read_text())['fingerprint']}))

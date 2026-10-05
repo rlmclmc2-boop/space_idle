@@ -3,7 +3,7 @@ extends RefCounted
 const FORMAT=1
 const QA_CONTINUITY=["early_page_route.gd","hyperspace_player_policy.gd","hyperspace_safe_farm.gd","player_input.gd","scene_driver.gd","presented_balance_game.gd"]
 const CONTROLLER=["next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
-const POLICY=["last_attempt","manual_failures","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew"]
+const POLICY=["last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew"]
 const FARM=["round_seen","known","failed","attempted_stage","phase","plan"]
 
 static func digest(bytes:PackedByteArray)->String:
@@ -104,9 +104,12 @@ static func restore(run:Object,payload:Dictionary)->Dictionary:
  # A manual started receipt is failed/refunded by the production loader.
  # It is an interrupted operation, not an observed new combat result.
  run.active_space_record={}
+ if bool(payload.get("manual_interrupted_on_reload",false)) and not run.space_policy.manual_watch.is_empty():
+  run.space_policy.manual_watch.exit_reason="Interrupted by formal production checkpoint reload"
+  run.space_policy.manual_finished(run.game,false,run.game.simulated_time)
  if int(payload.controller.get("segment_state",-1))>=0:
   run.segments.append({"stage":int(payload.controller.segment_stage),"state":int(payload.controller.segment_state),"seconds":run.game.simulated_time-float(payload.controller.segment_start),"end":"checkpoint_reload"})
  run.segment_state=run.game.state;run.segment_stage=run.game.stage;run.segment_start=run.game.simulated_time
  if payload.has("legacy_missing_state"):
   run.observed_weapons.assign(run.game.WEAPON_KEYS.filter(func(key):return run.game.content_unlocked("equipment",str(key))))
- return {"error":"","battle_regenerated":true,"manual_failed_by_production_reload":bool(payload.get("manual_interrupted_on_reload",false)),"gui_drafts_reset":true,"legacy_missing_state":payload.get("legacy_missing_state",[])}
+ return {"error":"","battle_regenerated":true,"manual_failed_by_production_reload":bool(payload.get("manual_interrupted_on_reload",false)),"gui_drafts_reset":true,"legacy_missing_state":payload.get("legacy_missing_state",[]),"qa_policy_upgrade":payload.get("qa_policy_upgrade",{})}

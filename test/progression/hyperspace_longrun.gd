@@ -63,8 +63,13 @@ func observe(kind:String,payload:Dictionary)->void:
    round_clears[round_key][str(game.stage)]=game.simulated_time
    record("round_first_clear",{"round":int(game.profile.hyperspace.round_id),"stage":game.stage,"x1_seconds":game.simulated_time})
  if kind=="hyperspace_manual":
-  if bool(payload.active):active_space_record={"route":payload.route,"level":payload.level,"start":game.simulated_time,"loadout":game.profile.loadout.duplicate(true),"equipped":game.profile.hyperspace.inventory.equipped.duplicate(),"source_count":game.combat_weapon_entries().size()}
-  elif not active_space_record.is_empty():
+  if bool(payload.active):
+   space_policy.manual_started(game,str(payload.route),int(payload.level),game.simulated_time)
+   active_space_record={"route":payload.route,"level":payload.level,"start":game.simulated_time,"loadout":game.profile.loadout.duplicate(true),"equipped":game.profile.hyperspace.inventory.equipped.duplicate(),"source_count":game.combat_weapon_entries().size()}
+  else:
+   var manual_feedback:=space_policy.manual_finished(game,bool(payload.success),game.simulated_time)
+   if not manual_feedback.is_empty():record("manual_retry_feedback",manual_feedback)
+  if not bool(payload.active) and not active_space_record.is_empty():
    active_space_record.end=game.simulated_time;active_space_record.success=payload.success;active_space_record.seconds=game.simulated_time-float(active_space_record.start)
    space_runs.append(active_space_record.duplicate(true));record("space_actual_result",active_space_record);active_space_record={};save_snapshot("space_%d"%space_runs.size())
  if kind=="planet_reforged":
@@ -116,6 +121,12 @@ func preferred_defence(index:int)->String:
  return str(space_policy.wanted_defences[index]) if index<space_policy.wanted_defences.size() else super.preferred_defence(index)
 func action()->Dictionary:
  if not pending_picker.is_empty() or not player_input.modal_windows().is_empty() or not game.pending_unlocks.is_empty():return super.action()
+ if page==9:
+  if not space_policy.manual_watch.is_empty() and not str(space_policy.manual_watch.exit_reason).is_empty() and game.manual_hyperspace.active:
+   return control_action("space_exit_budget",driver.scene.hyperspace_panel.exit_button,{"reason":space_policy.manual_watch.exit_reason})
+  if safe_farm.phase=="idle":
+   var pending:Dictionary=space_policy.pending_manual_action(game,game.simulated_time)
+   if not pending.is_empty():return pending
  var farm_event:Dictionary=safe_farm.consider(game,game.simulated_time)
  if not farm_event.is_empty():record("safe_farm_event",farm_event)
  var farm_command:Dictionary=safe_farm.next_command(game)
@@ -128,7 +139,9 @@ func action()->Dictionary:
  var feedback:Dictionary=space_policy.observe_visible(game,driver.scene,observed_weapons,game.simulated_time)
  if not feedback.is_empty():record("visible_loadout_decision",feedback)
  if page==9:
+  var queued_before:Dictionary=space_policy.manual_pending.duplicate(true)
   var choice:Dictionary=space_policy.space_action(game,game.simulated_time)
+  if queued_before!=space_policy.manual_pending and not space_policy.manual_pending.is_empty():record("manual_request_queued",space_policy.manual_pending)
   if not choice.is_empty():return choice
  elif page==6:
   var choice:Dictionary=space_policy.planet_action(game)
@@ -148,6 +161,8 @@ func click_button(choice:Dictionary)->void:
  if not bool(choice.get("domain",false)):
   var rejected_before:int=rejected_inputs
   await super.click_button(choice)
+  if choice.kind=="space_exit_budget" and game.manual_hyperspace.active:
+   input_failure={"kind":choice.kind,"reason":"Native exit input did not end the manual session"};record("input_failure_stop",input_failure)
   if input_failure.is_empty() and rejected_inputs==rejected_before:
    var effect:Dictionary=safe_farm.native_completed(game,choice,game.simulated_time)
    if effect.has("error"):
@@ -174,6 +189,15 @@ func check_page()->void:
  if game.profile.cleared.has(10) and next_tour!=before:
   next_tour=tour_started+float(options.get("visit_seconds",300))
 func step_controller()->void:
+ if game.manual_hyperspace.active and not space_policy.manual_watch.is_empty() and game.simulated_time>=float(space_policy.manual_watch.next_check):
+  var feedback:=space_policy.check_manual_budget(game,space_policy.manual_visible_bars(game,driver.scene),game.simulated_time)
+  if not feedback.is_empty():record("manual_visible_budget_check",feedback)
+ var exit_due:bool=game.manual_hyperspace.active and not space_policy.manual_watch.is_empty() and not str(space_policy.manual_watch.exit_reason).is_empty()
+ var start_due:bool=safe_farm.phase=="idle" and not space_policy.pending_manual_action(game,game.simulated_time).is_empty()
+ if ((exit_due and (page!=9 or not busy)) or (start_due and not busy)) and pending_picker.is_empty() and player_input.modal_windows().is_empty() and game.pending_unlocks.is_empty():
+  await visit_page(9)
+  busy=true;burst_start=game.simulated_time;next_button=game.simulated_time+BUTTON_TIME
+  record("manual_boundary_dispatch" if start_due else "manual_exit_dispatch",{"boundary":space_policy.main_boundary(game),"reason":"One visible page action after 0.3 X1 seconds; revalidate at execution"})
  await super.step_controller()
  if game.profile.cleared.has(10) and not busy and not touring:next_check=maxf(next_check,game.simulated_time+float(options.get("visit_seconds",300)))
 func galaxy_complete()->bool:
@@ -223,6 +247,7 @@ func run()->void:
   page=clampi(page,0,driver.scene.equipment_tabs.get_tab_count()-1);driver.scene.equipment_tabs.current_tab=page
   driver.scene.refresh_navigation();driver.scene.refresh_visible_cards();await process_frame;await process_frame
   initial_scope="legacy_checkpoint_continuation_with_missing_tool_state" if recovery.get("legacy",false) else "checkpoint_continuation_with_formal_journey_regeneration"
+  if payload.has("qa_policy_upgrade"):initial_scope="explicit_qa_policy_upgrade_with_formal_journey_regeneration"
   var link:Dictionary={"checkpoint":recovery.path,"source_x1":payload.x1_seconds,"origin_trace":payload.get("origin_trace","legacy parent trace"),"fallback_reason":recovery.get("fallback_reason",""),"discontinuities":restored}
   resume_lineage.append(link);record("checkpoint_resumed",link);save_snapshot("resumed")
  checkpoint_now()
