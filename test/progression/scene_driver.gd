@@ -31,13 +31,13 @@ func before_tick(dt:float):
 	scene.before_logical_game_tick(dt)
 	scene.clock+=dt;scene.wave_hint=maxf(0,scene.wave_hint-dt)
 func after_tick(dt:float):
- if drop_post_vfx:
-  for key in ["particles","floats","pickup_effects","beam_visuals","projectile_visuals","destruction_events","missile_events","rail_events","enemy_impacts","pulse_events"]:scene.get(key).clear()
-  scene.damage_pending.clear()
-  if production_ui_ticks:
-   scene.hightech_page.set_process(false);scene.hightech_page._process(dt)
-   if is_instance_valid(scene.enhancement_panel):scene.enhancement_panel.metrics_timer.stop()
-  return
+	if drop_post_vfx:
+		for key in ["particles","floats","pickup_effects","beam_visuals","projectile_visuals","destruction_events","missile_events","rail_events","enemy_impacts","pulse_events"]:scene.get(key).clear()
+		scene.damage_pending.clear()
+		if production_ui_ticks:
+			scene.hightech_page.set_process(false);scene.hightech_page._process(dt)
+			if is_instance_valid(scene.enhancement_panel):scene.enhancement_panel.metrics_timer.stop()
+		return
 	# Retain the full production event handler. Mirror its bounded VFX cleanup;
 	# none of these containers own game projectiles or enemy health.
 	scene.sync_beam_visuals();scene.advance_projectile_visuals(dt)
