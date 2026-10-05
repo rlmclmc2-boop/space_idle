@@ -357,7 +357,7 @@ func refresh_progress() -> void:
    fill=100.0*float(a.work)/maxf(0.001,float(a.duration));text=t("progress",{"work":"%.1f"%float(a.work),"duration":"%.1f"%float(a.duration)})
   else:text=t("manual")
   if not session.queue_error.is_empty():text+="\n"+(t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload","invalid_main_return","setup_failed"] else t("command_failed"))
- put(status,"text",text);put(status,"modulate",Color("ff7979") if s.blocked or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
+ put(status,"text",text);put(status,"modulate",Color("ff7979") if (s.blocked and s.auto.enabled) or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
  put(exit_button,"visible",host.game.manual_hyperspace.active)
  refresh_start_reason()

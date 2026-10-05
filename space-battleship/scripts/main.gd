@@ -2060,7 +2060,7 @@ func refresh_hyperspace_badge() -> void:
 	if system_nav_buttons.size()<=9:return
 	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
 	var s:Dictionary=game.profile.hyperspace
-	if is_instance_valid(dot):set_ui_value(dot,"visible",bool(s.blocked) or s.active.get("status","")=="completed_pending")
+	if is_instance_valid(dot):set_ui_value(dot,"visible",(bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
 
 func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
