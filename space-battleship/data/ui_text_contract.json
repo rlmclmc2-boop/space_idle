@@ -1,5 +1,8 @@
 {
   "entries": {
+    "hyperspace.queue_failed_invalid_main_return": {"params": []},
+    "hyperspace.queue_failed_setup_failed": {"params": []},
+    "hyperspace.promotion_risk_hint": {"params": []},
     "crew.hyperspace_reserved_short": {"params": []},
     "crew.hyperspace_reserved": {"params": []},
     "crew.hyperspace_busy_reason": {"params": []},

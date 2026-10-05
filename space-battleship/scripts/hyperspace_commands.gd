@@ -8,6 +8,7 @@ var maximum: CheckBox
 var quote_label: Label
 var commit_button: Button
 var feedback: Label
+var promotion_hint: Label
 var quoted_request: Dictionary={}
 var crew_dialog: AcceptDialog
 var crew_choice: OptionButton
@@ -32,13 +33,15 @@ func build_forge(parent: Node) -> void:
  guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum);panel.checkbox_skin(maximum)
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
+ promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  quote_label=panel.label(parent,t("quote_first"),21);feedback=panel.label(parent,"",21)
  configure_operation()
 func invalidate() -> void:
- quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first")
+ quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first");feedback.text=""
 func configure_operation() -> void:
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
+ promotion_hint.visible=op=="promote_affix"
  var d: Dictionary=panel.bag.get("drones",{}).get(panel.selected_id,{})
  if d.is_empty():return
  var keys: Array=h().config.affixes.keys() if op=="replace_affix" else game().profile.hyperspace.legendary_collection
@@ -86,7 +89,7 @@ func execute_quote() -> void:
  if quoted_request.is_empty():return
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var result: Dictionary=h().forge(game(),quoted_request)
- commit_button.disabled=true;quoted_request={}
+ commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
  panel.dirty=true;panel.refresh()
 func build_dialog(title: String) -> AcceptDialog:
