@@ -1,8 +1,5 @@
 extends "res://qa/hyperspace_longrun.gd"
 const Policy=preload("res://qa/hyperspace_player_policy.gd")
-const Game=preload("res://qa/presented_balance_game.gd")
-const Driver=preload("res://qa/scene_driver.gd")
-const PlayerInput=preload("res://qa/player_input.gd")
 var test_checks:=0
 var test_failures:=0
 func check(ok:bool,label:String)->void:
