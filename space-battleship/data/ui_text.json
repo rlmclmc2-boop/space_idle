@@ -14404,6 +14404,7 @@
   {"key": "hyperspace.result_failed", "text": "探索结束", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_defeat", "text": "舰体耗尽，探索失败", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_user_exit", "text": "主动退出", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.result_formation_invalid", "text": "敌舰布局异常，探索已结束并退回实际可容纳的能量", "params": "", "category": "hyperspace", "note": "显示布局校验拒绝后的事务失败结果"},
   {"key": "hyperspace.result_setup_failed", "text": "探索未能正常启动", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {
     "key": "crew.hyperspace_reserved_short",

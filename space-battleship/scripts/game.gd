@@ -1994,7 +1994,8 @@ func spawn_group(keep_distance := false) -> void:
 	var placement:Dictionary = manual_hyperspace.positions(self,slots,explicit) if manual_hyperspace.active else preload("res://scripts/enemy_formation.gd").positions(slots,db.enemies,explicit)
 	if explicit!=null and placement.is_empty():
 		push_error("Encounter rejected: invalid formation_positions")
-		change_state(State.RETREAT)
+		if not manual_hyperspace.reject_formation(self,["invalid formation_positions"]):
+			change_state(State.RETREAT)
 		return
 	var formation_columns := 0 if explicit!=null else 5
 	for slot in range(slots.size()):

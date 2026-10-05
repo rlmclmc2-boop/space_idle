@@ -733,7 +733,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 				var formation_errors:=validate_explicit_formation()
 				if not formation_errors.is_empty():
 					push_error("Explicit formation rejected: "+str(formation_errors))
-					game.change_state(BattleGame.State.RETREAT)
+					if not game.manual_hyperspace.reject_formation(game,formation_errors):
+						game.change_state(BattleGame.State.RETREAT)
 					return
 			wave_hint = 0.8
 		"wave_clear":

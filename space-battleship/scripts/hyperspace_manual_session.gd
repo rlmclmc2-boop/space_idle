@@ -20,6 +20,7 @@ var queue_error:=""
 var return_state:Dictionary={}
 var loaded_return:Dictionary={}
 var last_result:Dictionary={}
+var last_rejection:Dictionary={}
 func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 	if active:return false
 	route_ids={};registry={};production_accepted=false;reward_binder=null
@@ -115,6 +116,12 @@ func start(g,route: String,level: int) -> bool:
 	initializing=false
 	if not started:finish(g,false,"setup_failed");return false
 	g.event.emit("hyperspace_manual",{"active":true,"route":route,"level":level});return true
+func reject_formation(g,errors:Array) -> bool:
+	if not active:return false
+	last_error="formation_invalid"
+	last_rejection={"reason":last_error,"stage":g.stage,"point":g.group_index,"route":g.profile.hyperspace.active.get("route",""),"run_id":run_id,"round_id":round_id,"errors":errors.duplicate(true),"uids":g.enemies.map(func(enemy):return int(enemy.uid))}
+	g.event.emit("encounter_rejected",last_rejection.duplicate(true))
+	return finish(g,false,last_error)
 func finish(g,success: bool,reason: String="failed") -> bool:
 	if not active:return false
 	g.settle_drops()

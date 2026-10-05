@@ -18,6 +18,7 @@
     "hyperspace.result_failed": {"params": []},
     "hyperspace.result_defeat": {"params": []},
     "hyperspace.result_user_exit": {"params": []},
+    "hyperspace.result_formation_invalid": {"params": []},
     "hyperspace.result_setup_failed": {"params": []},
     "planet.reforge_zero_title": {"params": []},
     "planet.reforge_zero_warning": {"params": ["count"]},
