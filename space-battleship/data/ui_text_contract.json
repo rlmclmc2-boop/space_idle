@@ -1,5 +1,10 @@
 {
   "entries": {
+    "hyperspace.manual_busy": {"params": []},
+    "hyperspace.manual_level_unavailable": {"params": []},
+    "hyperspace.manual_energy_needed": {"params": ["ticket"]},
+    "hyperspace.sealed_gate": {"params": ["level"]},
+
     "hyperspace.exit_manual": {"params": []},
     "tutorial.basics": {"params": []},
     "tutorial.select_entry": {"params": []},
@@ -6920,6 +6925,8 @@
   },
   "bindings": {
     "hyperspace_affixes": {
+      "armour_capacity": {"name": "hyperspace.affix_name.armour_hp"},
+      "shield_capacity": {"name": "hyperspace.affix_name.shield_energy"},
       "global_damage": {
         "name": "hyperspace.affix_name.global_damage"
       },

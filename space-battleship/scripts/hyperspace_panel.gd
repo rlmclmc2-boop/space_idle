@@ -6,7 +6,7 @@ const PAGE_SIZE=8
 const FAMILIES={"laser":"pulse","missile":"missile","cannon":"rail","longLaser":"beam"}
 const QUALITIES=["white","blue","gold","legendary"]
 const KINDS=["none","weapon","quality","minimum_level","affix","legendary_effect"]
-const COUNT_AFFIXES=["chain_count"]
+const COUNT_AFFIXES=["chain_count","extra_chain_count"]
 var host
 var manual_adapter: Callable
 var manual_ready_provider: Callable
@@ -308,11 +308,19 @@ func refresh_status() -> void:
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.config.energy_cap),"ticket":"%.0f"%ticket}))
  var best_time=float(h.best_x1(g,route,int(level.value)))
  put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
- put(start_button,"disabled",not manual_ready() or not h.eligible_level(g,route,int(level.value)) or not s.active.is_empty() or float(s.energy)<float(h.config.ticket))
- put(start_button,"tooltip_text","" if manual_ready() else manual_error_text())
+ refresh_start_reason()
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
- put(manual_reason,"visible",not manual_ready());put(manual_reason,"text",manual_error_text())
+
  for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
+func refresh_start_reason() -> void:
+ var reason=""
+ var g=host.game;var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace
+ if not manual_ready():reason=manual_error_text()
+ elif not s.active.is_empty():reason=t("manual_busy")
+ elif not h.eligible_level(g,route,int(level.value)):reason=t("manual_level_unavailable")
+ elif float(s.energy)<float(h.config.ticket):reason=t("manual_energy_needed",{"ticket":"%.0f"%float(h.config.ticket)})
+ put(start_button,"disabled",not reason.is_empty());put(start_button,"tooltip_text",reason)
+ put(manual_reason,"visible",not reason.is_empty());put(manual_reason,"text",reason)
 func display_ticket(s: Dictionary) -> float:
  if not s.active.is_empty():return float(s.active.ticket)
  var h=host.game.hyperspace
@@ -329,7 +337,7 @@ func refresh_progress() -> void:
  put(status,"text",text);put(status,"modulate",Color("ff7979") if s.blocked or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
  put(exit_button,"visible",host.game.manual_hyperspace.active)
- put(start_button,"disabled",not manual_ready() or not host.game.hyperspace.eligible_level(host.game,route,int(level.value)) or not a.is_empty() or float(s.energy)<float(host.game.hyperspace.config.ticket))
+ refresh_start_reason()
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
  put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))
  var ticket=display_ticket(s)
@@ -386,7 +394,9 @@ func refresh_details() -> void:
  if section_index!=1:return
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
- put(unseal,"disabled",not valid or not bag.sealed.has(selected_id) or int(host.game.profile.highestLevel)<int(bag.sealed.get(selected_id,0)))
+ var gate=int(bag.sealed.get(selected_id,0))
+ put(unseal,"disabled",not valid or gate<1 or int(host.game.profile.highestLevel)<gate)
+ put(unseal,"tooltip_text",t("sealed_gate",{"level":str(gate)}) if gate>0 else "")
  var totals:Dictionary=host.game.hyperspace_totals()
  put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
@@ -396,13 +406,14 @@ func refresh_details() -> void:
 func drone_description(d: Dictionary) -> String:
  var protection=protection_flags(str(d.id))
  var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
+ if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES or key==t("affix_name.extra_chain_count") else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
+  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
   if affix_display_provider.is_valid():
    var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
    if projection is Dictionary:
     value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
-  lines.append(t("affix",{"key":name_text,"tier":str(a.tier),"value":value_text,"locked":t("locked") if a.locked else ""}))
+  lines.append(t("affix",{"key":name_text,"tier":str(int(a.tier)),"value":value_text,"locked":t("locked") if a.locked else ""}))
  if d.legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))

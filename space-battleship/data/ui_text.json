@@ -11473,7 +11473,7 @@
     "key": "planet.reforge_confirm",
     "category": "planet",
     "source": "planet_panel.gd",
-    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、自动探索设置及历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n每颗星球只能重铸一次。",
+    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n异空间能源恢复初始值；材料、进行中的探索、自动探索设置、改造命令与挂载模块成长重置。保留异空间通关时间记录。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。当前确认入口未选择保留无人机，将删除全部无人机。\n\n每颗星球只能重铸一次。",
     "params": "{level}"
   },
   {
@@ -14296,5 +14296,33 @@
     "category": "hyperspace"
   }
 ,
-  {"key":"hyperspace.exit_manual","text":"退出探索","params":"","category":"hyperspace"}
+  {"key":"hyperspace.exit_manual","text":"退出探索","params":"","category":"hyperspace"},
+  {
+    "key": "hyperspace.manual_busy",
+    "category": "hyperspace",
+    "source": "hyperspace_panel.gd",
+    "text": "已有异空间探索，请先完成或退出。",
+    "params": ""
+  },
+  {
+    "key": "hyperspace.manual_level_unavailable",
+    "category": "hyperspace",
+    "source": "hyperspace_panel.gd",
+    "text": "当前路线或关卡不可探索。",
+    "params": ""
+  },
+  {
+    "key": "hyperspace.manual_energy_needed",
+    "category": "hyperspace",
+    "source": "hyperspace_panel.gd",
+    "text": "能源不足；手动探索需要 {ticket} 能源。",
+    "params": "{ticket}"
+  },
+  {
+    "key": "hyperspace.sealed_gate",
+    "category": "hyperspace",
+    "source": "hyperspace_panel.gd",
+    "text": "本轮到达第 {level} 关后可领取。",
+    "params": "{level}"
+  }
 ]
