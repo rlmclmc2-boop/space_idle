@@ -100,7 +100,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="started":return false
 	var next: Dictionary=s.duplicate(true)
 	if not success:
-		next.energy=minf(float(online_config(g).energy_cap),float(next.energy)+float(a.ticket));next.settled_run=run_id;next.active={};next.blocked=false;next.pending_time=0.0
+		next.energy=float(next.energy)+float(a.ticket);next.settled_run=run_id;next.active={};next.blocked=false;next.pending_time=0.0
 		scheduler.reset();publish(g,next,"refunded");return true
 	if not reward.is_empty():last_error="external_reward_forbidden";return false
 	var generated:=Rewards.generate(next,config,a,Permission.planet_for_level(g.db.data,int(a.level)))

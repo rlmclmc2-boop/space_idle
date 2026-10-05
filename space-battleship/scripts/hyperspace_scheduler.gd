@@ -7,6 +7,8 @@ func reset() -> void:
 	pass # All elapsed work belongs to the saved profile namespace.
 
 static func charge(s: Dictionary,c: Dictionary,dt: float) -> void:
+	# Failure refunds may exceed capacity; pause charge without discarding paid energy.
+	if float(s.energy)>=float(c.energy_cap):return
 	s.energy=minf(float(c.energy_cap),float(s.energy)+float(c.energy_rate)*dt)
 
 func advance(owner,g,dt: float) -> void:
