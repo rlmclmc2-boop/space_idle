@@ -1,5 +1,6 @@
 {
   "entries": {
+    "hyperspace.quote_execution_result": {"params": ["cost", "count"]},
     "hyperspace.modernize_preview": {"params": ["before", "after", "effects"]},
     "hyperspace.modernize_effect": {"params": ["name", "before", "after"]},
     "hyperspace.modernize_no_affixes": {"params": []},

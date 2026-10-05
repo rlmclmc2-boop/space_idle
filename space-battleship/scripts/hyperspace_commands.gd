@@ -88,7 +88,7 @@ func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
  var result: Dictionary=h().preview_forge(game(),quoted_request)
- quote_label.text=t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})
+ quote_label.text=t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})
  if quoted_request.operation=="modernize":quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("quote_ready")
  commit_button.disabled=not str(result.error).is_empty()
