@@ -6,6 +6,9 @@ const Transfer=preload("res://scripts/save_transfer.gd")
 const CC=preload("res://scripts/combat_context.gd")
 var checks:=0
 var failures:=0
+const FIXED_SEED:=20261005
+var formation_records:Array=[]
+var viewport_record:Dictionary={}
 func check(ok:bool,label:String)->void:
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
@@ -28,7 +31,17 @@ func run()->void:
  var width=OS.get_environment("QA_MANUAL_WIDTH")
  if not width.is_empty():root.size=Vector2i(int(width),int(OS.get_environment("QA_MANUAL_HEIGHT")))
  var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"];root.add_child(scene);current_scene=scene;scene.set_process(false);root.gui_embed_subwindows=true
- var g=scene.game;g.save_enabled=false;g.profile.onboarding.completed=true;g.profile.cleared=range(1,33);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.resources["1"]=1e12
+ var g=scene.game;g.rng.seed=FIXED_SEED;g.profile.hyperspace.random_state="123456789";g.save_enabled=false;g.profile.onboarding.completed=true;g.profile.cleared=range(1,33);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.resources["1"]=1e12
+ viewport_record={"seed":FIXED_SEED,"root_size":str(root.size),"visible_rect":str(root.get_visible_rect()),"content_scale_size":str(root.content_scale_size),"stretch_transform":str(root.get_stretch_transform()),"final_transform":str(root.get_final_transform()),"screen_scale":scene.enemy_recognition_screen_scale(),"display":DisplayServer.get_name()}
+ g.event.connect(func(kind:String,_info:Dictionary):
+  if kind!="encounter" or not g.enemies.any(func(e):return e.get("explicit_formation",false)):return
+  var actors:Array=[]
+  for e in g.enemies:actors.append({"uid":e.uid,"slot":e.slot,"id":e.id,"size":e.size,"x":e.x,"y":e.y,"pose":scene.enemy_pose(e).duplicate(true)})
+  var errors=scene.validate_explicit_formation()
+  formation_records.append({"stage":g.stage,"point":g.group_index,"rng":str(g.rng.state),"uid":g.uid,"state_after_production_validation":g.state,"root_size":str(root.size),"visible_rect":str(root.get_visible_rect()),"stretch_transform":str(root.get_stretch_transform()),"screen_scale":scene.enemy_recognition_screen_scale(),"actors":actors,"errors":errors})
+  check(errors.is_empty() and g.state==g.State.COMBAT,"Production explicit formation accepted at actual viewport, point "+str(g.group_index))
+ )
+
  check(g.load_hyperspace_routes(),"Production routes accepted")
  # Explicit lawful progress/UI fixtures; no timing or balance acceptance.
  for ship in g.db.ships.keys():
@@ -171,4 +184,7 @@ func run()->void:
  check(not g.manual_hyperspace.dispatch_queued(g) and g.manual_hyperspace.queue_error=="busy" and g.manual_hyperspace.queued.is_empty() and JSON.stringify(g.profile)==auto_before,"Dispatch cancels stale request without pausing or refunding current auto owner")
  panel.refresh_progress();check(panel.status.text.contains("排队已取消"),"Visible auto progress also reports cancelled manual request")
  await capture("05-auto-owner-revalidation")
+ var record_folder=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
+ if record_folder.is_empty():record_folder=OS.get_environment("QA_MANUAL_EVIDENCE")
+ if not record_folder.is_empty():FileAccess.open(record_folder+"/formation-viewport.json",FileAccess.WRITE).store_string(JSON.stringify({"initial":viewport_record,"encounters":formation_records},"\t"))
  print("MANUAL_QUEUE_RETURN ",checks," checks ",failures," failures");quit(1 if failures else 0)
