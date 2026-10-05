@@ -37,8 +37,10 @@ func run()->void:
   modifications.append("Isolated growth branch: state=LEVEL_SELECT; clear battle actors/projectiles/cooldowns. No currency/equipment/affix grants; not natural combat continuation.")
  var driver
  if request.mode!="headless":
-  driver=Driver.new();driver.production_ui_ticks=true;driver.setup(self,g)
-  driver.ui_refresh_seconds=1.0 if request.mode=="ui1s" else 3600.0 if request.mode=="minimal-vfx" else 0.0
+  driver=Driver.new();driver.production_ui_ticks=true
+  if request.mode=="cached":driver.scene_path="res://qa/cached_battlefield.tscn";driver.drop_post_vfx=true
+  driver.setup(self,g)
+  driver.ui_refresh_seconds=1.0 if request.mode=="ui1s" else 3600.0 if request.mode in ["minimal-vfx","cached"] else 0.0
   root.size=Vector2i(1373,883);await process_frame;await process_frame
  var stream:=FileAccess.open(str(request.output)+"/states.jsonl",FileAccess.WRITE)
  stream.store_line(JSON.stringify({"step":0,"state":signature(g)},"",true))

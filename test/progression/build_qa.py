@@ -31,7 +31,8 @@ shutil.copytree(source/'data',out/'data',ignore=shutil.ignore_patterns('.import_
 if a.data_ref:
  (out/'data/game_data.json').write_bytes(subprocess.check_output(['git','show',a.data_ref+':space-battleship/data/game_data.json'],cwd=ROOT))
 (out/'.runtime').mkdir(); (out/'qa').mkdir(); 
-for script in Path(__file__).parent.glob('*.gd'):shutil.copy2(script,out/'qa'/script.name)
+for pattern in ['*.gd','*.tscn']:
+ for script in Path(__file__).parent.glob(pattern):shutil.copy2(script,out/'qa'/script.name)
 if a.policy_ref:
  (out/"qa/sparse_policy.gd").write_bytes(subprocess.check_output(["git","show",a.policy_ref+":test/progression/sparse_policy.gd"],cwd=ROOT))
 if a.scene:

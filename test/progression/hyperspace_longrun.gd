@@ -2,6 +2,8 @@ extends "res://qa/early_page_route.gd"
 ## Native early controls plus serial visible-page domain actions for newly integrated systems.
 const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
 var space_policy:=SpacePolicy.new()
+# Optional isolated stage profiler; frozen P2 policy behavior is unchanged.
+var stage_meter=null
 const Checkpoint=preload("res://qa/hyperspace_checkpoint.gd")
 const SafeFarm=preload("res://qa/hyperspace_safe_farm.gd")
 var safe_farm:=SafeFarm.new()
@@ -255,10 +257,16 @@ func run()->void:
  while game.simulated_time<float(options.duration) and input_failure.is_empty() and not galaxy_complete():
   if int(options.stop_clear)>0 and clears.has(str(int(options.stop_clear))):break
   if float(Time.get_ticks_usec()-wall_started)/1e6>=float(options.wall_limit_seconds):break
+  var controller_start:int=Time.get_ticks_usec() if stage_meter!=null else 0
   await step_controller()
+  var controller_elapsed:int=Time.get_ticks_usec()-controller_start if stage_meter!=null else 0
   if not input_failure.is_empty():break
   var before_stage:int=game.stage;var before_state:int=game.state;var manual:bool=game.manual_hyperspace.active
-  driver.before_tick(STEP);game.tick(STEP);driver.after_tick(STEP)
+  if stage_meter==null:driver.before_tick(STEP);game.tick(STEP);driver.after_tick(STEP)
+  else:
+   var timing_start:=Time.get_ticks_usec();driver.before_tick(STEP);var timing_pre:=Time.get_ticks_usec()
+   game.tick(STEP);var timing_core:=Time.get_ticks_usec();driver.after_tick(STEP);var timing_post:=Time.get_ticks_usec()
+   stage_meter.tick(game,before_state,controller_elapsed,timing_pre-timing_start,timing_core-timing_pre,timing_post-timing_core)
   if manual:space_seconds+=STEP
   else:
    if safe_farm.phase!="idle":farm_seconds+=STEP
@@ -284,4 +292,5 @@ func run()->void:
  var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","initial_scope":initial_scope,"resume_lineage":resume_lineage,"cumulative_totals_complete":not resume_lineage.any(func(link):return not link.discontinuities.get("legacy_missing_state",[]).is_empty()),"cumulative_wall_seconds":carried_wall_seconds+float(Time.get_ticks_usec()-wall_started)/1e6,"stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge T3 is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
+ if stage_meter!=null:stage_meter.finish(output,game)
  driver.close();await process_frame;quit(2 if not input_failure.is_empty() else 0)

@@ -32,7 +32,7 @@ out.mkdir(parents=True);results=[]
 for scenario in a.scenarios.split(','):
  if scenario not in {'combat','idle-growth'}:raise SystemExit('Unknown scenario')
  for mode in a.modes.split(','):
-  if mode not in {'full','ui1s','minimal-vfx','headless'}:raise SystemExit('Unknown mode')
+  if mode not in {'full','ui1s','minimal-vfx','headless','cached'}:raise SystemExit('Unknown mode')
   folder=out/(scenario+'-'+mode);folder.mkdir()
   request={'checkpoint':str(a.checkpoint.resolve()),'format':source_format,'seconds':a.seconds,'scenario':scenario,'mode':mode,'output':str(folder),'source_manifest':str(a.source_manifest.resolve()),'source_fingerprint':old['fingerprint'],'target_fingerprint':new['fingerprint'],'data_sha256':new['files']['data/game_data.json'],'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_phase':{'highest':source.get('save',{}).get('highestLevel'),'round':source.get('save',{}).get('hyperspace',{}).get('round_id')}}
   rp=folder/'request.json';rp.write_text(json.dumps(request,indent=2));env=os.environ.copy();env['QA_STAGE_REQUEST']=str(rp)
