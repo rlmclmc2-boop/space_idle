@@ -34,7 +34,7 @@ func capture(dialog,label:String)->void:
  var screen_image:Image=DisplayServer.screen_get_image(DisplayServer.window_get_current_screen(root.get_window_id()))
  if screen_image!=null:screen_image.save_png(folder+"/"+label+"-screen.png")
  var control:Control=dialog.get_ok_button()
- FileAccess.open(folder+"/"+label+".json",FileAccess.WRITE).store_string(JSON.stringify({"display":DisplayServer.get_name(),"root_size":str(root.size),"dialog_size":str(dialog.size),"dialog_position":str(dialog.position),"confirm_rect":str(control.get_global_rect()),"selected":dialog.selected,"capacity":dialog.capacity,"summary":dialog.summary.text,"feedback":dialog.feedback.text},"\t"))
+ FileAccess.open(folder+"/"+label+".json",FileAccess.WRITE).store_string(JSON.stringify({"display":DisplayServer.get_name(),"root_size":str(root.size),"dialog_size":str(dialog.size),"embedded":dialog.is_embedded(),"root_embed":root.gui_embed_subwindows,"dialog_position":str(dialog.position),"confirm_rect":str(control.get_global_rect()),"selected":dialog.selected,"capacity":dialog.capacity,"summary":dialog.summary.text,"feedback":dialog.feedback.text},"\t"))
 func current_dialog(panel):
  for child in panel.get_children():
   if child.get_script()==preload("res://scripts/hyperspace_reforge_dialog.gd"):return child
@@ -42,7 +42,7 @@ func current_dialog(panel):
 func run()->void:
  var width:String=OS.get_environment("QA_RETENTION_WIDTH")
  if not width.is_empty():root.size=Vector2i(int(width),int(OS.get_environment("QA_RETENTION_HEIGHT")))
- var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);root.add_child(scene);current_scene=scene;scene.set_process(false);root.gui_embed_subwindows=true;scene.game.profile.onboarding.completed=true
+ var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"];root.add_child(scene);current_scene=scene;scene.set_process(false);root.gui_embed_subwindows=true;scene.game.profile.onboarding.completed=true
  var g=scene.game;g.save_enabled=false;g.paused=true;g.profile.highestLevel=80;g.profile.cleared=range(1,80);g.rebuild_unlocks();g.pending_unlocks.clear()
  g.profile.planets["1"].degree=300;g.planet_buildings.sync(g,"1");g.profile.planets["1"].buildings.shipyard.status="ready"
  check(g.planet_buildings.activate(g,"1","shipyard"),"Actual activated shipyard fixture")

@@ -41,6 +41,10 @@ func setup(g,id:String,rewards:String)->void:
   var d:Dictionary=bag.drones[drone_id]
   var choice=CheckBox.new();choice.set_meta("drone_id",drone_id);choice.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   choice.text=Text.t("planet.reforge_drone",{"weapon":Text.t("hyperspace."+str(d.weapon)),"level":str(int(d.level)),"quality":Text.t("hyperspace."+str(d.origin_quality)),"favorite":Text.t("hyperspace.favorite") if bag.favorites.has(drone_id) else "","gate":str(Permission.planet_stage(g.db.data,str(d.planet_id)))})
+  var chrome=preload("res://scripts/dialog_presentation.gd")
+  chrome.button_skin(choice)
+  choice.add_theme_color_override("font_hover_pressed_color",chrome.NAVY)
+  choice.add_theme_stylebox_override("hover_pressed",choice.get_theme_stylebox("pressed"))
   content.add_child(choice);choices[drone_id]=choice;choice.toggled.connect(on_choice.bind(drone_id))
   if bag.equipped.has(drone_id):choice.text+=" · "+Text.t("hyperspace.equipped")
   var lines:Array[String]=[]
