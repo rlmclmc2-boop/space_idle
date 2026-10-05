@@ -310,7 +310,7 @@ func refresh_status() -> void:
  put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
  put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
  var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.config.energy_cap),"ticket":"%.0f"%ticket}))
+ put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.online_config(g).energy_cap),"ticket":"%.0f"%ticket}))
  var best_time=float(h.best_x1(g,route,int(level.value)))
  put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
  refresh_start_reason()

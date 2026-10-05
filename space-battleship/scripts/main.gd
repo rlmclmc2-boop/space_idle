@@ -2243,6 +2243,7 @@ func on_viewport_resized() -> void:
 	layout_overlay_controls()
 
 func refresh_navigation() -> void:
+	refresh_hyperspace_badge() # Scheduler capacity waits change without a command event.
 	if not is_instance_valid(advance_button):
 		return
 	var unlocking := not game.pending_unlocks.is_empty()
