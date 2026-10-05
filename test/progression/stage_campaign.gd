@@ -12,6 +12,7 @@ func run()->void:
 func refresh_decision_ui()->void:
  if stage_variant=="full":return
  driver.scene.refresh_visible_cards(0.0);driver.scene.refresh_navigation()
+ if is_instance_valid(driver.scene.enhancement_panel) and driver.scene.enhancement_panel.visible:driver.scene.enhancement_panel.refresh()
 func action()->Dictionary:
  refresh_decision_ui()
  return super.action()

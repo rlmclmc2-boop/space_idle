@@ -36,7 +36,7 @@ func after_tick(dt:float):
 		scene.damage_pending.clear()
 		if production_ui_ticks:
 			scene.hightech_page.set_process(false);scene.hightech_page._process(dt)
-			if is_instance_valid(scene.enhancement_panel):scene.enhancement_panel.metrics_timer.stop()
+			advance_enhancement_metrics(dt)
 		return
 	# Retain the full production event handler. Mirror its bounded VFX cleanup;
 	# none of these containers own game projectiles or enemy health.
@@ -63,15 +63,17 @@ func after_tick(dt:float):
 		# The workshop owns its0.2s sampling; use its actual production process
 		# with logical UI dt instead of sampling the accelerated test's wall time.
 		scene.hightech_page.set_process(false);scene.hightech_page._process(dt)
-		# The enhancement metric timer is a UI-only1s sampler bound to refresh.
-		# Event invalidation remains production-owned. No gameplay timer is driven.
-		if is_instance_valid(scene.enhancement_panel):
-			scene.enhancement_panel.metrics_timer.stop()
-			if scene.enhancement_panel.visible:
-				enhancement_ui_elapsed+=dt
-				if enhancement_ui_elapsed>=scene.enhancement_panel.metrics_timer.wait_time:
-					enhancement_ui_elapsed=fmod(enhancement_ui_elapsed,scene.enhancement_panel.metrics_timer.wait_time)
-					scene.enhancement_panel.refresh()
-			else:enhancement_ui_elapsed=0.0
+		advance_enhancement_metrics(dt)
+func advance_enhancement_metrics(dt:float)->void:
+	# Both scene variants drive the production1s visible metric sampler at X1.
+	# Cached presentation still requires current history before native decisions.
+	if not is_instance_valid(scene.enhancement_panel):return
+	scene.enhancement_panel.metrics_timer.stop()
+	if scene.enhancement_panel.visible:
+		enhancement_ui_elapsed+=dt
+		if enhancement_ui_elapsed>=scene.enhancement_panel.metrics_timer.wait_time:
+			enhancement_ui_elapsed=fmod(enhancement_ui_elapsed,scene.enhancement_panel.metrics_timer.wait_time)
+			scene.enhancement_panel.refresh()
+	else:enhancement_ui_elapsed=0.0
 func close():
 	if is_instance_valid(scene):scene.queue_free()
