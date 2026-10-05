@@ -1465,6 +1465,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	# other rows or altering the existing player clearance cap.
 	for iteration in 3:minimum_y=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
 	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
+	else:position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 
