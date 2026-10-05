@@ -9,6 +9,10 @@ p.add_argument('--output',type=Path,required=True)
 p.add_argument('--source-library-identity',type=Path,required=True)
 p.add_argument('--godot',default='godot')
 a=p.parse_args();target=a.target_project.resolve();old=json.loads(a.source_manifest.read_text());new=json.loads((target/'qa-manifest.json').read_text())
+marker=target/'.qa-import-complete.json'
+if not marker.exists():raise SystemExit('Target must complete its own run_entry editor import before conversion')
+imported=json.loads(marker.read_text())
+if imported.get('project')!=str(target) or imported.get('manifest_fingerprint')!=new['fingerprint']:raise SystemExit('Target import marker does not match this immutable package')
 known={'32db3f1523ba58719f34fc48c1e40e6eb8fc1524c65003c488ed542c12201395':'frozen v16 reasonable QA','0f151fb5c8461aa0cf8d40c182078fd2e41a384b645f4423231ba0cddf850f8f':'frozen v15 production plus fast QA','b61b08d5410b42b4c0a2a23ec8047c500c58f305bbb4febd4d05adab3ea25c36':'verified ee fast-QA old production','6cfb7ec81f61bca2753a2cba2d73b192df545f627c6c39c8f8eb7889d8f61001':'frozen v14 production'}
 for m in [old,new]:
  if hashlib.sha256(json.dumps(m['files'],sort_keys=True).encode()).hexdigest()!=m['fingerprint']:raise SystemExit('Manifest digest rejected')
