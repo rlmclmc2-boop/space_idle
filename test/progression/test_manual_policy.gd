@@ -81,7 +81,7 @@ func run()->void:
  g.manual_hyperspace.active=false
  # Exercise the actual controller's queued dispatch and watchdog priority.
  # Only fixture scheduling time is advanced; this is not a timing acceptance run.
- space_policy=p;output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
+ space_policy=p;player_input=input;output=OS.get_environment("QA_DIAGNOSTIC_RESULT_DIR")
  trace=FileAccess.open(output+"/controller-actions.jsonl",FileAccess.WRITE)
  g.event.connect(observe)
  g.profile.hyperspace.active={};g.profile.hyperspace.auto.enabled=false
