@@ -355,7 +355,7 @@ func refresh_list() -> void:
   if index>=ids.size():continue
   var id=str(ids[index]);var d: Dictionary=bag.drones[id];b.set_meta("drone_id",id)
   put(card_icons[i],"texture",load("res://assets/hyperspace/icons/"+FAMILIES[d.weapon]+".png"))
-  put(card_titles[i],"text",t("card",{"weapon":t(d.weapon),"level":str(d.level),"quality":"","flags":""}).split("\n")[0])
+  put(card_titles[i],"text",t("card",{"weapon":t(d.weapon),"level":str(int(d.level)),"quality":"","flags":""}).split("\n")[0])
   put(card_subtitles[i],"text",t(d.origin_quality))
   put(card_flags[i],"text",flags(id,d) if not flags(id,d).is_empty() else t("no_flags"))
   skin_selection(b,id==selected_id)
@@ -387,7 +387,7 @@ func refresh_details() -> void:
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
  if section_index==2:
-  put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
+  put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(bag.drones[selected_id].hanging_slots),"revision":str(bag.drones[selected_id].forge_revision)}))
   put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
   return
@@ -400,7 +400,7 @@ func refresh_details() -> void:
  var totals:Dictionary=host.game.hyperspace_totals()
  put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
- put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(bag.drones[selected_id].level),"quality":t(bag.drones[selected_id].origin_quality),"flags":""}))
+ put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":""}))
  put(detail_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
  for b in cards:skin_selection(b,b.get_meta("drone_id","")==selected_id)
 func drone_description(d: Dictionary) -> String:

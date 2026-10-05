@@ -20,13 +20,14 @@ func run()->void:
  g.profile.hyperspace=before;p.refresh_progress();check(not p.start_button.disabled and not p.manual_reason.visible,"Energy replenishment clears stale disabled reason")
  var rng=RandomNumberGenerator.new();rng.seed=73
  var d:Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"ux:sealed","gold","laser",5,"1")
+ d.level=5.0 # JSON restores numeric values as floats; display remains an integer.
  d.affixes=[{"key":"armour_capacity","tier":3.0,"value":0.16,"locked":false},{"key":"shield_capacity","tier":5.0,"value":0.27,"locked":false}]
  g.profile.hyperspace.unlocked_drones=true
  var bag:Dictionary=g.profile.hyperspace.inventory;bag.drones[d.id]=d;bag.warehouse.append(d.id)
  var gate:int=g.hyperspace.Permission.planet_stage(g.db.data,str(d.planet_id));bag.sealed[d.id]=gate;bag.generation+=1
  p.refresh();p.select_section(1);p.selected_id=d.id;g.profile.highestLevel=gate-1;p.refresh_details()
  check(p.unseal.disabled and p.details.text.contains(str(gate)) and p.unseal.tooltip_text.contains(str(gate)),"Below actual claim gate shows threshold and disabled action")
- check(not p.details.text.contains("未知词条") and p.details.text.contains("T3") and not p.details.text.contains("T3.0") and not p.details.text.contains("T5.0"),"Actual capacity affixes and JSON float tiers display correctly")
+ check(not p.details.text.contains("未知词条") and p.details.text.contains("T3") and not p.details.text.contains("T3.0") and not p.details.text.contains("T5.0") and not p.card_titles[0].text.contains("5.0") and not p.detail_title.text.contains("5.0") and not p.forge_title.text.contains("5.0"),"Actual capacity affixes, JSON float tiers and levels display correctly")
  var sealed_before=JSON.stringify(g.profile.hyperspace);check(not g.hyperspace.claim_sealed(g,d.id) and JSON.stringify(g.profile.hyperspace)==sealed_before,"Below-gate claim is transactionally unchanged")
  g.profile.highestLevel=gate;p.refresh_details();check(not p.unseal.disabled,"Exact reached gate enables native claim")
  p.unseal.pressed.emit();check(not g.profile.hyperspace.inventory.sealed.has(d.id),"Native claim commits at exact gate")
