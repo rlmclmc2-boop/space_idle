@@ -78,7 +78,7 @@ func observe(kind:String,payload:Dictionary)->void:
    active_space_record.end=game.simulated_time;active_space_record.success=payload.success;active_space_record.seconds=game.simulated_time-float(active_space_record.start)
    space_runs.append(active_space_record.duplicate(true));record("space_actual_result",active_space_record);active_space_record={};save_snapshot("space_%d"%space_runs.size())
  if kind=="planet_reforged":
-  refeeds.append({"planet":payload.id,"x1_seconds":game.simulated_time,"round":game.profile.hyperspace.round_id,"sealed":game.profile.hyperspace.inventory.sealed.duplicate()})
+  refeeds.append({"planet":payload.id,"x1_seconds":game.simulated_time,"round":game.profile.hyperspace.round_id,"sealed":game.profile.hyperspace.inventory.sealed.duplicate(),"first_visible_eligibility":space_policy.reforge_observed.get(str([int(game.profile.hyperspace.round_id)-1,payload.id]),{})})
   last_frontier=int(game.profile.highestLevel)
   save_snapshot("reforge_%d"%refeeds.size());next_tour=game.simulated_time;next_check=game.simulated_time
  if kind=="hyperspace_changed":record("space_feedback",{"payload":payload,"active":game.profile.hyperspace.active.duplicate(true),"energy":game.profile.hyperspace.energy,"warehouse":game.profile.hyperspace.inventory.warehouse.size(),"cores":game.profile.hyperspace.ultimate_cores})
@@ -87,6 +87,9 @@ func observe(kind:String,payload:Dictionary)->void:
   last_frontier=int(game.profile.highestLevel)
   save_snapshot("reach_%d_round_%d"%[last_frontier,int(game.profile.hyperspace.round_id)])
 func crew_action()->Dictionary:
+ var redeploy:Dictionary=space_policy.crew_redeploy_action(game,5,driver.scene.crew_panel.rows.keys(),game.simulated_time)
+ if not redeploy.is_empty():return redeploy
+ if not space_policy.crew_transfer.is_empty():return {}
  var reserved:String=space_policy.pick_crew(game) if int(game.profile.highestLevel)>=7 else ""
  if reserved.is_empty() and not game.profile.hyperspace.history.is_empty() and not game.profile.hyperspace.auto.enabled:
   for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
@@ -149,7 +152,10 @@ func action()->Dictionary:
   if queued_before!=space_policy.manual_pending and not space_policy.manual_pending.is_empty():record("manual_request_queued",space_policy.manual_pending)
   if not choice.is_empty():return choice
  elif page==6:
-  var choice:Dictionary=space_policy.planet_action(game)
+  var choice:Dictionary=space_policy.crew_redeploy_action(game,6,[],game.simulated_time)
+  if not choice.is_empty():return choice
+  if not space_policy.crew_transfer.is_empty():return {}
+  choice=space_policy.planet_action(game,game.simulated_time)
   if not bool(options.get("allow_reforge",true)) and choice.get("kind")=="planet_reforge":return {}
   if not choice.is_empty():return choice
  elif page==8:

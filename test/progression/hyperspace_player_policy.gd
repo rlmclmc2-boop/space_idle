@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v8-earned-retry-safe-boundary-budget"
+const VERSION="hyperspace-player-v9-visible-reforge-earned-crew-transfer"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -81,6 +81,10 @@ func check_manual_budget(g,bars:Dictionary,now:float)->Dictionary:
 
 var forge_at:Dictionary={}
 var reserved_crew:=""
+var crew_transfer:Dictionary={}
+var crew_transfer_history:Array=[]
+var last_crew_transfer:=-300.0
+var reforge_observed:Dictionary={}
 var last_reforge:=0
 var reforge_since:=-1.0
 var known_weapons:Array=[]
@@ -224,11 +228,59 @@ func observe_failure(g,now:float)->Dictionary:
     plan.weapons=alternative.weapons;plan.revision+=1;plan.last_revision_failure=encounter_failures[failed];plan.growth=growth
  pending_encounters.erase(failed);seen_encounter=""
  return feedback
+func transfer_crew(id:String)->bool:
+ return not crew_transfer.is_empty() and id in [str(crew_transfer.veteran),str(crew_transfer.replacement)]
 func pick_crew(g)->String:
- if not reserved_crew.is_empty() and Permission.crew_available(g,reserved_crew):return reserved_crew
+ var current:String=Permission.reserved_crew(g.profile.hyperspace)
+ if not current.is_empty() and Permission.crew_available(g,current):reserved_crew=current;return current
+ if not reserved_crew.is_empty() and not transfer_crew(reserved_crew) and Permission.crew_available(g,reserved_crew):return reserved_crew
+ var available:Array=[]
  for member in g.profile.crew:
-  if Permission.crew_available(g,str(member.crewId)):reserved_crew=str(member.crewId);return reserved_crew
+  if not transfer_crew(str(member.crewId)) and Permission.crew_available(g,str(member.crewId)):available.append(member)
+ available.sort_custom(func(a,b):return int(a.level)<int(b.level))
+ if not available.is_empty():reserved_crew=str(available[0].crewId);return reserved_crew
  return ""
+func equipment_crew_level(g)->int:
+ var level:=-1
+ for member in g.profile.crew:
+  if member.assignmentType=="equipment_upgrade" and g.crew.active(g,member):level=maxi(level,int(member.level))
+ return level
+func crew_redeploy_action(g,page:int,visible_ids:Array,now:float)->Dictionary:
+ if not crew_transfer.is_empty() and int(crew_transfer.round)!=int(g.profile.hyperspace.round_id):crew_transfer={}
+ if crew_transfer.is_empty():
+  if page!=5 or not g.crew.levels_unlocked(g) or now-last_crew_transfer<300.0:return {}
+  var veteran:Dictionary={};var planet:=""
+  for id in g.profile.planets:
+   var member:Dictionary=g.crew.entry(g,str(g.planet_progress(str(id)).crewId))
+   if member.is_empty() or not visible_ids.has(str(member.crewId)) or not g.crew.unlocked(g,str(member.crewId)):continue
+   if int(member.level)<=maxi(0,equipment_crew_level(g)) or (not veteran.is_empty() and int(member.level)<=int(veteran.level)):continue
+   veteran=member;planet=str(id)
+  if veteran.is_empty():return {}
+  var candidates:Array=[]
+  for member in g.profile.crew:
+   var id:String=str(member.crewId)
+   if id==str(veteran.crewId) or not visible_ids.has(id) or not g.crew.unlocked(g,id) or id==Permission.reserved_crew(g.profile.hyperspace) or not g.crew_exploration(id).is_empty():continue
+   if str(member.assignmentType) not in ["","equipment_upgrade","hightech_scientists","reactor_upgrade","jewel_auto"]:continue
+   candidates.append(member)
+  candidates.sort_custom(func(a,b):return int(a.level)<int(b.level) if str(a.assignmentType).is_empty()==str(b.assignmentType).is_empty() else str(a.assignmentType).is_empty())
+  if candidates.is_empty():return {}
+  crew_transfer={"round":int(g.profile.hyperspace.round_id),"planet":planet,"veteran":str(veteran.crewId),"replacement":str(candidates[0].crewId),"visible_level":int(veteran.level),"planned_at":now,"phase":"prepare"}
+ var plan:Dictionary=crew_transfer;var veteran:Dictionary=g.crew.entry(g,str(plan.veteran));var replacement:Dictionary=g.crew.entry(g,str(plan.replacement));var progress:Dictionary=g.planet_progress(str(plan.planet))
+ if veteran.is_empty() or replacement.is_empty() or progress.is_empty() or Permission.reserved_crew(g.profile.hyperspace) in [str(plan.veteran),str(plan.replacement)]:crew_transfer={};return {}
+ if page==5:
+  if not visible_ids.has(str(plan.veteran)) or not visible_ids.has(str(plan.replacement)):return {}
+  if plan.phase=="prepare" and not str(replacement.assignmentType).is_empty():return {"domain":true,"kind":"crew_release","crew":str(plan.replacement),"reason":"Visible higher-level explorer will take equipment; release the actual replacement job first"}
+  if not g.idle_planet_crew(str(plan.replacement)):crew_transfer={};return {}
+  for member in g.profile.crew:
+   if member.assignmentType=="equipment_upgrade" and str(member.crewId)!=str(plan.veteran):return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"One equipment target; prepare earned higher-level replacement"}
+  if str(progress.crewId).is_empty() and g.crew.can_assign(g,str(plan.veteran),"equipment_upgrade","equipment") and veteran.assignmentType!="equipment_upgrade":
+   if str(veteran.upgradeMode)!="10":return {"domain":true,"kind":"crew_equipment_mode","crew":str(plan.veteran),"mode":"10"}
+   return {"domain":true,"kind":"crew_assign_equipment","crew":str(plan.veteran),"reason":"Visible earned level improves equipment; actual explorer already recalled"}
+ elif page==6:
+  if not g.idle_planet_crew(str(plan.replacement)):crew_transfer={};return {}
+  if str(progress.crewId)==str(plan.veteran) and plan.phase=="prepare":return {"domain":true,"kind":"crew_transfer_recall","planet":str(plan.planet),"crew":str(plan.veteran),"replacement":str(plan.replacement),"lost_exploration_seconds":float(progress.elapsed)}
+  if str(progress.crewId).is_empty() and veteran.assignmentType=="equipment_upgrade":return {"domain":true,"kind":"crew_transfer_explore","planet":str(plan.planet),"crew":str(plan.replacement)}
+ return {}
 func score(d:Dictionary)->float:
  var value:=float(d.level)*0.2+20.0*int(d.ultimate)+8.0*int(d.legendary)
  for a in d.affixes:
@@ -340,7 +392,7 @@ func space_action(g,now:float)->Dictionary:
   var crew:String=pick_crew(g)
   if not crew.is_empty() and (not s.auto.enabled or s.auto.route!=best_route or int(s.auto.level)!=best_level):return {"domain":true,"kind":"space_auto","route":best_route,"level":best_level,"crew":crew}
  return {}
-func planet_action(g)->Dictionary:
+func planet_action(g,now:float=0.0)->Dictionary:
  for id in g.profile.planets:
   if not g.planet_unlocked(str(id)):continue
   for row in g.planet_buildings.rows(g,str(id)):
@@ -353,7 +405,10 @@ func planet_action(g)->Dictionary:
   if not progress.conquered and str(progress.crewId).is_empty():
    for member in g.profile.crew:
     if g.idle_planet_crew(str(member.crewId)):return {"domain":true,"kind":"planet_explore","planet":str(id),"crew":str(member.crewId)}
-  if g.can_reforge_planet(str(id)) and int(g.profile.highestLevel)>=33+5*(int(id)-1):return {"domain":true,"kind":"planet_reforge","planet":str(id),"keep":keep(g)}
+  if g.can_reforge_planet(str(id)):
+   var key:String=str([int(g.profile.hyperspace.round_id),id])
+   if not reforge_observed.has(key):reforge_observed[key]={"first_visible_eligible_x1":now,"frontier":int(g.profile.highestLevel),"eligibility_source":"Actual planet page production can_reforge_planet"}
+   return {"domain":true,"kind":"planet_reforge","planet":str(id),"keep":keep(g),"eligibility":reforge_observed[key].duplicate(true)}
  # Reallocate one growth worker for either exploration or a blocked building.
  for id in g.profile.planets:
   var building_needs_worker:=false
@@ -373,7 +428,7 @@ func galaxy_action(g)->Dictionary:
   var target:int=mini(6,maxi(1,g.profile.crew.size()))
   if g.galaxy.crew_count(g,str(key))<target:
    for member in g.profile.crew:
-    if g.idle_planet_crew(str(member.crewId)) and g.crew.can_assign(g,str(member.crewId),"galaxy_explore",str(key)):return {"domain":true,"kind":"galaxy_crew","galaxy":str(key),"crew":str(member.crewId)}
+    if not transfer_crew(str(member.crewId)) and g.idle_planet_crew(str(member.crewId)) and g.crew.can_assign(g,str(member.crewId),"galaxy_explore",str(key)):return {"domain":true,"kind":"galaxy_crew","galaxy":str(key),"crew":str(member.crewId)}
    for planet in g.profile.planets:
     var progress:Dictionary=g.planet_progress(str(planet))
     if progress.conquered and not str(progress.crewId).is_empty():return {"domain":true,"kind":"planet_recall","planet":str(planet)}
@@ -402,6 +457,16 @@ func execute(g,choice:Dictionary,now:float)->bool:
   "space_forge":
    forge_at[str(choice.request.drone_id)]=now
    return str(g.hyperspace.forge(g,choice.request).error).is_empty()
+  "crew_equipment_mode":return g.crew.set_upgrade_mode(g,choice.crew,choice.mode,"equipment_upgrade")
+  "crew_assign_equipment":return g.assign_crew(choice.crew,"equipment_upgrade","equipment")
+  "crew_transfer_recall":
+   if crew_transfer.is_empty() or not g.idle_planet_crew(str(crew_transfer.replacement)) or str(g.planet_progress(choice.planet).crewId)!=str(crew_transfer.veteran):return false
+   if not g.cancel_planet_exploration(choice.planet):return false
+   crew_transfer.phase="recalled";crew_transfer.lost_exploration_seconds=choice.lost_exploration_seconds;return true
+  "crew_transfer_explore":
+   if crew_transfer.is_empty() or g.crew.entry(g,str(crew_transfer.veteran)).assignmentType!="equipment_upgrade":return false
+   if not g.start_planet_exploration(choice.planet,choice.crew):return false
+   crew_transfer.completed_at=now;crew_transfer_history.append(crew_transfer.duplicate(true));last_crew_transfer=now;crew_transfer={};return true
   "planet_activate":return g.planet_buildings.activate(g,choice.planet,choice.building)
   "planet_builder":return g.planet_buildings.assign(g,choice.planet,choice.building,choice.crew)
   "planet_recall":return g.cancel_planet_exploration(choice.planet)
