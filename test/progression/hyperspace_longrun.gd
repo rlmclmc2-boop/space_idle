@@ -18,6 +18,7 @@ var manifest:Dictionary={}
 var initial_scope:="fresh"
 var farm_seconds:=0.0
 var options:Dictionary={}
+var crew_transfer_burst:Dictionary={}
 var snapshots:Dictionary={}
 var wall_started:=0
 var last_wall_report:=0
@@ -199,12 +200,60 @@ func check_page()->void:
  await super.check_page()
  if game.profile.cleared.has(10) and next_tour!=before:
   next_tour=tour_started+float(options.get("visit_seconds",300))
+func finish_crew_transfer_burst(reason:String)->void:
+ var now:float=game.simulated_time;var burst:Dictionary=crew_transfer_burst
+ if burst.is_empty():return
+ if reason!="completed":
+  space_policy.crew_transfer={};space_policy.last_crew_transfer=now
+ var saved:Dictionary=burst.controller
+ tour.assign(saved.tour);touring=bool(saved.touring);tour_started=float(saved.tour_started);next_tour=float(saved.next_tour)
+ busy=bool(saved.busy);burst_start=float(saved.burst_start);next_check=maxf(float(saved.next_check),now+BUTTON_TIME);next_button=now+BUTTON_TIME
+ record("crew_transfer_burst_end",{"reason":reason,"seconds":now-float(burst.started),"steps":burst.steps,"navigation_steps":burst.navigation_steps,"ordinary_next_tour_preserved":next_tour==float(saved.next_tour),"ordinary_next_tour":next_tour,"actual_page":page,"old_175_second_wait_not_rewritten":true})
+ crew_transfer_burst={}
+func step_crew_transfer_burst()->bool:
+ if crew_transfer_burst.is_empty() and space_policy.crew_transfer.is_empty():return false
+ # Let the inherited native picker/modal/unlock path finish first; never jump through it.
+ if not pending_picker.is_empty() or not player_input.modal_windows().is_empty() or not game.pending_unlocks.is_empty():return false
+ var now:float=game.simulated_time
+ if crew_transfer_burst.is_empty():
+  crew_transfer_burst={"started":now,"steps":0,"navigation_steps":0,"returning":false,"history_count":space_policy.crew_transfer_history.size(),"controller":{"tour":tour.duplicate(),"touring":touring,"tour_started":tour_started,"next_tour":next_tour,"next_check":next_check,"busy":busy,"burst_start":burst_start,"page":page}}
+  record("crew_transfer_burst_start",{"plan":space_policy.crew_transfer.duplicate(true),"scope":"Finite continuation of a plan found at a regular crew-page check; actual native navigation and 0.3 X1 per navigation/command; ordinary300s initiation schedule retained"})
+ if now+0.000001<next_button:return true
+ if int(crew_transfer_burst.steps)>=16 or now-float(crew_transfer_burst.started)>120.0:
+  finish_crew_transfer_burst("finite_step_or_time_limit");return true
+ if space_policy.crew_transfer.is_empty():
+  var completed:bool=space_policy.crew_transfer_history.size()>int(crew_transfer_burst.history_count)
+  var return_page:int=int(crew_transfer_burst.controller.page)
+  if page!=return_page:
+   var before:int=rejected_inputs;await visit_page(return_page);operation_seconds+=BUTTON_TIME
+   crew_transfer_burst.steps+=1;crew_transfer_burst.navigation_steps+=1;next_button=now+BUTTON_TIME
+   if rejected_inputs!=before:finish_crew_transfer_burst("return_navigation_rejected")
+   return true
+  finish_crew_transfer_burst("completed" if completed else "cancelled_by_current_state");return true
+ var wanted:int=space_policy.crew_transfer_page(game)
+ if wanted<0:
+  finish_crew_transfer_burst("current_ownership_or_plan_invalid");return true
+ if page!=wanted:
+  var before:int=rejected_inputs;await visit_page(wanted);operation_seconds+=BUTTON_TIME
+  crew_transfer_burst.steps+=1;crew_transfer_burst.navigation_steps+=1;next_button=now+BUTTON_TIME
+  record("crew_transfer_navigation",{"requested":wanted,"actual":page,"seconds":BUTTON_TIME,"native_input":true})
+  if rejected_inputs!=before:finish_crew_transfer_burst("navigation_rejected")
+  return true
+ await process_frame # Same real deferred layout boundary as ordinary page inspection.
+ var choice:Dictionary=space_policy.crew_redeploy_action(game,page,driver.scene.crew_panel.rows.keys() if page==5 else [],now)
+ if choice.is_empty():
+  finish_crew_transfer_burst("no_legal_next_command");return true
+ var rejected_before:int=rejected_inputs;await click_button(choice)
+ crew_transfer_burst.steps+=1;next_button=now+BUTTON_TIME
+ if rejected_inputs!=rejected_before:finish_crew_transfer_burst("domain_command_rejected")
+ return true
 func step_controller()->void:
  if game.manual_hyperspace.active and not space_policy.manual_watch.is_empty() and game.simulated_time>=float(space_policy.manual_watch.next_check):
   var feedback:=space_policy.check_manual_budget(game,space_policy.manual_visible_bars(game,driver.scene),game.simulated_time)
   if not feedback.is_empty():record("manual_visible_budget_check",feedback)
  var exit_due:bool=game.manual_hyperspace.active and not space_policy.manual_watch.is_empty() and not str(space_policy.manual_watch.exit_reason).is_empty()
- var start_due:bool=safe_farm.phase=="idle" and not space_policy.pending_manual_action(game,game.simulated_time).is_empty()
+ if not exit_due and await step_crew_transfer_burst():return
+ var start_due:bool=crew_transfer_burst.is_empty() and space_policy.crew_transfer.is_empty() and safe_farm.phase=="idle" and not space_policy.pending_manual_action(game,game.simulated_time).is_empty()
  if ((exit_due and (page!=9 or not busy)) or (start_due and not busy)) and pending_picker.is_empty() and player_input.modal_windows().is_empty() and game.pending_unlocks.is_empty():
   await visit_page(9)
   busy=true;burst_start=game.simulated_time;next_button=game.simulated_time+BUTTON_TIME

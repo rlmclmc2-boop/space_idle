@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v9-visible-reforge-earned-crew-transfer"
+const VERSION="hyperspace-player-v10-finite-serial-crew-transfer"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var last_attempt:Dictionary={}
@@ -245,6 +245,18 @@ func equipment_crew_level(g)->int:
  for member in g.profile.crew:
   if member.assignmentType=="equipment_upgrade" and g.crew.active(g,member):level=maxi(level,int(member.level))
  return level
+func crew_transfer_page(g)->int:
+ if crew_transfer.is_empty():return -1
+ var plan:Dictionary=crew_transfer;var replacement:Dictionary=g.crew.entry(g,str(plan.replacement));var veteran:Dictionary=g.crew.entry(g,str(plan.veteran));var progress:Dictionary=g.planet_progress(str(plan.planet))
+ if int(plan.round)!=int(g.profile.hyperspace.round_id) or replacement.is_empty() or veteran.is_empty() or progress.is_empty():return -1
+ if Permission.reserved_crew(g.profile.hyperspace) in [str(plan.veteran),str(plan.replacement)]:return -1
+ if not str(replacement.assignmentType).is_empty():return 5
+ if not g.idle_planet_crew(str(plan.replacement)):return -1
+ for member in g.profile.crew:
+  if member.assignmentType=="equipment_upgrade" and str(member.crewId)!=str(plan.veteran):return 5
+ if str(progress.crewId)==str(plan.veteran):return 6
+ if not str(progress.crewId).is_empty():return -1
+ return 6 if veteran.assignmentType=="equipment_upgrade" else 5
 func crew_redeploy_action(g,page:int,visible_ids:Array,now:float)->Dictionary:
  if not crew_transfer.is_empty() and int(crew_transfer.round)!=int(g.profile.hyperspace.round_id):crew_transfer={}
  if crew_transfer.is_empty():
