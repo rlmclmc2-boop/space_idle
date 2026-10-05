@@ -18,6 +18,7 @@ var target_label: Label
 var upgrade_picker: OptionButton
 var mode_ids: Array[String] = []
 var assign_button: Button
+var assignment_reason: Label
 var release_button: Button
 var job_ids: Array = []
 var target_ids: Array = []
@@ -25,6 +26,8 @@ var dirty := true
 var locked_preview: Button
 var job_label: Label
 var exploration_samples: Dictionary = {}
+
+const SPACE_PERMISSION := preload("res://scripts/hyperspace_permissions.gd")
 
 const SKIN := preload("res://scripts/dialog_presentation.gd")
 const SURFACE := Color("ecebdc")
@@ -186,6 +189,8 @@ func setup(owner_ui: Node) -> void:
 		if jobs.selected>=0 and target_picker.selected>=0:
 			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions(),buttons,true)
 	release_button=action("crew.release",func():host.game.crew.assign(host.game,selected,"",""),buttons)
+	assignment_reason=label(assignment_section,UIText.t("crew.hyperspace_busy_reason"),20,MUTED)
+	assignment_reason.visible=false
 	locked_preview=Button.new()
 	locked_preview.custom_minimum_size=Vector2(0,74)
 	locked_preview.disabled=true
@@ -266,6 +271,9 @@ func refresh_exploration_sample() -> void:
 		if not item.is_empty() and rows.has(crew_id):refresh_row(item)
 		if selected==crew_id:refresh_detail_status(item)
 
+func hyperspace_reserved(id: String) -> bool:
+	return not id.is_empty() and SPACE_PERMISSION.reserved_crew(host.game.profile.hyperspace)==id
+
 func refresh_row(item: Dictionary) -> void:
 	var g=host.game
 	var id: String=item.crewId
@@ -275,7 +283,8 @@ func refresh_row(item: Dictionary) -> void:
 	var fields: Dictionary=row_fields[id]
 	host.set_ui_value(fields.name,"text",g.crew.display_name(g,item))
 	var role:=UIText.t("crew.free")
-	if not planet_id.is_empty():role=UIText.t("crew.exploring" if str(g.planet_progress(planet_id).crewId)==id else "planet.builder_role")
+	if hyperspace_reserved(id):role=UIText.t("crew.hyperspace_reserved_short")
+	elif not planet_id.is_empty():role=UIText.t("crew.exploring" if str(g.planet_progress(planet_id).crewId)==id else "planet.builder_role")
 	elif assigned:
 		role=job_title(g.crew.assignments(g).get(item.assignmentType,{}))
 	host.set_ui_value(fields.role,"text",role)
@@ -284,6 +293,7 @@ func refresh_row(item: Dictionary) -> void:
 	host.set_ui_value(fields.avatar,"texture",member_portrait(item))
 	host.set_ui_value(fields.badge,"texture",job_icon(item))
 	var tooltip: String=g.crew.display_name(g,item)+"\n"+role+(" · "+state if not state.is_empty() else "")
+	if hyperspace_reserved(id):tooltip+="\n"+UIText.t("crew.hyperspace_busy_reason")
 	if g.crew.levels_unlocked(g):tooltip+="\n"+experience_text(item,true)
 	host.set_ui_value(rows[id],"tooltip_text",tooltip)
 
@@ -469,10 +479,13 @@ func refresh_detail_status(item: Dictionary) -> void:
 	var planet_id: String=g.crew_exploration(str(item.crewId))
 	var assigned:=not str(item.assignmentType).is_empty()
 	var state:=UIText.t("crew.assigned") if assigned else UIText.t("crew.free")
-	if not planet_id.is_empty():
+	if hyperspace_reserved(str(item.crewId)):
+		state=UIText.t("crew.hyperspace_reserved")
+	elif not planet_id.is_empty():
 		state=UIText.t("crew.exploring_brief",{"planet":exploration_name(planet_id),"remaining":exploration_remaining(planet_id)}) if str(g.planet_progress(planet_id).crewId)==str(item.crewId) else UIText.t("planet.builder_status",{"planet":exploration_name(planet_id)})
 	elif assigned and not g.crew.active(g,item):state=UIText.t("crew.paused")
 	host.set_ui_value(status,"text",state)
+	host.set_ui_value(status,"tooltip_text",UIText.t("crew.hyperspace_busy_reason") if hyperspace_reserved(str(item.crewId)) else "")
 	host.set_ui_value(effect_section,"visible",assigned and planet_id.is_empty())
 	if not assigned:return
 	var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
@@ -518,7 +531,10 @@ func refresh_actions() -> void:
 	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(str(item.get("upgradeMode",""))))
 	host.set_ui_value(upgrade_picker,"disabled",item.is_empty())
 	var valid:=jobs.selected>=0 and target_picker.selected>=0
-	host.set_ui_value(assign_button,"disabled",not valid or not g.crew.can_assign(g,selected,job_ids[jobs.selected] if valid else "",target_ids[target_picker.selected] if valid else ""))
+	var space_reserved:=hyperspace_reserved(selected)
+	host.set_ui_value(assignment_reason,"visible",space_reserved)
+	host.set_ui_value(assign_button,"tooltip_text",UIText.t("crew.hyperspace_busy_reason") if space_reserved else "")
+	host.set_ui_value(assign_button,"disabled",space_reserved or not valid or not g.crew.can_assign(g,selected,job_ids[jobs.selected] if valid else "",target_ids[target_picker.selected] if valid else ""))
 	var assigned:=not str(item.get("assignmentType","")).is_empty()
 	host.set_ui_value(assign_button,"text",UIText.t("crew.confirm_change" if assigned else "crew.confirm_assign"))
 	host.set_ui_value(release_button,"visible",assigned)
@@ -545,7 +561,7 @@ func ensure_level_ui() -> void:
 	level_effect_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 
 func job_icon(item: Dictionary) -> Texture2D:
-	if not host.game.crew_exploration(str(item.crewId)).is_empty():return EXPLORATION_ICON
+	if hyperspace_reserved(str(item.crewId)) or not host.game.crew_exploration(str(item.crewId)).is_empty():return EXPLORATION_ICON
 	var job: Dictionary=host.game.crew.assignments(host.game).get(str(item.assignmentType),{})
 	var target_type:=str(job.get("targetType",""))
 	# The enhancement rollout retains the legacy jewel assignment identity.

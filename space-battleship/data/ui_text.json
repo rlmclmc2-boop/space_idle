@@ -14404,5 +14404,29 @@
   {"key": "hyperspace.result_failed", "text": "探索结束", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_defeat", "text": "舰体耗尽，探索失败", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_user_exit", "text": "主动退出", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_setup_failed", "text": "探索未能正常启动", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"}
+  {"key": "hyperspace.result_setup_failed", "text": "探索未能正常启动", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {
+    "key": "crew.hyperspace_reserved_short",
+    "text": "异空间占用",
+    "params": "",
+    "category": "crew"
+  },
+  {
+    "key": "crew.hyperspace_reserved",
+    "text": "异空间自动探索占用（待命时仍占用）",
+    "params": "",
+    "category": "crew"
+  },
+  {
+    "key": "crew.hyperspace_busy_reason",
+    "text": "已被异空间自动探索占用；停止自动探索并处理当前任务或待领取奖励后可派遣。",
+    "params": "",
+    "category": "crew"
+  },
+  {
+    "key": "hyperspace.resource_reference_hint",
+    "text": "所选战斗等级 {level}；普通材料（铁/铀、强化碎片）按已通关 {cleared}；无人机/专材需探索通关。",
+    "params": "level,cleared",
+    "category": "hyperspace"
+  }
 ]

@@ -1,5 +1,9 @@
 {
   "entries": {
+    "crew.hyperspace_reserved_short": {"params": []},
+    "crew.hyperspace_reserved": {"params": []},
+    "crew.hyperspace_busy_reason": {"params": []},
+    "hyperspace.resource_reference_hint": {"params": ["level", "cleared"]},
     "hyperspace.recent_result": {"params": ["weapon", "level", "reason", "elapsed", "point", "refund", "stage", "main_point"]},
     "hyperspace.result_success": {"params": []},
     "hyperspace.result_failed": {"params": []},

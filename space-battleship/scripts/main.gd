@@ -146,6 +146,7 @@ var max_upgrade_buttons: Dictionary = {}
 var EQUIPMENT_PAGES: Array = []
 var equipment_panel: Control
 var crew_panel: Control
+var crew_hyperspace_signature := ""
 var planet_panel: Control
 var chrono_panel: Control
 var galaxy_panel: Control
@@ -595,6 +596,13 @@ func invalidate_equipment_projections() -> void:
 
 func on_event(kind: String, info: Dictionary) -> void:
 	match kind:
+		"hyperspace_changed":
+			var s: Dictionary=game.profile.hyperspace
+			var signature := str([preload("res://scripts/hyperspace_permissions.gd").reserved_crew(s),s.auto.enabled,s.active.get("mode",""),s.active.get("status",""),s.blocked])
+			if signature!=crew_hyperspace_signature:
+				crew_hyperspace_signature=signature
+				if is_instance_valid(crew_panel):crew_panel.invalidate()
+				if is_instance_valid(planet_panel):planet_panel.invalidate()
 		"galaxy_unlocked":
 			if is_instance_valid(equipment_tabs):refresh_tab_visibility()
 			if is_instance_valid(crew_panel):crew_panel.invalidate()

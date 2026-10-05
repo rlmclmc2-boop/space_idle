@@ -552,8 +552,7 @@ func _refresh_task(id: String, refresh_roster := true) -> void:
 	if not refresh_roster:return
 	var available: Array = []
 	for item in host.game.profile.crew:
-		if not host.game.crew.unlocked(host.game, item.crewId) or not str(item.assignmentType).is_empty():continue
-		if not host.game.crew_exploration(str(item.crewId)).is_empty():continue
+		if not host.game.idle_planet_crew(str(item.crewId)):continue
 		available.append(item.crewId)
 	if card.crew_ids != available:
 		var previous := str(card.crew_ids[card.picker.selected]) if card.picker.selected >= 0 and card.picker.selected < card.crew_ids.size() else ""

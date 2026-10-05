@@ -15,6 +15,7 @@ var manual_snapshot_reads=0
 var exit_button: Button
 var manual_reason: Label
 var recent_result: Label
+var resource_reference_hint: Label
 var crew_adapter: Callable
 var hull_capacity_provider: Callable
 var preset_adapter: Callable
@@ -166,7 +167,7 @@ func build_exploration(parent: Node) -> void:
   if crew_adapter.is_valid():crew_adapter.call())
  manual_reason=label(parent,"",20)
  recent_result=label(parent,"",20);recent_result.visible=false
- label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
+ resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
  first_win=label(parent,t("first_win"),22)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
@@ -307,6 +308,7 @@ func refresh_status() -> void:
  if host==null:return
  var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
  put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
+ put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
  var ticket=display_ticket(s)
  put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.config.energy_cap),"ticket":"%.0f"%ticket}))
  var best_time=float(h.best_x1(g,route,int(level.value)))
