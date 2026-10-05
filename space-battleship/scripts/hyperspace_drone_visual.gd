@@ -17,12 +17,24 @@ func sync(bag: Dictionary) -> bool:
   if sources.size()==5:break
  var next=JSON.stringify(sources)
  if next==signature:return false
+ var retained:Array[Material]=[]
+ for node in nodes:retain_materials(node,retained)
  for node in nodes:node.free()
+ retained.clear()
  nodes.clear();identities.clear();muzzles.clear();signature=next;rebuilds+=1
  for source in sources:
   var node=(load("res://assets/hyperspace/models/"+FAMILIES[source[1]]+".glb") as PackedScene).instantiate() as Node3D
   node.name="HyperspaceDrone"+str(nodes.size());node.visible=false;add_child(node);install_materials(node);nodes.append(node);identities.append(str(source[0]));install_muzzles(node,str(source[0]),str(source[1]))
  return true
+func retain_materials(node:Node,retained:Array[Material])->void:
+ if node is GeometryInstance3D:
+  if node.material_override!=null:retained.append(node.material_override)
+  if node.material_overlay!=null:retained.append(node.material_overlay)
+ if node is MeshInstance3D and node.mesh!=null:
+  for i in node.mesh.get_surface_count():
+   var material=node.get_surface_override_material(i)
+   if material!=null:retained.append(material)
+ for child in node.get_children():retain_materials(child,retained)
 func install_materials(node: Node) -> void:
  if node is MeshInstance3D:
   for i in node.mesh.get_surface_count():
