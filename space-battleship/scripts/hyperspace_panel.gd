@@ -336,7 +336,11 @@ func display_ticket(s: Dictionary) -> float:
  return float(h.config.ticket)
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
- var text=t("idle");var fill=0.0
+ var text=t("auto_waiting") if s.auto.enabled else t("auto_stopped");var fill=0.0
+ var effective=host.game.hyperspace.online_config(host.game)
+ if s.auto.enabled and a.is_empty():
+  if s.blocked:text=t("auto_waiting_warehouse")
+  elif host.game.hyperspace.auto_eligible(host.game) and float(s.energy)<float(effective.energy_cap):text=t("auto_waiting_energy")
  var session=host.game.manual_hyperspace
  var result:Dictionary=session.last_result
  put(recent_result,"visible",not result.is_empty())
@@ -358,9 +362,9 @@ func refresh_progress() -> void:
  put(exit_button,"visible",host.game.manual_hyperspace.active)
  refresh_start_reason()
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
- put(energy_bar,"max_value",float(host.game.hyperspace.config.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(host.game.hyperspace.config.energy_cap)))
+ put(energy_bar,"max_value",float(effective.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(effective.energy_cap)))
  var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(host.game.hyperspace.config.energy_cap),"ticket":"%.0f"%ticket}))
+ put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(effective.energy_cap),"ticket":"%.0f"%ticket}))
 func refresh_list() -> void:
  list_refreshes+=1
  var ids: Array=bag.warehouse+bag.overflow
