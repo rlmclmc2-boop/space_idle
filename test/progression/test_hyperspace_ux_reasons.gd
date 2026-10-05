@@ -32,5 +32,5 @@ func run()->void:
  p.unseal.pressed.emit();check(not g.profile.hyperspace.inventory.sealed.has(d.id),"Native claim commits at exact gate")
  var claimed=JSON.stringify(g.profile.hyperspace);check(not g.hyperspace.claim_sealed(g,d.id) and JSON.stringify(g.profile.hyperspace)==claimed,"Repeat claim cannot mutate inventory")
  var text:String=preload("res://scripts/ui_text.gd").t("planet.reforge_confirm",{"level":"8"})
- check(text.contains("保留铁与铀余额") and text.contains("删除全部无人机") and text.contains("自动探索设置") and text.contains("封存"),"Confirmation discloses actual resource preservation, current empty keep selection and hyperspace resets")
+ check(text.contains("保留铁与铀余额") and text.contains("未选择的无人机将删除") and text.contains("自动探索设置") and text.contains("封存"),"Confirmation discloses actual resource preservation, explicit retention selection and hyperspace resets")
  print("HYPERSPACE_UX_REASONS ",checks," checks ",failures," failures");quit(1 if failures else 0)

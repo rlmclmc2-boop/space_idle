@@ -1,5 +1,14 @@
 {
   "entries": {
+    "planet.reforge_brief": {"params": []},
+    "planet.reforge_selection": {"params": ["selected", "capacity", "discarded"]},
+    "planet.reforge_selection_hint": {"params": []},
+    "planet.reforge_drone": {"params": ["weapon", "level", "quality", "favorite", "gate"]},
+    "planet.reforge_no_drones": {"params": []},
+    "planet.reforge_stale": {"params": []},
+    "planet.reforge_over_capacity": {"params": []},
+    "planet.reforge_failed": {"params": []},
+
     "hyperspace.manual_busy": {"params": []},
     "hyperspace.manual_level_unavailable": {"params": []},
     "hyperspace.manual_energy_needed": {"params": ["ticket"]},

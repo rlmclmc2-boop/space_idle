@@ -11473,7 +11473,7 @@
     "key": "planet.reforge_confirm",
     "category": "planet",
     "source": "planet_panel.gd",
-    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n异空间能源恢复初始值；材料、进行中的探索、自动探索设置、改造命令与挂载模块成长重置。保留异空间通关时间记录。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。当前确认入口未选择保留无人机，将删除全部无人机。\n\n每颗星球只能重铸一次。",
+    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n异空间能源恢复初始值；材料、进行中的探索、自动探索设置、改造命令与挂载模块成长重置。保留异空间通关时间记录。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。请在本窗口选择保留名单；未选择的无人机将删除。\n\n每颗星球只能重铸一次。",
     "params": "{level}"
   },
   {
@@ -14324,5 +14324,61 @@
     "source": "hyperspace_panel.gd",
     "text": "本轮到达第 {level} 关后可领取。",
     "params": "{level}"
+  },
+  {
+    "key": "planet.reforge_selection",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "已选 {selected}/{capacity} 架；未选 {discarded} 架将删除。",
+    "params": "{selected},{capacity},{discarded}"
+  },
+  {
+    "key": "planet.reforge_selection_hint",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "选择本次保留的无人机（收藏置顶）；保留后封存并卸装，到达显示关卡才能领取。",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge_drone",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "{weapon} · 等级 {level} · {quality} · {favorite} · 领取关卡 {gate}",
+    "params": "{weapon},{level},{quality},{favorite},{gate}"
+  },
+  {
+    "key": "planet.reforge_no_drones",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "当前没有可保留的无人机。",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge_stale",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "无人机库存或轮次已变更，请取消后重新选择。",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge_over_capacity",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "已超过本次保留名额，请减少选择。",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge_failed",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "当前无法重铸，请取消并检查条件。",
+    "params": ""
+  },
+  {
+    "key": "planet.reforge_brief",
+    "category": "planet",
+    "source": "hyperspace_reforge_dialog.gd",
+    "text": "本轮成长和异空间材料重置；铁、铀和时空粒子保留。",
+    "params": ""
   }
 ]
