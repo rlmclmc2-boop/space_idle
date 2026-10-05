@@ -43,6 +43,7 @@ for mode in a.modes.split(','):
  diag=project/'diagnostics'/label
  if r.returncode:raise SystemExit('Stage failed: '+str(diag/'run.log'))
  result=json.loads((diag/'stage-performance.json').read_text());result['diagnostics']=str(diag);result['process_wall_seconds']=time.perf_counter()-start
+ result['complete_interval']=result['x1_seconds']+1e-6>=a.seconds
  results.append(result);print(f"{mode}: {result['wall_seconds']:.3f}s wall for {result['x1_seconds']:.3f}s X1 = {result['x1_per_wall']:.3f}x",flush=True)
 base=next((r for r in results if r['mode']=='full'),None)
 if base:
@@ -58,3 +59,4 @@ if base:
   comparisons.append({'mode':r['mode'],'samples':len(x),'exact_state_equal':len(x)==len(y) and not diffs,'first_mismatch':diffs[0] if diffs else None,'mismatched_samples':len(diffs),'native_actions_equal':actions(base)==actions(r),'speedup':base['wall_seconds']/r['wall_seconds'],'final_rng_equal':base['final_rng']==r['final_rng']})
 summary={'source_checkpoint':str(a.checkpoint),'source_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest(),'source_x1':header['x1_seconds'],'source_manifest':old,'target_manifest':target,'results':results,'comparisons':comparisons,'scope':'Explicit same-production/data/P2 policy stage branch; formal battle regeneration, no grants/chrono/dt changes. Real native input/controller and cannon/missile/beam/drone/rail providers retained. Approximate headless combat is a separate passive probe.'}
 (out/'summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(comparisons,indent=2))
+if any(not r['complete_interval'] for r in results) or any(not c['exact_state_equal'] or not c['native_actions_equal'] for c in comparisons):raise SystemExit('Native stage interval incomplete or exact invariants failed; evidence retained')
