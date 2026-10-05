@@ -44,6 +44,7 @@ static func crew_level(g,id: String) -> int:
 static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -> bool:
 	if not profile.has("hyperspace"):return true
 	var s: Dictionary=profile.hyperspace
+	if not s.active.is_empty() and not s.active.get("return_state",{}).is_empty() and not preload("res://scripts/hyperspace_main_return.gd").binding_valid(s.active.return_journey,profile,data):return false
 	var bag: Dictionary=s.inventory
 	if bag.equipped.size()>int(c.hull_capacities.get(str(profile.get("selectedShip","")),0)):return false
 	for id in bag.drones:

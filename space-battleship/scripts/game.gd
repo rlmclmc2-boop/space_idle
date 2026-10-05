@@ -259,12 +259,14 @@ func load_progress() -> void:
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
 	# Reject a future/corrupt subsystem before changing any authoritative balance.
-	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,hyperspace.config)):
+	var validation_db=manual_hyperspace.base_db if manual_hyperspace.active else db
+	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,validation_db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,validation_db.data,hyperspace.config)):
 		hyperspace.last_error="invalid_hyperspace_save"
 		return
 	invalidate_stat_cache()
 	login_chrono_particles = 0.0
 	if int(raw.get("version",0)) not in [2,3,4,SAVE_VERSION]:return
+	manual_hyperspace.reset_for_load(self)
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
@@ -389,6 +391,10 @@ func load_journey(value) -> void:
 				profile.journey.pendingUnlocks.append(key)
 
 func resume_progress() -> void:
+	if not manual_hyperspace.loaded_return.is_empty():
+		var recovered=manual_hyperspace.loaded_return;manual_hyperspace.loaded_return={};profile.erase("journey")
+		preload("res://scripts/hyperspace_main_return.gd").restore(self,recovered.state,recovered.journey)
+		return
 	var checkpoint: Dictionary = profile.get("journey", {})
 	profile.erase("journey")
 	if not checkpoint.is_empty():
@@ -1429,6 +1435,7 @@ func set_planet_auto(id: String, enabled: bool) -> bool:
 	return true
 
 func can_reforge_planet(id: String) -> bool:
+	if manual_hyperspace.active:return false
 	return planet_unlocked(id) and not planet_progress(id).get("conquered",false) and planet_buildings.built(self,id,"shipyard")
 
 func planet_reforge_start(id: String) -> int:
@@ -1472,6 +1479,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.chronoParticles=profile.chronoParticles
 	next.productionElapsed=production_time()
 	profile=next
+	manual_hyperspace.cancel_queue(self,"round_changed")
 	hyperspace.scheduler.reset()
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
@@ -1878,6 +1886,12 @@ func configure_hyperspace_routes(routes: Dictionary) -> bool:
 
 func load_hyperspace_routes(binding: Variant=null,candidate: Variant=null) -> bool:
 	return manual_hyperspace.load_production(self,binding,candidate)
+
+func request_hyperspace(route:String,level:int)->bool:
+	return manual_hyperspace.request(self,route,level)
+
+func cancel_hyperspace_request()->bool:
+	return manual_hyperspace.cancel_queue(self)
 
 func start_hyperspace(route: String,level: int) -> bool:
 	return manual_hyperspace.start(self,route,level)
@@ -2619,9 +2633,9 @@ func advance_enemy_shields(dt: float) -> void:
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 
 func tick(dt: float) -> void:
-	if manual_hyperspace.active and not paused and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
-	if paused:
-		return
+	if paused:return
+	manual_hyperspace.dispatch_queued(self)
+	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
 	profile.productionElapsed=production_time()+dt
 	hyperspace.advance(self,dt)
 	enhancement_branches.advance_weapons(self,dt)

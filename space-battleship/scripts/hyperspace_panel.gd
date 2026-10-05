@@ -54,6 +54,7 @@ var best: Label
 var status: Label
 var progress: ProgressBar
 var start_button: Button
+var cancel_queue_button:Button
 var crew_button: Button
 var claim_button: Button
 var first_win: Label
@@ -112,7 +113,7 @@ func option(parent: Node) -> OptionButton:
 func setup(owner) -> void:
  host=owner;commands.setup(self)
  manual_adapter=func(selected_route,selected_level):
-  if not host.game.start_hyperspace(selected_route,selected_level):status.text=t("command_failed")
+  if not host.game.request_hyperspace(selected_route,selected_level):status.text=t("command_failed")
  manual_ready_provider=func():return bool(manual_projection.get("manual_ready",false))
  refresh_manual_status()
  crew_adapter=commands.show_crew
@@ -160,7 +161,7 @@ func build_exploration(parent: Node) -> void:
  var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
  label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
  label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
- var commands=row(parent);start_button=button(commands,"start",start_manual);exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
+ var commands=row(parent);start_button=button(commands,"queue_start",start_manual);cancel_queue_button=button(commands,"queue_cancel",func():host.game.cancel_hyperspace_request();refresh_progress());cancel_queue_button.visible=false;exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
  manual_reason=label(parent,"",20)
  label(parent,t("explore_hint"),20);label(parent,t("auto_hint"),20)
@@ -273,7 +274,7 @@ func save_filter() -> void:
  if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
- if kind in ["hyperspace_changed","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
+ if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
   dirty=true
   if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
@@ -316,6 +317,7 @@ func refresh_start_reason() -> void:
  var reason=""
  var g=host.game;var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace
  if not manual_ready():reason=manual_error_text()
+ elif not g.manual_hyperspace.queued.is_empty():reason=t("queue_already")
  elif not s.active.is_empty():reason=t("manual_busy")
  elif not h.eligible_level(g,route,int(level.value)):reason=t("manual_level_unavailable")
  elif float(s.energy)<float(h.config.ticket):reason=t("manual_energy_needed",{"ticket":"%.0f"%float(h.config.ticket)})
@@ -329,11 +331,18 @@ func display_ticket(s: Dictionary) -> float:
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
  var text=t("idle");var fill=0.0
+ var session=host.game.manual_hyperspace
+ put(cancel_queue_button,"visible",not session.queued.is_empty())
+ if not session.queued.is_empty():
+  var waiting=session.boundary_reason(host.game)
+  text=t("queue_wait",{"weapon":t(host.game.hyperspace.config.routes[session.queued.route].weapon),"level":str(int(session.queued.level)),"reason":t("queue_wait_"+waiting) if waiting in ["battle","guard","unlock","projectiles"] else t("queue_wait_ready")})
+ elif not session.queue_error.is_empty():text=t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload"] else t("command_failed")
  if not a.is_empty():
   if a.status=="completed_pending":text=t("blocked") if s.blocked else t("pending");fill=100.0
   elif a.mode=="auto":
    fill=100.0*float(a.work)/maxf(0.001,float(a.duration));text=t("progress",{"work":"%.1f"%float(a.work),"duration":"%.1f"%float(a.duration)})
   else:text=t("manual")
+  if not session.queue_error.is_empty():text+="\n"+(t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload"] else t("command_failed"))
  put(status,"text",text);put(status,"modulate",Color("ff7979") if s.blocked or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
  put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
  put(exit_button,"visible",host.game.manual_hyperspace.active)

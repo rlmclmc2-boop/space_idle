@@ -1,5 +1,6 @@
 extends RefCounted
 ## Route IDs are injected from the final encounter owner, never borrowed from mainline.
+const Return=preload("res://scripts/hyperspace_main_return.gd")
 const View=preload("res://scripts/hyperspace_encounter_database.gd")
 const RewardBinding=preload("res://scripts/hyperspace_reward_binding.gd")
 var reward_binder:RefCounted
@@ -14,6 +15,10 @@ var run_id:=0
 var active:=false
 var initializing:=false
 var last_error:=""
+var queued:Dictionary={}
+var queue_error:=""
+var return_state:Dictionary={}
+var loaded_return:Dictionary={}
 func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 	if active:return false
 	route_ids={};registry={};production_accepted=false;reward_binder=null
@@ -54,34 +59,72 @@ func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 			if not str(resolver.call("explicit_error",row.slots,enemies,row.formation_positions)).is_empty():last_error="encounter_spec_invalid";return false
 			seen[id]=true
 	route_ids=routes.duplicate(true);registry=separate.duplicate(true);production_accepted=false;last_error="";return true
+func request(g,route:String,level:int)->bool:
+	if active or not g.profile.hyperspace.active.is_empty():queue_error="busy";return false
+	if not production_accepted or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level):queue_error="unavailable";return false
+	if float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):queue_error="energy";return false
+	if not queued.is_empty():return queued.route==route and int(queued.level)==level
+	queued={"route":route,"level":level,"round":int(g.profile.hyperspace.round_id)};queue_error=""
+	g.event.emit("hyperspace_queue",{"status":"queued"});return true
+func cancel_queue(g,reason:String="")->bool:
+	if queued.is_empty():return false
+	queued={};queue_error=reason;g.event.emit("hyperspace_queue",{"status":"cancelled","reason":reason});return true
+func boundary_reason(g)->String:
+	if active:return "busy"
+	if g.profile.loop:return "guard"
+	if not g.pending_unlocks.is_empty():return "unlock"
+	if g.state not in [g.State.MAIN_MENU,g.State.LEVEL_SELECT,g.State.TRAVEL,g.State.LEVEL_CLEAR,g.State.UPGRADE]:return "battle"
+	for enemy in g.enemies:
+		if g.N.compare(enemy.hp,0)>0:return "battle"
+	if not g.projectiles.is_empty() or (g.get("missile_queue") is Array and not g.get("missile_queue").is_empty()) or not g.jewel_repeats.is_empty() or not g.drone_combat.delayed.is_empty():return "projectiles"
+	return ""
+func dispatch_queued(g)->bool:
+	if queued.is_empty():return false
+	if int(queued.round)!=int(g.profile.hyperspace.round_id):cancel_queue(g,"round_changed");return false
+	if not production_accepted or not route_ids.has(queued.route) or not g.hyperspace.eligible_level(g,str(queued.route),int(queued.level)):cancel_queue(g,"unavailable");return false
+	if not g.profile.hyperspace.active.is_empty():cancel_queue(g,"busy");return false
+	if float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):cancel_queue(g,"energy");return false
+	if not boundary_reason(g).is_empty():return false
+	var choice=queued.duplicate();queued={}
+	if not start(g,str(choice.route),int(choice.level)):
+		queue_error="unavailable";g.event.emit("hyperspace_queue",{"status":"rejected","reason":queue_error});return false
+	queue_error="";g.event.emit("hyperspace_queue",{"status":"dispatched"});return true
+func reset_for_load(g)->void:
+	cancel_queue(g,"reload")
+	if active:g.db=base_db
+	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={}
 func start(g,route: String,level: int) -> bool:
-	if active or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
+	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket) or not boundary_reason(g).is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
 		bound_registry=reward_binder.bind(g.db,registry,level)
 		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
 		production_accepted=true
-	var checkpoint: Dictionary={"stage":g.stage,"distance":g.retreat_target if g.state==g.State.RETREAT else g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}
-	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual")
+	# Existing earned drops settle by their ordinary rule, before freezing the main run.
+	var point=Return.journey(g);var frozen=Return.capture(g)
+	if not Return.valid(frozen,point,g.db.levels.size()):last_error="invalid_main_return";return false
+	g.settle_drops();frozen.run_resources=g.run_resources.duplicate(true)
+	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual","",{"journey":point,"state":frozen})
 	if receipt.is_empty():return false
-	base_db=g.db;return_journey=checkpoint;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
+	base_db=g.db;return_journey=point;return_state=frozen;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
 	var view:=View.new();view.configure(base_db,level,route_ids[route],bound_registry)
-	g.profile.hyperspace.active.return_journey=checkpoint.duplicate(true)
 	g.db=view;active=true;initializing=true
 	var started: bool=g.start(level,false)
 	initializing=false
-	if not started:
-		finish(g,false);return false
+	if not started:finish(g,false);return false
 	g.event.emit("hyperspace_manual",{"active":true,"route":route,"level":level});return true
 func finish(g,success: bool) -> bool:
 	if not active:return false
 	g.settle_drops()
 	var elapsed: float=float(g.profile.hyperspace.active.get("work",0))
 	if not g.hyperspace.complete(g,round_id,run_id,success,{},elapsed,success):return false
-	active=false;g.db=base_db;var checkpoint: Dictionary=return_journey.duplicate(true)
-	return_journey={};base_db=null;g.enemies.clear();g.projectiles.clear();g.cooldowns.clear();g.drone_combat.reset();g.invalidate_stat_cache();g.reset_player()
-	if int(checkpoint.state) in [g.State.TRAVEL,g.State.COMBAT,g.State.LEVEL_CLEAR,g.State.RETREAT]:g.start(int(checkpoint.stage),bool(checkpoint.loop),checkpoint)
-	else:g.change_state(int(checkpoint.state));g.profile.loop=bool(checkpoint.loop)
+	active=false;g.db=base_db
+	var point=return_journey;var frozen=return_state
+	return_journey={};return_state={};base_db=null
+	Return.restore(g,frozen,point)
+	# A pending reward no longer owns a suspended main state after it has returned.
+	if not g.profile.hyperspace.active.is_empty():
+		g.profile.hyperspace.active.return_journey={};g.profile.hyperspace.active.return_state={}
 	g.event.emit("hyperspace_manual",{"active":false,"success":success});return true
 func positions(g,slots: Array,explicit: Variant) -> Dictionary:
 	return preload("res://scripts/enemy_formation.gd").new().call("positions",slots,g.db.enemies,explicit)

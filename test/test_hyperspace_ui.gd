@@ -49,7 +49,9 @@ func run() -> void:
  var base_db=g.db;var ticket_energy=float(g.profile.hyperspace.energy)
  for i in p.routes.size():
   await click(p.routes[i]);p.level.value=5;await click(p.start_button)
-  check(g.manual_hyperspace.active and g.profile.hyperspace.active.route==g.hyperspace.config.routes.keys()[i],"Actual selected route starts")
+  check(not g.manual_hyperspace.queued.is_empty() and not g.manual_hyperspace.active and g.profile.hyperspace.energy==ticket_energy,"Actual selected route queues without ticket")
+  g.paused=false;g.tick(0.001)
+  check(g.manual_hyperspace.active and g.profile.hyperspace.active.route==g.hyperspace.config.routes.keys()[i],"Actual selected route dispatches at safe standby")
   check(g.profile.hyperspace.energy==ticket_energy-float(g.hyperspace.config.ticket),"One actual manual ticket charged")
   g.spawn_group();g.paused=true;scene._process(0)
   check(not g.enemies.is_empty() and g.db.levels[4].groups.size()==10,"Formal first group spawns in isolated ten-wave view")

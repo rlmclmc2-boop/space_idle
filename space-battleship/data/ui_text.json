@@ -14380,5 +14380,19 @@
     "source": "hyperspace_reforge_dialog.gd",
     "text": "本轮成长和异空间材料重置；铁、铀和时空粒子保留。",
     "params": ""
-  }
+  },
+  {"key": "hyperspace.queue_start", "text": "排队挑战", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_cancel", "text": "取消排队", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_already", "text": "已有挑战请求在排队；尚未扣票，可取消。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait", "text": "已排队：{weapon} 等级{level}；{reason}。尚未扣票，可取消。", "params": "{weapon},{level},{reason}", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait_battle", "text": "等待当前战点结束", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait_guard", "text": "等待你停止守点", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait_unlock", "text": "等待主线解锁提示确认", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait_projectiles", "text": "等待残留弹幕结清", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_wait_ready", "text": "等待继续航行后派发", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_failed_energy", "text": "排队已取消：派发前能源不足，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_failed_busy", "text": "排队已取消：已有探索或待领取奖励，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_failed_unavailable", "text": "排队已取消：路线或等级当前不可用，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_failed_round_changed", "text": "重铸已取消未扣票的挑战排队。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
+  {"key": "hyperspace.queue_failed_reload", "text": "读档已取消未扣票的挑战排队。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"}
 ]

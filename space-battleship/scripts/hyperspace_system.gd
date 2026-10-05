@@ -36,7 +36,9 @@ func load_state(g,raw: Variant) -> bool:
 		last_error="invalid_hyperspace_save";return false
 	g.profile.hyperspace=raw.duplicate(true)
 	var receipt: Dictionary=g.profile.hyperspace.active
-	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":complete(g,int(receipt.round_id),int(receipt.run_id),false)
+	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
+		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
+		complete(g,int(receipt.round_id),int(receipt.run_id),false)
 	return true
 
 func snapshot(g) -> Dictionary:
@@ -72,9 +74,10 @@ func best_x1(g,route: String,level: int) -> float:
 	if not eligible_level(g,route,level):return 0.0
 	return float(g.profile.hyperspace.history.get(route,{}).get(str(level),0.0))
 
-func start(g,route: String,level: int,mode: String,crew_id: String="") -> Dictionary:
+func start(g,route: String,level: int,mode: String,crew_id: String="",main_return:Dictionary={}) -> Dictionary:
 	var s: Dictionary=g.profile.hyperspace
 	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or not generation_ready():return {}
+	if not main_return.is_empty() and (mode!="manual" or not main_return.get("journey") is Dictionary or not main_return.get("state") is Dictionary or not preload("res://scripts/hyperspace_main_return.gd").valid(main_return.state,main_return.journey,g.db.levels.size())):return {}
 	var duration:=0.0;var ticket:=float(config.ticket)
 	if mode=="auto":
 		if not Bag.has_space(s.inventory,config) or float(s.energy)<float(online_config(g).energy_cap):return {}
@@ -86,7 +89,8 @@ func start(g,route: String,level: int,mode: String,crew_id: String="") -> Dictio
 	if float(s.energy)<ticket:return {}
 	var next: Dictionary=s.duplicate(true)
 	next.energy=float(s.energy)-ticket;next.blocked=false
-	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":{},"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
+	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
+	if not main_return.is_empty():next.active.return_state=main_return.state.duplicate(true)
 	next.next_run+=1;publish(g,next,"started")
 	return next.active.duplicate(true)
 
