@@ -1,0 +1,45 @@
+{
+  "source_x1": 42767.8833349779,
+  "clear21": 48944.7000029029,
+  "clear22": 56228.1833377201,
+  "baseline_clear21": 50332.2333365189,
+  "baseline_clear22": 61913.7166722117,
+  "clear22_saving_s": 5685.533334491607,
+  "candidate20to22_h": 3.738972222983943,
+  "baseline20to22_h": 5.3182870381205,
+  "wall_seconds": 1447.709884,
+  "input_failure": {},
+  "scope": "Sameoriginal2dactual20CP andformalload,only5resRatioleaves, oldknownterminalreportlambdaerror retained; actualclearCP/actionsvalid; notfull30timingpass",
+  "files": {
+    "checkpoint.bin.gz": {
+      "original_sha256": "aa65b5ec97fd6d0d9ad11859334aa13d1b344593942db65e7d0bcbadf8f87ff0",
+      "compressed_sha256": "0a35de02ed08aea2ce7823c41940762a7327a967a9a0a0d4b0a3b8be54310c29",
+      "original_bytes": 973219,
+      "compressed_bytes": 44219,
+      "credential_scan_hits": 0
+    },
+    "actions.jsonl.gz": {
+      "original_sha256": "61913d99a20bd16ae9e76525d5ee1e021b9f1f5c9714ee74c0e33bf0f82e9d5b",
+      "compressed_sha256": "a0e06aaf9ea140933d01ca10fcbdd85b1d48c85f33703c606eeb064d4b3bc5c0",
+      "original_bytes": 2384038,
+      "compressed_bytes": 115179,
+      "credential_scan_hits": 0
+    },
+    "run.log.gz": {
+      "original_sha256": "09cc6f113d909ab61343195f0166ca6c68fe4be246396397fdc36cc8919704c2",
+      "compressed_sha256": "a8854a000cdb96c9fd6ae21957f940c6e8b5d99c796e29d90ed657db772747c8",
+      "original_bytes": 36617,
+      "compressed_bytes": 2015,
+      "credential_scan_hits": 0
+    },
+    "longrun-summary.json.gz": {
+      "original_sha256": "035b85bc65a534724e2c1d3e4260508a474a848234fc5f5f637ddbd1e473e0ea",
+      "compressed_sha256": "f200f898fc409bef639ad21889e04481489c99f3f716132fb575ccd678cbd1da",
+      "original_bytes": 1416682,
+      "compressed_bytes": 86363,
+      "credential_scan_hits": 0
+    }
+  },
+  "source_commit": "c90fd6f8697e74756ea1ad6536891deb20bbd2d2",
+  "content_scope": "Owner approved public game-only longtest raw CP/nativeaction/engine logs andsummary; no unrelated files. Sameexactsource20CP, distinct resourcesexperiment, known reportingexception retained."
+}
