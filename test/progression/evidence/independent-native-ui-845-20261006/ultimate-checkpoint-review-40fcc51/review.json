@@ -1,0 +1,23 @@
+{
+  "head": "40fcc51a8b20aa51f2cc683eda6b57490d685e70",
+  "checkout": "/tmp/ultimate-checkpoint-review-40fcc51",
+  "clean": true,
+  "changed_files": [
+    "test/progression/hyperspace_longrun.gd",
+    "test/progression/test_ultimate_checkpoint_safety.gd"
+  ],
+  "scope": "Code review only; father owns persistence fixture execution; no campaign, payments, material creation or new longrun",
+  "original_archive_identity_gap_fixed": true,
+  "original_primary_write_order_gap_fixed": true,
+  "failure_semantics": {
+    "primary_failure": "Restore both in-memory pending arrays, set checkpoint_io, return; no archive attempt and no next gameplay dispatch",
+    "archive_failure": "Primary already contains fresh paid business state/chain; restore ultimate pending in memory, set ultimate_chain_checkpoint_io, return and stop",
+    "pending_on_disk": "capture occurs after pending arrays clear, so fresh primary does not persist failed archive retry intent",
+    "same_identity_reentry": "write_once ERR_ALREADY_EXISTS remains explicit fail-stop; no overwrite or implicit retry",
+    "unwritable_primary": "cannot claim new paid state persisted when primary write fails"
+  },
+  "tests_read_not_run": [
+    "test_ultimate_checkpoint_safety.gd"
+  ],
+  "real_success_evidence": "Father reports28851dd three original paid CPs checked; success not substituted for IO failure coverage"
+}
