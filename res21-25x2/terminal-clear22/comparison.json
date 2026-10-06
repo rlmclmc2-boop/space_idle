@@ -1,0 +1,1678 @@
+{
+  "status": "actual_clear22_candidate_only",
+  "source_cp_sha256": "cf5042c688e2418290afdfa8e6f646e94f041acc8cb5c86291b6af8531bb9084",
+  "same_formal_reload_source": true,
+  "code_commit": "c90fd6f8697e74756ea1ad6536891deb20bbd2d2",
+  "baseline": {
+    "actual_clears": {
+      "21": 50332.2333365189,
+      "22": 61913.7166722117
+    },
+    "window_seconds": 19145.833337233802,
+    "window_hours": 5.3182870381205,
+    "completed_five_paid_waits": [
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 42960.1833350171,
+        "paid_growth_ready": 42968.8833350188,
+        "seconds": 8.700000001699664,
+        "cycles": 0,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1096,
+          "reactor": 71,
+          "research": 298,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1101,
+          "reactor": 71,
+          "research": 298,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 43117.2166683824,
+        "paid_growth_ready": 43414.516668443,
+        "seconds": 297.3000000605971,
+        "cycles": 26,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1117,
+          "reactor": 72,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1122,
+          "reactor": 72,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 43554.7666684715,
+        "paid_growth_ready": 44148.7666685925,
+        "seconds": 594.0000001209992,
+        "cycles": 58,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1127,
+          "reactor": 73,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1132,
+          "reactor": 73,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 44278.9666686191,
+        "paid_growth_ready": 45172.6666688011,
+        "seconds": 893.7000001820052,
+        "cycles": 88,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1134,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1139,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 45304.2000021613,
+        "paid_growth_ready": 46198.2000023434,
+        "seconds": 894.0000001821027,
+        "cycles": 91,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1140,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1145,
+          "reactor": 74,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 46407.7833357194,
+        "paid_growth_ready": 47002.9833358407,
+        "seconds": 595.2000001212946,
+        "cycles": 63,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1147,
+          "reactor": 74,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1152,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 47128.0333358662,
+        "paid_growth_ready": 47722.9333359874,
+        "seconds": 594.9000001211971,
+        "cycles": 71,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1154,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1159,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 47849.2000026798,
+        "paid_growth_ready": 48743.5000028619,
+        "seconds": 894.3000001821056,
+        "cycles": 119,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1160,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1165,
+          "reactor": 76,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 48854.0833362178,
+        "paid_growth_ready": 49449.2833363391,
+        "seconds": 595.2000001212946,
+        "cycles": 87,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1167,
+          "reactor": 76,
+          "research": 304,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1172,
+          "reactor": 77,
+          "research": 306,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 49597.4333363692,
+        "paid_growth_ready": 50192.6333364905,
+        "seconds": 595.2000001213019,
+        "cycles": 96,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1172,
+          "reactor": 77,
+          "research": 306,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1177,
+          "reactor": 77,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 50992.8833366535,
+        "paid_growth_ready": 51586.5833367745,
+        "seconds": 593.7000001210035,
+        "cycles": 24,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1182,
+          "reactor": 77,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1187,
+          "reactor": 78,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 51994.3666701909,
+        "paid_growth_ready": 52588.0666703119,
+        "seconds": 593.7000001209963,
+        "cycles": 29,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1190,
+          "reactor": 78,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1195,
+          "reactor": 79,
+          "research": 308,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 52934.7166703825,
+        "paid_growth_ready": 53528.7166705035,
+        "seconds": 594.0000001209992,
+        "cycles": 35,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1197,
+          "reactor": 79,
+          "research": 309,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1202,
+          "reactor": 79,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 53842.2500039007,
+        "paid_growth_ready": 54736.2500040828,
+        "seconds": 894.0000001821027,
+        "cycles": 62,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1203,
+          "reactor": 80,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1208,
+          "reactor": 80,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 55003.7333374707,
+        "paid_growth_ready": 55897.4333376527,
+        "seconds": 893.7000001819979,
+        "cycles": 67,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1209,
+          "reactor": 80,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1214,
+          "reactor": 81,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 56125.4166710325,
+        "paid_growth_ready": 57019.4166712146,
+        "seconds": 894.0000001821027,
+        "cycles": 77,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1215,
+          "reactor": 81,
+          "research": 312,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1220,
+          "reactor": 81,
+          "research": 314,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 57358.7666712838,
+        "paid_growth_ready": 58252.1666714658,
+        "seconds": 893.400000181995,
+        "cycles": 96,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1221,
+          "reactor": 81,
+          "research": 315,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 13,
+          "modules": 1226,
+          "reactor": 82,
+          "research": 315,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 58582.4833381997,
+        "paid_growth_ready": 59476.1833383818,
+        "seconds": 893.7000001820998,
+        "cycles": 115,
+        "baseline_growth": {
+          "enhancement": 13,
+          "modules": 1228,
+          "reactor": 82,
+          "research": 315,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 13,
+          "modules": 1233,
+          "reactor": 82,
+          "research": 315,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 59721.0333384317,
+        "paid_growth_ready": 60614.7333386138,
+        "seconds": 893.7000001820998,
+        "cycles": 125,
+        "baseline_growth": {
+          "enhancement": 13,
+          "modules": 1234,
+          "reactor": 82,
+          "research": 315,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 13,
+          "modules": 1239,
+          "reactor": 83,
+          "research": 316,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 60915.0333386749,
+        "paid_growth_ready": 61509.333338796,
+        "seconds": 594.300000121104,
+        "cycles": 92,
+        "baseline_growth": {
+          "enhancement": 13,
+          "modules": 1240,
+          "reactor": 83,
+          "research": 317,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 13,
+          "modules": 1245,
+          "reactor": 83,
+          "research": 318,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      }
+    ],
+    "paid_wait_total_seconds": 13700.700002791098,
+    "completed_growth_waits": 20,
+    "actual_farm_cycle_wins": 1421,
+    "actual_deaths": {
+      "21": 20,
+      "22": 21
+    },
+    "deaths_total": 41,
+    "paid_module_levels": 151,
+    "actual_visible_resource_debits": {
+      "upgrade_slot": {
+        "count": 151,
+        "iron": 4054800000000000.0,
+        "uranium": 0.0
+      },
+      "scientist_max": {
+        "count": 18,
+        "iron": 49130605591963.0,
+        "uranium": 2456530279596.0
+      },
+      "reactor_max": {
+        "count": 12,
+        "iron": 0.0,
+        "uranium": 1352958883693.2366
+      }
+    },
+    "debits_scope": "Positive resource decrease around logged native transactions; not a full automatic income/expense ledger. Scientist MAX uses both iron and uranium. Ordered growth waits are not paired identical growth states.",
+    "first_normal22_guard_iron_pickups": [
+      {
+        "x1_seconds": 51285.6833367132,
+        "uid": 6445,
+        "actual_credit": {
+          "1": 11458242610885.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 56555641801479.0,
+          "2": 92592054220.309
+        },
+        "resources_after": {
+          "1": 68013884412364.0,
+          "2": 92592054220.309
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 148
+            },
+            {
+              "key": "armour",
+              "level": 148
+            },
+            {
+              "key": "armour",
+              "level": 148
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 51286.2833367133,
+        "uid": 6448,
+        "actual_credit": {
+          "1": 416838954328.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 68013884412364.0,
+          "2": 92592054220.309
+        },
+        "resources_after": {
+          "1": 68430723366692.0,
+          "2": 92592054220.309
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 148
+            },
+            {
+              "key": "armour",
+              "level": 148
+            },
+            {
+              "key": "armour",
+              "level": 148
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 51585.6833367743,
+        "uid": 6510,
+        "actual_credit": {
+          "1": 11458242610885.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 70493848841647.0,
+          "2": 152958836080.309
+        },
+        "resources_after": {
+          "1": 81952091452532.0,
+          "2": 152958836080.309
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 149
+            },
+            {
+              "key": "shield",
+              "level": 149
+            },
+            {
+              "key": "shield",
+              "level": 148
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 51995.8666701912,
+        "uid": 6581,
+        "actual_credit": {
+          "1": 11458242610885.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 50239884140328.0,
+          "2": 109973938064.309
+        },
+        "resources_after": {
+          "1": 61698126751213.0,
+          "2": 109973938064.309
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 149
+            },
+            {
+              "key": "armour",
+              "level": 149
+            },
+            {
+              "key": "shield",
+              "level": 149
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            },
+            {
+              "key": "cannon",
+              "level": 148
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 52587.4666703117,
+        "uid": 6711,
+        "actual_credit": {
+          "1": 433371347933.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 62618630425706.0,
+          "2": 122139917603.967
+        },
+        "resources_after": {
+          "1": 63052001773639.0,
+          "2": 122139917603.967
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 149
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 52935.0166703825,
+        "uid": 6770,
+        "actual_credit": {
+          "1": 11607050956481.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 39792167066082.0,
+          "2": 139145235360.967
+        },
+        "resources_after": {
+          "1": 51399218022563.0,
+          "2": 139145235360.967
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "armour",
+              "level": 150
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            }
+          ]
+        }
+      }
+    ],
+    "trace_bytes": 9850089,
+    "trace_cut_sha256": "421ec9af8353bc16ae3c6519cea7bf746a20c7742bb3848c4241af60d5022043",
+    "rows_through_actual22": 5169,
+    "exclusive_X1_partition_seconds": {
+      "other_progression_noncombat": 397.9333334144758,
+      "other_progression_combat": 4449.63333423993,
+      "paid_farm_wait_noncombat": 34.000000006904884,
+      "paid_farm_wait_combat": 13666.700002784193,
+      "paid_manual_exploration_noncombat": 114.00000002315937,
+      "paid_manual_exploration_combat": 483.5666667651385
+    },
+    "paid_manual_intervals": [
+      {
+        "start": 46209.9666690125,
+        "end": 46274.9666690257,
+        "seconds": 65.00000001319859
+      },
+      {
+        "start": 57031.4333378838,
+        "end": 57160.4500045767,
+        "seconds": 129.0166666928999
+      },
+      {
+        "start": 58274.2666714703,
+        "end": 58371.5833381568,
+        "seconds": 97.31666668649996
+      },
+      {
+        "start": 59481.4000050495,
+        "end": 59571.9666717347,
+        "seconds": 90.56666668519756
+      },
+      {
+        "start": 60630.1500052836,
+        "end": 60720.8166719687,
+        "seconds": 90.66666668510152
+      },
+      {
+        "start": 61686.1833388321,
+        "end": 61811.1833388575,
+        "seconds": 125.00000002540037
+      }
+    ],
+    "partition_scope": "Manual takespriority overfarm ifoverlapping. Remainingtimeincludesnormalprogression, travel, GUI/notices/nativeoperations; operationclickdurationsoverlapcombat andarenotadded. Farmwaitingcriterionminimum5paidmodulelevels."
+  },
+  "experiment": {
+    "actual_clears": {
+      "21": 48944.7000029029,
+      "22": 56228.1833377201
+    },
+    "window_seconds": 13460.300002742195,
+    "window_hours": 3.738972222983943,
+    "completed_five_paid_waits": [
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 42960.1833350171,
+        "paid_growth_ready": 42968.8833350188,
+        "seconds": 8.700000001699664,
+        "cycles": 0,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1106,
+          "reactor": 71,
+          "research": 298,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1111,
+          "reactor": 71,
+          "research": 298,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 43114.3833350485,
+        "paid_growth_ready": 43411.683335109,
+        "seconds": 297.3000000605025,
+        "cycles": 27,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1121,
+          "reactor": 71,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1126,
+          "reactor": 72,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 43531.9333351335,
+        "paid_growth_ready": 44126.2333352546,
+        "seconds": 594.3000001210967,
+        "cycles": 58,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1133,
+          "reactor": 73,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1138,
+          "reactor": 73,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 44250.1166686132,
+        "paid_growth_ready": 44844.4166687343,
+        "seconds": 594.300000121104,
+        "cycles": 58,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1141,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1146,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 44968.3000020928,
+        "paid_growth_ready": 45562.900002214,
+        "seconds": 594.6000001212014,
+        "cycles": 59,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1147,
+          "reactor": 74,
+          "research": 299,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1152,
+          "reactor": 75,
+          "research": 300,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 45687.0000022393,
+        "paid_growth_ready": 46581.0000024214,
+        "seconds": 894.0000001821027,
+        "cycles": 102,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1153,
+          "reactor": 75,
+          "research": 301,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1158,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 46771.7333357936,
+        "paid_growth_ready": 47366.6333359148,
+        "seconds": 594.9000001211971,
+        "cycles": 76,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1160,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1165,
+          "reactor": 75,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 47493.0166692739,
+        "paid_growth_ready": 48087.616669395,
+        "seconds": 594.6000001210996,
+        "cycles": 86,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1166,
+          "reactor": 76,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1171,
+          "reactor": 76,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 21,
+        "push_stage": 21,
+        "started": 48212.133336087,
+        "paid_growth_ready": 48806.133336208,
+        "seconds": 594.0000001209992,
+        "cycles": 89,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1172,
+          "reactor": 77,
+          "research": 303,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1177,
+          "reactor": 77,
+          "research": 304,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 49554.2000030271,
+        "paid_growth_ready": 49848.200003087,
+        "seconds": 294.0000000598957,
+        "cycles": 13,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1189,
+          "reactor": 78,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1194,
+          "reactor": 78,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 50229.483336498,
+        "paid_growth_ready": 50527.3833365587,
+        "seconds": 297.9000000606975,
+        "cycles": 17,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1198,
+          "reactor": 78,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1203,
+          "reactor": 79,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 50843.5666699565,
+        "paid_growth_ready": 51137.2666700163,
+        "seconds": 293.70000005980546,
+        "cycles": 19,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1205,
+          "reactor": 81,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1210,
+          "reactor": 81,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 51398.9333367363,
+        "paid_growth_ready": 51992.3333368572,
+        "seconds": 593.4000001208988,
+        "cycles": 44,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1211,
+          "reactor": 82,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1216,
+          "reactor": 82,
+          "research": 307,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 52217.2166702363,
+        "paid_growth_ready": 52811.5166703574,
+        "seconds": 594.3000001210967,
+        "cycles": 53,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1218,
+          "reactor": 82,
+          "research": 308,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1223,
+          "reactor": 82,
+          "research": 310,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 53075.5333370778,
+        "paid_growth_ready": 53668.9333371987,
+        "seconds": 593.4000001208988,
+        "cycles": 61,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1226,
+          "reactor": 82,
+          "research": 310,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1231,
+          "reactor": 82,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 53832.2500038987,
+        "paid_growth_ready": 54425.6500040196,
+        "seconds": 593.4000001208988,
+        "cycles": 75,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1233,
+          "reactor": 82,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1238,
+          "reactor": 83,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 54569.5833373822,
+        "paid_growth_ready": 55163.5833375032,
+        "seconds": 594.0000001209992,
+        "cycles": 80,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1240,
+          "reactor": 83,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1245,
+          "reactor": 83,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      },
+      {
+        "farm_stage": 22,
+        "push_stage": 22,
+        "started": 55352.3333375417,
+        "paid_growth_ready": 55946.6333376628,
+        "seconds": 594.300000121104,
+        "cycles": 96,
+        "baseline_growth": {
+          "enhancement": 12,
+          "modules": 1247,
+          "reactor": 84,
+          "research": 311,
+          "ship": "Cruiser"
+        },
+        "current_growth": {
+          "enhancement": 12,
+          "modules": 1252,
+          "reactor": 84,
+          "research": 312,
+          "ship": "Cruiser"
+        },
+        "earned_module_delta": 5
+      }
+    ],
+    "paid_wait_total_seconds": 9215.100001877297,
+    "completed_growth_waits": 18,
+    "actual_farm_cycle_wins": 1013,
+    "actual_deaths": {
+      "21": 18,
+      "22": 19
+    },
+    "deaths_total": 37,
+    "paid_module_levels": 149,
+    "actual_visible_resource_debits": {
+      "upgrade_slot": {
+        "count": 149,
+        "iron": 4896850000000000.0,
+        "uranium": 0.0
+      },
+      "scientist_max": {
+        "count": 18,
+        "iron": 59274230947733.0,
+        "uranium": 2963711547385.0
+      },
+      "reactor_max": {
+        "count": 13,
+        "iron": 0.0,
+        "uranium": 1839779561382.0012
+      }
+    },
+    "debits_scope": "Positive resource decrease around logged native transactions; not a full automatic income/expense ledger. Scientist MAX uses both iron and uranium. Ordered growth waits are not paired identical growth states.",
+    "first_normal22_guard_iron_pickups": [
+      {
+        "x1_seconds": 50230.0833364981,
+        "uid": 5347,
+        "actual_credit": {
+          "1": 22657745615336.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 61442957266141.0,
+          "2": 206447862314.309
+        },
+        "resources_after": {
+          "1": 84100702881477.0,
+          "2": 206447862314.309
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "armour",
+              "level": 150
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            },
+            {
+              "key": "cannon",
+              "level": 149
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 50525.8833365584,
+        "uid": 5418,
+        "actual_credit": {
+          "1": 866742695865.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 130994499717417.0,
+          "2": 230687198214.967
+        },
+        "resources_after": {
+          "1": 131861242413282.0,
+          "2": 230687198214.967
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 150
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 50526.1833365585,
+        "uid": 5419,
+        "actual_credit": {
+          "1": 22657745615336.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 131861242413282.0,
+          "2": 230687198214.967
+        },
+        "resources_after": {
+          "1": 154518988028618.0,
+          "2": 230687198214.967
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 150
+            },
+            {
+              "key": "shield",
+              "level": 150
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            },
+            {
+              "key": "cannon",
+              "level": 150
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 51399.2333367363,
+        "uid": 5607,
+        "actual_credit": {
+          "1": 22657745615336.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 55221355151905.0,
+          "2": 308323779754.757
+        },
+        "resources_after": {
+          "1": 77879100767241.0,
+          "2": 308323779754.757
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 152
+            },
+            {
+              "key": "shield",
+              "level": 152
+            },
+            {
+              "key": "shield",
+              "level": 152
+            }
+          ],
+          "weapons": [
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 51692.033336796,
+        "uid": 5685,
+        "actual_credit": {
+          "1": 974936947294.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 139696530873887.0,
+          "2": 196540968069.757
+        },
+        "resources_after": {
+          "1": 140671467821181.0,
+          "2": 196540968069.757
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 152
+            },
+            {
+              "key": "shield",
+              "level": 152
+            },
+            {
+              "key": "shield",
+              "level": 152
+            }
+          ],
+          "weapons": [
+            {
+              "key": "missile",
+              "level": 152
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            },
+            {
+              "key": "cannon",
+              "level": 151
+            }
+          ]
+        }
+      },
+      {
+        "x1_seconds": 52510.6166702961,
+        "uid": 5907,
+        "actual_credit": {
+          "1": 24466432047011.0,
+          "2": 0.0
+        },
+        "resources_before": {
+          "1": 153184264073291.0,
+          "2": 379124690618.757
+        },
+        "resources_after": {
+          "1": 177650696120302.0,
+          "2": 379124690618.757
+        },
+        "loadout": {
+          "defence": [
+            {
+              "key": "armour",
+              "level": 153
+            },
+            {
+              "key": "shield",
+              "level": 153
+            },
+            {
+              "key": "shield",
+              "level": 153
+            }
+          ],
+          "weapons": [
+            {
+              "key": "missile",
+              "level": 152
+            },
+            {
+              "key": "cannon",
+              "level": 152
+            },
+            {
+              "key": "cannon",
+              "level": 152
+            },
+            {
+              "key": "cannon",
+              "level": 152
+            },
+            {
+              "key": "cannon",
+              "level": 152
+            }
+          ]
+        }
+      }
+    ],
+    "trace_bytes": 2387257,
+    "trace_cut_sha256": "d89aa5ea3d984714783081139db4d8a43e390d36af9eae8adda18d6615b83d2e",
+    "rows_through_actual22": 4091,
+    "exclusive_X1_partition_seconds": {
+      "other_progression_noncombat": 358.4666667397687,
+      "other_progression_combat": 3821.7333341118283,
+      "paid_farm_wait_noncombat": 30.60000000608852,
+      "paid_farm_wait_combat": 9184.500001871209,
+      "paid_manual_exploration_noncombat": 20.000000004132744,
+      "paid_manual_exploration_combat": 45.00000000916771
+    },
+    "paid_manual_intervals": [
+      {
+        "start": 46582.6000024217,
+        "end": 46647.600002435,
+        "seconds": 65.00000001330045
+      }
+    ],
+    "partition_scope": "Manual takespriority overfarm ifoverlapping. Remainingtimeincludesnormalprogression, travel, GUI/notices/nativeoperations; operationclickdurationsoverlapcombat andarenotadded. Farmwaitingcriterionminimum5paidmodulelevels."
+  },
+  "observed_saved_seconds_to21": 1387.5333336159965,
+  "observed_saved_seconds_to22": 5685.533334491607,
+  "scope": "Same sourceCP/RNG/policy with actual native scene, only5ExcelresRatio values and matchingimportJSON. stop22instead30. Nobaseline rerun. Initialdiskfailure excluded; sequentialrestart fromsameoriginalCP. New andoldgrowthpathsdiverge. No estimateof savingsto30; no34hardlockvalidation.",
+  "next_step": "Authorizedsamefrozenversionresumeactualclear22to30; addsoneformalreloadboundary. Strictreschangecausalclaimonly20to22;olduninterrupted2d30isreferenceonly. Pairedparentalso resumesactual22.",
+  "parent_verified_exact_same_native_endpoints": {
+    "clear21": 48944.7000029029,
+    "clear22": 56228.1833377201
+  },
+  "known_terminal_report_failure": "Original2d hyperspace_longrun.gd:362 lambda accessesmissingdiscontinuities ontransitionlineage. 2SCRIPTERROR entries;canonicalrunnerexit1. ActualterminalfullCP/input_failureempty/clear ledger verified. NoQAcode changed."
+}

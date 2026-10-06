@@ -1,0 +1,3233 @@
+{
+	"clears": {
+		"1": 136.300000000001,
+		"10": 6688.06666665349,
+		"11": 7502.24999997498,
+		"12": 8476.51666662747,
+		"13": 9827.89999994113,
+		"14": 12155.4666665739,
+		"15": 14000.9833332137,
+		"16": 17903.9666664903,
+		"17": 23312.3166664116,
+		"18": 28914.5833329967,
+		"19": 29804.9166663171,
+		"2": 231.650000000076,
+		"20": 42767.8833349779,
+		"3": 365.316666666663,
+		"4": 731.833333332996,
+		"5": 1021.41666666607,
+		"6": 1926.14999999858,
+		"7": 3940.21666668923,
+		"8": 4698.91666668244,
+		"9": 5918.63333333135
+	},
+	"code_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+	"options": {
+		"affix_target_tier": 0.0,
+		"allow_new_manual": true,
+		"allow_reforge": true,
+		"checkpoint_wall_seconds": 30.0,
+		"duration": 216000.0,
+		"seed": 20261005.0,
+		"stop_clear": 22.0,
+		"visit_seconds": 300.0,
+		"wall_limit_seconds": 14400.0
+	},
+	"page": 0,
+	"policy": "hyperspace-player-v16-post60-formal-supply",
+	"rng_state": "-1701768960580556831",
+	"rows": {
+		"1": {
+			"checks": 86,
+			"clear_notice": 9.03333333333336,
+			"clicks": 109,
+			"combat": 121.299999999994,
+			"growth_blocked_checks": 52,
+			"other": 0.0,
+			"page_visits": 43,
+			"retreat": 0.0,
+			"travel": 15.0000000000003
+		},
+		"10": {
+			"checks": 680,
+			"clear_notice": 9.03333333333336,
+			"clicks": 1295,
+			"combat": 683.899999999707,
+			"growth_blocked_checks": 521,
+			"other": 0.0,
+			"page_visits": 536,
+			"retreat": 8.4,
+			"travel": 74.1166666666637
+		},
+		"11": {
+			"checks": 72,
+			"clear_notice": 3.01666666666666,
+			"clicks": 292,
+			"combat": 722.633333333005,
+			"growth_blocked_checks": 44,
+			"other": 0.0,
+			"page_visits": 72,
+			"retreat": 8.4,
+			"travel": 74.1166666666637
+		},
+		"12": {
+			"checks": 99,
+			"clear_notice": 6.01666666666665,
+			"clicks": 433,
+			"combat": 866.299999999541,
+			"growth_blocked_checks": 65,
+			"other": 0.0,
+			"page_visits": 99,
+			"retreat": 10.8000000000001,
+			"travel": 94.1499999999959
+		},
+		"13": {
+			"checks": 81,
+			"clear_notice": 3.01666666666666,
+			"clicks": 329,
+			"combat": 1264.06666666585,
+			"growth_blocked_checks": 55,
+			"other": 0.0,
+			"page_visits": 81,
+			"retreat": 7.19999999999998,
+			"travel": 74.0999999999971
+		},
+		"14": {
+			"checks": 135,
+			"clear_notice": 3.01666666666666,
+			"clicks": 466,
+			"combat": 2204.38333333379,
+			"growth_blocked_checks": 90,
+			"other": 0.0,
+			"page_visits": 135,
+			"retreat": 12.0000000000002,
+			"travel": 108.166666666662
+		},
+		"15": {
+			"checks": 108,
+			"clear_notice": 6.01666666666665,
+			"clicks": 343,
+			"combat": 1664.43333333215,
+			"growth_blocked_checks": 83,
+			"other": 0.0,
+			"page_visits": 108,
+			"retreat": 8.4,
+			"travel": 72.1166666666639
+		},
+		"16": {
+			"checks": 234,
+			"clear_notice": 3.01666666666666,
+			"clicks": 694,
+			"combat": 3713.50000001967,
+			"growth_blocked_checks": 179,
+			"other": 0.0,
+			"page_visits": 234,
+			"retreat": 19.2000000000002,
+			"travel": 164.26666666669
+		},
+		"17": {
+			"checks": 270,
+			"clear_notice": 3.01666666666666,
+			"clicks": 711,
+			"combat": 5245.08333334115,
+			"growth_blocked_checks": 198,
+			"other": 0.0,
+			"page_visits": 270,
+			"retreat": 18.0000000000003,
+			"travel": 142.250000000005
+		},
+		"18": {
+			"checks": 278,
+			"clear_notice": 3.01666666666666,
+			"clicks": 662,
+			"combat": 5365.31666667274,
+			"growth_blocked_checks": 210,
+			"other": 0.0,
+			"page_visits": 277,
+			"retreat": 18.0000000000003,
+			"travel": 138.250000000002
+		},
+		"19": {
+			"checks": 456,
+			"clear_notice": 45.2499999999987,
+			"clicks": 1209,
+			"combat": 12023.6166665758,
+			"growth_blocked_checks": 366,
+			"other": 0.0,
+			"page_visits": 469,
+			"retreat": 4.79999999999999,
+			"travel": 270.06666666675
+		},
+		"2": {
+			"checks": 58,
+			"clear_notice": 9.03333333333336,
+			"clicks": 133,
+			"combat": 71.3166666666639,
+			"growth_blocked_checks": 42,
+			"other": 0.0,
+			"page_visits": 36,
+			"retreat": 0.0,
+			"travel": 15.0000000000003
+		},
+		"20": {
+			"checks": 129,
+			"clear_notice": 0.0,
+			"clicks": 403,
+			"combat": 1220.09999999922,
+			"growth_blocked_checks": 95,
+			"other": 0.0,
+			"page_visits": 118,
+			"retreat": 28.7999999999996,
+			"travel": 162.250000000021
+		},
+		"3": {
+			"checks": 95,
+			"clear_notice": 6.01666666666665,
+			"clicks": 106,
+			"combat": 109.633333333328,
+			"growth_blocked_checks": 80,
+			"other": 0.0,
+			"page_visits": 57,
+			"retreat": 0.0,
+			"travel": 15.0000000000003
+		},
+		"4": {
+			"checks": 284,
+			"clear_notice": 9.03333333333336,
+			"clicks": 399,
+			"combat": 324.233333333367,
+			"growth_blocked_checks": 200,
+			"other": 0.0,
+			"page_visits": 185,
+			"retreat": 2.4,
+			"travel": 33.866666666666
+		},
+		"5": {
+			"checks": 575,
+			"clear_notice": 6.01666666666665,
+			"clicks": 1140,
+			"combat": 243.950000000086,
+			"growth_blocked_checks": 428,
+			"other": 0.0,
+			"page_visits": 420,
+			"retreat": 2.4,
+			"travel": 34.1999999999993
+		},
+		"6": {
+			"checks": 684,
+			"clear_notice": 3.01666666666666,
+			"clicks": 973,
+			"combat": 814.199999999588,
+			"growth_blocked_checks": 475,
+			"other": 0.0,
+			"page_visits": 455,
+			"retreat": 8.4,
+			"travel": 76.1166666666636
+		},
+		"7": {
+			"checks": 1394,
+			"clear_notice": 6.01666666666665,
+			"clicks": 2225,
+			"combat": 1599.58333333221,
+			"growth_blocked_checks": 963,
+			"other": 0.0,
+			"page_visits": 1003,
+			"retreat": 9.60000000000006,
+			"travel": 90.1333333333295
+		},
+		"8": {
+			"checks": 591,
+			"clear_notice": 3.01666666666666,
+			"clicks": 1422,
+			"combat": 638.633333333081,
+			"growth_blocked_checks": 435,
+			"other": 0.0,
+			"page_visits": 477,
+			"retreat": 5.99999999999998,
+			"travel": 58.0833333333313
+		},
+		"9": {
+			"checks": 1071,
+			"clear_notice": 3.01666666666666,
+			"clicks": 1318,
+			"combat": 1032.59999999939,
+			"growth_blocked_checks": 872,
+			"other": 0.0,
+			"page_visits": 793,
+			"retreat": 8.4,
+			"travel": 78.1166666666635
+		}
+	},
+	"safe_farm": {
+		"actual_defeats": {
+			"1": 0,
+			"2": 0,
+			"3": 0,
+			"4": 0,
+			"5": 0,
+			"6": 0,
+			"7": 0,
+			"8": 0,
+			"9": 0,
+			"10": 0,
+			"11": 0,
+			"12": 0,
+			"13": 0,
+			"14": 0,
+			"15": 0,
+			"16": 0,
+			"17": 0,
+			"18": 0,
+			"19": 0,
+			"20": 0
+		},
+		"known_wins": {
+			"1": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 35.7166666666659
+			},
+			"2": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 161.566666666687
+			},
+			"3": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 261.883333333424
+			},
+			"4": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 384.883333333312
+			},
+			"5": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 757.016666666307
+			},
+			"6": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 1047.33333333271
+			},
+			"7": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 1948.36666666522
+			},
+			"8": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 3963.61666668952
+			},
+			"9": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 4714.48333334888
+			},
+			"10": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 5933.63333333113
+			},
+			"11": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 6708.84999998652
+			},
+			"12": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 7521.33333330803
+			},
+			"13": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 8492.81666662723
+			},
+			"14": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 9842.06666660759
+			},
+			"15": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 12187.2499999068
+			},
+			"16": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 14012.5166665469
+			},
+			"17": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 17919.8333331567
+			},
+			"18": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 23324.3833330781
+			},
+			"19": {
+				"node": 0,
+				"round": 1,
+				"tier": "normal",
+				"won_at": 28937.1833329964
+			}
+		},
+		"phase": "idle",
+		"plan": {
+
+		},
+		"round": 1,
+		"version": "safe-first-normal-v3-early-continuous-beam-refresh"
+	},
+	"save": {
+		"bossSeen": [
+			1,
+			2,
+			3,
+			4,
+			5,
+			6,
+			7,
+			8,
+			9,
+			10,
+			11,
+			12,
+			13,
+			14,
+			15,
+			16,
+			17,
+			18,
+			19,
+			20
+		],
+		"chronoParticles": 0.0,
+		"chronoSavedAt": 1791285535.67478,
+		"cleared": [
+			1,
+			2,
+			3,
+			4,
+			5,
+			6,
+			7,
+			8,
+			9,
+			10,
+			11,
+			12,
+			13,
+			14,
+			15,
+			16,
+			17,
+			18,
+			19,
+			20
+		],
+		"crew": [
+			{
+				"assignmentType": "",
+				"crewId": "navigator",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "engineer",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "researcher",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_04",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_05",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_06",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_07",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_08",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_09",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_10",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_11",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_12",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_13",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_14",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_15",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_16",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_17",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_18",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_19",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			},
+			{
+				"assignmentType": "",
+				"crewId": "crew_20",
+				"equipmentSlots": [
+					null,
+					null
+				],
+				"exp": 0.0,
+				"level": 0,
+				"targetId": "",
+				"upgradeMode": "1"
+			}
+		],
+		"crewEquipment": {
+
+		},
+		"enhancementAttacks": 231735,
+		"enhancementBranches": {
+			"defence": {
+				"adaptation": {
+					"1": "A"
+				},
+				"delayed_damage": {
+
+				},
+				"memory_material": {
+
+				}
+			},
+			"weapons": {
+				"critical": {
+
+				},
+				"proficiency": {
+					"1": "A"
+				},
+				"repeat": {
+
+				}
+			}
+		},
+		"enhancementHits": 208290,
+		"enhancementLevel": 12,
+		"enhancementOrder": {
+			"defence": [
+				"adaptation",
+				"memory_material",
+				"delayed_damage"
+			],
+			"weapons": [
+				"proficiency",
+				"repeat",
+				"critical"
+			]
+		},
+		"enhancementVersion": 1,
+		"furnaceElapsed": 12.0333333326189,
+		"furnaceIncomePeak": 250126621874.0,
+		"galaxies": {
+			"galaxy_1": {
+				"bag": [
+					"orbital_shipyard"
+				],
+				"blueprint": {
+					"core": {
+						"connections": [
+							"node_000",
+							"node_001",
+							"node_002",
+							"node_003"
+						],
+						"depth": 0,
+						"footprint": [
+							32.0,
+							32.0
+						],
+						"id": -1,
+						"node_id": "core",
+						"parent_id": -1,
+						"planned_type": "core",
+						"requires": [],
+						"rotation_y": 0.0,
+						"type": "core",
+						"world_pos": [
+							0.0,
+							0.0
+						]
+					},
+					"core_id": "core",
+					"edges": [
+						{
+							"from": "core",
+							"path": [
+								[
+									0.0,
+									-16.0
+								],
+								[
+									0.0,
+									-19.0
+								]
+							],
+							"to": "node_000",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									16.0,
+									0.0
+								],
+								[
+									19.0,
+									0.0
+								]
+							],
+							"to": "node_001",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									0.0,
+									16.0
+								],
+								[
+									0.0,
+									19.0
+								]
+							],
+							"to": "node_002",
+							"width": 2.0
+						},
+						{
+							"from": "core",
+							"path": [
+								[
+									-16.0,
+									0.0
+								],
+								[
+									-19.0,
+									0.0
+								]
+							],
+							"to": "node_003",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									0.0,
+									-33.0
+								],
+								[
+									0.0,
+									-45.0
+								]
+							],
+							"to": "node_004",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									7.0,
+									-26.0
+								],
+								[
+									19.0,
+									-26.0
+								]
+							],
+							"to": "node_005",
+							"width": 2.0
+						},
+						{
+							"from": "node_000",
+							"path": [
+								[
+									-7.0,
+									-26.0
+								],
+								[
+									-19.0,
+									-26.0
+								]
+							],
+							"to": "node_006",
+							"width": 2.0
+						},
+						{
+							"from": "node_001",
+							"path": [
+								[
+									33.0,
+									0.0
+								],
+								[
+									45.0,
+									0.0
+								]
+							],
+							"to": "node_007",
+							"width": 2.0
+						},
+						{
+							"from": "node_001",
+							"path": [
+								[
+									26.0,
+									7.0
+								],
+								[
+									26.0,
+									19.0
+								]
+							],
+							"to": "node_008",
+							"width": 2.0
+						},
+						{
+							"from": "node_002",
+							"path": [
+								[
+									0.0,
+									33.0
+								],
+								[
+									0.0,
+									45.0
+								]
+							],
+							"to": "node_009",
+							"width": 2.0
+						},
+						{
+							"from": "node_002",
+							"path": [
+								[
+									-7.0,
+									26.0
+								],
+								[
+									-19.0,
+									26.0
+								]
+							],
+							"to": "node_010",
+							"width": 2.0
+						},
+						{
+							"from": "node_003",
+							"path": [
+								[
+									-33.0,
+									0.0
+								],
+								[
+									-45.0,
+									0.0
+								]
+							],
+							"to": "node_011",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									0.0,
+									-59.0
+								],
+								[
+									0.0,
+									-71.0
+								]
+							],
+							"to": "node_012",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									7.0,
+									-52.0
+								],
+								[
+									19.0,
+									-52.0
+								]
+							],
+							"to": "node_013",
+							"width": 2.0
+						},
+						{
+							"from": "node_004",
+							"path": [
+								[
+									-7.0,
+									-52.0
+								],
+								[
+									-19.0,
+									-52.0
+								]
+							],
+							"to": "node_014",
+							"width": 2.0
+						},
+						{
+							"from": "node_005",
+							"path": [
+								[
+									33.0,
+									-26.0
+								],
+								[
+									45.0,
+									-26.0
+								]
+							],
+							"to": "node_015",
+							"width": 2.0
+						},
+						{
+							"from": "node_006",
+							"path": [
+								[
+									-33.0,
+									-26.0
+								],
+								[
+									-45.0,
+									-26.0
+								]
+							],
+							"to": "node_016",
+							"width": 2.0
+						},
+						{
+							"from": "node_007",
+							"path": [
+								[
+									59.0,
+									0.0
+								],
+								[
+									71.0,
+									0.0
+								]
+							],
+							"to": "node_017",
+							"width": 2.0
+						},
+						{
+							"from": "node_007",
+							"path": [
+								[
+									52.0,
+									7.0
+								],
+								[
+									52.0,
+									19.0
+								]
+							],
+							"to": "node_018",
+							"width": 2.0
+						},
+						{
+							"from": "node_008",
+							"path": [
+								[
+									26.0,
+									33.0
+								],
+								[
+									26.0,
+									45.0
+								]
+							],
+							"to": "node_019",
+							"width": 2.0
+						},
+						{
+							"from": "node_009",
+							"path": [
+								[
+									0.0,
+									59.0
+								],
+								[
+									0.0,
+									71.0
+								]
+							],
+							"to": "node_020",
+							"width": 2.0
+						},
+						{
+							"from": "node_009",
+							"path": [
+								[
+									-7.0,
+									52.0
+								],
+								[
+									-19.0,
+									52.0
+								]
+							],
+							"to": "node_021",
+							"width": 2.0
+						},
+						{
+							"from": "node_010",
+							"path": [
+								[
+									-33.0,
+									26.0
+								],
+								[
+									-45.0,
+									26.0
+								]
+							],
+							"to": "node_022",
+							"width": 2.0
+						},
+						{
+							"from": "node_011",
+							"path": [
+								[
+									-59.0,
+									0.0
+								],
+								[
+									-71.0,
+									0.0
+								]
+							],
+							"to": "node_023",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									0.0,
+									-85.0
+								],
+								[
+									0.0,
+									-97.0
+								]
+							],
+							"to": "node_024",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									7.0,
+									-78.0
+								],
+								[
+									19.0,
+									-78.0
+								]
+							],
+							"to": "node_025",
+							"width": 2.0
+						},
+						{
+							"from": "node_012",
+							"path": [
+								[
+									-7.0,
+									-78.0
+								],
+								[
+									-19.0,
+									-78.0
+								]
+							],
+							"to": "node_026",
+							"width": 2.0
+						},
+						{
+							"from": "node_013",
+							"path": [
+								[
+									33.0,
+									-52.0
+								],
+								[
+									45.0,
+									-52.0
+								]
+							],
+							"to": "node_027",
+							"width": 2.0
+						},
+						{
+							"from": "node_014",
+							"path": [
+								[
+									-33.0,
+									-52.0
+								],
+								[
+									-45.0,
+									-52.0
+								]
+							],
+							"to": "node_028",
+							"width": 2.0
+						},
+						{
+							"from": "node_015",
+							"path": [
+								[
+									59.0,
+									-26.0
+								],
+								[
+									71.0,
+									-26.0
+								]
+							],
+							"to": "node_029",
+							"width": 2.0
+						}
+					],
+					"layout_version": 1,
+					"nodes": [
+						{
+							"connections": [
+								"core",
+								"node_004",
+								"node_005",
+								"node_006"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 0,
+							"node_id": "node_000",
+							"parent_id": -1,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "crystal_refinery",
+							"visual_seed": 2540585198,
+							"world_pos": [
+								0.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_007",
+								"node_008"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 1,
+							"node_id": "node_001",
+							"parent_id": -1,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2967889042,
+							"world_pos": [
+								26.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_009",
+								"node_010"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 2,
+							"node_id": "node_002",
+							"parent_id": -1,
+							"planned_type": "colony_ring",
+							"requires": [
+								"core"
+							],
+							"rotation_y": 0.0,
+							"type": "colony_ring",
+							"visual_seed": 3742669742,
+							"world_pos": [
+								0.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"core",
+								"node_011"
+							],
+							"depth": 1,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 3,
+							"node_id": "node_003",
+							"parent_id": -1,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"core"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 2094529347,
+							"world_pos": [
+								-26.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_012",
+								"node_013",
+								"node_014"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 4,
+							"node_id": "node_004",
+							"parent_id": 0,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "stellar_energy_array",
+							"visual_seed": 4122975946,
+							"world_pos": [
+								0.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_015"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 5,
+							"node_id": "node_005",
+							"parent_id": 0,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 241195129,
+							"world_pos": [
+								26.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_000",
+								"node_016"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 6,
+							"node_id": "node_006",
+							"parent_id": 0,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_000"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 3674321502,
+							"world_pos": [
+								-26.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_001",
+								"node_017",
+								"node_018"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 7,
+							"node_id": "node_007",
+							"parent_id": 1,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_001"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 3348784888,
+							"world_pos": [
+								52.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_001",
+								"node_019"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 8,
+							"node_id": "node_008",
+							"parent_id": 1,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_001"
+							],
+							"rotation_y": 0.0,
+							"type": "orbital_shipyard",
+							"visual_seed": 3678553777,
+							"world_pos": [
+								26.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_002",
+								"node_020",
+								"node_021"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 9,
+							"node_id": "node_009",
+							"parent_id": 2,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_002"
+							],
+							"rotation_y": 0.0,
+							"type": "colony_ring",
+							"visual_seed": 4127777431,
+							"world_pos": [
+								0.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_002",
+								"node_022"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 10,
+							"node_id": "node_010",
+							"parent_id": 2,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_002"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 4275612885,
+							"world_pos": [
+								-26.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_003",
+								"node_023"
+							],
+							"depth": 2,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 11,
+							"node_id": "node_011",
+							"parent_id": 3,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_003"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 2855848888,
+							"world_pos": [
+								-52.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_024",
+								"node_025",
+								"node_026"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 12,
+							"node_id": "node_012",
+							"parent_id": 4,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "stellar_energy_array",
+							"visual_seed": 1723271941,
+							"world_pos": [
+								0.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_027"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 13,
+							"node_id": "node_013",
+							"parent_id": 4,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2480943216,
+							"world_pos": [
+								26.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_004",
+								"node_028"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 14,
+							"node_id": "node_014",
+							"parent_id": 4,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_004"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 4010670777,
+							"world_pos": [
+								-26.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_005",
+								"node_029"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 15,
+							"node_id": "node_015",
+							"parent_id": 5,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_005"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 3162181320,
+							"world_pos": [
+								52.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_006"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 16,
+							"node_id": "node_016",
+							"parent_id": 6,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_006"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 3737848542,
+							"world_pos": [
+								-52.0,
+								-26.0
+							]
+						},
+						{
+							"connections": [
+								"node_007"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 17,
+							"node_id": "node_017",
+							"parent_id": 7,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_007"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 2001899221,
+							"world_pos": [
+								78.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_007"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 18,
+							"node_id": "node_018",
+							"parent_id": 7,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_007"
+							],
+							"rotation_y": 0.0,
+							"type": "interstellar_refinery",
+							"visual_seed": 4030393879,
+							"world_pos": [
+								52.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_008"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 19,
+							"node_id": "node_019",
+							"parent_id": 8,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_008"
+							],
+							"rotation_y": 0.0,
+							"type": "orbital_shipyard",
+							"visual_seed": 3461022743,
+							"world_pos": [
+								26.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_009"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 20,
+							"node_id": "node_020",
+							"parent_id": 9,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_009"
+							],
+							"rotation_y": 0.0,
+							"type": "stellar_energy_array",
+							"visual_seed": 2308099977,
+							"world_pos": [
+								0.0,
+								78.0
+							]
+						},
+						{
+							"connections": [
+								"node_009"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 21,
+							"node_id": "node_021",
+							"parent_id": 9,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_009"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2628454166,
+							"world_pos": [
+								-26.0,
+								52.0
+							]
+						},
+						{
+							"connections": [
+								"node_010"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 22,
+							"node_id": "node_022",
+							"parent_id": 10,
+							"planned_type": "orbital_shipyard",
+							"requires": [
+								"node_010"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "orbital_shipyard",
+							"visual_seed": 1623096846,
+							"world_pos": [
+								-52.0,
+								26.0
+							]
+						},
+						{
+							"connections": [
+								"node_011"
+							],
+							"depth": 3,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 23,
+							"node_id": "node_023",
+							"parent_id": 11,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_011"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 625483024,
+							"world_pos": [
+								-78.0,
+								0.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 24,
+							"node_id": "node_024",
+							"parent_id": 12,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": 3.14159265358979,
+							"type": "colony_ring",
+							"visual_seed": 3751353908,
+							"world_pos": [
+								0.0,
+								-104.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 25,
+							"node_id": "node_025",
+							"parent_id": 12,
+							"planned_type": "heavy_element_refinery",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "heavy_element_refinery",
+							"visual_seed": 2704509045,
+							"world_pos": [
+								26.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_012"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 26,
+							"node_id": "node_026",
+							"parent_id": 12,
+							"planned_type": "interstellar_refinery",
+							"requires": [
+								"node_012"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "interstellar_refinery",
+							"visual_seed": 2798386597,
+							"world_pos": [
+								-26.0,
+								-78.0
+							]
+						},
+						{
+							"connections": [
+								"node_013"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 27,
+							"node_id": "node_027",
+							"parent_id": 13,
+							"planned_type": "crystal_refinery",
+							"requires": [
+								"node_013"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "crystal_refinery",
+							"visual_seed": 1858751189,
+							"world_pos": [
+								52.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_014"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 28,
+							"node_id": "node_028",
+							"parent_id": 14,
+							"planned_type": "colony_ring",
+							"requires": [
+								"node_014"
+							],
+							"rotation_y": -1.5707963267949,
+							"type": "colony_ring",
+							"visual_seed": 99248821,
+							"world_pos": [
+								-52.0,
+								-52.0
+							]
+						},
+						{
+							"connections": [
+								"node_015"
+							],
+							"depth": 4,
+							"footprint": [
+								14.0,
+								14.0
+							],
+							"id": 29,
+							"node_id": "node_029",
+							"parent_id": 15,
+							"planned_type": "stellar_energy_array",
+							"requires": [
+								"node_015"
+							],
+							"rotation_y": 1.5707963267949,
+							"type": "stellar_energy_array",
+							"visual_seed": 425417104,
+							"world_pos": [
+								78.0,
+								-26.0
+							]
+						}
+					],
+					"units": "godot_world_xz"
+				},
+				"build_elapsed": 0.0,
+				"explore_work": 0.0,
+				"map_rng_state": "1715988424514899180",
+				"owned": "eJztz8ENACAQw7Cy/9L8bgGQqJA9QZIAAAAAAAAAAAAAAAAAAAAAAABA1nhdcsZHFx9dfHTx0eWXDwAAAAAAAAAAAAAAAAAAAAAAAC7ZIsMAZQ==",
+				"pending_crew_count": 0,
+				"pending_online_time": 0.0,
+				"rng_state": "382234214888651442",
+				"rounds": 5,
+				"slot_seed": 20260929,
+				"slots": [
+					{
+						"construction": 0.0,
+						"id": 0,
+						"level": 0,
+						"node_id": "node_000",
+						"parent_id": -1,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2540585198,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 1,
+						"level": 0,
+						"node_id": "node_001",
+						"parent_id": -1,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2967889042,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 2,
+						"level": 0,
+						"node_id": "node_002",
+						"parent_id": -1,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3742669742,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 3,
+						"level": 0,
+						"node_id": "node_003",
+						"parent_id": -1,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2094529347,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 4,
+						"level": 0,
+						"node_id": "node_004",
+						"parent_id": 0,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4122975946,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 5,
+						"level": 0,
+						"node_id": "node_005",
+						"parent_id": 0,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 241195129,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 6,
+						"level": 0,
+						"node_id": "node_006",
+						"parent_id": 0,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3674321502,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 7,
+						"level": 0,
+						"node_id": "node_007",
+						"parent_id": 1,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3348784888,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 8,
+						"level": 0,
+						"node_id": "node_008",
+						"parent_id": 1,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3678553777,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 9,
+						"level": 0,
+						"node_id": "node_009",
+						"parent_id": 2,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4127777431,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 10,
+						"level": 0,
+						"node_id": "node_010",
+						"parent_id": 2,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4275612885,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 11,
+						"level": 0,
+						"node_id": "node_011",
+						"parent_id": 3,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2855848888,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 12,
+						"level": 0,
+						"node_id": "node_012",
+						"parent_id": 4,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1723271941,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 13,
+						"level": 0,
+						"node_id": "node_013",
+						"parent_id": 4,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2480943216,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 14,
+						"level": 0,
+						"node_id": "node_014",
+						"parent_id": 4,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4010670777,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 15,
+						"level": 0,
+						"node_id": "node_015",
+						"parent_id": 5,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3162181320,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 16,
+						"level": 0,
+						"node_id": "node_016",
+						"parent_id": 6,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3737848542,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							-26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 17,
+						"level": 0,
+						"node_id": "node_017",
+						"parent_id": 7,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2001899221,
+						"work": 0.0,
+						"world_pos": [
+							78.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 18,
+						"level": 0,
+						"node_id": "node_018",
+						"parent_id": 7,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 4030393879,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 19,
+						"level": 0,
+						"node_id": "node_019",
+						"parent_id": 8,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3461022743,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 20,
+						"level": 0,
+						"node_id": "node_020",
+						"parent_id": 9,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2308099977,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 21,
+						"level": 0,
+						"node_id": "node_021",
+						"parent_id": 9,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2628454166,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 22,
+						"level": 0,
+						"node_id": "node_022",
+						"parent_id": 10,
+						"planned_type": "orbital_shipyard",
+						"status": "empty",
+						"type": "orbital_shipyard",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1623096846,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							26.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 23,
+						"level": 0,
+						"node_id": "node_023",
+						"parent_id": 11,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 625483024,
+						"work": 0.0,
+						"world_pos": [
+							-78.0,
+							0.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 24,
+						"level": 0,
+						"node_id": "node_024",
+						"parent_id": 12,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 3751353908,
+						"work": 0.0,
+						"world_pos": [
+							0.0,
+							-104.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 25,
+						"level": 0,
+						"node_id": "node_025",
+						"parent_id": 12,
+						"planned_type": "heavy_element_refinery",
+						"status": "empty",
+						"type": "heavy_element_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2704509045,
+						"work": 0.0,
+						"world_pos": [
+							26.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 26,
+						"level": 0,
+						"node_id": "node_026",
+						"parent_id": 12,
+						"planned_type": "interstellar_refinery",
+						"status": "empty",
+						"type": "interstellar_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 2798386597,
+						"work": 0.0,
+						"world_pos": [
+							-26.0,
+							-78.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 27,
+						"level": 0,
+						"node_id": "node_027",
+						"parent_id": 13,
+						"planned_type": "crystal_refinery",
+						"status": "empty",
+						"type": "crystal_refinery",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 1858751189,
+						"work": 0.0,
+						"world_pos": [
+							52.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 28,
+						"level": 0,
+						"node_id": "node_028",
+						"parent_id": 14,
+						"planned_type": "colony_ring",
+						"status": "empty",
+						"type": "colony_ring",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 99248821,
+						"work": 0.0,
+						"world_pos": [
+							-52.0,
+							-52.0
+						]
+					},
+					{
+						"construction": 0.0,
+						"id": 29,
+						"level": 0,
+						"node_id": "node_029",
+						"parent_id": 15,
+						"planned_type": "stellar_energy_array",
+						"status": "empty",
+						"type": "stellar_energy_array",
+						"unlock_progress": 0.0,
+						"upgrade_progress": 0.0,
+						"visual_seed": 425417104,
+						"work": 0.0,
+						"world_pos": [
+							78.0,
+							-26.0
+						]
+					}
+				],
+				"special_due": false,
+				"status": "locked",
+				"upgrade_work": 0.0,
+				"version": 3
+			}
+		},
+		"grantedUnlocks": [
+			"armour",
+			"shield",
+			"laser",
+			"missile",
+			"cannon",
+			"longLaser",
+			"ship/Frigate",
+			"ship/Destroyer",
+			"ship/Cruiser",
+			"reactor",
+			"hightech/超时空炼铁炉",
+			"hightech/正电子聚焦装置",
+			"hightech/简并态装甲",
+			"hightech/宝石熔炼炉",
+			"feature/jewels",
+			"crew/navigator",
+			"crew/engineer",
+			"reactor_module/condensation"
+		],
+		"guardDeath": 0,
+		"highestLevel": 21,
+		"hightechDrops": [
+			{
+				"age": 6.233333333462,
+				"amount": 875.0,
+				"hightech": true,
+				"id": "jewel",
+				"jewel": true,
+				"jewelRatio": 1.0,
+				"uid": 1,
+				"x": 395.170440673828,
+				"y": 312.107391357422
+			}
+		],
+		"hightechLevels": {
+			"宝石熔炼炉": 74,
+			"正电子聚焦装置": 75,
+			"简并态装甲": 74,
+			"超时空炼铁炉": 75
+		},
+		"hightechOrder": [
+			"超时空炼铁炉",
+			"正电子聚焦装置",
+			"简并态装甲",
+			"宝石熔炼炉",
+			"",
+			""
+		],
+		"hightechSavedAt": 1791285535.67478,
+		"hightechVersion": 2,
+		"hyperspace": {
+			"active": {
+
+			},
+			"auto": {
+				"crew_id": "navigator",
+				"enabled": true,
+				"level": 15,
+				"route": "alpha"
+			},
+			"blocked": false,
+			"command_seq": 4,
+			"energy": 74019.8333365233,
+			"filter": {
+				"action": "keep_matches",
+				"conditions": [],
+				"enabled": false,
+				"mode": "all",
+				"version": 2
+			},
+			"hanging_modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0,
+					"unlocked": false
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0,
+					"unlocked": false
+				}
+			},
+			"history": {
+				"alpha": {
+					"10": 97.5499999999957,
+					"15": 77.6833333333302,
+					"5": 97.5833333333291
+				}
+			},
+			"inventory": {
+				"drones": {
+					"space:1:2": {
+						"affixes": [
+							{
+								"key": "global_critical_damage",
+								"locked": false,
+								"tier": 4,
+								"value": 0.252
+							},
+							{
+								"key": "critical_chance",
+								"locked": false,
+								"tier": 5,
+								"value": 0.011
+							},
+							{
+								"key": "armour_capacity",
+								"locked": false,
+								"tier": 5,
+								"value": 0.117
+							}
+						],
+						"blue_source_bonus": false,
+						"forge_revision": 2,
+						"forge_rng_state": "-124304880856082859",
+						"hanging_slots": 0,
+						"hangings": [],
+						"id": "space:1:2",
+						"legendary": true,
+						"legendary_effect": {
+							"effect_id": "black_hole",
+							"parameters": {
+								"damage_multiplier": 1.659
+							}
+						},
+						"level": 5,
+						"omen": false,
+						"origin_quality": "legendary",
+						"planet_id": "1",
+						"preserved_hanging_slots": 0,
+						"ultimate": false,
+						"ultimate_affix": {
+
+						},
+						"weapon": "laser"
+					},
+					"space:1:4": {
+						"affixes": [],
+						"blue_source_bonus": false,
+						"forge_revision": 0,
+						"forge_rng_state": "6300483428431965411",
+						"hanging_slots": 0,
+						"hangings": [],
+						"id": "space:1:4",
+						"legendary": false,
+						"legendary_effect": {
+
+						},
+						"level": 5,
+						"omen": false,
+						"origin_quality": "white",
+						"planet_id": "1",
+						"preserved_hanging_slots": 0,
+						"ultimate": false,
+						"ultimate_affix": {
+
+						},
+						"weapon": "laser"
+					},
+					"space:1:5": {
+						"affixes": [
+							{
+								"key": "repeat_chance",
+								"locked": false,
+								"tier": 4,
+								"value": 0.038
+							},
+							{
+								"key": "global_damage",
+								"locked": false,
+								"tier": 4,
+								"value": 0.249
+							},
+							{
+								"key": "repeat_chance",
+								"locked": false,
+								"tier": 3,
+								"value": 0.08
+							}
+						],
+						"blue_source_bonus": false,
+						"forge_revision": 1,
+						"forge_rng_state": "2000761637539429194",
+						"hanging_slots": 0,
+						"hangings": [],
+						"id": "space:1:5",
+						"legendary": true,
+						"legendary_effect": {
+							"effect_id": "dodge_counter",
+							"parameters": {
+								"counter_damage_bonus": 0.998,
+								"maximum_dodge": 0.849
+							}
+						},
+						"level": 10,
+						"omen": false,
+						"origin_quality": "legendary",
+						"planet_id": "1",
+						"preserved_hanging_slots": 0,
+						"ultimate": false,
+						"ultimate_affix": {
+
+						},
+						"weapon": "laser"
+					},
+					"space:1:6": {
+						"affixes": [],
+						"blue_source_bonus": false,
+						"forge_revision": 0,
+						"forge_rng_state": "2229112640979669937",
+						"hanging_slots": 0,
+						"hangings": [],
+						"id": "space:1:6",
+						"legendary": false,
+						"legendary_effect": {
+
+						},
+						"level": 15,
+						"omen": false,
+						"origin_quality": "white",
+						"planet_id": "1",
+						"preserved_hanging_slots": 0,
+						"ultimate": false,
+						"ultimate_affix": {
+
+						},
+						"weapon": "laser"
+					},
+					"space:1:7": {
+						"affixes": [
+							{
+								"key": "attack_speed",
+								"locked": false,
+								"tier": 5,
+								"value": 0.018
+							},
+							{
+								"key": "repeat_chance",
+								"locked": false,
+								"tier": 5,
+								"value": 0.019
+							}
+						],
+						"blue_source_bonus": true,
+						"forge_revision": 0,
+						"forge_rng_state": "-4584109050788538662",
+						"hanging_slots": 0,
+						"hangings": [],
+						"id": "space:1:7",
+						"legendary": false,
+						"legendary_effect": {
+
+						},
+						"level": 15,
+						"omen": false,
+						"origin_quality": "blue",
+						"planet_id": "1",
+						"preserved_hanging_slots": 0,
+						"ultimate": false,
+						"ultimate_affix": {
+
+						},
+						"weapon": "laser"
+					}
+				},
+				"equipped": [
+					"space:1:5",
+					"space:1:2"
+				],
+				"favorites": [
+					"space:1:5",
+					"space:1:2"
+				],
+				"generation": 14,
+				"overflow": [],
+				"presets": [
+					{
+						"drone_ids": [
+							"space:1:5",
+							"space:1:2"
+						],
+						"hanging_loadouts": {
+							"space:1:2": [],
+							"space:1:5": []
+						},
+						"name": "Earned current fleet"
+					}
+				],
+				"reforge_count": 0,
+				"sealed": {
+
+				},
+				"warehouse": [
+					"space:1:2",
+					"space:1:4",
+					"space:1:5",
+					"space:1:6",
+					"space:1:7"
+				]
+			},
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:5\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:1:5\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3
+			},
+			"legendary_collection": [],
+			"legendary_seen": [
+				"black_hole",
+				"dodge_counter"
+			],
+			"materials": {
+				"antiproton": 0,
+				"degenerate_matter": 9,
+				"glueball": 0,
+				"zero_point_energy": 0
+			},
+			"next_run": 8,
+			"pending_time": 0.0,
+			"random_state": "-8624511907755024891",
+			"round_id": 1,
+			"settled_run": 7,
+			"ultimate_cores": 0,
+			"unlocked_drones": true,
+			"version": 4
+		},
+		"jewelFragments": 40692.98,
+		"jewelFurnaceElapsed": 6.233333333462,
+		"jewelFurnaceIncomePeak": 591.02,
+		"jewels": [],
+		"journey": {
+			"distance": 900.0,
+			"groupIndex": 9,
+			"guardArrived": false,
+			"pendingUnlocks": [
+				"ship/Cruiser",
+				"crew/engineer"
+			],
+			"retreatBossPending": false,
+			"stage": 20,
+			"state": 4
+		},
+		"levels": {
+			"armour": 142,
+			"cannon": 1,
+			"laser": 1,
+			"longLaser": 1,
+			"missile": 142,
+			"shield": 1
+		},
+		"lifetime_max_stage": 21,
+		"loadout": {
+			"defence": [
+				{
+					"key": "armour",
+					"level": 142
+				},
+				{
+					"key": "armour",
+					"level": 142
+				}
+			],
+			"weapons": [
+				{
+					"key": "missile",
+					"level": 142
+				},
+				{
+					"key": "missile",
+					"level": 142
+				},
+				{
+					"key": "missile",
+					"level": 142
+				},
+				{
+					"key": "missile",
+					"level": 141
+				}
+			]
+		},
+		"loop": false,
+		"loopLevel": 19,
+		"moduleVersion": 1,
+		"onboarding": {
+			"completed": true,
+			"dismissed": false,
+			"equipped": true,
+			"intro": true,
+			"upgraded": true,
+			"version": 1
+		},
+		"planets": {
+			"1": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"2": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"3": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"4": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"5": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			},
+			"6": {
+				"auto_explore": false,
+				"buildings": {
+					"refinery": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"shipyard_later": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"station": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					},
+					"workshop": {
+						"build_progress": 0,
+						"crew": [],
+						"status": "locked"
+					}
+				},
+				"conquered": false,
+				"crewId": "",
+				"degree": 0,
+				"elapsed": 0.0,
+				"unlocked": false
+			}
+		},
+		"productionElapsed": 42767.8833349721,
+		"reactorAllocation": {
+			"condensation": 1476,
+			"defence": 1477,
+			"smelting": 1477,
+			"weapons": 1477
+		},
+		"reactorLevel": 71,
+		"readUnlocks": [],
+		"resourceSamples": [
+			{
+				"amount": 432.0,
+				"id": "jewel",
+				"origin": "furnace",
+				"production_base": 432.0,
+				"production_time": 42711.6500016274,
+				"time": 42711.6500016331
+			},
+			{
+				"amount": 2696304433.0,
+				"id": "2",
+				"origin": "drop",
+				"production_base": 2696304433.0,
+				"production_time": 42723.183334963,
+				"time": 42723.1833349688
+			},
+			{
+				"amount": 863.0,
+				"id": "jewel",
+				"origin": "furnace",
+				"production_base": 863.0,
+				"production_time": 42723.4833349631,
+				"time": 42723.4833349688
+			},
+			{
+				"amount": 1875949664055.0,
+				"id": "1",
+				"origin": "furnace",
+				"production_base": 1875949664055.0,
+				"production_time": 42726.1833349637,
+				"time": 42726.1833349694
+			},
+			{
+				"amount": 438.0,
+				"id": "jewel",
+				"origin": "furnace",
+				"production_base": 438.0,
+				"production_time": 42751.6500016355,
+				"time": 42751.6500016412
+			},
+			{
+				"amount": 1348152217.0,
+				"id": "2",
+				"origin": "drop",
+				"production_base": 1348152217.0,
+				"production_time": 42753.8333349693,
+				"time": 42753.833334975
+			},
+			{
+				"amount": 937974832028.0,
+				"id": "1",
+				"origin": "furnace",
+				"production_base": 937974832028.0,
+				"production_time": 42765.8666683051,
+				"time": 42765.8666683108
+			}
+		],
+		"resources": {
+			"1": 8035415820083.0,
+			"2": 2621212283.90746
+		},
+		"saveIntervalMinutes": "1",
+		"scientistAssignments": {
+			"宝石熔炼炉": 30,
+			"正电子聚焦装置": 30,
+			"简并态装甲": 30,
+			"超时空炼铁炉": 30
+		},
+		"scientists": 120,
+		"seenUnlocks": [
+			"missile",
+			"reactor",
+			"shield",
+			"cannon",
+			"hightech/超时空炼铁炉",
+			"hightech/正电子聚焦装置",
+			"hightech/简并态装甲",
+			"longLaser",
+			"feature/jewels",
+			"ship/Destroyer",
+			"crew/navigator",
+			"hightech/宝石熔炼炉",
+			"reactor_module/condensation"
+		],
+		"selectedShip": "Destroyer",
+		"techPoints": {
+			"宝石熔炼炉": 1084.51666620139,
+			"正电子聚焦装置": 4648.39999959132,
+			"简并态装甲": 82013.9499996878,
+			"超时空炼铁炉": 15011.5666663844
+		},
+		"unlocked": [
+			"armour",
+			"laser",
+			"shield",
+			"missile",
+			"cannon",
+			"longLaser"
+		],
+		"version": 5
+	},
+	"x1_seconds": 42767.8833349779
+}

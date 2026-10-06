@@ -1,0 +1,13 @@
+{
+  "command": "python space-battleship/tools/config_workbooks.py import",
+  "exit_code": 0,
+  "parsed": [
+    "level"
+  ],
+  "changed": [
+    "level"
+  ],
+  "data_semantic_diff": "Exactly5resRatio values;allotherJSONvalues unchanged",
+  "source": "WorkbookXMLF24:F28;formula caches preserved;formalimporterrereadslevelsource",
+  "earlier_failed_attempt": "openpyxlsaveclearedformulaD64cachedvalue;importerrejected;sourcefullyrestoredbeforebytepreservingXML5-valuewrite."
+}

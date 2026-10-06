@@ -1,0 +1,26 @@
+{
+  "status": "actual_clear22_with_known_QA_terminal_report_error",
+  "actual_clear21": 48944.7000029029,
+  "actual_clear22": 56228.1833377201,
+  "same_as_parent_exact_endpoints": true,
+  "input_failure": {},
+  "canonical_runner_exit": 1,
+  "known_script_errors": 2,
+  "script_error_scope": "OriginalQAterminalstatisticslambda only;noQAcodechanges permitted in5valueexperiment. ActualterminalfullCPchecksum/clearledger/trace verified.",
+  "checkpoint_sha256": "0e261a5a2154d546ea1fdb7d8646a75e0c4003db64027dd00bd40eb732e1cb2c",
+  "trace_uncompressed_bytes": 2387257,
+  "trace_uncompressed_sha256": "d89aa5ea3d984714783081139db4d8a43e390d36af9eae8adda18d6615b83d2e",
+  "frozen_manifest_all887_files_verified": true,
+  "scope": "Sameactual20CPandformalreloadasoldbaseline;causalreschangeclaimonlyto22. Subsequent22to30resumesaddformalreload; oldcontinuous2dto30isreferenceonly.",
+  "file_sha256": {
+    "longrun-summary.json": "d44d6985414c0ba82ae315a731406931e9d3e2f3ed7cbca94fb3f4bea538269f",
+    "checkpoint.bin": "0e261a5a2154d546ea1fdb7d8646a75e0c4003db64027dd00bd40eb732e1cb2c",
+    "qa-manifest.json": "d75fb4306fd3706849e1e7ae89a54e7422f704f7a456ee0639f429945be4eca8",
+    "run.log": "25cf50b11af1d9d0a971fbb185966279831363fba0d95ed1e8818e346b9ea8cd",
+    "actions.jsonl.gz": "396271e5e8e65cddc3339cdb414ab32a33dcd488a10edd8b51392654dee8fb39",
+    "comparison.json": "c11c6ee83e5b0f80e846f06782c2a9f01f3701d3992454bf67431976fee6d0e6",
+    "stage-performance.json": "ca65a7d52165334b8e7d3b603ab4bdef0f1be80c9420411b0d164e871f12082a",
+    "native-stage-states.jsonl.gz": "3e9c900b70ba8620260e4a62a857890bacfabb49f7173965c40dbf6074c4caed",
+    "official-import-result.json": "4863c1b2d1bd07d345ff11ae408274d2af9871d0d1626f3728bfe226e49d94b3"
+  }
+}

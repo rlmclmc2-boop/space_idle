@@ -1,5 +1,5 @@
 {
-  "status": "experiment_started_not_result",
+  "status": "actual22_completed_result_in_terminal-clear22",
   "code_branch": "experiment/hyperspace-res21-25x2-from2d20",
   "code_commit": "c90fd6f",
   "same_source_cp_used_by_original_baseline": true,
@@ -27,5 +27,5 @@
     "experiment-options.json": "108ecdefc15044df1b0c917b75470b4e3eb9cdad53e9cdfbb76af3afd239a84b",
     "experiment-first21-native-samples.jsonl.gz": "48904111d9d3d1e32c1142f2246526c5d79a6937c76e191cb048e33fd2d96416"
   },
-  "active_status_at_1132UTC": "SequentialrestartGodotPID113273;sourceCPsame. Still21. Initialdiskfailure preserved separately;cleanupnowfreed1168.63MiB, available1287.47MiB. No terminal22 resultyet."
+  "active_status_at_1132UTC": "Historicalpreterminalsample only;terminal22complete. Nextphaseauthorizedpairedformalresume22to30."
 }
