@@ -1,0 +1,47 @@
+{
+  "workbook_row_counts": {
+    "hyperspace_config.xlsx": {
+      "基础参数": 40,
+      "路线": 4,
+      "品质": 5,
+      "舰型容量": 5,
+      "阶级权重": 5,
+      "词缀定义": 13,
+      "词缀区间": 62,
+      "挂设成长": 5,
+      "传说定义": 12,
+      "传说随机参数": 13,
+      "传说常量": 22,
+      "改造费用": 10,
+      "固定规则_兼容说明": 17
+    },
+    "hyperspace_enemies.xlsx": {
+      "敌人": 223,
+      "武器安装": 222,
+      "编队": 40,
+      "编队槽位": 223,
+      "路线编排": 40,
+      "奖励参考": 40,
+      "成员分配": 285
+    }
+  },
+  "existing_52_config_roots_roundtrip_equal": true,
+  "new_roots": {
+    "modernization_base_coefficient": 1.0,
+    "auto_duration_crew_base": 100.0,
+    "auto_ticket_crew_base": 20.0
+  },
+  "existing_config_dictionary_orders_preserved": true,
+  "workbooks_written": false,
+  "production_code_changed": false,
+  "ordinal_order_preserved": true,
+  "enemy_route_recipe_roundtrip_equal": true,
+  "enemy_route_recipe_dict_orders_equal": true,
+  "shuffled_physical_rows_same_enemy_route_recipe_output": true,
+  "config_shuffle_verification": "Fixed PK/order schema specified; full production importer shuffle check pending implementation",
+  "forward_semantics_reference": "12ed3f896218deebb083e99c0300629028670cef",
+  "frozen_inputs": {
+    "space_enemy_reward_catalog.json": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b",
+    "space_enemy_reward_sources.json": "4c92f2168c9c9b36da933934a10d4cfe4226870825b43dd228c3132ba4b8780a"
+  }
+}

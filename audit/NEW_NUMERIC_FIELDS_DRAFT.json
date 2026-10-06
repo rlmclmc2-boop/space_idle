@@ -21,8 +21,8 @@
     "existing_source": "Existing XLSX path and drone_effect_aggregator.gd level-4",
     "suggested_entity": "全局标量/词缀",
     "suggested_column": "value",
-    "description_zh": "放大起始等级；接通既有字段替代硬编码4，不新增第二字段",
-    "unit": "关",
+    "description_zh": "拟接线：无人机词缀放大指数起点；level=start时×1，低于起点为负指数缩小；冻结代码当前固定4",
+    "unit": "无人机等级",
     "constraints": "整数；当前4不变；保持pow(1+rate,level-start)包括负指数语义，不偷偷clamp",
     "consumers": [
       "drone_effect_aggregator.gd:7"

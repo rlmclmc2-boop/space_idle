@@ -1,0 +1,12 @@
+{
+  "status": "pending parent interface confirmation and spreadsheet-authored workbooks",
+  "steps": [
+    "Use explicit two-workbook entity reader and fixed schema/order manifest; no legacy editable numeric authority alongside it.",
+    "Validate literal types, per-field finite ranges, immutable structure, entity sets, foreign keys, sparse15slot formation and reward allocation coverage including zero-budget members.",
+    "Read catalog/sources as pinned readonly inputs; validate mainline references without duplicate reward numbers; preserve missing provenance limitation.",
+    "Stage four JSON outputs plus import-state manifest through existing atomic_batch rollback transaction; recheck source hashes before commit; preserve no-op byte/mtime stability.",
+    "Call complete business validator during ordinary startup before profile mutation and reject malformed packs clearly; no save migration.",
+    "Wire modernization_base_coefficient=1, existing amplification_start_level=4, auto_duration_crew_base=100 and auto_ticket_crew_base=20; share quotes between settlement and UI, preserve formulas/rounding/material_reward_start_level linkage.",
+    "Test exact defaults and RNG ordering, all-sheet physical shuffle, invalid references/type/immutable edits, write-failure rollback, no-op imports and consumer equivalence; no third longrun."
+  ]
+}

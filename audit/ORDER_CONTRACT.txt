@@ -1,0 +1,1 @@
+所有order列0起，在其作用域内唯一、连续、按冻结ID固定并锁定；工作表行随意排序不得改变order。输出Dictionary须按order插入，Array按原索引或显式order。基线CURRENT_DICTIONARY_ORDER.json完整覆盖当前对象序列。品质奖励顺序white,blue,gold,legendary,ultimate_core；tier1..5；路线alpha,beta,gamma,delta；词缀/挂设/传说效果池按基线order；传说参数首键决定既有强弱比较，不能按字母重排。编队slots空位仍null，slot_index不得密排。奖励ordinal数组若含非升序，须增加order保留原序，不按数值猜重排。

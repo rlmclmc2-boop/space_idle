@@ -1,0 +1,1247 @@
+{
+  "status": "authoring draft, no workbook/code changes",
+  "source_commit": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "workbook_filename_recommendation": "retain hyperspace_config.xlsx identity; upgrade importer for entity sheets",
+  "physical_partition": "Logical sheet defaults below are concrete; parent may combine views/files through explicit manifest mapping. Count is not an approval requirement.",
+  "layout": {
+    "row1": "exact English column names",
+    "row2": "Chinese description + unit + constraint (can wrap line breaks)",
+    "row3": "fixed declared column type",
+    "row4_plus": "literal typed data; no formulas",
+    "notes": "Parent spreadsheet tool authors workbook. No openpyxl writing/export_config regeneration here."
+  },
+  "ordering": {
+    "order_zero_based": true,
+    "order_protected": true,
+    "physical_row_sort_ignored": true,
+    "scope": "See each entity primary key; effect parameter order scoped to effect; route groups scoped to route+tier; mounts to enemy; dictionaries must match CURRENT_DICTIONARY_ORDER.json",
+    "new_ids_or_orders": "Rejected outside separately authorized schema changes"
+  },
+  "rules_outside_editable_cells": [
+    "config/save/filter/RNG schema versions",
+    "single-depth triggers/protected references/refund/idempotency",
+    "fixed40 encounter acceptance metadata and15slot template",
+    "fixed automatic full-cap dispatch and actual completed mainline ratio inheritance",
+    "fixed core reward1/preset count3/unimplemented prism maximum_towers/counting_policy",
+    "1960 primary-derived wave mappings and historical provenance"
+  ],
+  "sheets": [
+    {
+      "sheet": "标量配置",
+      "entity_id": "标量配置",
+      "primary_key": [
+        "key"
+      ],
+      "columns": [
+        {
+          "column": "key",
+          "type": "string",
+          "description_zh": "现有或本次明确规划的配置键",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "data_type",
+          "type": "enum",
+          "description_zh": "本键固定数据类型，不随单元格显示格式改变",
+          "unit": "类型标签",
+          "constraint": "int/float/bool/string/null；必须符合键契约；锁定",
+          "editable": false
+        },
+        {
+          "column": "value",
+          "type": "typed_literal",
+          "description_zh": "按本键固定类型读入的单一字面值",
+          "unit": "见unit列",
+          "constraint": "拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",
+          "editable": true
+        },
+        {
+          "column": "unit",
+          "type": "string",
+          "description_zh": "值的中文单位与比例口径",
+          "unit": "说明",
+          "constraint": "必填；只作说明，不改变数值计算",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "中文用途/联动说明",
+          "unit": "说明",
+          "constraint": "必填；不参与JSON业务值",
+          "editable": false
+        },
+        {
+          "column": "constraint",
+          "type": "string",
+          "description_zh": "固定范围/外键/不可编辑理由",
+          "unit": "说明",
+          "constraint": "必填；以代码契约执行，不能编辑此文案绕过校验",
+          "editable": false
+        },
+        {
+          "column": "editable",
+          "type": "bool",
+          "description_zh": "该键是否真实允许调整；不是功能开关",
+          "unit": "权限标签",
+          "constraint": "锁定并匹配契约；false拒绝改离基线",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json root scalars"
+      ],
+      "note": "不包含版本号；仓储/保护键移到相应页；新增现代化基础系数1与自动20/100；已有放大起点4接线；所有默认数值不变。"
+    },
+    {
+      "sheet": "仓储保留",
+      "entity_id": "仓储保留",
+      "primary_key": [
+        "key"
+      ],
+      "columns": [
+        {
+          "column": "key",
+          "type": "string",
+          "description_zh": "现有或本次明确规划的配置键",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "data_type",
+          "type": "enum",
+          "description_zh": "本键固定数据类型，不随单元格显示格式改变",
+          "unit": "类型标签",
+          "constraint": "int/float/bool/string/null；必须符合键契约；锁定",
+          "editable": false
+        },
+        {
+          "column": "value",
+          "type": "typed_literal",
+          "description_zh": "按本键固定类型读入的单一字面值",
+          "unit": "见unit列",
+          "constraint": "拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",
+          "editable": true
+        },
+        {
+          "column": "unit",
+          "type": "string",
+          "description_zh": "值的中文单位与比例口径",
+          "unit": "说明",
+          "constraint": "必填；只作说明，不改变数值计算",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "中文用途/联动说明",
+          "unit": "说明",
+          "constraint": "必填；不参与JSON业务值",
+          "editable": false
+        },
+        {
+          "column": "constraint",
+          "type": "string",
+          "description_zh": "固定范围/外键/不可编辑理由",
+          "unit": "说明",
+          "constraint": "必填；以代码契约执行，不能编辑此文案绕过校验",
+          "editable": false
+        },
+        {
+          "column": "editable",
+          "type": "bool",
+          "description_zh": "该键是否真实允许调整；不是功能开关",
+          "unit": "权限标签",
+          "constraint": "锁定并匹配契约；false拒绝改离基线",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json warehouse_capacity/overflow_capacity/reforge_capacity_gain/initial_retention_capacity/retention_capacity_gain/maximum_equipped/maximum_legendary/maximum_ultimate"
+      ],
+      "note": "overflow容量10及已有硬上限约束锁定；封存领取的星球门槛引用原planet/unlock表，不复制。"
+    },
+    {
+      "sheet": "保护与策略",
+      "entity_id": "保护与策略",
+      "primary_key": [
+        "key"
+      ],
+      "columns": [
+        {
+          "column": "key",
+          "type": "string",
+          "description_zh": "保护参数或已存在policies子键",
+          "unit": "稳定键",
+          "constraint": "允许清单，路径映射由契约指定",
+          "editable": false
+        },
+        {
+          "column": "data_type",
+          "type": "enum",
+          "description_zh": "本键固定数据类型，不随单元格显示格式改变",
+          "unit": "类型标签",
+          "constraint": "int/float/bool/string/null；必须符合键契约；锁定",
+          "editable": false
+        },
+        {
+          "column": "value",
+          "type": "typed_literal",
+          "description_zh": "按本键固定类型读入的单一字面值",
+          "unit": "见unit列",
+          "constraint": "拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",
+          "editable": true
+        },
+        {
+          "column": "unit",
+          "type": "string",
+          "description_zh": "值的中文单位与比例口径",
+          "unit": "说明",
+          "constraint": "必填；只作说明，不改变数值计算",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "中文用途/联动说明",
+          "unit": "说明",
+          "constraint": "必填；不参与JSON业务值",
+          "editable": false
+        },
+        {
+          "column": "constraint",
+          "type": "string",
+          "description_zh": "固定范围/外键/不可编辑理由",
+          "unit": "说明",
+          "constraint": "必填；以代码契约执行，不能编辑此文案绕过校验",
+          "editable": false
+        },
+        {
+          "column": "editable",
+          "type": "bool",
+          "description_zh": "该键是否真实允许调整；不是功能开关",
+          "unit": "权限标签",
+          "constraint": "锁定并匹配契约；false拒绝改离基线",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json completion/filter/forecast limits and policies"
+      ],
+      "note": "过滤器用户条件/mode/action/预设是玩家保存状态，不放进Excel；未消费策略仅说明并锁定；版本、触发深度、保护引用、审核状态保持代码不变量。"
+    },
+    {
+      "sheet": "路线",
+      "entity_id": "路线",
+      "primary_key": [
+        "route_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "route_id",
+          "type": "string",
+          "description_zh": "现有alpha/beta/gamma/delta路线",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "weapon",
+          "type": "string",
+          "description_zh": "路线武器结构绑定；四个既有ID唯一覆盖",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于现有装备/敌武器注册表；保持当前引用，变更需跨表校验",
+          "editable": true
+        },
+        {
+          "column": "material",
+          "type": "string",
+          "description_zh": "现有专属材料结构ID；与改造成本及存档一致",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /routes"
+      ],
+      "note": "四路线、四武器对应关系完整且唯一；顺序保留。"
+    },
+    {
+      "sheet": "品质",
+      "entity_id": "品质",
+      "primary_key": [
+        "quality"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "quality",
+          "type": "string",
+          "description_zh": "现有white/blue/gold/legendary来源品质",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "affix_limit",
+          "type": "int",
+          "description_zh": "可生成/改造的词缀槽位上限",
+          "unit": "槽",
+          "constraint": "非负；不超过既有0/2/3/3硬上限",
+          "editable": true
+        },
+        {
+          "column": "hanging_limit",
+          "type": "int",
+          "description_zh": "可生成挂设槽位上限",
+          "unit": "槽",
+          "constraint": "非负；不超过既有4/2/1/0硬上限",
+          "editable": true
+        },
+        {
+          "column": "weapon_level_bonus",
+          "type": "int",
+          "description_zh": "来源品质武器有效等级增量；非究极时蓝来源优先，蓝转传说仍用蓝加成",
+          "unit": "武器有效等级增量",
+          "constraint": "非负；蓝来源继承规则不改",
+          "editable": true
+        },
+        {
+          "column": "dismantle_amount",
+          "type": "int",
+          "description_zh": "拆解专属材料数与随机挂设副本数",
+          "unit": "份/次",
+          "constraint": "正整数；现行为同一个数，不拆成两个可独立调参来源；奖励校验上界联动",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /quality_limits,/weapon_level_bonuses,/dismantle_amounts"
+      ],
+      "note": "究极有效等级奖励仍是标量ultimate_weapon_bonus；不伪装为第五种origin_quality。"
+    },
+    {
+      "sheet": "奖励权重",
+      "entity_id": "奖励权重",
+      "primary_key": [
+        "outcome"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "outcome",
+          "type": "string",
+          "description_zh": "white/blue/gold/legendary/ultimate_core抽签结果",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "weight",
+          "type": "float",
+          "description_zh": "结果相对抽签权重",
+          "unit": "相对权重",
+          "constraint": "非负；合计>0；默认合计1.09，不能当互斥绝对概率",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /quality_weights"
+      ],
+      "note": "按order构建有序Dictionary；核心固定一次一个及独占/额外政策由既有支持规则控制，不添加送机/赠核心。"
+    },
+    {
+      "sheet": "舰型槽位",
+      "entity_id": "舰型槽位",
+      "primary_key": [
+        "hull_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "hull_id",
+          "type": "string",
+          "description_zh": "现有舰型ID",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于ship.xlsx；保持当前引用，变更需跨表校验",
+          "editable": false
+        },
+        {
+          "column": "capacity",
+          "type": "int",
+          "description_zh": "该舰型异空间无人机槽位",
+          "unit": "架",
+          "constraint": "1..5，且满足全局maximum_equipped",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /hull_capacities"
+      ],
+      "note": "只引用舰型ID，不复制舰体数值/普通武器槽。"
+    },
+    {
+      "sheet": "阶级权重",
+      "entity_id": "阶级权重",
+      "primary_key": [
+        "tier"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "tier",
+          "type": "int",
+          "description_zh": "现有词缀阶级，1为最高",
+          "unit": "阶",
+          "constraint": "1..5完整唯一",
+          "editable": false
+        },
+        {
+          "column": "draw_weight",
+          "type": "float",
+          "description_zh": "生成/升阶判定使用的相对阶级权重",
+          "unit": "相对权重",
+          "constraint": ">0；保留默认1/5/15/45/135及order",
+          "editable": true
+        },
+        {
+          "column": "modernization_weight",
+          "type": "float",
+          "description_zh": "现代化费用附加阶级系数",
+          "unit": "无量纲",
+          "constraint": "非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /tier_weights,/modernization_tier_weights"
+      ],
+      "note": "两列分别导出两个有序字典，阶键序1→5保持。"
+    },
+    {
+      "sheet": "词缀定义",
+      "entity_id": "词缀定义",
+      "primary_key": [
+        "affix_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "affix_id",
+          "type": "string",
+          "description_zh": "已实现聚合器支持的词缀ID",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "weapon",
+          "type": "string",
+          "description_zh": "适用武器；空字符串代表全局",
+          "unit": "武器ID/空字符串",
+          "constraint": "已支持武器或空；空保持为\"\"而非null",
+          "editable": true
+        },
+        {
+          "column": "amplified",
+          "type": "bool",
+          "description_zh": "是否按等级放大已有词缀值",
+          "unit": "bool",
+          "constraint": "保持当前值；消费者必须识别ID，不允许新增名即假称生效",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /affixes/*/weapon,/amplified"
+      ],
+      "note": "抽词缀候选池按order排列。"
+    },
+    {
+      "sheet": "词缀区间",
+      "entity_id": "词缀区间",
+      "primary_key": [
+        "affix_id",
+        "tier"
+      ],
+      "columns": [
+        {
+          "column": "affix_id",
+          "type": "string",
+          "description_zh": "词缀定义外键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于词缀定义；保持当前引用，变更需跨表校验",
+          "editable": false
+        },
+        {
+          "column": "tier",
+          "type": "int",
+          "description_zh": "该词缀有定义的阶级",
+          "unit": "阶",
+          "constraint": "1..5；仅导出存在的阶，不凭空补缺",
+          "editable": false
+        },
+        {
+          "column": "minimum",
+          "type": "float",
+          "description_zh": "未放大的原值区间下端",
+          "unit": "原始加成；1=100%或数量",
+          "constraint": "有限；≤maximum；value_precision网格至少有一个可取值",
+          "editable": true
+        },
+        {
+          "column": "maximum",
+          "type": "float",
+          "description_zh": "未放大的原值区间上端",
+          "unit": "同minimum",
+          "constraint": "有限；≥minimum；数量词缀现有量化及最终int投影保持",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /affixes/*/ranges"
+      ],
+      "note": "范围输出[minimum,maximum]；tier字典按固定1..5顺序输出，不能随物理行变化。"
+    },
+    {
+      "sheet": "改造费用",
+      "entity_id": "改造费用",
+      "primary_key": [
+        "operation",
+        "resource"
+      ],
+      "columns": [
+        {
+          "column": "operation_order",
+          "type": "int",
+          "description_zh": "已有改造操作输出顺序",
+          "unit": "0起序号",
+          "constraint": "固定操作顺序，锁定",
+          "editable": false
+        },
+        {
+          "column": "operation",
+          "type": "string",
+          "description_zh": "已有Forge操作ID",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "resource",
+          "type": "string",
+          "description_zh": "现有材料或ultimate_cores",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验",
+          "editable": true
+        },
+        {
+          "column": "amount",
+          "type": "int",
+          "description_zh": "该操作消耗该资源的基础数量",
+          "unit": "份/次",
+          "constraint": "非负整数；同(operation,resource)唯一；真实preview/commit共用此来源",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /forge_costs"
+      ],
+      "note": "允许同操作多资源行但仅已实现资源；没有现代化空cost行：现代化实际价格来自公式，不能增加第二份报价权威。"
+    },
+    {
+      "sheet": "挂设",
+      "entity_id": "挂设",
+      "primary_key": [
+        "module_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "module_id",
+          "type": "string",
+          "description_zh": "既有五种挂设ID",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "base_exp",
+          "type": "float",
+          "description_zh": "首份只解锁不给经验；重复模块输入经验及各级阈值共用base_exp",
+          "unit": "经验/重复模块",
+          "constraint": ">0且有限",
+          "editable": true
+        },
+        {
+          "column": "exp_growth",
+          "type": "float",
+          "description_zh": "每级需求的增长率",
+          "unit": "比例；1=100%",
+          "constraint": "≥0且有限，经验需求不得非有限",
+          "editable": true
+        },
+        {
+          "column": "effect_growth",
+          "type": "float",
+          "description_zh": "每架加成=(1+growth)^全局模块等级−1；等级0为0，同类多架相加",
+          "unit": "比例；1=100%",
+          "constraint": "≥0且有限，实际公式pow(1+g,L)-1保持",
+          "editable": true
+        },
+        {
+          "column": "unlock_stage",
+          "type": "int",
+          "description_zh": "挂设可应用的最高到达关卡",
+          "unit": "关",
+          "constraint": "非负整数",
+          "editable": true
+        },
+        {
+          "column": "effects_note",
+          "type": "string",
+          "description_zh": "当前effects数组的说明，仅标签非路由",
+          "unit": "只读说明",
+          "constraint": "从基线说明映射；不编辑扩玩法；原JSON effects数组由锁定契约保留",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /hanging_modules"
+      ],
+      "note": "拆解随机挂设选择按order；实际module→消费者映射留在代码，旧effects不当可调开关。"
+    },
+    {
+      "sheet": "传说定义",
+      "entity_id": "传说定义",
+      "primary_key": [
+        "effect_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "effect_id",
+          "type": "string",
+          "description_zh": "既有十二种传说效果ID",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "weapon",
+          "type": "string",
+          "description_zh": "固定结构绑定；空字符串表示全武器通用",
+          "unit": "武器ID/空字符串",
+          "constraint": "仅已有武器或空字符串",
+          "editable": true
+        },
+        {
+          "column": "score_parameter_note",
+          "type": "string",
+          "description_zh": "当前强弱比较读取第一个parameter键",
+          "unit": "只读参数名",
+          "constraint": "保持当前首参数或空；只是说明，不新增可调primary策略",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /legendary_effects/*/weapon"
+      ],
+      "note": "随机效果候选池按order；不增加效果ID/行为。"
+    },
+    {
+      "sheet": "传说区间",
+      "entity_id": "传说区间",
+      "primary_key": [
+        "effect_id",
+        "parameter"
+      ],
+      "columns": [
+        {
+          "column": "effect_id",
+          "type": "string",
+          "description_zh": "传说定义外键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+          "editable": false
+        },
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "parameter",
+          "type": "string",
+          "description_zh": "该效果已实现参数名",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "minimum",
+          "type": "float",
+          "description_zh": "新生成/重洗范围下端",
+          "unit": "依参数；倍率/比例",
+          "constraint": "≤maximum、有限、量化网格非空；比例类满足既有语义范围",
+          "editable": true
+        },
+        {
+          "column": "maximum",
+          "type": "float",
+          "description_zh": "新生成/重洗范围上端",
+          "unit": "同minimum",
+          "constraint": "≥minimum；不得混入旧存值许可范围",
+          "editable": true
+        },
+        {
+          "column": "stored_minimum",
+          "type": "float_or_blank",
+          "description_zh": "仅已有stored_parameter_ranges下端",
+          "unit": "旧存值许可",
+          "constraint": "仅现有兼容项填；否则空并不输出该键；锁定；不做旧档迁移",
+          "editable": false
+        },
+        {
+          "column": "stored_maximum",
+          "type": "float_or_blank",
+          "description_zh": "仅已有stored_parameter_ranges上端",
+          "unit": "同stored_minimum",
+          "constraint": "成对出现，当前既有0.8..0.9保留；锁定",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /legendary_effects/*/parameters,/stored_parameter_ranges"
+      ],
+      "note": "order按每effect作用域唯一连续；生成parameters字典必须按order；第一个参数用于现有强弱比较。"
+    },
+    {
+      "sheet": "传说常量",
+      "entity_id": "传说常量",
+      "primary_key": [
+        "effect_id",
+        "constant_path"
+      ],
+      "columns": [
+        {
+          "column": "effect_id",
+          "type": "string",
+          "description_zh": "传说定义外键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+          "editable": false
+        },
+        {
+          "column": "constant_path",
+          "type": "string",
+          "description_zh": "效果内固定常量路径，如quality_ratios/white",
+          "unit": "相对字段路径",
+          "constraint": "仅当前支持的已知路径，不接受脚本/任意表达式",
+          "editable": false
+        },
+        {
+          "column": "data_type",
+          "type": "enum",
+          "description_zh": "本键固定数据类型，不随单元格显示格式改变",
+          "unit": "类型标签",
+          "constraint": "int/float/bool/string/null；必须符合键契约；锁定",
+          "editable": false
+        },
+        {
+          "column": "value",
+          "type": "typed_literal",
+          "description_zh": "按本键固定类型读入的单一字面值",
+          "unit": "见unit列",
+          "constraint": "拒绝公式；不得把数字放进文本；null键用空值且类型为null；有限值；每键专属范围见KEY_CONTRACT",
+          "editable": true
+        },
+        {
+          "column": "unit",
+          "type": "string",
+          "description_zh": "值的中文单位与比例口径",
+          "unit": "说明",
+          "constraint": "必填；只作说明，不改变数值计算",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "中文用途/联动说明",
+          "unit": "说明",
+          "constraint": "必填；不参与JSON业务值",
+          "editable": false
+        },
+        {
+          "column": "constraint",
+          "type": "string",
+          "description_zh": "固定范围/外键/不可编辑理由",
+          "unit": "说明",
+          "constraint": "必填；以代码契约执行，不能编辑此文案绕过校验",
+          "editable": false
+        },
+        {
+          "column": "editable",
+          "type": "bool",
+          "description_zh": "该键是否真实允许调整；不是功能开关",
+          "unit": "权限标签",
+          "constraint": "锁定并匹配契约；false拒绝改离基线",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "hyperspace_config.json /legendary_effects/*/constants"
+      ],
+      "note": "数值常量有精确键约束；counting_policy和maximum_towers未消费，锁定；源码固定行为不因表格化扩展。"
+    },
+    {
+      "sheet": "异空间敌人",
+      "entity_id": "异空间敌人",
+      "primary_key": [
+        "enemy_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "enemy_id",
+          "type": "int",
+          "description_zh": "现有独立异空间敌人ID",
+          "unit": "ID",
+          "constraint": "正整数，当前223个既有ID；不得与主线ID冲突",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "已有敌人描述",
+          "unit": "文本",
+          "constraint": "保留原des，不创造美术/新指南",
+          "editable": true
+        },
+        {
+          "column": "size",
+          "type": "int",
+          "description_zh": "既有舰体尺寸档",
+          "unit": "尺寸档",
+          "constraint": "正整数且现有模型/几何支持",
+          "editable": true
+        },
+        {
+          "column": "health",
+          "type": "number",
+          "description_zh": "基础生命值",
+          "unit": "生命",
+          "constraint": ">0且有限",
+          "editable": true
+        },
+        {
+          "column": "armour_type",
+          "type": "int",
+          "description_zh": "装甲抗性类别",
+          "unit": "枚举码",
+          "constraint": "0/1/2",
+          "editable": true
+        },
+        {
+          "column": "shield",
+          "type": "number",
+          "description_zh": "基础护盾容量",
+          "unit": "护盾",
+          "constraint": "≥0且有限",
+          "editable": true
+        },
+        {
+          "column": "shield_type",
+          "type": "int",
+          "description_zh": "护盾抗性类别",
+          "unit": "枚举码",
+          "constraint": "0/1/2",
+          "editable": true
+        },
+        {
+          "column": "shield_recovery",
+          "type": "number",
+          "description_zh": "每秒最大护盾恢复比例",
+          "unit": "比例/游戏秒",
+          "constraint": "≥0且有限",
+          "editable": true
+        },
+        {
+          "column": "shield_delay",
+          "type": "number",
+          "description_zh": "实际命中后护盾恢复延迟",
+          "unit": "游戏秒",
+          "constraint": "≥0且有限",
+          "editable": true
+        },
+        {
+          "column": "damage_multiplier",
+          "type": "number",
+          "description_zh": "基础武器伤害倍率",
+          "unit": "无量纲",
+          "constraint": "≥0且有限",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_candidates.json /enemies"
+      ],
+      "note": "equipment另表；drops/rewardDrops/jewelDropRolls/res由奖励投影重建或保持冻结非编辑基线，不提供第二份预算。"
+    },
+    {
+      "sheet": "敌人武器",
+      "entity_id": "敌人武器",
+      "primary_key": [
+        "enemy_id",
+        "order"
+      ],
+      "columns": [
+        {
+          "column": "enemy_id",
+          "type": "int",
+          "description_zh": "异空间敌人外键",
+          "unit": "ID",
+          "constraint": "必须存在于异空间敌人",
+          "editable": false
+        },
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "weapon_id",
+          "type": "string",
+          "description_zh": "现有敌武器安装键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于enemy_weapon_base.xlsx/现有ShipDatabase.enemy_weapon；保持当前引用，变更需跨表校验",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_candidates.json /enemies/*/equipment"
+      ],
+      "note": "每行一项安装，重复武器按不同order保留；不复制装备伤害/CD等正式表参数。"
+    },
+    {
+      "sheet": "异空间编队",
+      "entity_id": "异空间编队",
+      "primary_key": [
+        "group_id"
+      ],
+      "columns": [
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "group_id",
+          "type": "int",
+          "description_zh": "现有四十组独立编队ID",
+          "unit": "ID",
+          "constraint": "正整数，当前7001..7040既有集合，不与主线冲突",
+          "editable": false
+        },
+        {
+          "column": "description",
+          "type": "string",
+          "description_zh": "已有编队名称/描述",
+          "unit": "文本",
+          "constraint": "保留当前description",
+          "editable": true
+        },
+        {
+          "column": "tier",
+          "type": "enum",
+          "description_zh": "普通/精英/Boss/地区Boss档位",
+          "unit": "档位",
+          "constraint": "normal/elite/boss/ultimate；总计16/16/4/4，当前不扩组",
+          "editable": true
+        },
+        {
+          "column": "reward_reference_id",
+          "type": "string",
+          "description_zh": "奖励预算设计参考键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于奖励参考；保持当前引用，变更需跨表校验",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_candidates.json /groups"
+      ],
+      "note": "固定15槽的null结构由编码器模板重建；审核版本/status/acceptance元数据不作为可编辑值。"
+    },
+    {
+      "sheet": "编队槽位",
+      "entity_id": "编队槽位",
+      "primary_key": [
+        "group_id",
+        "slot_index"
+      ],
+      "columns": [
+        {
+          "column": "group_id",
+          "type": "int",
+          "description_zh": "编队外键",
+          "unit": "ID",
+          "constraint": "必须存在于异空间编队",
+          "editable": false
+        },
+        {
+          "column": "slot_index",
+          "type": "int",
+          "description_zh": "源15槽的实际索引",
+          "unit": "0起索引",
+          "constraint": "0..14，group内唯一，不能自动密排",
+          "editable": true
+        },
+        {
+          "column": "enemy_id",
+          "type": "int",
+          "description_zh": "该非空槽异空间敌人",
+          "unit": "ID",
+          "constraint": "必须存在于异空间敌人",
+          "editable": true
+        },
+        {
+          "column": "x",
+          "type": "number",
+          "description_zh": "显式阵型横坐标",
+          "unit": "逻辑战场单位",
+          "constraint": "有限且54..518；实际几何合法",
+          "editable": true
+        },
+        {
+          "column": "y",
+          "type": "number",
+          "description_zh": "显式阵型纵坐标",
+          "unit": "逻辑战场单位",
+          "constraint": "有限且80..350；大型舰前后顺序/中心扇区合法",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_candidates.json /groups/*/slots,/formation_positions"
+      ],
+      "note": "仅写非空槽；未列槽保留null，不能变成0；占用槽必须有x/y。既有显式阵型验证负责几何约束。"
+    },
+    {
+      "sheet": "路线编队",
+      "entity_id": "路线编队",
+      "primary_key": [
+        "route_id",
+        "tier",
+        "order"
+      ],
+      "columns": [
+        {
+          "column": "route_id",
+          "type": "string",
+          "description_zh": "异空间路线外键",
+          "unit": "已有ID引用",
+          "constraint": "必须存在于路线；保持当前引用，变更需跨表校验",
+          "editable": false
+        },
+        {
+          "column": "tier",
+          "type": "enum",
+          "description_zh": "战斗档位",
+          "unit": "档位",
+          "constraint": "normal/elite/boss/ultimate固定顺序",
+          "editable": false
+        },
+        {
+          "column": "order",
+          "type": "int",
+          "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
+          "unit": "0起序号",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "editable": false
+        },
+        {
+          "column": "group_id",
+          "type": "int",
+          "description_zh": "该档位有序编队ID",
+          "unit": "ID",
+          "constraint": "存在于异空间编队且档位一致；每路线4/4/1/1，无跨路线重复",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_routes.json /routes"
+      ],
+      "note": "JSON以路线表weapon键投影；按route.order、固定tier次序、组order输出；倍率继承策略仍是固定规则，不另设倍率表。"
+    },
+    {
+      "sheet": "奖励参考",
+      "entity_id": "奖励参考",
+      "primary_key": [
+        "reference_id"
+      ],
+      "columns": [
+        {
+          "column": "reference_id",
+          "type": "string",
+          "description_zh": "现有奖励参考设计键",
+          "unit": "稳定ID",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "editable": false
+        },
+        {
+          "column": "source_design_group_id",
+          "type": "int",
+          "description_zh": "现有正式主线原设计组引用",
+          "unit": "ID",
+          "constraint": "存在于正式monGroup；仅引用，不复制预算",
+          "editable": true
+        },
+        {
+          "column": "late_reference_level_id",
+          "type": "int",
+          "description_zh": "现有晚段回退引用关卡",
+          "unit": "关卡ID",
+          "constraint": "存在于正式level且对应group确属该关卡",
+          "editable": true
+        },
+        {
+          "column": "late_reference_group_id",
+          "type": "int",
+          "description_zh": "现有晚段回退引用组",
+          "unit": "group ID",
+          "constraint": "存在于正式monGroup；真实blocks从mon的drops读取",
+          "editable": true
+        },
+        {
+          "column": "boundary_note",
+          "type": "string",
+          "description_zh": "既有早1..5、晚≥6规则与不可重建项",
+          "unit": "只读说明",
+          "constraint": "锁定；不把catalog未消费分界字段当参数",
+          "editable": false
+        }
+      ],
+      "json_targets": [
+        "space_enemy_candidates.json /groups/*/rewardBinding/rewardReferenceDesignId",
+        "space_enemy_reward_catalog.json references association only"
+      ],
+      "note": "reference_member_count从正式source_design组非空槽派生（当前40/40相等）；晚段budget不在表里重复。早段fallback及sources原设计来源仍用冻结派生JSON基线，本轮无伪造重生成。"
+    },
+    {
+      "sheet": "奖励成员分配",
+      "entity_id": "奖励成员分配",
+      "primary_key": [
+        "group_id",
+        "slot_index",
+        "reference_member_ordinal"
+      ],
+      "columns": [
+        {
+          "column": "group_id",
+          "type": "int",
+          "description_zh": "异空间奖励组外键",
+          "unit": "ID",
+          "constraint": "存在于异空间编队",
+          "editable": false
+        },
+        {
+          "column": "slot_index",
+          "type": "int",
+          "description_zh": "实际收取该预算块的异空间非空槽",
+          "unit": "0起索引",
+          "constraint": "必须为该组非空槽",
+          "editable": true
+        },
+        {
+          "column": "reference_member_ordinal",
+          "type": "int",
+          "description_zh": "被分配的原参考成员序号",
+          "unit": "0起索引",
+          "constraint": "覆盖0..reference_count-1且无重复；每个非空槽有分配",
+          "editable": true
+        }
+      ],
+      "json_targets": [
+        "space_enemy_reward_recipes.json /groups"
+      ],
+      "note": "一行一个分配，不复制奖励金额；enemy_id从group.slot派生，jewelDropRolls=该槽ordinal数。导出成员按slot_index，ordinal按当前顺序；若当前非升序须加局部order列，不能私自排序。"
+    }
+  ]
+}
