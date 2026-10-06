@@ -1,0 +1,15 @@
+{
+  "workbook_source": "a7b14b257c50576477015dc19dc70e7d0c7aa736/hyperspace-excel-final",
+  "sha256": {
+    "hyperspace_config.xlsx": "ae03d71a739cd90ab63c1e76773a47bf937a9cd4b8b955c81cd7df2e62820f70",
+    "hyperspace_enemies.xlsx": "0358d9b4619a9917b4956c74c901c7b15182b60a654d3c20bcd03bbdd9329efd"
+  },
+  "sheet_count": 21,
+  "data_cells_equal_authoring_package": 8014,
+  "formal_incremental_import_success": true,
+  "five_outputs_semantically_equal_existing_candidate": true,
+  "mainline_nonprovenance_equal": true,
+  "second_import_changed": [],
+  "second_import_five_output_bytes_mtime_unchanged": true,
+  "no_functional_or_longrun_repeated": true
+}
