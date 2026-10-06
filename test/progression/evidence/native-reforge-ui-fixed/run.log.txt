@@ -1,3 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-NATIVE_REFORGE_MODULES before=8 after=5 expected=5 pending_rebuild=true

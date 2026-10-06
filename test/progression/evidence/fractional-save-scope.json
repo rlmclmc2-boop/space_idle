@@ -1,8 +1,0 @@
-{
-  "bug": "Formal load_progress_data ceiled fractional balances, silently creating <1 of each resource on reload",
-  "negative": "12 checks: 2 fail with iron10.25 titanium20.75",
-  "fix": "Keep finite valid values exact; duplicate GrowthNumber dictionary",
-  "impact": "Load/import boundary only; continuous fresh simulation unaffected until resume or forge resets loading",
-  "positive": "14 checks: fractional offline/save/reload and huge-number dictionary ownership",
-  "tests_updated": "test_save_boundaries expected123.5 rather than124; only fractional restore expectation changed, no failures removed"
-}

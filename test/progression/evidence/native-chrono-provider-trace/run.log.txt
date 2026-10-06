@@ -1,7 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-CHRONO_PROVIDER_TRACE {"geometry":{"baseline":{"demo":2.43333333333333,"fx":2.43333333333333,"input":[66.0,382.0],"kind":"target","point":[69.8412399291992,309.160522460938],"quality":false,"uid":11,"x1":2.43333333333333},"boosted":{"demo":0.25,"fx":0.25,"input":[66.0,382.0],"kind":"target","point":[66.7389297485352,300.749603271484],"quality":true,"uid":11,"x1":2.43333333333333},"field":"point","index":0},"quality_control":{"baseline":{"demo":2.43333333333333,"fx":2.43333333333333,"input":[66.0,382.0],"kind":"target","point":[69.8412399291992,309.160522460938],"quality":false,"uid":11,"x1":2.43333333333333},"boosted":{"demo":0.25,"fx":0.25,"input":[66.0,382.0],"kind":"target","point":[66.7389297485352,300.749603271484],"quality":false,"uid":11,"x1":2.43333333333333},"field":"point","index":0},"tick":{"baseline":{"angles":[0.0,0.0,0.0],"demo":0.0166666666666667,"fx":0.0166666666666667,"motion":0.0,"player":[286.0,520.0],"quality":false,"x1_before":0.0},"boosted":{"angles":[0.0,0.0,0.0],"demo":0.0166666666666667,"fx":0.0166666666666667,"motion":0.0,"player":[286.0,520.0],"quality":true,"x1_before":0.0},"field":"quality","index":0}}
-WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
-   at: cleanup (core/object/object.cpp:2663)
-ERROR: 13 resources still in use at exit (run with --verbose for details).
-   at: clear (core/io/resource.cpp:810)

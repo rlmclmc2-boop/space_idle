@@ -1,6 +1,0 @@
-{
-  "input_ref": "4d81bed07d88c008a02bcbd42eff25eb217214e4",
-  "data_ref": "04a5a307bcef9325efa9026e1ca94affa577e10d",
-  "game_sha256": "b27344943f3424e1c8efa779e2be48c1cb89f00c8d750cf155b8a8eb8d3dd9ea",
-  "note": "Executed locally against parent-provided controlled first-hour profile and exact probe; no claim parent executed the repair yet."
-}

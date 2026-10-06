@@ -1,8 +1,0 @@
-{
-  "executor": "shell/tool calls are working as of2026-10-02 evening UTC",
-  "last_pushed_before_this_commit": "6db9e3c",
-  "running": "formal-scene-v9-0-20 fresh120-through20; progress heartbeat atstage20 after6.17h",
-  "prepared": "v11 Excel+JSON validated; not yet tested fresh",
-  "parent_report": "3e4 formal30\u219234 no-reforge only56.97s in34; directly35 withoutforge. Parent formal smooth7 cross-config20=14.615h. Both diagnostic only.",
-  "resume": "Existing test/work frozen projects plus isolated userdata/results; run_qa refuses reused labels. Checkpoint resumes diagnostic only; preserve fingerprints and allow-version-change explicitly when intended."
-}

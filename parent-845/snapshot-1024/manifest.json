@@ -1,0 +1,32 @@
+{
+  "snapshot_x1": 159836.099984327,
+  "commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "source_actual_d92_clear35": 137316.74998957,
+  "scope": "Parent actual Godot headless cached/VFXfast continuation. Formal reload from d92 clear35 to845; crossversion prefix retained. Currentcampaign notterminal. Rawactions clipped toatomicCP. Runlog may later thanCP. No nativeparentUI claim.",
+  "files": {
+    "checkpoint.bin.gz": {
+      "sha256": "e77e8c890a69c04db91bff83ea6b750c27d1bb221416ea0616a3c20b40d211e4",
+      "original_sha256": "59ff30fb2e653d51e30473733a3e376a27e12f738b12dac90b35b37fef0dad01",
+      "original_bytes": 2354864,
+      "gzip_bytes": 94764
+    },
+    "qa-manifest.json.gz": {
+      "sha256": "3f87143debf511bb32efb7405b55a07f8f6236a5b4f5de860a0045d811c956bd",
+      "original_sha256": "57b5f855a94f49a7ce2f92c936db5bf6e706ec3aa48585f51a1917f8559f2b87",
+      "original_bytes": 101491,
+      "gzip_bytes": 41976
+    },
+    "run.log.gz": {
+      "sha256": "5115eff8696e198a3737c69226237fcbe0a0e9a02895376d8f2946469fa26d39",
+      "original_sha256": "49ec0ba3a4080ccff4da792c0c295b1a171b46447f3eaa06538436e1de86b4ca",
+      "original_bytes": 120007,
+      "gzip_bytes": 3854
+    },
+    "actions.jsonl.gz": {
+      "sha256": "4fe172c0f29b863ceebff8aebfe36c28a844ed59e63fc85d91086ebc961b7433",
+      "original_sha256": "212296f4600e6b5e61a8bc58342e77e4565806070ae83b7660a347f3e218317f",
+      "original_bytes": 4994642,
+      "gzip_bytes": 227203
+    }
+  }
+}

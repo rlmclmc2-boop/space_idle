@@ -1,8 +1,0 @@
-{
-  "count": 176,
-  "gate_deviations": [],
-  "event_hook": "full production scene.on_event connected",
-  "seed": 1701,
-  "package_fingerprint": "90ae6d0761212feb5ccd892aad8724c275e0d4f50a1100b351d318c5809072e8",
-  "scope": "Original40 source-export adjacent upgrade gates only, not full progression acceptance"
-}

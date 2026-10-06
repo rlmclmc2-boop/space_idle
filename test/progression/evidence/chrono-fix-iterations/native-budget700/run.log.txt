@@ -1,3 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-NATIVE_CHRONO_BUDGET {"baseline":{"deaths":1,"initial_chrono":0.0,"kills":885,"real_seconds":700,"remaining_chrono":0.0,"resources":{"1":0.0,"2":63.0},"rng":"-3432010838509193265","speed":1.0,"x1_seconds":699.999999999692},"boosted":{"deaths":1,"initial_chrono":600.0,"kills":885,"real_seconds":100,"remaining_chrono":0.0,"resources":{"1":0.0,"2":63.0},"rng":"-3432010838509193265","speed":1.0,"x1_seconds":699.999999999692},"budget_pass":true,"combat_pass":true,"scope":"Native scene _process, controlled missile farm; no actions; stored600 plus real100 yields700 X1 seconds. Exact kills/deaths/RNG/resources comparison in this fixture, not universal equivalence."}

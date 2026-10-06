@@ -1,1 +1,0 @@
-Old legal30 checkpoint cross-version formal-scene/v6 policy comparator, no+10/MAX scientist and no recovery bulk. Reached34 after clear33=49910.4333; clear34=79324.7000:8.1706h stall, FAIL required≥12h. Later stronger-policy/current-source counterfactuals are separate, never substitute this older run as current acceptance.

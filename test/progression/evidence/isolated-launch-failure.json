@@ -1,6 +1,0 @@
-{
-  "scope": "QA launch failure, not game-rule regression",
-  "cause": "Direct Godot launch without isolated writable XDG paths attempted read-only home and crashed during initialization",
-  "corrected": "Relaunched with /workspace test/work isolated XDG paths; migration passed; systems completed",
-  "unaffected": "run_qa.py always supplies isolated paths"
-}

@@ -1,1 +1,0 @@
-{"presentation": true, "critical_only": true, "seed": 1701, "groups": ["ultimate_physical", "ultimate_physical_physical_attack"], "enemies": {"1089": {"health": 777728}, "2089": {"health": 777728, "dmgMultiple": 12.54}}, "output": "/tmp/native-ultimate60-v1.json"}

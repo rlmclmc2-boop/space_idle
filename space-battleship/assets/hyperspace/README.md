@@ -1,5 +1,0 @@
-# Accepted hyperspace drone family
-
-Four authored GLBs and static top thumbnails are copied unchanged from Library `libfile_d24f11dd0094819189a2bad15870dc71` (ZIP SHA256 `82262a52ec041ab66b632a74c8e9cddde636d939a0136743ddc1329073796c04`). The Blender source remains in that package. Family keys: pulse/laser, missile/missile, rail/cannon, beam/longLaser. Approved form: floating diamond core, detached wings, short lens/twin bays/long rails/optical fork. No combat behavior is encoded in the assets.
-
-`hyperspace_drone_visual.gd` adds at most five models to the existing friendly world and viewport. Its identity signature contains only equipped ID and weapon. Warehouse cards reuse eight static images; they never create viewports. Model scale is 16 battlefield pixels per model unit, with staggered bow/side anchors above the existing player HUD. The renderer shares the project's toon shader. Five models plus the three ordinary carriers are covered by `test_hyperspace_ui.gd`; GUI evidence uses the actual root framebuffer and software OpenGL, not headless pixels.

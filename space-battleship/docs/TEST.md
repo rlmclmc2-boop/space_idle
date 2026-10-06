@@ -1,9 +1,0 @@
-# TEST: selection/stop policy
-Commands/map: [test README](../../test/README.md).
-- State change risk -> smallest directly relevant test. NO directory/index/alias batch or unrelated stable-module rerun.
-- Default fast (aim <=30s); module for larger module change/acceptance; full only major refactor, explicit request, prepackage. Long sim/perf/stress=full. Tiers are alternatives, not cumulative.
-- Stop when related checks pass and no new change/failure/open risk. On failure classify behavior vs environment/engine/dependency/fixture; fix then rerun failure+direct impact only. Do not widen automatically or alter valid assertion to fit impl.
-- Reuse specialty tests. Add minimal assertions only for new behavior, actual bug or coverage gap; none for reversible low-risk/implementation-detail/duplicate scenario.
-- Editable balance values, unlock thresholds and descriptions are not fixed test contracts. Compute integration expectations from table inputs and the documented rule, independently of the production method under test. Give boundary/format scenarios explicit in-memory fixtures; never rewrite source workbooks or player saves to satisfy tests. For configuration-sensitive rules, cover live values plus a distinct valid configuration; retain invalid-data rejection and behavior assertions.
-- Docs-only: verify facts/links/open IDs/diff; NO game test. Tests use isolated project+user dir, never player save; outputs ../test/work/. After checking results, remove this run's unneeded isolated copies and temporary data; retain evidence needed for failures or handoff. Never clean active runs or unrelated work.
-- Remove completed one-off acceptance notes/Done log, not reusable regression. Delete obsolete test only after consumers+unique coverage checked; update entrypoint. Open issues -> STATUS.
