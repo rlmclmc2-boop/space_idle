@@ -1,0 +1,76 @@
+[
+  {
+    "slug": "galaxy845",
+    "checkpoint_header": {
+      "bytes": 2995360,
+      "code_fingerprint": "4e07f51458d778fa152222ab0d39042cc07f4d7f83d2e1c563479de5e4123983",
+      "continuity_fingerprint": "bad1232730480e235680bac1606fd84147e1cca7aa416035e519a4bb51798b79",
+      "format": 1,
+      "scope": "formal_journey_reload_not_live_combat_restore",
+      "sha256": "61971908eaad9d6eab44b69e160097dae4b5c5e4407b1521cbed89f1f057997e",
+      "source_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+      "x1_seconds": 190625.266643825
+    },
+    "files": {
+      "galaxy845-checkpoint.bin.gz": {
+        "raw_sha256": "f4343ac6baf962333bc74c179933a8cd609fbadbc023cd116eb449a731a54c3b",
+        "gzip_sha256": "3d17599b9eb46f3a8a2af304332aca6e799964cae7dc05be029c4dd1faf3be0b",
+        "raw_bytes": 2995788,
+        "gzip_bytes": 119929,
+        "credential_hits": 0
+      },
+      "galaxy845-actions.jsonl.gz": {
+        "raw_sha256": "97a2b9b4b263dc06e71fa4570da76c4cb9a397dc7796c1a524e17da335774184",
+        "gzip_sha256": "aa9781450b51c1b327801f47871b4cde5ec53a55b1490f5117a33813fa8b79d9",
+        "raw_bytes": 1593377,
+        "gzip_bytes": 92420,
+        "credential_hits": 0
+      },
+      "galaxy845-run.log.gz": {
+        "raw_sha256": "38a999fdde23db54f6e137a0ab18793d6c94e669f6df42d551c17a21c2203b74",
+        "gzip_sha256": "fd84f0481cecae9546f6d5f092ebaeb4e9f97dbda5943f3a3700f34f15cdcb8e",
+        "raw_bytes": 82192,
+        "gzip_bytes": 2624,
+        "credential_hits": 0
+      }
+    },
+    "scope": "Ownerapproved publicgame-only originalCP/actionlog/engine log. Actions clippedatCP; engine logindependentsample. Bothrunsformalresume:845actual60->hold60; c90actual22->30. No freshsingleversion claim."
+  },
+  {
+    "slug": "resx2",
+    "checkpoint_header": {
+      "bytes": 1056712,
+      "code_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+      "continuity_fingerprint": "0732d0c04b4d5ba8e6e0e8d3788f303917afcd3e73730c171735f091389b63bb",
+      "format": 1,
+      "scope": "formal_journey_reload_not_live_combat_restore",
+      "sha256": "8f0b2ecec05fc6f501fe16a71262dbaa26e4f90063528b564ef84e8e856f9f15",
+      "source_commit": "c90fd6f8697e74756ea1ad6536891deb20bbd2d2",
+      "x1_seconds": 62163.4166722626
+    },
+    "files": {
+      "resx2-checkpoint.bin.gz": {
+        "raw_sha256": "53ffc49e904a1cb02a7a49e58ca9f10c091df26526c2d182d3ae3bc41713159e",
+        "gzip_sha256": "6f5be0bcc4b2f50c63a8d9153588c73d590d5a21ab152e149ad2160190bb76bd",
+        "raw_bytes": 1057140,
+        "gzip_bytes": 48020,
+        "credential_hits": 0
+      },
+      "resx2-actions.jsonl.gz": {
+        "raw_sha256": "11c0cf03285fd5bdfd29aa671cf4232cec0d57d10b67f1bc1340d28b24489af1",
+        "gzip_sha256": "efafb5fae67bd0744d4aefa17996c43f603c73920cd4169d120c68553d92e87e",
+        "raw_bytes": 1558501,
+        "gzip_bytes": 80422,
+        "credential_hits": 0
+      },
+      "resx2-run.log.gz": {
+        "raw_sha256": "e4cb034f436be3453b1555b1d24afb1d76aa8e693bd268fc65004bc652bfc451",
+        "gzip_sha256": "86f70eb6e2e869dc5a6a8f1b9188d941567dc7966023a148f2eb0a2a03923d4a",
+        "raw_bytes": 22249,
+        "gzip_bytes": 1334,
+        "credential_hits": 0
+      }
+    },
+    "scope": "Ownerapproved publicgame-only originalCP/actionlog/engine log. Actions clippedatCP; engine logindependentsample. Bothrunsformalresume:845actual60->hold60; c90actual22->30. No freshsingleversion claim."
+  }
+]
