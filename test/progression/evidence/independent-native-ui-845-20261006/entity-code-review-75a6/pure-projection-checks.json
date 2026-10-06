@@ -1,0 +1,30 @@
+{
+  "checks": [
+    [
+      "zero amplification_rate (disable scaling)",
+      "ValueError: Invalid positive config field: amplification_rate"
+    ],
+    [
+      "maximum_equipped=4 with heavy hull=5",
+      "accepted"
+    ],
+    [
+      "all modernization tier weights zero with positive base",
+      "ValueError: Invalid weights: modernization_tier_weights"
+    ],
+    [
+      "legendary dismantle_amount=11",
+      "accepted"
+    ],
+    [
+      "valid known cannon weapon laser_mon→cannon_mon",
+      "accepted"
+    ],
+    [
+      "slot_index 0→2 (editable flag, currently empty slot)",
+      "ValueError: 编队槽位: immutable identity/structure mismatch"
+    ]
+  ],
+  "baseline_projection_pass": true,
+  "mainline_late_refresh": true
+}
