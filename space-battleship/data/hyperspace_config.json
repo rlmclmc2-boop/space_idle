@@ -70,7 +70,7 @@
     "blue": 0.26,
     "gold": 0.15,
     "legendary": 0.08,
-    "ultimate_core": 0.01
+    "ultimate_core": 0.1
   },
   "weapon_level_bonuses": {
     "white": 0,
