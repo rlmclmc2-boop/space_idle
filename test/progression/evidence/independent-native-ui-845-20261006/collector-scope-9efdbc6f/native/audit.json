@@ -1,0 +1,100 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native current real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next current actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual collector-equipped drone",
+			"native": true,
+			"point": [
+				914.597778320312,
+				518.832763671875
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native module hint inspect without applying",
+			"native": true,
+			"point": [
+				1087.10815429688,
+				446.245422363281
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"actual_hint": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
+	"checks": [
+		{
+			"label": "existing module source hint displays collector scope",
+			"ok": true
+		},
+		{
+			"label": "three actual direct production paths named",
+			"ok": true
+		},
+		{
+			"label": "unsupported material and production sources explicitly excluded",
+			"ok": true
+		},
+		{
+			"label": "actual hint uses four real lines no literal escape",
+			"ok": true
+		},
+		{
+			"label": "module dialog keeps compact readable width",
+			"ok": true
+		},
+		{
+			"label": "actual module dialog stays inside desktop usable bounds",
+			"ok": true
+		},
+		{
+			"label": "source and actual profile unchanged no apply payment or equip",
+			"ok": true
+		}
+	],
+	"dialog_position": [
+		430,
+		166
+	],
+	"dialog_size": [
+		740,
+		668
+	],
+	"failures": [],
+	"source_sha": "d77d94d5c0d87019f7f9c822226821be66b06e3e629a324b7ff0ce40d9c3a3d2"
+}

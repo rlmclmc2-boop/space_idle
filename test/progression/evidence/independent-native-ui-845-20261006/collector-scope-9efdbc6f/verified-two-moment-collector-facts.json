@@ -1,0 +1,33 @@
+[
+  {
+    "moment": "first_hour",
+    "raw_sha": "840c46986c06efbc37c57bbcf1be5c8ac1f68c05c5d88aecab56fce4fabc585a",
+    "x1_seconds": 185072.216645118,
+    "resource_collector": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "equipped_collector_ids": [
+      "space:6:8"
+    ],
+    "actual_per_copy_bonus": 0.10000000000000009,
+    "equipped_bonus_sum": 0.10000000000000009
+  },
+  {
+    "moment": "next_tour",
+    "raw_sha": "d77d94d5c0d87019f7f9c822226821be66b06e3e629a324b7ff0ce40d9c3a3d2",
+    "x1_seconds": 185372.233311715,
+    "resource_collector": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "equipped_collector_ids": [
+      "space:6:15",
+      "space:6:8"
+    ],
+    "actual_per_copy_bonus": 0.10000000000000009,
+    "equipped_bonus_sum": 0.20000000000000018
+  }
+]

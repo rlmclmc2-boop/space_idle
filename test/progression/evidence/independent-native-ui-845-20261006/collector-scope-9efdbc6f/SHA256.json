@@ -1,0 +1,21 @@
+{
+  "build-verification.json": "e2bff613a0cafe592e53070f5a33c99ae11501f3a337b6d20bf228964d247565",
+  "build.log": "16cbbdfc5644e83bc31757e20972ad8f7623938916fedb3e1f7d0ead164fef0f",
+  "first-visual-format-failure/independent_collector_scope.gd": "2d7eea5b0f59efe49e61e25022cf764b2985b94ad85586f016426785c811f98c",
+  "first-visual-format-failure/native/actual-collector-source-hint-screen.png": "f44189f43c32c6265c0f8fa6aeedc630d1ff5feb02aa80cf063da51cf6479592",
+  "first-visual-format-failure/native/audit.json": "fe57f18ad57ab08fb54820bdee090f0795a6f2b1ba491efb4e4f98a6be70737c",
+  "first-visual-format-failure/native/run.log": "e4e6c6834158475aef534a32bba19000db2cf26eaaaaa64cb47c86decf3c6653",
+  "first-visual-format-failure/qa-manifest.json": "a80431de481d7dfe0faac7b5783aa2524cd876a5e5c4b69ef094261cb11117b7",
+  "fixed-build.log": "4760f7fb0755a236baa1f40c85276771d7710b2b1473e95efb839ab6c9aa2cf1",
+  "fixed-import.log": "45c4940a706a300feef676380ec68f003ed3c49f401a93d05dffaebad6411c2a",
+  "import.log": "2851a7419a5b4117564143433bbd42db6a8cb5eb412b64dc66660f7628fe2c1a",
+  "independent_collector_scope.gd": "61205bb7010421d0546b635be1ec133c555efcb30c0df7b5fd64ac0858a1af37",
+  "native/actual-collector-source-hint-screen.png": "d1feacc2b716d8497c417f3c471efd996e6a585cc05a7d0c6707f7bd52930f31",
+  "native/audit.json": "9d6cd9e0bd669a767b0c0703251d72af85b29627dceebb35a17e03009bb1c6f8",
+  "native/run.log": "8c237eecc9414f5fb6f00aecaa25cd3ceb31cf1f5bc5a0473908bf2a2d663d44",
+  "qa-manifest.json": "a283d8f372966b606f9668e7be1508e3102b2a705d042883c853b151dd4ef2e5",
+  "sources/first_hour.json.gz": "49f0a5249503cd65b168b1509025673043f246a61db23869811bb16313d0d305",
+  "sources/save_final.json": "d77d94d5c0d87019f7f9c822226821be66b06e3e629a324b7ff0ce40d9c3a3d2",
+  "verified-two-moment-collector-facts.json": "3460e44ac0b95a65347d338e68b6768b079d20b920198fcccf9e93b958e5aaa6",
+  "资源收集器最小说明补丁与事实纠正.md": "3bc09aeff7bc58ddc1a5f1ec2b7347d3515c6fda0b2d4804c18460761bc8f812"
+}
