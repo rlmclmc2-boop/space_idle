@@ -178,7 +178,7 @@ func action()->Dictionary:
  if not feedback.is_empty():record("visible_loadout_decision",feedback)
  if page==9:
   var queued_before:Dictionary=space_policy.manual_pending.duplicate(true)
-  var choice:Dictionary=space_policy.space_action(game,game.simulated_time)
+  var choice:Dictionary=space_policy.space_action(game,game.simulated_time,tour_started)
   if queued_before!=space_policy.manual_pending and not space_policy.manual_pending.is_empty():record("manual_request_queued",space_policy.manual_pending)
   if not choice.is_empty():return choice
  elif page==6:
