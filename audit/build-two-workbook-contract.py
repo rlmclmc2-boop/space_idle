@@ -211,10 +211,16 @@ for advice in remarks['rows']:
  table=allrows[('hyperspace_config.xlsx',advice['sheet'])]
  record=next(r for r in table['records'] if [r[k] for k in identity_columns[advice['sheet']]]==advice['identity'])
  record['unit']=advice['unit'];record['description']=advice['description']
- # Keep expanded examples/directions already reviewed, except where the suggestion fixes a subtle source rule.
- if advice['sheet']=='基础参数' and advice['identity'][0] not in ['initial_retention_capacity','retention_capacity_gain']:
-  details=by_path.get('/'+advice['identity'][0],newmap.get(advice['identity'][0],{})).get('description_zh','')
-  if '调小' in details and '调小' not in record['description']:record['description']+=' '+details
+ if advice['sheet']=='基础参数':
+  key=advice['identity'][0]
+  source=by_path.get('/'+key,newmap.get(key,{}))
+  if key=='initial_retention_capacity':
+   record['description']='保留名额初始基数，默认0；实际选择本次保留时加入累计增长及即将重铸的一次增长。调大名额更多，调小更少；不是首轮只能保留0架。'
+  elif key=='retention_capacity_gain':
+   record['description']='每次重铸增加保留名额，默认10，选择本次保留时计入即将重铸的一次。调大后续保留更多，调小更少；保留机封存到对应星球阶段开放，不保留材料。'
+  else:
+   value=record['value'];display=str(int(value)) if isinstance(value,(int,float)) and int(value)==value else str(value)
+   record['description']='默认'+display+'。'+source['description_zh']
 for book,ss in books.items():
  for definition in ss:
   table=allrows[(book,definition['sheet'])]

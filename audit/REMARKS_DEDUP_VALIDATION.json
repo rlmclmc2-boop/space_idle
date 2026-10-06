@@ -1,0 +1,12 @@
+{
+  "business_literals_types_permissions_order_unchanged": true,
+  "method": "One canonical paragraph per scalar; no suggestion/original concatenation",
+  "source": "remarks-only parent feedback; original75/35 consumer-reviewed suggestions retained",
+  "sample_lengths": {
+    "energy_rate": 60,
+    "energy_cap": 62,
+    "ticket": 84,
+    "minimum_duration": 67,
+    "warehouse_capacity": 63
+  }
+}
