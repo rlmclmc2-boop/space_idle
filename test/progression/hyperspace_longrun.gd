@@ -3,6 +3,9 @@ extends "res://qa/early_page_route.gd"
 const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
 const NoNewManualPolicy=preload("res://qa/no_new_manual_policy.gd")
 var space_policy:=SpacePolicy.new()
+var tour_failed_encounters:Dictionary={}
+var tour_current_encounter:=""
+var tour_seen_unlocks:Dictionary={}
 func configure_manual_policy()->void:
  space_policy=SpacePolicy.new() if bool(options.get("allow_new_manual",true)) else NoNewManualPolicy.new()
  space_policy.affix_target_tier=clampi(int(options.get("affix_target_tier",0)),0,5)
@@ -76,6 +79,9 @@ func checkpoint_now()->void:
  else:record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
  checkpoint_due=false;next_checkpoint_wall=Time.get_ticks_usec()+int(float(options.get("checkpoint_wall_seconds",30))*1000000)
 func observe(kind:String,payload:Dictionary)->void:
+ if kind=="state" and game.state==BattleGame.State.COMBAT:
+  var route:String=str(game.profile.hyperspace.active.route) if game.manual_hyperspace.active else "main"
+  tour_current_encounter=str([int(game.profile.hyperspace.round_id),route,game.stage,game.group_index])
  var farm_event:Dictionary=safe_farm.observe(game,kind,payload,game.simulated_time)
  if not farm_event.is_empty():record("safe_farm_event",farm_event)
  if kind=="retreat" or (kind=="hyperspace_manual" and not bool(payload.active) and not bool(payload.success)):
@@ -112,10 +118,28 @@ func observe(kind:String,payload:Dictionary)->void:
   reforge_checkpoint_pending.append({"round":int(game.profile.hyperspace.round_id),"x1_seconds":game.simulated_time})
   checkpoint_due=true
  if kind=="hyperspace_changed":record("space_feedback",{"payload":payload,"active":game.profile.hyperspace.active.duplicate(true),"energy":game.profile.hyperspace.energy,"warehouse":game.profile.hyperspace.inventory.warehouse.size(),"cores":game.profile.hyperspace.ultimate_cores})
- if kind=="retreat" or kind=="unlock":next_tour=minf(next_tour,game.simulated_time+0.3)
+ if kind=="retreat" or kind=="unlock":
+  if not game.profile.cleared.has(10):next_tour=minf(next_tour,game.simulated_time+0.3)
+  else:
+   var reason:String=sparse_tour_reaction(kind,payload)
+   record("tour_reaction",{"event":kind,"encounter":tour_current_encounter,"immediate":not reason.is_empty(),"reason":reason if not reason.is_empty() else "Repeated known failure/unlock; keep the sparse baseline"})
+   if not reason.is_empty():next_tour=minf(next_tour,game.simulated_time+0.3)
  if int(game.profile.highestLevel)>last_frontier:
   last_frontier=int(game.profile.highestLevel)
   save_snapshot("reach_%d_round_%d"%[last_frontier,int(game.profile.hyperspace.round_id)])
+func sparse_tour_reaction(kind:String,payload:Dictionary)->String:
+ if kind=="unlock":
+  var fresh:bool=false
+  for id in payload.get("items",[]):
+   if not tour_seen_unlocks.has(str(id)):
+    tour_seen_unlocks[str(id)]=true;fresh=true
+  return "First observed new unlock" if fresh else ""
+ if kind=="retreat" and not tour_current_encounter.is_empty():
+  var encounter:String=tour_current_encounter
+  if tour_failed_encounters.has(encounter) or int(space_policy.encounter_failures.get(encounter,0))>1:return ""
+  tour_failed_encounters[encounter]=true
+  return "First actual defeat against this observed encounter"
+ return ""
 func crew_action()->Dictionary:
  var redeploy:Dictionary=space_policy.crew_redeploy_action(game,5,driver.scene.crew_panel.rows.keys(),game.simulated_time)
  if not redeploy.is_empty():return redeploy

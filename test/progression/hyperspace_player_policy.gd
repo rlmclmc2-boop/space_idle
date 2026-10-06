@@ -1,9 +1,11 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v18-tour-budgeted-idle-salvage"
+const VERSION="hyperspace-player-v19-sparse-repeat-failure-rolling-salvage"
 var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
 var idle_salvage_budget:Dictionary={"round":-1,"used":0,"tour_started":-1.0}
-const IDLE_SALVAGE_TOUR_LIMIT:=3
+var idle_salvage_success_times:Array=[]
+const IDLE_SALVAGE_WINDOW_LIMIT:=3
+const IDLE_SALVAGE_WINDOW_SECONDS:=300.0
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
@@ -513,14 +515,14 @@ func salvage_candidates(g,white_only:bool)->Array:
 func idle_salvage_choice(g,now:float,tour_started:float)->Dictionary:
  if not idle_salvage_enabled:return {}
  var round_id:int=int(g.profile.hyperspace.round_id)
- var tour_id:float=tour_started if tour_started>=0.0 else floorf(now/300.0)*300.0
- if int(idle_salvage_budget.round)!=round_id or float(idle_salvage_budget.tour_started)!=tour_id:idle_salvage_budget={"round":round_id,"used":0,"tour_started":tour_id}
- if int(idle_salvage_budget.used)>=IDLE_SALVAGE_TOUR_LIMIT:return {}
+ idle_salvage_success_times=idle_salvage_success_times.filter(func(at):return now-float(at)<IDLE_SALVAGE_WINDOW_SECONDS)
+ idle_salvage_budget={"round":round_id,"used":idle_salvage_success_times.size(),"tour_started":tour_started,"window_seconds":IDLE_SALVAGE_WINDOW_SECONDS}
+ if int(idle_salvage_budget.used)>=IDLE_SALVAGE_WINDOW_LIMIT:return {}
  for id in salvage_candidates(g,true):
   var choice:Dictionary=forge_choice(g,id,"dismantle")
   if choice.is_empty():continue
   choice.idle_salvage=true;choice.salvage_budget=idle_salvage_budget.duplicate(true)
-  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three per actual sparse page tour; existing 0.3-second native action"
+  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three successful idle dismantles per rolling300 X1 seconds; existing 0.3-second native action"
   return choice
  return {}
 func space_action(g,now:float,tour_started:float=-1.0)->Dictionary:
@@ -702,7 +704,8 @@ func execute(g,choice:Dictionary,now:float)->bool:
    var previous_sequence:int=int(g.profile.hyperspace.command_seq)
    var result:Dictionary=g.hyperspace.forge(g,choice.request)
    if str(result.error).is_empty() and choice.get("idle_salvage",false) and int(g.profile.hyperspace.command_seq)>previous_sequence:
-    idle_salvage_budget.used+=1
+    idle_salvage_success_times.append(now)
+    idle_salvage_budget.used=idle_salvage_success_times.size()
    if str(result.error).is_empty() and choice.get("paid_affix",false):
     var key:String=str([g.profile.hyperspace.round_id,choice.request.drone_id])
     if affix_paid_windows.has(key):affix_paid_windows[key].attempts+=1
