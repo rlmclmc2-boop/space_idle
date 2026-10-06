@@ -1,0 +1,57 @@
+{
+	"affixes": {
+		"armour_capacity": 8.69795545360101,
+		"attack_speed": 0.035,
+		"chain_count": 1.0,
+		"critical_chance": 0.05,
+		"damage_missile": 2.96591060520317,
+		"global_critical_damage": 12.9904449403845
+	},
+	"armour": 9.69795545360101,
+	"attack_speed": 1.035,
+	"chain_count": 1,
+	"critical_chance": 0.05,
+	"critical_damage": 13.9904449403845,
+	"damage": 1.0,
+	"defence": 1.0,
+	"hangings": {
+		"gem_refiner": 0.0
+	},
+	"legendary": {
+		"black_hole": {
+			"constants": {
+				"absorption_duration": 5.0,
+				"period": 20.0
+			},
+			"drone_id": "space:6:10",
+			"parameters": {
+				"damage_multiplier": 1.458
+			},
+			"score": 1.458
+		},
+		"drone_master": {
+			"constants": {
+				"quality_ratios": {
+					"blue": 0.6,
+					"gold": 0.7,
+					"legendary": 0.8,
+					"ultimate": 0.9,
+					"white": 0.5
+				}
+			},
+			"drone_id": "space:2:3",
+			"parameters": {
+				"maximum_reduction": 0.589
+			},
+			"score": 0.589
+		}
+	},
+	"repeat_chance": 0.0,
+	"shield": 1.0,
+	"weapon_damage": {
+		"cannon": 1.0,
+		"laser": 1.0,
+		"longLaser": 1.0,
+		"missile": 3.96591060520317
+	}
+}

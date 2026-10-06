@@ -1,0 +1,929 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native real source hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse for actual space:1:3",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse next",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse next",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual space:1:3",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual dismantle forge",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native dismantle operation open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 12,
+			"label": "native dismantle operation",
+			"native_menu_window": -1,
+			"selected": 12
+		},
+		{
+			"disabled": false,
+			"label": "native actual dismantle quote",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native dismantle opens confirmation",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native confirm one surplus white dismantle",
+			"native": true,
+			"point": [
+				377.0,
+				119.0
+			],
+			"visible": true,
+			"window_id": 2
+		},
+		{
+			"disabled": true,
+			"label": "native repeat disabled actual dismantle result button",
+			"native": true,
+			"point": [
+				748.852478027344,
+				417.33349609375
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse for actual space:6:8",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native return warehouse first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native return warehouse first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse next",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse next",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse next",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual space:6:8",
+			"native": true,
+			"point": [
+				672.898742675781,
+				429.021301269531
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native earned module manager",
+			"native": true,
+			"point": [
+				1087.10815429688,
+				446.245422363281
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native equip actually earned hanging",
+			"native": true,
+			"point": [
+				370.0,
+				240.5
+			],
+			"visible": true,
+			"window_id": 3
+		},
+		{
+			"disabled": false,
+			"label": "native apply actual earned hanging",
+			"native": true,
+			"point": [
+				370.0,
+				348.0
+			],
+			"visible": true,
+			"window_id": 3
+		}
+	],
+	"candidate_before": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 1.0,
+		"forge_rng_state": "2727297613325888486",
+		"hanging_slots": 0.0,
+		"hangings": [],
+		"id": "space:1:3",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 15.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": false,
+		"ultimate_affix": {
+
+		},
+		"weapon": "missile"
+	},
+	"checks": [
+		{
+			"label": "actual original full-locked natural source preserved at start",
+			"ok": true
+		},
+		{
+			"label": "actual surplus white15 candidate unprotected unequipped unpresetted unsealed",
+			"ok": true
+		},
+		{
+			"label": "actual equipped nonultimate recipient has existing free slot",
+			"ok": true
+		},
+		{
+			"label": "actual surplus candidate card found",
+			"ok": true
+		},
+		{
+			"label": "native dismantle operation actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual dismantle quote read-only no reward injection",
+			"ok": true
+		},
+		{
+			"label": "actual source hint explains first copy unlock at0 and later experience",
+			"ok": true
+		},
+		{
+			"label": "real preview shows fixed material amount and random copy count",
+			"ok": true
+		},
+		{
+			"label": "quote does not reveal or assume random module name",
+			"ok": true
+		},
+		{
+			"label": "confirmation before irreversible removal keeps original state",
+			"ok": true
+		},
+		{
+			"label": "one real surplus drone removed exactly once",
+			"ok": true
+		},
+		{
+			"label": "white dismantle actual one module unlock and one missile material",
+			"ok": true
+		},
+		{
+			"label": "first actual copy unlocks level0 with zero exp gem_refiner",
+			"ok": true
+		},
+		{
+			"label": "protected fleet favorites presets sealed cores unchanged",
+			"ok": true
+		},
+		{
+			"label": "all other actual drones unchanged by dismantle",
+			"ok": true
+		},
+		{
+			"label": "paid actual reward text names received material and first real module outcome",
+			"ok": true
+		},
+		{
+			"label": "committed receipt retains actual reward quantities and unlock state",
+			"ok": true
+		},
+		{
+			"label": "repeat native commit cannot duplicate actual reward",
+			"ok": true
+		},
+		{
+			"label": "same exact receipt returns same actual display rewards without recredit",
+			"ok": true
+		},
+		{
+			"label": "protected actual equipped favorite preset drone still rejected read-only",
+			"ok": true
+		},
+		{
+			"label": "actual existing recipient selected",
+			"ok": true
+		},
+		{
+			"label": "actual earned first module selectable under real level gate",
+			"ok": true
+		},
+		{
+			"label": "actual module dialog persistently explains dismantle source and progression",
+			"ok": true
+		},
+		{
+			"label": "actual unlocked module attached without new resources",
+			"ok": true
+		},
+		{
+			"label": "first-copy level0 real aggregate bonus is zero not claimed as positive gain",
+			"ok": true
+		},
+		{
+			"label": "parent original full-locked source byte-identical",
+			"ok": true
+		}
+	],
+	"commit": "f8744214",
+	"events": [
+		{
+			"info": {
+				"reason": "forge_dismantle",
+				"round_id": 6.0
+			},
+			"kind": "hyperspace_changed",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 264.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			}
+		},
+		{
+			"info": {
+				"reason": "hangings_changed",
+				"round_id": 6.0
+			},
+			"kind": "hyperspace_changed",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 264.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			}
+		}
+	],
+	"failures": [],
+	"recipient_before": {
+		"affixes": [
+			{
+				"key": "global_critical_damage",
+				"locked": false,
+				"tier": 2.0,
+				"value": 0.648
+			},
+			{
+				"key": "damage_missile",
+				"locked": false,
+				"tier": 5.0,
+				"value": 0.193
+			}
+		],
+		"blue_source_bonus": true,
+		"forge_revision": 1.0,
+		"forge_rng_state": "-451802683289723060",
+		"hanging_slots": 1.0,
+		"hangings": [],
+		"id": "space:6:8",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 60.0,
+		"omen": false,
+		"origin_quality": "blue",
+		"planet_id": "6",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": false,
+		"ultimate_affix": {
+
+		},
+		"weapon": "missile"
+	},
+	"scope": "One actual surplus dismantle and earned hanging attachment in isolated source; original all-locked natural history retained separately",
+	"snapshots": [
+		{
+			"confirm_text": "",
+			"core": 2.0,
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"label": "01-real-dismantle-quote-before-reward",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			},
+			"quote": "拆解收益：胶球 ×1\n随机挂设副本 1 份（具体模块以实际结果为准）。\n消耗：无材料消耗\n抽取次数：1",
+			"request": {
+				"args": {
+
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:3",
+				"expected_revision": 1.0,
+				"operation": "dismantle",
+				"round_id": 6.0
+			},
+			"selected": "space:1:3",
+			"warehouse": [
+				"space:1:2",
+				"space:2:3",
+				"space:4:3",
+				"space:1:11",
+				"space:5:3",
+				"space:1:13",
+				"space:3:3",
+				"space:1:10",
+				"space:1:14",
+				"space:1:5",
+				"space:3:1",
+				"space:1:12",
+				"space:2:2",
+				"space:1:8",
+				"space:1:9",
+				"space:5:1",
+				"space:1:3",
+				"space:2:1",
+				"space:3:2",
+				"space:4:1",
+				"space:4:2",
+				"space:6:1",
+				"space:6:2",
+				"space:6:3",
+				"space:6:5",
+				"space:6:6",
+				"space:6:7",
+				"space:6:8",
+				"space:6:9",
+				"space:6:10",
+				"space:6:11",
+				"space:6:12",
+				"space:6:13",
+				"space:6:14",
+				"space:6:15",
+				"space:6:16",
+				"space:6:18",
+				"space:6:19"
+			]
+		},
+		{
+			"confirm_text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+			"core": 2.0,
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"label": "02-real-dismantle-confirmation",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			},
+			"quote": "拆解收益：胶球 ×1\n随机挂设副本 1 份（具体模块以实际结果为准）。\n消耗：无材料消耗\n抽取次数：1",
+			"request": {
+				"args": {
+
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:3",
+				"expected_revision": 1.0,
+				"operation": "dismantle",
+				"round_id": 6.0
+			},
+			"selected": "space:1:3",
+			"warehouse": [
+				"space:1:2",
+				"space:2:3",
+				"space:4:3",
+				"space:1:11",
+				"space:5:3",
+				"space:1:13",
+				"space:3:3",
+				"space:1:10",
+				"space:1:14",
+				"space:1:5",
+				"space:3:1",
+				"space:1:12",
+				"space:2:2",
+				"space:1:8",
+				"space:1:9",
+				"space:5:1",
+				"space:1:3",
+				"space:2:1",
+				"space:3:2",
+				"space:4:1",
+				"space:4:2",
+				"space:6:1",
+				"space:6:2",
+				"space:6:3",
+				"space:6:5",
+				"space:6:6",
+				"space:6:7",
+				"space:6:8",
+				"space:6:9",
+				"space:6:10",
+				"space:6:11",
+				"space:6:12",
+				"space:6:13",
+				"space:6:14",
+				"space:6:15",
+				"space:6:16",
+				"space:6:18",
+				"space:6:19"
+			]
+		},
+		{
+			"confirm_text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+			"core": 2.0,
+			"feedback": "改造已完成。",
+			"label": "03-real-dismantle-result-and-unlock",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 264.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			},
+			"quote": "实际收到：胶球 ×1\n宝石提炼装置 ×1：首次解锁，当前等级 0；获得经验 0。",
+			"request": {
+
+			},
+			"selected": "space:1:3",
+			"warehouse": [
+				"space:1:2",
+				"space:2:3",
+				"space:4:3",
+				"space:1:11",
+				"space:5:3",
+				"space:1:13",
+				"space:3:3",
+				"space:1:10",
+				"space:1:14",
+				"space:1:5",
+				"space:3:1",
+				"space:1:12",
+				"space:2:2",
+				"space:1:8",
+				"space:1:9",
+				"space:5:1",
+				"space:2:1",
+				"space:3:2",
+				"space:4:1",
+				"space:4:2",
+				"space:6:1",
+				"space:6:2",
+				"space:6:3",
+				"space:6:5",
+				"space:6:6",
+				"space:6:7",
+				"space:6:8",
+				"space:6:9",
+				"space:6:10",
+				"space:6:11",
+				"space:6:12",
+				"space:6:13",
+				"space:6:14",
+				"space:6:15",
+				"space:6:16",
+				"space:6:18",
+				"space:6:19"
+			]
+		},
+		{
+			"confirm_text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+			"core": 2.0,
+			"feedback": "",
+			"label": "04-real-first-module-unlocked-level0",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 264.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			},
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"selected": "space:6:8",
+			"warehouse": [
+				"space:1:2",
+				"space:2:3",
+				"space:4:3",
+				"space:1:11",
+				"space:5:3",
+				"space:1:13",
+				"space:3:3",
+				"space:1:10",
+				"space:1:14",
+				"space:1:5",
+				"space:3:1",
+				"space:1:12",
+				"space:2:2",
+				"space:1:8",
+				"space:1:9",
+				"space:5:1",
+				"space:2:1",
+				"space:3:2",
+				"space:4:1",
+				"space:4:2",
+				"space:6:1",
+				"space:6:2",
+				"space:6:3",
+				"space:6:5",
+				"space:6:6",
+				"space:6:7",
+				"space:6:8",
+				"space:6:9",
+				"space:6:10",
+				"space:6:11",
+				"space:6:12",
+				"space:6:13",
+				"space:6:14",
+				"space:6:15",
+				"space:6:16",
+				"space:6:18",
+				"space:6:19"
+			]
+		},
+		{
+			"confirm_text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+			"core": 2.0,
+			"feedback": "",
+			"label": "05-real-first-module-equipped",
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 264.0,
+				"zero_point_energy": 0.0
+			},
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				}
+			},
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"selected": "space:6:8",
+			"warehouse": [
+				"space:1:2",
+				"space:2:3",
+				"space:4:3",
+				"space:1:11",
+				"space:5:3",
+				"space:1:13",
+				"space:3:3",
+				"space:1:10",
+				"space:1:14",
+				"space:1:5",
+				"space:3:1",
+				"space:1:12",
+				"space:2:2",
+				"space:1:8",
+				"space:1:9",
+				"space:5:1",
+				"space:2:1",
+				"space:3:2",
+				"space:4:1",
+				"space:4:2",
+				"space:6:1",
+				"space:6:2",
+				"space:6:3",
+				"space:6:5",
+				"space:6:6",
+				"space:6:7",
+				"space:6:8",
+				"space:6:9",
+				"space:6:10",
+				"space:6:11",
+				"space:6:12",
+				"space:6:13",
+				"space:6:14",
+				"space:6:15",
+				"space:6:16",
+				"space:6:18",
+				"space:6:19"
+			]
+		}
+	],
+	"source_sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+	"source_warehouse": 38,
+	"unlocked": [
+		"gem_refiner"
+	]
+}

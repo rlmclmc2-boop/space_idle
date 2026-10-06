@@ -51,3 +51,5 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 
 
 挂设来源策略缺口与一次实际补操作：[真实拆解解锁、0级挂设验证](dismantle-earned-module-actual845/README.md)。保留自然全锁来源，不把补操作混入原长跑。
+
+追加：dismantle-feedback-f8744214（UI候选与26项真实奖励短测）；galaxy-complete-parent-119457（真实第一星系完成页，无下一星系配置）。

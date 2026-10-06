@@ -1,0 +1,44 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5728:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:90)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:247)
+
+CHECK true actual original full-locked natural source preserved at start
+CHECK true actual surplus white15 candidate unprotected unequipped unpresetted unsealed
+CHECK true actual equipped nonultimate recipient has existing free slot
+CHECK true actual surplus candidate card found
+CHECK true native dismantle operation actual highlighted menu Enter
+CHECK true actual dismantle quote read-only no reward injection
+CHECK true actual source hint explains first copy unlock at0 and later experience
+CHECK true real preview shows fixed material amount and random copy count
+CHECK true quote does not reveal or assume random module name
+CHECK true confirmation before irreversible removal keeps original state
+CHECK true one real surplus drone removed exactly once
+CHECK true white dismantle actual one module unlock and one missile material
+CHECK true first actual copy unlocks level0 with zero exp gem_refiner
+CHECK true protected fleet favorites presets sealed cores unchanged
+CHECK true all other actual drones unchanged by dismantle
+CHECK true paid actual reward text names received material and first real module outcome
+CHECK true committed receipt retains actual reward quantities and unlock state
+CHECK true repeat native commit cannot duplicate actual reward
+CHECK true same exact receipt returns same actual display rewards without recredit
+CHECK true protected actual equipped favorite preset drone still rejected read-only
+CHECK true actual existing recipient selected
+CHECK true actual earned first module selectable under real level gate
+CHECK true actual module dialog persistently explains dismantle source and progression
+CHECK true actual unlocked module attached without new resources
+CHECK true first-copy level0 real aggregate bonus is zero not claimed as positive gain
+CHECK true parent original full-locked source byte-identical
+DISMANTLE_FEEDBACK_UI failures=0

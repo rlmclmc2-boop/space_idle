@@ -1,0 +1,205 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual completed galaxy navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native inspect actual galaxy selector entries",
+			"native": true,
+			"point": [
+				924.437927246094,
+				130.674850463867
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native choose only actual completed galaxy open actual native menu",
+			"native": true,
+			"point": [
+				924.437927246094,
+				130.674850463867
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 0,
+			"label": "native choose only actual completed galaxy",
+			"native_menu_window": -1,
+			"selected": 0
+		},
+		{
+			"label": "native actual completed building select",
+			"native": true,
+			"slot": 19
+		},
+		{
+			"disabled": false,
+			"label": "native close completed galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native reopen completed galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "actual complete source formal load 30x5 no main61 advance",
+			"ok": true
+		},
+		{
+			"label": "actual complete page 30/30 all30 maxlevel no repeat start",
+			"ok": true
+		},
+		{
+			"label": "native choose only actual completed galaxy actual highlighted menu Enter",
+			"ok": false
+		},
+		{
+			"label": "845 only defines first galaxy with empty next_galaxy; no invented next entry",
+			"ok": true
+		},
+		{
+			"label": "actual completed building selected shows real level5 detail",
+			"ok": true
+		},
+		{
+			"label": "real complete state and same panel persist after reopen",
+			"ok": true
+		},
+		{
+			"label": "no progression forge or completed galaxy mutation during display checks",
+			"ok": true
+		},
+		{
+			"label": "parent actual complete source byte-identical",
+			"ok": true
+		}
+	],
+	"commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+	"failures": [
+		{
+			"label": "native choose only actual completed galaxy actual highlighted menu Enter",
+			"ok": false
+		}
+	],
+	"scope": "Actual full galaxy UI only, no stage61 or construction injection; only first galaxy configured",
+	"snapshots": [
+		{
+			"cards": {
+				"buildings": "30 / 30",
+				"exploration": "100.0%",
+				"max_level": "30"
+			},
+			"detail_slot": -1,
+			"detail_text": "",
+			"highest": 61,
+			"label": "01-real-30x5-completed-page",
+			"next_definition": "",
+			"selected": "galaxy_1",
+			"selector_items": [
+				{
+					"key": "galaxy_1",
+					"name": "第一星系"
+				}
+			],
+			"stage": 60,
+			"start_visible": false,
+			"state_text": "已完成"
+		},
+		{
+			"cards": {
+				"buildings": "30 / 30",
+				"exploration": "100.0%",
+				"max_level": "30"
+			},
+			"detail_slot": -1,
+			"detail_text": "",
+			"highest": 61,
+			"label": "02-real-selector-only-configured-first-galaxy",
+			"next_definition": "",
+			"selected": "galaxy_1",
+			"selector_items": [
+				{
+					"key": "galaxy_1",
+					"name": "第一星系"
+				}
+			],
+			"stage": 60,
+			"start_visible": false,
+			"state_text": "已完成"
+		},
+		{
+			"cards": {
+				"buildings": "30 / 30",
+				"exploration": "100.0%",
+				"max_level": "30"
+			},
+			"detail_slot": 19,
+			"detail_text": "轨道船坞 · Lv5　装备属性 [color=#005449]+50%[/color]　运行中 [color=#214663]100%[/color]",
+			"highest": 61,
+			"label": "03-real-max-building-detail",
+			"next_definition": "",
+			"selected": "galaxy_1",
+			"selector_items": [
+				{
+					"key": "galaxy_1",
+					"name": "第一星系"
+				}
+			],
+			"stage": 60,
+			"start_visible": false,
+			"state_text": "已完成"
+		},
+		{
+			"cards": {
+				"buildings": "30 / 30",
+				"exploration": "100.0%",
+				"max_level": "30"
+			},
+			"detail_slot": 19,
+			"detail_text": "轨道船坞 · Lv5　装备属性 [color=#005449]+50%[/color]　运行中 [color=#214663]100%[/color]",
+			"highest": 61,
+			"label": "04-real-complete-reopened",
+			"next_definition": "",
+			"selected": "galaxy_1",
+			"selector_items": [
+				{
+					"key": "galaxy_1",
+					"name": "第一星系"
+				}
+			],
+			"stage": 60,
+			"start_visible": false,
+			"state_text": "已完成"
+		}
+	],
+	"source_commit": "119457ced6c485f763a14ae6b87ccf14b8c57d70",
+	"source_sha": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404",
+	"source_x1": 206171.533306872
+}

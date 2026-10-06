@@ -1,0 +1,16 @@
+{
+  "build-verification.json": "b7bd3098e69f7ac739f8fdd45f80ece3479e85ab8a655d5f39386d5bda809de0",
+  "independent_galaxy_complete.gd": "ae1760d9777498cd385132d8388319cf06b5ab250dc71c20325d528b158dfd2b",
+  "native/01-real-30x5-completed-page-screen.png": "53e46dca165aa045d36efaae3134df470aaa912ff6f1949865a87dcd2d44c71b",
+  "native/02-real-selector-only-configured-first-galaxy-screen.png": "89f47f1de3c4c0eeba0b9f99bb827915b66478ed17f449e56d5a4d2e7f842cc8",
+  "native/03-real-max-building-detail-screen.png": "ac6fda5964fbbe4a256c9fee333213921b1d56132bd21ef39346cc9536bcbcf6",
+  "native/04-real-complete-reopened-screen.png": "9beb5997cfcc91e23324d2a9402c7845f5499581a96eeb4100a4fddeea0764f2",
+  "native/audit.json": "39a3b9e5d315270cde6c64c124e99ceb5edb0e85b5f139b141d1f6369c0a0c15",
+  "native/run.log": "c1a4530fa6febf0273457fc3e9a96acad5583f7f9142d9ad4059042ddda15759",
+  "qa-manifest.json": "57b5f855a94f49a7ce2f92c936db5bf6e706ec3aa48585f51a1917f8559f2b87",
+  "sources/RESULT.json": "97eee4ccd81f902dde280ef281f4c216a92cad4869b3c7eb6bfd62607a70994b",
+  "sources/run.log.gz": "cc746e7d3338403cc844bcb9854157f877f9c28a5ddcf0a22eb96e408f8068a1",
+  "sources/save_final.json": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404",
+  "sources/save_final.json.gz": "8a5bd32e67da02ee7684a8e5a9edcb4cbd9fbbc7749e03d7b7483e5d9f6632fd",
+  "星系完成页独立验证报告.md": "81ac3271045777d7675417667fcc396094768d50ca9a6fd00791e0d0c3eedd3c"
+}

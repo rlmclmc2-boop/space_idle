@@ -1,0 +1,48 @@
+{
+  "status": "galaxy_complete",
+  "x1_seconds": 206171.533306872,
+  "total_x1_h": 57.269870363020004,
+  "since_clear60_h": 6.860925924328338,
+  "wall_seconds": 4240.523869,
+  "speed": 5.8245948120100115,
+  "galaxy_status": "complete",
+  "slots": 30,
+  "levels": {
+    "5": 30
+  },
+  "input_failure": {},
+  "actual61": null,
+  "scope": "845 actual35 onward with formal45 recovery; prior versions and strategy changes retained; five hanging modules still locked; no fresh single-version full pass; owner authorized public game-only evidence, no private messages or credentials",
+  "files": {
+    "checkpoint.bin.gz": {
+      "raw_sha256": "1b8dcc158969b6e90a1e7e635a75721dcb7921244422fe915fa2846f8ecb4ac3",
+      "gzip_sha256": "61191e0e28cb6bb42281be70df1f7403033bff0ff3319db0b64a77b6492f1b1e",
+      "gzip_bytes": 128180,
+      "credential_hits": 0
+    },
+    "save_final.json.gz": {
+      "raw_sha256": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404",
+      "gzip_sha256": "8a5bd32e67da02ee7684a8e5a9edcb4cbd9fbbc7749e03d7b7483e5d9f6632fd",
+      "gzip_bytes": 17470,
+      "credential_hits": 0
+    },
+    "longrun-summary.json.gz": {
+      "raw_sha256": "06b906f42ff7acf3a37573bbf3053412f8d2238158fbf4cf450f9f0ffad95d87",
+      "gzip_sha256": "4ad63b7383b081c855960235eb5aae05fd684925270ae729fdc9cfa02362fefe",
+      "gzip_bytes": 122757,
+      "credential_hits": 0
+    },
+    "actions.jsonl.gz": {
+      "raw_sha256": "ccfa987a13c059e027ace35a4fa961394bd3f53191b49cd083ad5edbd6c419c0",
+      "gzip_sha256": "dcade9e966e00f527571902dcda116903bf00007b6f05ec5692cdbd994111b86",
+      "gzip_bytes": 198069,
+      "credential_hits": 0
+    },
+    "run.log.gz": {
+      "raw_sha256": "28472a0b14a1147d5b8150d35cab9a992360f8400bab9bfc20c5b03b46e5a8f8",
+      "gzip_sha256": "cc746e7d3338403cc844bcb9854157f877f9c28a5ddcf0a22eb96e408f8068a1",
+      "gzip_bytes": 5523,
+      "credential_hits": 0
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+	"confirm_text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+	"core": 2.0,
+	"feedback": "",
+	"label": "04-real-first-module-unlocked-level0",
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 264.0,
+		"zero_point_energy": 0.0
+	},
+	"modules": {
+		"distributed_algorithm": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"extra_storage": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"gem_refiner": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"hyperspace_charge": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"resource_collector": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		}
+	},
+	"quote": "先预览：费用与随机次数由改造领域计算。",
+	"request": {
+
+	},
+	"selected": "space:6:8",
+	"warehouse": [
+		"space:1:2",
+		"space:2:3",
+		"space:4:3",
+		"space:1:11",
+		"space:5:3",
+		"space:1:13",
+		"space:3:3",
+		"space:1:10",
+		"space:1:14",
+		"space:1:5",
+		"space:3:1",
+		"space:1:12",
+		"space:2:2",
+		"space:1:8",
+		"space:1:9",
+		"space:5:1",
+		"space:2:1",
+		"space:3:2",
+		"space:4:1",
+		"space:4:2",
+		"space:6:1",
+		"space:6:2",
+		"space:6:3",
+		"space:6:5",
+		"space:6:6",
+		"space:6:7",
+		"space:6:8",
+		"space:6:9",
+		"space:6:10",
+		"space:6:11",
+		"space:6:12",
+		"space:6:13",
+		"space:6:14",
+		"space:6:15",
+		"space:6:16",
+		"space:6:18",
+		"space:6:19"
+	]
+}
