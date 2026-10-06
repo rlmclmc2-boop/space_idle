@@ -1,0 +1,322 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native open current real save hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual white ultimate",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual forge summary",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native module management from real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual hanging module dialog",
+			"native": true,
+			"point": [
+				1087.10815429688,
+				446.245422363281
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close module dialog",
+			"native": true,
+			"point": [
+				370.0,
+				483.0
+			],
+			"visible": true,
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native close format page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native open current real save hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual white ultimate",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual forge summary",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native open current real save hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual white ultimate",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual forge summary",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "actual original revision2 summary shows integer slots and revision",
+			"ok": true
+		},
+		{
+			"label": "actual module dialog capacity integer1",
+			"ok": true
+		},
+		{
+			"label": "real module levels all display integer0",
+			"ok": true
+		},
+		{
+			"label": "close reopen integer label preserved same control",
+			"ok": true
+		},
+		{
+			"label": "original real namespace including receipt unchanged by all format actions",
+			"ok": true
+		},
+		{
+			"label": "actual previously paid revision5 checkpoint integer summary",
+			"ok": true
+		},
+		{
+			"label": "real revision5 paid save namespace and command fingerprint unchanged",
+			"ok": true
+		},
+		{
+			"label": "existing real source unchanged save_periodic_185401.json",
+			"ok": true
+		},
+		{
+			"label": "existing real source unchanged 04-reultimate-checkpoint.json",
+			"ok": true
+		}
+	],
+	"failures": [],
+	"scope": "Only integer UI labels; existing actual revision2 and revision5 checkpoints; no new forge commit or progress tick",
+	"snapshots": [
+		{
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"label": "01-real-revision2-integer-summary",
+			"module_dialog_visible": false,
+			"summary": "词条 0 项 · 挂设槽 1 个 · 改造版本 2",
+			"summary_instance": 257580603321
+		},
+		{
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"label": "02-real-integer-module-dialog",
+			"module_dialog_visible": true,
+			"summary": "词条 0 项 · 挂设槽 1 个 · 改造版本 2",
+			"summary_instance": 257580603321
+		},
+		{
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 5.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"label": "03-real-revision5-integer-summary",
+			"module_dialog_visible": false,
+			"summary": "词条 0 项 · 挂设槽 1 个 · 改造版本 5",
+			"summary_instance": 257580603321
+		}
+	],
+	"source_shas": {
+		"/tmp/ultimate-chain-evidence/native/04-reultimate-checkpoint.json": "ab34da62fb55307db6f81da502601150000e815b86f0320b294fc8014e8f9432",
+		"/tmp/ultimate-chain-evidence/sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+	}
+}

@@ -1,0 +1,16 @@
+{
+  "README.md": "ef1a10138eeacf222dfc387f7fbeb6f2c3b83e3bcbec8237de80215539bf5697",
+  "build-verification.json": "c1fef8f9bfd54210e0499835aa4bac666e0abdeb655f54e7007e0b39a1677e43",
+  "import.log": "527a72d2a662f748fa22dfdb41d9132b208648decf45f1f8e9052aaa721a343c",
+  "independent_integer_labels.gd": "c842623199f4016bb4725ceef1f4173f5c8bba901a5d49008c99df80f34f1167",
+  "integer-counter-format.patch": "e4bd9cd6e8cad1cc72bf2c91f9ad460e655dc67ac7162a13aa1f7bbd7fc164d3",
+  "native/01-real-revision2-integer-summary-screen.png": "159a562ea4cb3308bfe182a7ae8b4c82cdab16d419f16c16d8fe2f5b9e111a78",
+  "native/02-real-integer-module-dialog-screen.png": "7d4622e007304b33dc1353dcde081f99ec5563699b0c0188779d20c0cd990cbf",
+  "native/03-real-revision5-integer-summary-screen.png": "ef9132cf3ac014fa8f9043f1a82ebd47a58dba3789a7d3a3cc1863fd2a72fb1e",
+  "native/audit.json": "507291ca4e45d08e83e1b341691a461ef6b094bdab84e44bb28c704b3dcebd93",
+  "native/module-dialog-texts.json": "f2181e25c45584e2381ded54947dd397d3b42edc572d00161e40063f2b199bb9",
+  "native/run.log": "41b8dc234d16487836a3b4e62ba6683f1a3c9cbbaacf0ce12b7dad212127aea1",
+  "qa-manifest.json": "ef4f56028feb1e51c4fa089d7cd8f737e33828f1031bc42607de3c6ff06947fa",
+  "sources/04-reultimate-checkpoint.json": "ab34da62fb55307db6f81da502601150000e815b86f0320b294fc8014e8f9432",
+  "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+}

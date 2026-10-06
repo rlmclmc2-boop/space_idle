@@ -45,3 +45,6 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 
 
 真实2核心究极生命周期补缺：[原生还原→现代化→再究极](ultimate-lifecycle-real-two-cores/README.md)。实际10→alpha20、核心2→0；保留观察器数值类型失败及跨JSON请求20/20.0拒绝边界。
+
+
+计数展示修正候选44c4d0d4：[真实版本2/5及挂设管理像素验证](integer-counter-format-44c4d0d4/README.md)。仅格式转换，原28项与生命周期证据保留。

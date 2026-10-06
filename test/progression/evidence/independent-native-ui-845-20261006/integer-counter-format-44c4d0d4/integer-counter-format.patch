@@ -1,0 +1,29 @@
+diff --git a/space-battleship/scripts/hyperspace_commands.gd b/space-battleship/scripts/hyperspace_commands.gd
+index 92a85b46..10b3ca75 100644
+--- a/space-battleship/scripts/hyperspace_commands.gd
++++ b/space-battleship/scripts/hyperspace_commands.gd
+@@ -146,9 +146,9 @@ func show_modules() -> void:
+  for child in module_dialog.get_children():
+   if child is VBoxContainer:child.free()
+  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
+- dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(d.hanging_slots)}),22)
++ dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
+  for key in h().config.hanging_modules:
+-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(progress.level),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
++  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  panel.button(body,"module_apply",func():
+   var keys: Array=[]
+   for choice in module_choices:
+diff --git a/space-battleship/scripts/hyperspace_panel.gd b/space-battleship/scripts/hyperspace_panel.gd
+index 7ad9a42d..333f9d8f 100644
+--- a/space-battleship/scripts/hyperspace_panel.gd
++++ b/space-battleship/scripts/hyperspace_panel.gd
+@@ -414,7 +414,7 @@ func refresh_details() -> void:
+  var valid=bag.drones.has(selected_id)
+  if section_index==2:
+   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
+-  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(bag.drones[selected_id].hanging_slots),"revision":str(bag.drones[selected_id].forge_revision)}))
++  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(int(bag.drones[selected_id].hanging_slots)),"revision":str(int(bag.drones[selected_id].forge_revision))}))
+   put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
+   return
+  if section_index!=1:return
