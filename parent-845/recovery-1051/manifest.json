@@ -1,0 +1,48 @@
+{
+  "snapshot_x1": 163309.899983518,
+  "code_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "scope": "Authorized public test evidence only: game checkpoint, QA filenames/hashes, numeric game heartbeat and native game action records; no credentials or unrelated files. Same845 formalreload from45 CP160435.083317521 after sessionloss; noactive manual; continuedrealGodot.",
+  "files": {
+    "checkpoint.bin.gz": {
+      "gzip_sha256": "d44cc116deefc0ac104a947a971e688f7a40d752dbaa87bf30719ecd6a85baa2",
+      "original_sha256": "9204ca9f583354022c885f5623e34ad3ddd12e8cd0ace35d1e5331792d498dda",
+      "original_bytes": 2405764,
+      "gzip_bytes": 97803,
+      "credential_pattern_hits": 0
+    },
+    "qa-manifest.json.gz": {
+      "gzip_sha256": "3f87143debf511bb32efb7405b55a07f8f6236a5b4f5de860a0045d811c956bd",
+      "original_sha256": "57b5f855a94f49a7ce2f92c936db5bf6e706ec3aa48585f51a1917f8559f2b87",
+      "original_bytes": 101491,
+      "gzip_bytes": 41976,
+      "credential_pattern_hits": 0
+    },
+    "run.log.gz": {
+      "gzip_sha256": "2732dc764e0be9484a29031c4dde27648eebb8d5b709b5077f5287a8e3b53f16",
+      "original_sha256": "89c5438d357a238fc18270acbdddcc8d9aac71943a8e6f5e41d9ceed7602aaf6",
+      "original_bytes": 21140,
+      "gzip_bytes": 1311,
+      "credential_pattern_hits": 0
+    },
+    "actions.jsonl.gz": {
+      "gzip_sha256": "93c656ef0d27cec66cdc0ada0a89fca67689d1588194ebf83cde36741bd380e6",
+      "original_sha256": "91eea975a106ec32a7bfecdc7735b1fa86448e02dc946a3334df3165a9c94cc5",
+      "original_bytes": 689323,
+      "gzip_bytes": 33806,
+      "credential_pattern_hits": 0
+    }
+  },
+  "recovery": {
+    "detected_utc": "2026-10-06T10:50:40Z",
+    "previous_heartbeat_utc": "2026-10-06T10:26:00.916160Z",
+    "previous_session": "49503 unknownprocess",
+    "resume_session": 39350,
+    "source_cp_x1": 160435.083317521,
+    "source_stage": 45,
+    "source_round": 4,
+    "manual_active": false,
+    "input_failure": {},
+    "code_unchanged": "845d2ea",
+    "scope": "Sameenvironment reconnect; formalbattle regenerates. Unpersistedtail afterCP notcounted. Noofflineincome; wallgapnotX1progress. Firstnewheartbeat10:55 stage47."
+  }
+}
