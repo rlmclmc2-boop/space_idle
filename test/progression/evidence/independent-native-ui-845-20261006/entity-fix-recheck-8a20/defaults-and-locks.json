@@ -1,0 +1,16 @@
+{
+  "candidate": "8a20d4c738fe1e9a3d05cf4ee983d4069d29202b",
+  "five_defaults_equal_original_f9": {
+    "hyperspace_config.json": true,
+    "space_enemy_candidates.json": true,
+    "space_enemy_routes.json": true,
+    "space_enemy_reward_recipes.json": true,
+    "space_enemy_reward_catalog.json": true
+  },
+  "structural_columns_marked_locked": {
+    "改造费用/resource": true,
+    "编队槽位/slot_index": true,
+    "成员分配/slot_index": true
+  },
+  "xlsx": "parent322 v2 originals numeric unchanged; notes not final"
+}
