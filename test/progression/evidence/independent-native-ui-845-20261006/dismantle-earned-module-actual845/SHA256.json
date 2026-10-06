@@ -1,0 +1,23 @@
+{
+  "README.md": "4ac077f1fb9988a7624bbd944bdb1d1660f560775aa5679bc5c9e466b5c7b6b0",
+  "build-verification.json": "43b68779185747f5e5fc670596869bf14ecd0b86cafb32de4a61ee6c2e0efad3",
+  "independent_earned_module.gd": "6102ba3a8f5d86120b86bb58f55791e0f012ee39b80ca89fb9d44c5da6599b33",
+  "native/01-real-dismantle-quote-before-reward-screen.png": "2a7cee4469d911f2b12a1640e196e396607025538790878fb21e258172ff4420",
+  "native/01-real-dismantle-quote-before-reward.json": "4e0aa036e42a47b86114e7c8dd6ba4acd99d8bdeff4e8c44814c6b2b5c3c7acf",
+  "native/02-real-dismantle-confirmation-screen.png": "fa05af4af33a662598cc0e35313ed7fe1b80cdd6e0085b13ee3d5a5a9f1cb5ed",
+  "native/02-real-dismantle-confirmation.json": "78f6b4afe3abde259e0f2162bdb30338aed9ec86ef75c6860e8219911a62b802",
+  "native/03-real-dismantle-result-and-unlock-screen.png": "811ffc7315fb1e85a4663129638df664936c96f1ab6dff21d62330859d43beba",
+  "native/03-real-dismantle-result-and-unlock.json": "4f6f101f9b748f5edb8a353320a9e012a79dacff56af3f588b3f07c26fed2ee4",
+  "native/04-real-first-module-unlocked-level0-screen.png": "4c26f0bc02142207ca2eece3f689e487e1a0a7ff5d44bca1b7d8879748ee62cf",
+  "native/04-real-first-module-unlocked-level0.json": "4646781b962abb93af239d7bd4705772ca5a30fcc35b7f4fc5721f9953287118",
+  "native/05-real-first-module-equipped-screen.png": "1f9b44e29b6aa15eecfeb7eef37bc8051288e56ae6f87d45d122804989b05140",
+  "native/05-real-first-module-equipped.json": "cdebdc1900f80d03b2db86dbca0d9044dcfdce93308d3fdb4e87b4ea4c317341",
+  "native/actual-after-earned-hanging-checkpoint.json": "326a1cb113c72945fa19a4bfa1fab4c73b43643dbb9d975cbca5985ba6e9a4ec",
+  "native/actual-after-one-dismantle-checkpoint.json": "8f6f159c88c9a7e10a61547aee44d33adf0ad086dbb06573e5aa922006a7a84d",
+  "native/actual-module-totals.json": "f06366c8d64a0f7d896815922b70c7fc7176c779624a865f124b56950c0f900f",
+  "native/audit.json": "5bb9c7cd3b91bd93093e90c5be12b5b11cad15f20b8216019dba4427c476a2d4",
+  "native/run.log": "46ee9d1701658e3b227adaf717ccb50cfcca07369f5da884a9090938912d6c99",
+  "qa-manifest.json": "57b5f855a94f49a7ce2f92c936db5bf6e706ec3aa48585f51a1917f8559f2b87",
+  "source-analysis/natural-strategy-readonly.json": "e760c0eb38e138eadb12e889ac5807370c61b1a0e1b29639c50f6ca5360ccb5d",
+  "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+}

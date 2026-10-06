@@ -1,0 +1,80 @@
+[
+  {
+    "path": "/tmp/clear60-ui-evidence/sources/save_final.json",
+    "sha": "cdcb3044e428a0471d3ff5a57d5570bfaf925a0aaf8078f322cb1cd3d7b88e8a",
+    "x1": 181472.19997929,
+    "reforge_count": 5,
+    "warehouse": 24,
+    "capacity": 250,
+    "overflow": 0,
+    "modules": {
+      "distributed_algorithm": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "extra_storage": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "gem_refiner": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "hyperspace_charge": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "resource_collector": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      }
+    }
+  },
+  {
+    "path": "/tmp/ultimate-chain-evidence/sources/save_periodic_185401.json",
+    "sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+    "x1": 185401.399978375,
+    "reforge_count": 5,
+    "warehouse": 38,
+    "capacity": 250,
+    "overflow": 0,
+    "modules": {
+      "distributed_algorithm": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "extra_storage": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "gem_refiner": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "hyperspace_charge": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      },
+      "resource_collector": {
+        "exp": 0.0,
+        "level": 0,
+        "unlocked": false
+      }
+    }
+  },
+  {
+    "action_source": "/tmp/clear60-ui-evidence/sources/actions.jsonl.gz",
+    "gzip_sha": "60fe196368af1b19621c1b98d52710132acedca1fc1234c68177cd5972182f15",
+    "lines": 10462,
+    "dismantle_text_mentions": 0
+  }
+]

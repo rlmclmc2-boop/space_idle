@@ -48,3 +48,6 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 
 
 计数展示修正候选44c4d0d4：[真实版本2/5及挂设管理像素验证](integer-counter-format-44c4d0d4/README.md)。仅格式转换，原28项与生命周期证据保留。
+
+
+挂设来源策略缺口与一次实际补操作：[真实拆解解锁、0级挂设验证](dismantle-earned-module-actual845/README.md)。保留自然全锁来源，不把补操作混入原长跑。
