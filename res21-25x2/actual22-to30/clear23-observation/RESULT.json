@@ -1,0 +1,23 @@
+{
+  "actual_clear23_x1": 58706.683338225,
+  "source_actual_clear22_x1": 56228.1833377201,
+  "actual22_to23_seconds": 2478.5000005049005,
+  "observation_scope": "Nativefirst_clear23event andexactrawactionprefix throughactualclear23. CapturedCPispostclear23liveCP(atdifferentheaderX1),notclaimedexact23CP. Oldexact23CPoverwrittenbyrolling30swallbackupbeforedelivery;no fabrication/reconstruction.",
+  "captured_live_cp_header": {
+    "bytes": 1030352,
+    "code_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+    "continuity_fingerprint": "0732d0c04b4d5ba8e6e0e8d3788f303917afcd3e73730c171735f091389b63bb",
+    "format": 1,
+    "scope": "formal_journey_reload_not_live_combat_restore",
+    "sha256": "665a55c7bf3823aaae8f8bec396469df4f6464c100df91545af2dfd121efeb87",
+    "source_commit": "c90fd6f8697e74756ea1ad6536891deb20bbd2d2",
+    "x1_seconds": 59400.300005033
+  },
+  "script_errors_during_new_active_phase": 0,
+  "file_sha256": {
+    "qa-manifest.json": "d75fb4306fd3706849e1e7ae89a54e7422f704f7a456ee0639f429945be4eca8",
+    "post-clear23-live-checkpoint.bin": "082de49a4526992d5cf9510ebc8c9f5e1592e2a873e9cd77c7fe245e3198df05",
+    "actual22-to23-actions.jsonl.gz": "e2d20fd3183c3d39f35d38f5f3591c68c3f7e8d10265f05ff5d8ce3463dda06c",
+    "actual-clear23-event.json": "b07173cc70188a878db4f0e20a87f8e1504f2973f241c00887c0c7b4ed04f588"
+  }
+}

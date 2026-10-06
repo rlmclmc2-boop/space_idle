@@ -1,0 +1,49 @@
+{
+  "kind": "first_clear",
+  "loadout": {
+    "defence": [
+      {
+        "key": "armour",
+        "level": 164
+      },
+      {
+        "key": "armour",
+        "level": 164
+      },
+      {
+        "key": "armour",
+        "level": 163
+      }
+    ],
+    "weapons": [
+      {
+        "key": "missile",
+        "level": 163
+      },
+      {
+        "key": "cannon",
+        "level": 163
+      },
+      {
+        "key": "cannon",
+        "level": 163
+      },
+      {
+        "key": "cannon",
+        "level": 163
+      },
+      {
+        "key": "cannon",
+        "level": 163
+      }
+    ]
+  },
+  "page": 0,
+  "resources": {
+    "1": 663945785437974.0,
+    "2": 1702714064392.3
+  },
+  "rng": "5960020468823438286",
+  "stage": 23,
+  "x1_seconds": 58706.683338225
+}
