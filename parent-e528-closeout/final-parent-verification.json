@@ -1,0 +1,216 @@
+{
+  "candidate": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "main_unchanged": "4a2083f6d6ee2ca6cbb46dbcb05ef7c2612bc2d2",
+  "checks": {
+    "parent-peer-terminal-audit": {
+      "parent_records": 22061,
+      "peer_records": 22061,
+      "business_equal": true,
+      "first_differences": [],
+      "final_save_different_paths": [
+        "/save/hightechSavedAt",
+        "/save/chronoSavedAt"
+      ],
+      "peer_end": 160142.216650922,
+      "peer_wall": 6735.568662,
+      "peer_input_failure": {},
+      "peer_cp_hash": "b8afae333a20cf1113b42e9bc5363355f995f93334162f0010627f77005c3934",
+      "scope": "Two actual full12h original e528 pressure samples, with highreaction/mixeddefence limitation retained"
+    },
+    "LATE_RESULT": {
+      "source_x1": 153772.333319072,
+      "source_gate_hours": 10.230592590210557,
+      "end_x1": 160142.216650922,
+      "wall": 762.407555,
+      "clear34": false,
+      "input_failure": {},
+      "failures": [
+        {
+          "x1": 154322.633318944,
+          "encounter": "[1, \"main\", 34, 3]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        },
+        {
+          "x1": 154336.466652274,
+          "encounter": "[1, \"main\", 34, 4]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        },
+        {
+          "x1": 157366.333318235,
+          "encounter": "[1, \"main\", 34, 2]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        },
+        {
+          "x1": 157381.166651565,
+          "encounter": "[1, \"main\", 34, 4]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        },
+        {
+          "x1": 160110.349984263,
+          "encounter": "[1, \"main\", 34, 2]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        },
+        {
+          "x1": 160125.183317593,
+          "encounter": "[1, \"main\", 34, 4]",
+          "defence": [
+            "armour",
+            "armour",
+            "armour"
+          ],
+          "weapons": [
+            "cannon",
+            "cannon",
+            "longLaser",
+            "longLaser",
+            "longLaser",
+            "longLaser"
+          ]
+        }
+      ],
+      "scope": "Last1.77h ofgate with native three-armour refits afterformalrestore; historical earlier10.23h retains originalmixeddefence. Notfull12hoptimaldefence."
+    },
+    "parent-peer-audit": {
+      "end_x1": 124557.049992541,
+      "wall": 22.512053,
+      "input_failure": {},
+      "parent_records": 413,
+      "peer_records": 413,
+      "business_equal": true,
+      "first_diff": [],
+      "fixture_passed": 13,
+      "parent_setup_failure": "First fixture invocation omitted QA_CREW_SOURCE; assertion retained, stopped and corrected; initial run refused missing convertedCP"
+    },
+    "parent-peer-funding-audit": {
+      "end_x1": 186572.233311435,
+      "wall": 196.682502,
+      "parent_records": 359,
+      "peer_records": 359,
+      "business_equal": true,
+      "first_diff": [],
+      "input_failure": {},
+      "source_proof": "All original root fields Variant-equal; payload dictionary semantically equal; new qa_policy_upgrade metadata order changes CP byte SHA; not identical byte CP",
+      "chain_paid": false
+    },
+    "parent-paid-step-audit": [
+      {
+        "affix": {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.256
+        },
+        "cores": 3,
+        "level": 10,
+        "material": 312,
+        "phase": "modernize",
+        "sequence": 25,
+        "ultimate": false,
+        "x1": 186581.516644767
+      },
+      {
+        "affix": {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.256
+        },
+        "cores": 3,
+        "level": 60,
+        "material": 122,
+        "phase": "reultimate",
+        "sequence": 26,
+        "ultimate": false,
+        "x1": 186581.816644767
+      },
+      {
+        "affix": {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.256
+        },
+        "cores": 2,
+        "level": 60,
+        "material": 122,
+        "phase": "complete",
+        "sequence": 27,
+        "ultimate": true,
+        "x1": 186582.116644766
+      }
+    ]
+  },
+  "parent_checkpoint_io_fixture": {
+    "commit": "40fcc51a8b20aa51f2cc683eda6b57490d685e70",
+    "checks": 15,
+    "failures": 0,
+    "scope": "Collision/failure fixture, not progress run"
+  },
+  "parent_chain_fixture": {
+    "commit": "1f12b38f1e7a05452fc00578d1d91b92f7141100",
+    "checks": 25,
+    "failures": 0,
+    "scope": "Prospective fixture; actual natural chain CP audited separately"
+  },
+  "scope": "Stage reuse, same-source key intervals and targeted regression. Not a single final-version fresh end-to-end pass."
+}
