@@ -1,0 +1,5 @@
+file	change	scope
+hyperspace_player_policy.gd	quote full chain; reserve actual record/material/core requirements; prioritized native transactions and recovery	QA only
+hyperspace_longrun.gd	persist chain phase; paid-step receipt and checkpoint archive	QA only
+hyperspace_checkpoint.gd	persist new policy/controller fields	QA only
+test_ultimate_upgrade_chain.gd	25 checks, explicitly prospective fixture vs actual source	unit only
