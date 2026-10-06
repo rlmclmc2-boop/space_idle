@@ -1,0 +1,1176 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native selected actual fleet space:2:3",
+			"native": true,
+			"point": [
+				914.597778320312,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual fleet pagination",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native selected actual fleet space:6:10",
+			"native": true,
+			"point": [
+				914.597778320312,
+				608.644287109375
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native first page for actual fleet",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native selected actual fleet space:1:2",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual fleet pagination",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual fleet pagination",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native selected actual fleet space:6:15",
+			"native": true,
+			"point": [
+				672.898742675781,
+				429.021301269531
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native first page for actual fleet",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native first page for actual fleet",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual fleet pagination",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native selected actual fleet space:6:8",
+			"native": true,
+			"point": [
+				914.597778320312,
+				518.832763671875
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native view actual totals",
+			"native": true,
+			"point": [
+				1194.11987304688,
+				796.264221191406
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"label": "native totals scroll to hanging bonuses",
+			"point": [
+				370.0,
+				230.0
+			],
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native close totals no mutation",
+			"native": true,
+			"point": [
+				370.0,
+				474.0
+			],
+			"visible": true,
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native inspect actual five module progression no apply",
+			"native": true,
+			"point": [
+				1087.10815429688,
+				446.245422363281
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close module manager without applying",
+			"native": true,
+			"point": [
+				370.0,
+				562.0
+			],
+			"visible": true,
+			"window_id": 2
+		}
+	],
+	"checks": [
+		{
+			"label": "real post60 source formal hyperspace unchanged",
+			"ok": true
+		},
+		{
+			"label": "five actual equipped drones",
+			"ok": true
+		},
+		{
+			"label": "two equipped level1 collectors correctly sum20percent",
+			"ok": true
+		},
+		{
+			"label": "warehouse installed distributed algorithm does not count",
+			"ok": true
+		},
+		{
+			"label": "real excluded warehouse has collector30percent and algorithm10percent",
+			"ok": true
+		},
+		{
+			"label": "actual aggregate equals independent equipped-only arithmetic",
+			"ok": true
+		},
+		{
+			"label": "warehouse collector copies do not inflate actual total to50percent",
+			"ok": true
+		},
+		{
+			"label": "all five actual modules naturally unlocked positive level; no invented level0 state",
+			"ok": true
+		},
+		{
+			"label": "production bonus formula level0 equalszero resource_collector static arithmetic not mutated source",
+			"ok": true
+		},
+		{
+			"label": "production bonus formula level0 equalszero distributed_algorithm static arithmetic not mutated source",
+			"ok": true
+		},
+		{
+			"label": "production bonus formula level0 equalszero extra_storage static arithmetic not mutated source",
+			"ok": true
+		},
+		{
+			"label": "production bonus formula level0 equalszero gem_refiner static arithmetic not mutated source",
+			"ok": true
+		},
+		{
+			"label": "production bonus formula level0 equalszero hyperspace_charge static arithmetic not mutated source",
+			"ok": true
+		},
+		{
+			"label": "actual fleet card located space:2:3",
+			"ok": true
+		},
+		{
+			"label": "native real fleet level label space:2:3",
+			"ok": true
+		},
+		{
+			"label": "actual fleet card located space:6:10",
+			"ok": true
+		},
+		{
+			"label": "native real fleet level label space:6:10",
+			"ok": true
+		},
+		{
+			"label": "actual fleet card located space:1:2",
+			"ok": true
+		},
+		{
+			"label": "native real fleet level label space:1:2",
+			"ok": true
+		},
+		{
+			"label": "actual fleet card located space:6:15",
+			"ok": true
+		},
+		{
+			"label": "native real fleet level label space:6:15",
+			"ok": true
+		},
+		{
+			"label": "actual fleet card located space:6:8",
+			"ok": true
+		},
+		{
+			"label": "native real fleet level label space:6:8",
+			"ok": true
+		},
+		{
+			"label": "totals states currently equipped and active hanging scope",
+			"ok": true
+		},
+		{
+			"label": "native totals correctly display actual20percent and exclude unequipped algorithm",
+			"ok": true
+		},
+		{
+			"label": "native five actual module progression visible",
+			"ok": true
+		},
+		{
+			"label": "no payment equip attach dismantle or profile mutation",
+			"ok": true
+		},
+		{
+			"label": "real original source bytes unchanged",
+			"ok": true
+		}
+	],
+	"commit": "caa80f59aef5dcf1caab20e40e17b39a8a27d1e1",
+	"equipped_arithmetic": {
+		"resource_collector": 0.2
+	},
+	"excluded_warehouse_arithmetic": {
+		"distributed_algorithm": 0.1,
+		"resource_collector": 0.3
+	},
+	"failures": [],
+	"fleet": [
+		{
+			"hangings": [],
+			"id": "space:1:2",
+			"legendary": false,
+			"level": 10.0,
+			"ultimate": true,
+			"weapon": "laser"
+		},
+		{
+			"hangings": [],
+			"id": "space:2:3",
+			"legendary": true,
+			"level": 60.0,
+			"ultimate": false,
+			"weapon": "missile"
+		},
+		{
+			"hangings": [],
+			"id": "space:6:10",
+			"legendary": true,
+			"level": 60.0,
+			"ultimate": false,
+			"weapon": "missile"
+		},
+		{
+			"hangings": [
+				"resource_collector"
+			],
+			"id": "space:6:15",
+			"legendary": false,
+			"level": 60.0,
+			"ultimate": false,
+			"weapon": "missile"
+		},
+		{
+			"hangings": [
+				"resource_collector"
+			],
+			"id": "space:6:8",
+			"legendary": false,
+			"level": 60.0,
+			"ultimate": false,
+			"weapon": "missile"
+		}
+	],
+	"snapshots": [
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n传说 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n复合装甲耐久值 · T4 · 56.6% \n全局暴击伤害 · T5 · 8.0% \n全局攻速 · T4 · 3.5% \n无人机大师\n最大减伤: 58.9%\n挂设：暂无挂设",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "fleet-space-2-3",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:2:3",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n传说 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.5% \n全局暴击率 · T4 · 3.5% \n黑洞\n伤害倍率: 145.8%\n挂设：暂无挂设",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "fleet-space-6-10",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:10",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "脉冲 · 等级 10\n白色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T4 · 25.6% \n挂设：暂无挂设",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "fleet-space-1-2",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:2",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T5 · 9.5% \n额外连锁次数 · T2 · 1 次 \n挂设：资源收集器",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "fleet-space-6-15",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:15",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T2 · 64.8% \n全局导弹伤害 · T5 · 19.3% \n挂设：资源收集器",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "fleet-space-6-8",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:8",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T2 · 64.8% \n全局导弹伤害 · T5 · 19.3% \n挂设：资源收集器",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "01-actual-totals-top",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:8",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 5.0%\n暴击伤害: 1299.0%\n重复攻击概率: 0.0%\n攻击速度: 3.5%\n全局防御: 0.0%\n装甲容量: 869.8%\n护盾容量: 0.0%\n额外连锁: 1 次\n脉冲伤害: 0.0%\n导弹伤害: 296.6%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 20.0%\n生效传说效果（领域择取）\n无人机大师\n  最大减伤: 58.9%\n黑洞\n  伤害倍率: 145.8%"
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T2 · 64.8% \n全局导弹伤害 · T5 · 19.3% \n挂设：资源收集器",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "02-actual-positive-hanging-total-and-current-fleet",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:8",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 5.0%\n暴击伤害: 1299.0%\n重复攻击概率: 0.0%\n攻击速度: 3.5%\n全局防御: 0.0%\n装甲容量: 869.8%\n护盾容量: 0.0%\n额外连锁: 1 次\n脉冲伤害: 0.0%\n导弹伤害: 296.6%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 20.0%\n生效传说效果（领域择取）\n无人机大师\n  最大减伤: 58.9%\n黑洞\n  伤害倍率: 145.8%"
+		},
+		{
+			"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 60\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T2 · 64.8% \n全局导弹伤害 · T5 · 19.3% \n挂设：资源收集器",
+			"equipped": [
+				"space:2:3",
+				"space:6:10",
+				"space:1:2",
+				"space:6:15",
+				"space:6:8"
+			],
+			"label": "03-five-naturally-grown-modules",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 80.0,
+					"level": 2.0,
+					"unlocked": true
+				},
+				"gem_refiner": {
+					"exp": 36.0,
+					"level": 3.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 100.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:6:8",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 8.69795545360101,
+					"attack_speed": 0.035,
+					"chain_count": 1.0,
+					"critical_chance": 0.05,
+					"damage_missile": 2.96591060520317,
+					"global_critical_damage": 12.9904449403845
+				},
+				"armour": 9.69795545360101,
+				"attack_speed": 1.035,
+				"chain_count": 1,
+				"critical_chance": 0.05,
+				"critical_damage": 13.9904449403845,
+				"damage": 1.0,
+				"defence": 1.0,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"black_hole": {
+						"constants": {
+							"absorption_duration": 5.0,
+							"period": 20.0
+						},
+						"drone_id": "space:6:10",
+						"parameters": {
+							"damage_multiplier": 1.458
+						},
+						"score": 1.458
+					},
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.0,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 3.96591060520317
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 5.0%\n暴击伤害: 1299.0%\n重复攻击概率: 0.0%\n攻击速度: 3.5%\n全局防御: 0.0%\n装甲容量: 869.8%\n护盾容量: 0.0%\n额外连锁: 1 次\n脉冲伤害: 0.0%\n导弹伤害: 296.6%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 20.0%\n生效传说效果（领域择取）\n无人机大师\n  最大减伤: 58.9%\n黑洞\n  伤害倍率: 145.8%"
+		}
+	],
+	"source_evidence_commit": "1b1041117c30709551342874273e28cd0c7e5dab",
+	"source_sha": "d77d94d5c0d87019f7f9c822226821be66b06e3e629a324b7ff0ce40d9c3a3d2",
+	"source_x1": 185372.233311715
+}

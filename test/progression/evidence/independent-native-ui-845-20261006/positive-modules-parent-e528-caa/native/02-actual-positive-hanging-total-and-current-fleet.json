@@ -1,0 +1,99 @@
+{
+	"budgets": "已装备 5/5 · 传说 2/2 · 究极 1/1",
+	"detail_title": "导弹 · 等级 60\n蓝色 · ",
+	"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T2 · 64.8% \n全局导弹伤害 · T5 · 19.3% \n挂设：资源收集器",
+	"equipped": [
+		"space:2:3",
+		"space:6:10",
+		"space:1:2",
+		"space:6:15",
+		"space:6:8"
+	],
+	"label": "02-actual-positive-hanging-total-and-current-fleet",
+	"modules": {
+		"distributed_algorithm": {
+			"exp": 0.0,
+			"level": 1.0,
+			"unlocked": true
+		},
+		"extra_storage": {
+			"exp": 80.0,
+			"level": 2.0,
+			"unlocked": true
+		},
+		"gem_refiner": {
+			"exp": 36.0,
+			"level": 3.0,
+			"unlocked": true
+		},
+		"hyperspace_charge": {
+			"exp": 100.0,
+			"level": 1.0,
+			"unlocked": true
+		},
+		"resource_collector": {
+			"exp": 100.0,
+			"level": 1.0,
+			"unlocked": true
+		}
+	},
+	"selected": "space:6:8",
+	"totals": {
+		"affixes": {
+			"armour_capacity": 8.69795545360101,
+			"attack_speed": 0.035,
+			"chain_count": 1.0,
+			"critical_chance": 0.05,
+			"damage_missile": 2.96591060520317,
+			"global_critical_damage": 12.9904449403845
+		},
+		"armour": 9.69795545360101,
+		"attack_speed": 1.035,
+		"chain_count": 1,
+		"critical_chance": 0.05,
+		"critical_damage": 13.9904449403845,
+		"damage": 1.0,
+		"defence": 1.0,
+		"hangings": {
+			"resource_collector": 0.2
+		},
+		"legendary": {
+			"black_hole": {
+				"constants": {
+					"absorption_duration": 5.0,
+					"period": 20.0
+				},
+				"drone_id": "space:6:10",
+				"parameters": {
+					"damage_multiplier": 1.458
+				},
+				"score": 1.458
+			},
+			"drone_master": {
+				"constants": {
+					"quality_ratios": {
+						"blue": 0.6,
+						"gold": 0.7,
+						"legendary": 0.8,
+						"ultimate": 0.9,
+						"white": 0.5
+					}
+				},
+				"drone_id": "space:2:3",
+				"parameters": {
+					"maximum_reduction": 0.589
+				},
+				"score": 0.589
+			}
+		},
+		"repeat_chance": 0.0,
+		"shield": 1.0,
+		"weapon_damage": {
+			"cannon": 1.0,
+			"laser": 1.0,
+			"longLaser": 1.0,
+			"missile": 3.96591060520317
+		}
+	},
+	"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 5.0%\n暴击伤害: 1299.0%\n重复攻击概率: 0.0%\n攻击速度: 3.5%\n全局防御: 0.0%\n装甲容量: 869.8%\n护盾容量: 0.0%\n额外连锁: 1 次\n脉冲伤害: 0.0%\n导弹伤害: 296.6%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 20.0%\n生效传说效果（领域择取）\n无人机大师\n  最大减伤: 58.9%\n黑洞\n  伤害倍率: 145.8%"
+}
