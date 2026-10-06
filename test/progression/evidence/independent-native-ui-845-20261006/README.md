@@ -55,3 +55,5 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 追加：dismantle-feedback-f8744214（UI候选与26项真实奖励短测）；galaxy-complete-parent-119457（真实第一星系完成页，无下一星系配置）。
 
 追加：modernization-base-cost-83af2544，正常窗口真实白机支付190、词条机不足与究极阻断，保留观察标签字段失败。
+
+追加：readonly-restore-and-complete-ux，仅现有还原前材料风险/满级船员召回提示的只读评审和建议，未改生产规则。
