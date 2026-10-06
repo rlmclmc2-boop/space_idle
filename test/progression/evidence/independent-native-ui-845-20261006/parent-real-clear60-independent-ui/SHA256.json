@@ -1,5 +1,5 @@
 {
-  "README.md": "5b5dbcaa17b26511c79eb1446a8b4855c83eac349aabb316dfa517ac3444ae28",
+  "README.md": "3d58479d33318c6238fd315a232b40d6d1711ea866015743bc7bfd5393f35718",
   "build-verification.json": "eeb404376d765a025872c488a036f5250ebba2bed4360c2aea2181555e56daf8",
   "import.log": "527a72d2a662f748fa22dfdb41d9132b208648decf45f1f8e9052aaa721a343c",
   "independent_clear60_ui.gd": "4670dfe4c0ff3540dfb5b2906d9dae91bd46f69cbd1e26a5d30f28d1d94f51a9",
@@ -33,5 +33,6 @@
   "sources/longrun-summary.json.gz": "2354a3c52e9239b842c249f68ac6f7cab8f5b96536b5b372129e14a34a280642",
   "sources/run.log.gz": "aa69e9e1851dc512a555c3a805c1b6397d45b2b249cc71307f20a19eb4c331ae",
   "sources/save_final.json": "cdcb3044e428a0471d3ff5a57d5570bfaf925a0aaf8078f322cb1cd3d7b88e8a",
-  "sources/save_final.json.gz": "75983fc11c7d5d34f42337b966b4609f779560e734f8c495e7b48c7d00cf7c59"
+  "sources/save_final.json.gz": "75983fc11c7d5d34f42337b966b4609f779560e734f8c495e7b48c7d00cf7c59",
+  "只读经济边界核对.md": "b0e0e307321dd5b4877c7bb7402d60eb75f27c99b342969df33981ebcbb9f572"
 }
