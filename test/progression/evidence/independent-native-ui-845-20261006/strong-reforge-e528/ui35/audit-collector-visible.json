@@ -1,0 +1,160 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual total bonus",
+			"native": true,
+			"point": [
+				1194.11987304688,
+				796.264221191406
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"label": "native totals scroll to hanging bonuses",
+			"point": [
+				370.0,
+				230.0
+			],
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native close actual totals",
+			"native": true,
+			"point": [
+				370.0,
+				474.0
+			],
+			"visible": true,
+			"window_id": 1
+		}
+	],
+	"checks": [
+		{
+			"label": "actual totals visible",
+			"ok": true
+		},
+		{
+			"label": "actual native totals text resourcecollector20percent",
+			"ok": true
+		},
+		{
+			"label": "no observed profile mutation",
+			"ok": true
+		}
+	],
+	"failures": [],
+	"snapshots": [
+		{
+			"budgets": "已装备 4/4 · 传说 1/2 · 究极 1/1",
+			"detail_title": "未选择无人机",
+			"details": "点击无人机查看词条与保护状态",
+			"equipped": [
+				"space:1:2",
+				"space:2:3",
+				"space:1:11",
+				"space:1:13"
+			],
+			"label": "visible-actual-resource-collector20percent",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 1.0,
+					"unlocked": true
+				}
+			},
+			"selected": "",
+			"totals": {
+				"affixes": {
+					"armour_capacity": 2.01251074137651,
+					"critical_chance": 0.037,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 1.07719046424223,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 3.01251074137651,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.037,
+				"critical_damage": 2.07719046424223,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.2
+				},
+				"legendary": {
+					"drone_master": {
+						"constants": {
+							"quality_ratios": {
+								"blue": 0.6,
+								"gold": 0.7,
+								"legendary": 0.8,
+								"ultimate": 0.9,
+								"white": 0.5
+							}
+						},
+						"drone_id": "space:2:3",
+						"parameters": {
+							"maximum_reduction": 0.589
+						},
+						"score": 0.589
+					}
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 3.7%\n暴击伤害: 107.7%\n重复攻击概率: 1.9%\n攻击速度: 0.0%\n全局防御: 16.4%\n装甲容量: 201.3%\n护盾容量: 0.0%\n额外连锁: 0 次\n脉冲伤害: 0.0%\n导弹伤害: 53.2%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 20.0%\n生效传说效果（领域择取）\n无人机大师\n  最大减伤: 58.9%"
+		}
+	]
+}

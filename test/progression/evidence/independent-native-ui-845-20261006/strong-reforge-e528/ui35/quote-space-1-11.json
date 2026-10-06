@@ -1,0 +1,87 @@
+{
+	"budgets": "已装备 4/4 · 传说 1/2 · 究极 1/1",
+	"detail_title": "导弹 · 等级 20\n金色 · ",
+	"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T4 · 3.7% \n全局防御效果提升 · T5 · 7.5% \n全局暴击伤害 · T4 · 20.6% \n挂设：资源收集器",
+	"equipped": [
+		"space:1:2",
+		"space:2:3",
+		"space:1:11",
+		"space:1:13"
+	],
+	"label": "quote-space-1-11",
+	"modules": {
+		"distributed_algorithm": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"extra_storage": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"gem_refiner": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"hyperspace_charge": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"resource_collector": {
+			"exp": 0.0,
+			"level": 1.0,
+			"unlocked": true
+		}
+	},
+	"selected": "space:1:11",
+	"totals": {
+		"affixes": {
+			"armour_capacity": 2.01251074137651,
+			"critical_chance": 0.037,
+			"damage_missile": 0.532118854766714,
+			"global_critical_damage": 1.07719046424223,
+			"global_defence": 0.163715594128645,
+			"repeat_chance": 0.019
+		},
+		"armour": 3.01251074137651,
+		"attack_speed": 1.0,
+		"chain_count": 0,
+		"critical_chance": 0.037,
+		"critical_damage": 2.07719046424223,
+		"damage": 1.0,
+		"defence": 1.16371559412865,
+		"hangings": {
+			"resource_collector": 0.2
+		},
+		"legendary": {
+			"drone_master": {
+				"constants": {
+					"quality_ratios": {
+						"blue": 0.6,
+						"gold": 0.7,
+						"legendary": 0.8,
+						"ultimate": 0.9,
+						"white": 0.5
+					}
+				},
+				"drone_id": "space:2:3",
+				"parameters": {
+					"maximum_reduction": 0.589
+				},
+				"score": 0.589
+			}
+		},
+		"repeat_chance": 0.019,
+		"shield": 1.0,
+		"weapon_damage": {
+			"cannon": 1.0,
+			"laser": 1.0,
+			"longLaser": 1.0,
+			"missile": 1.53211885476671
+		}
+	},
+	"totals_text": ""
+}

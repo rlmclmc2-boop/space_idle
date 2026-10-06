@@ -1,0 +1,9 @@
+{
+	"round": 2,
+	"scope": "file-only observer; no restore/tick/model changes",
+	"sha256": "bf0f284975edfcecab6d11ee6b52dfc1b0e0610193fdf35e0e2dc3d4986b38d9",
+	"source": "live runner atomic checkpoint",
+	"stage": 35,
+	"state": "COMBAT",
+	"x1_seconds": 132689.266657314
+}
