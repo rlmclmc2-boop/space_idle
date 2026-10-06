@@ -1,5 +1,7 @@
 {
   "entries": {
+    "hyperspace.restore_modernize_hint": {"params": []},
+    "galaxy.complete_crew_hint": {"params": []},
     "hyperspace.dismantle_source_hint": {"params": []},
     "hyperspace.module_source_hint": {"params": []},
     "hyperspace.reward_material_item": {"params": ["material", "count"]},

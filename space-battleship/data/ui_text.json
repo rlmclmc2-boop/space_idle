@@ -14451,5 +14451,19 @@
 {"key": "hyperspace.dismantle_received_materials", "text": "实际收到：{materials}", "params": "materials", "category": "hyperspace"},
 {"key": "hyperspace.dismantle_received_module", "text": "{name} ×{count}：{state}，当前等级 {level}；获得经验 {exp}。", "params": "name,count,state,level,exp", "category": "hyperspace"},
 {"key": "hyperspace.module_first_unlock", "text": "首次解锁", "params": "", "category": "hyperspace"},
-{"key": "hyperspace.module_duplicate", "text": "重复副本", "params": "", "category": "hyperspace"}
+{"key": "hyperspace.module_duplicate", "text": "重复副本", "params": "", "category": "hyperspace"},
+  {
+    "key": "hyperspace.restore_modernize_hint",
+    "text": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "还原前静态提示，不承诺后续现代化可支付"
+  },
+  {
+    "key": "galaxy.complete_crew_hint",
+    "text": "建设已完成，可在管理中召回船员。",
+    "params": "",
+    "category": "galaxy",
+    "note": "建设完成且仍有派遣船员时提示，玩家自行召回"
+  }
 ]

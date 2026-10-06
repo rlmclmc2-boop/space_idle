@@ -6,6 +6,7 @@ var game
 var selected := ""
 var selector := OptionButton.new()
 var state_label := Label.new()
+var complete_crew_hint := Label.new()
 var start_button := Button.new()
 var map := preload("res://scripts/galaxy_map.gd").new()
 var crew_rows := {}
@@ -73,6 +74,12 @@ func setup(owner) -> void:
 	summary.add_theme_constant_override("h_separation",8)
 	box.add_child(summary)
 	for key in ["exploration","buildings","max_level","crew"]:make_card(summary,key,true)
+	complete_crew_hint.text=UIText.t("galaxy.complete_crew_hint")
+	complete_crew_hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	complete_crew_hint.add_theme_font_size_override("font_size",21)
+	complete_crew_hint.add_theme_color_override("font_color",CHROME.MUTED)
+	complete_crew_hint.visible=false
+	box.add_child(complete_crew_hint)
 	setup_crew_dialog()
 	var map_frame := PanelContainer.new()
 	map_frame.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -216,6 +223,7 @@ func refresh() -> void:
 	set_text(cards.buildings,"%d / %d"%[region.occupied_count,region.slots.size()])
 	set_text(cards.max_level,str(region.max_level_count))
 	set_text(cards.crew,UIText.t("galaxy.crew_count",{"count":map.crew_count}))
+	host.set_ui_value(complete_crew_hint,"visible",region.state.status=="complete" and map.crew_count>0)
 	set_text(cards.explorers,str(map.explorers.size()))
 	game.galaxy.effects.refresh(game.galaxy)
 	var effect: Dictionary=game.galaxy.effects.cache[selected]

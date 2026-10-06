@@ -10,6 +10,7 @@ var commit_button: Button
 var feedback: Label
 var promotion_hint: Label
 var dismantle_hint: Label
+var restore_hint: Label
 var quoted_request: Dictionary={}
 var crew_dialog: AcceptDialog
 var crew_choice: OptionButton
@@ -36,6 +37,7 @@ func build_forge(parent: Node) -> void:
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
+ restore_hint=panel.label(parent,t("restore_modernize_hint"),21)
  quote_label=panel.label(parent,t("quote_first"),21);feedback=panel.label(parent,"",21)
  configure_operation()
 func invalidate() -> void:
@@ -45,6 +47,7 @@ func configure_operation() -> void:
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
  promotion_hint.visible=op=="promote_affix"
  dismantle_hint.visible=op=="dismantle"
+ restore_hint.visible=op=="restore_ultimate"
  var d: Dictionary=panel.bag.get("drones",{}).get(panel.selected_id,{})
  if d.is_empty():return
  var keys: Array=h().config.affixes.keys() if op=="replace_affix" else game().profile.hyperspace.legendary_collection
