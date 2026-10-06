@@ -1,0 +1,169 @@
+{
+  "source_x1": 181472.19997929,
+  "equipped_ids": [
+    "space:1:2",
+    "space:2:3",
+    "space:4:3",
+    "space:6:3",
+    "space:1:11"
+  ],
+  "original_equipped_drones": {
+    "space:1:2": {
+      "affixes": [],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "7335463139941275162",
+      "hanging_slots": 1,
+      "hangings": [],
+      "id": "space:1:2",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 10,
+      "omen": false,
+      "origin_quality": "white",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": true,
+      "ultimate_affix": {
+        "key": "global_critical_damage",
+        "locked": false,
+        "tier": 4,
+        "value": 0.256
+      },
+      "weapon": "laser"
+    },
+    "space:2:3": {
+      "affixes": [
+        {
+          "key": "armour_capacity",
+          "locked": false,
+          "tier": 4,
+          "value": 0.566
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 5,
+          "value": 0.08
+        },
+        {
+          "key": "attack_speed",
+          "locked": false,
+          "tier": 4,
+          "value": 0.035
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "5654130464523979916",
+      "hanging_slots": 0,
+      "hangings": [],
+      "id": "space:2:3",
+      "legendary": true,
+      "legendary_effect": {
+        "effect_id": "drone_master",
+        "parameters": {
+          "maximum_reduction": 0.589
+        }
+      },
+      "level": 30,
+      "omen": false,
+      "origin_quality": "legendary",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:4:3": {
+      "affixes": [
+        {
+          "key": "attack_speed",
+          "locked": false,
+          "tier": 5,
+          "value": 0.018
+        },
+        {
+          "key": "shield_capacity",
+          "locked": false,
+          "tier": 5,
+          "value": 0.135
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 1,
+      "forge_rng_state": "-3968735361738311346",
+      "hanging_slots": 0,
+      "hangings": [],
+      "id": "space:4:3",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 40,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "3",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:6:3": {
+      "affixes": [],
+      "blue_source_bonus": false,
+      "forge_revision": 0,
+      "forge_rng_state": "2291635379989245729",
+      "hanging_slots": 0,
+      "hangings": [],
+      "id": "space:6:3",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 55,
+      "omen": false,
+      "origin_quality": "white",
+      "planet_id": "6",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:1:11": {
+      "affixes": [
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 4,
+          "value": 0.037
+        },
+        {
+          "key": "global_defence",
+          "locked": false,
+          "tier": 5,
+          "value": 0.075
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.206
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "8177203670080354894",
+      "hanging_slots": 1,
+      "hangings": [],
+      "id": "space:1:11",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 20,
+      "omen": false,
+      "origin_quality": "gold",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    }
+  },
+  "scope": "Track modernization of these exact IDs separately from earned replacement equipment. Ultimate drones must use actual paid restore/core path before modernization; never automatically relabel replacement as modernization."
+}
