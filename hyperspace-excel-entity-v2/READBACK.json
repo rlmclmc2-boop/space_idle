@@ -1,0 +1,20 @@
+[
+  {
+    "file": "hyperspace_config.xlsx",
+    "sha256": "ccef919897ccb7ef3d80cf7e0ae9671fd896e83d5431e0da4cb7712ced626536",
+    "cells_checked": 1185,
+    "sheets": 13,
+    "visual_changed_sheets_checked": true,
+    "formal_import_test": "pending",
+    "contract": "67b379e0666e8cc2cc31f6842cc76ba88ae97918"
+  },
+  {
+    "file": "hyperspace_enemies.xlsx",
+    "sha256": "802735530bd8c03ea524643849c82f8f3be3c7eccd1ce13579821ec7caa356e0",
+    "cells_checked": 6829,
+    "sheets": 8,
+    "visual_changed_sheets_checked": true,
+    "formal_import_test": "pending",
+    "contract": "67b379e0666e8cc2cc31f6842cc76ba88ae97918"
+  }
+]
