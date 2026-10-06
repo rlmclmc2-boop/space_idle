@@ -1,0 +1,9 @@
+{
+  "terminal_x1_seconds": 89840.4166672909,
+  "terminal_hours": 24.955671296469696,
+  "parent_x1_equal": true,
+  "strict_20_24h_pass": false,
+  "integration_decision": "Do not integrate resource x2",
+  "known_terminal_errors": "Original two missing link.discontinuities lambda errors retained; actual terminal checkpoint and trace valid",
+  "terminal_checkpoint_sha256": "c6175a1b977be6c94adad27766b7eeed9f612546e895e20b14322dedef8931e2"
+}

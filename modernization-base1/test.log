@@ -1,0 +1,22 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: zero affixes baseline1 replay does not charge twice
+SCRIPT ERROR: Assertion failed.
+          at: fixture (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:28)
+          GDScript backtrace (most recent call first):
+              [0] fixture (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:28)
+              [1] _initialize (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:49)
+SCRIPT ERROR: Invalid access to property or key 'hyperspace' on a base object of type 'Nil'.
+          at: purchase (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:33)
+          GDScript backtrace (most recent call first):
+              [0] purchase (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:33)
+              [1] _initialize (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:49)
+SCRIPT ERROR: Assertion failed.
+          at: fixture (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:28)
+          GDScript backtrace (most recent call first):
+              [0] fixture (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:28)
+              [1] _initialize (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:50)
+SCRIPT ERROR: Invalid access to property or key 'profile' on a base object of type 'Nil'.
+          at: _initialize (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:50)
+          GDScript backtrace (most recent call first):
+              [0] _initialize (/workspace/space_idle/test/work/test_modernization_base_cost-_43111n4/test/test_modernization_base_cost.gd:50)

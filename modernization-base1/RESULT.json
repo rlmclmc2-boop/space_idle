@@ -1,0 +1,16 @@
+{
+  "source_commit": "83af25441ed34979ef530f5dfece62599d66f6c8",
+  "production_change": "drone_forge.gd coefficient initialization0\u21921;allExcel-derivedfeeparametersunchanged",
+  "valid_run": "test-retry3.log",
+  "checks": 21,
+  "failures": 0,
+  "scope": "Isolatedtransactionfixtures invokingproductionpreview_forge/forge;notnativewindow proof/notnewcostcampaignproof. Priorfixturefailures preserved.",
+  "file_sha256": {
+    "test-retry3.log": "c1576ad24120f045cb2dccb73351489ac1ff33acd67de1f8c0cf5385fee91e3c",
+    "test-retry2.log": "6c3c6d40e4d42878b585bbe46fa5a69440b1b9a708d534c8c6b78833accbc9e0",
+    "test.log": "e3682a95b96710c99c4e4e867d66032c0da805350e46cde1fb25d7b80fe58711",
+    "test-retry1.log": "c525dafe629c0947e450e90c6382b921b66defa6179b47976d065d14ac7f507f",
+    "import.log": "8939de1f891ed00020f98d8922d98655422c24400140ecf787be984bbf2d725c",
+    "test-source.gd": "bb66d30622062b067aeb89303cb5a7778184a8827084eacae5d307054ff425b7"
+  }
+}

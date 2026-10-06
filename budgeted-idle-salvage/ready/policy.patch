@@ -1,0 +1,83 @@
+diff --git a/test/progression/hyperspace_checkpoint.gd b/test/progression/hyperspace_checkpoint.gd
+index 934d392..d74bfe5 100644
+--- a/test/progression/hyperspace_checkpoint.gd
++++ b/test/progression/hyperspace_checkpoint.gd
+@@ -3,7 +3,7 @@ extends RefCounted
+ const FORMAT=1
+ const QA_CONTINUITY=["early_page_route.gd","hyperspace_player_policy.gd","hyperspace_safe_farm.gd","player_input.gd","scene_driver.gd","presented_balance_game.gd"]
+ const CONTROLLER=["crew_transfer_burst","next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
+-const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew"]
++const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew","idle_salvage_enabled","idle_salvage_budget"]
+ const FARM=["round_seen","known","failed","attempted_stage","phase","plan","beam_refresh"]
+ 
+ static func digest(bytes:PackedByteArray)->String:
+diff --git a/test/progression/hyperspace_player_policy.gd b/test/progression/hyperspace_player_policy.gd
+index d17202f..9aa0d7c 100644
+--- a/test/progression/hyperspace_player_policy.gd
++++ b/test/progression/hyperspace_player_policy.gd
+@@ -1,6 +1,10 @@
+ extends RefCounted
+ ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
+-const VERSION="hyperspace-player-v16-post60-formal-supply"
++const VERSION="hyperspace-player-v17-budgeted-idle-salvage"
++var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
++var idle_salvage_budget:Dictionary={"round":-1,"used":0,"next_at":0.0}
++const IDLE_SALVAGE_ROUND_LIMIT:=3
++const IDLE_SALVAGE_INTERVAL:=300.0
+ const Bag=preload("res://scripts/drone_inventory.gd")
+ const Permission=preload("res://scripts/hyperspace_permissions.gd")
+ const Rewards=preload("res://scripts/drone_rewards.gd")
+@@ -480,6 +484,30 @@ func paid_affix_supply_action(g,now:float,supply:Dictionary)->Dictionary:
+   var crew:String=funding_crew
+   if not crew.is_empty() and (not s.auto.enabled or str(s.auto.route)!=route or int(s.auto.level)!=recorded):return {"domain":true,"kind":"space_auto","route":route,"level":recorded,"crew":crew,"paid_affix_supply":supply.duplicate(true),"reason":"Best genuinely recorded eligible required-material source, actual reduced ticket and cap gate"}
+  return {}
++func idle_salvage_choice(g,now:float)->Dictionary:
++ if not idle_salvage_enabled:return {}
++ var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
++ if int(idle_salvage_budget.round)!=int(s.round_id):idle_salvage_budget={"round":int(s.round_id),"used":0,"next_at":0.0}
++ if int(idle_salvage_budget.used)>=IDLE_SALVAGE_ROUND_LIMIT or now<float(idle_salvage_budget.next_at):return {}
++ # Keep the best currently usable unequipped backup for every earned weapon type.
++ var backups:Dictionary={}
++ for id in bag.warehouse:
++  if id in bag.equipped or bag.sealed.has(id):continue
++  var d:Dictionary=bag.drones[id];var weapon:String=str(d.weapon)
++  if not backups.has(weapon) or score(d)>score(bag.drones[backups[weapon]]) or (score(d)==score(bag.drones[backups[weapon]]) and str(id)<str(backups[weapon])):backups[weapon]=id
++ var removable:Array=[]
++ for id in bag.warehouse:
++  var d:Dictionary=bag.drones[id]
++  if Bag.protected(bag,id) or d.ultimate or d.legendary or str(d.origin_quality)!="white" or id in backups.values() or not d.hangings.is_empty():continue
++  removable.append(id)
++ removable.sort_custom(func(a,b):return score(bag.drones[a])<score(bag.drones[b]) if score(bag.drones[a])!=score(bag.drones[b]) else str(a)<str(b))
++ for id in removable:
++  var choice:Dictionary=forge_choice(g,id,"dismantle")
++  if choice.is_empty():continue
++  choice.idle_salvage=true;choice.salvage_budget=idle_salvage_budget.duplicate(true)
++  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three per round and one per 300 seconds"
++  return choice
++ return {}
+ func space_action(g,now:float)->Dictionary:
+  if int(g.profile.highestLevel)<7:return {}
+  var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
+@@ -493,7 +521,11 @@ func space_action(g,now:float)->Dictionary:
+  if chosen!=bag.equipped:return {"domain":true,"kind":"space_equip","ids":chosen}
+  if chosen!=bag.favorites:return {"domain":true,"kind":"space_favorite","ids":chosen}
+  if not chosen.is_empty() and (bag.presets.is_empty() or bag.presets[0].drone_ids!=chosen):return {"domain":true,"kind":"space_preset","ids":chosen}
+- # Full storage clears only the least useful legally unprotected object, through dismantle.
++ if idle_salvage_enabled:
++  var salvage:Dictionary=idle_salvage_choice(g,now)
++  if not salvage.is_empty():return salvage
++  if not Bag.has_space(bag,h.config):return {}
++ # Disabled comparison arm retains the original full-storage-only policy.
+  if not Bag.has_space(bag,h.config):
+   var removable:Array=bag.warehouse.filter(func(id):return not Bag.protected(bag,id))
+   removable.sort_custom(func(a,b):return score(bag.drones[a])<score(bag.drones[b]))
+@@ -650,6 +682,9 @@ func execute(g,choice:Dictionary,now:float)->bool:
+   "space_forge":
+    forge_at[str(choice.request.drone_id)]=now
+    var result:Dictionary=g.hyperspace.forge(g,choice.request)
++   if str(result.error).is_empty() and choice.get("idle_salvage",false):
++    idle_salvage_budget.used+=1
++    idle_salvage_budget.next_at=now+IDLE_SALVAGE_INTERVAL
+    if str(result.error).is_empty() and choice.get("paid_affix",false):
+     var key:String=str([g.profile.hyperspace.round_id,choice.request.drone_id])
+     if affix_paid_windows.has(key):affix_paid_windows[key].attempts+=1

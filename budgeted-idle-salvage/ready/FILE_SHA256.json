@@ -1,0 +1,17 @@
+{
+  "README.md": "792837748a3815e464b4f6022b5ff7d4aad7a26df7d2cca896743efeaf9a04ca",
+  "checkpoint.bin.gz": "f57653b14cbba48f4c638b32f455a547d23ad312dea96ee9c3b7cfdea63d7833",
+  "checkpoint.bin.transition.json": "8bb6d0ee8ddcc478686188cff27bfab22f7b9b08f7328f8342e2354408374a2c",
+  "hyperspace_checkpoint.gd": "434acfa5d2f980c2d1c6be038bace82ae60c1f270c0e1a00e9083624df5fd88a",
+  "hyperspace_player_policy.gd": "0500b7deb04f019e996bcfbe33c9451d4e0a75d059a04724ec0a8812b15e7185",
+  "import.log": "83ff42b3a06fba758027b7fa4e925475cd0c6bca519340fbfdcc0e9034b4835d",
+  "options.json": "7046e9375609d0816ab2f7f5340ab5a3df791af33102ea94fbc7bf822226cac9",
+  "package.json": "aa0a499d1deda03810b5c8f8c86439a7a54577e3e4a40aa9a8d2b571c225db7d",
+  "policy.patch": "b4ef9904521fd29d7bef1d3a0f026d3b9c41bb67da3b31d7102649b08d2909eb",
+  "prepare-package.py": "50d46132bdb242a2443a1a89a9244e053aea910edfb975642a74577c5f87ab0f",
+  "qa-manifest.json": "e9bfb55142c37317f7c5e8b5383dbae70d49c132e49e7990caebed7361f101cd",
+  "run_entry_window.py": "feb2ce15aa05d7065e4b37944f917b105566b986a481951f15fddc945929daec",
+  "source-checkpoint.bin.gz": "831a5fec075285f5bad1388b11482547643998cea3e3ef84c1bf9e707ccb74ec",
+  "source-manifest.json": "8130c4afcfc3fa73d902424e065b0bb359c120579d36246a39cc29a4073467f4",
+  "transition.gd": "1d3d87e0c231f68b9d7d9214b234d326f6b4079977e942a307b1dccb558f79b3"
+}

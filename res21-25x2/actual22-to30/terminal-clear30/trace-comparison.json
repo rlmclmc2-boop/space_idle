@@ -1,0 +1,8 @@
+{
+  "sol_business_records": 10898,
+  "parent_business_records": 10898,
+  "run_start_equal": false,
+  "subsequent_business_records_equal": true,
+  "subsequent_count": 10897,
+  "run_start_difference": "only duration cap216000 versus144000, both beyond terminal; raw records retained"
+}

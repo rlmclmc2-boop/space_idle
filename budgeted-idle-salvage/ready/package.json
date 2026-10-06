@@ -1,0 +1,10 @@
+{
+  "project": "/workspace/sol-validation/budgeted-idle-salvage-2d-qa",
+  "fingerprint": "5f123fbc05ec023decc5fe34bdf717a0f2fa8790fb73157e783aae27947cb08b",
+  "changed_files": [
+    "qa/hyperspace_checkpoint.gd",
+    "qa/hyperspace_player_policy.gd"
+  ],
+  "data_sha256": "86634b4b91b7a0437f1ce4de557b549be04da170c59b177c00a4c504848a354c",
+  "commit": "6abe0048f6d6afacd570d6e9b2c202a02b09c56d"
+}

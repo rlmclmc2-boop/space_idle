@@ -1,0 +1,325 @@
+{
+  "controller_equal": true,
+  "differences": [
+    {
+      "kind": "value",
+      "parent": 1791292337.10455,
+      "path": "/save/hightechSavedAt",
+      "sol": 1791293715.89175
+    },
+    {
+      "kind": "value",
+      "parent": 1791292337.10455,
+      "path": "/save/chronoSavedAt",
+      "sol": 1791293715.89175
+    },
+    {
+      "kind": "value",
+      "parent": 144000.0,
+      "path": "/options/duration",
+      "sol": 216000.0
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_final.json",
+      "path": "/snapshots/final",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_final.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_resumed.json",
+      "path": "/snapshots/resumed",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_resumed.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_43200.json",
+      "path": "/snapshots/periodic_43200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_43200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_45000.json",
+      "path": "/snapshots/periodic_45000",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_45000.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_space_7.json",
+      "path": "/snapshots/space_7",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_space_7.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_46800.json",
+      "path": "/snapshots/periodic_46800",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_46800.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_48600.json",
+      "path": "/snapshots/periodic_48600",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_48600.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_reach_22_round_1.json",
+      "path": "/snapshots/reach_22_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_reach_22_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_50400.json",
+      "path": "/snapshots/periodic_50400",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_50400.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_52200.json",
+      "path": "/snapshots/periodic_52200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_52200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_54000.json",
+      "path": "/snapshots/periodic_54000",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_54000.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_periodic_55800.json",
+      "path": "/snapshots/periodic_55800",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_periodic_55800.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/save_reach_23_round_1.json",
+      "path": "/snapshots/reach_23_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/save_reach_23_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_space_8.json",
+      "path": "/snapshots/space_8",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_space_8.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_57600.json",
+      "path": "/snapshots/periodic_57600",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_57600.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_24_round_1.json",
+      "path": "/snapshots/reach_24_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_24_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_59400.json",
+      "path": "/snapshots/periodic_59400",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_59400.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_61200.json",
+      "path": "/snapshots/periodic_61200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_61200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_25_round_1.json",
+      "path": "/snapshots/reach_25_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_25_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_63000.json",
+      "path": "/snapshots/periodic_63000",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_63000.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_64800.json",
+      "path": "/snapshots/periodic_64800",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_64800.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_26_round_1.json",
+      "path": "/snapshots/reach_26_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_26_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_66600.json",
+      "path": "/snapshots/periodic_66600",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_66600.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_space_9.json",
+      "path": "/snapshots/space_9",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_space_9.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_27_round_1.json",
+      "path": "/snapshots/reach_27_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_27_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_68400.json",
+      "path": "/snapshots/periodic_68400",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_68400.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_70200.json",
+      "path": "/snapshots/periodic_70200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_70200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_72000.json",
+      "path": "/snapshots/periodic_72000",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_72000.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_73800.json",
+      "path": "/snapshots/periodic_73800",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_73800.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_75600.json",
+      "path": "/snapshots/periodic_75600",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_75600.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_28_round_1.json",
+      "path": "/snapshots/reach_28_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_28_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_77400.json",
+      "path": "/snapshots/periodic_77400",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_77400.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_space_10.json",
+      "path": "/snapshots/space_10",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_space_10.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_79200.json",
+      "path": "/snapshots/periodic_79200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_79200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_81000.json",
+      "path": "/snapshots/periodic_81000",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_81000.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_82800.json",
+      "path": "/snapshots/periodic_82800",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_82800.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_29_round_1.json",
+      "path": "/snapshots/reach_29_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_29_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_84600.json",
+      "path": "/snapshots/periodic_84600",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_84600.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_86400.json",
+      "path": "/snapshots/periodic_86400",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_86400.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_30_round_1.json",
+      "path": "/snapshots/reach_30_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_30_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_periodic_88200.json",
+      "path": "/snapshots/periodic_88200",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_periodic_88200.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_space_11.json",
+      "path": "/snapshots/space_11",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_space_11.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/save_reach_31_round_1.json",
+      "path": "/snapshots/reach_31_round_1",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/save_reach_31_round_1.json"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/res-exp-1131/res21-25x2/source-and-baseline/experiment-transition20.bin",
+      "path": "/lineage/3/checkpoint",
+      "sol": "/workspace/sol-validation/res21-25x2-work/checkpoint.bin"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/res-exp-1131/continue-to30/source-clear22.bin",
+      "path": "/lineage/4/checkpoint",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/checkpoint.bin"
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-same20-to22/actions.jsonl",
+      "path": "/lineage/4/origin_trace",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/actions.jsonl"
+    },
+    {
+      "kind": "value",
+      "parent": 12677.685431,
+      "path": "/wall_seconds",
+      "sol": 14155.712396
+    },
+    {
+      "kind": "value",
+      "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-resx2/diagnostics/parent-resx2-actual22-to30/actions.jsonl",
+      "path": "/origin_trace",
+      "sol": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-actual22-to30-window1/actions.jsonl"
+    },
+    {
+      "kind": "value",
+      "parent": 7152620,
+      "path": "/trace_bytes",
+      "sol": 7164783
+    }
+  ],
+  "differences_count": 52,
+  "main_rng_equal": true,
+  "parent_sha256": "77ce1d72c29d8ecc94edca16d8ed2af5fc4fc0721c19a59637f731e3114df0a3",
+  "safe_farm_equal": true,
+  "save_loadout_equal": true,
+  "save_resources_equal": true,
+  "sol_sha256": "c6175a1b977be6c94adad27766b7eeed9f612546e895e20b14322dedef8931e2",
+  "space_policy_equal": true
+}

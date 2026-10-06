@@ -1,0 +1,6 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: production restore ultimate command
+FAIL: modernization reenabled after real restoration
+MODERNIZATION_RECEIPTS [{"case":"zero affixes baseline1","material_after":940,"material_before":1000,"quote":{"cost":{"degenerate_matter":60.0},"draws":1,"error":"","revision":0},"result":{"affixes_changed":false,"applied":true,"cost":{"degenerate_matter":60.0},"draws":1,"drone_id":"price-fixture","error":"","index":-1,"operation":"modernize","outcome":true}},{"case":"one T5 affix baseline1 plus0.5","material_after":910,"material_before":1000,"quote":{"cost":{"degenerate_matter":90.0},"draws":1,"error":"","revision":0},"result":{"affixes_changed":false,"applied":true,"cost":{"degenerate_matter":90.0},"draws":1,"drone_id":"price-fixture","error":"","index":-1,"operation":"modernize","outcome":true}}]
+MODERNIZATION_RESULT checks=21 failures=2
