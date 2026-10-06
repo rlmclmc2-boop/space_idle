@@ -1,0 +1,203 @@
+{
+  "status": "actual_clear30_original_command_failed_reporting",
+  "capture_utc": "2026-10-06T10:25:21.383331+00:00",
+  "candidate_commit": "2d8141222edb8e138e68c71546a87c890e47fa6e",
+  "frozen_fingerprint": "12bb0c8f9e3fa900e48e173a951859debcabae8180af7e7e26dc625f53c50213",
+  "data_sha256": "86634b4b91b7a0437f1ce4de557b549be04da170c59b177c00a4c504848a354c",
+  "x1_seconds": 98433.4499986235,
+  "checkpoint_header": {
+    "bytes": 1402464,
+    "code_fingerprint": "12bb0c8f9e3fa900e48e173a951859debcabae8180af7e7e26dc625f53c50213",
+    "continuity_fingerprint": "e107b0c756be6bf34bbab7a61f5e83126f18bcaebaee56278ebe5e0d88eb91d2",
+    "format": 1,
+    "scope": "formal_journey_reload_not_live_combat_restore",
+    "sha256": "329b3a7f5fcf0fed7a26a8063271895e02a6700336ebe9f631cf0deddca965c7",
+    "source_commit": "2d8141222edb8e138e68c71546a87c890e47fa6e",
+    "x1_seconds": 98433.4499986235
+  },
+  "packet": {
+    "clears": {
+      "1": 136.300000000001,
+      "10": 6688.06666665349,
+      "11": 7502.24999997498,
+      "12": 8476.51666662747,
+      "13": 9827.89999994113,
+      "14": 12155.4666665739,
+      "15": 14000.9833332137,
+      "16": 17903.9666664903,
+      "17": 23312.3166664116,
+      "18": 28914.5833329967,
+      "19": 29804.9166663171,
+      "2": 231.650000000076,
+      "20": 42767.8833349779,
+      "21": 50332.2333365189,
+      "22": 61913.7166722117,
+      "23": 67249.2666725508,
+      "24": 71322.883338269,
+      "25": 79970.6666695889,
+      "26": 84782.8333351351,
+      "27": 91314.450000281,
+      "28": 92534.2166666637,
+      "29": 96313.6333324504,
+      "3": 365.316666666663,
+      "30": 98433.4499986235,
+      "4": 731.833333332996,
+      "5": 1021.41666666607,
+      "6": 1926.14999999858,
+      "7": 3940.21666668923,
+      "8": 4698.91666668244,
+      "9": 5918.63333333135
+    },
+    "code_fingerprint": "12bb0c8f9e3fa900e48e173a951859debcabae8180af7e7e26dc625f53c50213",
+    "data_sha256": "86634b4b91b7a0437f1ce4de557b549be04da170c59b177c00a4c504848a354c",
+    "highest": 31,
+    "input_failure": {},
+    "journey": {
+      "distance": 900.0,
+      "groupIndex": 9,
+      "guardArrived": false,
+      "pendingUnlocks": [
+        "ship/Battleship",
+        "crew/crew_04",
+        "planet/1",
+        "feature/crew_level"
+      ],
+      "retreatBossPending": false,
+      "stage": 30,
+      "state": 4
+    },
+    "lineage_count": 3,
+    "manual_interrupted_on_reload": false,
+    "masters": [],
+    "rng_state": "9128911167499078622",
+    "round": 1,
+    "round_clears": {
+      "1": {
+        "1": 136.300000000001,
+        "10": 6688.06666665349,
+        "11": 7502.24999997498,
+        "12": 8476.51666662747,
+        "13": 9827.89999994113,
+        "14": 12155.4666665739,
+        "15": 14000.9833332137,
+        "16": 17903.9666664903,
+        "17": 23312.3166664116,
+        "18": 28914.5833329967,
+        "19": 29804.9166663171,
+        "2": 231.650000000076,
+        "20": 42767.8833349779,
+        "21": 50332.2333365189,
+        "22": 61913.7166722117,
+        "23": 67249.2666725508,
+        "24": 71322.883338269,
+        "25": 79970.6666695889,
+        "26": 84782.8333351351,
+        "27": 91314.450000281,
+        "28": 92534.2166666637,
+        "29": 96313.6333324504,
+        "3": 365.316666666663,
+        "30": 98433.4499986235,
+        "4": 731.833333332996,
+        "5": 1021.41666666607,
+        "6": 1926.14999999858,
+        "7": 3940.21666668923,
+        "8": 4698.91666668244,
+        "9": 5918.63333333135
+      }
+    },
+    "safe_farm_phase": "idle",
+    "trace_bytes": 9850089,
+    "x1_seconds": 98433.4499986235
+  },
+  "actions": {
+    "uncompressed_sha256": "421ec9af8353bc16ae3c6519cea7bf746a20c7742bb3848c4241af60d5022043",
+    "uncompressed_bytes": 9850089,
+    "gzip_sha256": "7e6370a0c7d6673aca25022bd22663fe473db3f300605813a8d4bea47ffce3f3",
+    "gzip_bytes": 477413,
+    "rows": 16636,
+    "last_x1": 98433.4499986235,
+    "cutoff": "Exactlyoriginalrawbytes[0:payload.trace_bytes], completeJSONL rows; unchangedformat, no reserialization. gzipmtime0; rawCPunchanged. Latercheckpoint_saved action notincluded unlesswithinCPtraceoffset."
+  },
+  "scope": "ActualfullQAcheckpoint, native/domain actions, no injected resources/drones. Formalreload regeneratesbattle/GUI; no livecombat losslessclaim. Publicevidence authorized, no sourcecode, credentials, unrelatedfiles.",
+  "original_terminal_script_error": "Invalid access to property or key discontinuities on a base object of type Dictionary; qa/hyperspace_longrun.gd:362",
+  "original_command_exit": 1,
+  "native_clear30_x1": 98433.4499986235,
+  "native_clear30_hours": 27.34262499961764,
+  "target30_hours": [
+    20,
+    24
+  ],
+  "target_met": false,
+  "cold98_summary_complete": true,
+  "cold98_summary_lineage_entries": 3,
+  "cold_report_does_not_change_failed_original_command": true,
+  "analysis_status": "Branchrawloganalysis, parentverificationpending",
+  "20to30_analysis": {
+    "total_hours": 15.462657406568223,
+    "total_split_seconds": {
+      "progression_noncombat": 1563.1666665085359,
+      "progression_combat": 17202.11666483179,
+      "safe_farm_noncombat": 215.8499999830383,
+      "safe_farm_combat": 35771.866665607355,
+      "manual_space": 912.5666667148835
+    },
+    "safe_farm_share": 0.6464987032835411,
+    "slowest_clear_windows": [
+      {
+        "stage": 22,
+        "hours": 3.217078704359113,
+        "split_seconds": {
+          "progression_combat": 3048.3166672877705,
+          "progression_noncombat": 187.40000003814203,
+          "safe_farm_noncombat": 29.166666672674182,
+          "safe_farm_combat": 7784.0333349191205,
+          "manual_space": 532.5666667750993
+        },
+        "observed_native_click_resource_spend": {
+          "1": 3457892076255103.0,
+          "2": 3355747369791.077
+        },
+        "net_module_levels_from_logged_upgrade": 69
+      },
+      {
+        "stage": 25,
+        "hours": 2.402162036477748,
+        "split_seconds": {
+          "progression_noncombat": 364.3166665816825,
+          "progression_combat": 2132.4666661701194,
+          "safe_farm_noncombat": 38.033333324681735,
+          "safe_farm_combat": 6027.966665263215,
+          "manual_space": 84.99999998019484
+        },
+        "observed_native_click_resource_spend": {
+          "1": 4.618980776797079e+17,
+          "2": 71291928554311.52
+        },
+        "net_module_levels_from_logged_upgrade": 89
+      },
+      {
+        "stage": 21,
+        "hours": 2.1012083337613876,
+        "split_seconds": {
+          "progression_noncombat": 186.20000003799214,
+          "progression_combat": 1278.6500002605026,
+          "safe_farm_noncombat": 29.16666667257232,
+          "safe_farm_combat": 6005.33333455673,
+          "manual_space": 65.00000001319859
+        },
+        "observed_native_click_resource_spend": {
+          "1": 646038529336860.0,
+          "2": 453741793498.16
+        },
+        "net_module_levels_from_logged_upgrade": 82
+      }
+    ]
+  },
+  "sensitive_pattern_scan": "No matches inrawCP/actions/manifest; logs containonlygame/engine/QA output.",
+  "file_sha256": {
+    "actions.jsonl.gz": "7e6370a0c7d6673aca25022bd22663fe473db3f300605813a8d4bea47ffce3f3",
+    "checkpoint.bin": "bc1e2a229bf4a3fe5f6e21a0f698bf290f69d29bf07f768d2f1868552a0360fe",
+    "qa-manifest.json": "8130c4afcfc3fa73d902424e065b0bb359c120579d36246a39cc29a4073467f4",
+    "run.log": "d354aca2432730c26982b0f217ad741f394c971882d1d5b94a0c10c499abe221"
+  }
+}
