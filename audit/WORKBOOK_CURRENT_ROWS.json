@@ -8217,12 +8217,12 @@
             "boundary_note"
           ],
           "description_row": [
-            "现有奖励参考设计键｜单位：稳定ID｜约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
-            "现有正式主线原设计组引用｜单位：ID｜约束：存在于正式monGroup；仅引用，不复制预算；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+            "现有奖励参考设计键｜单位：稳定ID｜约束：仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
+            "现有正式主线原设计组引用｜单位：ID｜约束：存在于正式monGroup；仅引用，不复制预算；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
             "从正式原设计组非空slots导出的参考成员数｜单位：个｜约束：现值锁定，与正式monGroup实时派生值一致；不是第二份可调预算",
-            "现有晚段回退引用关卡｜单位：关卡ID｜约束：存在于正式level且对应group确属该关卡；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
-            "现有晚段回退引用组｜单位：group ID｜约束：存在于正式monGroup；真实blocks从mon的drops读取；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
-            "既有早1..5、晚≥6规则与不可重建项｜单位：只读说明｜约束：锁定；不把catalog未消费分界字段当参数；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog"
+            "现有晚段回退引用关卡｜单位：关卡ID｜约束：存在于正式level且对应group确属该关卡；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
+            "现有晚段回退引用组｜单位：group ID｜约束：存在于正式monGroup；真实blocks从mon的drops读取；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
+            "既有早1..5、晚≥6规则与不可重建项｜单位：只读说明｜约束：锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生"
           ],
           "type_row": [
             "string",
@@ -8239,7 +8239,7 @@
               3,
               10,
               30101,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral2_physical_attack",
@@ -8247,7 +8247,7 @@
               3,
               13,
               30131,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral4",
@@ -8255,7 +8255,7 @@
               3,
               16,
               30161,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_laser_physical_attack",
@@ -8263,7 +8263,7 @@
               9,
               7,
               30071,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_missile",
@@ -8271,7 +8271,7 @@
               15,
               8,
               30081,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral3_physical_attack",
@@ -8279,7 +8279,7 @@
               3,
               10,
               30102,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_laser",
@@ -8287,7 +8287,7 @@
               9,
               7,
               30072,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral1_physical_attack",
@@ -8295,7 +8295,7 @@
               3,
               11,
               30111,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_longLaser",
@@ -8303,7 +8303,7 @@
               3,
               6,
               30061,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_cannon_physical_attack",
@@ -8311,7 +8311,7 @@
               1,
               9,
               30091,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral1",
@@ -8319,7 +8319,7 @@
               3,
               11,
               30112,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral4_physical_attack",
@@ -8327,7 +8327,7 @@
               3,
               16,
               30162,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_neutral2",
@@ -8335,7 +8335,7 @@
               3,
               13,
               30132,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_longLaser_physical_attack",
@@ -8343,7 +8343,7 @@
               3,
               6,
               30062,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_cannon",
@@ -8351,7 +8351,7 @@
               1,
               9,
               30092,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "normal_missile_physical_attack",
@@ -8359,7 +8359,7 @@
               15,
               8,
               30082,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral1",
@@ -8367,7 +8367,7 @@
               5,
               11,
               30116,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral2_physical_attack",
@@ -8375,7 +8375,7 @@
               5,
               13,
               30137,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_missile",
@@ -8383,7 +8383,7 @@
               15,
               8,
               30087,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral1_physical_attack",
@@ -8391,7 +8391,7 @@
               5,
               11,
               30117,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral2",
@@ -8399,7 +8399,7 @@
               5,
               13,
               30136,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_cannon_physical_attack",
@@ -8407,7 +8407,7 @@
               3,
               9,
               30097,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral4",
@@ -8415,7 +8415,7 @@
               5,
               16,
               30167,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_laser_physical_attack",
@@ -8423,7 +8423,7 @@
               15,
               7,
               30077,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_cannon",
@@ -8431,7 +8431,7 @@
               3,
               9,
               30096,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral4_physical_attack",
@@ -8439,7 +8439,7 @@
               5,
               16,
               30166,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_laser",
@@ -8447,7 +8447,7 @@
               15,
               7,
               30076,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_longLaser_physical_attack",
@@ -8455,7 +8455,7 @@
               3,
               6,
               30066,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral3",
@@ -8463,7 +8463,7 @@
               5,
               10,
               30107,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_missile_physical_attack",
@@ -8471,7 +8471,7 @@
               15,
               8,
               30086,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_longLaser",
@@ -8479,7 +8479,7 @@
               3,
               6,
               30067,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "elite_neutral3_physical_attack",
@@ -8487,7 +8487,7 @@
               5,
               10,
               30106,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "boss_physical",
@@ -8495,7 +8495,7 @@
               1,
               6,
               30069,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "boss_energy_physical_attack",
@@ -8503,7 +8503,7 @@
               1,
               9,
               30099,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "boss_energy",
@@ -8511,7 +8511,7 @@
               1,
               8,
               30089,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "boss_physical_physical_attack",
@@ -8519,7 +8519,7 @@
               1,
               7,
               30079,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "ultimate_physical",
@@ -8527,7 +8527,7 @@
               1,
               20,
               30209,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "ultimate_physical_physical_attack",
@@ -8535,7 +8535,7 @@
               1,
               25,
               30259,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "ultimate_energy",
@@ -8543,7 +8543,7 @@
               1,
               40,
               30409,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ],
             [
               "ultimate_energy_physical_attack",
@@ -8551,7 +8551,7 @@
               1,
               45,
               30459,
-              "早段1..5，晚段≥6；catalog/sources冻结基线，当前无完整派生来源"
+              "早段1..5，晚段≥6；已有预算取主线，95独立块取回退预算页；sources结构冻结"
             ]
           ]
         },
@@ -10573,6 +10573,795 @@
               6,
               null,
               null
+            ]
+          ]
+        },
+        {
+          "sheet": "早段回退预算",
+          "header": [
+            "reference_id",
+            "reference_member_ordinal",
+            "drop_order",
+            "resource_id",
+            "amount",
+            "chance"
+          ],
+          "description_row": [
+            "无早段主线实例的既有奖励参考ID｜单位：稳定ID｜约束：仅既有25参考；锁定；不复制有主线来源的预算",
+            "参考成员预算块索引｜单位：0起索引｜约束：每参考0..count-1；原95块结构锁定",
+            "块内掉落数组顺序｜单位：0起序号｜约束：现有每块一项，order0锁定；不新增条目",
+            "回退掉落资源引用｜单位：正式res资源ID｜约束：必须存在于本次正式主线投影resources；不复制资源本身数值",
+            "仅来源无匹配且资源参考关≤5时的回退掉落数量｜单位：资源份/预算块｜约束：非负有限且<9e15；不影响15已有主线早段模板及40晚段预算",
+            "该回退掉落发生概率｜单位：概率，1=100%｜约束：有限，0..1"
+          ],
+          "type_row": [
+            "string",
+            "int",
+            "int",
+            "int",
+            "number",
+            "float"
+          ],
+          "data_rows": [
+            [
+              "normal_neutral3",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral3",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral3",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral3_physical_attack",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral3_physical_attack",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral3_physical_attack",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4_physical_attack",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4_physical_attack",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_neutral4_physical_attack",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser_physical_attack",
+              0,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser_physical_attack",
+              1,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "normal_longLaser_physical_attack",
+              2,
+              0,
+              1,
+              8.0,
+              1.0
+            ],
+            [
+              "elite_neutral1_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral1_physical_attack",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral1_physical_attack",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral1_physical_attack",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral1_physical_attack",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral2",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral2",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral2",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral2",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral2",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_cannon",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_cannon",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_cannon",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4_physical_attack",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4_physical_attack",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4_physical_attack",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral4_physical_attack",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              5,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              6,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              7,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              8,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              9,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              10,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              11,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              12,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              13,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_laser",
+              14,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser_physical_attack",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser_physical_attack",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              5,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              6,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              7,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              8,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              9,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              10,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              11,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              12,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              13,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_missile_physical_attack",
+              14,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_longLaser",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3_physical_attack",
+              1,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3_physical_attack",
+              2,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3_physical_attack",
+              3,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "elite_neutral3_physical_attack",
+              4,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "boss_physical",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "boss_energy_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "boss_energy",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "boss_physical_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "ultimate_physical",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "ultimate_physical_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "ultimate_energy",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
+            ],
+            [
+              "ultimate_energy_physical_attack",
+              0,
+              0,
+              1,
+              20.0,
+              1.0
             ]
           ]
         }

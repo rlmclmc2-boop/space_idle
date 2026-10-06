@@ -1083,7 +1083,7 @@
               "type": "string",
               "description_zh": "现有奖励参考设计键",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
             },
             {
@@ -1091,7 +1091,7 @@
               "type": "int",
               "description_zh": "现有正式主线原设计组引用",
               "unit": "ID",
-              "constraint": "存在于正式monGroup；仅引用，不复制预算；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+              "constraint": "存在于正式monGroup；仅引用，不复制预算；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
             },
             {
@@ -1107,7 +1107,7 @@
               "type": "int",
               "description_zh": "现有晚段回退引用关卡",
               "unit": "关卡ID",
-              "constraint": "存在于正式level且对应group确属该关卡；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+              "constraint": "存在于正式level且对应group确属该关卡；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
             },
             {
@@ -1115,7 +1115,7 @@
               "type": "int",
               "description_zh": "现有晚段回退引用组",
               "unit": "group ID",
-              "constraint": "存在于正式monGroup；真实blocks从mon的drops读取；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+              "constraint": "存在于正式monGroup；真实blocks从mon的drops读取；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
             },
             {
@@ -1123,7 +1123,7 @@
               "type": "string",
               "description_zh": "既有早1..5、晚≥6规则与不可重建项",
               "unit": "只读说明",
-              "constraint": "锁定；不把catalog未消费分界字段当参数；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog",
+              "constraint": "锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
             }
           ],
@@ -1131,7 +1131,7 @@
             "space_enemy_candidates.json /groups/*/rewardBinding/rewardReferenceDesignId",
             "space_enemy_reward_catalog.json references association only"
           ],
-          "note": "catalog与1960 sources阶段1只读取/hash校验，不生成。不将早段fallback、晚段drop块或主线金额写进工作簿；本页参考ID供编队关联使用。来源缺口未补，不声称完全重生成。",
+          "note": "本页固定来源关联只读；catalog的15早段/40晚段预算从本次主线投影刷新；25无早段实例的95块独立预算见早段回退预算；sources1960结构冻结并校验。",
           "workbook": "hyperspace_enemies.xlsx"
         },
         {
@@ -1188,6 +1188,70 @@
             "space_enemy_reward_recipes.json /groups"
           ],
           "note": "每行一个预算块分配；member_order与局部order保留原数组序。enemy_id和jewelDropRolls派生。不给用户金额列。",
+          "workbook": "hyperspace_enemies.xlsx"
+        },
+        {
+          "sheet": "早段回退预算",
+          "primary_key": [
+            "reference_id",
+            "reference_member_ordinal",
+            "drop_order"
+          ],
+          "columns": [
+            {
+              "column": "reference_id",
+              "type": "string",
+              "description_zh": "无早段主线实例的既有奖励参考ID",
+              "unit": "稳定ID",
+              "constraint": "仅既有25参考；锁定；不复制有主线来源的预算",
+              "editable": false
+            },
+            {
+              "column": "reference_member_ordinal",
+              "type": "int",
+              "description_zh": "参考成员预算块索引",
+              "unit": "0起索引",
+              "constraint": "每参考0..count-1；原95块结构锁定",
+              "editable": false
+            },
+            {
+              "column": "drop_order",
+              "type": "int",
+              "description_zh": "块内掉落数组顺序",
+              "unit": "0起序号",
+              "constraint": "现有每块一项，order0锁定；不新增条目",
+              "editable": false
+            },
+            {
+              "column": "resource_id",
+              "type": "int",
+              "description_zh": "回退掉落资源引用",
+              "unit": "正式res资源ID",
+              "constraint": "必须存在于本次正式主线投影resources；不复制资源本身数值",
+              "editable": true
+            },
+            {
+              "column": "amount",
+              "type": "number",
+              "description_zh": "仅来源无匹配且资源参考关≤5时的回退掉落数量",
+              "unit": "资源份/预算块",
+              "constraint": "非负有限且<9e15；不影响15已有主线早段模板及40晚段预算",
+              "editable": true
+            },
+            {
+              "column": "chance",
+              "type": "float",
+              "description_zh": "该回退掉落发生概率",
+              "unit": "概率，1=100%",
+              "constraint": "有限，0..1",
+              "editable": true
+            }
+          ],
+          "json_targets": [
+            "space_enemy_reward_catalog.json /references/*/early_drop_blocks"
+          ],
+          "note": "仅25无实例参考的95块真实独立回退数值。15有实例早段及40晚段从本次主线投影刷新，不作为第二个金额权威。",
+          "entity_id": "早段回退预算",
           "workbook": "hyperspace_enemies.xlsx"
         }
       ]
@@ -1269,10 +1333,10 @@
     "hyperspace_config.json",
     "space_enemy_candidates.json",
     "space_enemy_routes.json",
-    "space_enemy_reward_recipes.json"
+    "space_enemy_reward_recipes.json",
+    "space_enemy_reward_catalog.json"
   ],
   "frozen_noneditable_inputs": {
-    "space_enemy_reward_catalog.json": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b",
     "space_enemy_reward_sources.json": "4c92f2168c9c9b36da933934a10d4cfe4226870825b43dd228c3132ba4b8780a"
   },
   "existing_root_order": [
@@ -1329,5 +1393,11 @@
     "late_material_reward_multiplier",
     "late_supply_ramp_seconds"
   ],
+  "catalog_derivation": {
+    "late": "Each reference late_reference_actual_group_id current mainline drops in occupied slot order",
+    "early_existing": "First listed early_existing_encounters current mainline group drops; validate every listed group identity/count",
+    "early_without_instance": "Only95 literal drop rows from早段回退预算",
+    "metadata": "Keep fixed reference identity/order and source_hashes audit origin; not a new acceptance certificate"
+  },
   "schema_rules": "Fixed invariant metadata stays code/locked contract. Derived candidate drop projections and audit metadata remain frozen; no mainline numeric duplicate; no old-save migration."
 }

@@ -22,7 +22,8 @@
       "编队槽位": 223,
       "路线编排": 40,
       "奖励参考": 40,
-      "成员分配": 285
+      "成员分配": 285,
+      "早段回退预算": 95
     }
   },
   "existing_52_config_roots_roundtrip_equal": true,
@@ -41,7 +42,6 @@
   "config_shuffle_verification": "Fixed PK/order schema specified; full production importer shuffle check pending implementation",
   "forward_semantics_reference": "12ed3f896218deebb083e99c0300629028670cef",
   "frozen_inputs": {
-    "space_enemy_reward_catalog.json": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b",
     "space_enemy_reward_sources.json": "4c92f2168c9c9b36da933934a10d4cfe4226870825b43dd228c3132ba4b8780a"
   }
 }

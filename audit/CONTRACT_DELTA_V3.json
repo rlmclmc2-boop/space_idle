@@ -1,0 +1,14 @@
+{
+ "from":"373ebdc",
+ "numeric_values_changed":false,
+ "workbooks":2,
+ "sheet_count":21,
+ "added_sheet":"hyperspace_enemies.xlsx / 早段回退预算",
+ "added_rows":95,
+ "columns":["reference_id","reference_member_ordinal","drop_order","resource_id","amount","chance"],
+ "source_authority":"25无早段实例的独立回退块由新增页导入；15有实例早段及40晚段预算从本次正式主线投影刷新；不复制主线金额到工作簿。",
+ "atomic_output_count":5,
+ "frozen_input":"space_enemy_reward_sources.json only;1960结构映射保留并验证本次主线stage/node/group和原source_group来源。",
+ "remaining_boundary":"来源映射的结构再生成与accepted_all40重新验收不是本次导入的保证；保留原审计元信息，不冒充新验收。",
+ "parent_action":"使用当前AUTHORING_PACKAGE原位重导出同两本文件；85零预算成员占位不变。"
+}

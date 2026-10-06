@@ -98,14 +98,20 @@ hyperspace_enemies.xlsx	路线编排	route_id+tier+order	route_id	string	异空�
 hyperspace_enemies.xlsx	路线编排	route_id+tier+order	tier	enum	战斗档位	档位	normal/elite/boss/ultimate固定顺序	False
 hyperspace_enemies.xlsx	路线编排	route_id+tier+order	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_enemies.xlsx	路线编排	route_id+tier+order	group_id	int	该档位有序编队ID	ID	存在于异空间编队且档位一致；每路线4/4/1/1，无跨路线重复	True
-hyperspace_enemies.xlsx	奖励参考	reference_id	reference_id	string	现有奖励参考设计键	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog	False
-hyperspace_enemies.xlsx	奖励参考	reference_id	source_design_group_id	int	现有正式主线原设计组引用	ID	存在于正式monGroup；仅引用，不复制预算；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog	False
+hyperspace_enemies.xlsx	奖励参考	reference_id	reference_id	string	现有奖励参考设计键	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生	False
+hyperspace_enemies.xlsx	奖励参考	reference_id	source_design_group_id	int	现有正式主线原设计组引用	ID	存在于正式monGroup；仅引用，不复制预算；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生	False
 hyperspace_enemies.xlsx	奖励参考	reference_id	reference_member_count	int	从正式原设计组非空slots导出的参考成员数	个	现值锁定，与正式monGroup实时派生值一致；不是第二份可调预算	False
-hyperspace_enemies.xlsx	奖励参考	reference_id	late_reference_level_id	int	现有晚段回退引用关卡	关卡ID	存在于正式level且对应group确属该关卡；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog	False
-hyperspace_enemies.xlsx	奖励参考	reference_id	late_reference_group_id	int	现有晚段回退引用组	group ID	存在于正式monGroup；真实blocks从mon的drops读取；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog	False
-hyperspace_enemies.xlsx	奖励参考	reference_id	boundary_note	string	既有早1..5、晚≥6规则与不可重建项	只读说明	锁定；不把catalog未消费分界字段当参数；阶段1是冻结派生基线的只读关联预览，导入只校验等值，不改写catalog	False
+hyperspace_enemies.xlsx	奖励参考	reference_id	late_reference_level_id	int	现有晚段回退引用关卡	关卡ID	存在于正式level且对应group确属该关卡；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生	False
+hyperspace_enemies.xlsx	奖励参考	reference_id	late_reference_group_id	int	现有晚段回退引用组	group ID	存在于正式monGroup；真实blocks从mon的drops读取；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生	False
+hyperspace_enemies.xlsx	奖励参考	reference_id	boundary_note	string	既有早1..5、晚≥6规则与不可重建项	只读说明	锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生	False
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	group_id	int	异空间奖励组外键	ID	存在于异空间编队	False
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	member_order	int	组内原recipe成员记录顺序	0起序号	同group/slot重复值一致；组内唯一成员顺序连续；锁定；导出按它排列成员	False
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	slot_index	int	实际收取该预算块的异空间非空槽	0起索引	必须为该组非空槽	True
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	order	int_or_blank	同成员内原ordinal数组顺序；零预算成员填空	0起序号	同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序	False
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	reference_member_ordinal	int_or_blank	被分配的原参考成员序号	0起索引	覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0	True
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	reference_id	string	无早段主线实例的既有奖励参考ID	稳定ID	仅既有25参考；锁定；不复制有主线来源的预算	False
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	reference_member_ordinal	int	参考成员预算块索引	0起索引	每参考0..count-1；原95块结构锁定	False
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	drop_order	int	块内掉落数组顺序	0起序号	现有每块一项，order0锁定；不新增条目	False
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	resource_id	int	回退掉落资源引用	正式res资源ID	必须存在于本次正式主线投影resources；不复制资源本身数值	True
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	amount	number	仅来源无匹配且资源参考关≤5时的回退掉落数量	资源份/预算块	非负有限且<9e15；不影响15已有主线早段模板及40晚段预算	True
+hyperspace_enemies.xlsx	早段回退预算	reference_id+reference_member_ordinal+drop_order	chance	float	该回退掉落发生概率	概率，1=100%	有限，0..1	True
