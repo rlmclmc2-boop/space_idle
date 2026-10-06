@@ -1,0 +1,9 @@
+import sys,json,shutil,hashlib,os
+from pathlib import Path
+sys.dont_write_bytecode=True
+source=Path(os.environ.get('SPACE_IDLE_AUDIT_SOURCE','/workspace/final-unified-candidate'))/'space-battleship';sys.path.insert(0,str(source/'tools'));import config_workbooks as cw
+out=Path(__file__).resolve().parent;scratch=out/'isolated-existing-import';scratch.mkdir(exist_ok=False);shutil.copytree(source/'config_excel',scratch/'config_excel');target=scratch/'data/game_data.json';target.parent.mkdir()
+for name in ['game_data.json','hyperspace_config.json']:shutil.copy2(source/'data'/name,target.with_name(name))
+first=cw.incremental_import(scratch/'config_excel',target);before={p.name:(p.read_bytes(),p.stat().st_mtime_ns) for p in target.parent.iterdir() if p.is_file()};second=cw.incremental_import(scratch/'config_excel',target);after={p.name:(p.read_bytes(),p.stat().st_mtime_ns) for p in target.parent.iterdir() if p.is_file()};assert before==after and second['changed']==[]
+original=json.loads((source/'data/game_data.json').read_text());projected=json.loads(target.read_text());deltas=[k for k in set(original)|set(projected) if k not in ['source','source_files'] and original.get(k)!=projected.get(k)];hyp_equal=json.loads((source/'data/hyperspace_config.json').read_text())==json.loads(target.with_name('hyperspace_config.json').read_text());assert hyp_equal
+result={'first_import':first,'second_import':second,'second_import_bytes_and_mtimes_unchanged':True,'hyperspace_semantic_match':hyp_equal,'main_nonprovenance_root_changes':deltas,'source_workbooks_written':False,'scratch_root':str(scratch),'scope':'Baseline official importer only; no workbook editing, source mutation, Godot gameplay or new numeric candidate'};(out/'EXISTING_IMPORT_VERIFICATION.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))

@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/modernization_base_coefficient",
+    "type": "float",
+    "current_value": 1.0,
+    "existing_source": "drone_forge.gd plan coefficient:=1.0",
+    "suggested_entity": "全局标量/现代化",
+    "suggested_column": "value",
+    "description_zh": "现代化费用初始系数；随后逐个加词缀阶级权重",
+    "unit": "无量纲",
+    "constraints": ">0且有限；默认1.0；保留原公式、舍入顺序和奖励起点联动",
+    "consumers": [
+      "drone_forge.gd:133"
+    ],
+    "status": "proposed numeric field, no code implementation"
+  },
+  {
+    "path": "/amplification_start_level",
+    "type": "int",
+    "current_value": 4,
+    "existing_source": "Existing XLSX path and drone_effect_aggregator.gd level-4",
+    "suggested_entity": "全局标量/词缀",
+    "suggested_column": "value",
+    "description_zh": "放大起始等级；接通既有字段替代硬编码4，不新增第二字段",
+    "unit": "关",
+    "constraints": "整数；当前4不变；保持pow(1+rate,level-start)包括负指数语义，不偷偷clamp",
+    "consumers": [
+      "drone_effect_aggregator.gd:7"
+    ],
+    "status": "existing field presently unconsumed; same-default wire proposed"
+  },
+  {
+    "path": "/auto_duration_crew_base",
+    "type": "float",
+    "current_value": 100.0,
+    "existing_source": "system/commands duplicate100/(100+L)",
+    "suggested_entity": "全局标量/自动探索",
+    "suggested_column": "value",
+    "description_zh": "自动探索耗时船员等级折算基数",
+    "unit": "船员等级基数",
+    "constraints": ">0且有限；默认100；公共函数返回max(minimum_duration,best_x1*B/(B+L))，结算与UI共用",
+    "consumers": [
+      "hyperspace_system.gd:108",
+      "hyperspace_commands.gd:160"
+    ],
+    "status": "proposed numeric field; default behavior unchanged"
+  },
+  {
+    "path": "/auto_ticket_crew_base",
+    "type": "float",
+    "current_value": 20.0,
+    "existing_source": "system/commands/panel duplicate20/(20+L)",
+    "suggested_entity": "全局标量/自动探索",
+    "suggested_column": "value",
+    "description_zh": "自动探索票耗船员等级折算基数",
+    "unit": "船员等级基数",
+    "constraints": ">0且有限；默认20；公共函数ticket*B/(B+L)，三个消费者共用，不改满容量派发门槛",
+    "consumers": [
+      "hyperspace_system.gd:109",
+      "hyperspace_commands.gd:160",
+      "hyperspace_panel.gd:337"
+    ],
+    "status": "proposed numeric field; default behavior unchanged"
+  }
+]

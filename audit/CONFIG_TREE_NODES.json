@@ -1,0 +1,3642 @@
+[
+  {
+    "path": "",
+    "type": "object",
+    "xlsx_row": 2,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/version",
+    "type": "int",
+    "xlsx_row": 3,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/unlock_stage",
+    "type": "int",
+    "xlsx_row": 4,
+    "declared_type": "int",
+    "value": 7
+  },
+  {
+    "path": "/minimum_level",
+    "type": "int",
+    "xlsx_row": 5,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/energy_rate",
+    "type": "float",
+    "xlsx_row": 6,
+    "declared_type": "float",
+    "value": 10.0
+  },
+  {
+    "path": "/energy_cap",
+    "type": "float",
+    "xlsx_row": 7,
+    "declared_type": "float",
+    "value": 216000.0
+  },
+  {
+    "path": "/ticket",
+    "type": "float",
+    "xlsx_row": 8,
+    "declared_type": "float",
+    "value": 108000.0
+  },
+  {
+    "path": "/minimum_duration",
+    "type": "float",
+    "xlsx_row": 9,
+    "declared_type": "float",
+    "value": 10.0
+  },
+  {
+    "path": "/warehouse_capacity",
+    "type": "int",
+    "xlsx_row": 10,
+    "declared_type": "int",
+    "value": 200
+  },
+  {
+    "path": "/overflow_capacity",
+    "type": "int",
+    "xlsx_row": 11,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/reforge_capacity_gain",
+    "type": "int",
+    "xlsx_row": 12,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/initial_retention_capacity",
+    "type": "int",
+    "xlsx_row": 13,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/retention_capacity_gain",
+    "type": "int",
+    "xlsx_row": 14,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/maximum_equipped",
+    "type": "int",
+    "xlsx_row": 15,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/maximum_legendary",
+    "type": "int",
+    "xlsx_row": 16,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/maximum_ultimate",
+    "type": "int",
+    "xlsx_row": 17,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/completion_budget",
+    "type": "int",
+    "xlsx_row": 18,
+    "declared_type": "int",
+    "value": 8
+  },
+  {
+    "path": "/routes",
+    "type": "object",
+    "xlsx_row": 19,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/routes/alpha",
+    "type": "object",
+    "xlsx_row": 20,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/routes/alpha/weapon",
+    "type": "string",
+    "xlsx_row": 21,
+    "declared_type": "string",
+    "value": "laser"
+  },
+  {
+    "path": "/routes/alpha/material",
+    "type": "string",
+    "xlsx_row": 22,
+    "declared_type": "string",
+    "value": "degenerate_matter"
+  },
+  {
+    "path": "/routes/beta",
+    "type": "object",
+    "xlsx_row": 23,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/routes/beta/weapon",
+    "type": "string",
+    "xlsx_row": 24,
+    "declared_type": "string",
+    "value": "missile"
+  },
+  {
+    "path": "/routes/beta/material",
+    "type": "string",
+    "xlsx_row": 25,
+    "declared_type": "string",
+    "value": "glueball"
+  },
+  {
+    "path": "/routes/gamma",
+    "type": "object",
+    "xlsx_row": 26,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/routes/gamma/weapon",
+    "type": "string",
+    "xlsx_row": 27,
+    "declared_type": "string",
+    "value": "cannon"
+  },
+  {
+    "path": "/routes/gamma/material",
+    "type": "string",
+    "xlsx_row": 28,
+    "declared_type": "string",
+    "value": "antiproton"
+  },
+  {
+    "path": "/routes/delta",
+    "type": "object",
+    "xlsx_row": 29,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/routes/delta/weapon",
+    "type": "string",
+    "xlsx_row": 30,
+    "declared_type": "string",
+    "value": "longLaser"
+  },
+  {
+    "path": "/routes/delta/material",
+    "type": "string",
+    "xlsx_row": 31,
+    "declared_type": "string",
+    "value": "zero_point_energy"
+  },
+  {
+    "path": "/quality_limits",
+    "type": "object",
+    "xlsx_row": 32,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_limits/white",
+    "type": "object",
+    "xlsx_row": 33,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_limits/white/affixes",
+    "type": "int",
+    "xlsx_row": 34,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/quality_limits/white/hangings",
+    "type": "int",
+    "xlsx_row": 35,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/quality_limits/blue",
+    "type": "object",
+    "xlsx_row": 36,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_limits/blue/affixes",
+    "type": "int",
+    "xlsx_row": 37,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/quality_limits/blue/hangings",
+    "type": "int",
+    "xlsx_row": 38,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/quality_limits/gold",
+    "type": "object",
+    "xlsx_row": 39,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_limits/gold/affixes",
+    "type": "int",
+    "xlsx_row": 40,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/quality_limits/gold/hangings",
+    "type": "int",
+    "xlsx_row": 41,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/quality_limits/legendary",
+    "type": "object",
+    "xlsx_row": 42,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_limits/legendary/affixes",
+    "type": "int",
+    "xlsx_row": 43,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/quality_limits/legendary/hangings",
+    "type": "int",
+    "xlsx_row": 44,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/modernization_tier_weights",
+    "type": "object",
+    "xlsx_row": 45,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/modernization_tier_weights/1",
+    "type": "float",
+    "xlsx_row": 46,
+    "declared_type": "float",
+    "value": 10.0
+  },
+  {
+    "path": "/modernization_tier_weights/2",
+    "type": "float",
+    "xlsx_row": 47,
+    "declared_type": "float",
+    "value": 5.0
+  },
+  {
+    "path": "/modernization_tier_weights/3",
+    "type": "float",
+    "xlsx_row": 48,
+    "declared_type": "float",
+    "value": 3.0
+  },
+  {
+    "path": "/modernization_tier_weights/4",
+    "type": "float",
+    "xlsx_row": 49,
+    "declared_type": "float",
+    "value": 1.0
+  },
+  {
+    "path": "/modernization_tier_weights/5",
+    "type": "float",
+    "xlsx_row": 50,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/hull_capacities",
+    "type": "object",
+    "xlsx_row": 51,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hull_capacities/Frigate",
+    "type": "int",
+    "xlsx_row": 52,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/hull_capacities/Destroyer",
+    "type": "int",
+    "xlsx_row": 53,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/hull_capacities/Cruiser",
+    "type": "int",
+    "xlsx_row": 54,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/hull_capacities/Battleship",
+    "type": "int",
+    "xlsx_row": 55,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/hull_capacities/Heavy_Battleship",
+    "type": "int",
+    "xlsx_row": 56,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/quality_weights",
+    "type": "object",
+    "xlsx_row": 57,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/quality_weights/white",
+    "type": "float",
+    "xlsx_row": 58,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/quality_weights/blue",
+    "type": "float",
+    "xlsx_row": 59,
+    "declared_type": "float",
+    "value": 0.26
+  },
+  {
+    "path": "/quality_weights/gold",
+    "type": "float",
+    "xlsx_row": 60,
+    "declared_type": "float",
+    "value": 0.15
+  },
+  {
+    "path": "/quality_weights/legendary",
+    "type": "float",
+    "xlsx_row": 61,
+    "declared_type": "float",
+    "value": 0.08
+  },
+  {
+    "path": "/quality_weights/ultimate_core",
+    "type": "float",
+    "xlsx_row": 62,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/weapon_level_bonuses",
+    "type": "object",
+    "xlsx_row": 63,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/weapon_level_bonuses/white",
+    "type": "int",
+    "xlsx_row": 64,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/weapon_level_bonuses/blue",
+    "type": "int",
+    "xlsx_row": 65,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/weapon_level_bonuses/gold",
+    "type": "int",
+    "xlsx_row": 66,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/weapon_level_bonuses/legendary",
+    "type": "int",
+    "xlsx_row": 67,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/ultimate_weapon_bonus",
+    "type": "int",
+    "xlsx_row": 68,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/affix_initial_probability",
+    "type": "float",
+    "xlsx_row": 69,
+    "declared_type": "float",
+    "value": 1.0
+  },
+  {
+    "path": "/hanging_initial_probability",
+    "type": "float",
+    "xlsx_row": 70,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/additional_probability_factor",
+    "type": "float",
+    "xlsx_row": 71,
+    "declared_type": "float",
+    "value": 0.25
+  },
+  {
+    "path": "/tier_weights",
+    "type": "object",
+    "xlsx_row": 72,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/tier_weights/1",
+    "type": "int",
+    "xlsx_row": 73,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/tier_weights/2",
+    "type": "int",
+    "xlsx_row": 74,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/tier_weights/3",
+    "type": "int",
+    "xlsx_row": 75,
+    "declared_type": "int",
+    "value": 15
+  },
+  {
+    "path": "/tier_weights/4",
+    "type": "int",
+    "xlsx_row": 76,
+    "declared_type": "int",
+    "value": 45
+  },
+  {
+    "path": "/tier_weights/5",
+    "type": "int",
+    "xlsx_row": 77,
+    "declared_type": "int",
+    "value": 135
+  },
+  {
+    "path": "/value_precision",
+    "type": "float",
+    "xlsx_row": 78,
+    "declared_type": "float",
+    "value": 0.001
+  },
+  {
+    "path": "/amplification_rate",
+    "type": "float",
+    "xlsx_row": 79,
+    "declared_type": "float",
+    "value": 0.05
+  },
+  {
+    "path": "/amplification_start_level",
+    "type": "int",
+    "xlsx_row": 80,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/material_base_reward",
+    "type": "int",
+    "xlsx_row": 81,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/material_reward_level_step",
+    "type": "int",
+    "xlsx_row": 82,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/material_reward_start_level",
+    "type": "int",
+    "xlsx_row": 83,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/dismantle_amounts",
+    "type": "object",
+    "xlsx_row": 84,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/dismantle_amounts/white",
+    "type": "int",
+    "xlsx_row": 85,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/dismantle_amounts/blue",
+    "type": "int",
+    "xlsx_row": 86,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/dismantle_amounts/gold",
+    "type": "int",
+    "xlsx_row": 87,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/dismantle_amounts/legendary",
+    "type": "int",
+    "xlsx_row": 88,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/maximum_filter_conditions",
+    "type": "int",
+    "xlsx_row": 89,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/maximum_filter_string_length",
+    "type": "int",
+    "xlsx_row": 90,
+    "declared_type": "int",
+    "value": 4096
+  },
+  {
+    "path": "/maximum_forecast_attempts",
+    "type": "int",
+    "xlsx_row": 91,
+    "declared_type": "int",
+    "value": 10000
+  },
+  {
+    "path": "/maximum_command_id_length",
+    "type": "int",
+    "xlsx_row": 92,
+    "declared_type": "int",
+    "value": 96
+  },
+  {
+    "path": "/policies",
+    "type": "object",
+    "xlsx_row": 93,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/policies/core_reward",
+    "type": "string",
+    "xlsx_row": 94,
+    "declared_type": "string",
+    "value": "exclusive"
+  },
+  {
+    "path": "/policies/promotion_success",
+    "type": "string",
+    "xlsx_row": 95,
+    "declared_type": "string",
+    "value": "weighted_draw_stronger"
+  },
+  {
+    "path": "/policies/omen_scope",
+    "type": "string",
+    "xlsx_row": 96,
+    "declared_type": "string",
+    "value": "drone"
+  },
+  {
+    "path": "/policies/legendary_selection",
+    "type": "string",
+    "xlsx_row": 97,
+    "declared_type": "string",
+    "value": "strongest_primary_stable_id"
+  },
+  {
+    "path": "/policies/sealed_unlock",
+    "type": "string",
+    "xlsx_row": 98,
+    "declared_type": "string",
+    "value": "reached_planet_stage"
+  },
+  {
+    "path": "/policies/legendary_repeat_action",
+    "type": "null",
+    "xlsx_row": 99,
+    "declared_type": "null",
+    "value": null
+  },
+  {
+    "path": "/forge_costs",
+    "type": "object",
+    "xlsx_row": 100,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/add_affix",
+    "type": "object",
+    "xlsx_row": 101,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/add_affix/degenerate_matter",
+    "type": "int",
+    "xlsx_row": 102,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/forge_costs/replace_affix",
+    "type": "object",
+    "xlsx_row": 103,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/replace_affix/degenerate_matter",
+    "type": "int",
+    "xlsx_row": 104,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/forge_costs/add_hanging_slot",
+    "type": "object",
+    "xlsx_row": 105,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/add_hanging_slot/glueball",
+    "type": "int",
+    "xlsx_row": 106,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/forge_costs/lock_affix",
+    "type": "object",
+    "xlsx_row": 107,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/lock_affix/glueball",
+    "type": "int",
+    "xlsx_row": 108,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/forge_costs/promote_affix",
+    "type": "object",
+    "xlsx_row": 109,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/promote_affix/antiproton",
+    "type": "int",
+    "xlsx_row": 110,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/forge_costs/reroll_values",
+    "type": "object",
+    "xlsx_row": 111,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/reroll_values/antiproton",
+    "type": "int",
+    "xlsx_row": 112,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/forge_costs/enable_omen",
+    "type": "object",
+    "xlsx_row": 113,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/enable_omen/zero_point_energy",
+    "type": "int",
+    "xlsx_row": 114,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/forge_costs/legendary",
+    "type": "object",
+    "xlsx_row": 115,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/legendary/zero_point_energy",
+    "type": "int",
+    "xlsx_row": 116,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/forge_costs/ultimate",
+    "type": "object",
+    "xlsx_row": 117,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/ultimate/ultimate_cores",
+    "type": "int",
+    "xlsx_row": 118,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/forge_costs/restore_ultimate",
+    "type": "object",
+    "xlsx_row": 119,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/forge_costs/restore_ultimate/ultimate_cores",
+    "type": "int",
+    "xlsx_row": 120,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/lock_cost_multiplier",
+    "type": "int",
+    "xlsx_row": 121,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/reroll_guarantee_multiplier",
+    "type": "int",
+    "xlsx_row": 122,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/modernization_cost_base",
+    "type": "int",
+    "xlsx_row": 123,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/modernization_level_step",
+    "type": "int",
+    "xlsx_row": 124,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/modernization_legendary_multiplier",
+    "type": "int",
+    "xlsx_row": 125,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/affixes",
+    "type": "object",
+    "xlsx_row": 126,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_laser",
+    "type": "object",
+    "xlsx_row": 127,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_laser/ranges",
+    "type": "object",
+    "xlsx_row": 128,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/1",
+    "type": "array",
+    "xlsx_row": 129,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 130,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 131,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/2",
+    "type": "array",
+    "xlsx_row": 132,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 133,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 134,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/3",
+    "type": "array",
+    "xlsx_row": 135,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 136,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 137,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/4",
+    "type": "array",
+    "xlsx_row": 138,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 139,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 140,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/5",
+    "type": "array",
+    "xlsx_row": 141,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 142,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/damage_laser/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 143,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/damage_laser/amplified",
+    "type": "bool",
+    "xlsx_row": 144,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/damage_laser/weapon",
+    "type": "string",
+    "xlsx_row": 145,
+    "declared_type": "string",
+    "value": "laser"
+  },
+  {
+    "path": "/affixes/damage_missile",
+    "type": "object",
+    "xlsx_row": 146,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_missile/ranges",
+    "type": "object",
+    "xlsx_row": 147,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/1",
+    "type": "array",
+    "xlsx_row": 148,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 149,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 150,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/2",
+    "type": "array",
+    "xlsx_row": 151,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 152,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 153,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/3",
+    "type": "array",
+    "xlsx_row": 154,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 155,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 156,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/4",
+    "type": "array",
+    "xlsx_row": 157,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 158,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 159,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/5",
+    "type": "array",
+    "xlsx_row": 160,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 161,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/damage_missile/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 162,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/damage_missile/amplified",
+    "type": "bool",
+    "xlsx_row": 163,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/damage_missile/weapon",
+    "type": "string",
+    "xlsx_row": 164,
+    "declared_type": "string",
+    "value": "missile"
+  },
+  {
+    "path": "/affixes/damage_cannon",
+    "type": "object",
+    "xlsx_row": 165,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges",
+    "type": "object",
+    "xlsx_row": 166,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/1",
+    "type": "array",
+    "xlsx_row": 167,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 168,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 169,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/2",
+    "type": "array",
+    "xlsx_row": 170,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 171,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 172,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/3",
+    "type": "array",
+    "xlsx_row": 173,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 174,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 175,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/4",
+    "type": "array",
+    "xlsx_row": 176,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 177,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 178,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/5",
+    "type": "array",
+    "xlsx_row": 179,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 180,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/damage_cannon/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 181,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/damage_cannon/amplified",
+    "type": "bool",
+    "xlsx_row": 182,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/damage_cannon/weapon",
+    "type": "string",
+    "xlsx_row": 183,
+    "declared_type": "string",
+    "value": "cannon"
+  },
+  {
+    "path": "/affixes/damage_longLaser",
+    "type": "object",
+    "xlsx_row": 184,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges",
+    "type": "object",
+    "xlsx_row": 185,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/1",
+    "type": "array",
+    "xlsx_row": 186,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 187,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 188,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/2",
+    "type": "array",
+    "xlsx_row": 189,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 190,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 191,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/3",
+    "type": "array",
+    "xlsx_row": 192,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 193,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 194,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/4",
+    "type": "array",
+    "xlsx_row": 195,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 196,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 197,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/5",
+    "type": "array",
+    "xlsx_row": 198,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 199,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/damage_longLaser/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 200,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/damage_longLaser/amplified",
+    "type": "bool",
+    "xlsx_row": 201,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/damage_longLaser/weapon",
+    "type": "string",
+    "xlsx_row": 202,
+    "declared_type": "string",
+    "value": "longLaser"
+  },
+  {
+    "path": "/affixes/global_damage",
+    "type": "object",
+    "xlsx_row": 203,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_damage/ranges",
+    "type": "object",
+    "xlsx_row": 204,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_damage/ranges/1",
+    "type": "array",
+    "xlsx_row": 205,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 206,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/affixes/global_damage/ranges/1/1",
+    "type": "int",
+    "xlsx_row": 207,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/global_damage/ranges/2",
+    "type": "array",
+    "xlsx_row": 208,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 209,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/global_damage/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 210,
+    "declared_type": "float",
+    "value": 0.75
+  },
+  {
+    "path": "/affixes/global_damage/ranges/3",
+    "type": "array",
+    "xlsx_row": 211,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 212,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/global_damage/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 213,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/affixes/global_damage/ranges/4",
+    "type": "array",
+    "xlsx_row": 214,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 215,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 216,
+    "declared_type": "float",
+    "value": 0.3
+  },
+  {
+    "path": "/affixes/global_damage/ranges/5",
+    "type": "array",
+    "xlsx_row": 217,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_damage/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 218,
+    "declared_type": "float",
+    "value": 0.05
+  },
+  {
+    "path": "/affixes/global_damage/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 219,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/global_damage/amplified",
+    "type": "bool",
+    "xlsx_row": 220,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/global_damage/weapon",
+    "type": "string",
+    "xlsx_row": 221,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/global_critical_damage",
+    "type": "object",
+    "xlsx_row": 222,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges",
+    "type": "object",
+    "xlsx_row": 223,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/1",
+    "type": "array",
+    "xlsx_row": 224,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 225,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/1/1",
+    "type": "int",
+    "xlsx_row": 226,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/2",
+    "type": "array",
+    "xlsx_row": 227,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 228,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 229,
+    "declared_type": "float",
+    "value": 0.75
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/3",
+    "type": "array",
+    "xlsx_row": 230,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 231,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 232,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/4",
+    "type": "array",
+    "xlsx_row": 233,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 234,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 235,
+    "declared_type": "float",
+    "value": 0.3
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/5",
+    "type": "array",
+    "xlsx_row": 236,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 237,
+    "declared_type": "float",
+    "value": 0.05
+  },
+  {
+    "path": "/affixes/global_critical_damage/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 238,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/global_critical_damage/amplified",
+    "type": "bool",
+    "xlsx_row": 239,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/global_critical_damage/weapon",
+    "type": "string",
+    "xlsx_row": 240,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/global_defence",
+    "type": "object",
+    "xlsx_row": 241,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_defence/ranges",
+    "type": "object",
+    "xlsx_row": 242,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/global_defence/ranges/1",
+    "type": "array",
+    "xlsx_row": 243,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 244,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/affixes/global_defence/ranges/1/1",
+    "type": "int",
+    "xlsx_row": 245,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/global_defence/ranges/2",
+    "type": "array",
+    "xlsx_row": 246,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 247,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/global_defence/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 248,
+    "declared_type": "float",
+    "value": 0.75
+  },
+  {
+    "path": "/affixes/global_defence/ranges/3",
+    "type": "array",
+    "xlsx_row": 249,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 250,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/global_defence/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 251,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/affixes/global_defence/ranges/4",
+    "type": "array",
+    "xlsx_row": 252,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 253,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 254,
+    "declared_type": "float",
+    "value": 0.3
+  },
+  {
+    "path": "/affixes/global_defence/ranges/5",
+    "type": "array",
+    "xlsx_row": 255,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/global_defence/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 256,
+    "declared_type": "float",
+    "value": 0.05
+  },
+  {
+    "path": "/affixes/global_defence/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 257,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/global_defence/amplified",
+    "type": "bool",
+    "xlsx_row": 258,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/global_defence/weapon",
+    "type": "string",
+    "xlsx_row": 259,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/critical_chance",
+    "type": "object",
+    "xlsx_row": 260,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/critical_chance/ranges",
+    "type": "object",
+    "xlsx_row": 261,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/1",
+    "type": "array",
+    "xlsx_row": 262,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 263,
+    "declared_type": "float",
+    "value": 0.13
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 264,
+    "declared_type": "float",
+    "value": 0.15
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/2",
+    "type": "array",
+    "xlsx_row": 265,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 266,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 267,
+    "declared_type": "float",
+    "value": 0.12
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/3",
+    "type": "array",
+    "xlsx_row": 268,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 269,
+    "declared_type": "float",
+    "value": 0.06
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 270,
+    "declared_type": "float",
+    "value": 0.08
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/4",
+    "type": "array",
+    "xlsx_row": 271,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 272,
+    "declared_type": "float",
+    "value": 0.03
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 273,
+    "declared_type": "float",
+    "value": 0.04
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/5",
+    "type": "array",
+    "xlsx_row": 274,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 275,
+    "declared_type": "float",
+    "value": 0.01
+  },
+  {
+    "path": "/affixes/critical_chance/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 276,
+    "declared_type": "float",
+    "value": 0.02
+  },
+  {
+    "path": "/affixes/critical_chance/amplified",
+    "type": "bool",
+    "xlsx_row": 277,
+    "declared_type": "bool",
+    "value": false
+  },
+  {
+    "path": "/affixes/critical_chance/weapon",
+    "type": "string",
+    "xlsx_row": 278,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/repeat_chance",
+    "type": "object",
+    "xlsx_row": 279,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges",
+    "type": "object",
+    "xlsx_row": 280,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/1",
+    "type": "array",
+    "xlsx_row": 281,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 282,
+    "declared_type": "float",
+    "value": 0.13
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 283,
+    "declared_type": "float",
+    "value": 0.15
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/2",
+    "type": "array",
+    "xlsx_row": 284,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 285,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 286,
+    "declared_type": "float",
+    "value": 0.12
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/3",
+    "type": "array",
+    "xlsx_row": 287,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 288,
+    "declared_type": "float",
+    "value": 0.06
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 289,
+    "declared_type": "float",
+    "value": 0.08
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/4",
+    "type": "array",
+    "xlsx_row": 290,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 291,
+    "declared_type": "float",
+    "value": 0.03
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 292,
+    "declared_type": "float",
+    "value": 0.04
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/5",
+    "type": "array",
+    "xlsx_row": 293,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 294,
+    "declared_type": "float",
+    "value": 0.01
+  },
+  {
+    "path": "/affixes/repeat_chance/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 295,
+    "declared_type": "float",
+    "value": 0.02
+  },
+  {
+    "path": "/affixes/repeat_chance/amplified",
+    "type": "bool",
+    "xlsx_row": 296,
+    "declared_type": "bool",
+    "value": false
+  },
+  {
+    "path": "/affixes/repeat_chance/weapon",
+    "type": "string",
+    "xlsx_row": 297,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/attack_speed",
+    "type": "object",
+    "xlsx_row": 298,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/attack_speed/ranges",
+    "type": "object",
+    "xlsx_row": 299,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/1",
+    "type": "array",
+    "xlsx_row": 300,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 301,
+    "declared_type": "float",
+    "value": 0.13
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 302,
+    "declared_type": "float",
+    "value": 0.15
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/2",
+    "type": "array",
+    "xlsx_row": 303,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 304,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 305,
+    "declared_type": "float",
+    "value": 0.12
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/3",
+    "type": "array",
+    "xlsx_row": 306,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 307,
+    "declared_type": "float",
+    "value": 0.06
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/3/1",
+    "type": "float",
+    "xlsx_row": 308,
+    "declared_type": "float",
+    "value": 0.08
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/4",
+    "type": "array",
+    "xlsx_row": 309,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 310,
+    "declared_type": "float",
+    "value": 0.03
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 311,
+    "declared_type": "float",
+    "value": 0.04
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/5",
+    "type": "array",
+    "xlsx_row": 312,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 313,
+    "declared_type": "float",
+    "value": 0.01
+  },
+  {
+    "path": "/affixes/attack_speed/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 314,
+    "declared_type": "float",
+    "value": 0.02
+  },
+  {
+    "path": "/affixes/attack_speed/amplified",
+    "type": "bool",
+    "xlsx_row": 315,
+    "declared_type": "bool",
+    "value": false
+  },
+  {
+    "path": "/affixes/attack_speed/weapon",
+    "type": "string",
+    "xlsx_row": 316,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/chain_count",
+    "type": "object",
+    "xlsx_row": 317,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/chain_count/ranges",
+    "type": "object",
+    "xlsx_row": 318,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/chain_count/ranges/1",
+    "type": "array",
+    "xlsx_row": 319,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/chain_count/ranges/1/0",
+    "type": "int",
+    "xlsx_row": 320,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/affixes/chain_count/ranges/1/1",
+    "type": "int",
+    "xlsx_row": 321,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/affixes/chain_count/ranges/2",
+    "type": "array",
+    "xlsx_row": 322,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/chain_count/ranges/2/0",
+    "type": "int",
+    "xlsx_row": 323,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/chain_count/ranges/2/1",
+    "type": "int",
+    "xlsx_row": 324,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/chain_count/amplified",
+    "type": "bool",
+    "xlsx_row": 325,
+    "declared_type": "bool",
+    "value": false
+  },
+  {
+    "path": "/affixes/chain_count/weapon",
+    "type": "string",
+    "xlsx_row": 326,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/armour_capacity",
+    "type": "object",
+    "xlsx_row": 327,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges",
+    "type": "object",
+    "xlsx_row": 328,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/1",
+    "type": "array",
+    "xlsx_row": 329,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 330,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 331,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/2",
+    "type": "array",
+    "xlsx_row": 332,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 333,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 334,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/3",
+    "type": "array",
+    "xlsx_row": 335,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 336,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 337,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/4",
+    "type": "array",
+    "xlsx_row": 338,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 339,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 340,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/5",
+    "type": "array",
+    "xlsx_row": 341,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 342,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/armour_capacity/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 343,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/armour_capacity/amplified",
+    "type": "bool",
+    "xlsx_row": 344,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/armour_capacity/weapon",
+    "type": "string",
+    "xlsx_row": 345,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/affixes/shield_capacity",
+    "type": "object",
+    "xlsx_row": 346,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges",
+    "type": "object",
+    "xlsx_row": 347,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/1",
+    "type": "array",
+    "xlsx_row": 348,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/1/0",
+    "type": "float",
+    "xlsx_row": 349,
+    "declared_type": "float",
+    "value": 1.8
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/1/1",
+    "type": "float",
+    "xlsx_row": 350,
+    "declared_type": "float",
+    "value": 2.0
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/2",
+    "type": "array",
+    "xlsx_row": 351,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/2/0",
+    "type": "float",
+    "xlsx_row": 352,
+    "declared_type": "float",
+    "value": 1.2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/2/1",
+    "type": "float",
+    "xlsx_row": 353,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/3",
+    "type": "array",
+    "xlsx_row": 354,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/3/0",
+    "type": "float",
+    "xlsx_row": 355,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/3/1",
+    "type": "int",
+    "xlsx_row": 356,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/4",
+    "type": "array",
+    "xlsx_row": 357,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/4/0",
+    "type": "float",
+    "xlsx_row": 358,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/4/1",
+    "type": "float",
+    "xlsx_row": 359,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/5",
+    "type": "array",
+    "xlsx_row": 360,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/5/0",
+    "type": "float",
+    "xlsx_row": 361,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/affixes/shield_capacity/ranges/5/1",
+    "type": "float",
+    "xlsx_row": 362,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/affixes/shield_capacity/amplified",
+    "type": "bool",
+    "xlsx_row": 363,
+    "declared_type": "bool",
+    "value": true
+  },
+  {
+    "path": "/affixes/shield_capacity/weapon",
+    "type": "string",
+    "xlsx_row": 364,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/hanging_modules",
+    "type": "object",
+    "xlsx_row": 365,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/resource_collector",
+    "type": "object",
+    "xlsx_row": 366,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/resource_collector/base_exp",
+    "type": "int",
+    "xlsx_row": 367,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/hanging_modules/resource_collector/exp_growth",
+    "type": "float",
+    "xlsx_row": 368,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/hanging_modules/resource_collector/effect_growth",
+    "type": "float",
+    "xlsx_row": 369,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/hanging_modules/resource_collector/unlock_stage",
+    "type": "int",
+    "xlsx_row": 370,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/hanging_modules/resource_collector/effects",
+    "type": "array",
+    "xlsx_row": 371,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/hanging_modules/resource_collector/effects/0",
+    "type": "string",
+    "xlsx_row": 372,
+    "declared_type": "string",
+    "value": "iron_income"
+  },
+  {
+    "path": "/hanging_modules/resource_collector/effects/1",
+    "type": "string",
+    "xlsx_row": 373,
+    "declared_type": "string",
+    "value": "uranium_income"
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm",
+    "type": "object",
+    "xlsx_row": 374,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/base_exp",
+    "type": "int",
+    "xlsx_row": 375,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/exp_growth",
+    "type": "float",
+    "xlsx_row": 376,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/effect_growth",
+    "type": "float",
+    "xlsx_row": 377,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/unlock_stage",
+    "type": "int",
+    "xlsx_row": 378,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/effects",
+    "type": "array",
+    "xlsx_row": 379,
+    "declared_type": "array",
+    "value": 1
+  },
+  {
+    "path": "/hanging_modules/distributed_algorithm/effects/0",
+    "type": "string",
+    "xlsx_row": 380,
+    "declared_type": "string",
+    "value": "ai_speed"
+  },
+  {
+    "path": "/hanging_modules/extra_storage",
+    "type": "object",
+    "xlsx_row": 381,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/extra_storage/base_exp",
+    "type": "int",
+    "xlsx_row": 382,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/hanging_modules/extra_storage/exp_growth",
+    "type": "float",
+    "xlsx_row": 383,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/hanging_modules/extra_storage/effect_growth",
+    "type": "float",
+    "xlsx_row": 384,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/hanging_modules/extra_storage/unlock_stage",
+    "type": "int",
+    "xlsx_row": 385,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/hanging_modules/extra_storage/effects",
+    "type": "array",
+    "xlsx_row": 386,
+    "declared_type": "array",
+    "value": 1
+  },
+  {
+    "path": "/hanging_modules/extra_storage/effects/0",
+    "type": "string",
+    "xlsx_row": 387,
+    "declared_type": "string",
+    "value": "reactor_energy_cap"
+  },
+  {
+    "path": "/hanging_modules/gem_refiner",
+    "type": "object",
+    "xlsx_row": 388,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/base_exp",
+    "type": "int",
+    "xlsx_row": 389,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/exp_growth",
+    "type": "float",
+    "xlsx_row": 390,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/effect_growth",
+    "type": "float",
+    "xlsx_row": 391,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/unlock_stage",
+    "type": "int",
+    "xlsx_row": 392,
+    "declared_type": "int",
+    "value": 15
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/effects",
+    "type": "array",
+    "xlsx_row": 393,
+    "declared_type": "array",
+    "value": 1
+  },
+  {
+    "path": "/hanging_modules/gem_refiner/effects/0",
+    "type": "string",
+    "xlsx_row": 394,
+    "declared_type": "string",
+    "value": "gem_income"
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge",
+    "type": "object",
+    "xlsx_row": 395,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/base_exp",
+    "type": "int",
+    "xlsx_row": 396,
+    "declared_type": "int",
+    "value": 100
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/exp_growth",
+    "type": "float",
+    "xlsx_row": 397,
+    "declared_type": "float",
+    "value": 0.2
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/effect_growth",
+    "type": "float",
+    "xlsx_row": 398,
+    "declared_type": "float",
+    "value": 0.1
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/unlock_stage",
+    "type": "int",
+    "xlsx_row": 399,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/effects",
+    "type": "array",
+    "xlsx_row": 400,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/effects/0",
+    "type": "string",
+    "xlsx_row": 401,
+    "declared_type": "string",
+    "value": "hyperspace_energy_rate"
+  },
+  {
+    "path": "/hanging_modules/hyperspace_charge/effects/1",
+    "type": "string",
+    "xlsx_row": 402,
+    "declared_type": "string",
+    "value": "hyperspace_energy_cap"
+  },
+  {
+    "path": "/legendary_effects",
+    "type": "object",
+    "xlsx_row": 403,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon",
+    "type": "object",
+    "xlsx_row": 404,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/weapon",
+    "type": "string",
+    "xlsx_row": 405,
+    "declared_type": "string",
+    "value": "cannon"
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters",
+    "type": "object",
+    "xlsx_row": 406,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/damage_bonus",
+    "type": "array",
+    "xlsx_row": 407,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/damage_bonus/0",
+    "type": "int",
+    "xlsx_row": 408,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/damage_bonus/1",
+    "type": "int",
+    "xlsx_row": 409,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/area_bonus",
+    "type": "array",
+    "xlsx_row": 410,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/area_bonus/0",
+    "type": "int",
+    "xlsx_row": 411,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/parameters/area_bonus/1",
+    "type": "int",
+    "xlsx_row": 412,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/constants",
+    "type": "object",
+    "xlsx_row": 413,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/higgs_cannon/constants/maximum_cannon_sources",
+    "type": "int",
+    "xlsx_row": 414,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse",
+    "type": "object",
+    "xlsx_row": 415,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/weapon",
+    "type": "string",
+    "xlsx_row": 416,
+    "declared_type": "string",
+    "value": "laser"
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/parameters",
+    "type": "object",
+    "xlsx_row": 417,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/parameters/single_target_bonus",
+    "type": "array",
+    "xlsx_row": 418,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/parameters/single_target_bonus/0",
+    "type": "int",
+    "xlsx_row": 419,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/parameters/single_target_bonus/1",
+    "type": "int",
+    "xlsx_row": 420,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/legendary_effects/scatter_pulse/constants",
+    "type": "object",
+    "xlsx_row": 421,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/precise_guidance",
+    "type": "object",
+    "xlsx_row": 422,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/weapon",
+    "type": "string",
+    "xlsx_row": 423,
+    "declared_type": "string",
+    "value": "missile"
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/parameters",
+    "type": "object",
+    "xlsx_row": 424,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/constants",
+    "type": "object",
+    "xlsx_row": 425,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/constants/stack_multiplier",
+    "type": "float",
+    "xlsx_row": 426,
+    "declared_type": "float",
+    "value": 1.5
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/constants/stack_limit_enabled",
+    "type": "bool",
+    "xlsx_row": 427,
+    "declared_type": "bool",
+    "value": false
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/constants/stack_limit",
+    "type": "int",
+    "xlsx_row": 428,
+    "declared_type": "int",
+    "value": 0
+  },
+  {
+    "path": "/legendary_effects/precise_guidance/constants/counting_policy",
+    "type": "string",
+    "xlsx_row": 429,
+    "declared_type": "string",
+    "value": "first_hit_per_batch_per_target"
+  },
+  {
+    "path": "/legendary_effects/prism_tower",
+    "type": "object",
+    "xlsx_row": 430,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/prism_tower/weapon",
+    "type": "string",
+    "xlsx_row": 431,
+    "declared_type": "string",
+    "value": "longLaser"
+  },
+  {
+    "path": "/legendary_effects/prism_tower/parameters",
+    "type": "object",
+    "xlsx_row": 432,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/prism_tower/parameters/maximum_multiplier_bonus",
+    "type": "array",
+    "xlsx_row": 433,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/prism_tower/parameters/maximum_multiplier_bonus/0",
+    "type": "float",
+    "xlsx_row": 434,
+    "declared_type": "float",
+    "value": 1.3
+  },
+  {
+    "path": "/legendary_effects/prism_tower/parameters/maximum_multiplier_bonus/1",
+    "type": "int",
+    "xlsx_row": 435,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/prism_tower/constants",
+    "type": "object",
+    "xlsx_row": 436,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/prism_tower/constants/nearby_targets",
+    "type": "int",
+    "xlsx_row": 437,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/legendary_effects/prism_tower/constants/maximum_towers",
+    "type": "int",
+    "xlsx_row": 438,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/strange_matter",
+    "type": "object",
+    "xlsx_row": 439,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/strange_matter/weapon",
+    "type": "string",
+    "xlsx_row": 440,
+    "declared_type": "string",
+    "value": "cannon"
+  },
+  {
+    "path": "/legendary_effects/strange_matter/parameters",
+    "type": "object",
+    "xlsx_row": 441,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/strange_matter/parameters/damage_multiplier",
+    "type": "array",
+    "xlsx_row": 442,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/strange_matter/parameters/damage_multiplier/0",
+    "type": "float",
+    "xlsx_row": 443,
+    "declared_type": "float",
+    "value": 1.3
+  },
+  {
+    "path": "/legendary_effects/strange_matter/parameters/damage_multiplier/1",
+    "type": "int",
+    "xlsx_row": 444,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/strange_matter/constants",
+    "type": "object",
+    "xlsx_row": 445,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/strange_matter/constants/spawn_probability",
+    "type": "float",
+    "xlsx_row": 446,
+    "declared_type": "float",
+    "value": 0.4
+  },
+  {
+    "path": "/legendary_effects/strange_matter/constants/delay",
+    "type": "int",
+    "xlsx_row": 447,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/strange_matter/constants/kill_spawns",
+    "type": "int",
+    "xlsx_row": 448,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/laser_charge",
+    "type": "object",
+    "xlsx_row": 449,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/laser_charge/weapon",
+    "type": "string",
+    "xlsx_row": 450,
+    "declared_type": "string",
+    "value": "laser"
+  },
+  {
+    "path": "/legendary_effects/laser_charge/parameters",
+    "type": "object",
+    "xlsx_row": 451,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/laser_charge/parameters/maximum_bonus",
+    "type": "array",
+    "xlsx_row": 452,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/laser_charge/parameters/maximum_bonus/0",
+    "type": "int",
+    "xlsx_row": 453,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/laser_charge/parameters/maximum_bonus/1",
+    "type": "int",
+    "xlsx_row": 454,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/legendary_effects/laser_charge/constants",
+    "type": "object",
+    "xlsx_row": 455,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/laser_charge/constants/bonus_per_laser",
+    "type": "float",
+    "xlsx_row": 456,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/legendary_effects/wild_missile",
+    "type": "object",
+    "xlsx_row": 457,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/wild_missile/weapon",
+    "type": "string",
+    "xlsx_row": 458,
+    "declared_type": "string",
+    "value": "missile"
+  },
+  {
+    "path": "/legendary_effects/wild_missile/parameters",
+    "type": "object",
+    "xlsx_row": 459,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/wild_missile/parameters/damage_multiplier",
+    "type": "array",
+    "xlsx_row": 460,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/wild_missile/parameters/damage_multiplier/0",
+    "type": "int",
+    "xlsx_row": 461,
+    "declared_type": "int",
+    "value": 7
+  },
+  {
+    "path": "/legendary_effects/wild_missile/parameters/damage_multiplier/1",
+    "type": "int",
+    "xlsx_row": 462,
+    "declared_type": "int",
+    "value": 10
+  },
+  {
+    "path": "/legendary_effects/wild_missile/constants",
+    "type": "object",
+    "xlsx_row": 463,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/wild_missile/constants/attack_period",
+    "type": "int",
+    "xlsx_row": 464,
+    "declared_type": "int",
+    "value": 3
+  },
+  {
+    "path": "/legendary_effects/wild_missile/constants/blast_fraction",
+    "type": "float",
+    "xlsx_row": 465,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/legendary_effects/endless_beam",
+    "type": "object",
+    "xlsx_row": 466,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/endless_beam/weapon",
+    "type": "string",
+    "xlsx_row": 467,
+    "declared_type": "string",
+    "value": "longLaser"
+  },
+  {
+    "path": "/legendary_effects/endless_beam/parameters",
+    "type": "object",
+    "xlsx_row": 468,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/endless_beam/parameters/maximum_multiplier_bonus",
+    "type": "array",
+    "xlsx_row": 469,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/endless_beam/parameters/maximum_multiplier_bonus/0",
+    "type": "int",
+    "xlsx_row": 470,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/endless_beam/parameters/maximum_multiplier_bonus/1",
+    "type": "int",
+    "xlsx_row": 471,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/endless_beam/constants",
+    "type": "object",
+    "xlsx_row": 472,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/dodge_counter",
+    "type": "object",
+    "xlsx_row": 473,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/weapon",
+    "type": "string",
+    "xlsx_row": 474,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters",
+    "type": "object",
+    "xlsx_row": 475,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/maximum_dodge",
+    "type": "array",
+    "xlsx_row": 476,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/maximum_dodge/0",
+    "type": "float",
+    "xlsx_row": 477,
+    "declared_type": "float",
+    "value": 0.75
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/maximum_dodge/1",
+    "type": "float",
+    "xlsx_row": 478,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/counter_damage_bonus",
+    "type": "array",
+    "xlsx_row": 479,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/counter_damage_bonus/0",
+    "type": "float",
+    "xlsx_row": 480,
+    "declared_type": "float",
+    "value": 0.7
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/parameters/counter_damage_bonus/1",
+    "type": "int",
+    "xlsx_row": 481,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/constants",
+    "type": "object",
+    "xlsx_row": 482,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/dodge_counter/constants/cooldown",
+    "type": "int",
+    "xlsx_row": 483,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/drone_master",
+    "type": "object",
+    "xlsx_row": 484,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_master/weapon",
+    "type": "string",
+    "xlsx_row": 485,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/legendary_effects/drone_master/parameters",
+    "type": "object",
+    "xlsx_row": 486,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_master/parameters/maximum_reduction",
+    "type": "array",
+    "xlsx_row": 487,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/drone_master/parameters/maximum_reduction/0",
+    "type": "float",
+    "xlsx_row": 488,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/legendary_effects/drone_master/parameters/maximum_reduction/1",
+    "type": "float",
+    "xlsx_row": 489,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants",
+    "type": "object",
+    "xlsx_row": 490,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios",
+    "type": "object",
+    "xlsx_row": 491,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios/white",
+    "type": "float",
+    "xlsx_row": 492,
+    "declared_type": "float",
+    "value": 0.5
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios/blue",
+    "type": "float",
+    "xlsx_row": 493,
+    "declared_type": "float",
+    "value": 0.6
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios/gold",
+    "type": "float",
+    "xlsx_row": 494,
+    "declared_type": "float",
+    "value": 0.7
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios/legendary",
+    "type": "float",
+    "xlsx_row": 495,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/legendary_effects/drone_master/constants/quality_ratios/ultimate",
+    "type": "float",
+    "xlsx_row": 496,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/legendary_effects/drone_master/stored_parameter_ranges",
+    "type": "object",
+    "xlsx_row": 518,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction",
+    "type": "array",
+    "xlsx_row": 519,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/0",
+    "type": "float",
+    "xlsx_row": 520,
+    "declared_type": "float",
+    "value": 0.8
+  },
+  {
+    "path": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/1",
+    "type": "float",
+    "xlsx_row": 521,
+    "declared_type": "float",
+    "value": 0.9
+  },
+  {
+    "path": "/legendary_effects/black_hole",
+    "type": "object",
+    "xlsx_row": 497,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/black_hole/weapon",
+    "type": "string",
+    "xlsx_row": 498,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/legendary_effects/black_hole/parameters",
+    "type": "object",
+    "xlsx_row": 499,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/black_hole/parameters/damage_multiplier",
+    "type": "array",
+    "xlsx_row": 500,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/black_hole/parameters/damage_multiplier/0",
+    "type": "float",
+    "xlsx_row": 501,
+    "declared_type": "float",
+    "value": 1.3
+  },
+  {
+    "path": "/legendary_effects/black_hole/parameters/damage_multiplier/1",
+    "type": "int",
+    "xlsx_row": 502,
+    "declared_type": "int",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/black_hole/constants",
+    "type": "object",
+    "xlsx_row": 503,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/black_hole/constants/period",
+    "type": "int",
+    "xlsx_row": 504,
+    "declared_type": "int",
+    "value": 20
+  },
+  {
+    "path": "/legendary_effects/black_hole/constants/absorption_duration",
+    "type": "int",
+    "xlsx_row": 505,
+    "declared_type": "int",
+    "value": 5
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild",
+    "type": "object",
+    "xlsx_row": 506,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/weapon",
+    "type": "string",
+    "xlsx_row": 507,
+    "declared_type": "string",
+    "value": ""
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/parameters",
+    "type": "object",
+    "xlsx_row": 508,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/parameters/damage_and_defence_bonus",
+    "type": "array",
+    "xlsx_row": 509,
+    "declared_type": "array",
+    "value": 2
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/parameters/damage_and_defence_bonus/0",
+    "type": "float",
+    "xlsx_row": 510,
+    "declared_type": "float",
+    "value": 0.7
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/parameters/damage_and_defence_bonus/1",
+    "type": "int",
+    "xlsx_row": 511,
+    "declared_type": "int",
+    "value": 1
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/constants",
+    "type": "object",
+    "xlsx_row": 512,
+    "declared_type": "object",
+    "value": null
+  },
+  {
+    "path": "/legendary_effects/drone_rebuild/constants/maximum_stacks",
+    "type": "int",
+    "xlsx_row": 513,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/late_supply_unlock_stage",
+    "type": "int",
+    "xlsx_row": 514,
+    "declared_type": "int",
+    "value": 60
+  },
+  {
+    "path": "/late_energy_rate_multiplier",
+    "type": "float",
+    "xlsx_row": 515,
+    "declared_type": "float",
+    "value": 30.0
+  },
+  {
+    "path": "/late_material_reward_multiplier",
+    "type": "int",
+    "xlsx_row": 516,
+    "declared_type": "int",
+    "value": 4
+  },
+  {
+    "path": "/late_supply_ramp_seconds",
+    "type": "int",
+    "xlsx_row": 517,
+    "declared_type": "int",
+    "value": 600
+  }
+]
