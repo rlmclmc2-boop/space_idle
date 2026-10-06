@@ -1,0 +1,167 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native establish only paid exit boundary",
+			"native": true,
+			"point": [
+				590.794860839844,
+				617.871520996094
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native cleared-stage warp for exit-only retest open actual native menu",
+			"native": true,
+			"point": [
+				951.981567382812,
+				28.1210174560547
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 5,
+			"label": "native cleared-stage warp for exit-only retest",
+			"native_menu_window": -1,
+			"selected": 5
+		}
+	],
+	"active": {
+		"crew_id": "",
+		"duration": 0.0,
+		"level": 5,
+		"mode": "manual",
+		"return_journey": {
+			"distance": 0.0,
+			"groupIndex": 0,
+			"guardArrived": false,
+			"loop": false,
+			"pendingUnlocks": [],
+			"retreatBossPending": false,
+			"stage": 5,
+			"state": 2
+		},
+		"return_state": {
+			"armour": 255913767815697140744544891961344.0,
+			"buffers": {
+
+			},
+			"charged": {
+
+			},
+			"clear_reduction_remaining": 0.0,
+			"clear_timer": 0.0,
+			"cooldowns": {
+				"weapons_0": {
+					"key": "missile",
+					"remaining": 2.4
+				},
+				"weapons_1": {
+					"key": "missile",
+					"remaining": 2.4
+				},
+				"weapons_2": {
+					"key": "laser",
+					"remaining": 0.5
+				},
+				"weapons_3": {
+					"key": "laser",
+					"remaining": 0.5
+				}
+			},
+			"defense_losses": {
+				"0": {
+					"damage": 0.0,
+					"key": "armour",
+					"time": 100.0
+				},
+				"1": {
+					"damage": 0.0,
+					"key": "armour",
+					"time": 100.0
+				}
+			},
+			"defenses": {
+
+			},
+			"drone": {
+				"black_hole_damage": 0.0,
+				"black_hole_elapsed": 0.0,
+				"black_hole_remaining": 0.0,
+				"disabled": [],
+				"dodge_cooldown": 0.0,
+				"missile_attacks": 0,
+				"rebuild_bonus": 0.0,
+				"rebuild_stacks": 0
+			},
+			"enhancement_defense_time": 0.0,
+			"enhancement_deferred": {
+
+			},
+			"enhancement_deferred_elapsed": 0.0,
+			"enhancement_deferred_tick": 0,
+			"enhancement_memory_elapsed": 0.0,
+			"incoming_sources": {
+
+			},
+			"memory_reduction_remaining": 0.0,
+			"paused": false,
+			"run_resources": {
+				"1": 0.0,
+				"2": 0.0
+			},
+			"shield": 0.0,
+			"since_hit": 100.0,
+			"travel_origin": 0.0,
+			"travel_origin_ready": false,
+			"version": 1,
+			"weapons": {
+
+			}
+		},
+		"reward": {
+
+		},
+		"round_id": 3,
+		"route": "alpha",
+		"run_id": 2,
+		"status": "started",
+		"ticket": 108000.0,
+		"work": 0.0166666666666667
+	},
+	"beam_inspector_visible": false,
+	"beam_scroll": 0,
+	"beam_stats": "",
+	"cancel_visible": false,
+	"energy": 61107.775193608,
+	"exit_visible": true,
+	"highest": 15,
+	"hint": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。",
+	"hint_visible": false,
+	"label": "01-real-paid-exit-boundary",
+	"queue": {
+
+	},
+	"queue_error": "",
+	"reason": "已有异空间探索，请先完成或退出。",
+	"recent": "",
+	"source_to_candidate_regenerated": true,
+	"stage": 5,
+	"start_disabled": true,
+	"state": 2,
+	"status": "手动探索进行中"
+}

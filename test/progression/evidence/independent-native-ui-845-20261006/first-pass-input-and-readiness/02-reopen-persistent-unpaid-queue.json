@@ -1,0 +1,105 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "open existing real automatic policy manager",
+			"native": true,
+			"point": [
+				676.896301269531,
+				617.871520996094
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native stop existing auto policy",
+			"native": true,
+			"point": [
+				238.0,
+				205.0
+			],
+			"visible": true,
+			"window_id": 1
+		},
+		{
+			"disabled": true,
+			"label": "native queue real battle boundary",
+			"native": true,
+			"point": [
+				590.794860839844,
+				617.871520996094
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "repeat click disabled queue start",
+			"native": true,
+			"point": [
+				590.794860839844,
+				617.871520996094
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "close exploration page via native equipment navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "reopen exploration page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"active": {
+
+	},
+	"beam_inspector_visible": false,
+	"beam_scroll": 0,
+	"beam_stats": "",
+	"cancel_visible": false,
+	"energy": 169107.775193608,
+	"exit_visible": false,
+	"highest": 15,
+	"hint": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。",
+	"hint_visible": false,
+	"label": "02-reopen-persistent-unpaid-queue",
+	"queue": {
+
+	},
+	"queue_error": "",
+	"reason": "探索路线尚未准备完毕，手动探索暂不可用。",
+	"recent": "",
+	"source_to_candidate_regenerated": true,
+	"stage": 14,
+	"start_disabled": true,
+	"state": 3,
+	"status": "自动探索已停止；可开始手动探索。"
+}

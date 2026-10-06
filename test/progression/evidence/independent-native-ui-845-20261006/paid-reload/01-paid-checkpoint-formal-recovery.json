@@ -1,0 +1,39 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"active": {
+
+	},
+	"beam_inspector_visible": false,
+	"beam_scroll": 0,
+	"beam_stats": "",
+	"cancel_visible": false,
+	"energy": 169107.775193608,
+	"exit_visible": false,
+	"highest": 15,
+	"hint": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。",
+	"hint_visible": false,
+	"label": "01-paid-checkpoint-formal-recovery",
+	"queue": {
+
+	},
+	"queue_error": "",
+	"reason": "",
+	"recent": "",
+	"source_to_candidate_regenerated": true,
+	"stage": 5,
+	"start_disabled": false,
+	"state": 2,
+	"status": "自动探索已停止；可开始手动探索。"
+}
