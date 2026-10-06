@@ -1,0 +1,11 @@
+{
+  "included_in_hold60_comparison": false,
+  "reason": "Wrong stage_campaign entry does not enforce hold60; actual stage61 observed. Preserve this attempt, do not use its progressed CP as restart source.",
+  "stop_method": "Canonical STOP file; natural operator_stopped terminal",
+  "stop_x1": 182196.699979121,
+  "stop_stage": 61,
+  "status": "operator_stopped",
+  "restart_source_sha256": "a62e26b39c2ea26011ea8ec0e594c835bf17f0f828a02584c2b6f7259cb6c673",
+  "restart_entry": "res://qa/post60_supply_hold60.gd",
+  "input_failure": {}
+}
