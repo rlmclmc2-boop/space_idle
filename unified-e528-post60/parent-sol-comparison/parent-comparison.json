@@ -1,0 +1,2026 @@
+[
+  {
+    "controller_equal": true,
+    "delta_x1_parent_minus_sol": 0.0,
+    "differences": [
+      {
+        "kind": "value",
+        "parent": 1791296951.28397,
+        "path": "/save/hightechSavedAt",
+        "sol": 1791297208.57445
+      },
+      {
+        "kind": "value",
+        "parent": 1791296951.28397,
+        "path": "/save/chronoSavedAt",
+        "sol": 1791297208.57445
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_final.json",
+        "path": "/snapshots/final",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_final.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_resumed.json",
+        "path": "/snapshots/resumed",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_resumed.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_periodic_181801.json",
+        "path": "/snapshots/periodic_181801",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_periodic_181801.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_space_26.json",
+        "path": "/snapshots/space_26",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_space_26.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_periodic_183601.json",
+        "path": "/snapshots/periodic_183601",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_periodic_183601.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/tour-salvage-1412/parent-converted-clear60.bin",
+        "path": "/lineage/11/checkpoint",
+        "sol": "/workspace/sol-validation/unified-e528-post60-work/checkpoint.bin"
+      },
+      {
+        "kind": "value",
+        "parent": 23629.793508,
+        "path": "/wall_seconds",
+        "sol": 23841.192866
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/actions.jsonl",
+        "path": "/origin_trace",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/actions.jsonl"
+      },
+      {
+        "kind": "value",
+        "parent": 905180,
+        "path": "/trace_bytes",
+        "sol": 907854
+      }
+    ],
+    "differences_count": 11,
+    "label": "one-hour",
+    "main_rng_equal": true,
+    "parent_sha256": "a98120195a393deb82d9203d9fb835f78315e09fbba848d840f68cf9ce35281b",
+    "parent_x1": 185072.216645118,
+    "safe_farm_equal": true,
+    "save_hyperspace_equal": true,
+    "save_loadout_equal": true,
+    "save_resources_equal": true,
+    "sol_sha256": "080bd5d2af2497c3f20ffdfd79f52a8ff8dd0beb37167f07ed7c66fcda68865c",
+    "sol_x1": 185072.216645118,
+    "space_policy_equal": true
+  },
+  {
+    "controller_equal": false,
+    "delta_x1_parent_minus_sol": 0.0166666666627862,
+    "differences": [
+      {
+        "kind": "value",
+        "parent": 185372.233311715,
+        "path": "/x1_seconds",
+        "sol": 185372.216645048
+      },
+      {
+        "kind": "value",
+        "parent": 185372.233313511,
+        "path": "/save/productionElapsed",
+        "sol": 185372.216646844
+      },
+      {
+        "kind": "value",
+        "parent": 1198574.33066637,
+        "path": "/save/techPoints/超时空炼铁炉",
+        "sol": 1198526.59066637
+      },
+      {
+        "kind": "value",
+        "parent": 1188453.32733154,
+        "path": "/save/techPoints/正电子聚焦装置",
+        "sol": 1188405.58733154
+      },
+      {
+        "kind": "value",
+        "parent": 1173977.21899743,
+        "path": "/save/techPoints/简并态装甲",
+        "sol": 1173929.47899743
+      },
+      {
+        "kind": "value",
+        "parent": 1139520.71833068,
+        "path": "/save/techPoints/宝石熔炼炉",
+        "sol": 1139472.97833068
+      },
+      {
+        "kind": "value",
+        "parent": 1791297190.79589,
+        "path": "/save/hightechSavedAt",
+        "sol": 1791297477.79248
+      },
+      {
+        "kind": "value",
+        "parent": 0.566666666530295,
+        "path": "/save/furnaceElapsed",
+        "sol": 0.549999999863628
+      },
+      {
+        "kind": "value",
+        "parent": 99211,
+        "path": "/save/enhancementAttacks",
+        "sol": 99205
+      },
+      {
+        "kind": "value",
+        "parent": 10.5666666667258,
+        "path": "/save/jewelFurnaceElapsed",
+        "sol": 10.5500000000592
+      },
+      {
+        "kind": "value",
+        "parent": 196935.523445395,
+        "path": "/save/hyperspace/energy",
+        "sol": 196930.523445395
+      },
+      {
+        "kind": "value",
+        "parent": 27.5909853243122,
+        "path": "/save/hyperspace/active/work",
+        "sol": 27.5743186576455
+      },
+      {
+        "kind": "value",
+        "parent": 3.23333333333333,
+        "path": "/save/galaxies/galaxy_1/pending_online_time",
+        "sol": 3.21666666666666
+      },
+      {
+        "kind": "value",
+        "parent": 0.726666666666446,
+        "path": "/save/planets/6/elapsed",
+        "sol": 0.709999999999779
+      },
+      {
+        "kind": "array_size",
+        "parent": 101,
+        "path": "/save/resourceSamples",
+        "sol": 102
+      },
+      {
+        "kind": "value",
+        "parent": 185312.399978395,
+        "path": "/save/resourceSamples/0/time",
+        "sol": 185312.216645062
+      },
+      {
+        "kind": "value",
+        "parent": 185312.399980191,
+        "path": "/save/resourceSamples/0/production_time",
+        "sol": 185312.216646858
+      },
+      {
+        "kind": "value",
+        "parent": 2469693894529776484864539668865089536.0,
+        "path": "/save/resourceSamples/0/amount",
+        "sol": 577488163155957721325209804592906240.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/0/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/0/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185312.533311729,
+        "path": "/save/resourceSamples/1/time",
+        "sol": 185312.399978395
+      },
+      {
+        "kind": "value",
+        "parent": 185312.533313524,
+        "path": "/save/resourceSamples/1/production_time",
+        "sol": 185312.399980191
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/1/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/1/amount",
+        "sol": 2469693894529776484864539668865089536.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/1/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185312.883311729,
+        "path": "/save/resourceSamples/2/time",
+        "sol": 185312.533311729
+      },
+      {
+        "kind": "value",
+        "parent": 185312.883313524,
+        "path": "/save/resourceSamples/2/production_time",
+        "sol": 185312.533313524
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/2/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2469693894529776484864539668865089536.0,
+        "path": "/save/resourceSamples/2/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/2/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185315.533311728,
+        "path": "/save/resourceSamples/3/time",
+        "sol": 185312.883311729
+      },
+      {
+        "kind": "value",
+        "parent": 185315.533313524,
+        "path": "/save/resourceSamples/3/production_time",
+        "sol": 185312.883313524
+      },
+      {
+        "kind": "value",
+        "parent": 2470879090405263314406958072468602880.0,
+        "path": "/save/resourceSamples/3/amount",
+        "sol": 2469693894529776484864539668865089536.0
+      },
+      {
+        "kind": "value",
+        "parent": 185315.749978395,
+        "path": "/save/resourceSamples/4/time",
+        "sol": 185315.533311728
+      },
+      {
+        "kind": "value",
+        "parent": 185315.74998019,
+        "path": "/save/resourceSamples/4/production_time",
+        "sol": 185315.533313524
+      },
+      {
+        "kind": "value",
+        "parent": 185315.966645061,
+        "path": "/save/resourceSamples/6/time",
+        "sol": 185315.749978395
+      },
+      {
+        "kind": "value",
+        "parent": 185315.966646857,
+        "path": "/save/resourceSamples/6/production_time",
+        "sol": 185315.74998019
+      },
+      {
+        "kind": "value",
+        "parent": 185316.449978394,
+        "path": "/save/resourceSamples/7/time",
+        "sol": 185315.966645061
+      },
+      {
+        "kind": "value",
+        "parent": 185316.44998019,
+        "path": "/save/resourceSamples/7/production_time",
+        "sol": 185315.966646857
+      },
+      {
+        "kind": "value",
+        "parent": 185319.233311727,
+        "path": "/save/resourceSamples/8/time",
+        "sol": 185316.449978394
+      },
+      {
+        "kind": "value",
+        "parent": 185319.233313523,
+        "path": "/save/resourceSamples/8/production_time",
+        "sol": 185316.44998019
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/8/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/8/amount",
+        "sol": 2470879090405263314406958072468602880.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/8/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185321.683311727,
+        "path": "/save/resourceSamples/9/time",
+        "sol": 185319.233311727
+      },
+      {
+        "kind": "value",
+        "parent": 185321.683313522,
+        "path": "/save/resourceSamples/9/production_time",
+        "sol": 185319.233313523
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/9/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 45763763257148923495964779555678322688.0,
+        "path": "/save/resourceSamples/9/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "value",
+        "parent": "furnace",
+        "path": "/save/resourceSamples/9/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/9/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185322.21664506,
+        "path": "/save/resourceSamples/10/time",
+        "sol": 185321.683311727
+      },
+      {
+        "kind": "value",
+        "parent": 185322.216646855,
+        "path": "/save/resourceSamples/10/production_time",
+        "sol": 185321.683313522
+      },
+      {
+        "kind": "value",
+        "parent": 577488163155957721325209804592906240.0,
+        "path": "/save/resourceSamples/10/amount",
+        "sol": 45763763257148923495964779555678322688.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/10/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/10/origin",
+        "sol": "furnace"
+      },
+      {
+        "kind": "value",
+        "parent": 185322.233311726,
+        "path": "/save/resourceSamples/11/time",
+        "sol": 185322.21664506
+      },
+      {
+        "kind": "value",
+        "parent": 185322.233313522,
+        "path": "/save/resourceSamples/11/production_time",
+        "sol": 185322.216646855
+      },
+      {
+        "kind": "value",
+        "parent": 2472063231438608056938815830527836160.0,
+        "path": "/save/resourceSamples/11/amount",
+        "sol": 577488163155957721325209804592906240.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/11/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/11/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185322.299978393,
+        "path": "/save/resourceSamples/16/time",
+        "sol": 185322.233311726
+      },
+      {
+        "kind": "value",
+        "parent": 185322.299980189,
+        "path": "/save/resourceSamples/16/production_time",
+        "sol": 185322.233313522
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/16/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/16/amount",
+        "sol": 2472063231438608056938815830527836160.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/16/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185324.883311726,
+        "path": "/save/resourceSamples/17/time",
+        "sol": 185322.299978393
+      },
+      {
+        "kind": "value",
+        "parent": 185324.883313522,
+        "path": "/save/resourceSamples/17/production_time",
+        "sol": 185322.299980189
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/17/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2473246320009724630253427638925262848.0,
+        "path": "/save/resourceSamples/17/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/17/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185325.099978392,
+        "path": "/save/resourceSamples/18/time",
+        "sol": 185324.883311726
+      },
+      {
+        "kind": "value",
+        "parent": 185325.099980188,
+        "path": "/save/resourceSamples/18/production_time",
+        "sol": 185324.883313522
+      },
+      {
+        "kind": "value",
+        "parent": 185325.233311726,
+        "path": "/save/resourceSamples/20/time",
+        "sol": 185325.099978392
+      },
+      {
+        "kind": "value",
+        "parent": 185325.233313521,
+        "path": "/save/resourceSamples/20/production_time",
+        "sol": 185325.099980188
+      },
+      {
+        "kind": "value",
+        "parent": "2",
+        "path": "/save/resourceSamples/20/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 101929347666161147778435121152.0,
+        "path": "/save/resourceSamples/20/amount",
+        "sol": 2473246320009724630253427638925262848.0
+      },
+      {
+        "kind": "value",
+        "parent": 84941123055134272223176556544.0,
+        "path": "/save/resourceSamples/20/production_base",
+        "sol": 3079936870165084273666088096497664.0
+      },
+      {
+        "kind": "value",
+        "parent": 185325.299978392,
+        "path": "/save/resourceSamples/21/time",
+        "sol": 185325.233311726
+      },
+      {
+        "kind": "value",
+        "parent": 185325.299980188,
+        "path": "/save/resourceSamples/21/production_time",
+        "sol": 185325.233313521
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/21/id",
+        "sol": "2"
+      },
+      {
+        "kind": "value",
+        "parent": 2473246320009724630253427638925262848.0,
+        "path": "/save/resourceSamples/21/amount",
+        "sol": 101929347666161147778435121152.0
+      },
+      {
+        "kind": "value",
+        "parent": 3079936870165084273666088096497664.0,
+        "path": "/save/resourceSamples/21/production_base",
+        "sol": 84941123055134272223176556544.0
+      },
+      {
+        "kind": "value",
+        "parent": 185325.649978392,
+        "path": "/save/resourceSamples/22/time",
+        "sol": 185325.299978392
+      },
+      {
+        "kind": "value",
+        "parent": 185325.649980188,
+        "path": "/save/resourceSamples/22/production_time",
+        "sol": 185325.299980188
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/22/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/22/amount",
+        "sol": 2473246320009724630253427638925262848.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/22/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185325.783311726,
+        "path": "/save/resourceSamples/23/time",
+        "sol": 185325.649978392
+      },
+      {
+        "kind": "value",
+        "parent": 185325.783313521,
+        "path": "/save/resourceSamples/23/production_time",
+        "sol": 185325.649980188
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/23/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2473246320009724630253427638925262848.0,
+        "path": "/save/resourceSamples/23/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/23/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185326.333311725,
+        "path": "/save/resourceSamples/24/time",
+        "sol": 185325.783311726
+      },
+      {
+        "kind": "value",
+        "parent": 185326.333313521,
+        "path": "/save/resourceSamples/24/production_time",
+        "sol": 185325.783313521
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/24/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/24/amount",
+        "sol": 2473246320009724630253427638925262848.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/24/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185328.433311725,
+        "path": "/save/resourceSamples/25/time",
+        "sol": 185326.333311725
+      },
+      {
+        "kind": "value",
+        "parent": 185328.433313521,
+        "path": "/save/resourceSamples/25/production_time",
+        "sol": 185326.333313521
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/25/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2473246320009724630253427638925262848.0,
+        "path": "/save/resourceSamples/25/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/25/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185328.649978392,
+        "path": "/save/resourceSamples/26/time",
+        "sol": 185328.433311725
+      },
+      {
+        "kind": "value",
+        "parent": 185328.649980187,
+        "path": "/save/resourceSamples/26/production_time",
+        "sol": 185328.433313521
+      },
+      {
+        "kind": "value",
+        "parent": 185328.849978392,
+        "path": "/save/resourceSamples/28/time",
+        "sol": 185328.649978392
+      },
+      {
+        "kind": "value",
+        "parent": 185328.849980187,
+        "path": "/save/resourceSamples/28/production_time",
+        "sol": 185328.649980187
+      },
+      {
+        "kind": "value",
+        "parent": 185329.183311725,
+        "path": "/save/resourceSamples/29/time",
+        "sol": 185328.849978392
+      },
+      {
+        "kind": "value",
+        "parent": 185329.183313521,
+        "path": "/save/resourceSamples/29/production_time",
+        "sol": 185328.849980187
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/29/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/29/amount",
+        "sol": 2473246320009724630253427638925262848.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/29/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185329.333311725,
+        "path": "/save/resourceSamples/30/time",
+        "sol": 185329.183311725
+      },
+      {
+        "kind": "value",
+        "parent": 185329.333313521,
+        "path": "/save/resourceSamples/30/production_time",
+        "sol": 185329.183313521
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/30/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2473246320009724630253427638925262848.0,
+        "path": "/save/resourceSamples/30/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/30/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185331.666645058,
+        "path": "/save/resourceSamples/31/time",
+        "sol": 185329.333311725
+      },
+      {
+        "kind": "value",
+        "parent": 185331.666646853,
+        "path": "/save/resourceSamples/31/production_time",
+        "sol": 185329.333313521
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/31/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 9608522.0,
+        "path": "/save/resourceSamples/31/amount",
+        "sol": 2473246320009724630253427638925262848.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/31/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": "furnace",
+        "path": "/save/resourceSamples/31/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185331.983311724,
+        "path": "/save/resourceSamples/32/time",
+        "sol": 185331.666645058
+      },
+      {
+        "kind": "value",
+        "parent": 185331.98331352,
+        "path": "/save/resourceSamples/32/production_time",
+        "sol": 185331.666646853
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/32/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2474428358489915126566785036790530048.0,
+        "path": "/save/resourceSamples/32/amount",
+        "sol": 9608522.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/32/origin",
+        "sol": "furnace"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/32/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185332.183311724,
+        "path": "/save/resourceSamples/33/time",
+        "sol": 185331.983311724
+      },
+      {
+        "kind": "value",
+        "parent": 185332.18331352,
+        "path": "/save/resourceSamples/33/production_time",
+        "sol": 185331.98331352
+      },
+      {
+        "kind": "value",
+        "parent": 185332.199978391,
+        "path": "/save/resourceSamples/34/time",
+        "sol": 185332.183311724
+      },
+      {
+        "kind": "value",
+        "parent": 185332.199980187,
+        "path": "/save/resourceSamples/34/production_time",
+        "sol": 185332.18331352
+      },
+      {
+        "kind": "value",
+        "parent": 185332.216645057,
+        "path": "/save/resourceSamples/35/time",
+        "sol": 185332.199978391
+      },
+      {
+        "kind": "value",
+        "parent": 185332.216646853,
+        "path": "/save/resourceSamples/35/production_time",
+        "sol": 185332.199980187
+      },
+      {
+        "kind": "value",
+        "parent": 577488163155957721325209804592906240.0,
+        "path": "/save/resourceSamples/35/amount",
+        "sol": 2474428358489915126566785036790530048.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/35/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/35/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185332.416645057,
+        "path": "/save/resourceSamples/36/time",
+        "sol": 185332.216645057
+      },
+      {
+        "kind": "value",
+        "parent": 185332.416646853,
+        "path": "/save/resourceSamples/36/production_time",
+        "sol": 185332.216646853
+      },
+      {
+        "kind": "value",
+        "parent": 2474428358489915126566785036790530048.0,
+        "path": "/save/resourceSamples/36/amount",
+        "sol": 577488163155957721325209804592906240.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/36/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/36/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185332.899978391,
+        "path": "/save/resourceSamples/37/time",
+        "sol": 185332.416645057
+      },
+      {
+        "kind": "value",
+        "parent": 185332.899980186,
+        "path": "/save/resourceSamples/37/production_time",
+        "sol": 185332.416646853
+      },
+      {
+        "kind": "value",
+        "parent": 185335.54997839,
+        "path": "/save/resourceSamples/38/time",
+        "sol": 185332.899978391
+      },
+      {
+        "kind": "value",
+        "parent": 185335.549980186,
+        "path": "/save/resourceSamples/38/production_time",
+        "sol": 185332.899980186
+      },
+      {
+        "kind": "value",
+        "parent": 2475609349241912608963807412660207616.0,
+        "path": "/save/resourceSamples/38/amount",
+        "sol": 2474428358489915126566785036790530048.0
+      },
+      {
+        "kind": "value",
+        "parent": 185335.766645057,
+        "path": "/save/resourceSamples/39/time",
+        "sol": 185335.54997839
+      },
+      {
+        "kind": "value",
+        "parent": 185335.766646852,
+        "path": "/save/resourceSamples/39/production_time",
+        "sol": 185335.549980186
+      },
+      {
+        "kind": "value",
+        "parent": 185335.966645057,
+        "path": "/save/resourceSamples/41/time",
+        "sol": 185335.766645057
+      },
+      {
+        "kind": "value",
+        "parent": 185335.966646852,
+        "path": "/save/resourceSamples/41/production_time",
+        "sol": 185335.766646852
+      },
+      {
+        "kind": "value",
+        "parent": 185336.44997839,
+        "path": "/save/resourceSamples/42/time",
+        "sol": 185335.966645057
+      },
+      {
+        "kind": "value",
+        "parent": 185336.449980186,
+        "path": "/save/resourceSamples/42/production_time",
+        "sol": 185335.966646852
+      },
+      {
+        "kind": "value",
+        "parent": 185339.233311722,
+        "path": "/save/resourceSamples/43/time",
+        "sol": 185336.44997839
+      },
+      {
+        "kind": "value",
+        "parent": 185339.233313518,
+        "path": "/save/resourceSamples/43/production_time",
+        "sol": 185336.449980186
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/43/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/43/amount",
+        "sol": 2475609349241912608963807412660207616.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/43/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185342.216645055,
+        "path": "/save/resourceSamples/46/time",
+        "sol": 185339.233311722
+      },
+      {
+        "kind": "value",
+        "parent": 185342.216646851,
+        "path": "/save/resourceSamples/46/production_time",
+        "sol": 185339.233313518
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/46/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 577488163155957721325209804592906240.0,
+        "path": "/save/resourceSamples/46/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/46/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185342.233311722,
+        "path": "/save/resourceSamples/47/time",
+        "sol": 185342.216645055
+      },
+      {
+        "kind": "value",
+        "parent": 185342.233313517,
+        "path": "/save/resourceSamples/47/production_time",
+        "sol": 185342.216646851
+      },
+      {
+        "kind": "value",
+        "parent": 2476789294619922136957161934520582144.0,
+        "path": "/save/resourceSamples/47/amount",
+        "sol": 577488163155957721325209804592906240.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/47/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/47/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185342.299978388,
+        "path": "/save/resourceSamples/52/time",
+        "sol": 185342.233311722
+      },
+      {
+        "kind": "value",
+        "parent": 185342.299980184,
+        "path": "/save/resourceSamples/52/production_time",
+        "sol": 185342.233313517
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/52/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/52/amount",
+        "sol": 2476789294619922136957161934520582144.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/52/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185344.883311721,
+        "path": "/save/resourceSamples/53/time",
+        "sol": 185342.299978388
+      },
+      {
+        "kind": "value",
+        "parent": 185344.883313517,
+        "path": "/save/resourceSamples/53/production_time",
+        "sol": 185342.299980184
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/53/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2476789294619922136957161934520582144.0,
+        "path": "/save/resourceSamples/53/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/53/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185345.099978388,
+        "path": "/save/resourceSamples/54/time",
+        "sol": 185344.883311721
+      },
+      {
+        "kind": "value",
+        "parent": 185345.099980183,
+        "path": "/save/resourceSamples/54/production_time",
+        "sol": 185344.883313517
+      },
+      {
+        "kind": "value",
+        "parent": 185345.299978388,
+        "path": "/save/resourceSamples/56/time",
+        "sol": 185345.099978388
+      },
+      {
+        "kind": "value",
+        "parent": 185345.299980183,
+        "path": "/save/resourceSamples/56/production_time",
+        "sol": 185345.099980183
+      },
+      {
+        "kind": "value",
+        "parent": 185345.649978388,
+        "path": "/save/resourceSamples/57/time",
+        "sol": 185345.299978388
+      },
+      {
+        "kind": "value",
+        "parent": 185345.649980183,
+        "path": "/save/resourceSamples/57/production_time",
+        "sol": 185345.299980183
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/57/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/57/amount",
+        "sol": 2476789294619922136957161934520582144.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/57/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185345.783311721,
+        "path": "/save/resourceSamples/58/time",
+        "sol": 185345.649978388
+      },
+      {
+        "kind": "value",
+        "parent": 185345.783313517,
+        "path": "/save/resourceSamples/58/production_time",
+        "sol": 185345.649980183
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/58/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2477968196969666809560471528848490496.0,
+        "path": "/save/resourceSamples/58/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/58/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185348.43331172,
+        "path": "/save/resourceSamples/59/time",
+        "sol": 185345.783311721
+      },
+      {
+        "kind": "value",
+        "parent": 185348.433313516,
+        "path": "/save/resourceSamples/59/production_time",
+        "sol": 185345.783313517
+      },
+      {
+        "kind": "value",
+        "parent": 185348.649978387,
+        "path": "/save/resourceSamples/60/time",
+        "sol": 185348.43331172
+      },
+      {
+        "kind": "value",
+        "parent": 185348.649980183,
+        "path": "/save/resourceSamples/60/production_time",
+        "sol": 185348.433313516
+      },
+      {
+        "kind": "value",
+        "parent": 185348.849978387,
+        "path": "/save/resourceSamples/62/time",
+        "sol": 185348.649978387
+      },
+      {
+        "kind": "value",
+        "parent": 185348.849980183,
+        "path": "/save/resourceSamples/62/production_time",
+        "sol": 185348.649980183
+      },
+      {
+        "kind": "value",
+        "parent": 185349.199978387,
+        "path": "/save/resourceSamples/63/time",
+        "sol": 185348.849978387
+      },
+      {
+        "kind": "value",
+        "parent": 185349.199980183,
+        "path": "/save/resourceSamples/63/production_time",
+        "sol": 185348.849980183
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/63/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/63/amount",
+        "sol": 2477968196969666809560471528848490496.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/63/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185349.33331172,
+        "path": "/save/resourceSamples/64/time",
+        "sol": 185349.199978387
+      },
+      {
+        "kind": "value",
+        "parent": 185349.333313516,
+        "path": "/save/resourceSamples/64/production_time",
+        "sol": 185349.199980183
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/64/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2477968196969666809560471528848490496.0,
+        "path": "/save/resourceSamples/64/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/64/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185349.88331172,
+        "path": "/save/resourceSamples/65/time",
+        "sol": 185349.33331172
+      },
+      {
+        "kind": "value",
+        "parent": 185349.883313516,
+        "path": "/save/resourceSamples/65/production_time",
+        "sol": 185349.333313516
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/65/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/65/amount",
+        "sol": 2477968196969666809560471528848490496.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/65/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185351.666645053,
+        "path": "/save/resourceSamples/66/time",
+        "sol": 185349.88331172
+      },
+      {
+        "kind": "value",
+        "parent": 185351.666646849,
+        "path": "/save/resourceSamples/66/production_time",
+        "sol": 185349.883313516
+      },
+      {
+        "kind": "value",
+        "parent": 9608522.0,
+        "path": "/save/resourceSamples/66/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "value",
+        "parent": "furnace",
+        "path": "/save/resourceSamples/66/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185351.68331172,
+        "path": "/save/resourceSamples/67/time",
+        "sol": 185351.666645053
+      },
+      {
+        "kind": "value",
+        "parent": 185351.683313515,
+        "path": "/save/resourceSamples/67/production_time",
+        "sol": 185351.666646849
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/67/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 45763763257148923495964779555678322688.0,
+        "path": "/save/resourceSamples/67/amount",
+        "sol": 9608522.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/67/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185351.98331172,
+        "path": "/save/resourceSamples/68/time",
+        "sol": 185351.68331172
+      },
+      {
+        "kind": "value",
+        "parent": 185351.983313515,
+        "path": "/save/resourceSamples/68/production_time",
+        "sol": 185351.683313515
+      },
+      {
+        "kind": "value",
+        "parent": 2479146058628426134515988196478681088.0,
+        "path": "/save/resourceSamples/68/amount",
+        "sol": 45763763257148923495964779555678322688.0
+      },
+      {
+        "kind": "value",
+        "parent": 3079936870165084273666088096497664.0,
+        "path": "/save/resourceSamples/68/production_base",
+        "sol": 45763763257148923495964779555678322688.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/68/origin",
+        "sol": "furnace"
+      },
+      {
+        "kind": "value",
+        "parent": 185352.199978386,
+        "path": "/save/resourceSamples/69/time",
+        "sol": 185351.98331172
+      },
+      {
+        "kind": "value",
+        "parent": 185352.199980182,
+        "path": "/save/resourceSamples/69/production_time",
+        "sol": 185351.983313515
+      },
+      {
+        "kind": "value",
+        "parent": 185352.216645053,
+        "path": "/save/resourceSamples/71/time",
+        "sol": 185352.199978386
+      },
+      {
+        "kind": "value",
+        "parent": 185352.216646849,
+        "path": "/save/resourceSamples/71/production_time",
+        "sol": 185352.199980182
+      },
+      {
+        "kind": "value",
+        "parent": 592887847506783265479680485704597504.0,
+        "path": "/save/resourceSamples/71/amount",
+        "sol": 2479146058628426134515988196478681088.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/71/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/71/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185352.399978386,
+        "path": "/save/resourceSamples/72/time",
+        "sol": 185352.216645053
+      },
+      {
+        "kind": "value",
+        "parent": 185352.399980182,
+        "path": "/save/resourceSamples/72/production_time",
+        "sol": 185352.216646849
+      },
+      {
+        "kind": "value",
+        "parent": 2479146058628426134515988196478681088.0,
+        "path": "/save/resourceSamples/72/amount",
+        "sol": 592887847506783265479680485704597504.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/72/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/72/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185352.749978386,
+        "path": "/save/resourceSamples/73/time",
+        "sol": 185352.399978386
+      },
+      {
+        "kind": "value",
+        "parent": 185352.749980182,
+        "path": "/save/resourceSamples/73/production_time",
+        "sol": 185352.399980182
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/73/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/73/amount",
+        "sol": 2479146058628426134515988196478681088.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/73/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185352.883311719,
+        "path": "/save/resourceSamples/74/time",
+        "sol": 185352.749978386
+      },
+      {
+        "kind": "value",
+        "parent": 185352.883313515,
+        "path": "/save/resourceSamples/74/production_time",
+        "sol": 185352.749980182
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/74/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2479146058628426134515988196478681088.0,
+        "path": "/save/resourceSamples/74/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/74/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185355.233311719,
+        "path": "/save/resourceSamples/75/time",
+        "sol": 185352.883311719
+      },
+      {
+        "kind": "value",
+        "parent": 185355.233313514,
+        "path": "/save/resourceSamples/75/production_time",
+        "sol": 185352.883313515
+      },
+      {
+        "kind": "value",
+        "parent": "2",
+        "path": "/save/resourceSamples/75/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 101929347666161147778435121152.0,
+        "path": "/save/resourceSamples/75/amount",
+        "sol": 2479146058628426134515988196478681088.0
+      },
+      {
+        "kind": "value",
+        "parent": 84941123055134272223176556544.0,
+        "path": "/save/resourceSamples/75/production_base",
+        "sol": 3079936870165084273666088096497664.0
+      },
+      {
+        "kind": "value",
+        "parent": 185355.533311719,
+        "path": "/save/resourceSamples/76/time",
+        "sol": 185355.233311719
+      },
+      {
+        "kind": "value",
+        "parent": 185355.533313514,
+        "path": "/save/resourceSamples/76/production_time",
+        "sol": 185355.233313514
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/76/id",
+        "sol": "2"
+      },
+      {
+        "kind": "value",
+        "parent": 2479146058628426134515988196478681088.0,
+        "path": "/save/resourceSamples/76/amount",
+        "sol": 101929347666161147778435121152.0
+      },
+      {
+        "kind": "value",
+        "parent": 3079936870165084273666088096497664.0,
+        "path": "/save/resourceSamples/76/production_base",
+        "sol": 84941123055134272223176556544.0
+      },
+      {
+        "kind": "value",
+        "parent": 185355.749978385,
+        "path": "/save/resourceSamples/77/time",
+        "sol": 185355.533311719
+      },
+      {
+        "kind": "value",
+        "parent": 185355.749980181,
+        "path": "/save/resourceSamples/77/production_time",
+        "sol": 185355.533313514
+      },
+      {
+        "kind": "value",
+        "parent": 185355.949978385,
+        "path": "/save/resourceSamples/79/time",
+        "sol": 185355.749978385
+      },
+      {
+        "kind": "value",
+        "parent": 185355.949980181,
+        "path": "/save/resourceSamples/79/production_time",
+        "sol": 185355.749980181
+      },
+      {
+        "kind": "value",
+        "parent": 2480322881925079710184559556822040576.0,
+        "path": "/save/resourceSamples/79/amount",
+        "sol": 2479146058628426134515988196478681088.0
+      },
+      {
+        "kind": "value",
+        "parent": 185356.433311718,
+        "path": "/save/resourceSamples/80/time",
+        "sol": 185355.949978385
+      },
+      {
+        "kind": "value",
+        "parent": 185356.433313514,
+        "path": "/save/resourceSamples/80/production_time",
+        "sol": 185355.949980181
+      },
+      {
+        "kind": "value",
+        "parent": 185362.21664505,
+        "path": "/save/resourceSamples/81/time",
+        "sol": 185356.433311718
+      },
+      {
+        "kind": "value",
+        "parent": 185362.216646846,
+        "path": "/save/resourceSamples/81/production_time",
+        "sol": 185356.433313514
+      },
+      {
+        "kind": "value",
+        "parent": 577488163155957721325209804592906240.0,
+        "path": "/save/resourceSamples/81/amount",
+        "sol": 2480322881925079710184559556822040576.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/81/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/81/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185362.233311717,
+        "path": "/save/resourceSamples/82/time",
+        "sol": 185362.21664505
+      },
+      {
+        "kind": "value",
+        "parent": 185362.233313513,
+        "path": "/save/resourceSamples/82/production_time",
+        "sol": 185362.216646846
+      },
+      {
+        "kind": "value",
+        "parent": 2481498669180147955956543598555561984.0,
+        "path": "/save/resourceSamples/82/amount",
+        "sol": 577488163155957721325209804592906240.0
+      },
+      {
+        "kind": "value",
+        "parent": "drop",
+        "path": "/save/resourceSamples/82/origin",
+        "sol": "galaxy"
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/82/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185364.883311717,
+        "path": "/save/resourceSamples/87/time",
+        "sol": 185362.233311717
+      },
+      {
+        "kind": "value",
+        "parent": 185364.883313512,
+        "path": "/save/resourceSamples/87/production_time",
+        "sol": 185362.233313513
+      },
+      {
+        "kind": "value",
+        "parent": 185365.099978383,
+        "path": "/save/resourceSamples/89/time",
+        "sol": 185364.883311717
+      },
+      {
+        "kind": "value",
+        "parent": 185365.099980179,
+        "path": "/save/resourceSamples/89/production_time",
+        "sol": 185364.883313512
+      },
+      {
+        "kind": "value",
+        "parent": 185365.21664505,
+        "path": "/save/resourceSamples/90/time",
+        "sol": 185365.099978383
+      },
+      {
+        "kind": "value",
+        "parent": 185365.216646845,
+        "path": "/save/resourceSamples/90/production_time",
+        "sol": 185365.099980179
+      },
+      {
+        "kind": "value",
+        "parent": 185367.033311716,
+        "path": "/save/resourceSamples/91/time",
+        "sol": 185365.21664505
+      },
+      {
+        "kind": "value",
+        "parent": 185367.033313512,
+        "path": "/save/resourceSamples/91/production_time",
+        "sol": 185365.216646845
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/91/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/91/amount",
+        "sol": 2481498669180147955956543598555561984.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/91/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185367.166645049,
+        "path": "/save/resourceSamples/92/time",
+        "sol": 185367.033311716
+      },
+      {
+        "kind": "value",
+        "parent": 185367.166646845,
+        "path": "/save/resourceSamples/92/production_time",
+        "sol": 185367.033313512
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/92/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 2482673422705833728106438968370790400.0,
+        "path": "/save/resourceSamples/92/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/92/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185369.833311715,
+        "path": "/save/resourceSamples/93/time",
+        "sol": 185367.166645049
+      },
+      {
+        "kind": "value",
+        "parent": 185369.833313511,
+        "path": "/save/resourceSamples/93/production_time",
+        "sol": 185367.166646845
+      },
+      {
+        "kind": "value",
+        "parent": 185370.033311715,
+        "path": "/save/resourceSamples/94/time",
+        "sol": 185369.833311715
+      },
+      {
+        "kind": "value",
+        "parent": 185370.033313511,
+        "path": "/save/resourceSamples/94/production_time",
+        "sol": 185369.833313511
+      },
+      {
+        "kind": "value",
+        "parent": 185370.233311715,
+        "path": "/save/resourceSamples/96/time",
+        "sol": 185370.033311715
+      },
+      {
+        "kind": "value",
+        "parent": 185370.233313511,
+        "path": "/save/resourceSamples/96/production_time",
+        "sol": 185370.033313511
+      },
+      {
+        "kind": "value",
+        "parent": 185370.716645048,
+        "path": "/save/resourceSamples/97/time",
+        "sol": 185370.233311715
+      },
+      {
+        "kind": "value",
+        "parent": 185370.716646844,
+        "path": "/save/resourceSamples/97/production_time",
+        "sol": 185370.233313511
+      },
+      {
+        "kind": "value",
+        "parent": 185371.266645048,
+        "path": "/save/resourceSamples/98/time",
+        "sol": 185370.716645048
+      },
+      {
+        "kind": "value",
+        "parent": 185371.266646844,
+        "path": "/save/resourceSamples/98/production_time",
+        "sol": 185370.716646844
+      },
+      {
+        "kind": "value",
+        "parent": "jewel",
+        "path": "/save/resourceSamples/98/id",
+        "sol": "1"
+      },
+      {
+        "kind": "value",
+        "parent": 270738.85,
+        "path": "/save/resourceSamples/98/amount",
+        "sol": 2482673422705833728106438968370790400.0
+      },
+      {
+        "kind": "missing_key",
+        "path": "/save/resourceSamples/98/production_base"
+      },
+      {
+        "kind": "value",
+        "parent": 185371.666645048,
+        "path": "/save/resourceSamples/99/time",
+        "sol": 185371.266645048
+      },
+      {
+        "kind": "value",
+        "parent": 185371.666646844,
+        "path": "/save/resourceSamples/99/production_time",
+        "sol": 185371.266646844
+      },
+      {
+        "kind": "value",
+        "parent": 9608522.0,
+        "path": "/save/resourceSamples/99/amount",
+        "sol": 270738.85
+      },
+      {
+        "kind": "value",
+        "parent": "furnace",
+        "path": "/save/resourceSamples/99/origin",
+        "sol": "drop"
+      },
+      {
+        "kind": "value",
+        "parent": 185372.216645048,
+        "path": "/save/resourceSamples/100/time",
+        "sol": 185371.666645048
+      },
+      {
+        "kind": "value",
+        "parent": 185372.216646844,
+        "path": "/save/resourceSamples/100/production_time",
+        "sol": 185371.666646844
+      },
+      {
+        "kind": "value",
+        "parent": "1",
+        "path": "/save/resourceSamples/100/id",
+        "sol": "jewel"
+      },
+      {
+        "kind": "value",
+        "parent": 554388636629719294413039340668059648.0,
+        "path": "/save/resourceSamples/100/amount",
+        "sol": 9608522.0
+      },
+      {
+        "kind": "value",
+        "parent": "galaxy",
+        "path": "/save/resourceSamples/100/origin",
+        "sol": "furnace"
+      },
+      {
+        "kind": "value",
+        "parent": 1791297190.79589,
+        "path": "/save/chronoSavedAt",
+        "sol": 1791297477.79248
+      },
+      {
+        "kind": "value",
+        "parent": 0.566666666530295,
+        "path": "/save/hightechDrops/0/age",
+        "sol": 0.549999999863628
+      },
+      {
+        "kind": "value",
+        "parent": "7081898774612435615",
+        "path": "/rng_state",
+        "sol": "2647014170906538541"
+      },
+      {
+        "kind": "value",
+        "parent": 185672.216645048,
+        "path": "/controller/next_check",
+        "sol": 185672.199978381
+      },
+      {
+        "kind": "value",
+        "parent": 4240.11666668911,
+        "path": "/controller/rows/60/combat",
+        "sol": 4240.10000002245
+      },
+      {
+        "kind": "value",
+        "parent": 185372.233311715,
+        "path": "/controller/segment_start",
+        "sol": 185372.216645048
+      },
+      {
+        "kind": "value",
+        "parent": 0.983333333104383,
+        "path": "/controller/segments/22837/seconds",
+        "sol": 0.966666666441597
+      },
+      {
+        "kind": "value",
+        "parent": 185372.216645118,
+        "path": "/options/duration",
+        "sol": 185372.19997929
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-next-tour-300x1/save_final.json",
+        "path": "/snapshots/final",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-hold60-extension300x1/save_final.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-next-tour-300x1/save_resumed.json",
+        "path": "/snapshots/resumed",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-hold60-extension300x1/save_resumed.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_periodic_181801.json",
+        "path": "/snapshots/periodic_181801",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_periodic_181801.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_space_26.json",
+        "path": "/snapshots/space_26",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_space_26.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/save_periodic_183601.json",
+        "path": "/snapshots/periodic_183601",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/save_periodic_183601.json"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/tour-salvage-1412/parent-converted-clear60.bin",
+        "path": "/lineage/11/checkpoint",
+        "sol": "/workspace/sol-validation/unified-e528-post60-work/checkpoint.bin"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/checkpoint.bin",
+        "path": "/lineage/12/checkpoint",
+        "sol": "/workspace/sol-validation/unified-e528-post60-work/terminal-hold60-3600.bin"
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-hold60-3600x1/actions.jsonl",
+        "path": "/lineage/12/origin_trace",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1/actions.jsonl"
+      },
+      {
+        "kind": "value",
+        "parent": 23679.697274,
+        "path": "/wall_seconds",
+        "sol": 23920.972521
+      },
+      {
+        "kind": "value",
+        "parent": "/workspace/scratch/9ced2a722b42/hyperspace-parent-tour-salvage/diagnostics/parent-e528-next-tour-300x1/actions.jsonl",
+        "path": "/origin_trace",
+        "sol": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-hold60-extension300x1/actions.jsonl"
+      },
+      {
+        "kind": "value",
+        "parent": 80367,
+        "path": "/trace_bytes",
+        "sol": 80591
+      }
+    ],
+    "differences_count": 333,
+    "label": "extension300",
+    "main_rng_equal": false,
+    "parent_sha256": "41c0c13eeea5bbd7bf84afbda90ff8517e06155b100cb72be4880f2aa59bb630",
+    "parent_x1": 185372.233311715,
+    "safe_farm_equal": true,
+    "save_hyperspace_equal": false,
+    "save_loadout_equal": true,
+    "save_resources_equal": true,
+    "sol_sha256": "d0db524eaa9af72ec99f1249a70200a041dc4de3b9589c1668e4ddfdbff32451",
+    "sol_x1": 185372.216645048,
+    "space_policy_equal": true
+  }
+]

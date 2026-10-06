@@ -1,0 +1,60 @@
+[
+  {
+    "label": "hour",
+    "sol_business_count": 1040,
+    "parent_business_count": 1040,
+    "all_business_records_equal": true,
+    "first_difference_index": null,
+    "sol_first_difference": null,
+    "parent_first_difference": null,
+    "after_run_start_records_equal": true
+  },
+  {
+    "label": "extension",
+    "sol_business_count": 112,
+    "parent_business_count": 112,
+    "all_business_records_equal": false,
+    "first_difference_index": 0,
+    "sol_first_difference": {
+      "initial_scope": "checkpoint_continuation_with_formal_journey_regeneration",
+      "kind": "run_start",
+      "options": {
+        "affix_target_tier": 0.0,
+        "allow_new_manual": true,
+        "allow_reforge": false,
+        "checkpoint_wall_seconds": 30.0,
+        "duration": 185372.19997929,
+        "seed": 20261005.0,
+        "stop_clear": 0.0,
+        "visit_seconds": 300.0,
+        "wall_limit_seconds": 14400.0
+      },
+      "page": 0,
+      "scene_provider_scope": "production before_logical_game_tick, ordinary/drone/rail/target callbacks, exact Presented fixed steps",
+      "source_commit": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+      "stage": 60,
+      "x1_seconds": 185072.216645118
+    },
+    "parent_first_difference": {
+      "initial_scope": "checkpoint_continuation_with_formal_journey_regeneration",
+      "kind": "run_start",
+      "options": {
+        "affix_target_tier": 0.0,
+        "allow_new_manual": true,
+        "allow_reforge": false,
+        "checkpoint_wall_seconds": 30.0,
+        "duration": 185372.216645118,
+        "seed": 20261005.0,
+        "stop_clear": 0.0,
+        "visit_seconds": 300.0,
+        "wall_limit_seconds": 14400.0
+      },
+      "page": 0,
+      "scene_provider_scope": "production before_logical_game_tick, ordinary/drone/rail/target callbacks, exact Presented fixed steps",
+      "source_commit": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+      "stage": 60,
+      "x1_seconds": 185072.216645118
+    },
+    "after_run_start_records_equal": true
+  }
+]

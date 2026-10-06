@@ -1,0 +1,11 @@
+{
+  "authority": "Exact terminal drone dictionaries",
+  "new60_replacement_quality": {
+    "space:6:10": "legendary",
+    "space:6:15": "blue",
+    "space:6:8": "blue"
+  },
+  "supersedes": "Earlier prose describing all three replacements as white. No raw evidence changed.",
+  "terminal_active_resource_collector_copies": 1,
+  "terminal_nominal_bonus": 0.1
+}

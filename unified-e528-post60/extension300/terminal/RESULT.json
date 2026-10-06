@@ -1,0 +1,391 @@
+{
+  "source_sha256": "080bd5d2af2497c3f20ffdfd79f52a8ff8dd0beb37167f07ed7c66fcda68865c",
+  "terminal_sha256": "d0db524eaa9af72ec99f1249a70200a041dc4de3b9589c1668e4ddfdbff32451",
+  "entry": "res://qa/post60_supply_hold60.gd",
+  "source_x1": 185072.216645118,
+  "terminal_x1": 185372.216645048,
+  "extension_x1": 299.9999999300053,
+  "wall_seconds": 79.928345,
+  "stage": 60,
+  "input_failure": {},
+  "script_errors": 0,
+  "modernizations": [
+    {
+      "after": {
+        "cores": 3,
+        "energy": 216000.0,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 47,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 3.4790031136207326e+38,
+          "2": 2.5935579741646775e+30
+        }
+      },
+      "before": {
+        "cores": 3,
+        "energy": 216000.0,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 1397,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 3.4790031136207326e+38,
+          "2": 2.5935579741646775e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "kind": "space_forge",
+        "preview": {
+          "cost": {
+            "glueball": 1350.0
+          },
+          "draws": 1,
+          "error": "",
+          "revision": 2
+        },
+        "request": {
+          "args": {},
+          "command_seq": 18,
+          "drone_id": "space:2:3",
+          "expected_revision": 2,
+          "operation": "modernize",
+          "round_id": 6
+        }
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 185089.599978447
+    }
+  ],
+  "modernization_payment_since_actual_clear60_h": 1.0048333330991672,
+  "not_in_original_3600_window": true,
+  "original_equipment_ledger": [
+    {
+      "id": "space:1:2",
+      "present": true,
+      "level": 10,
+      "equipped": true,
+      "ultimate": true,
+      "quality": "white",
+      "modernizations": []
+    },
+    {
+      "id": "space:2:3",
+      "present": true,
+      "level": 60,
+      "equipped": true,
+      "ultimate": false,
+      "quality": "legendary",
+      "modernizations": [
+        {
+          "after": {
+            "cores": 3,
+            "energy": 216000.0,
+            "materials": {
+              "antiproton": 7,
+              "degenerate_matter": 10,
+              "glueball": 47,
+              "zero_point_energy": 0
+            },
+            "resources": {
+              "1": 3.4790031136207326e+38,
+              "2": 2.5935579741646775e+30
+            }
+          },
+          "before": {
+            "cores": 3,
+            "energy": 216000.0,
+            "materials": {
+              "antiproton": 7,
+              "degenerate_matter": 10,
+              "glueball": 1397,
+              "zero_point_energy": 0
+            },
+            "resources": {
+              "1": 3.4790031136207326e+38,
+              "2": 2.5935579741646775e+30
+            },
+            "round": 6
+          },
+          "choice": {
+            "domain": true,
+            "kind": "space_forge",
+            "preview": {
+              "cost": {
+                "glueball": 1350.0
+              },
+              "draws": 1,
+              "error": "",
+              "revision": 2
+            },
+            "request": {
+              "args": {},
+              "command_seq": 18,
+              "drone_id": "space:2:3",
+              "expected_revision": 2,
+              "operation": "modernize",
+              "round_id": 6
+            }
+          },
+          "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+          "kind": "domain_action",
+          "ok": true,
+          "page": 9,
+          "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+          "stage": 60,
+          "x1_seconds": 185089.599978447
+        }
+      ]
+    },
+    {
+      "id": "space:4:3",
+      "present": true,
+      "level": 40,
+      "equipped": false,
+      "ultimate": false,
+      "quality": "blue",
+      "modernizations": []
+    },
+    {
+      "id": "space:6:3",
+      "present": false,
+      "level": null,
+      "equipped": false,
+      "ultimate": null,
+      "quality": null,
+      "modernizations": []
+    },
+    {
+      "id": "space:1:11",
+      "present": true,
+      "level": 20,
+      "equipped": false,
+      "ultimate": false,
+      "quality": "gold",
+      "modernizations": []
+    }
+  ],
+  "materials": {
+    "antiproton": 7,
+    "degenerate_matter": 8,
+    "glueball": 265,
+    "zero_point_energy": 0
+  },
+  "cores": 3,
+  "equipped": {
+    "space:2:3": {
+      "affixes": [
+        {
+          "key": "armour_capacity",
+          "locked": false,
+          "tier": 4,
+          "value": 0.566
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 5,
+          "value": 0.08
+        },
+        {
+          "key": "attack_speed",
+          "locked": false,
+          "tier": 4,
+          "value": 0.035
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 3,
+      "forge_rng_state": "5654130464523979916",
+      "hanging_slots": 0,
+      "hangings": [],
+      "id": "space:2:3",
+      "legendary": true,
+      "legendary_effect": {
+        "effect_id": "drone_master",
+        "parameters": {
+          "maximum_reduction": 0.589
+        }
+      },
+      "level": 60,
+      "omen": false,
+      "origin_quality": "legendary",
+      "planet_id": "6",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:6:10": {
+      "affixes": [
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 5,
+          "value": 0.015
+        },
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 4,
+          "value": 0.035
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 1,
+      "forge_rng_state": "4985827825531712807",
+      "hanging_slots": 0,
+      "hangings": [],
+      "id": "space:6:10",
+      "legendary": true,
+      "legendary_effect": {
+        "effect_id": "black_hole",
+        "parameters": {
+          "damage_multiplier": 1.458
+        }
+      },
+      "level": 60,
+      "omen": false,
+      "origin_quality": "legendary",
+      "planet_id": "6",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:1:2": {
+      "affixes": [],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "7335463139941275162",
+      "hanging_slots": 1,
+      "hangings": [],
+      "id": "space:1:2",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 10,
+      "omen": false,
+      "origin_quality": "white",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": true,
+      "ultimate_affix": {
+        "key": "global_critical_damage",
+        "locked": false,
+        "tier": 4,
+        "value": 0.256
+      },
+      "weapon": "laser"
+    },
+    "space:6:15": {
+      "affixes": [
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 5,
+          "value": 0.095
+        },
+        {
+          "key": "chain_count",
+          "locked": false,
+          "tier": 2,
+          "value": 1.0
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 1,
+      "forge_rng_state": "7540435635227411078",
+      "hanging_slots": 1,
+      "hangings": [
+        "resource_collector"
+      ],
+      "id": "space:6:15",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 60,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "6",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:6:8": {
+      "affixes": [
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 2,
+          "value": 0.648
+        },
+        {
+          "key": "damage_missile",
+          "locked": false,
+          "tier": 5,
+          "value": 0.193
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 1,
+      "forge_rng_state": "-451802683289723060",
+      "hanging_slots": 1,
+      "hangings": [
+        "resource_collector"
+      ],
+      "id": "space:6:8",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 60,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "6",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    }
+  },
+  "module_progress": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "extra_storage": {
+      "exp": 80.0,
+      "level": 2,
+      "unlocked": true
+    },
+    "gem_refiner": {
+      "exp": 36.0,
+      "level": 3,
+      "unlocked": true
+    },
+    "hyperspace_charge": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "resource_collector": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    }
+  },
+  "quality_correction": "Three newly earned60 replacements are one legendary(space:6:10) and two blue(space:6:15/space:6:8), not three white drones. Raw original and terminal drone dictionaries are authoritative.",
+  "nominal_active_resource_collector_bonus": 0.2,
+  "nominal_bonus_scope": "Two actual installed1-level copies, authored effect_growth0.1 each; not net causal income or whole-fleet modernization acceptance."
+}
