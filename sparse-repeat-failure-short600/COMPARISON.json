@@ -1,0 +1,937 @@
+{
+  "original": {
+    "checkpoint_x1": 117396.466660875,
+    "checkpoint_sha256": "81860001fd02a1db3e13834f1be53d75455e27f389defd49838970e264acbafe",
+    "trace_bytes": 275707,
+    "status": "bounded_partial",
+    "input_failure": {},
+    "script_errors": 0,
+    "tour_starts": [
+      116944.299994314,
+      116956.916660977,
+      116983.333327638,
+      117283.333327568,
+      117295.649994232,
+      117305.516660896
+    ],
+    "tour_intervals": [
+      12.616666663001524,
+      26.41666666099627,
+      299.9999999300053,
+      12.316666663988144,
+      9.866666664005606
+    ],
+    "native_click_counts": {
+      "upgrade_slot": 21,
+      "pickup": 25,
+      "distribute_scientists": 2,
+      "reactor_max": 2,
+      "reactor_balance": 2,
+      "ship_select": 1,
+      "refit_open": 5,
+      "option_focus": 88,
+      "option_select": 7,
+      "farm_warp_open": 2,
+      "farm_guard_on": 2,
+      "farm_guard_off": 1,
+      "scientist_max": 1
+    },
+    "counted_actions": 231,
+    "page_visits": 60,
+    "checks": 60,
+    "empty_checks": 42,
+    "domains_success": 12,
+    "domains_failed": 0,
+    "domain_counts": {
+      "space_forge:dismantle": 4,
+      "space_hangings:": 5,
+      "space_forge:add_hanging_slot": 3
+    },
+    "idle_salvage_successes": [
+      {
+        "x1": 116953.299994311,
+        "drone": "space:1:3",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 0
+        }
+      },
+      {
+        "x1": 116953.599994311,
+        "drone": "space:1:8",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 1
+        }
+      },
+      {
+        "x1": 116953.899994311,
+        "drone": "space:1:9",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 2
+        }
+      },
+      {
+        "x1": 116981.816660972,
+        "drone": "space:1:12",
+        "budget": {
+          "round": 1,
+          "tour_started": 116956.916660977,
+          "used": 0
+        }
+      }
+    ],
+    "max_idle_salvage_in_rolling_300_seconds": 4,
+    "tour_reactions": [],
+    "stage": 34,
+    "clear33": 116937.183327649,
+    "clear34": null,
+    "deaths": 4,
+    "loadout": {
+      "defence": [
+        {
+          "key": "armour",
+          "level": 245
+        },
+        {
+          "key": "shield",
+          "level": 245
+        },
+        {
+          "key": "shield",
+          "level": 245
+        }
+      ],
+      "weapons": [
+        {
+          "key": "cannon",
+          "level": 245
+        },
+        {
+          "key": "cannon",
+          "level": 245
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        }
+      ]
+    },
+    "resources": {
+      "1": 2.553123846442764e+21,
+      "2": 3.4076754150661434e+17
+    },
+    "materials": {
+      "antiproton": 4,
+      "degenerate_matter": 4,
+      "glueball": 17,
+      "zero_point_energy": 0
+    },
+    "inventory_warehouse": [
+      "space:1:2",
+      "space:1:5",
+      "space:1:10",
+      "space:1:11",
+      "space:1:13"
+    ],
+    "rng_state": "-1109852922161936027",
+    "active_manual": {},
+    "salvage_success_times": null,
+    "safe_farm_event_counts": {
+      "safe_point_won": 2,
+      "farm_requested": 2,
+      "farm_real_departure": 2,
+      "farm_guard_started": 2,
+      "farm_cycle_won": 53,
+      "farm_growth_ready": 1,
+      "farm_resume_progression": 1
+    },
+    "safe_farm_final": {
+      "attempted_stage": 34,
+      "failed": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0,
+        "13": 0,
+        "14": 0,
+        "15": 0,
+        "16": 0,
+        "17": 0,
+        "18": 0,
+        "19": 0,
+        "20": 0,
+        "21": 0,
+        "22": 0,
+        "23": 0,
+        "24": 0,
+        "25": 0,
+        "26": 0,
+        "27": 0,
+        "28": 0,
+        "29": 0,
+        "30": 0,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 2
+      },
+      "known": {
+        "1": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 35.7166666666659
+        },
+        "2": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 161.566666666687
+        },
+        "3": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 261.883333333424
+        },
+        "4": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 384.883333333312
+        },
+        "5": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 757.016666666307
+        },
+        "6": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 1047.33333333271
+        },
+        "7": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 1948.36666666522
+        },
+        "8": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 4874.86666667988
+        },
+        "9": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 5587.85000000283
+        },
+        "10": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 6841.68333331792
+        },
+        "11": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 7963.09999996827
+        },
+        "12": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 8729.29999995712
+        },
+        "13": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 9685.31666660988
+        },
+        "14": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 10953.1999999248
+        },
+        "15": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 14547.4166665391
+        },
+        "16": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 16260.1333331809
+        },
+        "17": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 20495.2666664526
+        },
+        "18": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 28680.2999996668
+        },
+        "19": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 28864.3499996641
+        },
+        "21": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 45051.083335443
+        },
+        "22": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 52151.2000035562
+        },
+        "23": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 64384.5333393818
+        },
+        "24": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 71062.8833383295
+        },
+        "26": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 85640.800001602
+        },
+        "27": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 90191.1333338759
+        },
+        "28": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 98522.1499986028
+        },
+        "29": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 102346.016664379
+        },
+        "31": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 110600.049995791
+        },
+        "32": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 114508.366661547
+        },
+        "33": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 116807.199994346
+        },
+        "34": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 116948.049994313
+        }
+      },
+      "phase": "farm",
+      "plan": {
+        "baseline": {
+          "enhancement": 16,
+          "modules": 2200,
+          "reactor": 129,
+          "research": 353,
+          "ship": "Battleship"
+        },
+        "cycles": 12,
+        "node": 0,
+        "push_stage": 34,
+        "reason": "Two actual defeats; return to an already won first normal point, no unseen-income ranking",
+        "since": 117305.516660896,
+        "stage": 34
+      },
+      "round_seen": 1
+    },
+    "wall_seconds": 175.273722
+  },
+  "fixed": {
+    "checkpoint_x1": 117396.466660875,
+    "checkpoint_sha256": "357473207d879b57c87da5e855c9843f7dc77f4a0f6d6a1f8304de917d4e5e1e",
+    "trace_bytes": 195144,
+    "status": "bounded_partial",
+    "input_failure": {},
+    "script_errors": 0,
+    "tour_starts": [
+      116944.299994314,
+      116956.916660977,
+      117256.916660907
+    ],
+    "tour_intervals": [
+      12.616666663001524,
+      299.99999992999074
+    ],
+    "native_click_counts": {
+      "upgrade_slot": 17,
+      "pickup": 15,
+      "distribute_scientists": 2,
+      "reactor_max": 2,
+      "reactor_balance": 2,
+      "ship_select": 1,
+      "refit_open": 5,
+      "option_focus": 54,
+      "option_select": 6,
+      "farm_warp_open": 1,
+      "farm_guard_on": 1,
+      "farm_guard_off": 1,
+      "scientist_max": 1
+    },
+    "counted_actions": 150,
+    "page_visits": 30,
+    "checks": 30,
+    "empty_checks": 19,
+    "domains_success": 12,
+    "domains_failed": 0,
+    "domain_counts": {
+      "space_forge:dismantle": 4,
+      "space_hangings:": 5,
+      "space_forge:add_hanging_slot": 3
+    },
+    "idle_salvage_successes": [
+      {
+        "x1": 116953.299994311,
+        "drone": "space:1:3",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 0,
+          "window_seconds": 300.0
+        }
+      },
+      {
+        "x1": 116953.599994311,
+        "drone": "space:1:8",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 1,
+          "window_seconds": 300.0
+        }
+      },
+      {
+        "x1": 116953.899994311,
+        "drone": "space:1:9",
+        "budget": {
+          "round": 1,
+          "tour_started": 116944.299994314,
+          "used": 2,
+          "window_seconds": 300.0
+        }
+      },
+      {
+        "x1": 117265.916660905,
+        "drone": "space:1:12",
+        "budget": {
+          "round": 1,
+          "tour_started": 117256.916660907,
+          "used": 0,
+          "window_seconds": 300.0
+        }
+      }
+    ],
+    "max_idle_salvage_in_rolling_300_seconds": 3,
+    "tour_reactions": [
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": true,
+        "kind": "tour_reaction",
+        "page": 5,
+        "reason": "First actual defeat against this observed encounter",
+        "stage": 34,
+        "x1_seconds": 116951.583327645
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 116964.449994309
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 4,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117264.483327572
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117275.666660903
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117287.683327567
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117298.433327564
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117312.199994228
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117325.966660891
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117336.866660889
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117350.633327552
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117367.866660882
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117382.133327545
+      },
+      {
+        "encounter": "[1, \"main\", 34, 2]",
+        "event": "retreat",
+        "immediate": false,
+        "kind": "tour_reaction",
+        "page": 0,
+        "reason": "Repeated known failure/unlock; keep the sparse baseline",
+        "stage": 34,
+        "x1_seconds": 117395.899994208
+      }
+    ],
+    "stage": 34,
+    "clear33": 116937.183327649,
+    "clear34": null,
+    "deaths": 13,
+    "loadout": {
+      "defence": [
+        {
+          "key": "armour",
+          "level": 245
+        },
+        {
+          "key": "shield",
+          "level": 244
+        },
+        {
+          "key": "shield",
+          "level": 244
+        }
+      ],
+      "weapons": [
+        {
+          "key": "cannon",
+          "level": 244
+        },
+        {
+          "key": "cannon",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        },
+        {
+          "key": "longLaser",
+          "level": 244
+        }
+      ]
+    },
+    "resources": {
+      "1": 4.17944952545656e+21,
+      "2": 1.777150790031572e+17
+    },
+    "materials": {
+      "antiproton": 4,
+      "degenerate_matter": 4,
+      "glueball": 17,
+      "zero_point_energy": 0
+    },
+    "inventory_warehouse": [
+      "space:1:2",
+      "space:1:5",
+      "space:1:10",
+      "space:1:11",
+      "space:1:13"
+    ],
+    "rng_state": "7740372706672565137",
+    "active_manual": {},
+    "salvage_success_times": [
+      117265.916660905
+    ],
+    "safe_farm_event_counts": {
+      "safe_point_won": 2,
+      "farm_requested": 1,
+      "farm_real_departure": 1,
+      "farm_guard_started": 1,
+      "farm_cycle_won": 37,
+      "farm_growth_ready": 1,
+      "farm_resume_progression": 1
+    },
+    "safe_farm_final": {
+      "attempted_stage": 34,
+      "failed": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0,
+        "13": 0,
+        "14": 0,
+        "15": 0,
+        "16": 0,
+        "17": 0,
+        "18": 0,
+        "19": 0,
+        "20": 0,
+        "21": 0,
+        "22": 0,
+        "23": 0,
+        "24": 0,
+        "25": 0,
+        "26": 0,
+        "27": 0,
+        "28": 0,
+        "29": 0,
+        "30": 0,
+        "31": 0,
+        "32": 0,
+        "33": 0,
+        "34": 11
+      },
+      "known": {
+        "1": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 35.7166666666659
+        },
+        "2": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 161.566666666687
+        },
+        "3": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 261.883333333424
+        },
+        "4": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 384.883333333312
+        },
+        "5": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 757.016666666307
+        },
+        "6": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 1047.33333333271
+        },
+        "7": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 1948.36666666522
+        },
+        "8": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 4874.86666667988
+        },
+        "9": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 5587.85000000283
+        },
+        "10": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 6841.68333331792
+        },
+        "11": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 7963.09999996827
+        },
+        "12": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 8729.29999995712
+        },
+        "13": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 9685.31666660988
+        },
+        "14": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 10953.1999999248
+        },
+        "15": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 14547.4166665391
+        },
+        "16": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 16260.1333331809
+        },
+        "17": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 20495.2666664526
+        },
+        "18": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 28680.2999996668
+        },
+        "19": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 28864.3499996641
+        },
+        "21": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 45051.083335443
+        },
+        "22": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 52151.2000035562
+        },
+        "23": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 64384.5333393818
+        },
+        "24": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 71062.8833383295
+        },
+        "26": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 85640.800001602
+        },
+        "27": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 90191.1333338759
+        },
+        "28": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 98522.1499986028
+        },
+        "29": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 102346.016664379
+        },
+        "31": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 110600.049995791
+        },
+        "32": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 114508.366661547
+        },
+        "33": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 116807.199994346
+        },
+        "34": {
+          "node": 0,
+          "round": 1,
+          "tier": "normal",
+          "won_at": 116948.049994313
+        }
+      },
+      "phase": "idle",
+      "plan": {},
+      "round_seen": 1
+    },
+    "wall_seconds": 121.28323
+  }
+}

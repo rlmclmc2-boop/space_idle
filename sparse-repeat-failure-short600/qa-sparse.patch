@@ -1,0 +1,201 @@
+diff --git a/test/progression/hyperspace_checkpoint.gd b/test/progression/hyperspace_checkpoint.gd
+index 5893b6f..0139431 100644
+--- a/test/progression/hyperspace_checkpoint.gd
++++ b/test/progression/hyperspace_checkpoint.gd
+@@ -2,8 +2,8 @@ extends RefCounted
+ ## QA recovery only. Production journey reload regenerates the current battle.
+ const FORMAT=1
+ const QA_CONTINUITY=["early_page_route.gd","hyperspace_player_policy.gd","hyperspace_safe_farm.gd","player_input.gd","scene_driver.gd","presented_balance_game.gd"]
+-const CONTROLLER=["reforge_checkpoint_pending","crew_transfer_burst","next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
+-const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew","idle_salvage_enabled","idle_salvage_budget"]
++const CONTROLLER=["tour_failed_encounters","tour_current_encounter","tour_seen_unlocks","reforge_checkpoint_pending","crew_transfer_burst","next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
++const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew","idle_salvage_enabled","idle_salvage_budget","idle_salvage_success_times"]
+ const FARM=["round_seen","known","failed","attempted_stage","phase","plan"]
+ 
+ static func digest(bytes:PackedByteArray)->String:
+diff --git a/test/progression/hyperspace_longrun.gd b/test/progression/hyperspace_longrun.gd
+index 5f5afe3..47b8e1c 100644
+--- a/test/progression/hyperspace_longrun.gd
++++ b/test/progression/hyperspace_longrun.gd
+@@ -3,6 +3,9 @@ extends "res://qa/early_page_route.gd"
+ const SpacePolicy=preload("res://qa/hyperspace_player_policy.gd")
+ const NoNewManualPolicy=preload("res://qa/no_new_manual_policy.gd")
+ var space_policy:=SpacePolicy.new()
++var tour_failed_encounters:Dictionary={}
++var tour_current_encounter:=""
++var tour_seen_unlocks:Dictionary={}
+ func configure_manual_policy()->void:
+  space_policy=SpacePolicy.new() if bool(options.get("allow_new_manual",true)) else NoNewManualPolicy.new()
+  space_policy.affix_target_tier=clampi(int(options.get("affix_target_tier",0)),0,5)
+@@ -76,6 +79,9 @@ func checkpoint_now()->void:
+  else:record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
+  checkpoint_due=false;next_checkpoint_wall=Time.get_ticks_usec()+int(float(options.get("checkpoint_wall_seconds",30))*1000000)
+ func observe(kind:String,payload:Dictionary)->void:
++ if kind=="state" and game.state==BattleGame.State.COMBAT:
++  var route:String=str(game.profile.hyperspace.active.route) if game.manual_hyperspace.active else "main"
++  tour_current_encounter=str([int(game.profile.hyperspace.round_id),route,game.stage,game.group_index])
+  var farm_event:Dictionary=safe_farm.observe(game,kind,payload,game.simulated_time)
+  if not farm_event.is_empty():record("safe_farm_event",farm_event)
+  if kind=="retreat" or (kind=="hyperspace_manual" and not bool(payload.active) and not bool(payload.success)):
+@@ -112,10 +118,28 @@ func observe(kind:String,payload:Dictionary)->void:
+   reforge_checkpoint_pending.append({"round":int(game.profile.hyperspace.round_id),"x1_seconds":game.simulated_time})
+   checkpoint_due=true
+  if kind=="hyperspace_changed":record("space_feedback",{"payload":payload,"active":game.profile.hyperspace.active.duplicate(true),"energy":game.profile.hyperspace.energy,"warehouse":game.profile.hyperspace.inventory.warehouse.size(),"cores":game.profile.hyperspace.ultimate_cores})
+- if kind=="retreat" or kind=="unlock":next_tour=minf(next_tour,game.simulated_time+0.3)
++ if kind=="retreat" or kind=="unlock":
++  if not game.profile.cleared.has(10):next_tour=minf(next_tour,game.simulated_time+0.3)
++  else:
++   var reason:String=sparse_tour_reaction(kind,payload)
++   record("tour_reaction",{"event":kind,"encounter":tour_current_encounter,"immediate":not reason.is_empty(),"reason":reason if not reason.is_empty() else "Repeated known failure/unlock; keep the sparse baseline"})
++   if not reason.is_empty():next_tour=minf(next_tour,game.simulated_time+0.3)
+  if int(game.profile.highestLevel)>last_frontier:
+   last_frontier=int(game.profile.highestLevel)
+   save_snapshot("reach_%d_round_%d"%[last_frontier,int(game.profile.hyperspace.round_id)])
++func sparse_tour_reaction(kind:String,payload:Dictionary)->String:
++ if kind=="unlock":
++  var fresh:bool=false
++  for id in payload.get("items",[]):
++   if not tour_seen_unlocks.has(str(id)):
++    tour_seen_unlocks[str(id)]=true;fresh=true
++  return "First observed new unlock" if fresh else ""
++ if kind=="retreat" and not tour_current_encounter.is_empty():
++  var encounter:String=tour_current_encounter
++  if tour_failed_encounters.has(encounter) or int(space_policy.encounter_failures.get(encounter,0))>1:return ""
++  tour_failed_encounters[encounter]=true
++  return "First actual defeat against this observed encounter"
++ return ""
+ func crew_action()->Dictionary:
+  var redeploy:Dictionary=space_policy.crew_redeploy_action(game,5,driver.scene.crew_panel.rows.keys(),game.simulated_time)
+  if not redeploy.is_empty():return redeploy
+diff --git a/test/progression/hyperspace_player_policy.gd b/test/progression/hyperspace_player_policy.gd
+index e54de06..916e1c2 100644
+--- a/test/progression/hyperspace_player_policy.gd
++++ b/test/progression/hyperspace_player_policy.gd
+@@ -1,9 +1,11 @@
+ extends RefCounted
+ ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
+-const VERSION="hyperspace-player-v18-tour-budgeted-idle-salvage"
++const VERSION="hyperspace-player-v19-sparse-repeat-failure-rolling-salvage"
+ var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
+ var idle_salvage_budget:Dictionary={"round":-1,"used":0,"tour_started":-1.0}
+-const IDLE_SALVAGE_TOUR_LIMIT:=3
++var idle_salvage_success_times:Array=[]
++const IDLE_SALVAGE_WINDOW_LIMIT:=3
++const IDLE_SALVAGE_WINDOW_SECONDS:=300.0
+ const Bag=preload("res://scripts/drone_inventory.gd")
+ const Permission=preload("res://scripts/hyperspace_permissions.gd")
+ const Rewards=preload("res://scripts/drone_rewards.gd")
+@@ -513,14 +515,14 @@ func salvage_candidates(g,white_only:bool)->Array:
+ func idle_salvage_choice(g,now:float,tour_started:float)->Dictionary:
+  if not idle_salvage_enabled:return {}
+  var round_id:int=int(g.profile.hyperspace.round_id)
+- var tour_id:float=tour_started if tour_started>=0.0 else floorf(now/300.0)*300.0
+- if int(idle_salvage_budget.round)!=round_id or float(idle_salvage_budget.tour_started)!=tour_id:idle_salvage_budget={"round":round_id,"used":0,"tour_started":tour_id}
+- if int(idle_salvage_budget.used)>=IDLE_SALVAGE_TOUR_LIMIT:return {}
++ idle_salvage_success_times=idle_salvage_success_times.filter(func(at):return now-float(at)<IDLE_SALVAGE_WINDOW_SECONDS)
++ idle_salvage_budget={"round":round_id,"used":idle_salvage_success_times.size(),"tour_started":tour_started,"window_seconds":IDLE_SALVAGE_WINDOW_SECONDS}
++ if int(idle_salvage_budget.used)>=IDLE_SALVAGE_WINDOW_LIMIT:return {}
+  for id in salvage_candidates(g,true):
+   var choice:Dictionary=forge_choice(g,id,"dismantle")
+   if choice.is_empty():continue
+   choice.idle_salvage=true;choice.salvage_budget=idle_salvage_budget.duplicate(true)
+-  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three per actual sparse page tour; existing 0.3-second native action"
++  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three successful idle dismantles per rolling300 X1 seconds; existing 0.3-second native action"
+   return choice
+  return {}
+ func space_action(g,now:float,tour_started:float=-1.0)->Dictionary:
+@@ -702,7 +704,8 @@ func execute(g,choice:Dictionary,now:float)->bool:
+    var previous_sequence:int=int(g.profile.hyperspace.command_seq)
+    var result:Dictionary=g.hyperspace.forge(g,choice.request)
+    if str(result.error).is_empty() and choice.get("idle_salvage",false) and int(g.profile.hyperspace.command_seq)>previous_sequence:
+-    idle_salvage_budget.used+=1
++    idle_salvage_success_times.append(now)
++    idle_salvage_budget.used=idle_salvage_success_times.size()
+    if str(result.error).is_empty() and choice.get("paid_affix",false):
+     var key:String=str([g.profile.hyperspace.round_id,choice.request.drone_id])
+     if affix_paid_windows.has(key):affix_paid_windows[key].attempts+=1
+diff --git a/test/progression/test_sparse_tour_reactions.gd b/test/progression/test_sparse_tour_reactions.gd
+new file mode 100644
+index 0000000..21d2589
+--- /dev/null
++++ b/test/progression/test_sparse_tour_reactions.gd
+@@ -0,0 +1,79 @@
++extends SceneTree
++const Run=preload("res://qa/hyperspace_longrun.gd")
++const Policy=preload("res://qa/hyperspace_player_policy.gd")
++const CP=preload("res://qa/hyperspace_checkpoint.gd")
++const Config=preload("res://scripts/hyperspace_config.gd")
++const Rewards=preload("res://scripts/drone_rewards.gd")
++class FakeH:
++ extends RefCounted
++ var config:Dictionary=Config.load_config()
++ var fail:=false
++ func preview_forge(_g,_request):return {"error":"","cost":{}}
++ func forge(g,request):
++  if fail:return {"error":"fixture_rejection"}
++  g.profile.hyperspace.inventory.warehouse.erase(request.drone_id)
++  g.profile.hyperspace.inventory.drones.erase(request.drone_id)
++  g.profile.hyperspace.command_seq+=1
++  return {"error":""}
++class FakeG:
++ extends RefCounted
++ var hyperspace:=FakeH.new()
++ var profile:Dictionary={"highestLevel":60,"selectedShip":"fixture-zero-hull","hyperspace":{"round_id":1,"command_seq":0,"active":{},"inventory":{"drones":{},"warehouse":[],"overflow":[],"equipped":[],"favorites":[],"presets":[],"sealed":{},"reforge_count":0}}}
++var checks:=0
++var failures:=0
++func check(ok:bool,label:String):
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL ",label)
++func add(g,id:String,level:int,quality:String="white",weapon:String="laser"):
++ var rng=RandomNumberGenerator.new();rng.seed=101
++ var d=Rewards.create_drone(rng,g.hyperspace.config,id,quality,weapon,level,"fixture")
++ g.profile.hyperspace.inventory.drones[id]=d;g.profile.hyperspace.inventory.warehouse.append(id)
++func _initialize():
++ var g=FakeG.new();var bag:Dictionary=g.profile.hyperspace.inventory;var p=Policy.new();p.idle_salvage_enabled=true
++ for i in range(6):add(g,"w"+str(i),i+1)
++ bag.drones.w5.level=200
++ add(g,"equipped",20);bag.equipped=["equipped"]
++ add(g,"favorite",1);bag.favorites=["favorite"]
++ add(g,"preset",1);bag.presets=[{"drone_ids":["preset"]}]
++ add(g,"sealed",1);bag.sealed={"sealed":999}
++ add(g,"ultimate",1);bag.drones.ultimate.ultimate=true
++ add(g,"mounted",1);bag.drones.mounted.hangings=["distributed_algorithm"]
++ add(g,"cannon-backup",1,"white","cannon")
++ add(g,"blue",1,"blue")
++ var candidates:Array=p.salvage_candidates(g,true)
++ check(candidates==["w0","w1","w2","w3","w4"],"Protected objects, best unequipped backup, other weapon backup and blue all retained")
++ for i in range(3):
++  var choice:Dictionary=p.idle_salvage_choice(g,100.0+float(i)*0.3,90.0)
++  check(choice.request.drone_id=="w"+str(i),"Finite same-tour visible-score order")
++  check(p.execute(g,choice,100.0+float(i)*0.3),"Successful transaction charged")
++ check(p.idle_salvage_choice(g,100.9,90.0).is_empty(),"Fourth same-tour salvage blocked")
++ var resumed=Policy.new();CP.apply_fields(resumed,CP.fields(p,CP.POLICY),CP.POLICY)
++ check(resumed.idle_salvage_enabled and resumed.idle_salvage_choice(g,200,90).is_empty(),"Checkpoint restore keeps opt-in and spent tour budget")
++ check(p.idle_salvage_choice(g,110,105).is_empty(),"Early reactive tour cannot reset rolling budget")
++ g.profile.hyperspace.round_id=2
++ check(p.idle_salvage_choice(g,120,115).is_empty(),"Reforge round cannot reset rolling budget")
++ var next:Dictionary=p.idle_salvage_choice(g,400,390)
++ check(next.request.drone_id=="w3" and p.idle_salvage_budget.used==2,"Only successful transactions at least300 seconds old expire")
++ g.hyperspace.fail=true;check(not p.execute(g,next,400) and p.idle_salvage_budget.used==2 and bag.drones.has("w3"),"Failed transaction preserves budget and object")
++ g.hyperspace.fail=false
++ # Full-storage recovery is tested independently of idle mode and its spent budget.
++ var full=FakeG.new();var fullbag:Dictionary=full.profile.hyperspace.inventory
++ for i in range(int(full.hyperspace.config.warehouse_capacity)):add(full,"full"+str(i),i+1,"blue")
++ fullbag.overflow.resize(int(full.hyperspace.config.overflow_capacity));fullbag.overflow.fill("fixture")
++ p.idle_salvage_budget={"round":1,"used":3,"tour_started":390.0}
++ for enabled in [true,false]:
++  p.idle_salvage_enabled=enabled
++  var recovery:Dictionary=p.space_action(full,400,390)
++  check(recovery.get("storage_pressure",false) and not recovery.get("idle_salvage",false) and recovery.request.drone_id=="full0","Full storage retains legal nonwhite recovery independently of idle budget/flag")
++ var run=Run.new()
++ run.tour_current_encounter='[1, "main", 34, 2]'
++ check(not run.sparse_tour_reaction("retreat",{}).is_empty(),"First observed encounter defeat retains immediate response")
++ check(run.sparse_tour_reaction("retreat",{}).is_empty(),"Repeated identical defeat does not schedule full tour")
++ run.tour_current_encounter='[1, "main", 34, 3]'
++ check(not run.sparse_tour_reaction("retreat",{}).is_empty(),"Distinct newly observed encounter keeps immediate response")
++ check(not run.sparse_tour_reaction("unlock",{"items":["fixture-new"]}).is_empty(),"New unlock responds immediately")
++ check(run.sparse_tour_reaction("unlock",{"items":["fixture-new"]}).is_empty(),"Repeated unlock does not reset baseline")
++ var restored=Run.new();CP.apply_fields(restored,CP.fields(run,CP.CONTROLLER),CP.CONTROLLER)
++ check(restored.sparse_tour_reaction("retreat",{}).is_empty() and restored.sparse_tour_reaction("unlock",{"items":["fixture-new"]}).is_empty(),"Atomic checkpoint fields preserve reaction memory")
++ run.free();restored.free()
++ print("TOUR_SALVAGE_TEST checks=",checks," failures=",failures);quit(1 if failures else 0)

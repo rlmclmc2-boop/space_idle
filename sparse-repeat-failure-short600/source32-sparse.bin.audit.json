@@ -1,0 +1,64 @@
+{
+  "all_old_controller_and_policy_members_preserved": true,
+  "output_sha256": "7d599a5a15fb618276636d7114d3f90adc1ead51b8a8cacd33e5e84e67cbf245",
+  "qa_whitelist": {
+    "qa/hyperspace_checkpoint.gd": {
+      "after": "a19e4c9ba00c7ae43a265292f3cad90108b3d92904a09415fa89efbd5982c127",
+      "before": "280ce28dfa845e1a46b1cf37435ef474982d791966d5f6093fe939bc77393368"
+    },
+    "qa/hyperspace_longrun.gd": {
+      "after": "13a529ad16fd9729dd2ec5f44e3ccd0a82c126b4d8e04b57fc6e810c947fca03",
+      "before": "9524ad0d8410f3a20d73729729a845eef0335202aa0043e5b1909ac5f51ee47c"
+    },
+    "qa/hyperspace_player_policy.gd": {
+      "after": "0796b0a7241a4b393e7be45d96a4b47e23a04efc7352345850a6514b744922dc",
+      "before": "00e6ac5bd850e3ed0ef423fd5b77503be845cbc8d673c7aadd4ecf79ea3b8105"
+    },
+    "qa/test_sparse_tour_reactions.gd": {
+      "after": "cca91e3ca54b4391504c7f746daaea2e99c1bec40ddd412a50152cf010f60079",
+      "before": null
+    }
+  },
+  "rng_preserved": true,
+  "source_fp": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+  "source_save_sha256": "0cf19353a5ab6db31271b2a4cb429e548449348eca23623dc9450f93cf3ee306",
+  "source_sha256": "ec3c211d1f5f6abcf1de85cf37df5f385ef153061219d71d65e68994ac05ff32",
+  "target_fp": "9d583eb7acba26c538001a2ae4e765b928364d049cc6aa1256ec5e25418580f8",
+  "transition": {
+    "added_controller_defaults": {
+      "tour_current_encounter": "",
+      "tour_failed_encounters": {
+
+      },
+      "tour_seen_unlocks": {
+
+      }
+    },
+    "added_policy_defaults": {
+      "idle_salvage_success_times": []
+    },
+    "exact_whitelist": {
+      "qa/hyperspace_checkpoint.gd": {
+        "after": "a19e4c9ba00c7ae43a265292f3cad90108b3d92904a09415fa89efbd5982c127",
+        "before": "280ce28dfa845e1a46b1cf37435ef474982d791966d5f6093fe939bc77393368"
+      },
+      "qa/hyperspace_longrun.gd": {
+        "after": "13a529ad16fd9729dd2ec5f44e3ccd0a82c126b4d8e04b57fc6e810c947fca03",
+        "before": "9524ad0d8410f3a20d73729729a845eef0335202aa0043e5b1909ac5f51ee47c"
+      },
+      "qa/hyperspace_player_policy.gd": {
+        "after": "0796b0a7241a4b393e7be45d96a4b47e23a04efc7352345850a6514b744922dc",
+        "before": "00e6ac5bd850e3ed0ef423fd5b77503be845cbc8d673c7aadd4ecf79ea3b8105"
+      },
+      "qa/test_sparse_tour_reactions.gd": {
+        "after": "cca91e3ca54b4391504c7f746daaea2e99c1bec40ddd412a50152cf010f60079",
+        "before": null
+      }
+    },
+    "scope": "Authorized same-earned-source short cadence comparison; QA scheduling and budget only; formal battle regeneration on both arms",
+    "source_fp": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+    "source_sha256": "ec3c211d1f5f6abcf1de85cf37df5f385ef153061219d71d65e68994ac05ff32",
+    "target_fp": "9d583eb7acba26c538001a2ae4e765b928364d049cc6aa1256ec5e25418580f8"
+  },
+  "x1_seconds": 116796.449994348
+}
