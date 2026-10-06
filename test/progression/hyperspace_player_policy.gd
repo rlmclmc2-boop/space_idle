@@ -1,6 +1,10 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v16-post60-formal-supply"
+const VERSION="hyperspace-player-v17-budgeted-idle-salvage"
+var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
+var idle_salvage_budget:Dictionary={"round":-1,"used":0,"next_at":0.0}
+const IDLE_SALVAGE_ROUND_LIMIT:=3
+const IDLE_SALVAGE_INTERVAL:=300.0
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
@@ -480,6 +484,30 @@ func paid_affix_supply_action(g,now:float,supply:Dictionary)->Dictionary:
   var crew:String=funding_crew
   if not crew.is_empty() and (not s.auto.enabled or str(s.auto.route)!=route or int(s.auto.level)!=recorded):return {"domain":true,"kind":"space_auto","route":route,"level":recorded,"crew":crew,"paid_affix_supply":supply.duplicate(true),"reason":"Best genuinely recorded eligible required-material source, actual reduced ticket and cap gate"}
  return {}
+func idle_salvage_choice(g,now:float)->Dictionary:
+ if not idle_salvage_enabled:return {}
+ var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
+ if int(idle_salvage_budget.round)!=int(s.round_id):idle_salvage_budget={"round":int(s.round_id),"used":0,"next_at":0.0}
+ if int(idle_salvage_budget.used)>=IDLE_SALVAGE_ROUND_LIMIT or now<float(idle_salvage_budget.next_at):return {}
+ # Keep the best currently usable unequipped backup for every earned weapon type.
+ var backups:Dictionary={}
+ for id in bag.warehouse:
+  if id in bag.equipped or bag.sealed.has(id):continue
+  var d:Dictionary=bag.drones[id];var weapon:String=str(d.weapon)
+  if not backups.has(weapon) or score(d)>score(bag.drones[backups[weapon]]) or (score(d)==score(bag.drones[backups[weapon]]) and str(id)<str(backups[weapon])):backups[weapon]=id
+ var removable:Array=[]
+ for id in bag.warehouse:
+  var d:Dictionary=bag.drones[id]
+  if Bag.protected(bag,id) or d.ultimate or d.legendary or str(d.origin_quality)!="white" or id in backups.values() or not d.hangings.is_empty():continue
+  removable.append(id)
+ removable.sort_custom(func(a,b):return score(bag.drones[a])<score(bag.drones[b]) if score(bag.drones[a])!=score(bag.drones[b]) else str(a)<str(b))
+ for id in removable:
+  var choice:Dictionary=forge_choice(g,id,"dismantle")
+  if choice.is_empty():continue
+  choice.idle_salvage=true;choice.salvage_budget=idle_salvage_budget.duplicate(true)
+  choice.reason="Earned idle white drone; protected fleet and one backup per weapon retained; at most three per round and one per 300 seconds"
+  return choice
+ return {}
 func space_action(g,now:float)->Dictionary:
  if int(g.profile.highestLevel)<7:return {}
  var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
@@ -493,7 +521,11 @@ func space_action(g,now:float)->Dictionary:
  if chosen!=bag.equipped:return {"domain":true,"kind":"space_equip","ids":chosen}
  if chosen!=bag.favorites:return {"domain":true,"kind":"space_favorite","ids":chosen}
  if not chosen.is_empty() and (bag.presets.is_empty() or bag.presets[0].drone_ids!=chosen):return {"domain":true,"kind":"space_preset","ids":chosen}
- # Full storage clears only the least useful legally unprotected object, through dismantle.
+ if idle_salvage_enabled:
+  var salvage:Dictionary=idle_salvage_choice(g,now)
+  if not salvage.is_empty():return salvage
+  if not Bag.has_space(bag,h.config):return {}
+ # Disabled comparison arm retains the original full-storage-only policy.
  if not Bag.has_space(bag,h.config):
   var removable:Array=bag.warehouse.filter(func(id):return not Bag.protected(bag,id))
   removable.sort_custom(func(a,b):return score(bag.drones[a])<score(bag.drones[b]))
@@ -650,6 +682,9 @@ func execute(g,choice:Dictionary,now:float)->bool:
   "space_forge":
    forge_at[str(choice.request.drone_id)]=now
    var result:Dictionary=g.hyperspace.forge(g,choice.request)
+   if str(result.error).is_empty() and choice.get("idle_salvage",false):
+    idle_salvage_budget.used+=1
+    idle_salvage_budget.next_at=now+IDLE_SALVAGE_INTERVAL
    if str(result.error).is_empty() and choice.get("paid_affix",false):
     var key:String=str([g.profile.hyperspace.round_id,choice.request.drone_id])
     if affix_paid_windows.has(key):affix_paid_windows[key].attempts+=1
