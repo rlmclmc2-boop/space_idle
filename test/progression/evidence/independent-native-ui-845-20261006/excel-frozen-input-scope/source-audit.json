@@ -1,0 +1,855 @@
+{
+  "candidate": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "sources_count": 1960,
+  "sources_equal_original_manifest_projection": true,
+  "source_manifest_hash_matches": true,
+  "late_references": 40,
+  "late_blocks_equal_current_mainline": true,
+  "early_with_instances": 15,
+  "all_early_actual_instance_blocks_equal_catalog": true,
+  "early_without_instances": 25,
+  "fallback_member_blocks": 95,
+  "absent_catalog_builder": "test/build_candidate_reward_plan.py absent from frozen Git tree; recorded hash does not supply implementation",
+  "early_fallback_references": [
+    {
+      "reference_id": "normal_neutral3",
+      "source_design_group_id": 1007,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "normal_neutral4",
+      "source_design_group_id": 1008,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "normal_neutral3_physical_attack",
+      "source_design_group_id": 2007,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "normal_longLaser",
+      "source_design_group_id": 1004,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "normal_neutral4_physical_attack",
+      "source_design_group_id": 2008,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "normal_longLaser_physical_attack",
+      "source_design_group_id": 2004,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 8.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral1_physical_attack",
+      "source_design_group_id": 2013,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral2",
+      "source_design_group_id": 1014,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral4",
+      "source_design_group_id": 1016,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_cannon",
+      "source_design_group_id": 1011,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral4_physical_attack",
+      "source_design_group_id": 2016,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_laser",
+      "source_design_group_id": 1009,
+      "reference_member_count": 15,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_longLaser_physical_attack",
+      "source_design_group_id": 2012,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral3",
+      "source_design_group_id": 1015,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_missile_physical_attack",
+      "source_design_group_id": 2010,
+      "reference_member_count": 15,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_longLaser",
+      "source_design_group_id": 1012,
+      "reference_member_count": 3,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "elite_neutral3_physical_attack",
+      "source_design_group_id": 2015,
+      "reference_member_count": 5,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ],
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "boss_physical",
+      "source_design_group_id": 1017,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "boss_energy_physical_attack",
+      "source_design_group_id": 2018,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "boss_energy",
+      "source_design_group_id": 1018,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "boss_physical_physical_attack",
+      "source_design_group_id": 2017,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "ultimate_physical",
+      "source_design_group_id": 1019,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "ultimate_physical_physical_attack",
+      "source_design_group_id": 2019,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "ultimate_energy",
+      "source_design_group_id": 1020,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    },
+    {
+      "reference_id": "ultimate_energy_physical_attack",
+      "source_design_group_id": 2020,
+      "reference_member_count": 1,
+      "early_drop_blocks": [
+        [
+          {
+            "resourceId": 1,
+            "amount": 20.0,
+            "chance": 1.0
+          }
+        ]
+      ]
+    }
+  ]
+}
