@@ -14177,7 +14177,7 @@
   },
   {
     "key": "hyperspace.dismantle_confirm",
-    "text": "拆解将移除此无人机，并按领域规则发放材料与挂设奖励。继续？",
+    "text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
     "params": "",
     "category": "hyperspace"
   },
@@ -14443,5 +14443,13 @@
   {"key": "hyperspace.modernize_no_affixes", "text": "此无人机没有词条。", "params": "", "category": "hyperspace"},
   {"key": "hyperspace.quote_execution_result", "text": "消耗：{cost}\n执行次数：{count}", "params": "cost,count", "category": "hyperspace", "note": "现代化非随机执行，不显示抽取次数"},
 {"key": "equipment.continuous_beam_snapshot_hint", "text": "持续束沿用开火时的属性；升级在下一束开火时生效。", "params": "", "category": "weapon", "note": "装备详情持续束属性快照说明"},
-{"key": "hyperspace.queue_departure_hint", "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。", "params": "", "category": "hyperspace", "note": "手动排队底部提示，不进入探索小卡"}
+{"key": "hyperspace.queue_departure_hint", "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。", "params": "", "category": "hyperspace", "note": "手动排队底部提示，不进入探索小卡"},
+{"key": "hyperspace.dismantle_source_hint", "text": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。", "params": "", "category": "hyperspace"},
+{"key": "hyperspace.module_source_hint", "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。", "params": "", "category": "hyperspace"},
+{"key": "hyperspace.reward_material_item", "text": "{material} ×{count}", "params": "material,count", "category": "hyperspace"},
+{"key": "hyperspace.dismantle_preview", "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。", "params": "materials,count", "category": "hyperspace"},
+{"key": "hyperspace.dismantle_received_materials", "text": "实际收到：{materials}", "params": "materials", "category": "hyperspace"},
+{"key": "hyperspace.dismantle_received_module", "text": "{name} ×{count}：{state}，当前等级 {level}；获得经验 {exp}。", "params": "name,count,state,level,exp", "category": "hyperspace"},
+{"key": "hyperspace.module_first_unlock", "text": "首次解锁", "params": "", "category": "hyperspace"},
+{"key": "hyperspace.module_duplicate", "text": "重复副本", "params": "", "category": "hyperspace"}
 ]

@@ -9,6 +9,7 @@ var quote_label: Label
 var commit_button: Button
 var feedback: Label
 var promotion_hint: Label
+var dismantle_hint: Label
 var quoted_request: Dictionary={}
 var crew_dialog: AcceptDialog
 var crew_choice: OptionButton
@@ -34,6 +35,7 @@ func build_forge(parent: Node) -> void:
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
+ dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
  quote_label=panel.label(parent,t("quote_first"),21);feedback=panel.label(parent,"",21)
  configure_operation()
 func invalidate() -> void:
@@ -42,6 +44,7 @@ func configure_operation() -> void:
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
  promotion_hint.visible=op=="promote_affix"
+ dismantle_hint.visible=op=="dismantle"
  var d: Dictionary=panel.bag.get("drones",{}).get(panel.selected_id,{})
  if d.is_empty():return
  var keys: Array=h().config.affixes.keys() if op=="replace_affix" else game().profile.hyperspace.legendary_collection
@@ -84,12 +87,30 @@ func modernization_text(request_data: Dictionary) -> String:
   var after_text: String=t("times",{"value":str(int(after))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(after*100.0)})
   effects.append(t("modernize_effect",{"name":panel.affix_name(str(a.key)),"before":before_text,"after":after_text}))
  return t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
+func received_materials_text(materials: Dictionary) -> String:
+ var values: Array[String]=[]
+ for key in materials:values.append(t("reward_material_item",{"material":t(str(key)),"count":str(int(materials[key]))}))
+ return " · ".join(values)
+func dismantle_preview_text(request_data: Dictionary) -> String:
+ var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
+ if d.is_empty():return ""
+ var quality: String="legendary" if d.legendary else str(d.origin_quality)
+ var count: int=int(h().config.dismantle_amounts[quality])
+ var route: String=h().config.routes.keys().filter(func(key):return h().config.routes[key].weapon==d.weapon)[0]
+ return t("dismantle_preview",{"materials":received_materials_text({str(h().config.routes[route].material):count}),"count":str(count)})
+func received_rewards_text(rewards: Dictionary) -> String:
+ var lines: Array[String]=[t("dismantle_received_materials",{"materials":received_materials_text(rewards.get("materials",{}))})]
+ for key in rewards.get("modules",{}):
+  var outcome: Dictionary=rewards.modules[key]
+  lines.append(t("dismantle_received_module",{"name":panel.hanging_name(str(key)),"count":str(int(outcome.copies)),"state":t("module_first_unlock") if outcome.newly_unlocked else t("module_duplicate"),"level":str(int(outcome.level)),"exp":"%.0f"%float(outcome.experience_added)}))
+ return "\n".join(lines)
 func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
  var result: Dictionary=h().preview_forge(game(),quoted_request)
  quote_label.text=t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})
  if quoted_request.operation=="modernize":quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
+ if quoted_request.operation=="dismantle" and str(result.error).is_empty():quote_label.text=dismantle_preview_text(quoted_request)+"\n"+quote_label.text
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("quote_ready")
  commit_button.disabled=not str(result.error).is_empty()
 func commit() -> void:
@@ -104,7 +125,8 @@ func execute_quote() -> void:
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var result: Dictionary=h().forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
- if str(result.error).is_empty() and result.get("applied",false):quote_label.text=t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
+ if str(result.error).is_empty() and result.get("applied",false):
+  quote_label.text=received_rewards_text(result.rewards) if result.has("rewards") else t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
  panel.dirty=true;panel.refresh()
 func build_dialog(title: String) -> AcceptDialog:
@@ -155,6 +177,7 @@ func show_modules() -> void:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
   if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
   else:module_dialog.title=t("module_rejected"))
+ dialog_label(body,t("module_source_hint"),18)
  dialog_label(body,t("reforge_module_reset"),18)
  module_dialog.popup_centered(Vector2i(740,510))
 

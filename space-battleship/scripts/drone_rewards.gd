@@ -77,17 +77,20 @@ static func module_progress(c: Dictionary) -> Dictionary:
 	for key in c.hanging_modules:result[key]={"unlocked":false,"level":0,"exp":0.0}
 	return result
 
-static func credit_modules(s: Dictionary,c: Dictionary,drops: Dictionary) -> bool:
+static func credit_modules(s: Dictionary,c: Dictionary,drops: Dictionary,outcomes: Dictionary={}) -> bool:
 	for key in drops:
 		var row: Dictionary=c.hanging_modules[key]
 		var progress: Dictionary=s.hanging_modules[key]
 		var copies:=int(drops[key])
+		var newly_unlocked: bool=not progress.unlocked
 		if not progress.unlocked:progress.unlocked=true;copies-=1
-		progress.exp+=copies*float(row.base_exp)
+		var experience_added:=copies*float(row.base_exp)
+		progress.exp+=experience_added
 		var needed:=float(row.base_exp)*pow(1.0+float(row.exp_growth),int(progress.level))
 		if not is_finite(needed):return false
 		while progress.exp+0.000000001>=needed:
 			progress.exp=maxf(0.0,float(progress.exp)-needed);progress.level+=1
 			needed=float(row.base_exp)*pow(1.0+float(row.exp_growth),int(progress.level))
 			if not is_finite(needed):return false
+		outcomes[key]={"copies":int(drops[key]),"newly_unlocked":newly_unlocked,"experience_added":experience_added,"level":int(progress.level)}
 	return true
