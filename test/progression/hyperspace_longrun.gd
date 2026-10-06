@@ -14,6 +14,7 @@ var safe_farm:=SafeFarm.new()
 var resume_lineage:Array=[]
 var carried_wall_seconds:=0.0
 var checkpoint_due:=true
+var reforge_checkpoint_pending:Array=[]
 var next_checkpoint_wall:=0
 var manifest:Dictionary={}
 var initial_scope:="fresh"
@@ -48,7 +49,28 @@ func save_snapshot(label:String)->void:
  snapshots[label]=path
 func checkpoint_now()->void:
  trace.flush()
- var error:=Checkpoint.write(output+"/checkpoint.bin",Checkpoint.capture(self,manifest),manifest)
+ # Called after the controller/tick returns, never from an event callback.
+ var pending:Array=reforge_checkpoint_pending.duplicate(true)
+ reforge_checkpoint_pending.clear()
+ var captured:Dictionary=Checkpoint.capture(self,manifest)
+ for entry in pending:
+  var round_id:int=int(entry.round)
+  if round_id!=int(game.profile.hyperspace.round_id) or game.manual_hyperspace.active:
+   reforge_checkpoint_pending.assign(pending)
+   input_failure={"kind":"reforge_checkpoint_boundary","round":round_id};record("checkpoint_write_failed",input_failure);return
+  var archive_path:String=output+"/checkpoint-reforge-round-%d.bin"%round_id
+  var archive_error:=Checkpoint.write_once(archive_path,captured,manifest)
+  if archive_error==ERR_ALREADY_EXISTS:
+   var existing:Dictionary=Checkpoint.read_one(archive_path)
+   if not existing.error.is_empty() or int(existing.payload.save.hyperspace.round_id)!=round_id:
+    input_failure={"kind":"reforge_checkpoint_existing_invalid","path":archive_path};record("checkpoint_write_failed",input_failure);return
+   record("reforge_checkpoint_retained",{"path":archive_path,"round":round_id,"sha256":FileAccess.get_sha256(archive_path)})
+  elif archive_error!=OK:
+   reforge_checkpoint_pending.assign(pending)
+   input_failure={"kind":"reforge_checkpoint_io","error":archive_error,"path":archive_path};record("checkpoint_write_failed",input_failure);return
+  else:
+   record("reforge_checkpoint_saved",{"path":archive_path,"round":round_id,"event_x1":entry.x1_seconds,"x1_seconds":captured.x1_seconds,"sha256":FileAccess.get_sha256(archive_path),"scope":"Full controller/statistics/clocks/RNG; formal reload regenerates battle and GUI drafts"})
+ var error:=Checkpoint.write(output+"/checkpoint.bin",captured,manifest)
  if error!=OK:
   input_failure={"kind":"checkpoint_io","error":error};record("checkpoint_write_failed",input_failure)
  else:record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
@@ -87,6 +109,8 @@ func observe(kind:String,payload:Dictionary)->void:
   refeeds.append({"planet":payload.id,"x1_seconds":game.simulated_time,"round":game.profile.hyperspace.round_id,"sealed":game.profile.hyperspace.inventory.sealed.duplicate(),"first_visible_eligibility":space_policy.reforge_observed.get(str([int(game.profile.hyperspace.round_id)-1,payload.id]),{})})
   last_frontier=int(game.profile.highestLevel)
   save_snapshot("reforge_%d"%refeeds.size());next_tour=game.simulated_time;next_check=game.simulated_time
+  reforge_checkpoint_pending.append({"round":int(game.profile.hyperspace.round_id),"x1_seconds":game.simulated_time})
+  checkpoint_due=true
  if kind=="hyperspace_changed":record("space_feedback",{"payload":payload,"active":game.profile.hyperspace.active.duplicate(true),"energy":game.profile.hyperspace.energy,"warehouse":game.profile.hyperspace.inventory.warehouse.size(),"cores":game.profile.hyperspace.ultimate_cores})
  if kind=="retreat" or kind=="unlock":next_tour=minf(next_tour,game.simulated_time+0.3)
  if int(game.profile.highestLevel)>last_frontier:
@@ -330,6 +354,10 @@ func run()->void:
   var controller_start:int=Time.get_ticks_usec() if stage_meter!=null else 0
   await step_controller()
   var controller_elapsed:int=Time.get_ticks_usec()-controller_start if stage_meter!=null else 0
+  if not input_failure.is_empty():break
+  # Reforge command and policy bookkeeping have returned. Capture before
+  # the next logical tick consumes the new round's random streams.
+  if not reforge_checkpoint_pending.is_empty():checkpoint_now()
   if not input_failure.is_empty():break
   var before_stage:int=game.stage;var before_state:int=game.state;var manual:bool=game.manual_hyperspace.active
   if stage_meter==null:driver.before_tick(STEP);game.tick(STEP);driver.after_tick(STEP)
