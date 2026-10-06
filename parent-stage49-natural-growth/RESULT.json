@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-10-06T11:08:33.493224+00:00",
+  "source": "Parent delegation report; originalCP/actions forstage49 notprovided/materializedhere",
+  "candidate_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "reported_push_stage": 49,
+  "reported_current_battle_point": 8,
+  "safe_farm_completed_cycles": 18,
+  "actual_module_levels_before": 3106,
+  "actual_module_levels_after": 3111,
+  "actual_reactor_level_before": 181,
+  "actual_reactor_level_after": 182,
+  "actual_research_before": 396,
+  "actual_research_after": 398,
+  "returned_to_progression": true,
+  "actual_paid_inputs_reported": true,
+  "amounts_not_provided": true,
+  "wall_and_X1_durations_not_provided": true,
+  "actual_farming_stage_not_provided": true,
+  "analysis_scope": "Naturalpost49growth sample forlateranalysis. 18earnedfarmwins->5actualmodulelevels plusreactor/researchgrowth, thenactualpoint8 push. Do notlabelidle/stall, inferfreegrowth, assumeconstantcycleincome or tune fromthissingleunverifiedsample. No parameter/code/QA/savechanges.",
+  "parent_resume_boundary_context": "Parentpreviouslyreported lostexecutionsession after10:26, formalresume fromsameversion CP160435.083317521/stage45/round4/noactivemanual; ~24minwallinterruption retained andbattleformallyregenerated. Notlosslesslivecombat continuation."
+}

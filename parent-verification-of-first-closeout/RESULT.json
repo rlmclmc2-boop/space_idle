@@ -1,0 +1,17 @@
+{
+  "recorded_utc": "2026-10-06T11:08:33.493224+00:00",
+  "verified_evidence_commit_by_parent": "49c837a19bcc1244f0a6cabcf26c56dc017c80c3",
+  "parent_reported_verification": [
+    "845weakterminalCPbody checksum",
+    "2dclear30terminalCPbodychecksum",
+    "rawactiontracecutoffs",
+    "allRESULTfile_sha256 entries"
+  ],
+  "parent_verification_passed": true,
+  "2d_native_clear30_hours": 27.342624999617644,
+  "2d_30_target_met": false,
+  "scope": "ParenthasactuallyGitfetched andverified firstcloseout rawbytes. Earlierbranch-only evidence label superseded forthosefiles; laterstage49report remains reportedonly.",
+  "refund_notice_code_commit": "fb4392f32d3fcdb85f90e9f7816f9d39dc6ea1f7",
+  "native_UI_revalidation_pending": true,
+  "parent_read_only_diff_confirmed_no_economy_change": true
+}
