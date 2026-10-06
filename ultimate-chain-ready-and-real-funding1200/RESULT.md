@@ -19,3 +19,9 @@ godot --headless --path /absolute/path/project --script res://qa/test_sparse_tou
 Crew fixture source is previous crew-reservation-short120/converted.bin.gz, NOT this clear60 CP. Use writable XDG dirs. Build from exact commit using canonical mkproject/project builder; import into isolated project and verify manifest. Only use --skip-import after that same project's own successful import marker. `native-run.json` pins manifest and options; included canonical runner accepts --project, --entry, --label, --godot, --resume and --longrun-options.
 
 Original gate PID122294 remains alive unchanged at e528. Archived readiness heartbeat is an ongoing partial status, not terminal12h. Deadline160142.199994314, first34 COMBAT116942.199994314. Parent original terminal12h did not clear34; parent separate natural10.2306h tail with three armour had six failed battles and no34 clear; neither proves continuous optimal defence for12h. Do not duplicate parent armour diagnostic.
+
+## Authoritative early native snapshot
+
+Actual partial CP X1 `185743.566644962` (371.349999914X1 after resume), SHA `276f8c8868e5b340a83b1f62673b1cfe1b6bb0b41f197cc520a0cf613342d56f`, header/body verified and trace cut exactly99078 bytes. Actual alpha60 record57.55s was earned through native manual challenge; chain remains funding, degenerate8/core3, no paid chain receipts, input_failure{}. `record_prerequisite` is persisted original planning flag, not the current best-record result. Not enough matter to begin restore. This snapshot is not terminal; live1200 segment continues.
+
+Packaging first tried git bundle SHA-only range and Git refused empty bundle; source/code unaffected. Retried named branch range successfully. Evidence22e8c8d was incomplete intermediary; use final current evidence commit instead.

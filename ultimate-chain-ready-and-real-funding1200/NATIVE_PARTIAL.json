@@ -1,0 +1,901 @@
+{
+  "status": "running: funding; paid chain unfinished",
+  "x1_seconds": 185743.566644962,
+  "delta_x1": 371.349999914004,
+  "checkpoint_sha256": "276f8c8868e5b340a83b1f62673b1cfe1b6bb0b41f197cc520a0cf613342d56f",
+  "body_header_hash_verified": true,
+  "trace_bytes": 99078,
+  "stage": 60,
+  "round": 6,
+  "actual_alpha60_history": 57.549999999998,
+  "materials": {
+    "antiproton": 7,
+    "degenerate_matter": 8,
+    "glueball": 341,
+    "zero_point_energy": 0
+  },
+  "cores": 3,
+  "chain": {
+    "core_available": 3,
+    "core_reserve": 2,
+    "created_at": 185381.199978379,
+    "drone": "space:1:2",
+    "material": "degenerate_matter",
+    "minimum": 0,
+    "phase": "funding",
+    "receipts": [],
+    "record_prerequisite": true,
+    "round": 6,
+    "route": "alpha",
+    "source_level": 10,
+    "source_ultimate_affix": {
+      "key": "global_critical_damage",
+      "locked": false,
+      "tier": 4,
+      "value": 0.256
+    },
+    "target_level": 60
+  },
+  "input_failure": {},
+  "raw_event_count": 127,
+  "funding_events": [
+    {
+      "action_kind": "space_manual",
+      "domain": true,
+      "frontier": 61,
+      "kind": "manual_request_queued",
+      "level": 60,
+      "page": 9,
+      "paid_affix_supply": {
+        "available": 8,
+        "core_available": 3,
+        "drone": "space:1:2",
+        "goal": "Earn actual same-route record and reserve the complete real modernization price plus restore/reultimate cores before lowering this equipped ultimate",
+        "material": "degenerate_matter",
+        "minimum": 0,
+        "operation": "ultimate_upgrade_chain",
+        "ready": false,
+        "record_prerequisite": true,
+        "recorded_target": 20,
+        "required_cores": 2,
+        "required_route_level": 60,
+        "route": "alpha",
+        "target_level": 60,
+        "ultimate_chain": true
+      },
+      "reason": "Paid forge-material source; actual earlier main milestone or next +5 challenge, not an injected space record; one safe main boundary and actual ticket",
+      "round": 6,
+      "route": "alpha",
+      "stage": 60,
+      "x1_seconds": 185381.199978379
+    },
+    {
+      "active": {
+        "crew_id": "crew_09",
+        "duration": 117.872117400445,
+        "level": 60,
+        "mode": "auto",
+        "return_journey": {},
+        "reward": {},
+        "round_id": 6,
+        "route": "beta",
+        "run_id": 25,
+        "status": "started",
+        "ticket": 27341.7721518987,
+        "work": 36.8576519909783
+      },
+      "cores": 3,
+      "energy": 199715.523445395,
+      "kind": "space_feedback",
+      "page": 9,
+      "payload": {
+        "reason": "auto_changed",
+        "round_id": 6
+      },
+      "stage": 60,
+      "warehouse": 25,
+      "x1_seconds": 185381.499978379
+    },
+    {
+      "after": {
+        "cores": 3,
+        "energy": 199715.523445395,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 8,
+          "glueball": 265,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 9.962063793755193e+37,
+          "2": 3.510922103160126e+30
+        }
+      },
+      "before": {
+        "cores": 3,
+        "energy": 199715.523445395,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 8,
+          "glueball": 265,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 9.962063793755193e+37,
+          "2": 3.510922103160126e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "kind": "space_auto_pause",
+        "reason": "Hold60 planned manual: stop future auto recurrence without discarding the current paid receipt"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v21-sparse-reserved-crew-ultimate-chain",
+      "stage": 60,
+      "x1_seconds": 185381.499978379
+    },
+    {
+      "active": {
+        "crew_id": "crew_09",
+        "duration": 117.872117400445,
+        "level": 60,
+        "mode": "auto",
+        "return_journey": {},
+        "reward": {
+          "drone": {
+            "affixes": [
+              {
+                "key": "critical_chance",
+                "locked": false,
+                "tier": 2,
+                "value": 0.106
+              }
+            ],
+            "blue_source_bonus": true,
+            "forge_revision": 0,
+            "forge_rng_state": "2564837008353666659",
+            "hanging_slots": 0,
+            "hangings": [],
+            "id": "space:6:25",
+            "legendary": false,
+            "legendary_effect": {},
+            "level": 60,
+            "omen": false,
+            "origin_quality": "blue",
+            "planet_id": "6",
+            "preserved_hanging_slots": 0,
+            "ultimate": false,
+            "ultimate_affix": {},
+            "weapon": "missile"
+          },
+          "hanging_rewards": {},
+          "materials": {
+            "glueball": 76
+          },
+          "ultimate_cores": 0
+        },
+        "round_id": 6,
+        "route": "beta",
+        "run_id": 25,
+        "status": "completed_pending",
+        "ticket": 27341.7721518987,
+        "work": 117.872117400445
+      },
+      "cores": 3,
+      "energy": 216000.0,
+      "kind": "space_feedback",
+      "page": 0,
+      "payload": {
+        "reason": "completed_pending",
+        "round_id": 6
+      },
+      "stage": 60,
+      "warehouse": 25,
+      "x1_seconds": 185462.516645027
+    },
+    {
+      "active": {},
+      "cores": 3,
+      "energy": 216000.0,
+      "kind": "space_feedback",
+      "page": 0,
+      "payload": {
+        "reason": "claimed",
+        "round_id": 6
+      },
+      "stage": 60,
+      "warehouse": 26,
+      "x1_seconds": 185462.516645027
+    },
+    {
+      "after": {
+        "cores": 3,
+        "energy": 216000.0,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 8,
+          "glueball": 341,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 3.1139969033364952e+38,
+          "2": 4.6321449274878975e+30
+        }
+      },
+      "before": {
+        "cores": 3,
+        "energy": 216000.0,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 8,
+          "glueball": 341,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 3.1139969033364952e+38,
+          "2": 4.6321449274878975e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "frontier": 61,
+        "kind": "space_manual_queue",
+        "level": 60,
+        "paid_affix_supply": {
+          "available": 8,
+          "core_available": 3,
+          "drone": "space:1:2",
+          "goal": "Earn actual same-route record and reserve the complete real modernization price plus restore/reultimate cores before lowering this equipped ultimate",
+          "material": "degenerate_matter",
+          "minimum": 0,
+          "operation": "ultimate_upgrade_chain",
+          "ready": false,
+          "record_prerequisite": true,
+          "recorded_target": 20,
+          "required_cores": 2,
+          "required_route_level": 60,
+          "route": "alpha",
+          "target_level": 60,
+          "ultimate_chain": true
+        },
+        "reason": "Paid forge-material source; actual earlier main milestone or next +5 challenge, not an injected space record; one safe main boundary and actual ticket",
+        "round": 6,
+        "route": "alpha"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v21-sparse-reserved-crew-ultimate-chain",
+      "stage": 60,
+      "x1_seconds": 185685.699978308
+    },
+    {
+      "active": {
+        "crew_id": "",
+        "duration": 0.0,
+        "level": 60,
+        "mode": "manual",
+        "return_journey": {
+          "distance": 100.0,
+          "groupIndex": 1,
+          "guardArrived": false,
+          "loop": false,
+          "pendingUnlocks": [],
+          "retreatBossPending": false,
+          "stage": 60,
+          "state": 2
+        },
+        "return_state": {
+          "armour": 4.412414896056643e+64,
+          "buffers": {
+            "0": {
+              "amount": 1.5355203838277119e+65,
+              "key": "armour"
+            },
+            "1": {
+              "amount": 7.916722195591998e+63,
+              "key": "shield"
+            },
+            "2": {
+              "amount": 7.916722195591998e+63,
+              "key": "shield"
+            },
+            "3": {
+              "amount": 6.698764934731691e+63,
+              "key": "shield"
+            }
+          },
+          "charged": {},
+          "clear_reduction_remaining": 0.0,
+          "clear_timer": 0.0,
+          "cooldowns": {
+            "drone:space:1:2": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "drone:space:2:3": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:10": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:15": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:8": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_0": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_1": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_2": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_3": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_4": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_5": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_6": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_7": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            }
+          },
+          "defense_losses": {
+            "0": {
+              "damage": 0.0,
+              "key": "armour",
+              "time": 1.31666666666667
+            },
+            "1": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            },
+            "2": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            },
+            "3": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            }
+          },
+          "defenses": {
+            "0": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "armour",
+              "lockout": 0.0,
+              "owner": "defence_0",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "1": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_1",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "2": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_2",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "3": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_3",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            }
+          },
+          "drone": {
+            "black_hole_damage": 0.0,
+            "black_hole_elapsed": 13.8000000000003,
+            "black_hole_remaining": 0.0,
+            "disabled": [],
+            "dodge_cooldown": 0.0,
+            "missile_attacks": 665,
+            "rebuild_bonus": 0.0,
+            "rebuild_stacks": 0
+          },
+          "enhancement_defense_time": 313.800000000043,
+          "enhancement_deferred": {},
+          "enhancement_deferred_elapsed": 0.0,
+          "enhancement_deferred_tick": 1569,
+          "enhancement_memory_elapsed": 0.0,
+          "incoming_sources": {},
+          "memory_reduction_remaining": 0.0,
+          "paused": false,
+          "run_resources": {
+            "1": 1.8648491323679484e+39,
+            "2": 1.1212228243277724e+30
+          },
+          "shield": 6.474772794803357e+63,
+          "since_hit": 1.31666666666667,
+          "travel_origin": 0.0,
+          "travel_origin_ready": false,
+          "version": 1,
+          "weapons": {
+            "0": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_0",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "1": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_1",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "10": {
+              "key": "laser",
+              "next": 0,
+              "owner": "drone:space:1:2",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "11": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:15",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "12": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:8",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "2": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_2",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "3": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_3",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "4": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_4",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "5": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_5",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "6": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_6",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "7": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_7",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "8": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:2:3",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "9": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:10",
+              "stack_time": 0.0,
+              "stacks": 0
+            }
+          }
+        },
+        "reward": {},
+        "round_id": 6,
+        "route": "alpha",
+        "run_id": 26,
+        "status": "started",
+        "ticket": 108000.0,
+        "work": 0.0
+      },
+      "cores": 3,
+      "energy": 108000.0,
+      "kind": "space_feedback",
+      "page": 9,
+      "payload": {
+        "reason": "started",
+        "round_id": 6
+      },
+      "stage": 60,
+      "warehouse": 26,
+      "x1_seconds": 185686.033311642
+    },
+    {
+      "active": {
+        "crew_id": "",
+        "duration": 0.0,
+        "level": 60,
+        "mode": "manual",
+        "return_journey": {
+          "distance": 100.0,
+          "groupIndex": 1,
+          "guardArrived": false,
+          "loop": false,
+          "pendingUnlocks": [],
+          "retreatBossPending": false,
+          "stage": 60,
+          "state": 2
+        },
+        "return_state": {
+          "armour": 4.412414896056643e+64,
+          "buffers": {
+            "0": {
+              "amount": 1.5355203838277119e+65,
+              "key": "armour"
+            },
+            "1": {
+              "amount": 7.916722195591998e+63,
+              "key": "shield"
+            },
+            "2": {
+              "amount": 7.916722195591998e+63,
+              "key": "shield"
+            },
+            "3": {
+              "amount": 6.698764934731691e+63,
+              "key": "shield"
+            }
+          },
+          "charged": {},
+          "clear_reduction_remaining": 0.0,
+          "clear_timer": 0.0,
+          "cooldowns": {
+            "drone:space:1:2": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "drone:space:2:3": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:10": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:15": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "drone:space:6:8": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_0": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_1": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_2": {
+              "key": "missile",
+              "remaining": 2.31884057971015
+            },
+            "weapons_3": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_4": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_5": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_6": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            },
+            "weapons_7": {
+              "key": "laser",
+              "remaining": 0.483091787439614
+            }
+          },
+          "defense_losses": {
+            "0": {
+              "damage": 0.0,
+              "key": "armour",
+              "time": 1.31666666666667
+            },
+            "1": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            },
+            "2": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            },
+            "3": {
+              "damage": 0.0,
+              "key": "shield",
+              "time": 413.799999999961
+            }
+          },
+          "defenses": {
+            "0": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "armour",
+              "lockout": 0.0,
+              "owner": "defence_0",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "1": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_1",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "2": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_2",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            },
+            "3": {
+              "cover": 0.0,
+              "cover_elapsed": 0.0,
+              "cover_time": 0.0,
+              "key": "shield",
+              "lockout": 0.0,
+              "owner": "defence_3",
+              "resistance_time": 0.0,
+              "resistance_type": 0
+            }
+          },
+          "drone": {
+            "black_hole_damage": 0.0,
+            "black_hole_elapsed": 13.8000000000003,
+            "black_hole_remaining": 0.0,
+            "disabled": [],
+            "dodge_cooldown": 0.0,
+            "missile_attacks": 665,
+            "rebuild_bonus": 0.0,
+            "rebuild_stacks": 0
+          },
+          "enhancement_defense_time": 313.800000000043,
+          "enhancement_deferred": {},
+          "enhancement_deferred_elapsed": 0.0,
+          "enhancement_deferred_tick": 1569,
+          "enhancement_memory_elapsed": 0.0,
+          "incoming_sources": {},
+          "memory_reduction_remaining": 0.0,
+          "paused": false,
+          "run_resources": {
+            "1": 1.8648491323679484e+39,
+            "2": 1.1212228243277724e+30
+          },
+          "shield": 6.474772794803357e+63,
+          "since_hit": 1.31666666666667,
+          "travel_origin": 0.0,
+          "travel_origin_ready": false,
+          "version": 1,
+          "weapons": {
+            "0": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_0",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "1": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_1",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "10": {
+              "key": "laser",
+              "next": 0,
+              "owner": "drone:space:1:2",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "11": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:15",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "12": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:8",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "2": {
+              "key": "missile",
+              "next": 0,
+              "owner": "weapons_2",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "3": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_3",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "4": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_4",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "5": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_5",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "6": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_6",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "7": {
+              "key": "laser",
+              "next": 0,
+              "owner": "weapons_7",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "8": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:2:3",
+              "stack_time": 0.0,
+              "stacks": 0
+            },
+            "9": {
+              "key": "missile",
+              "next": 0,
+              "owner": "drone:space:6:10",
+              "stack_time": 0.0,
+              "stacks": 0
+            }
+          }
+        },
+        "reward": {
+          "drone": {
+            "affixes": [],
+            "blue_source_bonus": false,
+            "forge_revision": 0,
+            "forge_rng_state": "7698779773056308850",
+            "hanging_slots": 0,
+            "hangings": [],
+            "id": "space:6:26",
+            "legendary": false,
+            "legendary_effect": {},
+            "level": 60,
+            "omen": false,
+            "origin_quality": "white",
+            "planet_id": "6",
+            "preserved_hanging_slots": 0,
+            "ultimate": false,
+            "ultimate_affix": {},
+            "weapon": "laser"
+          },
+          "hanging_rewards": {},
+          "materials": {
+            "degenerate_matter": 76
+          },
+          "ultimate_cores": 0
+        },
+        "round_id": 6,
+        "route": "alpha",
+        "run_id": 26,
+        "status": "completed_pending",
+        "ticket": 108000.0,
+        "work": 57.549999999998
+      },
+      "cores": 3,
+      "energy": 125265.0,
+      "kind": "space_feedback",
+      "page": 0,
+      "payload": {
+        "reason": "completed_pending",
+        "round_id": 6
+      },
+      "stage": 60,
+      "warehouse": 26,
+      "x1_seconds": 185743.566644962
+    }
+  ]
+}
