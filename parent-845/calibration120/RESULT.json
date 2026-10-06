@@ -1,0 +1,17 @@
+{
+  "source_cp_sha": "f51b1178c17173a103184d7d39e7d0f24040ad82e8f79d6bd4128bb7a22f11ef",
+  "duration_x1": 120.01666663802462,
+  "full_wall": 54.875684,
+  "cached_wall": 24.814941,
+  "full_vs_cached_wall_ratio": 2.2113969160756817,
+  "saved_differences": [
+    "/save/chronoSavedAt",
+    "/save/hightechSavedAt"
+  ],
+  "business_action_counts": [
+    127,
+    127
+  ],
+  "business_actions_equal": true,
+  "scope": "sameactual845clear60CP formalreload,120X1,full production scene logical driver vs cached VFXfast; headless not normal renderedwindow FPS"
+}
