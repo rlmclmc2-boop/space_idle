@@ -1,12 +1,1 @@
-{
-  "status": "pending parent interface confirmation and spreadsheet-authored workbooks",
-  "steps": [
-    "Use explicit two-workbook entity reader and fixed schema/order manifest; no legacy editable numeric authority alongside it.",
-    "Validate literal types, per-field finite ranges, immutable structure, entity sets, foreign keys, sparse15slot formation and reward allocation coverage including zero-budget members.",
-    "Read catalog/sources as pinned readonly inputs; validate mainline references without duplicate reward numbers; preserve missing provenance limitation.",
-    "Stage four JSON outputs plus import-state manifest through existing atomic_batch rollback transaction; recheck source hashes before commit; preserve no-op byte/mtime stability.",
-    "Call complete business validator during ordinary startup before profile mutation and reject malformed packs clearly; no save migration.",
-    "Wire modernization_base_coefficient=1, existing amplification_start_level=4, auto_duration_crew_base=100 and auto_ticket_crew_base=20; share quotes between settlement and UI, preserve formulas/rounding/material_reward_start_level linkage.",
-    "Test exact defaults and RNG ordering, all-sheet physical shuffle, invalid references/type/immutable edits, write-failure rollback, no-op imports and consumer equivalence; no third longrun."
-  ]
-}
+{"status":"implemented and targeted validated; awaiting final authored remarks/protection workbook readback","candidate_branch":"candidate/hyperspace-entity-import-f9d31b9","implementation":["two authoritative entity workbooks, fixed identity/order, typed literals and full current mappings","five outputs with mainline-derived catalog55 budgets and95 independent fallback rows","1960 hash-pinned sources, original source plan identity and current structural associations validated","shared auto quote, modernization base and amplification start consumed at equal defaults","startup rejects invalid packs before profile/save mutation","configured dismantle reward bound; sampler-equivalent quantization tolerance; zero additive modernization weights accepted"],"remaining":["parent regenerates same workbooks using current AUTHORING_PACKAGE notes/protection","verify final literal values and headers, then integrate unchanged final workbook bytes"],"scope_limits":["no source mapping regeneration or new encounter acceptance certificate","no old-save migration","ordinary write failure rollback, no process-crash multi-file atomic claim","no new full progression longrun"]}
