@@ -1,0 +1,27 @@
+{
+  "old_pid": 85211,
+  "old_status": "operator_stopped",
+  "source_x1": 126776.133325358,
+  "old_wall_seconds": 752.855776,
+  "terminal_cp_sha256": "cb3b814dc9d0b976b5c67d0c8d3e5c0640effffc3693aa0a21d0d1f41c1a7272",
+  "new_entrypoint": "qa/stage_campaign.gd",
+  "environment": {
+    "QA_STAGE_MODE": "cached",
+    "QA_STAGE_VFX_PROBE": "1",
+    "QA_STAGE_VFX_FAST": "1",
+    "QA_IDLE_SALVAGE": "1"
+  },
+  "new_options": {
+    "affix_target_tier": 0,
+    "allow_new_manual": true,
+    "allow_reforge": false,
+    "checkpoint_wall_seconds": 30,
+    "duration": 180000,
+    "seed": 20261005,
+    "stop_clear": 35,
+    "visit_seconds": 300,
+    "wall_limit_seconds": 4347.144
+  },
+  "boundary": "formal production journey reload; current battle regenerated; old policy/controller/RNG restored by existing CP.restore; GUI draft and current segment discontinuities retained in lineage",
+  "parent_calibration": "Parent reported1899 matching business records in first600X1, zero differences; no same-endpoint native full snapshot"
+}

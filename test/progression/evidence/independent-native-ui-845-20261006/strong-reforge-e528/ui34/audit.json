@@ -1,0 +1,1360 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual selected space:1:2",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:2",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernize space:1:2 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernize space:1:2",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native read actual price space:1:2",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse next",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual selected space:1:11",
+			"native": true,
+			"point": [
+				914.597778320312,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:11",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernize space:1:11 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernize space:1:11",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native read actual price space:1:11",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse next",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual selected space:1:13",
+			"native": true,
+			"point": [
+				672.898742675781,
+				429.021301269531
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:13",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernize space:1:13 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernize space:1:13",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native read actual price space:1:13",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse next",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual selected space:1:10",
+			"native": true,
+			"point": [
+				914.597778320312,
+				429.021301269531
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:10",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernize space:1:10 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernize space:1:10",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native read actual price space:1:10",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse next",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual equipped totals",
+			"native": true,
+			"point": [
+				1194.11987304688,
+				796.264221191406
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close totals",
+			"native": true,
+			"point": [
+				370.0,
+				474.0
+			],
+			"visible": true,
+			"window_id": 5
+		},
+		{
+			"disabled": false,
+			"label": "native actual module progression",
+			"native": true,
+			"point": [
+				1087.10815429688,
+				446.245422363281
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close module manager without applying",
+			"native": true,
+			"point": [
+				370.0,
+				562.0
+			],
+			"visible": true,
+			"window_id": 6
+		}
+	],
+	"checks": [
+		{
+			"label": "actual second-round reach34 source formally loaded unchanged",
+			"ok": true
+		},
+		{
+			"label": "actual second round frontier34",
+			"ok": true
+		},
+		{
+			"label": "all ten real kept drones already reclaimed",
+			"ok": true
+		},
+		{
+			"label": "actual ship currently equips four drones",
+			"ok": true
+		},
+		{
+			"label": "actual equipped card found space:1:2",
+			"ok": true
+		},
+		{
+			"label": "actual fleet level space:1:2",
+			"ok": true
+		},
+		{
+			"label": "native modernize space:1:2 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual ultimate modernization blocked",
+			"ok": true
+		},
+		{
+			"label": "actual equipped card found space:1:11",
+			"ok": true
+		},
+		{
+			"label": "actual fleet level space:1:11",
+			"ok": true
+		},
+		{
+			"label": "native modernize space:1:11 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "quote target uses actually retained eligible history space:1:11",
+			"ok": true
+		},
+		{
+			"label": "native price agrees independent base+1 arithmetic space:1:11",
+			"ok": true
+		},
+		{
+			"label": "actual quote label displays cost space:1:11",
+			"ok": true
+		},
+		{
+			"label": "actual materials insufficient, blocked payment space:1:11",
+			"ok": true
+		},
+		{
+			"label": "actual equipped card found space:1:13",
+			"ok": true
+		},
+		{
+			"label": "actual fleet level space:1:13",
+			"ok": true
+		},
+		{
+			"label": "native modernize space:1:13 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "quote target uses actually retained eligible history space:1:13",
+			"ok": true
+		},
+		{
+			"label": "native price agrees independent base+1 arithmetic space:1:13",
+			"ok": true
+		},
+		{
+			"label": "actual quote label displays cost space:1:13",
+			"ok": true
+		},
+		{
+			"label": "actual materials insufficient, blocked payment space:1:13",
+			"ok": true
+		},
+		{
+			"label": "actual equipped card found space:1:10",
+			"ok": true
+		},
+		{
+			"label": "actual fleet level space:1:10",
+			"ok": true
+		},
+		{
+			"label": "native modernize space:1:10 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "quote target uses actually retained eligible history space:1:10",
+			"ok": true
+		},
+		{
+			"label": "native price agrees independent base+1 arithmetic space:1:10",
+			"ok": true
+		},
+		{
+			"label": "actual quote label displays cost space:1:10",
+			"ok": true
+		},
+		{
+			"label": "actual materials insufficient, blocked payment space:1:10",
+			"ok": true
+		},
+		{
+			"label": "actual totals dialog",
+			"ok": true
+		},
+		{
+			"label": "naturally unlocked level0 hanging bonuses currently zero",
+			"ok": true
+		},
+		{
+			"label": "actual module levels zero, no invented positive growth",
+			"ok": true
+		},
+		{
+			"label": "all native observations no forge/equip/attachment/save mutation",
+			"ok": true
+		},
+		{
+			"label": "actual reach34 snapshot original bytes unchanged",
+			"ok": true
+		}
+	],
+	"failures": [],
+	"scope": "Read-only actual reach34 snapshot through normal production main.tscn graphics; paused after formal load; separate from cached campaign",
+	"snapshots": [
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "未选择无人机",
+			"details": "点击无人机查看词条与保护状态",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "00-reclaimed-warehouse",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "脉冲 · 等级 10\n白色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T4 · 25.6% \n挂设：暂无挂设",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "fleet-space-1-2",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:2",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"disabled": true,
+			"id": "space:1:2",
+			"label": "actual-modernization-quote",
+			"materials": {
+				"antiproton": 1.0,
+				"degenerate_matter": 1.0,
+				"glueball": 3.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+
+				},
+				"draws": 0,
+				"error": "ultimate_modification_forbidden",
+				"revision": 2.0
+			},
+			"quote_label": "现代化：等级 10 → 15\n词条效果：\n全局暴击伤害：34.3% → 43.8%\n消耗：无材料消耗\n执行次数：0",
+			"request": {
+				"args": {
+					"target_level": 15
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:2",
+				"expected_revision": 2.0,
+				"operation": "modernize",
+				"round_id": 2.0
+			}
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "脉冲 · 等级 10\n白色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击伤害 · T4 · 25.6% \n挂设：暂无挂设",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "quote-space-1-2",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:2",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n金色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T4 · 3.7% \n全局防御效果提升 · T5 · 7.5% \n全局暴击伤害 · T4 · 20.6% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "fleet-space-1-11",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:11",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"disabled": true,
+			"id": "space:1:11",
+			"label": "actual-modernization-quote",
+			"materials": {
+				"antiproton": 1.0,
+				"degenerate_matter": 1.0,
+				"glueball": 3.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"glueball": 330.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 2.0
+			},
+			"quote_label": "现代化：等级 20 → 30\n词条效果：\n全局暴击率：3.7% → 3.7%\n全局防御效果提升：16.4% → 26.7%\n全局暴击伤害：45.0% → 73.2%\n消耗：胶球 330（持有 3）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 30
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:11",
+				"expected_revision": 2.0,
+				"operation": "modernize",
+				"round_id": 2.0
+			}
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n金色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T4 · 3.7% \n全局防御效果提升 · T5 · 7.5% \n全局暴击伤害 · T4 · 20.6% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "quote-space-1-11",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:11",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 25\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局导弹伤害 · T5 · 19.1% \n全局连发概率 · T5 · 1.9% \n挂设：暂无挂设",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "fleet-space-1-13",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:13",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"disabled": true,
+			"id": "space:1:13",
+			"label": "actual-modernization-quote",
+			"materials": {
+				"antiproton": 1.0,
+				"degenerate_matter": 1.0,
+				"glueball": 3.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"glueball": 190.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 0.0
+			},
+			"quote_label": "现代化：等级 25 → 30\n词条效果：\n全局导弹伤害：53.2% → 67.9%\n全局连发概率：1.9% → 1.9%\n消耗：胶球 190（持有 3）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 30
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:13",
+				"expected_revision": 0.0,
+				"operation": "modernize",
+				"round_id": 2.0
+			}
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 25\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局导弹伤害 · T5 · 19.1% \n全局连发概率 · T5 · 1.9% \n挂设：暂无挂设",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "quote-space-1-13",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:13",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.8% \n全局暴击率 · T5 · 1.2% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "fleet-space-1-10",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:10",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"disabled": true,
+			"id": "space:1:10",
+			"label": "actual-modernization-quote",
+			"materials": {
+				"antiproton": 1.0,
+				"degenerate_matter": 1.0,
+				"glueball": 3.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"glueball": 190.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 0.0
+			},
+			"quote_label": "现代化：等级 20 → 30\n词条效果：\n全局暴击率：1.8% → 1.8%\n全局暴击率：1.2% → 1.2%\n消耗：胶球 190（持有 3）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 30
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:10",
+				"expected_revision": 0.0,
+				"operation": "modernize",
+				"round_id": 2.0
+			}
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.8% \n全局暴击率 · T5 · 1.2% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "quote-space-1-10",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:10",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": ""
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.8% \n全局暴击率 · T5 · 1.2% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "totals-actual-level-zero",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:10",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 6.7%\n暴击伤害: 79.3%\n重复攻击概率: 1.9%\n攻击速度: 0.0%\n全局防御: 16.4%\n装甲容量: 0.0%\n护盾容量: 0.0%\n额外连锁: 0 次\n脉冲伤害: 0.0%\n导弹伤害: 53.2%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 0.0%\n生效传说效果（领域择取）\n暂无生效传说效果"
+		},
+		{
+			"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+			"detail_title": "导弹 · 等级 20\n蓝色 · ",
+			"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.8% \n全局暴击率 · T5 · 1.2% \n挂设：资源收集器",
+			"equipped": [
+				"space:1:2",
+				"space:1:11",
+				"space:1:13",
+				"space:1:10"
+			],
+			"label": "modules-actual-unlocked-zero",
+			"modules": {
+				"distributed_algorithm": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"extra_storage": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"gem_refiner": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				},
+				"hyperspace_charge": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": false
+				},
+				"resource_collector": {
+					"exp": 0.0,
+					"level": 0.0,
+					"unlocked": true
+				}
+			},
+			"selected": "space:1:10",
+			"totals": {
+				"affixes": {
+					"critical_chance": 0.067,
+					"damage_missile": 0.532118854766714,
+					"global_critical_damage": 0.792736649206679,
+					"global_defence": 0.163715594128645,
+					"repeat_chance": 0.019
+				},
+				"armour": 1.0,
+				"attack_speed": 1.0,
+				"chain_count": 0,
+				"critical_chance": 0.067,
+				"critical_damage": 1.79273664920668,
+				"damage": 1.0,
+				"defence": 1.16371559412865,
+				"hangings": {
+					"resource_collector": 0.0
+				},
+				"legendary": {
+
+				},
+				"repeat_chance": 0.019,
+				"shield": 1.0,
+				"weapon_damage": {
+					"cannon": 1.0,
+					"laser": 1.0,
+					"longLaser": 1.0,
+					"missile": 1.53211885476671
+				}
+			},
+			"totals_text": "当前装备总加成（领域投影）\n全局伤害: 0.0%\n暴击概率: 6.7%\n暴击伤害: 79.3%\n重复攻击概率: 1.9%\n攻击速度: 0.0%\n全局防御: 16.4%\n装甲容量: 0.0%\n护盾容量: 0.0%\n额外连锁: 0 次\n脉冲伤害: 0.0%\n导弹伤害: 53.2%\n磁轨伤害: 0.0%\n光束伤害: 0.0%\n已生效挂设总加成\n资源收集器: 0.0%\n生效传说效果（领域择取）\n暂无生效传说效果"
+		}
+	],
+	"source_sha256": "d0faca030562ed6cb30447174408b95c659e09aa67902028bb0da65284f80c67",
+	"target_fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+	"x1_seconds": 126947.349991985
+}

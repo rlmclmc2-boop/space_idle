@@ -1,0 +1,71 @@
+{
+	"budgets": "已装备 4/4 · 传说 0/2 · 究极 1/1",
+	"detail_title": "导弹 · 等级 20\n蓝色 · ",
+	"details": "保护：已装备 · 收藏 · 预设\n全局暴击率 · T5 · 1.8% \n全局暴击率 · T5 · 1.2% \n挂设：资源收集器",
+	"equipped": [
+		"space:1:2",
+		"space:1:11",
+		"space:1:13",
+		"space:1:10"
+	],
+	"label": "fleet-space-1-10",
+	"modules": {
+		"distributed_algorithm": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"extra_storage": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"gem_refiner": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		},
+		"hyperspace_charge": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": false
+		},
+		"resource_collector": {
+			"exp": 0.0,
+			"level": 0.0,
+			"unlocked": true
+		}
+	},
+	"selected": "space:1:10",
+	"totals": {
+		"affixes": {
+			"critical_chance": 0.067,
+			"damage_missile": 0.532118854766714,
+			"global_critical_damage": 0.792736649206679,
+			"global_defence": 0.163715594128645,
+			"repeat_chance": 0.019
+		},
+		"armour": 1.0,
+		"attack_speed": 1.0,
+		"chain_count": 0,
+		"critical_chance": 0.067,
+		"critical_damage": 1.79273664920668,
+		"damage": 1.0,
+		"defence": 1.16371559412865,
+		"hangings": {
+			"resource_collector": 0.0
+		},
+		"legendary": {
+
+		},
+		"repeat_chance": 0.019,
+		"shield": 1.0,
+		"weapon_damage": {
+			"cannon": 1.0,
+			"laser": 1.0,
+			"longLaser": 1.0,
+			"missile": 1.53211885476671
+		}
+	},
+	"totals_text": ""
+}
