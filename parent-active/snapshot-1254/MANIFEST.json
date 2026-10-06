@@ -1,0 +1,60 @@
+{
+  "utc": "2026-10-06T12:54:14Z",
+  "scope": "Authorized game-only raw checkpoints and native numeric action records; actions clipped to atomic checkpoint. Formal reload boundaries retained. No credentials or private communications.",
+  "runs": [
+    {
+      "slug": "galaxy845",
+      "header": {
+        "bytes": 3293772,
+        "code_fingerprint": "4e07f51458d778fa152222ab0d39042cc07f4d7f83d2e1c563479de5e4123983",
+        "continuity_fingerprint": "bad1232730480e235680bac1606fd84147e1cca7aa416035e519a4bb51798b79",
+        "format": 1,
+        "scope": "formal_journey_reload_not_live_combat_restore",
+        "sha256": "fd96ef279f4d53b5eba94c6da2e7204bd06f5e2dbf68d7c6254e1243440dd396",
+        "source_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+        "x1_seconds": 202821.833307652
+      },
+      "files": {
+        "galaxy845-checkpoint.bin.gz": {
+          "raw_sha256": "d4abb0e9a7adf4c7bf005845645c6242c3b79a3844003e16ec8b4272f36c7d3d",
+          "gzip_sha256": "8904466b540c44c540c790fd7e3dfdcaf275308a613c6a05dddfdfaaeb91da20",
+          "gzip_bytes": 126356,
+          "credential_hits": 0
+        },
+        "galaxy845-actions.jsonl.gz": {
+          "raw_sha256": "a00d9e27e977b35097add63d0f1455fe0a1c07962bb8bcf3cd72088a4d921329",
+          "gzip_sha256": "0e5533d8d4ba399b2646fbe7b5e3bb13db961dcf4181a0c967fe6816a89d9585",
+          "gzip_bytes": 179779,
+          "credential_hits": 0
+        }
+      }
+    },
+    {
+      "slug": "resx2",
+      "header": {
+        "bytes": 1198296,
+        "code_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+        "continuity_fingerprint": "0732d0c04b4d5ba8e6e0e8d3788f303917afcd3e73730c171735f091389b63bb",
+        "format": 1,
+        "scope": "formal_journey_reload_not_live_combat_restore",
+        "sha256": "6a8d89bf4461f1335ccafa7cfc37c3ba1ddbb231861f877385fc765b8331c126",
+        "source_commit": "c90fd6f8697e74756ea1ad6536891deb20bbd2d2",
+        "x1_seconds": 79454.466669709
+      },
+      "files": {
+        "resx2-checkpoint.bin.gz": {
+          "raw_sha256": "602f4fe7e888ac0201592f3d232e559db885c22fb4731f124299a2f3fe374db5",
+          "gzip_sha256": "4081696f917dc4e97e835225741a69c96441bfa0b6bd47b6cdb0909460496e65",
+          "gzip_bytes": 54259,
+          "credential_hits": 0
+        },
+        "resx2-actions.jsonl.gz": {
+          "raw_sha256": "139ef568a04a3ff4694efe2cecfd00cdc263f500cb603bac6954193b506cb2be",
+          "gzip_sha256": "2cc0061ba1eaf974d3309d60853d983885515260579534eebef780b0ef63b488",
+          "gzip_bytes": 241339,
+          "credential_hits": 0
+        }
+      }
+    }
+  ]
+}
