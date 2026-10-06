@@ -39,3 +39,6 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 
 
 后续真实存档退票提示补丁复验：[fb4392独立报告](refund-notice-independent-fb4392/README.md)。包含已付票、已结算、未付票、普通档和关闭重开实际页面证据。
+
+
+父真实clear60来源的845独立界面复验：[星系与四路线现代化](parent-real-clear60-independent-ui/README.md)。来源含跨版本前缀与45恢复，报告保留该边界。

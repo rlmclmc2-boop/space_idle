@@ -1,0 +1,1120 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native acknowledge actual pending unlock",
+			"native": true,
+			"point": [
+				202.020492553711,
+				527.067016601562
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native open actual galaxy after clear60",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native start actual available galaxy",
+			"native": true,
+			"point": [
+				1332.49719238281,
+				130.674850463867
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"label": "native actual survey footprint select",
+			"native": true,
+			"point": [
+				874.314575195312,
+				299.225219726562
+			],
+			"slot": 19
+		},
+		{
+			"disabled": false,
+			"label": "native galaxy crew manager",
+			"native": true,
+			"point": [
+				1340.49230957031,
+				190.344146728516
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close galaxy crew manager",
+			"native": true,
+			"point": [
+				260.0,
+				379.5
+			],
+			"visible": true,
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native close galaxy page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native reopen galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native hyperspace after real clear60",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual drone warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:2:2",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual cannon drone",
+			"native": true,
+			"point": [
+				672.898742675781,
+				518.832763671875
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge page",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization operation open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization operation",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native modernization quote cannon",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native back to warehouse for next actual route",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:1:3",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:1:3",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual missile drone",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge page",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization operation open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization operation",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native modernization quote missile",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "short private in-memory cap45 quote using unchanged real records",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native back to warehouse for next actual route",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:2:1",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:2:1",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual laser drone",
+			"native": true,
+			"point": [
+				914.597778320312,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge page",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization operation open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization operation",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native modernization quote laser",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native back to warehouse for next actual route",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:4:2",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse page for space:4:2",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select actual longLaser drone",
+			"native": true,
+			"point": [
+				672.898742675781,
+				518.832763671875
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge page",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization operation open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization operation",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native modernization quote longLaser",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native back to warehouse for next actual route",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse back to first page",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "actual clear60 formal load preserves full hyperspace state and real highest61",
+			"ok": true
+		},
+		{
+			"label": "actual pending unlock notices acknowledged natively",
+			"ok": true
+		},
+		{
+			"label": "actual galaxy navigation available",
+			"ok": true
+		},
+		{
+			"label": "real galaxy_1 selector and page opened",
+			"ok": true
+		},
+		{
+			"label": "native galaxy start enters exploring without fake building",
+			"ok": true
+		},
+		{
+			"label": "native existing building-plan footprint opens correct detail",
+			"ok": true
+		},
+		{
+			"label": "galaxy crew interaction dialog opens",
+			"ok": true
+		},
+		{
+			"label": "galaxy close reopen preserves started state",
+			"ok": true
+		},
+		{
+			"label": "actual drone card found space:2:2",
+			"ok": true
+		},
+		{
+			"label": "native modernization operation actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual corresponding route target cannon 20",
+			"ok": true
+		},
+		{
+			"label": "modernization quote read-only cannon",
+			"ok": true
+		},
+		{
+			"label": "actual drone card found space:1:3",
+			"ok": true
+		},
+		{
+			"label": "native modernization operation actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual corresponding route target missile 55",
+			"ok": true
+		},
+		{
+			"label": "modernization quote read-only missile",
+			"ok": true
+		},
+		{
+			"label": "real beta55 retained but cap45 selects actual beta45",
+			"ok": true
+		},
+		{
+			"label": "domain rejects real55 request above private cap45",
+			"ok": true
+		},
+		{
+			"label": "actual drone card found space:2:1",
+			"ok": true
+		},
+		{
+			"label": "native modernization operation actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual corresponding route target laser 20",
+			"ok": true
+		},
+		{
+			"label": "modernization quote read-only laser",
+			"ok": true
+		},
+		{
+			"label": "actual drone card found space:4:2",
+			"ok": true
+		},
+		{
+			"label": "native modernization operation actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual corresponding route target longLaser 15",
+			"ok": true
+		},
+		{
+			"label": "modernization quote read-only longLaser",
+			"ok": true
+		},
+		{
+			"label": "all real history inventory materials unchanged; quote only no forge payment",
+			"ok": true
+		},
+		{
+			"label": "parent actual source stays byte-identical",
+			"ok": true
+		}
+	],
+	"crossversion_prefix_and45_formal_recovery": true,
+	"failures": [],
+	"formal_scene_regeneration": true,
+	"snapshots": [
+		{
+			"commit_disabled": true,
+			"drone_id": "",
+			"feedback": "",
+			"galaxy_detail": "",
+			"galaxy_detail_slot": -1,
+			"galaxy_selected": "",
+			"galaxy_status": "available",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "01-actual-clear60-formal-load",
+			"pending": [
+				"crew/crew_10"
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "",
+			"feedback": "",
+			"galaxy_detail": "",
+			"galaxy_detail_slot": -1,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "available",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "02-galaxy-entry",
+			"pending": [],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "",
+			"feedback": "",
+			"galaxy_detail": "",
+			"galaxy_detail_slot": -1,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "03-galaxy-started",
+			"pending": [],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "",
+			"feedback": "",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "04-galaxy-building-plan-detail",
+			"pending": [],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "",
+			"feedback": "",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "05-galaxy-real-crew-dialog",
+			"pending": [],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"request": {
+
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "space:2:2",
+			"feedback": "材料不足；报价显示实际所需材料。",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "06-modernize-cannon",
+			"pending": [],
+			"quote": "现代化：等级 5 → 20\n词条效果：\n全局连发概率：1.3% → 1.3%\n复合装甲耐久值：16.8% → 34.9%\n复合装甲耐久值：13.5% → 28.2%\n消耗：反质子 90（持有 6）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 1.0,
+				"drone_id": "space:2:2",
+				"expected_revision": 0.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": false,
+			"drone_id": "space:1:3",
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "06-modernize-missile",
+			"pending": [],
+			"quote": "现代化：等级 15 → 55\n词条效果：\n此无人机没有词条。\n消耗：胶球 0（持有 17）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 55
+				},
+				"command_seq": 1.0,
+				"drone_id": "space:1:3",
+				"expected_revision": 1.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": false,
+			"drone_id": "space:1:3",
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 45,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "07-private-cap45-real-history-boundary",
+			"pending": [],
+			"quote": "现代化：等级 15 → 45\n词条效果：\n此无人机没有词条。\n消耗：胶球 0（持有 17）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 45
+				},
+				"command_seq": 1.0,
+				"drone_id": "space:1:3",
+				"expected_revision": 1.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": false,
+			"drone_id": "space:2:1",
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "06-modernize-laser",
+			"pending": [],
+			"quote": "现代化：等级 15 → 20\n词条效果：\n此无人机没有词条。\n消耗：简并态物质 0（持有 6）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 1.0,
+				"drone_id": "space:2:1",
+				"expected_revision": 2.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			},
+			"stage": 60
+		},
+		{
+			"commit_disabled": true,
+			"drone_id": "space:4:2",
+			"feedback": "同路线没有更高等级首胜记录。",
+			"galaxy_detail": "轨道船坞 · 已规划",
+			"galaxy_detail_slot": 19,
+			"galaxy_selected": "galaxy_1",
+			"galaxy_status": "exploring",
+			"highest": 61,
+			"history": {
+				"alpha": {
+					"10": 67.7333333333308,
+					"15": 78.3666666666635,
+					"20": 64.8499999999976,
+					"5": 178.066666666701
+				},
+				"beta": {
+					"15": 127.616666666661,
+					"20": 76.9166666666636,
+					"25": 80.0999999999967,
+					"30": 69.916666666664,
+					"35": 82.3833333333299,
+					"40": 63.0999999999977,
+					"45": 93.9999999999959,
+					"5": 145.616666666675,
+					"55": 94.2666666666626
+				},
+				"delta": {
+					"15": 56.949999999998
+				},
+				"gamma": {
+					"15": 54.6333333333315,
+					"20": 77.9333333333302,
+					"5": 65.7333333333309
+				}
+			},
+			"label": "06-modernize-longLaser",
+			"pending": [],
+			"quote": "现代化：等级 15 → 15\n词条效果：\n此无人机没有词条。\n消耗：无材料消耗\n执行次数：0",
+			"request": {
+				"args": {
+					"target_level": 15
+				},
+				"command_seq": 1.0,
+				"drone_id": "space:4:2",
+				"expected_revision": 0.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			},
+			"stage": 60
+		}
+	],
+	"source_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+	"source_evidence_commit": "bf09ce3c9c8bf2c0405a7893337896484237aab7",
+	"source_sha": "cdcb3044e428a0471d3ff5a57d5570bfaf925a0aaf8078f322cb1cd3d7b88e8a"
+}
