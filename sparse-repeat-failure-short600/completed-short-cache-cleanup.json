@@ -1,0 +1,9 @@
+{
+  "completed_short_run_processes": "123371 and124159 exited naturally; original gate122294 still alive",
+  "project": "/workspace/sol-validation/sparse-repeat-failure-qa",
+  "removed_reconstructible_cache": ".godot",
+  "cache_bytes": 151023011,
+  "raw_diagnostics_and_package_sources_retained": true,
+  "import_marker_archived": "fixed-qa-import-complete.json",
+  "future_use_requires_own_editor_import": true
+}
