@@ -1,0 +1,71 @@
+{
+  "checkpoint_sha256": "a633a7ddd20647e42e37391a943e5e5b0608343201d7eeacba4cc9cdb1843a95",
+  "x1_seconds": 186872.249978032,
+  "wall_seconds": 69.208936,
+  "input_failure": {},
+  "trace_bytes": 62057,
+  "status": "bounded_partial",
+  "round": 6,
+  "phase": "complete",
+  "elapsed_x1": 300.0166665969882,
+  "receipts": [
+    {
+      "command_seq_after": 25,
+      "cores_after": 3,
+      "cost": {
+        "ultimate_cores": 1.0
+      },
+      "level": 10,
+      "materials_after": {
+        "antiproton": 7,
+        "degenerate_matter": 312,
+        "glueball": 321,
+        "zero_point_energy": 0
+      },
+      "operation": "restore_ultimate",
+      "ultimate": false,
+      "x1_seconds": 186581.4999781
+    },
+    {
+      "command_seq_after": 26,
+      "cores_after": 3,
+      "cost": {
+        "degenerate_matter": 190.0
+      },
+      "level": 60,
+      "materials_after": {
+        "antiproton": 7,
+        "degenerate_matter": 122,
+        "glueball": 321,
+        "zero_point_energy": 0
+      },
+      "operation": "modernize",
+      "ultimate": false,
+      "x1_seconds": 186581.7999781
+    },
+    {
+      "command_seq_after": 27,
+      "cores_after": 2,
+      "cost": {
+        "ultimate_cores": 1.0
+      },
+      "level": 60,
+      "materials_after": {
+        "antiproton": 7,
+        "degenerate_matter": 122,
+        "glueball": 321,
+        "zero_point_energy": 0
+      },
+      "operation": "ultimate",
+      "ultimate": true,
+      "x1_seconds": 186582.0999781
+    }
+  ],
+  "cores": 3,
+  "materials": {
+    "antiproton": 7,
+    "degenerate_matter": 427,
+    "glueball": 321,
+    "zero_point_energy": 0
+  }
+}

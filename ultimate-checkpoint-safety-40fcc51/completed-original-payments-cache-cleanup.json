@@ -1,0 +1,10 @@
+{
+  "project": "/workspace/sol-validation/post60-original-equipped-payments-qa",
+  "reason": "completed own diagnostic import cache only; low disk threatens active gate",
+  "utc": "2026-10-06T17:22:58.475933+00:00",
+  "archived_import_marker": {
+    "project": "/workspace/sol-validation/post60-original-equipped-payments-qa",
+    "manifest_fingerprint": "a41cb7181ffa702bd308ecd54a7cf90438723e00bf61da1847f8771100633682"
+  },
+  "raw_diagnostics_retained": true
+}

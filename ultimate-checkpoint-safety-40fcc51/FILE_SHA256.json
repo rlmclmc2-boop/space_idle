@@ -1,0 +1,18 @@
+{
+  "RESULT.md": "f4faa53866cb6c536dc0b90224eaa9db16f2af4b033602e7796034c7dbbe0d4f",
+  "actions.jsonl.gz": "e181c5d352289c5ca74473e982d754f45e1b92736167582a83142669f8026e2b",
+  "checkpoint-safety.bundle": "8abea9643c733bb8c7feee7c91059518631fa8c0c9c82b8222d02b6dced06b6a",
+  "checkpoint-safety.patch": "a7213246bb0e07a4cbaae2b3eb4c72a9a43e6fcfb707d49bb9f9c1abdb160fec",
+  "checkpoint-ultimate-round-6-drone-361f4caef955f54e-step-27-ultimate.bin.gz": "f43b4669006c34786dec95437c25510adc5e9191f8c975026f179c8069b1ef7c",
+  "checkpoint.bin.gz": "69f4a9151b9511a93cee65d73f6bf6b43db6638748373bf928622a403e55be8e",
+  "checkpoint.bin.previous.gz": "1a4ecbe3d1ff36d273f278bba2c5904727735b12a26161a1735b6262dc4f70ef",
+  "completed-original-payments-cache-cleanup.json": "b05f5381183f807dff86a185892a1dc9ffa04b65978e1927b393e5be9d73e4f8",
+  "fixture-working-manifest.json": "9cad61a12ead67d734d503d106441dae6e197059bae32b34cc926b113d712533",
+  "qa-import-complete.json": "1a09d80d5925f4170f16e0736779ed287b3b49d2862cb0cc30efcbb53edf58dd",
+  "qa-manifest.json": "ce0a8bf0cec674a721abb35ef978d15997cb765565e9de35c627ec4ca23867e0",
+  "read-two-terminal.log": "f6da49dc599f8a6d78c440cfc41276ea8048799716177cfadf9dbcb7f9c772f3",
+  "real-paid-step27-source.bin.gz": "e1ac31f0c72b122cd3167aa0e0c972c7cf00221d01d7c9e06150baa05f7df237",
+  "safety-fixture.log": "6f61b45e4fac6498b59d03082517bf889f062a0ef5d817361b14e03c78472430",
+  "safety-import.log": "2aca515261e85cd13799f0f572a846708c552d05e900f850e3e77a20c9661223",
+  "ultimate-completed-cache-cleanup.json": "0fca9d66728ff6a40dcbf8e3019a8f8c42302e18788896fb6356e1ccfa15a35f"
+}

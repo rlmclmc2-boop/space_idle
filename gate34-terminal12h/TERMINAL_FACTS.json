@@ -1,0 +1,16 @@
+{
+  "checkpoint_sha256": "b8afae333a20cf1113b42e9bc5363355f995f93334162f0010627f77005c3934",
+  "x1_seconds": 160142.216650922,
+  "wall_seconds": 6735.568662,
+  "input_failure": {},
+  "trace_bytes": 12263826,
+  "status": "bounded_partial",
+  "round": 1,
+  "phase": null,
+  "first34_main_combat_x1": 116942.199994314,
+  "deadline_x1": 160142.199994314,
+  "elapsed_h": 12.000004626835556,
+  "clear34": null,
+  "frozen_commit": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+  "fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d"
+}

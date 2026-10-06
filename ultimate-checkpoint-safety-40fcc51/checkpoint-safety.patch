@@ -1,0 +1,118 @@
+diff --git a/test/progression/hyperspace_longrun.gd b/test/progression/hyperspace_longrun.gd
+index d3d0dc4..715d4d1 100644
+--- a/test/progression/hyperspace_longrun.gd
++++ b/test/progression/hyperspace_longrun.gd
+@@ -51,6 +51,9 @@ func save_snapshot(label:String)->void:
+  if error!=OK:input_failure={"kind":"snapshot_io","error":error,"path":path}
+  checkpoint_due=true
+  snapshots[label]=path
++static func ultimate_checkpoint_name(entry:Dictionary,round_id:int,drone_id:String)->String:
++ var identity:String=Checkpoint.digest(str(entry.get("drone",drone_id)).to_utf8_buffer()).substr(0,16)
++ return "checkpoint-ultimate-round-%d-drone-%s-step-%d-%s.bin"%[int(entry.get("round",round_id)),identity,int(entry.command_seq),str(entry.operation)]
+ func checkpoint_now()->void:
+  trace.flush()
+  # Called after the controller/tick returns, never from an event callback.
+@@ -59,8 +62,17 @@ func checkpoint_now()->void:
+  var ultimate_pending:Array=ultimate_upgrade_checkpoint_pending.duplicate(true)
+  ultimate_upgrade_checkpoint_pending.clear()
+  var captured:Dictionary=Checkpoint.capture(self,manifest)
++ # Preserve the current paid state before optional write-once archives.
++ var error:=Checkpoint.write(output+"/checkpoint.bin",captured,manifest)
++ if error!=OK:
++  reforge_checkpoint_pending.assign(pending)
++  ultimate_upgrade_checkpoint_pending.assign(ultimate_pending)
++  input_failure={"kind":"checkpoint_io","error":error};record("checkpoint_write_failed",input_failure);return
++ record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
+  for entry in ultimate_pending:
+-  var archive_path:String=output+"/checkpoint-ultimate-step-%d.bin"%int(entry.command_seq)
++  var round_id:int=int(entry.get("round",game.profile.hyperspace.round_id))
++  var drone_id:String=str(entry.get("drone",space_policy.ultimate_upgrade_chain.get("drone","")))
++  var archive_path:String=output+"/"+ultimate_checkpoint_name(entry,round_id,drone_id)
+   var archive_error:=Checkpoint.write_once(archive_path,captured,manifest)
+   if archive_error!=OK:
+    ultimate_upgrade_checkpoint_pending.assign(ultimate_pending)
+@@ -83,10 +95,6 @@ func checkpoint_now()->void:
+    input_failure={"kind":"reforge_checkpoint_io","error":archive_error,"path":archive_path};record("checkpoint_write_failed",input_failure);return
+   else:
+    record("reforge_checkpoint_saved",{"path":archive_path,"round":round_id,"event_x1":entry.x1_seconds,"x1_seconds":captured.x1_seconds,"sha256":FileAccess.get_sha256(archive_path),"scope":"Full controller/statistics/clocks/RNG; formal reload regenerates battle and GUI drafts"})
+- var error:=Checkpoint.write(output+"/checkpoint.bin",captured,manifest)
+- if error!=OK:
+-  input_failure={"kind":"checkpoint_io","error":error};record("checkpoint_write_failed",input_failure)
+- else:record("checkpoint_saved",{"path":output+"/checkpoint.bin","continuity_fingerprint":Checkpoint.continuity(manifest)})
+  checkpoint_due=false;next_checkpoint_wall=Time.get_ticks_usec()+int(float(options.get("checkpoint_wall_seconds",30))*1000000)
+ func observe(kind:String,payload:Dictionary)->void:
+  if kind=="state" and game.state==BattleGame.State.COMBAT:
+@@ -249,7 +257,7 @@ func click_button(choice:Dictionary)->void:
+  var ok:bool=game.set_enhancement_branch(choice.category,choice.effect,int(choice.node),choice.choice) if choice.kind=="enhancement_branch" else space_policy.execute(game,choice,game.simulated_time)
+  if ok:
+   if choice.get("ultimate_chain",false):
+-   ultimate_upgrade_checkpoint_pending.append({"command_seq":int(game.profile.hyperspace.command_seq),"operation":str(choice.request.operation)})
++   ultimate_upgrade_checkpoint_pending.append({"round":int(game.profile.hyperspace.round_id),"drone":str(choice.request.drone_id),"command_seq":int(game.profile.hyperspace.command_seq),"operation":str(choice.request.operation)})
+    checkpoint_due=true
+    record("ultimate_chain_step",{"plan":space_policy.ultimate_upgrade_chain.duplicate(true),"scope":"Actual committed production forge; complete QA state archived after this tick"})
+   clicks+=1;row(game.stage).clicks+=1;domain_rejections=0;last_domain_rejection=""
+diff --git a/test/progression/test_ultimate_checkpoint_safety.gd b/test/progression/test_ultimate_checkpoint_safety.gd
+new file mode 100644
+index 0000000..a32f877
+--- /dev/null
++++ b/test/progression/test_ultimate_checkpoint_safety.gd
+@@ -0,0 +1,59 @@
++extends "res://qa/hyperspace_longrun.gd"
++## Persistence fixture only: no ticks, new campaign, or paid business commands.
++var fixture_checks:=0
++var fixture_failures:=0
++func verify(ok:bool,label:String)->void:
++ fixture_checks+=1
++ if not ok:fixture_failures+=1;printerr("FAIL ",label)
++func _initialize()->void:
++ var source:String=OS.get_environment("QA_ULTIMATE_PAID_SOURCE")
++ var original:String=FileAccess.get_sha256(source)
++ var loaded:Dictionary=Checkpoint.read_one(source)
++ assert(loaded.error.is_empty())
++ var payload:Dictionary=loaded.payload
++ game=Game.new(ShipDatabase.new())
++ var raw:Dictionary=payload.save.duplicate(true);raw.chronoSavedAt=Time.get_unix_time_from_system();game.load_progress_data(raw)
++ game.simulated_time=payload.x1_seconds
++ Checkpoint.apply_fields(space_policy,payload.space_policy,Checkpoint.POLICY)
++ manifest=JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json"))
++ output=OS.get_environment("QA_CHECKPOINT_FIXTURE_OUTPUT")
++ assert(not output.is_empty() and not DirAccess.dir_exists_absolute(output))
++ DirAccess.make_dir_recursive_absolute(output)
++ trace=FileAccess.open(output+"/actions.jsonl",FileAccess.WRITE);wall_started=Time.get_ticks_usec()
++ options={"checkpoint_wall_seconds":30}
++ var plan:Dictionary=space_policy.ultimate_upgrade_chain
++ verify(plan.phase=="complete" and plan.receipts.size()==3,"Fixture source is a real complete paid chain")
++ var entry:Dictionary={"round":int(game.profile.hyperspace.round_id),"drone":str(plan.drone),"command_seq":int(game.profile.hyperspace.command_seq),"operation":"ultimate"}
++ var name:String=ultimate_checkpoint_name(entry,0,"")
++ var next_round:Dictionary=entry.duplicate(true);next_round.round+=1
++ verify(name!=ultimate_checkpoint_name(next_round,0,""),"Reset command sequence in another round cannot collide")
++ var another:Dictionary=entry.duplicate(true);another.drone="different-real-id-for-name-fixture"
++ verify(name!=ultimate_checkpoint_name(another,0,""),"Different drone identity cannot collide")
++ var before:Dictionary=Checkpoint.capture(self,manifest)
++ verify(Checkpoint.write_once(output+"/"+name,before,manifest)==OK,"Seed actual occupied write-once name")
++ var archive_sha:String=FileAccess.get_sha256(output+"/"+name)
++ ultimate_upgrade_checkpoint_pending.append(entry)
++ checkpoint_now()
++ var primary:Dictionary=Checkpoint.read_one(output+"/checkpoint.bin")
++ verify(primary.error.is_empty(),"Archive collision leaves valid primary already written")
++ verify(primary.payload.space_policy.ultimate_upgrade_chain==plan,"Primary retains all three actual paid receipts and complete phase")
++ verify(primary.payload.save.hyperspace.materials==game.profile.hyperspace.materials and primary.payload.save.hyperspace.ultimate_cores==game.profile.hyperspace.ultimate_cores,"Primary preserves exact actual paid balances")
++ verify(input_failure.kind=="ultimate_chain_checkpoint_io" and input_failure.error==ERR_ALREADY_EXISTS,"Collision is explicitly reported, never hidden")
++ verify(FileAccess.get_sha256(output+"/"+name)==archive_sha,"Write-once collision does not overwrite original archive")
++ verify(ultimate_upgrade_checkpoint_pending.size()==1,"Failed archive intent remains pending in memory")
++ input_failure={};ultimate_upgrade_checkpoint_pending.clear()
++ var bad:Dictionary=entry.duplicate(true);bad.operation="missing-parent/ultimate"
++ ultimate_upgrade_checkpoint_pending.append(bad)
++ checkpoint_now()
++ primary=Checkpoint.read_one(output+"/checkpoint.bin")
++ verify(primary.error.is_empty() and primary.payload.space_policy.ultimate_upgrade_chain.receipts.size()==3,"Missing archive directory leaves fresh paid-state primary valid")
++ verify(not input_failure.is_empty() and input_failure.kind=="ultimate_chain_checkpoint_io","Archive open failure is explicit")
++ verify(Checkpoint.read_one(output+"/checkpoint.bin.previous").error.is_empty(),"Primary update retains valid backup")
++ input_failure={};ultimate_upgrade_checkpoint_pending.clear();ultimate_upgrade_checkpoint_pending.append(entry)
++ var prior_output:String=output;output=prior_output+"/missing-primary-parent"
++ checkpoint_now();output=prior_output
++ verify(input_failure.kind=="checkpoint_io" and ultimate_upgrade_checkpoint_pending.size()==1,"Primary write failure preserves pending archive intent and stops first")
++ verify(FileAccess.get_sha256(source)==original,"Actual source CP remains unchanged")
++ trace.close()
++ print("ULTIMATE_CHECKPOINT_SAFETY checks=",fixture_checks," failures=",fixture_failures," scope=Persistence fixtures only, no campaign progression")
++ quit(0 if fixture_failures==0 else 1)
