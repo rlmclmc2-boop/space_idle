@@ -19,6 +19,7 @@
     "run.log": "25cf50b11af1d9d0a971fbb185966279831363fba0d95ed1e8818e346b9ea8cd",
     "actions.jsonl.gz": "396271e5e8e65cddc3339cdb414ab32a33dcd488a10edd8b51392654dee8fb39",
     "comparison.json": "c11c6ee83e5b0f80e846f06782c2a9f01f3701d3992454bf67431976fee6d0e6",
+    "changes.tsv": "e4118738e1f2395f864714e4309c8a8d94f42b0d9249139a531e048ff566e0bd",
     "stage-performance.json": "ca65a7d52165334b8e7d3b603ab4bdef0f1be80c9420411b0d164e871f12082a",
     "native-stage-states.jsonl.gz": "3e9c900b70ba8620260e4a62a857890bacfabb49f7173965c40dbf6074c4caed",
     "official-import-result.json": "4863c1b2d1bd07d345ff11ae408274d2af9871d0d1626f3728bfe226e49d94b3"

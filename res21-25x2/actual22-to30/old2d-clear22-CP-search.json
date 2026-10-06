@@ -1,0 +1,6 @@
+{
+  "local_checkpoint_paths_examined": 800,
+  "valid_json_headers": 740,
+  "exact_old2d_clear22_fullCP_candidates": [],
+  "scope": "LocalmaterializedCPheaders only. NoJSONfallbackorbackfilledCP;remoteLibraryhistorynotassumed. ExactoldFP12bb andactualclear22X1required."
+}

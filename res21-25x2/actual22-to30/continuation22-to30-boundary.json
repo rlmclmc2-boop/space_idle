@@ -1,0 +1,21 @@
+{
+  "source_checkpoint": "/workspace/sol-validation/res21-25x2-from2d20-qa/diagnostics/sol-res21-25x2-same2d20-to22-restart1/checkpoint.bin",
+  "source_sha256": "0e261a5a2154d546ea1fdb7d8646a75e0c4003db64027dd00bd40eb732e1cb2c",
+  "source_actual_clear22_x1": 56228.1833377201,
+  "source_journey": {
+    "distance": 900.0,
+    "groupIndex": 9,
+    "guardArrived": false,
+    "pendingUnlocks": [],
+    "retreatBossPending": false,
+    "stage": 22,
+    "state": 4
+  },
+  "source_main_rng": "-2059198566126118555",
+  "source_input_failure": {},
+  "candidate_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+  "new_candidate": false,
+  "allowed_options_override": "stop_clear22\u219230 only;noresources/time/RNG/controller/policy injection",
+  "comparison_scope": "Additionalformalreload/regeneratedbattle/GUI. Sameboundaryasparentactual22-to30. Olduninterrupted2dclear30onlyreferencetotal;strictrescausalcomparisonendsat22.",
+  "source_keys_unaltered": "RunnerdirectreadsactualterminalCP;notnewconverter/JSONfallback"
+}
