@@ -1,0 +1,25 @@
+{
+  "candidate": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "contract": "dcf5d8ed8b179b5844daa25af3a3f79476989e9b",
+  "sheets": 20,
+  "existing_config_roots": 52,
+  "existing_config_leaves": 338,
+  "missing_leaves": [],
+  "value_differences": [],
+  "new_root_defaults": [
+    "/auto_duration_crew_base",
+    "/auto_ticket_crew_base",
+    "/modernization_base_coefficient"
+  ],
+  "assignment_sheet_rows": 285,
+  "recipe_members": 223,
+  "zero_budget_members_preserved": 85,
+  "nonempty_ordinal_0_occurrences": 40,
+  "all_nonempty_fleet_slots_covered": 223,
+  "frozen_hash_matches": {
+    "space_enemy_reward_catalog.json": true,
+    "space_enemy_reward_sources.json": true
+  },
+  "sources_waves": 1960,
+  "scope": "Read-only package checks, not final XLSX/import/runtime acceptance"
+}
