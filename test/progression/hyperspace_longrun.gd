@@ -18,6 +18,7 @@ var resume_lineage:Array=[]
 var carried_wall_seconds:=0.0
 var checkpoint_due:=true
 var reforge_checkpoint_pending:Array=[]
+var ultimate_upgrade_checkpoint_pending:Array=[]
 var next_checkpoint_wall:=0
 var manifest:Dictionary={}
 var initial_scope:="fresh"
@@ -55,7 +56,16 @@ func checkpoint_now()->void:
  # Called after the controller/tick returns, never from an event callback.
  var pending:Array=reforge_checkpoint_pending.duplicate(true)
  reforge_checkpoint_pending.clear()
+ var ultimate_pending:Array=ultimate_upgrade_checkpoint_pending.duplicate(true)
+ ultimate_upgrade_checkpoint_pending.clear()
  var captured:Dictionary=Checkpoint.capture(self,manifest)
+ for entry in ultimate_pending:
+  var archive_path:String=output+"/checkpoint-ultimate-step-%d.bin"%int(entry.command_seq)
+  var archive_error:=Checkpoint.write_once(archive_path,captured,manifest)
+  if archive_error!=OK:
+   ultimate_upgrade_checkpoint_pending.assign(ultimate_pending)
+   input_failure={"kind":"ultimate_chain_checkpoint_io","error":archive_error,"path":archive_path};record("checkpoint_write_failed",input_failure);return
+  record("ultimate_chain_checkpoint_saved",{"path":archive_path,"operation":entry.operation,"phase":space_policy.ultimate_upgrade_chain.get("phase",""),"sha256":FileAccess.get_sha256(archive_path)})
  for entry in pending:
   var round_id:int=int(entry.round)
   if round_id!=int(game.profile.hyperspace.round_id) or game.manual_hyperspace.active:
@@ -238,6 +248,10 @@ func click_button(choice:Dictionary)->void:
   dispatch_before={"production_boundary_reason":game.manual_hyperspace.boundary_reason(game),"queued":game.manual_hyperspace.queued.duplicate(true),"state":game.state,"point":game.group_index,"live_enemies":game.enemies.filter(func(e):return game.N.compare(e.hp,0)>0).size(),"projectiles":game.projectiles.size(),"missile_queue":game.missile_queue.size(),"jewel_repeats":game.jewel_repeats.size(),"drone_delayed":game.drone_combat.delayed.size(),"eligible_level":game.hyperspace.eligible_level(game,str(choice.route),int(choice.level)),"production_accepted":game.manual_hyperspace.production_accepted,"armour_positive":game.N.compare(game.stat("armour"),0)>0}
  var ok:bool=game.set_enhancement_branch(choice.category,choice.effect,int(choice.node),choice.choice) if choice.kind=="enhancement_branch" else space_policy.execute(game,choice,game.simulated_time)
  if ok:
+  if choice.get("ultimate_chain",false):
+   ultimate_upgrade_checkpoint_pending.append({"command_seq":int(game.profile.hyperspace.command_seq),"operation":str(choice.request.operation)})
+   checkpoint_due=true
+   record("ultimate_chain_step",{"plan":space_policy.ultimate_upgrade_chain.duplicate(true),"scope":"Actual committed production forge; complete QA state archived after this tick"})
   clicks+=1;row(game.stage).clicks+=1;domain_rejections=0;last_domain_rejection=""
  else:
   rejected_inputs+=1

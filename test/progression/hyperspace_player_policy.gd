@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v20-sparse-rolling-salvage-reserved-crew"
+const VERSION="hyperspace-player-v21-sparse-reserved-crew-ultimate-chain"
 var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
 var idle_salvage_budget:Dictionary={"round":-1,"used":0,"tour_started":-1.0}
 var idle_salvage_success_times:Array=[]
@@ -402,9 +402,10 @@ func keep(g)->Array:
 func forge_request(g,id:String,op:String,args:Dictionary={})->Dictionary:
  var s:Dictionary=g.profile.hyperspace
  return {"round_id":int(s.round_id),"command_seq":int(s.command_seq),"drone_id":id,"operation":op,"expected_revision":int(s.inventory.drones[id].forge_revision),"args":args}
-func forge_choice(g,id:String,op:String,args:Dictionary={})->Dictionary:
+func forge_choice(g,id:String,op:String,args:Dictionary={},chain_step:bool=false)->Dictionary:
  var request:Dictionary=forge_request(g,id,op,args)
  var preview:Dictionary=g.hyperspace.preview_forge(g,request)
+ if not chain_step and not forge_preserves_ultimate_reservation(g,preview.get("cost",{})):return {}
  return {"domain":true,"kind":"space_forge","request":request,"preview":preview} if str(preview.error).is_empty() else {}
 var affix_target_tier:=0 # Optional QA spending preference; never a progression/acceptance gate.
 var affix_paid_windows:Dictionary={}
@@ -417,6 +418,131 @@ func affix_supply(g)->Dictionary:
   if not d.ultimate and d.affixes.any(func(a):return not a.locked and int(a.tier)>affix_target_tier):targets.append(id)
  if targets.is_empty():return {}
  return {"route":"gamma","material":"antiproton","available":int(s.materials.antiproton),"minimum":1,"targets":targets,"goal":"Optional spending preference, never a progression/acceptance gate; natural stronger results accepted","desired_tier":affix_target_tier}
+const ForgePlanner=preload("res://scripts/drone_forge.gd")
+var ultimate_upgrade_chain:Dictionary={}
+func ultimate_upgrade_offer(g,id:String)->Dictionary:
+ var s:Dictionary=g.profile.hyperspace;var c:Dictionary=g.hyperspace.config
+ if not s.inventory.drones.has(id) or s.inventory.sealed.has(id):return {}
+ var d:Dictionary=s.inventory.drones[id]
+ if not d.ultimate:return {}
+ var route:String=""
+ for key in c.routes:
+  if str(c.routes[key].weapon)==str(d.weapon):route=str(key)
+ if route.is_empty():return {}
+ var recorded:int=best_record(g,route)
+ var target:int=maxi(recorded,manual_challenge_level(g,route))
+ if target<=int(d.level):return {}
+ var material:String=str(c.routes[route].material)
+ var required_cores:int=int(c.forge_costs.restore_ultimate.get("ultimate_cores",0))+int(c.forge_costs.ultimate.get("ultimate_cores",0))
+ var offer:Dictionary={"ultimate_chain":true,"route":route,"material":material,"drone":id,"available":int(s.materials.get(material,0)),"minimum":0,"operation":"ultimate_upgrade_chain","target_level":target,"recorded_target":recorded,"required_cores":required_cores,"core_available":int(s.ultimate_cores),"ready":false,"goal":"Earn actual same-route record and reserve the complete real modernization price plus restore/reultimate cores before lowering this equipped ultimate"}
+ if target>recorded:
+  offer.record_prerequisite=true;offer.required_route_level=target;return offer
+ if int(s.ultimate_cores)<int(c.forge_costs.restore_ultimate.get("ultimate_cores",0)):offer.core_blocked=true;return offer
+ # Native pure planner, disposable copy; no injected record, core or material.
+ var private:Dictionary=s.duplicate(true)
+ var restored:Dictionary=ForgePlanner.plan(private,c,forge_request(g,id,"restore_ultimate"),g)
+ if not str(restored.error).is_empty():return {}
+ var request:Dictionary=forge_request(g,id,"modernize",{"target_level":target})
+ request.expected_revision=private.inventory.drones[id].forge_revision
+ var quote:Dictionary=ForgePlanner.plan(private,c,request,g)
+ if str(quote.error) not in ["","insufficient_materials"]:return {}
+ offer.minimum=int(quote.get("cost",{}).get(material,0));offer.modernize_cost=quote.get("cost",{}).duplicate(true)
+ offer.restore_cost=restored.cost.duplicate(true);offer.reultimate_cost=c.forge_costs.ultimate.duplicate(true)
+ offer.reserved_cost={}
+ for payment in [offer.restore_cost,offer.modernize_cost,offer.reultimate_cost]:
+  for key in payment:offer.reserved_cost[key]=int(offer.reserved_cost.get(key,0))+int(payment[key])
+ offer.core_blocked=int(s.ultimate_cores)<required_cores
+ offer.ready=ForgePlanner.can_pay(s,offer.reserved_cost)
+ var reward:int=Rewards.material_amount(g.hyperspace.online_config(g),recorded)
+ offer.expected_recorded_reward=reward
+ offer.needed_recorded_claims=ceili(float(maxi(0,int(offer.minimum)-int(offer.available)))/maxi(1,reward))
+ return offer
+func ultimate_upgrade_supply(g)->Dictionary:
+ if not ultimate_upgrade_chain.is_empty() and str(ultimate_upgrade_chain.get("phase","")) in ["modernize","reultimate"]:return {}
+ var ids:Array=equipped(g)
+ if not ultimate_upgrade_chain.is_empty() and int(ultimate_upgrade_chain.get("round",-1))==int(g.profile.hyperspace.round_id):
+  var selected:String=str(ultimate_upgrade_chain.get("drone",""))
+  if selected in ids:ids.erase(selected);ids.push_front(selected)
+ for id in ids:
+  var offer:Dictionary=ultimate_upgrade_offer(g,str(id))
+  if offer.is_empty():continue
+  # No known paid core farm is invented. Other real first victories may earn cores.
+  if offer.get("core_blocked",false) and int(offer.available)>=int(offer.minimum) and not offer.get("record_prerequisite",false):continue
+  return offer
+ return {}
+func ultimate_chain_in_transaction()->bool:
+ return str(ultimate_upgrade_chain.get("phase","")) in ["modernize","reultimate"]
+func ultimate_chain_action(g,now:float)->Dictionary:
+ var s:Dictionary=g.profile.hyperspace
+ if not ultimate_upgrade_chain.is_empty() and int(ultimate_upgrade_chain.get("round",-1))!=int(s.round_id):ultimate_upgrade_chain={}
+ if ultimate_upgrade_chain.is_empty() or str(ultimate_upgrade_chain.get("phase","")) in ["complete","recovered"]:
+  var supply:Dictionary=ultimate_upgrade_supply(g)
+  if supply.is_empty():return {}
+  var id:String=str(supply.drone);var d:Dictionary=s.inventory.drones[id]
+  ultimate_upgrade_chain={"round":int(s.round_id),"drone":id,"route":str(supply.route),"material":str(supply.material),"source_level":int(d.level),"source_ultimate_affix":d.ultimate_affix.duplicate(true),"target_level":int(supply.target_level),"minimum":int(supply.minimum),"phase":"funding","created_at":now,"receipts":[],"core_reserve":int(supply.required_cores)}
+ var plan:Dictionary=ultimate_upgrade_chain;var id:String=str(plan.drone)
+ if not s.inventory.drones.has(id) or s.inventory.sealed.has(id):return {}
+ var d:Dictionary=s.inventory.drones[id]
+ if d.ultimate_affix!=plan.source_ultimate_affix:plan.last_error="Ultimate extra affix changed outside this chain";return {}
+ var op:String=""
+ if plan.phase=="funding":
+  if not d.ultimate:plan.last_error="Unowned ordinary state before a paid chain restore";return {}
+  var offer:Dictionary=ultimate_upgrade_offer(g,id)
+  if offer.is_empty():return {}
+  plan.target_level=int(offer.target_level);plan.minimum=int(offer.minimum);plan.core_reserve=int(offer.required_cores);plan.source_level=int(d.level)
+  plan.record_prerequisite=bool(offer.get("record_prerequisite",false));plan.core_available=int(s.ultimate_cores)
+  if not offer.get("ready",false):return {}
+  plan.recorded_target=int(offer.recorded_target);plan.modernize_cost=offer.modernize_cost.duplicate(true)
+  plan.reserved_cost=offer.reserved_cost.duplicate(true);plan.reultimate_cost=offer.reultimate_cost.duplicate(true)
+  op="restore_ultimate"
+ elif plan.phase=="modernize":
+  if d.ultimate:return {}
+  var quote:Dictionary=g.hyperspace.preview_forge(g,forge_request(g,id,"modernize",{"target_level":int(plan.recorded_target)}))
+  if str(quote.error).is_empty() and quote.cost==plan.modernize_cost and ForgePlanner.can_pay(s,plan.reserved_cost):op="modernize"
+  else:
+   plan.last_error=str(quote.error) if not str(quote.error).is_empty() else "Reserved modernization quote changed"
+   plan.recovery=true;plan.phase="reultimate";op="ultimate"
+ elif plan.phase=="reultimate":
+  if d.ultimate:return {}
+  op="ultimate"
+ if op.is_empty():return {}
+ var args:Dictionary={"target_level":int(plan.recorded_target)} if op=="modernize" else {}
+ var choice:Dictionary=forge_choice(g,id,op,args,true)
+ if choice.is_empty():return {}
+ choice.ultimate_chain=true;choice.chain_phase=str(plan.phase);choice.chain_target=int(plan.get("recorded_target",plan.target_level))
+ return choice
+func ultimate_chain_step_valid(g,choice:Dictionary)->bool:
+ var plan:Dictionary=ultimate_upgrade_chain;var s:Dictionary=g.profile.hyperspace
+ if plan.is_empty() or int(plan.round)!=int(s.round_id) or str(choice.request.drone_id)!=str(plan.drone) or not s.inventory.drones.has(str(plan.drone)):return false
+ var d:Dictionary=s.inventory.drones[plan.drone]
+ if d.ultimate_affix!=plan.source_ultimate_affix:return false
+ var op:String=str(choice.request.operation)
+ if op=="restore_ultimate":
+  return d.ultimate and plan.phase=="funding" and best_record(g,str(plan.route))==int(plan.recorded_target) and ForgePlanner.can_pay(s,plan.reserved_cost)
+ if op=="modernize":return not d.ultimate and plan.phase=="modernize" and ForgePlanner.can_pay(s,plan.reserved_cost) and best_record(g,str(plan.route))==int(plan.recorded_target)
+ return op=="ultimate" and not d.ultimate and plan.phase=="reultimate" and ForgePlanner.can_pay(s,plan.reultimate_cost)
+func ultimate_chain_result(g,choice:Dictionary,result:Dictionary,now:float,advanced:bool)->void:
+ var plan:Dictionary=ultimate_upgrade_chain
+ if plan.is_empty():return
+ var d:Dictionary=g.profile.hyperspace.inventory.drones.get(str(plan.drone),{})
+ if not str(result.error).is_empty() or not advanced:
+  plan.last_error=str(result.error) if not str(result.error).is_empty() else "No committed command sequence advancement"
+  if not d.is_empty() and not d.ultimate:plan.phase="reultimate";plan.recovery=true
+  return
+ var operation:String=str(choice.request.operation)
+ for key in result.cost:plan.reserved_cost[key]=maxi(0,int(plan.reserved_cost.get(key,0))-int(result.cost[key]))
+ plan.receipts.append({"operation":operation,"x1_seconds":now,"command_seq_after":int(g.profile.hyperspace.command_seq),"cost":result.cost.duplicate(true),"level":int(d.level),"ultimate":bool(d.ultimate),"cores_after":int(g.profile.hyperspace.ultimate_cores),"materials_after":g.profile.hyperspace.materials.duplicate(true)})
+ if operation=="restore_ultimate":plan.phase="modernize"
+ elif operation=="modernize":plan.phase="reultimate"
+ else:plan.phase="recovered" if bool(plan.get("recovery",false)) else "complete";plan.completed_at=now
+func forge_preserves_ultimate_reservation(g,cost:Dictionary)->bool:
+ var plan:Dictionary=ultimate_upgrade_chain
+ if plan.is_empty() or int(plan.get("round",-1))!=int(g.profile.hyperspace.round_id) or str(plan.get("phase","")) in ["complete","recovered"]:return true
+ var s:Dictionary=g.profile.hyperspace
+ if int(cost.get("ultimate_cores",0))>0 and int(s.ultimate_cores)-int(cost.ultimate_cores)<int(plan.core_reserve):return false
+ var material:String=str(plan.material);var reserve:int=mini(int(s.materials.get(material,0)),int(plan.minimum))
+ if bool(plan.get("record_prerequisite",false)):reserve=int(s.materials.get(material,0))
+ return int(s.materials.get(material,0))-int(cost.get(material,0))>=reserve
 func modernization_opportunities(g)->Array:
  var s:Dictionary=g.profile.hyperspace;var c:Dictionary=g.hyperspace.config;var opportunities:Array=[]
  for id in equipped(g):
@@ -456,6 +582,8 @@ func modernization_plan(g)->Dictionary:
  all.sort_custom(func(a,b):return int(a.needed_recorded_claims)<int(b.needed_recorded_claims) if int(a.needed_recorded_claims)!=int(b.needed_recorded_claims) else int(a.level_gain)>int(b.level_gain) if int(a.level_gain)!=int(b.level_gain) else str(a.drone)<str(b.drone))
  return all[0]
 func growth_supply(g)->Dictionary:
+ var ultimate_supply:Dictionary=ultimate_upgrade_supply(g)
+ if not ultimate_supply.is_empty():return ultimate_supply
  if g.profile.cleared.has(60):
   var modernization:Dictionary=modernization_plan(g)
   if not modernization.is_empty():return modernization
@@ -575,6 +703,9 @@ func space_action(g,now:float,tour_started:float=-1.0)->Dictionary:
  # Return only sealed drones whose real planet gate was regained in this run.
  for id in bag.sealed:
   if int(g.profile.highestLevel)>=int(bag.sealed[id]):return {"domain":true,"kind":"space_unseal","id":id}
+ var chain_choice:Dictionary=ultimate_chain_action(g,now)
+ if not chain_choice.is_empty():return chain_choice
+ if ultimate_chain_in_transaction():return {}
  var chosen:Array=equipped(g)
  if chosen!=bag.equipped:return {"domain":true,"kind":"space_equip","ids":chosen}
  if chosen!=bag.favorites:return {"domain":true,"kind":"space_favorite","ids":chosen}
@@ -741,9 +872,14 @@ func execute(g,choice:Dictionary,now:float)->bool:
   "space_auto":return g.hyperspace.set_auto(g,true,choice.route,int(choice.level),choice.crew)
   "space_hangings":return g.hyperspace.attach_hangings(g,choice.id,choice.keys)
   "space_forge":
+   if choice.get("ultimate_chain",false) and not ultimate_chain_step_valid(g,choice):
+    ultimate_upgrade_chain.last_error="Chain prerequisites changed before the finite input dispatch"
+    if ultimate_chain_in_transaction():ultimate_upgrade_chain.phase="reultimate";ultimate_upgrade_chain.recovery=true
+    return false
    forge_at[str(choice.request.drone_id)]=now
    var previous_sequence:int=int(g.profile.hyperspace.command_seq)
    var result:Dictionary=g.hyperspace.forge(g,choice.request)
+   if choice.get("ultimate_chain",false):ultimate_chain_result(g,choice,result,now,int(g.profile.hyperspace.command_seq)>previous_sequence)
    if str(result.error).is_empty() and choice.get("idle_salvage",false) and int(g.profile.hyperspace.command_seq)>previous_sequence:
     idle_salvage_success_times.append(now)
     idle_salvage_budget.used=idle_salvage_success_times.size()
