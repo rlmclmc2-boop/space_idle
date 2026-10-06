@@ -18,6 +18,16 @@
   "native/white-paid-190-screen.png": "3b5ac584195048b1177eab75e7bdd42db6f8e08c01118aeebb4dc4e080273bc9",
   "native/white-paid-190.json": "ab94ffc2d30cca98165d68b50636a050c96b532c6eb424b50553d080784d26b0",
   "qa-manifest.json": "4528903155b46b048fe98a12c9f4fec64c054b5fbaf7a7f7cdb1e2f7b520c379",
+  "restored-real-core-insufficient/independent_restore_insufficient.gd": "606896ad427e5235c331ce2a96a0033efcf663e350a7c36c00caad8f44c407f2",
+  "restored-real-core-insufficient/native/01-real-restore-quote-screen.png": "e72bd251228ce5c10ffe5d5dd6f56c495b0527289f460a6dce8d3a49f2c5d8b7",
+  "restored-real-core-insufficient/native/01-real-restore-quote.json": "fb55ea49a66689b31b48383a7c55ecdd636bdce7c6aed8afc8dc16753172d2a6",
+  "restored-real-core-insufficient/native/02-real-restored-one-core-spent-screen.png": "532ec668cbe77a56d8ab8d30ccda156ee666ccd2a16deadda9f9f9bcb299a184",
+  "restored-real-core-insufficient/native/02-real-restored-one-core-spent.json": "890c8d80e0be9c35b02a0af38a3e808a2bc96ad9364ee2ffa6e32bb6daeb5090",
+  "restored-real-core-insufficient/native/03-restored-modernization-insufficient60-have4-screen.png": "d476aaa8a58541e3a4f2cff7a9c5b9f2f9bb3cf1da0a9daf35ca4ac4017f38d5",
+  "restored-real-core-insufficient/native/03-restored-modernization-insufficient60-have4.json": "c7d260799fa1bdf08133cc416984c44cb8d414ac7191c6baec0ef85da4bb7a74",
+  "restored-real-core-insufficient/native/actual-after-restore-blocked-checkpoint.json": "657e263e841a8885066698ece0443ae191fcf70e6a3b78c875dc28cc0a664b05",
+  "restored-real-core-insufficient/native/audit.json": "d6660631d5f21997f8857bbfa3dd7e06a4041090cff17d8eedc67511b9797233",
+  "restored-real-core-insufficient/native/run.log": "917c6d003be4083d3f8017202199b778285be80894258c964e90d0fe5a0b930b",
   "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
-  "现代化基础费原生界面核验报告.md": "7d417344ecfb83afee463980fd0b437399c93e419adb8bb9ca507cc0668c1507"
+  "现代化基础费原生界面核验报告.md": "19aa315c9ee09708f09a0379509bb6bd4e1aeb6593b1c4613505b7369015335e"
 }

@@ -1,0 +1,64 @@
+{
+	"command_seq": 5.0,
+	"cores": 1.0,
+	"disabled": true,
+	"drone": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 3.0,
+		"forge_rng_state": "7335463139941275162",
+		"hanging_slots": 1.0,
+		"hangings": [],
+		"id": "space:1:2",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 10.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": false,
+		"ultimate_affix": {
+			"key": "global_critical_damage",
+			"locked": false,
+			"tier": 4.0,
+			"value": 0.256
+		},
+		"weapon": "laser"
+	},
+	"feedback": "材料不足；报价显示实际所需材料。",
+	"id": "space:1:2",
+	"label": "03-restored-modernization-insufficient60-have4",
+	"last_command": {
+		"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:2\",\"expected_revision\":2.0,\"operation\":\"restore_ultimate\"}",
+		"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"ultimate_cores\":1.0},\"draws\":1,\"drone_id\":\"space:1:2\",\"error\":\"\",\"index\":-1,\"operation\":\"restore_ultimate\",\"outcome\":true}",
+		"seq": 4
+	},
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 263.0,
+		"zero_point_energy": 0.0
+	},
+	"preview": {
+		"cost": {
+			"degenerate_matter": 60.0
+		},
+		"draws": 1,
+		"error": "insufficient_materials",
+		"revision": 3.0
+	},
+	"quote": "现代化：等级 10 → 20\n词条效果：\n此无人机没有词条。\n消耗：简并态物质 60（持有 4）\n执行次数：1",
+	"request": {
+		"args": {
+			"target_level": 20
+		},
+		"command_seq": 5.0,
+		"drone_id": "space:1:2",
+		"expected_revision": 3.0,
+		"operation": "modernize",
+		"round_id": 6.0
+	}
+}

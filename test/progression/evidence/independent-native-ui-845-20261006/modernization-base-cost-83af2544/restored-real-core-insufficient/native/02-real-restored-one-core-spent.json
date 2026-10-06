@@ -1,0 +1,52 @@
+{
+	"command_seq": 5.0,
+	"cores": 1.0,
+	"disabled": true,
+	"drone": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 3.0,
+		"forge_rng_state": "7335463139941275162",
+		"hanging_slots": 1.0,
+		"hangings": [],
+		"id": "space:1:2",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 10.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": false,
+		"ultimate_affix": {
+			"key": "global_critical_damage",
+			"locked": false,
+			"tier": 4.0,
+			"value": 0.256
+		},
+		"weapon": "laser"
+	},
+	"feedback": "改造已完成。",
+	"id": "space:1:2",
+	"label": "02-real-restored-one-core-spent",
+	"last_command": {
+		"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:2\",\"expected_revision\":2.0,\"operation\":\"restore_ultimate\"}",
+		"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"ultimate_cores\":1.0},\"draws\":1,\"drone_id\":\"space:1:2\",\"error\":\"\",\"index\":-1,\"operation\":\"restore_ultimate\",\"outcome\":true}",
+		"seq": 4
+	},
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 263.0,
+		"zero_point_energy": 0.0
+	},
+	"preview": {
+
+	},
+	"quote": "本次消耗：究极核心 1（持有 1）。再次改造前请重新预览。",
+	"request": {
+
+	}
+}

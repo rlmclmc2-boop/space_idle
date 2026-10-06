@@ -1,0 +1,365 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual ultimate",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native restore ultimate open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 11,
+			"label": "native restore ultimate",
+			"native_menu_window": -1,
+			"selected": 11
+		},
+		{
+			"disabled": false,
+			"label": "native restore quote",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual restore pay one core",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native restored modernization open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native restored modernization",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native restored new modernize quote",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "native blocked restored commit",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "real original two-core source unchanged",
+			"ok": true
+		},
+		{
+			"label": "actual ultimate white pulse card",
+			"ok": true
+		},
+		{
+			"label": "native restore ultimate actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "actual restore costs one core",
+			"ok": true
+		},
+		{
+			"label": "restore quote read-only",
+			"ok": true
+		},
+		{
+			"label": "actual cores2→1 and ultimate removed",
+			"ok": true
+		},
+		{
+			"label": "restore preserves material and original extra affix",
+			"ok": true
+		},
+		{
+			"label": "native restored modernization actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "restored actual alpha20 cost60 has4",
+			"ok": true
+		},
+		{
+			"label": "restored modernization blocked without new funds",
+			"ok": true
+		},
+		{
+			"label": "failed modernization no refund of already spent core no new debit",
+			"ok": true
+		},
+		{
+			"label": "real opportunity cost remains one core and normal level10",
+			"ok": true
+		},
+		{
+			"label": "parent source bytes unchanged",
+			"ok": true
+		}
+	],
+	"failures": [],
+	"snapshots": [
+		{
+			"command_seq": 4.0,
+			"cores": 2.0,
+			"disabled": false,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"id": "space:1:2",
+			"label": "01-real-restore-quote",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3.0
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"ultimate_cores": 1.0
+				},
+				"draws": 1,
+				"error": "",
+				"revision": 2.0
+			},
+			"quote": "消耗：究极核心 1（持有 2）\n抽取次数：1",
+			"request": {
+				"args": {
+
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:2",
+				"expected_revision": 2.0,
+				"operation": "restore_ultimate",
+				"round_id": 6.0
+			}
+		},
+		{
+			"command_seq": 5.0,
+			"cores": 1.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 3.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"feedback": "改造已完成。",
+			"id": "space:1:2",
+			"label": "02-real-restored-one-core-spent",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:2\",\"expected_revision\":2.0,\"operation\":\"restore_ultimate\"}",
+				"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"ultimate_cores\":1.0},\"draws\":1,\"drone_id\":\"space:1:2\",\"error\":\"\",\"index\":-1,\"operation\":\"restore_ultimate\",\"outcome\":true}",
+				"seq": 4
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+
+			},
+			"quote": "本次消耗：究极核心 1（持有 1）。再次改造前请重新预览。",
+			"request": {
+
+			}
+		},
+		{
+			"command_seq": 5.0,
+			"cores": 1.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 3.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"feedback": "材料不足；报价显示实际所需材料。",
+			"id": "space:1:2",
+			"label": "03-restored-modernization-insufficient60-have4",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:2\",\"expected_revision\":2.0,\"operation\":\"restore_ultimate\"}",
+				"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"ultimate_cores\":1.0},\"draws\":1,\"drone_id\":\"space:1:2\",\"error\":\"\",\"index\":-1,\"operation\":\"restore_ultimate\",\"outcome\":true}",
+				"seq": 4
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"degenerate_matter": 60.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 3.0
+			},
+			"quote": "现代化：等级 10 → 20\n词条效果：\n此无人机没有词条。\n消耗：简并态物质 60（持有 4）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 5.0,
+				"drone_id": "space:1:2",
+				"expected_revision": 3.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			}
+		}
+	],
+	"source_commit": "83af25441ed34979ef530f5dfece62599d66f6c8",
+	"source_sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+}
