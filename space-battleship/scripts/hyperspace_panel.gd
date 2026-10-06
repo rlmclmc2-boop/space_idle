@@ -414,7 +414,7 @@ func refresh_details() -> void:
  var valid=bag.drones.has(selected_id)
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
-  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(bag.drones[selected_id].hanging_slots),"revision":str(bag.drones[selected_id].forge_revision)}))
+  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(int(bag.drones[selected_id].hanging_slots)),"revision":str(int(bag.drones[selected_id].forge_revision))}))
   put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
   return
  if section_index!=1:return

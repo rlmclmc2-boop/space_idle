@@ -146,9 +146,9 @@ func show_modules() -> void:
  for child in module_dialog.get_children():
   if child is VBoxContainer:child.free()
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
- dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(d.hanging_slots)}),22)
+ dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
  for key in h().config.hanging_modules:
-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(progress.level),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
  panel.button(body,"module_apply",func():
   var keys: Array=[]
   for choice in module_choices:
