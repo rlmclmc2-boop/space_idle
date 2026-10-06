@@ -1,0 +1,453 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native view actual paid checkpoint recovery notice",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native reopen notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "repeat native current notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "actual paid receipt refunded once through patch formal startup",
+			"ok": true
+		},
+		{
+			"label": "notice patch changes neither actual inventory nor materials",
+			"ok": true
+		},
+		{
+			"label": "native notice reflects actual interrupted route and exact refund",
+			"ok": true
+		},
+		{
+			"label": "close/reopen and repeated native page click preserve actual notice without refund",
+			"ok": true
+		},
+		{
+			"label": "same actual started input cannot compound refunded balance",
+			"ok": true
+		},
+		{
+			"label": "actual already-settled reload neither refunds nor claims new refund notice",
+			"ok": true
+		},
+		{
+			"label": "actual prior unpaid queue checkpoint reload never shows false refund",
+			"ok": true
+		},
+		{
+			"label": "original ordinary source has no false refund or altered balance",
+			"ok": true
+		},
+		{
+			"label": "source checkpoint remains unchanged: paid-candidate-checkpoint.json",
+			"ok": true
+		},
+		{
+			"label": "source checkpoint remains unchanged: queued-candidate-checkpoint.json",
+			"ok": true
+		},
+		{
+			"label": "source checkpoint remains unchanged: original-save-reach15-old0a.json",
+			"ok": true
+		}
+	],
+	"failures": [],
+	"not_parent_numeric_cp": true,
+	"old0a_to_845_to_patch": true,
+	"snapshots": [
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "01-actual-paid-refund-notice",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": true,
+			"point": 0,
+			"runtime_result": {
+				"level": 5,
+				"reason": "interrupted_reload",
+				"refund": 108000.0,
+				"route": "alpha"
+			},
+			"stage": 5,
+			"status": "自动探索已停止；可开始手动探索。"
+		},
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native close notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						99.8296127319336
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native reopen notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "repeat native current notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "02-reopened-interruption-notice",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": true,
+			"point": 0,
+			"runtime_result": {
+				"level": 5,
+				"reason": "interrupted_reload",
+				"refund": 108000.0,
+				"route": "alpha"
+			},
+			"stage": 5,
+			"status": "自动探索已停止；可开始手动探索。"
+		},
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native close notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						99.8296127319336
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native reopen notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "repeat native current notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "03-same-paid-input-second-load",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": true,
+			"point": 0,
+			"runtime_result": {
+				"level": 5,
+				"reason": "interrupted_reload",
+				"refund": 108000.0,
+				"route": "alpha"
+			},
+			"stage": 5,
+			"status": "自动探索已停止；可开始手动探索。"
+		},
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native close notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						99.8296127319336
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native reopen notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "repeat native current notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "04-settled-load-no-false-notice",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": false,
+			"point": 0,
+			"runtime_result": {
+
+			},
+			"stage": 5,
+			"status": "自动探索已停止；可开始手动探索。"
+		},
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native close notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						99.8296127319336
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native reopen notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "repeat native current notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "05-unpaid-load-no-false-notice",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": false,
+			"point": 9,
+			"runtime_result": {
+
+			},
+			"stage": 14,
+			"status": "自动探索已停止；可开始手动探索。"
+		},
+		{
+			"actions": [
+				{
+					"disabled": false,
+					"label": "native view actual paid checkpoint recovery notice",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native close notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						99.8296127319336
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "native reopen notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				},
+				{
+					"disabled": false,
+					"label": "repeat native current notice page",
+					"native": true,
+					"point": [
+						464.893463134766,
+						561.014343261719
+					],
+					"visible": true,
+					"window_id": 0
+				}
+			],
+			"active": {
+
+			},
+			"energy": 169107.775193608,
+			"highest": 15,
+			"label": "06-ordinary-load-no-false-notice",
+			"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"notice_visible": false,
+			"point": 9,
+			"runtime_result": {
+
+			},
+			"stage": 14,
+			"status": "自动探索已启用，等待能量充满后开始。"
+		}
+	],
+	"source_commit": "fb4392f32d3fcdb85f90e9f7816f9d39dc6ea1f7",
+	"source_shas": {
+		"/tmp/qa845-evidence/exit-retest/paid-candidate-checkpoint.json": "1dbe8ebc4a52dff9363b9e812ce21c0aafa83ce5de7262dcadfa7fc42b079545",
+		"/tmp/qa845-evidence/native/queued-candidate-checkpoint.json": "6b2f009fadcd31efb9ac80f9def57b5772b4e0095bc5e72f8a673979d1a99aa4",
+		"/tmp/qa845-evidence/original-save-reach15-old0a.json": "c0ae2ed3f1fcf196c38e2029b4a7434c9bcbb052f0b6a569a5742d7763a44385"
+	}
+}

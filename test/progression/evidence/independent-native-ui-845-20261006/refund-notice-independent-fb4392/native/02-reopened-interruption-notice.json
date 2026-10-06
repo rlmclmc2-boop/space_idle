@@ -1,0 +1,65 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native view actual paid checkpoint recovery notice",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native reopen notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "repeat native current notice page",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"active": {
+
+	},
+	"energy": 169107.775193608,
+	"highest": 15,
+	"label": "02-reopened-interruption-notice",
+	"notice": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+	"notice_visible": true,
+	"point": 0,
+	"runtime_result": {
+		"level": 5,
+		"reason": "interrupted_reload",
+		"refund": 108000.0,
+		"route": "alpha"
+	},
+	"stage": 5,
+	"status": "自动探索已停止；可开始手动探索。"
+}

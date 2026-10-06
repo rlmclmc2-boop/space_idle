@@ -1,0 +1,24 @@
+{
+  "source_commit": "fb4392f32d3fcdb85f90e9f7816f9d39dc6ea1f7",
+  "file_count": 888,
+  "fingerprint": "71d6928061c57df289a9ab8997e98b938d3e5170195f18170026aebb408dc68e",
+  "import_changed_only": [
+    "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv1.glb.import",
+    "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv2.glb.import",
+    "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv3.glb.import",
+    "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv4.glb.import",
+    "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv5.glb.import",
+    "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb.import",
+    "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb.import",
+    "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb.import",
+    "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb.import",
+    "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb.import",
+    "assets/galaxy/v3/core/galaxy_core.glb.import",
+    "assets/galaxy/v3/ships/transport_shuttle.glb.import",
+    "assets/planets/orbital/models/auto_explore.glb.import",
+    "assets/planets/orbital/models/equipment.glb.import",
+    "assets/planets/orbital/models/refinery.glb.import",
+    "assets/planets/orbital/models/shipyard.glb.import"
+  ],
+  "all_non_import_manifest_hashes_match": true
+}
