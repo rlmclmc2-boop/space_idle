@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-06T11:05:20.351463+00:00",
+  "code_commit": "fb4392f32d3fcdb85f90e9f7816f9d39dc6ea1f7",
+  "code_branch": "review/hyperspace-reload-refund-notice-845",
+  "base_candidate_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "status": "targeted isolated productioncharge/load/refund + actualUIrenderer checks passed; originalUIthread native revalidation pending",
+  "test_entry": "res://qa/test_manual_reload_refund_notice.gd",
+  "test_exit": 0,
+  "checks": 12,
+  "failures": 0,
+  "script_errors": 0,
+  "UI_catalog_rows": 2128,
+  "UI_catalog_valid": true,
+  "frozen_runtime_fingerprint": "dc0b35782eb5dc79cc4215819bfa16bbdc903c5942988c561a47f65d1f61c83f",
+  "modified_source_file_hashes_match_published_code_commit": true,
+  "business_scope": "Existingcomplete(...false) settlement executesonce in sameplace; addedephemerallast_result onlyafteractualsuccess andpositiveenergycredit. Refundreceipt/persistence/economy/battle/codecandidate845 untouched. No savedfeedbackflag. Runtime resultresetonformalread prevents settledsave/unpaidqueue falseclaim. UIupdatesexistingrecent_result only.",
+  "positive_cases": [
+    "Actualproductionmanualreceiptcharged, saved, formallyloaded/refunded; UIshows interruption +exactcredit",
+    "RepeatedUIrefresh preservesnode/message/energy"
+  ],
+  "negative_cases": [
+    "Settledsaveformalreload doesnotrefundorredisplaynotice",
+    "Unpaidqueuereload neithercharges norclaimsrefund",
+    "Feedbacknotserializedasnewrefundablereceipt"
+  ],
+  "fixture_scope": "Isolatedpersist=false unitfixture withreached8/cleared1..7 andfundedenergy2tickets toexercise realproductiontransactions. Notnaturalcampaigntiming/economybalance evidence. No originalplayer/longrun savewrite.",
+  "environment_failures_retained_local": [
+    "Firstowneditor import hitdiskcapacity, partialassetcache; first12/0test alsoSCRIPT ERROR pulseassetandnotacleanpass",
+    "Earlyretrystill inheritedinvalidignoredsourcepulse_laser.glb.import; notproductionUIcodefailure",
+    "Oneearlytestlaunch overlappededitor; logsretained, notcountedasfinalproof",
+    "OwnQA pulseimport regeneratedfromrawassets; owneditor completedcleanly; generated16importinputs recorded; finalstrictcodebytesmatchGit."
+  ],
+  "expected_platform_warning": "NoALSA soundcard; Godotfallbackdummy driver. Finalrun hasnoresource/parse/script errors.",
+  "final_native_visual_revalidation": "DelegateoriginalUIthread viaGitcommit; no newagent/task spawned.",
+  "candidate_and_main_not_changed": true,
+  "file_sha256": {
+    "run.log": "52ef90d76417b262d901bf97425791ad159278f098cd480c5dc3b6eb9a09f02f",
+    "qa-manifest.json": "7a3f32d93a625caa0d7ea1f0afbed5d13f804a90928dcce45b3c3dbbecc8ad00"
+  }
+}
