@@ -57,3 +57,5 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 追加：modernization-base-cost-83af2544，正常窗口真实白机支付190、词条机不足与究极阻断，保留观察标签字段失败。
 
 追加：readonly-restore-and-complete-ux，仅现有还原前材料风险/满级船员召回提示的只读评审和建议，未改生产规则。
+
+追加：static-hints-21587054，两条静态提示已实现，基于f874/44+83af生产基线，26项真实档只读窗口检查通过，无付款或召回。

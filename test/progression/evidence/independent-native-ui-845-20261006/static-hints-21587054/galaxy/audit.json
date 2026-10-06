@@ -1,0 +1,165 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual completed galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native view actual crew manager no recall",
+			"native": true,
+			"point": [
+				1340.49230957031,
+				190.344146728516
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native close manager without recall",
+			"native": true,
+			"point": [
+				260.0,
+				379.5
+			],
+			"visible": true,
+			"window_id": 1
+		},
+		{
+			"disabled": false,
+			"label": "native close galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				99.8296127319336
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native reopen completed galaxy",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "real source formal hyperspace load unchanged",
+			"ok": true
+		},
+		{
+			"label": "actual completed galaxy six assigned zero construction ships",
+			"ok": true
+		},
+		{
+			"label": "completed actual page has static recall guidance",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 01-complete-crew-guidance",
+			"ok": true
+		},
+		{
+			"label": "existing crew management remains reachable",
+			"ok": true
+		},
+		{
+			"label": "completed guidance survives normal close reopen",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 02-complete-reopened",
+			"ok": true
+		},
+		{
+			"label": "no payment or hyperspace state change",
+			"ok": true
+		},
+		{
+			"label": "no crew recall or assignment change",
+			"ok": true
+		},
+		{
+			"label": "no galaxy progression or rule mutation",
+			"ok": true
+		},
+		{
+			"label": "original source bytes unchanged",
+			"ok": true
+		}
+	],
+	"commit": "21587054fd6e9e4e02449514205140e5631a9900",
+	"failures": [],
+	"kind": "galaxy",
+	"snapshots": [
+		{
+			"feedback": "",
+			"hint": "建设已完成，可在管理中召回船员。",
+			"label": "01-complete-crew-guidance",
+			"lines": 1,
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 2.0,
+				"glueball": 10599.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				770.875,
+				305.75,
+				1163.75,
+				28.0
+			],
+			"source_cores": 17.0,
+			"visible": true
+		},
+		{
+			"feedback": "",
+			"hint": "建设已完成，可在管理中召回船员。",
+			"label": "02-complete-reopened",
+			"lines": 1,
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 2.0,
+				"glueball": 10599.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				770.875,
+				305.75,
+				1163.75,
+				28.0
+			],
+			"source_cores": 17.0,
+			"visible": true
+		}
+	],
+	"source_sha": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404"
+}

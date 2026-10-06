@@ -1,0 +1,19 @@
+{
+  "build-verification.json": "4b9b5d74fb83dd2da3aecaa9ab5a2c61f1259007898c0a10238562aac184afa2",
+  "build.log": "3e4afb9023938e957705eb7f08cbf6016b1a3c07917f85ed645257db050d233a",
+  "dependency-verification.json": "c57def84c5fdd6efe7d6ecefdccf82ed82f8d7467c21b6243080a31cac1136bb",
+  "galaxy/01-complete-crew-guidance-screen.png": "474dcbe886ba81203bfba0aea38d181a121da1b01bda277ab9996ae2ca16f7ac",
+  "galaxy/02-complete-reopened-screen.png": "3af8e8789c9ab82c6de46449820a493be364f0eb34441b54268c8c16851c1dbb",
+  "galaxy/audit.json": "c8e4d28bb1cb456665875e4ef026897c5b17db1bae7a32e76b2fddb2fa04aebb",
+  "galaxy/run.log": "554ef44bec37256d1c1873edda1395f0f8431731562e31144a51ada813bae749",
+  "import.log": "d03c735a964ba9cf54856f94a0eb88f26288bec574c6599a8e228486e5036e29",
+  "independent_static_hints.gd": "5c02693cc7aa2a9aee2002b336546507b282135000596cf00ad24dc1dd57f8e5",
+  "qa-manifest.json": "c2219d67d20392100d52a1a52f0760b93768435fcbfb3a1a4473171262e3caa7",
+  "restore/01-before-restore-quote-screen.png": "b07966ba492c7025a0ce22cb97c6e72ff3e1ef50aeab415b2969238407558ab5",
+  "restore/02-restore-quote-no-payment-screen.png": "b3b6e546968c829eb32f687a2601b2f56144732f9d96250703959cbab927f4b0",
+  "restore/audit.json": "7e74d2e9261cdbf5f1d586336ed2d641f762c8e91f88939ee5ce5b9c33d0f6c9",
+  "restore/run.log": "df9ae3c049100beb4c12aa3a0d20133e427475a8b95beafe84194cd947fc57ed",
+  "sources/galaxy.json": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404",
+  "sources/restore.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+  "静态提示候选与真实档只读核验.md": "3f72475341b596eb1c9ee5df2c4ab279534d9689106af6922b6428e2b9ee7f40"
+}

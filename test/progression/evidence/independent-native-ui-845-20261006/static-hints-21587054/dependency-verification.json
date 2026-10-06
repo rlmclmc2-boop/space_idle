@@ -1,0 +1,8 @@
+{
+  "commit": "21587054fd6e9e4e02449514205140e5631a9900",
+  "parent": "f874421463f36ea3da12d69f72514fee27a2f564",
+  "integer_format_ancestor": "44c4d0d4ae32c8360dd0643e14c7ff846f9ab1d8",
+  "modernization_candidate": "83af25441ed34979ef530f5dfece62599d66f6c8",
+  "modernization_production_delta": "drone_forge coefficient initial 0\u21921; applied same production change atop f874; 83af isolated test fixture not copied",
+  "no_refund_candidate": "fb4392 not included"
+}

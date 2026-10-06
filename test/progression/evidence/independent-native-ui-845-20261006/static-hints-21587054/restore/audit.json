@@ -1,0 +1,232 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native actual ultimate card",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native choose restore only no payment open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 11,
+			"label": "native choose restore only no payment",
+			"native_menu_window": -1,
+			"selected": 11
+		},
+		{
+			"disabled": false,
+			"label": "native read-only restore quote",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native change operation read-only open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native change operation read-only",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native restore hint reappears open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 11,
+			"label": "native restore hint reappears",
+			"native_menu_window": -1,
+			"selected": 11
+		}
+	],
+	"checks": [
+		{
+			"label": "real source formal hyperspace load unchanged",
+			"ok": true
+		},
+		{
+			"label": "actual white ultimate card",
+			"ok": true
+		},
+		{
+			"label": "native choose restore only no payment actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "restore hint visible before quote with all three static facts",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 01-before-restore-quote",
+			"ok": true
+		},
+		{
+			"label": "restore quote retains real one-core cost plus static caution",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 02-restore-quote-no-payment",
+			"ok": true
+		},
+		{
+			"label": "native change operation read-only actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "restore hint hidden on modernization",
+			"ok": true
+		},
+		{
+			"label": "native restore hint reappears actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "restore hint restored on operation reselect",
+			"ok": true
+		},
+		{
+			"label": "no payment or hyperspace state change",
+			"ok": true
+		},
+		{
+			"label": "no crew recall or assignment change",
+			"ok": true
+		},
+		{
+			"label": "no galaxy progression or rule mutation",
+			"ok": true
+		},
+		{
+			"label": "original source bytes unchanged",
+			"ok": true
+		}
+	],
+	"commit": "21587054fd6e9e4e02449514205140e5631a9900",
+	"failures": [],
+	"kind": "restore",
+	"snapshots": [
+		{
+			"feedback": "",
+			"hint": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
+			"label": "01-before-restore-quote",
+			"lines": 2,
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				788.375,
+				638.25,
+				1128.75,
+				58.625
+			],
+			"source_cores": 2.0,
+			"visible": true
+		},
+		{
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"hint": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
+			"label": "02-restore-quote-no-payment",
+			"lines": 2,
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "消耗：究极核心 1（持有 2）\n抽取次数：1",
+			"rect": [
+				788.375,
+				638.25,
+				1128.75,
+				58.625
+			],
+			"source_cores": 2.0,
+			"visible": true
+		}
+	],
+	"source_sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+}
