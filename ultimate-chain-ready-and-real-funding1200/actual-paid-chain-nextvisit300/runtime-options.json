@@ -1,0 +1,11 @@
+{
+  "affix_target_tier": 0,
+  "allow_new_manual": true,
+  "allow_reforge": false,
+  "checkpoint_wall_seconds": 30.0,
+  "duration": 186872.233311435,
+  "seed": 20261005.0,
+  "stop_clear": 0,
+  "visit_seconds": 300.0,
+  "wall_limit_seconds": 1800
+}

@@ -1,0 +1,255 @@
+[
+  {
+    "file": "checkpoint-ultimate-step-26.bin",
+    "sha256": "948006b1b1ca8f9dd6aadc1b8d3f532452f1f88d95634cc28b14b8184d9a632f",
+    "x1_seconds": 186581.816644767,
+    "phase": "reultimate",
+    "level": 60,
+    "ultimate": false,
+    "ultimate_affix": {
+      "key": "global_critical_damage",
+      "locked": false,
+      "tier": 4,
+      "value": 0.256
+    },
+    "cores": 3,
+    "materials": {
+      "antiproton": 7,
+      "degenerate_matter": 122,
+      "glueball": 321,
+      "zero_point_energy": 0
+    },
+    "receipts": [
+      {
+        "command_seq_after": 25,
+        "cores_after": 3,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 10,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 312,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "restore_ultimate",
+        "ultimate": false,
+        "x1_seconds": 186581.4999781
+      },
+      {
+        "command_seq_after": 26,
+        "cores_after": 3,
+        "cost": {
+          "degenerate_matter": 190.0
+        },
+        "level": 60,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 122,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "modernize",
+        "ultimate": false,
+        "x1_seconds": 186581.7999781
+      }
+    ],
+    "trace_bytes": 34472,
+    "input_failure": {}
+  },
+  {
+    "file": "checkpoint-ultimate-step-27.bin",
+    "sha256": "482bd90bfc2dac0ad50439f3797a60639397f8edb4c51f8aee8302a79a04b5e9",
+    "x1_seconds": 186582.116644766,
+    "phase": "complete",
+    "level": 60,
+    "ultimate": true,
+    "ultimate_affix": {
+      "key": "global_critical_damage",
+      "locked": false,
+      "tier": 4,
+      "value": 0.256
+    },
+    "cores": 2,
+    "materials": {
+      "antiproton": 7,
+      "degenerate_matter": 122,
+      "glueball": 321,
+      "zero_point_energy": 0
+    },
+    "receipts": [
+      {
+        "command_seq_after": 25,
+        "cores_after": 3,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 10,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 312,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "restore_ultimate",
+        "ultimate": false,
+        "x1_seconds": 186581.4999781
+      },
+      {
+        "command_seq_after": 26,
+        "cores_after": 3,
+        "cost": {
+          "degenerate_matter": 190.0
+        },
+        "level": 60,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 122,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "modernize",
+        "ultimate": false,
+        "x1_seconds": 186581.7999781
+      },
+      {
+        "command_seq_after": 27,
+        "cores_after": 2,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 60,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 122,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "ultimate",
+        "ultimate": true,
+        "x1_seconds": 186582.0999781
+      }
+    ],
+    "trace_bytes": 38040,
+    "input_failure": {}
+  },
+  {
+    "file": "checkpoint-partial.bin",
+    "sha256": "2e749d971b74ccb519b3ddb2ffc48820e37c202b95c22e732df88e9d04057573",
+    "x1_seconds": 186735.216644731,
+    "phase": "complete",
+    "level": 60,
+    "ultimate": true,
+    "ultimate_affix": {
+      "key": "global_critical_damage",
+      "locked": false,
+      "tier": 4,
+      "value": 0.256
+    },
+    "cores": 2,
+    "materials": {
+      "antiproton": 7,
+      "degenerate_matter": 275,
+      "glueball": 321,
+      "zero_point_energy": 0
+    },
+    "receipts": [
+      {
+        "command_seq_after": 25,
+        "cores_after": 3,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 10,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 312,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "restore_ultimate",
+        "ultimate": false,
+        "x1_seconds": 186581.4999781
+      },
+      {
+        "command_seq_after": 26,
+        "cores_after": 3,
+        "cost": {
+          "degenerate_matter": 190.0
+        },
+        "level": 60,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 122,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "modernize",
+        "ultimate": false,
+        "x1_seconds": 186581.7999781
+      },
+      {
+        "command_seq_after": 27,
+        "cores_after": 2,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 60,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 122,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "ultimate",
+        "ultimate": true,
+        "x1_seconds": 186582.0999781
+      }
+    ],
+    "trace_bytes": 59664,
+    "input_failure": {}
+  },
+  {
+    "file": "checkpoint-ultimate-step-25.bin",
+    "sha256": "532008278320970abe9c15c6ce521c605a88548049323d6323d34d76b617632d",
+    "x1_seconds": 186581.516644767,
+    "phase": "modernize",
+    "level": 10,
+    "ultimate": false,
+    "ultimate_affix": {
+      "key": "global_critical_damage",
+      "locked": false,
+      "tier": 4,
+      "value": 0.256
+    },
+    "cores": 3,
+    "materials": {
+      "antiproton": 7,
+      "degenerate_matter": 312,
+      "glueball": 321,
+      "zero_point_energy": 0
+    },
+    "receipts": [
+      {
+        "command_seq_after": 25,
+        "cores_after": 3,
+        "cost": {
+          "ultimate_cores": 1.0
+        },
+        "level": 10,
+        "materials_after": {
+          "antiproton": 7,
+          "degenerate_matter": 312,
+          "glueball": 321,
+          "zero_point_energy": 0
+        },
+        "operation": "restore_ultimate",
+        "ultimate": false,
+        "x1_seconds": 186581.4999781
+      }
+    ],
+    "trace_bytes": 31148,
+    "input_failure": {}
+  }
+]
