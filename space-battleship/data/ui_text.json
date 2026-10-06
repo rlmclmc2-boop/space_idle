@@ -14441,5 +14441,7 @@
   {"key": "hyperspace.modernize_preview", "text": "现代化：等级 {before} → {after}\n词条效果：\n{effects}", "params": "before,after,effects", "category": "hyperspace", "note": "付款前只读目标和已有词条效果预览"},
   {"key": "hyperspace.modernize_effect", "text": "{name}：{before} → {after}", "params": "name,before,after", "category": "hyperspace"},
   {"key": "hyperspace.modernize_no_affixes", "text": "此无人机没有词条。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.quote_execution_result", "text": "消耗：{cost}\n执行次数：{count}", "params": "cost,count", "category": "hyperspace", "note": "现代化非随机执行，不显示抽取次数"}
+  {"key": "hyperspace.quote_execution_result", "text": "消耗：{cost}\n执行次数：{count}", "params": "cost,count", "category": "hyperspace", "note": "现代化非随机执行，不显示抽取次数"},
+{"key": "equipment.continuous_beam_snapshot_hint", "text": "持续束沿用开火时的属性；升级在下一束开火时生效。", "params": "", "category": "weapon", "note": "装备详情持续束属性快照说明"},
+{"key": "hyperspace.queue_departure_hint", "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。", "params": "", "category": "hyperspace", "note": "手动排队底部提示，不进入探索小卡"}
 ]

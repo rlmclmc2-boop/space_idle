@@ -57,6 +57,7 @@ var status: Label
 var progress: ProgressBar
 var start_button: Button
 var cancel_queue_button:Button
+var queue_departure_hint:Label
 var crew_button: Button
 var claim_button: Button
 var first_win: Label
@@ -165,6 +166,7 @@ func build_exploration(parent: Node) -> void:
  label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
  var commands=row(parent);start_button=button(commands,"queue_start",start_manual);cancel_queue_button=button(commands,"queue_cancel",func():host.game.cancel_hyperspace_request();refresh_progress());cancel_queue_button.visible=false;exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
   if crew_adapter.is_valid():crew_adapter.call())
+ queue_departure_hint=label(parent,t("queue_departure_hint"),20);queue_departure_hint.visible=false
  manual_reason=label(parent,"",20)
  recent_result=label(parent,"",20);recent_result.visible=false
  resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
@@ -347,6 +349,7 @@ func refresh_progress() -> void:
  if not result.is_empty():
   put(recent_result,"text",t("recent_result",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"reason":t("result_"+str(result.reason)),"elapsed":"%.1f"%float(result.elapsed),"point":str(result.end_point),"refund":"%.0f"%float(result.refund),"stage":str(result.return_stage),"main_point":str(result.return_point)}))
  put(cancel_queue_button,"visible",not session.queued.is_empty())
+ put(queue_departure_hint,"visible",not session.queued.is_empty())
  if not session.queued.is_empty():
   var waiting=session.boundary_reason(host.game)
   text=t("queue_wait",{"weapon":t(host.game.hyperspace.config.routes[session.queued.route].weapon),"level":str(int(session.queued.level)),"reason":t("queue_wait_"+waiting) if waiting in ["battle","guard","unlock","projectiles"] else t("queue_wait_ready")})

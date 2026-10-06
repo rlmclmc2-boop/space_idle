@@ -617,6 +617,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		description=host.equipment_stat_text(entry,item.projection,next_projection)+"\n"
 		if category=="weapons":description+=host.equipment_expected_details(entry,item.projection)+"\n"
 		description+=host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
+		if key=="longLaser":description+=UIText.t("equipment.continuous_beam_snapshot_hint")+"\n"
 	description += UIText.t("upgrade.cost_one",{"cost":cost})
 	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
