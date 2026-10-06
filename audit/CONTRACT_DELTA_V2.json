@@ -1,0 +1,9 @@
+{
+ "from":"dcf5d8ed8b179b5844daa25af3a3f79476989e9b",
+ "numeric_values_changed":false,
+ "headers_rows_counts_changed":false,
+ "descriptions":"基础参数正整数及5/2/1硬上限；ticket自动票耗联动；槽位抽取失败不停止。希格斯area_bonus宽度加成；maximum_dodge闪避上限0..1；damage_and_defence_bonus每牺牲层累加；spawn_probability非击杀命中概率；maximum_cannon_sources来源数量。",
+ "column_protection_changed":["路线.weapon","词缀定义.weapon","词缀定义.amplified","传说定义.weapon","敌人.description","编队.description"],
+ "protection_reason":"保持固定结构/玩法/原描述；明确原约束与editable冲突，导入真实拒绝改离基线。",
+ "parent_action":"从同一AUTHORING_PACKAGE重新导出原两本工作簿，保留文件身份；没有业务数值或表结构变动。"
+}

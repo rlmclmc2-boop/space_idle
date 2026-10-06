@@ -262,7 +262,7 @@
           "description_zh": "路线武器结构绑定；四个既有ID唯一覆盖",
           "unit": "已有ID引用",
           "constraint": "必须存在于现有装备/敌武器注册表；保持当前引用，变更需跨表校验",
-          "editable": true
+          "editable": false
         },
         {
           "column": "material",
@@ -486,16 +486,16 @@
           "type": "string",
           "description_zh": "适用武器；空字符串代表全局",
           "unit": "武器ID/空字符串",
-          "constraint": "已支持武器或空；空保持为\"\"而非null",
-          "editable": true
+          "constraint": "已支持武器或空；空保持为\"\"而非null；结构绑定必须基线等值",
+          "editable": false
         },
         {
           "column": "amplified",
           "type": "bool",
-          "description_zh": "是否按等级放大已有词缀值",
+          "description_zh": "固定：是否按等级放大已有词缀值",
           "unit": "bool",
-          "constraint": "保持当前值；消费者必须识别ID，不允许新增名即假称生效",
-          "editable": true
+          "constraint": "必须基线等值；不改变词缀行为",
+          "editable": false
         }
       ],
       "json_targets": [
@@ -692,8 +692,8 @@
           "type": "string",
           "description_zh": "固定结构绑定；空字符串表示全武器通用",
           "unit": "武器ID/空字符串",
-          "constraint": "仅已有武器或空字符串",
-          "editable": true
+          "constraint": "仅已有武器或空字符串；结构绑定必须基线等值",
+          "editable": false
         },
         {
           "column": "score_parameter_note",
@@ -885,8 +885,8 @@
           "type": "string",
           "description_zh": "已有敌人描述",
           "unit": "文本",
-          "constraint": "保留原des，不创造美术/新指南",
-          "editable": true
+          "constraint": "必须基线等值；不创造美术/新指南",
+          "editable": false
         },
         {
           "column": "size",
@@ -1024,8 +1024,8 @@
           "type": "string",
           "description_zh": "已有编队名称/描述",
           "unit": "文本",
-          "constraint": "保留当前description",
-          "editable": true
+          "constraint": "必须基线等值；不创造新描述",
+          "editable": false
         },
         {
           "column": "tier",
@@ -1234,7 +1234,7 @@
           "type": "int",
           "description_zh": "被分配的原参考成员序号",
           "unit": "0起索引",
-          "constraint": "覆盖0..reference_count-1且无重复；每个非空槽有分配",
+          "constraint": "覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算",
           "editable": true
         }
       ],

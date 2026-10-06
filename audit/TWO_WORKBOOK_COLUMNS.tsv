@@ -8,7 +8,7 @@ hyperspace_config.xlsx	基础参数	key	constraint	string	固定范围/外键/�
 hyperspace_config.xlsx	基础参数	key	editable	bool	该键是否真实允许调整；不是功能开关	权限标签	锁定并匹配契约；false拒绝改离基线	False
 hyperspace_config.xlsx	路线	route_id	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_config.xlsx	路线	route_id	route_id	string	现有alpha/beta/gamma/delta路线	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一	False
-hyperspace_config.xlsx	路线	route_id	weapon	string	路线武器结构绑定；四个既有ID唯一覆盖	已有ID引用	必须存在于现有装备/敌武器注册表；保持当前引用，变更需跨表校验	True
+hyperspace_config.xlsx	路线	route_id	weapon	string	路线武器结构绑定；四个既有ID唯一覆盖	已有ID引用	必须存在于现有装备/敌武器注册表；保持当前引用，变更需跨表校验	False
 hyperspace_config.xlsx	路线	route_id	material	string	现有专属材料结构ID；与改造成本及存档一致	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一	False
 hyperspace_config.xlsx	品质	quality	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_config.xlsx	品质	quality	quality	string	来源品质或独占核心抽签结果	稳定ID	white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空	False
@@ -26,8 +26,8 @@ hyperspace_config.xlsx	阶级权重	tier	draw_weight	float	生成/升阶判定�
 hyperspace_config.xlsx	阶级权重	tier	modernization_weight	float	现代化费用附加阶级系数	无量纲	非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项	True
 hyperspace_config.xlsx	词缀定义	affix_id	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_config.xlsx	词缀定义	affix_id	affix_id	string	已实现聚合器支持的词缀ID	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一	False
-hyperspace_config.xlsx	词缀定义	affix_id	weapon	string	适用武器；空字符串代表全局	武器ID/空字符串	"已支持武器或空；空保持为""""而非null"	True
-hyperspace_config.xlsx	词缀定义	affix_id	amplified	bool	是否按等级放大已有词缀值	bool	保持当前值；消费者必须识别ID，不允许新增名即假称生效	True
+hyperspace_config.xlsx	词缀定义	affix_id	weapon	string	适用武器；空字符串代表全局	武器ID/空字符串	"已支持武器或空；空保持为""""而非null；结构绑定必须基线等值"	False
+hyperspace_config.xlsx	词缀定义	affix_id	amplified	bool	固定：是否按等级放大已有词缀值	bool	必须基线等值；不改变词缀行为	False
 hyperspace_config.xlsx	词缀区间	affix_id+tier	affix_id	string	词缀定义外键	已有ID引用	必须存在于词缀定义；保持当前引用，变更需跨表校验	False
 hyperspace_config.xlsx	词缀区间	affix_id+tier	tier	int	该词缀有定义的阶级	阶	1..5；仅导出存在的阶，不凭空补缺	False
 hyperspace_config.xlsx	词缀区间	affix_id+tier	minimum	float	未放大的原值区间下端	原始加成；1=100%或数量	有限；≤maximum；value_precision网格至少有一个可取值	True
@@ -41,7 +41,7 @@ hyperspace_config.xlsx	挂设成长	module_id	unlock_stage	int	挂设可应用�
 hyperspace_config.xlsx	挂设成长	module_id	effects_note	string	当前effects数组的说明，仅标签非路由	只读说明	从基线说明映射；不编辑扩玩法；原JSON effects数组由锁定契约保留	False
 hyperspace_config.xlsx	传说定义	effect_id	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_config.xlsx	传说定义	effect_id	effect_id	string	既有十二种传说效果ID	稳定ID	仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一	False
-hyperspace_config.xlsx	传说定义	effect_id	weapon	string	固定结构绑定；空字符串表示全武器通用	武器ID/空字符串	仅已有武器或空字符串	True
+hyperspace_config.xlsx	传说定义	effect_id	weapon	string	固定结构绑定；空字符串表示全武器通用	武器ID/空字符串	仅已有武器或空字符串；结构绑定必须基线等值	False
 hyperspace_config.xlsx	传说定义	effect_id	score_parameter_note	string	当前强弱比较读取第一个parameter键	只读参数名	保持当前首参数或空；只是说明，不新增可调primary策略	False
 hyperspace_config.xlsx	传说随机参数	effect_id+parameter	effect_id	string	传说定义外键	已有ID引用	必须存在于传说定义；保持当前引用，变更需跨表校验	False
 hyperspace_config.xlsx	传说随机参数	effect_id+parameter	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
@@ -72,7 +72,7 @@ hyperspace_config.xlsx	固定规则_兼容说明	key	constraint	string	固定范
 hyperspace_config.xlsx	固定规则_兼容说明	key	editable	bool	该键是否真实允许调整；不是功能开关	权限标签	锁定并匹配契约；false拒绝改离基线	False
 hyperspace_enemies.xlsx	敌人	enemy_id	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_enemies.xlsx	敌人	enemy_id	enemy_id	int	现有独立异空间敌人ID	ID	正整数，当前223个既有ID；不得与主线ID冲突	False
-hyperspace_enemies.xlsx	敌人	enemy_id	description	string	已有敌人描述	文本	保留原des，不创造美术/新指南	True
+hyperspace_enemies.xlsx	敌人	enemy_id	description	string	已有敌人描述	文本	必须基线等值；不创造美术/新指南	False
 hyperspace_enemies.xlsx	敌人	enemy_id	size	int	既有舰体尺寸档	尺寸档	正整数且现有模型/几何支持	True
 hyperspace_enemies.xlsx	敌人	enemy_id	health	number	基础生命值	生命	>0且有限	True
 hyperspace_enemies.xlsx	敌人	enemy_id	armour_type	int	装甲抗性类别	枚举码	0/1/2	True
@@ -86,7 +86,7 @@ hyperspace_enemies.xlsx	武器安装	enemy_id+order	order	int	固定输出/随�
 hyperspace_enemies.xlsx	武器安装	enemy_id+order	weapon_id	string	现有敌武器安装键	已有ID引用	必须存在于enemy_weapon_base.xlsx/现有ShipDatabase.enemy_weapon；保持当前引用，变更需跨表校验	True
 hyperspace_enemies.xlsx	编队	group_id	order	int	固定输出/随机选择顺序；物理行排序不改变它	0起序号	按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序	False
 hyperspace_enemies.xlsx	编队	group_id	group_id	int	现有四十组独立编队ID	ID	正整数，当前7001..7040既有集合，不与主线冲突	False
-hyperspace_enemies.xlsx	编队	group_id	description	string	已有编队名称/描述	文本	保留当前description	True
+hyperspace_enemies.xlsx	编队	group_id	description	string	已有编队名称/描述	文本	必须基线等值；不创造新描述	False
 hyperspace_enemies.xlsx	编队	group_id	tier	enum	普通/精英/Boss/地区Boss档位	档位	normal/elite/boss/ultimate；总计16/16/4/4，当前不扩组	True
 hyperspace_enemies.xlsx	编队	group_id	reward_reference_id	string	奖励预算设计参考键	已有ID引用	必须存在于奖励参考；保持当前引用，变更需跨表校验	True
 hyperspace_enemies.xlsx	编队槽位	group_id+slot_index	group_id	int	编队外键	ID	必须存在于异空间编队	False
@@ -108,4 +108,4 @@ hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	group_id	int	异�
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	member_order	int	组内原recipe成员记录顺序	0起序号	同group/slot重复值一致；组内唯一成员顺序连续；锁定；导出按它排列成员	False
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	slot_index	int	实际收取该预算块的异空间非空槽	0起索引	必须为该组非空槽	True
 hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	order	int_or_blank	同成员内原ordinal数组顺序；零预算成员填空	0起序号	同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序	False
-hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	reference_member_ordinal	int_or_blank	被分配的原参考成员序号	0起索引	覆盖0..reference_count-1且无重复；每个非空槽有分配；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0	True
+hyperspace_enemies.xlsx	成员分配	group_id+slot_index+order	reference_member_ordinal	int_or_blank	被分配的原参考成员序号	0起索引	覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0	True

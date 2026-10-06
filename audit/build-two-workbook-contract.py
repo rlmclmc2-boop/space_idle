@@ -36,6 +36,11 @@ attach('hyperspace_config.xlsx','词缀区间','词缀区间',[{'affix_id':key,'
 attach('hyperspace_config.xlsx','挂设','挂设成长',[{'order':i,'module_id':key,**{k:row[k] for k in ['base_exp','exp_growth','effect_growth','unlock_stage']},'effects_note':'；'.join(row['effects'])} for i,(key,row) in enumerate(cfg['hanging_modules'].items())])
 attach('hyperspace_config.xlsx','传说定义','传说定义',[{'order':i,'effect_id':key,'weapon':row['weapon'],'score_parameter_note':next(iter(row['parameters']), '')} for i,(key,row) in enumerate(cfg['legendary_effects'].items())])
 def legend_semantics(effect,name):
+ if name=='area_bonus':return '射线宽度加成比例','宽度倍率=1+area_bonus；1表示宽度×2，不是任意面积倍数'
+ if name=='maximum_dodge':return '闪避概率上限，0..1','实际闪避概率=min(现有武器最高暴击概率,上限)，不是固定实际闪避率'
+ if name=='damage_and_defence_bonus':return '每牺牲层伤害/防御加成比例','逐次牺牲累加；0.7为每层+70%'
+ if name=='spawn_probability':return '非击杀炮击命中生成1个的概率，0..1','击杀分支使用kill_spawns绕过此概率'
+ if name=='maximum_cannon_sources':return '炮类武器来源数上限/个','参与统计的炮类来源数上限'
  if name in ['damage_bonus','single_target_bonus','maximum_bonus','counter_damage_bonus']:return '加成比例；2=+200%，实际×3','加到1后作伤害倍率，不是直接倍率'
  if name=='damage_multiplier':return '直接伤害倍率','1.3表示伤害×1.3'
  if name=='maximum_multiplier_bonus':return '既有激光最大倍率的加法增量','加到既有最大倍率，不是独立总倍率'
