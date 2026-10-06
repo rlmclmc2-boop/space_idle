@@ -23,8 +23,14 @@ func _initialize()->void:
  # Leave the actual player save untouched. Reset only controller drafts that belonged to old UI.
  payload.controller.merge({"busy":false,"tour":[],"touring":false,"next_button":payload.x1_seconds,"next_check":payload.x1_seconds,"next_tour":payload.x1_seconds,"scientist_context":"","reactor_context":"","active_space_record":{}},true)
  var policy_changed:bool=old.files.get("qa/hyperspace_player_policy.gd","")!=target.files.get("qa/hyperspace_player_policy.gd","")
- if policy_changed:payload.space_policy={}
- var link:Dictionary={"kind":"explicit_production_candidate_transition","source_library_identity":r.source_library_identity,"source_sha256":r.source_sha256,"source_fingerprint":old.fingerprint,"target_fingerprint":target.fingerprint,"source_commit":old.source_commit,"target_commit":target.source_commit,"source_x1":payload.x1_seconds,"changes":r.changes,"source_save_byte_identical":true,"numeric_data_identical":true,"old_segment_used_new_fix":false,"discontinuities":{"production_changed":true,"formal_reload_regenerates_battle":true,"qa_policy_changed":policy_changed,"controller_drafts_reset":true,"legacy_missing_state":payload.get("legacy_missing_state",[])}}
+ var preserved:Array=[];var discarded:Array=[]
+ if policy_changed:
+  var previous:Dictionary=payload.space_policy;payload.space_policy={}
+  for key in previous:
+   if key in ["last_attempt","manual_failures","last_frontier_attempt","manual_frontier_failures","forge_at","reserved_crew","affix_target_tier","affix_paid_windows"]:
+    payload.space_policy[key]=previous[key];preserved.append(key)
+   else:discarded.append(key)
+ var link:Dictionary={"kind":"explicit_production_candidate_transition","source_library_identity":r.source_library_identity,"source_sha256":r.source_sha256,"source_fingerprint":old.fingerprint,"target_fingerprint":target.fingerprint,"source_commit":old.source_commit,"target_commit":target.source_commit,"source_x1":payload.x1_seconds,"changes":r.changes,"source_save_byte_identical":true,"numeric_data_identical":true,"old_segment_used_new_fix":false,"discontinuities":{"production_changed":true,"formal_reload_regenerates_battle":true,"qa_policy_changed":policy_changed,"controller_drafts_reset":true,"preserved_policy_fields":preserved,"discarded_policy_fields":discarded,"legacy_missing_state":payload.get("legacy_missing_state",[])}}
  payload.lineage.append(link);payload.candidate_transition=link;payload.code_fingerprint=target.fingerprint;payload.data_sha256=target.files["data/game_data.json"]
  if original!=var_to_bytes(payload.save) or FileAccess.file_exists(r.output):reject("Save changed/output exists");return
  if CP.write(r.output,payload,target)!=OK:reject("Atomic output failure");return

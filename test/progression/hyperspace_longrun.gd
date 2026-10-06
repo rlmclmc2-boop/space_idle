@@ -5,6 +5,7 @@ const NoNewManualPolicy=preload("res://qa/no_new_manual_policy.gd")
 var space_policy:=SpacePolicy.new()
 func configure_manual_policy()->void:
  space_policy=SpacePolicy.new() if bool(options.get("allow_new_manual",true)) else NoNewManualPolicy.new()
+ space_policy.affix_target_tier=clampi(int(options.get("affix_target_tier",0)),0,5)
 # Optional isolated stage profiler; frozen P2 policy behavior is unchanged.
 var stage_meter=null
 const Checkpoint=preload("res://qa/hyperspace_checkpoint.gd")
@@ -75,6 +76,10 @@ func observe(kind:String,payload:Dictionary)->void:
   else:
    var manual_feedback:=space_policy.manual_finished(game,bool(payload.success),game.simulated_time)
    if not manual_feedback.is_empty():record("manual_retry_feedback",manual_feedback)
+   if bool(payload.success) and not manual_feedback.get("paid_affix_supply",{}).is_empty() and page==9:
+    # Finish this observed paid attempt on its already visible page, through ordinary finite actions.
+    busy=true;burst_start=game.simulated_time;next_button=game.simulated_time+BUTTON_TIME
+    record("paid_affix_finite_followup",{"supply":manual_feedback.paid_affix_supply,"reason":"Observed real paid manual completion; claim/equip/forge on same visible page, actual costs and0.3 actions; ordinary tour unchanged"})
   if not bool(payload.active) and not active_space_record.is_empty():
    active_space_record.end=game.simulated_time;active_space_record.success=payload.success;active_space_record.seconds=game.simulated_time-float(active_space_record.start)
    space_runs.append(active_space_record.duplicate(true));record("space_actual_result",active_space_record);active_space_record={};save_snapshot("space_%d"%space_runs.size())
@@ -354,7 +359,7 @@ func run()->void:
    await process_frame
   if game.simulated_time-last_state_report>=1800.0:last_state_report=game.simulated_time;save_snapshot("periodic_%d"%int(game.simulated_time))
  state_change();save_snapshot("final");checkpoint_now();trace.close()
- var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","initial_scope":initial_scope,"resume_lineage":resume_lineage,"cumulative_totals_complete":not resume_lineage.any(func(link):return not link.discontinuities.get("legacy_missing_state",[]).is_empty()),"cumulative_wall_seconds":carried_wall_seconds+float(Time.get_ticks_usec()-wall_started)/1e6,"stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge T3 is paid planning goal, no cap."}
+ var result:Dictionary={"status":"input_failure" if not input_failure.is_empty() else "operator_stopped" if operator_stopped else "galaxy_complete" if galaxy_complete() else "bounded_partial","initial_scope":initial_scope,"resume_lineage":resume_lineage,"cumulative_totals_complete":not resume_lineage.any(func(link):return not link.discontinuities.get("legacy_missing_state",[]).is_empty()),"cumulative_wall_seconds":carried_wall_seconds+float(Time.get_ticks_usec()-wall_started)/1e6,"stop_request_file":stop_request_path,"options":options,"x1_seconds":game.simulated_time,"wall_seconds":float(Time.get_ticks_usec()-wall_started)/1e6,"clears":clears,"stage":game.stage,"frontier":game.profile.highestLevel,"input_failure":input_failure,"rows":rows,"segments":segments,"operation_seconds":operation_seconds,"space_seconds":space_seconds,"farm_seconds":farm_seconds,"safe_farm":safe_farm.snapshot(),"space_runs":space_runs,"reforges":refeeds,"round_clears":round_clears,"snapshots":snapshots,"deaths":deaths,"clicks":clicks,"peak_projectiles":peak_projectiles,"peak_missile_queue":peak_missile_queue,"policy":space_policy.VERSION,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"manifest":JSON.parse_string(FileAccess.get_file_as_string("res://qa-manifest.json")),"scope":"Fresh real main/Presented scene, native early inputs, serial visible-page new-system domain commands, exact X1 fixed1/60, no injected resources/drones/affix tiers. Real native first-normal safe farming after two actual defeats, resume after five earned module levels; before clear10 checks3s/tours10s, afterwards300s. Reforge chosen low-tier goal is paid planning goal, no cap."}
  FileAccess.open(output+"/longrun-summary.json",FileAccess.WRITE).store_string(JSON.stringify(result,"\t"))
  print("LONGRUN_DONE ",result.status," x1=",game.simulated_time," stage=",game.stage)
  if stage_meter!=null:stage_meter.finish(output,game)

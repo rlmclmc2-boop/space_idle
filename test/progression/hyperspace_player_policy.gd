@@ -1,10 +1,13 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v11-production-manual-boundary"
+const VERSION="hyperspace-player-v16-post60-formal-supply"
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
+const Rewards=preload("res://scripts/drone_rewards.gd")
 var last_attempt:Dictionary={}
 var manual_failures:Dictionary={}
+var last_frontier_attempt:Dictionary={}
+var manual_frontier_failures:Dictionary={}
 var manual_pending:Dictionary={}
 var manual_watch:Dictionary={}
 var last_manual_boundary:=""
@@ -24,8 +27,22 @@ static func earned_manual_growth(before:Dictionary,after:Dictionary)->bool:
  for key in ["scientists","reactorLevel","enhancementLevel"]:
   if int(after.get(key,0))>int(before.get(key,0)):return true
  return false
+func manual_frontier_key(g)->String:
+ return str([g.profile.hyperspace.round_id,g.profile.highestLevel])
+func frontier_failure(g)->Dictionary:
+ var key:String=manual_frontier_key(g);var latest:Dictionary=manual_frontier_failures.get(key,{})
+ # An old failure at the exact current frontier proves this same gate; do not infer older paid-route frontiers.
+ for old_key in manual_failures:
+  var parsed=JSON.parse_string(str(old_key))
+  if not parsed is Array or parsed.size()!=3 or int(parsed[0])!=int(g.profile.hyperspace.round_id) or int(parsed[2])!=int(g.profile.highestLevel):continue
+  var failure:Dictionary=manual_failures[old_key]
+  if float(failure.get("failed_at",-1.0))>float(latest.get("failed_at",-1.0)):latest=failure
+ return latest
 func manual_retry_allowed(g,route:String,level:int,now:float)->bool:
  var key:String=manual_key(g,route,level)
+ if now-float(last_frontier_attempt.get(manual_frontier_key(g),-1000.0))<MANUAL_CHECK_SECONDS:return false
+ var frontier:Dictionary=frontier_failure(g)
+ if not frontier.is_empty() and (now-float(frontier.failed_at)<900.0 or not earned_manual_growth(frontier.growth,manual_growth(g.profile))):return false
  if now-float(last_attempt.get(key,-1000.0))<900.0:return false
  return not manual_failures.has(key) or earned_manual_growth(manual_failures[key].growth,manual_growth(g.profile))
 func main_boundary(g)->String:
@@ -39,6 +56,10 @@ func safe_main_boundary(g)->bool:
 func pending_manual_action(g,now:float)->Dictionary:
  if manual_pending.is_empty() or not safe_main_boundary(g) or not g.profile.hyperspace.active.is_empty():return {}
  var choice:Dictionary=manual_pending
+ if choice.has("paid_affix_supply"):
+  var needed:Dictionary=growth_supply(g);var planned:Dictionary=choice.paid_affix_supply
+  if needed.is_empty() or str(needed.route)!=str(planned.route) or (planned.has("desired_tier") and not needed.has("desired_tier")) or (not needed.get("record_prerequisite",false) and int(needed.available)>=int(needed.get("minimum",1))):manual_pending={};return {}
+  if g.profile.hyperspace.auto.enabled:return {}
  if int(choice.round)!=int(g.profile.hyperspace.round_id) or int(choice.frontier)!=int(g.profile.highestLevel):
   manual_pending={};return {}
  if not manual_retry_allowed(g,str(choice.route),int(choice.level),now):return {}
@@ -46,12 +67,16 @@ func pending_manual_action(g,now:float)->Dictionary:
  return choice.duplicate(true)
 func manual_started(g,route:String,level:int,now:float)->void:
  manual_pending={}
- manual_watch={"key":manual_key(g,route,level),"route":route,"level":level,"start":now,"next_check":now+MANUAL_CHECK_SECONDS,"last_progress":now,"group":-1,"bars":{},"exit_reason":""}
+ manual_watch={"key":manual_key(g,route,level),"frontier":manual_frontier_key(g),"route":route,"level":level,"start":now,"next_check":now+MANUAL_CHECK_SECONDS,"last_progress":now,"group":-1,"bars":{},"exit_reason":""}
 func manual_finished(g,success:bool,now:float)->Dictionary:
  if manual_watch.is_empty():return {}
- var result:Dictionary={"key":manual_watch.key,"success":success,"seconds":now-float(manual_watch.start),"exit_reason":manual_watch.exit_reason}
- if not success:manual_failures[str(manual_watch.key)]={"growth":manual_growth(g.profile),"failed_at":now,"reason":manual_watch.exit_reason}
- else:manual_failures.erase(str(manual_watch.key))
+ var result:Dictionary={"key":manual_watch.key,"success":success,"seconds":now-float(manual_watch.start),"exit_reason":manual_watch.exit_reason,"paid_affix_supply":manual_watch.get("paid_affix_supply",{}).duplicate(true)}
+ var frontier:String=str(manual_watch.get("frontier",manual_frontier_key(g)))
+ if not success:
+  var failure:Dictionary={"growth":manual_growth(g.profile),"failed_at":now,"reason":manual_watch.exit_reason}
+  manual_failures[str(manual_watch.key)]=failure;manual_frontier_failures[frontier]=failure.duplicate(true)
+ else:
+  manual_failures.erase(str(manual_watch.key));manual_frontier_failures.erase(frontier)
  manual_watch={};return result
 # Bars come only from actors actually drawn in the clipped viewport.
 func manual_visible_bars(g,scene)->Dictionary:
@@ -100,6 +125,29 @@ var weapon_losses:Dictionary={}
 var last_weapon_change:=-1000.0
 var last_galaxy_state:=""
 var galaxy_needs_reserved_crew:=false
+func visible_loadout_plan(g,allowed:Array,resist:Dictionary,attacks:Dictionary,repairs:int,visible_count:int)->Dictionary:
+ var higgs:=false
+ var physical:String="missile" if visible_count>=4 else "cannon"
+ var energy:String="laser" if visible_count>=4 else "longLaser"
+ for id in g.profile.hyperspace.inventory.equipped:
+  var d:Dictionary=g.profile.hyperspace.inventory.drones[id]
+  if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":physical="missile";higgs=true
+ if not allowed.has(physical):physical="cannon" if allowed.has("cannon") else "missile" if allowed.has("missile") else ""
+ if not allowed.has(energy):energy="longLaser" if allowed.has("longLaser") else "laser" if allowed.has("laser") else ""
+ var weapons:Array=[];var defences:Array=[]
+ var mixed:bool=int(resist[1])>0 and int(resist[2])>0
+ var physical_slots:int=clampi(roundi(float(g.active_slot_count("weapons")*int(resist[1]))/float(maxi(1,int(resist[1])+int(resist[2])))),1,g.active_slot_count("weapons")-1) if mixed else 0
+ for index in g.active_slot_count("weapons"):
+  var desired:String=physical if int(resist[1])>int(resist[2]) else energy if int(resist[2])>int(resist[1]) else physical if not physical.is_empty() else energy
+  if mixed:desired=physical if index<physical_slots else energy
+  # The permanent repair-module glyph is visible feedback; the unlocked beam tutorial teaches sustained damage.
+  if repairs>0 and desired in ["laser","longLaser"] and allowed.has("longLaser"):desired="longLaser"
+  if desired.is_empty():desired=str(g.slot_entry("weapons",index).key)
+  weapons.append(desired)
+ for index in g.active_slot_count("defence"):
+  var shield:bool=index>0 and g.content_unlocked("equipment","shield") and (int(attacks[1])>int(attacks[2]) or (int(attacks[1])==int(attacks[2]) and (int(attacks[1])==0 or index%2==1)))
+  defences.append("shield" if shield else "armour")
+ return {"weapons":weapons,"defences":defences,"higgs":higgs}
 func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
  if g.state!=g.State.COMBAT:return {}
  var visible:Array=[];var resist:Dictionary={1:0,2:0};var attacks:Dictionary={1:0,2:0};var repairs:=0
@@ -150,27 +198,9 @@ func observe_visible(g,scene,tutorials:Array,now:float)->Dictionary:
   for attack_kind in actor.shown_attacks:
    if attacks.has(int(attack_kind)):attacks[int(attack_kind)]+=1
  seen_encounter=encounter;encounter_started=now
- var higgs:=false
- var physical:String="missile" if visible.size()>=4 else "cannon"
- var energy:String="laser" if visible.size()>=4 else "longLaser"
- for id in g.profile.hyperspace.inventory.equipped:
-  var d:Dictionary=g.profile.hyperspace.inventory.drones[id]
-  if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":physical="missile";higgs=true
- if not allowed.has(physical):physical="cannon" if allowed.has("cannon") else "missile" if allowed.has("missile") else ""
- if not allowed.has(energy):energy="longLaser" if allowed.has("longLaser") else "laser" if allowed.has("laser") else ""
- wanted_weapons=[];wanted_defences=[]
- var mixed:bool=int(resist[1])>0 and int(resist[2])>0
- var physical_slots:int=clampi(roundi(float(g.active_slot_count("weapons")*int(resist[1]))/float(maxi(1,int(resist[1])+int(resist[2])))),1,g.active_slot_count("weapons")-1) if mixed else 0
- for index in g.active_slot_count("weapons"):
-  var desired:String=physical if int(resist[1])>int(resist[2]) else energy if int(resist[2])>int(resist[1]) else physical if not physical.is_empty() else energy
-  if mixed:desired=physical if index<physical_slots else energy
-  # The permanent repair-module glyph is visible feedback; the unlocked beam tutorial teaches sustained damage.
-  if repairs>0 and allowed.has("longLaser"):desired="longLaser"
-  if desired.is_empty():desired=str(g.slot_entry("weapons",index).key)
-  wanted_weapons.append(desired)
- for index in g.active_slot_count("defence"):
-  var shield:bool=index>0 and g.content_unlocked("equipment","shield") and (int(attacks[1])>int(attacks[2]) or (int(attacks[1])==int(attacks[2]) and (int(attacks[1])==0 or index%2==1)))
-  wanted_defences.append("shield" if shield else "armour")
+ var layout:Dictionary=visible_loadout_plan(g,allowed,resist,attacks,repairs,visible.size())
+ wanted_weapons=layout.weapons;wanted_defences=layout.defences
+ var higgs:bool=layout.higgs
  last_weapon_change=now
  encounter_plans[encounter]={"weapons":wanted_weapons.duplicate(),"defences":wanted_defences.duplicate(),"visible_only":visible.duplicate(true),"allowed":allowed.duplicate(),"growth":growth_stamp(g),"revision":0,"last_revision_failure":0,"higgs":higgs}
  pending_encounters.erase(encounter)
@@ -319,6 +349,137 @@ func forge_choice(g,id:String,op:String,args:Dictionary={})->Dictionary:
  var request:Dictionary=forge_request(g,id,op,args)
  var preview:Dictionary=g.hyperspace.preview_forge(g,request)
  return {"domain":true,"kind":"space_forge","request":request,"preview":preview} if str(preview.error).is_empty() else {}
+var affix_target_tier:=0 # Optional QA spending preference; never a progression/acceptance gate.
+var affix_paid_windows:Dictionary={}
+func affix_supply(g)->Dictionary:
+ var s:Dictionary=g.profile.hyperspace
+ if int(s.inventory.reforge_count)<=0 or affix_target_tier<=0:return {}
+ var targets:Array=[]
+ for id in equipped(g):
+  var d:Dictionary=s.inventory.drones[id]
+  if not d.ultimate and d.affixes.any(func(a):return not a.locked and int(a.tier)>affix_target_tier):targets.append(id)
+ if targets.is_empty():return {}
+ return {"route":"gamma","material":"antiproton","available":int(s.materials.antiproton),"minimum":1,"targets":targets,"goal":"Optional spending preference, never a progression/acceptance gate; natural stronger results accepted","desired_tier":affix_target_tier}
+func modernization_opportunities(g)->Array:
+ var s:Dictionary=g.profile.hyperspace;var c:Dictionary=g.hyperspace.config;var opportunities:Array=[]
+ for id in equipped(g):
+  var d:Dictionary=s.inventory.drones[id]
+  if d.ultimate or d.affixes.is_empty():continue
+  var route:String=""
+  for key in c.routes:
+   if str(c.routes[key].weapon)==str(d.weapon):route=str(key)
+  var target:int=manual_challenge_level(g,route)
+  var recorded:int=best_record(g,route)
+  if target>recorded and target>int(d.level):
+   opportunities.append({"route":route,"material":str(c.routes[route].material),"available":int(s.materials.get(str(c.routes[route].material),0)),"minimum":0,"record_prerequisite":true,"required_route_level":target,"operation":"modernize","drone":str(id),"level_gain":target-int(d.level),"goal":"Post60 whole-equipment modernization: earn the actually eligible higher route record before a price exists; no assumed reward or cost"})
+   continue
+  var preview:Dictionary=g.hyperspace.preview_forge(g,forge_request(g,str(id),"modernize"))
+  if str(preview.error) not in ["","insufficient_materials"]:continue
+  var material:String=str(c.routes[route].material);var cost:int=int(preview.get("cost",{}).get(material,0))
+  var available:int=int(s.materials.get(material,0))
+  var reward:int=Rewards.material_amount(g.hyperspace.online_config(g),recorded)
+  var missing:int=maxi(0,cost-available)
+  opportunities.append({"route":route,"material":material,"available":available,"minimum":cost,"operation":"modernize","drone":str(id),"ready":str(preview.error).is_empty(),"expected_recorded_reward":reward,"needed_recorded_claims":ceili(float(missing)/maxi(1,reward)),"level_gain":recorded-int(d.level),"goal":"Post60 whole-equipment modernization: compare every real quote and reserve its actual material, with unchanged price/RNG"})
+ return opportunities
+func modernization_plan(g)->Dictionary:
+ var all:Array=modernization_opportunities(g)
+ if all.is_empty():return {}
+ # Spend an already affordable real modernization before planning further paid work.
+ var ready:Array=all.filter(func(o):return bool(o.get("ready",false)))
+ if not ready.is_empty():
+  ready.sort_custom(func(a,b):return int(a.minimum)<int(b.minimum) if int(a.minimum)!=int(b.minimum) else str(a.drone)<str(b.drone))
+  return ready[0]
+ # Avoid buying a lower-record modernization just before an eligible new record.
+ var prerequisites:Array=all.filter(func(o):return bool(o.get("record_prerequisite",false)))
+ if not prerequisites.is_empty():
+  for o in prerequisites:o["affected_equipped"]=prerequisites.filter(func(v):return str(v.route)==str(o.route)).size()
+  prerequisites.sort_custom(func(a,b):return int(a.affected_equipped)>int(b.affected_equipped) if int(a.affected_equipped)!=int(b.affected_equipped) else int(a.level_gain)>int(b.level_gain) if int(a.level_gain)!=int(b.level_gain) else str(a.drone)<str(b.drone))
+  return prerequisites[0]
+ # Collect the fewest known real reward receipts for one complete legal upgrade.
+ all.sort_custom(func(a,b):return int(a.needed_recorded_claims)<int(b.needed_recorded_claims) if int(a.needed_recorded_claims)!=int(b.needed_recorded_claims) else int(a.level_gain)>int(b.level_gain) if int(a.level_gain)!=int(b.level_gain) else str(a.drone)<str(b.drone))
+ return all[0]
+func growth_supply(g)->Dictionary:
+ if g.profile.cleared.has(60):
+  var modernization:Dictionary=modernization_plan(g)
+  if not modernization.is_empty():return modernization
+ var preference:Dictionary=affix_supply(g)
+ if not preference.is_empty():return preference
+ var s:Dictionary=g.profile.hyperspace;var c:Dictionary=g.hyperspace.config
+ for id in equipped(g):
+  var d:Dictionary=s.inventory.drones[id]
+  if d.ultimate:continue
+  var operations:Array=[]
+  if d.affixes.size()<Bag.affix_limit(d,c):operations.append("add_affix")
+  var hanging_unlocked:bool=c.hanging_modules.keys().any(func(key):return s.hanging_modules[key].unlocked and int(g.profile.highestLevel)>=int(c.hanging_modules[key].unlock_stage))
+  if int(d.hanging_slots)<Bag.hanging_limit(d,c) and hanging_unlocked:operations.append("add_hanging_slot")
+  operations.append("modernize")
+  for operation in operations:
+   var preview:Dictionary=g.hyperspace.preview_forge(g,forge_request(g,str(id),str(operation)))
+   if str(preview.error)!="insufficient_materials":continue
+   for material in preview.get("cost",{}):
+    var required:int=int(preview.cost[material])
+    if int(s.materials.get(material,0))>=required:continue
+    for route in c.routes:
+     if str(c.routes[route].material)==str(material):return {"route":str(route),"material":str(material),"available":int(s.materials.get(material,0)),"minimum":required,"operation":str(operation),"drone":str(id),"goal":"Visible affordable-in-principle normal forge action; no affix-tier prerequisite or probability change"}
+ # A higher genuinely cleared main milestone can expose a modernize quote only after a real route victory.
+ # Choosing that prerequisite challenge never inserts history or forecasts an RNG reward.
+ for id in equipped(g):
+  var drone:Dictionary=s.inventory.drones[id]
+  if drone.ultimate:continue
+  for route in c.routes:
+   if str(c.routes[route].weapon)!=str(drone.weapon):continue
+   var target:int=manual_challenge_level(g,str(route))
+   if target>int(drone.level):return {"route":str(route),"material":str(c.routes[route].material),"available":int(s.materials.get(str(c.routes[route].material),0)),"minimum":0,"record_prerequisite":true,"required_route_level":target,"operation":"modernize","drone":str(id),"goal":"Actual modernization needs an earned higher route record before a legal price exists; no injected history/cost or tier requirement"}
+ return {}
+func manual_challenge_level(g,route:String,repeat_recorded:bool=false)->int:
+ var cleared:=0
+ for level in g.profile.cleared:cleared=maxi(cleared,int(level))
+ var minimum:int=int(g.hyperspace.config.minimum_level)
+ var ceiling:int=mini(int(g.profile.highestLevel),maxi(minimum,((cleared-1)/5)*5))
+ if cleared>=60:ceiling=mini(60,int(g.profile.highestLevel))
+ var recorded:int=best_record(g,route)
+ var target:int=mini(maxi(minimum if recorded==0 else recorded+5,ceiling),ceiling)
+ return target if target>recorded or repeat_recorded else 0
+func best_record(g,route:String)->int:
+ var best:=0
+ for key in g.profile.hyperspace.history.get(route,{}):
+  if g.hyperspace.eligible_level(g,route,int(key)):best=maxi(best,int(key))
+ return best
+func affix_paid_window(g,id:String,now:float)->bool:
+ var key:String=str([g.profile.hyperspace.round_id,id])
+ var window:Dictionary=affix_paid_windows.get(key,{"started":now,"attempts":0})
+ if now-float(window.started)>=300.0:window={"started":now,"attempts":0}
+ affix_paid_windows[key]=window
+ return int(window.attempts)<32
+func pick_supply_crew(g)->String:
+ var current:String=Permission.reserved_crew(g.profile.hyperspace)
+ if not current.is_empty():return current if Permission.crew_available(g,current) else ""
+ var available:Array=[]
+ for member in g.profile.crew:
+  if not transfer_crew(str(member.crewId)) and Permission.crew_available(g,str(member.crewId)):available.append(member)
+ available.sort_custom(func(a,b):return int(a.level)>int(b.level) if int(a.level)!=int(b.level) else (str(a.crewId)==reserved_crew if str(b.crewId)!=reserved_crew else false))
+ if not available.is_empty():reserved_crew=str(available[0].crewId);return reserved_crew
+ return ""
+func paid_affix_supply_action(g,now:float,supply:Dictionary)->Dictionary:
+ var s:Dictionary=g.profile.hyperspace
+ if not manual_pending.is_empty():
+  if s.auto.enabled:return {"domain":true,"kind":"space_auto_pause","reason":"Stop future recurrence for an already planned earned material attempt; current receipt is preserved"}
+  return pending_manual_action(g,now)
+ var route:String=str(supply.route);var recorded:int=best_record(g,route)
+ var target:int=manual_challenge_level(g,route,not supply.get("record_prerequisite",false))
+ var funding_crew:String=pick_supply_crew(g) if recorded>0 else ""
+ # After60, an already won target and available crew can fund the same material
+ # through the authored discounted auto ticket. Manual play earns new records.
+ var recorded_auto:bool=g.profile.cleared.has(60) and not supply.get("record_prerequisite",false) and target>0 and recorded>=target and not funding_crew.is_empty()
+ var needs_challenge:bool=(supply.get("record_prerequisite",false) or int(supply.available)<int(supply.get("minimum",1))) and not recorded_auto
+ if target>0 and needs_challenge and float(s.energy)>=float(g.hyperspace.config.ticket) and manual_retry_allowed(g,route,target,now):
+  manual_pending={"domain":true,"kind":"space_manual","route":route,"level":target,"round":int(s.round_id),"frontier":int(g.profile.highestLevel),"paid_affix_supply":supply.duplicate(true),"reason":"Paid forge-material source; actual earlier main milestone or next +5 challenge, not an injected space record; one safe main boundary and actual ticket"}
+  if s.auto.enabled:return {"domain":true,"kind":"space_auto_pause","reason":"Stop future recurrence for earned material attempt; current receipt continues to actual completion/claim"}
+  return pending_manual_action(g,now)
+ if recorded>0:
+  var crew:String=funding_crew
+  if not crew.is_empty() and (not s.auto.enabled or str(s.auto.route)!=route or int(s.auto.level)!=recorded):return {"domain":true,"kind":"space_auto","route":route,"level":recorded,"crew":crew,"paid_affix_supply":supply.duplicate(true),"reason":"Best genuinely recorded eligible required-material source, actual reduced ticket and cap gate"}
+ return {}
 func space_action(g,now:float)->Dictionary:
  if int(g.profile.highestLevel)<7:return {}
  var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace;var bag:Dictionary=s.inventory
@@ -340,6 +501,10 @@ func space_action(g,now:float)->Dictionary:
    var dismantle:Dictionary=forge_choice(g,id,"dismantle")
    if not dismantle.is_empty():return dismantle
   return {}
+ var post60_modernize:Dictionary=modernization_plan(g) if g.profile.cleared.has(60) else {}
+ if post60_modernize.get("ready",false):
+  var modernization:Dictionary=forge_choice(g,str(post60_modernize.drone),"modernize")
+  if not modernization.is_empty():return modernization
  for id in chosen:
   var d:Dictionary=bag.drones[id]
   if d.ultimate:continue
@@ -350,11 +515,18 @@ func space_action(g,now:float)->Dictionary:
   for key in ["resource_collector","distributed_algorithm","extra_storage","hyperspace_charge","gem_refiner"]:
    if unlocked.has(key) and not layout.has(key) and layout.size()<int(d.hanging_slots):layout.append(key)
   if layout!=d.hangings:return {"domain":true,"kind":"space_hangings","id":id,"keys":layout}
+  # Reserve materials for the compared post60 upgrade; optional paid rolls wait.
+  if not post60_modernize.is_empty():continue
+  var paid_affix:bool=affix_target_tier>0 and int(bag.reforge_count)>0 and d.affixes.any(func(a):return not a.locked and int(a.tier)>affix_target_tier)
+  if paid_affix and int(s.materials.antiproton)>0 and affix_paid_window(g,str(id),now):
+   for op in (["enable_omen","promote_affix"] if not d.omen else ["promote_affix"]):
+    var paid:Dictionary=forge_choice(g,id,str(op))
+    if not paid.is_empty():paid.paid_affix=true;return paid
   if now-float(forge_at.get(id,-1000.0))<300.0:continue
   var operations:Array=[]
   if d.affixes.size()<Bag.affix_limit(d,h.config):operations.append("add_affix")
-  # T3 is a minimum planning goal after any reforge, never a cap or injected value.
-  if int(bag.reforge_count)>0 and d.affixes.any(func(a):return not a.locked and int(a.tier)>3):
+  # Optional paid spending preference; never a progression or acceptance gate.
+  if paid_affix and affix_paid_window(g,str(id),now):
    if not d.omen:operations.append("enable_omen")
    operations.append("promote_affix")
   if int(d.hanging_slots)<Bag.hanging_limit(d,h.config) and not unlocked.is_empty():operations.append("add_hanging_slot")
@@ -367,6 +539,12 @@ func space_action(g,now:float)->Dictionary:
  if galaxy_needs_reserved_crew:
   if s.auto.enabled:return {"domain":true,"kind":"space_auto_pause","reason":"Six actual galaxy workers need the reserved exploration worker"}
   return {}
+ var supply:Dictionary=growth_supply(g)
+ if not supply.is_empty():
+  var funding:Dictionary=paid_affix_supply_action(g,now,supply)
+  if not funding.is_empty():return funding
+  # An initiated material plan awaits real safe boundary/energy/receipt; no unrelated auto can overwrite it.
+  return {} # A real unresolved supply need owns this choice; do not toggle back to unrelated auto.
  # Storage/equipment/forge remain legal while pure-progress auto is active.
  if not s.active.is_empty():return {}
  # Enable pure-progress automation immediately after the first genuine record.
@@ -386,15 +564,12 @@ func space_action(g,now:float)->Dictionary:
  for route in routes:
   if not ordered.has(route):ordered.append(route)
  for route in ordered:
-  var best_level:=0
-  for level in s.history.get(route,{}):
-   if int(level)<=int(g.profile.highestLevel):best_level=maxi(best_level,int(level))
-  var target:int=int(h.config.minimum_level) if best_level==0 else int(g.profile.highestLevel)
-  if best_level>0 and target<best_level+5 and not (target==60 and best_level<60):continue
+  var target:int=manual_challenge_level(g,str(route))
+  if target<=0:continue
   var key:String=str([s.round_id,route,target])
   if not manual_retry_allowed(g,str(route),target,now):continue
   if g.manual_hyperspace.production_accepted and float(s.energy)>=float(h.config.ticket):
-   manual_pending={"domain":true,"kind":"space_manual","route":route,"level":target,"round":int(s.round_id),"frontier":int(g.profile.highestLevel),"reason":"Earned retry eligibility; dispatch only after main battle point ends"}
+   manual_pending={"domain":true,"kind":"space_manual","route":route,"level":target,"round":int(s.round_id),"frontier":int(g.profile.highestLevel),"reason":"Default natural exploration uses a real earlier main milestone and shared frontier failure/growth gate; never current hard frontier by fallback"}
    return pending_manual_action(g,now)
  var best_route:="";var best_level:=0
  for route in ordered:
@@ -457,18 +632,28 @@ func execute(g,choice:Dictionary,now:float)->bool:
    last_manual_boundary=main_boundary(g)
    if g.profile.hyperspace.auto.enabled:g.hyperspace.set_auto(g,false,"",0,"")
    last_attempt[str([g.profile.hyperspace.round_id,choice.route,choice.level])]=now
-   return g.start_hyperspace(choice.route,int(choice.level))
+   last_frontier_attempt[manual_frontier_key(g)]=now
+   var started:bool=g.start_hyperspace(choice.route,int(choice.level))
+   if started and choice.has("paid_affix_supply"):manual_watch.paid_affix_supply=choice.paid_affix_supply.duplicate(true)
+   return started
   "space_claim":return g.hyperspace.claim(g,int(choice.round),int(choice.run))
   "space_unseal":return g.hyperspace.claim_sealed(g,choice.id)
   "space_equip":return g.hyperspace.set_equipped(g,choice.ids)
   "space_favorite":return g.hyperspace.set_favorites(g,choice.ids)
   "space_preset":return g.hyperspace.set_preset(g,0,"Earned current fleet",choice.ids)
-  "space_auto_pause":return g.hyperspace.set_auto(g,false,"",0,"")
+  "space_auto_pause":
+   var previous:String=Permission.reserved_crew(g.profile.hyperspace)
+   if not previous.is_empty():reserved_crew=previous
+   return g.hyperspace.set_auto(g,false,"",0,"")
   "space_auto":return g.hyperspace.set_auto(g,true,choice.route,int(choice.level),choice.crew)
   "space_hangings":return g.hyperspace.attach_hangings(g,choice.id,choice.keys)
   "space_forge":
    forge_at[str(choice.request.drone_id)]=now
-   return str(g.hyperspace.forge(g,choice.request).error).is_empty()
+   var result:Dictionary=g.hyperspace.forge(g,choice.request)
+   if str(result.error).is_empty() and choice.get("paid_affix",false):
+    var key:String=str([g.profile.hyperspace.round_id,choice.request.drone_id])
+    if affix_paid_windows.has(key):affix_paid_windows[key].attempts+=1
+   return str(result.error).is_empty()
   "crew_equipment_mode":return g.crew.set_upgrade_mode(g,choice.crew,choice.mode,"equipment_upgrade")
   "crew_assign_equipment":return g.assign_crew(choice.crew,"equipment_upgrade","equipment")
   "crew_transfer_recall":

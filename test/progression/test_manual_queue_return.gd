@@ -79,6 +79,18 @@ func run()->void:
  g.enhancement_buffers[0]=buffer;g.enhancement_buffer_owners[0]={"entry":g.slot_entry("defence",0),"key":"armour"}
  g.player.armour=g.N.multiply(g.stat("armour"),0.37);g.player.shield=g.N.multiply(g.max_shield(),0.23);g.since_hit=0.25
  g.queue_enhancement_deferred("armour",1.25)
+ # Declared expired-countdown fixture at an actual completed-wave TRAVEL boundary.
+ g.clear_timer=-1.0/60.0
+ var expired=Return.capture(g);var expired_point=Return.journey(g)
+ check(expired.clear_timer==0.0 and g.clear_timer==-1.0/60.0 and Return.valid(expired,expired_point,g.db.levels.size()),"Expired remaining countdown serializes zero without mutating runtime")
+ var bad=expired.duplicate(true);bad.clear_timer=-1.0/60.0
+ check(not Return.valid(bad,expired_point,g.db.levels.size()),"Schema continues rejecting raw negative countdown")
+ bad=expired.duplicate(true);bad.since_hit=-1.0/60.0
+ check(not Return.valid(bad,expired_point,g.db.levels.size()),"Other elapsed-time negatives remain invalid")
+ for timer in [0.25,INF,NAN]:
+  g.clear_timer=timer;var captured=Return.capture(g)
+  check(captured.clear_timer==timer if is_finite(timer) else not Return.valid(captured,expired_point,g.db.levels.size()),"Positive countdown preserved; nonfinite countdown still rejected")
+ g.clear_timer=-1.0/60.0
  var expected=frozen_health(g);var original_point=Return.journey(g);var energy=float(g.profile.hyperspace.energy);var base=g.db
  g.tick(0.001)
  check(g.manual_hyperspace.active and is_equal_approx(float(g.profile.hyperspace.energy),minf(float(g.hyperspace.config.energy_cap),energy-float(g.hyperspace.config.ticket)+float(g.hyperspace.config.energy_rate)*0.001)),"Production tick revalidates then dispatches exactly one ticket")
@@ -88,16 +100,17 @@ func run()->void:
  var old_level=int(g.profile.loadout.defence[0].level)
  check(g.upgrade("armour",1),"Real paid armour upgrade while in manual route")
  var balances=g.profile.resources.duplicate(true);g.rng.randi();var after_rng=str(g.rng.state)
- var refunded_energy=float(g.profile.hyperspace.energy)+float(g.profile.hyperspace.active.ticket)
+ var pre_refund=float(g.profile.hyperspace.energy)
+ var refunded_energy=minf(float(g.hyperspace.online_config(g).energy_cap),pre_refund+float(g.profile.hyperspace.active.ticket))
  await click(panel.exit_button);panel.refresh_progress()
  check(not g.manual_hyperspace.active and is_same(g.db,base) and g.stage==int(original_point.stage) and g.group_index==int(original_point.groupIndex) and g.state==int(original_point.state),"Native exit returns exact completed main point without start/spawn")
  check(g.enemies.is_empty() and not g.enemies.any(func(e):return enemy_ids.has(e.uid)),"Killed main ships remain dead")
  check(frozen_health(g)==expected,"Native exit restores absolute armour/shield, shield delay, cooldowns and existing debt without heal or zero-CD")
  check(g.enhancement_branches.weapon(g,0).next==2 and g.enhancement_branches.weapon(g,0).stacks==3 and g.enhancement_branches.weapon(g,0).stack_time==5.0 and g.enhancement_branches.defense(g,0).cover_time==3.0 and g.N.compare(g.memory_buffer(0),buffer)==0,"Critical charges/stacks, owned cover and Memory buffer are frozen and restored without free regeneration")
  check(g.profile.resources==balances and str(g.rng.state)==after_rng and int(g.profile.loadout.defence[0].level)==old_level+1,"Paid growth, resource balances and advanced global RNG survive return")
- check(g.profile.hyperspace.energy==refunded_energy and not g.manual_hyperspace.finish(g,false),"Voluntary failure refunds one ticket; duplicate finish cannot refund again")
+ check(g.profile.hyperspace.energy==refunded_energy and not g.manual_hyperspace.finish(g,false),"Voluntary failure credits available energy capacity; duplicate finish cannot refund again")
  var result=g.manual_hyperspace.last_result
- check(result.reason=="user_exit" and is_equal_approx(float(result.refund),float(g.hyperspace.config.ticket)) and result.return_stage==g.stage and result.return_point==g.group_index,"Recent result records voluntary exit, actual ticket refund and returned main point")
+ check(result.reason=="user_exit" and is_equal_approx(float(result.refund),refunded_energy-pre_refund) and result.return_stage==g.stage and result.return_point==g.group_index,"Recent result records voluntary exit, actual ticket refund and returned main point")
  check(panel.recent_result.visible and panel.recent_result.text.contains("主动退出") and panel.recent_result.text.contains("已退票"),"Actual exploration section shows recent result without a new page")
  await capture("03-restored-main")
  # Interrupted current-version save/read restores the same damage and debt exception.

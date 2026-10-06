@@ -203,6 +203,7 @@ func click_button(choice:Dictionary) -> void:
 	if choice.kind=="option_select" and choice.get("origin","")=="refit_open":
 		ok=ok and before_loadout!=game.profile.loadout and str(game.slot_entry(choice.category,int(choice.slot_index)).key)==str(choice.target_key)
 	if choice.kind=="upgrade_slot":ok=ok and before_loadout!=game.profile.loadout
+	if choice.kind=="crew_select":ok=ok and driver.scene.crew_panel.selected==str(choice.crew)
 	if choice.kind=="switch_ship":ok=ok and before_ship!=str(game.profile.selectedShip)
 	for action_key in {"scientist_max":"scientists","reactor_max":"reactorLevel","enhancement_max":"enhancementLevel","crew_assign":"crew"}:
 		if choice.kind==action_key:

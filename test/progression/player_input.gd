@@ -91,11 +91,15 @@ func scroll(control:Control,container:ScrollContainer)->bool:
 	await motion(point)
 	var target:Vector2=control.get_global_transform_with_canvas()*(control.size*.5)
 	var before:=Vector2(container.scroll_horizontal,container.scroll_vertical)
-	var event:=InputEventMouseButton.new()
-	event.button_index=MOUSE_BUTTON_WHEEL_DOWN if target.y>point.y else MOUSE_BUTTON_WHEEL_UP
-	event.pressed=true;event.position=tree.root.get_final_transform()*point
-	Input.parse_input_event(event);await tree.process_frame
-	last_gate={"path":str(container.get_path()),"scroll_before":before,"scroll_after":Vector2(container.scroll_horizontal,container.scroll_vertical)}
+	var direction:int=MOUSE_BUTTON_WHEEL_DOWN if target.y>point.y else MOUSE_BUTTON_WHEEL_UP
+	# A native wheel gesture must release its button before the next control.
+	# Otherwise the viewport keeps the scroll container's mouse capture.
+	for down in [true,false]:
+		var event:=InputEventMouseButton.new()
+		event.button_index=direction;event.position=tree.root.get_final_transform()*point
+		event.pressed=down
+		Input.parse_input_event(event);await tree.process_frame
+	last_gate={"path":str(container.get_path()),"scroll_before":before,"scroll_after":Vector2(container.scroll_horizontal,container.scroll_vertical),"mouse_mask_after":Input.get_mouse_button_mask()}
 	return before!=Vector2(container.scroll_horizontal,container.scroll_vertical)
 func pickup_point(drop:Dictionary)->Variant:
 	if scene.resource_input_blocked() or not modal_windows().is_empty():return null
