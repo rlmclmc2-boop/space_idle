@@ -25,7 +25,7 @@
               "type": "string",
               "description_zh": "现有或本次明确规划的配置键",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -103,7 +103,7 @@
               "type": "string",
               "description_zh": "现有alpha/beta/gamma/delta路线",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -149,13 +149,13 @@
               "type": "string",
               "description_zh": "来源品质或独占核心抽签结果",
               "unit": "稳定ID",
-              "constraint": "white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空",
+              "constraint": "white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
               "column": "weight",
               "type": "float",
-              "description_zh": "结果相对抽签权重",
+              "description_zh": "结果相对抽签权重；单独调大更易抽中该结果，调小更少；实际概率=本权重/总权重，不要求总和1",
               "unit": "相对权重",
               "constraint": "非负；合计>0；默认合计1.09，不能当互斥绝对概率",
               "editable": true
@@ -220,13 +220,13 @@
               "type": "string",
               "description_zh": "现有舰型ID",
               "unit": "已有ID引用",
-              "constraint": "必须存在于ship.xlsx；保持当前引用，变更需跨表校验",
+              "constraint": "必须存在于ship.xlsx；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
               "column": "capacity",
               "type": "int",
-              "description_zh": "该舰型异空间无人机槽位",
+              "description_zh": "该舰型无人机装备容量；调大可同时生效更多机，调小更少；仍受全局上限约束",
               "unit": "架",
               "constraint": "1..5，且满足全局maximum_equipped",
               "editable": true
@@ -258,13 +258,13 @@
               "type": "int",
               "description_zh": "现有词缀阶级，1为最高",
               "unit": "阶",
-              "constraint": "1..5完整唯一",
+              "constraint": "1..5完整唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
               "column": "draw_weight",
               "type": "float",
-              "description_zh": "生成/升阶判定使用的相对阶级权重",
+              "description_zh": "新生成阶及升阶判定的相对权重；调大本阶更易抽中，强于当前阶才成功且只升1阶",
               "unit": "相对权重",
               "constraint": ">0；保留默认1/5/15/45/135及order",
               "editable": true
@@ -272,7 +272,7 @@
             {
               "column": "modernization_weight",
               "type": "float",
-              "description_zh": "现代化费用附加阶级系数",
+              "description_zh": "无人机每个词缀按其阶加入此费用系数；调大该阶现代化更贵，调小更便宜，另加基础系数",
               "unit": "无量纲",
               "constraint": "非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项",
               "editable": true
@@ -304,7 +304,7 @@
               "type": "string",
               "description_zh": "已实现聚合器支持的词缀ID",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -343,7 +343,7 @@
               "type": "string",
               "description_zh": "词缀定义外键",
               "unit": "已有ID引用",
-              "constraint": "必须存在于词缀定义；保持当前引用，变更需跨表校验",
+              "constraint": "必须存在于词缀定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -351,7 +351,7 @@
               "type": "int",
               "description_zh": "该词缀有定义的阶级",
               "unit": "阶",
-              "constraint": "1..5；仅导出存在的阶，不凭空补缺",
+              "constraint": "1..5；仅导出存在的阶，不凭空补缺；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -397,7 +397,7 @@
               "type": "string",
               "description_zh": "既有五种挂设ID",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -411,7 +411,7 @@
             {
               "column": "exp_growth",
               "type": "float",
-              "description_zh": "每级需求的增长率",
+              "description_zh": "升级所需经验按base_exp×(1+此值)^当前等级；调大后续升级更慢，调小更快",
               "unit": "比例；1=100%",
               "constraint": "≥0且有限，经验需求不得非有限",
               "editable": true
@@ -419,7 +419,7 @@
             {
               "column": "effect_growth",
               "type": "float",
-              "description_zh": "每架加成=(1+growth)^全局模块等级−1；等级0为0，同类多架相加",
+              "description_zh": "每架加成=(1+此值)^全局模块等级−1；调大高等级收益更强，调小更弱；等级0为0，同类多架相加",
               "unit": "比例；1=100%",
               "constraint": "≥0且有限，实际公式pow(1+g,L)-1保持",
               "editable": true
@@ -427,7 +427,7 @@
             {
               "column": "unlock_stage",
               "type": "int",
-              "description_zh": "挂设可应用的最高到达关卡",
+              "description_zh": "挂设生效所需最高已到达关；调大更晚生效，调小更早，不是模块经验等级",
               "unit": "关",
               "constraint": "非负整数",
               "editable": true
@@ -467,7 +467,7 @@
               "type": "string",
               "description_zh": "既有十二种传说效果ID",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -506,7 +506,7 @@
               "type": "string",
               "description_zh": "传说定义外键",
               "unit": "已有ID引用",
-              "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+              "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -522,7 +522,7 @@
               "type": "string",
               "description_zh": "该效果已实现参数名",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -577,7 +577,7 @@
               "type": "string",
               "description_zh": "传说定义外键",
               "unit": "已有ID引用",
-              "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+              "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -585,7 +585,7 @@
               "type": "string",
               "description_zh": "效果内固定常量路径，如quality_ratios/white",
               "unit": "相对字段路径",
-              "constraint": "仅当前支持的已知路径，不接受脚本/任意表达式",
+              "constraint": "仅当前支持的已知路径，不接受脚本/任意表达式；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -664,7 +664,7 @@
               "type": "string",
               "description_zh": "已有Forge操作ID",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -672,8 +672,8 @@
               "type": "string",
               "description_zh": "现有材料或ultimate_cores",
               "unit": "已有ID引用",
-              "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验",
-              "editable": true
+              "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+              "editable": false
             },
             {
               "column": "resource_order",
@@ -686,7 +686,7 @@
             {
               "column": "amount",
               "type": "int",
-              "description_zh": "该操作消耗该资源的基础数量",
+              "description_zh": "该改造操作基础资源消耗；调大更贵，调小更便宜；结算及UI共用，部分操作另乘锁定/保底系数",
               "unit": "份/次",
               "constraint": "非负整数；同(operation,resource)唯一；真实preview/commit共用此来源",
               "editable": true
@@ -710,7 +710,7 @@
               "type": "string",
               "description_zh": "保护参数或已存在policies子键",
               "unit": "稳定键",
-              "constraint": "允许清单，路径映射由契约指定",
+              "constraint": "允许清单，路径映射由契约指定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -793,7 +793,7 @@
               "type": "int",
               "description_zh": "现有独立异空间敌人ID",
               "unit": "ID",
-              "constraint": "正整数，当前223个既有ID；不得与主线ID冲突",
+              "constraint": "正整数，当前223个既有ID；不得与主线ID冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -815,7 +815,7 @@
             {
               "column": "health",
               "type": "number",
-              "description_zh": "基础生命值",
+              "description_zh": "独立异空间敌人基础生命；调大更耐打、推进更慢，调小反之；战斗再乘所选主线lifeRatio",
               "unit": "生命",
               "constraint": ">0且有限",
               "editable": true
@@ -831,7 +831,7 @@
             {
               "column": "shield",
               "type": "number",
-              "description_zh": "基础护盾容量",
+              "description_zh": "敌人基础护盾；调大更耐打，调小更少；随所选主线lifeRatio缩放，0为无护盾",
               "unit": "护盾",
               "constraint": "≥0且有限",
               "editable": true
@@ -847,7 +847,7 @@
             {
               "column": "shield_recovery",
               "type": "number",
-              "description_zh": "每秒最大护盾恢复比例",
+              "description_zh": "每秒按最大护盾恢复的比例；调大护盾恢复更快，调小更慢；需超过命中后延迟",
               "unit": "比例/游戏秒",
               "constraint": "≥0且有限",
               "editable": true
@@ -855,7 +855,7 @@
             {
               "column": "shield_delay",
               "type": "number",
-              "description_zh": "实际命中后护盾恢复延迟",
+              "description_zh": "实际命中后等待多久才恢复护盾；调大更晚恢复、易持续压制，调小更早；每次实际命中刷新",
               "unit": "游戏秒",
               "constraint": "≥0且有限",
               "editable": true
@@ -863,7 +863,7 @@
             {
               "column": "damage_multiplier",
               "type": "number",
-              "description_zh": "基础武器伤害倍率",
+              "description_zh": "异空间敌武器基础伤害倍率；调大敌人更危险，调小更弱；再继承所选主线atkRatio，不改变资源收入倍率",
               "unit": "无量纲",
               "constraint": "≥0且有限",
               "editable": true
@@ -888,7 +888,7 @@
               "type": "int",
               "description_zh": "异空间敌人外键",
               "unit": "ID",
-              "constraint": "必须存在于异空间敌人",
+              "constraint": "必须存在于异空间敌人；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -896,7 +896,7 @@
               "type": "int",
               "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
               "unit": "0起序号",
-              "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+              "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -934,7 +934,7 @@
               "type": "int",
               "description_zh": "现有四十组独立编队ID",
               "unit": "ID",
-              "constraint": "正整数，当前7001..7040既有集合，不与主线冲突",
+              "constraint": "正整数，当前7001..7040既有集合，不与主线冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -981,7 +981,7 @@
               "type": "int",
               "description_zh": "编队外键",
               "unit": "ID",
-              "constraint": "必须存在于异空间编队",
+              "constraint": "必须存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -989,8 +989,8 @@
               "type": "int",
               "description_zh": "源15槽的实际索引",
               "unit": "0起索引",
-              "constraint": "0..14，group内唯一，不能自动密排",
-              "editable": true
+              "constraint": "0..14，group内唯一，不能自动密排；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+              "editable": false
             },
             {
               "column": "enemy_id",
@@ -1037,7 +1037,7 @@
               "type": "string",
               "description_zh": "异空间路线外键",
               "unit": "已有ID引用",
-              "constraint": "必须存在于路线；保持当前引用，变更需跨表校验",
+              "constraint": "必须存在于路线；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1045,7 +1045,7 @@
               "type": "enum",
               "description_zh": "战斗档位",
               "unit": "档位",
-              "constraint": "normal/elite/boss/ultimate固定顺序",
+              "constraint": "normal/elite/boss/ultimate固定顺序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1053,7 +1053,7 @@
               "type": "int",
               "description_zh": "固定输出/随机选择顺序；物理行排序不改变它",
               "unit": "0起序号",
-              "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+              "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1083,7 +1083,7 @@
               "type": "string",
               "description_zh": "现有奖励参考设计键",
               "unit": "稳定ID",
-              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
+              "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1148,7 +1148,7 @@
               "type": "int",
               "description_zh": "异空间奖励组外键",
               "unit": "ID",
-              "constraint": "存在于异空间编队",
+              "constraint": "存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1164,15 +1164,15 @@
               "type": "int",
               "description_zh": "实际收取该预算块的异空间非空槽",
               "unit": "0起索引",
-              "constraint": "必须为该组非空槽",
-              "editable": true
+              "constraint": "必须为该组非空槽；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+              "editable": false
             },
             {
               "column": "order",
               "type": "int_or_blank",
               "description_zh": "同成员内原ordinal数组顺序；零预算成员填空",
               "unit": "0起序号",
-              "constraint": "同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序",
+              "constraint": "同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1203,7 +1203,7 @@
               "type": "string",
               "description_zh": "无早段主线实例的既有奖励参考ID",
               "unit": "稳定ID",
-              "constraint": "仅既有25参考；锁定；不复制有主线来源的预算",
+              "constraint": "仅既有25参考；锁定；不复制有主线来源的预算；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1211,7 +1211,7 @@
               "type": "int",
               "description_zh": "参考成员预算块索引",
               "unit": "0起索引",
-              "constraint": "每参考0..count-1；原95块结构锁定",
+              "constraint": "每参考0..count-1；原95块结构锁定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1219,7 +1219,7 @@
               "type": "int",
               "description_zh": "块内掉落数组顺序",
               "unit": "0起序号",
-              "constraint": "现有每块一项，order0锁定；不新增条目",
+              "constraint": "现有每块一项，order0锁定；不新增条目；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
             },
             {
@@ -1272,8 +1272,8 @@
       "existing_source": "drone_forge.gd plan coefficient:=1.0",
       "suggested_entity": "全局标量/现代化",
       "suggested_column": "value",
-      "description_zh": "现代化费用初始系数；随后逐个加词缀阶级权重",
-      "unit": "无量纲",
+      "description_zh": "现代化阶级系数=此值+逐个词缀的阶级费用权重。调大价格更高，调小更低；还乘等级项及传说倍率，默认1与旧固定值等效。",
+      "unit": "费用无量纲起始系数",
       "constraints": ">0且有限；默认1.0；保留原公式、舍入顺序和奖励起点联动",
       "consumers": [
         "drone_forge.gd:133"
@@ -1287,7 +1287,7 @@
       "existing_source": "Existing XLSX path and drone_effect_aggregator.gd level-4",
       "suggested_entity": "全局标量/词缀",
       "suggested_column": "value",
-      "description_zh": "拟接线：无人机词缀放大指数起点；level=start时×1，低于起点为负指数缩小；冻结代码当前固定4",
+      "description_zh": "词缀放大指数的零点，正式接线后生效。调大同等级词缀的放大值更小，调小更大；level=起点时×1，低于起点仍按负指数缩小。默认4与旧固定值等效。",
       "unit": "无人机等级",
       "constraints": "整数；当前4不变；保持pow(1+rate,level-start)包括负指数语义，不偷偷clamp",
       "consumers": [
@@ -1302,8 +1302,8 @@
       "existing_source": "system/commands duplicate100/(100+L)",
       "suggested_entity": "全局标量/自动探索",
       "suggested_column": "value",
-      "description_zh": "自动探索耗时船员等级折算基数",
-      "unit": "船员等级基数",
+      "description_zh": "自动耗时=max(最低耗时,最佳手动X1秒数×B/(B+船员等级))。同一正等级时调大耗时更长，调小更短；B=100、等级100时记录耗时减半。",
+      "unit": "船员等级折算基数B",
       "constraints": ">0且有限；默认100；公共函数返回max(minimum_duration,best_x1*B/(B+L))，结算与UI共用",
       "consumers": [
         "hyperspace_system.gd:108",
@@ -1318,8 +1318,8 @@
       "existing_source": "system/commands/panel duplicate20/(20+L)",
       "suggested_entity": "全局标量/自动探索",
       "suggested_column": "value",
-      "description_zh": "自动探索票耗船员等级折算基数",
-      "unit": "船员等级基数",
+      "description_zh": "自动票耗=基础票耗×B/(B+船员等级)。同一正等级时调大消耗更多，调小更少；B=20、等级20时半票。只调自动，失败退实际已付票，结算和UI共用公式。",
+      "unit": "船员等级折算基数B",
       "constraints": ">0且有限；默认20；公共函数ticket*B/(B+L)，三个消费者共用，不改满容量派发门槛",
       "consumers": [
         "hyperspace_system.gd:109",

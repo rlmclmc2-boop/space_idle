@@ -1,0 +1,1 @@
+{"numeric_values_changed":false,"changed_columns":["改造费用.resource","编队槽位.slot_index","成员分配.slot_index"],"editable":false,"reason":"这些是既有主键身份，实际导入一直要求基线等值；修正外观权限及说明，避免伪可编辑。早段回退预算.resource_id不是主键，仍允许引用正式已知资源。"}

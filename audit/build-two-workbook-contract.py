@@ -6,6 +6,9 @@ books={'hyperspace_config.xlsx':[],'hyperspace_enemies.xlsx':[]};allrows={}
 def attach(book,oldname,newname,rows,modify=None):
  s=copy.deepcopy(defs[oldname]);s['sheet']=newname;s['entity_id']=newname;s['workbook']=book
  if modify:modify(s)
+ for c in s['columns']:
+  if c['column'] in s['primary_key']:
+   c['editable']=False;c['constraint']+='；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化'
  books[book].append(s)
  header=[c['column'] for c in s['columns']]
  data_rows=[[r.get(k) for k in header] for r in rows]
@@ -35,7 +38,7 @@ attach('hyperspace_config.xlsx','词缀定义','词缀定义',[{'order':i,'affix
 attach('hyperspace_config.xlsx','词缀区间','词缀区间',[{'affix_id':key,'tier':int(tier),'minimum':b[0],'maximum':b[1]} for key,row in cfg['affixes'].items() for tier,b in row['ranges'].items()])
 attach('hyperspace_config.xlsx','挂设','挂设成长',[{'order':i,'module_id':key,**{k:row[k] for k in ['base_exp','exp_growth','effect_growth','unlock_stage']},'effects_note':'；'.join(row['effects'])} for i,(key,row) in enumerate(cfg['hanging_modules'].items())])
 attach('hyperspace_config.xlsx','传说定义','传说定义',[{'order':i,'effect_id':key,'weapon':row['weapon'],'score_parameter_note':next(iter(row['parameters']), '')} for i,(key,row) in enumerate(cfg['legendary_effects'].items())])
-def legend_semantics(effect,name):
+def original_legend_semantics(effect,name):
  if name=='area_bonus':return '射线宽度加成比例','宽度倍率=1+area_bonus；1表示宽度×2，不是任意面积倍数'
  if name=='maximum_dodge':return '闪避概率上限，0..1','实际闪避概率=min(现有武器最高暴击概率,上限)，不是固定实际闪避率'
  if name=='damage_and_defence_bonus':return '每牺牲层伤害/防御加成比例','逐次牺牲累加；0.7为每层+70%'
@@ -56,6 +59,44 @@ def legend_semantics(effect,name):
  if name.startswith('quality_ratios/') or name in ['white','blue','gold','legendary','ultimate']:return '无量纲相对品质系数','统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率'
  if name=='bonus_per_laser':return '每激光来源加成比例','每个激光来源的加成比例'
  return '无量纲/固定枚举','现有固定效果语义；不新增消费者'
+def legend_semantics(effect,name):
+ specific={
+ ('higgs_cannon','damage_bonus'):('炮伤害加成比例；2=+200%，实际×3','希格斯作用于炮类输出。调大炮伤更高，调小更低；是(1+加成)，不是直接倍率。'),
+ ('higgs_cannon','area_bonus'):('射线宽度加成比例','希格斯炮射线宽度×(1+此值)。调大覆盖横向范围更宽，调小更窄；1表示宽度×2，不是面积×2。'),
+ ('higgs_cannon','maximum_cannon_sources'):('炮类武器来源数上限/个','希格斯装备组合限制：主舰及无人机的炮类来源总数不得超过此值。调大放宽炮源组合，调小更严格；不是伤害倍率。'),
+ ('scatter_pulse','single_target_bonus'):('单目标激光伤害加成比例','只有一个存活目标时，激光伤害×(1+此值)。调大单目标伤害更高，调小更低；2为实际×3。'),
+ ('precise_guidance','stack_multiplier'):('每已有层数的复合倍率底数','精确制导按每目标已有命中层数：伤害=base×此值^layers。调大后续命中成长更快，调小更慢；1.5为每层再×1.5，不是固定加50%。'),
+ ('precise_guidance','stack_limit_enabled'):('既有层数封顶开关','true时将下一层限制在stack_limit，false时不封顶。已有实现的上限设置，默认false；不是单层伤害加成。'),
+ ('precise_guidance','stack_limit'):('最大累计命中层数/层','只有stack_limit_enabled=true才使用。调大允许更高复合层数，调小更早封顶；默认0且开关关闭，不表示默认无加成。'),
+ ('precise_guidance','counting_policy'):('固定命中计数说明','只读、此字符串未被消费者读取。实际固定为每发射批次对每目标的首次命中计层，二次/连锁不无限叠层；改文字不改变规则。'),
+ ('prism_tower','nearby_targets'):('额外连锁目标/跳数','棱镜塔主激光允许的额外连锁目标数。调大可波及更多目标，调小更少；仍需实际存在合法目标。'),
+ ('prism_tower','maximum_towers'):('塔数量说明/个','只读、未消费字段，实际实现同一时刻只有一座激活棱镜塔。保持1；修改此值不能增加塔数量。'),
+ ('prism_tower','maximum_multiplier_bonus'):('激光既有最大倍率的加法增量','棱镜塔增加持续激光既有最大倍率上限。调大上限更高，调小更低；加1.3到原上限，不是独立总倍率×1.3。'),
+ ('strange_matter','damage_multiplier'):('直接伤害倍率','奇异物质延迟生成炮击的伤害为触发命中原伤害×此值。调大生成伤害更高，调小更低；1.3即×1.3。'),
+ ('strange_matter','spawn_probability'):('非击杀炮击命中生成1个的概率，0..1','调大非击杀命中更易生成，调小更少；0.4为40%。击杀直接按kill_spawns生成，不经过本概率。'),
+ ('strange_matter','delay'):('游戏秒','奇异物质生成的炮击从触发到释放的延迟。调大更晚释放，调小更早；不提高伤害或生成概率。'),
+ ('strange_matter','kill_spawns'):('击杀生成数量/个','炮击已击杀目标时固定生成此数量的奇异物质炮击。调大击杀后更多，调小更少；不乘spawn_probability。'),
+ ('laser_charge','maximum_bonus'):('激光伤害加成上限比例','镭射充能伤害×(1+min(此值,每激光来源加成×激光来源数))。调大只提高上限，来源不足时不增加伤害；2为最多实际×3。'),
+ ('laser_charge','bonus_per_laser'):('每激光来源加成比例','镭射充能按主舰及无人机激光来源数累加，并受maximum_bonus封顶。调大每个来源收益更高，调小更低；0.5为每源+50%。'),
+ ('wild_missile','attack_period'):('特殊攻击前的普通主导弹攻击批次数','狂野导弹按主发射批次计数。调大特殊攻击更稀疏，调小更频繁；N=3为普通、普通、普通、特殊，总周期4，不按单颗弹计。'),
+ ('wild_missile','blast_fraction'):('特殊主击伤害比例，0..1','狂野导弹额外爆炸按特殊主击伤害乘此值。调大爆炸更强，调小更弱；0.5为主击的50%，不是发生概率。'),
+ ('wild_missile','damage_multiplier'):('特殊导弹直接伤害倍率','狂野导弹特殊主攻击伤害乘此值。调大特殊攻击更强，调小更弱；7即×7，不是+700%。普通攻击频率另由attack_period控制。'),
+ ('endless_beam','maximum_multiplier_bonus'):('激光既有最大倍率的加法增量','无尽光束增加持续激光既有最大倍率上限。调大上限更高，调小更低；加到原上限，不是独立总倍率。'),
+ ('dodge_counter','maximum_dodge'):('闪避概率上限，0..1','实际=min(现有武器最高暴击概率,此上限)。调大只放宽上限，武器暴击不足时无增益；0.75是最多75%，不是固定实际闪避率。'),
+ ('dodge_counter','counter_damage_bonus'):('闪避反击伤害加成比例','触发且反击冷却已到的武器反击伤害×(1+此值)。调大反击更强，调小更弱；0.7为实际×1.7。'),
+ ('dodge_counter','cooldown'):('反击冷却游戏秒','限制闪避后发起反击的最短间隔，不限制本身闪避判定。调大反击更稀疏，调小更频繁；必须>0。'),
+ ('drone_master','maximum_reduction'):('舰队品质折算的减伤上限比例','统御实际减伤=此值×已装备未失效机的最大品质系数/究极系数。调大减伤更强，调小更弱；取最大不累加，0.5为究极条件下最多50%。'),
+ ('black_hole','period'):('两次开启间隔/游戏秒','黑洞两次开启的间隔，包含吸收窗口。调大开启更稀疏，调小更频繁；必须≥absorption_duration，首次也需等待此间隔。'),
+ ('black_hole','absorption_duration'):('吸收窗口/游戏秒','黑洞窗口内吸收敌方攻击，并累计己方攻击伤害，结束时释放。调大覆盖时间更长且爆发更晚，调小更短更早；不得超过period。'),
+ ('black_hole','damage_multiplier'):('储存己方伤害释放倍率','黑洞结束时把窗口内储存的己方攻击伤害乘此值释放。调大释放伤害更高，调小更低；敌方被吸收伤害不加入储存。'),
+ ('drone_rebuild','maximum_stacks'):('本战斗牺牲重建层数上限/层','重建最多牺牲此数量的可用无人机，每次增加一层。调大允许更多次重建，调小更少；还受实际可牺牲无人机数限制，不销毁仓库机。'),
+ ('drone_rebuild','damage_and_defence_bonus'):('每牺牲层伤害及防御加成比例','每次牺牲重建把此值累加到伤害/防御加成。调大每层更强，调小更弱；0.7每层+70%，两层+140%后乘×2.4。')}
+ if (effect,name) in specific:return specific[(effect,name)]
+ if effect=='drone_master' and name.startswith('quality_ratios/'):
+  quality=name.split('/')[-1]
+  if quality=='ultimate':return '品质归一化分母/无量纲','究极品质系数同时作为分母，必须>0且不小于其他品质系数。单独调大降低非究极品质折算，调小反之；究极自身比值仍1。'
+  return '相对品质系数/无量纲','统御取已装备未失效无人机中最高品质系数。调大此品质系数可提高它的减伤折算，调小更低；必须0..究极系数，不是独立减伤概率。'
+ return original_legend_semantics(effect,name)
 def param_schema(s):
  s['columns']=[c for c in s['columns'] if not c['column'].startswith('stored_')];s['columns'] += [copy.deepcopy(defs['传说常量']['columns'][4]),copy.deepcopy(defs['传说常量']['columns'][5])];s['json_targets']=['hyperspace_config.json /legendary_effects/*/parameters'];s['note']='同effect内order保留参数首键和随机数调用次序；stored许可范围只在固定规则_兼容说明一处导出，不重复。'
 attach('hyperspace_config.xlsx','传说区间','传说随机参数',[{'effect_id':key,'order':i,'parameter':p,'minimum':b[0],'maximum':b[1],'unit':legend_semantics(key,p)[0],'description':legend_semantics(key,p)[1]} for key,row in cfg['legendary_effects'].items() for i,(p,b) in enumerate(row['parameters'].items())],param_schema)
