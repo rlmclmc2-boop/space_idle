@@ -1,0 +1,10 @@
+ space-battleship/data/ui_text.json                 | 33 ++++++++++++++++-
+ space-battleship/data/ui_text_contract.json        | 11 ++++++
+ space-battleship/scripts/drone_forge.gd            |  7 ++--
+ space-battleship/scripts/drone_rewards.gd          |  7 +++-
+ space-battleship/scripts/galaxy_panel.gd           |  8 ++++
+ space-battleship/scripts/hyperspace_commands.gd    | 32 ++++++++++++++--
+ space-battleship/scripts/hyperspace_panel.gd       |  6 ++-
+ space-battleship/scripts/hyperspace_system.gd      |  7 +++-
+ .../test_manual_reload_refund_notice.gd            | 43 ++++++++++++++++++++++
+ 9 files changed, 141 insertions(+), 13 deletions(-)

@@ -1,0 +1,32 @@
+{
+  "head": "caa80f59aef5dcf1caab20e40e17b39a8a27d1e1",
+  "branch": "candidate/hyperspace-unified-845-ui",
+  "parent": "21587054fd6e9e4e02449514205140e5631a9900",
+  "ancestor_content": [
+    "44c4d0d4ae32c8360dd0643e14c7ff846f9ab1d8",
+    "f874421463f36ea3da12d69f72514fee27a2f564",
+    "21587054fd6e9e4e02449514205140e5631a9900"
+  ],
+  "delta_content_not_ancestry": [
+    "83af25441ed34979ef530f5dfece62599d66f6c8 production coefficient+1 only",
+    "fb4392f32d3fcdb85f90e9f7816f9d39dc6ea1f7 exact845-relative delta + test fixture"
+  ],
+  "base": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "changed_files": [
+    "space-battleship/data/ui_text.json",
+    "space-battleship/data/ui_text_contract.json",
+    "space-battleship/scripts/drone_forge.gd",
+    "space-battleship/scripts/drone_rewards.gd",
+    "space-battleship/scripts/galaxy_panel.gd",
+    "space-battleship/scripts/hyperspace_commands.gd",
+    "space-battleship/scripts/hyperspace_panel.gd",
+    "space-battleship/scripts/hyperspace_system.gd",
+    "test/progression/test_manual_reload_refund_notice.gd"
+  ],
+  "gameplay_data_unchanged": true,
+  "excluded": [
+    "c90 resource experiment",
+    "old2d budget dismantle AB QA",
+    "main merge"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "build-verification.json": "54e00fe7d1b2a3c8ca00543c2f80bbef04d10154a400070a652a2c8d554cb665",
+  "build.log": "546848b15c06dcee7e5bb64e2d07e5310aae78553a20f48b3fd14e859d08d7c2",
+  "galaxy/01-complete-crew-guidance-screen.png": "50f9931f3cceff7f7c53f6ca5a2957dba5926009744a0856e438c591120801ff",
+  "galaxy/02-complete-reopened-screen.png": "ae95747f64c401a3356778b996f06fadb8750c6f55014d3393ba77a50e7f1ad8",
+  "galaxy/audit.json": "0df2d22e9f7724d6f1b2de4ea4149368e4c4f87229adf7f9b899dac9c4c5ed44",
+  "galaxy/run.log": "8ffa4cf52f2385b15f8bbe633221a28bbb4f58511232954a0b7ef2311f10cc90",
+  "import.log": "2851a7419a5b4117564143433bbd42db6a8cb5eb412b64dc66660f7628fe2c1a",
+  "independent_unified_hints.gd": "0c762c2f9dc98ebcb0f042e8a0b605e962dbe62042ed6ffb831ae0a308d6a241",
+  "integrated-version-map.json": "7acf24b74183e3b7fe2e65b4b6f43819c2d16c835a3ad90961fc4c1ec54d496b",
+  "qa-manifest.json": "6ca0e5eb1fdd75dba860bafa5a5db1b4e13a151354fc297a9e90b6eb958f8f0c",
+  "refund/01-actual-refund-notice-screen.png": "56c096cd96792b89aef5fdb48e8cd6c9e24f049b73518fbb61452a69cfe28569",
+  "refund/02-restore-hint-coexists-screen.png": "bd3f75d99c3800ed17a775c72884ace91569e4ee41c7e20983463df123602204",
+  "refund/03-dismantle-hint-coexists-screen.png": "97934473606cc87fcc529a863c5c80f45a3398cab50a7105b82f5b8b1b2a38cd",
+  "refund/04-refund-reopened-screen.png": "07cb458e244e9d6cd330e74ca841f72f005acf513fba9704426933c33b528194",
+  "refund/audit.json": "ce3927288f7379df358df5fd78f88cb02313280cedfe6cf872a12030e33477e0",
+  "refund/run.log": "766e91a044d2ac3c65172468ffbb2e651c48e3dfcee3e11082a94708795111f4",
+  "source-diff-from845.txt": "b5ac12976f7cc5ec695c9d49b1d6d729d70556217c3cdfbeaf059e558ac0c6ac",
+  "sources/galaxy.json": "5f766b50de202c46a8bd9fd2079d121c01f83349ee587d799bcf297193618404",
+  "sources/refund.json": "1dbe8ebc4a52dff9363b9e812ce21c0aafa83ce5de7262dcadfa7fc42b079545",
+  "单一845源码候选整合报告.md": "9f6800b0e071585736aabb0e216aa669c87ca96cb5f87bb164bc92b65c44edfb"
+}

@@ -1,0 +1,273 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native actual interrupted refund notice",
+			"native": true,
+			"point": [
+				464.893463134766,
+				561.014343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native existing real warehouse",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native existing actual card no payment",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge hints",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native static restore operation no quote or payment open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 11,
+			"label": "native static restore operation no quote or payment",
+			"native_menu_window": -1,
+			"selected": 11
+		},
+		{
+			"disabled": false,
+			"label": "native dismantle operation no quote or payment open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 12,
+			"label": "native dismantle operation no quote or payment",
+			"native_menu_window": -1,
+			"selected": 12
+		},
+		{
+			"disabled": false,
+			"label": "native back to exploration refund notice",
+			"native": true,
+			"point": [
+				651.373352050781,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "formal source inventory materials unchanged",
+			"ok": true
+		},
+		{
+			"label": "existing actual paid receipt formally refunds108000 once",
+			"ok": true
+		},
+		{
+			"label": "unified candidate displays actual interrupted refund",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 01-actual-refund-notice",
+			"ok": true
+		},
+		{
+			"label": "native static restore operation no quote or payment actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "restore caution visible and dismantle explanation hidden",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 02-restore-hint-coexists",
+			"ok": true
+		},
+		{
+			"label": "native dismantle operation no quote or payment actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "dismantle explanation visible and restore caution hidden",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 03-dismantle-hint-coexists",
+			"ok": true
+		},
+		{
+			"label": "actual refund notice remains visible after other operation pages",
+			"ok": true
+		},
+		{
+			"label": "static hint bounds inside actual panel 04-refund-reopened",
+			"ok": true
+		},
+		{
+			"label": "no payment or hyperspace state change",
+			"ok": true
+		},
+		{
+			"label": "no crew recall or assignment change",
+			"ok": true
+		},
+		{
+			"label": "no galaxy progression or rule mutation",
+			"ok": true
+		},
+		{
+			"label": "original source bytes unchanged",
+			"ok": true
+		}
+	],
+	"commit": "caa80f59",
+	"failures": [],
+	"kind": "refund",
+	"snapshots": [
+		{
+			"feedback": "",
+			"hint": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"label": "01-actual-refund-notice",
+			"lines": 2,
+			"materials": {
+				"antiproton": 0.0,
+				"degenerate_matter": 2.0,
+				"glueball": 0.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				788.375,
+				910.375,
+				1128.75,
+				58.625
+			],
+			"source_cores": 0.0,
+			"visible": true
+		},
+		{
+			"feedback": "",
+			"hint": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
+			"label": "02-restore-hint-coexists",
+			"lines": 2,
+			"materials": {
+				"antiproton": 0.0,
+				"degenerate_matter": 2.0,
+				"glueball": 0.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				788.375,
+				638.25,
+				1128.75,
+				58.625
+			],
+			"source_cores": 0.0,
+			"visible": true
+		},
+		{
+			"feedback": "",
+			"hint": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。",
+			"label": "03-dismantle-hint-coexists",
+			"lines": 1,
+			"materials": {
+				"antiproton": 0.0,
+				"degenerate_matter": 2.0,
+				"glueball": 0.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				788.375,
+				638.25,
+				1128.75,
+				28.0
+			],
+			"source_cores": 0.0,
+			"visible": true
+		},
+		{
+			"feedback": "",
+			"hint": "已付探索因读档中断 · 脉冲 5级\n已退票 108000 超空间能量。",
+			"label": "04-refund-reopened",
+			"lines": 2,
+			"materials": {
+				"antiproton": 0.0,
+				"degenerate_matter": 2.0,
+				"glueball": 0.0,
+				"zero_point_energy": 0.0
+			},
+			"parent_rect": [
+				756.875,
+				150.875,
+				1191.75,
+				1048.25
+			],
+			"quote": "先预览：费用与随机次数由改造领域计算。",
+			"rect": [
+				788.375,
+				910.375,
+				1128.75,
+				58.625
+			],
+			"source_cores": 0.0,
+			"visible": true
+		}
+	],
+	"source_sha": "1dbe8ebc4a52dff9363b9e812ce21c0aafa83ce5de7262dcadfa7fc42b079545"
+}
