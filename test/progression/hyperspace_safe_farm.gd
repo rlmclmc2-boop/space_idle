@@ -1,6 +1,6 @@
 extends RefCounted
 ## QA only: current-round wins, real UI navigation, earned five-level growth.
-const VERSION="safe-first-normal-v2-from-four-earned-five-levels"
+const VERSION="safe-first-normal-v3-early-continuous-beam-refresh"
 var round_seen:=-1
 var known:Dictionary={}
 var failed:Dictionary={}
@@ -8,6 +8,8 @@ var attempted_stage:=0
 var phase:="idle"
 var plan:Dictionary={}
 var records:Array=[]
+var beam_refresh:Dictionary={}
+const BEAM_REFRESH_WAIT=300.0
 func growth(g)->Dictionary:
  var modules:=0
  for category in ["weapons","defence"]:
@@ -21,8 +23,15 @@ func note(kind:String,now:float,extra:Dictionary={})->Dictionary:
 func observe(g,kind:String,payload:Dictionary,now:float)->Dictionary:
  var round_id:int=int(g.profile.hyperspace.round_id)
  if round_id!=round_seen:
-  round_seen=round_id;known={};failed={};attempted_stage=0;phase="idle";plan={}
+  round_seen=round_id;known={};failed={};attempted_stage=0;phase="idle";plan={};beam_refresh={}
  if g.manual_hyperspace.active:return {}
+ if not beam_refresh.is_empty() and (int(beam_refresh.stage)!=int(g.stage) or int(beam_refresh.point)!=int(g.group_index) or g.state!=g.State.COMBAT):beam_refresh={}
+ if kind=="upgrade" and phase=="idle" and g.state==g.State.COMBAT and int(g.stage)<=30 and str(payload.get("slot","")).begins_with("weapons_"):
+  var index:int=int(str(payload.slot).trim_prefix("weapons_"))
+  var entries:Array=g.loadout_entries("weapons")
+  if index<entries.size() and str(entries[index].key)=="longLaser" and beam_refresh.is_empty():
+   beam_refresh={"stage":int(g.stage),"point":int(g.group_index),"since":now,"slot":str(payload.slot),"upgrades":int(payload.get("levels",1))}
+   return note("continuous_beam_upgrade_wait",now,{"observed_upgrade":beam_refresh.duplicate(true),"wait_seconds":BEAM_REFRESH_WAIT})
  if kind=="state":
   if g.state==g.State.COMBAT:attempted_stage=int(g.stage)
   elif g.state==g.State.LEVEL_CLEAR:failed[int(g.stage)]=0
@@ -44,13 +53,14 @@ func observe(g,kind:String,payload:Dictionary,now:float)->Dictionary:
  return {}
 func consider(g,now:float)->Dictionary:
  if g.manual_hyperspace.active:return {}
- if phase=="idle" and attempted_stage>=4 and int(failed.get(attempted_stage,0))>=2:
+ var refresh_due:bool=not beam_refresh.is_empty() and int(g.stage)<=30 and g.state==g.State.COMBAT and int(beam_refresh.stage)==int(g.stage) and int(beam_refresh.point)==int(g.group_index) and now-float(beam_refresh.since)>=BEAM_REFRESH_WAIT
+ if phase=="idle" and attempted_stage>=4 and (int(failed.get(attempted_stage,0))>=2 or refresh_due):
   var chosen:=0
   if known.has(attempted_stage) and (g.stage==attempted_stage or g.profile.cleared.has(attempted_stage)):chosen=attempted_stage
   elif known.has(attempted_stage-1) and g.profile.cleared.has(attempted_stage-1):chosen=attempted_stage-1
   if chosen>0:
-   plan={"stage":chosen,"push_stage":attempted_stage,"node":0,"since":now,"baseline":growth(g),"cycles":0,"reason":"Two actual defeats; return to an already won first normal point, no unseen-income ranking"}
-   phase="warp";return note("farm_requested",now)
+   plan={"stage":chosen,"push_stage":attempted_stage,"node":0,"since":now,"baseline":growth(g),"cycles":0,"reason":"Observed longLaser upgrade and the same early main battle still active after300 X1 seconds; native warp restarts frozen beams at an already won normal point" if refresh_due else "Two actual defeats; return to an already won first normal point, no unseen-income ranking","continuous_beam_refresh":beam_refresh.duplicate(true) if refresh_due else {}}
+   phase="warp";beam_refresh={};return note("farm_requested",now)
  if phase=="farm" and int(growth(g).modules)>=int(plan.baseline.modules)+5:
   phase="resume";return note("farm_growth_ready",now,{"current_growth":growth(g),"criterion":"Old sparse policy's five earned module levels; no timed forced release"})
  return {}
@@ -75,4 +85,4 @@ func native_completed(g,choice:Dictionary,now:float)->Dictionary:
   return note("farm_resume_progression",now,{"completed_farm":done,"current_growth":growth(g),"navigation":"Continue normally from this actual point; previous-stage farming replays its remaining real points before returning to frontier"})
  return {}
 func snapshot()->Dictionary:
- return {"version":VERSION,"round":round_seen,"phase":phase,"plan":plan.duplicate(true),"known_wins":known.duplicate(true),"actual_defeats":failed.duplicate(true),"records":records.duplicate(true)}
+ return {"version":VERSION,"round":round_seen,"phase":phase,"plan":plan.duplicate(true),"known_wins":known.duplicate(true),"actual_defeats":failed.duplicate(true),"records":records.duplicate(true),"continuous_beam_refresh":beam_refresh.duplicate(true)}
