@@ -16,7 +16,7 @@
           "description": "现有或本次明确规划的配置键",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -79,8 +79,8 @@
           "locked": {
             "key": "unlock_stage",
             "data_type": "int",
-            "unit": "关",
-            "description": "异空间可用最高到达关卡门槛",
+            "unit": "主线最高到达关",
+            "description": "异空间入口与能量推进门槛。调大延后开放，调小提前；默认7。与最低探索等级不同；需在现有主线关范围内。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -100,8 +100,8 @@
           "locked": {
             "key": "minimum_level",
             "data_type": "int",
-            "unit": "关",
-            "description": "允许探索的最低关卡",
+            "unit": "所选主线等级/关",
+            "description": "允许探索及无人机生成的最低等级。调大减少可选低等级，调小增加；默认5。升高可能令已有低等级无人机/历史存档不合法，需兼容检查。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -122,7 +122,7 @@
             "key": "energy_rate",
             "data_type": "float",
             "unit": "能量/游戏秒",
-            "description": "在线游戏时间每秒充能",
+            "description": "基础在线充能速率，调大缩短等满能量时间。默认10；不含挂设和后期倍率；超时空加速推进、离线不累计。 在线异空间充能基础速度。调大更快攒票，调小更慢；受挂设及60关后补给倍率共同作用。随游戏时间推进，离线不补充。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -143,7 +143,7 @@
             "key": "energy_cap",
             "data_type": "float",
             "unit": "能量",
-            "description": "基础能量容量；自动探索需满容量才派发",
+            "description": "基础能量容量，初始满额；自动探索须达到当前有效容量才派发。调大储能更多也延长充满时间，不能理解成仅增加次数；挂设会放大容量。 基础储能上限，也是自动探索满能量派发门槛。调大一次储能更多但首次充满更久，调小更快满；挂设会同步放大容量。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -164,7 +164,7 @@
             "key": "ticket",
             "data_type": "float",
             "unit": "能量/次",
-            "description": "手动票耗及自动票耗基数；自动再乘船员B/(B+L)，失败退实际已付票",
+            "description": "手动票耗及自动票耗基数；自动再乘B/(B+船员等级)。调大两类更贵；默认108000。失败退本次实际已付票，不退未折算基数。 手动票耗及自动票耗基数。调大每次消耗更多，调小更便宜；自动再乘B/(B+船员等级)，失败仅退实际已付票。例如B=20、等级20，自动票耗为此值的一半。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -185,7 +185,7 @@
             "key": "minimum_duration",
             "data_type": "float",
             "unit": "游戏秒",
-            "description": "自动探索最短耗时",
+            "description": "自动探索最短时间，最终max(本值,最佳X1×船员折算)。调大限制最快速度；默认10秒。手动战斗不按本值结束。 自动探索耗时下限。实际=max(此值,最佳手动X1记录×船员折算)。调大提高最快可达到的耗时下限，调小允许更快；离线不推进。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -205,8 +205,8 @@
           "locked": {
             "key": "warehouse_capacity",
             "data_type": "int",
-            "unit": "格",
-            "description": "基础仓库容量",
+            "unit": "架/格",
+            "description": "基础无人机仓库容量，实际再加重铸次数×增量。调大少触发满仓暂停；降低须检查已有库存，不会自动安全清空。 初始仓库容量。调大能存更多无人机，调小更早满仓；后续容量另加每次重铸增长。影响满仓暂停和领取条件，不直接提升伤害。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -227,8 +227,8 @@
             "key": "overflow_capacity",
             "data_type": "int",
             "value": 10,
-            "unit": "格",
-            "description": "固定溢出缓存容量；固定10格",
+            "unit": "架/格",
+            "description": "固定10格溢出缓存，锁定。仓库与缓存全满则停止后续自动探索，保留已完成待领取；不能编辑绕过。",
             "constraint": "必须等于10；只读锁定",
             "editable": false
           },
@@ -248,8 +248,8 @@
           "locked": {
             "key": "reforge_capacity_gain",
             "data_type": "int",
-            "unit": "格/重铸",
-            "description": "每次重铸增加仓库格数",
+            "unit": "格/次重铸",
+            "description": "每次重铸增加仓库容量；默认10。调大增加当前及未来总容量，同现有重铸次数相乘；降低涉及旧库存兼容。 每次重铸永久增加的仓库格数。调大后续轮次更能囤机，调小容量成长更慢；不增加单舰装备槽。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -269,8 +269,8 @@
           "locked": {
             "key": "initial_retention_capacity",
             "data_type": "int",
-            "unit": "格",
-            "description": "初始保留容量",
+            "unit": "架",
+            "description": "重铸保留名额初始基数，默认0；实际加累计重铸增量，选择本次保留时计入即将发生的一次。调大保留更多。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -290,8 +290,8 @@
           "locked": {
             "key": "retention_capacity_gain",
             "data_type": "int",
-            "unit": "格/重铸",
-            "description": "每次重铸增加保留格数",
+            "unit": "架/次重铸",
+            "description": "每次重铸增加保留无人机名额，默认10；保留机封存，达到其对应星球阶段才能领。调大仅扩保留名额，不保留材料。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -312,7 +312,7 @@
             "key": "maximum_equipped",
             "data_type": "int",
             "unit": "架",
-            "description": "全局无人机装备上限",
+            "description": "全局同时装备无人机上限，不含普通伴飞炮台；有效上限取舰型容量与此值的较小者。1..5；调小减少可装，存档需校验。",
             "constraint": "正整数，有限且<9e15；1..5，硬上限5",
             "editable": true
           },
@@ -333,7 +333,7 @@
             "key": "maximum_legendary",
             "data_type": "int",
             "unit": "架",
-            "description": "同时装备传说数量上限",
+            "description": "同时装备具传说属性机上限，1..2；默认2。传说+究极双属性同时占这项及究极配额，不是排除究极后再计数。 同时装备传说无人机上限，范围1..2。调小限制传说效果组合，调大允许更多组合但不能超过2；不是抽中传说的概率。",
             "constraint": "正整数，有限且<9e15；1..2，硬上限2",
             "editable": true
           },
@@ -354,7 +354,7 @@
             "key": "maximum_ultimate",
             "data_type": "int",
             "unit": "架",
-            "description": "同时装备究极数量上限",
+            "description": "同时装备具究极属性机上限，当前约束1，默认1。双属性也占此名额；不表示仓库只能拥有一架。",
             "constraint": "正整数，有限且<9e15；必须为1，硬上限1",
             "editable": true
           },
@@ -375,8 +375,8 @@
             "key": "completion_budget",
             "data_type": "int",
             "value": 8,
-            "unit": "次/advance",
-            "description": "单次advance最多结算数，性能保护而非奖励倍率",
+            "unit": "次/一次advance",
+            "description": "锁定的单次时间推进结算预算8；余下推进时间保留后续处理。性能保护，非奖励数量/付费可调项。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；锁定，不提供任意玩法开关",
             "editable": false
           },
@@ -397,7 +397,7 @@
             "key": "ultimate_weapon_bonus",
             "data_type": "int",
             "unit": "武器有效等级增量",
-            "description": "究极武器等级增量覆盖普通来源加成，不叠加；究极状态优先",
+            "description": "究极状态覆盖普通来源/传说加成，不相加；默认+5。调大提高实际武器模块等级，不改无人机本体等级。 究极武器有效等级增量，覆盖普通/蓝来源/传说等级加成而不叠加。调大究极输出通常更强，调小更弱；不提高实际购买等级或改造费用。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -417,8 +417,8 @@
           "locked": {
             "key": "affix_initial_probability",
             "data_type": "float",
-            "unit": "无量纲/按字段",
-            "description": "首个潜在槽成功概率；潜在槽失败不停止后续抽取",
+            "unit": "概率，0..1",
+            "description": "首个潜在词缀槽成功概率；后续按追加因子逐槽衰减，每槽独立尝试，失败不提前停止。1为必出首槽；受品质槽上限约束。 首个潜在词缀槽生成成功概率。调大更易生成词缀，调小更少；后续槽乘追加因子，某槽失败不停止后续抽取。限制0..1。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；0≤value≤1",
             "editable": true
           },
@@ -438,8 +438,8 @@
           "locked": {
             "key": "hanging_initial_probability",
             "data_type": "float",
-            "unit": "无量纲/按字段",
-            "description": "首个潜在槽成功概率；潜在槽失败不停止后续抽取",
+            "unit": "概率，0..1",
+            "description": "首个潜在挂设槽生成概率；后续逐槽衰减。默认0.2=首槽20%；调大平均槽数更多，不保证填满品质上限。 首个潜在挂设槽生成成功概率。调大更易带挂设，调小更少；后续槽乘追加因子，某槽失败不停止后续抽取。限制0..1。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；0≤value≤1",
             "editable": true
           },
@@ -459,8 +459,8 @@
           "locked": {
             "key": "additional_probability_factor",
             "data_type": "float",
-            "unit": "无量纲/按字段",
-            "description": "后续潜在槽概率乘数；不因前槽失败提前停止抽取",
+            "unit": "概率递乘因子，0..1",
+            "description": "每尝试下一潜在槽时概率乘本值，词缀/挂设共用。首概率1、因子0.25则1/0.25/0.0625；调大后续槽更常出现。 潜在槽每向后一个位置，概率再乘此因子。调大后续槽更易成功，调小更稀少。例如起始0.2、因子0.25，前两槽概率0.2与0.05；失败不提前停止。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；0≤value≤1",
             "editable": true
           },
@@ -480,8 +480,8 @@
           "locked": {
             "key": "value_precision",
             "data_type": "float",
-            "unit": "无量纲/按字段",
-            "description": "随机参数量化网格",
+            "unit": "原始参数量化步长",
+            "description": "新抽取/重洗数值的网格步长，默认0.001。调小可取值更多、保底期望成本可能更高；区间须含合法网格点；不自动改已有值。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -502,7 +502,7 @@
             "key": "amplification_rate",
             "data_type": "float",
             "unit": "每无人机等级复合增长率",
-            "description": "每等级复合因子1+rate；0.05表示1.05",
+            "description": "可放大词缀乘(1+rate)^(无人机等级−起点)。0.05是每级×1.05；调大高于起点增长更快，低于起点缩小更多。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -523,7 +523,7 @@
             "key": "amplification_start_level",
             "data_type": "int",
             "unit": "无人机等级",
-            "description": "词缀复合放大指数起点，拟接线；当前冻结代码固定4。无人机level=start时原值×1，低于起点负指数缩小",
+            "description": "复合放大指数起点，默认4；level=start时×1，低于起点仍负指数缩小。调大在同等级下加成下降。本轮已接线，非主线开放门槛。 词缀放大指数的零点，正式接线后生效。调大同等级词缀的放大值更小，调小更大；level=起点时×1，低于起点仍按负指数缩小。默认4与旧固定值等效。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -543,8 +543,8 @@
           "locked": {
             "key": "material_base_reward",
             "data_type": "int",
-            "unit": "份",
-            "description": "探索基础材料奖励",
+            "unit": "专属材料份/成功探索",
+            "description": "专属材料基础数量；再按探索等级阶梯增加并应用后期倍率取整。调大每次成功更多；失败仅退款，不发成功材料。 探索基础专属材料奖励。调大各关奖励整体增加，调小减少；基础再加floor(max(0,关卡−成长起点)/步长)，最后乘补给倍率并向下取整。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -564,8 +564,8 @@
           "locked": {
             "key": "material_reward_level_step",
             "data_type": "int",
-            "unit": "关/份",
-            "description": "每隔多少关增加1份基础材料",
+            "unit": "无人机/探索等级增量每份",
+            "description": "每跨这么多等级多1基础材料，默认3。调小成长更快；正整数。与普通铁/铀掉落独立。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -585,8 +585,8 @@
           "locked": {
             "key": "material_reward_start_level",
             "data_type": "int",
-            "unit": "关",
-            "description": "材料成长起点，同时用于现代化报价；保留联动",
+            "unit": "探索等级起点",
+            "description": "材料成长从此等级起算，低等级额外项夹到0；同时是现代化报价起点。调大材料增长推迟且现代化成本下降，须防报价因子非法。 材料奖励成长起点，同时是现代化费用等级项的原点。调大同关材料成长更晚且现代化等级项更低，调小反之；此联动保留，不拆成第二个价格起点。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；奖励起点与改造价格既有联动不拆分",
             "editable": true
           },
@@ -608,7 +608,7 @@
             "data_type": "int",
             "value": 5,
             "unit": "条",
-            "description": "筛选条件数量安全上限",
+            "description": "锁定5条筛选条件上限，支持且/或；不是自动清除比例。已装备/收藏/预设/封存保护仍生效。",
             "constraint": "正整数，有限且<9e15；1..5，硬上限5",
             "editable": false
           },
@@ -630,7 +630,7 @@
             "data_type": "int",
             "value": 4096,
             "unit": "字符",
-            "description": "筛选导入文本长度安全上限",
+            "description": "锁定筛选导入字符串长度上限4096，防超长输入；不是条件条数，不可用文案绕过。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；锁定，不提供任意玩法开关",
             "editable": false
           },
@@ -652,7 +652,7 @@
             "data_type": "int",
             "value": 10000,
             "unit": "次",
-            "description": "改造预估循环次数安全上限",
+            "description": "锁定改造定向预估抽取次数上限10000；防无界搜索，不增加付费成功率。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；锁定，不提供任意玩法开关",
             "editable": false
           },
@@ -672,8 +672,8 @@
           "locked": {
             "key": "lock_cost_multiplier",
             "data_type": "int",
-            "unit": "无量纲/按字段",
-            "description": "每个已锁词缀对下次锁定费用的倍增系数",
+            "unit": "每个已锁词缀的费用倍率",
+            "description": "下次锁定价=基础锁价×倍率^已锁数。默认4，0/1/2锁对应×1/4/16；调大连续锁定更贵。 锁定费用=基础胶子费×此值^已锁词缀数。调大后续锁定更贵，调小更便宜；首次未锁时指数0。例如4时每增加一个已锁词缀，下一次费用再×4。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -693,8 +693,8 @@
           "locked": {
             "key": "reroll_guarantee_multiplier",
             "data_type": "int",
-            "unit": "无量纲/按字段",
-            "description": "保底最大值重洗的期望价倍数",
+            "unit": "期望成本乘数",
+            "description": "保底最大值重洗的价格乘数，再乘所有待洗区间的网格组合数。调大保底更贵，不增加普通随机重洗幅度。 保底MAX重洗报价=基础反质子费×各重洗区间可取值数量乘积×此值，并向上取整。调大保底更贵，调小更便宜；不改变MAX结果或普通随机重洗范围。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -714,8 +714,8 @@
           "locked": {
             "key": "modernization_cost_base",
             "data_type": "int",
-            "unit": "材料份",
-            "description": "现代化费用基数与舍入粒度",
+            "unit": "材料份；也是舍入粒度",
+            "description": "现代化报价基数且按该份数为步长四舍五入。调大报价及档位间隔一同增大；不是单纯固定手续费。 现代化价格公式的材料基数，也是最终报价舍入粒度。调大通常更贵且报价更粗，调小更便宜且更细；价格按round(原价/此值)×此值，不改实际提升目标。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -735,8 +735,8 @@
           "locked": {
             "key": "modernization_level_step",
             "data_type": "int",
-            "unit": "关",
-            "description": "现代化等级成本步长",
+            "unit": "探索/无人机等级增量",
+            "description": "现代化等级费用因子的分母：1+(目标−材料起点)/步长。调大高等级报价增长更缓；材料奖励起点仍联动。 现代化费用等级项分母：(1+(目标关−材料成长起点)/此值)。调大等级费用增长更慢，调小更快；目标由该路线已有最佳记录决定，正数。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0；奖励起点与改造价格既有联动不拆分",
             "editable": true
           },
@@ -756,8 +756,8 @@
           "locked": {
             "key": "modernization_legendary_multiplier",
             "data_type": "int",
-            "unit": "无量纲/按字段",
-            "description": "传说现代化费用乘数",
+            "unit": "费用倍率",
+            "description": "传说机现代化费用额外乘数，默认2；调大仅提高传说报价。蓝转传说仍按传说收费，不影响蓝武器加成保留。 仅传说无人机现代化价格乘此值。调大传说升级更贵，调小更便宜；普通无人机不乘此倍率。例如2表示传说同条件费用×2。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -777,8 +777,8 @@
           "locked": {
             "key": "late_supply_unlock_stage",
             "data_type": "int",
-            "unit": "关",
-            "description": "已通主线关卡达到后期补给门槛",
+            "unit": "已清主线关ID",
+            "description": "清除指定关后开启后期充能/专属材料补给，默认60；检查已清集合，不是仅到达。调大延后获得补给。 后期补给门槛，须该主线关已通关，而不是仅最高到达。调大更晚开始补给，调小更早；之后按在线爬升时长渐进，默认60。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -798,8 +798,8 @@
           "locked": {
             "key": "late_energy_rate_multiplier",
             "data_type": "float",
-            "unit": "无量纲/按字段",
-            "description": "后期充能最大倍率",
+            "unit": "基础速率的终值倍率",
+            "description": "后期能量速率从1爬升到此倍率，默认30；不放大能量容量。调大满能量等待更短，离线不爬升。 后期补给爬升终点的充能倍率。调大最终充能更快，调小更慢；从×1线性爬升到此倍率，另乘挂设效果，不是储能容量倍率。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -819,8 +819,8 @@
           "locked": {
             "key": "late_material_reward_multiplier",
             "data_type": "int",
-            "unit": "无量纲/按字段",
-            "description": "后期材料最大倍率",
+            "unit": "专属材料终值倍率",
+            "description": "后期成功专属材料从1爬升到此倍率并向下取整，默认4。调大更多专属材料，不放大普通铁/宝石掉落。 后期补给爬升终点的专属材料奖励倍率。调大材料更多，调小更少；从×1线性爬升，结算份数向下取整。例如终点4即基础奖励×4。",
             "constraint": "正整数，有限且<9e15；必须>0；保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -840,8 +840,8 @@
           "locked": {
             "key": "late_supply_ramp_seconds",
             "data_type": "int",
-            "unit": "游戏秒",
-            "description": "后期补给在线爬升时长",
+            "unit": "在线游戏秒",
+            "description": "后期补给由1到终值倍率的爬升时长，默认600。调大升满更慢；超时空加速推进。缩短须校验旧late_supply_work存值。 补给从×1到目标倍率的爬升时间。调大完全生效更晚，调小更快；只在线累计，离线不补进度，默认600游戏秒。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0",
             "editable": true
           },
@@ -861,8 +861,8 @@
           "locked": {
             "key": "modernization_base_coefficient",
             "data_type": "float",
-            "unit": "无量纲",
-            "description": "现代化费用初始系数；随后逐个加词缀阶级权重",
+            "unit": "无量纲费用系数",
+            "description": "现代化初始系数，后加各普通词缀阶级费用权重；默认1。调大所有现代化更贵，不改变目标等级/成功率。 现代化阶级系数=此值+逐个词缀的阶级费用权重。调大价格更高，调小更低；还乘等级项及传说倍率，默认1与旧固定值等效。",
             "constraint": ">0且有限；默认1.0；保留原公式、舍入顺序和奖励起点联动",
             "editable": true
           },
@@ -882,8 +882,8 @@
           "locked": {
             "key": "auto_duration_crew_base",
             "data_type": "float",
-            "unit": "船员等级基数",
-            "description": "自动探索耗时船员等级折算基数",
+            "unit": "船员等级折算基数",
+            "description": "自动耗时=最佳X1×B/(B+L)，再受最短时间限制。默认100；L=100时系数0.5。调大相同船员提速变弱；无后台战斗。 自动耗时=max(最低耗时,最佳手动X1秒数×B/(B+船员等级))。同一正等级时调大耗时更长，调小更短；B=100、等级100时记录耗时减半。",
             "constraint": ">0且有限；默认100；公共函数返回max(minimum_duration,best_x1*B/(B+L))，结算与UI共用",
             "editable": true
           },
@@ -903,8 +903,8 @@
           "locked": {
             "key": "auto_ticket_crew_base",
             "data_type": "float",
-            "unit": "船员等级基数",
-            "description": "自动探索票耗船员等级折算基数",
+            "unit": "船员等级折算基数",
+            "description": "自动票耗=基础票×B/(B+L)。默认20，L=20时半票。调大相同船员折扣变小；自动仍须满容量派发。 自动票耗=基础票耗×B/(B+船员等级)。同一正等级时调大消耗更多，调小更少；B=20、等级20时半票。只调自动，失败退实际已付票，结算和UI共用公式。",
             "constraint": ">0且有限；默认20；公共函数ticket*B/(B+L)，三个消费者共用，不改满容量派发门槛",
             "editable": true
           },
@@ -936,7 +936,7 @@
           "description": "现有alpha/beta/gamma/delta路线",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -1079,12 +1079,12 @@
           "description": "来源品质或独占核心抽签结果",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空",
+          "constraint": "white/blue/gold/legendary/ultimate_core固定集合；核心行的非weight列必须空；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "weight",
-          "description": "结果相对抽签权重",
+          "description": "相对抽签权重，概率=本权重/所有结果总和；默认总和1.09。不是0.5独立50%。调大提高该结果相对出现率。",
           "type": "float",
           "unit": "相对权重",
           "constraint": "非负；合计>0；默认合计1.09，不能当互斥绝对概率",
@@ -1092,7 +1092,7 @@
         },
         {
           "key": "affix_limit",
-          "description": "可生成/改造的词缀槽位上限",
+          "description": "词缀槽上限，受品质硬上限0/2/3/3；调大可生成/添加更多，不自动补已有机。",
           "type": "int_or_blank",
           "unit": "槽",
           "constraint": "非负；不超过既有0/2/3/3硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",
@@ -1100,7 +1100,7 @@
         },
         {
           "key": "hanging_limit",
-          "description": "可生成挂设槽位上限",
+          "description": "挂设槽上限，硬上限4/2/1/0；传说化保留原挂设，不能用传说0误解成清空。",
           "type": "int_or_blank",
           "unit": "槽",
           "constraint": "非负；不超过既有4/2/1/0硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",
@@ -1108,7 +1108,7 @@
         },
         {
           "key": "weapon_level_bonus",
-          "description": "来源品质武器有效等级增量；非究极时蓝来源优先，蓝转传说仍用蓝加成",
+          "description": "非究极武器有效等级增量，蓝来源优先，蓝转传说继续用蓝值；究极覆盖，不叠加。",
           "type": "int_or_blank",
           "unit": "武器有效等级增量",
           "constraint": "非负；蓝来源继承规则不改；仅ultimate_core行必须空，导出时不新增对应品质字段",
@@ -1116,7 +1116,7 @@
         },
         {
           "key": "dismantle_amount",
-          "description": "拆解专属材料数与随机挂设副本数",
+          "description": "一次拆解的专属材料份数及随机模块份数共用此值。首份模块解锁，重复增加经验；须与自动筛除奖励验证上限联动。",
           "type": "int_or_blank",
           "unit": "份/次",
           "constraint": "正整数；现行为同一个数，不拆成两个可独立调参来源；奖励校验上界联动；仅ultimate_core行必须空，导出时不新增对应品质字段",
@@ -1331,12 +1331,12 @@
           "description": "现有舰型ID",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于ship.xlsx；保持当前引用，变更需跨表校验",
+          "constraint": "必须存在于ship.xlsx；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "capacity",
-          "description": "该舰型异空间无人机槽位",
+          "description": "该舰型无人机装备容量；调大可同时生效更多机，调小更少；仍受全局上限约束",
           "type": "int",
           "unit": "架",
           "constraint": "1..5，且满足全局maximum_equipped",
@@ -1451,12 +1451,12 @@
           "description": "现有词缀阶级，1为最高",
           "type": "int",
           "unit": "阶",
-          "constraint": "1..5完整唯一",
+          "constraint": "1..5完整唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "draw_weight",
-          "description": "生成/升阶判定使用的相对阶级权重",
+          "description": "生成及升阶成功判定相对权重；1阶最强。抽到更强阶即成功，但仅提升1阶，不跳阶。",
           "type": "float",
           "unit": "相对权重",
           "constraint": ">0；保留默认1/5/15/45/135及order",
@@ -1464,7 +1464,7 @@
         },
         {
           "key": "modernization_weight",
-          "description": "现代化费用附加阶级系数",
+          "description": "此阶每条普通词缀的现代化费用附加系数，与初始系数相加；调大该阶词缀越多报价越贵，不影响生成概率。",
           "type": "float",
           "unit": "无量纲",
           "constraint": "非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项",
@@ -1609,7 +1609,7 @@
           "description": "已实现聚合器支持的词缀ID",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -1969,7 +1969,7 @@
           "description": "词缀定义外键",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于词缀定义；保持当前引用，变更需跨表校验",
+          "constraint": "必须存在于词缀定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -1977,12 +1977,12 @@
           "description": "该词缀有定义的阶级",
           "type": "int",
           "unit": "阶",
-          "constraint": "1..5；仅导出存在的阶，不凭空补缺",
+          "constraint": "1..5；仅导出存在的阶，不凭空补缺；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "minimum",
-          "description": "未放大的原值区间下端",
+          "description": "原始词缀下界；比例词缀0.1=+10%，chain_count为数量。调大新抽取/重洗下限更高；未改已存值；区间含量化网格点。",
           "type": "float",
           "unit": "原始加成；1=100%或数量",
           "constraint": "有限；≤maximum；value_precision网格至少有一个可取值",
@@ -1990,7 +1990,7 @@
         },
         {
           "key": "maximum",
-          "description": "未放大的原值区间上端",
+          "description": "原始词缀上界，需≥下界；调大新抽取潜力更高，也会增加保底最大值期望成本；数量词缀最终聚合转int。",
           "type": "float",
           "unit": "同minimum",
           "constraint": "有限；≥minimum；数量词缀现有量化及最终int投影保持",
@@ -3509,12 +3509,12 @@
           "description": "既有五种挂设ID",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "base_exp",
-          "description": "首份只解锁不给经验；重复模块输入经验及各级阈值共用base_exp",
+          "description": "每重复模块输入经验，同时各级阈值基数；首份只解锁。调大两者同比，不等于单纯更易升级。",
           "type": "float",
           "unit": "经验/重复模块",
           "constraint": ">0且有限",
@@ -3522,7 +3522,7 @@
         },
         {
           "key": "exp_growth",
-          "description": "每级需求的增长率",
+          "description": "升级所需经验=base_exp×(1+本值)^当前等级。调大后续升级更慢。",
           "type": "float",
           "unit": "比例；1=100%",
           "constraint": "≥0且有限，经验需求不得非有限",
@@ -3530,7 +3530,7 @@
         },
         {
           "key": "effect_growth",
-          "description": "每架加成=(1+growth)^全局模块等级−1；等级0为0，同类多架相加",
+          "description": "每架已挂设加成=(1+本值)^全局模块等级−1。0.1、2级=21%，两架42%；仓库未装备不计。",
           "type": "float",
           "unit": "比例；1=100%",
           "constraint": "≥0且有限，实际公式pow(1+g,L)-1保持",
@@ -3538,7 +3538,7 @@
         },
         {
           "key": "unlock_stage",
-          "description": "挂设可应用的最高到达关卡",
+          "description": "模块可挂设及参与效果的最高到达主线门槛；调大延后使用，不代表模块抽取概率。",
           "type": "int",
           "unit": "关",
           "constraint": "非负整数",
@@ -3756,7 +3756,7 @@
           "description": "既有十二种传说效果ID",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -4019,7 +4019,7 @@
           "description": "传说定义外键",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -4035,7 +4035,7 @@
           "description": "该效果已实现参数名",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -4085,8 +4085,8 @@
             "effect_id": "higgs_cannon",
             "order": 0,
             "parameter": "damage_bonus",
-            "unit": "加成比例；2=+200%，实际×3",
-            "description": "加到1后作伤害倍率，不是直接倍率"
+            "unit": "伤害加成比例",
+            "description": "炮伤乘1+本值；2表示×3。调大更强；只改变伤害，不改变宽度。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4113,7 +4113,7 @@
             "order": 1,
             "parameter": "area_bonus",
             "unit": "射线宽度加成比例",
-            "description": "宽度倍率=1+area_bonus；1表示宽度×2，不是任意面积倍数"
+            "description": "射线宽度乘1+本值；1表示宽度×2。调大命中区域更宽；不是面积平方倍率。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4139,8 +4139,8 @@
             "effect_id": "scatter_pulse",
             "order": 0,
             "parameter": "single_target_bonus",
-            "unit": "加成比例；2=+200%，实际×3",
-            "description": "加到1后作伤害倍率，不是直接倍率"
+            "unit": "单目标伤害加成比例",
+            "description": "场上仅一个有效目标时激光乘1+本值；2表示×3。调大单体更强，多目标时不生效。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4166,8 +4166,8 @@
             "effect_id": "prism_tower",
             "order": 0,
             "parameter": "maximum_multiplier_bonus",
-            "unit": "既有激光最大倍率的加法增量",
-            "description": "加到既有最大倍率，不是独立总倍率"
+            "unit": "激光最大倍率加法增量",
+            "description": "对该棱镜塔源既有激光最大倍率加本值，调大蓄满倍率更高，不是全部激光再乘本值。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4194,7 +4194,7 @@
             "order": 0,
             "parameter": "damage_multiplier",
             "unit": "直接伤害倍率",
-            "description": "1.3表示伤害×1.3"
+            "description": "延迟奇异物质伤害=炮击原伤×本值，1.3表示×1.3。调大后续伤害更强，不改变概率。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4220,8 +4220,8 @@
             "effect_id": "laser_charge",
             "order": 0,
             "parameter": "maximum_bonus",
-            "unit": "加成比例；2=+200%，实际×3",
-            "description": "加到1后作伤害倍率，不是直接倍率"
+            "unit": "激光额外伤害比例上限",
+            "description": "额外比例取min(本值,每激光加成×激光来源数)，最终乘1+比例。调大只放宽上限，来源不足时不增伤。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4248,7 +4248,7 @@
             "order": 0,
             "parameter": "damage_multiplier",
             "unit": "直接伤害倍率",
-            "description": "1.3表示伤害×1.3"
+            "description": "特殊主导弹伤害乘本值，7表示×7。调大单次更强；触发间隔由attack_period另管。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4274,8 +4274,8 @@
             "effect_id": "endless_beam",
             "order": 0,
             "parameter": "maximum_multiplier_bonus",
-            "unit": "既有激光最大倍率的加法增量",
-            "description": "加到既有最大倍率，不是独立总倍率"
+            "unit": "激光最大倍率加法增量",
+            "description": "仅选定最强持续长激光源的既有最大倍率加本值。调大持续源更强，不同时新增多个持续源。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4302,7 +4302,7 @@
             "order": 0,
             "parameter": "maximum_dodge",
             "unit": "闪避概率上限，0..1",
-            "description": "实际闪避概率=min(现有武器最高暴击概率,上限)，不是固定实际闪避率"
+            "description": "实际概率=min(当前武器最高暴击概率,本值)。0.75为75%上限，不能保证实际75%；调大只解除上限限制。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4328,8 +4328,8 @@
             "effect_id": "dodge_counter",
             "order": 1,
             "parameter": "counter_damage_bonus",
-            "unit": "加成比例；2=+200%，实际×3",
-            "description": "加到1后作伤害倍率，不是直接倍率"
+            "unit": "反击伤害加成比例",
+            "description": "反击随机现有武器伤害乘1+本值，0.7表示×1.7。调大反击更强，不提高闪避概率。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4355,8 +4355,8 @@
             "effect_id": "drone_master",
             "order": 0,
             "parameter": "maximum_reduction",
-            "unit": "上限减伤比例",
-            "description": "按装备未失效无人机的最大品质系数/ultimate系数折算，取最大不累加；0.5是上限50%"
+            "unit": "减伤比例上限，0..1",
+            "description": "实际减伤=本值×未失效已装备机最大品质系数/究极系数。0.5为最高品质50%；品质系数取最大不加总。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4382,8 +4382,8 @@
             "effect_id": "black_hole",
             "order": 0,
             "parameter": "damage_multiplier",
-            "unit": "直接伤害倍率",
-            "description": "1.3表示伤害×1.3"
+            "unit": "释放伤害直接倍率",
+            "description": "黑洞释放伤害=吸收的己方原伤累计×本值。1.3表示×1.3；敌方伤害吸收用于防护，不计入释放伤害。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4409,8 +4409,8 @@
             "effect_id": "drone_rebuild",
             "order": 0,
             "parameter": "damage_and_defence_bonus",
-            "unit": "每牺牲层伤害/防御加成比例",
-            "description": "逐次牺牲累加；0.7为每层+70%"
+            "unit": "每牺牲一次的伤害/防御加成比例",
+            "description": "每次重建牺牲一架可用无人机，累计加本值。0.7、两层累计+140%；调大每层更强，层上限另管。 本页区间用于新生成/重洗，不自动重抽已有存值。"
           },
           "mappings": {
             "minimum": [
@@ -4438,7 +4438,7 @@
           "description": "传说定义外键",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验",
+          "constraint": "必须存在于传说定义；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -4446,7 +4446,7 @@
           "description": "效果内固定常量路径，如quality_ratios/white",
           "type": "string",
           "unit": "相对字段路径",
-          "constraint": "仅当前支持的已知路径，不接受脚本/任意表达式",
+          "constraint": "仅当前支持的已知路径，不接受脚本/任意表达式；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -4512,8 +4512,8 @@
             "effect_id": "higgs_cannon",
             "constant_path": "maximum_cannon_sources",
             "data_type": "int",
-            "unit": "炮类武器来源数上限/个",
-            "description": "higgs_cannon：maximum_cannon_sources；参与统计的炮类来源数上限；已实现传说效果参数区间与固定常量",
+            "unit": "炮类武器来源数",
+            "description": "装备希格斯时允许的炮类武器来源总数上限，默认1；包含普通武器与无人机来源。调大允许更多炮来源，不提高每炮伤害。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4536,7 +4536,7 @@
             "constant_path": "stack_multiplier",
             "data_type": "float",
             "unit": "每已有层数的复合倍率底数",
-            "description": "precise_guidance：stack_multiplier；伤害=base×multiplier^layers，不是每层相加；limit关闭时stack_limit不参与；已实现传说效果参数区间与固定常量",
+            "description": "伤害乘B^目标已有层数；B=1.5时2层×2.25。调大成长更快。每主发射批次每目标只叠一次，不按导弹颗数。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4559,7 +4559,7 @@
             "constant_path": "stack_limit_enabled",
             "data_type": "bool",
             "unit": "开关",
-            "description": "precise_guidance：stack_limit_enabled；关闭时stack_limit不参与；不是倍率；已实现传说效果参数区间与固定常量",
+            "description": "是否启用叠层上限。false时stack_limit完全不参与；true限制后续累计层数。默认关闭，开启不改变单发记层方式。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4582,7 +4582,7 @@
             "constant_path": "stack_limit",
             "data_type": "int",
             "unit": "层",
-            "description": "precise_guidance：stack_limit；堆叠层数；已实现传说效果参数区间与固定常量",
+            "description": "启用上限时最多保留的目标层数；调大允许更高复合伤害；0且启用会保持0层。默认0且关闭，不等于默认无制导。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4605,8 +4605,8 @@
             "constant_path": "counting_policy",
             "data_type": "string",
             "value": "first_hit_per_batch_per_target",
-            "unit": "无量纲/固定枚举",
-            "description": "precise_guidance：counting_policy；现有固定效果语义；不新增消费者；已实现传说效果参数区间与固定常量；当前行为是固定实现，不通过此字段改变",
+            "unit": "固定行为声明",
+            "description": "锁定：每发射批次每目标首次命中记一次。字段本身无消费者，改文字不改变逻辑。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；锁定，不提供任意玩法开关",
             "editable": false
           },
@@ -4629,7 +4629,7 @@
             "constant_path": "nearby_targets",
             "data_type": "int",
             "unit": "额外连锁目标/跳数",
-            "description": "prism_tower：nearby_targets；连锁额外目标数；已实现传说效果参数区间与固定常量",
+            "description": "棱镜塔连锁额外目标计数，默认5；调大可打更多邻近目标，不含最初主目标，不增加塔数量。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4652,8 +4652,8 @@
             "constant_path": "maximum_towers",
             "data_type": "int",
             "value": 1,
-            "unit": "无量纲/固定枚举",
-            "description": "prism_tower：maximum_towers；现有固定效果语义；不新增消费者；已实现传说效果参数区间与固定常量；当前行为是固定实现，不通过此字段改变",
+            "unit": "固定塔来源数",
+            "description": "锁定1；代码只允许一个有效棱镜塔，此字段未消费，不是可扩塔开关。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；锁定，不提供任意玩法开关",
             "editable": false
           },
@@ -4675,8 +4675,8 @@
             "effect_id": "strange_matter",
             "constant_path": "spawn_probability",
             "data_type": "float",
-            "unit": "非击杀炮击命中生成1个的概率，0..1",
-            "description": "strange_matter：spawn_probability；击杀分支使用kill_spawns绕过此概率；已实现传说效果参数区间与固定常量",
+            "unit": "非击杀炮命中的生成概率，0..1",
+            "description": "非击杀炮击命中时，以本概率生成1份延迟奇异物质；0.4=40%。击杀时直接用kill_spawns，不抽此概率。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；0..1",
             "editable": true
           },
@@ -4699,7 +4699,7 @@
             "constant_path": "delay",
             "data_type": "int",
             "unit": "游戏秒",
-            "description": "strange_matter：delay；按游戏时间计时；已实现传说效果参数区间与固定常量",
+            "description": "奇异物质生成后到造成伤害的延迟，默认1。调大伤害更晚，不增加份数或倍率。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；当前支持计时参数>0，黑洞周期不得短于吸收窗口",
             "editable": true
           },
@@ -4721,8 +4721,8 @@
             "effect_id": "strange_matter",
             "constant_path": "kill_spawns",
             "data_type": "int",
-            "unit": "个",
-            "description": "strange_matter：kill_spawns；击杀后生成数量；已实现传说效果参数区间与固定常量",
+            "unit": "份/击杀炮击",
+            "description": "炮击击杀时直接生成的奇异物质份数，默认2；调大更多延迟伤害。派生触发不能再触发其他效果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4744,8 +4744,8 @@
             "effect_id": "laser_charge",
             "constant_path": "bonus_per_laser",
             "data_type": "float",
-            "unit": "每激光来源加成比例",
-            "description": "laser_charge：bonus_per_laser；每个激光来源的加成比例；已实现传说效果参数区间与固定常量",
+            "unit": "每个激光来源的加成比例",
+            "description": "每激光来源提供本比例，最终受maximum_bonus限制。0.5、两来源是+100%（若未达上限）；调大更快达上限。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4767,8 +4767,8 @@
             "effect_id": "wild_missile",
             "constant_path": "attack_period",
             "data_type": "int",
-            "unit": "特殊攻击前的普通主导弹攻击批次数",
-            "description": "wild_missile：attack_period；N=3为普通、普通、普通、特殊，总周期4；不按导弹颗数计数；已实现传说效果参数区间与固定常量",
+            "unit": "特殊攻击前的普通主导弹批次数",
+            "description": "N=3为普通、普通、普通、特殊，周期N+1次；调大特殊更稀疏。按主发射批次，不按颗数或秒。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4790,8 +4790,8 @@
             "effect_id": "wild_missile",
             "constant_path": "blast_fraction",
             "data_type": "float",
-            "unit": "主击伤害比例",
-            "description": "wild_missile：blast_fraction；0.5表示主击伤害的50%；已实现传说效果参数区间与固定常量",
+            "unit": "主击伤害比例，0..1",
+            "description": "特殊导弹爆炸额外伤害=主击原伤×本值，0.5是50%。调大爆炸更强，不改变主击倍率或周期。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；0..1",
             "editable": true
           },
@@ -4814,7 +4814,7 @@
             "constant_path": "cooldown",
             "data_type": "int",
             "unit": "游戏秒",
-            "description": "dodge_counter：cooldown；按游戏时间计时；已实现传说效果参数区间与固定常量",
+            "description": "闪避反击之间的冷却，默认2；调大反击更稀疏。冷却限制反击，不把闪避概率改成每两秒固定一次。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；当前支持计时参数>0，黑洞周期不得短于吸收窗口",
             "editable": true
           },
@@ -4837,7 +4837,7 @@
             "constant_path": "quality_ratios/white",
             "data_type": "float",
             "unit": "无量纲相对品质系数",
-            "description": "drone_master：white；统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率；已实现传说效果参数区间与固定常量",
+            "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4860,7 +4860,7 @@
             "constant_path": "quality_ratios/blue",
             "data_type": "float",
             "unit": "无量纲相对品质系数",
-            "description": "drone_master：blue；统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率；已实现传说效果参数区间与固定常量",
+            "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4883,7 +4883,7 @@
             "constant_path": "quality_ratios/gold",
             "data_type": "float",
             "unit": "无量纲相对品质系数",
-            "description": "drone_master：gold；统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率；已实现传说效果参数区间与固定常量",
+            "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4906,7 +4906,7 @@
             "constant_path": "quality_ratios/legendary",
             "data_type": "float",
             "unit": "无量纲相对品质系数",
-            "description": "drone_master：legendary；统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率；已实现传说效果参数区间与固定常量",
+            "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -4929,7 +4929,7 @@
             "constant_path": "quality_ratios/ultimate",
             "data_type": "float",
             "unit": "无量纲相对品质系数",
-            "description": "drone_master：ultimate；统御取已装备未失效无人机最大品质系数/ultimate系数；ultimate是正数归一分母，不是各品质独立减伤概率；已实现传说效果参数区间与固定常量",
+            "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；>0，作为统御归一化分母",
             "editable": true
           },
@@ -4952,7 +4952,7 @@
             "constant_path": "period",
             "data_type": "int",
             "unit": "游戏秒",
-            "description": "black_hole：period；按游戏时间计时；已实现传说效果参数区间与固定常量",
+            "description": "黑洞循环周期，从一次开启到下次开启；默认20含5秒吸收窗口。调大开启更稀疏；需≥吸收时长且>0。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；当前支持计时参数>0，黑洞周期不得短于吸收窗口",
             "editable": true
           },
@@ -4975,7 +4975,7 @@
             "constant_path": "absorption_duration",
             "data_type": "int",
             "unit": "游戏秒",
-            "description": "black_hole：absorption_duration；按游戏时间计时；已实现传说效果参数区间与固定常量",
+            "description": "每次黑洞吸收窗口，默认5。调大吸收更久并更晚释放累计伤害；不得超过period。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查；当前支持计时参数>0，黑洞周期不得短于吸收窗口",
             "editable": true
           },
@@ -4997,8 +4997,8 @@
             "effect_id": "drone_rebuild",
             "constant_path": "maximum_stacks",
             "data_type": "int",
-            "unit": "层",
-            "description": "drone_rebuild：maximum_stacks；堆叠层数；已实现传说效果参数区间与固定常量",
+            "unit": "层/一场战斗",
+            "description": "重建最大累计牺牲/加成层数，默认4。调大最多牺牲更多，仍受当前可用无人机数量限制，战斗重置。",
             "constraint": "保留当前JSON类型；数值有限；运行时C.number边界abs(value)<9e15；相关跨字段约束必须导入和启动均检查",
             "editable": true
           },
@@ -5030,16 +5030,16 @@
           "description": "已有Forge操作ID",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "resource",
-          "description": "现有材料或ultimate_cores",
+          "description": "费用资源结构引用；当前为固定身份，只读，不因显示editable就能换资源。",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验",
-          "editable": true
+          "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+          "editable": false
         },
         {
           "key": "resource_order",
@@ -5051,7 +5051,7 @@
         },
         {
           "key": "amount",
-          "description": "该操作消耗该资源的基础数量",
+          "description": "指定操作每次基础资源消耗。调大更贵；锁定/定向/保底操作还叠加其倍率或抽取次数；究极还原消耗核心，不退款。",
           "type": "int",
           "unit": "份/次",
           "constraint": "非负整数；同(operation,resource)唯一；真实preview/commit共用此来源",
@@ -5274,7 +5274,7 @@
           "description": "保护参数或已存在policies子键",
           "type": "string",
           "unit": "稳定键",
-          "constraint": "允许清单，路径映射由契约指定",
+          "constraint": "允许清单，路径映射由契约指定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -5723,7 +5723,7 @@
           "description": "现有独立异空间敌人ID",
           "type": "int",
           "unit": "ID",
-          "constraint": "正整数，当前223个既有ID；不得与主线ID冲突",
+          "constraint": "正整数，当前223个既有ID；不得与主线ID冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -5736,7 +5736,7 @@
         },
         {
           "key": "size",
-          "description": "既有舰体尺寸档",
+          "description": "敌舰尺寸档位，影响战场几何/舰型；调大需重新检查阵型合法，不是生命倍率。",
           "type": "int",
           "unit": "尺寸档",
           "constraint": "正整数且现有模型/几何支持",
@@ -5744,7 +5744,7 @@
         },
         {
           "key": "health",
-          "description": "基础生命值",
+          "description": "敌人基础生命，另乘所选主线lifeRatio。调大更耐打，不复制主线等级倍率。",
           "type": "number",
           "unit": "生命",
           "constraint": ">0且有限",
@@ -5752,7 +5752,7 @@
         },
         {
           "key": "armour_type",
-          "description": "装甲抗性类别",
+          "description": "装甲伤害类型ID（0/1/2），与当前武器伤害类型匹配才使用相应抗性；不是减伤百分比。",
           "type": "int",
           "unit": "枚举码",
           "constraint": "0/1/2",
@@ -5760,7 +5760,7 @@
         },
         {
           "key": "shield",
-          "description": "基础护盾容量",
+          "description": "敌人基础护盾容量，另乘所选生命倍率；0表示无盾。调大增加容量，不增生命本体。",
           "type": "number",
           "unit": "护盾",
           "constraint": "≥0且有限",
@@ -5768,7 +5768,7 @@
         },
         {
           "key": "shield_type",
-          "description": "护盾抗性类别",
+          "description": "护盾伤害类型ID0/1/2，作用于盾的类型抗性，和装甲类型分别处理。",
           "type": "int",
           "unit": "枚举码",
           "constraint": "0/1/2",
@@ -5776,7 +5776,7 @@
         },
         {
           "key": "shield_recovery",
-          "description": "每秒最大护盾恢复比例",
+          "description": "护盾恢复比例参数；按主线敌盾现有规则处理，调大恢复更快，0禁恢复；需结合盾容量。",
           "type": "number",
           "unit": "比例/游戏秒",
           "constraint": "≥0且有限",
@@ -5784,7 +5784,7 @@
         },
         {
           "key": "shield_delay",
-          "description": "实际命中后护盾恢复延迟",
+          "description": "护盾被命中后的恢复等待游戏秒；调大更晚恢复，0为立即恢复条件。",
           "type": "number",
           "unit": "游戏秒",
           "constraint": "≥0且有限",
@@ -5792,7 +5792,7 @@
         },
         {
           "key": "damage_multiplier",
-          "description": "基础武器伤害倍率",
+          "description": "敌人攻击基础乘数，另继承所选主线atkRatio；调大造成更多伤害，不改变攻击间隔。",
           "type": "number",
           "unit": "无量纲",
           "constraint": "≥0且有限",
@@ -20532,7 +20532,7 @@
           "description": "异空间敌人外键",
           "type": "int",
           "unit": "ID",
-          "constraint": "必须存在于异空间敌人",
+          "constraint": "必须存在于异空间敌人；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -20540,7 +20540,7 @@
           "description": "固定输出/随机选择顺序；物理行排序不改变它",
           "type": "int",
           "unit": "0起序号",
-          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -24572,7 +24572,7 @@
           "description": "现有四十组独立编队ID",
           "type": "int",
           "unit": "ID",
-          "constraint": "正整数，当前7001..7040既有集合，不与主线冲突",
+          "constraint": "正整数，当前7001..7040既有集合，不与主线冲突；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -25815,20 +25815,20 @@
           "description": "编队外键",
           "type": "int",
           "unit": "ID",
-          "constraint": "必须存在于异空间编队",
+          "constraint": "必须存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "slot_index",
-          "description": "源15槽的实际索引",
+          "description": "15槽中的0起索引，保留不规则空位；目前schema锁定，不能标可编辑。",
           "type": "int",
           "unit": "0起索引",
-          "constraint": "0..14，group内唯一，不能自动密排",
-          "editable": true
+          "constraint": "0..14，group内唯一，不能自动密排；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+          "editable": false
         },
         {
           "key": "enemy_id",
-          "description": "该非空槽异空间敌人",
+          "description": "该现有非空槽使用的异空间敌ID，替换需保持合法尺寸/几何及recipe衍生ID一致。",
           "type": "int",
           "unit": "ID",
           "constraint": "必须存在于异空间敌人",
@@ -25836,7 +25836,7 @@
         },
         {
           "key": "x",
-          "description": "显式阵型横坐标",
+          "description": "逻辑战场横坐标，调大向右；范围54..518，非像素截图坐标。",
           "type": "number",
           "unit": "逻辑战场单位",
           "constraint": "有限且54..518；实际几何合法",
@@ -25844,7 +25844,7 @@
         },
         {
           "key": "y",
-          "description": "显式阵型纵坐标",
+          "description": "逻辑战场纵坐标，调大向下；范围80..350，检查前后/中心扇区。",
           "type": "number",
           "unit": "逻辑战场单位",
           "constraint": "有限且80..350；大型舰前后顺序/中心扇区合法",
@@ -32557,7 +32557,7 @@
           "description": "异空间路线外键",
           "type": "string",
           "unit": "已有ID引用",
-          "constraint": "必须存在于路线；保持当前引用，变更需跨表校验",
+          "constraint": "必须存在于路线；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -32565,7 +32565,7 @@
           "description": "战斗档位",
           "type": "enum",
           "unit": "档位",
-          "constraint": "normal/elite/boss/ultimate固定顺序",
+          "constraint": "normal/elite/boss/ultimate固定顺序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -32573,12 +32573,12 @@
           "description": "固定输出/随机选择顺序；物理行排序不改变它",
           "type": "int",
           "unit": "0起序号",
-          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序",
+          "constraint": "按作用域唯一且连续；与冻结基线同ID同序号；锁定；导出必须按它排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "group_id",
-          "description": "该档位有序编队ID",
+          "description": "该路线该档有序编队引用；必须唯一覆盖40组、档位匹配4/4/1/1。更换需与其他行联动，不能复制组突破数量。",
           "type": "int",
           "unit": "ID",
           "constraint": "存在于异空间编队且档位一致；每路线4/4/1/1，无跨路线重复",
@@ -33402,7 +33402,7 @@
           "description": "现有奖励参考设计键",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
+          "constraint": "仅已有实现/已验ID；不自动新增功能；非空；主键作用域唯一；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -33439,7 +33439,7 @@
         },
         {
           "key": "boundary_note",
-          "description": "既有早1..5、晚≥6规则与不可重建项",
+          "description": "已有主线实例预算由主线表派生；25无早段实例95块来自回退页；sources为冻结结构映射。不能以编辑备注改变预算。",
           "type": "string",
           "unit": "只读说明",
           "constraint": "锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
@@ -34021,12 +34021,12 @@
           "description": "异空间奖励组外键",
           "type": "int",
           "unit": "ID",
-          "constraint": "存在于异空间编队",
+          "constraint": "存在于异空间编队；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "member_order",
-          "description": "组内原recipe成员记录顺序",
+          "description": "组内原成员记录顺序，锁定；保留零预算成员位置，避免随机调用/奖励映射漂移。",
           "type": "int",
           "unit": "0起序号",
           "constraint": "同group/slot重复值一致；组内唯一成员顺序连续；锁定；导出按它排列成员",
@@ -34037,20 +34037,20 @@
           "description": "实际收取该预算块的异空间非空槽",
           "type": "int",
           "unit": "0起索引",
-          "constraint": "必须为该组非空槽",
-          "editable": true
+          "constraint": "必须为该组非空槽；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
+          "editable": false
         },
         {
           "key": "order",
-          "description": "同成员内原ordinal数组顺序；零预算成员填空",
+          "description": "同成员预算数组原顺序，锁定。空只用于零预算；物理行排序不改变输出。",
           "type": "int_or_blank",
           "unit": "0起序号",
-          "constraint": "同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序",
+          "constraint": "同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "reference_member_ordinal",
-          "description": "被分配的原参考成员序号",
+          "description": "源预算成员0起序号，0是第一个真实预算块；空表示该成员零预算，必须保留行。更换须全组完整覆盖且不重复；不填金额。",
           "type": "int_or_blank",
           "unit": "0起索引",
           "constraint": "覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0",
@@ -39549,7 +39549,7 @@
           "description": "无早段主线实例的既有奖励参考ID",
           "type": "string",
           "unit": "稳定ID",
-          "constraint": "仅既有25参考；锁定；不复制有主线来源的预算",
+          "constraint": "仅既有25参考；锁定；不复制有主线来源的预算；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -39557,7 +39557,7 @@
           "description": "参考成员预算块索引",
           "type": "int",
           "unit": "0起索引",
-          "constraint": "每参考0..count-1；原95块结构锁定",
+          "constraint": "每参考0..count-1；原95块结构锁定；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
@@ -39565,12 +39565,12 @@
           "description": "块内掉落数组顺序",
           "type": "int",
           "unit": "0起序号",
-          "constraint": "现有每块一项，order0锁定；不新增条目",
+          "constraint": "现有每块一项，order0锁定；不新增条目；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
           "editable": false
         },
         {
           "key": "resource_id",
-          "description": "回退掉落资源引用",
+          "description": "既有普通资源ID，当前1为铁；不是无人机专属材料ID。变更须确认资源注册表及预算类型，禁止新增未知资源。",
           "type": "int",
           "unit": "正式res资源ID",
           "constraint": "必须存在于本次正式主线投影resources；不复制资源本身数值",
@@ -39578,7 +39578,7 @@
         },
         {
           "key": "amount",
-          "description": "仅来源无匹配且资源参考关≤5时的回退掉落数量",
+          "description": "资源参考关≤5且当前主线来源无匹配时的回退单块基础数量。默认8/20，乘资源倍率后发放；调大该块更多，不是专属材料奖励。",
           "type": "number",
           "unit": "资源份/预算块",
           "constraint": "非负有限且<9e15；不影响15已有主线早段模板及40晚段预算",
@@ -39586,7 +39586,7 @@
         },
         {
           "key": "chance",
-          "description": "该回退掉落发生概率",
+          "description": "该回退块掉落概率0..1，默认1必掉；调大更常出，不改掉落数量。",
           "type": "float",
           "unit": "概率，1=100%",
           "constraint": "有限，0..1",
