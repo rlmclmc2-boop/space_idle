@@ -1,0 +1,26 @@
+[
+  {
+    "case": "numeric",
+    "import_projection": "accepted",
+    "godot_exit": 0,
+    "output": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nCATALOG_STRUCTURE startup_error= drops=[{\"amount\":17.0,\"chance\":1.0,\"resourceId\":1.0}]\n"
+  },
+  {
+    "case": "add_drop",
+    "import_projection": "accepted",
+    "godot_exit": 0,
+    "output": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nCATALOG_STRUCTURE startup_error= drops=[{\"amount\":10.0,\"chance\":1.0,\"resourceId\":1.0},{\"amount\":1.0,\"chance\":0.5,\"resourceId\":2.0}]\n"
+  },
+  {
+    "case": "replace_resource",
+    "import_projection": "accepted",
+    "godot_exit": 0,
+    "output": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nCATALOG_STRUCTURE startup_error= drops=[{\"amount\":10.0,\"chance\":1.0,\"resourceId\":2.0}]\n"
+  },
+  {
+    "case": "remove_drop",
+    "import_projection": "accepted",
+    "godot_exit": 0,
+    "output": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nCATALOG_STRUCTURE startup_error= drops=[]\n"
+  }
+]

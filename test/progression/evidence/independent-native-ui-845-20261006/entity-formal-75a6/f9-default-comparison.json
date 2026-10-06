@@ -1,0 +1,31 @@
+{
+  "new_defaults": {
+    "modernization_base_coefficient": 1.0,
+    "auto_duration_crew_base": 100.0,
+    "auto_ticket_crew_base": 20.0
+  },
+  "hyperspace_config.json": {
+    "equal_f9_semantics": true,
+    "old_sha": "c1ac5e05a1dd190025ee1c64201a4534330dafacfd6c3f5834d2ab6db6ee50dc"
+  },
+  "space_enemy_candidates.json": {
+    "equal_f9_semantics": true,
+    "old_sha": "dff607ae13618a6bd4350a86f159582580d5ae350720bdbbcd8a8b3fd5b6473d"
+  },
+  "space_enemy_routes.json": {
+    "equal_f9_semantics": true,
+    "old_sha": "4470c2af1bea87ad20f476840e4e69a547ab1222438d7802c881e94e6dfdfe58"
+  },
+  "space_enemy_reward_recipes.json": {
+    "equal_f9_semantics": true,
+    "old_sha": "f2097056ff68790702f0015447c91c6d81ea6b8352d7cdc80073e71f16e9fe5c"
+  },
+  "space_enemy_reward_catalog.json": {
+    "equal_f9_semantics": true,
+    "old_sha": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b"
+  },
+  "workbooks": {
+    "hyperspace_config.xlsx": "ccef919897ccb7ef3d80cf7e0ae9671fd896e83d5431e0da4cb7712ced626536",
+    "hyperspace_enemies.xlsx": "802735530bd8c03ea524643849c82f8f3be3c7eccd1ce13579821ec7caa356e0"
+  }
+}
