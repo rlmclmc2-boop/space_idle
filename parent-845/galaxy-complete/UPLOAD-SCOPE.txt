@@ -1,0 +1,1 @@
+This terminal evidence commit contains validated CP, final save, summary, run log and RESULT. actions.jsonl.gz remains local because its upload was cancelled; the previous 12:54 action snapshot remains on this branch. RESULT lists the local terminal hash, not proof of remote delivery for that file. No full-action remote coverage is claimed.
