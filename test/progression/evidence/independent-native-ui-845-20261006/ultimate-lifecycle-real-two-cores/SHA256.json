@@ -1,5 +1,5 @@
 {
-  "README.md": "c3b800118c70d3f8aa7f02e66a64f087b26fc7613d8b3cd00e8e0cccb95b4508",
+  "README.md": "90388695674c51151b8dc38b5fcde900319e68ce3ab3da640061c14396acc0b9",
   "build-verification.json": "e445ecbf7ab88856fb61a0a23b4305a949a4f3745447c4af0e3b1e3c8cc1adf0",
   "first-pass-observer-audit.json": "a03ddf25471ecd79b59babb51f1ceb5fdd43ac02c1849a9459dc022623cd82e5",
   "import.log": "527a72d2a662f748fa22dfdb41d9132b208648decf45f1f8e9052aaa721a343c",
@@ -32,5 +32,6 @@
   "qa-manifest.json": "57b5f855a94f49a7ce2f92c936db5bf6e706ec3aa48585f51a1917f8559f2b87",
   "sources/RESULT.json": "705946534862ebcb66bfa7f34a54f862dce29848c6f704d6119748c680f6ceeb",
   "sources/actual-post60-two-core-save.json.gz": "4d21d561a9bac9305d647d5fff780b3530f72afc6abbc89057382e48029dbdbe",
-  "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+  "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+  "命令指纹只读追踪.md": "e0ade43598b84283d44fb71dc3e0e9ce899b1a06f64eaae892d406e0ca81cdd9"
 }
