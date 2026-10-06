@@ -3,7 +3,7 @@ extends RefCounted
 const FORMAT=1
 const QA_CONTINUITY=["early_page_route.gd","hyperspace_player_policy.gd","hyperspace_safe_farm.gd","player_input.gd","scene_driver.gd","presented_balance_game.gd"]
 const CONTROLLER=["reforge_checkpoint_pending","crew_transfer_burst","next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
-const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew"]
+const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew"]
 const FARM=["round_seen","known","failed","attempted_stage","phase","plan"]
 
 static func digest(bytes:PackedByteArray)->String:
@@ -16,12 +16,21 @@ static func continuity(manifest:Dictionary)->String:
   if not str(name).begins_with("qa/") or str(name).trim_prefix("qa/") in QA_CONTINUITY:selected[name]=manifest.files[name]
  return digest(JSON.stringify(selected).to_utf8_buffer())
 
+static func field_names_unique(names:Array)->bool:
+ var seen:Dictionary={}
+ for name in names:
+  if seen.has(name):return false
+  seen[name]=true
+ return true
+
 static func fields(object:Object,names:Array)->Dictionary:
+ assert(field_names_unique(names),"Duplicate checkpoint capture field")
  var result:Dictionary={}
  for name in names:result[name]=object.get(name)
  return result
 
 static func apply_fields(object:Object,values:Dictionary,names:Array)->void:
+ assert(field_names_unique(names),"Duplicate checkpoint restore field")
  for name in names:
   if not values.has(name):continue
   var existing:Variant=object.get(name)
