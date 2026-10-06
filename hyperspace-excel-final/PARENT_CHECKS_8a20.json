@@ -1,0 +1,32 @@
+{
+  "candidate": "8a20d4c738fe1e9a3d05cf4ee983d4069d29202b",
+  "baseline": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "workbook_contract": "e8351dc60825586e6e74da4c0cad9a364199a8b1",
+  "scope": "Parent actual Python formal import and Godot headless targeted consumers. No full progression or rendered game UI claim.",
+  "files": {
+    "parent-default-vs-f9.json": {
+      "sha256": "f2fde1325f1d95da36743b4b69f273a0dc1491c672f3a22621557b6b778c0ec6",
+      "contents": "{\n  \"hyperspace_config.json\": {\n    \"old_values_equal\": true,\n    \"dictionary_order_differences\": [],\n    \"serialization_equal\": false,\n    \"new_roots\": [\n      \"auto_duration_crew_base\",\n      \"modernization_base_coefficient\",\n      \"auto_ticket_crew_base\"\n    ]\n  },\n  \"space_enemy_candidates.json\": {\n    \"old_values_equal\": true,\n    \"dictionary_order_differences\": [],\n    \"serialization_equal\": false,\n    \"new_roots\": []\n  },\n  \"space_enemy_routes.json\": {\n    \"old_values_equal\": true,\n    \"dictionary_order_differences\": [],\n    \"serialization_equal\": true,\n    \"new_roots\": []\n  },\n  \"space_enemy_reward_recipes.json\": {\n    \"old_values_equal\": true,\n    \"dictionary_order_differences\": [],\n    \"serialization_equal\": true,\n    \"new_roots\": []\n  },\n  \"space_enemy_reward_catalog.json\": {\n    \"old_values_equal\": true,\n    \"dictionary_order_differences\": [],\n    \"serialization_equal\": false,\n    \"new_roots\": []\n  }\n}"
+    },
+    "parent-tests-8a20.log": {
+      "sha256": "807a427c97fee26ad471ab2edef394a83d553c4ee68e3c2e987c6dabd7598da8",
+      "contents": "...........\n----------------------------------------------------------------------\nRan 11 tests in 3.786s\n\nOK\n"
+    },
+    "parent-edges-before.log": {
+      "sha256": "877171182d677ef86e882f43b06a6cc881460c24788ffbbb08f3c2146b50e39e",
+      "contents": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nEDGE dismantle51 config_valid=true reward11_valid=false\nEDGE quantized_single043 config_valid=false actual_quantized=0.043\nEDGE all_zero_extra_weights config_valid=false positive_base=1.0\n"
+    },
+    "parent-edges-8a20.log": {
+      "sha256": "cd56c788cbe589e658a309f11f0879ee906316c392f5558ebc1d502d9a357b1a",
+      "contents": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nHYPERSPACE_ENTITY_EDGES 10 checks 0 failures\n"
+    },
+    "parent-catalog-8a20.log": {
+      "sha256": "e136bf4e3b18020d53a4151d5b9844748a0b239a1ecbaafeb178733e293a2694",
+      "contents": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nHYPERSPACE_CATALOG_CONSUMERS 19 checks 0 failures\n"
+    },
+    "parent-godot-consumers-v2.log": {
+      "sha256": "fb98f19d9c161a327ab0e8f89169b6409d9fb03e184cc32fc1dcde149e31383f",
+      "contents": "Fontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nFontconfig error: No writable cache directories\nGodot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nHYPERSPACE_ENTITY_CONSUMERS 16 checks 0 failures\n"
+    }
+  }
+}
