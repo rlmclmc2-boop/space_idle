@@ -42,3 +42,6 @@ first-pass-input-and-readiness保留初始观察器路线初始化顺序/菜单�
 
 
 父真实clear60来源的845独立界面复验：[星系与四路线现代化](parent-real-clear60-independent-ui/README.md)。来源含跨版本前缀与45恢复，报告保留该边界。
+
+
+真实2核心究极生命周期补缺：[原生还原→现代化→再究极](ultimate-lifecycle-real-two-cores/README.md)。实际10→alpha20、核心2→0；保留观察器数值类型失败及跨JSON请求20/20.0拒绝边界。

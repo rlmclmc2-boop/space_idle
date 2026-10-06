@@ -1,0 +1,1267 @@
+{
+	"command_seq": 4.0,
+	"commit_disabled": false,
+	"core": 2.0,
+	"drone": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 2.0,
+		"forge_rng_state": "7335463139941275162",
+		"hanging_slots": 1.0,
+		"hangings": [],
+		"id": "space:1:2",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 10.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": true,
+		"ultimate_affix": {
+			"key": "global_critical_damage",
+			"locked": false,
+			"tier": 4.0,
+			"value": 0.256
+		},
+		"weapon": "laser"
+	},
+	"feedback": "报价可执行；条件变化后需重新预览。",
+	"inventory": {
+		"drones": {
+			"space:1:10": {
+				"affixes": [
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.018
+					},
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.012
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "6795950729409676157",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:10",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:11": {
+				"affixes": [
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.037
+					},
+					{
+						"key": "global_defence",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.075
+					},
+					{
+						"key": "global_critical_damage",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.206
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "8177203670080354894",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:11",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:12": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-2580461819891293157",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:12",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 25.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:13": {
+				"affixes": [
+					{
+						"key": "damage_missile",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.191
+					},
+					{
+						"key": "repeat_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.019
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "4013098081692300514",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:13",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 25.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:14": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-3325413551499523470",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:14",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 30.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:2": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"space:1:3": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 1.0,
+				"forge_rng_state": "2727297613325888486",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:5": {
+				"affixes": [
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.019
+					},
+					{
+						"key": "repeat_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.012
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 1.0,
+				"forge_rng_state": "8602226675588217357",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:5",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:8": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "9123398958476142905",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:8",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:1:9": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-57177382163621952",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:9",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:2:1": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "-7556211938283441793",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:2:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:2:2": {
+				"affixes": [
+					{
+						"key": "repeat_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.013
+					},
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.16
+					},
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.129
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "4406996084169618060",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:2:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 5.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "cannon"
+			},
+			"space:2:3": {
+				"affixes": [
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.566
+					},
+					{
+						"key": "global_critical_damage",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.08
+					},
+					{
+						"key": "attack_speed",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.035
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 3.0,
+				"forge_rng_state": "5654130464523979916",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:2:3",
+				"legendary": true,
+				"legendary_effect": {
+					"effect_id": "drone_master",
+					"parameters": {
+						"maximum_reduction": 0.589
+					}
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "legendary",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:3:1": {
+				"affixes": [
+					{
+						"key": "global_damage",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.051
+					},
+					{
+						"key": "global_defence",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.063
+					},
+					{
+						"key": "global_critical_damage",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.088
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "-5751087811691736804",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:3:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:3:2": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 1.0,
+				"forge_rng_state": "-2560972319506134956",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:3:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:3:3": {
+				"affixes": [
+					{
+						"key": "damage_missile",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.186
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-5553603209883898060",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:3:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 35.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "2",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:4:1": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-3740647362855214488",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:4:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:4:2": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "7333121937674294669",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:4:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "longLaser"
+			},
+			"space:4:3": {
+				"affixes": [
+					{
+						"key": "attack_speed",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.018
+					},
+					{
+						"key": "shield_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.135
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 1.0,
+				"forge_rng_state": "-3968735361738311346",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:4:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 40.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "3",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:5:1": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 1.0,
+				"forge_rng_state": "-1078852790536278985",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:5:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:5:3": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-501661025324108986",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:5:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 45.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "4",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:1": {
+				"affixes": [
+					{
+						"key": "shield_capacity",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.555
+					},
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.516
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "394829876944828211",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"space:6:10": {
+				"affixes": [
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.015
+					},
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.035
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 1.0,
+				"forge_rng_state": "4985827825531712807",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:10",
+				"legendary": true,
+				"legendary_effect": {
+					"effect_id": "black_hole",
+					"parameters": {
+						"damage_multiplier": 1.458
+					}
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "legendary",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:11": {
+				"affixes": [
+					{
+						"key": "critical_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.018
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-8259522875112186736",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:6:11",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:12": {
+				"affixes": [
+					{
+						"key": "damage_missile",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.191
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "935770457603572914",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:12",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:13": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-2575875414415406913",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:13",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:14": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "5542562669286389678",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:14",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:15": {
+				"affixes": [
+					{
+						"key": "global_critical_damage",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.095
+					},
+					{
+						"key": "chain_count",
+						"locked": false,
+						"tier": 2.0,
+						"value": 1.0
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "7540435635227411078",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:15",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:16": {
+				"affixes": [
+					{
+						"key": "shield_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.11
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "6892461151067431817",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:16",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:18": {
+				"affixes": [
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.188
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-6662105351980786314",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:18",
+				"legendary": true,
+				"legendary_effect": {
+					"effect_id": "drone_rebuild",
+					"parameters": {
+						"damage_and_defence_bonus": 0.807
+					}
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "legendary",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:19": {
+				"affixes": [
+					{
+						"key": "shield_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.118
+					},
+					{
+						"key": "damage_missile",
+						"locked": false,
+						"tier": 4.0,
+						"value": 0.593
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "-4897434824369655030",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:19",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:2": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "3162300426828468295",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 20.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "cannon"
+			},
+			"space:6:3": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "2291635379989245729",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 55.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:5": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "1197171628052828692",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:6:5",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:6": {
+				"affixes": [
+					{
+						"key": "global_defence",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.082
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "6262315662621178020",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:6:6",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:7": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "25070152215383111",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:6:7",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:8": {
+				"affixes": [
+					{
+						"key": "global_critical_damage",
+						"locked": false,
+						"tier": 2.0,
+						"value": 0.648
+					},
+					{
+						"key": "damage_missile",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.193
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 1.0,
+				"forge_rng_state": "-451802683289723060",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:6:8",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"space:6:9": {
+				"affixes": [
+					{
+						"key": "global_defence",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.05
+					}
+				],
+				"blue_source_bonus": true,
+				"forge_revision": 0.0,
+				"forge_rng_state": "6374865329512186134",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:6:9",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60.0,
+				"omen": false,
+				"origin_quality": "blue",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			}
+		},
+		"equipped": [
+			"space:2:3",
+			"space:6:10",
+			"space:1:2",
+			"space:6:15",
+			"space:6:8"
+		],
+		"favorites": [
+			"space:2:3",
+			"space:6:10",
+			"space:1:2",
+			"space:6:15",
+			"space:6:8"
+		],
+		"generation": 223.0,
+		"overflow": [],
+		"presets": [
+			{
+				"drone_ids": [
+					"space:2:3",
+					"space:6:10",
+					"space:1:2",
+					"space:6:15",
+					"space:6:8"
+				],
+				"hanging_loadouts": {
+					"space:1:2": [],
+					"space:2:3": [],
+					"space:6:10": [],
+					"space:6:15": [],
+					"space:6:8": []
+				},
+				"name": "Earned current fleet"
+			}
+		],
+		"reforge_count": 5.0,
+		"sealed": {
+
+		},
+		"warehouse": [
+			"space:1:2",
+			"space:2:3",
+			"space:4:3",
+			"space:1:11",
+			"space:5:3",
+			"space:1:13",
+			"space:3:3",
+			"space:1:10",
+			"space:1:14",
+			"space:1:5",
+			"space:3:1",
+			"space:1:12",
+			"space:2:2",
+			"space:1:8",
+			"space:1:9",
+			"space:5:1",
+			"space:1:3",
+			"space:2:1",
+			"space:3:2",
+			"space:4:1",
+			"space:4:2",
+			"space:6:1",
+			"space:6:2",
+			"space:6:3",
+			"space:6:5",
+			"space:6:6",
+			"space:6:7",
+			"space:6:8",
+			"space:6:9",
+			"space:6:10",
+			"space:6:11",
+			"space:6:12",
+			"space:6:13",
+			"space:6:14",
+			"space:6:15",
+			"space:6:16",
+			"space:6:18",
+			"space:6:19"
+		]
+	},
+	"label": "02-restore-quote",
+	"last_command": {
+		"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+		"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+		"seq": 3.0
+	},
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 263.0,
+		"zero_point_energy": 0.0
+	},
+	"quote": "消耗：究极核心 1（持有 2）\n抽取次数：1",
+	"request": {
+		"args": {
+
+		},
+		"command_seq": 4.0,
+		"drone_id": "space:1:2",
+		"expected_revision": 2.0,
+		"operation": "restore_ultimate",
+		"round_id": 6.0
+	},
+	"target": 20
+}
