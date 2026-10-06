@@ -14465,5 +14465,12 @@
     "params": "",
     "category": "galaxy",
     "note": "建设完成且仍有派遣船员时提示，玩家自行召回"
+  },
+  {
+    "key": "hyperspace.recent_interrupted_refund",
+    "text": "已付探索因读档中断 · {weapon} {level}级\n已退票 {refund} 超空间能量。",
+    "params": "{weapon},{level},{refund}",
+    "category": "hyperspace",
+    "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"
   }
 ]
