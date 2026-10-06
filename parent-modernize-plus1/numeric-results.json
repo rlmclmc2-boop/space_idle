@@ -1,0 +1,93 @@
+{
+  "scope": "Owner-approved game test results and original numeric engine output only. Test source code intentionally excluded; retained locally.",
+  "result": {
+    "commit": "83af25441ed34979ef530f5dfece62599d66f6c8",
+    "parent_build_fingerprint": "b1b3366cc24b0ae53b18e0a112499c1965355e941b2bb190161ca2e864ac73e2",
+    "fixtures": "21 checks0fail",
+    "natural_source_checks": "7checks0fail",
+    "actual_source_sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+    "actual_result": {
+      "checks": 7,
+      "failures": 0,
+      "receipts": [
+        {
+          "case": "actual white restored",
+          "cores_after": 1.0,
+          "cores_before": 2.0,
+          "material_after": {
+            "antiproton": 6.0,
+            "degenerate_matter": 4.0,
+            "glueball": 263.0,
+            "zero_point_energy": 0.0
+          },
+          "material_before": {
+            "antiproton": 6.0,
+            "degenerate_matter": 4.0,
+            "glueball": 263.0,
+            "zero_point_energy": 0.0
+          },
+          "quote": {
+            "cost": {
+              "degenerate_matter": 60.0
+            },
+            "draws": 1,
+            "error": "insufficient_materials",
+            "revision": 3.0
+          },
+          "result": {
+            "applied": false,
+            "cost": {
+              "degenerate_matter": 60.0
+            },
+            "draws": 1,
+            "error": "insufficient_materials"
+          }
+        },
+        {
+          "affixes": [
+            {
+              "key": "attack_speed",
+              "locked": false,
+              "tier": 5.0,
+              "value": 0.018
+            },
+            {
+              "key": "shield_capacity",
+              "locked": false,
+              "tier": 5.0,
+              "value": 0.135
+            }
+          ],
+          "case": "actual affixed quote only",
+          "drone": "space:4:3",
+          "level": 40.0,
+          "quote": {
+            "cost": {
+              "glueball": 390.0
+            },
+            "draws": 1,
+            "error": "insufficient_materials",
+            "revision": 1.0
+          }
+        }
+      ],
+      "scope": "Actual unmodified natural source, production domain commands in isolated copy; no resource/history injection; not native UI or progression timing",
+      "source_sha256": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+    },
+    "failed_attempts": [
+      "Initial direct Godot run omitted writable XDG and crashed before testing; fixed with isolated workspace data/cache/config.",
+      "First parent actual observer assumed wrong material key and error identifier, failed and then aborted; corrected from actual route config, retained original."
+    ],
+    "scope": "Production price/transaction checks and unmodified actual natural source in isolated memory, no injected resources/history; not complete new-price progression acceptance",
+    "files": {
+      "fixture-isolated.log": "c1576ad24120f045cb2dccb73351489ac1ff33acd67de1f8c0cf5385fee91e3c",
+      "actual-price-result.json": "3611728ae6a106eb23d58a7cc2e6d071a1dd727fe721903270bdb9ece960164a",
+      "actual_source_price.gd": "78fdb1ff8edd9226d4ef0a6eac6e11e89267a20e431afe32a590b86d57f8e09c",
+      "actual_source_price.failed.gd": "25a5e1676c903cb83c65413b832ca48049ff5af5fe30a75d1aae499b1559a9d4",
+      "actual-price.failed.log": "acf86c1f1b433b30c2bb2c3944fce23798608cd412ae2d89aeb64f6c0950fff0",
+      "actual-price.log": "025234751462a89e6ead8b28cc85a7928def2c5f9c7c501fe134c9563edbbadd",
+      "source-actual-two-cores.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+    }
+  },
+  "numeric_engine_output": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org\n\nMODERNIZATION_RECEIPTS [{\"case\":\"zero affixes baseline1\",\"material_after\":940,\"material_before\":1000,\"quote\":{\"cost\":{\"degenerate_matter\":60.0},\"draws\":1,\"error\":\"\",\"revision\":0},\"result\":{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"degenerate_matter\":60.0},\"draws\":1,\"drone_id\":\"price-fixture\",\"error\":\"\",\"index\":-1,\"operation\":\"modernize\",\"outcome\":true}},{\"case\":\"one T5 affix baseline1 plus0.5\",\"material_after\":910,\"material_before\":1000,\"quote\":{\"cost\":{\"degenerate_matter\":90.0},\"draws\":1,\"error\":\"\",\"revision\":0},\"result\":{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"degenerate_matter\":90.0},\"draws\":1,\"drone_id\":\"price-fixture\",\"error\":\"\",\"index\":-1,\"operation\":\"modernize\",\"outcome\":true}}]\nMODERNIZATION_RESULT checks=21 failures=0\n"
+}
