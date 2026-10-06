@@ -1,0 +1,6 @@
+{
+  "paid_quote_label_contains_actual190": true,
+  "actual_quote_label": "本次消耗：胶球 190（持有 73）。再次改造前请重新预览。",
+  "actual_feedback_label": "改造已完成。",
+  "explanation": "原观察脚本误查feedback字段；实际支出摘要位于quote_label，已核对保存原生截图及实际快照。未再执行支付，保留原始失败。"
+}

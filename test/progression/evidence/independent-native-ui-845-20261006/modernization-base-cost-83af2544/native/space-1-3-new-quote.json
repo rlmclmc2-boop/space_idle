@@ -1,0 +1,61 @@
+{
+	"command_seq": 4.0,
+	"cores": 2.0,
+	"disabled": false,
+	"drone": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 1.0,
+		"forge_rng_state": "2727297613325888486",
+		"hanging_slots": 0.0,
+		"hangings": [],
+		"id": "space:1:3",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 15.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": false,
+		"ultimate_affix": {
+
+		},
+		"weapon": "missile"
+	},
+	"feedback": "报价可执行；条件变化后需重新预览。",
+	"id": "space:1:3",
+	"label": "space-1-3-new-quote",
+	"last_command": {
+		"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+		"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+		"seq": 3.0
+	},
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 263.0,
+		"zero_point_energy": 0.0
+	},
+	"preview": {
+		"cost": {
+			"glueball": 190.0
+		},
+		"draws": 1,
+		"error": "",
+		"revision": 1.0
+	},
+	"quote": "现代化：等级 15 → 60\n词条效果：\n此无人机没有词条。\n消耗：胶球 190（持有 263）\n执行次数：1",
+	"request": {
+		"args": {
+			"target_level": 60
+		},
+		"command_seq": 4.0,
+		"drone_id": "space:1:3",
+		"expected_revision": 1.0,
+		"operation": "modernize",
+		"round_id": 6.0
+	}
+}

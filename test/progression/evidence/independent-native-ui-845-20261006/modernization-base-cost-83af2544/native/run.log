@@ -1,0 +1,60 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5205:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5728:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:90)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:247)
+
+CHECK true real parent source formally loaded unchanged
+CHECK true actual card found space:2:2
+CHECK true native modernization space:2:2 actual highlighted menu Enter
+CHECK true new quote read-only space:2:2
+CHECK true expected actual availability or ultimate restriction space:2:2 insufficient_materials
+CHECK true target from actual route history space:2:2
+CHECK true coefficient+1 actual amount space:2:2
+CHECK true native quote displays actual amount space:2:2
+CHECK true blocked native payment space:2:2
+CHECK true blocked quote no debit no mutation space:2:2
+CHECK true actual card found space:2:1
+CHECK true native modernization space:2:1 actual highlighted menu Enter
+CHECK true new quote read-only space:2:1
+CHECK true expected actual availability or ultimate restriction space:2:1 insufficient_materials
+CHECK true target from actual route history space:2:1
+CHECK true coefficient+1 actual amount space:2:1
+CHECK true native quote displays actual amount space:2:1
+CHECK true blocked native payment space:2:1
+CHECK true blocked quote no debit no mutation space:2:1
+CHECK true actual card found space:1:2
+CHECK true native modernization space:1:2 actual highlighted menu Enter
+CHECK true new quote read-only space:1:2
+CHECK true expected actual availability or ultimate restriction space:1:2 ultimate_modification_forbidden
+CHECK true blocked native payment space:1:2
+CHECK true blocked quote no debit no mutation space:1:2
+CHECK true actual card found space:1:3
+CHECK true native modernization space:1:3 actual highlighted menu Enter
+CHECK true new quote read-only space:1:3
+CHECK true expected actual availability or ultimate restriction space:1:3 
+CHECK true target from actual route history space:1:3
+CHECK true coefficient+1 actual amount space:1:3
+CHECK true native quote displays actual amount space:1:3
+CHECK true real white drone new payment enabled
+CHECK true actual glueball263→73 debit190
+CHECK true actual white15→60 one revision
+CHECK true no affix or random state reroll
+CHECK true unrelated materials cores histories unchanged
+CHECK true unrelated real drones unchanged
+CHECK true repeat UI cannot debit again
+CHECK true exact original request returns cached190 receipt no debit
+CHECK false success native feedback shows actual190 spent
+CHECK true parent real source bytes unchanged
+MODERNIZATION_NATIVE failures=1

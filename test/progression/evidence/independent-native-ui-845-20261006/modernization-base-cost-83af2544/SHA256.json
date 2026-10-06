@@ -1,0 +1,23 @@
+{
+  "build-verification.json": "1de771d8909247d8ffd0b157e23ddd100ddb35e69030bc419986ad76499cd8d4",
+  "build.log": "645d4ee2c364001e1ebe2edd02a55f0a24d4fa9e4ecab257628dee596b5436bb",
+  "display-observer-correction.json": "e11b21b2094a35997be26cef1212ec4bf2d604d8951941a2ebd99f15f2be1660",
+  "import.log": "d03c735a964ba9cf54856f94a0eb88f26288bec574c6599a8e228486e5036e29",
+  "independent_modernization_cost.gd": "47745541f2a886ad88a96e03c054187bf6e46a4c846fa7cb682ef5c412fac606",
+  "native/actual-after-paid-checkpoint.json": "9999eba87f6c47b9880c3213cc858e502493ef9376873378d82dfe2dfbf834ad",
+  "native/audit.json": "001a25310da9783b3a064424dcb51b5639c3d901f30a04e25e71b739de081b10",
+  "native/run.log": "e88e0ad28562432fc10ae75fa9ca6b9a35573cef50e6650e4f90d225181f1831",
+  "native/space-1-2-new-quote-screen.png": "992b7c4df4b773c0b0375f52e064a2f4cdd6e346d3a1aba85b478ae84c485b99",
+  "native/space-1-2-new-quote.json": "12712de4e6264e53bf36161723b47eebc039857e2125d74fda95ad487592e734",
+  "native/space-1-3-new-quote-screen.png": "da6c545b89f795ae9f886e9d4d0b1fca2418e08a1ca7859ea4cd1d663b441f18",
+  "native/space-1-3-new-quote.json": "3724bcb550b8ade26a55191fe4a3680a934a8d7e0cce2ab8b1e7077f286aaee0",
+  "native/space-2-1-new-quote-screen.png": "cbe14946f89598cf091276f57d67b5ad63ab5e9c58457939d3b5c04433ab2ba2",
+  "native/space-2-1-new-quote.json": "cbd94c10675e1f0ffec0062f0447de3dcb68e9f8aa434189e0202370b262d6bc",
+  "native/space-2-2-new-quote-screen.png": "714659489cddc3c69724106241ab52e69ca9027ad0929c38ff2e1efa80359165",
+  "native/space-2-2-new-quote.json": "57618da15ac0faaceaec5660b1251bae19f9373f5a70dcda796eb99bd46fde1e",
+  "native/white-paid-190-screen.png": "3b5ac584195048b1177eab75e7bdd42db6f8e08c01118aeebb4dc4e080273bc9",
+  "native/white-paid-190.json": "ab94ffc2d30cca98165d68b50636a050c96b532c6eb424b50553d080784d26b0",
+  "qa-manifest.json": "4528903155b46b048fe98a12c9f4fec64c054b5fbaf7a7f7cdb1e2f7b520c379",
+  "sources/save_periodic_185401.json": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887",
+  "现代化基础费原生界面核验报告.md": "7d417344ecfb83afee463980fd0b437399c93e419adb8bb9ca507cc0668c1507"
+}

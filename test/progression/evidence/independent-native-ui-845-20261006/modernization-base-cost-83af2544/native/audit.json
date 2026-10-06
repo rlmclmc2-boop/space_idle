@@ -1,0 +1,907 @@
+{
+	"actions": [
+		{
+			"disabled": false,
+			"label": "native hyperspace navigation",
+			"native": true,
+			"point": [
+				464.893463134766,
+				618.662414550781
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse space:2:2",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select space:2:2",
+			"native": true,
+			"point": [
+				672.898742675781,
+				518.832763671875
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:2:2",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization space:2:2 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization space:2:2",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native actual new quote space:2:2",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "native blocked commit space:2:2",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse space:2:1",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native page back",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select space:2:1",
+			"native": true,
+			"point": [
+				914.597778320312,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:2:1",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization space:2:1 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization space:2:1",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native actual new quote space:2:1",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "native blocked commit space:2:1",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse space:1:2",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native page back",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native page back",
+			"native": true,
+			"point": [
+				590.794860839844,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select space:1:2",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:2",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization space:1:2 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization space:1:2",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native actual new quote space:1:2",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "native blocked commit space:1:2",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native warehouse space:1:3",
+			"native": true,
+			"point": [
+				851.559204101562,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native next actual page",
+			"native": true,
+			"point": [
+				750.697509765625,
+				671.389343261719
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native select space:1:3",
+			"native": true,
+			"point": [
+				672.898742675781,
+				339.209777832031
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native forge space:1:3",
+			"native": true,
+			"point": [
+				1051.74499511719,
+				182.347229003906
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native modernization space:1:3 open actual native menu",
+			"native": true,
+			"point": [
+				951.805847167969,
+				391.804870605469
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"index": 9,
+			"label": "native modernization space:1:3",
+			"native_menu_window": -1,
+			"selected": 9
+		},
+		{
+			"disabled": false,
+			"label": "native actual new quote space:1:3",
+			"native": true,
+			"point": [
+				590.794860839844,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": false,
+			"label": "native pay actual nonzero white modernization",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		},
+		{
+			"disabled": true,
+			"label": "native repeat disabled paid quote",
+			"native": true,
+			"point": [
+				748.852478027344,
+				426.560699462891
+			],
+			"visible": true,
+			"window_id": 0
+		}
+	],
+	"checks": [
+		{
+			"label": "real parent source formally loaded unchanged",
+			"ok": true
+		},
+		{
+			"label": "actual card found space:2:2",
+			"ok": true
+		},
+		{
+			"label": "native modernization space:2:2 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "new quote read-only space:2:2",
+			"ok": true
+		},
+		{
+			"label": "expected actual availability or ultimate restriction space:2:2 insufficient_materials",
+			"ok": true
+		},
+		{
+			"label": "target from actual route history space:2:2",
+			"ok": true
+		},
+		{
+			"label": "coefficient+1 actual amount space:2:2",
+			"ok": true
+		},
+		{
+			"label": "native quote displays actual amount space:2:2",
+			"ok": true
+		},
+		{
+			"label": "blocked native payment space:2:2",
+			"ok": true
+		},
+		{
+			"label": "blocked quote no debit no mutation space:2:2",
+			"ok": true
+		},
+		{
+			"label": "actual card found space:2:1",
+			"ok": true
+		},
+		{
+			"label": "native modernization space:2:1 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "new quote read-only space:2:1",
+			"ok": true
+		},
+		{
+			"label": "expected actual availability or ultimate restriction space:2:1 insufficient_materials",
+			"ok": true
+		},
+		{
+			"label": "target from actual route history space:2:1",
+			"ok": true
+		},
+		{
+			"label": "coefficient+1 actual amount space:2:1",
+			"ok": true
+		},
+		{
+			"label": "native quote displays actual amount space:2:1",
+			"ok": true
+		},
+		{
+			"label": "blocked native payment space:2:1",
+			"ok": true
+		},
+		{
+			"label": "blocked quote no debit no mutation space:2:1",
+			"ok": true
+		},
+		{
+			"label": "actual card found space:1:2",
+			"ok": true
+		},
+		{
+			"label": "native modernization space:1:2 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "new quote read-only space:1:2",
+			"ok": true
+		},
+		{
+			"label": "expected actual availability or ultimate restriction space:1:2 ultimate_modification_forbidden",
+			"ok": true
+		},
+		{
+			"label": "blocked native payment space:1:2",
+			"ok": true
+		},
+		{
+			"label": "blocked quote no debit no mutation space:1:2",
+			"ok": true
+		},
+		{
+			"label": "actual card found space:1:3",
+			"ok": true
+		},
+		{
+			"label": "native modernization space:1:3 actual highlighted menu Enter",
+			"ok": true
+		},
+		{
+			"label": "new quote read-only space:1:3",
+			"ok": true
+		},
+		{
+			"label": "expected actual availability or ultimate restriction space:1:3 ",
+			"ok": true
+		},
+		{
+			"label": "target from actual route history space:1:3",
+			"ok": true
+		},
+		{
+			"label": "coefficient+1 actual amount space:1:3",
+			"ok": true
+		},
+		{
+			"label": "native quote displays actual amount space:1:3",
+			"ok": true
+		},
+		{
+			"label": "real white drone new payment enabled",
+			"ok": true
+		},
+		{
+			"label": "actual glueball263→73 debit190",
+			"ok": true
+		},
+		{
+			"label": "actual white15→60 one revision",
+			"ok": true
+		},
+		{
+			"label": "no affix or random state reroll",
+			"ok": true
+		},
+		{
+			"label": "unrelated materials cores histories unchanged",
+			"ok": true
+		},
+		{
+			"label": "unrelated real drones unchanged",
+			"ok": true
+		},
+		{
+			"label": "repeat UI cannot debit again",
+			"ok": true
+		},
+		{
+			"label": "exact original request returns cached190 receipt no debit",
+			"ok": true
+		},
+		{
+			"label": "success native feedback shows actual190 spent",
+			"ok": false
+		},
+		{
+			"label": "parent real source bytes unchanged",
+			"ok": true
+		}
+	],
+	"failures": [
+		{
+			"label": "success native feedback shows actual190 spent",
+			"ok": false
+		}
+	],
+	"snapshots": [
+		{
+			"command_seq": 4.0,
+			"cores": 2.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [
+					{
+						"key": "repeat_chance",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.013
+					},
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.16
+					},
+					{
+						"key": "armour_capacity",
+						"locked": false,
+						"tier": 5.0,
+						"value": 0.129
+					}
+				],
+				"blue_source_bonus": false,
+				"forge_revision": 0.0,
+				"forge_rng_state": "4406996084169618060",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:2:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 5.0,
+				"omen": false,
+				"origin_quality": "gold",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "cannon"
+			},
+			"feedback": "材料不足；报价显示实际所需材料。",
+			"id": "space:2:2",
+			"label": "space-2-2-new-quote",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3.0
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"antiproton": 150.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 0.0
+			},
+			"quote": "现代化：等级 5 → 20\n词条效果：\n全局连发概率：1.3% → 1.3%\n复合装甲耐久值：16.8% → 34.9%\n复合装甲耐久值：13.5% → 28.2%\n消耗：反质子 150（持有 6）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:2:2",
+				"expected_revision": 0.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			}
+		},
+		{
+			"command_seq": 4.0,
+			"cores": 2.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "-7556211938283441793",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:2:1",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "laser"
+			},
+			"feedback": "材料不足；报价显示实际所需材料。",
+			"id": "space:2:1",
+			"label": "space-2-1-new-quote",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3.0
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"degenerate_matter": 60.0
+				},
+				"draws": 1,
+				"error": "insufficient_materials",
+				"revision": 2.0
+			},
+			"quote": "现代化：等级 15 → 20\n词条效果：\n此无人机没有词条。\n消耗：简并态物质 60（持有 4）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:2:1",
+				"expected_revision": 2.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			}
+		},
+		{
+			"command_seq": 4.0,
+			"cores": 2.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "7335463139941275162",
+				"hanging_slots": 1.0,
+				"hangings": [],
+				"id": "space:1:2",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 10.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": true,
+				"ultimate_affix": {
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4.0,
+					"value": 0.256
+				},
+				"weapon": "laser"
+			},
+			"feedback": "究极状态只允许还原或拆解。",
+			"id": "space:1:2",
+			"label": "space-1-2-new-quote",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3.0
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+
+				},
+				"draws": 0,
+				"error": "ultimate_modification_forbidden",
+				"revision": 2.0
+			},
+			"quote": "现代化：等级 10 → 20\n词条效果：\n全局暴击伤害：34.3% → 55.9%\n消耗：无材料消耗\n执行次数：0",
+			"request": {
+				"args": {
+					"target_level": 20
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:2",
+				"expected_revision": 2.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			}
+		},
+		{
+			"command_seq": 4.0,
+			"cores": 2.0,
+			"disabled": false,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 1.0,
+				"forge_rng_state": "2727297613325888486",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 15.0,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "1",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"feedback": "报价可执行；条件变化后需重新预览。",
+			"id": "space:1:3",
+			"label": "space-1-3-new-quote",
+			"last_command": {
+				"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+				"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+				"seq": 3.0
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 263.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"cost": {
+					"glueball": 190.0
+				},
+				"draws": 1,
+				"error": "",
+				"revision": 1.0
+			},
+			"quote": "现代化：等级 15 → 60\n词条效果：\n此无人机没有词条。\n消耗：胶球 190（持有 263）\n执行次数：1",
+			"request": {
+				"args": {
+					"target_level": 60
+				},
+				"command_seq": 4.0,
+				"drone_id": "space:1:3",
+				"expected_revision": 1.0,
+				"operation": "modernize",
+				"round_id": 6.0
+			}
+		},
+		{
+			"command_seq": 5.0,
+			"cores": 2.0,
+			"disabled": true,
+			"drone": {
+				"affixes": [],
+				"blue_source_bonus": false,
+				"forge_revision": 2.0,
+				"forge_rng_state": "2727297613325888486",
+				"hanging_slots": 0.0,
+				"hangings": [],
+				"id": "space:1:3",
+				"legendary": false,
+				"legendary_effect": {
+
+				},
+				"level": 60,
+				"omen": false,
+				"origin_quality": "white",
+				"planet_id": "6",
+				"preserved_hanging_slots": 0.0,
+				"ultimate": false,
+				"ultimate_affix": {
+
+				},
+				"weapon": "missile"
+			},
+			"feedback": "改造已完成。",
+			"id": "space:1:3",
+			"label": "white-paid-190",
+			"last_command": {
+				"fingerprint": "{\"args\":{\"target_level\":60},\"drone_id\":\"space:1:3\",\"expected_revision\":1.0,\"operation\":\"modernize\"}",
+				"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"glueball\":190.0},\"draws\":1,\"drone_id\":\"space:1:3\",\"error\":\"\",\"index\":-1,\"operation\":\"modernize\",\"outcome\":true}",
+				"seq": 4
+			},
+			"materials": {
+				"antiproton": 6.0,
+				"degenerate_matter": 4.0,
+				"glueball": 73.0,
+				"zero_point_energy": 0.0
+			},
+			"preview": {
+				"affixes_changed": false,
+				"applied": true,
+				"cost": {
+					"glueball": 190
+				},
+				"draws": 1,
+				"drone_id": "space:1:3",
+				"error": "",
+				"index": -1,
+				"operation": "modernize",
+				"outcome": true
+			},
+			"quote": "本次消耗：胶球 190（持有 73）。再次改造前请重新预览。",
+			"request": {
+
+			}
+		}
+	],
+	"source_commit": "83af25441ed34979ef530f5dfece62599d66f6c8",
+	"source_sha": "2f61c5c26094236fc4a293854deb9edb04a08c3105d0a3f40e100258d5976887"
+}

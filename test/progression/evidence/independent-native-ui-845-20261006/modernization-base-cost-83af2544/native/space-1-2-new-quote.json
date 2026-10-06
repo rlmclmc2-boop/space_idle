@@ -1,0 +1,64 @@
+{
+	"command_seq": 4.0,
+	"cores": 2.0,
+	"disabled": true,
+	"drone": {
+		"affixes": [],
+		"blue_source_bonus": false,
+		"forge_revision": 2.0,
+		"forge_rng_state": "7335463139941275162",
+		"hanging_slots": 1.0,
+		"hangings": [],
+		"id": "space:1:2",
+		"legendary": false,
+		"legendary_effect": {
+
+		},
+		"level": 10.0,
+		"omen": false,
+		"origin_quality": "white",
+		"planet_id": "1",
+		"preserved_hanging_slots": 0.0,
+		"ultimate": true,
+		"ultimate_affix": {
+			"key": "global_critical_damage",
+			"locked": false,
+			"tier": 4.0,
+			"value": 0.256
+		},
+		"weapon": "laser"
+	},
+	"feedback": "究极状态只允许还原或拆解。",
+	"id": "space:1:2",
+	"label": "space-1-2-new-quote",
+	"last_command": {
+		"fingerprint": "{\"args\":{},\"drone_id\":\"space:6:8\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+		"result_json": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:6:8\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+		"seq": 3.0
+	},
+	"materials": {
+		"antiproton": 6.0,
+		"degenerate_matter": 4.0,
+		"glueball": 263.0,
+		"zero_point_energy": 0.0
+	},
+	"preview": {
+		"cost": {
+
+		},
+		"draws": 0,
+		"error": "ultimate_modification_forbidden",
+		"revision": 2.0
+	},
+	"quote": "现代化：等级 10 → 20\n词条效果：\n全局暴击伤害：34.3% → 55.9%\n消耗：无材料消耗\n执行次数：0",
+	"request": {
+		"args": {
+			"target_level": 20
+		},
+		"command_seq": 4.0,
+		"drone_id": "space:1:2",
+		"expected_revision": 2.0,
+		"operation": "modernize",
+		"round_id": 6.0
+	}
+}
