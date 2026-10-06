@@ -1,0 +1,15 @@
+{
+  "base": "caa80f59aef5dcf1caab20e40e17b39a8a27d1e1",
+  "commit": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+  "branch": "review/hyperspace-tour-salvage-unified",
+  "changed_files": [
+    "test/progression/hyperspace_checkpoint.gd",
+    "test/progression/hyperspace_longrun.gd",
+    "test/progression/hyperspace_player_policy.gd"
+  ],
+  "checks": 13,
+  "failures": 0,
+  "test_scope": "Isolated QA selection/cadence/restore/rejection/full-storage fixtures with fake production transaction adapter. Actual production transactions are separately proven by the unchanged6abe native A/B, not by this fixture. New unified policy has not yet run a native A/B or campaign.",
+  "first_fixture_failure": "Missing global NumberFormat dependency and fixture best-backup score expectation; original failed log retained; added original global dependency/editor scan and strengthened explicit fixture backup score; no valid assertion relaxed to fit production.",
+  "no_production_changes": true
+}

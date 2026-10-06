@@ -1,0 +1,162 @@
+{
+  "terminal_x1_equal": true,
+  "main_rng_equal": true,
+  "resources_equal": false,
+  "loadout_equal": true,
+  "journey_equal": true,
+  "safe_farm_equal": true,
+  "save_differences": [
+    {
+      "path": "/save/chronoSavedAt",
+      "arm0": 1791294693.35688,
+      "arm1": 1791295251.42923
+    },
+    {
+      "path": "/save/hightechSavedAt",
+      "arm0": 1791294693.35688,
+      "arm1": 1791295251.42923
+    },
+    {
+      "path": "/save/hyperspace/command_seq",
+      "arm0": 4,
+      "arm1": 6
+    },
+    {
+      "path": "/save/hyperspace/hanging_modules/distributed_algorithm/unlocked",
+      "arm0": false,
+      "arm1": true
+    },
+    {
+      "path": "/save/hyperspace/hanging_modules/resource_collector/unlocked",
+      "arm0": false,
+      "arm1": true
+    },
+    {
+      "path": "/save/hyperspace/inventory/drones/space:1:4",
+      "kind": "missing_key"
+    },
+    {
+      "path": "/save/hyperspace/inventory/drones/space:1:8",
+      "kind": "missing_key"
+    },
+    {
+      "path": "/save/hyperspace/inventory/generation",
+      "arm0": 17,
+      "arm1": 19
+    },
+    {
+      "path": "/save/hyperspace/inventory/warehouse",
+      "kind": "length",
+      "arm0": 6,
+      "arm1": 4
+    },
+    {
+      "path": "/save/hyperspace/inventory/warehouse/1",
+      "arm0": "space:1:4",
+      "arm1": "space:1:5"
+    },
+    {
+      "path": "/save/hyperspace/inventory/warehouse/2",
+      "arm0": "space:1:5",
+      "arm1": "space:1:6"
+    },
+    {
+      "path": "/save/hyperspace/inventory/warehouse/3",
+      "arm0": "space:1:6",
+      "arm1": "space:1:7"
+    },
+    {
+      "path": "/save/hyperspace/last_command/fingerprint",
+      "arm0": "{\"args\":{},\"drone_id\":\"space:1:5\",\"expected_revision\":0,\"operation\":\"add_affix\"}",
+      "arm1": "{\"args\":{},\"drone_id\":\"space:1:8\",\"expected_revision\":0,\"operation\":\"dismantle\"}"
+    },
+    {
+      "path": "/save/hyperspace/last_command/result_json",
+      "arm0": "{\"affixes_changed\":true,\"applied\":true,\"cost\":{\"degenerate_matter\":1.0},\"draws\":1,\"drone_id\":\"space:1:5\",\"error\":\"\",\"index\":-1,\"operation\":\"add_affix\",\"outcome\":true}",
+      "arm1": "{\"applied\":true,\"cost\":{},\"draws\":1,\"drone_id\":\"space:1:8\",\"error\":\"\",\"operation\":\"dismantle\",\"outcome\":true}"
+    },
+    {
+      "path": "/save/hyperspace/last_command/seq",
+      "arm0": 3,
+      "arm1": 5
+    },
+    {
+      "path": "/save/hyperspace/materials/degenerate_matter",
+      "arm0": 13,
+      "arm1": 15
+    },
+    {
+      "path": "/save/resources/1",
+      "arm0": 6245063407693.0,
+      "arm1": 4440795668046.0
+    }
+  ],
+  "arm0_modules": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "extra_storage": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "gem_refiner": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "hyperspace_charge": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "resource_collector": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    }
+  },
+  "arm1_modules": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "extra_storage": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "gem_refiner": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "hyperspace_charge": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "resource_collector": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    }
+  },
+  "source_equipped": [
+    "space:1:5",
+    "space:1:2"
+  ],
+  "arm0_equipped": [
+    "space:1:5",
+    "space:1:2",
+    "space:1:7"
+  ],
+  "arm1_equipped": [
+    "space:1:5",
+    "space:1:2",
+    "space:1:7"
+  ]
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "after": {
+      "cores": 0,
+      "energy": 75643.6666699036,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 10,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "resources": {
+        "1": 6523689219939.0,
+        "2": 7904380853.90746
+      }
+    },
+    "before": {
+      "cores": 0,
+      "energy": 75643.6666699036,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 9,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "resources": {
+        "1": 6523689219939.0,
+        "2": 7904380853.90746
+      },
+      "round": 1
+    },
+    "choice": {
+      "domain": true,
+      "idle_salvage": true,
+      "kind": "space_forge",
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "reason": "Earned idle white drone; protected fleet and one backup per weapon retained; at most three per round and one per 300 seconds",
+      "request": {
+        "args": {},
+        "command_seq": 4,
+        "drone_id": "space:1:4",
+        "expected_revision": 0,
+        "operation": "dismantle",
+        "round_id": 1
+      },
+      "salvage_budget": {
+        "next_at": 0.0,
+        "round": 1,
+        "used": 0
+      }
+    },
+    "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+    "kind": "domain_action",
+    "ok": true,
+    "page": 9,
+    "policy": "hyperspace-player-v17-budgeted-idle-salvage",
+    "stage": 21,
+    "x1_seconds": 42930.2666683443
+  },
+  {
+    "after": {
+      "cores": 0,
+      "energy": 1093.66667085494,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 15,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "resources": {
+        "1": 12199112885326.0,
+        "2": 10462583373.045
+      }
+    },
+    "before": {
+      "cores": 0,
+      "energy": 1093.66667085494,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 14,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "resources": {
+        "1": 12199112885326.0,
+        "2": 10462583373.045
+      },
+      "round": 1
+    },
+    "choice": {
+      "domain": true,
+      "idle_salvage": true,
+      "kind": "space_forge",
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "reason": "Earned idle white drone; protected fleet and one backup per weapon retained; at most three per round and one per 300 seconds",
+      "request": {
+        "args": {},
+        "command_seq": 5,
+        "drone_id": "space:1:8",
+        "expected_revision": 0,
+        "operation": "dismantle",
+        "round_id": 1
+      },
+      "salvage_budget": {
+        "next_at": 43230.2666683443,
+        "round": 1,
+        "used": 1
+      }
+    },
+    "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+    "kind": "domain_action",
+    "ok": true,
+    "page": 9,
+    "policy": "hyperspace-player-v17-budgeted-idle-salvage",
+    "stage": 21,
+    "x1_seconds": 46275.2666690258
+  }
+]

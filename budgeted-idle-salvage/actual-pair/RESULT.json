@@ -1,0 +1,121 @@
+{
+  "same_code_fingerprint": "5f123fbc05ec023decc5fe34bdf717a0f2fa8790fb73157e783aae27947cb08b",
+  "same_data_sha256": "86634b4b91b7a0437f1ce4de557b549be04da170c59b177c00a4c504848a354c",
+  "same_source_sha256": "b8759d9e4d439f3c834258f4aecece2c3a3c9c25710ae4390afae3fc565f3f4c",
+  "arms": [
+    {
+      "arm": 0,
+      "checkpoint_enabled": false,
+      "enabled_field_present": true,
+      "actual_terminal_x1_seconds": 46367.8833357113,
+      "source_x1_seconds": 42767.8833349779,
+      "elapsed_x1_seconds": 3600.000000733402,
+      "budget": {
+        "next_at": 0.0,
+        "round": -1,
+        "used": 0
+      },
+      "actions_count": 1244,
+      "domain_action_count": 6,
+      "salvage_count": 0,
+      "successful_salvage_count": 0,
+      "all_forge_count": 0,
+      "warehouse_count": 6,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 13,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "hanging_modules": {
+        "distributed_algorithm": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "extra_storage": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "gem_refiner": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "hyperspace_charge": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "resource_collector": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        }
+      },
+      "input_failure": {},
+      "progress_guard": {},
+      "script_errors": 2,
+      "terminal_marker_present": true,
+      "checkpoint_sha256": "5454974b437f0d6ea02c354ce6dd71949b9a6ecafa2078d642d6fef610b41183"
+    },
+    {
+      "arm": 1,
+      "checkpoint_enabled": true,
+      "enabled_field_present": true,
+      "actual_terminal_x1_seconds": 46367.8833357113,
+      "source_x1_seconds": 42767.8833349779,
+      "elapsed_x1_seconds": 3600.000000733402,
+      "budget": {
+        "next_at": 46575.2666690258,
+        "round": 1,
+        "used": 2
+      },
+      "actions_count": 1247,
+      "domain_action_count": 8,
+      "salvage_count": 2,
+      "successful_salvage_count": 2,
+      "all_forge_count": 2,
+      "warehouse_count": 4,
+      "materials": {
+        "antiproton": 0,
+        "degenerate_matter": 15,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "hanging_modules": {
+        "distributed_algorithm": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": true
+        },
+        "extra_storage": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "gem_refiner": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "hyperspace_charge": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": false
+        },
+        "resource_collector": {
+          "exp": 0.0,
+          "level": 0,
+          "unlocked": true
+        }
+      },
+      "input_failure": {},
+      "progress_guard": {},
+      "script_errors": 2,
+      "terminal_marker_present": true,
+      "checkpoint_sha256": "ad4a0eeaa3a396f4d788286258aa105e6d181138d5dd5ed64158d5b17da033d5"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Identifier "NumberFormat" not declared in the current scope.
+          at: GDScript::reload (res://scripts/growth_number.gd:85)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://scripts/hyperspace_main_return.gd:0)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://scripts/hyperspace_permissions.gd:0)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://qa/hyperspace_player_policy.gd:0)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://test.gd:0)
+ERROR: Failed to load script "res://test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:2907)
+FAIL Protected objects, best unequipped backup, other weapon backup and blue all retained
+TOUR_SALVAGE_TEST checks=13 failures=1
