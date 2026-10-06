@@ -130,7 +130,7 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 				if int(key)<=int(g.profile.highestLevel):target=maxi(target,int(key))
 			if target<=int(d.level):return error("no_new_record")
 			if args.has("target_level") and args.target_level!=target:return error("stale_modernization_target")
-			var coefficient:=0.0
+			var coefficient:=1.0
 			for a in d.affixes:coefficient+=float(c.modernization_tier_weights[str(int(a.tier))])
 			var raw:=float(c.modernization_cost_base)*(1.0+float(target-int(c.material_reward_start_level))/float(c.modernization_level_step))*coefficient*(float(c.modernization_legendary_multiplier) if d.legendary else 1.0)
 			cost={c.routes[route].material:roundf(raw/float(c.modernization_cost_base))*float(c.modernization_cost_base)}
