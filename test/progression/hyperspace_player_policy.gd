@@ -53,8 +53,8 @@ func safe_main_boundary(g)->bool:
  for enemy in g.enemies:
   if g.N.compare(enemy.hp,0)>0:return false
  return main_boundary(g)!=last_manual_boundary
-func pending_manual_action(g,now:float)->Dictionary:
- if manual_pending.is_empty() or not safe_main_boundary(g) or not g.profile.hyperspace.active.is_empty():return {}
+func pending_manual_action(g,now:float,require_main_boundary:bool=true)->Dictionary:
+ if manual_pending.is_empty() or (require_main_boundary and not safe_main_boundary(g)) or not g.profile.hyperspace.active.is_empty():return {}
  var choice:Dictionary=manual_pending
  if choice.has("paid_affix_supply"):
   var needed:Dictionary=growth_supply(g);var planned:Dictionary=choice.paid_affix_supply
@@ -66,8 +66,15 @@ func pending_manual_action(g,now:float)->Dictionary:
  if not g.manual_hyperspace.production_accepted or not g.hyperspace.eligible_level(g,str(choice.route),int(choice.level)) or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):return {}
  return choice.duplicate(true)
 func manual_started(g,route:String,level:int,now:float)->void:
+ var planned:Dictionary=manual_pending.duplicate(true)
+ if bool(planned.get("queued_for_hold60",false)):
+  var journey:Dictionary=g.manual_hyperspace.return_journey
+  last_manual_boundary=str([g.profile.hyperspace.round_id,journey.get("stage",g.stage),journey.get("groupIndex",g.group_index)])
+  last_attempt[str([g.profile.hyperspace.round_id,route,level])]=now
+  last_frontier_attempt[manual_frontier_key(g)]=now
  manual_pending={}
  manual_watch={"key":manual_key(g,route,level),"frontier":manual_frontier_key(g),"route":route,"level":level,"start":now,"next_check":now+MANUAL_CHECK_SECONDS,"last_progress":now,"group":-1,"bars":{},"exit_reason":""}
+ if planned.has("paid_affix_supply"):manual_watch.paid_affix_supply=planned.paid_affix_supply.duplicate(true)
 func manual_finished(g,success:bool,now:float)->Dictionary:
  if manual_watch.is_empty():return {}
  var result:Dictionary={"key":manual_watch.key,"success":success,"seconds":now-float(manual_watch.start),"exit_reason":manual_watch.exit_reason,"paid_affix_supply":manual_watch.get("paid_affix_supply",{}).duplicate(true)}
@@ -627,6 +634,12 @@ func galaxy_action(g)->Dictionary:
  return {}
 func execute(g,choice:Dictionary,now:float)->bool:
  match choice.kind:
+  "space_manual_queue":
+   var ready:Dictionary=pending_manual_action(g,now,false)
+   if ready.is_empty() or str(ready.route)!=str(choice.route) or int(ready.level)!=int(choice.level) or g.profile.hyperspace.auto.enabled:return false
+   var accepted:bool=g.request_hyperspace(str(choice.route),int(choice.level))
+   if accepted:manual_pending["queued_for_hold60"]=true
+   return accepted
   "space_manual":
    if pending_manual_action(g,now).is_empty():return false
    last_manual_boundary=main_boundary(g)
