@@ -1,0 +1,11 @@
+{
+  "seed": 20261005,
+  "duration": 181596.449994348,
+  "stop_clear": 34,
+  "allow_reforge": false,
+  "allow_new_manual": true,
+  "affix_target_tier": 0,
+  "visit_seconds": 300,
+  "checkpoint_wall_seconds": 30,
+  "wall_limit_seconds": 14400
+}

@@ -1,0 +1,78 @@
+{
+  "data/game_data.json": {
+    "before": "cc505854dd8913423ddbcb62369013a3272972a90a4c479872e51aaba5b2da50",
+    "after": "0d106fd2c4fe936d450ae3ad81f25c4981af9e523e16d95d460c98ce93786aba"
+  },
+  "data/hyperspace_config.json": {
+    "before": "c6c9f152201bb40fe5805765ede9918992a33911a36871edc22f5a8a613cf479",
+    "after": "c1ac5e05a1dd190025ee1c64201a4534330dafacfd6c3f5834d2ab6db6ee50dc"
+  },
+  "data/ui_text.json": {
+    "before": "a305fe4a230e2033f8cd2857806851826b924ca72dc85e7647b31a862aeee2a8",
+    "after": "d75e312f6933aa2c0d8acf152d978b1c7805d56df559ae7323540c66795d4a8f"
+  },
+  "data/ui_text_contract.json": {
+    "before": "9751d4bea13ff1db610efbe7a0f020c3485a2f2640c8839d384e65d127290dc9",
+    "after": "d25d203e351c3813d30a42f2fe220bae326572bd31955b2fff18920913b5d8a2"
+  },
+  "qa/hyperspace_checkpoint.gd": {
+    "before": "54443edd3a0b91a466e09922ac7f2e94bb3d7cd2ccc535b57d44b82cea878a3a",
+    "after": "280ce28dfa845e1a46b1cf37435ef474982d791966d5f6093fe939bc77393368"
+  },
+  "qa/hyperspace_longrun.gd": {
+    "before": "ff7e1a6fae62a05c7238ee27ecc53d9b217d546e6b722423b90959288f9fe1c2",
+    "after": "9524ad0d8410f3a20d73729729a845eef0335202aa0043e5b1909ac5f51ee47c"
+  },
+  "qa/hyperspace_player_policy.gd": {
+    "before": "a44b9c01b5971f0378b0ffb8b20ad3200b0d1f932a0312eb7ed05e7f40208b94",
+    "after": "00e6ac5bd850e3ed0ef423fd5b77503be845cbc8d673c7aadd4ecf79ea3b8105"
+  },
+  "qa/post60_supply_hold60.gd": {
+    "before": "65ab04ba06b75b4188e822a6a20cdb108f481e22b3b33ded9d0843c8ad36b364",
+    "after": "bf54c19516015e1fa5708bc52b2fb79febcda0d07b18ce452df655ec142f524c"
+  },
+  "qa/test_manual_reload_refund_notice.gd": {
+    "before": null,
+    "after": "3cc5480ab288829c7c490322b940ae42aff2922e11b1e8b8ae0cc2ceb6c51fdd"
+  },
+  "scripts/database.gd": {
+    "before": "ebb863c7509a1a38c7cd45256e9558bd9a0d1e4d3791a4de3008f6c6740be99d",
+    "after": "22d19c2621331ad580833705e408d37f91fe906dee50536ab6a1cc3688b5ea68"
+  },
+  "scripts/drone_forge.gd": {
+    "before": "911115ead18104bbd7023939ef24867d6797215d1118d993d3709e6381f8251b",
+    "after": "74b0fa1b392eb6485c61565ed51160185cb011cbd1743a60b0bc6e215ef4b527"
+  },
+  "scripts/drone_inventory.gd": {
+    "before": "671c7f3ff7a4c2e089898b18a40f643f4640487eeef5fd7c7297de1001d44efd",
+    "after": "89d44e2e8f416ce1421a26729e21aee571442ca38fc1fb5bb903ef3d180a9ac0"
+  },
+  "scripts/drone_rewards.gd": {
+    "before": "9bd77dc475faa4fcaa765d92edaf744445364a7b92ea1802c74cc5ac69803577",
+    "after": "d38e42d351f1aed2c686dc5d18c5ddc7099f7122ebcef210894cdf8b54a47cac"
+  },
+  "scripts/equipment_tab.gd": {
+    "before": "2b03bc400d508fcdebf3e62847b2246c7cb3b6aed152b0df0cfa26decc718604",
+    "after": "1eb79be2ba70c00518a769f5b335a53516dc469895f838c1ac4b9d6beee6e683"
+  },
+  "scripts/galaxy_panel.gd": {
+    "before": "183f913c2381c144d7e983a283f5c613619c21ad02df8df54b594ba5c0620bca",
+    "after": "e9f2a8b03d71c6de236a718c78dc3462577a66ff1e936db2982952955cacbb77"
+  },
+  "scripts/hyperspace_commands.gd": {
+    "before": "22ef1c30a59db1ec853e93cc7cef142dd7aea841b8a665aad7179d2518d20c4a",
+    "after": "b7f31a8332d5adba776da0199b82543e87cd9cb2f38f51b12dbe20c9e6872950"
+  },
+  "scripts/hyperspace_config.gd": {
+    "before": "a832a5c6086185a628e3eab983ee4d881d47f8636d3d390ed25611a550724446",
+    "after": "feb2bd7150c251278737b28c5ebf490fc4dc311fd3c49606b277c8fa72a93381"
+  },
+  "scripts/hyperspace_panel.gd": {
+    "before": "5fce98b82e83c50a91957167ce76e4c5c839b0638e75bb5a8d606b96c30e6137",
+    "after": "896628bb64af2ec2f9cbc70580cbceba745133a16cf9840c99875b7ba0738e00"
+  },
+  "scripts/hyperspace_system.gd": {
+    "before": "512b07058d2faf3d3174580f60222eef38e3c730a254c72bcf967020325e6175",
+    "after": "0668dfbcdeb55b34a1a24f297c0d88ed8a6bb53d43f14a2e6204b4397defbc67"
+  }
+}

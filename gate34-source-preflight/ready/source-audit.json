@@ -1,0 +1,415 @@
+{
+	"all_stored_legendary_parameters_currently_generatable": true,
+	"benchmark_limit": "Runtime validity and generation bounds only. Equipment payment provenance/retention history must be tied to original native action trace, not inferred from a legal dictionary.",
+	"controller_members": [
+		"crew_transfer_burst",
+		"next_check",
+		"next_tour",
+		"next_button",
+		"tour",
+		"touring",
+		"tour_started",
+		"observed_weapons",
+		"tour_durations",
+		"busy",
+		"page",
+		"checks",
+		"clicks",
+		"visits",
+		"empty_checks",
+		"burst_start",
+		"bursts",
+		"rows",
+		"clears",
+		"deaths",
+		"unlock_id",
+		"unlock_since",
+		"unlock_confirmations",
+		"segment_start",
+		"segment_state",
+		"segment_stage",
+		"segments",
+		"rejected_inputs",
+		"input_failure",
+		"scientist_context",
+		"reactor_context",
+		"farm_seconds",
+		"space_runs",
+		"active_space_record",
+		"refeeds",
+		"operation_seconds",
+		"space_seconds",
+		"last_frontier",
+		"round_clears",
+		"peak_projectiles",
+		"peak_missile_queue",
+		"model_rebuilds",
+		"last_domain_rejection",
+		"domain_rejections",
+		"last_state_report"
+	],
+	"current_inventory_valid": true,
+	"drones": [
+		{
+			"affixes": [],
+			"current_drone_valid": true,
+			"equipped": true,
+			"hangings": [],
+			"id": "space:1:2",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 10,
+			"quality": "white",
+			"ultimate": true,
+			"ultimate_affix": {
+				"key": "global_critical_damage",
+				"locked": false,
+				"tier": 4,
+				"value": 0.256
+			}
+		},
+		{
+			"affixes": [],
+			"current_drone_valid": true,
+			"equipped": false,
+			"hangings": [],
+			"id": "space:1:3",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 15,
+			"quality": "white",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [
+				{
+					"key": "critical_chance",
+					"locked": false,
+					"tier": 5,
+					"value": 0.019
+				},
+				{
+					"key": "repeat_chance",
+					"locked": false,
+					"tier": 5,
+					"value": 0.012
+				}
+			],
+			"current_drone_valid": true,
+			"equipped": false,
+			"hangings": [],
+			"id": "space:1:5",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 15,
+			"quality": "blue",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [],
+			"current_drone_valid": true,
+			"equipped": false,
+			"hangings": [],
+			"id": "space:1:8",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 20,
+			"quality": "white",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [],
+			"current_drone_valid": true,
+			"equipped": false,
+			"hangings": [],
+			"id": "space:1:9",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 20,
+			"quality": "white",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [
+				{
+					"key": "critical_chance",
+					"locked": false,
+					"tier": 5,
+					"value": 0.018
+				},
+				{
+					"key": "critical_chance",
+					"locked": false,
+					"tier": 5,
+					"value": 0.012
+				}
+			],
+			"current_drone_valid": true,
+			"equipped": true,
+			"hangings": [],
+			"id": "space:1:10",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 20,
+			"quality": "blue",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [
+				{
+					"key": "critical_chance",
+					"locked": false,
+					"tier": 4,
+					"value": 0.037
+				},
+				{
+					"key": "global_defence",
+					"locked": false,
+					"tier": 5,
+					"value": 0.075
+				},
+				{
+					"key": "global_critical_damage",
+					"locked": false,
+					"tier": 4,
+					"value": 0.206
+				}
+			],
+			"current_drone_valid": true,
+			"equipped": true,
+			"hangings": [],
+			"id": "space:1:11",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 20,
+			"quality": "gold",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [],
+			"current_drone_valid": true,
+			"equipped": false,
+			"hangings": [],
+			"id": "space:1:12",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 25,
+			"quality": "white",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		},
+		{
+			"affixes": [
+				{
+					"key": "damage_missile",
+					"locked": false,
+					"tier": 5,
+					"value": 0.191
+				},
+				{
+					"key": "repeat_chance",
+					"locked": false,
+					"tier": 5,
+					"value": 0.019
+				}
+			],
+			"current_drone_valid": true,
+			"equipped": true,
+			"hangings": [],
+			"id": "space:1:13",
+			"legacy_only_effect_parameters": [],
+			"legendary_effect": {
+
+			},
+			"level": 25,
+			"quality": "blue",
+			"ultimate": false,
+			"ultimate_affix": {
+
+			}
+		}
+	],
+	"module_progress": {
+		"distributed_algorithm": {
+			"exp": 0.0,
+			"level": 0,
+			"unlocked": false
+		},
+		"extra_storage": {
+			"exp": 0.0,
+			"level": 0,
+			"unlocked": false
+		},
+		"gem_refiner": {
+			"exp": 0.0,
+			"level": 0,
+			"unlocked": false
+		},
+		"hyperspace_charge": {
+			"exp": 0.0,
+			"level": 0,
+			"unlocked": false
+		},
+		"resource_collector": {
+			"exp": 0.0,
+			"level": 0,
+			"unlocked": false
+		}
+	},
+	"no_ticks_or_business_transactions": true,
+	"policy_members": [
+		"last_frontier_attempt",
+		"manual_frontier_failures",
+		"affix_target_tier",
+		"affix_paid_windows",
+		"crew_transfer",
+		"crew_transfer_history",
+		"last_crew_transfer",
+		"reforge_observed",
+		"last_attempt",
+		"manual_failures",
+		"manual_pending",
+		"manual_watch",
+		"last_manual_boundary",
+		"forge_at",
+		"reserved_crew",
+		"last_reforge",
+		"reforge_since",
+		"known_weapons",
+		"wanted_weapons",
+		"wanted_defences",
+		"seen_encounter",
+		"encounter_plans",
+		"pending_encounters",
+		"encounter_failures",
+		"encounter_started",
+		"wanted_weapon",
+		"weapon_losses",
+		"last_weapon_change",
+		"last_galaxy_state",
+		"galaxy_needs_reserved_crew"
+	],
+	"preserved_old_top_level_members": [
+		"x1_seconds",
+		"save",
+		"rng_state",
+		"controller",
+		"space_policy",
+		"safe_farm",
+		"progress_guard",
+		"options",
+		"snapshots",
+		"lineage",
+		"wall_seconds",
+		"origin_trace",
+		"trace_bytes",
+		"code_fingerprint",
+		"data_sha256",
+		"manual_interrupted_on_reload",
+		"ui_pending_picker_discarded_on_reload",
+		"candidate_transition"
+	],
+	"reforge_count": 0,
+	"round": 1,
+	"source_body_sha256": "100c4dc5a6ddb318144cf55a7f4dd2263d565d4bc7313a5a419062d12f08a138",
+	"source_equipped_ids": [
+		"space:1:2",
+		"space:1:11",
+		"space:1:13",
+		"space:1:10"
+	],
+	"source_fingerprint": "3a78ea1595662c820cfe7265932129dbade62566153f72158eabea1593305ae1",
+	"source_full_sha256": "1d3412d1a5bb7608a058a6a3760824168a572e757472fc76896a72ab04869522",
+	"source_journey": {
+		"distance": 900.0,
+		"groupIndex": 9,
+		"guardArrived": false,
+		"pendingUnlocks": [],
+		"retreatBossPending": false,
+		"stage": 32,
+		"state": 4
+	},
+	"source_loadout": {
+		"defence": [
+			{
+				"key": "armour",
+				"level": 243
+			},
+			{
+				"key": "armour",
+				"level": 243
+			},
+			{
+				"key": "armour",
+				"level": 242
+			}
+		],
+		"weapons": [
+			{
+				"key": "missile",
+				"level": 242
+			},
+			{
+				"key": "cannon",
+				"level": 242
+			},
+			{
+				"key": "cannon",
+				"level": 242
+			},
+			{
+				"key": "cannon",
+				"level": 242
+			},
+			{
+				"key": "longLaser",
+				"level": 242
+			},
+			{
+				"key": "longLaser",
+				"level": 242
+			}
+		]
+	},
+	"source_resources": {
+		"1": 2140094327173733154816.0,
+		"2": 271770289217787616.0
+	},
+	"x1_seconds": 116796.449994348
+}

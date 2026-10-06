@@ -1,10 +1,10 @@
 {
-  "status": "Pending exact source32 CP bytes; audit and converter syntax checked, not executed on the requested source",
+  "status": "Exact source obtained from parent authorized Git; current inventory/generation audit and full source transition passed",
   "source_expected_body_sha256": "100c4dc5a6ddb318144cf55a7f4dd2263d565d4bc7313a5a419062d12f08a138",
   "source_x1_expected": 116796.449994348,
   "source_fingerprint": "3a78ea1595662c820cfe7265932129dbade62566153f72158eabea1593305ae1",
   "target_fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
-  "local_exact_cp_found": false,
+  "local_exact_cp_found": true,
   "levels1_through34_semantically_identical": true,
   "changed_runtime_files": 19,
   "game_data_diff": "Only level35 life/attack x6 and two new level36 entry factors; no income/player/gate34 number changes",
@@ -26,7 +26,7 @@
     "member": "fresh30-hard34/source32-to049.bin",
     "size_bytes": 17874043
   },
-  "materialization_blocker": "Current official Library download helper failed hosted-app tools/list connection: network. No byte materialization, no fallback/bypass, no completed source validity claim.",
+  "materialization_blocker": "Previous Library connection failure preserved as history; resolved through exact parent Git copy",
   "authoritative_workbook_sha256": {
     "config_excel/level.xlsx": {
       "049af6c32428e0b31355bf35f2c9c63be35e0d8c": "5cecb2a58b4634874d4c6df999555677166a0ea5ce75afa3253f2e67067aada2",
@@ -46,5 +46,16 @@
       "tour_started": -1.0
     }
   },
-  "long_run_started": false
+  "long_run_started": true,
+  "source_git_commit": "a5bd689fdd2476ea09a4e66dde00b163ff4a0653",
+  "source_git_member": "parent-e528-strong34/source32-to049.bin.gz",
+  "source_full_sha256": "1d3412d1a5bb7608a058a6a3760824168a572e757472fc76896a72ab04869522",
+  "current_inventory_valid": true,
+  "current_generation_parameter_valid": true,
+  "converted_cp_sha256": "ec3c211d1f5f6abcf1de85cf37df5f385ef153061219d71d65e68994ac05ff32",
+  "gate_entry_sha256": "481c681414d2db9f272df4125ba13871050152f05e008f50562f2a9765f04821",
+  "source_controller_new_empty_field_type_issue": "Frozen ec3 metadata uses{} for newArray field; runtime production restore declines incompatible assignment and retains[], demonstrated by type probe and actual initial native checkpoint. Frozen parent/Sol pair source unchanged; corrected future converter supplied separately.",
+  "actual_main34_first_combat_x1": 116942.199994314,
+  "actual_gate_deadline_x1": 160142.199994314,
+  "external_gate_sha256": "bbdeea88ce954ab5aa10ff2194eb375e60b9c7481ad750ae6027586324cb6bd1"
 }

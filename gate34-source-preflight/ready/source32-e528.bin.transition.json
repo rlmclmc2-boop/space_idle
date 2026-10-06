@@ -1,0 +1,204 @@
+{
+	"added_controller_defaults": {
+		"reforge_checkpoint_pending": {
+
+		}
+	},
+	"added_policy_defaults": {
+		"idle_salvage_budget": {
+			"round": -1,
+			"tour_started": -1.0,
+			"used": 0
+		},
+		"idle_salvage_enabled": true
+	},
+	"exact_whitelist": {
+		"data/game_data.json": {
+			"after": "0d106fd2c4fe936d450ae3ad81f25c4981af9e523e16d95d460c98ce93786aba",
+			"before": "cc505854dd8913423ddbcb62369013a3272972a90a4c479872e51aaba5b2da50"
+		},
+		"data/hyperspace_config.json": {
+			"after": "c1ac5e05a1dd190025ee1c64201a4534330dafacfd6c3f5834d2ab6db6ee50dc",
+			"before": "c6c9f152201bb40fe5805765ede9918992a33911a36871edc22f5a8a613cf479"
+		},
+		"data/ui_text.json": {
+			"after": "d75e312f6933aa2c0d8acf152d978b1c7805d56df559ae7323540c66795d4a8f",
+			"before": "a305fe4a230e2033f8cd2857806851826b924ca72dc85e7647b31a862aeee2a8"
+		},
+		"data/ui_text_contract.json": {
+			"after": "d25d203e351c3813d30a42f2fe220bae326572bd31955b2fff18920913b5d8a2",
+			"before": "9751d4bea13ff1db610efbe7a0f020c3485a2f2640c8839d384e65d127290dc9"
+		},
+		"qa/hyperspace_checkpoint.gd": {
+			"after": "280ce28dfa845e1a46b1cf37435ef474982d791966d5f6093fe939bc77393368",
+			"before": "54443edd3a0b91a466e09922ac7f2e94bb3d7cd2ccc535b57d44b82cea878a3a"
+		},
+		"qa/hyperspace_longrun.gd": {
+			"after": "9524ad0d8410f3a20d73729729a845eef0335202aa0043e5b1909ac5f51ee47c",
+			"before": "ff7e1a6fae62a05c7238ee27ecc53d9b217d546e6b722423b90959288f9fe1c2"
+		},
+		"qa/hyperspace_player_policy.gd": {
+			"after": "00e6ac5bd850e3ed0ef423fd5b77503be845cbc8d673c7aadd4ecf79ea3b8105",
+			"before": "a44b9c01b5971f0378b0ffb8b20ad3200b0d1f932a0312eb7ed05e7f40208b94"
+		},
+		"qa/post60_supply_hold60.gd": {
+			"after": "bf54c19516015e1fa5708bc52b2fb79febcda0d07b18ce452df655ec142f524c",
+			"before": "65ab04ba06b75b4188e822a6a20cdb108f481e22b3b33ded9d0843c8ad36b364"
+		},
+		"qa/test_manual_reload_refund_notice.gd": {
+			"after": "3cc5480ab288829c7c490322b940ae42aff2922e11b1e8b8ae0cc2ceb6c51fdd",
+			"before": null
+		},
+		"scripts/database.gd": {
+			"after": "22d19c2621331ad580833705e408d37f91fe906dee50536ab6a1cc3688b5ea68",
+			"before": "ebb863c7509a1a38c7cd45256e9558bd9a0d1e4d3791a4de3008f6c6740be99d"
+		},
+		"scripts/drone_forge.gd": {
+			"after": "74b0fa1b392eb6485c61565ed51160185cb011cbd1743a60b0bc6e215ef4b527",
+			"before": "911115ead18104bbd7023939ef24867d6797215d1118d993d3709e6381f8251b"
+		},
+		"scripts/drone_inventory.gd": {
+			"after": "89d44e2e8f416ce1421a26729e21aee571442ca38fc1fb5bb903ef3d180a9ac0",
+			"before": "671c7f3ff7a4c2e089898b18a40f643f4640487eeef5fd7c7297de1001d44efd"
+		},
+		"scripts/drone_rewards.gd": {
+			"after": "d38e42d351f1aed2c686dc5d18c5ddc7099f7122ebcef210894cdf8b54a47cac",
+			"before": "9bd77dc475faa4fcaa765d92edaf744445364a7b92ea1802c74cc5ac69803577"
+		},
+		"scripts/equipment_tab.gd": {
+			"after": "1eb79be2ba70c00518a769f5b335a53516dc469895f838c1ac4b9d6beee6e683",
+			"before": "2b03bc400d508fcdebf3e62847b2246c7cb3b6aed152b0df0cfa26decc718604"
+		},
+		"scripts/galaxy_panel.gd": {
+			"after": "e9f2a8b03d71c6de236a718c78dc3462577a66ff1e936db2982952955cacbb77",
+			"before": "183f913c2381c144d7e983a283f5c613619c21ad02df8df54b594ba5c0620bca"
+		},
+		"scripts/hyperspace_commands.gd": {
+			"after": "b7f31a8332d5adba776da0199b82543e87cd9cb2f38f51b12dbe20c9e6872950",
+			"before": "22ef1c30a59db1ec853e93cc7cef142dd7aea841b8a665aad7179d2518d20c4a"
+		},
+		"scripts/hyperspace_config.gd": {
+			"after": "feb2bd7150c251278737b28c5ebf490fc4dc311fd3c49606b277c8fa72a93381",
+			"before": "a832a5c6086185a628e3eab983ee4d881d47f8636d3d390ed25611a550724446"
+		},
+		"scripts/hyperspace_panel.gd": {
+			"after": "896628bb64af2ec2f9cbc70580cbceba745133a16cf9840c99875b7ba0738e00",
+			"before": "5fce98b82e83c50a91957167ce76e4c5c839b0638e75bb5a8d606b96c30e6137"
+		},
+		"scripts/hyperspace_system.gd": {
+			"after": "0668dfbcdeb55b34a1a24f297c0d88ed8a6bb53d43f14a2e6204b4397defbc67",
+			"before": "512b07058d2faf3d3174580f60222eef38e3c730a254c72bcf967020325e6175"
+		}
+	},
+	"inventory_current_generation_validated": true,
+	"kind": "authorized_natural049_source32_to_unified_e528_preflight",
+	"reload_boundary": "Production formal journey regeneration, GUI contexts reset and offline compensation suppressed by existing checkpoint.restore. Not lossless battle restoration; original flags and receipt dictionaries preserved.",
+	"scope": "New policy/modernization/source version at unchanged earned32 state; no new-full-run claim. Levels1-34 unchanged, future35/36 and future master generation ranges differ. No affix/resource/loadout edits.",
+	"source_body_sha256": "100c4dc5a6ddb318144cf55a7f4dd2263d565d4bc7313a5a419062d12f08a138",
+	"source_field_digests": {
+		"candidate_transition": "85411b9aa97687839743fb5bd841dd9a0c561195c2f7ba699f0109a903a85d89",
+		"code_fingerprint": "563b5747da2aa4a5e85a7588e4fc3fb1045535cb3960b44f7794ab59b59cdda2",
+		"controller": "38dc5b43898273f7c41a51858a03d62629bffaea613850dfc238c3f87eac9bea",
+		"data_sha256": "1a891f8e27f29343c8c5abb6112ede842402420b456a1a54108cfa6867208c94",
+		"lineage": "ca2139afc02d9513cbe07d68e5a2f1f076e6b6ce63b31545038e09b172169dbc",
+		"manual_interrupted_on_reload": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+		"options": "b0dda567629a679e43e33cbafc2c89d7fa0ec6387e76637f2a0d9ca4d31f51ce",
+		"origin_trace": "4d383a6054917b9cdcb7665143670b6de3417262e440046f9ba210d8467df057",
+		"progress_guard": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+		"rng_state": "e8e5ee5e6ad886fef961ec0e76ce9b01837f099f700c7fa9c5bf0108e35e5604",
+		"safe_farm": "0e24e10d523d1b2eeebb19ea6b5931363984429a80a2c634c0267f1aad8ee3be",
+		"save": "0cf19353a5ab6db31271b2a4cb429e548449348eca23623dc9450f93cf3ee306",
+		"snapshots": "b9c86610a5c60c2fd28748f5328d600809b3f15712aecba3218d9cfe9c7a5601",
+		"space_policy": "20a7dfed7837a86b8140a6fe4f87e10d60e271ae86342ebdeae88ac83eec4072",
+		"trace_bytes": "308612056bf473406ac043e8bb8347d74c60e3122cee8d04ca43bd9a5a6938fb",
+		"ui_pending_picker_discarded_on_reload": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+		"wall_seconds": "76c2bd1443e5e71680a14e577ac638aa8e297524273a486a969f2685f8b31164",
+		"x1_seconds": "d16c4f8b6b22a0a3cd398762c0fb8ef89bcbf39afee7f772366992cdc8d16b6e"
+	},
+	"source_fingerprint": "3a78ea1595662c820cfe7265932129dbade62566153f72158eabea1593305ae1",
+	"source_member_digests": {
+		"controller": {
+			"active_space_record": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"burst_start": "86afad96cf31ccf28cc0561f2611ecd563249a4a1f2bfc2a728327162dd645ab",
+			"bursts": "6f8167a792d0c826cd3956ed71833953fbe47500ee13b4bad938abdbf9044bbe",
+			"busy": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+			"checks": "397bbbf743cfce68e52dfacf43eceadd944b4672ee3e83a3e618628f983bcddb",
+			"clears": "0ed34a0a144c88769f69699e1ca5d3bbd42214be8f9d09dd84d246a94c59f758",
+			"clicks": "8a8e1dc7c5d5cafb01489ba13b58fba17f3902ded2dab63993c529f33395fc70",
+			"crew_transfer_burst": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"deaths": "4a0bcdeb7287869892d2b7932b7a43b7fd5e4ace543d13414583b3c6b93bc348",
+			"domain_rejections": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"empty_checks": "bee55c54e81a6b407404828d75a2a4906c3c0a87dd6826925be0b138698882c4",
+			"farm_seconds": "724ba6bc9ff0f4edc6b1f69a51b16a0413804d889c455e1de51639005ffa8071",
+			"input_failure": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"last_domain_rejection": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+			"last_frontier": "6f705f252a77a7ade126e0ab7c11e50b7dec0ab5c1fdf0ef8b6a039bfcf3298b",
+			"last_state_report": "aef90c8970b713665ab8e74e854ddb86196ba46863b48bb50c5feafc602b038e",
+			"model_rebuilds": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"next_button": "acd7c75a54cd7442bf929d80e46bec16a1bcb34ac8ed92f54093282816da1ebf",
+			"next_check": "7c5d88cce659cdc61c8edc81c57038bcfc87e93175ae1fa318928c94dace51a2",
+			"next_tour": "e5a0783f27eca1d7b390c4408d7c107614cfb46a64380a85f3d4bcfec3992458",
+			"observed_weapons": "99962b8ce26c186b3615629db6cafe8f7c1bb4c50e06718686bb2c4492083717",
+			"operation_seconds": "f84f052260de1b224b9c04bbc4d32ffb97fef695f0afb7121d940a1b77b2c945",
+			"page": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"peak_missile_queue": "4e3143144a8e02e1619fab615629d15f7ac8c8e49879bb7535c8b6ab7d8c55d8",
+			"peak_projectiles": "dd913d6abd7fb63e1ac9f2966c3e8d10c08f5e090f8b2a1e44ca469d55e3ae37",
+			"reactor_context": "95fabfa2b311b70a8deaa79d25e1f2daeeeea754871a2cc99e166164d1a205aa",
+			"refeeds": "3c88bf13b58cba9ca7fe10c55db47931f52b52975cf1e9eaa0c9b0ec29c7c6be",
+			"rejected_inputs": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"round_clears": "0cca5b9116b4b84c594e2e90b95983476c0e95dee08069b0704844ded1aedf96",
+			"rows": "b47bc99d200b67ca9968e7d5928123ff77fb73fa0d0262bf09259a5d05f0bd5c",
+			"scientist_context": "bfec93c6de684290fe2c907b3d489510c1b854b29feb56d906380dba9c058f77",
+			"segment_stage": "e1a6e15f442b3e0dec3a9fb7dfe213811217fe727a2488a140448b70142b8d08",
+			"segment_start": "d16c4f8b6b22a0a3cd398762c0fb8ef89bcbf39afee7f772366992cdc8d16b6e",
+			"segment_state": "5821e0d4c400650dd06f099d465f0aa8d18a53da3f106272a1ab49035f253b04",
+			"segments": "cb823380e624365b0c261d3531960e6e1abf8ccc53328f3f341fe8605efd92e9",
+			"space_runs": "f68f0544d878d922c8abb8afa6ec00b6a15d212b2bee1ad87961957d504c8d71",
+			"space_seconds": "12862766a8106e0175208b96fae5189250b5c9ab159ca157c11838064785c65d",
+			"tour": "3c88bf13b58cba9ca7fe10c55db47931f52b52975cf1e9eaa0c9b0ec29c7c6be",
+			"tour_durations": "ae1edc96605fb78192d6c6ba6eb13863ba7b18dfe8a46162ccc3948884d738d1",
+			"tour_started": "0a6656f252c9dc700b441c3b10af7d452b57dc719db9b6767b12511c7d340e2d",
+			"touring": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+			"unlock_confirmations": "81048ad317880c80b38cce6ce50cd97591fb7e2bed17e32b67b74f246a4b4f81",
+			"unlock_id": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+			"unlock_since": "2a2a985a2addd1d2828a928f5f887a40297a052f4d85904319e7a31ec9338b9a",
+			"visits": "0e4499e8dc2b01cc5c6fd59bba01cef4aef677b0aa1d629f53f817a779b63b68"
+		},
+		"space_policy": {
+			"affix_paid_windows": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"affix_target_tier": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"crew_transfer": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"crew_transfer_history": "d73e7cfeb3751c64bff02bcfb11af8104ea8f12db3274fb9d18ec3af7416e1fc",
+			"encounter_failures": "c5ab64adb20b5bf48a2d45c50ac53b8e0ab1884287c0b398086b3df05c7cd2d1",
+			"encounter_plans": "e4c52ceef03f67dd59f036e09389e5850346de57b5caf96bdf7dcb7ff8efa104",
+			"encounter_started": "62a149bea67645b9cffd889588529883cb8f8fa08981503c2ed52bd8389db9df",
+			"forge_at": "e3cf10a6dd2835c68813530f61c69b2fcadce49c5fa61ef62143bffb4c6d66fd",
+			"galaxy_needs_reserved_crew": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+			"known_weapons": "5b13321df8eff5accd8c7f7a8c6a11ca396bee8a5677ef11e69b087889f9f930",
+			"last_attempt": "a613c75e6516ab495cf49f51dbfd4da238cfbe9231f1ca643e19246ab5bf7338",
+			"last_crew_transfer": "0489d38ecc7ac5a5a416c4520873cf170fb83f2622ba7f31b158711280e9d36e",
+			"last_frontier_attempt": "245ce5fd67f4fc0e5b231d865cdef2927b4a4fe29fddb555f2dfb1dc5ad6a0c1",
+			"last_galaxy_state": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+			"last_manual_boundary": "3ab2f7e29427e92f42eb1e06a2f69e65fe07941fec8aaf36795d4c6809ae6050",
+			"last_reforge": "d86e8112f3c4c4442126f8e9f44f16867da487f29052bf91b810457db34209a4",
+			"last_weapon_change": "ee58ad70d9bc0b2e660145233ccde0973ca65c22d5f9a8e186f1276440be8f14",
+			"manual_failures": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"manual_frontier_failures": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"manual_pending": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"manual_watch": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"pending_encounters": "c1f0f45212e59bbe0e7614d3fbbbf56b02ebf919b008f2b2bdcf9146de795675",
+			"reforge_observed": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+			"reforge_since": "5d676945fffefc0dc21a262d6e70ad29e4966cdf48ee89122876679b9e77a8a0",
+			"reserved_crew": "e599a1710ac5b06dc63c7869157de630e4a6f11db063a8c0112fb9f83fb89131",
+			"seen_encounter": "6eabbdd6d0843316c7783ddc31a104e83e8f0a609786122fdb6620d9e3ea90f2",
+			"wanted_defences": "483b8b9900d0b57a9b282f60c99a4f7ca5816e8591081089cd874c84730bda7f",
+			"wanted_weapon": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+			"wanted_weapons": "5b3f88b16e375cd70f5e87e4f1be0d053aec1f906d94cc6fe5e55e749d93c0e6",
+			"weapon_losses": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41"
+		}
+	},
+	"source_sha256": "1d3412d1a5bb7608a058a6a3760824168a572e757472fc76896a72ab04869522",
+	"source_x1": 116796.449994348,
+	"target_fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+	"written_sha256": "ec3c211d1f5f6abcf1de85cf37df5f385ef153061219d71d65e68994ac05ff32"
+}
