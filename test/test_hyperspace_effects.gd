@@ -49,7 +49,9 @@ func _initialize() -> void:
 	g=prepared("black_hole");g.drone_combat.advance(g,25)
 	check(g.drone_combat.black_hole_remaining==0 and g.drone_combat.black_hole_elapsed==5,"batched elapsed time crosses absorption boundaries")
 	g=prepared("drone_master");var raw: float=float(g.drone_combat.incoming(g,100,CC.root(0,"enemy","laser")).damage)
-	check(is_equal_approx(raw,20.0),"legendary rank proportional damage reduction")
+	var master: Dictionary=g.hyperspace.config.legendary_effects.drone_master
+	var expected:=100.0*(1.0-float(master.parameters.maximum_reduction[1])*float(master.constants.quality_ratios.legendary)/float(master.constants.quality_ratios.ultimate))
+	check(is_equal_approx(raw,expected),"legendary rank proportional damage reduction")
 	g=prepared("wild_missile");g.enemies=[target(1),target(2)]
 	var missile_index:=g.weapon_entries().size()
 	for i in 4:

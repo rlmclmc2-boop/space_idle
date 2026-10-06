@@ -45,6 +45,10 @@ static func valid(c: Dictionary) -> bool:
 		if not row is Dictionary or not row.get("weapon") is String or not row.get("parameters") is Dictionary or not row.get("constants") is Dictionary:return false
 		for bounds in row.parameters.values():
 			if not range_valid(bounds):return false
+		if row.has("stored_parameter_ranges"):
+			if not row.stored_parameter_ranges is Dictionary:return false
+			for key in row.stored_parameter_ranges:
+				if not row.parameters.has(key) or not range_valid(row.stored_parameter_ranges[key]):return false
 	for row in c.hanging_modules.values():
 		if not row is Dictionary:return false
 		for key in ["base_exp","exp_growth","effect_growth"]:
