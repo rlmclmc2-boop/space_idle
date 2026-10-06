@@ -1,13 +1,14 @@
 {
-  "snapshot_x1": 163309.899983518,
+  "utc": "2026-10-06T11:18:11Z",
+  "snapshot_x1": 170136.083315262,
   "code_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
-  "scope": "Authorized public test evidence only: game checkpoint, QA filenames/hashes, numeric game heartbeat and native game action records; no credentials or unrelated files. Same845 formalreload from45 CP160435.083317521 after sessionloss; noactive manual; continuedrealGodot.",
+  "scope": "Owner-authorized public longtest game checkpoints, native numeric actions and engine diagnostics only. No credentials/unrelated files. Actions clipped toatomicCP; runlog independentsample. Same845 recovery boundary at45, noactive manual. Notfreshsingleversion0to60.",
   "files": {
     "checkpoint.bin.gz": {
-      "gzip_sha256": "d44cc116deefc0ac104a947a971e688f7a40d752dbaa87bf30719ecd6a85baa2",
-      "original_sha256": "9204ca9f583354022c885f5623e34ad3ddd12e8cd0ace35d1e5331792d498dda",
-      "original_bytes": 2405764,
-      "gzip_bytes": 97803,
+      "gzip_sha256": "3cecf241fd83efd59bec681d18f63c6e0682085030a5129d6f64f935f6a96328",
+      "original_sha256": "fd21e4913be6bfda463e68bd79be270665e77cf469021f14dd582466343c5c11",
+      "original_bytes": 2517636,
+      "gzip_bytes": 102515,
       "credential_pattern_hits": 0
     },
     "qa-manifest.json.gz": {
@@ -18,17 +19,24 @@
       "credential_pattern_hits": 0
     },
     "run.log.gz": {
-      "gzip_sha256": "2732dc764e0be9484a29031c4dde27648eebb8d5b709b5077f5287a8e3b53f16",
-      "original_sha256": "89c5438d357a238fc18270acbdddcc8d9aac71943a8e6f5e41d9ceed7602aaf6",
-      "original_bytes": 21140,
-      "gzip_bytes": 1311,
+      "gzip_sha256": "a82249462334f79df8341e6181679113c9f4a9ac556b110abc8a6d4acb894937",
+      "original_sha256": "cb8c5dbf7e035869c6f1b25bb8567aa0883795897f58dd789a357930fdf6559f",
+      "original_bytes": 71547,
+      "gzip_bytes": 2524,
       "credential_pattern_hits": 0
     },
     "actions.jsonl.gz": {
-      "gzip_sha256": "93c656ef0d27cec66cdc0ada0a89fca67689d1588194ebf83cde36741bd380e6",
-      "original_sha256": "91eea975a106ec32a7bfecdc7735b1fa86448e02dc946a3334df3165a9c94cc5",
-      "original_bytes": 689323,
-      "gzip_bytes": 33806,
+      "gzip_sha256": "30c192c1bb8a004e52682ae90a8c5eeee6a680bf0b9a5fe288bc5024d18a381a",
+      "original_sha256": "13ca01e5cc5018e2d8d76e808a240bbdfeea0ac77467a08ab89df28f35293d23",
+      "original_bytes": 2762493,
+      "gzip_bytes": 128299,
+      "credential_pattern_hits": 0
+    },
+    "checkpoint-reforge-round-5.bin.gz": {
+      "gzip_sha256": "b856ae5ee895e0b0715419caa53e62e4635f406013db2df9a087276917e52a85",
+      "original_sha256": "d963bf95b91c798543dc2baf23f3084a83d66d52bf55bea2150471783bf5bbb2",
+      "original_bytes": 2416671,
+      "gzip_bytes": 97143,
       "credential_pattern_hits": 0
     }
   },
