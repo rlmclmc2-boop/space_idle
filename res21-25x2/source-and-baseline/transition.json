@@ -1,0 +1,55 @@
+{
+	"changed_files": [
+		"data/game_data.json"
+	],
+	"kind": "authorized_res21_25x2_same_actual2d_clear20_formal_reload",
+	"reload_boundary": "Same source as original2d20-to30. Production regeneration, not live battle restoration; offline compensation suppressed.",
+	"source_field_digests": {
+		"candidate_transition": "f92ad50329093c8a0ade00b733bb210bed1b101e0e2958c4bf18ded73df9e695",
+		"code_fingerprint": "ab17c3166bf45fd750646a86341916643c8383e6da6bc997b99cd784e7facf49",
+		"controller": "4d9c0e4f0ff4c7f8ed17cbbb2a02154013daa2c589c15365fc41b4838152983f",
+		"data_sha256": "0324c2bf7c30d5747f48ca6fb92b0fe0c4cbddb8cef2f483c3c569efccec10c6",
+		"lineage": "297749b97089f240dd14044b2017a03b47efda2b50a8f6c79c5a39fc21cef3ea",
+		"manual_interrupted_on_reload": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+		"options": "92e0a8d53c6d6224d77e2f8a861931fcf8c59ebadbab1da26589580e9d5e8d19",
+		"origin_trace": "f2d9e6e4ec5a69f35cdb6563126050dee4543f5988c9c8a19b8795bfe944225d",
+		"progress_guard": "4d159113222bfeb85fbe717cc2393ee8a6a85b7ce5ac1791c4eade5e3dd6de41",
+		"rng_state": "d8047e6ff58c55b478f3026ca6699490d365abfa99861e9fc29a7aaed107dea1",
+		"safe_farm": "38dda65ec0907063bd984b687ecf3f81ddd7ac93f07216a3659133059c858962",
+		"save": "ae8730568c86738a8e2324c714b1a8b92d08e409b09cd41e77bc6eb30f348145",
+		"snapshots": "c492baa00944675189132737aa32020092956935e131d9503fb0c4744fb7257e",
+		"space_policy": "58292082bcb47d2b66700cce978650a371250004e080be613e1dd0534b1c26c1",
+		"trace_bytes": "41424e548450e0df0515c5e75493be09875ab245abd26f3f5b4e948dcfc8df80",
+		"ui_pending_picker_discarded_on_reload": "7c9fa136d4413fa6173637e883b6998d32e1d675f88cddff9dcbcf331820f4b8",
+		"wall_seconds": "1b593cbd2600cb893ef94b419b258be941376eb544ded553d34fe161f4c9007b",
+		"x1_seconds": "a78f4d2e0b332c18f8c3deda027372042e28b5169c604cc8df1714d31240c554"
+	},
+	"source_fingerprint": "12bb0c8f9e3fa900e48e173a951859debcabae8180af7e7e26dc625f53c50213",
+	"source_journey": {
+		"distance": 900.0,
+		"groupIndex": 9,
+		"guardArrived": false,
+		"pendingUnlocks": [
+			"ship/Cruiser",
+			"crew/engineer"
+		],
+		"retreatBossPending": false,
+		"stage": 20,
+		"state": 4
+	},
+	"source_options": {
+		"affix_target_tier": 0.0,
+		"allow_new_manual": true,
+		"allow_reforge": true,
+		"checkpoint_wall_seconds": 30.0,
+		"duration": 86400.0,
+		"seed": 20261005.0,
+		"stop_clear": 20.0,
+		"visit_seconds": 300.0,
+		"wall_limit_seconds": 14400.0
+	},
+	"source_sha256": "cf5042c688e2418290afdfa8e6f646e94f041acc8cb5c86291b6af8531bb9084",
+	"source_x1": 42767.8833349779,
+	"target_fingerprint": "5255b4260bb6196d949501b7f49a128e0fc87b420cb3ac6d260aa513b07a3744",
+	"written_sha256": "ae4ffc0f406ba7ac783c383b3eba7efeeb712e0c0ec11e78125e271c8814256f"
+}
