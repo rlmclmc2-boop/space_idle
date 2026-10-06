@@ -1,0 +1,9 @@
+{
+  "source": "/workspace/sol-validation/unified-e528-post60-work/terminal-hold60-3600.bin",
+  "source_sha256": "080bd5d2af2497c3f20ffdfd79f52a8ff8dd0beb37167f07ed7c66fcda68865c",
+  "source_x1": 185072.216645118,
+  "entry": "res://qa/post60_supply_hold60.gd",
+  "absolute_stop": 185372.19997929,
+  "max_nominal_extension_x1": 300,
+  "scope": "Separate formal production reload after frozen one-hour terminal; budget/controller/actual resources and histories preserved. Extension payments cannot be counted in original one hour."
+}
