@@ -23,8 +23,13 @@ static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool
 	if not C.integer(reward.get("ultimate_cores")) or reward.ultimate_cores<0 or reward.ultimate_cores>1:return false
 	for key in reward.materials:
 		if key!=c.routes[route].material or not C.integer(reward.materials[key]) or reward.materials[key]<0:return false
+	var module_budget:=0
+	for amount in c.dismantle_amounts.values():module_budget=maxi(module_budget,int(amount))
+	var module_total:=0
 	for key in reward.hanging_rewards:
-		if not c.hanging_modules.has(key) or not C.integer(reward.hanging_rewards[key]) or reward.hanging_rewards[key]<0 or reward.hanging_rewards[key]>10:return false
+		if not c.hanging_modules.has(key) or not C.integer(reward.hanging_rewards[key]) or reward.hanging_rewards[key]<0 or reward.hanging_rewards[key]>module_budget:return false
+		module_total+=int(reward.hanging_rewards[key])
+		if module_total>module_budget:return false
 	return true
 
 static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:

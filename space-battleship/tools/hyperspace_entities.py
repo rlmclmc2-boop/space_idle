@@ -1,7 +1,8 @@
 """Read the two authoritative entity workbooks without editing either workbook.
 
 Immutable shape/order comes from a pinned schema, not a second editable balance
-source. Frozen catalog/sources are verified but deliberately never regenerated.
+source. The catalog is rebuilt from current mainline drops and95 literal early fallback
+rows. Only the1960 source mapping remains pinned and is structurally verified.
 """
 import copy
 import hashlib
@@ -187,7 +188,7 @@ def validate_config(c):
     for v in c['hull_capacities'].values():
         if not 1 <= v <= 5:raise ValueError('Invalid hull capacity')
     for name in ['quality_weights','tier_weights','modernization_tier_weights']:
-        if any(not finite(v) or v < 0 or (name=='tier_weights' and v==0) for v in c[name].values()) or sum(c[name].values()) <= 0:raise ValueError('Invalid weights: '+name)
+        if any(not finite(v) or v < 0 or (name=='tier_weights' and v==0) for v in c[name].values()) or (name != 'modernization_tier_weights' and sum(c[name].values()) <= 0):raise ValueError('Invalid weights: '+name)
     for q in c['dismantle_amounts']:
         if c['dismantle_amounts'][q] < 1 or c['weapon_level_bonuses'][q] < 0:raise ValueError('Invalid quality reward')
     for cost in c['forge_costs'].values():
@@ -198,7 +199,7 @@ def validate_config(c):
         for row in c[table].values():
             if row['weapon'] not in ['','laser','missile','cannon','longLaser']:raise ValueError('Unsupported weapon binding')
             for low,high in row[field].values():
-                if not finite(low) or not finite(high) or low<0 or high<low or math.ceil(low/c['value_precision']) > math.floor(high/c['value_precision']):raise ValueError('Invalid/empty quantized parameter range')
+                if not finite(low) or not finite(high) or low<0 or high<low or math.ceil(low/c['value_precision']-1e-7) > math.floor(high/c['value_precision']+1e-7):raise ValueError('Invalid/empty quantized parameter range')
     for e, row in c['legendary_effects'].items():
         for key,v in row['constants'].items():
             if key in ['period','cooldown','delay','absorption_duration'] and v<=0:raise ValueError('Invalid effect timing')

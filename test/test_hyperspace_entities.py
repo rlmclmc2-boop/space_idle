@@ -1,4 +1,4 @@
-"""Entity XLSX defaults, ordering, rejection and four-output transaction boundary."""
+"""Entity XLSX defaults, ordering, rejection and five-output transaction boundary."""
 import copy
 import hashlib
 import json
@@ -55,13 +55,46 @@ class EntityTests(unittest.TestCase):
         self.reject(lambda t:self.rows(t,'成员分配')[0].update(reference_member_ordinal=999))
         self.reject(lambda t:next(r for r in self.rows(t,'成员分配') if r['order'] is None).update(reference_member_ordinal=0))
         self.reject(lambda t:self.rows(t,'敌人')[0].update(order=3))
+    def test_fallback_and_mainline_derived_catalog(self):
+        t=copy.deepcopy(self.tables)
+        fallback=t[('hyperspace_enemies.xlsx','早段回退预算')][0]
+        fallback['amount']=13;fallback['chance']=0.75
+        cfg=h.project_tables(t,self.main,self.frozen)['space_enemy_reward_catalog.json']
+        drop=cfg['references'][fallback['reference_id']]['early_drop_blocks'][fallback['reference_member_ordinal']][fallback['drop_order']]
+        self.assertEqual((13,0.75),(drop['amount'],drop['chance']))
+        main=copy.deepcopy(self.main)
+        late_id=self.default['space_enemy_reward_catalog.json']['references'][fallback['reference_id']]['late_reference_actual_group_id']
+        late_enemy=next(v for v in main['groups'][str(late_id)]['slots'] if v is not None)
+        main['enemies'][str(late_enemy)]['drops'][0]['amount']=17
+        early_key,early_ref=next((k,r) for k,r in self.default['space_enemy_reward_catalog.json']['references'].items() if r['early_existing_encounters'])
+        early_gid=early_ref['early_existing_encounters'][0]['group_id']
+        early_enemy=next(v for v in main['groups'][str(early_gid)]['slots'] if v is not None)
+        main['enemies'][str(early_enemy)]['drops'][0]['amount']=19
+        out=h.project_tables(t,main,self.frozen)['space_enemy_reward_catalog.json']
+        self.assertEqual(17,out['references'][fallback['reference_id']]['late_drop_blocks'][0][0]['amount'])
+        self.assertEqual(19,out['references'][early_key]['early_drop_blocks'][0][0]['amount'])
+        self.assertEqual(13,out['references'][fallback['reference_id']]['early_drop_blocks'][0][0]['amount'])
+        self.reject(lambda t:t[('hyperspace_enemies.xlsx','早段回退预算')][0].update(chance=1.01))
+        self.reject(lambda t:t[('hyperspace_enemies.xlsx','早段回退预算')][0].update(resource_id=99999))
+    def test_quantized_single_point_and_zero_additional_cost_weights(self):
+        t=copy.deepcopy(self.tables)
+        for row in t[('hyperspace_config.xlsx','词缀区间')]:
+            if row['affix_id']=='global_damage' and row['tier']==5:row['minimum']=row['maximum']=0.043
+        for row in t[('hyperspace_config.xlsx','阶级权重')]:row['modernization_weight']=0
+        o=h.project_tables(t,self.main,self.frozen)['hyperspace_config.json']
+        self.assertEqual([.043,.043],o['affixes']['global_damage']['ranges']['5'])
+        self.assertEqual(1,o['modernization_base_coefficient'])
+        self.assertTrue(all(v==0 for v in o['modernization_tier_weights'].values()))
+    def test_sources_structure_rechecked(self):
+        main=copy.deepcopy(self.main);main['levels'][0]['groups'][0]['id']=999999
+        with self.assertRaises(ValueError):h.project_tables(self.tables,main,self.frozen)
     def test_frozen_hash(self):
         with tempfile.TemporaryDirectory() as tmp:
             d=Path(tmp)
             for n in self.schema['frozen_inputs']:shutil.copyfile(self.data/n,d/n)
             (d/'space_enemy_reward_sources.json').write_text('{}')
             with self.assertRaises(ValueError):h.read_bundle(self.raw,self.main,d)
-    def test_formal_incremental_noop_and_four_output_rollback(self):
+    def test_formal_incremental_noop_and_five_output_rollback(self):
         with tempfile.TemporaryDirectory() as tmp:
             area=Path(tmp);folder=area/'config_excel';data=area/'data'
             shutil.copytree(ROOT/'config_excel',folder);shutil.copytree(self.data,data)
@@ -70,12 +103,12 @@ class EntityTests(unittest.TestCase):
             before={p:(p.read_bytes(),p.stat().st_mtime_ns) for p in paths}
             self.assertEqual([],cw.incremental_import(folder,target)['changed'])
             self.assertEqual(before,{p:(p.read_bytes(),p.stat().st_mtime_ns) for p in paths})
-            # Force all four outputs to require writing. Real parent workbooks stay untouched.
+            # Force all five outputs to require writing. Real parent workbooks stay untouched.
             for n in self.default:(data/n).write_text('{}')
             before={p:p.read_bytes() for p in paths}
             original=cw.os.replace
             def fail_last(source,destination):
-                if Path(destination).name=='space_enemy_reward_recipes.json':raise OSError('injected final output failure')
+                if Path(destination).name=='space_enemy_reward_catalog.json':raise OSError('injected final output failure')
                 return original(source,destination)
             with patch.object(cw.os,'replace',side_effect=fail_last):
                 with self.assertRaises(OSError):cw.incremental_import(folder,target)

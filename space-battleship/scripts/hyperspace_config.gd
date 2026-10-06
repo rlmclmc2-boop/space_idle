@@ -42,7 +42,6 @@ static func valid(c: Dictionary) -> bool:
 	for tier in range(1,6):
 		if not number(c.tier_weights.get(str(tier))) or c.tier_weights[str(tier)]<=0:return false
 		if not number(c.modernization_tier_weights.get(str(tier))) or c.modernization_tier_weights[str(tier)]<0:return false
-	if c.modernization_tier_weights.values().reduce(func(a,b):return float(a)+float(b),0.0)<=0:return false
 	for quality in c.dismantle_amounts:
 		if not integer(c.dismantle_amounts[quality]) or c.dismantle_amounts[quality]<1 or not integer(c.weapon_level_bonuses[quality]) or c.weapon_level_bonuses[quality]<0:return false
 	if not integer(c.ultimate_weapon_bonus) or c.ultimate_weapon_bonus<0:return false
@@ -100,7 +99,7 @@ static func integer(value: Variant) -> bool:
 	return number(value) and float(value)==floorf(float(value))
 
 static func quantized_range(value:Variant,precision:float)->bool:
-	return range_valid(value) and precision>0 and value[0]>=0 and ceilf(float(value[0])/precision)<=floorf(float(value[1])/precision)
+	return range_valid(value) and precision>0 and value[0]>=0 and ceilf(float(value[0])/precision-0.0000001)<=floorf(float(value[1])/precision+0.0000001)
 
 static func pack_valid(g)->bool:
 	if not valid(g.hyperspace.config) or not Entity.frozen_valid():return false
