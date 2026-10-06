@@ -25,3 +25,9 @@ Original gate PID122294 remains alive unchanged at e528. Archived readiness hear
 Actual partial CP X1 `185743.566644962` (371.349999914X1 after resume), SHA `276f8c8868e5b340a83b1f62673b1cfe1b6bb0b41f197cc520a0cf613342d56f`, header/body verified and trace cut exactly99078 bytes. Actual alpha60 record57.55s was earned through native manual challenge; chain remains funding, degenerate8/core3, no paid chain receipts, input_failure{}. `record_prerequisite` is persisted original planning flag, not the current best-record result. Not enough matter to begin restore. This snapshot is not terminal; live1200 segment continues.
 
 Packaging first tried git bundle SHA-only range and Git refused empty bundle; source/code unaffected. Retried named branch range successfully. Evidence22e8c8d was incomplete intermediary; use final current evidence commit instead.
+
+## Actual1200 terminal supersedes early snapshot
+
+Terminal at X1 `186572.233311435`, elapsed1200.016666387X1, wall291.087721s, bounded_partial, no input failure. Native manual alpha60 first win then recorded alpha60 paid auto funding claims; materials/core/chain state are pinned in native-terminal/RESULT.json and verified raw CP. Source material8 → actual236, cores3 preserved, real alpha60 record57.55s earned. Full190-material/two-core funding now affordable, but last claim falls after the last normal300sec page9 visit; cap ends before next visit. Chain remains funding and receipts empty. This is material preparation success, NOT actual restore/modernize/reultimate success. No1200 extension launched here; parent is independently reproducing same segment.
+
+One unrelated normal ultimate request `space:2:3` at185997.399978236 returnedfalse with no resources/cores debit and no input_failure. Raw false receipt preserved; not misreported as all native actions successful. It is outside protected white-pulse chain. Audio dummy-driver fallback only; no script assertions.

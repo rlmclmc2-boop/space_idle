@@ -1,0 +1,7 @@
+{
+	"event_calls": 74740,
+	"experimental_fast": true,
+	"game_speed": 1.0,
+	"retained_vfx_entries_created": 3372,
+	"scope": "Net positive per-event container changes; not internal temporary allocations or GPU time"
+}
