@@ -14401,6 +14401,7 @@
   {"key": "planet.reforge_zero_cancel", "text": "返回选择", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
   {"key": "hyperspace.recent_result", "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}", "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_success", "text": "探索成功", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {"key": "hyperspace.recent_interrupted_refund", "text": "已付探索因读档中断 · {weapon} {level}级\n已退票 {refund} 超空间能量。", "params": "{weapon},{level},{refund}", "category": "hyperspace", "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"},
   {"key": "hyperspace.result_failed", "text": "探索结束", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_defeat", "text": "舰体耗尽，探索失败", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
   {"key": "hyperspace.result_user_exit", "text": "主动退出", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},

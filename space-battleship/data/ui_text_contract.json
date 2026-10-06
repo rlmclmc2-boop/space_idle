@@ -1,5 +1,6 @@
 {
   "entries": {
+    "hyperspace.recent_interrupted_refund": {"params": ["weapon", "level", "refund"]},
     "equipment.continuous_beam_snapshot_hint": {"params": []},
     "hyperspace.queue_departure_hint": {"params": []},
     "hyperspace.quote_execution_result": {"params": ["cost", "count"]},

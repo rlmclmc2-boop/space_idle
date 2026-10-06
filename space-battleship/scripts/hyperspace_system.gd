@@ -54,7 +54,12 @@ func load_state(g,raw: Variant) -> bool:
 	var receipt: Dictionary=g.profile.hyperspace.active
 	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
 		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
-		complete(g,int(receipt.round_id),int(receipt.run_id),false)
+		var energy_before:float=float(g.profile.hyperspace.energy)
+		var refunded:bool=complete(g,int(receipt.round_id),int(receipt.run_id),false)
+		var actual_refund:float=float(g.profile.hyperspace.energy)-energy_before
+		# Session-only feedback for this real settlement, never persisted/replayed.
+		if refunded and actual_refund>0:
+			g.manual_hyperspace.last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"interrupted_reload","refund":actual_refund}
 	return true
 
 func snapshot(g) -> Dictionary:

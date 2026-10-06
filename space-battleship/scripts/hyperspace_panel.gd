@@ -346,7 +346,9 @@ func refresh_progress() -> void:
  var session=host.game.manual_hyperspace
  var result:Dictionary=session.last_result
  put(recent_result,"visible",not result.is_empty())
- if not result.is_empty():
+ if result.get("reason","")=="interrupted_reload":
+  put(recent_result,"text",t("recent_interrupted_refund",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"refund":"%.0f"%float(result.refund)}))
+ elif not result.is_empty():
   put(recent_result,"text",t("recent_result",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"reason":t("result_"+str(result.reason)),"elapsed":"%.1f"%float(result.elapsed),"point":str(result.end_point),"refund":"%.0f"%float(result.refund),"stage":str(result.return_stage),"main_point":str(result.return_point)}))
  put(cancel_queue_button,"visible",not session.queued.is_empty())
  put(queue_departure_hint,"visible",not session.queued.is_empty())
