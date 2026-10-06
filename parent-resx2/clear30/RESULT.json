@@ -1,0 +1,35 @@
+{
+  "summary_status": "bounded_partial",
+  "clear30": 89840.4166672909,
+  "total_x1_h": 24.955671296469696,
+  "wall_seconds": 4059.320373,
+  "input_failure": {},
+  "scope": "actual c90 original20 then own22 formalreload to30; original2d uninterrupted30 reference only; terminalreport known error retained; no claimfull fresh sameversion",
+  "files": {
+    "checkpoint.bin.gz": {
+      "raw_sha256": "77ce1d72c29d8ecc94edca16d8ed2af5fc4fc0721c19a59637f731e3114df0a3",
+      "gzip_sha256": "6daee48e52b14ccf99aca542f6fd39e50b94b376b8acd1d2dca62168deea9eb3",
+      "gzip_bytes": 58975
+    },
+    "save_final.json.gz": {
+      "raw_sha256": "22b985944b48a005a22b0e7f3a0c86518f11e16a086e1cece2ed19666fbdeff2",
+      "gzip_sha256": "36a9acb83fc2d5c8887ace4ba6a57057dbc5123c10cbb5c65b53f815834ab123",
+      "gzip_bytes": 8772
+    },
+    "longrun-summary.json.gz": {
+      "raw_sha256": "b24c8435973a733233e27bd8a4f9e307c37e2d09987aa0da9e2263402bcaf054",
+      "gzip_sha256": "b412c5b8a0712c2d3dbc3a78a49ae941e1310535d954f070301ced2210fa3b2f",
+      "gzip_bytes": 116276
+    },
+    "actions.jsonl.gz": {
+      "raw_sha256": "79f1cf6e98f492ded041accef81bc30cd28e4b201da7d515299381488c908e00",
+      "gzip_sha256": "702d6c8703d8c57c5b4b7f8eb7feecbb975eb27aa51267af80241892fb094e14",
+      "gzip_bytes": 337373
+    },
+    "run.log.gz": {
+      "raw_sha256": "649d354810a2fd58a6cd63b25b82712a5f24bcb2087f3f7d7070ce83249cc91d",
+      "gzip_sha256": "e50351b845797f8a2f9394b97686a5470e36c55cf8c1046ea3b06c3e0ecd8b8c",
+      "gzip_bytes": 4586
+    }
+  }
+}
