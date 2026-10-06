@@ -1,0 +1,52 @@
+{
+  "candidate": "8a20d4c738fe1e9a3d05cf4ee983d4069d29202b",
+  "workbook_source": "322d8d7809c6b0db3e493be8d1f606013d57ef8a/hyperspace-excel-entity-v2",
+  "workbook_sha256": {
+    "hyperspace_config.xlsx": "ccef919897ccb7ef3d80cf7e0ae9671fd896e83d5431e0da4cb7712ced626536",
+    "hyperspace_enemies.xlsx": "802735530bd8c03ea524643849c82f8f3be3c7eccd1ce13579821ec7caa356e0"
+  },
+  "latest_authoring_contract": "e8351dc",
+  "comparison": {
+    "hyperspace_config.json": {
+      "all_existing_values_equal_f9": true,
+      "existing_dictionary_and_array_orders_equal_f9": true,
+      "current_projected_semantics_equal_candidate": true
+    },
+    "space_enemy_candidates.json": {
+      "all_existing_values_equal_f9": true,
+      "existing_dictionary_and_array_orders_equal_f9": true,
+      "current_projected_semantics_equal_candidate": true
+    },
+    "space_enemy_routes.json": {
+      "all_existing_values_equal_f9": true,
+      "existing_dictionary_and_array_orders_equal_f9": true,
+      "current_projected_semantics_equal_candidate": true
+    },
+    "space_enemy_reward_recipes.json": {
+      "all_existing_values_equal_f9": true,
+      "existing_dictionary_and_array_orders_equal_f9": true,
+      "current_projected_semantics_equal_candidate": true
+    },
+    "space_enemy_reward_catalog.json": {
+      "all_existing_values_equal_f9": true,
+      "existing_dictionary_and_array_orders_equal_f9": true,
+      "current_projected_semantics_equal_candidate": true
+    }
+  },
+  "added_defaults": {
+    "modernization_base_coefficient": 1.0,
+    "auto_duration_crew_base": 100.0,
+    "auto_ticket_crew_base": 20.0
+  },
+  "python_tests": 11,
+  "godot_numeric_consumer_assertions": 16,
+  "godot_catalog_consumer_assertions": 19,
+  "godot_boundary_assertions": 10,
+  "invalid_startup_preserves_sentinel_save": true,
+  "ui_catalog_rows": 2140,
+  "remaining": "Parent reexports same21-sheet workbooks with latest Chinese remarks/protection; final readback/integration pending.",
+  "atomicity_scope": "five JSON plus import state and changed mainline share ordinary replace-failure rollback; no process-crash multi-file atomicity claim",
+  "frozen_sources": "1960 source mapping SHA and original plan SHA plus current stage/node/group/source_group structural validation",
+  "no_longrun": true,
+  "main_unchanged": true
+}
