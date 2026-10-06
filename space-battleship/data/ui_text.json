@@ -14294,9 +14294,13 @@
     "text": "暂无生效传说效果",
     "params": "",
     "category": "hyperspace"
-  }
-,
-  {"key":"hyperspace.exit_manual","text":"退出探索","params":"","category":"hyperspace"},
+  },
+  {
+    "key": "hyperspace.exit_manual",
+    "text": "退出探索",
+    "params": "",
+    "category": "hyperspace"
+  },
   {
     "key": "hyperspace.manual_busy",
     "category": "hyperspace",
@@ -14381,31 +14385,181 @@
     "text": "本轮成长和异空间材料重置；铁、铀和时空粒子保留。",
     "params": ""
   },
-  {"key": "hyperspace.queue_start", "text": "排队挑战", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_cancel", "text": "取消排队", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_already", "text": "已有挑战请求在排队；尚未扣票，可取消。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait", "text": "已排队：{weapon} 等级{level}；{reason}。尚未扣票，可取消。", "params": "{weapon},{level},{reason}", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait_battle", "text": "等待当前战点结束", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait_guard", "text": "等待你停止守点", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait_unlock", "text": "等待主线解锁提示确认", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait_projectiles", "text": "等待残留弹幕结清", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_wait_ready", "text": "等待继续航行后派发", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_failed_energy", "text": "排队已取消：派发前能源不足，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_failed_busy", "text": "排队已取消：已有探索或待领取奖励，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_failed_unavailable", "text": "排队已取消：路线或等级当前不可用，未扣票。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_failed_round_changed", "text": "重铸已取消未扣票的挑战排队。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "hyperspace.queue_failed_reload", "text": "读档已取消未扣票的挑战排队。", "params": "", "category": "hyperspace", "note": "手动挑战安全排队反馈"},
-  {"key": "planet.reforge_zero_title", "text": "确认不保留任何无人机", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
-  {"key": "planet.reforge_zero_warning", "text": "未选择保留，将删除全部 {count} 架无人机，包括收藏和已装备的无人机，并进行重铸。此操作无法撤销。", "params": "{count}", "category": "planet", "note": "零保留单独破坏性确认"},
-  {"key": "planet.reforge_zero_confirm", "text": "删除全部并重铸", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
-  {"key": "planet.reforge_zero_cancel", "text": "返回选择", "params": "", "category": "planet", "note": "零保留单独破坏性确认"},
-  {"key": "hyperspace.recent_result", "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}", "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_success", "text": "探索成功", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_failed", "text": "探索结束", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_defeat", "text": "舰体耗尽，探索失败", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_user_exit", "text": "主动退出", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
-  {"key": "hyperspace.result_formation_invalid", "text": "敌舰布局异常，探索已结束并退回实际可容纳的能量", "params": "", "category": "hyperspace", "note": "显示布局校验拒绝后的事务失败结果"},
-  {"key": "hyperspace.result_setup_failed", "text": "探索未能正常启动", "params": "", "category": "hyperspace", "note": "当前会话最近探索结果，不是QA超时"},
+  {
+    "key": "hyperspace.queue_start",
+    "text": "排队挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_cancel",
+    "text": "取消排队",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_already",
+    "text": "已有挑战请求在排队；尚未扣票，可取消。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait",
+    "text": "已排队：{weapon} 等级{level}；{reason}。尚未扣票，可取消。",
+    "params": "{weapon},{level},{reason}",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait_battle",
+    "text": "等待当前战点结束",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait_guard",
+    "text": "等待你停止守点",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait_unlock",
+    "text": "等待主线解锁提示确认",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait_projectiles",
+    "text": "等待残留弹幕结清",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_wait_ready",
+    "text": "等待继续航行后派发",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_energy",
+    "text": "排队已取消：派发前能源不足，未扣票。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_busy",
+    "text": "排队已取消：已有探索或待领取奖励，未扣票。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_unavailable",
+    "text": "排队已取消：路线或等级当前不可用，未扣票。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_round_changed",
+    "text": "重铸已取消未扣票的挑战排队。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_reload",
+    "text": "读档已取消未扣票的挑战排队。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动挑战安全排队反馈"
+  },
+  {
+    "key": "planet.reforge_zero_title",
+    "text": "确认不保留任何无人机",
+    "params": "",
+    "category": "planet",
+    "note": "零保留单独破坏性确认"
+  },
+  {
+    "key": "planet.reforge_zero_warning",
+    "text": "未选择保留，将删除全部 {count} 架无人机，包括收藏和已装备的无人机，并进行重铸。此操作无法撤销。",
+    "params": "{count}",
+    "category": "planet",
+    "note": "零保留单独破坏性确认"
+  },
+  {
+    "key": "planet.reforge_zero_confirm",
+    "text": "删除全部并重铸",
+    "params": "",
+    "category": "planet",
+    "note": "零保留单独破坏性确认"
+  },
+  {
+    "key": "planet.reforge_zero_cancel",
+    "text": "返回选择",
+    "params": "",
+    "category": "planet",
+    "note": "零保留单独破坏性确认"
+  },
+  {
+    "key": "hyperspace.recent_result",
+    "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}",
+    "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
+  {
+    "key": "hyperspace.result_success",
+    "text": "探索成功",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
+  {
+    "key": "hyperspace.result_failed",
+    "text": "探索结束",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
+  {
+    "key": "hyperspace.result_defeat",
+    "text": "舰体耗尽，探索失败",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
+  {
+    "key": "hyperspace.result_user_exit",
+    "text": "主动退出",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
+  {
+    "key": "hyperspace.result_formation_invalid",
+    "text": "敌舰布局异常，探索已结束并退回实际可容纳的能量",
+    "params": "",
+    "category": "hyperspace",
+    "note": "显示布局校验拒绝后的事务失败结果"
+  },
+  {
+    "key": "hyperspace.result_setup_failed",
+    "text": "探索未能正常启动",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前会话最近探索结果，不是QA超时"
+  },
   {
     "key": "crew.hyperspace_reserved_short",
     "text": "异空间占用",
@@ -14430,28 +14584,146 @@
     "params": "level,cleared",
     "category": "hyperspace"
   },
-  {"key": "hyperspace.queue_failed_invalid_main_return", "text": "排队已取消：当前主线状态暂时无法保存，未扣票。请继续航行后再试；若重复出现，请保存并重新载入。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
-  {"key": "hyperspace.queue_failed_setup_failed", "text": "排队已取消：当前无法开始探索，未扣票。请继续航行后再试。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
-  {"key": "hyperspace.promotion_risk_hint", "text": "随机选择一个未锁定词条尝试升阶；失败仍消耗报价材料，成功只升一阶并重新随机数值。凶兆开启时，仅从最差阶级的未锁定词条中选择。", "params": "", "category": "hyperspace", "note": "真实失败归因与付费预期反馈"},
-  {"key": "hyperspace.forge_paid_summary", "text": "本次消耗：{cost}。再次改造前请重新预览。", "params": "cost", "category": "hyperspace", "note": "已执行报价及当前实际材料余额"},
-  {"key": "hyperspace.auto_stopped", "text": "自动探索已停止；可开始手动探索。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.auto_waiting", "text": "自动探索已启用，等待满足开始条件。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.auto_waiting_energy", "text": "自动探索已启用，等待能量充满后开始。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.auto_waiting_warehouse", "text": "自动探索已启用，等待仓库空位。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.modernize_preview", "text": "现代化：等级 {before} → {after}\n词条效果：\n{effects}", "params": "before,after,effects", "category": "hyperspace", "note": "付款前只读目标和已有词条效果预览"},
-  {"key": "hyperspace.modernize_effect", "text": "{name}：{before} → {after}", "params": "name,before,after", "category": "hyperspace"},
-  {"key": "hyperspace.modernize_no_affixes", "text": "此无人机没有词条。", "params": "", "category": "hyperspace"},
-  {"key": "hyperspace.quote_execution_result", "text": "消耗：{cost}\n执行次数：{count}", "params": "cost,count", "category": "hyperspace", "note": "现代化非随机执行，不显示抽取次数"},
-{"key": "equipment.continuous_beam_snapshot_hint", "text": "持续束沿用开火时的属性；升级在下一束开火时生效。", "params": "", "category": "weapon", "note": "装备详情持续束属性快照说明"},
-{"key": "hyperspace.queue_departure_hint", "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。", "params": "", "category": "hyperspace", "note": "手动排队底部提示，不进入探索小卡"},
-{"key": "hyperspace.dismantle_source_hint", "text": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。", "params": "", "category": "hyperspace"},
-{"key": "hyperspace.module_source_hint", "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。", "params": "", "category": "hyperspace"},
-{"key": "hyperspace.reward_material_item", "text": "{material} ×{count}", "params": "material,count", "category": "hyperspace"},
-{"key": "hyperspace.dismantle_preview", "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。", "params": "materials,count", "category": "hyperspace"},
-{"key": "hyperspace.dismantle_received_materials", "text": "实际收到：{materials}", "params": "materials", "category": "hyperspace"},
-{"key": "hyperspace.dismantle_received_module", "text": "{name} ×{count}：{state}，当前等级 {level}；获得经验 {exp}。", "params": "name,count,state,level,exp", "category": "hyperspace"},
-{"key": "hyperspace.module_first_unlock", "text": "首次解锁", "params": "", "category": "hyperspace"},
-{"key": "hyperspace.module_duplicate", "text": "重复副本", "params": "", "category": "hyperspace"},
+  {
+    "key": "hyperspace.queue_failed_invalid_main_return",
+    "text": "排队已取消：当前主线状态暂时无法保存，未扣票。请继续航行后再试；若重复出现，请保存并重新载入。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "真实失败归因与付费预期反馈"
+  },
+  {
+    "key": "hyperspace.queue_failed_setup_failed",
+    "text": "排队已取消：当前无法开始探索，未扣票。请继续航行后再试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "真实失败归因与付费预期反馈"
+  },
+  {
+    "key": "hyperspace.promotion_risk_hint",
+    "text": "随机选择一个未锁定词条尝试升阶；失败仍消耗报价材料，成功只升一阶并重新随机数值。凶兆开启时，仅从最差阶级的未锁定词条中选择。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "真实失败归因与付费预期反馈"
+  },
+  {
+    "key": "hyperspace.forge_paid_summary",
+    "text": "本次消耗：{cost}。再次改造前请重新预览。",
+    "params": "cost",
+    "category": "hyperspace",
+    "note": "已执行报价及当前实际材料余额"
+  },
+  {
+    "key": "hyperspace.auto_stopped",
+    "text": "自动探索已停止；可开始手动探索。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_waiting",
+    "text": "自动探索已启用，等待满足开始条件。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_waiting_energy",
+    "text": "自动探索已启用，等待能量充满后开始。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.auto_waiting_warehouse",
+    "text": "自动探索已启用，等待仓库空位。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.modernize_preview",
+    "text": "现代化：等级 {before} → {after}\n词条效果：\n{effects}",
+    "params": "before,after,effects",
+    "category": "hyperspace",
+    "note": "付款前只读目标和已有词条效果预览"
+  },
+  {
+    "key": "hyperspace.modernize_effect",
+    "text": "{name}：{before} → {after}",
+    "params": "name,before,after",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.modernize_no_affixes",
+    "text": "此无人机没有词条。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.quote_execution_result",
+    "text": "消耗：{cost}\n执行次数：{count}",
+    "params": "cost,count",
+    "category": "hyperspace",
+    "note": "现代化非随机执行，不显示抽取次数"
+  },
+  {
+    "key": "equipment.continuous_beam_snapshot_hint",
+    "text": "持续束沿用开火时的属性；升级在下一束开火时生效。",
+    "params": "",
+    "category": "weapon",
+    "note": "装备详情持续束属性快照说明"
+  },
+  {
+    "key": "hyperspace.queue_departure_hint",
+    "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "手动排队底部提示，不进入探索小卡"
+  },
+  {
+    "key": "hyperspace.dismantle_source_hint",
+    "text": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_source_hint",
+    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.reward_material_item",
+    "text": "{material} ×{count}",
+    "params": "material,count",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_preview",
+    "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。",
+    "params": "materials,count",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_received_materials",
+    "text": "实际收到：{materials}",
+    "params": "materials",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_received_module",
+    "text": "{name} ×{count}：{state}，当前等级 {level}；获得经验 {exp}。",
+    "params": "name,count,state,level,exp",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_first_unlock",
+    "text": "首次解锁",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_duplicate",
+    "text": "重复副本",
+    "params": "",
+    "category": "hyperspace"
+  },
   {
     "key": "hyperspace.restore_modernize_hint",
     "text": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
@@ -14472,5 +14744,19 @@
     "params": "{weapon},{level},{refund}",
     "category": "hyperspace",
     "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"
+  },
+  {
+    "key": "hyperspace.invalid_config_title",
+    "text": "异空间配置校验",
+    "params": "",
+    "category": "hyperspace",
+    "note": "启动失败诊断"
+  },
+  {
+    "key": "hyperspace.invalid_config_pack",
+    "text": "异空间配置校验失败。请成功导入两本异空间工作簿后重新启动；本次未读取或修改玩家存档。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "无效配置包启动阻断"
   }
 ]

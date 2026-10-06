@@ -83,11 +83,11 @@
   "hanging_initial_probability": 0.2,
   "additional_probability_factor": 0.25,
   "tier_weights": {
-    "1": 1,
-    "2": 5,
-    "3": 15,
-    "4": 45,
-    "5": 135
+    "1": 1.0,
+    "2": 5.0,
+    "3": 15.0,
+    "4": 45.0,
+    "5": 135.0
   },
   "value_precision": 0.001,
   "amplification_rate": 0.05,
@@ -163,7 +163,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -189,7 +189,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -215,7 +215,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -241,7 +241,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -259,7 +259,7 @@
       "ranges": {
         "1": [
           0.9,
-          1
+          1.0
         ],
         "2": [
           0.6,
@@ -285,7 +285,7 @@
       "ranges": {
         "1": [
           0.9,
-          1
+          1.0
         ],
         "2": [
           0.6,
@@ -311,7 +311,7 @@
       "ranges": {
         "1": [
           0.9,
-          1
+          1.0
         ],
         "2": [
           0.6,
@@ -414,12 +414,12 @@
     "chain_count": {
       "ranges": {
         "1": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "2": [
-          1,
-          1
+          1.0,
+          1.0
         ]
       },
       "amplified": false,
@@ -437,7 +437,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -463,7 +463,7 @@
         ],
         "3": [
           0.8,
-          1
+          1.0
         ],
         "4": [
           0.4,
@@ -480,7 +480,7 @@
   },
   "hanging_modules": {
     "resource_collector": {
-      "base_exp": 100,
+      "base_exp": 100.0,
       "exp_growth": 0.2,
       "effect_growth": 0.1,
       "unlock_stage": 0,
@@ -490,7 +490,7 @@
       ]
     },
     "distributed_algorithm": {
-      "base_exp": 100,
+      "base_exp": 100.0,
       "exp_growth": 0.2,
       "effect_growth": 0.1,
       "unlock_stage": 0,
@@ -499,7 +499,7 @@
       ]
     },
     "extra_storage": {
-      "base_exp": 100,
+      "base_exp": 100.0,
       "exp_growth": 0.2,
       "effect_growth": 0.1,
       "unlock_stage": 0,
@@ -508,7 +508,7 @@
       ]
     },
     "gem_refiner": {
-      "base_exp": 100,
+      "base_exp": 100.0,
       "exp_growth": 0.2,
       "effect_growth": 0.1,
       "unlock_stage": 15,
@@ -517,7 +517,7 @@
       ]
     },
     "hyperspace_charge": {
-      "base_exp": 100,
+      "base_exp": 100.0,
       "exp_growth": 0.2,
       "effect_growth": 0.1,
       "unlock_stage": 0,
@@ -532,12 +532,12 @@
       "weapon": "cannon",
       "parameters": {
         "damage_bonus": [
-          2,
-          3
+          2.0,
+          3.0
         ],
         "area_bonus": [
-          1,
-          2
+          1.0,
+          2.0
         ]
       },
       "constants": {
@@ -548,8 +548,8 @@
       "weapon": "laser",
       "parameters": {
         "single_target_bonus": [
-          2,
-          3
+          2.0,
+          3.0
         ]
       },
       "constants": {}
@@ -569,7 +569,7 @@
       "parameters": {
         "maximum_multiplier_bonus": [
           1.3,
-          2
+          2.0
         ]
       },
       "constants": {
@@ -582,7 +582,7 @@
       "parameters": {
         "damage_multiplier": [
           1.3,
-          2
+          2.0
         ]
       },
       "constants": {
@@ -595,8 +595,8 @@
       "weapon": "laser",
       "parameters": {
         "maximum_bonus": [
-          2,
-          3
+          2.0,
+          3.0
         ]
       },
       "constants": {
@@ -607,8 +607,8 @@
       "weapon": "missile",
       "parameters": {
         "damage_multiplier": [
-          7,
-          10
+          7.0,
+          10.0
         ]
       },
       "constants": {
@@ -620,8 +620,8 @@
       "weapon": "longLaser",
       "parameters": {
         "maximum_multiplier_bonus": [
-          1,
-          2
+          1.0,
+          2.0
         ]
       },
       "constants": {}
@@ -635,7 +635,7 @@
         ],
         "counter_damage_bonus": [
           0.7,
-          1
+          1.0
         ]
       },
       "constants": {
@@ -671,7 +671,7 @@
       "parameters": {
         "damage_multiplier": [
           1.3,
-          2
+          2.0
         ]
       },
       "constants": {
@@ -684,7 +684,7 @@
       "parameters": {
         "damage_and_defence_bonus": [
           0.7,
-          1
+          1.0
         ]
       },
       "constants": {
@@ -695,5 +695,8 @@
   "late_supply_unlock_stage": 60,
   "late_energy_rate_multiplier": 30.0,
   "late_material_reward_multiplier": 4,
-  "late_supply_ramp_seconds": 600
+  "late_supply_ramp_seconds": 600,
+  "modernization_base_coefficient": 1.0,
+  "auto_duration_crew_base": 100.0,
+  "auto_ticket_crew_base": 20.0
 }

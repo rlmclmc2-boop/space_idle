@@ -95,6 +95,11 @@ func best_x1(g,route: String,level: int) -> float:
 	if not eligible_level(g,route,level):return 0.0
 	return float(g.profile.hyperspace.history.get(route,{}).get(str(level),0.0))
 
+func auto_quote(best:float,crew_level:int) -> Dictionary:
+	var duration_base:=float(config.auto_duration_crew_base)
+	var ticket_base:=float(config.auto_ticket_crew_base)
+	return {"duration":maxf(float(config.minimum_duration),best*duration_base/(duration_base+crew_level)),"ticket":float(config.ticket)*ticket_base/(ticket_base+crew_level)}
+
 func start(g,route: String,level: int,mode: String,crew_id: String="",main_return:Dictionary={}) -> Dictionary:
 	var s: Dictionary=g.profile.hyperspace
 	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or not generation_ready():return {}
@@ -105,8 +110,8 @@ func start(g,route: String,level: int,mode: String,crew_id: String="",main_retur
 		var best:=best_x1(g,route,level)
 		if best<=0 or not Permission.crew_available(g,crew_id):return {}
 		var crew_level:=Permission.crew_level(g,crew_id)
-		duration=maxf(float(config.minimum_duration),best*100.0/(100.0+crew_level))
-		ticket*=20.0/(20.0+crew_level)
+		var quote:=auto_quote(best,crew_level)
+		duration=float(quote.duration);ticket=float(quote.ticket)
 	if float(s.energy)<ticket:return {}
 	var next: Dictionary=s.duplicate(true)
 	next.energy=float(s.energy)-ticket;next.blocked=false

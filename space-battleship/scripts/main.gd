@@ -245,6 +245,13 @@ func _ready() -> void:
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
 	game = create_battle_game(not automation_args.has("--capture"))
+	if not game.startup_error.is_empty():
+		set_process(false);set_process_unhandled_input(false)
+		var problem := AcceptDialog.new()
+		problem.title = UIText.t("hyperspace.invalid_config_title")
+		problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
+		add_child(problem);problem.popup_centered(Vector2i(900,420))
+		return
 	railgun_fx.configure(db)
 	if game.save_enabled:
 		load_music_setting()

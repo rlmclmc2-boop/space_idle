@@ -18,7 +18,7 @@ import zipfile
 from lxml import etree as ET
 
 import openpyxl
-from hyperspace_workbook import read_config as read_hyperspace_config
+from hyperspace_entities import read_bundle as read_hyperspace_bundle
 from import_workbook import ROOT, SECTIONS, read_rows, convert_sheet, projection_base, validate_projection, encode
 
 NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -26,7 +26,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 11
+CACHE_VERSION = 12
 
 
 def sha(value):
@@ -215,16 +215,11 @@ def incremental_import(directory, target):
     state = read_json(state_path)
     original = target.read_bytes() if target.exists() else b""
     current = json.loads(original) if original else {}
-    hyperspace_path = directory / 'hyperspace_config.xlsx'
-    hyperspace_target = target.with_name('hyperspace_config.json')
-    if hyperspace_target.exists() and not hyperspace_path.is_file():
-        raise ValueError('Missing authoritative hyperspace_config.xlsx')
-    hyperspace_raw = hyperspace_path.read_bytes() if hyperspace_path.is_file() else None
-    hyperspace_payload = None
-    if hyperspace_raw is not None:
-        hyperspace_data = read_hyperspace_config(hyperspace_raw)
-        hyperspace_payload = (json.dumps(hyperspace_data, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
-    hyperspace_changed = hyperspace_payload is not None and (not hyperspace_target.exists() or hyperspace_target.read_bytes() != hyperspace_payload)
+    hyperspace_paths = {name: directory / name for name in ('hyperspace_config.xlsx', 'hyperspace_enemies.xlsx')}
+    entity_required = any(p.exists() for p in hyperspace_paths.values()) or target.with_name('hyperspace_config.json').exists()
+    if entity_required and not all(p.is_file() for p in hyperspace_paths.values()):
+        raise ValueError('Both authoritative hyperspace entity workbooks are required')
+    hyperspace_raw = {name: path.read_bytes() for name,path in hyperspace_paths.items()} if entity_required else {}
     trustworthy = state.get("version") == CACHE_VERSION and state.get("directory") == str(directory.resolve()) and state.get("target_hash") == sha(original)
     hashes = state.get("hashes", {}) if trustworthy else {}
     snapshot, paths, changed = {}, {}, []
@@ -247,37 +242,43 @@ def incremental_import(directory, target):
         paths[name] = path
         if digest != hashes.get(name) or section not in current:
             changed.append((name, raw))
-    if not changed:
-        if hyperspace_changed:
-            if hyperspace_path.read_bytes() != hyperspace_raw:
-                raise ValueError('Hyperspace workbook changed during import')
-            atomic_batch({hyperspace_target: hyperspace_payload})
-            return {"ok":True,"action":"import","changed":["hyperspace_config"],"parsed":["hyperspace_config"]}
-        return {"ok":True,"action":"import","changed":[],"parsed":[],"message":ui_text('debug.config_workbooks.message_07')}
-    data = projection_base(current, directory.name)
+    data = projection_base(current, directory.name) if changed else current
     for name, raw in changed:
         try:
             data[SECTIONS[name]] = read_changed_file(paths[name], name, raw)
         except Exception as error:
             raise ValueError(ui_text('debug.config_workbooks.message_101', name=paths[name].name, error=error)) from error
-    # Cross-table checks run against the merged JSON, not unchanged Excel files.
-    validate_projection(data)
-    data["source_files"] = {name:str(path.resolve()) for name,path in paths.items()}
-    payload = encode(data)
+    if changed:
+        validate_projection(data)
+        data["source_files"] = {name:str(path.resolve()) for name,path in paths.items()}
+    entity_outputs, frozen_snapshot = {}, {}
+    if hyperspace_raw:
+        projected, frozen_snapshot = read_hyperspace_bundle(hyperspace_raw, data, target.parent)
+        for filename, values in projected.items():
+            entity_target = target.with_name(filename)
+            entity_payload = (json.dumps(values, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+            if not entity_target.exists() or entity_target.read_bytes() != entity_payload:
+                entity_outputs[entity_target] = entity_payload
+    if not changed and not entity_outputs:
+        return {"ok":True,"action":"import","changed":[],"parsed":[],"message":ui_text('debug.config_workbooks.message_07')}
+    payload = encode(data) if changed else original
     # Never commit a snapshot that was changed again while it was being parsed.
     for name, path in paths.items():
         if sha(path.read_bytes()) != snapshot[name]:
             raise ValueError(ui_text('debug.config_workbooks.message_08', name=path.name))
     next_state = {"version":CACHE_VERSION,"directory":str(directory.resolve()),"target_hash":sha(payload),"hashes":snapshot}
-    outputs = {target:payload, state_path:encode(next_state)}
-    if hyperspace_raw is not None and hyperspace_path.read_bytes() != hyperspace_raw:
-        raise ValueError('Hyperspace workbook changed during import')
-    if hyperspace_changed:
-        outputs[hyperspace_target] = hyperspace_payload
+    next_state['hyperspace_hashes'] = {name:sha(raw) for name,raw in hyperspace_raw.items()}
+    outputs = {target:payload, state_path:encode(next_state)} if changed else {state_path:encode(next_state)}
+    for name, raw in hyperspace_raw.items():
+        if hyperspace_paths[name].read_bytes() != raw:
+            raise ValueError('Hyperspace workbook changed during import: ' + name)
+    for path, raw in frozen_snapshot.items():
+        if path.read_bytes() != raw:
+            raise ValueError('Frozen reward baseline changed during import: ' + path.name)
+    outputs.update(entity_outputs)
     atomic_batch(outputs)
     names = [name for name, _ in changed]
-    if hyperspace_changed:
-        names.append('hyperspace_config')
+    names.extend(path.stem for path in entity_outputs)
     return {"ok":True,"action":"import","changed":names,"parsed":names,"message":ui_text('debug.config_workbooks.message_03', names="、".join(names))}
 
 

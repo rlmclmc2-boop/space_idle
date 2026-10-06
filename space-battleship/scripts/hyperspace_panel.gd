@@ -334,7 +334,7 @@ func refresh_start_reason() -> void:
 func display_ticket(s: Dictionary) -> float:
  if not s.active.is_empty():return float(s.active.ticket)
  var h=host.game.hyperspace
- if s.auto.enabled:return float(h.config.ticket)*20.0/(20.0+h.Permission.crew_level(host.game,str(s.auto.crew_id)))
+ if s.auto.enabled:return float(h.auto_quote(0.0,h.Permission.crew_level(host.game,str(s.auto.crew_id))).ticket)
  return float(h.config.ticket)
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active

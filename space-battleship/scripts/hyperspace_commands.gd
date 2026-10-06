@@ -157,7 +157,7 @@ func show_crew() -> void:
  refresh_crew();crew_dialog.popup_centered(Vector2i(720,390))
 func refresh_crew() -> void:
  var id=str(crew_choice.get_item_metadata(crew_choice.selected));var lv=h().Permission.crew_level(game(),id);var best=h().best_x1(game(),panel.route,int(panel.level.value))
- var ticket=float(h().config.ticket)*20.0/(20.0+lv);var duration=maxf(float(h().config.minimum_duration),best*100.0/(100.0+lv))
+ var quote=h().auto_quote(best,lv);var ticket=float(quote.ticket);var duration=float(quote.duration)
  crew_info.text=t("auto_projection",{"ticket":"%.1f"%ticket,"duration":"%.1f"%duration,"status":t("auto_enabled") if game().profile.hyperspace.auto.enabled else t("auto_disabled")})
  crew_enable.disabled=id.is_empty() or not h().Permission.crew_available(game(),id) or best<=0
 func set_auto(enabled: bool) -> void:

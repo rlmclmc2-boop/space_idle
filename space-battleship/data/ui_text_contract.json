@@ -1,5 +1,7 @@
 {
   "entries": {
+    "hyperspace.invalid_config_title": {"params": []},
+    "hyperspace.invalid_config_pack": {"params": []},
     "hyperspace.recent_interrupted_refund": {"params": ["weapon", "level", "refund"]},
     "hyperspace.restore_modernize_hint": {"params": []},
     "galaxy.complete_crew_hint": {"params": []},

@@ -75,6 +75,7 @@ var first_clear := false
 var run_resources := {"1": 0.0, "2": 0.0}
 var uid := 0
 var projectile_serial := 0
+var startup_error := ""
 var save_enabled := true
 var stat_cache_enabled := false
 var stat_cache: Dictionary = {}
@@ -122,6 +123,10 @@ func economy_time() -> float:
 
 func _init(database: ShipDatabase, persist := true) -> void:
 	db = database
+	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
+		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
+		push_error(startup_error)
+		return
 	speed = default_speed()
 	save_enabled = persist
 	stat_cache_enabled = persist

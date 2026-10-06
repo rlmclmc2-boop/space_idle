@@ -32,9 +32,10 @@ func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
 		reward_binder=RewardBinding.new()
 		if not reward_binder.load_contract():last_error=reward_binder.last_error;route_ids={};registry={};return false
 		# Validate all forty at unlock and current reach; selected levels rebind before charge.
-		var levels:Array=[7]
-		var reached:int=clampi(int(g.profile.highestLevel),7,g.db.levels.size())
-		if reached!=7:levels.append(reached)
+		var unlock:int=int(g.hyperspace.config.unlock_stage)
+		var levels:Array=[unlock]
+		var reached:int=clampi(int(g.profile.highestLevel),unlock,g.db.levels.size())
+		if reached!=unlock:levels.append(reached)
 		for level in levels:
 			if reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g)).is_empty():last_error=reward_binder.last_error;route_ids={};registry={};reward_binder=null;return false
 	production_accepted=true;return true
