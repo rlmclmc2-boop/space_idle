@@ -1,0 +1,1032 @@
+{
+  "cutoff_x1": 136522.949989755,
+  "source_x1": 124437.033325902,
+  "source_cp_sha256": "f648b5f8f9c754c93ebcd35780c6c385fe1f4ee99cced7a0d7a25fcd3d6e603c",
+  "logical_delta": 12085.916663853,
+  "metrics_delta": {
+    "clicks": 3577,
+    "checks": 1081,
+    "visits": 1014,
+    "deaths": 31,
+    "operation_seconds": 770.1000000004706,
+    "space_seconds": 159.7333333331901,
+    "farm_seconds": 4011.0499990661046
+  },
+  "exclusive_main_state_seconds": {
+    "travel": 910.2999999999242,
+    "combat": 10861.033333284768,
+    "retreat": 37.19999999999929,
+    "clear_notice": 117.64999999999932,
+    "other": 0.0
+  },
+  "main_plus_space_seconds": 12085.91666661788,
+  "exclusive_time_matches_delta": true,
+  "overlap_warning": "operation_seconds is an overlapping input budget; farm_seconds covers safe_farm.phase != idle and overlaps main battle/travel. Do not sum these into exclusive wall/X1 time.",
+  "stage_rows_delta": {
+    "5": {
+      "travel": 14.999999999999197,
+      "combat": 18.150000000004013,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666671,
+      "other": 0.0,
+      "clicks": 215,
+      "checks": 87,
+      "page_visits": 80,
+      "growth_blocked_checks": 66
+    },
+    "6": {
+      "travel": 17.99999999999899,
+      "combat": 24.99999999997692,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 153,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "7": {
+      "travel": 17.999999999999005,
+      "combat": 142.0000000018099,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666671,
+      "other": 0.0,
+      "clicks": 284,
+      "checks": 158,
+      "page_visits": 132,
+      "growth_blocked_checks": 101
+    },
+    "8": {
+      "travel": 17.99999999999889,
+      "combat": 90.516666666584,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 263,
+      "checks": 95,
+      "page_visits": 82,
+      "growth_blocked_checks": 74
+    },
+    "9": {
+      "travel": 17.999999999998906,
+      "combat": 30.449999999969805,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 62,
+      "checks": 59,
+      "page_visits": 45,
+      "growth_blocked_checks": 50
+    },
+    "10": {
+      "travel": 17.999999999998593,
+      "combat": 35.99999999996987,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666684,
+      "other": 0.0,
+      "clicks": 103,
+      "checks": 62,
+      "page_visits": 54,
+      "growth_blocked_checks": 46
+    },
+    "11": {
+      "travel": 17.99999999999899,
+      "combat": 29.766666666639026,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 54,
+      "checks": 10,
+      "page_visits": 10,
+      "growth_blocked_checks": 4
+    },
+    "12": {
+      "travel": 17.999999999998593,
+      "combat": 104.39999999990505,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666671,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "13": {
+      "travel": 17.999999999999005,
+      "combat": 30.99999999997999,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "14": {
+      "travel": 18.000000000013983,
+      "combat": 95.76666666788014,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 56,
+      "checks": 10,
+      "page_visits": 10,
+      "growth_blocked_checks": 5
+    },
+    "15": {
+      "travel": 17.999999999999005,
+      "combat": 22.866666666639958,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666671,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "16": {
+      "travel": 18.000000000013983,
+      "combat": 59.78333333406954,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "17": {
+      "travel": 18.000000000014012,
+      "combat": 44.3833333326902,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "18": {
+      "travel": 17.9999999999989,
+      "combat": 53.81666666670901,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 13,
+      "checks": 5,
+      "page_visits": 4,
+      "growth_blocked_checks": 3
+    },
+    "19": {
+      "travel": 17.999999999984027,
+      "combat": 157.3499999977994,
+      "retreat": 0.0,
+      "clear_notice": 3.0166666666665023,
+      "other": 0.0,
+      "clicks": 7,
+      "checks": 5,
+      "page_visits": 6,
+      "growth_blocked_checks": 4
+    },
+    "20": {
+      "travel": 18.00000000001498,
+      "combat": 103.60000000132004,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666684,
+      "other": 0.0,
+      "clicks": 16,
+      "checks": 10,
+      "page_visits": 10,
+      "growth_blocked_checks": 7
+    },
+    "21": {
+      "travel": 18.000000000013983,
+      "combat": 58.68333333248029,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "22": {
+      "travel": 18.000000000015007,
+      "combat": 24.93333333299961,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "23": {
+      "travel": 18.000000000014012,
+      "combat": 59.233333332469556,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "24": {
+      "travel": 17.999999999984027,
+      "combat": 160.28333333099908,
+      "retreat": 0.0,
+      "clear_notice": 3.0166666666665023,
+      "other": 0.0,
+      "clicks": 26,
+      "checks": 10,
+      "page_visits": 10,
+      "growth_blocked_checks": 4
+    },
+    "25": {
+      "travel": 17.999999999999403,
+      "combat": 105.93333333323994,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666671,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "26": {
+      "travel": 18.00000000000601,
+      "combat": 51.08333333258997,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "27": {
+      "travel": 18.000000000015007,
+      "combat": 28.23333333292976,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 120,
+      "checks": 10,
+      "page_visits": 10,
+      "growth_blocked_checks": 3
+    },
+    "28": {
+      "travel": 18.000000000008,
+      "combat": 31.00000000038972,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "29": {
+      "travel": 18.000000000015007,
+      "combat": 14.999999999779902,
+      "retreat": 0.0,
+      "clear_notice": 3.0166666666663993,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "30": {
+      "travel": 17.999999999999005,
+      "combat": 28.999999999969987,
+      "retreat": 0.0,
+      "clear_notice": 3.016666666666598,
+      "other": 0.0,
+      "clicks": 2,
+      "checks": 0,
+      "page_visits": 1,
+      "growth_blocked_checks": 0
+    },
+    "31": {
+      "travel": 18.000000000015007,
+      "combat": 120.20000000153004,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 74,
+      "checks": 1,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "32": {
+      "travel": 17.999999999998707,
+      "combat": 37.28333333380988,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 45,
+      "checks": 9,
+      "page_visits": 10,
+      "growth_blocked_checks": 4
+    },
+    "33": {
+      "travel": 17.9999999999989,
+      "combat": 75.400000000053,
+      "retreat": 0.0,
+      "clear_notice": 3.01666666666666,
+      "other": 0.0,
+      "clicks": 0,
+      "checks": 0,
+      "page_visits": 0,
+      "growth_blocked_checks": 0
+    },
+    "34": {
+      "travel": 291.216666666484,
+      "combat": 4413.4666666024705,
+      "retreat": 19.199999999998994,
+      "clear_notice": 30.1666666666662,
+      "other": 0.0,
+      "clicks": 1367,
+      "checks": 353,
+      "page_visits": 360,
+      "growth_blocked_checks": 233
+    },
+    "35": {
+      "travel": 100.083333333329,
+      "combat": 4606.45000001711,
+      "retreat": 18.0000000000003,
+      "clear_notice": 0.0,
+      "other": 0.0,
+      "clicks": 717,
+      "checks": 197,
+      "page_visits": 190,
+      "growth_blocked_checks": 155
+    }
+  },
+  "event_counts": {
+    "checkpoint_resumed": 2,
+    "checkpoint_saved": 94,
+    "run_start": 2,
+    "burst_end": 325,
+    "page_visit": 1014,
+    "check": 1081,
+    "navigation_rejected": 1,
+    "tour_end": 108,
+    "tour_start": 107,
+    "click": 2448,
+    "visible_loadout_decision": 75,
+    "safe_farm_event": 1137,
+    "domain_action": 115,
+    "crew_transfer_burst_start": 1,
+    "crew_transfer_navigation": 3,
+    "crew_transfer_burst_end": 1,
+    "round_first_clear": 31,
+    "space_feedback": 54,
+    "manual_request_queued": 2,
+    "manual_boundary_dispatch": 2,
+    "manual_retry_feedback": 2,
+    "space_actual_result": 2,
+    "operator_stop": 1,
+    "visible_loadout_failure": 31,
+    "first_clear": 2
+  },
+  "domain_counts": {
+    "crew_release": 64,
+    "crew_transfer_recall": 1,
+    "crew_assign_equipment": 1,
+    "crew_transfer_explore": 1,
+    "space_favorite": 6,
+    "space_auto": 7,
+    "space_equip": 5,
+    "space_preset": 5,
+    "space_manual": 2,
+    "enhancement_branch": 2,
+    "space_unseal": 10,
+    "space_forge": 7,
+    "space_hangings": 3,
+    "space_auto_pause": 1
+  },
+  "forge_counts": {
+    "dismantle": 5,
+    "add_affix": 1,
+    "add_hanging_slot": 1
+  },
+  "claims": [
+    {
+      "receipt": [
+        2,
+        1
+      ],
+      "at": 124683.799992512,
+      "phase": "native",
+      "route": "alpha",
+      "level": 5,
+      "mode": "auto",
+      "ticket": 58378.3783783784,
+      "receipt_duration": 152.193732193761,
+      "materials": {
+        "degenerate_matter": 1
+      },
+      "drone": {
+        "affixes": [],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-7556211938283441793",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "space:2:1",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 5,
+        "omen": false,
+        "origin_quality": "white",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      },
+      "cores": 0
+    },
+    {
+      "receipt": [
+        2,
+        2
+      ],
+      "at": 124767.216659159,
+      "phase": "native",
+      "route": "gamma",
+      "level": 5,
+      "mode": "manual",
+      "ticket": 108000.0,
+      "receipt_duration": 0.0,
+      "materials": {
+        "antiproton": 1
+      },
+      "drone": {
+        "affixes": [
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 5,
+            "value": 0.013
+          },
+          {
+            "key": "armour_capacity",
+            "locked": false,
+            "tier": 5,
+            "value": 0.16
+          },
+          {
+            "key": "armour_capacity",
+            "locked": false,
+            "tier": 5,
+            "value": 0.129
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "4406996084169618060",
+        "hanging_slots": 1,
+        "hangings": [],
+        "id": "space:2:2",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 5,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      },
+      "cores": 0,
+      "actual_manual_seconds": 65.7333333180286,
+      "actual_manual_start": 124701.466659174,
+      "actual_manual_end": 124767.199992492
+    },
+    {
+      "receipt": [
+        2,
+        3
+      ],
+      "at": 130657.499991121,
+      "phase": "cached",
+      "route": "beta",
+      "level": 30,
+      "mode": "manual",
+      "ticket": 108000.0,
+      "receipt_duration": 0.0,
+      "materials": {
+        "glueball": 9
+      },
+      "drone": {
+        "affixes": [
+          {
+            "key": "armour_capacity",
+            "locked": false,
+            "tier": 4,
+            "value": 0.566
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "7385849361428134372",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "space:2:3",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "drone_master",
+          "parameters": {
+            "maximum_reduction": 0.589
+          }
+        },
+        "level": 30,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "cores": 0,
+      "actual_manual_seconds": 93.9999999781139,
+      "actual_manual_start": 130563.483324476,
+      "actual_manual_end": 130657.483324454
+    }
+  ],
+  "forge_transactions": [
+    {
+      "at": 126807.316658684,
+      "phase": "cached",
+      "operation": "dismantle",
+      "id": "space:1:3",
+      "command_seq": 1,
+      "expected_revision": 1,
+      "ok": true,
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 1
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": 1,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 134
+    },
+    {
+      "at": 126807.616658684,
+      "phase": "cached",
+      "operation": "dismantle",
+      "id": "space:1:8",
+      "command_seq": 2,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": 1,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 136
+    },
+    {
+      "at": 126807.916658684,
+      "phase": "cached",
+      "operation": "dismantle",
+      "id": "space:1:9",
+      "command_seq": 3,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": 1,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 138
+    },
+    {
+      "at": 127026.016658633,
+      "phase": "cached",
+      "operation": "dismantle",
+      "id": "space:1:12",
+      "command_seq": 4,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": 1,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 291
+    },
+    {
+      "at": 130740.516657768,
+      "phase": "cached",
+      "operation": "dismantle",
+      "id": "space:1:14",
+      "command_seq": 5,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {},
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": 1,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 3087
+    },
+    {
+      "at": 130740.816657768,
+      "phase": "cached",
+      "operation": "add_affix",
+      "id": "space:2:3",
+      "command_seq": 6,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {
+          "degenerate_matter": 1.0
+        },
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": -1,
+        "glueball": 0,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 3089
+    },
+    {
+      "at": 130741.116657768,
+      "phase": "cached",
+      "operation": "add_hanging_slot",
+      "id": "space:1:13",
+      "command_seq": 7,
+      "expected_revision": 0,
+      "ok": true,
+      "preview": {
+        "cost": {
+          "glueball": 10.0
+        },
+        "draws": 1,
+        "error": "",
+        "revision": 0
+      },
+      "material_delta": {
+        "antiproton": 0,
+        "degenerate_matter": 0,
+        "glueball": -10,
+        "zero_point_energy": 0
+      },
+      "raw_phase_line": 3091
+    }
+  ],
+  "material_balance": {
+    "antiproton": {
+      "initial": 0,
+      "claimed": 1,
+      "forge_delta": 0,
+      "expected": 1,
+      "actual": 1,
+      "match": true
+    },
+    "degenerate_matter": {
+      "initial": 0,
+      "claimed": 1,
+      "forge_delta": -1,
+      "expected": 0,
+      "actual": 0,
+      "match": true
+    },
+    "glueball": {
+      "initial": 0,
+      "claimed": 9,
+      "forge_delta": -5,
+      "expected": 4,
+      "actual": 4,
+      "match": true
+    },
+    "zero_point_energy": {
+      "initial": 0,
+      "claimed": 0,
+      "forge_delta": 0,
+      "expected": 0,
+      "actual": 0,
+      "match": true
+    }
+  },
+  "all_material_balances_match": true,
+  "duplicate_claims": [],
+  "errors": [],
+  "fleet": [
+    {
+      "id": "space:1:2",
+      "affixes": [],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "7335463139941275162",
+      "hanging_slots": 1,
+      "hangings": [],
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 10,
+      "omen": false,
+      "origin_quality": "white",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": true,
+      "ultimate_affix": {
+        "key": "global_critical_damage",
+        "locked": false,
+        "tier": 4,
+        "value": 0.256
+      },
+      "weapon": "laser"
+    },
+    {
+      "id": "space:2:3",
+      "affixes": [
+        {
+          "key": "armour_capacity",
+          "locked": false,
+          "tier": 4,
+          "value": 0.566
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 5,
+          "value": 0.08
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 1,
+      "forge_rng_state": "2631794696137382296",
+      "hanging_slots": 0,
+      "hangings": [],
+      "legendary": true,
+      "legendary_effect": {
+        "effect_id": "drone_master",
+        "parameters": {
+          "maximum_reduction": 0.589
+        }
+      },
+      "level": 30,
+      "omen": false,
+      "origin_quality": "legendary",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    {
+      "id": "space:1:11",
+      "affixes": [
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 4,
+          "value": 0.037
+        },
+        {
+          "key": "global_defence",
+          "locked": false,
+          "tier": 5,
+          "value": 0.075
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.206
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "8177203670080354894",
+      "hanging_slots": 1,
+      "hangings": [
+        "resource_collector"
+      ],
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 20,
+      "omen": false,
+      "origin_quality": "gold",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    {
+      "id": "space:1:13",
+      "affixes": [
+        {
+          "key": "damage_missile",
+          "locked": false,
+          "tier": 5,
+          "value": 0.191
+        },
+        {
+          "key": "repeat_chance",
+          "locked": false,
+          "tier": 5,
+          "value": 0.019
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 1,
+      "forge_rng_state": "4013098081692300514",
+      "hanging_slots": 1,
+      "hangings": [
+        "resource_collector"
+      ],
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 25,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    }
+  ],
+  "modules": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "extra_storage": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "gem_refiner": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "hyperspace_charge": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "resource_collector": {
+      "exp": 0.0,
+      "level": 1,
+      "unlocked": true
+    }
+  },
+  "frontier": 36,
+  "journey": {
+    "distance": 900.0,
+    "groupIndex": 9,
+    "guardArrived": false,
+    "pendingUnlocks": [
+      "crew/crew_05",
+      "planet/2"
+    ],
+    "retreatBossPending": false,
+    "stage": 35,
+    "state": 4
+  },
+  "round_clears": {
+    "1": {
+      "1": 136.300000000001,
+      "10": 7944.8666666352,
+      "11": 8710.21666662406,
+      "12": 9671.38333327674,
+      "13": 10939.0333332583,
+      "14": 14496.8833332065,
+      "15": 16248.5999998477,
+      "16": 20477.1999997862,
+      "17": 28670.0999996669,
+      "18": 28826.5666663313,
+      "19": 33583.7999997735,
+      "2": 231.650000000076,
+      "20": 45005.5500021004,
+      "21": 52110.5166702146,
+      "22": 64361.4333393771,
+      "23": 71043.3000050008,
+      "24": 78839.0666698523,
+      "25": 85597.0833349455,
+      "26": 90009.8333339181,
+      "27": 98496.2666652755,
+      "28": 102280.716664394,
+      "29": 107157.733329926,
+      "3": 365.316666666663,
+      "30": 110492.633329149,
+      "31": 114491.866661551,
+      "32": 116796.449994348,
+      "33": 116937.183327649,
+      "4": 731.833333332996,
+      "5": 1021.41666666607,
+      "6": 1926.14999999858,
+      "7": 4851.53333334688,
+      "8": 5575.80000000301,
+      "9": 6829.6333333181
+    },
+    "2": {
+      "10": 124964.966659113,
+      "11": 125015.749992434,
+      "12": 125141.166659072,
+      "13": 125193.183325726,
+      "14": 125309.966659032,
+      "15": 125353.849992356,
+      "16": 125434.649992337,
+      "17": 125500.049992322,
+      "18": 125574.883325637,
+      "19": 125753.249992263,
+      "20": 125877.8666589,
+      "21": 125957.566658882,
+      "22": 126003.516658871,
+      "23": 126083.766658852,
+      "24": 126265.06665881,
+      "25": 126392.016658781,
+      "26": 126464.116658764,
+      "27": 126513.366658752,
+      "28": 126565.383325407,
+      "29": 126601.399992065,
+      "30": 126651.41665872,
+      "31": 126792.633325354,
+      "32": 126850.93332534,
+      "33": 126947.349991985,
+      "34": 128616.166658263,
+      "35": 136522.949989755,
+      "5": 124470.183325895,
+      "6": 124516.199992551,
+      "7": 124679.216659179,
+      "8": 124856.483325805,
+      "9": 124907.949992459
+    }
+  },
+  "reforges": [
+    {
+      "first_visible_eligibility": {
+        "eligibility_source": "Actual planet page production can_reforge_planet",
+        "first_visible_eligible_x1": 124437.033325902,
+        "frontier": 34
+      },
+      "planet": "1",
+      "round": 2,
+      "sealed": {
+        "space:1:10": 30,
+        "space:1:11": 30,
+        "space:1:12": 30,
+        "space:1:13": 30,
+        "space:1:14": 30,
+        "space:1:2": 30,
+        "space:1:3": 30,
+        "space:1:5": 30,
+        "space:1:8": 30,
+        "space:1:9": 30
+      },
+      "x1_seconds": 124437.033325902
+    }
+  ],
+  "scope": "SourceCP-to-cutoff only; raw transaction receipts and actual profile balance; no guessed reward/payouts or hidden simulation."
+}

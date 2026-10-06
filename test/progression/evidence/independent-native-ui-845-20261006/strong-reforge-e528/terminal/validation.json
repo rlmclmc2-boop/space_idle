@@ -1,0 +1,103 @@
+{
+  "target_commit": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+  "target_fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+  "immutable_package_mismatches": [],
+  "import_metadata_deltas": [
+    {
+      "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv1.glb.import",
+      "expected": "d842028f3604d891952601173fff5e1afd82a7bab5d6330a02fe9919803c148f",
+      "actual": "d9f405fc87973e80ae517d69dedf67db7882b7d6582870eac34dad3df08b65c7"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv2.glb.import",
+      "expected": "d13f49c226ba4f7c1df790a3d60cdfa1eb44bdaf2334a510d3b0902dd826b515",
+      "actual": "debcc9e0152416d409019b69d3c8d8ba9d6877e55988b2a820ac5c3d69febb6f"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv3.glb.import",
+      "expected": "245ff4303b40ca4ebffbc12579167597b0e0389f386149668c3a32eca6dc8b69",
+      "actual": "1b728e2162c346836df2bc58ab8a1428c447553290dc6b952fbe9ea00ac0aaf8"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv4.glb.import",
+      "expected": "6ea426c619ec43f27d96333aee624acb98ac6a68839ca1345488d2519b5114ab",
+      "actual": "5ad62d420d29a2bf49286b7a61a1d3737cf5be20e5c9b42103da11e0e566460d"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/colony_ring/colony_ring_lv5.glb.import",
+      "expected": "312cbd957f8925704a3f0c5fbd22ea906c90fc3fc061ff54b88dee2de7e1612c",
+      "actual": "df0d6717f63f5b234cbdf09e2502b325118407a1e0a13cac60da0b3db8d46930"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/crystal_refinery/crystal_refinery_lv1.glb.import",
+      "expected": "2bd4d42bc610746d6d4e71534e1b048e6cf2a0000c1f067556c116babb0b12f4",
+      "actual": "a5141660de85ce432e90dbc3f60313d5b1a25b4ec965b76cd75b95c664ec42d0"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/heavy_element_refinery/heavy_element_refinery_lv1.glb.import",
+      "expected": "6db766fdbde16dfe7af284bf29fcd2ba30ade5a646d1132cb67f03e146177ae7",
+      "actual": "497c4b1c54ae3746348b3be9d893ed9b34b3b613800c26e5e1c96d9739fcfdf7"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/interstellar_refinery/interstellar_refinery_lv1.glb.import",
+      "expected": "2a7534456268555475b69defb85978de14bc86ab5440bfac7b3d63e6e9cc23ba",
+      "actual": "dca881a2bc9fcf8701176bd8f44e2c74b863ad4ed2896afdea38ff269d5cacc4"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/orbital_shipyard/orbital_shipyard_lv1.glb.import",
+      "expected": "7509fc82d245e7a7ad48e815d58ffb919ef62c23b92a6080f33e3a63e6d8929a",
+      "actual": "0fff28be8946f3509306a6e17efe8b41817819d65707dd5423a8c1ca1f5f0f60"
+    },
+    {
+      "path": "assets/galaxy/v3/buildings/stellar_energy_array/stellar_energy_array_lv1.glb.import",
+      "expected": "e6d7047f54bf91c5437cef477167f495bc12d7eacc410e76cc9521832cf1c53a",
+      "actual": "472a10279f0d50f29e3f31d6c0d20c6822efc18ad34d6207db7016a94777d6c1"
+    },
+    {
+      "path": "assets/galaxy/v3/core/galaxy_core.glb.import",
+      "expected": "60ea6d22074ff2812027e6c288a27677261350b2f9a17292b69b06fed3504bab",
+      "actual": "53b00fae80f519bdb681556cc34497b2c337efb54888dfec318db4ec522193ef"
+    },
+    {
+      "path": "assets/galaxy/v3/ships/transport_shuttle.glb.import",
+      "expected": "38af0d3daf2ce8544356f7e28069f399c63371f2c99edef0e8d638188eb0ee67",
+      "actual": "32aac768f0c304b358c705188b47553ae8dedba1b56a18cbb7a19124d0a4c657"
+    },
+    {
+      "path": "assets/planets/orbital/models/auto_explore.glb.import",
+      "expected": "38e4d741f0e94dacfb91747ea99e505be87377f201d8bbeb7c58ba3956add2fd",
+      "actual": "b7ba0ae32c2ae5e96a5baf0a2dbd05149ef07dacb434a6dbcd4ce2a77285a027"
+    },
+    {
+      "path": "assets/planets/orbital/models/equipment.glb.import",
+      "expected": "eb577d992a894578ca196e01d562851cbef12da55bf17e46b3c4c3b664b594ce",
+      "actual": "585d166e2116bf5aa7e78cd713baf8dddd6663979ce9420abf852543f06402d5"
+    },
+    {
+      "path": "assets/planets/orbital/models/refinery.glb.import",
+      "expected": "4aa9b5f79eb1a6cb97909f601fe69c6c93b55de96244b7f55f7269e907830fdd",
+      "actual": "8dfa5c9c8e3634d75784a9f8add12020643e8edbb3346d4a86d4a003a19cf419"
+    },
+    {
+      "path": "assets/planets/orbital/models/shipyard.glb.import",
+      "expected": "c889c975b074a4815d86cb67bd4914117ce9f66ff16ce8ecaaf845f2290f3a49",
+      "actual": "3a8cc8ba79b50c01f9deff6eddbdc2eaf2fc44eaf8481efc80a419d56a971de9"
+    }
+  ],
+  "all_material_balances_match": true,
+  "exclusive_time_matches": true,
+  "duplicate_claims": [],
+  "ledger_errors": [],
+  "clear35_x1": 136522.949989755,
+  "actual_stage_stopped": 35,
+  "frontier_only_unlocked": 36,
+  "second_reforge_occurred": false,
+  "input_failure": {},
+  "native_wall_seconds": 752.855776,
+  "cached_wall_seconds": 1365.895384,
+  "combined_wall_seconds": 2118.75116,
+  "terminal_cp_sha256": "f648b5f8f9c754c93ebcd35780c6c385fe1f4ee99cced7a0d7a25fcd3d6e603c",
+  "terminal_ui_checks": 6,
+  "terminal_ui_failures": [],
+  "no_stage36_actions": true
+}
