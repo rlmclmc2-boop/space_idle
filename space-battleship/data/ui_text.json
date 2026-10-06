@@ -14445,7 +14445,7 @@
 {"key": "equipment.continuous_beam_snapshot_hint", "text": "持续束沿用开火时的属性；升级在下一束开火时生效。", "params": "", "category": "weapon", "note": "装备详情持续束属性快照说明"},
 {"key": "hyperspace.queue_departure_hint", "text": "排队后，可用现有入口跃迁到已通关关卡或撤退，改变出发时机；符合出发条件后才派发并扣票。", "params": "", "category": "hyperspace", "note": "手动排队底部提示，不进入探索小卡"},
 {"key": "hyperspace.dismantle_source_hint", "text": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。", "params": "", "category": "hyperspace"},
-{"key": "hyperspace.module_source_hint", "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。", "params": "", "category": "hyperspace"},
+{"key": "hyperspace.module_source_hint", "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。", "params": "", "category": "hyperspace"},
 {"key": "hyperspace.reward_material_item", "text": "{material} ×{count}", "params": "material,count", "category": "hyperspace"},
 {"key": "hyperspace.dismantle_preview", "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。", "params": "materials,count", "category": "hyperspace"},
 {"key": "hyperspace.dismantle_received_materials", "text": "实际收到：{materials}", "params": "materials", "category": "hyperspace"},
