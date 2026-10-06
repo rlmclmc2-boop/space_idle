@@ -5,6 +5,10 @@ const R=preload("res://scripts/hyperspace_random.gd")
 static func empty_reward() -> Dictionary:
 	return {"drone":{},"materials":{},"ultimate_cores":0,"hanging_rewards":{}}
 
+static func material_amount(c: Dictionary,level: int) -> int:
+	var base:=int(c.material_base_reward)+maxi(0,level-int(c.material_reward_start_level))/int(c.material_reward_level_step)
+	return floori(float(base)*float(c.get("material_reward_multiplier",1.0)))
+
 static func affix(rng: RandomNumberGenerator,c: Dictionary,weapon: String,forced_key: String="") -> Dictionary:
 	var weights: Dictionary={}
 	for tier in c.tier_weights:
@@ -53,7 +57,7 @@ static func generate(s: Dictionary,c: Dictionary,request: Dictionary,planet_id: 
 			outcome=R.weighted(rng,weights)
 	if outcome!="ultimate_core":
 		reward.drone=create_drone(rng,c,"space:%d:%d"%[int(request.round_id),int(request.run_id)],outcome,c.routes[request.route].weapon,int(request.level),planet_id)
-	var amount:=int(c.material_base_reward)+maxi(0,int(request.level)-int(c.material_reward_start_level))/int(c.material_reward_level_step)
+	var amount:=material_amount(c,int(request.level))
 	reward.materials[c.routes[request.route].material]=int(amount)
 	return {"error":"","reward":reward,"random_state":str(rng.state)}
 

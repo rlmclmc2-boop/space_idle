@@ -18,6 +18,7 @@ import zipfile
 from lxml import etree as ET
 
 import openpyxl
+from hyperspace_workbook import read_config as read_hyperspace_config
 from import_workbook import ROOT, SECTIONS, read_rows, convert_sheet, projection_base, validate_projection, encode
 
 NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -214,6 +215,16 @@ def incremental_import(directory, target):
     state = read_json(state_path)
     original = target.read_bytes() if target.exists() else b""
     current = json.loads(original) if original else {}
+    hyperspace_path = directory / 'hyperspace_config.xlsx'
+    hyperspace_target = target.with_name('hyperspace_config.json')
+    if hyperspace_target.exists() and not hyperspace_path.is_file():
+        raise ValueError('Missing authoritative hyperspace_config.xlsx')
+    hyperspace_raw = hyperspace_path.read_bytes() if hyperspace_path.is_file() else None
+    hyperspace_payload = None
+    if hyperspace_raw is not None:
+        hyperspace_data = read_hyperspace_config(hyperspace_raw)
+        hyperspace_payload = (json.dumps(hyperspace_data, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+    hyperspace_changed = hyperspace_payload is not None and (not hyperspace_target.exists() or hyperspace_target.read_bytes() != hyperspace_payload)
     trustworthy = state.get("version") == CACHE_VERSION and state.get("directory") == str(directory.resolve()) and state.get("target_hash") == sha(original)
     hashes = state.get("hashes", {}) if trustworthy else {}
     snapshot, paths, changed = {}, {}, []
@@ -237,6 +248,11 @@ def incremental_import(directory, target):
         if digest != hashes.get(name) or section not in current:
             changed.append((name, raw))
     if not changed:
+        if hyperspace_changed:
+            if hyperspace_path.read_bytes() != hyperspace_raw:
+                raise ValueError('Hyperspace workbook changed during import')
+            atomic_batch({hyperspace_target: hyperspace_payload})
+            return {"ok":True,"action":"import","changed":["hyperspace_config"],"parsed":["hyperspace_config"]}
         return {"ok":True,"action":"import","changed":[],"parsed":[],"message":ui_text('debug.config_workbooks.message_07')}
     data = projection_base(current, directory.name)
     for name, raw in changed:
@@ -253,8 +269,15 @@ def incremental_import(directory, target):
         if sha(path.read_bytes()) != snapshot[name]:
             raise ValueError(ui_text('debug.config_workbooks.message_08', name=path.name))
     next_state = {"version":CACHE_VERSION,"directory":str(directory.resolve()),"target_hash":sha(payload),"hashes":snapshot}
-    atomic_batch({target:payload, state_path:encode(next_state)})
+    outputs = {target:payload, state_path:encode(next_state)}
+    if hyperspace_raw is not None and hyperspace_path.read_bytes() != hyperspace_raw:
+        raise ValueError('Hyperspace workbook changed during import')
+    if hyperspace_changed:
+        outputs[hyperspace_target] = hyperspace_payload
+    atomic_batch(outputs)
     names = [name for name, _ in changed]
+    if hyperspace_changed:
+        names.append('hyperspace_config')
     return {"ok":True,"action":"import","changed":names,"parsed":names,"message":ui_text('debug.config_workbooks.message_03', names="、".join(names))}
 
 

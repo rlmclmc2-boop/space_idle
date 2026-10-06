@@ -685,5 +685,9 @@
         "maximum_stacks": 4
       }
     }
-  }
+  },
+  "late_supply_unlock_stage": 60,
+  "late_energy_rate_multiplier": 30.0,
+  "late_material_reward_multiplier": 4,
+  "late_supply_ramp_seconds": 600
 }

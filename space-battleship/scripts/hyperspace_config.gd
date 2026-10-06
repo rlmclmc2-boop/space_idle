@@ -29,6 +29,11 @@ static func valid(c: Dictionary) -> bool:
 		if not number(c.get(key)) or c[key]<0 or c[key]>1:return false
 	for key in ["material_base_reward","material_reward_start_level","material_reward_level_step"]:
 		if not integer(c.get(key)) or c[key]<1:return false
+	if c.has("late_supply_unlock_stage"):
+		if not integer(c.late_supply_unlock_stage) or c.late_supply_unlock_stage<1:return false
+		if not number(c.get("late_energy_rate_multiplier")) or c.late_energy_rate_multiplier<=0:return false
+		if not integer(c.get("late_material_reward_multiplier")) or c.late_material_reward_multiplier<1:return false
+		if c.has("late_supply_ramp_seconds") and (not number(c.late_supply_ramp_seconds) or c.late_supply_ramp_seconds<=0):return false
 	for tier in range(1,6):
 		if not number(c.tier_weights.get(str(tier))) or c.tier_weights[str(tier)]<=0:return false
 	for key in c.affixes:

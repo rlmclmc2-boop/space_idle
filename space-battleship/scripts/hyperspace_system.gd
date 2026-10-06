@@ -17,13 +17,29 @@ func configure(c: Dictionary) -> bool:
 	config=c.duplicate(true);scheduler.reset();return true
 
 func online_config(g) -> Dictionary:
-	if g.stat_cache_enabled and g.stat_cache.has("hyperspace_energy_config"):return g.stat_cache.hyperspace_energy_config
-	if g.profile.hyperspace.inventory.equipped.is_empty():return config
-	var multiplier:=1.0+float(g.hyperspace_totals().hangings.get("hyperspace_charge",0))
-	if multiplier==1.0:return config
+	var supplied:bool=g.profile.cleared.has(int(config.get("late_supply_unlock_stage",60)))
+	var cache_key:="hyperspace_energy_config_late" if supplied else "hyperspace_energy_config"
+	if g.stat_cache_enabled and g.stat_cache.has(cache_key):return ramp_config(g,g.stat_cache[cache_key],supplied)
+	var multiplier:=1.0 if g.profile.hyperspace.inventory.equipped.is_empty() else 1.0+float(g.hyperspace_totals().hangings.get("hyperspace_charge",0))
+	var rate_multiplier:float=float(config.get("late_energy_rate_multiplier",1.0)) if supplied else 1.0
+	var material_multiplier:int=int(config.get("late_material_reward_multiplier",1)) if supplied else 1
+	if multiplier==1.0 and rate_multiplier==1.0 and material_multiplier==1:return config
 	var next: Dictionary=config.duplicate()
-	next.energy_cap=float(config.energy_cap)*multiplier;next.energy_rate=float(config.energy_rate)*multiplier
-	if g.stat_cache_enabled:g.stat_cache.hyperspace_energy_config=next
+	next.energy_cap=float(config.energy_cap)*multiplier;next.energy_rate=float(config.energy_rate)*multiplier*rate_multiplier
+	next.material_reward_multiplier=material_multiplier
+	if g.stat_cache_enabled:g.stat_cache[cache_key]=next
+	return ramp_config(g,next,supplied)
+
+func ramp_config(g,c:Dictionary,supplied:bool)->Dictionary:
+	if not supplied or not config.has("late_supply_ramp_seconds"):return c
+	var elapsed:float=float(g.profile.hyperspace.get("late_supply_work",0.0))
+	var duration:float=float(config.late_supply_ramp_seconds)
+	var progress:float=clampf(elapsed/duration,0.0,1.0)
+	var next:Dictionary=c.duplicate()
+	next.late_supply_elapsed=elapsed
+	next.late_supply_base_rate=float(c.energy_rate)/float(config.late_energy_rate_multiplier)
+	next.energy_rate=float(next.late_supply_base_rate)*lerpf(1.0,float(config.late_energy_rate_multiplier),progress)
+	next.material_reward_multiplier=lerpf(1.0,float(config.late_material_reward_multiplier),progress)
 	return next
 
 func fresh() -> Dictionary:
@@ -103,7 +119,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 		next.energy=float(next.energy)+float(a.ticket);next.settled_run=run_id;next.active={};next.blocked=false;next.pending_time=0.0
 		scheduler.reset();publish(g,next,"refunded");return true
 	if not reward.is_empty():last_error="external_reward_forbidden";return false
-	var generated:=Rewards.generate(next,config,a,Permission.planet_for_level(g.db.data,int(a.level)))
+	var generated:=Rewards.generate(next,online_config(g),a,Permission.planet_for_level(g.db.data,int(a.level)))
 	if not generated.error.is_empty():last_error=generated.error;return false
 	var frozen: Dictionary=generated.reward;next.random_state=generated.random_state
 	var filter_match: bool=not frozen.drone.is_empty() and Filter.matches(frozen.drone,next.filter)
