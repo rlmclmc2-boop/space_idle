@@ -25,6 +25,18 @@ func _initialize() -> void:
 		check(is_equal_approx(db.ratio(2, point_count - 1, kind), 1.3), kind + " last battle point reaches its level multiplier")
 		check(is_equal_approx(db.ratio(2, -1, kind), 1.1) and is_equal_approx(db.ratio(2, point_count, kind), 1.3), kind + " battle point index clamps to endpoints")
 		check(is_equal_approx(db.ratio(1, 0, kind), 1.0) and is_equal_approx(db.ratio(1, point_count - 1, kind), 1.1), kind + " first level ramps from base multiplier one")
+	# Distinct authored entries affect attack/life only, including nullable legacy rows.
+	for kind in ["atkRatio", "lifeRatio"]:
+		var key: String = "entryAtkRatio" if kind == "atkRatio" else "entryLifeRatio"
+		db.levels[1][key] = 0.7
+		check(is_equal_approx(db.ratio(2,0,kind),0.7),kind+" independent entry")
+		check(is_equal_approx(db.ratio(2,middle_point,kind),lerpf(0.7,1.3,middle_progress)),kind+" entry interpolation")
+		check(is_equal_approx(db.ratio(2,point_count-1,kind),1.3),kind+" terminal unchanged")
+		for empty in [null, ""]:
+			db.levels[1][key]=empty
+			check(is_equal_approx(db.ratio(2,0,kind),1.1),kind+" empty entry inherits")
+		db.levels[1].erase(key)
+	check(is_equal_approx(db.ratio(2,0,"resRatio"),1.1),"Resources keep inherited entry")
 	game.stage = 2
 	game.group_index = 1
 	check(is_equal_approx(game.ratio("lifeRatio"), 1.1), "First encounter uses the first battle point multiplier")

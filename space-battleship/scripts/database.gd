@@ -143,6 +143,10 @@ func unlock_row(kind: String, key: String) -> Dictionary:
 
 func ratio(level: int, battle_point_index: int, kind: String) -> float:
 	var previous := 1.0 if level == 1 else float(levels[level - 2][kind])
+	var entry_key := "entryAtkRatio" if kind == "atkRatio" else "entryLifeRatio" if kind == "lifeRatio" else ""
+	var entry: Variant = levels[level - 1].get(entry_key)
+	if entry_key != "" and entry != null and entry != "":
+		previous = float(entry)
 	var point_count: int = levels[level - 1].groups.size()
 	var progress: float = 1.0 if point_count <= 1 else clampf(float(battle_point_index) / float(point_count - 1), 0.0, 1.0)
 	return lerpf(previous, float(levels[level - 1][kind]), progress)

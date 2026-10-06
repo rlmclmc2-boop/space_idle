@@ -134,6 +134,12 @@ def convert_sheet(name, rows):
             if type(ratio) not in (int, float) or not math.isfinite(ratio) or ratio < 0:
                 raise ValueError(ui_text('debug.import_workbook.message_11'))
             row["jewelRatio"] = ratio
+            for key in ("entryAtkRatio", "entryLifeRatio"):
+                value = row.get(key)
+                if value in (None, ""):
+                    row.pop(key, None)
+                elif type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+                    raise ValueError(f"level {row.get('id')} {key}: expected positive finite multiplier or blank")
             row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
         return rows
     if name=="res":
@@ -288,6 +294,9 @@ def validate_projection(data, *, check_level_ratios=True):
     for level in levels:
         for key in (('length','atkRatio','lifeRatio','resRatio') if check_level_ratios else ('length',)):
             positive(level[key],f'level {level["id"]} {key}')
+        for key in ("entryAtkRatio", "entryLifeRatio"):
+            if key in level and level[key] not in (None, ""):
+                positive(level[key], f'level {level["id"]} {key}')
         positive(level.get('planetExpRatio'), f'level {level["id"]} planetExpRatio', True)
         positions=[g['position'] for g in level['groups']]
         if not positions or positions!=sorted(set(positions)) or not all(0<=p<=1 for p in positions):
