@@ -1,0 +1,304 @@
+{
+  "source_sha256": "a62e26b39c2ea26011ea8ec0e594c835bf17f0f828a02584c2b6f7259cb6c673",
+  "terminal_sha256": "080bd5d2af2497c3f20ffdfd79f52a8ff8dd0beb37167f07ed7c66fcda68865c",
+  "source_x1": 181472.19997929,
+  "terminal_x1": 185072.216645118,
+  "elapsed_x1": 3600.016665828007,
+  "wall_seconds": 797.314759,
+  "status": "bounded_partial",
+  "stage": 60,
+  "round": 6,
+  "input_failure": {},
+  "progress_guard": {},
+  "script_error_count": 0,
+  "canonical_runner_log": "Diagnostic completed: /workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-parent845-clear60-hold60-3600x1\n",
+  "materials": {
+    "antiproton": 7,
+    "degenerate_matter": 10,
+    "glueball": 1396,
+    "zero_point_energy": 0
+  },
+  "cores": 3,
+  "resources": {
+    "1": 1.49462664116715e+39,
+    "2": 2.5935579741646775e+30
+  },
+  "modules": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "extra_storage": {
+      "exp": 80.0,
+      "level": 2,
+      "unlocked": true
+    },
+    "gem_refiner": {
+      "exp": 80.0,
+      "level": 2,
+      "unlocked": true
+    },
+    "hyperspace_charge": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    },
+    "resource_collector": {
+      "exp": 100.0,
+      "level": 1,
+      "unlocked": true
+    }
+  },
+  "successful_dismantles": 16,
+  "modernization_success_count": 0,
+  "restore_success_count": 0,
+  "original_equipped_ledger": [
+    {
+      "id": "space:1:2",
+      "source_level": 10,
+      "source_ultimate": true,
+      "terminal_exists": true,
+      "terminal_level": 10,
+      "terminal_equipped": true,
+      "terminal_ultimate": true,
+      "modernizations": [],
+      "restores": [],
+      "dismantles": [],
+      "classification": "unchanged_original_equipped"
+    },
+    {
+      "id": "space:2:3",
+      "source_level": 30,
+      "source_ultimate": false,
+      "terminal_exists": true,
+      "terminal_level": 30,
+      "terminal_equipped": true,
+      "terminal_ultimate": false,
+      "modernizations": [],
+      "restores": [],
+      "dismantles": [],
+      "classification": "unchanged_original_equipped"
+    },
+    {
+      "id": "space:4:3",
+      "source_level": 40,
+      "source_ultimate": false,
+      "terminal_exists": true,
+      "terminal_level": 40,
+      "terminal_equipped": false,
+      "terminal_ultimate": false,
+      "modernizations": [],
+      "restores": [],
+      "dismantles": [],
+      "classification": "replaced_retained_in_inventory"
+    },
+    {
+      "id": "space:6:3",
+      "source_level": 55,
+      "source_ultimate": false,
+      "terminal_exists": false,
+      "terminal_level": null,
+      "terminal_equipped": false,
+      "terminal_ultimate": null,
+      "modernizations": [],
+      "restores": [],
+      "dismantles": [
+        {
+          "after": {
+            "cores": 1,
+            "energy": 190500.051747425,
+            "materials": {
+              "antiproton": 7,
+              "degenerate_matter": 10,
+              "glueball": 480,
+              "zero_point_energy": 0
+            },
+            "resources": {
+              "1": 6.281244673767839e+37,
+              "2": 1.1204518247413963e+30
+            }
+          },
+          "before": {
+            "cores": 1,
+            "energy": 190500.051747425,
+            "materials": {
+              "antiproton": 7,
+              "degenerate_matter": 10,
+              "glueball": 479,
+              "zero_point_energy": 0
+            },
+            "resources": {
+              "1": 6.281244673767839e+37,
+              "2": 1.1204518247413963e+30
+            },
+            "round": 6
+          },
+          "choice": {
+            "domain": true,
+            "idle_salvage": true,
+            "kind": "space_forge",
+            "preview": {
+              "cost": {},
+              "draws": 1,
+              "error": "",
+              "revision": 0
+            },
+            "reason": "Earned idle white drone; protected fleet and one backup per weapon retained; at most three per actual sparse page tour; existing 0.3-second native action",
+            "request": {
+              "args": {},
+              "command_seq": 12,
+              "drone_id": "space:6:3",
+              "expected_revision": 0,
+              "operation": "dismantle",
+              "round_id": 6
+            },
+            "salvage_budget": {
+              "round": 6,
+              "tour_started": 183572.499978801,
+              "used": 0
+            }
+          },
+          "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+          "kind": "domain_action",
+          "ok": true,
+          "page": 9,
+          "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+          "stage": 60,
+          "x1_seconds": 183582.699978798
+        }
+      ],
+      "classification": "replaced_and_dismantled"
+    },
+    {
+      "id": "space:1:11",
+      "source_level": 20,
+      "source_ultimate": false,
+      "terminal_exists": true,
+      "terminal_level": 20,
+      "terminal_equipped": false,
+      "terminal_ultimate": false,
+      "modernizations": [],
+      "restores": [],
+      "dismantles": [],
+      "classification": "replaced_retained_in_inventory"
+    }
+  ],
+  "replacement_equipped": [
+    {
+      "id": "space:6:10",
+      "drone": {
+        "affixes": [
+          {
+            "key": "critical_chance",
+            "locked": false,
+            "tier": 5,
+            "value": 0.015
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "6765387860203870595",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "space:6:10",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "black_hole",
+          "parameters": {
+            "damage_multiplier": 1.458
+          }
+        },
+        "level": 60,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "6",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "was_source_equipped": false
+    },
+    {
+      "id": "space:6:15",
+      "drone": {
+        "affixes": [
+          {
+            "key": "global_critical_damage",
+            "locked": false,
+            "tier": 5,
+            "value": 0.095
+          },
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 2,
+            "value": 1.0
+          }
+        ],
+        "blue_source_bonus": true,
+        "forge_revision": 0,
+        "forge_rng_state": "7540435635227411078",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "space:6:15",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 60,
+        "omen": false,
+        "origin_quality": "blue",
+        "planet_id": "6",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "was_source_equipped": false
+    },
+    {
+      "id": "space:6:8",
+      "drone": {
+        "affixes": [
+          {
+            "key": "global_critical_damage",
+            "locked": false,
+            "tier": 2,
+            "value": 0.648
+          }
+        ],
+        "blue_source_bonus": true,
+        "forge_revision": 0,
+        "forge_rng_state": "250842125914718296",
+        "hanging_slots": 1,
+        "hangings": [
+          "resource_collector"
+        ],
+        "id": "space:6:8",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 60,
+        "omen": false,
+        "origin_quality": "blue",
+        "planet_id": "6",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "was_source_equipped": false
+    }
+  ],
+  "terminal_equipped_module_effects": {
+    "resource_collector": 0.10000000000000009
+  },
+  "income_bonus_scope": "Authored equipped module projection only; not a measured causal net-income comparison. No off-policy same-source post60 arm exists in this experiment.",
+  "parent_report_match": {
+    "terminal_x1": true,
+    "materials": true,
+    "cores": true,
+    "original_ultimate10": true,
+    "original_legendary30": true
+  },
+  "comparison_limit": "Matches exact fields provided by parent; full raw parent terminal/trace not yet available for strict all-field comparison."
+}

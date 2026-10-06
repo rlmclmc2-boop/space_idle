@@ -1,0 +1,432 @@
+{
+  "equips": [
+    {
+      "after": {
+        "cores": 1,
+        "energy": 205954.957407831,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 250,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.6938571206653157e+38,
+          "2": 9.26642357742712e+28
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 205954.957407831,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 250,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.6938571206653157e+38,
+          "2": 9.26642357742712e+28
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "ids": [
+          "space:1:2",
+          "space:2:3",
+          "space:6:6",
+          "space:6:5",
+          "space:4:3"
+        ],
+        "kind": "space_equip"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183280.599978868
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 190230.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 479,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.268604095188147e+37,
+          "2": 1.1204518247413963e+30
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 190230.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 479,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.268604095188147e+37,
+          "2": 1.1204518247413963e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "ids": [
+          "space:1:2",
+          "space:2:3",
+          "space:6:8",
+          "space:6:6",
+          "space:6:9"
+        ],
+        "kind": "space_equip"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183581.799978798
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 212296.781307155,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 633,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.781205668323389e+37,
+          "2": 2.335109884429817e+30
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 212296.781307155,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 633,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.781205668323389e+37,
+          "2": 2.335109884429817e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "ids": [
+          "space:1:2",
+          "space:2:3",
+          "space:6:10",
+          "space:6:8",
+          "space:6:11"
+        ],
+        "kind": "space_equip"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183891.099978726
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 212518.605206479,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 1016,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 2.8719429541132364e+38,
+          "2": 7.248532669517243e+29
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 212518.605206479,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 1016,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 2.8719429541132364e+38,
+          "2": 7.248532669517243e+29
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "ids": [
+          "space:1:2",
+          "space:2:3",
+          "space:6:10",
+          "space:6:15",
+          "space:6:8"
+        ],
+        "kind": "space_equip"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 184481.199978589
+    }
+  ],
+  "hangings": [
+    {
+      "after": {
+        "cores": 0,
+        "energy": 38897.7496866764,
+        "materials": {
+          "antiproton": 6,
+          "degenerate_matter": 8,
+          "glueball": 18,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.3489896355998147e+38,
+          "2": 5.8988189783975015e+28
+        }
+      },
+      "before": {
+        "cores": 0,
+        "energy": 38897.7496866764,
+        "materials": {
+          "antiproton": 6,
+          "degenerate_matter": 8,
+          "glueball": 18,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.3489896355998147e+38,
+          "2": 5.8988189783975015e+28
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "id": "space:1:11",
+        "keys": [
+          "distributed_algorithm"
+        ],
+        "kind": "space_hangings"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 181790.199979215
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 206314.957407831,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 251,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.6938571206653157e+38,
+          "2": 9.26642357742712e+28
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 206314.957407831,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 251,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 1.6938571206653157e+38,
+          "2": 9.26642357742712e+28
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "id": "space:6:6",
+        "keys": [
+          "resource_collector"
+        ],
+        "kind": "space_hangings"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183281.799978868
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 190680.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 481,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.281244673767839e+37,
+          "2": 1.1204518247413963e+30
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 190680.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 481,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.281244673767839e+37,
+          "2": 1.1204518247413963e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "id": "space:6:8",
+        "keys": [
+          "resource_collector"
+        ],
+        "kind": "space_hangings"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183583.299978798
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 190770.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 481,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.281244673767839e+37,
+          "2": 1.1204518247413963e+30
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 190770.051747425,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 481,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.281244673767839e+37,
+          "2": 1.1204518247413963e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "id": "space:6:9",
+        "keys": [
+          "resource_collector"
+        ],
+        "kind": "space_hangings"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183583.599978798
+    },
+    {
+      "after": {
+        "cores": 1,
+        "energy": 212656.781307155,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 634,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.809426494919911e+37,
+          "2": 2.335109884429817e+30
+        }
+      },
+      "before": {
+        "cores": 1,
+        "energy": 212656.781307155,
+        "materials": {
+          "antiproton": 7,
+          "degenerate_matter": 10,
+          "glueball": 634,
+          "zero_point_energy": 0
+        },
+        "resources": {
+          "1": 6.809426494919911e+37,
+          "2": 2.335109884429817e+30
+        },
+        "round": 6
+      },
+      "choice": {
+        "domain": true,
+        "id": "space:6:11",
+        "keys": [
+          "resource_collector"
+        ],
+        "kind": "space_hangings"
+      },
+      "input_scope": "one visible system page, real domain command, 0.3 X1 action; native early controls inherited",
+      "kind": "domain_action",
+      "ok": true,
+      "page": 9,
+      "policy": "hyperspace-player-v18-tour-budgeted-idle-salvage",
+      "stage": 60,
+      "x1_seconds": 183892.299978726
+    }
+  ]
+}
