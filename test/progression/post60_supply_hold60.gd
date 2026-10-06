@@ -18,7 +18,7 @@ func action()->Dictionary:
   # production queue on the visible page before releasing the main guard.
   if page==9 and not space_policy.manual_pending.is_empty():
    if game.profile.hyperspace.auto.enabled:return {"domain":true,"kind":"space_auto_pause","reason":"Hold60 planned manual: stop future auto recurrence without discarding the current paid receipt"}
-   var queued_choice:Dictionary=space_policy.pending_manual_action(game,game.simulated_time,false)
+   var queued_choice:Dictionary=space_policy.queue_manual_action(game,game.simulated_time)
    if not queued_choice.is_empty():
     queued_choice.kind="space_manual_queue"
     return queued_choice

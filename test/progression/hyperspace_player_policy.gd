@@ -53,7 +53,11 @@ func safe_main_boundary(g)->bool:
  for enemy in g.enemies:
   if g.N.compare(enemy.hp,0)>0:return false
  return main_boundary(g)!=last_manual_boundary
-func pending_manual_action(g,now:float,require_main_boundary:bool=true)->Dictionary:
+func pending_manual_action(g,now:float)->Dictionary:
+ return validated_pending_manual_action(g,now,true)
+func queue_manual_action(g,now:float)->Dictionary:
+ return validated_pending_manual_action(g,now,false)
+func validated_pending_manual_action(g,now:float,require_main_boundary:bool)->Dictionary:
  if manual_pending.is_empty() or (require_main_boundary and not safe_main_boundary(g)) or not g.profile.hyperspace.active.is_empty():return {}
  var choice:Dictionary=manual_pending
  if choice.has("paid_affix_supply"):
@@ -635,7 +639,7 @@ func galaxy_action(g)->Dictionary:
 func execute(g,choice:Dictionary,now:float)->bool:
  match choice.kind:
   "space_manual_queue":
-   var ready:Dictionary=pending_manual_action(g,now,false)
+   var ready:Dictionary=queue_manual_action(g,now)
    if ready.is_empty() or str(ready.route)!=str(choice.route) or int(ready.level)!=int(choice.level) or g.profile.hyperspace.auto.enabled:return false
    var accepted:bool=g.request_hyperspace(str(choice.route),int(choice.level))
    if accepted:manual_pending["queued_for_hold60"]=true
