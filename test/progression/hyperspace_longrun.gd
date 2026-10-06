@@ -144,11 +144,9 @@ func crew_action()->Dictionary:
  var redeploy:Dictionary=space_policy.crew_redeploy_action(game,5,driver.scene.crew_panel.rows.keys(),game.simulated_time)
  if not redeploy.is_empty():return redeploy
  if not space_policy.crew_transfer.is_empty():return {}
- var reserved:String=space_policy.pick_crew(game) if int(game.profile.highestLevel)>=7 else ""
- if reserved.is_empty() and not game.profile.hyperspace.history.is_empty() and not game.profile.hyperspace.auto.enabled:
-  for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
-   for member in game.profile.crew:
-    if str(member.assignmentType)==job:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First earned space record needs an actual worker; old automation stops"}
+ var reservation_action:Dictionary=space_policy.space_crew_reservation_action(game,driver.scene.crew_panel.rows.keys(),game.simulated_time)
+ if not reservation_action.is_empty():return reservation_action
+ var reserved:String=space_policy.reserved_growth_crew(game)
  var panel=driver.scene.crew_panel
  for member in game.profile.crew:
   var id:=str(member.crewId)

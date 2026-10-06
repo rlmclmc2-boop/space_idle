@@ -1,6 +1,6 @@
 extends RefCounted
 ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
-const VERSION="hyperspace-player-v19-sparse-repeat-failure-rolling-salvage"
+const VERSION="hyperspace-player-v20-sparse-rolling-salvage-reserved-crew"
 var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
 var idle_salvage_budget:Dictionary={"round":-1,"used":0,"tour_started":-1.0}
 var idle_salvage_success_times:Array=[]
@@ -276,8 +276,49 @@ func observe_failure(g,now:float)->Dictionary:
  return feedback
 func transfer_crew(id:String)->bool:
  return not crew_transfer.is_empty() and id in [str(crew_transfer.veteran),str(crew_transfer.replacement)]
+var space_crew_reservation:Dictionary={}
+func reserved_growth_crew(g)->String:
+ var actual:String=Permission.reserved_crew(g.profile.hyperspace)
+ if not actual.is_empty():return actual
+ if int(space_crew_reservation.get("round",-1))==int(g.profile.hyperspace.round_id):return str(space_crew_reservation.get("crew",""))
+ return ""
+func space_worker_demand(g)->Dictionary:
+ var s:Dictionary=g.profile.hyperspace
+ if int(g.profile.highestLevel)<int(g.hyperspace.config.unlock_stage) or s.auto.enabled or not s.active.is_empty() or g.manual_hyperspace.active or not manual_pending.is_empty() or galaxy_needs_reserved_crew:return {}
+ # Do not stop a growth worker while an auto ticket cannot actually dispatch.
+ if float(s.energy)<float(g.hyperspace.online_config(g).energy_cap) or not Bag.has_space(s.inventory,g.hyperspace.config):return {}
+ var supply:Dictionary=growth_supply(g)
+ if not supply.is_empty():
+  if not g.profile.cleared.has(60) or supply.get("record_prerequisite",false) or supply.get("ready",false):return {}
+  var record:int=best_record(g,str(supply.route))
+  return {"route":str(supply.route),"level":record,"purpose":"Actual recorded paid material auto"} if record>0 else {}
+ for route in g.hyperspace.config.routes:
+  var record:int=best_record(g,str(route))
+  if record>0:return {"route":str(route),"level":record,"purpose":"Actual eligible recorded progress auto"}
+ return {}
+func space_crew_reservation_action(g,visible_ids:Array,now:float)->Dictionary:
+ var demand:Dictionary=space_worker_demand(g)
+ if demand.is_empty():space_crew_reservation={};return {}
+ var candidate:Dictionary={}
+ if int(space_crew_reservation.get("round",-1))==int(g.profile.hyperspace.round_id) and str(space_crew_reservation.get("route",""))==str(demand.route):candidate=g.crew.entry(g,str(space_crew_reservation.get("crew","")))
+ if not candidate.is_empty() and (not visible_ids.has(str(candidate.crewId)) or not g.crew.unlocked(g,str(candidate.crewId)) or transfer_crew(str(candidate.crewId)) or not g.crew_exploration(str(candidate.crewId)).is_empty() or not g.planet_buildings.occupied(g,str(candidate.crewId)).is_empty()):candidate={}
+ if candidate.is_empty():
+  space_crew_reservation={}
+  for member in g.profile.crew:
+   var id:String=str(member.crewId)
+   if visible_ids.has(id) and not transfer_crew(id) and Permission.crew_available(g,id):candidate=member;break
+  if candidate.is_empty():
+   for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
+    for member in g.profile.crew:
+     var id:String=str(member.crewId)
+     if visible_ids.has(id) and g.crew.unlocked(g,id) and not transfer_crew(id) and str(member.assignmentType)==job and g.crew_exploration(id).is_empty() and g.planet_buildings.occupied(g,id).is_empty():candidate=member;break
+    if not candidate.is_empty():break
+ if candidate.is_empty():return {}
+ space_crew_reservation={"round":int(g.profile.hyperspace.round_id),"crew":str(candidate.crewId),"route":str(demand.route),"level":int(demand.level),"purpose":str(demand.purpose),"phase":"reserved" if str(candidate.assignmentType).is_empty() else "release","planned_at":float(space_crew_reservation.get("planned_at",now))}
+ if not str(candidate.assignmentType).is_empty():return {"domain":true,"kind":"crew_release","crew":str(candidate.crewId),"reason":"Release only the selected reserved worker for an available funded space operation","reservation":space_crew_reservation.duplicate(true)}
+ return {}
 func pick_crew(g)->String:
- var current:String=Permission.reserved_crew(g.profile.hyperspace)
+ var current:String=reserved_growth_crew(g)
  if not current.is_empty() and Permission.crew_available(g,current):reserved_crew=current;return current
  if not reserved_crew.is_empty() and not transfer_crew(reserved_crew) and Permission.crew_available(g,reserved_crew):return reserved_crew
  var available:Array=[]
@@ -295,7 +336,7 @@ func crew_transfer_page(g)->int:
  if crew_transfer.is_empty():return -1
  var plan:Dictionary=crew_transfer;var replacement:Dictionary=g.crew.entry(g,str(plan.replacement));var veteran:Dictionary=g.crew.entry(g,str(plan.veteran));var progress:Dictionary=g.planet_progress(str(plan.planet))
  if int(plan.round)!=int(g.profile.hyperspace.round_id) or replacement.is_empty() or veteran.is_empty() or progress.is_empty():return -1
- if Permission.reserved_crew(g.profile.hyperspace) in [str(plan.veteran),str(plan.replacement)]:return -1
+ if reserved_growth_crew(g) in [str(plan.veteran),str(plan.replacement)]:return -1
  if not str(replacement.assignmentType).is_empty():return 5
  if not g.idle_planet_crew(str(plan.replacement)):return -1
  for member in g.profile.crew:
@@ -317,7 +358,7 @@ func crew_redeploy_action(g,page:int,visible_ids:Array,now:float)->Dictionary:
   var candidates:Array=[]
   for member in g.profile.crew:
    var id:String=str(member.crewId)
-   if id==str(veteran.crewId) or not visible_ids.has(id) or not g.crew.unlocked(g,id) or id==Permission.reserved_crew(g.profile.hyperspace) or not g.crew_exploration(id).is_empty():continue
+   if id==str(veteran.crewId) or not visible_ids.has(id) or not g.crew.unlocked(g,id) or id==reserved_growth_crew(g) or not g.crew_exploration(id).is_empty():continue
    if str(member.assignmentType) not in ["","equipment_upgrade","hightech_scientists","reactor_upgrade","jewel_auto"]:continue
    candidates.append(member)
   candidates.sort_custom(func(a,b):return int(a.level)<int(b.level) if str(a.assignmentType).is_empty()==str(b.assignmentType).is_empty() else str(a.assignmentType).is_empty())
@@ -468,7 +509,7 @@ func affix_paid_window(g,id:String,now:float)->bool:
  affix_paid_windows[key]=window
  return int(window.attempts)<32
 func pick_supply_crew(g)->String:
- var current:String=Permission.reserved_crew(g.profile.hyperspace)
+ var current:String=reserved_growth_crew(g)
  if not current.is_empty():return current if Permission.crew_available(g,current) else ""
  var available:Array=[]
  for member in g.profile.crew:
