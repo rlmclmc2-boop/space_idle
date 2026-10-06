@@ -10,13 +10,22 @@
   "baseline_actions_uncompressed_bytes": 2865165,
   "constraints": "Only Excel F24:F28 and their imported resRatio values. Same887 inputs exceptgame_data. All original state/options/RNG retained; onlystop_clear override22. Formalreloadregeneratescombat/gui. No845changes or baseline rerun. No extrapolated3.4h savings.",
   "file_sha256": {
+    "experiment.patch": "c81d655fbfa85274b6e91b5d3333a1d6455c1dabb291dae8eae37898aa928ae8",
     "transition.json": "20086eeaa47ef6f1e7967e875f19372c62171fe5918e64ddce1a4cb614b8abb1",
     "experiment-qa-manifest.json": "d75fb4306fd3706849e1e7ae89a54e7422f704f7a456ee0639f429945be4eca8",
+    "first21-native-sample-comparison.json": "3fade8d33bcdfea0d9cff02e9b6879a130e29102f00fe070e717705946ccab9d",
     "five-value-diff.json": "ef39742ef88c0a2c87fa62007d8d4dacb181791fa501bbe38b1fab8c1a4d5b51",
+    "experiment.bundle": "65604d6d02eebf8435e719a3898e6176c819c3d7633d7b41c2d1a6080a7b927b",
     "source-actual2d-clear20.bin": "cf5042c688e2418290afdfa8e6f646e94f041acc8cb5c86291b6af8531bb9084",
+    "cache-cleanup.json": "2aaa3e60baf54be910ee331c543b2b764e0430774f14675b8ccbe68c876de412",
+    "baseline-first21-native-samples.jsonl.gz": "48904111d9d3d1e32c1142f2246526c5d79a6937c76e191cb048e33fd2d96416",
     "source-qa-manifest.json": "8130c4afcfc3fa73d902424e065b0bb359c120579d36246a39cc29a4073467f4",
     "experiment-transition20.bin": "ae4ffc0f406ba7ac783c383b3eba7efeeb712e0c0ec11e78125e271c8814256f",
+    "baseline-through22-analysis.json": "046a2ee0bfe7180978e08cbee4199cf0f191dadf250a334fbd2f0f9c96ae1054",
+    "workbook-audit.json": "93ed23a5b89c10d02a676f8515ba75380d0a0cc6f7ec5d105f8700b21acd2dd2",
     "baseline-through-clear22-actions.jsonl.gz": "cde1a518852c10fb869e15fc78d3b2871d80ccb194a346140c680c5647a19d48",
-    "experiment-options.json": "108ecdefc15044df1b0c917b75470b4e3eb9cdad53e9cdfbb76af3afd239a84b"
-  }
+    "experiment-options.json": "108ecdefc15044df1b0c917b75470b4e3eb9cdad53e9cdfbb76af3afd239a84b",
+    "experiment-first21-native-samples.jsonl.gz": "48904111d9d3d1e32c1142f2246526c5d79a6937c76e191cb048e33fd2d96416"
+  },
+  "active_status_at_1132UTC": "SequentialrestartGodotPID113273;sourceCPsame. Still21. Initialdiskfailure preserved separately;cleanupnowfreed1168.63MiB, available1287.47MiB. No terminal22 resultyet."
 }

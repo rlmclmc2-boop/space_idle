@@ -1,0 +1,15 @@
+{
+  "only_changed_zip_member": [
+    "xl/worksheets/sheet1.xml"
+  ],
+  "only_changed_excel_cells": [
+    "level!F24",
+    "level!F25",
+    "level!F26",
+    "level!F27",
+    "level!F28"
+  ],
+  "all_formula_cached_values_styles_other_cells_byte_preserved": true,
+  "original_workbook_sha256": "2e977bd79660a65cd632363d775687cbc151e7ffc0257a8008590a83c344962d",
+  "experiment_workbook_sha256": "ba6560cb5d2dff5fa725ee41278808ac7bbdb6a84b923c827f8a228ff69994a4"
+}

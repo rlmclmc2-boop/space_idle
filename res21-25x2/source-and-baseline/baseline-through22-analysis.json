@@ -1,0 +1,620 @@
+{
+  "source_x1": 42767.8833349779,
+  "clear21": 50332.2333365189,
+  "clear22": 61913.7166722117,
+  "five_paid_farm_cycles": [
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 42960.1833350171,
+      "five_paid_ready": 42968.8833350188,
+      "seconds": 8.700000001699664,
+      "cycles": 0,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1096,
+        "reactor": 71,
+        "research": 298,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1101,
+        "reactor": 71,
+        "research": 298,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 43117.2166683824,
+      "five_paid_ready": 43414.516668443,
+      "seconds": 297.3000000605971,
+      "cycles": 26,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1117,
+        "reactor": 72,
+        "research": 299,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1122,
+        "reactor": 72,
+        "research": 299,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 43554.7666684715,
+      "five_paid_ready": 44148.7666685925,
+      "seconds": 594.0000001209992,
+      "cycles": 58,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1127,
+        "reactor": 73,
+        "research": 299,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1132,
+        "reactor": 73,
+        "research": 299,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 44278.9666686191,
+      "five_paid_ready": 45172.6666688011,
+      "seconds": 893.7000001820052,
+      "cycles": 88,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1134,
+        "reactor": 74,
+        "research": 299,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1139,
+        "reactor": 74,
+        "research": 299,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 45304.2000021613,
+      "five_paid_ready": 46198.2000023434,
+      "seconds": 894.0000001821027,
+      "cycles": 91,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1140,
+        "reactor": 74,
+        "research": 299,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1145,
+        "reactor": 74,
+        "research": 303,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 46407.7833357194,
+      "five_paid_ready": 47002.9833358407,
+      "seconds": 595.2000001212946,
+      "cycles": 63,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1147,
+        "reactor": 74,
+        "research": 303,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1152,
+        "reactor": 75,
+        "research": 303,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 47128.0333358662,
+      "five_paid_ready": 47722.9333359874,
+      "seconds": 594.9000001211971,
+      "cycles": 71,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1154,
+        "reactor": 75,
+        "research": 303,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1159,
+        "reactor": 75,
+        "research": 303,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 47849.2000026798,
+      "five_paid_ready": 48743.5000028619,
+      "seconds": 894.3000001821056,
+      "cycles": 119,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1160,
+        "reactor": 75,
+        "research": 303,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1165,
+        "reactor": 76,
+        "research": 303,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 48854.0833362178,
+      "five_paid_ready": 49449.2833363391,
+      "seconds": 595.2000001212946,
+      "cycles": 87,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1167,
+        "reactor": 76,
+        "research": 304,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1172,
+        "reactor": 77,
+        "research": 306,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 21,
+      "push_stage": 21,
+      "start": 49597.4333363692,
+      "five_paid_ready": 50192.6333364905,
+      "seconds": 595.2000001213019,
+      "cycles": 96,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1172,
+        "reactor": 77,
+        "research": 306,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1177,
+        "reactor": 77,
+        "research": 307,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 50992.8833366535,
+      "five_paid_ready": 51586.5833367745,
+      "seconds": 593.7000001210035,
+      "cycles": 24,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1182,
+        "reactor": 77,
+        "research": 307,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1187,
+        "reactor": 78,
+        "research": 307,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 51994.3666701909,
+      "five_paid_ready": 52588.0666703119,
+      "seconds": 593.7000001209963,
+      "cycles": 29,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1190,
+        "reactor": 78,
+        "research": 307,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1195,
+        "reactor": 79,
+        "research": 308,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 52934.7166703825,
+      "five_paid_ready": 53528.7166705035,
+      "seconds": 594.0000001209992,
+      "cycles": 35,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1197,
+        "reactor": 79,
+        "research": 309,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1202,
+        "reactor": 79,
+        "research": 311,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 53842.2500039007,
+      "five_paid_ready": 54736.2500040828,
+      "seconds": 894.0000001821027,
+      "cycles": 62,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1203,
+        "reactor": 80,
+        "research": 311,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1208,
+        "reactor": 80,
+        "research": 311,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 55003.7333374707,
+      "five_paid_ready": 55897.4333376527,
+      "seconds": 893.7000001819979,
+      "cycles": 67,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1209,
+        "reactor": 80,
+        "research": 311,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1214,
+        "reactor": 81,
+        "research": 311,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 56125.4166710325,
+      "five_paid_ready": 57019.4166712146,
+      "seconds": 894.0000001821027,
+      "cycles": 77,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1215,
+        "reactor": 81,
+        "research": 312,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 12,
+        "modules": 1220,
+        "reactor": 81,
+        "research": 314,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 57358.7666712838,
+      "five_paid_ready": 58252.1666714658,
+      "seconds": 893.400000181995,
+      "cycles": 96,
+      "baseline_growth": {
+        "enhancement": 12,
+        "modules": 1221,
+        "reactor": 81,
+        "research": 315,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 13,
+        "modules": 1226,
+        "reactor": 82,
+        "research": 315,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 58582.4833381997,
+      "five_paid_ready": 59476.1833383818,
+      "seconds": 893.7000001820998,
+      "cycles": 115,
+      "baseline_growth": {
+        "enhancement": 13,
+        "modules": 1228,
+        "reactor": 82,
+        "research": 315,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 13,
+        "modules": 1233,
+        "reactor": 82,
+        "research": 315,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 59721.0333384317,
+      "five_paid_ready": 60614.7333386138,
+      "seconds": 893.7000001820998,
+      "cycles": 125,
+      "baseline_growth": {
+        "enhancement": 13,
+        "modules": 1234,
+        "reactor": 82,
+        "research": 315,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 13,
+        "modules": 1239,
+        "reactor": 83,
+        "research": 316,
+        "ship": "Cruiser"
+      }
+    },
+    {
+      "farm_stage": 22,
+      "push_stage": 22,
+      "start": 60915.0333386749,
+      "five_paid_ready": 61509.333338796,
+      "seconds": 594.300000121104,
+      "cycles": 92,
+      "baseline_growth": {
+        "enhancement": 13,
+        "modules": 1240,
+        "reactor": 83,
+        "research": 317,
+        "ship": "Cruiser"
+      },
+      "paid_growth": {
+        "enhancement": 13,
+        "modules": 1245,
+        "reactor": 83,
+        "research": 318,
+        "ship": "Cruiser"
+      }
+    }
+  ],
+  "logged_native_click_positive_debits": {
+    "iron": 4103930605591963.0,
+    "uranium": 3809489163289.2373
+  },
+  "debit_scope": "Actual native clickbefore/after positive balances decrease, notfull ledger;no inferenceof kill income orautomatic production here.",
+  "native_click_action_counts": {
+    "pickup": 258,
+    "refit_open": 75,
+    "option_focus": 663,
+    "option_select": 96,
+    "upgrade_slot": 151,
+    "scientist_max": 18,
+    "distribute_scientists": 19,
+    "reactor_balance": 14,
+    "ship_select": 2,
+    "switch_ship": 1,
+    "crew_select": 1,
+    "crew_assign": 1,
+    "crew_mode_open": 1,
+    "farm_warp_open": 20,
+    "farm_guard_on": 20,
+    "farm_guard_off": 20,
+    "reactor_max": 12,
+    "enhancement_max": 1
+  },
+  "first_pickups": [
+    {
+      "stage": 21,
+      "x1": 42906.2666683394,
+      "uid": 48,
+      "iron_gain": 0.0,
+      "uranium_gain": 7384830402.000002
+    },
+    {
+      "stage": 21,
+      "x1": 42906.5666683395,
+      "uid": 50,
+      "iron_gain": 65454131765.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42906.8666683395,
+      "uid": 56,
+      "iron_gain": 1875949664055.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42921.8666683426,
+      "uid": 60,
+      "iron_gain": 0.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42923.666668343,
+      "uid": 61,
+      "iron_gain": 55065152605.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42923.966668343,
+      "uid": 62,
+      "iron_gain": 55065152605.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42928.4666683439,
+      "uid": 63,
+      "iron_gain": 0.0,
+      "uranium_gain": 6212698910.0
+    },
+    {
+      "stage": 21,
+      "x1": 42962.5833350176,
+      "uid": 82,
+      "iron_gain": 0.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42966.7833350184,
+      "uid": 86,
+      "iron_gain": 23898215126.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 21,
+      "x1": 42967.0833350185,
+      "uid": 88,
+      "iron_gain": 2505189576075.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 50490.5333365512,
+      "uid": 6311,
+      "iron_gain": 0.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 50490.8333365513,
+      "uid": 6312,
+      "iron_gain": 0.0,
+      "uranium_gain": 22570361863.0
+    },
+    {
+      "stage": 22,
+      "x1": 50790.5333366123,
+      "uid": 6350,
+      "iron_gain": 0.0,
+      "uranium_gain": 33067367356.0
+    },
+    {
+      "stage": 22,
+      "x1": 50794.4333366131,
+      "uid": 6352,
+      "iron_gain": 1098934011262.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 50796.2333366135,
+      "uid": 6357,
+      "iron_gain": 11458242610885.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 50802.2333366147,
+      "uid": 6358,
+      "iron_gain": 0.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 50996.7833366543,
+      "uid": 6389,
+      "iron_gain": 0.0,
+      "uranium_gain": 12073356371.0
+    },
+    {
+      "stage": 22,
+      "x1": 51285.6833367132,
+      "uid": 6445,
+      "iron_gain": 11458242610885.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 51285.9833367133,
+      "uid": 6446,
+      "iron_gain": 0.0,
+      "uranium_gain": 0.0
+    },
+    {
+      "stage": 22,
+      "x1": 51286.2833367133,
+      "uid": 6448,
+      "iron_gain": 416838954328.0,
+      "uranium_gain": 0.0
+    }
+  ],
+  "exact_window_deaths": {
+    "21": 20,
+    "22": 21,
+    "total": 41,
+    "source": "Originalterminalstate segments cumulativedurations;all295RETREATsegmentsmatchterminalcontrollerdeaths295. Timeline sum98433.44999862349matchesterminalX1."
+  }
+}

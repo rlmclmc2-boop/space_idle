@@ -1,0 +1,64 @@
+{
+  "started_utc": "2026-10-06T11:31:46Z",
+  "rule": "test/README.md:73; parentexplicitlyauthorizesinactiveownrebuildablecaches.",
+  "before_free_bytes": 124608512,
+  "active_processes": [
+    "  37755 godot           [godot] <defunct>",
+    " 113270 python          python /workspace/sol-validation/work-phase-12h/sol-fresh0cc-to30/run_entry_window.py --project /workspace/sol-validation/res21-25x2-from2d20-qa --entry res://qa/stage_campaign.gd --label sol-res21-25x2-same2d20-to22-restart1 --godot /usr/local/bin/godot --skip-import --resume /workspace/sol-validation/res21-25x2-work/checkpoint.bin --longrun-options /workspace/sol-validation/res21-25x2-work/options.json --timeout 14500",
+    " 113273 godot           /usr/local/bin/godot --display-driver x11 --path /workspace/sol-validation/res21-25x2-from2d20-qa --script res://qa/stage_campaign.gd"
+  ],
+  "active_cwd_check": "proc cwd unreadable: [Errno 13] Permission denied: '/proc/113273/cwd'; launchedwith runnercwd/workspace/space_idle; projectverified byexplicit--path",
+  "protected_active_project": "/workspace/sol-validation/res21-25x2-from2d20-qa",
+  "cleaned": [
+    {
+      "path": "/workspace/sol-validation/curve20x3-step6p5-formal/.godot",
+      "apparent_bytes": 151023736,
+      "released_free_bytes": 153182208,
+      "import_marker_archived": "/workspace/sol-validation/curve20x3-step6p5-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/curve-step5-formal/.godot",
+      "apparent_bytes": 151023711,
+      "released_free_bytes": 153178112,
+      "import_marker_archived": "/workspace/sol-validation/curve-step5-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/hard34-smooth35-formal/.godot",
+      "apparent_bytes": 151024041,
+      "released_free_bytes": 153186304,
+      "import_marker_archived": "/workspace/sol-validation/hard34-smooth35-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/first35-smooth-x2-formal/.godot",
+      "apparent_bytes": 151023726,
+      "released_free_bytes": 153174016,
+      "import_marker_archived": "/workspace/sol-validation/first35-smooth-x2-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/first35-smooth-x3-formal/.godot",
+      "apparent_bytes": 151023747,
+      "released_free_bytes": 153182208,
+      "import_marker_archived": "/workspace/sol-validation/first35-smooth-x3-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/curve-step6p5-formal/.godot",
+      "apparent_bytes": 151023721,
+      "released_free_bytes": 153182208,
+      "import_marker_archived": "/workspace/sol-validation/curve-step6p5-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/first35-smooth-x4-formal/.godot",
+      "apparent_bytes": 151023963,
+      "released_free_bytes": 153174016,
+      "import_marker_archived": "/workspace/sol-validation/first35-smooth-x4-formal/.qa-import-complete.cache-removed-history.json"
+    },
+    {
+      "path": "/workspace/sol-validation/post60-supply-formal-qa-v4/.godot",
+      "apparent_bytes": 151024597,
+      "released_free_bytes": 153174016,
+      "import_marker_archived": "/workspace/sol-validation/post60-supply-formal-qa-v4/.qa-import-complete.cache-removed-history.json"
+    }
+  ],
+  "after_free_bytes": 1350008832,
+  "finished_utc": "2026-10-06T11:32:04Z"
+}

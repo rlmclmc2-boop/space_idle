@@ -1,0 +1,908 @@
+{
+  "scope": "Actual native scene samples; group_index1 corresponds first ordinarybattle point, notnavigationgroup0.",
+  "first21_native_samples": [
+    {
+      "step": 720,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 780,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 840,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 900,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 960,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1020,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1080,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1140,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1200,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1260,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1320,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1380,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1440,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1500,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1560,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1620,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1680,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1740,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1800,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1860,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1920,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 1980,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 2040,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 2100,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 2160,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": true,
+      "state_identical": true
+    },
+    {
+      "step": 11640,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 11700,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 11760,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 11820,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 11880,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 11940,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12000,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12060,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12120,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12180,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12240,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12300,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12360,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12420,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12480,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12540,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    },
+    {
+      "step": 12600,
+      "baseline_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "experiment_res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ],
+      "rng_equal": true,
+      "resources_equal": false,
+      "state_identical": false
+    }
+  ],
+  "all_equal": false,
+  "sample_count": 42,
+  "first_encounter_before_going_to_next_point": [
+    {
+      "step": 720,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 780,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 840,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 900,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 960,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1020,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1080,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1140,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1200,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1260,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1320,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1380,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1440,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1500,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1560,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1620,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1680,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1740,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1800,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1860,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1920,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 1980,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 2040,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 2100,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    },
+    {
+      "step": 2160,
+      "all_state_identical": true,
+      "res_ratios": [
+        539260886.477125,
+        539260886.477125,
+        539260886.477125
+      ]
+    }
+  ],
+  "first_encounter_all_states_identical": true,
+  "all_equal_scope_note": "All42group1samplesinclude laterrevisits afterboostedotherpointincome;notallstatesareequal;onlyinitialencountermatches."
+}

@@ -1,0 +1,46 @@
+{
+  "status": "failed_io_not_causal_evidence",
+  "reason": "Disk reachedzero;actions.jsonl andstage-states.jsonl ended withtruncatedJSON. Sequentialrunstopped; restartfromsameconvertedsourceCP only. Do notusepartialfirstwindowresults.",
+  "files": {
+    "checkpoint.bin": {
+      "bytes": 840087,
+      "sha256": "79e5e959979951e894ff9e9b6a217e49b6e3a6a7264a123dfa8917ec9012a4ef"
+    },
+    "run.log": {
+      "bytes": 2761,
+      "sha256": "346a663c55ef44d477c07c1589bafc380bf1f15510a12b3ec1a6decd7f409713"
+    },
+    "actions.jsonl": {
+      "bytes": 197839,
+      "sha256": "fa8998ec85efa5afc13babd1cdc62fde7c0aa9596d51a7fd7acfca9f1df1fa46"
+    },
+    "heartbeat.json": {
+      "bytes": 836,
+      "sha256": "c6b9ffca7e0c621dcfb22dea9f59219a7ce50915d3673232631ef4cf6f72f298"
+    },
+    "checkpoint.bin.previous": {
+      "bytes": 836839,
+      "sha256": "5c3ede201587964c2fca6649853dc0a09f5ebc1436885640e4ed150cb595c126"
+    },
+    "stage-states.jsonl": {
+      "bytes": 19906560,
+      "sha256": "2c7bc2c5c0d2c383fe4319042c1c753171939cf9f7eb7de24e50bcd7cfcaf840"
+    },
+    "run.json": {
+      "bytes": 103764,
+      "sha256": "2891c38977e53b33914592f19e41c51b224f530d301173e8120a9d83c1d3ea29"
+    },
+    "save_resumed.json": {
+      "bytes": 61446,
+      "sha256": "18dba3b297d46aa298905c17c0d521b3496d72d37f2dbeec42e592340afffd70"
+    },
+    "import-metadata-restored.json": {
+      "bytes": 1124,
+      "sha256": "b29503e1e4ebdb9db714401c57b447740b98c4beb386da5a8e065c30828b5964"
+    },
+    "import.log": {
+      "bytes": 94252,
+      "sha256": "527a72d2a662f748fa22dfdb41d9132b208648decf45f1f8e9052aaa721a343c"
+    }
+  }
+}
