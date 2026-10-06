@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/levels/34/atkRatio",
+    "before": 3.266900647334875e+31,
+    "after": 1.960140388400925e+32
+  },
+  {
+    "path": "/levels/34/lifeRatio",
+    "before": 3.266900647334875e+31,
+    "after": 1.960140388400925e+32
+  },
+  {
+    "path": "/levels/35/entryAtkRatio",
+    "before": null,
+    "after": 3.266900647334875e+31
+  },
+  {
+    "path": "/levels/35/entryLifeRatio",
+    "before": null,
+    "after": 3.266900647334875e+31
+  }
+]

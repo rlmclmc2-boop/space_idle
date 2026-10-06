@@ -1,0 +1,50 @@
+{
+  "status": "Pending exact source32 CP bytes; audit and converter syntax checked, not executed on the requested source",
+  "source_expected_body_sha256": "100c4dc5a6ddb318144cf55a7f4dd2263d565d4bc7313a5a419062d12f08a138",
+  "source_x1_expected": 116796.449994348,
+  "source_fingerprint": "3a78ea1595662c820cfe7265932129dbade62566153f72158eabea1593305ae1",
+  "target_fingerprint": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+  "local_exact_cp_found": false,
+  "levels1_through34_semantically_identical": true,
+  "changed_runtime_files": 19,
+  "game_data_diff": "Only level35 life/attack x6 and two new level36 entry factors; no income/player/gate34 number changes",
+  "hyperspace_config_diff": "Only master newly generated range0.8-0.9 to0.5-0.6 plus stored compatibility range; compatibility does not establish current earning eligibility",
+  "parent_source_facts_not_independently_verified_here": {
+    "round": 1,
+    "reforge_count": 0,
+    "no_inventory_legendary_effects": true,
+    "equipped_summary": "blue missile20 twoT5 critical; gold missile20 T4 critical/critical-damage T5defence; blue missile25 T5damage/repeat; white pulse10 ultimate",
+    "iron": 2.1400943271737332e+21,
+    "uranium": 2.7177028921778762e+17,
+    "modules_all_locked": true
+  },
+  "library_identity": {
+    "library_file_id": "libfile_dfcf24188af88191ac477e1197fe2183",
+    "file_id": "file_000000007c3881fd930b738e5d507421",
+    "version_id": "7",
+    "name": "closing-live-checkpoints.zip",
+    "member": "fresh30-hard34/source32-to049.bin",
+    "size_bytes": 17874043
+  },
+  "materialization_blocker": "Current official Library download helper failed hosted-app tools/list connection: network. No byte materialization, no fallback/bypass, no completed source validity claim.",
+  "authoritative_workbook_sha256": {
+    "config_excel/level.xlsx": {
+      "049af6c32428e0b31355bf35f2c9c63be35e0d8c": "5cecb2a58b4634874d4c6df999555677166a0ea5ce75afa3253f2e67067aada2",
+      "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de": "ccaa8bb15e8677f23c17a0a14b7921a5c25ad75f62e1eae75265a6455429a901"
+    },
+    "config_excel/hyperspace_config.xlsx": {
+      "049af6c32428e0b31355bf35f2c9c63be35e0d8c": "5e201fb7efe5915abb2a083d19cb5e0714acc209d9b954ebd1242425660ed042",
+      "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de": "5052e76702c8d85b45358f29af491bba4c4749efe8dba069742eadff52d66a0d"
+    }
+  },
+  "new_declared_defaults": {
+    "controller.reforge_checkpoint_pending": {},
+    "space_policy.idle_salvage_enabled": true,
+    "space_policy.idle_salvage_budget": {
+      "round": -1,
+      "used": 0,
+      "tour_started": -1.0
+    }
+  },
+  "long_run_started": false
+}
