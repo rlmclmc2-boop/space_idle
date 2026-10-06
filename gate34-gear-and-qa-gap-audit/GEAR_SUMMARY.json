@@ -1,0 +1,341 @@
+{
+  "checkpoint_sha256": "d0dfd18f8974c85654e25fcb2749cc687eada7d22c64203b262c552fd7d062ff",
+  "checkpoint_x1": 130480.666657829,
+  "gate_elapsed_hours": 3.760685184309724,
+  "source_loadout": {
+    "defence": [
+      {
+        "key": "armour",
+        "level": 243
+      },
+      {
+        "key": "armour",
+        "level": 243
+      },
+      {
+        "key": "armour",
+        "level": 242
+      }
+    ],
+    "weapons": [
+      {
+        "key": "missile",
+        "level": 242
+      },
+      {
+        "key": "cannon",
+        "level": 242
+      },
+      {
+        "key": "cannon",
+        "level": 242
+      },
+      {
+        "key": "cannon",
+        "level": 242
+      },
+      {
+        "key": "longLaser",
+        "level": 242
+      },
+      {
+        "key": "longLaser",
+        "level": 242
+      }
+    ]
+  },
+  "current_loadout": {
+    "defence": [
+      {
+        "key": "armour",
+        "level": 262
+      },
+      {
+        "key": "shield",
+        "level": 262
+      },
+      {
+        "key": "shield",
+        "level": 262
+      }
+    ],
+    "weapons": [
+      {
+        "key": "cannon",
+        "level": 262
+      },
+      {
+        "key": "cannon",
+        "level": 261
+      },
+      {
+        "key": "longLaser",
+        "level": 261
+      },
+      {
+        "key": "longLaser",
+        "level": 261
+      },
+      {
+        "key": "longLaser",
+        "level": 261
+      },
+      {
+        "key": "longLaser",
+        "level": 261
+      }
+    ]
+  },
+  "growth_action_counts": {
+    "upgrade_slot": 173,
+    "pickup": 507,
+    "distribute_scientists": 11,
+    "reactor_max": 9,
+    "reactor_balance": 9,
+    "ship_select": 1,
+    "refit_open": 41,
+    "option_focus": 907,
+    "option_select": 65,
+    "farm_warp_open": 23,
+    "farm_guard_on": 23,
+    "farm_guard_off": 22,
+    "scientist_max": 8,
+    "crew_assign": 2,
+    "crew_select": 1,
+    "crew_mode_open": 1,
+    "enhancement_max": 1
+  },
+  "upgrade_slot_amount_counts": {
+    "1": 173
+  },
+  "equipped_drones": {
+    "space:1:2": {
+      "affixes": [],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "7335463139941275162",
+      "hanging_slots": 1,
+      "hangings": [],
+      "id": "space:1:2",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 10,
+      "omen": false,
+      "origin_quality": "white",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": true,
+      "ultimate_affix": {
+        "key": "global_critical_damage",
+        "locked": false,
+        "tier": 4,
+        "value": 0.256
+      },
+      "weapon": "laser"
+    },
+    "space:1:11": {
+      "affixes": [
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 4,
+          "value": 0.037
+        },
+        {
+          "key": "global_defence",
+          "locked": false,
+          "tier": 5,
+          "value": 0.075
+        },
+        {
+          "key": "global_critical_damage",
+          "locked": false,
+          "tier": 4,
+          "value": 0.206
+        }
+      ],
+      "blue_source_bonus": false,
+      "forge_revision": 2,
+      "forge_rng_state": "8177203670080354894",
+      "hanging_slots": 1,
+      "hangings": [
+        "resource_collector"
+      ],
+      "id": "space:1:11",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 20,
+      "omen": false,
+      "origin_quality": "gold",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:1:13": {
+      "affixes": [
+        {
+          "key": "damage_missile",
+          "locked": false,
+          "tier": 5,
+          "value": 0.191
+        },
+        {
+          "key": "repeat_chance",
+          "locked": false,
+          "tier": 5,
+          "value": 0.019
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 2,
+      "forge_rng_state": "4013098081692300514",
+      "hanging_slots": 2,
+      "hangings": [
+        "resource_collector",
+        "distributed_algorithm"
+      ],
+      "id": "space:1:13",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 25,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    },
+    "space:1:10": {
+      "affixes": [
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 5,
+          "value": 0.018
+        },
+        {
+          "key": "critical_chance",
+          "locked": false,
+          "tier": 5,
+          "value": 0.012
+        }
+      ],
+      "blue_source_bonus": true,
+      "forge_revision": 1,
+      "forge_rng_state": "6795950729409676157",
+      "hanging_slots": 2,
+      "hangings": [
+        "resource_collector",
+        "distributed_algorithm"
+      ],
+      "id": "space:1:10",
+      "legendary": false,
+      "legendary_effect": {},
+      "level": 20,
+      "omen": false,
+      "origin_quality": "blue",
+      "planet_id": "1",
+      "preserved_hanging_slots": 0,
+      "ultimate": false,
+      "ultimate_affix": {},
+      "weapon": "missile"
+    }
+  },
+  "hanging_progress": {
+    "distributed_algorithm": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "extra_storage": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": false
+    },
+    "gem_refiner": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "hyperspace_charge": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    },
+    "resource_collector": {
+      "exp": 0.0,
+      "level": 0,
+      "unlocked": true
+    }
+  },
+  "current_group2_cached_plan": {
+    "allowed": [
+      "laser",
+      "missile",
+      "cannon",
+      "longLaser"
+    ],
+    "defences": [
+      "armour",
+      "armour",
+      "armour"
+    ],
+    "growth": "[[\"weapons\", 0, 258], [\"weapons\", 1, 258], [\"weapons\", 2, 258], [\"weapons\", 3, 257], [\"weapons\", 4, 257], [\"weapons\", 5, 257], [\"defence\", 0, 258], [\"defence\", 1, 258], [\"defence\", 2, 258]]",
+    "higgs": false,
+    "last_revision_failure": 20,
+    "revision": 2,
+    "visible_only": [
+      {
+        "drawn_repair_modules": false,
+        "resistance": 2,
+        "shown_attacks": [
+          2
+        ],
+        "uid": 9050
+      },
+      {
+        "drawn_repair_modules": false,
+        "resistance": 1,
+        "shown_attacks": [
+          2
+        ],
+        "uid": 9051
+      },
+      {
+        "drawn_repair_modules": false,
+        "resistance": 2,
+        "shown_attacks": [
+          2
+        ],
+        "uid": 9052
+      }
+    ],
+    "weapons": [
+      "cannon",
+      "cannon",
+      "longLaser",
+      "longLaser",
+      "longLaser",
+      "longLaser"
+    ]
+  },
+  "current_wanted_defences": [
+    "armour",
+    "shield",
+    "shield"
+  ],
+  "parent_reported_sparse_pair_reproduction": {
+    "code": "8879606e808bf28f8f5ca5669aa2fe9661a14804",
+    "fingerprint": "9d583eb7acba26c538001a2ae4e765b928364d049cc6aa1256ec5e25418580f8",
+    "source_sha256": "7d599a5a15fb618276636d7114d3f90adc1ead51b8a8cacd33e5e84e67cbf245",
+    "fixture_checks": 21,
+    "fixture_failures": 0,
+    "end_x1": 117396.466660875,
+    "wall_seconds": 76.846732,
+    "nonmetadata_business_records_equal": 274,
+    "scope": "Parent explicit independent reproduction report received in delegation; not an additional Sol run or independently fetched parent raw archive"
+  }
+}

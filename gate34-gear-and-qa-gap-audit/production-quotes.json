@@ -1,0 +1,629 @@
+[
+  {
+    "dmgReduce": 0.5,
+    "effective_hyperspace_totals": {
+      "affixes": {
+        "critical_chance": 0.067,
+        "damage_missile": 0.532118854766714,
+        "global_critical_damage": 0.792736649206679,
+        "global_defence": 0.163715594128645,
+        "repeat_chance": 0.019
+      },
+      "armour": 1.0,
+      "attack_speed": 1.0,
+      "chain_count": 0,
+      "critical_chance": 0.067,
+      "critical_damage": 1.79273664920668,
+      "damage": 1.0,
+      "defence": 1.16371559412865,
+      "hangings": {
+        "distributed_algorithm": 0.0,
+        "resource_collector": 0.0
+      },
+      "legendary": {
+
+      },
+      "repeat_chance": 0.019,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 1.53211885476671
+      }
+    },
+    "equipment": [
+      {
+        "actual_level": 262,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 758821588509111938961985503232.0,
+        "effective_level": 262,
+        "index": 0,
+        "key": "cannon",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 718999999999999943376896.0
+        }
+      },
+      {
+        "actual_level": 261,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 628737887621835602547431178240.0,
+        "effective_level": 261,
+        "index": 1,
+        "key": "cannon",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 601999999999999995805696.0
+        }
+      },
+      {
+        "actual_level": 261,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 15176431770182235876529012736.0,
+        "effective_level": 261,
+        "index": 2,
+        "key": "longLaser",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 601999999999999995805696.0
+        }
+      },
+      {
+        "actual_level": 261,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 15176431770182235876529012736.0,
+        "effective_level": 261,
+        "index": 3,
+        "key": "longLaser",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 601999999999999995805696.0
+        }
+      },
+      {
+        "actual_level": 261,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 15176431770182235876529012736.0,
+        "effective_level": 261,
+        "index": 4,
+        "key": "longLaser",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 601999999999999995805696.0
+        }
+      },
+      {
+        "actual_level": 261,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 15176431770182235876529012736.0,
+        "effective_level": 261,
+        "index": 5,
+        "key": "longLaser",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 601999999999999995805696.0
+        }
+      },
+      {
+        "actual_level": 262,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 569152599508888164656641736704.0,
+        "effective_level": 262,
+        "index": 0,
+        "key": "armour",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 718999999999999943376896.0
+        }
+      },
+      {
+        "actual_level": 262,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 284576299754444082328320868352.0,
+        "effective_level": 262,
+        "index": 1,
+        "key": "shield",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 718999999999999943376896.0
+        }
+      },
+      {
+        "actual_level": 262,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 284576299754444082328320868352.0,
+        "effective_level": 262,
+        "index": 2,
+        "key": "shield",
+        "max_affordable_now": 1,
+        "next10_cost": {
+          "1": 718999999999999943376896.0
+        }
+      }
+    ],
+    "history": {
+      "alpha": {
+        "10": 114.533333333328,
+        "15": 78.3666666666635,
+        "5": 178.066666666701
+      },
+      "beta": {
+        "15": 127.616666666661,
+        "20": 76.9166666666636,
+        "25": 80.0999999999967,
+        "30": 66.3999999999975,
+        "5": 145.616666666675
+      },
+      "gamma": {
+        "15": 54.6333333333315
+      }
+    },
+    "materials": {
+      "antiproton": 4,
+      "degenerate_matter": 4,
+      "glueball": 26,
+      "zero_point_energy": 0
+    },
+    "path": "/workspace/sol-validation/gate34-source-audit/gear-audit/checkpoint.bin",
+    "reactor_max_affordable_now": 0,
+    "readonly_profile_and_rng_preserved": true,
+    "sha256": "d0dfd18f8974c85654e25fcb2749cc687eada7d22c64203b262c552fd7d062ff",
+    "ultimate_chain_quotes": [
+      {
+        "after_restore_modernize_quote": {
+          "applied": false,
+          "cost": {
+            "degenerate_matter": 40.0
+          },
+          "draws": 1,
+          "error": "insufficient_materials"
+        },
+        "current_cores": 2,
+        "current_materials": {
+          "antiproton": 4,
+          "degenerate_matter": 4,
+          "glueball": 26,
+          "zero_point_energy": 0
+        },
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "ultimate_modification_forbidden",
+          "revision": 2
+        },
+        "id": "space:1:2",
+        "level": 10,
+        "quote_target_is_not_paid_progress": true,
+        "quoted_target_level": 15,
+        "restore_quote": {
+          "affixes_changed": false,
+          "applied": true,
+          "cost": {
+            "ultimate_cores": 1.0
+          },
+          "draws": 1,
+          "drone_id": "space:1:2",
+          "error": "",
+          "index": -1,
+          "operation": "restore_ultimate",
+          "outcome": true
+        },
+        "reultimate_cost": {
+          "ultimate_cores": 1.0
+        },
+        "ultimate": true
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+            "glueball": 330.0
+          },
+          "draws": 1,
+          "error": "insufficient_materials",
+          "revision": 2
+        },
+        "id": "space:1:11",
+        "level": 20,
+        "ultimate": false
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+            "glueball": 190.0
+          },
+          "draws": 1,
+          "error": "insufficient_materials",
+          "revision": 2
+        },
+        "id": "space:1:13",
+        "level": 25,
+        "ultimate": false
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+            "glueball": 190.0
+          },
+          "draws": 1,
+          "error": "insufficient_materials",
+          "revision": 1
+        },
+        "id": "space:1:10",
+        "level": 20,
+        "ultimate": false
+      }
+    ],
+    "ultimate_cores": 2,
+    "x1_seconds": 130480.666657829
+  },
+  {
+    "dmgReduce": 0.5,
+    "effective_hyperspace_totals": {
+      "affixes": {
+        "armour_capacity": 8.69795545360101,
+        "attack_speed": 0.035,
+        "chain_count": 1.0,
+        "critical_chance": 0.05,
+        "damage_missile": 2.96591060520317,
+        "global_critical_damage": 12.9904449403845
+      },
+      "armour": 9.69795545360101,
+      "attack_speed": 1.035,
+      "chain_count": 1,
+      "critical_chance": 0.05,
+      "critical_damage": 13.9904449403845,
+      "damage": 1.0,
+      "defence": 1.0,
+      "hangings": {
+        "resource_collector": 0.2
+      },
+      "legendary": {
+        "black_hole": {
+          "constants": {
+            "absorption_duration": 5.0,
+            "period": 20.0
+          },
+          "drone_id": "space:6:10",
+          "parameters": {
+            "damage_multiplier": 1.458
+          },
+          "score": 1.458
+        },
+        "drone_master": {
+          "constants": {
+            "quality_ratios": {
+              "blue": 0.6,
+              "gold": 0.7,
+              "legendary": 0.8,
+              "ultimate": 0.9,
+              "white": 0.5
+            }
+          },
+          "drone_id": "space:2:3",
+          "parameters": {
+            "maximum_reduction": 0.589
+          },
+          "score": 0.589
+        }
+      },
+      "repeat_chance": 0.0,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 3.96591060520317
+      }
+    },
+    "equipment": [
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 293136231782298892044496087302084737538148035728992934469566464.0,
+        "effective_level": 561,
+        "index": 0,
+        "key": "missile",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      },
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 293136231782298892044496087302084737538148035728992934469566464.0,
+        "effective_level": 561,
+        "index": 1,
+        "key": "missile",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 246500922180569489639652679528959479209696468311129975441850368.0,
+        "effective_level": 560,
+        "index": 2,
+        "key": "missile",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 30237536718546557895272898274678719962144428804146618664222720.0,
+        "effective_level": 560,
+        "index": 3,
+        "key": "laser",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 30237536718546557895272898274678719962144428804146618664222720.0,
+        "effective_level": 560,
+        "index": 4,
+        "key": "laser",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 30237536718546557895272898274678719962144428804146618664222720.0,
+        "effective_level": 560,
+        "index": 5,
+        "key": "laser",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 30237536718546557895272898274678719962144428804146618664222720.0,
+        "effective_level": 560,
+        "index": 6,
+        "key": "laser",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 465,
+        "can_buy_next10": false,
+        "category": "weapons",
+        "current_stat": 30237536718546557895272898274678719962144428804146618664222720.0,
+        "effective_level": 560,
+        "index": 7,
+        "key": "laser",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 8550000000000000459209814541501949018112.0
+        }
+      },
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 3248571720821313316559206057191238521240774549197652549582192640.0,
+        "effective_level": 561,
+        "index": 0,
+        "key": "armour",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      },
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 167487453224744652276349940519055963669643635223051796788281344.0,
+        "effective_level": 561,
+        "index": 1,
+        "key": "shield",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      },
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 167487453224744652276349940519055963669643635223051796788281344.0,
+        "effective_level": 561,
+        "index": 2,
+        "key": "shield",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      },
+      {
+        "actual_level": 466,
+        "can_buy_next10": false,
+        "category": "defence",
+        "current_stat": 167487453224744652276349940519055963669643635223051796788281344.0,
+        "effective_level": 561,
+        "index": 3,
+        "key": "shield",
+        "max_affordable_now": 3,
+        "next10_cost": {
+          "1": 10219999999999998987904474393993430433792.0
+        }
+      }
+    ],
+    "history": {
+      "alpha": {
+        "10": 67.7333333333308,
+        "15": 78.3666666666635,
+        "20": 64.8499999999976,
+        "5": 178.066666666701
+      },
+      "beta": {
+        "15": 127.616666666661,
+        "20": 76.9166666666636,
+        "25": 80.0999999999967,
+        "30": 69.916666666664,
+        "35": 82.3833333333299,
+        "40": 63.0999999999977,
+        "45": 93.9999999999959,
+        "5": 145.616666666675,
+        "55": 94.2666666666626,
+        "60": 187.416666666708
+      },
+      "delta": {
+        "15": 56.949999999998
+      },
+      "gamma": {
+        "15": 54.6333333333315,
+        "20": 77.9333333333302,
+        "5": 65.7333333333309
+      }
+    },
+    "materials": {
+      "antiproton": 7,
+      "degenerate_matter": 8,
+      "glueball": 265,
+      "zero_point_energy": 0
+    },
+    "path": "/workspace/sol-validation/unified-e528-post60-qa/diagnostics/sol-e528-hold60-extension300x1/checkpoint.bin",
+    "reactor_max_affordable_now": 0,
+    "readonly_profile_and_rng_preserved": true,
+    "sha256": "d0db524eaa9af72ec99f1249a70200a041dc4de3b9589c1668e4ddfdbff32451",
+    "ultimate_chain_quotes": [
+      {
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "no_new_record",
+          "revision": 3
+        },
+        "id": "space:2:3",
+        "level": 60,
+        "ultimate": false
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "no_new_record",
+          "revision": 1
+        },
+        "id": "space:6:10",
+        "level": 60,
+        "ultimate": false
+      },
+      {
+        "after_restore_modernize_quote": {
+          "applied": false,
+          "cost": {
+            "degenerate_matter": 60.0
+          },
+          "draws": 1,
+          "error": "insufficient_materials"
+        },
+        "current_cores": 3,
+        "current_materials": {
+          "antiproton": 7,
+          "degenerate_matter": 8,
+          "glueball": 265,
+          "zero_point_energy": 0
+        },
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "ultimate_modification_forbidden",
+          "revision": 2
+        },
+        "id": "space:1:2",
+        "level": 10,
+        "quote_target_is_not_paid_progress": true,
+        "quoted_target_level": 20,
+        "restore_quote": {
+          "affixes_changed": false,
+          "applied": true,
+          "cost": {
+            "ultimate_cores": 1.0
+          },
+          "draws": 1,
+          "drone_id": "space:1:2",
+          "error": "",
+          "index": -1,
+          "operation": "restore_ultimate",
+          "outcome": true
+        },
+        "reultimate_cost": {
+          "ultimate_cores": 1.0
+        },
+        "ultimate": true
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "no_new_record",
+          "revision": 1
+        },
+        "id": "space:6:15",
+        "level": 60,
+        "ultimate": false
+      },
+      {
+        "direct_modernize": {
+          "cost": {
+
+          },
+          "draws": 0,
+          "error": "no_new_record",
+          "revision": 1
+        },
+        "id": "space:6:8",
+        "level": 60,
+        "ultimate": false
+      }
+    ],
+    "ultimate_cores": 3,
+    "x1_seconds": 185372.216645048
+  }
+]

@@ -1,0 +1,510 @@
+{
+  "scope": "Reconstructed equipment keys from source and preceding native click.loadout_after; intervening automatic level purchases do not alter keys. Not an exact transient combat snapshot.",
+  "defeat_count": 28,
+  "defeats": [
+    {
+      "x1": 116951.583327645,
+      "failures": 1,
+      "weapons": [
+        "missile",
+        "cannon",
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "armour",
+        "armour"
+      ],
+      "combat_observed_seconds": 1.28333333303453
+    },
+    {
+      "x1": 116964.449994309,
+      "failures": 2,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "armour",
+        "armour"
+      ],
+      "combat_observed_seconds": 0.333333333255723
+    },
+    {
+      "x1": 117292.149994233,
+      "failures": 3,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.31666666636011
+    },
+    {
+      "x1": 117948.916660746,
+      "failures": 4,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.4499999996624
+    },
+    {
+      "x1": 118283.283327335,
+      "failures": 5,
+      "weapons": [
+        "missile",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.26666666637175
+    },
+    {
+      "x1": 118615.766660591,
+      "failures": 6,
+      "weapons": [
+        "missile",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.53333333297633
+    },
+    {
+      "x1": 118625.916660589,
+      "failures": 7,
+      "weapons": [
+        "missile",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.46666666632518
+    },
+    {
+      "x1": 118948.38332718,
+      "failures": 8,
+      "weapons": [
+        "missile",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.4499999996624
+    },
+    {
+      "x1": 119282.249993769,
+      "failures": 9,
+      "weapons": [
+        "missile",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.41666666633682
+    },
+    {
+      "x1": 119613.366660359,
+      "failures": 10,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.54999999963911
+    },
+    {
+      "x1": 119946.533326948,
+      "failures": 11,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.49999999965075
+    },
+    {
+      "x1": 120282.23332687,
+      "failures": 12,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 2.5333333327435
+    },
+    {
+      "x1": 120602.116660129,
+      "failures": 13,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 2.54999999940628
+    },
+    {
+      "x1": 121221.516659984,
+      "failures": 14,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 3.54999999917345
+    },
+    {
+      "x1": 121543.583326576,
+      "failures": 15,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 3.51666666584788
+    },
+    {
+      "x1": 122249.399993078,
+      "failures": 16,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 2.94999999931315
+    },
+    {
+      "x1": 122854.833326271,
+      "failures": 17,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 1.53333333297633
+    },
+    {
+      "x1": 123507.883326119,
+      "failures": 18,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 19.4666666621342
+    },
+    {
+      "x1": 123530.99999278,
+      "failures": 19,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 16.5166666628211
+    },
+    {
+      "x1": 124454.283325898,
+      "failures": 20,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 18.78333332896
+    },
+    {
+      "x1": 124480.316659226,
+      "failures": 21,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 19.4333333288087
+    },
+    {
+      "x1": 125415.466659008,
+      "failures": 22,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 30.6499999928637
+    },
+    {
+      "x1": 125471.199992328,
+      "failures": 23,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "armour",
+        "armour"
+      ],
+      "combat_observed_seconds": 53.6333333208458
+    },
+    {
+      "x1": 126405.833325444,
+      "failures": 24,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 30.1333333263174
+    },
+    {
+      "x1": 126450.583325434,
+      "failures": 25,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "armour",
+        "armour"
+      ],
+      "combat_observed_seconds": 42.6499999900698
+    },
+    {
+      "x1": 127412.38332521,
+      "failures": 26,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 57.599999986589
+    },
+    {
+      "x1": 128403.283324979,
+      "failures": 27,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 48.3166666554171
+    },
+    {
+      "x1": 129373.99999142,
+      "failures": 28,
+      "weapons": [
+        "cannon",
+        "cannon",
+        "longLaser",
+        "longLaser",
+        "longLaser",
+        "longLaser"
+      ],
+      "defence": [
+        "armour",
+        "shield",
+        "shield"
+      ],
+      "combat_observed_seconds": 41.1166666570934
+    }
+  ]
+}
