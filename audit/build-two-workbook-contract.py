@@ -160,6 +160,25 @@ defs['早段回退预算']={'sheet':'早段回退预算','primary_key':['referen
  'json_targets':['space_enemy_reward_catalog.json /references/*/early_drop_blocks'],
  'note':'仅25无实例参考的95块真实独立回退数值。15有实例早段及40晚段从本次主线投影刷新，不作为第二个金额权威。'}
 attach('hyperspace_enemies.xlsx','早段回退预算','早段回退预算',[{'reference_id':key,'reference_member_ordinal':i,'drop_order':j,'resource_id':drop['resourceId'],'amount':drop['amount'],'chance':drop['chance']} for key,ref in catalog['references'].items() if not ref['early_existing_encounters'] for i,block in enumerate(ref['early_drop_blocks']) for j,drop in enumerate(block)])
+# Fixed declarations explain current consumers without becoming switches.
+fixed_notes={
+ '/policies/core_reward':('固定奖励策略','抽到究极核心结果时，只发1个核心，不同时生成无人机。固定规则，不调整核心数量或赠机。'),
+ '/policies/promotion_success':('固定升阶策略','按阶级权重抽签，抽到比当前更强的阶才成功；成功只提升1阶，不直接跳到抽中阶。固定规则。'),
+ '/policies/omen_scope':('固定预兆作用域','预兆作用于该架无人机，筛选该机可修改词缀中的最低阶目标；不跨无人机生效。固定规则。'),
+ '/policies/legendary_selection':('未消费的旧声明','旧声明不驱动当前传说效果抽取。实际先按武器筛选适用效果，再均匀随机抽取，不按此strongest字符串挑最强。装备聚合时的同效果强弱选择是另一固定消费者。只读。'),
+ '/policies/sealed_unlock':('固定封存领取声明','重铸保留的无人机先封存，重新达到该机对应星球阶段后才能领取。实际门槛由正式星球数据和固定权限规则执行，此字符串本身不改变门槛。只读。'),
+ '/policies/legendary_repeat_action':('未接入预留项','预留null，目前未接入消费，不提供重复传说动作开关；保持null，只读。'),
+ '/hanging_modules/resource_collector/effects/0':('固定模块路由提示','资源采集器的铁收入效果提示。实际按固定resource_collector模块ID接入铁资源消费者，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/resource_collector/effects/1':('固定模块路由提示','资源采集器的铀收入效果提示。实际按固定resource_collector模块ID接入铀资源消费者，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/distributed_algorithm/effects/0':('固定模块路由提示','分布式算法的AI效率效果提示。实际按固定distributed_algorithm模块ID接入AI研究效率，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/extra_storage/effects/0':('固定模块路由提示','额外储能的反应炉能量容量效果提示。实际按固定extra_storage模块ID接入反应炉容量，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/gem_refiner/effects/0':('固定模块路由提示','宝石精炼的强化碎片收益效果提示。实际按固定gem_refiner模块ID接入掉落及熔炼来源的强化碎片产出，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/hyperspace_charge/effects/0':('固定模块路由提示','异空间充能的能量充能速率效果提示。实际按固定hyperspace_charge模块ID接入在线充能，此字符串本身不改变效果。只读。'),
+ '/hanging_modules/hyperspace_charge/effects/1':('固定模块路由提示','异空间充能的能量容量效果提示。实际按固定hyperspace_charge模块ID接入储能容量，此字符串本身不改变效果。只读。'),
+ '/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/0':('已有存值校验下界','仅用于验证已有统御maximum_reduction参数的兼容许可范围0.8..0.9；此项是下界0.8，不是新生成或重洗范围。只读，不做旧档迁移。'),
+ '/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/1':('已有存值校验上界','仅用于验证已有统御maximum_reduction参数的兼容许可范围0.8..0.9；此项是上界0.9，不是新生成或重洗范围。只读，不做旧档迁移。')}
+for record in fixed:
+ if record['key'] in fixed_notes:record['unit'],record['description']=fixed_notes[record['key']]
 # Coverage proof: round-trip proposed rows to existing config in memory. No workbook writing.
 projected={};
 for r in scalars:projected[r['key']]=r['value']

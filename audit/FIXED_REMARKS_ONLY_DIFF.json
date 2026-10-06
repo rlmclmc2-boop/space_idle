@@ -1,0 +1,158 @@
+{
+  "business_values_types_permissions_orders_unchanged": true,
+  "rows_changed": 15,
+  "rows_retained": 2,
+  "changes": [
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/core_reward",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/core_reward",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/promotion_success",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/promotion_success",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/omen_scope",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/omen_scope",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/legendary_selection",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/legendary_selection",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/sealed_unlock",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/sealed_unlock",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/legendary_repeat_action",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/policies/legendary_repeat_action",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/resource_collector/effects/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/resource_collector/effects/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/resource_collector/effects/1",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/resource_collector/effects/1",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/distributed_algorithm/effects/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/distributed_algorithm/effects/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/extra_storage/effects/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/extra_storage/effects/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/gem_refiner/effects/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/gem_refiner/effects/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/hyperspace_charge/effects/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/hyperspace_charge/effects/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/hyperspace_charge/effects/1",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/hanging_modules/hyperspace_charge/effects/1",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/0",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/0",
+      "field": "description"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/1",
+      "field": "unit"
+    },
+    {
+      "sheet": "固定规则_兼容说明",
+      "key": "/legendary_effects/drone_master/stored_parameter_ranges/maximum_reduction/1",
+      "field": "description"
+    }
+  ],
+  "scope": "Only fixed-rule17-row page. No functional tests or code behavior changes."
+}
