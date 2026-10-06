@@ -1,0 +1,33 @@
+{
+  "parent_source_commit": "2ba56d43b2c58ee7529af084539c2d6f46bd0b59",
+  "parent_file": "parent-active/snapshot-1218/resx2-actions.jsonl.gz",
+  "parent_compressed_sha256": "efafb5fae67bd0744d4aefa17996c43f603c73920cd4169d120c68553d92e87e",
+  "parent_raw_sha256": "11c0cf03285fd5bdfd29aa671cf4232cec0d57d10b67f1bc1340d28b24489af1",
+  "actual_clear23_x1": 58706.683338225,
+  "scope": "Exactparsedbusinessrecords fromactual22formalreloadthrough23;excludeonlycheckpoint_saved/resumed metadata.",
+  "sol_rows": 964,
+  "parent_rows": 964,
+  "all_business_records_equal": false,
+  "differences": [
+    {
+      "index": 0,
+      "sol_x1": 56228.1833377201,
+      "parent_x1": 56228.1833377201,
+      "sol_kind": "run_start",
+      "parent_kind": "run_start",
+      "changed_keys": [
+        "options"
+      ]
+    }
+  ],
+  "first_difference": {
+    "path": "run_start/options/duration",
+    "parent_absolute_X1_cap_seconds": 144000,
+    "sol_absolute_X1_cap_seconds": 216000,
+    "source_use": "hyperspace_longrun.gd loop termination cap;bothcapsaboveactual23clock58706.683338225",
+    "active_options_unchanged": true
+  },
+  "subsequent_actual_business_records": 963,
+  "all_subsequent_actual_business_records_equal": true,
+  "conclusion": "Do notclaimall964recordsidentical:run_startdurationdiffers. Afterthat963nativebusinessrecords through23exactlymatch. Samecleartime/RNG/loadout,notapproximate timingmatch."
+}
