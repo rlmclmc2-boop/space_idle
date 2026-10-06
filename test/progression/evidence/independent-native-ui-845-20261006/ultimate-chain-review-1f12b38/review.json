@@ -1,0 +1,28 @@
+{
+  "head": "1f12b38f1e7a05452fc00578d1d91b92f7141100",
+  "checkout": "/tmp/ultimate-chain-review-source",
+  "checkout_clean": true,
+  "baseline": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+  "production_differences": [],
+  "scope": "Static code and prior authentic UI audit only; no game run/paid fixture/longrun/source resource modification",
+  "real_post60_source": {
+    "path": "positive-modules-parent-e528-caa/sources/save_final.json.gz",
+    "x1": 185372.233311715,
+    "alpha_best_record": 20,
+    "beta_best_record": 60,
+    "cores": 3,
+    "degenerate_matter": 8
+  },
+  "findings": [
+    {
+      "severity": "medium",
+      "path": "test/progression/hyperspace_longrun.gd:63",
+      "finding": "Paid-step archive lacks round_id; command_seq resets after reforge so archive name can collide and write_once fail"
+    },
+    {
+      "severity": "medium",
+      "path": "test/progression/hyperspace_longrun.gd:67",
+      "finding": "Archive failure returns before normal primary CP write, including final retry; committed step still has save_final JSON but binary CP can remain older"
+    }
+  ]
+}
