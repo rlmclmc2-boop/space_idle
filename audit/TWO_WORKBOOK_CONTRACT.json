@@ -155,7 +155,7 @@
             {
               "column": "weight",
               "type": "float",
-              "description_zh": "结果相对抽签权重；单独调大更易抽中该结果，调小更少；实际概率=本权重/总权重，不要求总和1",
+              "description_zh": "相对抽签权重，概率=本权重/所有结果总和；默认总和1.09。不是0.5独立50%。调大提高该结果相对出现率。",
               "unit": "相对权重",
               "constraint": "非负；合计>0；默认合计1.09，不能当互斥绝对概率",
               "editable": true
@@ -163,7 +163,7 @@
             {
               "column": "affix_limit",
               "type": "int_or_blank",
-              "description_zh": "可生成/改造的词缀槽位上限",
+              "description_zh": "词缀槽上限，受品质硬上限0/2/3/3；调大可生成/添加更多，不自动补已有机。",
               "unit": "槽",
               "constraint": "非负；不超过既有0/2/3/3硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",
               "editable": true
@@ -171,7 +171,7 @@
             {
               "column": "hanging_limit",
               "type": "int_or_blank",
-              "description_zh": "可生成挂设槽位上限",
+              "description_zh": "挂设槽上限，硬上限4/2/1/0；传说化保留原挂设，不能用传说0误解成清空。",
               "unit": "槽",
               "constraint": "非负；不超过既有4/2/1/0硬上限；仅ultimate_core行必须空，导出时不新增对应品质字段",
               "editable": true
@@ -179,7 +179,7 @@
             {
               "column": "weapon_level_bonus",
               "type": "int_or_blank",
-              "description_zh": "来源品质武器有效等级增量；非究极时蓝来源优先，蓝转传说仍用蓝加成",
+              "description_zh": "非究极武器有效等级增量，蓝来源优先，蓝转传说继续用蓝值；究极覆盖，不叠加。",
               "unit": "武器有效等级增量",
               "constraint": "非负；蓝来源继承规则不改；仅ultimate_core行必须空，导出时不新增对应品质字段",
               "editable": true
@@ -187,7 +187,7 @@
             {
               "column": "dismantle_amount",
               "type": "int_or_blank",
-              "description_zh": "拆解专属材料数与随机挂设副本数",
+              "description_zh": "一次拆解的专属材料份数及随机模块份数共用此值。首份模块解锁，重复增加经验；须与自动筛除奖励验证上限联动。",
               "unit": "份/次",
               "constraint": "正整数；现行为同一个数，不拆成两个可独立调参来源；奖励校验上界联动；仅ultimate_core行必须空，导出时不新增对应品质字段",
               "editable": true
@@ -264,7 +264,7 @@
             {
               "column": "draw_weight",
               "type": "float",
-              "description_zh": "新生成阶及升阶判定的相对权重；调大本阶更易抽中，强于当前阶才成功且只升1阶",
+              "description_zh": "生成及升阶成功判定相对权重；1阶最强。抽到更强阶即成功，但仅提升1阶，不跳阶。",
               "unit": "相对权重",
               "constraint": ">0；保留默认1/5/15/45/135及order",
               "editable": true
@@ -272,7 +272,7 @@
             {
               "column": "modernization_weight",
               "type": "float",
-              "description_zh": "无人机每个词缀按其阶加入此费用系数；调大该阶现代化更贵，调小更便宜，另加基础系数",
+              "description_zh": "此阶每条普通词缀的现代化费用附加系数，与初始系数相加；调大该阶词缀越多报价越贵，不影响生成概率。",
               "unit": "无量纲",
               "constraint": "非负；保留默认10/5/3/1/0.5；与draw_weight是不同用途，不混为一项",
               "editable": true
@@ -357,7 +357,7 @@
             {
               "column": "minimum",
               "type": "float",
-              "description_zh": "未放大的原值区间下端",
+              "description_zh": "原始词缀下界；比例词缀0.1=+10%，chain_count为数量。调大新抽取/重洗下限更高；未改已存值；区间含量化网格点。",
               "unit": "原始加成；1=100%或数量",
               "constraint": "有限；≤maximum；value_precision网格至少有一个可取值",
               "editable": true
@@ -365,7 +365,7 @@
             {
               "column": "maximum",
               "type": "float",
-              "description_zh": "未放大的原值区间上端",
+              "description_zh": "原始词缀上界，需≥下界；调大新抽取潜力更高，也会增加保底最大值期望成本；数量词缀最终聚合转int。",
               "unit": "同minimum",
               "constraint": "有限；≥minimum；数量词缀现有量化及最终int投影保持",
               "editable": true
@@ -403,7 +403,7 @@
             {
               "column": "base_exp",
               "type": "float",
-              "description_zh": "首份只解锁不给经验；重复模块输入经验及各级阈值共用base_exp",
+              "description_zh": "每重复模块输入经验，同时各级阈值基数；首份只解锁。调大两者同比，不等于单纯更易升级。",
               "unit": "经验/重复模块",
               "constraint": ">0且有限",
               "editable": true
@@ -411,7 +411,7 @@
             {
               "column": "exp_growth",
               "type": "float",
-              "description_zh": "升级所需经验按base_exp×(1+此值)^当前等级；调大后续升级更慢，调小更快",
+              "description_zh": "升级所需经验=base_exp×(1+本值)^当前等级。调大后续升级更慢。",
               "unit": "比例；1=100%",
               "constraint": "≥0且有限，经验需求不得非有限",
               "editable": true
@@ -419,7 +419,7 @@
             {
               "column": "effect_growth",
               "type": "float",
-              "description_zh": "每架加成=(1+此值)^全局模块等级−1；调大高等级收益更强，调小更弱；等级0为0，同类多架相加",
+              "description_zh": "每架已挂设加成=(1+本值)^全局模块等级−1。0.1、2级=21%，两架42%；仓库未装备不计。",
               "unit": "比例；1=100%",
               "constraint": "≥0且有限，实际公式pow(1+g,L)-1保持",
               "editable": true
@@ -427,7 +427,7 @@
             {
               "column": "unlock_stage",
               "type": "int",
-              "description_zh": "挂设生效所需最高已到达关；调大更晚生效，调小更早，不是模块经验等级",
+              "description_zh": "模块可挂设及参与效果的最高到达主线门槛；调大延后使用，不代表模块抽取概率。",
               "unit": "关",
               "constraint": "非负整数",
               "editable": true
@@ -670,7 +670,7 @@
             {
               "column": "resource",
               "type": "string",
-              "description_zh": "现有材料或ultimate_cores",
+              "description_zh": "费用资源结构引用；当前为固定身份，只读，不因显示editable就能换资源。",
               "unit": "已有ID引用",
               "constraint": "必须存在于路线材料与核心账本；保持当前引用，变更需跨表校验；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
@@ -686,7 +686,7 @@
             {
               "column": "amount",
               "type": "int",
-              "description_zh": "该改造操作基础资源消耗；调大更贵，调小更便宜；结算及UI共用，部分操作另乘锁定/保底系数",
+              "description_zh": "指定操作每次基础资源消耗。调大更贵；锁定/定向/保底操作还叠加其倍率或抽取次数；究极还原消耗核心，不退款。",
               "unit": "份/次",
               "constraint": "非负整数；同(operation,resource)唯一；真实preview/commit共用此来源",
               "editable": true
@@ -807,7 +807,7 @@
             {
               "column": "size",
               "type": "int",
-              "description_zh": "既有舰体尺寸档",
+              "description_zh": "敌舰尺寸档位，影响战场几何/舰型；调大需重新检查阵型合法，不是生命倍率。",
               "unit": "尺寸档",
               "constraint": "正整数且现有模型/几何支持",
               "editable": true
@@ -815,7 +815,7 @@
             {
               "column": "health",
               "type": "number",
-              "description_zh": "独立异空间敌人基础生命；调大更耐打、推进更慢，调小反之；战斗再乘所选主线lifeRatio",
+              "description_zh": "敌人基础生命，另乘所选主线lifeRatio。调大更耐打，不复制主线等级倍率。",
               "unit": "生命",
               "constraint": ">0且有限",
               "editable": true
@@ -823,7 +823,7 @@
             {
               "column": "armour_type",
               "type": "int",
-              "description_zh": "装甲抗性类别",
+              "description_zh": "装甲伤害类型ID（0/1/2），与当前武器伤害类型匹配才使用相应抗性；不是减伤百分比。",
               "unit": "枚举码",
               "constraint": "0/1/2",
               "editable": true
@@ -831,7 +831,7 @@
             {
               "column": "shield",
               "type": "number",
-              "description_zh": "敌人基础护盾；调大更耐打，调小更少；随所选主线lifeRatio缩放，0为无护盾",
+              "description_zh": "敌人基础护盾容量，另乘所选生命倍率；0表示无盾。调大增加容量，不增生命本体。",
               "unit": "护盾",
               "constraint": "≥0且有限",
               "editable": true
@@ -839,7 +839,7 @@
             {
               "column": "shield_type",
               "type": "int",
-              "description_zh": "护盾抗性类别",
+              "description_zh": "护盾伤害类型ID0/1/2，作用于盾的类型抗性，和装甲类型分别处理。",
               "unit": "枚举码",
               "constraint": "0/1/2",
               "editable": true
@@ -847,7 +847,7 @@
             {
               "column": "shield_recovery",
               "type": "number",
-              "description_zh": "每秒按最大护盾恢复的比例；调大护盾恢复更快，调小更慢；需超过命中后延迟",
+              "description_zh": "护盾恢复比例参数；按主线敌盾现有规则处理，调大恢复更快，0禁恢复；需结合盾容量。",
               "unit": "比例/游戏秒",
               "constraint": "≥0且有限",
               "editable": true
@@ -855,7 +855,7 @@
             {
               "column": "shield_delay",
               "type": "number",
-              "description_zh": "实际命中后等待多久才恢复护盾；调大更晚恢复、易持续压制，调小更早；每次实际命中刷新",
+              "description_zh": "护盾被命中后的恢复等待游戏秒；调大更晚恢复，0为立即恢复条件。",
               "unit": "游戏秒",
               "constraint": "≥0且有限",
               "editable": true
@@ -863,7 +863,7 @@
             {
               "column": "damage_multiplier",
               "type": "number",
-              "description_zh": "异空间敌武器基础伤害倍率；调大敌人更危险，调小更弱；再继承所选主线atkRatio，不改变资源收入倍率",
+              "description_zh": "敌人攻击基础乘数，另继承所选主线atkRatio；调大造成更多伤害，不改变攻击间隔。",
               "unit": "无量纲",
               "constraint": "≥0且有限",
               "editable": true
@@ -987,7 +987,7 @@
             {
               "column": "slot_index",
               "type": "int",
-              "description_zh": "源15槽的实际索引",
+              "description_zh": "15槽中的0起索引，保留不规则空位；目前schema锁定，不能标可编辑。",
               "unit": "0起索引",
               "constraint": "0..14，group内唯一，不能自动密排；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
@@ -995,7 +995,7 @@
             {
               "column": "enemy_id",
               "type": "int",
-              "description_zh": "该非空槽异空间敌人",
+              "description_zh": "该现有非空槽使用的异空间敌ID，替换需保持合法尺寸/几何及recipe衍生ID一致。",
               "unit": "ID",
               "constraint": "必须存在于异空间敌人",
               "editable": true
@@ -1003,7 +1003,7 @@
             {
               "column": "x",
               "type": "number",
-              "description_zh": "显式阵型横坐标",
+              "description_zh": "逻辑战场横坐标，调大向右；范围54..518，非像素截图坐标。",
               "unit": "逻辑战场单位",
               "constraint": "有限且54..518；实际几何合法",
               "editable": true
@@ -1011,7 +1011,7 @@
             {
               "column": "y",
               "type": "number",
-              "description_zh": "显式阵型纵坐标",
+              "description_zh": "逻辑战场纵坐标，调大向下；范围80..350，检查前后/中心扇区。",
               "unit": "逻辑战场单位",
               "constraint": "有限且80..350；大型舰前后顺序/中心扇区合法",
               "editable": true
@@ -1059,7 +1059,7 @@
             {
               "column": "group_id",
               "type": "int",
-              "description_zh": "该档位有序编队ID",
+              "description_zh": "该路线该档有序编队引用；必须唯一覆盖40组、档位匹配4/4/1/1。更换需与其他行联动，不能复制组突破数量。",
               "unit": "ID",
               "constraint": "存在于异空间编队且档位一致；每路线4/4/1/1，无跨路线重复",
               "editable": true
@@ -1121,7 +1121,7 @@
             {
               "column": "boundary_note",
               "type": "string",
-              "description_zh": "既有早1..5、晚≥6规则与不可重建项",
+              "description_zh": "已有主线实例预算由主线表派生；25无早段实例95块来自回退页；sources为冻结结构映射。不能以编辑备注改变预算。",
               "unit": "只读说明",
               "constraint": "锁定；不把catalog未消费分界字段当参数；阶段1是固定只读来源关联；catalog预算由正式主线及早段回退预算唯一派生",
               "editable": false
@@ -1154,7 +1154,7 @@
             {
               "column": "member_order",
               "type": "int",
-              "description_zh": "组内原recipe成员记录顺序",
+              "description_zh": "组内原成员记录顺序，锁定；保留零预算成员位置，避免随机调用/奖励映射漂移。",
               "unit": "0起序号",
               "constraint": "同group/slot重复值一致；组内唯一成员顺序连续；锁定；导出按它排列成员",
               "editable": false
@@ -1170,7 +1170,7 @@
             {
               "column": "order",
               "type": "int_or_blank",
-              "description_zh": "同成员内原ordinal数组顺序；零预算成员填空",
+              "description_zh": "同成员预算数组原顺序，锁定。空只用于零预算；物理行排序不改变输出。",
               "unit": "0起序号",
               "constraint": "同group/slot内唯一连续，锁定；数组按它输出，不按ordinal数值猜排序；固定结构身份列，必须与基线等值，不能只改物理行冒充结构变化",
               "editable": false
@@ -1178,7 +1178,7 @@
             {
               "column": "reference_member_ordinal",
               "type": "int_or_blank",
-              "description_zh": "被分配的原参考成员序号",
+              "description_zh": "源预算成员0起序号，0是第一个真实预算块；空表示该成员零预算，必须保留行。更换须全组完整覆盖且不重复；不填金额。",
               "unit": "0起索引",
               "constraint": "覆盖0..reference_count-1且无重复；每个非空槽有成员记录，允许零预算；零预算成员必须保留一行，order与ordinal都为空，导出[]和jewelDropRolls=0",
               "editable": true
@@ -1225,7 +1225,7 @@
             {
               "column": "resource_id",
               "type": "int",
-              "description_zh": "回退掉落资源引用",
+              "description_zh": "既有普通资源ID，当前1为铁；不是无人机专属材料ID。变更须确认资源注册表及预算类型，禁止新增未知资源。",
               "unit": "正式res资源ID",
               "constraint": "必须存在于本次正式主线投影resources；不复制资源本身数值",
               "editable": true
@@ -1233,7 +1233,7 @@
             {
               "column": "amount",
               "type": "number",
-              "description_zh": "仅来源无匹配且资源参考关≤5时的回退掉落数量",
+              "description_zh": "资源参考关≤5且当前主线来源无匹配时的回退单块基础数量。默认8/20，乘资源倍率后发放；调大该块更多，不是专属材料奖励。",
               "unit": "资源份/预算块",
               "constraint": "非负有限且<9e15；不影响15已有主线早段模板及40晚段预算",
               "editable": true
@@ -1241,7 +1241,7 @@
             {
               "column": "chance",
               "type": "float",
-              "description_zh": "该回退掉落发生概率",
+              "description_zh": "该回退块掉落概率0..1，默认1必掉；调大更常出，不改掉落数量。",
               "unit": "概率，1=100%",
               "constraint": "有限，0..1",
               "editable": true

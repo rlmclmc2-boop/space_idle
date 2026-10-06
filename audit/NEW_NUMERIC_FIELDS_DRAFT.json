@@ -6,8 +6,8 @@
     "existing_source": "drone_forge.gd plan coefficient:=1.0",
     "suggested_entity": "全局标量/现代化",
     "suggested_column": "value",
-    "description_zh": "现代化费用初始系数；随后逐个加词缀阶级权重",
-    "unit": "无量纲",
+    "description_zh": "现代化阶级系数=此值+逐个词缀的阶级费用权重。调大价格更高，调小更低；还乘等级项及传说倍率，默认1与旧固定值等效。",
+    "unit": "费用无量纲起始系数",
     "constraints": ">0且有限；默认1.0；保留原公式、舍入顺序和奖励起点联动",
     "consumers": [
       "drone_forge.gd:133"
@@ -21,7 +21,7 @@
     "existing_source": "Existing XLSX path and drone_effect_aggregator.gd level-4",
     "suggested_entity": "全局标量/词缀",
     "suggested_column": "value",
-    "description_zh": "拟接线：无人机词缀放大指数起点；level=start时×1，低于起点为负指数缩小；冻结代码当前固定4",
+    "description_zh": "词缀放大指数的零点，正式接线后生效。调大同等级词缀的放大值更小，调小更大；level=起点时×1，低于起点仍按负指数缩小。默认4与旧固定值等效。",
     "unit": "无人机等级",
     "constraints": "整数；当前4不变；保持pow(1+rate,level-start)包括负指数语义，不偷偷clamp",
     "consumers": [
@@ -36,8 +36,8 @@
     "existing_source": "system/commands duplicate100/(100+L)",
     "suggested_entity": "全局标量/自动探索",
     "suggested_column": "value",
-    "description_zh": "自动探索耗时船员等级折算基数",
-    "unit": "船员等级基数",
+    "description_zh": "自动耗时=max(最低耗时,最佳手动X1秒数×B/(B+船员等级))。同一正等级时调大耗时更长，调小更短；B=100、等级100时记录耗时减半。",
+    "unit": "船员等级折算基数B",
     "constraints": ">0且有限；默认100；公共函数返回max(minimum_duration,best_x1*B/(B+L))，结算与UI共用",
     "consumers": [
       "hyperspace_system.gd:108",
@@ -52,8 +52,8 @@
     "existing_source": "system/commands/panel duplicate20/(20+L)",
     "suggested_entity": "全局标量/自动探索",
     "suggested_column": "value",
-    "description_zh": "自动探索票耗船员等级折算基数",
-    "unit": "船员等级基数",
+    "description_zh": "自动票耗=基础票耗×B/(B+船员等级)。同一正等级时调大消耗更多，调小更少；B=20、等级20时半票。只调自动，失败退实际已付票，结算和UI共用公式。",
+    "unit": "船员等级折算基数B",
     "constraints": ">0且有限；默认20；公共函数ticket*B/(B+L)，三个消费者共用，不改满容量派发门槛",
     "consumers": [
       "hyperspace_system.gd:109",

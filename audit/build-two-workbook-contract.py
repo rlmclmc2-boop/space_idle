@@ -204,6 +204,27 @@ def dict_orders(v,p=''):
   for i,x in enumerate(v):d.update(dict_orders(x,p+'/'+str(i)))
  return d
 assert {k:v for k,v in dict_orders(ordered).items() if k!=''}=={k:v for k,v in dict_orders(cfg).items() if k!=''}
+# Consumer-reviewed Chinese remarks; separate from all business literals/types/orders.
+remarks=json.loads((out/'INDEPENDENT_REMARKS_SUGGESTIONS.json').read_text())
+identity_columns={'基础参数':['key'],'传说随机参数':['effect_id','parameter'],'传说常量':['effect_id','constant_path']}
+for advice in remarks['rows']:
+ table=allrows[('hyperspace_config.xlsx',advice['sheet'])]
+ record=next(r for r in table['records'] if [r[k] for k in identity_columns[advice['sheet']]]==advice['identity'])
+ record['unit']=advice['unit'];record['description']=advice['description']
+ # Keep expanded examples/directions already reviewed, except where the suggestion fixes a subtle source rule.
+ if advice['sheet']=='基础参数' and advice['identity'][0] not in ['initial_retention_capacity','retention_capacity_gain']:
+  details=by_path.get('/'+advice['identity'][0],newmap.get(advice['identity'][0],{})).get('description_zh','')
+  if '调小' in details and '调小' not in record['description']:record['description']+=' '+details
+for book,ss in books.items():
+ for definition in ss:
+  table=allrows[(book,definition['sheet'])]
+  for column in definition['columns']:
+   suggestion=remarks['column_descriptions'].get(definition['sheet'],{}).get(column['column'])
+   if suggestion:column['description_zh']=suggestion
+   if column['column'] in definition['primary_key']:column['editable']=False
+  header=[c['column'] for c in definition['columns']]
+  table['data_rows']=[[r.get(k) for k in header] for r in table['records']]
+  table['description_row']=[f"{c['description_zh']}｜单位：{c['unit']}｜约束：{c['constraint']}" for c in definition['columns']]
 contract={'contract_version':1,'status':'machine-readable authoring interface, not production importer','source_commit':'f9d31b92d2b80af1c4b663173f12e4f6a23b8841','layout':original['layout'],'workbooks':[{'filename':name,'sheets':ss} for name,ss in books.items()],'ordering':original['ordering'],'new_numeric_defaults':new,'output_targets':['hyperspace_config.json','space_enemy_candidates.json','space_enemy_routes.json','space_enemy_reward_recipes.json','space_enemy_reward_catalog.json'],'frozen_noneditable_inputs':{name:hashlib.sha256((project/'data'/name).read_bytes()).hexdigest() for name in ['space_enemy_reward_sources.json']},'existing_root_order':list(cfg),'catalog_derivation':{'late':'Each reference late_reference_actual_group_id current mainline drops in occupied slot order','early_existing':'First listed early_existing_encounters current mainline group drops; validate every listed group identity/count','early_without_instance':'Only95 literal drop rows from早段回退预算','metadata':'Keep fixed reference identity/order and source_hashes audit origin; not a new acceptance certificate'},'schema_rules':'Fixed invariant metadata stays code/locked contract. Derived candidate drop projections and audit metadata remain frozen; no mainline numeric duplicate; no old-save migration.'}
 (out/'TWO_WORKBOOK_CONTRACT.json').write_text(json.dumps(contract,ensure_ascii=False,indent=2)+'\n')
 author={'source_commit':contract['source_commit'],'contract_version':1,'workbooks':[{'filename':name,'sheets':[{k:v for k,v in allrows[(name,s['sheet'])].items() if k!='records'} for s in ss]} for name,ss in books.items()]}

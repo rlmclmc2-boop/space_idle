@@ -1,0 +1,775 @@
+{
+  "candidate": "75a6d63255e099fc2949817c550ad3599ff5165c",
+  "rows": [
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "unlock_stage"
+      ],
+      "unit": "主线最高到达关",
+      "description": "异空间入口与能量推进门槛。调大延后开放，调小提前；默认7。与最低探索等级不同；需在现有主线关范围内。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "minimum_level"
+      ],
+      "unit": "所选主线等级/关",
+      "description": "允许探索及无人机生成的最低等级。调大减少可选低等级，调小增加；默认5。升高可能令已有低等级无人机/历史存档不合法，需兼容检查。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "energy_rate"
+      ],
+      "unit": "能量/游戏秒",
+      "description": "基础在线充能速率，调大缩短等满能量时间。默认10；不含挂设和后期倍率；超时空加速推进、离线不累计。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "energy_cap"
+      ],
+      "unit": "能量",
+      "description": "基础能量容量，初始满额；自动探索须达到当前有效容量才派发。调大储能更多也延长充满时间，不能理解成仅增加次数；挂设会放大容量。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "ticket"
+      ],
+      "unit": "能量/次",
+      "description": "手动票耗及自动票耗基数；自动再乘B/(B+船员等级)。调大两类更贵；默认108000。失败退本次实际已付票，不退未折算基数。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "minimum_duration"
+      ],
+      "unit": "游戏秒",
+      "description": "自动探索最短时间，最终max(本值,最佳X1×船员折算)。调大限制最快速度；默认10秒。手动战斗不按本值结束。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "warehouse_capacity"
+      ],
+      "unit": "架/格",
+      "description": "基础无人机仓库容量，实际再加重铸次数×增量。调大少触发满仓暂停；降低须检查已有库存，不会自动安全清空。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "overflow_capacity"
+      ],
+      "unit": "架/格",
+      "description": "固定10格溢出缓存，锁定。仓库与缓存全满则停止后续自动探索，保留已完成待领取；不能编辑绕过。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "reforge_capacity_gain"
+      ],
+      "unit": "格/次重铸",
+      "description": "每次重铸增加仓库容量；默认10。调大增加当前及未来总容量，同现有重铸次数相乘；降低涉及旧库存兼容。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "initial_retention_capacity"
+      ],
+      "unit": "架",
+      "description": "重铸保留名额初始基数，默认0；实际加累计重铸增量，选择本次保留时计入即将发生的一次。调大保留更多。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "retention_capacity_gain"
+      ],
+      "unit": "架/次重铸",
+      "description": "每次重铸增加保留无人机名额，默认10；保留机封存，达到其对应星球阶段才能领。调大仅扩保留名额，不保留材料。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_equipped"
+      ],
+      "unit": "架",
+      "description": "全局同时装备无人机上限，不含普通伴飞炮台；有效上限取舰型容量与此值的较小者。1..5；调小减少可装，存档需校验。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_legendary"
+      ],
+      "unit": "架",
+      "description": "同时装备具传说属性机上限，1..2；默认2。传说+究极双属性同时占这项及究极配额，不是排除究极后再计数。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_ultimate"
+      ],
+      "unit": "架",
+      "description": "同时装备具究极属性机上限，当前约束1，默认1。双属性也占此名额；不表示仓库只能拥有一架。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "completion_budget"
+      ],
+      "unit": "次/一次advance",
+      "description": "锁定的单次时间推进结算预算8；余下推进时间保留后续处理。性能保护，非奖励数量/付费可调项。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "ultimate_weapon_bonus"
+      ],
+      "unit": "武器有效等级增量",
+      "description": "究极状态覆盖普通来源/传说加成，不相加；默认+5。调大提高实际武器模块等级，不改无人机本体等级。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "affix_initial_probability"
+      ],
+      "unit": "概率，0..1",
+      "description": "首个潜在词缀槽成功概率；后续按追加因子逐槽衰减，每槽独立尝试，失败不提前停止。1为必出首槽；受品质槽上限约束。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "hanging_initial_probability"
+      ],
+      "unit": "概率，0..1",
+      "description": "首个潜在挂设槽生成概率；后续逐槽衰减。默认0.2=首槽20%；调大平均槽数更多，不保证填满品质上限。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "additional_probability_factor"
+      ],
+      "unit": "概率递乘因子，0..1",
+      "description": "每尝试下一潜在槽时概率乘本值，词缀/挂设共用。首概率1、因子0.25则1/0.25/0.0625；调大后续槽更常出现。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "value_precision"
+      ],
+      "unit": "原始参数量化步长",
+      "description": "新抽取/重洗数值的网格步长，默认0.001。调小可取值更多、保底期望成本可能更高；区间须含合法网格点；不自动改已有值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "amplification_rate"
+      ],
+      "unit": "每无人机等级复合增长率",
+      "description": "可放大词缀乘(1+rate)^(无人机等级−起点)。0.05是每级×1.05；调大高于起点增长更快，低于起点缩小更多。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "amplification_start_level"
+      ],
+      "unit": "无人机等级",
+      "description": "复合放大指数起点，默认4；level=start时×1，低于起点仍负指数缩小。调大在同等级下加成下降。本轮已接线，非主线开放门槛。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "material_base_reward"
+      ],
+      "unit": "专属材料份/成功探索",
+      "description": "专属材料基础数量；再按探索等级阶梯增加并应用后期倍率取整。调大每次成功更多；失败仅退款，不发成功材料。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "material_reward_level_step"
+      ],
+      "unit": "无人机/探索等级增量每份",
+      "description": "每跨这么多等级多1基础材料，默认3。调小成长更快；正整数。与普通铁/铀掉落独立。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "material_reward_start_level"
+      ],
+      "unit": "探索等级起点",
+      "description": "材料成长从此等级起算，低等级额外项夹到0；同时是现代化报价起点。调大材料增长推迟且现代化成本下降，须防报价因子非法。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_filter_conditions"
+      ],
+      "unit": "条",
+      "description": "锁定5条筛选条件上限，支持且/或；不是自动清除比例。已装备/收藏/预设/封存保护仍生效。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_filter_string_length"
+      ],
+      "unit": "字符",
+      "description": "锁定筛选导入字符串长度上限4096，防超长输入；不是条件条数，不可用文案绕过。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "maximum_forecast_attempts"
+      ],
+      "unit": "次",
+      "description": "锁定改造定向预估抽取次数上限10000；防无界搜索，不增加付费成功率。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "lock_cost_multiplier"
+      ],
+      "unit": "每个已锁词缀的费用倍率",
+      "description": "下次锁定价=基础锁价×倍率^已锁数。默认4，0/1/2锁对应×1/4/16；调大连续锁定更贵。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "reroll_guarantee_multiplier"
+      ],
+      "unit": "期望成本乘数",
+      "description": "保底最大值重洗的价格乘数，再乘所有待洗区间的网格组合数。调大保底更贵，不增加普通随机重洗幅度。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "modernization_cost_base"
+      ],
+      "unit": "材料份；也是舍入粒度",
+      "description": "现代化报价基数且按该份数为步长四舍五入。调大报价及档位间隔一同增大；不是单纯固定手续费。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "modernization_level_step"
+      ],
+      "unit": "探索/无人机等级增量",
+      "description": "现代化等级费用因子的分母：1+(目标−材料起点)/步长。调大高等级报价增长更缓；材料奖励起点仍联动。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "modernization_legendary_multiplier"
+      ],
+      "unit": "费用倍率",
+      "description": "传说机现代化费用额外乘数，默认2；调大仅提高传说报价。蓝转传说仍按传说收费，不影响蓝武器加成保留。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "late_supply_unlock_stage"
+      ],
+      "unit": "已清主线关ID",
+      "description": "清除指定关后开启后期充能/专属材料补给，默认60；检查已清集合，不是仅到达。调大延后获得补给。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "late_energy_rate_multiplier"
+      ],
+      "unit": "基础速率的终值倍率",
+      "description": "后期能量速率从1爬升到此倍率，默认30；不放大能量容量。调大满能量等待更短，离线不爬升。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "late_material_reward_multiplier"
+      ],
+      "unit": "专属材料终值倍率",
+      "description": "后期成功专属材料从1爬升到此倍率并向下取整，默认4。调大更多专属材料，不放大普通铁/宝石掉落。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "late_supply_ramp_seconds"
+      ],
+      "unit": "在线游戏秒",
+      "description": "后期补给由1到终值倍率的爬升时长，默认600。调大升满更慢；超时空加速推进。缩短须校验旧late_supply_work存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "modernization_base_coefficient"
+      ],
+      "unit": "无量纲费用系数",
+      "description": "现代化初始系数，后加各普通词缀阶级费用权重；默认1。调大所有现代化更贵，不改变目标等级/成功率。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "auto_duration_crew_base"
+      ],
+      "unit": "船员等级折算基数",
+      "description": "自动耗时=最佳X1×B/(B+L)，再受最短时间限制。默认100；L=100时系数0.5。调大相同船员提速变弱；无后台战斗。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "基础参数",
+      "identity": [
+        "auto_ticket_crew_base"
+      ],
+      "unit": "船员等级折算基数",
+      "description": "自动票耗=基础票×B/(B+L)。默认20，L=20时半票。调大相同船员折扣变小；自动仍须满容量派发。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "higgs_cannon",
+        "damage_bonus"
+      ],
+      "unit": "伤害加成比例",
+      "description": "炮伤乘1+本值；2表示×3。调大更强；只改变伤害，不改变宽度。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "higgs_cannon",
+        "area_bonus"
+      ],
+      "unit": "射线宽度加成比例",
+      "description": "射线宽度乘1+本值；1表示宽度×2。调大命中区域更宽；不是面积平方倍率。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "scatter_pulse",
+        "single_target_bonus"
+      ],
+      "unit": "单目标伤害加成比例",
+      "description": "场上仅一个有效目标时激光乘1+本值；2表示×3。调大单体更强，多目标时不生效。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "prism_tower",
+        "maximum_multiplier_bonus"
+      ],
+      "unit": "激光最大倍率加法增量",
+      "description": "对该棱镜塔源既有激光最大倍率加本值，调大蓄满倍率更高，不是全部激光再乘本值。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "strange_matter",
+        "damage_multiplier"
+      ],
+      "unit": "直接伤害倍率",
+      "description": "延迟奇异物质伤害=炮击原伤×本值，1.3表示×1.3。调大后续伤害更强，不改变概率。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "laser_charge",
+        "maximum_bonus"
+      ],
+      "unit": "激光额外伤害比例上限",
+      "description": "额外比例取min(本值,每激光加成×激光来源数)，最终乘1+比例。调大只放宽上限，来源不足时不增伤。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "wild_missile",
+        "damage_multiplier"
+      ],
+      "unit": "直接伤害倍率",
+      "description": "特殊主导弹伤害乘本值，7表示×7。调大单次更强；触发间隔由attack_period另管。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "endless_beam",
+        "maximum_multiplier_bonus"
+      ],
+      "unit": "激光最大倍率加法增量",
+      "description": "仅选定最强持续长激光源的既有最大倍率加本值。调大持续源更强，不同时新增多个持续源。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "dodge_counter",
+        "maximum_dodge"
+      ],
+      "unit": "闪避概率上限，0..1",
+      "description": "实际概率=min(当前武器最高暴击概率,本值)。0.75为75%上限，不能保证实际75%；调大只解除上限限制。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "dodge_counter",
+        "counter_damage_bonus"
+      ],
+      "unit": "反击伤害加成比例",
+      "description": "反击随机现有武器伤害乘1+本值，0.7表示×1.7。调大反击更强，不提高闪避概率。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "drone_master",
+        "maximum_reduction"
+      ],
+      "unit": "减伤比例上限，0..1",
+      "description": "实际减伤=本值×未失效已装备机最大品质系数/究极系数。0.5为最高品质50%；品质系数取最大不加总。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "black_hole",
+        "damage_multiplier"
+      ],
+      "unit": "释放伤害直接倍率",
+      "description": "黑洞释放伤害=吸收的己方原伤累计×本值。1.3表示×1.3；敌方伤害吸收用于防护，不计入释放伤害。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说随机参数",
+      "identity": [
+        "drone_rebuild",
+        "damage_and_defence_bonus"
+      ],
+      "unit": "每牺牲一次的伤害/防御加成比例",
+      "description": "每次重建牺牲一架可用无人机，累计加本值。0.7、两层累计+140%；调大每层更强，层上限另管。 本页区间用于新生成/重洗，不自动重抽已有存值。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "higgs_cannon",
+        "maximum_cannon_sources"
+      ],
+      "unit": "炮类武器来源数",
+      "description": "装备希格斯时允许的炮类武器来源总数上限，默认1；包含普通武器与无人机来源。调大允许更多炮来源，不提高每炮伤害。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "precise_guidance",
+        "stack_multiplier"
+      ],
+      "unit": "每已有层数的复合倍率底数",
+      "description": "伤害乘B^目标已有层数；B=1.5时2层×2.25。调大成长更快。每主发射批次每目标只叠一次，不按导弹颗数。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "precise_guidance",
+        "stack_limit_enabled"
+      ],
+      "unit": "开关",
+      "description": "是否启用叠层上限。false时stack_limit完全不参与；true限制后续累计层数。默认关闭，开启不改变单发记层方式。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "precise_guidance",
+        "stack_limit"
+      ],
+      "unit": "层",
+      "description": "启用上限时最多保留的目标层数；调大允许更高复合伤害；0且启用会保持0层。默认0且关闭，不等于默认无制导。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "precise_guidance",
+        "counting_policy"
+      ],
+      "unit": "固定行为声明",
+      "description": "锁定：每发射批次每目标首次命中记一次。字段本身无消费者，改文字不改变逻辑。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "prism_tower",
+        "nearby_targets"
+      ],
+      "unit": "额外连锁目标/跳数",
+      "description": "棱镜塔连锁额外目标计数，默认5；调大可打更多邻近目标，不含最初主目标，不增加塔数量。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "prism_tower",
+        "maximum_towers"
+      ],
+      "unit": "固定塔来源数",
+      "description": "锁定1；代码只允许一个有效棱镜塔，此字段未消费，不是可扩塔开关。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "strange_matter",
+        "spawn_probability"
+      ],
+      "unit": "非击杀炮命中的生成概率，0..1",
+      "description": "非击杀炮击命中时，以本概率生成1份延迟奇异物质；0.4=40%。击杀时直接用kill_spawns，不抽此概率。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "strange_matter",
+        "delay"
+      ],
+      "unit": "游戏秒",
+      "description": "奇异物质生成后到造成伤害的延迟，默认1。调大伤害更晚，不增加份数或倍率。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "strange_matter",
+        "kill_spawns"
+      ],
+      "unit": "份/击杀炮击",
+      "description": "炮击击杀时直接生成的奇异物质份数，默认2；调大更多延迟伤害。派生触发不能再触发其他效果。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "laser_charge",
+        "bonus_per_laser"
+      ],
+      "unit": "每个激光来源的加成比例",
+      "description": "每激光来源提供本比例，最终受maximum_bonus限制。0.5、两来源是+100%（若未达上限）；调大更快达上限。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "wild_missile",
+        "attack_period"
+      ],
+      "unit": "特殊攻击前的普通主导弹批次数",
+      "description": "N=3为普通、普通、普通、特殊，周期N+1次；调大特殊更稀疏。按主发射批次，不按颗数或秒。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "wild_missile",
+        "blast_fraction"
+      ],
+      "unit": "主击伤害比例，0..1",
+      "description": "特殊导弹爆炸额外伤害=主击原伤×本值，0.5是50%。调大爆炸更强，不改变主击倍率或周期。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "dodge_counter",
+        "cooldown"
+      ],
+      "unit": "游戏秒",
+      "description": "闪避反击之间的冷却，默认2；调大反击更稀疏。冷却限制反击，不把闪避概率改成每两秒固定一次。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "black_hole",
+        "period"
+      ],
+      "unit": "游戏秒",
+      "description": "黑洞循环周期，从一次开启到下次开启；默认20含5秒吸收窗口。调大开启更稀疏；需≥吸收时长且>0。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "black_hole",
+        "absorption_duration"
+      ],
+      "unit": "游戏秒",
+      "description": "每次黑洞吸收窗口，默认5。调大吸收更久并更晚释放累计伤害；不得超过period。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_rebuild",
+        "maximum_stacks"
+      ],
+      "unit": "层/一场战斗",
+      "description": "重建最大累计牺牲/加成层数，默认4。调大最多牺牲更多，仍受当前可用无人机数量限制，战斗重置。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_master",
+        "quality_ratios/white"
+      ],
+      "unit": "无量纲相对品质系数",
+      "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_master",
+        "quality_ratios/blue"
+      ],
+      "unit": "无量纲相对品质系数",
+      "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_master",
+        "quality_ratios/gold"
+      ],
+      "unit": "无量纲相对品质系数",
+      "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_master",
+        "quality_ratios/legendary"
+      ],
+      "unit": "无量纲相对品质系数",
+      "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
+      "scope": "remarks only; no value/type/permission changes"
+    },
+    {
+      "sheet": "传说常量",
+      "identity": [
+        "drone_master",
+        "quality_ratios/ultimate"
+      ],
+      "unit": "无量纲相对品质系数",
+      "description": "统御取未失效已装备机最高系数/究极系数，再乘减伤上限；不是本品质独立概率。增大此品质系数提高对应减伤；究极是正分母，改变它也影响所有其他品质，统一同比缩放不改结果。",
+      "scope": "remarks only; no value/type/permission changes"
+    }
+  ],
+  "column_descriptions": {
+    "品质": {
+      "weight": "相对抽签权重，概率=本权重/所有结果总和；默认总和1.09。不是0.5独立50%。调大提高该结果相对出现率。",
+      "affix_limit": "词缀槽上限，受品质硬上限0/2/3/3；调大可生成/添加更多，不自动补已有机。",
+      "hanging_limit": "挂设槽上限，硬上限4/2/1/0；传说化保留原挂设，不能用传说0误解成清空。",
+      "weapon_level_bonus": "非究极武器有效等级增量，蓝来源优先，蓝转传说继续用蓝值；究极覆盖，不叠加。",
+      "dismantle_amount": "一次拆解的专属材料份数及随机模块份数共用此值。首份模块解锁，重复增加经验；须与自动筛除奖励验证上限联动。"
+    },
+    "阶级权重": {
+      "draw_weight": "生成及升阶成功判定相对权重；1阶最强。抽到更强阶即成功，但仅提升1阶，不跳阶。",
+      "modernization_weight": "此阶每条普通词缀的现代化费用附加系数，与初始系数相加；调大该阶词缀越多报价越贵，不影响生成概率。"
+    },
+    "词缀区间": {
+      "minimum": "原始词缀下界；比例词缀0.1=+10%，chain_count为数量。调大新抽取/重洗下限更高；未改已存值；区间含量化网格点。",
+      "maximum": "原始词缀上界，需≥下界；调大新抽取潜力更高，也会增加保底最大值期望成本；数量词缀最终聚合转int。"
+    },
+    "挂设成长": {
+      "base_exp": "每重复模块输入经验，同时各级阈值基数；首份只解锁。调大两者同比，不等于单纯更易升级。",
+      "exp_growth": "升级所需经验=base_exp×(1+本值)^当前等级。调大后续升级更慢。",
+      "effect_growth": "每架已挂设加成=(1+本值)^全局模块等级−1。0.1、2级=21%，两架42%；仓库未装备不计。",
+      "unlock_stage": "模块可挂设及参与效果的最高到达主线门槛；调大延后使用，不代表模块抽取概率。"
+    },
+    "敌人": {
+      "size": "敌舰尺寸档位，影响战场几何/舰型；调大需重新检查阵型合法，不是生命倍率。",
+      "health": "敌人基础生命，另乘所选主线lifeRatio。调大更耐打，不复制主线等级倍率。",
+      "armour_type": "装甲伤害类型ID（0/1/2），与当前武器伤害类型匹配才使用相应抗性；不是减伤百分比。",
+      "shield": "敌人基础护盾容量，另乘所选生命倍率；0表示无盾。调大增加容量，不增生命本体。",
+      "shield_type": "护盾伤害类型ID0/1/2，作用于盾的类型抗性，和装甲类型分别处理。",
+      "shield_recovery": "护盾恢复比例参数；按主线敌盾现有规则处理，调大恢复更快，0禁恢复；需结合盾容量。",
+      "shield_delay": "护盾被命中后的恢复等待游戏秒；调大更晚恢复，0为立即恢复条件。",
+      "damage_multiplier": "敌人攻击基础乘数，另继承所选主线atkRatio；调大造成更多伤害，不改变攻击间隔。"
+    },
+    "编队槽位": {
+      "slot_index": "15槽中的0起索引，保留不规则空位；目前schema锁定，不能标可编辑。",
+      "enemy_id": "该现有非空槽使用的异空间敌ID，替换需保持合法尺寸/几何及recipe衍生ID一致。",
+      "x": "逻辑战场横坐标，调大向右；范围54..518，非像素截图坐标。",
+      "y": "逻辑战场纵坐标，调大向下；范围80..350，检查前后/中心扇区。"
+    },
+    "成员分配": {
+      "reference_member_ordinal": "源预算成员0起序号，0是第一个真实预算块；空表示该成员零预算，必须保留行。更换须全组完整覆盖且不重复；不填金额。",
+      "order": "同成员预算数组原顺序，锁定。空只用于零预算；物理行排序不改变输出。",
+      "member_order": "组内原成员记录顺序，锁定；保留零预算成员位置，避免随机调用/奖励映射漂移。"
+    },
+    "早段回退预算": {
+      "amount": "资源参考关≤5且当前主线来源无匹配时的回退单块基础数量。默认8/20，乘资源倍率后发放；调大该块更多，不是专属材料奖励。",
+      "chance": "该回退块掉落概率0..1，默认1必掉；调大更常出，不改掉落数量。",
+      "resource_id": "既有普通资源ID，当前1为铁；不是无人机专属材料ID。变更须确认资源注册表及预算类型，禁止新增未知资源。"
+    },
+    "改造费用": {
+      "amount": "指定操作每次基础资源消耗。调大更贵；锁定/定向/保底操作还叠加其倍率或抽取次数；究极还原消耗核心，不退款。",
+      "resource": "费用资源结构引用；当前为固定身份，只读，不因显示editable就能换资源。"
+    },
+    "路线编排": {
+      "group_id": "该路线该档有序编队引用；必须唯一覆盖40组、档位匹配4/4/1/1。更换需与其他行联动，不能复制组突破数量。"
+    },
+    "奖励参考": {
+      "boundary_note": "已有主线实例预算由主线表派生；25无早段实例95块来自回退页；sources为冻结结构映射。不能以编辑备注改变预算。"
+    }
+  },
+  "instruction": "Merge only unit/description note metadata; retain values/types/order/permissions. Locked metadata in schema and parent contract must be synchronized before re-author XLSX."
+}
