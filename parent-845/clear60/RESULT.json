@@ -1,0 +1,50 @@
+{
+  "clear60": 181472.19997929,
+  "total_x1_h": 50.40894443869166,
+  "command_clean": true,
+  "input_failure": {},
+  "galaxy_granted": true,
+  "galaxy_ids": [
+    "galaxy_1"
+  ],
+  "scope": "Actual845 progression clear60, crossversionprefix andformalrecovery at45 retained; notnewfreshsingleversionallpass",
+  "files": {
+    "checkpoint.bin.gz": {
+      "sha256": "3dadbbbb85e2d882999551c56eec7809d102c5259a9100b1b38f683acea6649f",
+      "original_sha256": "f51b1178c17173a103184d7d39e7d0f24040ad82e8f79d6bd4128bb7a22f11ef",
+      "original_bytes": 2763603,
+      "compressed_bytes": 112620,
+      "credential_scan_hits": 0
+    },
+    "save_final.json.gz": {
+      "sha256": "75983fc11c7d5d34f42337b966b4609f779560e734f8c495e7b48c7d00cf7c59",
+      "original_sha256": "cdcb3044e428a0471d3ff5a57d5570bfaf925a0aaf8078f322cb1cd3d7b88e8a",
+      "original_bytes": 88296,
+      "compressed_bytes": 11350,
+      "credential_scan_hits": 0
+    },
+    "longrun-summary.json.gz": {
+      "sha256": "2354a3c52e9239b842c249f68ac6f7cab8f5b96536b5b372129e14a34a280642",
+      "original_sha256": "1b796dc24b90c07728bd265d9f54dd1a2b578e650921d5589cb57d4a198827df",
+      "original_bytes": 2065847,
+      "compressed_bytes": 122015,
+      "credential_scan_hits": 0
+    },
+    "run.log.gz": {
+      "sha256": "aa69e9e1851dc512a555c3a805c1b6397d45b2b249cc71307f20a19eb4c331ae",
+      "original_sha256": "d162117a439b04675344ee77456d7e072d2e3c5904dd265b4872c00ffb1f22f3",
+      "original_bytes": 171260,
+      "compressed_bytes": 4873,
+      "credential_scan_hits": 0
+    },
+    "actions.jsonl.gz": {
+      "sha256": "60fe196368af1b19621c1b98d52710132acedca1fc1234c68177cd5972182f15",
+      "original_sha256": "317956e0886df710fcbbabcfed0ce5ce11bbdde36aed93ea83aaf5f764cd0cec",
+      "original_bytes": 9965785,
+      "compressed_bytes": 386009,
+      "credential_scan_hits": 0
+    }
+  },
+  "source_commit": "845d2ea206379ca186a6fe0d4a5bf876d7a8b5c5",
+  "content_scope": "Explicitly authorized public longtest evidence: actual game-only save,checkpoint,nativeactions,engine diagnostics andmanifest; no unrelated files."
+}
