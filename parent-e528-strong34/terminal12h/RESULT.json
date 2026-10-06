@@ -1,0 +1,100 @@
+{
+  "code": "e5283ab8f8d53b5524e41bdaec0dd2e3b07bc4de",
+  "fp": "13757dc31c5b2f8796cb5407bf6def1aefd1b877cda465e8a57818bfb6b2b33d",
+  "source_x1": 116796.449994348,
+  "gate_entry_x1": 116942.199994314,
+  "end_x1": 160142.216650922,
+  "gate_hours": 12.000004626835556,
+  "wall_seconds": 5204.132982,
+  "effective_x1_per_wall": 8.329104349657834,
+  "clear34": false,
+  "profile_cleared34": false,
+  "frontier": 34,
+  "input_failure": {},
+  "reforge_count": 0,
+  "cp_sha256": "beea41d503b05c3e59a6dc4be5bee42d4821ec6477954d479533018eefe83354",
+  "final_loadout": {
+    "defence": [
+      {
+        "key": "armour",
+        "level": 272
+      },
+      {
+        "key": "armour",
+        "level": 271
+      },
+      {
+        "key": "armour",
+        "level": 271
+      }
+    ],
+    "weapons": [
+      {
+        "key": "cannon",
+        "level": 271
+      },
+      {
+        "key": "cannon",
+        "level": 271
+      },
+      {
+        "key": "longLaser",
+        "level": 271
+      },
+      {
+        "key": "longLaser",
+        "level": 271
+      },
+      {
+        "key": "longLaser",
+        "level": 271
+      },
+      {
+        "key": "longLaser",
+        "level": 271
+      }
+    ]
+  },
+  "tour_count": 224,
+  "tour_interval_min_median_max": [
+    5.066666665996308,
+    299.99999992999074,
+    299.9999999310239
+  ],
+  "operation_counts": {
+    "upgrade_slot": 260,
+    "pickup": 1677,
+    "distribute_scientists": 18,
+    "reactor_max": 13,
+    "reactor_balance": 13,
+    "ship_select": 1,
+    "refit_open": 133,
+    "option_focus": 1755,
+    "option_select": 179,
+    "farm_warp_open": 40,
+    "farm_guard_on": 40,
+    "farm_guard_off": 39,
+    "scientist_max": 8,
+    "crew_assign": 7,
+    "crew_select": 6,
+    "crew_mode_open": 6,
+    "enhancement_max": 2
+  },
+  "domain_counts": {
+    "space_forge": 11,
+    "space_hangings": 7,
+    "crew_release": 17,
+    "crew_transfer_recall": 11,
+    "crew_assign_equipment": 11,
+    "crew_transfer_explore": 11,
+    "space_auto_pause": 4,
+    "space_manual": 4,
+    "space_auto": 4,
+    "planet_activate": 1,
+    "crew_equipment_mode": 5,
+    "space_equip": 2,
+    "space_favorite": 2,
+    "space_preset": 2
+  },
+  "scope": "Parent actual unchanged e528 from natural32:12h afterfirst34 notclear; aggressive repeated failure tours/mixedactualdefence, not fullfixedoptimaldefence nor newfreshfullgame; separate three-armour shortdiagnosticnotstitched"
+}
