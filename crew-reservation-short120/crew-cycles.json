@@ -1,0 +1,510 @@
+{
+  "cycles": [
+    {
+      "assign_x1": 124471.583325894,
+      "release_x1": 124471.883325894,
+      "duration": 0.3000000000029104,
+      "stage": 5,
+      "assign_index": 145,
+      "release_index": 146
+    },
+    {
+      "assign_x1": 124472.183325894,
+      "release_x1": 124472.483325894,
+      "duration": 0.3000000000029104,
+      "stage": 5,
+      "assign_index": 147,
+      "release_index": 148
+    },
+    {
+      "assign_x1": 124472.783325894,
+      "release_x1": 124473.083325894,
+      "duration": 0.3000000000029104,
+      "stage": 5,
+      "assign_index": 149,
+      "release_index": 150
+    },
+    {
+      "assign_x1": 124473.383325894,
+      "release_x1": 124473.683325894,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 151,
+      "release_index": 152
+    },
+    {
+      "assign_x1": 124473.983325894,
+      "release_x1": 124474.283325894,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 153,
+      "release_index": 154
+    },
+    {
+      "assign_x1": 124474.583325894,
+      "release_x1": 124474.883325894,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 155,
+      "release_index": 156
+    },
+    {
+      "assign_x1": 124475.183325894,
+      "release_x1": 124475.483325893,
+      "duration": 0.29999999899882823,
+      "stage": 6,
+      "assign_index": 157,
+      "release_index": 158
+    },
+    {
+      "assign_x1": 124475.783325893,
+      "release_x1": 124476.083325893,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 159,
+      "release_index": 160
+    },
+    {
+      "assign_x1": 124476.683325893,
+      "release_x1": 124476.983325893,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 162,
+      "release_index": 163
+    },
+    {
+      "assign_x1": 124477.583325893,
+      "release_x1": 124477.883325893,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 165,
+      "release_index": 166
+    },
+    {
+      "assign_x1": 124478.183325893,
+      "release_x1": 124478.783325893,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 167,
+      "release_index": 170
+    },
+    {
+      "assign_x1": 124479.083325893,
+      "release_x1": 124479.383325893,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 171,
+      "release_index": 172
+    },
+    {
+      "assign_x1": 124479.683325892,
+      "release_x1": 124479.983325892,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 173,
+      "release_index": 174
+    },
+    {
+      "assign_x1": 124480.283325892,
+      "release_x1": 124480.583325892,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 175,
+      "release_index": 176
+    },
+    {
+      "assign_x1": 124480.883325892,
+      "release_x1": 124481.183325892,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 177,
+      "release_index": 178
+    },
+    {
+      "assign_x1": 124481.783325892,
+      "release_x1": 124482.083325892,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 180,
+      "release_index": 181
+    },
+    {
+      "assign_x1": 124482.683325892,
+      "release_x1": 124482.983325892,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 183,
+      "release_index": 184
+    },
+    {
+      "assign_x1": 124483.583325892,
+      "release_x1": 124483.883325891,
+      "duration": 0.29999999899882823,
+      "stage": 6,
+      "assign_index": 186,
+      "release_index": 187
+    },
+    {
+      "assign_x1": 124484.183325891,
+      "release_x1": 124484.483325891,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 188,
+      "release_index": 189
+    },
+    {
+      "assign_x1": 124484.783325891,
+      "release_x1": 124485.083325891,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 190,
+      "release_index": 191
+    },
+    {
+      "assign_x1": 124485.383325891,
+      "release_x1": 124485.683325891,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 192,
+      "release_index": 193
+    },
+    {
+      "assign_x1": 124485.983325891,
+      "release_x1": 124486.583325891,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 194,
+      "release_index": 196
+    },
+    {
+      "assign_x1": 124486.883325891,
+      "release_x1": 124487.183325891,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 197,
+      "release_index": 198
+    },
+    {
+      "assign_x1": 124487.783325891,
+      "release_x1": 124488.083325891,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 200,
+      "release_index": 201
+    },
+    {
+      "assign_x1": 124488.68332589,
+      "release_x1": 124488.98332589,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 203,
+      "release_index": 204
+    },
+    {
+      "assign_x1": 124489.28332589,
+      "release_x1": 124489.58332589,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 205,
+      "release_index": 206
+    },
+    {
+      "assign_x1": 124489.88332589,
+      "release_x1": 124490.18332589,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 207,
+      "release_index": 208
+    },
+    {
+      "assign_x1": 124490.48332589,
+      "release_x1": 124490.78332589,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 209,
+      "release_index": 210
+    },
+    {
+      "assign_x1": 124491.08332589,
+      "release_x1": 124491.68332589,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 211,
+      "release_index": 213
+    },
+    {
+      "assign_x1": 124491.98332589,
+      "release_x1": 124492.583325889,
+      "duration": 0.5999999990017386,
+      "stage": 6,
+      "assign_index": 214,
+      "release_index": 216
+    },
+    {
+      "assign_x1": 124492.883325889,
+      "release_x1": 124493.183325889,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 217,
+      "release_index": 218
+    },
+    {
+      "assign_x1": 124493.783325889,
+      "release_x1": 124494.083325889,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 220,
+      "release_index": 221
+    },
+    {
+      "assign_x1": 124494.383325889,
+      "release_x1": 124494.683325889,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 222,
+      "release_index": 223
+    },
+    {
+      "assign_x1": 124494.983325889,
+      "release_x1": 124495.283325889,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 224,
+      "release_index": 225
+    },
+    {
+      "assign_x1": 124495.583325889,
+      "release_x1": 124495.883325889,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 226,
+      "release_index": 227
+    },
+    {
+      "assign_x1": 124496.183325889,
+      "release_x1": 124496.783325888,
+      "duration": 0.5999999990017386,
+      "stage": 6,
+      "assign_index": 228,
+      "release_index": 230
+    },
+    {
+      "assign_x1": 124497.683325888,
+      "release_x1": 124497.983325888,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 233,
+      "release_index": 234
+    },
+    {
+      "assign_x1": 124498.583325888,
+      "release_x1": 124498.883325888,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 236,
+      "release_index": 237
+    },
+    {
+      "assign_x1": 124499.183325888,
+      "release_x1": 124499.483325888,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 238,
+      "release_index": 239
+    },
+    {
+      "assign_x1": 124499.783325888,
+      "release_x1": 124500.383325888,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 240,
+      "release_index": 242
+    },
+    {
+      "assign_x1": 124500.683325888,
+      "release_x1": 124500.983325888,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 243,
+      "release_index": 244
+    },
+    {
+      "assign_x1": 124501.583325887,
+      "release_x1": 124501.883325887,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 246,
+      "release_index": 247
+    },
+    {
+      "assign_x1": 124502.183325887,
+      "release_x1": 124502.783325887,
+      "duration": 0.5999999999912689,
+      "stage": 6,
+      "assign_index": 248,
+      "release_index": 250
+    },
+    {
+      "assign_x1": 124503.083325887,
+      "release_x1": 124503.683325887,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 251,
+      "release_index": 253
+    },
+    {
+      "assign_x1": 124503.983325887,
+      "release_x1": 124504.283325887,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 254,
+      "release_index": 255
+    },
+    {
+      "assign_x1": 124504.583325887,
+      "release_x1": 124504.883325887,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 256,
+      "release_index": 257
+    },
+    {
+      "assign_x1": 124505.183325887,
+      "release_x1": 124505.483325886,
+      "duration": 0.29999999899882823,
+      "stage": 6,
+      "assign_index": 258,
+      "release_index": 259
+    },
+    {
+      "assign_x1": 124505.783325886,
+      "release_x1": 124506.083325886,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 260,
+      "release_index": 261
+    },
+    {
+      "assign_x1": 124506.683325886,
+      "release_x1": 124506.983325886,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 263,
+      "release_index": 264
+    },
+    {
+      "assign_x1": 124507.583325886,
+      "release_x1": 124507.883325886,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 266,
+      "release_index": 267
+    },
+    {
+      "assign_x1": 124508.183325886,
+      "release_x1": 124508.783325886,
+      "duration": 0.6000000000058208,
+      "stage": 6,
+      "assign_index": 268,
+      "release_index": 270
+    },
+    {
+      "assign_x1": 124509.083325886,
+      "release_x1": 124509.383325886,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 271,
+      "release_index": 272
+    },
+    {
+      "assign_x1": 124509.683325885,
+      "release_x1": 124509.983325885,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 273,
+      "release_index": 274
+    },
+    {
+      "assign_x1": 124510.283325885,
+      "release_x1": 124510.583325885,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 275,
+      "release_index": 276
+    },
+    {
+      "assign_x1": 124510.883325885,
+      "release_x1": 124511.183325885,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 277,
+      "release_index": 278
+    },
+    {
+      "assign_x1": 124511.783325885,
+      "release_x1": 124512.083325885,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 280,
+      "release_index": 281
+    },
+    {
+      "assign_x1": 124512.683325885,
+      "release_x1": 124512.983325885,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 283,
+      "release_index": 284
+    },
+    {
+      "assign_x1": 124513.583325885,
+      "release_x1": 124513.883325884,
+      "duration": 0.29999999899882823,
+      "stage": 6,
+      "assign_index": 286,
+      "release_index": 287
+    },
+    {
+      "assign_x1": 124514.183325884,
+      "release_x1": 124514.483325884,
+      "duration": 0.29999999998835847,
+      "stage": 6,
+      "assign_index": 288,
+      "release_index": 289
+    },
+    {
+      "assign_x1": 124514.783325884,
+      "release_x1": 124515.083325884,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 290,
+      "release_index": 291
+    },
+    {
+      "assign_x1": 124515.383325884,
+      "release_x1": 124515.683325884,
+      "duration": 0.3000000000029104,
+      "stage": 6,
+      "assign_index": 292,
+      "release_index": 293
+    }
+  ],
+  "crew_assignment": {
+    "id": "equipment_upgrade",
+    "targetType": "equipment",
+    "effectType": "AUTO_UPGRADE",
+    "baseValue": 1,
+    "levelScale": 0,
+    "powerScale": 0,
+    "interval": 1,
+    "maxCrew": 1,
+    "description": "每秒尝试升级全部启用的武器和防御模块，正常消耗资源。",
+    "titleTextId": "crew.job.equipment",
+    "descTextId": "crew.effect.all_equipment",
+    "targetCategory": "",
+    "upgradeModes": "1,10,max"
+  },
+  "actual_crew_basePower": 1,
+  "total_assignments": 62,
+  "matched_cycles": 61
+}

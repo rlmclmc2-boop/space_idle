@@ -1,0 +1,32 @@
+{
+	"final_group": 3,
+	"final_rng": "9109876351918326999",
+	"final_stage": 7,
+	"first_and_final_included": true,
+	"max_samples": 256,
+	"mode": "cached",
+	"sample_seconds": 1.0,
+	"samples": 122,
+	"state_times": {
+		"combat": {
+			"ticks": 4499,
+			"wall_us": 8808612
+		},
+		"noncombat": {
+			"ticks": 2702,
+			"wall_us": 2362748
+		}
+	},
+	"suppressed_samples": 0,
+	"ticks": 7201,
+	"timing": {
+		"after_tick_us": 163876,
+		"before_tick_us": 4853940,
+		"controller_us": 100109999,
+		"game_tick_us": 6153544,
+		"state_log_us": 858700
+	},
+	"wall_seconds": 113.534735,
+	"x1_per_wall": 1.05709205792101,
+	"x1_seconds": 120.016666666667
+}

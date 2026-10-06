@@ -1,0 +1,167 @@
+diff --git a/test/progression/hyperspace_checkpoint.gd b/test/progression/hyperspace_checkpoint.gd
+index 0139431..ae7d937 100644
+--- a/test/progression/hyperspace_checkpoint.gd
++++ b/test/progression/hyperspace_checkpoint.gd
+@@ -3,7 +3,7 @@ extends RefCounted
+ const FORMAT=1
+ const QA_CONTINUITY=["early_page_route.gd","hyperspace_player_policy.gd","hyperspace_safe_farm.gd","player_input.gd","scene_driver.gd","presented_balance_game.gd"]
+ const CONTROLLER=["tour_failed_encounters","tour_current_encounter","tour_seen_unlocks","reforge_checkpoint_pending","crew_transfer_burst","next_check","next_tour","next_button","tour","touring","tour_started","observed_weapons","tour_durations","busy","page","checks","clicks","visits","empty_checks","burst_start","bursts","rows","clears","deaths","unlock_id","unlock_since","unlock_confirmations","segment_start","segment_state","segment_stage","segments","rejected_inputs","input_failure","scientist_context","reactor_context","farm_seconds","space_runs","active_space_record","refeeds","operation_seconds","space_seconds","last_frontier","round_clears","peak_projectiles","peak_missile_queue","model_rebuilds","last_domain_rejection","domain_rejections","last_state_report"]
+-const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew","idle_salvage_enabled","idle_salvage_budget","idle_salvage_success_times"]
++const POLICY=["last_frontier_attempt","manual_frontier_failures","affix_target_tier","affix_paid_windows","crew_transfer","crew_transfer_history","last_crew_transfer","reforge_observed","last_attempt","manual_failures","manual_pending","manual_watch","last_manual_boundary","forge_at","reserved_crew","last_reforge","reforge_since","known_weapons","wanted_weapons","wanted_defences","seen_encounter","encounter_plans","pending_encounters","encounter_failures","encounter_started","wanted_weapon","weapon_losses","last_weapon_change","last_galaxy_state","galaxy_needs_reserved_crew","idle_salvage_enabled","idle_salvage_budget","idle_salvage_success_times","space_crew_reservation"]
+ const FARM=["round_seen","known","failed","attempted_stage","phase","plan"]
+ 
+ static func digest(bytes:PackedByteArray)->String:
+diff --git a/test/progression/hyperspace_longrun.gd b/test/progression/hyperspace_longrun.gd
+index 47b8e1c..aa4c0f8 100644
+--- a/test/progression/hyperspace_longrun.gd
++++ b/test/progression/hyperspace_longrun.gd
+@@ -144,11 +144,9 @@ func crew_action()->Dictionary:
+  var redeploy:Dictionary=space_policy.crew_redeploy_action(game,5,driver.scene.crew_panel.rows.keys(),game.simulated_time)
+  if not redeploy.is_empty():return redeploy
+  if not space_policy.crew_transfer.is_empty():return {}
+- var reserved:String=space_policy.pick_crew(game) if int(game.profile.highestLevel)>=7 else ""
+- if reserved.is_empty() and not game.profile.hyperspace.history.is_empty() and not game.profile.hyperspace.auto.enabled:
+-  for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
+-   for member in game.profile.crew:
+-    if str(member.assignmentType)==job:return {"domain":true,"kind":"crew_release","crew":str(member.crewId),"reason":"First earned space record needs an actual worker; old automation stops"}
++ var reservation_action:Dictionary=space_policy.space_crew_reservation_action(game,driver.scene.crew_panel.rows.keys(),game.simulated_time)
++ if not reservation_action.is_empty():return reservation_action
++ var reserved:String=space_policy.reserved_growth_crew(game)
+  var panel=driver.scene.crew_panel
+  for member in game.profile.crew:
+   var id:=str(member.crewId)
+diff --git a/test/progression/hyperspace_player_policy.gd b/test/progression/hyperspace_player_policy.gd
+index 916e1c2..d943a88 100644
+--- a/test/progression/hyperspace_player_policy.gd
++++ b/test/progression/hyperspace_player_policy.gd
+@@ -1,6 +1,6 @@
+ extends RefCounted
+ ## Explicit QA decisions from earned records/current feedback; each command costs one visible-page action.
+-const VERSION="hyperspace-player-v19-sparse-repeat-failure-rolling-salvage"
++const VERSION="hyperspace-player-v20-sparse-rolling-salvage-reserved-crew"
+ var idle_salvage_enabled:=OS.get_environment("QA_IDLE_SALVAGE")=="1"
+ var idle_salvage_budget:Dictionary={"round":-1,"used":0,"tour_started":-1.0}
+ var idle_salvage_success_times:Array=[]
+@@ -276,8 +276,49 @@ func observe_failure(g,now:float)->Dictionary:
+  return feedback
+ func transfer_crew(id:String)->bool:
+  return not crew_transfer.is_empty() and id in [str(crew_transfer.veteran),str(crew_transfer.replacement)]
++var space_crew_reservation:Dictionary={}
++func reserved_growth_crew(g)->String:
++ var actual:String=Permission.reserved_crew(g.profile.hyperspace)
++ if not actual.is_empty():return actual
++ if int(space_crew_reservation.get("round",-1))==int(g.profile.hyperspace.round_id):return str(space_crew_reservation.get("crew",""))
++ return ""
++func space_worker_demand(g)->Dictionary:
++ var s:Dictionary=g.profile.hyperspace
++ if int(g.profile.highestLevel)<int(g.hyperspace.config.unlock_stage) or s.auto.enabled or not s.active.is_empty() or g.manual_hyperspace.active or not manual_pending.is_empty() or galaxy_needs_reserved_crew:return {}
++ # Do not stop a growth worker while an auto ticket cannot actually dispatch.
++ if float(s.energy)<float(g.hyperspace.online_config(g).energy_cap) or not Bag.has_space(s.inventory,g.hyperspace.config):return {}
++ var supply:Dictionary=growth_supply(g)
++ if not supply.is_empty():
++  if not g.profile.cleared.has(60) or supply.get("record_prerequisite",false) or supply.get("ready",false):return {}
++  var record:int=best_record(g,str(supply.route))
++  return {"route":str(supply.route),"level":record,"purpose":"Actual recorded paid material auto"} if record>0 else {}
++ for route in g.hyperspace.config.routes:
++  var record:int=best_record(g,str(route))
++  if record>0:return {"route":str(route),"level":record,"purpose":"Actual eligible recorded progress auto"}
++ return {}
++func space_crew_reservation_action(g,visible_ids:Array,now:float)->Dictionary:
++ var demand:Dictionary=space_worker_demand(g)
++ if demand.is_empty():space_crew_reservation={};return {}
++ var candidate:Dictionary={}
++ if int(space_crew_reservation.get("round",-1))==int(g.profile.hyperspace.round_id) and str(space_crew_reservation.get("route",""))==str(demand.route):candidate=g.crew.entry(g,str(space_crew_reservation.get("crew","")))
++ if not candidate.is_empty() and (not visible_ids.has(str(candidate.crewId)) or not g.crew.unlocked(g,str(candidate.crewId)) or transfer_crew(str(candidate.crewId)) or not g.crew_exploration(str(candidate.crewId)).is_empty() or not g.planet_buildings.occupied(g,str(candidate.crewId)).is_empty()):candidate={}
++ if candidate.is_empty():
++  space_crew_reservation={}
++  for member in g.profile.crew:
++   var id:String=str(member.crewId)
++   if visible_ids.has(id) and not transfer_crew(id) and Permission.crew_available(g,id):candidate=member;break
++  if candidate.is_empty():
++   for job in ["jewel_auto","reactor_upgrade","hightech_scientists","equipment_upgrade"]:
++    for member in g.profile.crew:
++     var id:String=str(member.crewId)
++     if visible_ids.has(id) and g.crew.unlocked(g,id) and not transfer_crew(id) and str(member.assignmentType)==job and g.crew_exploration(id).is_empty() and g.planet_buildings.occupied(g,id).is_empty():candidate=member;break
++    if not candidate.is_empty():break
++ if candidate.is_empty():return {}
++ space_crew_reservation={"round":int(g.profile.hyperspace.round_id),"crew":str(candidate.crewId),"route":str(demand.route),"level":int(demand.level),"purpose":str(demand.purpose),"phase":"reserved" if str(candidate.assignmentType).is_empty() else "release","planned_at":float(space_crew_reservation.get("planned_at",now))}
++ if not str(candidate.assignmentType).is_empty():return {"domain":true,"kind":"crew_release","crew":str(candidate.crewId),"reason":"Release only the selected reserved worker for an available funded space operation","reservation":space_crew_reservation.duplicate(true)}
++ return {}
+ func pick_crew(g)->String:
+- var current:String=Permission.reserved_crew(g.profile.hyperspace)
++ var current:String=reserved_growth_crew(g)
+  if not current.is_empty() and Permission.crew_available(g,current):reserved_crew=current;return current
+  if not reserved_crew.is_empty() and not transfer_crew(reserved_crew) and Permission.crew_available(g,reserved_crew):return reserved_crew
+  var available:Array=[]
+@@ -295,7 +336,7 @@ func crew_transfer_page(g)->int:
+  if crew_transfer.is_empty():return -1
+  var plan:Dictionary=crew_transfer;var replacement:Dictionary=g.crew.entry(g,str(plan.replacement));var veteran:Dictionary=g.crew.entry(g,str(plan.veteran));var progress:Dictionary=g.planet_progress(str(plan.planet))
+  if int(plan.round)!=int(g.profile.hyperspace.round_id) or replacement.is_empty() or veteran.is_empty() or progress.is_empty():return -1
+- if Permission.reserved_crew(g.profile.hyperspace) in [str(plan.veteran),str(plan.replacement)]:return -1
++ if reserved_growth_crew(g) in [str(plan.veteran),str(plan.replacement)]:return -1
+  if not str(replacement.assignmentType).is_empty():return 5
+  if not g.idle_planet_crew(str(plan.replacement)):return -1
+  for member in g.profile.crew:
+@@ -317,7 +358,7 @@ func crew_redeploy_action(g,page:int,visible_ids:Array,now:float)->Dictionary:
+   var candidates:Array=[]
+   for member in g.profile.crew:
+    var id:String=str(member.crewId)
+-   if id==str(veteran.crewId) or not visible_ids.has(id) or not g.crew.unlocked(g,id) or id==Permission.reserved_crew(g.profile.hyperspace) or not g.crew_exploration(id).is_empty():continue
++   if id==str(veteran.crewId) or not visible_ids.has(id) or not g.crew.unlocked(g,id) or id==reserved_growth_crew(g) or not g.crew_exploration(id).is_empty():continue
+    if str(member.assignmentType) not in ["","equipment_upgrade","hightech_scientists","reactor_upgrade","jewel_auto"]:continue
+    candidates.append(member)
+   candidates.sort_custom(func(a,b):return int(a.level)<int(b.level) if str(a.assignmentType).is_empty()==str(b.assignmentType).is_empty() else str(a.assignmentType).is_empty())
+@@ -468,7 +509,7 @@ func affix_paid_window(g,id:String,now:float)->bool:
+  affix_paid_windows[key]=window
+  return int(window.attempts)<32
+ func pick_supply_crew(g)->String:
+- var current:String=Permission.reserved_crew(g.profile.hyperspace)
++ var current:String=reserved_growth_crew(g)
+  if not current.is_empty():return current if Permission.crew_available(g,current) else ""
+  var available:Array=[]
+  for member in g.profile.crew:
+diff --git a/test/progression/test_space_crew_reservation.gd b/test/progression/test_space_crew_reservation.gd
+new file mode 100644
+index 0000000..e809976
+--- /dev/null
++++ b/test/progression/test_space_crew_reservation.gd
+@@ -0,0 +1,39 @@
++extends SceneTree
++const Policy=preload("res://qa/hyperspace_player_policy.gd")
++const CP=preload("res://qa/hyperspace_checkpoint.gd")
++const Game=preload("res://scripts/game.gd")
++var checks:=0
++var failures:=0
++func check(ok:bool,label:String)->void:
++ checks+=1
++ if not ok:failures+=1;printerr("FAIL ",label)
++func _initialize()->void:
++ var loaded:Dictionary=CP.read_one(OS.get_environment("QA_CREW_SOURCE"));assert(loaded.error.is_empty())
++ var g=Game.new(ShipDatabase.new());var raw:Dictionary=loaded.payload.save.duplicate(true);raw.chronoSavedAt=Time.get_unix_time_from_system();g.load_progress_data(raw)
++ var p=Policy.new();var visible:Array=g.profile.crew.map(func(m):return str(m.crewId))
++ var original:String=CP.digest(var_to_bytes(g.profile))
++ check(p.space_crew_reservation_action(g,visible,1).is_empty() and p.space_crew_reservation.is_empty(),"Earned reforge source5 keeps growth jobs despite inherited records")
++ check(CP.digest(var_to_bytes(g.profile))==original,"Planning does not mutate production profile")
++ # Explicit unit fixture conditions, never written to the campaign/source CP.
++ g.profile.highestLevel=int(g.hyperspace.config.unlock_stage)-1
++ check(p.space_crew_reservation_action(g,visible,2).is_empty(),"Last locked stage cannot release space workers")
++ g.profile.highestLevel=int(g.hyperspace.config.unlock_stage)
++ g.profile.hyperspace.energy=float(g.hyperspace.online_config(g).energy_cap)
++ for m in g.profile.crew:g.assign_crew(str(m.crewId),"","")
++ check(g.assign_crew("navigator","equipment_upgrade","equipment"),"Fixture worker lawfully assigned to actual growth job")
++ var choice:Dictionary=p.space_crew_reservation_action(g,["navigator"],3)
++ check(choice.get("kind")=="crew_release" and choice.get("crew")=="navigator","Exactly selected visible worker released for funded eligible record")
++ check(p.space_crew_reservation.get("crew")=="navigator" and p.space_crew_reservation.get("level")==5,"Reservation binds current round/crew/real eligible route record")
++ check(p.execute(g,choice,3.3),"Actual legal release command succeeds")
++ check(p.space_crew_reservation_action(g,["navigator"],3.6).is_empty(),"Already idle reserved worker is not released again")
++ check(p.reserved_growth_crew(g)=="navigator" and p.pick_crew(g)=="navigator","Growth skip and next space dispatch use the same candidate")
++ var resumed=Policy.new();CP.apply_fields(resumed,CP.fields(p,CP.POLICY),CP.POLICY)
++ check(resumed.reserved_growth_crew(g)=="navigator" and resumed.space_crew_reservation_action(g,["navigator"],4).is_empty(),"Atomic policy restoration retains selected idle worker")
++ g.profile.hyperspace.energy=float(g.hyperspace.online_config(g).energy_cap)-1.0
++ check(resumed.space_crew_reservation_action(g,["navigator"],5).is_empty() and resumed.space_crew_reservation.is_empty(),"Unfunded auto cannot stop a growth worker")
++ g.profile.hyperspace.energy=float(g.hyperspace.online_config(g).energy_cap)
++ resumed.manual_pending={"route":"alpha","level":5}
++ check(resumed.space_crew_reservation_action(g,["navigator"],6).is_empty() and resumed.space_crew_reservation.is_empty(),"Manual plan needs no automatic-exploration worker")
++ resumed.manual_pending={};resumed.space_crew_reservation_action(g,["navigator"],7)
++ check(resumed.space_crew_reservation_action(g,[],8).is_empty() and resumed.space_crew_reservation.is_empty(),"Invisible/stale candidate is not released or kept")
++ print("SPACE_CREW_RESERVATION checks=",checks," failures=",failures);quit(1 if failures else 0)
