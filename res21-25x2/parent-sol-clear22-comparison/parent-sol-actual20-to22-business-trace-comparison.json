@@ -1,0 +1,11 @@
+{
+  "excluded_kinds": [
+    "checkpoint_resumed",
+    "checkpoint_saved"
+  ],
+  "scope": "Exactparsednativebusinessrecordcomparison;noothernormalization. CPwrite/resumepathmetadata excluded becausewallcadence/paths differ.",
+  "sol_business_rows": 4025,
+  "parent_business_rows": 4025,
+  "all_remaining_business_records_equal": true,
+  "differences": []
+}
