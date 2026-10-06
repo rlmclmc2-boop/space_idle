@@ -1,0 +1,12 @@
+{
+  "candidate": "f9d31b92d2b80af1c4b663173f12e4f6a23b8841",
+  "workbook_json_equal": true,
+  "root_keys": 52,
+  "executed": "Read-only Python XLSX parse and equality; no Godot, no workbook writes, no import mutations",
+  "hashes": {
+    "config_excel/hyperspace_config.xlsx": "5052e76702c8d85b45358f29af491bba4c4749efe8dba069742eadff52d66a0d",
+    "data/hyperspace_config.json": "c1ac5e05a1dd190025ee1c64201a4534330dafacfd6c3f5834d2ab6db6ee50dc",
+    "tools/hyperspace_workbook.py": "10b60f859fc7f77b452773e00e43f36032de2a5b47ac2b3ec56f2ae17c8aa65a",
+    "tools/config_workbooks.py": "47d60250dfb27d275d9d73d466e87039ea79f52c5dfda6d1679bf09d277185c0"
+  }
+}
