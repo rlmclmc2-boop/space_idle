@@ -14938,5 +14938,33 @@
     "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
     "params": "",
     "category": "hyperspace"
+  },
+  {
+    "key": "battle.finale_cleared",
+    "text": "终局已肃清",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_cleared",
+    "text": "异空间突破 · 已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_main",
+    "text": "已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.finale",
+    "text": "终局战",
+    "params": "",
+    "category": "battle",
+    "note": "ultimate战斗表现标题，不参与规则"
   }
 ]

@@ -7983,6 +7983,18 @@
     },
     "hyperspace.module_source_hint_basic": {
       "params": []
+    },
+    "battle.finale": {
+      "params": []
+    },
+    "battle.return_main": {
+      "params": []
+    },
+    "battle.return_cleared": {
+      "params": []
+    },
+    "battle.finale_cleared": {
+      "params": []
     }
   },
   "bindings": {
