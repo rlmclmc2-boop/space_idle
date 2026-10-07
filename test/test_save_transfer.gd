@@ -22,6 +22,7 @@ func run() -> void:
  var g:=BattleGame.new(db,false);g.profile.cleared=range(1,40);g.rebuild_unlocks();g.resume_progress();g.paused=true
  g.profile.resources={"1":{"m":9.7,"e":400.0},"2":321.0};g.profile.enhancementLevel=31;g.profile.planets["1"].conquered=true;g.profile.planets["1"].degree={"m":1.2,"e":350.0}
  g.profile.external_credentials="never-export";g.profile.planets["1"].absolute_path="/private/not-portable"
+ g.profile.hyperspaceReceipt={"round":int(g.profile.hyperspace.round_id),"run":int(g.profile.hyperspace.settled_run),"drone_id":"","unread":true}
  var transfer:=Transfer.new();var before:=g.profile.duplicate(true);var rng:=g.rng.state
  var exported:="user://transfer-export.json"
  check(transfer.export_progress(g,exported)==OK,"Export portable current progress")
@@ -31,6 +32,8 @@ func run() -> void:
  var preview:=transfer.prepare(exported,db)
  if not preview.error.is_empty():printerr("Export preview rejected: "+preview.error);quit(1);return
  check(preview.error.is_empty() and preview.data.resources["1"]==raw.resources["1"],"Export prepares with huge GrowthNumber intact")
+ var receipt:Dictionary=preview.data.get("hyperspaceReceipt",{})
+ check(receipt.size()==4 and Transfer.shape(receipt,Transfer.schema().hyperspaceReceipt) and int(receipt.get("round",-1))==int(g.profile.hyperspaceReceipt.round) and int(receipt.get("run",-1))==int(g.profile.hyperspaceReceipt.run) and receipt.get("drone_id")==g.profile.hyperspaceReceipt.drone_id and receipt.get("unread")==g.profile.hyperspaceReceipt.unread,"Actual export and prepare cleaner preserve unread UI receipt metadata")
  check(g.profile==before,"Preparing import is read-only")
  for version in [2,3,4]:
   var legacy:=raw.duplicate(true);legacy.version=version
@@ -81,6 +84,7 @@ func run() -> void:
  var live_backup:=transfer.prepare(transaction.backup+"/current-progress.json",db)
  check(live_backup.error.is_empty() and live_backup.data.resources["1"]==raw.resources["1"],"Current unsaved progress has a reimportable persistent backup")
  var restored:=BattleGame.new(db,true)
+ check(restored.profile.hyperspaceReceipt==g.profile.hyperspaceReceipt,"Confirmed import staging and startup reload retain the unread UI marker")
  check(restored.profile.resources==g.profile.resources and restored.profile.enhancementLevel==31 and restored.profile.planets["1"].conquered and GrowthNumber.compare(restored.profile.planets["1"].degree,g.profile.planets["1"].degree)==0,"Existing load restores big numbers, permanent planet state and enhancement")
  check(transfer.rollback(transaction)==OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Reload failure rollback restores exact original primary")
  var first:=transfer.commit_import(g,preview.data);transfer.finish(first)

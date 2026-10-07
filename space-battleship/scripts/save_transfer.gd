@@ -24,6 +24,7 @@ static func schema() -> Dictionary:
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
  result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
+ result.hyperspaceReceipt={"round":"i","run":"i","drone_id":"s","unread":"b"}
  return result
 
 static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
