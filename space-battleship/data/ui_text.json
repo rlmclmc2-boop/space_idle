@@ -13944,7 +13944,7 @@
   },
   {
     "key": "hyperspace.command_error_insufficient_materials",
-    "text": "材料不足；报价显示实际所需材料。",
+    "text": "材料不足；先看报价缺哪种材料，再去产出它的路线探索。",
     "params": "",
     "category": "hyperspace"
   },
