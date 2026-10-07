@@ -825,17 +825,37 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
-	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
+	# Scale only the protection draw transform, never the shared geometry
+	# packet/pose cache consumed by entry limits and combat providers.
+	var protection_scale:float=hull_width/width if width>0.0 else 1.0
+	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE*protection_scale)
+	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
+	var outline:PackedVector2Array=protection_outline
+	if leader:
+		outline=PackedVector2Array()
+		for point in protection_outline:outline.append(point*protection_scale)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
 	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
 		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
-	if boss_battle and leader:text_at(layout.caption,layout.caption_position,12,BATTLE_CREAM)
+	if boss_battle and leader:text_at(layout.caption,layout.caption_position,14,BATTLE_CREAM)
+
+func encounter_leader_name(enemy:Dictionary)->String:
+	# Manual hyperspace swaps game.db to its own live encounter registry.
+	# Do not resolve these IDs through the mainline UIText data bindings.
+	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
+	var caption:=str(row.get("des","")).strip_edges()
+	if not caption.is_empty():return caption
+	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
+		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
+		var group_row:Dictionary=game.db.groups.get(str(int(group.id)),{})
+		return str(group_row.get("description","")).strip_edges()
+	return ""
 
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
-	# Shared actual draw/validation authority; preserve the existing pixel layout.
+	# Status placement follows the drawn hull/protection, not combat bounds.
 	var dimensions:=Vector2(width,width*2.0)
 	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var used:=enemy_hull_bounds(texture)
@@ -851,13 +871,20 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		# Meters use the same free outer-wing space as their captions.
 		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
-	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,12)
+	var leader:=encounter_presentation.is_leader(enemy)
+	var caption_font_size:=14 if leader else 12
+	if leader:
+		var leader_name:=encounter_leader_name(enemy)
+		if not leader_name.is_empty():caption=fit_battle_text(leader_name,260.0,caption_font_size)
+	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,caption_font_size)
 	var caption_left:=left
-	if outer_wing:
+	if leader:
+		caption_left=clampf(pos.x-caption_size.x*0.5,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
+	elif outer_wing:
 		# Outer wing labels use the space away from the neighbouring centre fleet.
 		caption_left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-caption_size.x,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
-	var caption_position:=Vector2(caption_left,maxf(20,top-5))
-	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(12)),Vector2(caption_size.x,font.get_ascent(12)+font.get_descent(12)))}
+	var caption_position:=Vector2(caption_left,maxf(20,top-13 if leader else top-5))
+	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(caption_font_size)),Vector2(caption_size.x,font.get_ascent(caption_font_size)+font.get_descent(caption_font_size)))}
 
 func draw_environment_event(_offset:Vector2)->void:
 	encounter_presentation.draw_fall(draw_surface)
