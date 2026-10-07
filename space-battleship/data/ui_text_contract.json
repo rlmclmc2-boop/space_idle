@@ -8297,6 +8297,24 @@
       "params": [
         "value"
       ]
+    },
+    "hyperspace.module_no_slots": {
+      "params": []
+    },
+    "hyperspace.module_none_unlocked": {
+      "params": []
+    },
+    "hyperspace.module_none_available": {
+      "params": []
+    },
+    "hyperspace.module_zero_level": {
+      "params": []
+    },
+    "hyperspace.module_ultimate_locked": {
+      "params": []
+    },
+    "hyperspace.module_sealed_locked": {
+      "params": []
     }
   },
   "bindings": {

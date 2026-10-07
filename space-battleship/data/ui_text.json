@@ -13726,7 +13726,7 @@
   },
   {
     "key": "hyperspace.module_slots",
-    "text": "挂载模块 {used} / {cap}（同架不可重复）",
+    "text": "已安装 {used} / {cap}（同一种模块不能重复装）",
     "params": "used,cap",
     "category": "hyperspace"
   },
@@ -13744,7 +13744,7 @@
   },
   {
     "key": "hyperspace.module_rejected",
-    "text": "挂载模块未通过领域校验",
+    "text": "未能安装模块，请检查挂载槽和已解锁模块。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14296,7 +14296,7 @@
   },
   {
     "key": "hyperspace.reforge_module_reset",
-    "text": "重铸重置模块解锁、等级与经验。\n保留挂载模块待本轮重新解锁后生效。",
+    "text": "重铸后需要重新获得模块；保留下来的安装记录不会自动解锁模块。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14707,7 +14707,7 @@
   },
   {
     "key": "hyperspace.module_source_hint",
-    "text": "拆解多余无人机获得随机挂载模块副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
+    "text": "拆解多余无人机会随机获得模块；再次获得同种模块，可用于升级。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14845,7 +14845,7 @@
   },
   {
     "key": "hyperspace.forge_guide_add_hanging_slot",
-    "text": "想装一个挂载模块？\n先添加一个槽，再去无人机详情点「管理挂载模块」，选择已解锁挂载模块。槽数不能超过当前容量；同一种挂载模块不能在一架上重复安装。\n低品质转为传说后，会保留已有槽和挂载模块；究极状态不能换挂载模块。",
+    "text": "先给这架添加一个挂载槽，再回详情点「管理挂载模块」，勾选已解锁模块后应用。\n还没有模块？拆解多余无人机可随机获得，不能指定种类。0级只表示已解锁，尚无加成；再次获得同种模块可升到1级。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -15508,5 +15508,47 @@
     "params": "{value}",
     "category": "hyperspace",
     "note": "时间数值的秒单位格式，保持暂无成绩无需单位"
+  },
+  {
+    "key": "hyperspace.module_no_slots",
+    "text": "这架没有挂载槽。先到「改造」添加一个挂载槽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_none_unlocked",
+    "text": "还没有解锁模块。拆解多余无人机可随机获得，种类不能指定。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_none_available",
+    "text": "当前没有可安装的模块；继续推进主线后再回来查看。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_zero_level",
+    "text": "0级表示已解锁，尚无加成；再次获得同种模块可升到1级。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_ultimate_locked",
+    "text": "这架处于究极状态，当前不能更换挂载模块。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_sealed_locked",
+    "text": "这架仍在封存，先领取后再安装模块。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
   }
 ]
