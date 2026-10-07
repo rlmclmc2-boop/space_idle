@@ -1,0 +1,173 @@
+{
+  "status": "scoped_fix_ready_for_parent_review",
+  "base": "ada722017c603e151304ddb3dc136e27663da407",
+  "engine": "Godot4.6.3 stable;real Xvfb display:91;llvmpipe;isolated copied project andXDG;not a performance run",
+  "reproduction": "Actual battlefield geometry at Alpha5 fifth formation7018,main7 QA fixture,laser18/beam18/laser19,armour23/shield16. Controlled FX time42 andten UID offsets in each window. This is staged legal QA,not the original player save or natural third exploration. Reactor progression not reproduced;no battle difficulty conclusion.",
+  "baseline": [
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 0,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 20,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 50,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 100,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 150,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 200,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 250,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 300,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 400,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [],
+      "scale": 0.604508221149445,
+      "uid": 500,
+      "window": "(1180, 812)"
+    },
+    {
+      "errors": [
+        "slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap"
+      ],
+      "scale": 0.477459013462067,
+      "uid": 0,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [],
+      "scale": 0.477459013462067,
+      "uid": 20,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [
+        "slots 4/1 body/protection/shield sample 0.50 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 0.50 independent-yaw overlap",
+        "slots 4/1 body/protection/shield sample 1.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 1.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield sample 8.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 8.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"
+      ],
+      "scale": 0.477459013462067,
+      "uid": 50,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [],
+      "scale": 0.477459013462067,
+      "uid": 100,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [
+        "slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap"
+      ],
+      "scale": 0.477459013462067,
+      "uid": 150,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [],
+      "scale": 0.477459013462067,
+      "uid": 200,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [],
+      "scale": 0.477459013462067,
+      "uid": 250,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [
+        "slots 4/2 body/protection/shield sample 1.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield after shield sample 1.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"
+      ],
+      "scale": 0.477459013462067,
+      "uid": 300,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [
+        "slots 4/1 body/protection/shield sample 0.25 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 0.25 independent-yaw overlap",
+        "slots 4/1 body/protection/shield sample 0.50 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 0.50 independent-yaw overlap",
+        "slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap",
+        "slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap",
+        "slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"
+      ],
+      "scale": 0.477459013462067,
+      "uid": 400,
+      "window": "(960, 600)"
+    },
+    {
+      "errors": [],
+      "scale": 0.477459013462067,
+      "uid": 500,
+      "window": "(960, 600)"
+    }
+  ],
+  "root_cause": "Window scale6045/10000 vs4775/10000 changes logical extents of fixed-screen-pixel mount minimums,protection gaps,andtwo-pixel safety padding. UID-dependent scale variance/hover makes the tight leader-to-front-guard gap intersect the independently swept guard shield meters. Weapon switching is unnecessary for this controlled reproduction.",
+  "fix": "Explicit size>=4 hulls use width*min(1,actual_screen_scale/0.6). At960x600 this is0.7958 of previous hull width;1180x812 unchanged. Actual hull,weapon/protection envelope andstatus placement follow the same width. Screen scale andcollision assertions remain untouched;mainline implicit hulls untouched.",
+  "validation": {
+    "new_graphical_regression": "221checks0failures;five UID offsets at1180x812,960x600,960x540;all40 at960x600;production encounter callback retains active run;enemy logical coordinates,HP/shield,damage multiplier/resource multiplier unchanged;deliberate same-centre overlap still fails.",
+    "existing_geometry": "9checks passed;retained actual stdout in existing-geometry.txt",
+    "screenshot": "Local /workspace/bug-qa/geometry-evidence/alpha5-compact-fixed.png;actual960x600 rendered QA scene,paused fifth wave;FXclock+5 only,not battle elapsed;not committed per screenshot exclusion. FPS not meaningful;not a natural replay."
+  },
+  "unchanged": [
+    "All40 candidate formations/enemies,workbook,entity schema,reward recipes;combat formulas andlogical authored coordinates;existing display boundary/independent-yaw/overlap validation."
+  ],
+  "limitations": [
+    "Parent should replay the reported ordinary window-resize sequence;original third-run UID/timing/save unavailable.",
+    "The compact viewport deliberately displays large explicit hulls smaller;this is the actual overlap remedy,not a bypass.",
+    "No whole-game performance ornewplayer acceptance claimed."
+  ],
+  "candidate_sha256": "1d27ecacd93e4208bccc8a3b79568516c169846fea2213bb79e4e68fbd3dcd14"
+}

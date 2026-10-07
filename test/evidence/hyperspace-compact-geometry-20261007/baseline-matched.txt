@@ -1,0 +1,25 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+PROBE {"errors":[],"scale":0.604508221149445,"uid":0,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":20,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":50,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":100,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":150,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":200,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":250,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":300,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":400,"window":"(1180, 812)"}
+PROBE {"errors":[],"scale":0.604508221149445,"uid":500,"window":"(1180, 812)"}
+PROBE {"errors":["slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap"],"scale":0.477459013462067,"uid":0,"window":"(960, 600)"}
+PROBE {"errors":[],"scale":0.477459013462067,"uid":20,"window":"(960, 600)"}
+PROBE {"errors":["slots 4/1 body/protection/shield sample 0.50 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 0.50 independent-yaw overlap","slots 4/1 body/protection/shield sample 1.00 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 1.00 independent-yaw overlap","slots 4/1 body/protection/shield sample 8.00 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 8.00 independent-yaw overlap","slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap","slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"],"scale":0.477459013462067,"uid":50,"window":"(960, 600)"}
+PROBE {"errors":[],"scale":0.477459013462067,"uid":100,"window":"(960, 600)"}
+PROBE {"errors":["slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap"],"scale":0.477459013462067,"uid":150,"window":"(960, 600)"}
+PROBE {"errors":[],"scale":0.477459013462067,"uid":200,"window":"(960, 600)"}
+PROBE {"errors":[],"scale":0.477459013462067,"uid":250,"window":"(960, 600)"}
+PROBE {"errors":["slots 4/2 body/protection/shield sample 1.00 independent-yaw overlap","slots 4/2 body/protection/shield after shield sample 1.00 independent-yaw overlap","slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap","slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"],"scale":0.477459013462067,"uid":300,"window":"(960, 600)"}
+PROBE {"errors":["slots 4/1 body/protection/shield sample 0.25 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 0.25 independent-yaw overlap","slots 4/1 body/protection/shield sample 0.50 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 0.50 independent-yaw overlap","slots 4/1 body/protection/shield sample 5.00 independent-yaw overlap","slots 4/1 body/protection/shield after shield sample 5.00 independent-yaw overlap","slots 4/2 body/protection/shield sample 8.00 independent-yaw overlap","slots 4/2 body/protection/shield after shield sample 8.00 independent-yaw overlap"],"scale":0.477459013462067,"uid":400,"window":"(960, 600)"}
+PROBE {"errors":[],"scale":0.477459013462067,"uid":500,"window":"(960, 600)"}
