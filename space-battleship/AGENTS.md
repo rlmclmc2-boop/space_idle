@@ -2,6 +2,8 @@
 
 Godot/GDScript idle auto-battle. Read this entry, then search the target and load only task-relevant rules. Preserve unrelated edits. User instructions outrank docs. Do not infer approval for gameplay, numeric, configuration-source, or player-save changes from current implementation. One fact has one authority.
 
+Git 上传/下载已获用户授权；协作交接优先 Git 分支与提交，Library 仅补充。未验收改动用工作分支；main 须父验收后合入并回读远端。只提交任务文件，排除凭据、玩家存档、缓存及临时产物。
+
 ## Routes — load only when triggered
 
 | Task | Read |
