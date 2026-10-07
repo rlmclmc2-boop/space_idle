@@ -8151,6 +8151,11 @@
     },
     "hyperspace.advanced_operations_hint": {
       "params": []
+    },
+    "hyperspace.active_effects_summary": {
+      "params": [
+        "items"
+      ]
     }
   },
   "bindings": {

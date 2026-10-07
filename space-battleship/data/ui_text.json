@@ -12822,7 +12822,7 @@
   },
   {
     "key": "hyperspace.hanging",
-    "text": "挂设：{items}",
+    "text": "挂载模块：{items}",
     "params": "{items}",
     "category": "hyperspace"
   },
@@ -13158,7 +13158,7 @@
   },
   {
     "key": "hyperspace.no_hangings",
-    "text": "暂无挂设",
+    "text": "暂无挂载模块",
     "params": "",
     "category": "hyperspace"
   },
@@ -13176,7 +13176,7 @@
   },
   {
     "key": "hyperspace.unknown_hanging",
-    "text": "未识别挂设",
+    "text": "未识别挂载模块",
     "params": "",
     "category": "hyperspace"
   },
@@ -13644,7 +13644,7 @@
   },
   {
     "key": "hyperspace.forge_summary",
-    "text": "词条 {affixes} 项 · 挂设槽 {slots} 个 · 改造版本 {revision}",
+    "text": "词条 {affixes} 项 · 挂载槽 {slots} 个 · 改造版本 {revision}",
     "params": "affixes,slots,revision",
     "category": "hyperspace"
   },
@@ -13704,13 +13704,13 @@
   },
   {
     "key": "hyperspace.module_manage",
-    "text": "管理挂设",
+    "text": "管理挂载模块",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.module_slots",
-    "text": "挂设 {used} / {cap}（同架不可重复）",
+    "text": "挂载模块 {used} / {cap}（同架不可重复）",
     "params": "used,cap",
     "category": "hyperspace"
   },
@@ -13722,13 +13722,13 @@
   },
   {
     "key": "hyperspace.module_apply",
-    "text": "应用挂设",
+    "text": "应用挂载模块",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.module_rejected",
-    "text": "挂设未通过领域校验",
+    "text": "挂载模块未通过领域校验",
     "params": "",
     "category": "hyperspace"
   },
@@ -13836,7 +13836,7 @@
   },
   {
     "key": "hyperspace.operation_add_hanging_slot",
-    "text": "添加挂设槽",
+    "text": "添加挂载槽",
     "params": "",
     "category": "hyperspace"
   },
@@ -13956,7 +13956,7 @@
   },
   {
     "key": "hyperspace.command_error_hanging_limit",
-    "text": "这架无人机没有空余挂设容量，不能再加槽。",
+    "text": "这架无人机没有空余挂载槽容量，不能再加槽。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14184,7 +14184,7 @@
   },
   {
     "key": "hyperspace.dismantle_confirm",
-    "text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+    "text": "拆解将移除此无人机，获得对应材料和随机挂载模块副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
     "params": "",
     "category": "hyperspace"
   },
@@ -14202,7 +14202,7 @@
   },
   {
     "key": "hyperspace.totals_summary",
-    "text": "装备总加成：伤害 +{damage}%\n生效词条 {affixes} 类 · 挂设 {hangings} 类",
+    "text": "装备总加成：伤害 +{damage}%\n生效词条 {affixes} 类 · 挂载模块 {hangings} 类",
     "params": "damage,affixes,hangings",
     "category": "hyperspace"
   },
@@ -14274,13 +14274,13 @@
   },
   {
     "key": "hyperspace.total_hangings",
-    "text": "已生效挂设总加成",
+    "text": "已生效挂载模块总加成",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.reforge_module_reset",
-    "text": "重铸重置模块解锁、等级与经验。\n保留挂设待本轮重新解锁后生效。",
+    "text": "重铸重置模块解锁、等级与经验。\n保留挂载模块待本轮重新解锁后生效。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14691,7 +14691,7 @@
   },
   {
     "key": "hyperspace.module_source_hint",
-    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
+    "text": "拆解多余无人机获得随机挂载模块副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14703,7 +14703,7 @@
   },
   {
     "key": "hyperspace.dismantle_preview",
-    "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。",
+    "text": "拆解收益：{materials}\n随机挂载模块副本 {count} 份（具体模块以实际结果为准）。",
     "params": "materials,count",
     "category": "hyperspace"
   },
@@ -14829,14 +14829,14 @@
   },
   {
     "key": "hyperspace.forge_guide_add_hanging_slot",
-    "text": "想装一个挂设？\n先添加一个槽，再去无人机详情点「管理挂设」，选择已解锁挂设。槽数不能超过当前容量；同一种挂设不能在一架上重复安装。\n低品质转为传说后，会保留已有槽和挂设；究极状态不能换挂设。",
+    "text": "想装一个挂载模块？\n先添加一个槽，再去无人机详情点「管理挂载模块」，选择已解锁挂载模块。槽数不能超过当前容量；同一种挂载模块不能在一架上重复安装。\n低品质转为传说后，会保留已有槽和挂载模块；究极状态不能换挂载模块。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
   },
   {
     "key": "hyperspace.forge_guide_legendary",
-    "text": "想给无人机一个传说效果？\n传说化会保留已有词条、锁定、挂设槽与挂设，并获得一个传说效果；蓝色来源的武器模块加成也保留。\n想指定效果，先在「传说收藏」中收藏已发现且符合武器的效果。首次发现不等于收藏。已经传说化的无人机不能再次重抽。\n同时最多装备2架传说；若也为究极，会同时占用两种名额。",
+    "text": "想给无人机一个传说效果？\n传说化会保留已有词条、锁定、挂载槽与挂载模块，并获得一个传说效果；蓝色来源的武器模块加成也保留。\n想指定效果，先在「传说收藏」中收藏已发现且符合武器的效果。首次发现不等于收藏。已经传说化的无人机不能再次重抽。\n同时最多装备2架传说；若也为究极，会同时占用两种名额。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -14850,7 +14850,7 @@
   },
   {
     "key": "hyperspace.forge_guide_ultimate",
-    "text": "想把它变为究极？\n究极化会使武器模块等级+5，并增加一条额外词条；可以与传说同时存在。最多装备1架究极。\n究极状态不能做普通改造或更换挂设。若还想现代化，先查看「还原究极」的说明；每一步都要分别报价和付款。",
+    "text": "想把它变为究极？\n究极化会使武器模块等级+5，并增加一条额外词条；可以与传说同时存在。最多装备1架究极。\n究极状态不能做普通改造或更换挂载模块。若还想现代化，先查看「还原究极」的说明；每一步都要分别报价和付款。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -14864,14 +14864,14 @@
   },
   {
     "key": "hyperspace.forge_guide_dismantle",
-    "text": "想清掉一架多余无人机？\n先解除装备、收藏与预设保护，再看返还预览。拆解会永久删除这架无人机，并获得对应路线材料；随机挂设副本首次解锁模块，之后提供成长经验。\n核对对象后再确认。重铸删除未保留无人机不算拆解，不会发拆解奖励。",
+    "text": "想清掉一架多余无人机？\n先解除装备、收藏与预设保护，再看返还预览。拆解会永久删除这架无人机，并获得对应路线材料；随机挂载模块副本首次解锁模块，之后提供成长经验。\n核对对象后再确认。重铸删除未保留无人机不算拆解，不会发拆解奖励。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
   },
   {
     "key": "hyperspace.forge_capacity_summary",
-    "text": "词条 {affixes}/{affix_cap} · 挂设槽 {slots}/{slot_cap}",
+    "text": "词条 {affixes}/{affix_cap} · 挂载槽 {slots}/{slot_cap}",
     "params": "affixes,affix_cap,slots,slot_cap",
     "category": "hyperspace",
     "note": "实际词条与挂设容量；隐藏开发改造版本号"
@@ -15039,7 +15039,7 @@
   },
   {
     "key": "hyperspace.material_white_condition",
-    "text": "白色无人机没有词条位，不能添加词条；回到基础改造，可查看这架能否添加挂设槽。",
+    "text": "白色无人机没有词条位，不能添加词条；回到基础改造，可查看这架能否添加挂载槽。",
     "params": "",
     "category": "hyperspace",
     "note": ""
@@ -15225,5 +15225,12 @@
     "params": "",
     "category": "hyperspace",
     "note": ""
+  },
+  {
+    "key": "hyperspace.active_effects_summary",
+    "text": "当前装备生效：{items}",
+    "params": "{items}",
+    "category": "hyperspace",
+    "note": "仅列战斗汇总中非零词条、非零挂载模块及生效传说效果；不固定展示伤害0%"
   }
 ]
