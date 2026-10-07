@@ -36,6 +36,7 @@ var muzzle: Node3D
 var shield: MeshInstance3D
 var shield_material: ShaderMaterial
 var material_entries: Array[Dictionary] = []
+var material_pool: Dictionary = {}
 var exhaust_materials: Array[ShaderMaterial] = []
 var exhaust_nodes: Array[MeshInstance3D] = []
 var world: Node3D
@@ -156,6 +157,7 @@ func set_hull(key: String) -> bool:
 	modules.clear()
 	carriers.clear()
 	material_entries.clear()
+	material_pool.clear()
 	exhaust_nodes.clear()
 	exhaust_materials.clear()
 	loadout_signature = ""
@@ -204,16 +206,24 @@ func _install_materials(node: Node, owner := "hull") -> void:
 	if node is MeshInstance3D:
 		for index in node.mesh.get_surface_count():
 			var source: StandardMaterial3D = node.mesh.surface_get_material(index)
-			var mat := ShaderMaterial.new()
-			mat.shader = TOON
-			mat.set_shader_parameter("albedo",source.albedo_color)
-			mat.set_shader_parameter("clamp_diffuse_to_max",true)
-			mat.set_shader_parameter("use_attenuation",true)
-			mat.set_shader_parameter("steepness",1.0)
-			mat.set_shader_parameter("specular_shininess",9.0)
-			mat.set_shader_parameter("emission_color",source.emission)
+			# Repeated surfaces/instances of an imported material have identical
+			# toon inputs. Share their material RID instead of allocating per face
+			# group; keep owners separate for weapon-only parameter updates.
+			# Resource identity avoids rounding/color-name equivalence assumptions.
+			var pool_key:String=owner+":"+str(source.get_instance_id())
+			if not material_pool.has(pool_key):
+				var shared := ShaderMaterial.new()
+				shared.shader = TOON
+				shared.set_shader_parameter("albedo",source.albedo_color)
+				shared.set_shader_parameter("clamp_diffuse_to_max",true)
+				shared.set_shader_parameter("use_attenuation",true)
+				shared.set_shader_parameter("steepness",1.0)
+				shared.set_shader_parameter("specular_shininess",9.0)
+				shared.set_shader_parameter("emission_color",source.emission)
+				material_pool[pool_key]=shared
+				material_entries.append({"material":shared,"name":source.resource_name,"owner":owner,"pool_key":pool_key})
+			var mat:ShaderMaterial=material_pool[pool_key]
 			node.set_surface_override_material(index,mat)
-			material_entries.append({"material":mat,"name":source.resource_name,"owner":owner})
 	for child in node.get_children():
 		_install_materials(child,owner)
 
@@ -235,6 +245,10 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 	carriers.clear()
 	carrier_states.clear()
 	material_entries = material_entries.filter(func(entry): return entry.owner=="hull")
+	# Match the existing model lifetime: discard removed loadout resources,
+	# retain only hull materials, then populate the new weapon/carrier set.
+	material_pool.clear()
+	for entry in material_entries:material_pool[entry.pool_key]=entry.material
 	for item in assignment:
 		var mount: Node3D
 		if item.carrier == "hull":
