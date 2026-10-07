@@ -10,6 +10,8 @@ uniform float near_speed = 90.0;
 uniform float density = 1.0;
 uniform float mid_opacity = 0.16;
 uniform float fog_opacity = 0.22;
+uniform float hyperspace = 0.0;
+uniform vec3 route_color = vec3(0.5,0.8,0.9);
 varying vec2 local_pos;
 varying float radius;
 varying float tail;
@@ -39,6 +41,13 @@ void fragment() {
 		float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
 		float haze = pow(clamp(cloud*0.5+0.5,0.0,1.0),3.0);
 		COLOR = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
+		if (hyperspace > 0.5) {
+			// Quiet central void and a wide transverse rift; no extra particles,
+			// textures or full-screen postprocess pass.
+			float rim = smoothstep(0.18,0.49,abs(UV.x-0.5));
+			float rift = exp(-abs(UV.y-0.19)*22.0);
+			COLOR = vec4(mix(vec3(0.012,0.016,0.035),route_color*0.23,clamp(rim*0.7+rift*0.5,0.0,1.0)),0.94);
+		}
 	} else if (layer == 1.0) {
 		vec2 p = local_pos / radius;
 		float shape = max(abs(p.x)*0.85+abs(p.y)*0.4,abs(p.y));

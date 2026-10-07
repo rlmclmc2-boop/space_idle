@@ -1,5 +1,33 @@
 [
   {
+    "key": "battle.finale_cleared",
+    "text": "终局已肃清",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_cleared",
+    "text": "异空间突破 · 已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_main",
+    "text": "已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.finale",
+    "text": "终局战",
+    "params": "",
+    "category": "battle",
+    "note": "ultimate战斗表现标题，不参与规则"
+  },
+  {
     "key": "hyperspace.visual_tier",
     "text": " · T{tier}",
     "params": "{tier}",

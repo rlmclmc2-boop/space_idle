@@ -7904,6 +7904,18 @@
     },
     "hyperspace.forge_guide_body": {
       "params": []
+    },
+    "battle.finale": {
+      "params": []
+    },
+    "battle.return_main": {
+      "params": []
+    },
+    "battle.return_cleared": {
+      "params": []
+    },
+    "battle.finale_cleared": {
+      "params": []
     }
   },
   "bindings": {
