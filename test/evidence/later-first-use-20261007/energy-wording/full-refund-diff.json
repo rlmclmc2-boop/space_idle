@@ -1,0 +1,36 @@
+[
+  {
+    "key": "hyperspace.result_formation_invalid",
+    "before": {
+      "key": "hyperspace.result_formation_invalid",
+      "text": "敌舰布局异常，探索已结束并退回实际可容纳的能量",
+      "params": "",
+      "category": "hyperspace",
+      "note": "显示布局校验拒绝后的事务失败结果"
+    },
+    "after": {
+      "key": "hyperspace.result_formation_invalid",
+      "text": "敌舰布局异常，探索已结束，消耗的能量已全额退回",
+      "params": "",
+      "category": "hyperspace",
+      "note": "显示布局校验拒绝后的事务失败结果"
+    }
+  },
+  {
+    "key": "hyperspace.recent_interrupted_refund",
+    "before": {
+      "key": "hyperspace.recent_interrupted_refund",
+      "text": "已付探索因读档中断 · {weapon} {level}级\n已退票 {refund} 超空间能量。",
+      "params": "{weapon},{level},{refund}",
+      "category": "hyperspace",
+      "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"
+    },
+    "after": {
+      "key": "hyperspace.recent_interrupted_refund",
+      "text": "探索因读档中断 · {weapon} {level}级\n已全额退回 {refund} 能量。",
+      "params": "{weapon},{level},{refund}",
+      "category": "hyperspace",
+      "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"
+    }
+  }
+]
