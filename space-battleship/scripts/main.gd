@@ -2167,7 +2167,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())
-	pages.append(int(game.profile.highestLevel)>=int(game.hyperspace.config.unlock_stage))
+	pages.append(game.hyperspace.is_unlocked(game))
 	pages.append(true) # Save is always the final page, independent of unlocks.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:

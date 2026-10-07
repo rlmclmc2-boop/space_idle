@@ -7904,6 +7904,26 @@
     },
     "hyperspace.forge_guide_body": {
       "params": []
+    },
+    "tutorial.system.hyperspace": {
+      "params": []
+    },
+    "tutorial.hyperspace.description": {
+      "params": []
+    },
+    "planet.reforge_confirm_basic": {
+      "params": [
+        "level"
+      ]
+    },
+    "planet.reforge_hyperspace": {
+      "params": []
+    },
+    "planet.reforge_drones": {
+      "params": []
+    },
+    "planet.reforge_brief_basic": {
+      "params": []
     }
   },
   "bindings": {

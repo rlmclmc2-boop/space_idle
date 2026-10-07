@@ -88,8 +88,11 @@ func publish(g,next: Dictionary,kind: String) -> void:
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})
 
+func is_unlocked(g) -> bool:
+	return int(g.profile.highestLevel)>=int(config.unlock_stage)
+
 func eligible_level(g,route: String,level: int) -> bool:
-	return int(g.profile.highestLevel)>=int(config.unlock_stage) and config.routes.has(route) and level>=int(config.minimum_level) and level<=int(g.profile.highestLevel) and level<=g.db.levels.size()
+	return is_unlocked(g) and config.routes.has(route) and level>=int(config.minimum_level) and level<=int(g.profile.highestLevel) and level<=g.db.levels.size()
 
 func best_x1(g,route: String,level: int) -> float:
 	if not eligible_level(g,route,level):return 0.0

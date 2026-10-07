@@ -218,7 +218,15 @@ func tutorial_unlocks() -> Array[String]:
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
 		if unlock_available(str(id)) or profile.get("seenUnlocks", []).has(id):result.append(str(id))
+	if hyperspace.is_unlocked(self) or profile.get("seenUnlocks", []).has("hyperspace"):
+		if not result.has("hyperspace"):result.append("hyperspace")
 	return result
+
+func tutorial_unlock_row(id: String) -> Dictionary:
+	if not tutorial_unlocks().has(id):return {}
+	if id=="hyperspace":
+		return {"type":"feature","target":"hyperspace","title":UIText.t("hyperspace.title"),"desc":UIText.t("tutorial.hyperspace.description")}
+	return db.data.get("unlock",{}).get(id,{})
 
 func unread_tutorial_unlocks() -> Array[String]:
 	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
@@ -226,6 +234,7 @@ func unread_tutorial_unlocks() -> Array[String]:
 func read_tutorial_unlock(id: String) -> bool:
 	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
 	profile.readUnlocks.append(id)
+	if id=="hyperspace" and not profile.seenUnlocks.has(id):profile.seenUnlocks.append(id)
 	save_dirty = true
 	event.emit("tutorial_read", {"id":id})
 	return true
@@ -1461,6 +1470,8 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
+	if hyperspace.is_unlocked(self) and not next.seenUnlocks.has("hyperspace"):
+		next.seenUnlocks.append("hyperspace")
 	for gate_id in available_unlocks():
 		var gate: Dictionary = db.data.unlock[gate_id]
 		if not next.seenUnlocks.has(gate_id):next.seenUnlocks.append(gate_id)
