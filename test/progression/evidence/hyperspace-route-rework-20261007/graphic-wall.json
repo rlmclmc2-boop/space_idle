@@ -1,0 +1,9 @@
+{
+  "pre_final_wall": 93.62074518203735,
+  "final_active_wall": 26.453145742416382,
+  "active_wall": 120.07389092445374,
+  "pause_excluded": 59.03227400779724,
+  "x1": 119.8,
+  "x1_per_wall": 0.9977189801850757,
+  "method": "OS keyboard timestamps and event-log write mtimes; subsecond input/frame uncertainty"
+}

@@ -1,0 +1,487 @@
+{
+  "status": "pending_parent_player_acceptance",
+  "base_main": "766da2eb5375bee1ba1fb75d28e467af8e654dfa",
+  "branch": "tune/hyperspace-route-formations-20261007",
+  "engine": "Godot4.6.3 stable; Xvfb1280x800; llvmpipe; cloud only",
+  "scope": "All40 dedicated hyperspace formations;4 routes each4normal4elite1boss1ultimate. No new system/defense type/global target rule. XLSX authority regenerated; schema identities adjusted for authorized roster removals.",
+  "changes": {
+    "actors_before": 223,
+    "actors_after": 180,
+    "boss_counts": [
+      2,
+      3,
+      2,
+      2
+    ],
+    "ultimate_counts": [
+      1,
+      3,
+      1,
+      1
+    ],
+    "durability": "Strictly increasing HP+shield each route;boss leader>=70% of wave durability;size6 protagonist;front guards stay ahead.",
+    "routes": "A/Delta weak to energy1;Beta/Gamma weak to physical2. Existing missile salvo supplies multi-target behavior;labels still identify reward weapon,not a recommendation.",
+    "reward": "Every source resource block and all200 jewel roll trials preserved once. Removed boss guards give their budgets to leader,so per-kill timing changes;aggregate economics unchanged.",
+    "layout": "Boss leadersy190;missile ultimatey210;single ultimatey215. Guardsy350,missile pairx166/406. Deltaelite8shield leader/guards separated at155/285/350."
+  },
+  "unchanged_bytes": [
+    "game_data.json",
+    "hyperspace_config.json",
+    "space_enemy_reward_catalog.json",
+    "space_enemy_reward_sources.json",
+    "space_enemy_routes.json"
+  ],
+  "fixes": [
+    {
+      "route": "beta",
+      "wave": 10,
+      "problem": "Large leader health/shield/title crossed field edge at independent yaw samples.",
+      "fix": "Final layout:boss190/ultimate210;guards350,missile guards widen to x166/406."
+    },
+    {
+      "route": "delta",
+      "wave": 9,
+      "problem": "Boss protected caption crossed field edge.",
+      "fix": "Final boss190/guard350;large single ultimate215."
+    },
+    {
+      "route": "delta",
+      "wave": 8,
+      "problem": "Leader shield collided with front guards at independent yaw samples.",
+      "fix": "Guard row y285 and rear guard y350."
+    },
+    {
+      "route": "beta plus single finals",
+      "problem": "Astra1c8bd4f ultimate1.65/boss1.35 expansion made rendered protector overlap and cramped top despite valid logical geometry.",
+      "fix": "Boss leader190;missile ultimate210 with escorts166/406,350;single ultimate215. Fresh entry andFX8 stills show separation. No presentation-scale or validation change."
+    }
+  ],
+  "validation": {
+    "python": {
+      "tests": 14,
+      "failures": 0
+    },
+    "production_spawn": {
+      "checks": 201,
+      "failures": 0
+    },
+    "reward_binding": {
+      "checks": 421,
+      "failures": 0,
+      "existing_test_root_cause": "Old negative-ratio check mutated exploration7 while rewards freeze latest cleared40;same2 baseline failures confirmed. Now invalidates actual latest-cleared source, preserving rejection assertions."
+    },
+    "real_scene": {
+      "formations": 40,
+      "failures": 0,
+      "method": "Real graphical main scene,paid manual route with QA wave staging;all40 current configurations passed. Screenshot variants paused at entry and withFX clock+8 seconds;encounter animation age stays paused,so cinematic title is still visible. These are staged stills,not natural playthroughs.",
+      "presentation": "Temporary runtime only combines presentation branch1c8bd4f with final gameplay data;all40 production geometry checks0failures and16 boss/final actual-render stills (entry+FX time8). Presentation files not included in gameplay branch. Geometry provider remains original logical geometry,so scaled protection was also reviewed in these screenshots;parent must inspect moving appearance."
+    }
+  },
+  "comparison": {
+    "method": "Both versions restore identical FULL QA fixtures (hashes below),seed12345,weapon/armour/shield35,explore5,highest34 cleared33,no drones. Original EXACT1/60 tick path,240X1 cap;4 deterministic traces,not win rates. Wall measures only simulation loopCPU;concurrent scene test means throughput is not a benchmark or live FPS. Latest after run uses final expanded-spacing data;headless gameplay does not instantiate the added presentation scripts.",
+    "pairs": [
+      {
+        "route": "alpha",
+        "fixture_sha256": "9f095a6f4cb8b3b96e41c52e831e1988c877cc1087f8fff26099e1fb9f0482b7",
+        "before": {
+          "counts": [
+            3,
+            5,
+            7,
+            5,
+            8,
+            7,
+            6,
+            7,
+            6,
+            11
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7002,
+            7004,
+            7007,
+            7014,
+            7018,
+            7021,
+            7023,
+            7027,
+            7033,
+            7038
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "before",
+          "result": {
+            "elapsed": 100.983333333329,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "alpha"
+          },
+          "route": "alpha",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 9.354967,
+          "weapon": "laser"
+        },
+        "after": {
+          "counts": [
+            3,
+            5,
+            7,
+            5,
+            8,
+            7,
+            6,
+            7,
+            2,
+            1
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7002,
+            7004,
+            7007,
+            7014,
+            7018,
+            7021,
+            7023,
+            7027,
+            7033,
+            7038
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "after",
+          "result": {
+            "elapsed": 112.849999999995,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "alpha"
+          },
+          "route": "alpha",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 14.098354,
+          "weapon": "laser"
+        },
+        "after_cpu_x1_per_wall": 8.004480523045101
+      },
+      {
+        "route": "beta",
+        "fixture_sha256": "fbb5bfeff0b16eb441ed236f59769fd03354857dfaf3a87e9ea9411693e7a53b",
+        "before": {
+          "counts": [
+            7,
+            6,
+            7,
+            8,
+            6,
+            8,
+            6,
+            8,
+            10,
+            8
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7005,
+            7010,
+            7012,
+            7016,
+            7019,
+            7024,
+            7029,
+            7030,
+            7036,
+            7037
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "before",
+          "result": {
+            "elapsed": 109.199999999995,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "beta"
+          },
+          "route": "beta",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 12.930324,
+          "weapon": "missile"
+        },
+        "after": {
+          "counts": [
+            7,
+            6,
+            7,
+            8,
+            6,
+            8,
+            6,
+            8,
+            3,
+            3
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7005,
+            7010,
+            7012,
+            7016,
+            7019,
+            7024,
+            7029,
+            7030,
+            7036,
+            7037
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "after",
+          "result": {
+            "elapsed": 121.466666666661,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "beta"
+          },
+          "route": "beta",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 20.714123,
+          "weapon": "missile"
+        },
+        "after_cpu_x1_per_wall": 5.8639541083472855
+      },
+      {
+        "route": "gamma",
+        "fixture_sha256": "85ab30781907930a22e0615242f83b4eca709e5d8bbf0bc20d59ae94eae0cffb",
+        "before": {
+          "counts": [
+            3,
+            4,
+            4,
+            4,
+            3,
+            5,
+            4,
+            5,
+            4,
+            7
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7008,
+            7009,
+            7011,
+            7015,
+            7022,
+            7026,
+            7028,
+            7031,
+            7034,
+            7040
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "before",
+          "result": {
+            "elapsed": 205.350000000056,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "gamma"
+          },
+          "route": "gamma",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 23.057382,
+          "weapon": "cannon"
+        },
+        "after": {
+          "counts": [
+            3,
+            4,
+            4,
+            4,
+            3,
+            5,
+            4,
+            5,
+            2,
+            1
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7008,
+            7009,
+            7011,
+            7015,
+            7022,
+            7026,
+            7028,
+            7031,
+            7034,
+            7040
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "after",
+          "result": {
+            "elapsed": 170.216666666694,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "gamma"
+          },
+          "route": "gamma",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 21.079034,
+          "weapon": "cannon"
+        },
+        "after_cpu_x1_per_wall": 8.075164481763919
+      },
+      {
+        "route": "delta",
+        "fixture_sha256": "f62b24f45ae0db56df491fd2d5c9b475b76c233cb9ec84dea6957b4348b0bdde",
+        "before": {
+          "counts": [
+            2,
+            4,
+            2,
+            3,
+            3,
+            5,
+            4,
+            6,
+            7,
+            5
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7001,
+            7003,
+            7006,
+            7013,
+            7017,
+            7020,
+            7025,
+            7032,
+            7035,
+            7039
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "before",
+          "result": {
+            "elapsed": 129.766666666662,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "delta"
+          },
+          "route": "delta",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 14.84158,
+          "weapon": "longLaser"
+        },
+        "after": {
+          "counts": [
+            2,
+            4,
+            2,
+            3,
+            3,
+            5,
+            4,
+            6,
+            2,
+            1
+          ],
+          "equipment_level": 35,
+          "explore_level": 5,
+          "groups": [
+            7001,
+            7003,
+            7006,
+            7013,
+            7017,
+            7020,
+            7025,
+            7032,
+            7035,
+            7039
+          ],
+          "min_armour_ratio": 1.0,
+          "mode": "after",
+          "result": {
+            "elapsed": 118.483333333328,
+            "end_point": 10,
+            "level": 5,
+            "reason": "success",
+            "refund": 0.0,
+            "return_point": 0,
+            "return_stage": 34,
+            "route": "delta"
+          },
+          "route": "delta",
+          "started": true,
+          "timeout": false,
+          "wall_seconds": 16.054602,
+          "weapon": "longLaser"
+        },
+        "after_cpu_x1_per_wall": 7.380023082062577
+      }
+    ]
+  },
+  "real_manual_play": {
+    "version": "Pre-final-layout revision of this rework;not final-version player acceptance.",
+    "range": "Alpha explore5,weapon/armour/shield35,all10 waves normalX1;final single actor fired and died.",
+    "wall": {
+      "pre_final_wall": 93.62074518203735,
+      "final_active_wall": 26.453145742416382,
+      "active_wall": 120.07389092445374,
+      "pause_excluded": 59.03227400779724,
+      "x1": 119.8,
+      "x1_per_wall": 0.9977189801850757,
+      "method": "OS keyboard timestamps and event-log write mtimes; subsecond input/frame uncertainty"
+    },
+    "evidence": "graphic-alpha-final.mp4 is final30s actual normal-speed GUI battle;graphic-alpha.txt contains all10 wave actor counts. QA pauses final and result only to capture;pause time excluded.",
+    "limit": "Large-first-row positions subsequently changed to fix3 staged geometry defects;that final version has40-scene checks and4sim traces,not a new natural playthrough."
+  },
+  "remaining": [
+    "Parent must accept integrated playable experience. Astra1c8bd4f was combined only in temporary QA runtime;parent/UI tutorial branch remains outside scope.",
+    "Grade34 retains inherited lifeRatio5.505e29/atkRatio1.1415e30;do not infer suitability from grade5 traces. Exploration-level guidance belongs to parent/UI scope.",
+    "Existing accepted_all40 loader marker is inherited compatibility metadata,not evidence of current acceptance."
+  ],
+  "save_safety": "All fixtures/runtimeuser directories outside repository;no user saves,QA full snapshots,credentials or caches committed.",
+  "candidate_sha256": "1d27ecacd93e4208bccc8a3b79568516c169846fea2213bb79e4e68fbd3dcd14"
+}
