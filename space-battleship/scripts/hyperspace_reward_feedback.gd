@@ -69,7 +69,7 @@ func mark_viewed() -> void:
  if not unread or queued_notice or not panel.is_visible_in_tree():return
  if is_instance_valid(notice) and notice.visible:return
  var id=str(latest.get("drone",{}).get("id",""))
- var receipt_visible=panel.section_index==0 and card.is_visible_in_tree()
+ var receipt_visible=panel.section_index==0 and card.is_visible_in_tree() and panel.exploration_scroll.get_global_rect().encloses(summary.get_global_rect())
  var drone_visible=panel.section_index==1 and panel.selected_id==id and not id.is_empty() and panel.details.is_visible_in_tree()
  if receipt_visible or drone_visible:
   unread=false;save_read_state();panel.host.refresh_hyperspace_badge()

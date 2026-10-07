@@ -44,6 +44,7 @@ var route="alpha"
 var section_index=0
 var section_buttons: Array[Button]=[]
 var sections: Array[Control]=[]
+var exploration_scroll: ScrollContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
@@ -139,8 +140,18 @@ func setup(owner) -> void:
   var index=section_buttons.size();var b=button(tabs,key,func():select_section(index));b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;section_buttons.append(b)
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
-  var content=VBoxContainer.new();content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);content.add_theme_constant_override("separation",14);stack.add_child(content);sections.append(content)
- build_exploration(sections[0]);build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
+  var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
+  if i==0:
+   exploration_scroll=ScrollContainer.new();exploration_scroll.name="ExplorationScroll"
+   exploration_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+   exploration_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+   exploration_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+   exploration_scroll.follow_focus=true;stack.add_child(exploration_scroll)
+   content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;exploration_scroll.add_child(content)
+   sections.append(exploration_scroll);build_exploration(content)
+  else:
+   content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
+ build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
  host.game.event.connect(on_event);visibility_changed.connect(func():
   if is_visible_in_tree():refresh())
  select_section(0);set_process(true);refresh()
@@ -151,6 +162,8 @@ func select_section(index: int) -> void:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
  if host!=null and not bag.is_empty():refresh()
+ if section_index==0 and reward_feedback.unread:
+  exploration_scroll.ensure_control_visible.call_deferred(reward_feedback.card)
  if section_index==2 and commands!=null:commands.configure_operation()
 func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
