@@ -1,6 +1,7 @@
 extends Control
 ## Module projection; growth and equipment remain authoritative in BattleGame.
 const Card = preload("res://scripts/equipment_card.gd")
+var style_tiles := preload("res://scripts/equipment_style_tiles.gd").new()
 var host: Node
 var cards: Dictionary = {}
 var items: Dictionary = {}
@@ -85,17 +86,12 @@ func select_box(parent: Control, rect: Rect2, keys: Array, callback: Callable) -
 	parent.add_child(box)
 	return box
 
+# Other pages reuse this public skin helper. Keep their vector styling intact.
 func panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = fill
-	box.border_color = edge
-	box.set_border_width_all(3)
-	box.set_corner_radius_all(radius)
-	box.shadow_color = Color(0.02,0.05,0.08,0.35)
-	box.shadow_size = 3
-	box.shadow_offset = Vector2(0,3)
-	box.set_content_margin_all(12)
-	return box
+	return style_tiles.native_style(fill,edge,radius)
+
+func textured_panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxTexture:
+	return style_tiles.panel_style(fill,edge,radius)
 
 func skin_button(button: Button, primary := false) -> void:
 	button.add_theme_font_override("font",host.font)
@@ -105,8 +101,8 @@ func skin_button(button: Button, primary := false) -> void:
 		if state=="hover":fill=fill.lightened(0.13)
 		if state=="pressed":fill=fill.darkened(0.12)
 		if state=="disabled":fill=Color("8b9a9e")
-		button.add_theme_stylebox_override(state,panel_style(fill))
-	button.add_theme_stylebox_override("focus",panel_style(Color.TRANSPARENT,TEAL,14))
+		button.add_theme_stylebox_override(state,textured_panel_style(fill))
+	button.add_theme_stylebox_override("focus",textured_panel_style(Color.TRANSPARENT,TEAL,14))
 	button.add_theme_color_override("font_color",NAVY)
 	button.add_theme_color_override("font_hover_color",NAVY)
 	button.add_theme_color_override("font_focus_color",NAVY)
@@ -125,10 +121,12 @@ func action_button(parent: Control, text_key: String, action_id: String, callbac
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
+	style_tiles.name="EquipmentStyleTiles"
+	add_child(style_tiles)
 	var backdrop := Panel.new()
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	backdrop.add_theme_stylebox_override("panel",panel_style(Color("304c60")))
+	backdrop.add_theme_stylebox_override("panel",textured_panel_style(Color("304c60")))
 	add_child(backdrop)
 	total = label(self,"",Rect2(24,16,1250,42),27,PAPER)
 	summary = label(self,UIText.t("equipment.refit_hint"),Rect2(24,58,1230,32),20,Color("bedbdc"))
@@ -184,7 +182,7 @@ func setup(owner_ui: Node) -> void:
 		else:grid_defence=category_grid
 	empty = label(self,UIText.t("equipment.empty"),Rect2(40,220,840,32),20,PAPER)
 	footer = Panel.new()
-	footer.add_theme_stylebox_override("panel",panel_style(Color("dae4df")))
+	footer.add_theme_stylebox_override("panel",textured_panel_style(Color("dae4df")))
 	add_child(footer)
 	footer_title = label(footer,"",Rect2(18,14,560,42),22,NAVY)
 	var footer_actions := HBoxContainer.new()
@@ -201,7 +199,7 @@ func setup(owner_ui: Node) -> void:
 func build_detail() -> void:
 	detail_frame = Panel.new()
 	detail_frame.name = "EquipmentInspectorFrame"
-	detail_frame.add_theme_stylebox_override("panel",panel_style(PAPER))
+	detail_frame.add_theme_stylebox_override("panel",textured_panel_style(PAPER))
 	add_child(detail_frame)
 	detail_scroll = ScrollContainer.new()
 	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

@@ -107,9 +107,9 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	equip_button.custom_minimum_size = Vector2(246,36)
 	equip_button.size = Vector2(246,36)
 	resized.connect(layout_contents)
-	add_theme_stylebox_override("hover",panel.panel_style(Color("f8f7e9"),Color("519caa")))
-	add_theme_stylebox_override("pressed",panel.panel_style(Color("d8e6de")))
-	add_theme_stylebox_override("focus",panel.panel_style(Color.TRANSPARENT,panel.TEAL))
+	add_theme_stylebox_override("hover",panel.textured_panel_style(Color("f8f7e9"),Color("519caa")))
+	add_theme_stylebox_override("pressed",panel.textured_panel_style(Color("d8e6de")))
+	add_theme_stylebox_override("focus",panel.textured_panel_style(Color.TRANSPARENT,panel.TEAL))
 	layout_contents()
 
 func layout_contents() -> void:
@@ -161,7 +161,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(upgrade_button,"text",UIText.t("equipment.upgrade_cost",{"cost":item.get("cost","—")}))
 	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
-	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
+	add_theme_stylebox_override("normal",panel.textured_panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
 func refresh_options(item: Dictionary) -> void:
 	var options: Array = panel.equipment_choices(item.category,int(item.index))
