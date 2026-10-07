@@ -163,7 +163,7 @@ func shot_mount(shot:Dictionary)->int:
 	return super.shot_mount(shot)
 
 func visual_muzzle(shot:Dictionary)->Vector2:
-	if bool(shot.get("prototype_missile",false)):return Vector2(shot.launch_point)
+	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var id:String=_visual_drone_id(shot)
 	if not id.is_empty():return _prototype_drone_launch_pose(id,Vector2.ZERO,0).position
 	return super.visual_muzzle(shot)

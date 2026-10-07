@@ -24,6 +24,16 @@ func _initialize()->void:
  for i in 90:g.tick_projectiles(1.0/60.0)
  check(enemy.hp<10000 and impacts==[projected],"one real damage and impact on visible target")
  check(g.projectiles.is_empty(),"successful pulse retires")
+ # Entry/hover offsets may change while the enemy's actual position stays still.
+ impacts.clear();enemy.hp=10000
+ g.begin_enhancement_attack(0,enemy);attack=g.jewel_attack(0)
+ g.launch_player_attack(0,enemy,weapon,attack,g.player_weapon_offset(0),0.0);g.finish_enhancement_attack(0)
+ g.target_provider=func(target):return Vector2(target.x+70,target.y+25)
+ check(g.projectile_target_point(g.projectiles[0])==projected,"cosmetic target drift cannot move an in-flight pulse's collision point")
+ for i in 90:g.tick_projectiles(1.0/60.0)
+ check(enemy.hp<10000 and impacts==[projected],"animated projection still resolves one real hit and retires")
+ check(g.projectiles.is_empty(),"animated target hit retires the ordinary pulse")
+ g.target_provider=func(target):return Vector2(target.x+40,target.y-20)
  # A moving target still may escape the frozen straight heading; no homing added.
  impacts.clear();enemy.hp=10000
  g.begin_enhancement_attack(0,enemy);attack=g.jewel_attack(0)

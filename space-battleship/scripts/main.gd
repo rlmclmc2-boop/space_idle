@@ -725,7 +725,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"projectile_impact":
 			if fast_mode_enabled():return
 			var visual := projectile_visual(info.shot)
-			var impact: Vector2 = visual_effect_point(info.pos)
+			var impact: Vector2 = Vector2(info.pos) if info.shot.has("ballistic_target_origin") else visual_effect_point(info.pos)
 			if visual.has("fixed_step"):
 				impact=straight_projectile_point(info.pos,visual)
 			weapon_impact(info.shot,impact)
@@ -1290,6 +1290,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := Vector2(shot.x,shot.y)
 	if shot.hostile:
 		var nearest: Dictionary = {}
@@ -1603,9 +1604,13 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else shot.direction.angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":Vector2(shot.x,shot.y),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
 		if key in ["laser","cannon"] and not shot.target.is_empty():
 			var visual: Dictionary=projectile_visuals.back()
-			var distance := Vector2(shot.x,shot.y).distance_to(Vector2(shot.target.x,shot.target.y))
+			# Presented pulses already launch toward a projected aim. Map their
+			# committed segment once, rather than scaling it by the old logical target.
+			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
+			var distance := Vector2(shot.x,shot.y).distance_to(aim)
+			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else entity_render_position(shot.target)
 			visual.fixed_origin=battle_point(pos)
-			visual.fixed_step=(entity_render_position(shot.target)-visual.fixed_origin)/maxf(distance,0.001)
+			visual.fixed_step=(rendered_aim-visual.fixed_origin)/maxf(distance,0.001)
 			visual.fixed_direction=shot.direction
 			visual.angle=Vector2(visual.fixed_step).angle()
 	var tier := weapon_visual_tier(shot)

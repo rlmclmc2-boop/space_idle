@@ -147,7 +147,12 @@ func chain_target_point(target:Dictionary)->Vector2:
 	return target_point(target)
 
 func projectile_target_point(shot:Dictionary)->Vector2:
-	return super.projectile_target_point(shot) if bool(shot.hostile) else target_point(shot.target)
+	if bool(shot.hostile):return super.projectile_target_point(shot)
+	if shot.has("ballistic_target_origin"):
+		# Cosmetic entry/hover is not target movement. Preserve genuine movement
+		# relative to the logical position sampled by this straight shot at launch.
+		return Vector2(shot.ballistic_target_origin)+Vector2(shot.target.x,shot.target.y)-Vector2(shot.ballistic_target_logical)
+	return target_point(shot.target)
 
 func target_point(target:Dictionary)->Vector2:
 	if target_provider.is_valid():return target_provider.call(target)
@@ -178,6 +183,9 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	if bool(shot.hostile):return
 	if str(shot.key)!="missile":
 		var aim:Vector2=target_point(shot.target)
+		if str(shot.key)=="laser":
+			shot.ballistic_target_origin=aim
+			shot.ballistic_target_logical=Vector2(shot.target.x,shot.target.y)
 		var entry:Dictionary=shot.get("entry",{})
 		var pose:Dictionary={}
 		if entry.has("drone_id"):
@@ -186,6 +194,9 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 		if not pose.is_empty():
 			shot.x=pose.position.x;shot.y=pose.position.y
 			shot.launch_point=pose.position
+			shot.direction=(aim-Vector2(shot.x,shot.y)).normalized()
+		if shot.has("ballistic_target_origin"):
+			shot.launch_point=Vector2(shot.x,shot.y)
 			shot.direction=(aim-Vector2(shot.x,shot.y)).normalized()
 		if str(shot.key)=="cannon":shot.speed=float(shot.speed)*RAIL_SPEED_FACTOR
 		return
