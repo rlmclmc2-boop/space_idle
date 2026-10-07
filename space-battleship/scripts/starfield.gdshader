@@ -35,18 +35,23 @@ void vertex() {
 }
 void fragment() {
 	if (layer < 0.0) {
-		// Low-frequency periodic fog drifts without a visible wrap seam or TIME.
-		vec2 p = UV * vec2(3.0,5.0);
-		p.y -= flight_time * far_speed / 960.0;
-		float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
-		float haze = pow(clamp(cloud*0.5+0.5,0.0,1.0),3.0);
-		COLOR = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
 		if (hyperspace > 0.5) {
+			// Route identity replaces the mainline fog, so do not evaluate
+			// the three mainline sine functions only to overwrite their result.
 			// Quiet central void and a wide transverse rift; no extra particles,
 			// textures or full-screen postprocess pass.
 			float rim = smoothstep(0.18,0.49,abs(UV.x-0.5));
 			float rift = exp(-abs(UV.y-0.19)*22.0);
 			COLOR = vec4(mix(vec3(0.012,0.016,0.035),route_color*0.23,clamp(rim*0.7+rift*0.5,0.0,1.0)),0.94);
+		} else {
+			// Low-frequency periodic fog drifts without a wrap seam or TIME.
+			vec2 p = UV * vec2(3.0,5.0);
+			p.y -= flight_time * far_speed / 960.0;
+			float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
+			float haze = clamp(cloud*0.5+0.5,0.0,1.0);
+			// Same cubic density curve; no general-purpose fragment pow.
+			haze = haze*haze*haze;
+			COLOR = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
 		}
 	} else if (layer == 1.0) {
 		vec2 p = local_pos / radius;
