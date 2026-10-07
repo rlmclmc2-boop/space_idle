@@ -8092,6 +8092,65 @@
         "ship",
         "level"
       ]
+    },
+    "hyperspace.drone_independent_weapon": {
+      "params": [
+        "weapon",
+        "level"
+      ]
+    },
+    "hyperspace.drone_base_damage": {
+      "params": [
+        "damage"
+      ]
+    },
+    "hyperspace.drone_fire_laser": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.drone_fire_missile": {
+      "params": [
+        "interval",
+        "count"
+      ]
+    },
+    "hyperspace.drone_fire_cannon": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.drone_fire_longLaser": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.rare_legendary_budget": {
+      "params": [
+        "used",
+        "capacity"
+      ]
+    },
+    "hyperspace.rare_ultimate_budget": {
+      "params": [
+        "used",
+        "capacity"
+      ]
+    },
+    "hyperspace.more_operations": {
+      "params": []
+    },
+    "hyperspace.basic_operations": {
+      "params": []
+    },
+    "hyperspace.no_basic_operation": {
+      "params": []
+    },
+    "hyperspace.basic_operations_hint": {
+      "params": []
+    },
+    "hyperspace.advanced_operations_hint": {
+      "params": []
     }
   },
   "bindings": {

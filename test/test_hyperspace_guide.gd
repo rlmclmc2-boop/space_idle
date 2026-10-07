@@ -29,19 +29,19 @@ func run() -> void:
  p.select_section(2)
  var original_state=JSON.stringify(g.profile)
  var unrelated=p.cards[0];var filters=p.weapon_filter
- p.commands.operation.select(0);p.commands.configure_operation();p.commands.show_guide()
+ p.commands.select_operation("add_affix");p.commands.show_guide()
  await process_frame
  var dialog=p.commands.guide_dialog;var label=p.commands.guide_label
  check(label.text.contains("白色没有词条位") and not label.text.contains("究极"),"Adding a first affix explains capacity without unrelated advanced chapters")
  check(dialog.size.y<=550,"Context guide fits a short viewport")
- dialog.hide();p.commands.operation.select(1);p.commands.configure_operation();p.commands.show_guide()
+ dialog.hide();p.commands.select_operation("replace_affix");p.commands.show_guide()
  await process_frame
  check(p.commands.guide_dialog==dialog and p.commands.guide_label==label,"Topic changes reuse the guide controls")
  check(label.text.contains("中途可能改掉其他未锁词条") and not label.text.contains("品质决定容量"),"Replacement guide explains guaranteed target instead of retaining previous topic")
- dialog.hide();p.commands.operation.select(4);p.commands.configure_operation();p.commands.show_guide()
+ dialog.hide();p.commands.select_operation("promote_affix");p.commands.show_guide()
  check(label.text.contains("未来预兆不会改变升阶目标"),"Promotion guide matches actual target selection")
  check(not p.commands.promotion_hint.text.contains("凶兆"),"Inline promotion hint does not claim nonexistent targeting")
- dialog.hide();p.commands.operation.select(9);p.commands.configure_operation();p.commands.show_guide()
+ dialog.hide();p.commands.select_operation("modernize");p.commands.show_guide()
  check(label.text.contains("最高通关记录") and label.text.contains("本轮主线最大关卡"),"Modernization retains both progression conditions")
  check(p.cards[0]==unrelated and p.weapon_filter==filters,"Help preserves unrelated inventory controls")
  check(JSON.stringify(g.profile)==original_state,"Reading guides never changes progress, resources or RNG")
@@ -49,7 +49,7 @@ func run() -> void:
  var rng=RandomNumberGenerator.new();rng.seed=419
  var d=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"guide:white","white","laser",5,"1")
  g.profile.hyperspace.inventory.drones[d.id]=d;g.profile.hyperspace.inventory.warehouse.append(d.id);g.profile.hyperspace.inventory.generation+=1
- p.selected_id=d.id;p.dirty=true;p.refresh();p.commands.operation.select(0);p.commands.configure_operation()
+ p.selected_id=d.id;p.dirty=true;p.refresh();p.commands.select_operation("add_affix")
  var before_preview=JSON.stringify(g.profile);p.commands.preview()
  check(p.commands.feedback.text.contains("词条位") and p.commands.quote_label.text.is_empty() and p.commands.commit_button.disabled,"Rejected capacity preview shows its reason without a misleading free quote")
  var cap=preload("res://scripts/drone_inventory.gd").affix_limit(d,g.hyperspace.config)
@@ -58,7 +58,7 @@ func run() -> void:
  var blue=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"guide:blue","blue","laser",5,"1")
  g.profile.hyperspace.inventory.drones[blue.id]=blue;g.profile.hyperspace.inventory.warehouse.append(blue.id);g.profile.hyperspace.inventory.generation+=1
  g.profile.hyperspace.materials.degenerate_matter=int(g.hyperspace.config.forge_costs.replace_affix.degenerate_matter)
- p.selected_id=blue.id;p.dirty=true;p.refresh();p.commands.operation.select(1);p.commands.configure_operation();p.commands.preview();p.commands.execute_quote()
+ p.selected_id=blue.id;p.dirty=true;p.refresh();p.commands.select_operation("replace_affix");p.commands.preview();p.commands.execute_quote()
  var current:Dictionary=g.profile.hyperspace.inventory.drones[blue.id]
  check(p.commands.result_scroll.visible and p.commands.result_details.text.ends_with(p.drone_description(current)),"Successful paid replacement displays the actual resulting properties on the refit page")
  if DisplayServer.get_name()!="headless" and not OS.get_environment("GUIDE_EVIDENCE").is_empty():

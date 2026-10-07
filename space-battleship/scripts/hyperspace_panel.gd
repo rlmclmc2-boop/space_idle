@@ -151,6 +151,7 @@ func select_section(index: int) -> void:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
  if host!=null and not bag.is_empty():refresh()
+ if section_index==2 and commands!=null:commands.configure_operation()
 func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
  var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",14);grid.add_theme_constant_override("v_separation",14);parent.add_child(grid)
@@ -288,7 +289,7 @@ func save_filter() -> void:
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
  reward_feedback.on_event(kind,_payload)
- if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
+ if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
    commands.refresh_materials.call_deferred()
@@ -409,11 +410,7 @@ func refresh_list() -> void:
  inventory_dirty=false
  put(previous,"disabled",page==0);put(next,"disabled",page==pages-1);put(page_label,"text",t("page",{"page":str(page+1),"pages":str(pages)}))
  put(capacity,"text",t("capacity",{"used":str(bag.warehouse.size()),"cap":str(Bag.capacity(bag,host.game.hyperspace.config)),"overflow":str(bag.overflow.size()),"retention":str(Bag.retention_capacity(bag,host.game.hyperspace.config))}))
- var legendary=0;var ultimate=0
- for id in bag.equipped:
-  legendary+=int(bag.drones[id].legendary);ultimate+=int(bag.drones[id].ultimate)
- var cap_text=str(hull_capacity_provider.call()) if hull_capacity_provider.is_valid() else "?"
- put(budgets,"text",t("budgets",{"equipped":str(bag.equipped.size()),"cap":cap_text,"legendary":str(legendary),"ultimate":str(ultimate)}));refresh_details()
+ refresh_details()
 func flags(id: String,d: Dictionary) -> String:
  var names: Array[String]=[]
  if d.legendary:names.append(t("legendary"))
@@ -439,12 +436,21 @@ func refresh_details() -> void:
   return
  if section_index!=1:return
  equipment_ui.refresh()
+ var g=host.game;var rare:Array[String]=[];var legendary=0;var ultimate=0;var has_legendary=false;var has_ultimate=false
+ for id in bag.drones:
+  has_legendary=has_legendary or bool(bag.drones[id].legendary);has_ultimate=has_ultimate or bool(bag.drones[id].ultimate)
+ for id in bag.equipped:
+  legendary+=int(bag.drones[id].legendary);ultimate+=int(bag.drones[id].ultimate)
+ if has_legendary:rare.append(t("rare_legendary_budget",{"used":str(legendary),"capacity":str(int(g.hyperspace.config.maximum_legendary))}))
+ if has_ultimate:rare.append(t("rare_ultimate_budget",{"used":str(ultimate),"capacity":str(int(g.hyperspace.config.maximum_ultimate))}))
+ put(budgets,"visible",not rare.is_empty());put(budgets,"text"," · ".join(rare))
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
  var gate=int(bag.sealed.get(selected_id,0))
  put(unseal,"disabled",not valid or gate<1 or int(host.game.profile.highestLevel)<gate)
  put(unseal,"tooltip_text",t("sealed_gate",{"level":str(gate)}) if gate>0 else "")
  var totals:Dictionary=host.game.hyperspace_totals()
+ put(totals_summary,"visible",not totals.affixes.is_empty() or not totals.hangings.is_empty())
  put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
@@ -455,7 +461,11 @@ func quality_caption(drone: Dictionary) -> String:
  return t("legendary")+(" · "+origin if drone.origin_quality!="legendary" else "") if drone.legendary else origin
 func drone_description(d: Dictionary) -> String:
  var protection=protection_flags(str(d.id))
- var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
+ var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
+ var fire_params={"interval":"%.2f"%float(row.cd)}
+ if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
+ var lines: Array[String]=[t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}),t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}),t("drone_fire_"+str(d.weapon),fire_params)]
+ lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
   var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
