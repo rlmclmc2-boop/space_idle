@@ -74,6 +74,10 @@ var visual_regions: Dictionary = {}
 var hull_visible_bottoms: Dictionary = {}
 var player_components: Array = []
 var player_components_signature := ""
+# Shared fleet limit is scoped to one process/draw batch and logical pose time.
+var enemy_entry_batch_active := false
+var enemy_entry_distance_time := -INF
+var enemy_entry_distance_value := 0.0
 # Reuse presentation values only inside one synchronous draw callback. No state
 # survives the draw, so movement, refits and event-time muzzle reads stay live.
 var battle_draw_active := false
@@ -604,6 +608,8 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	# State/refit/encounter events may change geometry within a logical step.
+	enemy_entry_distance_time = -INF
 	match kind:
 		"hyperspace_changed":
 			var s: Dictionary=game.profile.hyperspace
@@ -1434,12 +1440,19 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
 
 func enemy_safe_entry_distance()->float:
+	# All ships share this fleet-wide limit. Reuse it only inside one synchronous
+	# process/draw batch at the same animation time; standalone queries stay live.
+	if enemy_entry_batch_active and enemy_entry_distance_time==fx_time:
+		return enemy_entry_distance_value
 	var distance:=float(battle_visual.enemy_entry_distance)
 	for enemy in game.enemies:
 		var pose:=enemy_pose(enemy)
 		var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 		var hover_margin:=float(battle_visual.enemy_idle_y)*(0.25 if enemy.get("size_formation",false) else 1.0)
 		distance=minf(distance,maxf(0.0,target.y-enemy_display_top_clearance(enemy,target.y)-hover_margin))
+	if enemy_entry_batch_active:
+		enemy_entry_distance_time=fx_time
+		enemy_entry_distance_value=distance
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
@@ -1480,7 +1493,10 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
 	# Width changes slightly with depth; solve the local top bound without moving
 	# other rows or altering the existing player clearance cap.
-	for iteration in 3:minimum_y=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
+	for iteration in 3:
+		var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
+		if next_minimum==minimum_y:break
+		minimum_y=next_minimum
 	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
 	else:position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
@@ -2830,6 +2846,8 @@ func draw_battle_resources() -> void:
 		RESOURCE_ART.draw_drop(draw_surface,drop,drop_render_position(drop),clock)
 
 func draw_battle() -> void:
+	enemy_entry_batch_active=true
+	enemy_entry_distance_time=-INF
 	player_weapon_components()
 	battle_draw_player_position=player_render_position()
 	battle_draw_active=true
@@ -2921,6 +2939,8 @@ func draw_battle() -> void:
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+	enemy_entry_batch_active=false
+	enemy_entry_distance_time=-INF
 
 func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle: bool) -> void:
 	var pos := enemy_render_position(enemy)+offset
