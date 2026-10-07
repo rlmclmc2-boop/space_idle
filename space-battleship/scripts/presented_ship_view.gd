@@ -48,6 +48,7 @@ var last_settings: Dictionary = {}
 var last_toon_enabled := true
 var last_rim_enabled := true
 var accelerated_quality := false
+var render_scale_sync_pending := false
 
 
 func _ready() -> void:
@@ -59,6 +60,7 @@ func _ready() -> void:
 	viewport.transparent_bg = true
 	viewport.own_world_3d = true
 	viewport.msaa_3d = Viewport.MSAA_4X
+	viewport.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	add_child(viewport)
 	var output := TextureRect.new()
@@ -103,6 +105,44 @@ func _ready() -> void:
 	# Exact top-down projection: model -Z points to screen top; no turntable camera.
 	camera.rotation_degrees.x = -90
 	world.add_child(camera)
+	# Keep the logical viewport and camera projection fixed. Only the internal
+	# 3D buffer follows displayed pixels; all unproject_position users therefore
+	# continue receiving the same canonical battlefield coordinates.
+	get_viewport().size_changed.connect(_request_render_scale_sync)
+	resized.connect(_request_render_scale_sync)
+	visibility_changed.connect(_request_render_scale_sync)
+	set_notify_transform(true)
+	_request_render_scale_sync()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED:
+		_request_render_scale_sync()
+
+
+func _request_render_scale_sync() -> void:
+	if not is_instance_valid(viewport) or render_scale_sync_pending:return
+	render_scale_sync_pending = true
+	# Resize/layout signals can arrive together. Read the final canvas stretch
+	# once, after layout, including paused resize and hidden-to-visible restore.
+	_sync_render_scale.call_deferred()
+
+
+func _sync_render_scale() -> void:
+	render_scale_sync_pending = false
+	if not is_instance_valid(viewport) or not is_visible_in_tree():return
+	if size.x <= 0.0 or size.y <= 0.0:return
+	var pixels: Transform2D = get_viewport().get_stretch_transform()*get_global_transform_with_canvas()
+	# Prefer the larger axis for nonuniform host scaling; normal
+	# aspect-preserving windows use one ratio, within the engine limits below.
+	var native_scale: float = maxf(pixels.x.length(),pixels.y.length())
+	if native_scale <= 0.0:return
+	# Engine-supported scaling range; no quality preset or FPS feedback loop.
+	var desired_scale: float = clampf(native_scale,0.25,2.0)
+	if is_equal_approx(viewport.scaling_3d_scale,desired_scale):return
+	viewport.scaling_3d_scale = desired_scale
+	if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
 func set_hull(key: String) -> bool:
