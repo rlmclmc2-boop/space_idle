@@ -54,9 +54,10 @@ func draw_space(canvas:CanvasItem,size:Vector2) -> void:
 		var final := tier=="ultimate"
 		var opening := 174.0 if final else 210.0
 		var entrance := (1.0-smoothstep(0.0,1.2,age))*36.0
-		for side in [-1.0,1.0]:
-			var edge := center.x+side*(opening+entrance)
-			var outer := 0.0 if side<0 else size.x
+		for side_value in [-1.0,1.0]:
+			var side:float=float(side_value)
+			var edge:float=center.x+side*(opening+entrance)
+			var outer:float=0.0 if side<0 else size.x
 			var points := PackedVector2Array([Vector2(outer,0),Vector2(edge,0),Vector2(edge-side*28,100),Vector2(edge+side*20,360),Vector2(outer,size.y)])
 			canvas.draw_colored_polygon(points,Color("101b2b"))
 			canvas.draw_polyline(PackedVector2Array([Vector2(edge,0),Vector2(edge-side*28,100),Vector2(edge+side*20,360)]),Color(accent,0.4),2.0,true)
@@ -69,21 +70,24 @@ func draw_space(canvas:CanvasItem,size:Vector2) -> void:
 	if transition<1.2 and (departure or not route.is_empty()):
 		var progress := smoothstep(0.0,1.2,transition)
 		var inset := (1.0-progress if departure else progress)*size.x*0.46
-		for x in [inset,size.x-inset]:
+		for x_value in [inset,size.x-inset]:
+			var x:float=float(x_value)
 			canvas.draw_line(Vector2(x,0),Vector2(x,size.y),Color(accent,(1.0-progress)*0.48),3.0,true)
 
 func draw_leader_frame(canvas:CanvasItem,position:Vector2,width:float) -> void:
 	focus=position
 	var spread := width*0.48+12.0
 	var arrival := 1.0-smoothstep(0.0,1.1,age)
-	for side in [-1.0,1.0]:
-		var x := position.x+side*(spread+arrival*32.0)
+	for side_value in [-1.0,1.0]:
+		var side:float=float(side_value)
+		var x:float=position.x+side*(spread+arrival*32.0)
 		canvas.draw_polyline(PackedVector2Array([Vector2(x-side*12,position.y-32),Vector2(x,position.y-32),Vector2(x,position.y+32),Vector2(x-side*12,position.y+32)]),Color(accent,0.35+arrival*0.35),2.0,true)
 
 func draw_fall(canvas:CanvasItem) -> void:
 	if leader_fall>=1.4:return
 	# Two severed command brackets fall apart; no screen flash or fake victory.
 	var progress := leader_fall/1.4
-	for side in [-1.0,1.0]:
-		var point := focus+Vector2(side*(32+progress*85),progress*65)
+	for side_value in [-1.0,1.0]:
+		var side:float=float(side_value)
+		var point:Vector2=focus+Vector2(side*(32+progress*85),progress*65)
 		canvas.draw_line(point-Vector2(0,26),point+Vector2(0,26),Color(accent,(1.0-progress)*0.8),3.0,true)
