@@ -13950,7 +13950,7 @@
   },
   {
     "key": "hyperspace.command_error_affix_limit",
-    "text": "这架无人机没有空余词条位；白色无人机没有词条位。",
+    "text": "这架无人机没有空余词条位。",
     "params": "",
     "category": "hyperspace"
   },
