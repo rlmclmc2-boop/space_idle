@@ -7916,6 +7916,9 @@
     },
     "battle.finale_cleared": {
       "params": []
+    },
+    "ship.refit.carrier_hint": {
+      "params": []
     }
   },
   "bindings": {
