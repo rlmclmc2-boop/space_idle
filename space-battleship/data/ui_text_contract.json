@@ -8168,6 +8168,11 @@
     },
     "hyperspace.energy_refund_over_cap": {
       "params": []
+    },
+    "hyperspace.time_seconds": {
+      "params": [
+        "value"
+      ]
     }
   },
   "bindings": {

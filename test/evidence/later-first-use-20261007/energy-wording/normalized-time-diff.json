@@ -1,0 +1,45 @@
+[
+  {
+    "key": "hyperspace.best",
+    "before": {
+      "key": "hyperspace.best",
+      "text": "最快用时：{time}",
+      "params": "{time}",
+      "category": "hyperspace"
+    },
+    "after": {
+      "key": "hyperspace.best",
+      "text": "最快用时（按1倍速）：{time}",
+      "params": "{time}",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.recent_result",
+    "before": {
+      "key": "hyperspace.recent_result",
+      "text": "最近探索 · {weapon} {level}级 · {reason}\n用时 {elapsed} 秒 · 到达战点 {point}/10 · 退回能量 {refund}\n返回主线 第{stage}关 · 战点 {main_point}",
+      "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}",
+      "category": "hyperspace",
+      "note": "当前会话最近探索结果，不是QA超时"
+    },
+    "after": {
+      "key": "hyperspace.recent_result",
+      "text": "最近探索 · {weapon} {level}级 · {reason}\n用时（按1倍速）：{elapsed} 秒 · 到达战点 {point}/10 · 退回能量 {refund}\n返回主线 第{stage}关 · 战点 {main_point}",
+      "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}",
+      "category": "hyperspace",
+      "note": "当前会话最近探索结果，不是QA超时"
+    }
+  },
+  {
+    "key": "hyperspace.time_seconds",
+    "before": null,
+    "after": {
+      "key": "hyperspace.time_seconds",
+      "text": "{value}秒",
+      "params": "{value}",
+      "category": "hyperspace",
+      "note": "时间数值的秒单位格式，保持暂无成绩无需单位"
+    }
+  }
+]

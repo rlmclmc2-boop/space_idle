@@ -330,7 +330,7 @@ func refresh_status() -> void:
  var ticket=display_ticket(s)
  put(energy,"text",energy_caption(s,float(h.online_config(g).energy_cap),ticket))
  var best_time=float(h.best_x1(g,route,int(level.value)))
- put(best,"text",t("best",{"time":"%.2f秒"%best_time if best_time>0 else t("none")}))
+ put(best,"text",t("best",{"time":t("time_seconds",{"value":"%.2f"%best_time}) if best_time>0 else t("none")}))
  refresh_start_reason()
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
 
