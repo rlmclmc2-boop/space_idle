@@ -330,9 +330,11 @@ func refresh_new_weapon() -> void:
 	for id in host.game.unread_tutorial_unlocks():
 		var row: Dictionary = host.db.data.unlock.get(id,{})
 		var key := str(row.get("target",""))
-		if row.get("type","")!="equipment" or not BattleGame.WEAPON_KEYS.has(key) or int(row.get("level",0))<=0:continue
+		if row.get("type","")!="equipment" or (not BattleGame.WEAPON_KEYS.has(key) and not BattleGame.DEFENSE_KEYS.has(key)) or int(row.get("level",0))<=0:continue
 		if not host.game.content_unlocked("equipment",key):continue
-		if host.game.weapon_entries().any(func(entry):return str(entry.key)==key):continue
+		var category := "weapons" if BattleGame.WEAPON_KEYS.has(key) else "defence"
+		if host.game.module_entries(category).any(func(entry):return str(entry.key)==key):continue
+		if discovery_target(category).is_empty():continue
 		new_weapon_id = id
 		break
 	host.set_ui_value(new_weapon,"visible",not new_weapon_id.is_empty())
@@ -341,16 +343,22 @@ func refresh_new_weapon() -> void:
 		var key := str(host.db.data.unlock[new_weapon_id].target)
 		host.set_ui_value(new_weapon,"text",UIText.t("equipment.new_weapon",{"weapon":str(host.NAMES.get(key,key))}))
 
+func discovery_target(category: String) -> String:
+	if items.has(selected) and items[selected].category==category and not items[selected].locked and not items[selected].get("refit_locked",false):return selected
+	for index in host.game.active_slot_count(category):
+		if not host.game.slot_equipment_locked(category,index):return host.game.slot_id(category,index)
+	return ""
+
 func show_new_weapon() -> void:
 	var id := new_weapon_id
 	if id.is_empty():return
 	var key := str(host.db.data.unlock.get(id,{}).get("target",""))
-	var target_slot: String = selected if items.has(selected) and items[selected].category=="weapons" and not items[selected].locked else host.game.slot_id("weapons",0)
+	var target_slot: String = discovery_target("weapons" if BattleGame.WEAPON_KEYS.has(key) else "defence")
 	if not cards.has(target_slot) or not cards[target_slot].equipment_options.has(key):return
 	category_filter = 0
 	category_picker.select(0)
 	apply_filters()
-	grid_scroll.scroll_vertical = 0
+	grid_scroll.ensure_control_visible(cards[target_slot])
 	select_item(target_slot)
 	open_picker(target_slot)
 	if cards[target_slot].name_button.get_popup().visible:
@@ -362,8 +370,8 @@ func dismiss_new_weapon() -> void:
 	host.game.read_tutorial_unlock(new_weapon_id)
 	refresh_new_weapon()
 
-func read_tried_weapon(key: String) -> void:
-	if not BattleGame.WEAPON_KEYS.has(key):return
+func read_tried_equipment(key: String) -> void:
+	if not BattleGame.WEAPON_KEYS.has(key) and not BattleGame.DEFENSE_KEYS.has(key):return
 	var id: String = host.db.unlock_id("equipment",key)
 	if not id.is_empty():host.game.read_tutorial_unlock(id)
 
@@ -371,7 +379,7 @@ func change_card_equipment(id: String, key: String) -> void:
 	if not items.has(id) or items[id].locked:return
 	var item: Dictionary = items[id]
 	if key.is_empty():host.game.unequip_slot(item.category,int(item.index))
-	elif host.game.equip_slot(item.category,int(item.index),key):read_tried_weapon(key)
+	elif host.game.equip_slot(item.category,int(item.index),key):read_tried_equipment(key)
 	refresh(id)
 
 func choose_equipment(index: int) -> void:
@@ -698,7 +706,7 @@ func change_equipment(key: String) -> void:
 	if not items.has(selected):return
 	var category: String = items[selected].category
 	if key.is_empty():host.game.unequip_slot(category,selected_slot)
-	elif host.game.equip_slot(category,selected_slot,key):read_tried_weapon(key)
+	elif host.game.equip_slot(category,selected_slot,key):read_tried_equipment(key)
 	refresh(selected)
 
 func equipment_attributes(entry: Dictionary, include_enhancement := true) -> String:

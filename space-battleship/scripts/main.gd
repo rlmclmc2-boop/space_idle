@@ -197,6 +197,7 @@ var resource_layer: Node2D
 var overlay_layer: Node2D
 var enhancement_panel: Panel
 var beginner_guide: Control
+var enemy_defence_inspector: Control
 var chrono_login_dialog: AcceptDialog
 var save_panel: Control
 var save_confirmation_text: Label
@@ -296,6 +297,9 @@ func _ready() -> void:
 		music.play()
 	game.resume_progress()
 	build_ui()
+	enemy_defence_inspector = preload("res://scripts/enemy_defence_inspector.gd").new()
+	add_child(enemy_defence_inspector)
+	enemy_defence_inspector.setup(self)
 	if get_tree().has_meta("save_import_backup"):
 		var backup: String=get_tree().get_meta("save_import_backup")
 		get_tree().remove_meta("save_import_backup")

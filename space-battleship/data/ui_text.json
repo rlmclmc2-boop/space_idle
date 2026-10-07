@@ -15349,7 +15349,7 @@
   },
   {
     "key": "equipment.new_weapon",
-    "text": "新武器：{weapon} · 去换装",
+    "text": "新装备：{weapon} · 去换装",
     "params": "{weapon}",
     "category": "equipment",
     "note": "装备页开局可发现入口与默认必要属性",
@@ -15378,5 +15378,69 @@
     "category": "equipment",
     "note": "装备页开局可发现入口与默认必要属性",
     "source": "equipment_tab.gd"
+  },
+  {
+    "key": "battle.enemy_defence.hint",
+    "text": "指向敌舰看防御",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.title",
+    "text": "敌舰防御",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.resistance",
+    "text": "抵抗{type}伤害",
+    "params": "{type}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.neutral",
+    "text": "无类型抗性",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.armour",
+    "text": "装甲：{resistance}",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.no_shield",
+    "text": "无护盾",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.shield",
+    "text": "护盾：{resistance} · 先承受伤害",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.broken_shield",
+    "text": "护盾已破（{resistance}）",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
   }
 ]

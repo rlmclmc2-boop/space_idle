@@ -8228,6 +8228,38 @@
       "params": [
         "percent"
       ]
+    },
+    "battle.enemy_defence.hint": {
+      "params": []
+    },
+    "battle.enemy_defence.title": {
+      "params": []
+    },
+    "battle.enemy_defence.resistance": {
+      "params": [
+        "type"
+      ]
+    },
+    "battle.enemy_defence.neutral": {
+      "params": []
+    },
+    "battle.enemy_defence.armour": {
+      "params": [
+        "resistance"
+      ]
+    },
+    "battle.enemy_defence.no_shield": {
+      "params": []
+    },
+    "battle.enemy_defence.shield": {
+      "params": [
+        "resistance"
+      ]
+    },
+    "battle.enemy_defence.broken_shield": {
+      "params": [
+        "resistance"
+      ]
     }
   },
   "bindings": {
