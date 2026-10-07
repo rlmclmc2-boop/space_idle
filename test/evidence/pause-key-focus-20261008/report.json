@@ -1,0 +1,41 @@
+{
+  "base": "bb1f0ebc4e37b325fd3ed9815ccb625b6a9abd08",
+  "environment": "Original cloud workspace, Godot 4.6.3, Xvfb :91, llvmpipe",
+  "fixture": "In-memory stage 1, 1000000 iron, no save persistence, scene simulation frozen; real graphical GUI Input.parse_input_event mouse/key path, not natural campaign acceptance",
+  "baseline": {
+    "checks": 4,
+    "failures": 1,
+    "space_before": {
+      "level": 2,
+      "iron": 999935
+    },
+    "space_after": {
+      "level": 3,
+      "iron": 999860,
+      "paused": true
+    }
+  },
+  "fixed": {
+    "checks": 18,
+    "failures": 0,
+    "space_after": {
+      "level": 2,
+      "iron": 999935,
+      "paused": true
+    }
+  },
+  "picker_comparison": {
+    "baseline_checks": 33,
+    "baseline_failures": 6,
+    "fixed_checks": 33,
+    "fixed_failures": 6,
+    "same_failure_labels": true,
+    "reason": "Existing inspector/picker fixture failures; no assertions changed. Native menu Enter selection passes both versions."
+  },
+  "source_scope": [
+    "space-battleship/scripts/main.gd"
+  ],
+  "screenshots": "Local only /workspace/bug-qa/pause-key-evidence; QA frozen UI is not natural campaign evidence",
+  "parent_acceptance": "Pending natural UI click upgrade then Space; no balance/price/pause semantics change",
+  "manual_os_input": "Xdotool actual OS mouse down/up at upgrade_point then Space in same graphical QA fixture; see manual.txt. Simulation frozen, not natural campaign acceptance."
+}
