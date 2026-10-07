@@ -8124,6 +8124,18 @@
     },
     "ship.refit.carrier_hint": {
       "params": []
+    },
+    "hyperspace.slot_switch_hull": {
+      "params": [
+        "ship",
+        "capacity"
+      ]
+    },
+    "hyperspace.slot_next_hull_reached": {
+      "params": [
+        "ship",
+        "level"
+      ]
     }
   },
   "bindings": {
