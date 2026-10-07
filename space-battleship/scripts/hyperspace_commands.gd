@@ -18,6 +18,7 @@ var crew_info: Label
 var crew_enable: Button
 var module_dialog: AcceptDialog
 var module_choices: Array[CheckBox]=[]
+var module_apply: Button
 var module_id=""
 var collection_dialog: AcceptDialog
 var collection_choices: Array[CheckBox]=[]
@@ -282,17 +283,39 @@ func show_modules() -> void:
   if child is VBoxContainer:child.free()
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
+ if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots"),21)
+ var unlocked=0;var available=0;var has_zero_level=false
  for key in h().config.hanging_modules:
-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
- panel.button(body,"module_apply",func():
+  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
+  unlocked+=int(progress.unlocked)
+  var usable=bool(progress.unlocked) and int(game().profile.highestLevel)>=int(h().config.hanging_modules[key].unlock_stage)
+  available+=int(usable);has_zero_level=has_zero_level or (usable and int(progress.level)==0)
+  var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key)
+  choice.visible=usable;choice.disabled=not usable or int(d.hanging_slots)==0 or d.ultimate or panel.bag.sealed.has(module_id)
+  body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  choice.toggled.connect(func(_pressed):refresh_module_apply())
+ if unlocked==0:dialog_label(body,t("module_none_unlocked"),21)
+ elif available==0:dialog_label(body,t("module_none_available"),21)
+ if has_zero_level:dialog_label(body,t("module_zero_level"),19)
+ if d.ultimate:dialog_label(body,t("module_ultimate_locked"),21)
+ elif panel.bag.sealed.has(module_id):dialog_label(body,t("module_sealed_locked"),21)
+ module_apply=panel.button(body,"module_apply",func():
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
   if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
   else:module_dialog.title=t("module_rejected"))
- dialog_label(body,t("module_source_hint"),18)
- dialog_label(body,t("reforge_module_reset"),18)
+ if available>0:dialog_label(body,t("module_source_hint"),18)
+ if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
+ refresh_module_apply()
  module_dialog.popup_centered(Vector2i(740,510))
+func refresh_module_apply() -> void:
+ if not is_instance_valid(module_apply):return
+ var d:Dictionary=game().profile.hyperspace.inventory.drones.get(module_id,{})
+ if d.is_empty():module_apply.disabled=true;return
+ var selected=module_choices.filter(func(choice):return choice.button_pressed).size()
+ var available=module_choices.any(func(choice):return choice.visible and not choice.disabled)
+ module_apply.disabled=not available or int(d.hanging_slots)==0 or selected>int(d.hanging_slots) or (selected==0 and d.hangings.is_empty()) or d.ultimate or game().profile.hyperspace.inventory.sealed.has(module_id)
 
 func show_collection() -> void:
  if collection_dialog==null:collection_dialog=build_dialog("collection_manage")
