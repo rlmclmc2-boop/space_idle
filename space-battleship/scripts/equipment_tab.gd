@@ -375,11 +375,17 @@ func read_tried_equipment(key: String) -> void:
 	var id: String = host.db.unlock_id("equipment",key)
 	if not id.is_empty():host.game.read_tutorial_unlock(id)
 
+func refit_equipment(category: String, index: int, key: String) -> void:
+	var previous_key := str(host.game.slot_entry(category,index).get("key",""))
+	var succeeded: bool = host.game.unequip_slot(category,index) if key.is_empty() else host.game.equip_slot(category,index,key)
+	if succeeded:
+		read_tried_equipment(previous_key)
+		read_tried_equipment(key)
+
 func change_card_equipment(id: String, key: String) -> void:
 	if not items.has(id) or items[id].locked:return
 	var item: Dictionary = items[id]
-	if key.is_empty():host.game.unequip_slot(item.category,int(item.index))
-	elif host.game.equip_slot(item.category,int(item.index),key):read_tried_equipment(key)
+	refit_equipment(item.category,int(item.index),key)
 	refresh(id)
 
 func choose_equipment(index: int) -> void:
@@ -705,8 +711,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 func change_equipment(key: String) -> void:
 	if not items.has(selected):return
 	var category: String = items[selected].category
-	if key.is_empty():host.game.unequip_slot(category,selected_slot)
-	elif host.game.equip_slot(category,selected_slot,key):read_tried_equipment(key)
+	refit_equipment(category,selected_slot,key)
 	refresh(selected)
 
 func equipment_attributes(entry: Dictionary, include_enhancement := true) -> String:
