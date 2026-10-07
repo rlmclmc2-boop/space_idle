@@ -7924,6 +7924,9 @@
     },
     "planet.reforge_brief_basic": {
       "params": []
+    },
+    "hyperspace.module_source_hint_basic": {
+      "params": []
     }
   },
   "bindings": {

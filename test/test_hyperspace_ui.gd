@@ -179,7 +179,7 @@ func run() -> void:
  # Module settings validate slots, unlock and no-repeat through the domain.
  g.profile.hyperspace.inventory.drones["ui:8"].hanging_slots=1;g.profile.hyperspace.inventory.generation+=1;g.profile.hyperspace.hanging_modules.resource_collector.unlocked=true
  p.dirty=true;p.refresh();p.selected_id="ui:8";p.commands.show_modules();await capture_window(p.commands.module_dialog,"module-manager")
- check(p.commands.module_choices.size()==g.hyperspace.config.hanging_modules.size(),"Module manager uses config catalog")
+ check(p.commands.module_choices.size()==1 and p.commands.module_choices[0].get_meta("module_key")=="resource_collector","Module manager shows the unlocked module without revealing the unowned catalog")
  check(g.hyperspace.attach_hangings(g,"ui:8",["resource_collector"]),"Attach unlocked module")
  check(not g.hyperspace.attach_hangings(g,"ui:8",["resource_collector","resource_collector"]),"Domain rejects same-drone duplicate")
  p.commands.module_dialog.hide()

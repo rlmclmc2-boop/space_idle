@@ -14813,5 +14813,11 @@
     "text": "本轮成长重置；铁、铀和时空粒子保留。",
     "params": "",
     "category": "planet"
+  },
+  {
+    "key": "hyperspace.module_source_hint_basic",
+    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
+    "params": "",
+    "category": "hyperspace"
   }
 ]
