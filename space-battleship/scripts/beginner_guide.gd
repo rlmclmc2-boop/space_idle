@@ -16,6 +16,7 @@ var manually_opened := false
 var elapsed := 0.0
 var equip_target := ""
 var retreat_pending := false
+var retreat_defence: Array = []
 var action_id := ""
 
 func setup(owner: Node) -> void:
@@ -82,6 +83,7 @@ func flags() -> Dictionary:
 
 func dismiss() -> void:
 	retreat_pending = false
+	retreat_defence.clear()
 	flags().dismissed = true
 	manually_opened = false
 	review = false
@@ -166,6 +168,20 @@ func has_equipment_choice(category: String, index: int) -> bool:
 	var choices: Array = host.equipment_panel.equipment_choices(category,index)
 	return choices.any(func(key):return not str(key).is_empty() and game.profile.unlocked.has(key))
 
+func defence_snapshot() -> Array:
+	var result: Array = []
+	for index in host.game.active_slot_count("defence"):
+		var entry: Dictionary = host.game.slot_entry("defence",index)
+		result.append([str(entry.key),int(entry.level)])
+	return result
+
+func recovery_adjusted() -> bool:
+	var current := defence_snapshot()
+	for index in current.size():
+		var previous: Array = retreat_defence[index] if index<retreat_defence.size() else ["",0]
+		if not str(current[index][0]).is_empty() and (current[index][0]!=previous[0] or int(current[index][1])>int(previous[1])):return true
+	return false
+
 func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
 	var playing: bool = host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT]
@@ -173,6 +189,10 @@ func refresh() -> void:
 	if playing and host.game.state==BattleGame.State.RETREAT and not flags().get("retreatSeen",true):
 		flags().retreatSeen = true
 		retreat_pending = not flags().dismissed
+		retreat_defence = defence_snapshot()
+	if retreat_pending and recovery_adjusted():
+		retreat_pending = false
+		retreat_defence.clear()
 	# Reconcile completion before deciding visibility, including while dismissed.
 	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending) else {"phase":"review"}
 	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending)))
@@ -238,5 +258,7 @@ func activate() -> void:
 				if action_id=="show_upgrade" and host.equipment_panel.has_method("set_upgrade_amount"):host.equipment_panel.set_upgrade_amount(1)
 				if host.equipment_panel.cards.has(target_slot):host.equipment_panel.grid_scroll.ensure_control_visible(host.equipment_panel.cards[target_slot])
 				if action_id in ["show_slot","show_defence"] and host.equipment_panel.has_method("open_picker"):host.equipment_panel.open_picker(target_slot)
-	if phase=="retreat":retreat_pending = false
+	if phase=="retreat":
+		retreat_pending = false
+		retreat_defence.clear()
 	refresh()

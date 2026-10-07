@@ -99,6 +99,7 @@ func run() -> void:
 	game.upgrade_slot("weapons",int(guide.target_slot.split("_")[1]))
 	guide.refresh()
 	check(guide.phase=="defence" and guide.target_slot=="defence_1","After upgrade the guide points to a free defensive slot")
+	await capture(scene,"defence-target")
 	guide.activate()
 	check(scene.equipment_panel.selected=="defence_1","Defence CTA selects its actual slot")
 	game.equip_slot("defence",1,"armour")
@@ -126,9 +127,18 @@ func run() -> void:
 	game.state = BattleGame.State.RETREAT
 	guide.refresh()
 	check(guide.panel.visible and guide.phase=="retreat" and game.profile.onboarding.retreatSeen,"First defeat still explains recovery after tutorial completion")
+	await capture(scene,"first-retreat")
 	guide.activate()
 	guide.refresh()
 	check(not guide.panel.visible,"Acknowledged first defeat stays quiet on the same retreat")
+	game.state = BattleGame.State.COMBAT
+	game.profile.onboarding.retreatSeen = false
+	guide.refresh()
+	game.state = BattleGame.State.RETREAT
+	guide.refresh()
+	game.upgrade_slot("defence",0)
+	guide.refresh()
+	check(not guide.retreat_pending and not guide.panel.visible,"An actual defensive upgrade dismisses the first-defeat hint without another click")
 	game.state = BattleGame.State.COMBAT
 
 	guide.open_guide()
