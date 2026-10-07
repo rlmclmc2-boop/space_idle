@@ -1,0 +1,65 @@
+{"unix": 1791415397.4125638, "requested": ["key", "space", "04-paused-after-start"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415398.0951598, "requested": ["click", "548", "309", "05-enhancement-inspection"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415419.467236, "requested": ["click", "548", "242", "06-reactor-before"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415420.9882333, "requested": ["click", "548", "179", "07-factory-current"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415479.9428213, "requested": ["click", "1434", "207", "09-ai-even-allocation"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415481.4908297, "requested": ["click", "548", "242", "10-reactor-open"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415483.9537253, "requested": ["click", "1468", "334", "11-reactor-max-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415485.4551654, "requested": ["click", "984", "520", "12-energy-even"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415516.1312106, "requested": ["click", "1508", "779", "14-clear-smelting-energy"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415519.718498, "requested": ["click", "548", "112", "16-equipment-open"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415522.2243335, "requested": ["click", "1231", "367", "17-earned-cannon39"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415538.929517, "requested": ["click", "548", "243", "19-reactor-reopen"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415541.4706917, "requested": ["click", "1507", "748", "20-smelting-zero-check"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415558.2400072, "requested": ["click", "548", "112", "23-upgraded-equipment-before-fight"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415560.7304556, "requested": ["key", "space", "24-x1-resumed"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415577.607593, "requested": ["click", "548", "179", "26-ai-after-redistribution"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415637.8344545, "requested": ["key", "space", "30-paused-to-read-weapon"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415638.505144, "requested": ["click", "548", "112", "31-equipment-details-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415640.9541972, "requested": ["click", "1233", "329", "32-cannon-selected"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415642.4028635, "requested": ["click", "1490", "925", "33-cannon-basics"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415710.6452305, "requested": ["click", "1510", "216", "35-close-details"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415712.0711408, "requested": ["click", "850", "284", "36-w01-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415728.3441505, "requested": ["click", "790", "427", "38-first-slot-cannon"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415729.7617447, "requested": ["click", "1087", "284", "39-second-slot-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415744.9742954, "requested": ["click", "1031", "427", "41-second-slot-cannon"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415746.4569573, "requested": ["click", "932", "209", "42-max-upgrade-mode"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415747.955596, "requested": ["click", "985", "366", "43-second-cannon-earned-upgrade"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415750.594001, "requested": ["key", "space", "45-resume-three-cannons"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415825.246119, "requested": ["key", "space", "47-pause-for-defence-refit"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415825.9809697, "requested": ["click", "1085", "445", "48-defence-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415891.9481394, "requested": ["click", "1040", "554", "50-free-shield36-refit"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415894.620395, "requested": ["key", "Escape", "52-resume-with-escape"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415943.771966, "requested": ["click", "548", "439", "56-existing-drone-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791415964.782433, "requested": ["click", "1118", "798", "58-view-existing-drone"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416005.8927379, "requested": ["click", "1352", "594", "60-existing-blue-forge"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416008.4914596, "requested": ["click", "548", "374", "62-chrono-read-only"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416041.610453, "requested": ["click", "548", "439", "64-forge-return"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416044.028075, "requested": ["click", "692", "638", "65-paid-affix-preview"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416093.2405674, "requested": ["click", "865", "638", "67-paid-blue-affix-confirm"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416095.8610656, "requested": ["click", "548", "112", "69-equipment-for-shield-upgrade"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416098.2970462, "requested": ["click", "982", "526", "70-earned-shield37"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416168.338236, "requested": ["click", "548", "308", "73-current-fragment-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416325.6746788, "requested": ["click", "548", "112", "75-equipment-current.png"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416334.7577584, "requested": ["click", "1224", "366", "77-cannon40-earned.png"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416344.5500188, "requested": ["click", "986", "526", "79-shield38-earned.png"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416384.0508566, "requested": ["click", "986", "366", "82-second-cannon34-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416406.9843771, "requested": ["click", "548", "178", "84-ai-current"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416417.4869733, "requested": ["click", "1292", "208", "86-earned-ai-generation"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416419.9449883, "requested": ["click", "1430", "208", "87-ai-uniform-after-generation"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416443.4285932, "requested": ["click", "548", "242", "89-reactor-earned-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416461.5186079, "requested": ["click", "1467", "334", "91-reactor22-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416463.9833703, "requested": ["click", "1002", "679", "92-reactor-weapon-energy-increase"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416465.4370568, "requested": ["click", "548", "112", "93-equipment-after-reactor22"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416477.7689242, "requested": ["click", "986", "366", "95-cannon35-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416536.5662613, "requested": ["key", "Escape", "105-before-armour-adjust-pause"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416537.2054584, "requested": ["click", "1085", "445", "106-defence-type-options"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416548.3928728, "requested": ["click", "1027", "522", "108-free-armour-refit"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416559.158314, "requested": ["key", "Escape", "110-armour-trial-resume"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416594.361758, "requested": ["click", "751", "526", "121-armour39-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416667.7097485, "requested": ["click", "986", "366", "147-cannon36-earned"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416720.9180694, "requested": ["key", "Escape", "150-checkpoint-pause"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416721.613217, "requested": ["click", "1085", "445", "151-restore-shield-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416723.0319831, "requested": ["click", "1018", "554", "152-restored-shield"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416725.4991665, "requested": ["click", "548", "503", "153-native-save-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791416753.1641595, "requested": ["click", "1099", "292", "155-manual-checkpoint-saved"], "source": "external real mouse/keyboard only"}

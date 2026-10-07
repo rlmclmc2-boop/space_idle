@@ -1,0 +1,327 @@
+[
+  {
+    "path": "README.md",
+    "bytes": 3180,
+    "sha256": "c3e01c88788c97b467b81bc8eb205cf452dfe10e0453ca86530980cc3272ffec"
+  },
+  {
+    "path": "actual-inputs.jsonl",
+    "bytes": 9017,
+    "sha256": "1dbf1dde7ce126f9e1156bf7b2deeb1d87b1a5b1477b2c528ea887484c6bee45"
+  },
+  {
+    "path": "screenshots/03-opening-ui.png",
+    "bytes": 222255,
+    "sha256": "753d3e5641dd97270740813c0729b62379bc2ee118e5ee465e7607b1d43a1ae0"
+  },
+  {
+    "path": "screenshots/100-short-battle-observation.png",
+    "bytes": 227949,
+    "sha256": "bc4509fc904c61c2c6d0081bda71be1db15257ada3a30ad92919521e74d7a047"
+  },
+  {
+    "path": "screenshots/107-defence-type-options.png",
+    "bytes": 228494,
+    "sha256": "e08fea761bb491fa8346b2786e1b1fa7a3094c1242f1f91a8da2b89101dd8604"
+  },
+  {
+    "path": "screenshots/109-refit-life-result.png",
+    "bytes": 224357,
+    "sha256": "e53a13c787faafe31359d4bf76a46dc46d556b19eeb087208ae27a211dd8dfcb"
+  },
+  {
+    "path": "screenshots/111-armour-short-observation.png",
+    "bytes": 225540,
+    "sha256": "82a1ac7031021755ee558e5e02ded3ccc1936774593b0519e88b079cde28b66f"
+  },
+  {
+    "path": "screenshots/112-armour-short-observation.png",
+    "bytes": 221553,
+    "sha256": "aff2be670d0d451fc44c9d6e74e8f6a7000957db8908515238a63de605b45aed"
+  },
+  {
+    "path": "screenshots/113-armour-short-observation.png",
+    "bytes": 214501,
+    "sha256": "fd0f8ed3ca21f0cfddbd3f7bd33eb89012be5d4114df73231ac278c8e2d826b3"
+  },
+  {
+    "path": "screenshots/114-armour-short-observation.png",
+    "bytes": 214457,
+    "sha256": "28fb1cde1ee5e41670412300b573b5e33fa053ddb9547f1058021c60bcf75958"
+  },
+  {
+    "path": "screenshots/115-armour-short-observation.png",
+    "bytes": 212788,
+    "sha256": "6025f064430b73f1b121bf80c29deefba72f417affc3ac05b344751852ee878e"
+  },
+  {
+    "path": "screenshots/116-armour-short-observation.png",
+    "bytes": 210542,
+    "sha256": "f0d41c8d767079e4c12d8d53d18501b29fc3521bc7d2d6d29e93ff4fefa52f96"
+  },
+  {
+    "path": "screenshots/117-armour-short-observation.png",
+    "bytes": 211178,
+    "sha256": "c91eabc5e828279216e3deae4caf97165164e2672f1cb10a9befcbc98267d04f"
+  },
+  {
+    "path": "screenshots/118-armour-short-observation.png",
+    "bytes": 204230,
+    "sha256": "3398aafc5ff4975317605f3047e0807cf5a492090c4fb0bdf8f70f8facf834f9"
+  },
+  {
+    "path": "screenshots/119-armour-short-observation.png",
+    "bytes": 222417,
+    "sha256": "124494f6627088969c138e2fcaa9663470e87c2a715e0246eec37fb04e6b2cc9"
+  },
+  {
+    "path": "screenshots/120-armour-short-observation.png",
+    "bytes": 225305,
+    "sha256": "f65c4b9094ef0f367d18b3d8d0d4ef7ed852d47260a3ef89f649eff5bb094433"
+  },
+  {
+    "path": "screenshots/122-full-armour-observation.png",
+    "bytes": 222171,
+    "sha256": "e544fa992790546f964a58b506e257b98844697f0e240cd877eb30a7564aa17f"
+  },
+  {
+    "path": "screenshots/123-full-armour-observation.png",
+    "bytes": 206757,
+    "sha256": "c1e1255cb28429bf0c4240bf3449541572e1f8b213b63f5511b6f0281d8c6fc9"
+  },
+  {
+    "path": "screenshots/124-full-armour-observation.png",
+    "bytes": 219500,
+    "sha256": "2576def0972fd19bbffffc0e4096adc03ce492f3633e8b506e55e659052130e6"
+  },
+  {
+    "path": "screenshots/125-full-armour-observation.png",
+    "bytes": 221244,
+    "sha256": "ec93a69bb759eb9fda22c29c0227c3c901f59f6a0678c52b590e5233169c1f20"
+  },
+  {
+    "path": "screenshots/126-full-armour-observation.png",
+    "bytes": 215423,
+    "sha256": "f8a9ca704eaafbcc66a62e32909ec106748e1fc9637031daa3ea85b7ce44f5cf"
+  },
+  {
+    "path": "screenshots/127-full-armour-observation.png",
+    "bytes": 210093,
+    "sha256": "4a24d93ec694bcb289df2d4c5582bdfcbcd171bf708609d76f91b158d28a6fe5"
+  },
+  {
+    "path": "screenshots/128-full-armour-observation.png",
+    "bytes": 211469,
+    "sha256": "c74339f4b5ada9bb205dba099f6e553cf2906f384c17da9d60f12a420199bfe5"
+  },
+  {
+    "path": "screenshots/129-full-armour-observation.png",
+    "bytes": 212196,
+    "sha256": "b19f1eb1014bc4a5d09ea15cb6802ce9e8f910880ce40165d1bf34604a49a48d"
+  },
+  {
+    "path": "screenshots/130-full-armour-observation.png",
+    "bytes": 210351,
+    "sha256": "27d001404f3f98bb82ccc6106b363cfe69d83c00f806d5d394679a64db3fcd44"
+  },
+  {
+    "path": "screenshots/131-full-armour-observation.png",
+    "bytes": 205140,
+    "sha256": "579177c627d6c7cc0caa3eb12923f74ed199414d4352d90df90a701582ab87f3"
+  },
+  {
+    "path": "screenshots/132-full-armour-observation.png",
+    "bytes": 224061,
+    "sha256": "e4c73d6e72652140c925629e7dc492a6065731da6ce0b420d600a69109764031"
+  },
+  {
+    "path": "screenshots/133-full-armour-observation.png",
+    "bytes": 227790,
+    "sha256": "4ab531b91bf4c9016c4755d2af850f17fd6d66580d3ebcfc99a41b7e21db35d3"
+  },
+  {
+    "path": "screenshots/134-full-armour-observation.png",
+    "bytes": 226520,
+    "sha256": "b8609d12b25980da68698b7e5ce50dd5bb53f5ae388a7518e5a2c0659d9497c3"
+  },
+  {
+    "path": "screenshots/135-full-armour-observation.png",
+    "bytes": 241710,
+    "sha256": "8efd5666b3ae8f99ed4e371e990f7e3025ba8cc98fbcb750fdac327d15894966"
+  },
+  {
+    "path": "screenshots/136-full-armour-observation.png",
+    "bytes": 228115,
+    "sha256": "1dbcbcb81898558cf79d403963a4106c827fe7030a2906484e5d75bfec60b23f"
+  },
+  {
+    "path": "screenshots/137-double-armour-result.png",
+    "bytes": 220938,
+    "sha256": "f06215aec27e67478480f777cc3b9d30c31609c345b0334509f5393ee5c0ade9"
+  },
+  {
+    "path": "screenshots/138-double-armour-result.png",
+    "bytes": 225897,
+    "sha256": "8ec6a4531bda194d54ea505bf8be98db993d5f6040aefece753da19e762a4cbd"
+  },
+  {
+    "path": "screenshots/139-double-armour-result.png",
+    "bytes": 225717,
+    "sha256": "fe5977a400e244da0f8a7abd151df0884f4f1f3a7da853cc0eae87cf01bbea7c"
+  },
+  {
+    "path": "screenshots/140-double-armour-result.png",
+    "bytes": 224940,
+    "sha256": "b402734b3ffdb3bad985f268247c22b1b9be2669fcf215273900420833a327fb"
+  },
+  {
+    "path": "screenshots/141-double-armour-result.png",
+    "bytes": 224246,
+    "sha256": "681dbd11b6536848f4ad01c049ebf804d3054440672ddcc3b4a28ef961f6d571"
+  },
+  {
+    "path": "screenshots/142-double-armour-result.png",
+    "bytes": 222918,
+    "sha256": "9530bca33ce17c524b96066edc58500a1e1e7a6fad6a0cc2cb76ed5e9b44ec75"
+  },
+  {
+    "path": "screenshots/143-double-armour-result.png",
+    "bytes": 225448,
+    "sha256": "98ffb26847414aa564f3570a9d20fdd1a261e7bf80c816e2394926c68d4e77cd"
+  },
+  {
+    "path": "screenshots/144-double-armour-result.png",
+    "bytes": 221002,
+    "sha256": "92812ee3f382190ebacf51ab09871062e0ffa807a6ed9b32d50ee4511e7304ce"
+  },
+  {
+    "path": "screenshots/145-double-armour-result.png",
+    "bytes": 237316,
+    "sha256": "9c70eea3aa2eca1610b821eb1c3ec7b10e4daf2ba29ae676162db6cd8e8e9aac"
+  },
+  {
+    "path": "screenshots/146-double-armour-result.png",
+    "bytes": 217020,
+    "sha256": "4856cee1f0b237db8c14ac3c476794fe3eda016493bc82472a48c36eb3395237"
+  },
+  {
+    "path": "screenshots/147-cannon36-earned.png",
+    "bytes": 225236,
+    "sha256": "86a012b33642045d6801a251b022fcd2fc506943ce28d783d207bce2e39b67a1"
+  },
+  {
+    "path": "screenshots/148-final-current-combat.png",
+    "bytes": 225952,
+    "sha256": "a3d7ecd6ab9d6a9a6b98550e3e1e7ac3f3aae6a8e96e5864f7d520622848e55b"
+  },
+  {
+    "path": "screenshots/149-last-short-outcome.png",
+    "bytes": 211582,
+    "sha256": "a5da23d31f79695e9f9e848d285c7431cae463ce0e4adb3148f9c5a700d26f3c"
+  },
+  {
+    "path": "screenshots/150-checkpoint-pause.png",
+    "bytes": 221416,
+    "sha256": "591334ece5daab12a32bf3deaf8ac8fc154b3f9d2341dc655de1992980c73c30"
+  },
+  {
+    "path": "screenshots/152-restored-shield.png",
+    "bytes": 224565,
+    "sha256": "4f2b9637a4ab855b6f69524dd03cbf3973b969514efdf0e53df80536f521acfd"
+  },
+  {
+    "path": "screenshots/154-native-save-page.png",
+    "bytes": 215984,
+    "sha256": "4c116030ea7f1ce604891673e401aec821473e31489cf55e93fd4d1735fd5b19"
+  },
+  {
+    "path": "screenshots/155-manual-checkpoint-saved.png",
+    "bytes": 218268,
+    "sha256": "a1703015de20f294f18312eb5ebbe2d0090694d106070e35f310a0b4e8975bc3"
+  },
+  {
+    "path": "screenshots/22-weapon-energy-confirmed.png",
+    "bytes": 336980,
+    "sha256": "7afc48577c011a8c5796ee1c28dda0710aeae0ccd8a20ebaf06228cda103786a"
+  },
+  {
+    "path": "screenshots/44-three-physical-cannons.png",
+    "bytes": 236284,
+    "sha256": "63fd26eca6d86c8d68c709fa6aaf14901758dd05e284f32e71d6908a48c2c03f"
+  },
+  {
+    "path": "screenshots/46-three-cannon-outcome.png",
+    "bytes": 227193,
+    "sha256": "50784b733cb2728542529cb2f2e833b41bb05ad94ed382df3b09b689dd20c084"
+  },
+  {
+    "path": "screenshots/49-defence-menu-visible.png",
+    "bytes": 218564,
+    "sha256": "5450aeaaad92522cbadbf0f8f2d999f4b00c178d0a420f59f234fda038bea1d3"
+  },
+  {
+    "path": "screenshots/63-actual-speed-setting.png",
+    "bytes": 158474,
+    "sha256": "af8dc73a7822c49bc59437698db76e504628dc12d167486e6c635bac4b5471e6"
+  },
+  {
+    "path": "screenshots/66-actual-material-quote.png",
+    "bytes": 197240,
+    "sha256": "90fc74fe22d60ac9896f9f4fce4b760e91178f42244513b109948e70d5f4843a"
+  },
+  {
+    "path": "screenshots/68-paid-affix-result.png",
+    "bytes": 259905,
+    "sha256": "4b5ab56f94359446a80de83aafff4d76defe1037ad29fdf5b0c773b6f62b9a29"
+  },
+  {
+    "path": "screenshots/71-growing-defence-current.png",
+    "bytes": 231827,
+    "sha256": "50316dc21fcb7a9e9c5e1a26be94618ea3c044ca4e552beaa6a3bd592f2b5ae2"
+  },
+  {
+    "path": "screenshots/78-cannon40-after.png",
+    "bytes": 234790,
+    "sha256": "893de794be61c14b17b607543291d3274658c6b56a92e859a8a6211c1cd03bb6"
+  },
+  {
+    "path": "screenshots/80-wave-six-followup.png",
+    "bytes": 219476,
+    "sha256": "eb4c9217251b0621c2b0b965911ca2ab02e89b20b273f0b05a46dfc2f57e4f05"
+  },
+  {
+    "path": "screenshots/85-ai-current.png",
+    "bytes": 275091,
+    "sha256": "65157d7b17862554031dad31cc9dc5920ec8aaa56aa3428f9b953016cebd9870"
+  },
+  {
+    "path": "screenshots/88-next-wave-growth.png",
+    "bytes": 283257,
+    "sha256": "60d8c71dc6c39f18fa9d7db88a52c6fc58946aac3aa778091ab42d40ed6076d8"
+  },
+  {
+    "path": "screenshots/94-current-normal.png",
+    "bytes": 224942,
+    "sha256": "2b1694ab918d745f2e5201d05931bd60cd0a3d6be07a2f719ea763f2fb696068"
+  },
+  {
+    "path": "screenshots/96-wave-six-new-growth.png",
+    "bytes": 219342,
+    "sha256": "1bd3ed65554489e39141b17f8d5e7680bb3fd8664adcce9490c903c524ce8cdb"
+  },
+  {
+    "path": "screenshots/97-short-battle-observation.png",
+    "bytes": 223555,
+    "sha256": "7275000b3b6049f5b22129a58caa9b885e7500ee7a41997ec08746078fdd2dd4"
+  },
+  {
+    "path": "screenshots/98-short-battle-observation.png",
+    "bytes": 213528,
+    "sha256": "b301bb522de8e50b8842acbef128909b721b736ee39e20c1fdbdf58d83b1b1fc"
+  },
+  {
+    "path": "session-metadata.json",
+    "bytes": 401,
+    "sha256": "3ae4cc58f0ad3cf49d17a8cafdf628e752eeb718748db2774128fbea988206e0"
+  }
+]
