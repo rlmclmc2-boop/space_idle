@@ -4,6 +4,7 @@ extends Node
 ## readback freezes the pixels and releases the viewport. Textures stay page-owned.
 
 var tiles: Dictionary = {}
+var pending_tiles: Array[Dictionary] = []
 const PAD_LEFT := 4.0
 const PAD_TOP := 1.0
 const PAD_RIGHT := 4.0
@@ -46,7 +47,9 @@ func panel_style(fill:Color,edge:Color,radius:int) -> StyleBoxTexture:
 		var shared:=AtlasTexture.new()
 		shared.atlas=view.get_texture()
 		tiles[key]=shared
-		RenderingServer.frame_post_draw.connect(_freeze_tile.bind(view,shared),CONNECT_ONE_SHOT)
+		pending_tiles.append({"view":view,"shared":shared})
+		if not RenderingServer.frame_post_draw.is_connected(_freeze_pending_tiles):
+			RenderingServer.frame_post_draw.connect(_freeze_pending_tiles)
 	# Return a fresh style resource: existing callers duplicate/change content
 	# margins, while only the immutable baked texture is shared.
 	var box:=StyleBoxTexture.new()
@@ -62,6 +65,16 @@ func panel_style(fill:Color,edge:Color,radius:int) -> StyleBoxTexture:
 	box.set_expand_margin(SIDE_BOTTOM,PAD_BOTTOM)
 	box.set_content_margin_all(12)
 	return box
+
+func _freeze_pending_tiles() -> void:
+	# One owner connection covers all tiles created before this frame. Detach
+	# before emitting texture changes so newly requested styles can queue their
+	# own next-frame batch without losing entries or connecting bound duplicates.
+	RenderingServer.frame_post_draw.disconnect(_freeze_pending_tiles)
+	var batch:Array[Dictionary]=pending_tiles
+	pending_tiles=[]
+	for tile in batch:
+		_freeze_tile(tile.view,tile.shared)
 
 func _freeze_tile(view:SubViewport,shared:AtlasTexture) -> void:
 	if not is_instance_valid(view):return
