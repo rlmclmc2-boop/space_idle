@@ -221,6 +221,15 @@ func before_logical_game_tick(dt:float) -> void:
 	advance_turrets(dt)
 
 func _process(delta: float) -> void:
+	# End the batch even when the presentation exits early. Each fixed logical
+	# step changes fx_time, so accelerated combat never reuses an older limit.
+	enemy_entry_batch_active=true
+	enemy_entry_distance_time=-INF
+	_process_battlefield(delta)
+	enemy_entry_batch_active=false
+	enemy_entry_distance_time=-INF
+
+func _process_battlefield(delta: float) -> void:
 	if is_instance_valid(ship_view):
 		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
