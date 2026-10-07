@@ -14966,5 +14966,243 @@
     "params": "",
     "category": "battle",
     "note": "ultimate战斗表现标题，不参与规则"
+  },
+  {
+    "key": "hyperspace.material_heading",
+    "text": "本次需求 · 持有 · 缺少",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_owned",
+    "text": "{material} {owned}",
+    "params": "{material},{owned}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_requirement",
+    "text": "{material}：需要 {need}　持有 {owned}　缺少 {missing}",
+    "params": "{material},{need},{owned},{missing}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_forecast_needed",
+    "text": "点「预览改造」计算保底总费用；预览不扣材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_explore",
+    "text": "去探索补材料",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_view_drone",
+    "text": "查看无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_drone_received",
+    "text": "已获得：{quality} · {weapon}无人机 · 等级 {level}",
+    "params": "{quality},{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_materials_received",
+    "text": "探索奖励已入库",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_first_drone",
+    "text": "获得第一架无人机！",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_equip_next",
+    "text": "点「查看无人机」，再点「装备到空位」，看看它加入战舰。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_empty",
+    "text": "空位",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_locked",
+    "text": "未开放",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slots_heading",
+    "text": "战舰无人机槽　{used} / {capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_drone",
+    "text": "{weapon} · 等级 {level}",
+    "params": "{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_capacity_source",
+    "text": "当前战舰「{ship}」提供 {capacity} 个无人机槽。",
+    "params": "{ship},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_next_hull",
+    "text": "更多槽位来自「{ship}」；战舰解锁条件：第 {level} 关。",
+    "params": "{ship},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_unequip",
+    "text": "卸下这架",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_replace",
+    "text": "替换已装无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_equip",
+    "text": "装备到空位",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_choose_replacement",
+    "text": "选择要换下的无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_changed",
+    "text": "战舰无人机已更新；上方槽位显示当前装备。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_rejected",
+    "text": "未能装备，当前装备保持不变。请检查封存、仓库位置及品质装备名额。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_white_condition",
+    "text": "白色无人机没有词条位，不能添加词条；先回「无人机」装备它。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_sealed",
+    "text": "这架仍在封存；达到详情中的领取关卡后，先领取再装备。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_not_in_warehouse",
+    "text": "这架不在仓库；先腾出仓库位置，再领取或整理。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_unknown_drone",
+    "text": "这架无人机已不在库存，请重新选择。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_no_slots",
+    "text": "当前战舰没有无人机槽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_replacement_not_equipped",
+    "text": "要换下的无人机已不在战舰上，请重新选择槽位。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_capacity_exceeded",
+    "text": "当前战舰槽位已满，请选择要换下的无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_select_replacement",
+    "text": "请先选择要换下的无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_legendary_limit",
+    "text": "装备后会超过传说名额，请改选要换下的传说无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_ultimate_limit",
+    "text": "装备后会超过究极名额，请改选要换下的究极无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_weapon_constraint",
+    "text": "这个组合不符合磁轨炮装备限制；当前装备保持不变。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_invalid_loadout",
+    "text": "这个组合无法装备；当前装备保持不变。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
   }
 ]

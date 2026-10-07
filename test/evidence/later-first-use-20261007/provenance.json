@@ -1,0 +1,20 @@
+{
+  "performance_base": "4f85c9c216b01ca3db74ecaabc28e9d0988808b0",
+  "ui_preparation_commits": [
+    "614348c",
+    "a7378e8"
+  ],
+  "equipment_api_original": "51e666da9d530bbd632f157016b4a9b8338fc822",
+  "equipment_api_local": "7236691",
+  "source_complete_save": "test/progression/fixtures/legal-qa34-v15.json",
+  "source_sha256": "4863579d1e3e0902e8c98ff2290ec5dca43b50ded6b572ff9aa8b2dd18dd404a",
+  "source_modified": false,
+  "original_player_save_modified": false,
+  "actual_run": "historical QA34 complete save clone, alpha level5, actual mouse route request/first success/first acquired blue laser drone level5/equip/add affix",
+  "render": "Godot 4.6.3 official, OpenGL llvmpipe Xorg :94 1373x883 window",
+  "acceptance": "pending_parent",
+  "performance_acceptance": "not_passed",
+  "ordinary_play_successful_replacement": "not_run",
+  "multi_slot_replacement": "graphical fixture only",
+  "earlier_dual_process_overlap": "excluded from controlled timing comparison"
+}

@@ -7995,6 +7995,132 @@
     },
     "battle.finale_cleared": {
       "params": []
+    },
+    "hyperspace.material_heading": {
+      "params": []
+    },
+    "hyperspace.material_owned": {
+      "params": [
+        "material",
+        "owned"
+      ]
+    },
+    "hyperspace.material_requirement": {
+      "params": [
+        "material",
+        "need",
+        "owned",
+        "missing"
+      ]
+    },
+    "hyperspace.material_forecast_needed": {
+      "params": []
+    },
+    "hyperspace.material_explore": {
+      "params": []
+    },
+    "hyperspace.reward_view_drone": {
+      "params": []
+    },
+    "hyperspace.reward_drone_received": {
+      "params": [
+        "quality",
+        "weapon",
+        "level"
+      ]
+    },
+    "hyperspace.reward_materials_received": {
+      "params": []
+    },
+    "hyperspace.reward_first_drone": {
+      "params": []
+    },
+    "hyperspace.reward_equip_next": {
+      "params": []
+    },
+    "hyperspace.slot_empty": {
+      "params": []
+    },
+    "hyperspace.slot_locked": {
+      "params": []
+    },
+    "hyperspace.slots_heading": {
+      "params": [
+        "used",
+        "capacity"
+      ]
+    },
+    "hyperspace.slot_drone": {
+      "params": [
+        "weapon",
+        "level"
+      ]
+    },
+    "hyperspace.slot_capacity_source": {
+      "params": [
+        "ship",
+        "capacity"
+      ]
+    },
+    "hyperspace.slot_next_hull": {
+      "params": [
+        "ship",
+        "level"
+      ]
+    },
+    "hyperspace.slot_unequip": {
+      "params": []
+    },
+    "hyperspace.slot_replace": {
+      "params": []
+    },
+    "hyperspace.slot_equip": {
+      "params": []
+    },
+    "hyperspace.slot_choose_replacement": {
+      "params": []
+    },
+    "hyperspace.slot_changed": {
+      "params": []
+    },
+    "hyperspace.slot_rejected": {
+      "params": []
+    },
+    "hyperspace.material_white_condition": {
+      "params": []
+    },
+    "hyperspace.equipment_error_sealed": {
+      "params": []
+    },
+    "hyperspace.equipment_error_not_in_warehouse": {
+      "params": []
+    },
+    "hyperspace.equipment_error_unknown_drone": {
+      "params": []
+    },
+    "hyperspace.equipment_error_no_slots": {
+      "params": []
+    },
+    "hyperspace.equipment_error_replacement_not_equipped": {
+      "params": []
+    },
+    "hyperspace.equipment_error_capacity_exceeded": {
+      "params": []
+    },
+    "hyperspace.equipment_error_select_replacement": {
+      "params": []
+    },
+    "hyperspace.equipment_error_legendary_limit": {
+      "params": []
+    },
+    "hyperspace.equipment_error_ultimate_limit": {
+      "params": []
+    },
+    "hyperspace.equipment_error_weapon_constraint": {
+      "params": []
+    },
+    "hyperspace.equipment_error_invalid_loadout": {
+      "params": []
     }
   },
   "bindings": {

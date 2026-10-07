@@ -28,6 +28,13 @@ var guide_label: Label
 var guide_scroll: ScrollContainer
 var result_scroll: ScrollContainer
 var result_details: Label
+var materials_box: VBoxContainer
+var material_rows: Dictionary={}
+var material_stock: Label
+var material_basis: Label
+var material_route_button: Button
+var missing_material=""
+var material_reads=0
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p
@@ -40,6 +47,12 @@ func build_forge(parent: Node) -> void:
  guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum);panel.checkbox_skin(maximum)
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
  var help_row=panel.row(parent);panel.button(help_row,"forge_guide",show_guide)
+ materials_box=panel.box(parent,4)
+ material_basis=panel.label(materials_box,t("material_heading"),21)
+ for key in ["degenerate_matter","glueball","antiproton","zero_point_energy","ultimate_cores"]:
+  material_rows[key]=panel.label(materials_box,"",21)
+ material_stock=panel.label(materials_box,"",18)
+ material_route_button=panel.button(materials_box,"material_explore",explore_missing_material)
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
@@ -51,6 +64,47 @@ func build_forge(parent: Node) -> void:
 func invalidate() -> void:
  quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first");feedback.text=""
  result_scroll.visible=false
+ refresh_materials.call_deferred()
+func refresh_materials(quoted: Dictionary={}) -> void:
+ if materials_box==null:return
+ var req=request()
+ var result=quoted
+ var deferred_forecast=false
+ if result.is_empty() and not req.is_empty():
+  # A guaranteed target can require many random draws. Only the explicit preview
+  # runs that forecast; selecting a target never introduces a hidden long task.
+  deferred_forecast=not str(req.args.get("guaranteed_key",req.args.get("guaranteed_effect",""))).is_empty()
+  if not deferred_forecast:
+   result=h().preview_forge(game(),req);material_reads+=1
+ var costs:Dictionary=result.get("cost",{})
+ var op=str(operation.get_item_metadata(operation.selected))
+ var keys:Dictionary=costs if not costs.is_empty() else h().config.forge_costs.get(op,{})
+ var stocks:Array[String]=[];missing_material=""
+ for key in material_rows:
+  var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
+  if key!="ultimate_cores" or available>0 or keys.has(key):stocks.append(t("material_owned",{"material":t(key),"owned":str(available)}))
+  panel.put(material_rows[key],"visible",keys.has(key))
+  if not keys.has(key):continue
+  var exact=costs.has(key)
+  var need=int(costs.get(key,0));var shortage=maxi(0,need-available)
+  panel.put(material_rows[key],"text",t("material_requirement",{"material":t(key),"need":str(need) if exact else "—","owned":str(available),"missing":str(shortage) if exact else "—"}))
+  var color=Color("b32929") if shortage>0 else Color("243d50")
+  if material_rows[key].get_theme_color("font_color")!=color:material_rows[key].add_theme_color_override("font_color",color)
+  if shortage>0 and missing_material.is_empty():missing_material=key
+ panel.put(material_stock,"text"," · ".join(stocks))
+ var message=t("material_heading")
+ if req.is_empty():message=t("choose")
+ elif deferred_forecast:message=t("material_forecast_needed")
+ elif not str(result.get("error","")).is_empty() and costs.is_empty():message=error_text(str(result.error))
+ if not req.is_empty() and str(result.get("error",""))=="affix_limit":
+  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(req.drone_id,{})
+  if str(d.get("origin_quality",""))=="white":message=t("material_white_condition")
+ panel.put(material_basis,"text",message)
+ panel.put(material_route_button,"visible",not missing_material.is_empty() and missing_material!="ultimate_cores")
+func explore_missing_material() -> void:
+ for key in h().config.routes:
+  if str(h().config.routes[key].material)==missing_material:
+   panel.route=str(key);panel.select_section(0);return
 func configure_operation() -> void:
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
@@ -120,6 +174,7 @@ func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
  var result: Dictionary=h().preview_forge(game(),quoted_request)
+ refresh_materials(result)
  var has_quote= str(result.error).is_empty() or not result.get("cost",{}).is_empty()
  quote_label.text=(t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})) if has_quote else ""
  if quoted_request.operation=="modernize" and has_quote:quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
@@ -148,6 +203,7 @@ func execute_quote() -> void:
   panel.put(result_details,"text",t("forge_result_current")+"\n"+panel.drone_description(current))
   result_scroll.scroll_vertical=0
  panel.dirty=true;panel.refresh()
+ refresh_materials()
 func build_dialog(title: String) -> AcceptDialog:
  var dialog=AcceptDialog.new();dialog.title=t(title);dialog.min_size=Vector2i(660,370);dialog.size=Vector2i(740,470);panel.add_child(dialog);preload("res://scripts/dialog_presentation.gd").dialog(dialog)
  return dialog
