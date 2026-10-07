@@ -8201,6 +8201,15 @@
     },
     "onboarding.show_enhancement": {
       "params": []
+    },
+    "battle.incoming_damage": {
+      "params": [
+        "type",
+        "damage"
+      ]
+    },
+    "equipment.fixed_armour": {
+      "params": []
     }
   },
   "bindings": {

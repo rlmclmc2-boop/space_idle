@@ -104,7 +104,10 @@ func run():
   ui.queue_damage_number({"amount":0,"absorbed":10,"player":true,"type":1})
   ui.queue_damage_number({"amount":3,"absorbed":5,"player":true,"type":1})
   check(ui.damage_pending.size()==1 and ui.damage_pending[0].amount==3 and ui.damage_pending[0].absorbed==15,"Coalescing keeps body loss and absorption separate")
-  check(ui.damage_pending[0].text=="3 · 吸收 15","Merged label does not report absorption as body loss")
+  check(ui.damage_pending[0].text=="能量 3 · 吸收 15","Merged incoming label keeps type, body loss and absorption distinct")
+  check(ui.damage_history.back().contains("能量 3 · 吸收 5"),"Existing history identifies actual incoming energy damage")
+  ui.queue_damage_number({"amount":7,"absorbed":0,"player":true,"type":2})
+  check(ui.damage_pending.size()==2 and ui.damage_pending[0].amount==3 and ui.damage_pending[1].amount==7 and ui.damage_pending[1].text=="物理 7","Simplified mode never merges unlike incoming damage types")
   ui.free()
  # These positive fractions must survive both the floating label and history.
  for value in [.04,.01,.001]:

@@ -15330,5 +15330,21 @@
     "params": "",
     "category": "onboarding",
     "note": "导航到已解锁的现有界面，不代替玩家购买"
+  },
+  {
+    "key": "battle.incoming_damage",
+    "text": "{type} {damage}",
+    "params": "{type} {damage}",
+    "category": "battle",
+    "note": "实际受击飘字与已有伤害明细：类型来自命中事件，不推断武器外观",
+    "source": "main.gd:incoming_damage_text"
+  },
+  {
+    "key": "equipment.fixed_armour",
+    "text": "基础装甲 · 这个槽位只能升级",
+    "params": "",
+    "category": "weapon",
+    "note": "基础防御槽详情中说明既有换装限制",
+    "source": "equipment_tab.gd:refresh_detail"
   }
 ]
