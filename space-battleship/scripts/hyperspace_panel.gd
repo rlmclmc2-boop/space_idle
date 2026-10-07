@@ -328,9 +328,9 @@ func refresh_status() -> void:
  put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
  put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
  var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.online_config(g).energy_cap),"ticket":"%.0f"%ticket}))
+ put(energy,"text",energy_caption(s,float(h.online_config(g).energy_cap),ticket))
  var best_time=float(h.best_x1(g,route,int(level.value)))
- put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
+ put(best,"text",t("best",{"time":"%.2f秒"%best_time if best_time>0 else t("none")}))
  refresh_start_reason()
  put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
 
@@ -352,6 +352,10 @@ func display_ticket(s: Dictionary) -> float:
  var h=host.game.hyperspace
  if s.auto.enabled:return float(h.auto_quote(0.0,h.Permission.crew_level(host.game,str(s.auto.crew_id))).ticket)
  return float(h.config.ticket)
+func energy_caption(s:Dictionary,cap:float,ticket:float) -> String:
+ var caption=t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%cap,"ticket":"%.0f"%ticket})
+ if float(s.energy)>cap:caption+="\n"+t("energy_refund_over_cap")
+ return caption
 func refresh_progress() -> void:
  var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
  var text=t("auto_waiting") if s.auto.enabled else t("auto_stopped");var fill=0.0
@@ -386,7 +390,7 @@ func refresh_progress() -> void:
  # Energy is a scalar read: never duplicate the entire inventory in a frame update.
  put(energy_bar,"max_value",float(effective.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(effective.energy_cap)))
  var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(effective.energy_cap),"ticket":"%.0f"%ticket}))
+ put(energy,"text",energy_caption(s,float(effective.energy_cap),ticket))
 func refresh_list() -> void:
  list_refreshes+=1
  var ids: Array=bag.warehouse+bag.overflow

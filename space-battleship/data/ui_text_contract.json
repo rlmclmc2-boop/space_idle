@@ -8289,6 +8289,9 @@
       "params": [
         "value"
       ]
+    },
+    "hyperspace.energy_refund_over_cap": {
+      "params": []
     }
   },
   "bindings": {
