@@ -1,0 +1,17 @@
+[
+  {
+    "key": "hyperspace.slot_next_hull",
+    "old": "更多槽位来自「{ship}」；战舰解锁条件：第 {level} 关。",
+    "new": "通关第 {level} 关可解锁「{ship}」，切换后可增加无人机槽。"
+  },
+  {
+    "key": "hyperspace.slot_switch_hull",
+    "old": null,
+    "new": "已有更多槽位的战舰：去「战舰」切换到「{ship}」，可使用 {capacity} 个无人机槽。"
+  },
+  {
+    "key": "hyperspace.slot_next_hull_reached",
+    "old": null,
+    "new": "推进到第 {level} 关之后可解锁「{ship}」，切换后可增加无人机槽。"
+  }
+]

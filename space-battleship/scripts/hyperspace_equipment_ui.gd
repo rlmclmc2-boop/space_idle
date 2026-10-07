@@ -27,19 +27,26 @@ func refresh() -> void:
   var name=panel.t("slot_locked") if i>=cap else panel.t("slot_empty") if id.is_empty() else panel.t("slot_drone",{"weapon":panel.t(str(bag.drones[id].weapon)),"level":str(int(bag.drones[id].level))})
   panel.put(slots[i],"text",str(i+1)+" · "+name);panel.put(slots[i],"disabled",id.is_empty())
   panel.skin_selection(slots[i],not id.is_empty() and id==panel.selected_id)
- var next_ship="";var next_gate=""
- for key in g.hyperspace.config.hull_capacities:
-  if mini(int(g.hyperspace.config.hull_capacities[key]),int(g.hyperspace.config.maximum_equipped))<=cap:continue
-  var ship:Dictionary=g.db.data.ship.get(key,{})
-  var gate:Dictionary=g.db.data.unlock.get(g.db.unlock_id("ship",str(key)),{})
-  if gate.is_empty():continue
-  if next_ship.is_empty() or int(gate.level)<int(next_gate):next_ship=UIText.data_text("ship",str(key),"des");next_gate=str(int(gate.level))
- var ship:Dictionary=g.db.data.ship.get(str(g.profile.selectedShip),{})
  var text=panel.t("slot_capacity_source",{"ship":UIText.data_text("ship",str(g.profile.selectedShip),"des"),"capacity":str(cap)})
- if not next_ship.is_empty():text+="\n"+panel.t("slot_next_hull",{"ship":next_ship,"level":next_gate})
+ var next=next_hull(g,cap)
+ if not next.is_empty():
+  var name=UIText.data_text("ship",str(next.id),"des")
+  text+="\n"+panel.t("slot_switch_hull",{"ship":name,"capacity":str(next.capacity)}) if next.available else "\n"+panel.t("slot_next_hull_reached" if next.mode=="reached" else "slot_next_hull",{"ship":name,"level":str(next.level)})
  panel.put(capacity_hint,"text",text)
  var selected=panel.selected_id
  panel.put(panel.equip,"text",panel.t("slot_unequip") if bag.equipped.has(selected) else panel.t("slot_replace") if bag.equipped.size()>=cap else panel.t("slot_equip"))
+static func next_hull(g,capacity:int) -> Dictionary:
+ var available:Dictionary={};var locked:Dictionary={}
+ for key in g.hyperspace.config.hull_capacities:
+  var cap=mini(int(g.hyperspace.config.hull_capacities[key]),int(g.hyperspace.config.maximum_equipped))
+  if cap<=capacity:continue
+  var gate:Dictionary=g.db.data.unlock.get(g.db.unlock_id("ship",str(key)),{})
+  if gate.is_empty():continue
+  var candidate={"id":str(key),"capacity":cap,"available":g.ship_unlocked(str(key)),"level":int(gate.level),"mode":str(gate.get("mode","cleared"))}
+  if candidate.available:
+   if available.is_empty() or cap>int(available.capacity):available=candidate
+  elif locked.is_empty() or int(candidate.level)<int(locked.level):locked=candidate
+ return available if not available.is_empty() else locked
 func select_slot(index:int) -> void:
  var ids:Array=panel.host.game.profile.hyperspace.inventory.equipped
  if index>=ids.size():return
