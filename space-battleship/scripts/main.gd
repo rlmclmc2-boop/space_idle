@@ -208,6 +208,8 @@ var pending_import: Dictionary = {}
 var import_committing := false
 
 func _ready() -> void:
+	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
+		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
 	var from_save_import := get_tree().has_meta("save_import_backup")
 	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
 	position.x = -VIEW_CROP_LEFT

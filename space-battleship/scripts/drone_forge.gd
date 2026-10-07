@@ -6,11 +6,11 @@ const Rewards=preload("res://scripts/drone_rewards.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 
-static func eligible_indices(d: Dictionary,c: Dictionary) -> Array:
+static func eligible_indices(d: Dictionary,c: Dictionary,apply_omen: bool=false) -> Array:
 	var indices: Array=[]
 	for i in d.affixes.size():
 		if not d.affixes[i].locked:indices.append(i)
-	if d.omen and c.policies.omen_scope=="drone" and not indices.is_empty():
+	if apply_omen and d.omen and c.policies.omen_scope=="drone" and not indices.is_empty():
 		var worst:=0
 		for i in indices:worst=maxi(worst,int(d.affixes[i].tier))
 		indices=indices.filter(func(i):return int(d.affixes[i].tier)==worst)
@@ -48,7 +48,7 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 	if op=="dismantle" and Bag.protected(s.inventory,id):return error("protected_drone")
 	var cost: Dictionary=c.forge_costs.get(op,{}).duplicate()
 	var rng:=R.restore(d.forge_rng_state)
-	var indices:=eligible_indices(d,c)
+	var indices:=eligible_indices(d,c,op=="replace_affix")
 	var index: int=-1;var draws:=1;var outcome:=true
 	var mutation:=false
 	match op:
@@ -64,7 +64,7 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 			d.affixes[index]=replacement
 			while not wanted.is_empty() and replacement.key!=wanted:
 				if draws>=int(c.maximum_forecast_attempts):return error("forecast_limit")
-				draws+=1;indices=eligible_indices(d,c)
+				draws+=1;indices=eligible_indices(d,c,true)
 				index=int(indices[rng.randi_range(0,indices.size()-1)])
 				replacement=Rewards.affix(rng,c,d.weapon);d.affixes[index]=replacement
 			cost.degenerate_matter=int(cost.degenerate_matter)*draws

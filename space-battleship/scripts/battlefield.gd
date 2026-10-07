@@ -224,6 +224,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(ship_view):
 		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
+		hyperspace_visual.animated=game.speed < 10.0
 		if current_hull != str(game.profile.selectedShip):
 			current_hull = str(game.profile.selectedShip)
 			if not ship_view.set_hull(current_hull):

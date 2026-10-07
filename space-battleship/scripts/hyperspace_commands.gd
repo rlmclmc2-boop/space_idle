@@ -23,6 +23,7 @@ var collection_dialog: AcceptDialog
 var collection_choices: Array[CheckBox]=[]
 var totals_dialog: AcceptDialog
 var totals_label: Label
+var guide_dialog: AcceptDialog
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p
@@ -34,6 +35,7 @@ func build_forge(parent: Node) -> void:
  for key in OPERATIONS:operation.add_item(t("operation_"+key));operation.set_item_metadata(operation.item_count-1,key)
  guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum);panel.checkbox_skin(maximum)
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
+ var help_row=panel.row(parent);panel.button(help_row,"forge_guide",show_guide)
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
@@ -221,3 +223,12 @@ func refresh_totals() -> void:
   for parameter in totals.legendary[key].parameters:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(totals.legendary[key].parameters[parameter])*100.0)}))
  if totals.legendary.is_empty():lines.append(t("no_active_legendary"))
  totals_label.text="\n".join(lines)
+
+func show_guide() -> void:
+ if guide_dialog==null:
+  guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(1000,900)
+  var body=content(guide_dialog)
+  var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;sc.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(sc)
+  var guide=Label.new();guide.text=t("forge_guide_body");guide.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+  guide.size_flags_horizontal=Control.SIZE_EXPAND_FILL;guide.add_theme_font_size_override("font_size",21);guide.add_theme_color_override("font_color",Color("243d50"));sc.add_child(guide)
+ guide_dialog.popup_centered()

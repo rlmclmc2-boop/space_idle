@@ -1,11 +1,34 @@
 extends SceneTree
 class IsolatedUI extends "res://scripts/battlefield.gd":
  func create_battle_game(_persist: bool) -> BattleGame:return super.create_battle_game(false)
+const ENERGY_ABSOLUTE_ERROR := 0.00000001
 var failures=0
 var checks=0
 func check(ok: bool,message: String) -> void:
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",message)
+func expected_manual_energy_after_tick(g,queued_energy: float,dt: float) -> float:
+ # Dispatch pays first. Derive online gain independently from the table values;
+ # do not call the production charge, ramp_gain or online_config helpers.
+ var c: Dictionary=g.hyperspace.config
+ var multiplier=1.0+float(g.hyperspace_totals().hangings.get("hyperspace_charge",0.0))
+ var cap=float(c.energy_cap)*multiplier
+ var base_rate=float(c.energy_rate)*multiplier
+ var gain=base_rate*dt
+ if g.profile.cleared.has(int(c.late_supply_unlock_stage)):
+  var maximum=float(c.late_energy_rate_multiplier)
+  if c.has("late_supply_ramp_seconds"):
+   var duration=float(c.late_supply_ramp_seconds)
+   var start=clampf(float(g.profile.hyperspace.get("late_supply_work",0.0)),0.0,duration)
+   var ramp_seconds=minf(dt,duration-start)
+   var first_rate=base_rate*(1.0+(maximum-1.0)*start/duration)
+   var last_rate=base_rate*(1.0+(maximum-1.0)*(start+ramp_seconds)/duration)
+   # Trapezoid integral for the linear segment, then the constant terminal rate.
+   gain=(first_rate+last_rate)*0.5*ramp_seconds+base_rate*maximum*(dt-ramp_seconds)
+  else:gain=base_rate*maximum*dt
+ var paid_energy=queued_energy-float(c.ticket)
+ # Refunded energy may already exceed the cap; charging never discards it.
+ return paid_energy if paid_energy>=cap else minf(cap,paid_energy+gain)
 func _initialize() -> void:call_deferred("run")
 func click(control: Control) -> void:
  if DisplayServer.get_name()=="headless":control.pressed.emit();await process_frame;return
@@ -46,22 +69,28 @@ func run() -> void:
  check(p.level.min_value==5 and p.level.max_value==80,"Level uses this round highest")
  check(not p.start_button.disabled and not p.crew_button.disabled,"Final routes enable manual; crew manager available")
  check(p.manual_projection.manual_ready and not p.manual_reason.visible,"Final production projection ready")
- var base_db=g.db;var ticket_energy=float(g.profile.hyperspace.energy)
+ var base_db=g.db
  for i in p.routes.size():
-  await click(p.routes[i]);p.level.value=5;await click(p.start_button)
+  await click(p.routes[i]);p.level.value=5
+  var ticket_energy=float(g.profile.hyperspace.energy)
+  await click(p.start_button)
   check(not g.manual_hyperspace.queued.is_empty() and not g.manual_hyperspace.active and g.profile.hyperspace.energy==ticket_energy,"Actual selected route queues without ticket")
-  g.paused=false;g.tick(0.001)
+  var tick_seconds=0.001;var ticket=float(g.hyperspace.config.ticket)
+  var charged_energy=expected_manual_energy_after_tick(g,ticket_energy,tick_seconds)
+  var refunded_energy=charged_energy+ticket
+  g.paused=false;g.tick(tick_seconds)
   check(g.manual_hyperspace.active and g.profile.hyperspace.active.route==g.hyperspace.config.routes.keys()[i],"Actual selected route dispatches at safe standby")
-  check(g.profile.hyperspace.energy==ticket_energy-float(g.hyperspace.config.ticket),"One actual manual ticket charged")
+  check(absf(float(g.profile.hyperspace.energy)-charged_energy)<=ENERGY_ABSOLUTE_ERROR and float(g.profile.hyperspace.active.ticket)==ticket,"One actual manual ticket charged")
+  print("MANUAL_TICKET_ENERGY route=",i," queued=","%.12f"%ticket_energy," charged=","%.12f"%float(g.profile.hyperspace.energy)," expected=","%.12f"%charged_energy," earned=","%.12f"%(charged_energy-(ticket_energy-ticket))," expected_refund=","%.12f"%refunded_energy)
   g.spawn_group();g.paused=true;scene._process(0)
   check(not g.enemies.is_empty() and g.db.levels[4].groups.size()==10,"Formal first group spawns in isolated ten-wave view")
   p.refresh_progress();await capture("formal-route%d"%i)
   g.save_enabled=true;g.save_progress();g.save_enabled=false
   check(g.last_save_error==OK and FileAccess.file_exists(g.SAVE_PATH),"Actual isolated manual save writes successfully")
   var saved=g.progress_writer.read_progress(g.SAVE_PATH);var restored=BattleGame.new(base_db,false);restored.load_progress_data(saved)
-  check(restored.profile.hyperspace.active.is_empty() and restored.profile.hyperspace.energy==ticket_energy,"Short save/read refunds interrupted run exactly once")
+  check(restored.profile.hyperspace.active.is_empty() and absf(float(restored.profile.hyperspace.energy)-refunded_energy)<=ENERGY_ABSOLUTE_ERROR,"Short save/read refunds interrupted run exactly once")
   await click(p.exit_button);p.refresh()
-  check(not g.manual_hyperspace.active and is_same(g.db,base_db) and g.profile.hyperspace.energy==ticket_energy and not p.exit_button.visible,"Native exit restores original context and exploration page")
+  check(not g.manual_hyperspace.active and is_same(g.db,base_db) and absf(float(g.profile.hyperspace.energy)-refunded_energy)<=ENERGY_ABSOLUTE_ERROR and not p.exit_button.visible,"Native exit restores original context and exploration page")
   check(not p.start_button.disabled,"Next route available after exit")
  g.paused=true
  check(p.cards.size()==8 and p.find_children("*","SubViewport",true,false).is_empty(),"Eight reusable cards, no card viewports")

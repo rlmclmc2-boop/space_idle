@@ -1,6 +1,14 @@
 extends Node3D
 ## Read-only visual source: shares the fleet's world and viewport; no combat objects.
 const FAMILIES={"laser":"pulse","missile":"missile","cannon":"rail","longLaser":"beam"}
+const Appearance=preload("res://scripts/hyperspace_appearance.gd")
+var members: Dictionary={}
+var style_keys: Dictionary={}
+static var base_materials: Dictionary={}
+var appearance_generation=-1
+var model_creations=0
+var style_updates=0
+var animated=true
 const TOON=preload("res://addons/flexible_toon_shader/flexible_toon.gdshader")
 const OFFSETS=[Vector2(-130,-28),Vector2(130,-60),Vector2(-130,-116),Vector2(130,-148),Vector2(0,-224)]
 var signature=""
@@ -16,32 +24,47 @@ func sync(bag: Dictionary) -> bool:
   if FAMILIES.has(drone.get("weapon")):sources.append([str(id),str(drone.weapon)])
   if sources.size()==5:break
  var next=JSON.stringify(sources)
- if next==signature:return false
- var retained:Array[Material]=[]
- for node in nodes:retain_materials(node,retained)
- for node in nodes:node.free()
- retained.clear()
- nodes.clear();identities.clear();muzzles.clear();signature=next;rebuilds+=1
+ var generation=int(bag.get("generation",-1))
+ if next==signature and generation==appearance_generation:return false
+ var member_changed=next!=signature
+ var keep: Array=[]
+ for source in sources:keep.append(str(source[0]))
+ for id in members.keys():
+  if not id in keep:
+   members[id].free();members.erase(id);style_keys.erase(id);muzzles.erase(id)
+ nodes.clear();identities.clear()
  for source in sources:
-  var node=(load("res://assets/hyperspace/models/"+FAMILIES[source[1]]+".glb") as PackedScene).instantiate() as Node3D
-  node.name="HyperspaceDrone"+str(nodes.size());node.visible=false;add_child(node);install_materials(node);nodes.append(node);identities.append(str(source[0]));install_muzzles(node,str(source[0]),str(source[1]))
+  var id=str(source[0]);var weapon=str(source[1])
+  if members.has(id) and members[id].get_meta("weapon")!=weapon:
+   members[id].free();members.erase(id);style_keys.erase(id);muzzles.erase(id)
+  if not members.has(id):
+   var node=Appearance.scene(weapon).instantiate() as Node3D
+   node.name="HyperspaceDrone"+id.replace(":","_");node.visible=false;node.set_meta("weapon",weapon);add_child(node);install_materials(node);members[id]=node;model_creations+=1;install_muzzles(node,id,weapon)
+  var node: Node3D=members[id]
+  var style=Appearance.project(bag.drones[id]);var key=Appearance.fingerprint(style)
+  if style_keys.get(id,"")!=key:
+   var old=node.get_node_or_null("Appearance")
+   if old!=null:old.free()
+   install_materials(node,style);Appearance.build_ornaments(node,style);style_keys[id]=key;style_updates+=1
+  nodes.append(node);identities.append(id)
+ signature=next;appearance_generation=generation
+ if member_changed:rebuilds+=1
  return true
-func retain_materials(node:Node,retained:Array[Material])->void:
- if node is GeometryInstance3D:
-  if node.material_override!=null:retained.append(node.material_override)
-  if node.material_overlay!=null:retained.append(node.material_overlay)
- if node is MeshInstance3D and node.mesh!=null:
-  for i in node.mesh.get_surface_count():
-   var material=node.get_surface_override_material(i)
-   if material!=null:retained.append(material)
- for child in node.get_children():retain_materials(child,retained)
-func install_materials(node: Node) -> void:
+
+func install_materials(node: Node,style: Dictionary={}) -> void:
  if node is MeshInstance3D:
   for i in node.mesh.get_surface_count():
    var source=node.mesh.surface_get_material(i) as StandardMaterial3D
    if source==null:continue
-   var mat=ShaderMaterial.new();mat.shader=TOON;mat.set_shader_parameter("albedo",source.albedo_color);mat.set_shader_parameter("clamp_diffuse_to_max",true);mat.set_shader_parameter("toon_steps",3);node.set_surface_override_material(i,mat)
- for child in node.get_children():install_materials(child)
+   var color=source.albedo_color
+   if not style.is_empty() and style.quality!="white" and source.resource_name in ["PhaseDroneIvory","PhaseDroneMetal"]:
+    color=color.lerp(style.color,clampf(float(Appearance.settings().get("body_tint",0.72)),0.0,1.0))
+   var key=color.to_html()
+   if not base_materials.has(key):
+    var mat=ShaderMaterial.new();mat.shader=TOON;mat.set_shader_parameter("albedo",color);mat.set_shader_parameter("clamp_diffuse_to_max",true);mat.set_shader_parameter("cuts",3);base_materials[key]=mat
+   node.set_surface_override_material(i,base_materials[key])
+ for child in node.get_children():
+  if child.name!="Appearance":install_materials(child,style)
 func install_muzzles(node: Node3D,id: String,weapon: String) -> void:
  var sockets: Array[Node3D]=[]
  for mesh_name in MUZZLE_MESHES[weapon]:
@@ -65,3 +88,5 @@ func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
   nodes[i].global_position=Vector3((center.x-view.size.x*0.5)*view.WORLD_PER_PIXEL,0.5,(center.y-view.size.y*0.5)*view.WORLD_PER_PIXEL)
   nodes[i].scale=Vector3.ONE*16.0*view.WORLD_PER_PIXEL*zoom
   nodes[i].visible=not disabled.has(identities[i])
+  var ring=nodes[i].get_node_or_null("Appearance/UltimateOrbit")
+  if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45

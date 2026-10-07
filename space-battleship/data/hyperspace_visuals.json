@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "quality": {
+    "white": {
+      "color": "b8c7d0",
+      "rank": 0
+    },
+    "blue": {
+      "color": "42c5ff",
+      "rank": 1
+    },
+    "gold": {
+      "color": "e5bb55",
+      "rank": 2
+    },
+    "legendary": {
+      "color": "bd83f4",
+      "rank": 3
+    }
+  },
+  "ultimate_color": "7ef5e0",
+  "emission": 0.28,
+  "animate": true,
+  "high_tier_max": 2,
+  "ornament_scale": 1.0,
+  "body_tint": 0.72,
+  "tier_glyph_scale": 2.8
+}

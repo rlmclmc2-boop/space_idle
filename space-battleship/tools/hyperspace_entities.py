@@ -9,6 +9,7 @@ import hashlib
 import io
 import json
 import math
+import re
 from pathlib import Path
 import openpyxl
 from explicit_formation import validate as validate_formation
@@ -211,8 +212,32 @@ def validate_config(c):
     if ratios['ultimate']<=0 or any(v<0 or v>ratios['ultimate'] for v in ratios.values()) or fleet['parameters']['maximum_reduction'][1]>1:raise ValueError('Invalid fleet command normalization')
 
 
+def validate_visuals(v, config):
+    if not finite(v['version']) or int(v['version']) != v['version'] or v['version'] <= 0:
+        raise ValueError('Visual version must be a positive integer')
+    if not isinstance(v['animate'], bool):
+        raise ValueError('Visual animate must be bool')
+    for key, low, high, integer in [('emission',0,0.7,False),('high_tier_max',1,5,True),('ornament_scale',0.5,1.1,False),('body_tint',0,1,False),('tier_glyph_scale',1,3,False)]:
+        value=v[key]
+        if not finite(value) or not low <= value <= high or (integer and int(value) != value):
+            raise ValueError('Invalid visual range/type: '+key)
+    colors=[v['ultimate_color']]
+    if set(v['quality']) != {'white','blue','gold','legendary'}:
+        raise ValueError('Missing/extra visual quality reference')
+    for quality, row in v['quality'].items():
+        if quality not in config['quality_weights'] or quality not in config['quality_limits']:
+            raise ValueError('Unknown visual quality reference: '+quality)
+        rank=row['rank']
+        if not finite(rank) or int(rank) != rank or not 0 <= rank <= 3:
+            raise ValueError('Invalid visual rank: '+quality)
+        colors.append(row['color'])
+    if any(not isinstance(color,str) or not re.fullmatch(r'[0-9a-fA-F]{6}',color) for color in colors):
+        raise ValueError('Visual colors must be six hex digits without #')
+
+
 def validate_outputs(outputs, mainline, frozen):
     c=outputs['hyperspace_config.json'];validate_config(c)
+    validate_visuals(outputs['hyperspace_visuals.json'],c)
     enemies=outputs['space_enemy_candidates.json']['enemies'];groups=outputs['space_enemy_candidates.json']['groups'];routes=outputs['space_enemy_routes.json']['routes'];recipes=outputs['space_enemy_reward_recipes.json']['groups']
     for eid,e in enemies.items():
         if eid in mainline['enemies'] or e['health']<=0 or e['size']<1 or e['armourType'] not in [0,1,2] or e['shieldType'] not in [0,1,2] or any(e[k]<0 for k in ['shield','shieldRecovery','shieldDelay','dmgMultiple']):raise ValueError('Invalid hyperspace enemy '+eid)

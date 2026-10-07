@@ -32,6 +32,7 @@ var condition_values: Array[OptionButton]=[]
 var condition_levels: Array[SpinBox]=[]
 var condition_tiers: Array[OptionButton]=[]
 var bag: Dictionary={}
+var card_style_cache: Dictionary={}
 var generation=-1
 var round_id=-1
 var page=0
@@ -110,7 +111,7 @@ func surface(parent: Node) -> VBoxContainer:
  var p=PanelContainer.new();p.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  p.add_theme_stylebox_override("panel",preload("res://scripts/dialog_presentation.gd").surface(Color("e4e8da"),Color("849e9c"),18));parent.add_child(p);return box(p)
 func thumbnail(parent: Node,width: float) -> TextureRect:
- var n=TextureRect.new();n.custom_minimum_size=Vector2(width,width);n.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;n.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;n.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(n);return n
+ var n=preload("res://scripts/hyperspace_icon.gd").new();n.custom_minimum_size=Vector2(width,width);n.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;n.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;n.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(n);return n
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
@@ -382,9 +383,12 @@ func refresh_list() -> void:
   var index=page*PAGE_SIZE+i;var b=cards[i];put(b,"visible",index<ids.size())
   if index>=ids.size():continue
   var id=str(ids[index]);var d: Dictionary=bag.drones[id];b.set_meta("drone_id",id)
-  put(card_icons[i],"texture",load("res://assets/hyperspace/icons/"+FAMILIES[d.weapon]+".png"))
+  var appearance=preload("res://scripts/hyperspace_appearance.gd").project(d)
+  card_icons[i].apply(d)
   put(card_titles[i],"text",t("card",{"weapon":t(d.weapon),"level":str(int(d.level)),"quality":"","flags":""}).split("\n")[0])
-  put(card_subtitles[i],"text",t(d.origin_quality))
+  put(card_subtitles[i],"text",quality_caption(d)+(t("visual_tier",{"tier":str(int(appearance.tier))}) if not appearance.category.is_empty() else ""))
+  var caption_color:Color=appearance.color.darkened(0.4)
+  if card_subtitles[i].get_theme_color("font_color")!=caption_color:card_subtitles[i].add_theme_color_override("font_color",caption_color)
   put(card_flags[i],"text",flags(id,d) if not flags(id,d).is_empty() else t("no_flags"))
   skin_selection(b,id==selected_id)
  put(empty,"visible",ids.is_empty())
@@ -415,9 +419,9 @@ func refresh_details() -> void:
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
  if section_index==2:
-  put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":flags(selected_id,bag.drones[selected_id])}))
+  put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(int(bag.drones[selected_id].hanging_slots)),"revision":str(int(bag.drones[selected_id].forge_revision))}))
-  put(forge_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
+  forge_icon.call("apply",bag.drones[selected_id]) if valid else forge_icon.call("clear")
   return
  if section_index!=1:return
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
@@ -428,9 +432,12 @@ func refresh_details() -> void:
  var totals:Dictionary=host.game.hyperspace_totals()
  put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
- put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":t(bag.drones[selected_id].origin_quality),"flags":""}))
- put(detail_icon,"texture",load("res://assets/hyperspace/icons/"+FAMILIES[bag.drones[selected_id].weapon]+".png") if valid else null)
+ put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
+ detail_icon.call("apply",bag.drones[selected_id]) if valid else detail_icon.call("clear")
  for b in cards:skin_selection(b,b.get_meta("drone_id","")==selected_id)
+func quality_caption(drone: Dictionary) -> String:
+ var origin=t(str(drone.origin_quality))
+ return t("legendary")+(" · "+origin if drone.origin_quality!="legendary" else "") if drone.legendary else origin
 func drone_description(d: Dictionary) -> String:
  var protection=protection_flags(str(d.id))
  var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
@@ -511,9 +518,19 @@ func input_skin(field: Control) -> void:
  for state in ["normal","focus","read_only"]:field.add_theme_stylebox_override(state,preload("res://scripts/dialog_presentation.gd").surface(Color("ecebdc"),Color("243d50"),6))
 
 func skin_selection(control: Button,selected: bool) -> void:
- if not control.has_meta("hyperspace_selected") or bool(control.get_meta("hyperspace_selected"))!=selected:
-  control.set_meta("hyperspace_selected",selected)
-  preload("res://scripts/dialog_presentation.gd").button_skin(control,selected)
+ var id=str(control.get_meta("drone_id",""))
+ var quality="legendary" if bag.get("drones",{}).get(id,{}).get("legendary",false) else str(bag.get("drones",{}).get(id,{}).get("origin_quality","white"))
+ var key=quality+str(selected)
+ if control.get_meta("hyperspace_skin","")==key:return
+ control.set_meta("hyperspace_skin",key);control.set_meta("hyperspace_selected",selected)
+ if not card_style_cache.has(key):
+  var accent=Color(str(preload("res://scripts/hyperspace_appearance.gd").settings().get("quality",{}).get(quality,{}).get("color","b8c7d0"))).darkened(0.25)
+  var style=preload("res://scripts/dialog_presentation.gd").surface(Color("c5e7e3") if selected else Color("ecebdc"),accent,6)
+  style.border_width_left=4;style.border_width_right=2;style.border_width_top=2;style.border_width_bottom=2
+  card_style_cache[key]=style
+ for state in ["normal","hover","pressed","hover_pressed"]:control.add_theme_stylebox_override(state,card_style_cache[key])
+ if not card_style_cache.has("focus"):card_style_cache.focus=preload("res://scripts/dialog_presentation.gd").surface(Color(0,0,0,0),Color("288c96"),6)
+ control.add_theme_stylebox_override("focus",card_style_cache.focus)
 
 func checkbox_skin(control: CheckBox) -> void:
  for key in ["font_color","font_pressed_color","font_hover_color","font_hover_pressed_color","font_focus_color"]:control.add_theme_color_override(key,Color("243d50"))

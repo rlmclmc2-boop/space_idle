@@ -1,90 +1,321 @@
 {
   "entries": {
-    "hyperspace.invalid_config_title": {"params": []},
-    "hyperspace.invalid_config_pack": {"params": []},
-    "hyperspace.recent_interrupted_refund": {"params": ["weapon", "level", "refund"]},
-    "hyperspace.restore_modernize_hint": {"params": []},
-    "galaxy.complete_crew_hint": {"params": []},
-    "hyperspace.dismantle_source_hint": {"params": []},
-    "hyperspace.module_source_hint": {"params": []},
-    "hyperspace.reward_material_item": {"params": ["material", "count"]},
-    "hyperspace.dismantle_preview": {"params": ["materials", "count"]},
-    "hyperspace.dismantle_received_materials": {"params": ["materials"]},
-    "hyperspace.dismantle_received_module": {"params": ["name", "count", "state", "level", "exp"]},
-    "hyperspace.module_first_unlock": {"params": []},
-    "hyperspace.module_duplicate": {"params": []},
-    "equipment.continuous_beam_snapshot_hint": {"params": []},
-    "hyperspace.queue_departure_hint": {"params": []},
-    "hyperspace.quote_execution_result": {"params": ["cost", "count"]},
-    "hyperspace.modernize_preview": {"params": ["before", "after", "effects"]},
-    "hyperspace.modernize_effect": {"params": ["name", "before", "after"]},
-    "hyperspace.modernize_no_affixes": {"params": []},
-    "hyperspace.auto_stopped": {"params": []},
-    "hyperspace.auto_waiting": {"params": []},
-    "hyperspace.auto_waiting_energy": {"params": []},
-    "hyperspace.auto_waiting_warehouse": {"params": []},
-
-    "hyperspace.forge_paid_summary": {"params": ["cost"]},
-    "hyperspace.queue_failed_invalid_main_return": {"params": []},
-    "hyperspace.queue_failed_setup_failed": {"params": []},
-    "hyperspace.promotion_risk_hint": {"params": []},
-    "crew.hyperspace_reserved_short": {"params": []},
-    "crew.hyperspace_reserved": {"params": []},
-    "crew.hyperspace_busy_reason": {"params": []},
-    "hyperspace.resource_reference_hint": {"params": ["level", "cleared"]},
-    "hyperspace.recent_result": {"params": ["weapon", "level", "reason", "elapsed", "point", "refund", "stage", "main_point"]},
-    "hyperspace.result_success": {"params": []},
-    "hyperspace.result_failed": {"params": []},
-    "hyperspace.result_defeat": {"params": []},
-    "hyperspace.result_user_exit": {"params": []},
-    "hyperspace.result_formation_invalid": {"params": []},
-    "hyperspace.result_setup_failed": {"params": []},
-    "planet.reforge_zero_title": {"params": []},
-    "planet.reforge_zero_warning": {"params": ["count"]},
-    "planet.reforge_zero_confirm": {"params": []},
-    "planet.reforge_zero_cancel": {"params": []},
-    "hyperspace.queue_start": {"params": []},
-    "hyperspace.queue_cancel": {"params": []},
-    "hyperspace.queue_already": {"params": []},
-    "hyperspace.queue_wait": {"params": ["weapon", "level", "reason"]},
-    "hyperspace.queue_wait_battle": {"params": []},
-    "hyperspace.queue_wait_guard": {"params": []},
-    "hyperspace.queue_wait_unlock": {"params": []},
-    "hyperspace.queue_wait_projectiles": {"params": []},
-    "hyperspace.queue_wait_ready": {"params": []},
-    "hyperspace.queue_failed_energy": {"params": []},
-    "hyperspace.queue_failed_busy": {"params": []},
-    "hyperspace.queue_failed_unavailable": {"params": []},
-    "hyperspace.queue_failed_round_changed": {"params": []},
-    "hyperspace.queue_failed_reload": {"params": []},
-    "planet.reforge_brief": {"params": []},
-    "planet.reforge_selection": {"params": ["selected", "capacity", "discarded"]},
-    "planet.reforge_selection_hint": {"params": []},
-    "planet.reforge_drone": {"params": ["weapon", "level", "quality", "favorite", "gate"]},
-    "planet.reforge_no_drones": {"params": []},
-    "planet.reforge_stale": {"params": []},
-    "planet.reforge_over_capacity": {"params": []},
-    "planet.reforge_failed": {"params": []},
-
-    "hyperspace.manual_busy": {"params": []},
-    "hyperspace.manual_level_unavailable": {"params": []},
-    "hyperspace.manual_energy_needed": {"params": ["ticket"]},
-    "hyperspace.sealed_gate": {"params": ["level"]},
-
-    "hyperspace.exit_manual": {"params": []},
-    "tutorial.basics": {"params": []},
-    "tutorial.select_entry": {"params": []},
-    "tutorial.system.crew": {"params": []},
-    "tutorial.system.enhancement": {"params": []},
-    "tutorial.system.equipment": {"params": []},
-    "tutorial.system.galaxy": {"params": []},
-    "tutorial.system.hightech": {"params": []},
-    "tutorial.system.other": {"params": []},
-    "tutorial.system.planets": {"params": []},
-    "tutorial.system.reactor": {"params": []},
-    "tutorial.system.ships": {"params": []},
-    "tutorial.unlocks": {"params": []},
-    "unlock.auto_confirm": {"params": ["seconds"]},
+    "hyperspace.visual_tier": {
+      "params": [
+        "tier"
+      ]
+    },
+    "hyperspace.invalid_config_title": {
+      "params": []
+    },
+    "hyperspace.invalid_config_pack": {
+      "params": []
+    },
+    "hyperspace.recent_interrupted_refund": {
+      "params": [
+        "weapon",
+        "level",
+        "refund"
+      ]
+    },
+    "hyperspace.restore_modernize_hint": {
+      "params": []
+    },
+    "galaxy.complete_crew_hint": {
+      "params": []
+    },
+    "hyperspace.dismantle_source_hint": {
+      "params": []
+    },
+    "hyperspace.module_source_hint": {
+      "params": []
+    },
+    "hyperspace.reward_material_item": {
+      "params": [
+        "material",
+        "count"
+      ]
+    },
+    "hyperspace.dismantle_preview": {
+      "params": [
+        "materials",
+        "count"
+      ]
+    },
+    "hyperspace.dismantle_received_materials": {
+      "params": [
+        "materials"
+      ]
+    },
+    "hyperspace.dismantle_received_module": {
+      "params": [
+        "name",
+        "count",
+        "state",
+        "level",
+        "exp"
+      ]
+    },
+    "hyperspace.module_first_unlock": {
+      "params": []
+    },
+    "hyperspace.module_duplicate": {
+      "params": []
+    },
+    "equipment.continuous_beam_snapshot_hint": {
+      "params": []
+    },
+    "hyperspace.queue_departure_hint": {
+      "params": []
+    },
+    "hyperspace.quote_execution_result": {
+      "params": [
+        "cost",
+        "count"
+      ]
+    },
+    "hyperspace.modernize_preview": {
+      "params": [
+        "before",
+        "after",
+        "effects"
+      ]
+    },
+    "hyperspace.modernize_effect": {
+      "params": [
+        "name",
+        "before",
+        "after"
+      ]
+    },
+    "hyperspace.modernize_no_affixes": {
+      "params": []
+    },
+    "hyperspace.auto_stopped": {
+      "params": []
+    },
+    "hyperspace.auto_waiting": {
+      "params": []
+    },
+    "hyperspace.auto_waiting_energy": {
+      "params": []
+    },
+    "hyperspace.auto_waiting_warehouse": {
+      "params": []
+    },
+    "hyperspace.forge_paid_summary": {
+      "params": [
+        "cost"
+      ]
+    },
+    "hyperspace.queue_failed_invalid_main_return": {
+      "params": []
+    },
+    "hyperspace.queue_failed_setup_failed": {
+      "params": []
+    },
+    "hyperspace.promotion_risk_hint": {
+      "params": []
+    },
+    "crew.hyperspace_reserved_short": {
+      "params": []
+    },
+    "crew.hyperspace_reserved": {
+      "params": []
+    },
+    "crew.hyperspace_busy_reason": {
+      "params": []
+    },
+    "hyperspace.resource_reference_hint": {
+      "params": [
+        "level",
+        "cleared"
+      ]
+    },
+    "hyperspace.recent_result": {
+      "params": [
+        "weapon",
+        "level",
+        "reason",
+        "elapsed",
+        "point",
+        "refund",
+        "stage",
+        "main_point"
+      ]
+    },
+    "hyperspace.result_success": {
+      "params": []
+    },
+    "hyperspace.result_failed": {
+      "params": []
+    },
+    "hyperspace.result_defeat": {
+      "params": []
+    },
+    "hyperspace.result_user_exit": {
+      "params": []
+    },
+    "hyperspace.result_formation_invalid": {
+      "params": []
+    },
+    "hyperspace.result_setup_failed": {
+      "params": []
+    },
+    "planet.reforge_zero_title": {
+      "params": []
+    },
+    "planet.reforge_zero_warning": {
+      "params": [
+        "count"
+      ]
+    },
+    "planet.reforge_zero_confirm": {
+      "params": []
+    },
+    "planet.reforge_zero_cancel": {
+      "params": []
+    },
+    "hyperspace.queue_start": {
+      "params": []
+    },
+    "hyperspace.queue_cancel": {
+      "params": []
+    },
+    "hyperspace.queue_already": {
+      "params": []
+    },
+    "hyperspace.queue_wait": {
+      "params": [
+        "weapon",
+        "level",
+        "reason"
+      ]
+    },
+    "hyperspace.queue_wait_battle": {
+      "params": []
+    },
+    "hyperspace.queue_wait_guard": {
+      "params": []
+    },
+    "hyperspace.queue_wait_unlock": {
+      "params": []
+    },
+    "hyperspace.queue_wait_projectiles": {
+      "params": []
+    },
+    "hyperspace.queue_wait_ready": {
+      "params": []
+    },
+    "hyperspace.queue_failed_energy": {
+      "params": []
+    },
+    "hyperspace.queue_failed_busy": {
+      "params": []
+    },
+    "hyperspace.queue_failed_unavailable": {
+      "params": []
+    },
+    "hyperspace.queue_failed_round_changed": {
+      "params": []
+    },
+    "hyperspace.queue_failed_reload": {
+      "params": []
+    },
+    "planet.reforge_brief": {
+      "params": []
+    },
+    "planet.reforge_selection": {
+      "params": [
+        "selected",
+        "capacity",
+        "discarded"
+      ]
+    },
+    "planet.reforge_selection_hint": {
+      "params": []
+    },
+    "planet.reforge_drone": {
+      "params": [
+        "weapon",
+        "level",
+        "quality",
+        "favorite",
+        "gate"
+      ]
+    },
+    "planet.reforge_no_drones": {
+      "params": []
+    },
+    "planet.reforge_stale": {
+      "params": []
+    },
+    "planet.reforge_over_capacity": {
+      "params": []
+    },
+    "planet.reforge_failed": {
+      "params": []
+    },
+    "hyperspace.manual_busy": {
+      "params": []
+    },
+    "hyperspace.manual_level_unavailable": {
+      "params": []
+    },
+    "hyperspace.manual_energy_needed": {
+      "params": [
+        "ticket"
+      ]
+    },
+    "hyperspace.sealed_gate": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.exit_manual": {
+      "params": []
+    },
+    "tutorial.basics": {
+      "params": []
+    },
+    "tutorial.select_entry": {
+      "params": []
+    },
+    "tutorial.system.crew": {
+      "params": []
+    },
+    "tutorial.system.enhancement": {
+      "params": []
+    },
+    "tutorial.system.equipment": {
+      "params": []
+    },
+    "tutorial.system.galaxy": {
+      "params": []
+    },
+    "tutorial.system.hightech": {
+      "params": []
+    },
+    "tutorial.system.other": {
+      "params": []
+    },
+    "tutorial.system.planets": {
+      "params": []
+    },
+    "tutorial.system.reactor": {
+      "params": []
+    },
+    "tutorial.system.ships": {
+      "params": []
+    },
+    "tutorial.unlocks": {
+      "params": []
+    },
+    "unlock.auto_confirm": {
+      "params": [
+        "seconds"
+      ]
+    },
     "crew.page_hint": {
       "params": []
     },
@@ -6692,307 +6923,997 @@
     "battle.zero_armour": {
       "params": []
     },
-    "hyperspace.tab": {"params": []},
-    "hyperspace.title": {"params": []},
-    "hyperspace.routes": {"params": []},
-    "hyperspace.alpha": {"params": []},
-    "hyperspace.beta": {"params": []},
-    "hyperspace.gamma": {"params": []},
-    "hyperspace.delta": {"params": []},
-    "hyperspace.level": {"params": []},
-    "hyperspace.energy": {"params": ["current", "cap", "ticket"]},
-    "hyperspace.best": {"params": ["time"]},
-    "hyperspace.none": {"params": []},
-    "hyperspace.start": {"params": []},
-    "hyperspace.crew": {"params": []},
-    "hyperspace.adapter": {"params": []},
-    "hyperspace.progress": {"params": ["work", "duration"]},
-    "hyperspace.idle": {"params": []},
-    "hyperspace.manual": {"params": []},
-    "hyperspace.pending": {"params": []},
-    "hyperspace.blocked": {"params": []},
-    "hyperspace.claim": {"params": []},
-    "hyperspace.warehouse": {"params": []},
-    "hyperspace.first_win": {"params": []},
-    "hyperspace.capacity": {"params": ["used", "cap", "overflow", "retention"]},
-    "hyperspace.budgets": {"params": ["equipped", "cap", "legendary", "ultimate"]},
-    "hyperspace.page": {"params": ["page", "pages"]},
-    "hyperspace.previous": {"params": []},
-    "hyperspace.next": {"params": []},
-    "hyperspace.empty": {"params": []},
-    "hyperspace.choose": {"params": []},
-    "hyperspace.card": {"params": ["weapon", "level", "quality", "flags"]},
-    "hyperspace.white": {"params": []},
-    "hyperspace.blue": {"params": []},
-    "hyperspace.gold": {"params": []},
-    "hyperspace.legendary": {"params": []},
-    "hyperspace.ultimate": {"params": []},
-    "hyperspace.laser": {"params": []},
-    "hyperspace.missile": {"params": []},
-    "hyperspace.cannon": {"params": []},
-    "hyperspace.longLaser": {"params": []},
-    "hyperspace.equipped": {"params": []},
-    "hyperspace.favorite": {"params": []},
-    "hyperspace.sealed": {"params": []},
-    "hyperspace.preset": {"params": []},
-    "hyperspace.equip": {"params": []},
-    "hyperspace.favorite_action": {"params": []},
-    "hyperspace.unseal": {"params": []},
-    "hyperspace.protect": {"params": ["flags"]},
-    "hyperspace.affix": {"params": ["key", "tier", "value", "locked"]},
-    "hyperspace.locked": {"params": []},
-    "hyperspace.hanging": {"params": ["items"]},
-    "hyperspace.legend_effect": {"params": ["effect", "value"]},
-    "hyperspace.presets": {"params": []},
-    "hyperspace.save_preset": {"params": []},
-    "hyperspace.apply_preset": {"params": []},
-    "hyperspace.clear_preset": {"params": []},
-    "hyperspace.preset_name": {"params": []},
-    "hyperspace.filter": {"params": []},
-    "hyperspace.filter_hint": {"params": []},
-    "hyperspace.preview": {"params": []},
-    "hyperspace.export": {"params": []},
-    "hyperspace.filter_valid": {"params": ["count", "mode"]},
-    "hyperspace.filter_invalid": {"params": ["reason"]},
-    "hyperspace.forge": {"params": []},
-    "hyperspace.forge_hint": {"params": []},
-    "hyperspace.summary": {"params": []},
-    "hyperspace.auto_hint": {"params": []},
-    "hyperspace.forge_upgrade": {"params": []},
-    "hyperspace.forge_reroll": {"params": []},
-    "hyperspace.forge_hanging": {"params": []},
-    "hyperspace.forge_lock": {"params": []},
-    "hyperspace.forge_tier": {"params": []},
-    "hyperspace.forge_reset": {"params": []},
-    "hyperspace.forge_future": {"params": []},
-    "hyperspace.forge_legend": {"params": []},
-    "hyperspace.forge_modern": {"params": []},
-    "hyperspace.forge_ultimate": {"params": []},
-    "hyperspace.all": {"params": []},
-    "hyperspace.sort_acquired": {"params": []},
-    "hyperspace.sort_level": {"params": []},
-    "hyperspace.sort_quality": {"params": []},
-    "hyperspace.condition_none": {"params": []},
-    "hyperspace.condition_weapon": {"params": []},
-    "hyperspace.condition_quality": {"params": []},
-    "hyperspace.condition_min_level": {"params": []},
-    "hyperspace.condition_affix": {"params": []},
-    "hyperspace.condition_legendary": {"params": []},
-    "hyperspace.condition_ultimate": {"params": []},
-    "hyperspace.section_explore": {"params": []},
-    "hyperspace.section_drones": {"params": []},
-    "hyperspace.section_forge": {"params": []},
-    "hyperspace.section_rules": {"params": []},
-    "hyperspace.route_reward": {"params": ["material"]},
-    "hyperspace.degenerate_matter": {"params": []},
-    "hyperspace.glueball": {"params": []},
-    "hyperspace.antiproton": {"params": []},
-    "hyperspace.zero_point_energy": {"params": []},
-    "hyperspace.explore_hint": {"params": []},
-    "hyperspace.energy_heading": {"params": []},
-    "hyperspace.mission_heading": {"params": []},
-    "hyperspace.inventory_heading": {"params": []},
-    "hyperspace.equipped_heading": {"params": []},
-    "hyperspace.selected_heading": {"params": []},
-    "hyperspace.none_selected": {"params": []},
-    "hyperspace.no_flags": {"params": []},
-    "hyperspace.unprotected": {"params": []},
-    "hyperspace.no_hangings": {"params": []},
-    "hyperspace.unknown_affix": {"params": []},
-    "hyperspace.unknown_effect": {"params": []},
-    "hyperspace.unknown_hanging": {"params": []},
-    "hyperspace.no_items": {"params": []},
-    "hyperspace.go_warehouse": {"params": []},
-    "hyperspace.forge_selected": {"params": []},
-    "hyperspace.forge_available_hint": {"params": []},
-    "hyperspace.forge_not_ready": {"params": []},
-    "hyperspace.filter_and": {"params": []},
-    "hyperspace.filter_or": {"params": []},
-    "hyperspace.yes": {"params": []},
-    "hyperspace.no": {"params": []},
-    "hyperspace.string_tools": {"params": []},
-    "hyperspace.string_import": {"params": []},
-    "hyperspace.string_copy": {"params": []},
-    "hyperspace.string_title": {"params": []},
-    "hyperspace.filter_preview": {"params": []},
-    "hyperspace.filter_disabled": {"params": []},
-    "hyperspace.filter_draft_hint": {"params": []},
-    "hyperspace.rule_none": {"params": []},
-    "hyperspace.affix_catalog_wait": {"params": []},
-    "hyperspace.remaining_adapter": {"params": []},
-    "hyperspace.percent": {"params": ["value"]},
-    "hyperspace.times": {"params": ["value"]},
-    "hyperspace.tier_value": {"params": ["value"]},
-    "hyperspace.condition_tier": {"params": ["tier"]},
-    "hyperspace.number": {"params": ["value"]},
-    "hyperspace.rule_error_length": {"params": []},
-    "hyperspace.rule_error_schema": {"params": []},
-    "hyperspace.rule_error_conditions": {"params": []},
-    "hyperspace.rule_error_condition": {"params": []},
-    "hyperspace.rule_error_weapon": {"params": []},
-    "hyperspace.rule_error_quality": {"params": []},
-    "hyperspace.rule_error_level": {"params": []},
-    "hyperspace.rule_error_affix": {"params": []},
-    "hyperspace.rule_error_tier": {"params": []},
-    "hyperspace.rule_error_flag": {"params": []},
-    "hyperspace.rule_error_enum": {"params": []},
-    "hyperspace.affix_name.global_damage": {"params": []},
-    "hyperspace.affix_name.global_crit_rate": {"params": []},
-    "hyperspace.affix_name.global_crit_damage": {"params": []},
-    "hyperspace.affix_name.global_burst_chance": {"params": []},
-    "hyperspace.affix_name.extra_chain_count": {"params": []},
-    "hyperspace.affix_name.global_attack_speed": {"params": []},
-    "hyperspace.affix_name.armour_hp": {"params": []},
-    "hyperspace.affix_name.shield_energy": {"params": []},
-    "hyperspace.affix_name.global_defense": {"params": []},
-    "hyperspace.affix_name.laser_damage": {"params": []},
-    "hyperspace.affix_name.missile_damage": {"params": []},
-    "hyperspace.affix_name.cannon_damage": {"params": []},
-    "hyperspace.affix_name.longLaser_damage": {"params": []},
-    "hyperspace.effect_name.higgs_particle_cannon": {"params": []},
-    "hyperspace.effect_name.scatter_pulse_laser": {"params": []},
-    "hyperspace.effect_name.precision_guidance": {"params": []},
-    "hyperspace.effect_name.prism_tower": {"params": []},
-    "hyperspace.effect_name.exotic_matter": {"params": []},
-    "hyperspace.effect_name.laser_charge": {"params": []},
-    "hyperspace.effect_name.random_missiles": {"params": []},
-    "hyperspace.effect_name.endless_beam": {"params": []},
-    "hyperspace.effect_name.dodge_counter": {"params": []},
-    "hyperspace.effect_name.drone_master": {"params": []},
-    "hyperspace.effect_name.black_hole_bomb": {"params": []},
-    "hyperspace.effect_name.drone_reassembly": {"params": []},
-    "hyperspace.hanging_name.resource_collector": {"params": []},
-    "hyperspace.hanging_name.distributed_algorithm": {"params": []},
-    "hyperspace.hanging_name.energy_storage": {"params": []},
-    "hyperspace.hanging_name.jewel_refiner": {"params": []},
-    "hyperspace.hanging_name.hyperspace_charge": {"params": []},
-    "hyperspace.quote": {"params": []},
-    "hyperspace.commit_forge": {"params": []},
-    "hyperspace.quote_first": {"params": []},
-    "hyperspace.quote_ready": {"params": []},
-    "hyperspace.quote_result": {"params": ["cost", "draws"]},
-    "hyperspace.cost_item": {"params": ["material", "cost", "available"]},
-    "hyperspace.no_cost": {"params": []},
-    "hyperspace.random_choice": {"params": []},
-    "hyperspace.guaranteed_max": {"params": []},
-    "hyperspace.forge_done": {"params": []},
-    "hyperspace.forge_attempt_failed": {"params": []},
-    "hyperspace.command_failed": {"params": []},
-    "hyperspace.forge_summary": {"params": ["affixes", "slots", "revision"]},
-    "hyperspace.auto_enable": {"params": []},
-    "hyperspace.auto_disable": {"params": []},
-    "hyperspace.crew_choice": {"params": ["name", "level", "status"]},
-    "hyperspace.crew_available": {"params": []},
-    "hyperspace.crew_occupied": {"params": []},
-    "hyperspace.no_crew": {"params": []},
-    "hyperspace.auto_projection": {"params": ["ticket", "duration", "status"]},
-    "hyperspace.auto_enabled": {"params": []},
-    "hyperspace.auto_disabled": {"params": []},
-    "hyperspace.module_manage": {"params": []},
-    "hyperspace.module_slots": {"params": ["used", "cap"]},
-    "hyperspace.module_choice": {"params": ["name", "level", "exp"]},
-    "hyperspace.module_apply": {"params": []},
-    "hyperspace.module_rejected": {"params": []},
-    "hyperspace.filter_domain_hint": {"params": []},
-    "hyperspace.filter_auto": {"params": []},
-    "hyperspace.filter_action_keep_matches": {"params": []},
-    "hyperspace.filter_action_clear_matches": {"params": []},
-    "hyperspace.filter_save": {"params": []},
-    "hyperspace.filter_action_wait": {"params": []},
-    "hyperspace.filter_saved": {"params": []},
-    "hyperspace.filter_string_invalid": {"params": []},
-    "hyperspace.condition_minimum_level": {"params": []},
-    "hyperspace.condition_legendary_effect": {"params": []},
-    "hyperspace.ultimate_cores": {"params": []},
-    "hyperspace.collection_manage": {"params": []},
-    "hyperspace.collection_apply": {"params": []},
-    "hyperspace.collection_empty": {"params": []},
-    "hyperspace.collection_hint": {"params": []},
-    "hyperspace.operation_add_affix": {"params": []},
-    "hyperspace.operation_replace_affix": {"params": []},
-    "hyperspace.operation_add_hanging_slot": {"params": []},
-    "hyperspace.operation_lock_affix": {"params": []},
-    "hyperspace.operation_promote_affix": {"params": []},
-    "hyperspace.operation_reroll_values": {"params": []},
-    "hyperspace.operation_enable_omen": {"params": []},
-    "hyperspace.operation_disable_omen": {"params": []},
-    "hyperspace.operation_legendary": {"params": []},
-    "hyperspace.operation_modernize": {"params": []},
-    "hyperspace.operation_ultimate": {"params": []},
-    "hyperspace.operation_restore_ultimate": {"params": []},
-    "hyperspace.operation_dismantle": {"params": []},
-    "hyperspace.command_error_stale_round": {"params": []},
-    "hyperspace.command_error_stale_command": {"params": []},
-    "hyperspace.command_error_command_conflict": {"params": []},
-    "hyperspace.command_error_stale_drone": {"params": []},
-    "hyperspace.command_error_unavailable_drone": {"params": []},
-    "hyperspace.command_error_protected_drone": {"params": []},
-    "hyperspace.command_error_ultimate_modification_forbidden": {"params": []},
-    "hyperspace.command_error_insufficient_materials": {"params": []},
-    "hyperspace.command_error_affix_limit": {"params": []},
-    "hyperspace.command_error_hanging_limit": {"params": []},
-    "hyperspace.command_error_no_unlocked_affix": {"params": []},
-    "hyperspace.command_error_already_highest_tier": {"params": []},
-    "hyperspace.command_error_forecast_limit": {"params": []},
-    "hyperspace.command_error_cost_limit": {"params": []},
-    "hyperspace.command_error_no_new_record": {"params": []},
-    "hyperspace.command_error_stale_modernization_target": {"params": []},
-    "hyperspace.command_error_legendary_not_collected": {"params": []},
-    "hyperspace.command_error_legendary_repeat_policy_required": {"params": []},
-    "hyperspace.command_error_invalid_arguments": {"params": []},
-    "hyperspace.command_error_invalid_affix": {"params": []},
-    "hyperspace.command_error_invalid_legendary": {"params": []},
-    "hyperspace.command_error_no_unlocked_values": {"params": []},
-    "hyperspace.command_error_omen_already_enabled": {"params": []},
-    "hyperspace.command_error_already_ultimate": {"params": []},
-    "hyperspace.command_error_not_ultimate": {"params": []},
-    "hyperspace.command_error_invalid_result": {"params": []},
-    "hyperspace.command_error_unknown_operation": {"params": []},
-    "hyperspace.command_error_promotion_policy_required": {"params": []},
-    "hyperspace.command_error_omen_policy_required": {"params": []},
-    "hyperspace.command_error_module_value_limit": {"params": []},
-    "hyperspace.effect_name.higgs_cannon": {"params": []},
-    "hyperspace.effect_name.scatter_pulse": {"params": []},
-    "hyperspace.effect_name.precise_guidance": {"params": []},
-    "hyperspace.effect_name.strange_matter": {"params": []},
-    "hyperspace.effect_name.wild_missile": {"params": []},
-    "hyperspace.effect_name.black_hole": {"params": []},
-    "hyperspace.effect_name.drone_rebuild": {"params": []},
-    "hyperspace.effect_parameter_damage_bonus": {"params": []},
-    "hyperspace.effect_parameter_area_bonus": {"params": []},
-    "hyperspace.effect_parameter_single_target_bonus": {"params": []},
-    "hyperspace.effect_parameter_maximum_multiplier_bonus": {"params": []},
-    "hyperspace.effect_parameter_damage_multiplier": {"params": []},
-    "hyperspace.effect_parameter_maximum_bonus": {"params": []},
-    "hyperspace.effect_parameter_maximum_dodge": {"params": []},
-    "hyperspace.effect_parameter_counter_damage_bonus": {"params": []},
-    "hyperspace.effect_parameter_maximum_reduction": {"params": []},
-    "hyperspace.effect_parameter_damage_and_defence_bonus": {"params": []},
-    "hyperspace.dismantle_confirm": {"params": []},
-    "hyperspace.manual_not_ready": {"params": []},
-    "hyperspace.totals_manage": {"params": []},
-    "hyperspace.totals_summary": {"params": ["damage", "affixes", "hangings"]},
-    "hyperspace.totals_authority": {"params": []},
-    "hyperspace.total_damage": {"params": []},
-    "hyperspace.total_critical_chance": {"params": []},
-    "hyperspace.total_critical_damage": {"params": []},
-    "hyperspace.total_repeat_chance": {"params": []},
-    "hyperspace.total_attack_speed": {"params": []},
-    "hyperspace.total_defence": {"params": []},
-    "hyperspace.total_armour": {"params": []},
-    "hyperspace.total_shield": {"params": []},
-    "hyperspace.total_chain_count": {"params": []},
-    "hyperspace.total_weapon": {"params": ["weapon"]},
-    "hyperspace.total_hangings": {"params": []},
-    "hyperspace.reforge_module_reset": {"params": []},
-    "hyperspace.total_legendary": {"params": []},
-    "hyperspace.manual_review_wait": {"params": []},
-    "hyperspace.no_active_legendary": {"params": []}
+    "hyperspace.tab": {
+      "params": []
+    },
+    "hyperspace.title": {
+      "params": []
+    },
+    "hyperspace.routes": {
+      "params": []
+    },
+    "hyperspace.alpha": {
+      "params": []
+    },
+    "hyperspace.beta": {
+      "params": []
+    },
+    "hyperspace.gamma": {
+      "params": []
+    },
+    "hyperspace.delta": {
+      "params": []
+    },
+    "hyperspace.level": {
+      "params": []
+    },
+    "hyperspace.energy": {
+      "params": [
+        "current",
+        "cap",
+        "ticket"
+      ]
+    },
+    "hyperspace.best": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.none": {
+      "params": []
+    },
+    "hyperspace.start": {
+      "params": []
+    },
+    "hyperspace.crew": {
+      "params": []
+    },
+    "hyperspace.adapter": {
+      "params": []
+    },
+    "hyperspace.progress": {
+      "params": [
+        "work",
+        "duration"
+      ]
+    },
+    "hyperspace.idle": {
+      "params": []
+    },
+    "hyperspace.manual": {
+      "params": []
+    },
+    "hyperspace.pending": {
+      "params": []
+    },
+    "hyperspace.blocked": {
+      "params": []
+    },
+    "hyperspace.claim": {
+      "params": []
+    },
+    "hyperspace.warehouse": {
+      "params": []
+    },
+    "hyperspace.first_win": {
+      "params": []
+    },
+    "hyperspace.capacity": {
+      "params": [
+        "used",
+        "cap",
+        "overflow",
+        "retention"
+      ]
+    },
+    "hyperspace.budgets": {
+      "params": [
+        "equipped",
+        "cap",
+        "legendary",
+        "ultimate"
+      ]
+    },
+    "hyperspace.page": {
+      "params": [
+        "page",
+        "pages"
+      ]
+    },
+    "hyperspace.previous": {
+      "params": []
+    },
+    "hyperspace.next": {
+      "params": []
+    },
+    "hyperspace.empty": {
+      "params": []
+    },
+    "hyperspace.choose": {
+      "params": []
+    },
+    "hyperspace.card": {
+      "params": [
+        "weapon",
+        "level",
+        "quality",
+        "flags"
+      ]
+    },
+    "hyperspace.white": {
+      "params": []
+    },
+    "hyperspace.blue": {
+      "params": []
+    },
+    "hyperspace.gold": {
+      "params": []
+    },
+    "hyperspace.legendary": {
+      "params": []
+    },
+    "hyperspace.ultimate": {
+      "params": []
+    },
+    "hyperspace.laser": {
+      "params": []
+    },
+    "hyperspace.missile": {
+      "params": []
+    },
+    "hyperspace.cannon": {
+      "params": []
+    },
+    "hyperspace.longLaser": {
+      "params": []
+    },
+    "hyperspace.equipped": {
+      "params": []
+    },
+    "hyperspace.favorite": {
+      "params": []
+    },
+    "hyperspace.sealed": {
+      "params": []
+    },
+    "hyperspace.preset": {
+      "params": []
+    },
+    "hyperspace.equip": {
+      "params": []
+    },
+    "hyperspace.favorite_action": {
+      "params": []
+    },
+    "hyperspace.unseal": {
+      "params": []
+    },
+    "hyperspace.protect": {
+      "params": [
+        "flags"
+      ]
+    },
+    "hyperspace.affix": {
+      "params": [
+        "key",
+        "tier",
+        "value",
+        "locked"
+      ]
+    },
+    "hyperspace.locked": {
+      "params": []
+    },
+    "hyperspace.hanging": {
+      "params": [
+        "items"
+      ]
+    },
+    "hyperspace.legend_effect": {
+      "params": [
+        "effect",
+        "value"
+      ]
+    },
+    "hyperspace.presets": {
+      "params": []
+    },
+    "hyperspace.save_preset": {
+      "params": []
+    },
+    "hyperspace.apply_preset": {
+      "params": []
+    },
+    "hyperspace.clear_preset": {
+      "params": []
+    },
+    "hyperspace.preset_name": {
+      "params": []
+    },
+    "hyperspace.filter": {
+      "params": []
+    },
+    "hyperspace.filter_hint": {
+      "params": []
+    },
+    "hyperspace.preview": {
+      "params": []
+    },
+    "hyperspace.export": {
+      "params": []
+    },
+    "hyperspace.filter_valid": {
+      "params": [
+        "count",
+        "mode"
+      ]
+    },
+    "hyperspace.filter_invalid": {
+      "params": [
+        "reason"
+      ]
+    },
+    "hyperspace.forge": {
+      "params": []
+    },
+    "hyperspace.forge_hint": {
+      "params": []
+    },
+    "hyperspace.summary": {
+      "params": []
+    },
+    "hyperspace.auto_hint": {
+      "params": []
+    },
+    "hyperspace.forge_upgrade": {
+      "params": []
+    },
+    "hyperspace.forge_reroll": {
+      "params": []
+    },
+    "hyperspace.forge_hanging": {
+      "params": []
+    },
+    "hyperspace.forge_lock": {
+      "params": []
+    },
+    "hyperspace.forge_tier": {
+      "params": []
+    },
+    "hyperspace.forge_reset": {
+      "params": []
+    },
+    "hyperspace.forge_future": {
+      "params": []
+    },
+    "hyperspace.forge_legend": {
+      "params": []
+    },
+    "hyperspace.forge_modern": {
+      "params": []
+    },
+    "hyperspace.forge_ultimate": {
+      "params": []
+    },
+    "hyperspace.all": {
+      "params": []
+    },
+    "hyperspace.sort_acquired": {
+      "params": []
+    },
+    "hyperspace.sort_level": {
+      "params": []
+    },
+    "hyperspace.sort_quality": {
+      "params": []
+    },
+    "hyperspace.condition_none": {
+      "params": []
+    },
+    "hyperspace.condition_weapon": {
+      "params": []
+    },
+    "hyperspace.condition_quality": {
+      "params": []
+    },
+    "hyperspace.condition_min_level": {
+      "params": []
+    },
+    "hyperspace.condition_affix": {
+      "params": []
+    },
+    "hyperspace.condition_legendary": {
+      "params": []
+    },
+    "hyperspace.condition_ultimate": {
+      "params": []
+    },
+    "hyperspace.section_explore": {
+      "params": []
+    },
+    "hyperspace.section_drones": {
+      "params": []
+    },
+    "hyperspace.section_forge": {
+      "params": []
+    },
+    "hyperspace.section_rules": {
+      "params": []
+    },
+    "hyperspace.route_reward": {
+      "params": [
+        "material"
+      ]
+    },
+    "hyperspace.degenerate_matter": {
+      "params": []
+    },
+    "hyperspace.glueball": {
+      "params": []
+    },
+    "hyperspace.antiproton": {
+      "params": []
+    },
+    "hyperspace.zero_point_energy": {
+      "params": []
+    },
+    "hyperspace.explore_hint": {
+      "params": []
+    },
+    "hyperspace.energy_heading": {
+      "params": []
+    },
+    "hyperspace.mission_heading": {
+      "params": []
+    },
+    "hyperspace.inventory_heading": {
+      "params": []
+    },
+    "hyperspace.equipped_heading": {
+      "params": []
+    },
+    "hyperspace.selected_heading": {
+      "params": []
+    },
+    "hyperspace.none_selected": {
+      "params": []
+    },
+    "hyperspace.no_flags": {
+      "params": []
+    },
+    "hyperspace.unprotected": {
+      "params": []
+    },
+    "hyperspace.no_hangings": {
+      "params": []
+    },
+    "hyperspace.unknown_affix": {
+      "params": []
+    },
+    "hyperspace.unknown_effect": {
+      "params": []
+    },
+    "hyperspace.unknown_hanging": {
+      "params": []
+    },
+    "hyperspace.no_items": {
+      "params": []
+    },
+    "hyperspace.go_warehouse": {
+      "params": []
+    },
+    "hyperspace.forge_selected": {
+      "params": []
+    },
+    "hyperspace.forge_available_hint": {
+      "params": []
+    },
+    "hyperspace.forge_not_ready": {
+      "params": []
+    },
+    "hyperspace.filter_and": {
+      "params": []
+    },
+    "hyperspace.filter_or": {
+      "params": []
+    },
+    "hyperspace.yes": {
+      "params": []
+    },
+    "hyperspace.no": {
+      "params": []
+    },
+    "hyperspace.string_tools": {
+      "params": []
+    },
+    "hyperspace.string_import": {
+      "params": []
+    },
+    "hyperspace.string_copy": {
+      "params": []
+    },
+    "hyperspace.string_title": {
+      "params": []
+    },
+    "hyperspace.filter_preview": {
+      "params": []
+    },
+    "hyperspace.filter_disabled": {
+      "params": []
+    },
+    "hyperspace.filter_draft_hint": {
+      "params": []
+    },
+    "hyperspace.rule_none": {
+      "params": []
+    },
+    "hyperspace.affix_catalog_wait": {
+      "params": []
+    },
+    "hyperspace.remaining_adapter": {
+      "params": []
+    },
+    "hyperspace.percent": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.times": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.tier_value": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.condition_tier": {
+      "params": [
+        "tier"
+      ]
+    },
+    "hyperspace.number": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.rule_error_length": {
+      "params": []
+    },
+    "hyperspace.rule_error_schema": {
+      "params": []
+    },
+    "hyperspace.rule_error_conditions": {
+      "params": []
+    },
+    "hyperspace.rule_error_condition": {
+      "params": []
+    },
+    "hyperspace.rule_error_weapon": {
+      "params": []
+    },
+    "hyperspace.rule_error_quality": {
+      "params": []
+    },
+    "hyperspace.rule_error_level": {
+      "params": []
+    },
+    "hyperspace.rule_error_affix": {
+      "params": []
+    },
+    "hyperspace.rule_error_tier": {
+      "params": []
+    },
+    "hyperspace.rule_error_flag": {
+      "params": []
+    },
+    "hyperspace.rule_error_enum": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_damage": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_crit_rate": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_crit_damage": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_burst_chance": {
+      "params": []
+    },
+    "hyperspace.affix_name.extra_chain_count": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_attack_speed": {
+      "params": []
+    },
+    "hyperspace.affix_name.armour_hp": {
+      "params": []
+    },
+    "hyperspace.affix_name.shield_energy": {
+      "params": []
+    },
+    "hyperspace.affix_name.global_defense": {
+      "params": []
+    },
+    "hyperspace.affix_name.laser_damage": {
+      "params": []
+    },
+    "hyperspace.affix_name.missile_damage": {
+      "params": []
+    },
+    "hyperspace.affix_name.cannon_damage": {
+      "params": []
+    },
+    "hyperspace.affix_name.longLaser_damage": {
+      "params": []
+    },
+    "hyperspace.effect_name.higgs_particle_cannon": {
+      "params": []
+    },
+    "hyperspace.effect_name.scatter_pulse_laser": {
+      "params": []
+    },
+    "hyperspace.effect_name.precision_guidance": {
+      "params": []
+    },
+    "hyperspace.effect_name.prism_tower": {
+      "params": []
+    },
+    "hyperspace.effect_name.exotic_matter": {
+      "params": []
+    },
+    "hyperspace.effect_name.laser_charge": {
+      "params": []
+    },
+    "hyperspace.effect_name.random_missiles": {
+      "params": []
+    },
+    "hyperspace.effect_name.endless_beam": {
+      "params": []
+    },
+    "hyperspace.effect_name.dodge_counter": {
+      "params": []
+    },
+    "hyperspace.effect_name.drone_master": {
+      "params": []
+    },
+    "hyperspace.effect_name.black_hole_bomb": {
+      "params": []
+    },
+    "hyperspace.effect_name.drone_reassembly": {
+      "params": []
+    },
+    "hyperspace.hanging_name.resource_collector": {
+      "params": []
+    },
+    "hyperspace.hanging_name.distributed_algorithm": {
+      "params": []
+    },
+    "hyperspace.hanging_name.energy_storage": {
+      "params": []
+    },
+    "hyperspace.hanging_name.jewel_refiner": {
+      "params": []
+    },
+    "hyperspace.hanging_name.hyperspace_charge": {
+      "params": []
+    },
+    "hyperspace.quote": {
+      "params": []
+    },
+    "hyperspace.commit_forge": {
+      "params": []
+    },
+    "hyperspace.quote_first": {
+      "params": []
+    },
+    "hyperspace.quote_ready": {
+      "params": []
+    },
+    "hyperspace.quote_result": {
+      "params": [
+        "cost",
+        "draws"
+      ]
+    },
+    "hyperspace.cost_item": {
+      "params": [
+        "material",
+        "cost",
+        "available"
+      ]
+    },
+    "hyperspace.no_cost": {
+      "params": []
+    },
+    "hyperspace.random_choice": {
+      "params": []
+    },
+    "hyperspace.guaranteed_max": {
+      "params": []
+    },
+    "hyperspace.forge_done": {
+      "params": []
+    },
+    "hyperspace.forge_attempt_failed": {
+      "params": []
+    },
+    "hyperspace.command_failed": {
+      "params": []
+    },
+    "hyperspace.forge_summary": {
+      "params": [
+        "affixes",
+        "slots",
+        "revision"
+      ]
+    },
+    "hyperspace.auto_enable": {
+      "params": []
+    },
+    "hyperspace.auto_disable": {
+      "params": []
+    },
+    "hyperspace.crew_choice": {
+      "params": [
+        "name",
+        "level",
+        "status"
+      ]
+    },
+    "hyperspace.crew_available": {
+      "params": []
+    },
+    "hyperspace.crew_occupied": {
+      "params": []
+    },
+    "hyperspace.no_crew": {
+      "params": []
+    },
+    "hyperspace.auto_projection": {
+      "params": [
+        "ticket",
+        "duration",
+        "status"
+      ]
+    },
+    "hyperspace.auto_enabled": {
+      "params": []
+    },
+    "hyperspace.auto_disabled": {
+      "params": []
+    },
+    "hyperspace.module_manage": {
+      "params": []
+    },
+    "hyperspace.module_slots": {
+      "params": [
+        "used",
+        "cap"
+      ]
+    },
+    "hyperspace.module_choice": {
+      "params": [
+        "name",
+        "level",
+        "exp"
+      ]
+    },
+    "hyperspace.module_apply": {
+      "params": []
+    },
+    "hyperspace.module_rejected": {
+      "params": []
+    },
+    "hyperspace.filter_domain_hint": {
+      "params": []
+    },
+    "hyperspace.filter_auto": {
+      "params": []
+    },
+    "hyperspace.filter_action_keep_matches": {
+      "params": []
+    },
+    "hyperspace.filter_action_clear_matches": {
+      "params": []
+    },
+    "hyperspace.filter_save": {
+      "params": []
+    },
+    "hyperspace.filter_action_wait": {
+      "params": []
+    },
+    "hyperspace.filter_saved": {
+      "params": []
+    },
+    "hyperspace.filter_string_invalid": {
+      "params": []
+    },
+    "hyperspace.condition_minimum_level": {
+      "params": []
+    },
+    "hyperspace.condition_legendary_effect": {
+      "params": []
+    },
+    "hyperspace.ultimate_cores": {
+      "params": []
+    },
+    "hyperspace.collection_manage": {
+      "params": []
+    },
+    "hyperspace.collection_apply": {
+      "params": []
+    },
+    "hyperspace.collection_empty": {
+      "params": []
+    },
+    "hyperspace.collection_hint": {
+      "params": []
+    },
+    "hyperspace.operation_add_affix": {
+      "params": []
+    },
+    "hyperspace.operation_replace_affix": {
+      "params": []
+    },
+    "hyperspace.operation_add_hanging_slot": {
+      "params": []
+    },
+    "hyperspace.operation_lock_affix": {
+      "params": []
+    },
+    "hyperspace.operation_promote_affix": {
+      "params": []
+    },
+    "hyperspace.operation_reroll_values": {
+      "params": []
+    },
+    "hyperspace.operation_enable_omen": {
+      "params": []
+    },
+    "hyperspace.operation_disable_omen": {
+      "params": []
+    },
+    "hyperspace.operation_legendary": {
+      "params": []
+    },
+    "hyperspace.operation_modernize": {
+      "params": []
+    },
+    "hyperspace.operation_ultimate": {
+      "params": []
+    },
+    "hyperspace.operation_restore_ultimate": {
+      "params": []
+    },
+    "hyperspace.operation_dismantle": {
+      "params": []
+    },
+    "hyperspace.command_error_stale_round": {
+      "params": []
+    },
+    "hyperspace.command_error_stale_command": {
+      "params": []
+    },
+    "hyperspace.command_error_command_conflict": {
+      "params": []
+    },
+    "hyperspace.command_error_stale_drone": {
+      "params": []
+    },
+    "hyperspace.command_error_unavailable_drone": {
+      "params": []
+    },
+    "hyperspace.command_error_protected_drone": {
+      "params": []
+    },
+    "hyperspace.command_error_ultimate_modification_forbidden": {
+      "params": []
+    },
+    "hyperspace.command_error_insufficient_materials": {
+      "params": []
+    },
+    "hyperspace.command_error_affix_limit": {
+      "params": []
+    },
+    "hyperspace.command_error_hanging_limit": {
+      "params": []
+    },
+    "hyperspace.command_error_no_unlocked_affix": {
+      "params": []
+    },
+    "hyperspace.command_error_already_highest_tier": {
+      "params": []
+    },
+    "hyperspace.command_error_forecast_limit": {
+      "params": []
+    },
+    "hyperspace.command_error_cost_limit": {
+      "params": []
+    },
+    "hyperspace.command_error_no_new_record": {
+      "params": []
+    },
+    "hyperspace.command_error_stale_modernization_target": {
+      "params": []
+    },
+    "hyperspace.command_error_legendary_not_collected": {
+      "params": []
+    },
+    "hyperspace.command_error_legendary_repeat_policy_required": {
+      "params": []
+    },
+    "hyperspace.command_error_invalid_arguments": {
+      "params": []
+    },
+    "hyperspace.command_error_invalid_affix": {
+      "params": []
+    },
+    "hyperspace.command_error_invalid_legendary": {
+      "params": []
+    },
+    "hyperspace.command_error_no_unlocked_values": {
+      "params": []
+    },
+    "hyperspace.command_error_omen_already_enabled": {
+      "params": []
+    },
+    "hyperspace.command_error_already_ultimate": {
+      "params": []
+    },
+    "hyperspace.command_error_not_ultimate": {
+      "params": []
+    },
+    "hyperspace.command_error_invalid_result": {
+      "params": []
+    },
+    "hyperspace.command_error_unknown_operation": {
+      "params": []
+    },
+    "hyperspace.command_error_promotion_policy_required": {
+      "params": []
+    },
+    "hyperspace.command_error_omen_policy_required": {
+      "params": []
+    },
+    "hyperspace.command_error_module_value_limit": {
+      "params": []
+    },
+    "hyperspace.effect_name.higgs_cannon": {
+      "params": []
+    },
+    "hyperspace.effect_name.scatter_pulse": {
+      "params": []
+    },
+    "hyperspace.effect_name.precise_guidance": {
+      "params": []
+    },
+    "hyperspace.effect_name.strange_matter": {
+      "params": []
+    },
+    "hyperspace.effect_name.wild_missile": {
+      "params": []
+    },
+    "hyperspace.effect_name.black_hole": {
+      "params": []
+    },
+    "hyperspace.effect_name.drone_rebuild": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_damage_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_area_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_single_target_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_maximum_multiplier_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_damage_multiplier": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_maximum_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_maximum_dodge": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_counter_damage_bonus": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_maximum_reduction": {
+      "params": []
+    },
+    "hyperspace.effect_parameter_damage_and_defence_bonus": {
+      "params": []
+    },
+    "hyperspace.dismantle_confirm": {
+      "params": []
+    },
+    "hyperspace.manual_not_ready": {
+      "params": []
+    },
+    "hyperspace.totals_manage": {
+      "params": []
+    },
+    "hyperspace.totals_summary": {
+      "params": [
+        "damage",
+        "affixes",
+        "hangings"
+      ]
+    },
+    "hyperspace.totals_authority": {
+      "params": []
+    },
+    "hyperspace.total_damage": {
+      "params": []
+    },
+    "hyperspace.total_critical_chance": {
+      "params": []
+    },
+    "hyperspace.total_critical_damage": {
+      "params": []
+    },
+    "hyperspace.total_repeat_chance": {
+      "params": []
+    },
+    "hyperspace.total_attack_speed": {
+      "params": []
+    },
+    "hyperspace.total_defence": {
+      "params": []
+    },
+    "hyperspace.total_armour": {
+      "params": []
+    },
+    "hyperspace.total_shield": {
+      "params": []
+    },
+    "hyperspace.total_chain_count": {
+      "params": []
+    },
+    "hyperspace.total_weapon": {
+      "params": [
+        "weapon"
+      ]
+    },
+    "hyperspace.total_hangings": {
+      "params": []
+    },
+    "hyperspace.reforge_module_reset": {
+      "params": []
+    },
+    "hyperspace.total_legendary": {
+      "params": []
+    },
+    "hyperspace.manual_review_wait": {
+      "params": []
+    },
+    "hyperspace.no_active_legendary": {
+      "params": []
+    },
+    "hyperspace.forge_guide": {
+      "params": []
+    },
+    "hyperspace.forge_guide_body": {
+      "params": []
+    }
   },
   "bindings": {
     "hyperspace_affixes": {
-      "armour_capacity": {"name": "hyperspace.affix_name.armour_hp"},
-      "shield_capacity": {"name": "hyperspace.affix_name.shield_energy"},
+      "armour_capacity": {
+        "name": "hyperspace.affix_name.armour_hp"
+      },
+      "shield_capacity": {
+        "name": "hyperspace.affix_name.shield_energy"
+      },
       "global_damage": {
         "name": "hyperspace.affix_name.global_damage"
       },

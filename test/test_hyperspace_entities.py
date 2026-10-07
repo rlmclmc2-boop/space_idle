@@ -1,4 +1,4 @@
-"""Entity XLSX defaults, ordering, rejection and five-output transaction boundary."""
+"""Entity XLSX defaults, ordering, rejection and six-output transaction boundary."""
 import copy
 import hashlib
 import json
@@ -94,7 +94,7 @@ class EntityTests(unittest.TestCase):
             for n in self.schema['frozen_inputs']:shutil.copyfile(self.data/n,d/n)
             (d/'space_enemy_reward_sources.json').write_text('{}')
             with self.assertRaises(ValueError):h.read_bundle(self.raw,self.main,d)
-    def test_formal_incremental_noop_and_five_output_rollback(self):
+    def test_formal_incremental_noop_and_six_output_rollback(self):
         with tempfile.TemporaryDirectory() as tmp:
             area=Path(tmp);folder=area/'config_excel';data=area/'data'
             shutil.copytree(ROOT/'config_excel',folder);shutil.copytree(self.data,data)
@@ -103,12 +103,12 @@ class EntityTests(unittest.TestCase):
             before={p:(p.read_bytes(),p.stat().st_mtime_ns) for p in paths}
             self.assertEqual([],cw.incremental_import(folder,target)['changed'])
             self.assertEqual(before,{p:(p.read_bytes(),p.stat().st_mtime_ns) for p in paths})
-            # Force all five outputs to require writing. Real parent workbooks stay untouched.
+            # Force all six outputs to require writing. Real parent workbooks stay untouched.
             for n in self.default:(data/n).write_text('{}')
             before={p:p.read_bytes() for p in paths}
             original=cw.os.replace
             def fail_last(source,destination):
-                if Path(destination).name=='space_enemy_reward_catalog.json':raise OSError('injected final output failure')
+                if Path(destination).name=='hyperspace_visuals.json':raise OSError('injected final output failure')
                 return original(source,destination)
             with patch.object(cw.os,'replace',side_effect=fail_last):
                 with self.assertRaises(OSError):cw.incremental_import(folder,target)
