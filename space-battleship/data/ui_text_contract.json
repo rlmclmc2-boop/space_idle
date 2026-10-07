@@ -7904,6 +7904,12 @@
     },
     "hyperspace.forge_guide_body": {
       "params": []
+    },
+    "onboarding.defence": {
+      "params": []
+    },
+    "onboarding.show_defence": {
+      "params": []
     }
   },
   "bindings": {
