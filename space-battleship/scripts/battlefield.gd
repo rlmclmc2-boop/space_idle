@@ -840,7 +840,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
 		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
-	if boss_battle and leader:text_at(layout.caption,layout.caption_position,14,BATTLE_CREAM)
+	if boss_battle and leader:text_at(layout.caption,layout.caption_position,17,BATTLE_CREAM)
 
 func encounter_leader_name(enemy:Dictionary)->String:
 	# Manual hyperspace swaps game.db to its own live encounter registry.
@@ -860,30 +860,51 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
+	var bottom:=pos.y
 	for corner in [used.position,Vector2(used.end.x,used.position.y),used.end,Vector2(used.position.x,used.end.y)]:
-		top=minf(top,pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y)
-	for point in outline:top=minf(top,pos.y+point.rotated(PI+angle).y)
+		var corner_y:float=pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y
+		top=minf(top,corner_y)
+		bottom=maxf(bottom,corner_y)
+	for point in outline:
+		var point_y:float=pos.y+point.rotated(PI+angle).y
+		top=minf(top,point_y)
+		bottom=maxf(bottom,point_y)
 	top-=9.0
 	var bar_width:=clampf(width*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
+	if encounter_presentation.is_leader(enemy):
+		# text_at renders at least 17 px: measure the same font size. Place the
+		# name and meters as one block, never clamp three rows independently.
+		var name:=encounter_leader_name(enemy)
+		if name.is_empty():name=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
+		name=fit_battle_text(name,260.0,17)
+		var name_size:=font.get_string_size(name,HORIZONTAL_ALIGNMENT_LEFT,-1,17)
+		var ascent:float=font.get_ascent(17)
+		var descent:float=font.get_descent(17)
+		var name_height:float=ascent+descent
+		var has_shield:bool=float(enemy.get("max_shield",0))>0.0
+		var block_height:float=name_height+6.0+(11.0 if has_shield else 4.0)
+		var block_top:float=top+4.0-block_height
+		# An enlarged ultimate can reach the header. Move the whole block
+		# below its visible outline instead of laying text across hull/meters.
+		if block_top<12.0:block_top=bottom+12.0
+		block_top=clampf(block_top,12.0,BATTLE_VIEW_SIZE.y-block_height-12.0)
+		var name_left:float=clampf(pos.x-name_size.x*0.5,12.0,BATTLE_VIEW_SIZE.x-name_size.x-12.0)
+		var baseline:=Vector2(name_left,block_top+ascent)
+		var first_meter_y:float=block_top+name_height+6.0
+		return {"health":Rect2(left,first_meter_y+(7.0 if has_shield else 0.0),bar_width,4),"shield":Rect2(left,first_meter_y,bar_width,4),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
 	var outer_wing:bool=enemy.get("explicit_formation",false) and absf(float(enemy.x)-BATTLE_VIEW_SIZE.x*0.5)>150.0
 	if outer_wing:
 		# Meters use the same free outer-wing space as their captions.
 		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
-	var leader:=encounter_presentation.is_leader(enemy)
-	var caption_font_size:=14 if leader else 12
-	if leader:
-		var leader_name:=encounter_leader_name(enemy)
-		if not leader_name.is_empty():caption=fit_battle_text(leader_name,260.0,caption_font_size)
+	var caption_font_size:=12
 	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,caption_font_size)
 	var caption_left:=left
-	if leader:
-		caption_left=clampf(pos.x-caption_size.x*0.5,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
-	elif outer_wing:
+	if outer_wing:
 		# Outer wing labels use the space away from the neighbouring centre fleet.
 		caption_left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-caption_size.x,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
-	var caption_position:=Vector2(caption_left,maxf(20,top-13 if leader else top-5))
+	var caption_position:=Vector2(caption_left,maxf(20,top-5))
 	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(caption_font_size)),Vector2(caption_size.x,font.get_ascent(caption_font_size)+font.get_descent(caption_font_size)))}
 
 func draw_environment_event(_offset:Vector2)->void:
