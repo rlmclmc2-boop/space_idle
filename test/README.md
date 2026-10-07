@@ -38,6 +38,7 @@
 | 音乐与开关偏好 | `test_bgm.gd` |
 | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
 | 无人机改造指南 | `test_hyperspace_guide.gd --headless`：首胜前隐藏改造与预设、按当前操作查阅、短窗口、控件复用、只读状态与改造结果回显；不作进度或通关验收 |
+| 无人机玩家反馈 | `test_hyperspace_player_feedback.gd`：已结算奖励跳转、显式装备、真实材料需求/持有/缺口、领域随机状态不变、进度刷新不重算报价、原子换装接口与多槽选择；图形证据是夹具，不作连续进度验收 |
 | 配置导入 | 按所改分表选择 `test_crew_import.py`、`test_jewel_import.py`、`test_unlock_import.py`、`test_equipment_growth_import.py`、`test_jewel_furnace_import.py`、`test_reactor_config.py`、`test_scientist_config.py` 或 `test_offline_config.py` |
 | 配置工具与编辑器 | `test_config_workbooks.py`、`test_level_editor.py` / `test_level_editor.gd`、`test_config_panel.gd`；输入/事务边界用 `test_config_input_matrix.py` |
 | Balance Lab | 按变化选 `test_balance_metrics.gd`、`test_balance_v2.gd`、`test_balance_database.gd`、`test_balance_lab_ui.gd`；模拟及 FAST 专项先查 [实验说明](../space-battleship/docs/BALANCE_LAB.md) 与 [性能协议](../space-battleship/docs/BALANCE_PERFORMANCE.md) |

@@ -12,6 +12,8 @@ var manual_adapter: Callable
 var manual_ready_provider: Callable
 var manual_projection: Dictionary={}
 var manual_snapshot_reads=0
+var reward_feedback=preload("res://scripts/hyperspace_reward_feedback.gd").new()
+var equipment_ui=preload("res://scripts/hyperspace_equipment_ui.gd").new()
 var exit_button: Button
 var manual_reason: Label
 var recent_result: Label
@@ -116,6 +118,8 @@ func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
  host=owner;commands.setup(self)
+ reward_feedback.setup(self)
+ equipment_ui.setup(self)
  manual_adapter=func(selected_route,selected_level):
   if not host.game.request_hyperspace(selected_route,selected_level):status.text=t("command_failed")
  manual_ready_provider=func():return bool(manual_projection.get("manual_ready",false))
@@ -173,10 +177,12 @@ func build_exploration(parent: Node) -> void:
  recent_result=label(parent,"",20);recent_result.visible=false
  resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
  first_win=label(parent,t("first_win"),22)
+ reward_feedback.build(parent)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
  drone_locked=label(parent,t("first_win"),24)
  inventory_box=box(parent);inventory_box.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ equipment_ui.build(inventory_box)
  var split=row(inventory_box);split.size_flags_vertical=Control.SIZE_EXPAND_FILL
  var list=box(split);list.size_flags_stretch_ratio=1.55
  var selectors=row(list);weapon_filter=option(selectors);weapon_filter.add_item(t("all"))
@@ -281,8 +287,11 @@ func save_filter() -> void:
  if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
+ reward_feedback.on_event(kind,_payload)
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
   dirty=true
+  if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
+   commands.refresh_materials.call_deferred()
   if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
 func _process(_delta: float) -> void:
@@ -350,7 +359,8 @@ func refresh_progress() -> void:
   elif host.game.hyperspace.auto_eligible(host.game) and float(s.energy)<float(effective.energy_cap):text=t("auto_waiting_energy")
  var session=host.game.manual_hyperspace
  var result:Dictionary=session.last_result
- put(recent_result,"visible",not result.is_empty())
+ put(recent_result,"visible",not result.is_empty() and not reward_feedback.card.visible)
+ put(resource_reference_hint,"visible",not reward_feedback.card.visible)
  if result.get("reason","")=="interrupted_reload":
   put(recent_result,"text",t("recent_interrupted_refund",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"refund":"%.0f"%float(result.refund)}))
  elif not result.is_empty():
@@ -428,6 +438,7 @@ func refresh_details() -> void:
   forge_icon.call("apply",bag.drones[selected_id]) if valid else forge_icon.call("clear")
   return
  if section_index!=1:return
+ equipment_ui.refresh()
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
  var gate=int(bag.sealed.get(selected_id,0))
@@ -477,11 +488,7 @@ func hanging_name(key: String) -> String:
  if hanging_display_provider.is_valid():return str(hanging_display_provider.call(key))
  return catalog_name("hyperspace_hangings",key,"unknown_hanging")
 func toggle_equipped() -> void:
- if not hull_capacity_provider.is_valid():return
- var ids: Array=bag.equipped.duplicate()
- if ids.has(selected_id):ids.erase(selected_id)
- else:ids.append(selected_id)
- host.game.hyperspace.set_equipped(host.game,ids,int(hull_capacity_provider.call()))
+ equipment_ui.activate()
 func toggle_favorite() -> void:
  var ids: Array=bag.favorites.duplicate()
  if ids.has(selected_id):ids.erase(selected_id)
