@@ -1,0 +1,348 @@
+[
+  {
+    "file": "evidence/before-04-first-screen.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-04-first-screen.png",
+    "sha256": "0f2d58c35431e6d8473b04509c123e629f774ef886528ce6b424271bbf9f6815",
+    "bytes": 191572,
+    "original_mtime_utc": "2026-10-07T15:50:16.968676+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-06-guide.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-06-guide.png",
+    "sha256": "5e2673f23773f503e040947d6f3c539057e4bc0c94a489405f3b604810dbd033",
+    "bytes": 224530,
+    "original_mtime_utc": "2026-10-07T15:50:41.956697+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-10-first-upgrade.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-10-first-upgrade.png",
+    "sha256": "cf794bba0e664fd244898bb38d2a42cd3a609d8b95e69089f9ec64bca0536bc7",
+    "bytes": 309332,
+    "original_mtime_utc": "2026-10-07T15:51:39.196737+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-15-equipped.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-15-equipped.png",
+    "sha256": "49377157e34605cda71a301da84471559e8bcdae0bed866be459a26da3b2b55c",
+    "bytes": 224801,
+    "original_mtime_utc": "2026-10-07T15:54:30.268805+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-18-defence-upgrade.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-18-defence-upgrade.png",
+    "sha256": "14afb21cad80e08fed2f188db2886e66898a3d91eeb71aed1c83deb7cca967de",
+    "bytes": 182115,
+    "original_mtime_utc": "2026-10-07T15:55:39.240837+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-24-reactor-page.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-24-reactor-page.png",
+    "sha256": "866dec2d58edf5ffe44e3caef496b3d342be9b4731e3031a2b2b2de42457d422",
+    "bytes": 372775,
+    "original_mtime_utc": "2026-10-07T15:57:28.056854+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-27-level2.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-27-level2.png",
+    "sha256": "a9ed22af9915ab0059be868d83eee3cf4d17fc242a07283b24095de68c2c6a50",
+    "bytes": 268909,
+    "original_mtime_utc": "2026-10-07T15:59:15.668895+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-33-cannon-menu.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-33-cannon-menu.png",
+    "sha256": "3f182460c0a088ac1e0c518f4039cf1f62cab009e4abfe68747c4bdba8a38323",
+    "bytes": 188833,
+    "original_mtime_utc": "2026-10-07T16:03:52.048988+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-37-shield-result.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-37-shield-result.png",
+    "sha256": "ed299c69cfa15b86e92f0ebd714be7c5881f105f7736947793ceb30c03d25cdf",
+    "bytes": 206818,
+    "original_mtime_utc": "2026-10-07T16:06:56.789051+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-41-unlock-factory.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-41-unlock-factory.png",
+    "sha256": "38aecd2528cdfc7074efd13f0ac05cd66e154c3f25530e1a7625cde4af2c1059",
+    "bytes": 190861,
+    "original_mtime_utc": "2026-10-07T16:08:49.745150+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-42-first-factory.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-42-first-factory.png",
+    "sha256": "074b7687ffcbeb56e11c92b8a9d19dbf4322dcdb5b412d59e9beaa196873aa57",
+    "bytes": 202855,
+    "original_mtime_utc": "2026-10-07T16:09:05.669160+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/before-44-assigned-ai.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/before-44-assigned-ai.png",
+    "sha256": "3a0cdec3a4a575245ae39b4247b7ddb8597876309fce253aa4e8ca0bb74f6bca",
+    "bytes": 267756,
+    "original_mtime_utc": "2026-10-07T16:10:20.905204+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-03-equip-target.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-03-equip-target.png",
+    "sha256": "d562055c05cbf89a6aaad2f83104afc5582b2b7e7007a99673d135f077c6169e",
+    "bytes": 220915,
+    "original_mtime_utc": "2026-10-07T16:14:10.409293+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-05-upgrade-target.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-05-upgrade-target.png",
+    "sha256": "da0eb7abb3cdd83117c73e03b6bf699d07eb5d53d225397f372fc38f84229860",
+    "bytes": 195154,
+    "original_mtime_utc": "2026-10-07T16:15:00.693314+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-06-defence-target.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-06-defence-target.png",
+    "sha256": "a5837d44ecc0d4f0a0dbb5cc77ca889dc43622b88edf6cf38d67892cdf22103b",
+    "bytes": 236096,
+    "original_mtime_utc": "2026-10-07T16:15:09.065317+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-07-first-retreat.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-07-first-retreat.png",
+    "sha256": "7bd37c8deca12dab7056d5986dad65650861297b885e5acffa3775d1e050f748",
+    "bytes": 252620,
+    "original_mtime_utc": "2026-10-07T16:15:17.277320+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-08-defence-equipped.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-08-defence-equipped.png",
+    "sha256": "bceaa401614294f5545a5c80fcfe14767081e85c086e91cc0bb650579c0e2aa6",
+    "bytes": 227452,
+    "original_mtime_utc": "2026-10-07T16:16:25.961339+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-14-reactor-upgraded.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-14-reactor-upgraded.png",
+    "sha256": "3b77408d8c4a271d5fab7ddc7cc00f5e3594121d72eea8e1c91bbd30264d32cd",
+    "bytes": 343647,
+    "original_mtime_utc": "2026-10-07T16:20:47.973413+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "evidence/after-18-beam-equipped.png",
+    "original_relative_path": "test/work/tutorial-opening/evidence/after-18-beam-equipped.png",
+    "sha256": "00d8ad1b039ccf9b9d0009e4ea2257f73634aceaae376b63ece71249bba820eb",
+    "bytes": 211520,
+    "original_mtime_utc": "2026-10-07T16:22:35.169467+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/06-cannon-result-x1.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/06-cannon-result-x1.png",
+    "sha256": "062626875e3fe468a68bc1427b55a78313664f58418f825ff007075faf57e06d",
+    "bytes": 199530,
+    "original_mtime_utc": "2026-10-07T16:40:38.189900+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/18-next-failure.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/18-next-failure.png",
+    "sha256": "a6d05357bf6f0d5b429afac1c71b3f28578e92aa126e1f1705d0314b45fa63cb",
+    "bytes": 206576,
+    "original_mtime_utc": "2026-10-07T16:44:33.838050+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/21-ai-increased.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/21-ai-increased.png",
+    "sha256": "3d74559643dde8c1435bc69c7d13411a605d8b98e716403d428fd8ca62a948ad",
+    "bytes": 259094,
+    "original_mtime_utc": "2026-10-07T16:45:12.906067+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/37-stage7-progress.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/37-stage7-progress.png",
+    "sha256": "8f1da3b9a7c99edc0ae2f9c139ebe31823a812987f3395b90aa07c450442fffd",
+    "bytes": 232507,
+    "original_mtime_utc": "2026-10-07T16:56:16.854309+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/64-first-hyperspace-page.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/64-first-hyperspace-page.png",
+    "sha256": "91cbe4a418aad206223c0a619cd892bef353c10e46f0528eda5b1e8ce5088a0f",
+    "bytes": 253721,
+    "original_mtime_utc": "2026-10-07T17:31:56.647115+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/67-exploration-current.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/67-exploration-current.png",
+    "sha256": "343a652df3f4c91e996bc40cf0b009f77b08b6e152c0d625d5c3e0e7ae04369d",
+    "bytes": 269060,
+    "original_mtime_utc": "2026-10-07T17:36:31.331263+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/73-drone-equip-confirm.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/73-drone-equip-confirm.png",
+    "sha256": "5fb66b12d72e082cefc219727198a2bba17258b845c2ef515650184977d51edb",
+    "bytes": 227065,
+    "original_mtime_utc": "2026-10-07T17:37:33.751288+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/82-mixed-weapons-result.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/82-mixed-weapons-result.png",
+    "sha256": "cd5b3f4a74c83fa24dffe92251ca7c1b9d41461d62eb40cae18c9fa7021d2018",
+    "bytes": 238087,
+    "original_mtime_utc": "2026-10-07T17:40:08.419332+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/91-armour33-wave8-x1.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/91-armour33-wave8-x1.png",
+    "sha256": "c32eed9406b6b6ba3472a0ac1ef40fe976a1ffb3f9a7ee646cced4f327f40de9",
+    "bytes": 217513,
+    "original_mtime_utc": "2026-10-07T17:49:15.763511+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/94-cannon27-at-main8.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/94-cannon27-at-main8.png",
+    "sha256": "3862acce393e83ba95672ce7895497eb7115e508d45a998f9ba83e436c543208",
+    "bytes": 217025,
+    "original_mtime_utc": "2026-10-07T17:50:50.551593+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/99-main8-all-beam-result-x1.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/99-main8-all-beam-result-x1.png",
+    "sha256": "b2aced9ddfab15274cb0c493564d498e3c1dde8d0e822259db3186ecb8542b38",
+    "bytes": 252516,
+    "original_mtime_utc": "2026-10-07T17:53:56.903708+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/121-first-enhancement-purchased.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/121-first-enhancement-purchased.png",
+    "sha256": "a171b65250ec1b57f55769b244a60b8e5654629ce9ab642af037f7e32b2d0f72",
+    "bytes": 267797,
+    "original_mtime_utc": "2026-10-07T18:11:30.928167+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/125-second-enhancement-result.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/125-second-enhancement-result.png",
+    "sha256": "ab8c5108a43900221a41ec900d07e8af867adff541855f4174b0b3ce2ee34cb9",
+    "bytes": 297118,
+    "original_mtime_utc": "2026-10-07T18:21:20.884470+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/142-final-live-checkpoint.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/142-final-live-checkpoint.png",
+    "sha256": "fa3f3018cc074bf3c75149da5480b9dce60350f3e52b54b9c9b06a5899c2a9d5",
+    "bytes": 231007,
+    "original_mtime_utc": "2026-10-07T18:36:56.760912+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/143-handoff-paused-live.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/143-handoff-paused-live.png",
+    "sha256": "efb305fac6d920cdbc2abc1495da1568c6944ae60cc1bf1592c85738e287fd04",
+    "bytes": 218671,
+    "original_mtime_utc": "2026-10-07T18:40:12.740993+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/155-main9-missile-defeat.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/155-main9-missile-defeat.png",
+    "sha256": "c14b09b6054d6b819a9fffa1b6fc888a2cace30185ea5bfea907accdfc229a00",
+    "bytes": 217722,
+    "original_mtime_utc": "2026-10-07T18:44:05.649076+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/195-real-enemy-defence-readout.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/195-real-enemy-defence-readout.png",
+    "sha256": "48163742b3caecd963fe4321c57fedaf152a11c3cacd92a472a63bc6b7c33634",
+    "bytes": 225866,
+    "original_mtime_utc": "2026-10-07T19:22:57.954060+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/205-all-weapons-physical-confirmed.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/205-all-weapons-physical-confirmed.png",
+    "sha256": "c91fe170f371172a8bfeb160f0ceadf4a264eb3e32ad8b308f4986852a8cc3bd",
+    "bytes": 210038,
+    "original_mtime_utc": "2026-10-07T19:32:19.282308+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "incremental-6-10/212-actual-ninth-six-defence.png",
+    "original_relative_path": "test/work/tutorial-opening/incremental-6-10/212-actual-ninth-six-defence.png",
+    "sha256": "2fb7e0393cd634fb63d89f2ff91412f9a9574abf6906b9bd92e72d5f7b56b880",
+    "bytes": 229214,
+    "original_mtime_utc": "2026-10-07T19:35:41.154380+00:00",
+    "kind": "original cloud desktop PNG; not a test fixture"
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "evidence/qa-continuation.log",
+    "original_log_sha256": "501268147699a3a64f8dda2c6a610ab1144b2fcbc8b354ec6eddc91c84304d3a",
+    "retained_events": 152,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "incremental-6-10/runtime-fixed-wait.log",
+    "original_log_sha256": "d35871e88cca6db394cbb9d563406ecf69fc7f0785f9b4f356ff6db8ae22dfa1",
+    "retained_events": 86,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "incremental-6-10/runtime.log",
+    "original_log_sha256": "e08e52942fc8dc2b37461dedb21a56ddb62399c3e847c4fa4098f71dc500b6a4",
+    "retained_events": 140,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "incremental-6-10/runtime-after-entryfix.log",
+    "original_log_sha256": "b00e4b66937f68ef2d038ea1ecdaa47519312ac64d50759e70088dca2132e763",
+    "retained_events": 112,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "incremental-6-10/runtime-current-d208-plus-perf.log",
+    "original_log_sha256": "3a67ee8a1e5715e13cce6d7fd6fb8756c3b2f73c12b560a12fddbe6bea67fe14",
+    "retained_events": 260,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  },
+  {
+    "file": "operations-and-phase-traces.jsonl",
+    "source_log": "incremental-6-10/runtime-enemy-defence-inspection.log",
+    "original_log_sha256": "a41dd5a64e543a0f3e76fa95b87069daf2e6877ab800d7ed5eae417cabfb06a0",
+    "retained_events": 27,
+    "extraction": "Only original QA_INPUT and phase/speed/cleared change QA_TRACE lines. Repeated unchanged traces omitted. No player profile or entity dump."
+  }
+]

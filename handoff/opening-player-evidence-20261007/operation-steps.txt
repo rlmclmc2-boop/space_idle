@@ -1,0 +1,14 @@
+Visible operation supplement (all cloud desktop mouse input, no direct gameplay/save edits):
+Baseline: fresh save -> dismiss chrono notice -> open free W02 picker -> pulse -> upgrade once
+-> free D02 armour -> later select missile/cannon/shield -> reactor 均分 -> AI factory 生成×1
+-> furnace +1 AI -> wait and observe construction and periodic iron output.
+Candidate fresh: same free equip and upgrade -> observe defensive hint -> equip D02 armour
+-> first retreat notice persisted after short retreat; this observation drove the final state fix.
+Final version ordinary continuation: load full baseline-stage5 manual save -> reactor MAX7 +均分
+-> armour MAX14 -> enter6 -> change W03 missile8 to beam8, observe beam and enemy shield regen.
+Separate QA continuation: copy exact stage6 input -> X5 bounded run -> restore X1 for manual changes
+-> shield MAX13 -> observe recurring encounter6 retreat -> W03 beam MAX14 -> W01 cannon6 to beam6
+-> observe again at X1 -> bounded X5 continuation still repeats retreat -> X1, pause with Space
+-> 保存 > 手动保存 -> archive synthetic output -> terminate QA process.
+Captures after-guide/ are regression fixture scenes and must not be counted as ordinary-play combat.
+Actual fresh after01–08 precede final retreat auto-completion fix; final ordinary after09+ and QA use2ae9426.
