@@ -7975,6 +7975,11 @@
       "params": [
         "resistance"
       ]
+    },
+    "research.effect.iron_unbuilt": {
+      "params": [
+        "time"
+      ]
     }
   },
   "bindings": {

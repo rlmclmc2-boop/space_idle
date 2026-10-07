@@ -1672,6 +1672,14 @@
     "note": "固定高度效果模板"
   },
   {
+    "key": "research.effect.iron_unbuilt",
+    "text": "尚未建成 · 建成后每 {time} 秒生成铁块",
+    "params": "time",
+    "category": "research",
+    "note": "炼铁炉等级0：区分施工与建成作用，不把当前0产量当成未来收益",
+    "source": "hightech_presentation.gd"
+  },
+  {
     "key": "research.effect.jewel",
     "text": "每 {time} 秒生成核心块 · 每块含 {value} 强化碎片",
     "params": "value,time",

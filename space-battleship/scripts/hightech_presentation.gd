@@ -20,6 +20,8 @@ static func effect(game, key: String) -> Dictionary:
 static func effect_template(game, key: String) -> Dictionary:
 	if not game.hightech_unlocked(key):return {}
 	var data := effect(game,key)
+	if key==BattleGame.FURNACE and game.effective_hightech_level(key)==0:
+		return {"key":"research.effect.iron_unbuilt","values":{"time":data.time},"spans":{"time":{"role":"time","unit":" 秒"}}}
 	var params := {"value":data.value}
 	var spans := {"value":{"role":"effect"}}
 	if data.effect_type in ["iron","jewel"]:
