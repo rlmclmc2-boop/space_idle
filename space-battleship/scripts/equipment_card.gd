@@ -101,6 +101,11 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	# Empty slots retain both actions without overlapping the shared bottom button.
 	for state in ["normal","hover","pressed","disabled"]:
 		var box: StyleBox = equip_button.get_theme_stylebox(state).duplicate()
+		# Resource.duplicate does not preserve the source style's signal link.
+		# This copy also needs its draw commands invalidated after tile freezing.
+		if box is StyleBoxTexture and box.texture is AtlasTexture:
+			if not box.texture.changed.is_connected(box.emit_changed):
+				box.texture.changed.connect(box.emit_changed)
 		box.content_margin_top = 2
 		box.content_margin_bottom = 2
 		equip_button.add_theme_stylebox_override(state,box)

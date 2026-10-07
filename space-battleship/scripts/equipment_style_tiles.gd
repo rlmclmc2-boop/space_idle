@@ -54,6 +54,9 @@ func panel_style(fill:Color,edge:Color,radius:int) -> StyleBoxTexture:
 	# margins, while only the immutable baked texture is shared.
 	var box:=StyleBoxTexture.new()
 	box.texture=tiles[key]
+	# StyleBoxTexture does not forward Texture2D.changed. When the atlas RID
+	# changes, invalidate the style's existing Control draw commands explicitly.
+	box.texture.changed.connect(box.emit_changed)
 	box.set_texture_margin(SIDE_LEFT,PAD_LEFT+radius)
 	# Top corners include the shadow center shifted three pixels downward.
 	box.set_texture_margin(SIDE_TOP,PAD_TOP+radius+3.0)
@@ -82,7 +85,7 @@ func _freeze_tile(view:SubViewport,shared:AtlasTexture) -> void:
 	# Keep the valid UPDATE_ONCE texture if a renderer cannot read it back.
 	if pixels==null or pixels.is_empty():return
 	var frozen:=ImageTexture.create_from_image(pixels)
-	# AtlasTexture emits changed to its existing StyleBoxTexture users. No
-	# control traversal, style replacement or page redraw framework is needed.
+	# The explicit Texture2D.changed -> StyleBox.changed links above (and on
+	# margin-adjusted copies) invalidate only users of this tile before release.
 	shared.atlas=frozen
 	view.queue_free()
