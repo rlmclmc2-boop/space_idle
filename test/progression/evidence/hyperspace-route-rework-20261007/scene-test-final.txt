@@ -1,0 +1,46 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+RENDERED staged-alpha-1 actors=3 active=true rejection={}
+RENDERED staged-alpha-2 actors=5 active=true rejection={}
+RENDERED staged-alpha-3 actors=7 active=true rejection={}
+RENDERED staged-alpha-4 actors=5 active=true rejection={}
+RENDERED staged-alpha-5 actors=8 active=true rejection={}
+RENDERED staged-alpha-6 actors=7 active=true rejection={}
+RENDERED staged-alpha-7 actors=6 active=true rejection={}
+RENDERED staged-alpha-8 actors=7 active=true rejection={}
+RENDERED staged-alpha-9 actors=2 active=true rejection={}
+RENDERED staged-alpha-10 actors=1 active=true rejection={}
+RENDERED staged-beta-1 actors=7 active=true rejection={}
+RENDERED staged-beta-2 actors=6 active=true rejection={}
+RENDERED staged-beta-3 actors=7 active=true rejection={}
+RENDERED staged-beta-4 actors=8 active=true rejection={}
+RENDERED staged-beta-5 actors=6 active=true rejection={}
+RENDERED staged-beta-6 actors=8 active=true rejection={}
+RENDERED staged-beta-7 actors=6 active=true rejection={}
+RENDERED staged-beta-8 actors=8 active=true rejection={}
+RENDERED staged-beta-9 actors=3 active=true rejection={}
+RENDERED staged-beta-10 actors=3 active=true rejection={}
+RENDERED staged-gamma-1 actors=3 active=true rejection={}
+RENDERED staged-gamma-2 actors=4 active=true rejection={}
+RENDERED staged-gamma-3 actors=4 active=true rejection={}
+RENDERED staged-gamma-4 actors=4 active=true rejection={}
+RENDERED staged-gamma-5 actors=3 active=true rejection={}
+RENDERED staged-gamma-6 actors=5 active=true rejection={}
+RENDERED staged-gamma-7 actors=4 active=true rejection={}
+RENDERED staged-gamma-8 actors=5 active=true rejection={}
+RENDERED staged-gamma-9 actors=2 active=true rejection={}
+RENDERED staged-gamma-10 actors=1 active=true rejection={}
+RENDERED staged-delta-1 actors=2 active=true rejection={}
+RENDERED staged-delta-2 actors=4 active=true rejection={}
+RENDERED staged-delta-3 actors=2 active=true rejection={}
+RENDERED staged-delta-4 actors=3 active=true rejection={}
+RENDERED staged-delta-5 actors=3 active=true rejection={}
+RENDERED staged-delta-6 actors=5 active=true rejection={}
+RENDERED staged-delta-7 actors=4 active=true rejection={}
+RENDERED staged-delta-8 actors=6 active=true rejection={}
+RENDERED staged-delta-9 actors=2 active=true rejection={}
+RENDERED staged-delta-10 actors=1 active=true rejection={}
+SCENE ALL40 failures=0

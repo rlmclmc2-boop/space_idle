@@ -29,7 +29,9 @@ class EntityTests(unittest.TestCase):
         with self.assertRaises((ValueError,KeyError)):h.project_tables(t,self.main,self.frozen)
     def test_formal_defaults(self):
         for name,v in self.default.items():self.assertEqual(v,json.loads((self.data/name).read_text()))
-        self.assertEqual(85,sum(not m['reference_member_ordinals_for_resource_blocks'] for a in self.default['space_enemy_reward_recipes.json']['groups'].values() for m in a))
+        # The authorized dedicated boss rosters remove43 zero-budget actors;
+        # all source reward blocks still appear exactly once per group.
+        self.assertEqual(42,sum(not m['reference_member_ordinals_for_resource_blocks'] for a in self.default['space_enemy_reward_recipes.json']['groups'].values() for m in a))
         self.assertEqual(40,sum(0 in m['reference_member_ordinals_for_resource_blocks'] for a in self.default['space_enemy_reward_recipes.json']['groups'].values() for m in a))
     def test_all_tables_shuffle_identical_bytes(self):
         t=copy.deepcopy(self.tables)

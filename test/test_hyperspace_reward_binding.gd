@@ -46,7 +46,8 @@ func _initialize()->void:
  check(Validator.binding_error(gid,g.db.groups,g.db.enemies,g.db.levels,7,g.ratio("resRatio"),g.jewel_ratio()).is_empty(),"runtime view validator")
  g.manual_hyperspace.finish(g,false)
  var ticket:float=float(g.profile.hyperspace.energy)
- g.db.levels[6].resRatio=-1
+ # Resource rewards use the latest cleared mainline level, not exploration7.
+ g.db.levels[Binder.latest_cleared_level(g)-1].resRatio=-1
  check(not g.start_hyperspace("alpha",7) and g.profile.hyperspace.energy==ticket,"bad changed ratio rejected before ticket")
  check(not g.hyperspace.snapshot(g).manual_ready,"failed rebinding clears readiness")
  print("REWARD_BINDING ",checks," checks ",failures," failures")

@@ -1,0 +1,18 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+GRAPHIC_READY alpha weapon=[{"key":"laser","level":35},{"key":"","level":1},{"key":"","level":1}] def=[{"key":"armour","level":35},{"key":"shield","level":35}]
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"normal"} count=3 work=2.99999999999999
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"normal"} count=5 work=8.16666666666665
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"normal"} count=7 work=14.366666666667
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"normal"} count=5 work=23.15
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"elite"} count=8 work=29.8666666666663
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"elite"} count=7 work=39.6833333333324
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"elite"} count=6 work=49.4999999999985
+GRAPHIC_ENCOUNTER {"boss":false,"final":false,"tier":"elite"} count=7 work=61.8999999999978
+GRAPHIC_ENCOUNTER {"boss":true,"final":false,"tier":"boss"} count=2 work=75.849999999997
+GRAPHIC_ENCOUNTER {"boss":true,"final":true,"tier":"ultimate"} count=1 work=93.4166666666626
+GRAPHIC_FINAL_HOLD
+GRAPHIC_COMPLETE {"elapsed":119.799999999994,"end_point":10,"level":5,"reason":"success","refund":0.0,"return_point":0,"return_stage":34,"route":"alpha"}
