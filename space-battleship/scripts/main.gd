@@ -1421,6 +1421,11 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
 	var depth := clampf((y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*float(enemy_pose(enemy).variance)
+	# Explicit formations reserve fixed screen-pixel mount/protection margins.
+	# On compact windows, reduce the drawn hull as well as its mount envelope;
+	# never validate with a larger fake screen scale or waive real collisions.
+	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
+		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
 	# Full five-column fleets reserve space for hover and protection outlines.
 	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
 
