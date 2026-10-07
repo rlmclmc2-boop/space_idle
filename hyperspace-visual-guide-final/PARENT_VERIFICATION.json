@@ -1,0 +1,19 @@
+{
+  "outputs": [
+    "hyperspace_config.json",
+    "space_enemy_candidates.json",
+    "space_enemy_routes.json",
+    "space_enemy_reward_recipes.json",
+    "space_enemy_reward_catalog.json",
+    "hyperspace_visuals.json"
+  ],
+  "previous_five_equal": true,
+  "visual_matches_runtime": true,
+  "invalid_values_rejected": 19,
+  "exact_data_cells": 8126,
+  "sheets": 22,
+  "sha256": {
+    "hyperspace_config.xlsx": "3c735524714f01b9c21ab72de05bbc3f9dd554201af175e224f1e55f61b9fdec",
+    "hyperspace_enemies.xlsx": "75b1baedad88df5440a9daf0abe8c2ceef244abda17ad8e57218a470993c9a58"
+  }
+}

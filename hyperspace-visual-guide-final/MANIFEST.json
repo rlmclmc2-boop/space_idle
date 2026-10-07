@@ -1,0 +1,113 @@
+{
+  "base": "d66fb1c69f35a973064666a14bf82c6d4b422271",
+  "published": true,
+  "files": [
+    {
+      "path": "space-battleship/scripts/hyperspace_appearance.gd",
+      "sha256": "eef2e8f04e37809879ac3751c04112e47daa681c4c8e793fa56fcc84e5df6414",
+      "bytes": 10265
+    },
+    {
+      "path": "space-battleship/scripts/hyperspace_drone_visual.gd",
+      "sha256": "7e7d0124cf2867cd789c86f82a919469f306eac1bf57309d2994b536493415d4",
+      "bytes": 5144
+    },
+    {
+      "path": "space-battleship/scripts/hyperspace_icon.gd",
+      "sha256": "999775f2dfb200948cc83f0706e90a06db623d531a69225a73ed5487859d4a3e",
+      "bytes": 472
+    },
+    {
+      "path": "space-battleship/scripts/hyperspace_icon_texture.gd",
+      "sha256": "6a51208ae97e0ddaf96a72f820b6673a4222d313699efe9c072b3efdd224d4f9",
+      "bytes": 3278
+    },
+    {
+      "path": "space-battleship/scripts/hyperspace_panel.gd",
+      "sha256": "f611ed218be1f84995d4a012f1e49afc0621bcc354c9fd60ff64f7d64a917756",
+      "bytes": 38888
+    },
+    {
+      "path": "space-battleship/scripts/battlefield.gd",
+      "sha256": "16da03c5cbbc2b89cadc21fc3348294bda15c928c2ccde71f7ebbe22d237874a",
+      "bytes": 45044
+    },
+    {
+      "path": "space-battleship/scripts/main.gd",
+      "sha256": "3a01714fc5d51bb5261cc2950302f54375c73c553cbbdba5959d8a0123831310",
+      "bytes": 174523
+    },
+    {
+      "path": "space-battleship/scripts/hyperspace_commands.gd",
+      "sha256": "02dd9993918f6ea304fafc9b9096d3a6190d59cdd1e7423224caa69bda672126",
+      "bytes": 17535
+    },
+    {
+      "path": "space-battleship/scripts/drone_forge.gd",
+      "sha256": "e5eb88ab12f16b12b9f0c7d231e0ea4dc4e7fdaf4dcb3166a1ecc17287497765",
+      "bytes": 9180
+    },
+    {
+      "path": "space-battleship/data/hyperspace_visuals.json",
+      "sha256": "1c432da564cc3c187432582cbb643a867b05048526cc3affe6408f0e7a2a0a19",
+      "bytes": 456
+    },
+    {
+      "path": "space-battleship/data/ui_text.json",
+      "sha256": "634f6ad4afe7b8503a96d20d8f461c8c48f3ad552298676155f0636bed64b5e5",
+      "bytes": 391219
+    },
+    {
+      "path": "space-battleship/data/ui_text_contract.json",
+      "sha256": "e630d64aef907e0844faebf3f1aa6c89eb37535bf7027c93e3e1ce6a40570f01",
+      "bytes": 157194
+    },
+    {
+      "path": "space-battleship/data/hyperspace_entity_schema.json",
+      "sha256": "0b2c4db8e0afc1487a4938a2e5bbb953022eae37c731ebb3132b690c612c49a8",
+      "bytes": 824340
+    },
+    {
+      "path": "space-battleship/tools/hyperspace_entities.py",
+      "sha256": "c5bcad6f7c37da4b7ea5b4ccdf22acf8815572a982a60cc11aa29a9379928a32",
+      "bytes": 18549
+    },
+    {
+      "path": "test/test_hyperspace_appearance.gd",
+      "sha256": "2c394195d14db03b6d09623bc09384728992cc394250a32e2f07d83f20782c29",
+      "bytes": 7008
+    },
+    {
+      "path": "test/test_hyperspace_ui.gd",
+      "sha256": "41b52ff5e08500a7b81944992cc1e9456071f664c4fc880eeca0dfd8f65cfecb",
+      "bytes": 27199
+    },
+    {
+      "path": "test/test_hyperspace_entities.py",
+      "sha256": "4c037f95bce4959afaad8f22c6b42d63fd6ce3d2cc53e19246f32834a8f719ee",
+      "bytes": 8359
+    },
+    {
+      "path": "space-battleship/docs/异空间无人机改造指南.md",
+      "sha256": "629ac0e2bacb34769e8135e8df176fdad846b429c8b9ccbd05b5061b5c142297",
+      "bytes": 5227
+    },
+    {
+      "path": "space-battleship/config_excel/hyperspace_config.xlsx",
+      "sha256": "3c735524714f01b9c21ab72de05bbc3f9dd554201af175e224f1e55f61b9fdec",
+      "bytes": 41607
+    },
+    {
+      "path": "space-battleship/config_excel/hyperspace_enemies.xlsx",
+      "sha256": "75b1baedad88df5440a9daf0abe8c2ceef244abda17ad8e57218a470993c9a58",
+      "bytes": 48965
+    },
+    {
+      "path": "test/test_drone_omen_scope.gd",
+      "sha256": "50e7b27f2c954bc1f0dd21923e071714a877241c63e4bf4f06c7eeb3ae8a14f0",
+      "bytes": 1981
+    }
+  ],
+  "schema_serialization": "Whitespace-only compact JSON; parsed values/types/key order exact",
+  "commit": "08e5e80d6c1653d6cdd8bcc6fb4f112f67e4f0b2"
+}
