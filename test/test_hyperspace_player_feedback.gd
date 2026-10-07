@@ -9,6 +9,11 @@ func gameplay_snapshot(g) -> String:
  var snapshot:Dictionary=g.profile.duplicate(true)
  snapshot.erase("hyperspaceReceipt") # The sole authorized UI-read marker.
  return JSON.stringify(snapshot)
+func same_receipt(raw:Dictionary,expected:Dictionary) -> bool:
+ var transfer=preload("res://scripts/save_transfer.gd")
+ # JSON numbers are floats; preserve exact integral values without tolerance.
+ if raw.size()!=4 or not transfer.shape(raw,transfer.schema().hyperspaceReceipt):return false
+ return int(raw.round)==int(expected.round) and int(raw.run)==int(expected.run) and raw.drone_id==expected.drone_id and raw.unread==expected.unread
 func capture(name:String) -> void:
  var folder=OS.get_environment("PLAYER_FEEDBACK_EVIDENCE")
  if folder.is_empty() or DisplayServer.get_name()=="headless":return
@@ -114,7 +119,13 @@ func run() -> void:
  var unread_save:Dictionary=g.portable_save_data()
  check(preload("res://scripts/hyperspace_state.gd").valid(unread_save.hyperspace,g.hyperspace.config,g.db.levels.size()) and g.hyperspace.Permission.bindings_valid(unread_save,g.db.data,g.hyperspace.config),"Save-boundary fixture satisfies the actual inventory and planet contracts")
  check(bool(unread_save.hyperspaceReceipt.unread),"Unseen rewards enter the existing portable save without an extra settlement")
- var resumed=BattleGame.new(g.db,false);resumed.load_progress_data(unread_save)
+ var transfer=preload("res://scripts/save_transfer.gd").new()
+ var exported="user://feedback-unread-export.json"
+ check(transfer.export_progress(g,exported)==OK,"Unread reward uses the actual export writer and schema cleaner")
+ var prepared:Dictionary=transfer.prepare(exported,g.db)
+ check(prepared.error.is_empty() and same_receipt(prepared.get("data",{}).get("hyperspaceReceipt",{}),unread_save.hyperspaceReceipt),"Actual file import preparation preserves the cleaned unread marker")
+ if not prepared.error.is_empty():scene.queue_free();await process_frame;quit(1);return
+ var resumed=BattleGame.new(g.db,false);resumed.load_progress_data(prepared.data)
  check(resumed.profile.hyperspaceReceipt==g.profile.hyperspaceReceipt,"Unread identity survives the existing save import boundary")
  var previous_host_game=scene.game
  scene.game=resumed;f.restore_read_state();scene.refresh_hyperspace_badge()
@@ -126,13 +137,32 @@ func run() -> void:
  f.mark_viewed()
  check(not f.unread and not dot.visible and nav.text==UIText.t(scene.SYSTEM_TITLES[9]),"Seeing the actual receipt restores the normal navigation caption and clears its unread dot")
  check(gameplay_snapshot(g)==before,"Reading a later receipt never settles, equips or mutates gameplay progress")
- var read_save:Dictionary=g.portable_save_data();resumed.load_progress_data(read_save)
+ var read_save:Dictionary=g.portable_save_data()
+ check(transfer.export_progress(g,exported)==OK,"Read reward also uses the actual export writer")
+ prepared=transfer.prepare(exported,g.db)
+ check(prepared.error.is_empty() and not bool(prepared.get("data",{}).get("hyperspaceReceipt",{}).get("unread",true)),"Actual import preparation preserves the already-read flag")
+ if not prepared.error.is_empty():scene.queue_free();await process_frame;quit(1);return
+ resumed.load_progress_data(prepared.data)
  scene.game=resumed;f.restore_read_state()
  check(not f.unread,"Read rewards remain read after save and restart")
- var legacy:Dictionary=read_save.duplicate(true);legacy.erase("hyperspaceReceipt");resumed.load_progress_data(unread_save);resumed.load_progress_data(legacy);f.restore_read_state()
+ var legacy:Dictionary=read_save.duplicate(true);legacy.erase("hyperspaceReceipt")
+ prepared=transfer.prepare_data(legacy,g.db)
+ check(prepared.error.is_empty() and not prepared.get("data",{}).has("hyperspaceReceipt"),"Legacy import remains valid and cleaning never invents UI metadata")
+ if not prepared.error.is_empty():scene.queue_free();await process_frame;quit(1);return
+ resumed.load_progress_data(unread_save);resumed.load_progress_data(prepared.data);f.restore_read_state()
  check(not f.unread,"Legacy saves do not announce already-owned drones again")
  var invalid:Dictionary=read_save.duplicate(true);invalid.hyperspaceReceipt={"round":"bad","run":-1,"drone_id":5,"unread":true};resumed.load_progress_data(invalid);f.restore_read_state()
  check(not f.unread,"Invalid optional UI receipt metadata stays quiet without accepting a false reward")
+ check(transfer.prepare_data(invalid,g.db).error=="format","Malformed known UI fields follow the existing strict import rejection policy")
+ invalid=read_save.duplicate(true);invalid.hyperspaceReceipt.round=-1;invalid.hyperspaceReceipt.unread=true
+ prepared=transfer.prepare_data(invalid,g.db)
+ check(prepared.error.is_empty(),"Integral UI markers follow existing integer shape validation")
+ if not prepared.error.is_empty():scene.queue_free();await process_frame;quit(1);return
+ resumed.load_progress_data(prepared.data);f.restore_read_state()
+ check(not f.unread,"Semantically invalid optional UI counters load quietly through the real cleaner")
+ var annotated:Dictionary=read_save.duplicate(true);annotated.hyperspaceReceipt.private_note="not-portable"
+ prepared=transfer.prepare_data(annotated,g.db)
+ check(prepared.error.is_empty() and not prepared.get("data",{}).get("hyperspaceReceipt",{}).has("private_note"),"Adding receipt fields never enables arbitrary metadata transport")
  var quiet=BattleGame.new(g.db,false);scene.game=quiet;f.restore_read_state();f.show_receipt()
  check(not f.unread and not f.card.visible,"A fresh save never invents a received-materials card")
  scene.game=previous_host_game
