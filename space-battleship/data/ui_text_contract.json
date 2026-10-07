@@ -8121,6 +8121,9 @@
     },
     "hyperspace.equipment_error_invalid_loadout": {
       "params": []
+    },
+    "ship.refit.carrier_hint": {
+      "params": []
     }
   },
   "bindings": {

@@ -9075,7 +9075,7 @@
   },
   {
     "key": "ship.refit.carrier",
-    "text": "无人机",
+    "text": "伴飞挂载",
     "params": "",
     "category": "ship",
     "note": "舰体静态预览与真实槽位显示"
@@ -12260,13 +12260,13 @@
   },
   {
     "key": "ship.refit.carrier_empty",
-    "text": "没有已装载武器的无人机",
+    "text": "暂无伴飞武器挂载",
     "params": "",
     "category": "ship"
   },
   {
     "key": "ship.refit.carrier_page",
-    "text": "武器无人机 · {page}/{pages} 页 · 共 {count} 架",
+    "text": "伴飞武器挂载 · {page}/{pages} 页 · 共 {count} 处",
     "params": "{page},{pages},{count}",
     "category": "ship"
   },
@@ -15204,5 +15204,12 @@
     "params": "",
     "category": "hyperspace",
     "note": ""
+  },
+  {
+    "key": "ship.refit.carrier_hint",
+    "text": "主舰挂点以外的舰载武器由伴飞平台承载，W 编号仍对应原武器槽。不占用异空间无人机槽。",
+    "params": "",
+    "category": "ship",
+    "note": "区分溢出武器挂载与异空间独立无人机，仅表现说明"
   }
 ]
