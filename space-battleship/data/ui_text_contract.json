@@ -8274,6 +8274,11 @@
     },
     "hyperspace.reward_nav_hint": {
       "params": []
+    },
+    "research.effect.iron_unbuilt": {
+      "params": [
+        "time"
+      ]
     }
   },
   "bindings": {

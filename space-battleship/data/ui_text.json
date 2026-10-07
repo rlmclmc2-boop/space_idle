@@ -15470,5 +15470,13 @@
     "params": "",
     "category": "hyperspace",
     "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "research.effect.iron_unbuilt",
+    "text": "尚未建成 · 建成后每 {time} 秒生成铁块",
+    "params": "time",
+    "category": "research",
+    "note": "炼铁炉等级0：区分施工与建成作用，不把当前0产量当成未来收益",
+    "source": "hightech_presentation.gd"
   }
 ]
