@@ -12576,13 +12576,13 @@
   },
   {
     "key": "hyperspace.energy",
-    "text": "能量 {current} / {cap} · 实际门票 {ticket}",
+    "text": "能量 {current} / {cap}\n每次消耗 {ticket} 能量",
     "params": "{current},{cap},{ticket}",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.best",
-    "text": "历史最佳 X1：{time}",
+    "text": "最快用时：{time}",
     "params": "{time}",
     "category": "hyperspace"
   },
@@ -13686,7 +13686,7 @@
   },
   {
     "key": "hyperspace.auto_projection",
-    "text": "实际门票 {ticket}\n预计耗时 {duration} 秒\n{status}；无 X1 记录时不能开启。",
+    "text": "每次消耗能量 {ticket}\n预计用时 {duration} 秒\n{status}；没有通关记录时不能开启。",
     "params": "ticket,duration,status",
     "category": "hyperspace"
   },
@@ -14520,7 +14520,7 @@
   },
   {
     "key": "hyperspace.recent_result",
-    "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}",
+    "text": "最近探索 · {weapon} {level}级 · {reason}\n用时 {elapsed} 秒 · 到达战点 {point}/10 · 退回能量 {refund}\n返回主线 第{stage}关 · 战点 {main_point}",
     "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}",
     "category": "hyperspace",
     "note": "当前会话最近探索结果，不是QA超时"
@@ -15253,5 +15253,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "hyperspace.energy_refund_over_cap",
+    "text": "退回能量保留，超限时暂缓恢复。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅当前能量超过实际容量时显示，不裁掉退款、不改变恢复逻辑"
   }
 ]

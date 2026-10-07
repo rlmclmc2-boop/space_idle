@@ -8165,6 +8165,9 @@
     },
     "hyperspace.reward_nav_hint": {
       "params": []
+    },
+    "hyperspace.energy_refund_over_cap": {
+      "params": []
     }
   },
   "bindings": {
