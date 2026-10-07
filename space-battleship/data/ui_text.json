@@ -15316,5 +15316,19 @@
     "params": "",
     "category": "hyperspace",
     "note": ""
+  },
+  {
+    "key": "onboarding.enhancement",
+    "text": "强化碎片够了。试着升1级，再看武器和防御旁的生效数量、数值变化。",
+    "params": "",
+    "category": "onboarding",
+    "note": "第8–10关已解锁且可首次购买时，提示一次真实操作；升过级后自动收起"
+  },
+  {
+    "key": "onboarding.show_enhancement",
+    "text": "去装备强化",
+    "params": "",
+    "category": "onboarding",
+    "note": "导航到已解锁的现有界面，不代替玩家购买"
   }
 ]

@@ -142,6 +142,10 @@ func decide() -> Dictionary:
 			if not str(game.slot_entry("defence",index).key).is_empty():
 				return {"phase":"retreat","slot":game.slot_id("defence",index),"action":"show_upgrade","anchor":"upgrade_action"}
 		return {"phase":"retreat","action":"show_equipment"}
+	if enhancement_ready():
+		var step := {"phase":"enhancement","anchor":"enhancement_upgrade"}
+		if host.equipment_tabs.current_tab!=4:step.action="show_enhancement"
+		return step
 	if not state.intro:return {"phase":"intro","action":"next"}
 	if game.state==BattleGame.State.RETREAT:return {"phase":"retreat","action":"show_equipment"}
 	if not state.equipped:
@@ -168,6 +172,12 @@ func has_equipment_choice(category: String, index: int) -> bool:
 	var choices: Array = host.equipment_panel.equipment_choices(category,index)
 	return choices.any(func(key):return not str(key).is_empty() and game.profile.unlocked.has(key))
 
+func enhancement_ready() -> bool:
+	var game: BattleGame = host.game
+	var state := flags()
+	# Existing purchase state ends this earned-action hint; no new saved flag.
+	return state.completed and state.equipped and state.upgraded and not state.dismissed and game.stage>=8 and game.stage<=10 and game.enhancement_level()==0 and game.can_upgrade_enhancement()
+
 func defence_snapshot() -> Array:
 	var result: Array = []
 	for index in host.game.active_slot_count("defence"):
@@ -193,8 +203,9 @@ func refresh() -> void:
 		retreat_pending = false
 		retreat_defence.clear()
 	# Reconcile completion before deciding visibility, including while dismissed.
-	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending) else {"phase":"review"}
-	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending)))
+	var enhancement_pending := enhancement_ready()
+	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending) else {"phase":"review"}
+	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
 	if show_reopen:
@@ -235,6 +246,9 @@ func visible_anchor_rect(control: Control) -> Rect2:
 
 func resolve_anchor(id: String, slot: String) -> Control:
 	if id.is_empty():return null
+	if id=="enhancement_upgrade":
+		if host.equipment_tabs.current_tab!=4:return host.system_nav_buttons.get(4)
+		return host.enhancement_panel.upgrade_button
 	if host.equipment_tabs.current_tab!=0:return host.system_nav_buttons[0]
 	var equipment: Control = host.equipment_panel
 	if equipment.has_method("get_action_anchor"):
@@ -248,6 +262,7 @@ func resolve_anchor(id: String, slot: String) -> Control:
 func activate() -> void:
 	match phase:
 		"intro":flags().intro = true
+		"enhancement":host.select_system(4)
 		"unlock":
 			# Reuse the existing explicit acknowledgement action.
 			host.continue_button.pressed.emit()

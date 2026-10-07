@@ -8195,6 +8195,12 @@
     },
     "hyperspace.advanced_operations_hint": {
       "params": []
+    },
+    "onboarding.enhancement": {
+      "params": []
+    },
+    "onboarding.show_enhancement": {
+      "params": []
     }
   },
   "bindings": {

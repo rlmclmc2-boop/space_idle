@@ -222,6 +222,47 @@ func run() -> void:
 	guide.refresh()
 	check(guide.outline.get_global_rect().grow(-3).is_equal_approx(guide.target.get_global_rect()),"Highlight follows moved semantic anchor")
 	guide.target.position = old_position
+	# An earned action can reappear after the opening sequence, without new flags.
+	game.profile.onboarding = {"version":1,"intro":true,"equipped":true,"upgraded":true,"completed":true,"dismissed":false,"retreatSeen":true}
+	guide.review = false
+	guide.manually_opened = false
+	game.state = BattleGame.State.COMBAT
+	game.stage = 8
+	game.profile.cleared = [1,2,3,4,5,6,7]
+	game.rebuild_unlocks()
+	game.pending_unlocks.clear()
+	game.profile.enhancementLevel = 0
+	game.profile.jewelFragments = game.enhancement_cost()-1
+	scene.refresh_tab_visibility()
+	scene.select_system(0)
+	guide.refresh()
+	check(not guide.panel.visible,"First enhancement waits until an actual purchase is affordable")
+	game.profile.jewelFragments = game.enhancement_cost()
+	guide.refresh()
+	check(guide.phase=="enhancement" and guide.panel.visible and guide.target==scene.system_nav_buttons[4],"Affordable first enhancement points to the existing navigation")
+	guide.activate()
+	await process_frame
+	guide.refresh()
+	check(scene.equipment_tabs.current_tab==4 and game.enhancement_level()==0,"Enhancement CTA navigates without buying")
+	check(guide.target==scene.enhancement_panel.upgrade_button and not guide.action.visible,"Opened enhancement points to the real one-level purchase button")
+	await capture(scene,"first-enhancement-ready")
+	guide.dismiss()
+	guide.refresh()
+	check(not guide.panel.visible,"Dismissed guidance does not nag about an affordable enhancement")
+	game.profile.onboarding.dismissed = false
+	guide.refresh()
+	game.upgrade_enhancement(1)
+	guide.refresh()
+	check(game.enhancement_level()==1 and not guide.panel.visible,"Actual first enhancement purchase ends the state-derived hint")
+	game.profile.enhancementLevel = 0
+	game.profile.jewelFragments = game.enhancement_cost()
+	game.stage = 11
+	guide.refresh()
+	check(not guide.panel.visible,"Opening enhancement hint stays within the first ten stages")
+	game.stage = 8
+	game.profile.onboarding = legacy.profile.onboarding.duplicate()
+	guide.refresh()
+	check(not guide.panel.visible,"Legacy completion without recorded opening actions stays quiet")
 	scene.queue_free()
 	await process_frame
 	print("Beginner guide: %d checks, %d failures" % [checks,failures])
