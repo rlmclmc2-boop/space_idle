@@ -142,6 +142,7 @@ func setup(owner) -> void:
  select_section(0);set_process(true);refresh()
 func select_section(index: int) -> void:
  section_index=clampi(index,0,3)
+ if section_index>1 and host!=null and not bool(host.game.profile.hyperspace.unlocked_drones):section_index=0
  for i in 4:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
@@ -291,6 +292,8 @@ func _process(_delta: float) -> void:
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
+ for i in [2,3]:put(section_buttons[i],"visible",bool(s.unlocked_drones))
+ if section_index>1 and not bool(s.unlocked_drones):select_section(0);return
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
   refresh_manual_status()
  elif dirty and bag.presets!=s.inventory.presets:
@@ -298,6 +301,7 @@ func refresh() -> void:
  if section_index==0:
   put(first_win,"visible",not bool(s.unlocked_drones));refresh_status();refresh_progress()
  elif section_index==1:
+  put(capacity,"visible",bool(s.unlocked_drones));put(budgets,"visible",bool(s.unlocked_drones))
   put(inventory_box,"visible",bool(s.unlocked_drones));put(drone_locked,"visible",not bool(s.unlocked_drones))
   if inventory_dirty:refresh_list()
   else:refresh_details()
@@ -420,7 +424,7 @@ func refresh_details() -> void:
  var valid=bag.drones.has(selected_id)
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
-  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(int(bag.drones[selected_id].hanging_slots)),"revision":str(int(bag.drones[selected_id].forge_revision))}))
+  put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
   forge_icon.call("apply",bag.drones[selected_id]) if valid else forge_icon.call("clear")
   return
  if section_index!=1:return

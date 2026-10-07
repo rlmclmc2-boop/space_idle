@@ -24,6 +24,10 @@ var collection_choices: Array[CheckBox]=[]
 var totals_dialog: AcceptDialog
 var totals_label: Label
 var guide_dialog: AcceptDialog
+var guide_label: Label
+var guide_scroll: ScrollContainer
+var result_scroll: ScrollContainer
+var result_details: Label
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p
@@ -40,10 +44,13 @@ func build_forge(parent: Node) -> void:
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
  restore_hint=panel.label(parent,t("restore_modernize_hint"),21)
- quote_label=panel.label(parent,t("quote_first"),21);feedback=panel.label(parent,"",21)
+ feedback=panel.label(parent,"",21);quote_label=panel.label(parent,t("quote_first"),21)
+ result_scroll=ScrollContainer.new();result_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
+ result_details=panel.label(result_scroll,"",21);result_details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_scroll.visible=false
  configure_operation()
 func invalidate() -> void:
  quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first");feedback.text=""
+ result_scroll.visible=false
 func configure_operation() -> void:
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
@@ -113,8 +120,9 @@ func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
  var result: Dictionary=h().preview_forge(game(),quoted_request)
- quote_label.text=t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})
- if quoted_request.operation=="modernize":quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
+ var has_quote= str(result.error).is_empty() or not result.get("cost",{}).is_empty()
+ quote_label.text=(t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})) if has_quote else ""
+ if quoted_request.operation=="modernize" and has_quote:quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
  if quoted_request.operation=="dismantle" and str(result.error).is_empty():quote_label.text=dismantle_preview_text(quoted_request)+"\n"+quote_label.text
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("quote_ready")
  commit_button.disabled=not str(result.error).is_empty()
@@ -128,11 +136,17 @@ func commit() -> void:
 func execute_quote() -> void:
  if quoted_request.is_empty():return
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
+ var drone_id=str(quoted_request.drone_id)
  var result: Dictionary=h().forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
  if str(result.error).is_empty() and result.get("applied",false):
   quote_label.text=received_rewards_text(result.rewards) if result.has("rewards") else t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
+ var current:Dictionary=game().profile.hyperspace.inventory.drones.get(drone_id,{})
+ result_scroll.visible=str(result.error).is_empty() and result.get("applied",false) and not current.is_empty()
+ if result_scroll.visible:
+  panel.put(result_details,"text",t("forge_result_current")+"\n"+panel.drone_description(current))
+  result_scroll.scroll_vertical=0
  panel.dirty=true;panel.refresh()
 func build_dialog(title: String) -> AcceptDialog:
  var dialog=AcceptDialog.new();dialog.title=t(title);dialog.min_size=Vector2i(660,370);dialog.size=Vector2i(740,470);panel.add_child(dialog);preload("res://scripts/dialog_presentation.gd").dialog(dialog)
@@ -225,10 +239,15 @@ func refresh_totals() -> void:
  totals_label.text="\n".join(lines)
 
 func show_guide() -> void:
+ if not bool(game().profile.hyperspace.unlocked_drones):return
  if guide_dialog==null:
-  guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(1000,900)
+  guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(740,510)
   var body=content(guide_dialog)
-  var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;sc.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(sc)
-  var guide=Label.new();guide.text=t("forge_guide_body");guide.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-  guide.size_flags_horizontal=Control.SIZE_EXPAND_FILL;guide.add_theme_font_size_override("font_size",21);guide.add_theme_color_override("font_color",Color("243d50"));sc.add_child(guide)
+  guide_scroll=ScrollContainer.new();guide_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;guide_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(guide_scroll)
+  guide_label=Label.new();guide_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+  guide_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;guide_label.add_theme_font_size_override("font_size",21);guide_label.add_theme_color_override("font_color",Color("243d50"));guide_scroll.add_child(guide_label)
+ var op=str(operation.get_item_metadata(operation.selected))
+ guide_dialog.title=t("operation_"+op)
+ panel.put(guide_label,"text",t("forge_guide_body")+"\n\n"+t("forge_guide_"+op))
+ guide_scroll.scroll_vertical=0
  guide_dialog.popup_centered()
