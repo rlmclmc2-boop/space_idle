@@ -7910,6 +7910,12 @@
     },
     "onboarding.show_defence": {
       "params": []
+    },
+    "onboarding.enhancement": {
+      "params": []
+    },
+    "onboarding.show_enhancement": {
+      "params": []
     }
   },
   "bindings": {
