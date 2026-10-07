@@ -152,7 +152,7 @@ func run() -> void:
  check(g.hyperspace.set_equipped(g,[]),"Clear equipped")
  p.preset_adapter.call(0);check(g.profile.hyperspace.inventory.equipped==["ui:8"],"Preset applies actual domain")
  # Quoting is read-only; commit uses the frozen command and localizes failures.
- p.selected_id="ui:8";p.select_section(2);p.commands.operation.select(5);p.commands.configure_operation()
+ p.selected_id="ui:8";p.select_section(2);p.commands.select_operation("reroll_values")
  var before_quote=JSON.stringify(g.profile.hyperspace);p.commands.preview()
  check(JSON.stringify(g.profile.hyperspace)==before_quote and p.commands.commit_button.disabled,"Insufficient quote is read-only")
  check(p.commands.feedback.text.contains("材料不足") and not p.commands.quote_label.text.contains("antiproton"),"Quote costs and errors localized")

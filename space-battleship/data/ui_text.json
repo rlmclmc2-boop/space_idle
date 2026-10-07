@@ -13578,7 +13578,7 @@
   },
   {
     "key": "hyperspace.commit_forge",
-    "text": "执行此报价",
+    "text": "确认改造",
     "params": "",
     "category": "hyperspace"
   },
@@ -14774,7 +14774,7 @@
   },
   {
     "key": "hyperspace.forge_guide_body",
-    "text": "先在「无人机」选一架，再选你想做的改造。\n点「预览改造」看费用，合适再点「执行此报价」。预览不扣材料；换了无人机或操作，就重新预览。",
+    "text": "先在「无人机」选一架，再选你想做的改造。\n点「预览改造」看费用，合适再点「确认改造」。预览不扣材料；换了无人机或操作，就重新预览。",
     "params": "",
     "category": "hyperspace"
   },
@@ -15123,7 +15123,7 @@
   },
   {
     "key": "hyperspace.material_white_condition",
-    "text": "白色无人机没有词条位，不能添加词条；先回「无人机」装备它。",
+    "text": "白色无人机没有词条位，不能添加词条；回到基础改造，可查看这架能否添加挂设槽。",
     "params": "",
     "category": "hyperspace",
     "note": ""
@@ -15223,6 +15223,97 @@
     "key": "hyperspace.slot_next_hull_reached",
     "text": "推进到第 {level} 关之后可解锁「{ship}」，切换后可增加无人机槽。",
     "params": "{ship},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_independent_weapon",
+    "text": "装备后独立开火：{weapon} · 武器等级 {level}",
+    "params": "{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_base_damage",
+    "text": "基础伤害 {damage}；额外加成和暴击另计。",
+    "params": "{damage}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_laser",
+    "text": "脉冲独立发射，射击间隔 {interval} 秒。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_missile",
+    "text": "每轮 {count} 枚导弹，逐个分配目标；间隔 {interval} 秒。",
+    "params": "{interval},{count}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_cannon",
+    "text": "磁轨炮独立发射，射击间隔 {interval} 秒。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_longLaser",
+    "text": "持续锁定目标，每 {interval} 秒判定一次伤害。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.rare_legendary_budget",
+    "text": "传说名额 {used}/{capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.rare_ultimate_budget",
+    "text": "究极名额 {used}/{capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.more_operations",
+    "text": "更多改造与条件",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.basic_operations",
+    "text": "回到基础改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.no_basic_operation",
+    "text": "暂无适合这架的基础改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.basic_operations_hint",
+    "text": "先做适合这架的操作；缺材料时可去对应路线探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.advanced_operations_hint",
+    "text": "后续改造可在这里查条件；选一项，材料区会显示当前限制。",
+    "params": "",
     "category": "hyperspace",
     "note": ""
   }

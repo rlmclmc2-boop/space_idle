@@ -35,6 +35,10 @@ var material_basis: Label
 var material_route_button: Button
 var missing_material=""
 var material_reads=0
+var show_advanced=false
+var configured_drone=""
+var operation_hint: Label
+var more_operations: Button
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p
@@ -43,10 +47,12 @@ func game():return panel.host.game
 func h():return game().hyperspace
 func build_forge(parent: Node) -> void:
  var controls=panel.row(parent);operation=panel.option(controls)
- for key in OPERATIONS:operation.add_item(t("operation_"+key));operation.set_item_metadata(operation.item_count-1,key)
+ operation.add_item(t("choose"));operation.set_item_metadata(0,"none")
  guarantee=panel.option(controls);maximum=CheckBox.new();maximum.text=t("guaranteed_max");controls.add_child(maximum);panel.checkbox_skin(maximum)
  operation.item_selected.connect(func(_n):configure_operation());guarantee.item_selected.connect(func(_n):invalidate());maximum.toggled.connect(func(_v):invalidate())
  var help_row=panel.row(parent);panel.button(help_row,"forge_guide",show_guide)
+ more_operations=panel.button(help_row,"more_operations",func():show_advanced=not show_advanced;rebuild_choices();configure_operation())
+ operation_hint=panel.label(parent,"",20)
  materials_box=panel.box(parent,4)
  material_basis=panel.label(materials_box,t("material_heading"),21)
  for key in ["degenerate_matter","glueball","antiproton","zero_point_energy","ultimate_cores"]:
@@ -105,7 +111,38 @@ func explore_missing_material() -> void:
  for key in h().config.routes:
   if str(h().config.routes[key].material)==missing_material:
    panel.route=str(key);panel.select_section(0);return
+func basic_available(op:String,d:Dictionary) -> bool:
+ if d.is_empty() or game().profile.hyperspace.inventory.sealed.has(str(d.id)):return false
+ if d.ultimate:return op=="restore_ultimate"
+ var unlocked=d.affixes.any(func(a):return not a.locked)
+ match op:
+  "add_affix":return d.affixes.size()<panel.Bag.affix_limit(d,h().config)
+  "replace_affix":return unlocked
+  "add_hanging_slot":return int(d.hanging_slots)<panel.Bag.hanging_limit(d,h().config)
+  "reroll_values":return unlocked or not d.legendary_effect.is_empty()
+  "modernize":return int(request("modernize").args.target_level)>int(d.level)
+ return false
+func rebuild_choices(wanted:String="") -> void:
+ if wanted.is_empty() and operation.selected>=0:wanted=str(operation.get_item_metadata(operation.selected))
+ var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
+ var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate"].filter(func(op):return basic_available(op,d))
+ operation.clear()
+ if choices.is_empty():operation.add_item(t("no_basic_operation"));operation.set_item_metadata(0,"none")
+ for op in choices:
+  operation.add_item(t("operation_"+op));operation.set_item_metadata(operation.item_count-1,op)
+  if op==wanted:operation.select(operation.item_count-1)
+ panel.put(more_operations,"text",t("basic_operations" if show_advanced else "more_operations"))
+ panel.put(operation_hint,"text",t("advanced_operations_hint") if show_advanced else t("basic_operations_hint"))
+func select_operation(op:String) -> void:
+ # Semantic selection also supports explicit inspection of a blocked operation.
+ configured_drone=panel.selected_id;show_advanced=true;rebuild_choices(op);configure_operation()
 func configure_operation() -> void:
+ if configured_drone!=panel.selected_id:
+  configured_drone=panel.selected_id;show_advanced=false;rebuild_choices()
+ elif not show_advanced:
+  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
+  var op=str(operation.get_item_metadata(operation.selected))
+  if not basic_available(op,d):rebuild_choices()
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
  promotion_hint.visible=op=="promote_affix"
@@ -118,10 +155,11 @@ func configure_operation() -> void:
   var entry: Dictionary=h().config.affixes[key] if op=="replace_affix" else h().config.legendary_effects[key]
   if not entry.weapon.is_empty() and entry.weapon!=d.weapon:continue
   guarantee.add_item(panel.affix_name(key) if op=="replace_affix" else panel.effect_name(key));guarantee.set_item_metadata(guarantee.item_count-1,key)
-func request() -> Dictionary:
+func request(requested_operation:String="") -> Dictionary:
  var s: Dictionary=game().profile.hyperspace;var d: Dictionary=s.inventory.drones.get(panel.selected_id,{})
  if d.is_empty():return {}
- var op=str(operation.get_item_metadata(operation.selected));var args: Dictionary={}
+ var op=requested_operation if not requested_operation.is_empty() else str(operation.get_item_metadata(operation.selected));var args: Dictionary={}
+ if op=="none":return {}
  if op in ["replace_affix","legendary"] and guarantee.selected>=0:
   var key=str(guarantee.get_item_metadata(guarantee.selected))
   if not key.is_empty():args["guaranteed_key" if op=="replace_affix" else "guaranteed_effect"]=key
@@ -307,6 +345,7 @@ func show_guide() -> void:
   guide_label=Label.new();guide_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
   guide_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;guide_label.add_theme_font_size_override("font_size",21);guide_label.add_theme_color_override("font_color",Color("243d50"));guide_scroll.add_child(guide_label)
  var op=str(operation.get_item_metadata(operation.selected))
+ if op=="none":return
  guide_dialog.title=t("operation_"+op)
  panel.put(guide_label,"text",t("forge_guide_body")+"\n\n"+t("forge_guide_"+op))
  guide_scroll.scroll_vertical=0

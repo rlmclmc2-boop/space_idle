@@ -39,15 +39,22 @@ func run() -> void:
  check(JSON.stringify(g.profile)==before,"Viewing reward does not auto-equip or change progress")
  f.notice.hide();p.toggle_equipped()
  check(g.profile.hyperspace.inventory.equipped.has(d.id),"Player explicitly equips the acquired drone")
+ check(p.details.text.contains("独立开火") and p.details.text.contains(scene.number(g.equipment_stat("laser",int(g.drone_weapon_entry(d).level)))),"White drone exposes its independent weapon and authoritative base damage")
+ check(not p.totals_summary.visible and not p.budgets.visible,"A plain white drone does not advertise zero affix benefit or irrelevant rare limits")
+ var actual:Array=g.combat_weapon_entries().filter(func(e):return e.get("drone_id","")==d.id)
+ check(actual.size()==1 and actual[0]==g.drone_weapon_entry(d),"Details share the exact weapon entry used by combat")
  check(p.equipment_ui.heading.text.contains("1 / "),"Slot heading shows authoritative occupancy")
- p.select_section(2);c.operation.select(0);c.configure_operation()
+ p.select_section(2)
+ check(str(c.operation.get_item_metadata(c.operation.selected))=="add_hanging_slot" and c.operation.item_count<13,"First white refit defaults to an eligible hanging-slot operation in a compact menu")
+ await capture("white-basic")
+ c.select_operation("add_affix")
  await process_frame
- check(c.material_basis.text.contains("词条位") and c.commit_button.disabled,"White drone sees capacity condition instead of a fake payable quote")
+ check(c.material_basis.text.contains("词条位") and not c.material_basis.text.contains("装备它") and c.commit_button.disabled,"White drone sees capacity condition instead of a fake payable quote")
  check(c.material_stock.text.contains("简并态物质"),"Materials are visible without pressing preview")
  var blue=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"feedback:blue","blue","missile",40,"1")
  bag=g.profile.hyperspace.inventory;bag.drones[blue.id]=blue;bag.warehouse.append(blue.id);bag.generation+=1
  g.profile.hyperspace.materials.degenerate_matter=2
- p.selected_id=blue.id;p.dirty=true;p.refresh();c.operation.select(1);c.configure_operation()
+ p.selected_id=blue.id;p.dirty=true;p.refresh();c.select_operation("replace_affix")
  await process_frame
  var line:Label=c.material_rows.degenerate_matter
  check(line.visible and line.text.contains("需要 5") and line.text.contains("持有 2") and line.text.contains("缺少 3"),"Actual replacement price and material deficit appear before explicit preview")
@@ -84,6 +91,10 @@ func run() -> void:
  p.selected_id=other.id;p.dirty=true;p.refresh();before=JSON.stringify(g.profile);p.toggle_equipped()
  check(p.equipment_ui.replacement_dialog!=null and p.equipment_ui.replacement_dialog.visible and p.equipment_ui.replacement_choice.item_count==2,"Multiple occupied slots ask which drone to replace")
  check(JSON.stringify(g.profile)==before,"Opening replacement chooser never unloads anything")
+ g.hyperspace.set_equipped(g,[blue.id])
+ check(g.switch_ship("Frigate"),"Hull-switch fixture uses the legal transaction")
+ p.refresh()
+ check(p.equipment_ui.heading.text.contains("/ 1") and not p.budgets.text.contains("1/2"),"Changing hull updates the sole occupancy display without a stale repeated budget")
  await capture("replacement-choice")
  p.equipment_ui.replacement_dialog.hide()
  print("Player feedback: ",checks," checks, ",failures," failures")

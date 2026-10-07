@@ -695,14 +695,17 @@ func combat_weapon_entries() -> Array:
 		for id in profile.hyperspace.inventory.equipped:
 			if profile.hyperspace.inventory.sealed.has(id) or drone_combat.disabled.has(id):continue
 			var d: Dictionary=profile.hyperspace.inventory.drones[id]
-			var maximum:=1
-			for entry in module_entries("weapons"):
-				if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
-			var level:=maximum+DroneEffects.weapon_bonus(d,hyperspace.config)
+			var projected:=drone_weapon_entry(d)
 			var old: Dictionary=previous.get(id,{})
-			combat_sources.append(old if old.get("key")==d.weapon and old.get("level")==level else {"key":d.weapon,"level":level,"drone_id":id})
+			combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
 	combat_sources_dirty=false
 	return combat_sources
+
+func drone_weapon_entry(d: Dictionary) -> Dictionary:
+	var maximum:=1
+	for entry in module_entries("weapons"):
+		if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
+	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
 	var entries:=combat_weapon_entries()
