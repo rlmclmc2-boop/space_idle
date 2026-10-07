@@ -13590,13 +13590,13 @@
   },
   {
     "key": "hyperspace.quote_ready",
-    "text": "可以执行这份报价。切换无人机或操作后，请重新预览。",
+    "text": "材料够了，可以确认改造。更换无人机或项目后需重新预览。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.quote_result",
-    "text": "消耗：{cost}\n抽取次数：{draws}",
+    "text": "需要材料：{cost}\n改造次数：{draws}",
     "params": "cost,draws",
     "category": "hyperspace"
   },
