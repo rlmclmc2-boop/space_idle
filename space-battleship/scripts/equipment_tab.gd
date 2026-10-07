@@ -93,7 +93,8 @@ func panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxFlat:
 func textured_panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxTexture:
 	return style_tiles.panel_style(fill,edge,radius)
 
-func skin_button(button: Button, primary := false) -> void:
+# Shared callers retain the original vector skin; equipment opts in explicitly.
+func skin_button(button: Button, primary := false, textured := false) -> void:
 	button.add_theme_font_override("font",host.font)
 	button.add_theme_font_size_override("font_size",20)
 	for state in ["normal","hover","pressed","disabled"]:
@@ -101,8 +102,8 @@ func skin_button(button: Button, primary := false) -> void:
 		if state=="hover":fill=fill.lightened(0.13)
 		if state=="pressed":fill=fill.darkened(0.12)
 		if state=="disabled":fill=Color("8b9a9e")
-		button.add_theme_stylebox_override(state,textured_panel_style(fill))
-	button.add_theme_stylebox_override("focus",textured_panel_style(Color.TRANSPARENT,TEAL,14))
+		button.add_theme_stylebox_override(state,textured_panel_style(fill) if textured else panel_style(fill))
+	button.add_theme_stylebox_override("focus",textured_panel_style(Color.TRANSPARENT,TEAL,14) if textured else panel_style(Color.TRANSPARENT,TEAL,14))
 	button.add_theme_color_override("font_color",NAVY)
 	button.add_theme_color_override("font_hover_color",NAVY)
 	button.add_theme_color_override("font_focus_color",NAVY)
@@ -114,7 +115,7 @@ func action_button(parent: Control, text_key: String, action_id: String, callbac
 	button.text = UIText.t(text_key,parameters)
 	button.set_meta("action_id",action_id)
 	button.custom_minimum_size = Vector2(120,48)
-	skin_button(button,primary)
+	skin_button(button,primary,true)
 	button.pressed.connect(callback)
 	parent.add_child(button)
 	return button
@@ -145,7 +146,7 @@ func setup(owner_ui: Node) -> void:
 	filters.position = Vector2(0,0)
 	toolbar.add_child(filters)
 	category_picker = select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
-	skin_button(category_picker)
+	skin_button(category_picker,false,true)
 	new_weapon = action_button(toolbar,"equipment.new_weapon","new_weapon",show_new_weapon,true,{"weapon":""})
 	new_weapon.position = Vector2(746,0)
 	new_weapon.size = Vector2(370,48)
@@ -221,7 +222,7 @@ func build_detail() -> void:
 	detail.primary = label(detail_body,"",Rect2(18,104,540,36),24,NAVY)
 	detail.status = label(detail_body,"",Rect2(18,145,540,30),19,NAVY)
 	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],choose_equipment)
-	skin_button(detail.slots,true)
+	skin_button(detail.slots,true,true)
 	detail.equip = action_button(detail_body,"equipment.confirm_free","equip_confirm",confirm_equipment,true)
 	detail.equip.position = Vector2(18,254)
 	detail.equip.size = Vector2(535,52)
@@ -279,7 +280,7 @@ func layout_contents() -> void:
 
 func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
-	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount)
+	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount,true)
 	var quotes := {}
 	for id in items:
 		update_card_cost(items[id],quotes)
