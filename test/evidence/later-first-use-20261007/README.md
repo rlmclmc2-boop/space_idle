@@ -27,3 +27,5 @@ Godot4.6.3官方、Mesa llvmpipe、1373×883云端窗口。此前停止会话未
 ## 整合边界
 
 新增hyperspace_reward_feedback.gd与hyperspace_equipment_ui.gd由面板拥有，首胜窗口不生成或结算奖励，也不自动装备。换装只调用equip_drone/unequip_drone，不在UI先卸后装。材料通常在对象/操作切换时读领域预览，保底长预测仅主动预览；普通进度事件不触发材料重算。控件复用，没有重建游戏UI。主干仍由父验收后串行发布。
+
+最后补充：显式查看奖励会清除旧武器/品质筛选并使用获得顺序，确保新机卡片可见；新增筛选边界断言，最终headless为24/0（feedback-test-filter.txt），图形仍为此前23/0，不冒称图形24项。主增量9f28fc9后另有此修正提交，请一并取；原准备提交不重复取。截图分支agent/later-first-use的e53eb4a保存本轮图像，代码分支agent/later-first-use-code保存最终代码与原始测试文本。首次完整截图推送HTTP408，改用有界POST缓冲后推送成功。

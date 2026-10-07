@@ -32,8 +32,10 @@ func run() -> void:
  await process_frame
  check(f.card.visible and f.view_button.visible and f.summary.text.contains("等级 5"),"Settled drone receives visible receipt and action")
  check(f.notice!=null and f.notice.visible,"First acquired drone opens actionable notice")
+ p.weapon_filter.select(2);p.quality_filter.select(2);p.sort_order.select(1)
  before=JSON.stringify(g.profile);f.view_drone()
  check(p.section_index==1 and p.selected_id==d.id,"Receipt opens the exact acquired drone")
+ check(p.weapon_filter.selected==0 and p.quality_filter.selected==0 and p.sort_order.selected==0,"Explicit receipt reveals its card despite earlier inventory filters")
  check(JSON.stringify(g.profile)==before,"Viewing reward does not auto-equip or change progress")
  f.notice.hide();p.toggle_equipped()
  check(g.profile.hyperspace.inventory.equipped.has(d.id),"Player explicitly equips the acquired drone")
