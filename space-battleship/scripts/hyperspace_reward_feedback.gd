@@ -9,6 +9,8 @@ var card: VBoxContainer
 var summary: Label
 var view_button: Button
 var queued_notice=false
+var unread=false
+var receipt_marker:Dictionary={}
 func setup(owner) -> void:
  panel=owner
  var s:Dictionary=panel.host.game.profile.hyperspace
@@ -17,6 +19,7 @@ func setup(owner) -> void:
  elif not s.inventory.warehouse.is_empty():
   var id=str(s.inventory.warehouse.back())
   if s.inventory.drones.has(id):latest={"drone":s.inventory.drones[id].duplicate(true),"materials":{},"ultimate_cores":0}
+ restore_read_state()
  panel.tree_exiting.connect(func():
   if is_instance_valid(notice):notice.queue_free())
 func build(parent:Node) -> void:
@@ -25,6 +28,10 @@ func build(parent:Node) -> void:
  card.visible=false
  if not latest.is_empty():show_receipt()
 func on_event(kind:String,payload:Dictionary) -> void:
+ if kind in ["state","hyperspace_rebuild"]:
+  if receipt_marker!=panel.host.game.profile.get("hyperspaceReceipt",{}):
+   restore_read_state();show_receipt()
+  return
  if kind!="hyperspace_changed":return
  var reason=str(payload.get("reason",""))
  var s:Dictionary=panel.host.game.profile.hyperspace
@@ -32,11 +39,43 @@ func on_event(kind:String,payload:Dictionary) -> void:
  elif reason=="claimed" and not pending.is_empty():
   latest=pending;pending={}
   var has_drone=show_receipt()
+  unread=true
+  save_read_state()
   if has_drone and first_drone:
    first_drone=false;queued_notice=true;show_first_drone.call_deferred()
  elif reason=="reforge" or reason=="inventory_reset":
-  pending={};latest={};panel.put(card,"visible",false)
+  pending={};latest={};unread=false;save_read_state();panel.put(card,"visible",false)
+func restore_read_state() -> void:
+ var g=panel.host.game;var s:Dictionary=g.profile.hyperspace
+ first_drone=not bool(s.unlocked_drones)
+ receipt_marker=g.profile.get("hyperspaceReceipt",{}).duplicate(true)
+ unread=bool(receipt_marker.get("unread",false)) and int(receipt_marker.get("round",0))==int(s.round_id) and int(receipt_marker.get("run",0))==int(s.settled_run)
+ latest={};pending={}
+ if unread:
+  var id=str(receipt_marker.get("drone_id",""))
+  latest={"drone":s.inventory.drones.get(id,{}).duplicate(true),"materials":{},"ultimate_cores":0}
+ elif not s.inventory.warehouse.is_empty():
+  var id=str(s.inventory.warehouse.back())
+  if s.inventory.drones.has(id):latest={"drone":s.inventory.drones[id].duplicate(true),"materials":{},"ultimate_cores":0}
+ if s.active.get("status","")=="completed_pending":pending=s.active.reward.duplicate(true)
+func save_read_state() -> void:
+ var g=panel.host.game;var s:Dictionary=g.profile.hyperspace
+ receipt_marker={"round":int(s.round_id),"run":int(s.settled_run),"drone_id":str(latest.get("drone",{}).get("id","")),"unread":unread}
+ g.profile.hyperspaceReceipt=receipt_marker.duplicate(true)
+ g.save_progress()
+func nav_key() -> String:
+ return "reward_nav_drone" if not latest.get("drone",{}).is_empty() else "reward_nav_received"
+func mark_viewed() -> void:
+ if not unread or queued_notice or not panel.is_visible_in_tree():return
+ if is_instance_valid(notice) and notice.visible:return
+ var id=str(latest.get("drone",{}).get("id",""))
+ var receipt_visible=panel.section_index==0 and card.is_visible_in_tree()
+ var drone_visible=panel.section_index==1 and panel.selected_id==id and not id.is_empty() and panel.details.is_visible_in_tree()
+ if receipt_visible or drone_visible:
+  unread=false;save_read_state();panel.host.refresh_hyperspace_badge()
 func show_receipt() -> bool:
+ if latest.is_empty():
+  panel.put(card,"visible",false);return false
  var drone:Dictionary=latest.get("drone",{})
  var has_drone=not drone.is_empty() and panel.host.game.profile.hyperspace.inventory.drones.has(str(drone.id))
  summary.text=panel.t("reward_drone_received",{"weapon":panel.t(str(drone.weapon)),"level":str(int(drone.level)),"quality":panel.quality_caption(drone)}) if has_drone else panel.t("reward_materials_received")

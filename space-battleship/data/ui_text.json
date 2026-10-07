@@ -15449,5 +15449,26 @@
     "params": "{items}",
     "category": "hyperspace",
     "note": "仅列战斗汇总中非零词条、非零挂载模块及生效传说效果；不固定展示伤害0%"
+  },
+  {
+    "key": "hyperspace.reward_nav_drone",
+    "text": "新无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "hyperspace.reward_nav_received",
+    "text": "新奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "hyperspace.reward_nav_hint",
+    "text": "异空间探索有新奖励；点击查看回执，再决定是否换装。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
   }
 ]

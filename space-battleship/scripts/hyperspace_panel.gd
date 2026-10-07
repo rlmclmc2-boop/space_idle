@@ -298,6 +298,7 @@ func on_event(kind: String,_payload: Dictionary) -> void:
 func _process(_delta: float) -> void:
  if not is_visible_in_tree():return
  if dirty:refresh()
+ reward_feedback.mark_viewed()
  if section_index==0:refresh_progress()
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return

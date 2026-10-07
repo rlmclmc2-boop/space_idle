@@ -8265,6 +8265,15 @@
       "params": [
         "items"
       ]
+    },
+    "hyperspace.reward_nav_drone": {
+      "params": []
+    },
+    "hyperspace.reward_nav_received": {
+      "params": []
+    },
+    "hyperspace.reward_nav_hint": {
+      "params": []
     }
   },
   "bindings": {
