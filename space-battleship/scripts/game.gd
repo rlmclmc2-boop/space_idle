@@ -152,6 +152,7 @@ func fresh_profile() -> Dictionary:
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
+	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.enhancementVersion = 1
 	profile.enhancementLevel = 0
@@ -287,6 +288,11 @@ func load_progress_data(raw: Dictionary) -> void:
 	if raw.get("onboarding") is Dictionary:
 		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
+	# Optional UI-only receipt metadata. Legacy/invalid markers remain quiet.
+	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
+	var receipt = raw.get("hyperspaceReceipt",{})
+	if receipt is Dictionary and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("round")) and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("run")) and receipt.round>=0 and receipt.run>=0 and receipt.get("drone_id") is String and receipt.get("unread") is bool:
+		profile.hyperspaceReceipt = {"round":int(receipt.round),"run":int(receipt.run),"drone_id":str(receipt.drone_id),"unread":bool(receipt.unread)}
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:

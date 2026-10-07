@@ -2086,6 +2086,7 @@ func build_workspace_shell() -> void:
 func select_system(index: int) -> void:
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
 	set_ui_value(equipment_tabs,"current_tab",index)
+	if index==9 and unread_hyperspace_reward():hyperspace_panel.select_section(0)
 	refresh_system_nav()
 
 func refresh_planet_activation_badge() -> void:
@@ -2093,11 +2094,17 @@ func refresh_planet_activation_badge() -> void:
 	var dot := system_nav_buttons[6].get_node_or_null("ActivationBadge")
 	if is_instance_valid(dot):set_ui_value(dot, "visible", game.planet_buildings.has_ready(game))
 
+func unread_hyperspace_reward() -> bool:
+	return is_instance_valid(hyperspace_panel) and bool(hyperspace_panel.reward_feedback.unread)
+
 func refresh_hyperspace_badge() -> void:
 	if system_nav_buttons.size()<=9:return
 	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
 	var s:Dictionary=game.profile.hyperspace
-	if is_instance_valid(dot):set_ui_value(dot,"visible",(bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
+	var unread=unread_hyperspace_reward()
+	if is_instance_valid(dot):set_ui_value(dot,"visible",unread or (bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
+	set_ui_value(system_nav_buttons[9],"text",hyperspace_panel.t(hyperspace_panel.reward_feedback.nav_key()) if unread else UIText.t(SYSTEM_TITLES[9]))
+	set_ui_value(system_nav_buttons[9],"tooltip_text",hyperspace_panel.t("reward_nav_hint") if unread else equipment_tabs.get_tab_bar().get_tab_tooltip(9))
 
 func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
@@ -2110,8 +2117,9 @@ func refresh_system_nav() -> void:
 		set_ui_value(navigation,"visible",available)
 		if not available:continue
 		var caption := UIText.t(SYSTEM_TITLES[index])
-		set_ui_value(navigation,"text",caption)
-		set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
+		if index!=9:
+			set_ui_value(navigation,"text",caption)
+			set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
 		if not navigation.has_meta("selected") or bool(navigation.get_meta("selected"))!=(index==selected):
 			navigation.set_meta("selected",index==selected)
 			SHELL_PRESENTATION.skin_navigation(navigation,index==selected)

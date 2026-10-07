@@ -5,6 +5,10 @@ func check(ok:bool,label:String) -> void:
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
 func _initialize() -> void:call_deferred("run")
+func gameplay_snapshot(g) -> String:
+ var snapshot:Dictionary=g.profile.duplicate(true)
+ snapshot.erase("hyperspaceReceipt") # The sole authorized UI-read marker.
+ return JSON.stringify(snapshot)
 func capture(name:String) -> void:
  var folder=OS.get_environment("PLAYER_FEEDBACK_EVIDENCE")
  if folder.is_empty() or DisplayServer.get_name()=="headless":return
@@ -22,9 +26,9 @@ func run() -> void:
  var d=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"feedback:white","white","laser",5,"1")
  g.profile.hyperspace.unlocked_drones=false
  g.profile.hyperspace.active={"status":"completed_pending","reward":{"drone":d,"materials":{"degenerate_matter":3},"ultimate_cores":0}}
- var before=JSON.stringify(g.profile)
+ var before=gameplay_snapshot(g)
  p.on_event("hyperspace_changed",{"reason":"completed_pending"})
- check(JSON.stringify(g.profile)==before and not f.card.visible,"Pending feedback does not settle or reveal unclaimed reward")
+ check(gameplay_snapshot(g)==before and not f.card.visible,"Pending feedback does not settle or reveal unclaimed reward")
  g.profile.hyperspace.active={};g.profile.hyperspace.unlocked_drones=true
  var bag:Dictionary=g.profile.hyperspace.inventory
  bag.drones[d.id]=d;bag.warehouse.append(d.id);bag.generation+=1
@@ -33,10 +37,10 @@ func run() -> void:
  check(f.card.visible and f.view_button.visible and f.summary.text.contains("等级 5"),"Settled drone receives visible receipt and action")
  check(f.notice!=null and f.notice.visible,"First acquired drone opens actionable notice")
  p.weapon_filter.select(2);p.quality_filter.select(2);p.sort_order.select(1)
- before=JSON.stringify(g.profile);f.view_drone()
+ before=gameplay_snapshot(g);f.view_drone()
  check(p.section_index==1 and p.selected_id==d.id,"Receipt opens the exact acquired drone")
  check(p.weapon_filter.selected==0 and p.quality_filter.selected==0 and p.sort_order.selected==0,"Explicit receipt reveals its card despite earlier inventory filters")
- check(JSON.stringify(g.profile)==before,"Viewing reward does not auto-equip or change progress")
+ check(gameplay_snapshot(g)==before,"Viewing reward does not auto-equip or change progress")
  f.notice.hide();p.toggle_equipped()
  check(g.profile.hyperspace.inventory.equipped.has(d.id),"Player explicitly equips the acquired drone")
  check(p.details.text.contains("独立开火") and p.details.text.contains(scene.number(g.equipment_stat("laser",int(g.drone_weapon_entry(d).level)))),"White drone exposes its independent weapon and authoritative base damage")
@@ -51,7 +55,7 @@ func run() -> void:
  await process_frame
  check(c.material_basis.text.contains("词条位") and not c.material_basis.text.contains("装备它") and c.commit_button.disabled,"White drone sees capacity condition instead of a fake payable quote")
  check(c.material_stock.text.contains("简并态物质"),"Materials are visible without pressing preview")
- var blue=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"feedback:blue","blue","missile",40,"1")
+ var blue=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"feedback:blue","blue","missile",40,g.hyperspace.Permission.planet_for_level(g.db.data,40))
  bag=g.profile.hyperspace.inventory;bag.drones[blue.id]=blue;bag.warehouse.append(blue.id);bag.generation+=1
  g.profile.hyperspace.materials.degenerate_matter=2
  p.selected_id=blue.id;p.dirty=true;p.refresh();c.select_operation("replace_affix")
@@ -60,9 +64,9 @@ func run() -> void:
  check(line.visible and line.text.contains("需要 5") and line.text.contains("持有 2") and line.text.contains("缺少 3"),"Actual replacement price and material deficit appear before explicit preview")
  check(line.get_theme_color("font_color")==Color("b32929") and c.material_route_button.visible,"Deficit is highlighted and has an exploration action")
  await capture("missing-material")
- before=JSON.stringify(g.profile)
+ before=gameplay_snapshot(g)
  c.refresh_materials();c.refresh_materials()
- check(JSON.stringify(g.profile)==before,"Material projection preserves resources, command sequence and RNG")
+ check(gameplay_snapshot(g)==before,"Material projection preserves resources, command sequence and RNG")
  var count=c.material_reads
  for repeat in 5:p.refresh_progress()
  check(c.material_reads==count,"Frame progress never recomputes forge forecasts")
@@ -81,21 +85,56 @@ func run() -> void:
  check(g.profile.hyperspace.inventory.equipped==[blue.id],"One occupied slot replaces directly without an intermediate unload")
  check(p.equipment_ui.feedback.text.contains("已更新"),"Successful replacement has local feedback")
  p.selected_id=d.id;g.profile.hyperspace.inventory.sealed[d.id]=100
- before=JSON.stringify(g.profile);p.toggle_equipped()
- check(JSON.stringify(g.profile)==before and not p.equipment_ui.feedback.text.is_empty(),"Rejected sealed replacement preserves existing equipment and explains failure")
+ before=gameplay_snapshot(g);p.toggle_equipped()
+ check(gameplay_snapshot(g)==before and not p.equipment_ui.feedback.text.is_empty(),"Rejected sealed replacement preserves existing equipment and explains failure")
  g.profile.hyperspace.inventory.sealed.erase(d.id)
  g.profile.selectedShip="Destroyer"
  g.hyperspace.set_equipped(g,[blue.id,d.id])
  var other=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"feedback:other","white","laser",5,"1")
  bag=g.profile.hyperspace.inventory;bag.drones[other.id]=other;bag.warehouse.append(other.id);bag.generation+=1
- p.selected_id=other.id;p.dirty=true;p.refresh();before=JSON.stringify(g.profile);p.toggle_equipped()
+ p.selected_id=other.id;p.dirty=true;p.refresh();before=gameplay_snapshot(g);p.toggle_equipped()
  check(p.equipment_ui.replacement_dialog!=null and p.equipment_ui.replacement_dialog.visible and p.equipment_ui.replacement_choice.item_count==2,"Multiple occupied slots ask which drone to replace")
- check(JSON.stringify(g.profile)==before,"Opening replacement chooser never unloads anything")
+ check(gameplay_snapshot(g)==before,"Opening replacement chooser never unloads anything")
  g.hyperspace.set_equipped(g,[blue.id])
  check(g.switch_ship("Frigate"),"Hull-switch fixture uses the legal transaction")
  p.refresh()
  check(p.equipment_ui.heading.text.contains("/ 1") and not p.budgets.text.contains("1/2"),"Changing hull updates the sole occupancy display without a stale repeated budget")
  await capture("replacement-choice")
  p.equipment_ui.replacement_dialog.hide()
+ scene.select_system(0)
+ f.pending={"drone":blue.duplicate(true),"materials":{"degenerate_matter":1},"ultimate_cores":0}
+ before=gameplay_snapshot(g)
+ p.on_event("hyperspace_changed",{"reason":"claimed"})
+ check(scene.equipment_tabs.current_tab==0 and not f.notice.visible,"Later reward never steals the active page or repeats the first-drone popup")
+ var nav:Button=scene.system_nav_buttons[9];var dot:Control=nav.get_node("ActivationBadge")
+ check(f.unread and dot.visible and nav.text==p.t("reward_nav_drone"),"A settled later drone remains visible in navigation outside hyperspace")
+ await capture("cross-page-reward")
+ for repeat in 5:scene.refresh_hyperspace_badge();scene.refresh_system_nav();f.mark_viewed()
+ check(f.unread and dot.visible and gameplay_snapshot(g)==before,"Hidden receipts and ordinary refreshes preserve unread feedback without changing progress")
+ var unread_save:Dictionary=g.portable_save_data()
+ check(preload("res://scripts/hyperspace_state.gd").valid(unread_save.hyperspace,g.hyperspace.config,g.db.levels.size()) and g.hyperspace.Permission.bindings_valid(unread_save,g.db.data,g.hyperspace.config),"Save-boundary fixture satisfies the actual inventory and planet contracts")
+ check(bool(unread_save.hyperspaceReceipt.unread),"Unseen rewards enter the existing portable save without an extra settlement")
+ var resumed=BattleGame.new(g.db,false);resumed.load_progress_data(unread_save)
+ check(resumed.profile.hyperspaceReceipt==g.profile.hyperspaceReceipt,"Unread identity survives the existing save import boundary")
+ var previous_host_game=scene.game
+ scene.game=resumed;f.restore_read_state();scene.refresh_hyperspace_badge()
+ check(f.unread and nav.text==p.t("reward_nav_drone") and str(f.latest.drone.id)==blue.id,"Restart restores the exact unread drone and visible navigation")
+ scene.game=previous_host_game
+ scene.select_system(9)
+ await process_frame
+ check(p.section_index==0 and f.card.is_visible_in_tree(),"Explicit navigation opens the unread receipt instead of an old refit page")
+ f.mark_viewed()
+ check(not f.unread and not dot.visible and nav.text==UIText.t(scene.SYSTEM_TITLES[9]),"Seeing the actual receipt restores the normal navigation caption and clears its unread dot")
+ check(gameplay_snapshot(g)==before,"Reading a later receipt never settles, equips or mutates gameplay progress")
+ var read_save:Dictionary=g.portable_save_data();resumed.load_progress_data(read_save)
+ scene.game=resumed;f.restore_read_state()
+ check(not f.unread,"Read rewards remain read after save and restart")
+ var legacy:Dictionary=read_save.duplicate(true);legacy.erase("hyperspaceReceipt");resumed.load_progress_data(unread_save);resumed.load_progress_data(legacy);f.restore_read_state()
+ check(not f.unread,"Legacy saves do not announce already-owned drones again")
+ var invalid:Dictionary=read_save.duplicate(true);invalid.hyperspaceReceipt={"round":"bad","run":-1,"drone_id":5,"unread":true};resumed.load_progress_data(invalid);f.restore_read_state()
+ check(not f.unread,"Invalid optional UI receipt metadata stays quiet without accepting a false reward")
+ var quiet=BattleGame.new(g.db,false);scene.game=quiet;f.restore_read_state();f.show_receipt()
+ check(not f.unread and not f.card.visible,"A fresh save never invents a received-materials card")
+ scene.game=previous_host_game
  print("Player feedback: ",checks," checks, ",failures," failures")
  scene.queue_free();await process_frame;quit(1 if failures else 0)
