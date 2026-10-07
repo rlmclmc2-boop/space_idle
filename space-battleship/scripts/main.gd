@@ -319,10 +319,12 @@ func _ready() -> void:
 func show_chrono_login_report() -> void:
 	if is_instance_valid(chrono_login_dialog):
 		return
+	var amount := float(game.login_chrono_particles)
+	if amount <= 0.0:
+		return
 	var qa_tools := get_tree().root.get_node_or_null("QATools")
 	if qa_tools is Window and qa_tools.visible:
 		qa_tools.hide()
-	var amount := float(game.login_chrono_particles)
 	var display := str(int(amount)) if is_equal_approx(amount,roundf(amount)) else str(amount)
 	chrono_login_dialog = AcceptDialog.new()
 	chrono_login_dialog.name = "ChronoLoginDialog"
