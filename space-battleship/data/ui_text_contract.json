@@ -8279,6 +8279,16 @@
       "params": [
         "time"
       ]
+    },
+    "research.effect.damage_unbuilt": {
+      "params": [
+        "value"
+      ]
+    },
+    "research.effect.health_unbuilt": {
+      "params": [
+        "value"
+      ]
     }
   },
   "bindings": {

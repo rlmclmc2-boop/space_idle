@@ -1686,11 +1686,27 @@
     "note": "效果类型与数值"
   },
   {
+    "key": "research.effect.damage_unbuilt",
+    "text": "尚未建成 · 首次建成后，武器伤害为原来的 {value}",
+    "params": "value",
+    "category": "research",
+    "note": "未建成工位：用现有公式首级预览，与当前效果区分",
+    "source": "hightech_presentation.gd"
+  },
+  {
     "key": "research.effect.health",
     "text": "生命上限为原来的 {value}",
     "params": "value",
     "category": "research",
     "note": "效果类型与数值"
+  },
+  {
+    "key": "research.effect.health_unbuilt",
+    "text": "尚未建成 · 首次建成后，生命与护盾上限为原来的 {value}",
+    "params": "value",
+    "category": "research",
+    "note": "未建成工位：用现有公式首级预览，与当前效果区分",
+    "source": "hightech_presentation.gd"
   },
   {
     "key": "research.effect.generic",

@@ -8,18 +8,20 @@ const TEAL := CHROME.TEAL
 const MUTED := CHROME.MUTED
 const TYPES := {BattleGame.FURNACE:"iron",BattleGame.JEWEL_FURNACE:"jewel",BattleGame.ENERGY_FOCUS:"damage",BattleGame.DENSE_ARMOUR:"health"}
 
-static func effect(game, key: String) -> Dictionary:
+static func effect(game, key: String, preview_level: int = -1) -> Dictionary:
 	var kind: String=TYPES.get(key,"generic")
+	var level: int=game.effective_hightech_level(key) if preview_level<0 else preview_level
 	var formulas: Array=UIText.formulas(UIText.data_key("hightech",key,"description"))
 	var values: Array[String]=[]
 	var income: float=game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
 	for formula in formulas:
-		values.append(game.format_description(game.db.data.hightech[key],str(formula),game.effective_hightech_level(key),income,income))
+		values.append(game.format_description(game.db.data.hightech[key],str(formula),level,income,income))
 	return {"effect_type":kind,"value":values[1] if kind in ["iron","jewel"] and values.size()>1 else values[0] if not values.is_empty() else "—","time":values[0] if not values.is_empty() else "—"}
 
 static func effect_template(game, key: String) -> Dictionary:
 	if not game.hightech_unlocked(key):return {}
-	var data := effect(game,key)
+	var first_build: bool=game.effective_hightech_level(key)==0 and key in [BattleGame.ENERGY_FOCUS,BattleGame.DENSE_ARMOUR]
+	var data := effect(game,key,1 if first_build else -1)
 	if key==BattleGame.FURNACE and game.effective_hightech_level(key)==0:
 		return {"key":"research.effect.iron_unbuilt","values":{"time":data.time},"spans":{"time":{"role":"time","unit":" 秒"}}}
 	var params := {"value":data.value}
@@ -28,7 +30,7 @@ static func effect_template(game, key: String) -> Dictionary:
 		params.time=data.time
 		spans.time={"role":"time","unit":" 秒"}
 		spans.value.unit=" 铁" if data.effect_type=="iron" else " 强化碎片"
-	return {"key":"research.effect."+str(data.effect_type),"values":params,"spans":spans}
+	return {"key":"research.effect."+str(data.effect_type)+("_unbuilt" if first_build else ""),"values":params,"spans":spans}
 
 static func effect_text(game, key: String) -> String:
 	var template := effect_template(game,key)
