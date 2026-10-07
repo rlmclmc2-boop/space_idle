@@ -1,5 +1,7 @@
 extends Node2D
 
+var space_pause_held := false
+
 const BG := Color("080e1b")
 const PANEL := Color("101c2c")
 const LINE := Color("26384b")
@@ -392,6 +394,7 @@ func show_qa_tools() -> void:
 	panel.show()
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:space_pause_held = false
 	if game == null:
 		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not background_unfocused:
@@ -539,6 +542,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				game.paused = not game.paused
 
 func _input(event: InputEvent) -> void:
+	# Space pauses after a mouse purchase; Enter still activates the focused button.
+	# Consume the release too, so GUI ui_accept cannot buy another upgrade.
+	if event is InputEventKey and event.keycode == KEY_SPACE:
+		if space_pause_held:
+			if not event.pressed:space_pause_held = false
+			get_viewport().set_input_as_handled()
+			return
+		var focus := get_viewport().gui_get_focus_owner()
+		if event.pressed and not event.echo and focus is Button and not focus is OptionButton and focus.get_window() == get_window():
+			if not (is_instance_valid(balance_lab) and balance_lab.visible):
+				space_pause_held = true
+				_unhandled_input(event)
+				get_viewport().set_input_as_handled()
+				return
 	# Motion may end on a GUI control after crossing exposed battlefield space.
 	if event is InputEventMouseMotion and is_instance_valid(battle_clip):
 		collect_render_path(event.position-event.relative,event.position)
