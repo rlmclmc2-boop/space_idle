@@ -207,6 +207,46 @@ func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=nul
 		if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":higgs=true
 	return not higgs or count<=int(config.legendary_effects.higgs_cannon.constants.maximum_cannon_sources)
 
+## Select an explicit replacement on multi-slot hulls; single-slot hulls have one unambiguous target.
+## Build and validate the final loadout before publishing so rejected changes never unequip anything.
+func equip_drone(g,id: String,replace_id: String="") -> Dictionary:
+	var bag: Dictionary=g.profile.hyperspace.inventory
+	var ids: Array=bag.equipped.duplicate()
+	var capacity:=mini(Permission.hull_capacity(g,config),int(config.maximum_equipped))
+	var result: Dictionary={"ok":false,"reason":"","changed":false,"capacity":capacity,"equipped":ids.duplicate(),"replaced_id":""}
+	if not bag.drones.has(id):result.reason="unknown_drone";return result
+	if bag.sealed.has(id):result.reason="sealed";return result
+	if not bag.warehouse.has(id):result.reason="not_in_warehouse";return result
+	if ids.has(id):result.ok=true;result.reason="already_equipped";return result
+	if capacity<=0:result.reason="no_slots";return result
+	var target:=replace_id
+	if not target.is_empty():
+		if not ids.has(target):result.reason="replacement_not_equipped";return result
+	elif ids.size()>=capacity:
+		if capacity==1 and ids.size()==1:target=str(ids[0])
+		else:result.reason="select_replacement";return result
+	if target.is_empty():ids.append(id)
+	else:ids[ids.find(target)]=id
+	if ids.size()>capacity:result.reason="capacity_exceeded";return result
+	var legendary:=0;var ultimate:=0
+	for equipped_id in ids:
+		legendary+=int(bag.drones[equipped_id].legendary);ultimate+=int(bag.drones[equipped_id].ultimate)
+	if legendary>int(config.maximum_legendary):result.reason="legendary_limit";return result
+	if ultimate>int(config.maximum_ultimate):result.reason="ultimate_limit";return result
+	if not equipment_constraints(g,ids,bag):result.reason="weapon_constraint";return result
+	if not set_equipped(g,ids):result.reason="invalid_loadout";return result
+	result.ok=true;result.changed=true;result.reason="equipped";result.equipped=ids;result.replaced_id=target
+	return result
+
+func unequip_drone(g,id: String) -> Dictionary:
+	var ids: Array=g.profile.hyperspace.inventory.equipped.duplicate()
+	var result: Dictionary={"ok":true,"reason":"already_unequipped","changed":false,"capacity":mini(Permission.hull_capacity(g,config),int(config.maximum_equipped)),"equipped":ids.duplicate(),"replaced_id":""}
+	if not ids.has(id):return result
+	ids.erase(id)
+	if not set_equipped(g,ids):result.ok=false;result.reason="invalid_loadout";return result
+	result.changed=true;result.reason="unequipped";result.equipped=ids
+	return result
+
 func set_equipped(g,ids: Array,hull_capacity: int=-1) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
 	var actual:=Permission.hull_capacity(g,config)
