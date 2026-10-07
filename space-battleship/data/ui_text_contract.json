@@ -7904,6 +7904,56 @@
     },
     "hyperspace.forge_guide_body": {
       "params": []
+    },
+    "hyperspace.forge_guide_add_affix": {
+      "params": []
+    },
+    "hyperspace.forge_guide_replace_affix": {
+      "params": []
+    },
+    "hyperspace.forge_guide_lock_affix": {
+      "params": []
+    },
+    "hyperspace.forge_guide_promote_affix": {
+      "params": []
+    },
+    "hyperspace.forge_guide_reroll_values": {
+      "params": []
+    },
+    "hyperspace.forge_guide_enable_omen": {
+      "params": []
+    },
+    "hyperspace.forge_guide_disable_omen": {
+      "params": []
+    },
+    "hyperspace.forge_guide_add_hanging_slot": {
+      "params": []
+    },
+    "hyperspace.forge_guide_legendary": {
+      "params": []
+    },
+    "hyperspace.forge_guide_modernize": {
+      "params": []
+    },
+    "hyperspace.forge_guide_ultimate": {
+      "params": []
+    },
+    "hyperspace.forge_guide_restore_ultimate": {
+      "params": []
+    },
+    "hyperspace.forge_guide_dismantle": {
+      "params": []
+    },
+    "hyperspace.forge_capacity_summary": {
+      "params": [
+        "affixes",
+        "affix_cap",
+        "slots",
+        "slot_cap"
+      ]
+    },
+    "hyperspace.forge_result_current": {
+      "params": []
     }
   },
   "bindings": {

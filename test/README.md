@@ -37,6 +37,7 @@
 | 存档与重启 | `test_save_policy.gd --headless` 检查真实时间定时/手动触发、间隔、业务内存提交、故障保护及备份恢复；去掉 `--headless` 检查设置界面。`test_jewel_combine_all.gd --headless` 检查合成事务，`test_journey_resume.gd --headless` 检查手动存档及不写盘的退出/重启。旧帧合并、即时写盘和异步候选夹具只描述旧机制，不作为当前保存验收入口；第二轮历史证据见 [报告](../space-battleship/PERFORMANCE_OPTIMIZATION_2.md)。 |
 | 音乐与开关偏好 | `test_bgm.gd` |
 | 文案 | `test_ui_text.py`；涉及运行时文字行为时用 `test_ui_text.gd` |
+| 无人机改造指南 | `test_hyperspace_guide.gd --headless`：首胜前隐藏改造与预设、按当前操作查阅、短窗口、控件复用、只读状态与改造结果回显；不作进度或通关验收 |
 | 配置导入 | 按所改分表选择 `test_crew_import.py`、`test_jewel_import.py`、`test_unlock_import.py`、`test_equipment_growth_import.py`、`test_jewel_furnace_import.py`、`test_reactor_config.py`、`test_scientist_config.py` 或 `test_offline_config.py` |
 | 配置工具与编辑器 | `test_config_workbooks.py`、`test_level_editor.py` / `test_level_editor.gd`、`test_config_panel.gd`；输入/事务边界用 `test_config_input_matrix.py` |
 | Balance Lab | 按变化选 `test_balance_metrics.gd`、`test_balance_v2.gd`、`test_balance_database.gd`、`test_balance_lab_ui.gd`；模拟及 FAST 专项先查 [实验说明](../space-battleship/docs/BALANCE_LAB.md) 与 [性能协议](../space-battleship/docs/BALANCE_PERFORMANCE.md) |
