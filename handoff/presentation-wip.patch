@@ -1,0 +1,231 @@
+diff --git a/space-battleship/data/ui_text.json b/space-battleship/data/ui_text.json
+index c5b5ce8..8d11676 100644
+--- a/space-battleship/data/ui_text.json
++++ b/space-battleship/data/ui_text.json
+@@ -14938,5 +14938,26 @@
+     "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
+     "params": "",
+     "category": "hyperspace"
++  },
++  {
++    "key": "hyperspace.battle_location",
++    "text": "异空间 · {route}",
++    "params": "{route}",
++    "category": "hyperspace",
++    "note": "异空间战场身份与进出场反馈"
++  },
++  {
++    "key": "hyperspace.entering_route",
++    "text": "驶入 {route}",
++    "params": "{route}",
++    "category": "hyperspace",
++    "note": "异空间战场身份与进出场反馈"
++  },
++  {
++    "key": "hyperspace.returning_main",
++    "text": "正在返回主航线",
++    "params": "",
++    "category": "hyperspace",
++    "note": "异空间战场身份与进出场反馈"
+   }
+ ]
+diff --git a/space-battleship/data/ui_text_contract.json b/space-battleship/data/ui_text_contract.json
+index 3d2bb95..ae1355c 100644
+--- a/space-battleship/data/ui_text_contract.json
++++ b/space-battleship/data/ui_text_contract.json
+@@ -7983,6 +7983,19 @@
+     },
+     "hyperspace.module_source_hint_basic": {
+       "params": []
++    },
++    "hyperspace.battle_location": {
++      "params": [
++        "route"
++      ]
++    },
++    "hyperspace.entering_route": {
++      "params": [
++        "route"
++      ]
++    },
++    "hyperspace.returning_main": {
++      "params": []
+     }
+   },
+   "bindings": {
+diff --git a/space-battleship/scripts/battlefield.gd b/space-battleship/scripts/battlefield.gd
+index 146161b..e22f63d 100644
+--- a/space-battleship/scripts/battlefield.gd
++++ b/space-battleship/scripts/battlefield.gd
+@@ -684,19 +684,21 @@ func draw_background()->void:
+ 	# This static frame shares the equipment palette without covering the playfield.
+ 	draw_surface.draw_rect(get_viewport_rect(),BG)
+ 	draw_surface.draw_rect(Rect2(20,96,572,get_viewport_rect().size.y-120),Color("102330"))
+-	draw_surface.draw_rect(Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE),Color("0d202e"))
++	var route := hyperspace_battle_route()
++	var base := Color("0d202e") if route.is_empty() else Color("090e19").lerp(hyperspace_route_color(route),0.14)
++	draw_surface.draw_rect(Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE),base)
+ 
+ func draw_vertical_battle_hud()->void:
+ 	battle_panel(BATTLE_HEADER_RECT)
+ 	draw_surface.draw_rect(Rect2(44,115,4,24),BATTLE_TEAL)
+-	text_at(UIText.t("battle.stage",{"stage":str(int(game.stage))}),Vector2(60,134),23,BATTLE_CREAM)
++	text_at(battle_location_title(),Vector2(60,134),20 if not hyperspace_battle_route().is_empty() else 23,BATTLE_CREAM)
+ 	var state_key:="hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"
+ 	if game.paused and game.pending_unlocks.is_empty():state_key="hud.state.paused"
+-	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
++	text_at(UIText.t(state_key),Vector2(350 if not hyperspace_battle_route().is_empty() else 208,132),16,BATTLE_TEAL)
+ 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(game.db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
+ 	battle_meter(Rect2(44,147,524,5),game.distance/maxf(1,float(game.db.levels[game.stage-1].length)),BATTLE_TEAL)
+ 	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
+-		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(315,132),14,BATTLE_WARM)
++		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(460,173) if not hyperspace_battle_route().is_empty() else Vector2(315,132),14,BATTLE_WARM)
+ 	battle_panel(Rect2(30,1132,552,114))
+ 	var status := game.enhancement_protection_status()
+ 	var layers := defense_hud_layers(status)
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index c2db165..68b2446 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -155,6 +155,7 @@ var planet_panel: Control
+ var chrono_panel: Control
+ var galaxy_panel: Control
+ var hyperspace_panel: Control
++var hyperspace_transition := {}
+ var background_unfocused := false
+ var equipment_page := 0
+ var equipment_tabs: TabContainer
+@@ -414,6 +415,9 @@ func _process(delta: float) -> void:
+ 	sync_accelerated_visual_mode()
+ 	var dt := maxf(0,delta) if background_unfocused else minf(delta,0.1)
+ 	clock += dt
++	if not game.paused and not hyperspace_transition.is_empty():
++		hyperspace_transition.remaining=maxf(0,float(hyperspace_transition.remaining)-dt)
++		if float(hyperspace_transition.remaining)<=0:hyperspace_transition.clear()
+ 	prune_resource_samples(Time.get_unix_time_from_system())
+ 	if not game.paused:
+ 		if not uses_logical_battle_pose():
+@@ -613,6 +617,13 @@ func on_event(kind: String, info: Dictionary) -> void:
+ 	# State/refit/encounter events may change geometry within a logical step.
+ 	enemy_entry_distance_time = -INF
+ 	match kind:
++		"hyperspace_manual":
++			var entering := bool(info.get("active",false))
++			var route := str(info.get("route","")) if entering else str(game.manual_hyperspace.last_result.get("route",""))
++			hyperspace_transition={"route":route,"entering":entering,"remaining":0.9}
++			if is_instance_valid(background_layer):background_layer.queue_redraw()
++			if is_instance_valid(stars_layer):stars_layer.queue_redraw()
++			if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
+ 		"hyperspace_changed":
+ 			var s: Dictionary=game.profile.hyperspace
+ 			var signature := str([preload("res://scripts/hyperspace_permissions.gd").reserved_crew(s),s.auto.enabled,s.active.get("mode",""),s.active.get("status",""),s.blocked])
+@@ -2409,7 +2420,7 @@ func refresh_draw_layers(dt: float) -> void:
+ 		if not game.drops.any(func(drop):return int(drop.get("source_uid",-1))==int(source_uid)):
+ 			death_drop_positions.erase(source_uid)
+ 	recover_death_drop_positions()
+-	if ui_state_changed(stars_layer,[star_travel,star_streak,game.speed,fx_time]):
++	if ui_state_changed(stars_layer,[star_travel,star_streak,game.speed,fx_time,hyperspace_battle_route()]):
+ 		stars_layer.queue_redraw()
+ 	# Animation is isolated to the battlefield; stationary UI/backgrounds retain draw commands.
+ 	if battle_layer.visible:
+@@ -2423,13 +2434,13 @@ func refresh_draw_layers(dt: float) -> void:
+ 			drop_layer.queue_redraw()
+ 	# The HUD reads encounter identity and player health, never enemy cooldowns
+ 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
+-	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),enhancement_defense_hud_state()]):
++	if ui_state_changed(battle_hud_layer,[hyperspace_battle_route(),game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),enhancement_defense_hud_state()]):
+ 		battle_hud_layer.queue_redraw()
+ 	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
+ 		resource_layer.queue_redraw()
+ 	# Derived foreground feedback, refreshed even while the simulation is paused.
+ 	resource_hover_feedback = resource_hover_notices()
+-	if ui_state_changed(overlay_layer,[help_open,game.pending_unlocks,battle_notices(),pickup_effects,resource_hover_feedback]):
++	if ui_state_changed(overlay_layer,[hyperspace_transition,help_open,game.pending_unlocks,battle_notices(),pickup_effects,resource_hover_feedback]):
+ 		overlay_layer.queue_redraw()
+ 
+ func refresh_fps_label(force := false) -> void:
+@@ -2574,13 +2585,41 @@ func draw_chrome() -> void:
+ 	text_at(UIText.t("main.draw_chrome.text_01"),Vector2(69,49),22,SHELL_PRESENTATION.PAPER)
+ 	draw_surface.draw_line(Vector2(599,96),Vector2(599,viewport.end.y-24),LINE,2)
+ 
++func hyperspace_battle_route() -> String:
++	if not game.manual_hyperspace.active:return ""
++	return str(game.profile.hyperspace.active.get("route",""))
++
++func hyperspace_route_color(route:String) -> Color:
++	return {"alpha":Color("6aabd8"),"beta":Color("dfa372"),"gamma":Color("83b9a0"),"delta":Color("b995d5")}.get(route,CYAN)
++
++func battle_location_title() -> String:
++	var route := hyperspace_battle_route()
++	if route.is_empty():return UIText.t("battle.stage",{"stage":str(int(game.stage))})
++	return UIText.t("hyperspace.battle_location",{"route":UIText.t("hyperspace."+route)})
++
++func draw_hyperspace_transition() -> void:
++	if hyperspace_transition.is_empty():return
++	var progress := 1.0-float(hyperspace_transition.remaining)/0.9
++	var entering := bool(hyperspace_transition.entering)
++	var tint := hyperspace_route_color(str(hyperspace_transition.route))
++	var alpha := minf(1.0,(1.0-progress)*4.0)
++	var field := Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE)
++	# A short edge sweep leaves ships and all controls unobstructed. No scene,
++	# simulation, input or speed changes are involved in this transition.
++	var y := field.position.y+field.size.y*(progress if entering else 1.0-progress)
++	draw_surface.draw_line(Vector2(field.position.x+8,y),Vector2(field.end.x-8,y),Color(tint,0.28*alpha),2)
++	var caption := UIText.t("hyperspace.entering_route",{"route":UIText.t("hyperspace."+str(hyperspace_transition.route))}) if entering else UIText.t("hyperspace.returning_main")
++	var rect := Rect2(field.position+Vector2(24,field.size.y-72),Vector2(field.size.x-48,42))
++	box(rect,Color(0.035,0.06,0.09,0.92*alpha),Color(tint,0.5*alpha))
++	text_at(caption,rect.position+Vector2(14,28),20,Color(tint,alpha))
++
+ func draw_vertical_battle_hud() -> void:
+ 	var length := float(db.levels[game.stage-1].length)
+ 	box(Rect2(30,100,552,98),Color("101f2e"),LINE)
+-	text_at(UIText.t("battle.stage",{"stage":str(int(game.stage))}),Vector2(44,129),20,INK)
++	text_at(battle_location_title(),Vector2(44,129),20,INK)
+ 	var state_key := "hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"
+ 	if game.paused and game.pending_unlocks.is_empty():state_key="hud.state.paused"
+-	text_at(UIText.t(state_key),Vector2(180,128),13,CYAN)
++	text_at(UIText.t(state_key),Vector2(340 if not hyperspace_battle_route().is_empty() else 180,128),13,CYAN)
+ 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(db.levels[game.stage-1].groups.size())}),Vector2(446,129),14,MUTED)
+ 	bar(Rect2(44,190,524,4),game.distance/length,CYAN)
+ 	var neutral_caption := neutral_protection_hud_text()
+@@ -2704,7 +2743,10 @@ func draw_stars() -> void:
+ 	mat.set_shader_parameter("near_speed",battle_visual.background_near_speed)
+ 	mat.set_shader_parameter("density",clampf(battle_visual.background_object_density,0,1))
+ 	mat.set_shader_parameter("mid_opacity",clampf(battle_visual.background_mid_opacity,0,1))
++	var route := hyperspace_battle_route()
+ 	mat.set_shader_parameter("fog_opacity",clampf(battle_visual.background_fog_opacity,0,1))
++	mat.set_shader_parameter("route_tint",hyperspace_route_color(route))
++	mat.set_shader_parameter("route_mix",0.8 if not route.is_empty() else 0.0)
+ 	draw_surface.draw_mesh(stars_mesh,null)
+ 
+ func draw_resources() -> void:
+@@ -2759,6 +2801,7 @@ func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
+ 	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color,"resource":"jewel" if drop.has("jewel") else str(drop.get("id","1"))})
+ 
+ func draw_overlay() -> void:
++	draw_hyperspace_transition()
+ 	for entry in resource_hover_feedback:
+ 		text_at(fit_battle_text(str(entry.text),170,17),entry.position,17,entry.color)
+ 	for effect in pickup_effects:
+diff --git a/space-battleship/scripts/starfield.gdshader b/space-battleship/scripts/starfield.gdshader
+index 2411104..dccf0e5 100644
+--- a/space-battleship/scripts/starfield.gdshader
++++ b/space-battleship/scripts/starfield.gdshader
+@@ -10,6 +10,8 @@ uniform float near_speed = 90.0;
+ uniform float density = 1.0;
+ uniform float mid_opacity = 0.16;
+ uniform float fog_opacity = 0.22;
++uniform vec4 route_tint : source_color = vec4(0.4,0.6,0.8,1.0);
++uniform float route_mix = 0.0;
+ varying vec2 local_pos;
+ varying float radius;
+ varying float tail;
+@@ -38,7 +40,7 @@ void fragment() {
+ 		p.y -= flight_time * far_speed / 960.0;
+ 		float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
+ 		float haze = pow(clamp(cloud*0.5+0.5,0.0,1.0),3.0);
+-		COLOR = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
++		COLOR = vec4(mix(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),route_tint.rgb*0.65,route_mix),haze*mix(fog_opacity,0.42,route_mix));
+ 	} else if (layer == 1.0) {
+ 		vec2 p = local_pos / radius;
+ 		float shape = max(abs(p.x)*0.85+abs(p.y)*0.4,abs(p.y));
