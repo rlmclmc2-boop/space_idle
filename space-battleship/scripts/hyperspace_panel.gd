@@ -450,8 +450,14 @@ func refresh_details() -> void:
  put(unseal,"disabled",not valid or gate<1 or int(host.game.profile.highestLevel)<gate)
  put(unseal,"tooltip_text",t("sealed_gate",{"level":str(gate)}) if gate>0 else "")
  var totals:Dictionary=host.game.hyperspace_totals()
- put(totals_summary,"visible",not totals.affixes.is_empty() or not totals.hangings.is_empty())
- put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
+ var active_effects:Array[String]=[]
+ for key in totals.affixes:
+  if float(totals.affixes[key])!=0.0:active_effects.append(affix_name(str(key)))
+ for key in totals.hangings:
+  if float(totals.hangings[key])!=0.0:active_effects.append(hanging_name(str(key)))
+ for key in totals.legendary:active_effects.append(effect_name(str(key)))
+ put(totals_summary,"visible",not active_effects.is_empty())
+ put(totals_summary,"text",t("active_effects_summary",{"items":" · ".join(active_effects)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
  detail_icon.call("apply",bag.drones[selected_id]) if valid else detail_icon.call("clear")

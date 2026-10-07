@@ -8260,6 +8260,11 @@
       "params": [
         "resistance"
       ]
+    },
+    "hyperspace.active_effects_summary": {
+      "params": [
+        "items"
+      ]
     }
   },
   "bindings": {
