@@ -26,7 +26,7 @@ var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
 var selected_next_stat = 0.0
 var detail_dirty := true
-var details_open := true
+var details_open := false
 var footer: Panel
 var footer_title: Label
 var footer_buttons: Dictionary = {}
@@ -50,6 +50,10 @@ var detail_scroll: ScrollContainer
 var detail_frame: Panel
 var detail_body: Control
 var detail_actions: GridContainer
+var new_weapon: Button
+var new_weapon_dismiss: Button
+var new_weapon_id := ""
+var category_picker: OptionButton
 
 func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
@@ -109,9 +113,9 @@ func skin_button(button: Button, primary := false) -> void:
 	button.add_theme_color_override("font_pressed_color",NAVY)
 	button.add_theme_color_override("font_disabled_color",NAVY)
 
-func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false) -> Button:
+func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false, parameters: Dictionary = {}) -> Button:
 	var button := Button.new()
-	button.text = UIText.t(text_key)
+	button.text = UIText.t(text_key,parameters)
 	button.set_meta("action_id",action_id)
 	button.custom_minimum_size = Vector2(120,48)
 	skin_button(button,primary)
@@ -142,8 +146,17 @@ func setup(owner_ui: Node) -> void:
 	filters = Control.new()
 	filters.position = Vector2(0,0)
 	toolbar.add_child(filters)
-	var category_box := select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
-	skin_button(category_box)
+	category_picker = select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
+	skin_button(category_picker)
+	new_weapon = action_button(toolbar,"equipment.new_weapon","new_weapon",show_new_weapon,true,{"weapon":""})
+	new_weapon.position = Vector2(746,0)
+	new_weapon.size = Vector2(370,48)
+	new_weapon.add_theme_font_size_override("font_size",18)
+	new_weapon_dismiss = action_button(toolbar,"equipment.new_weapon_dismiss","dismiss_new_weapon",dismiss_new_weapon)
+	new_weapon_dismiss.position = Vector2(1126,0)
+	new_weapon_dismiss.custom_minimum_size.x = 76
+	new_weapon_dismiss.size = Vector2(76,48)
+	new_weapon_dismiss.add_theme_font_size_override("font_size",18)
 	grid_scroll = ScrollContainer.new()
 	grid_scroll.name = "EquipmentGrid"
 	grid_scroll.position = Vector2(22,165)
@@ -226,12 +239,16 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
-	detail.more = action_button(detail_body,"equipment.attributes.hide","toggle_stats",toggle_details)
+	detail.more = action_button(detail_body,"equipment.attributes.show","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
 	detail.more.size = Vector2(535,48)
 	detail.stats = label(detail_body,"",Rect2(18,608,535,300),20,NAVY)
 	detail.stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.stats.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	detail.stats.hide()
+	detail.basics = label(detail_body,"",Rect2(18,608,535,180),20,NAVY)
+	detail.basics.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail.basics.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	detail.stats.resized.connect(update_detail_height)
 	detail_frame.hide()
 
@@ -308,11 +325,53 @@ func open_picker(id: String) -> void:
 	if cards.has(id) and not cards[id].name_button.disabled:
 		cards[id].name_button.show_popup()
 
+func refresh_new_weapon() -> void:
+	new_weapon_id = ""
+	for id in host.game.unread_tutorial_unlocks():
+		var row: Dictionary = host.db.data.unlock.get(id,{})
+		var key := str(row.get("target",""))
+		if row.get("type","")!="equipment" or not BattleGame.WEAPON_KEYS.has(key) or int(row.get("level",0))<=0:continue
+		if not host.game.content_unlocked("equipment",key):continue
+		if host.game.weapon_entries().any(func(entry):return str(entry.key)==key):continue
+		new_weapon_id = id
+		break
+	host.set_ui_value(new_weapon,"visible",not new_weapon_id.is_empty())
+	host.set_ui_value(new_weapon_dismiss,"visible",not new_weapon_id.is_empty())
+	if not new_weapon_id.is_empty():
+		var key := str(host.db.data.unlock[new_weapon_id].target)
+		host.set_ui_value(new_weapon,"text",UIText.t("equipment.new_weapon",{"weapon":str(host.NAMES.get(key,key))}))
+
+func show_new_weapon() -> void:
+	var id := new_weapon_id
+	if id.is_empty():return
+	var key := str(host.db.data.unlock.get(id,{}).get("target",""))
+	var target_slot: String = selected if items.has(selected) and items[selected].category=="weapons" and not items[selected].locked else host.game.slot_id("weapons",0)
+	if not cards.has(target_slot) or not cards[target_slot].equipment_options.has(key):return
+	category_filter = 0
+	category_picker.select(0)
+	apply_filters()
+	grid_scroll.scroll_vertical = 0
+	select_item(target_slot)
+	open_picker(target_slot)
+	if cards[target_slot].name_button.get_popup().visible:
+		host.game.read_tutorial_unlock(id)
+		refresh_new_weapon()
+
+func dismiss_new_weapon() -> void:
+	if new_weapon_id.is_empty():return
+	host.game.read_tutorial_unlock(new_weapon_id)
+	refresh_new_weapon()
+
+func read_tried_weapon(key: String) -> void:
+	if not BattleGame.WEAPON_KEYS.has(key):return
+	var id: String = host.db.unlock_id("equipment",key)
+	if not id.is_empty():host.game.read_tutorial_unlock(id)
+
 func change_card_equipment(id: String, key: String) -> void:
 	if not items.has(id) or items[id].locked:return
 	var item: Dictionary = items[id]
 	if key.is_empty():host.game.unequip_slot(item.category,int(item.index))
-	else:host.game.equip_slot(item.category,int(item.index),key)
+	elif host.game.equip_slot(item.category,int(item.index),key):read_tried_weapon(key)
 	refresh(id)
 
 func choose_equipment(index: int) -> void:
@@ -346,13 +405,14 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 func toggle_details() -> void:
 	details_open = not details_open
 	host.set_ui_value(detail.stats,"visible",details_open)
+	host.set_ui_value(detail.basics,"visible",not details_open)
 	host.set_ui_value(detail.more,"text",UIText.t("equipment.attributes.hide" if details_open else "equipment.attributes.show"))
 	update_detail_height()
 
 func update_detail_height(force := false) -> void:
 	if not is_instance_valid(detail_body):return
 	if not force and not detail_frame.is_visible_in_tree():return
-	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else 604.0
+	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else detail.basics.position.y+maxf(detail.basics.size.y,detail.basics.get_minimum_size().y)
 	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(570,bottom+24))
 
 func icon_for(key: String) -> Texture2D:
@@ -428,6 +488,7 @@ func refresh_slots(changed: Array) -> void:
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
 	refresh_total()
+	refresh_new_weapon()
 	if structure_changed:layout_contents()
 	apply_filters()
 	if detail_changed:refresh_detail()
@@ -435,6 +496,7 @@ func refresh_slots(changed: Array) -> void:
 
 func refresh_pending() -> void:
 	if not is_visible_in_tree():return
+	refresh_new_weapon()
 	if dirty:
 		refresh()
 	elif observed_resources!=host.game.profile.resources:
@@ -622,6 +684,13 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
+	var row: Dictionary = host.db.equip(key,int(entry.level)) if not key.is_empty() else {}
+	var basic_text := ""
+	if not row.is_empty():
+		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":host.number(float(row.cd))})
+		else:basic_text=UIText.t("equipment.current_reduction",{"percent":host.number(float(host.db.config.dmgReduce)*100)})
+		basic_text+="\n"+equipment_attributes(entry,false)
+	host.set_ui_value(detail.basics,"text",basic_text)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)
 
@@ -629,10 +698,10 @@ func change_equipment(key: String) -> void:
 	if not items.has(selected):return
 	var category: String = items[selected].category
 	if key.is_empty():host.game.unequip_slot(category,selected_slot)
-	else:host.game.equip_slot(category,selected_slot,key)
+	elif host.game.equip_slot(category,selected_slot,key):read_tried_weapon(key)
 	refresh(selected)
 
-func equipment_attributes(entry: Dictionary) -> String:
+func equipment_attributes(entry: Dictionary, include_enhancement := true) -> String:
 	var key: String = entry.key
 	var row: Dictionary = host.db.equip(key,int(entry.level))
 	var lines: Array[String] = []
@@ -646,7 +715,7 @@ func equipment_attributes(entry: Dictionary) -> String:
 		"shield":fields=[["recovery_percent",float(row.para2)*100],["recovery_delay",float(row.para3)]]
 	for field in fields:
 		lines.append(UIText.t("equipment.attribute",{"label":equipment_text("attribute."+str(field[0])),"value":host.number(float(field[1]))}))
-	if host.game.enhancement_unlocked():
+	if include_enhancement and host.game.enhancement_unlocked():
 		lines.append(UIText.t("enhance.equipment_slots",{"count":host.game.available_effect_count(entry)}))
 		if is_instance_valid(host.enhancement_panel):
 			for effect in host.game.enhancement_effects(entry):

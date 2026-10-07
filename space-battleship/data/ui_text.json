@@ -15346,5 +15346,37 @@
     "category": "weapon",
     "note": "基础防御槽详情中说明既有换装限制",
     "source": "equipment_tab.gd:refresh_detail"
+  },
+  {
+    "key": "equipment.new_weapon",
+    "text": "新武器：{weapon} · 去换装",
+    "params": "{weapon}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.new_weapon_dismiss",
+    "text": "收起",
+    "params": "",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.attack_interval",
+    "text": "攻击间隔 {seconds} 秒",
+    "params": "{seconds}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.current_reduction",
+    "text": "对应类型伤害减少 {percent}%",
+    "params": "{percent}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
   }
 ]

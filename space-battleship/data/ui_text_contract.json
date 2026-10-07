@@ -8210,6 +8210,24 @@
     },
     "equipment.fixed_armour": {
       "params": []
+    },
+    "equipment.new_weapon": {
+      "params": [
+        "weapon"
+      ]
+    },
+    "equipment.new_weapon_dismiss": {
+      "params": []
+    },
+    "equipment.attack_interval": {
+      "params": [
+        "seconds"
+      ]
+    },
+    "equipment.current_reduction": {
+      "params": [
+        "percent"
+      ]
     }
   },
   "bindings": {
