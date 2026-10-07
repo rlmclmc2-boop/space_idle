@@ -57,6 +57,17 @@ func run() -> void:
 	check(scene.equipment_panel.selected==slot,"CTA selects semantic module target")
 	var original_key: String = game.slot_entry("weapons",index).key
 	check(original_key.is_empty(),"CTA never auto-equips")
+	var laser_gate: int = scene.db.data.unlock.laser.level
+	var earned: Array = game.profile.get("grantedUnlocks",[]).duplicate()
+	scene.db.data.unlock.laser.level = 99
+	game.profile.grantedUnlocks = earned.filter(func(id):return id!="laser")
+	guide.refresh()
+	check(not guide.has_equipment_choice("weapons",index) and guide.phase!="equip","An earned ID without any selectable weapon does not trap onboarding")
+	scene.db.data.unlock.laser.level = laser_gate
+	game.profile.grantedUnlocks = earned
+	game.profile.onboarding.equipped = false
+	guide.refresh()
+	check(guide.phase=="equip","A real selectable weapon restores the equipment step")
 	game.equip_slot("weapons",index,"laser")
 	game.profile.resources = {"1":0.0,"2":0.0}
 	guide.refresh()
@@ -87,7 +98,13 @@ func run() -> void:
 	guide.open_guide()
 	game.upgrade_slot("weapons",int(guide.target_slot.split("_")[1]))
 	guide.refresh()
-	check(guide.phase=="progress","Actual level change completes upgrade")
+	check(guide.phase=="defence" and guide.target_slot=="defence_1","After upgrade the guide points to a free defensive slot")
+	await capture(scene,"defence-target")
+	guide.activate()
+	check(scene.equipment_panel.selected=="defence_1","Defence CTA selects its actual slot")
+	game.equip_slot("defence",1,"armour")
+	guide.refresh()
+	check(guide.phase=="progress","Actual defensive equip completes the survival step")
 	game.paused = true
 	guide.refresh()
 	check(guide.phase=="paused","Pause does not hide instructions or unpause battle")
@@ -105,6 +122,37 @@ func run() -> void:
 	for repeat in 3:guide.refresh()
 	check(not guide.panel.visible,"Completion stays quiet across repeated refresh")
 	await capture(scene,"completed")
+	game.profile.onboarding.dismissed = false
+	game.profile.onboarding.retreatSeen = false
+	game.state = BattleGame.State.RETREAT
+	scene.help_open = true
+	guide.refresh()
+	check(not guide.panel.visible and guide.retreat_pending and not game.profile.onboarding.retreatSeen,"A first defeat hidden behind help remains unseen")
+	game.save_enabled = true
+	game.save_progress()
+	game.save_enabled = false
+	var blocked_raw: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	check(game.last_save_error==OK and not blocked_raw.onboarding.retreatSeen,"Saving while first-defeat help is blocked does not mark it read")
+	var blocked_restored := BattleGame.new(scene.db,false)
+	blocked_restored.load_progress_data(blocked_raw)
+	check(not blocked_restored.profile.onboarding.retreatSeen,"Reload preserves eligibility for a never-shown defeat hint")
+	scene.help_open = false
+	guide.refresh()
+	check(guide.panel.visible and guide.phase=="retreat" and game.profile.onboarding.retreatSeen,"First defeat still explains recovery after tutorial completion")
+	await capture(scene,"first-retreat")
+	guide.activate()
+	guide.refresh()
+	check(not guide.panel.visible,"Acknowledged first defeat stays quiet on the same retreat")
+	game.state = BattleGame.State.COMBAT
+	game.profile.onboarding.retreatSeen = false
+	guide.refresh()
+	game.state = BattleGame.State.RETREAT
+	guide.refresh()
+	game.upgrade_slot("defence",0)
+	guide.refresh()
+	check(not guide.retreat_pending and not guide.panel.visible,"An actual defensive upgrade dismisses the first-defeat hint without another click")
+	game.state = BattleGame.State.COMBAT
+
 	guide.open_guide()
 	check(guide.phase=="review" and guide.panel.visible,"Completed guidance opens concise reference on explicit request")
 	await capture(scene,"review")
@@ -118,7 +166,7 @@ func run() -> void:
 	file.close()
 	var legacy := BattleGame.new(scene.db,false)
 	legacy.load_progress()
-	check(legacy.profile.onboarding.completed,"Legacy save with missing field stays quiet")
+	check(legacy.profile.onboarding.completed and legacy.profile.onboarding.retreatSeen,"Legacy save with missing field stays quiet")
 	for category in ["weapons","defence"]:
 		for module_index in game.active_slot_count(category):
 			var before := game.slot_entry(category,module_index)
@@ -132,7 +180,17 @@ func run() -> void:
 	game.save_enabled = false
 	var restored := BattleGame.new(scene.db,false)
 	restored.load_progress()
-	check(restored.profile.onboarding.dismissed and restored.profile.onboarding.completed,"Normal save/load preserves dismiss and completion")
+	check(restored.profile.onboarding.dismissed and restored.profile.onboarding.completed and restored.profile.onboarding.retreatSeen,"Normal save/load preserves dismiss, completion and the first-defeat receipt")
+	# Portable save sanitization must preserve the new one-time receipt too.
+	var transfer := preload("res://scripts/save_transfer.gd")
+	var portable: Dictionary = game.portable_save_data()
+	portable.onboarding.completed = false
+	portable.onboarding.retreatSeen = true
+	var cleaned: Dictionary = transfer.clean(portable,transfer.schema())
+	check(cleaned.onboarding.get("retreatSeen",false),"Portable export preserves a first-defeat receipt before tutorial completion")
+	var imported := BattleGame.new(scene.db,false)
+	imported.load_progress_data(cleaned)
+	check(imported.profile.onboarding.retreatSeen and not imported.profile.onboarding.completed,"Portable import restores the receipt without completing unfinished guidance")
 	# State reconciles pre-existing actions, even before a guide is first displayed.
 	game.profile.onboarding = fresh.profile.onboarding.duplicate()
 	guide.review = false
@@ -150,6 +208,15 @@ func run() -> void:
 	guide.activate()
 	check(game.pending_unlocks.is_empty(),"Guide Continue reuses existing unlock acknowledgement")
 	guide.refresh()
+	# Earlier CTA opens a native picker. Close it and settle the actual card layout
+	# before moving a visible anchor; hidden/clipped targets correctly have no outline.
+	for card in scene.equipment_panel.cards.values():card.name_button.get_popup().hide()
+	scene.equipment_panel.refresh()
+	guide.activate()
+	for card in scene.equipment_panel.cards.values():card.name_button.get_popup().hide()
+	await process_frame
+	guide.refresh()
+	check(guide.outline.visible,"Moved-anchor fixture starts with a visible highlighted target")
 	var old_position: Vector2 = guide.target.position
 	guide.target.position += Vector2(10,10)
 	guide.refresh()

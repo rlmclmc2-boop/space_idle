@@ -189,14 +189,18 @@ func show_modules() -> void:
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
  for key in h().config.hanging_modules:
-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key];var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key]
+  var known: bool=progress.unlocked or int(progress.level)>0 or float(progress.exp)>0 or game().profile.hyperspace.inventory.drones.values().any(func(drone):return drone.hangings.has(key))
+  if not known:continue
+  var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key);choice.disabled=not progress.unlocked or int(game().profile.highestLevel)<int(h().config.hanging_modules[key].unlock_stage);body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
  panel.button(body,"module_apply",func():
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
   if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
   else:module_dialog.title=t("module_rejected"))
- dialog_label(body,t("module_source_hint"),18)
+ var collector_known: bool=module_choices.any(func(choice):return choice.get_meta("module_key")=="resource_collector")
+ dialog_label(body,t("module_source_hint" if collector_known else "module_source_hint_basic"),18)
  dialog_label(body,t("reforge_module_reset"),18)
  module_dialog.popup_centered(Vector2i(740,510))
 

@@ -14,10 +14,14 @@ var choices:Dictionary={}
 var summary:Label
 var feedback:Label
 var stale:=false
+var show_hyperspace:=false
+var show_drones:=false
 var zero_confirmation:ConfirmationDialog
 func setup(g,id:String,rewards:String)->void:
  game=g;planet_id=id;round_id=int(g.profile.hyperspace.round_id)
  var bag:Dictionary=g.profile.hyperspace.inventory
+ show_drones=bool(g.profile.hyperspace.unlocked_drones) or not bag.drones.is_empty()
+ show_hyperspace=g.hyperspace.is_unlocked(g) or show_drones or has_hyperspace_progress(g.profile.hyperspace)
  generation=int(bag.generation)
  capacity=Bag.retention_capacity(bag,g.hyperspace.config)+int(g.hyperspace.config.retention_capacity_gain)
  title=Text.t("planet.reforge");dialog_text="";min_size=Vector2i(650,370);size=Vector2i(740,500);dialog_hide_on_ok=false;wrap_controls=false
@@ -31,7 +35,7 @@ func setup(g,id:String,rewards:String)->void:
   sc.position=Vector2(0,98);sc.size=Vector2(body.size.x,maxf(1,body.size.y-98))
  body.resized.connect(layout);layout.call()
  var content=VBoxContainer.new();content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;sc.add_child(content)
- make_label(content,Text.t("planet.reforge_selection_hint"))
+ if show_drones:make_label(content,Text.t("planet.reforge_selection_hint"))
  for drone_id in bag.warehouse+bag.overflow:
   if bag.drones.has(drone_id):candidates.append(drone_id)
  # Preserve the original inventory order within each favorite/non-favorite group.
@@ -55,12 +59,18 @@ func setup(g,id:String,rewards:String)->void:
    lines.append(Text.t("hyperspace.affix",{"key":Text.data_text("hyperspace_affixes",key,"name",Text.t("hyperspace.unknown_affix")),"tier":str(int(affix.tier)),"value":value,"locked":Text.t("hyperspace.locked") if affix.locked else ""}))
   if d.legendary:lines.append(Text.data_text("hyperspace_legendary_effects",str(d.legendary_effect.get("effect_id","")),"name",Text.t("hyperspace.unknown_effect")))
   if not lines.is_empty():make_label(content,"\n".join(lines))
- if candidates.is_empty():make_label(content,Text.t("planet.reforge_no_drones"))
- make_label(content,Text.t("planet.reforge_confirm",{"level":g.planet_reforge_start(id)}))
+ if show_drones and candidates.is_empty():make_label(content,Text.t("planet.reforge_no_drones"))
+ make_label(content,Text.t("planet.reforge_confirm_basic",{"level":g.planet_reforge_start(id)}))
+ if show_hyperspace:make_label(content,Text.t("planet.reforge_hyperspace"))
+ if show_drones:make_label(content,Text.t("planet.reforge_drones"))
  make_label(content,Text.t("planet.reforge_rewards",{"rewards":rewards}))
  confirmed.connect(commit);canceled.connect(queue_free)
  game.event.connect(on_game_event)
  refresh_summary()
+func has_hyperspace_progress(s:Dictionary)->bool:
+ if not s.history.is_empty() or not s.active.is_empty() or bool(s.auto.enabled) or int(s.ultimate_cores)>0:return true
+ if s.materials.values().any(func(value):return int(value)>0):return true
+ return s.hanging_modules.values().any(func(module):return bool(module.unlocked) or int(module.level)>0 or float(module.exp)>0)
 func make_label(parent:Node,value:String)->Label:
  var result=Label.new();result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;result.text=value;result.size_flags_horizontal=Control.SIZE_EXPAND_FILL;parent.add_child(result);return result
 func on_choice(on:bool,id:String)->void:
@@ -72,8 +82,9 @@ func on_game_event(kind:String,_info:Dictionary)->void:
   if int(game.profile.hyperspace.round_id)!=round_id or int(game.profile.hyperspace.inventory.generation)!=generation:
    stale=true;refresh_summary()
 func refresh_summary()->void:
+ summary.visible=show_drones
  summary.text=Text.t("planet.reforge_selection",{"selected":str(selected.size()),"capacity":str(capacity),"discarded":str(candidates.size()-selected.size())})
- feedback.text=Text.t("planet.reforge_stale") if stale else Text.t("planet.reforge_over_capacity") if selected.size()>capacity else Text.t("planet.reforge_brief")
+ feedback.text=Text.t("planet.reforge_stale") if stale else Text.t("planet.reforge_over_capacity") if selected.size()>capacity else Text.t("planet.reforge_brief" if show_hyperspace else "planet.reforge_brief_basic")
  get_ok_button().disabled=stale or selected.size()>capacity
 func commit(allow_zero:=false)->void:
  # Recheck the snapshot and current permission before the authoritative transaction.

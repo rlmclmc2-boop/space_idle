@@ -7954,6 +7954,35 @@
     },
     "hyperspace.forge_result_current": {
       "params": []
+    },
+    "onboarding.defence": {
+      "params": []
+    },
+    "onboarding.show_defence": {
+      "params": []
+    },
+    "tutorial.system.hyperspace": {
+      "params": []
+    },
+    "tutorial.hyperspace.description": {
+      "params": []
+    },
+    "planet.reforge_confirm_basic": {
+      "params": [
+        "level"
+      ]
+    },
+    "planet.reforge_hyperspace": {
+      "params": []
+    },
+    "planet.reforge_drones": {
+      "params": []
+    },
+    "planet.reforge_brief_basic": {
+      "params": []
+    },
+    "hyperspace.module_source_hint_basic": {
+      "params": []
     }
   },
   "bindings": {

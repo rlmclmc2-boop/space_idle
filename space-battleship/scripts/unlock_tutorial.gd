@@ -1,6 +1,6 @@
 extends Control
 ## Tutorial archive projects authoritative unlock rows; only explicit entry clicks read.
-const SYSTEMS := ["equipment","ships","hightech","reactor","enhancement","crew","planets","galaxy","other"]
+const SYSTEMS := ["equipment","ships","hightech","reactor","enhancement","crew","planets","galaxy","hyperspace","other"]
 var host: Node
 var showing_archive := false
 var system := "equipment"
@@ -94,7 +94,7 @@ func dot(parent: Node) -> Label:
 	return label
 
 func system_for(id: String) -> String:
-	var row: Dictionary = host.db.data.unlock.get(id,{})
+	var row: Dictionary = host.game.tutorial_unlock_row(id)
 	match str(row.get("type","")):
 		"equipment":return "equipment"
 		"ship":return "ships"
@@ -108,6 +108,7 @@ func system_for(id: String) -> String:
 				"jewels":return "enhancement"
 				"crew_level":return "crew"
 				"galaxy":return "galaxy"
+				"hyperspace":return "hyperspace"
 	return "other"
 
 func set_archive(enabled: bool) -> void:
@@ -132,7 +133,7 @@ func open_entry(id: String) -> void:
 	refresh()
 
 func refresh_detail() -> void:
-	var row: Dictionary = host.db.data.unlock.get(selected,{}) if host.game.tutorial_unlocks().has(selected) else {}
+	var row: Dictionary = host.game.tutorial_unlock_row(selected)
 	host.set_ui_value(title,"text",str(row.get("title","")))
 	host.set_ui_value(description,"text",str(row.get("desc",UIText.t("tutorial.select_entry"))))
 
@@ -169,7 +170,7 @@ func refresh() -> void:
 				entry_buttons.erase(id)
 		for id in filtered:
 			if entry_buttons.has(id):continue
-			var row: Dictionary = host.db.data.unlock[id]
+			var row: Dictionary = host.game.tutorial_unlock_row(id)
 			var button := make_button(entries,str(row.get("title","")),open_entry.bind(id))
 			button.toggle_mode = true
 			button.custom_minimum_size = Vector2(192,48)

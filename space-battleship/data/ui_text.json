@@ -1128,7 +1128,7 @@
   },
   {
     "key": "onboarding.next",
-    "text": "知道了",
+    "text": "试试装备",
     "params": "",
     "category": "onboarding"
   },
@@ -1158,49 +1158,49 @@
   },
   {
     "key": "onboarding.intro",
-    "text": "战舰会自动航行、开火和收集战利品。你可以同时管理装备，不必手动瞄准。先给空武器位装上武器。",
+    "text": "下方是你的战舰，它会自己开火。试试右侧的装配和升级，看看战舰与装备卡片的变化。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.equip",
-    "text": "这个空武器位已经开放。选择已解锁武器后确认装配，装配本身不消耗资源；模块升级才需要资源。",
+    "text": "在空武器位选「免费装配」，再从选单里选一种武器；选中就装上了。看看舰上多出的炮口。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.upgrade",
-    "text": "武器已就位。选择一个已装配模块，点击「升级」增强它；当前资源足够升一级。",
+    "text": "点亮框里的「升级」，升一级后看看卡片上的数值，再看看战斗。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.waiting",
-    "text": "升级需要：{cost}。当前资源不足，可继续自动战斗收集资源；不用停在这里等待。",
+    "text": "升级费用：{cost}。先让战舰继续战斗；有足够资源时，升级按钮会亮起。",
     "params": "{cost}",
     "category": "onboarding"
   },
   {
     "key": "onboarding.progress",
-    "text": "装备与升级会直接影响战斗。击败关卡首领后会自动继续推进；解锁通知需要点击「继续」后继续战斗。",
+    "text": "现在看看战斗：武器负责清敌，装甲撑住生命。打完本关最后一队敌舰，就会自动驶向下一关。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.clear",
-    "text": "已完成一次通关！继续补齐空模块、升级装备，再挑战后续关卡。随时可从「入门指引」回看。",
+    "text": "首关已通过！继续试试装配和升级；「操作指南」里能回看入门与已解锁内容。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.retreat",
-    "text": "战舰耐久耗尽后会撤退修复，并按驻守设置重新出发。已有装备与升级仍会保留；可趁现在检查空模块和升级费用。",
+    "text": "刚才生命归零，战舰会修复后重试。装备和资源都还在；补上空防御位或升一级装甲，再看看能否撑住。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.unlock",
-    "text": "新内容已解锁。先阅读提示并点击「继续」，战斗才会继续；装备面板仍可操作。",
+    "text": "新内容来了。3秒后自动确认；也可以点「确认」。没来得及看，去顶部「操作指南 → 系统解锁」回看。",
     "params": "",
     "category": "onboarding"
   },
@@ -1212,13 +1212,13 @@
   },
   {
     "key": "onboarding.review",
-    "text": "自动战斗获得资源 → 免费装配已解锁武器 → 花资源升级模块 → 通关解锁新内容。撤退会修复战舰，装备与升级保留。",
+    "text": "先补齐免费装备，再花铁升级。武器卡看伤害，防御卡看装甲或护盾。失败会撤退修复；装备、等级和资源都保留。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.continue",
-    "text": "继续战斗",
+    "text": "确认解锁",
     "params": "",
     "category": "onboarding"
   },
@@ -5489,7 +5489,7 @@
   },
   {
     "key": "main.draw_unlock.text_03",
-    "text": "点击继续后恢复自动前进。",
+    "text": "3秒后自动确认；已解锁内容可在「操作指南」回看。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -10063,7 +10063,7 @@
   },
   {
     "key": "unlock.next",
-    "text": "点击继续查看下一项解锁。",
+    "text": "可点「确认」查看下一项解锁。",
     "params": "",
     "category": "main",
     "note": "多项解锁逐项确认",
@@ -14882,5 +14882,61 @@
     "params": "",
     "category": "hyperspace",
     "note": "执行成功后读取同一架无人机的现有结果；不重抽"
+  },
+  {
+    "key": "onboarding.defence",
+    "text": "再给空防御位装上装甲。选中后，看看左下生命上限和防御卡的变化。",
+    "params": "",
+    "category": "onboarding",
+    "note": "入门防御操作"
+  },
+  {
+    "key": "onboarding.show_defence",
+    "text": "补上防御",
+    "params": "",
+    "category": "onboarding",
+    "note": "入门防御操作"
+  },
+  {
+    "key": "tutorial.system.hyperspace",
+    "text": "异空间",
+    "params": "",
+    "category": "tutorial"
+  },
+  {
+    "key": "tutorial.hyperspace.description",
+    "text": "选择一条已开放路线和关卡，点「手动开始」挑战。探索能源会随在线时间恢复；先在页面核对本次消耗。",
+    "params": "",
+    "category": "tutorial"
+  },
+  {
+    "key": "planet.reforge_confirm_basic",
+    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n每颗星球只能重铸一次。",
+    "params": "level",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_hyperspace",
+    "text": "异空间能源、材料与探索设置重置；保留异空间通关时间记录。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_drones",
+    "text": "改造命令与挂载模块成长重置。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。请在本窗口选择保留名单；未选择的无人机将删除。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_brief_basic",
+    "text": "本轮成长重置；铁、铀和时空粒子保留。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "hyperspace.module_source_hint_basic",
+    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
+    "params": "",
+    "category": "hyperspace"
   }
 ]

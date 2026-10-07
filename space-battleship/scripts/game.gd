@@ -151,7 +151,7 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.enhancementVersion = 1
 	profile.enhancementLevel = 0
@@ -218,7 +218,15 @@ func tutorial_unlocks() -> Array[String]:
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
 		if unlock_available(str(id)) or profile.get("seenUnlocks", []).has(id):result.append(str(id))
+	if hyperspace.is_unlocked(self) or profile.get("seenUnlocks", []).has("hyperspace"):
+		if not result.has("hyperspace"):result.append("hyperspace")
 	return result
+
+func tutorial_unlock_row(id: String) -> Dictionary:
+	if not tutorial_unlocks().has(id):return {}
+	if id=="hyperspace":
+		return {"type":"feature","target":"hyperspace","title":UIText.t("hyperspace.title"),"desc":UIText.t("tutorial.hyperspace.description")}
+	return db.data.get("unlock",{}).get(id,{})
 
 func unread_tutorial_unlocks() -> Array[String]:
 	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
@@ -226,6 +234,7 @@ func unread_tutorial_unlocks() -> Array[String]:
 func read_tutorial_unlock(id: String) -> bool:
 	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
 	profile.readUnlocks.append(id)
+	if id=="hyperspace" and not profile.seenUnlocks.has(id):profile.seenUnlocks.append(id)
 	save_dirty = true
 	event.emit("tutorial_read", {"id":id})
 	return true
@@ -283,10 +292,11 @@ func load_progress_data(raw: Dictionary) -> void:
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
 	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true}
 	if raw.get("onboarding") is Dictionary:
 		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
+		profile.onboarding.retreatSeen = raw.onboarding.get("retreatSeen",profile.onboarding.completed) == true
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -1461,6 +1471,8 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
+	if hyperspace.is_unlocked(self) and not next.seenUnlocks.has("hyperspace"):
+		next.seenUnlocks.append("hyperspace")
 	for gate_id in available_unlocks():
 		var gate: Dictionary = db.data.unlock[gate_id]
 		if not next.seenUnlocks.has(gate_id):next.seenUnlocks.append(gate_id)
