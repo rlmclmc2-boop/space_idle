@@ -667,7 +667,10 @@ func player_render_position() -> Vector2:
 
 
 func draw_battle() -> void:
-	if effects_enabled: super.draw_battle()
+	if effects_enabled:
+		draw_encounter_backdrop()
+		# The inherited renderer owns batch entry/exit and cache invalidation.
+		super.draw_battle()
 
 
 
@@ -865,20 +868,22 @@ func draw_stars()->void:
 	mat.set_shader_parameter("route_color",Vector3(encounter_presentation.accent.r,encounter_presentation.accent.g,encounter_presentation.accent.b))
 	super.draw_stars()
 
-func draw_battle()->void:
+func draw_encounter_backdrop()->void:
 	# These ordinary CanvasItem primitives must not inherit the star mesh's
 	# metadata shader. Use the existing battle layer, behind combat drawings.
 	encounter_presentation.draw_space(draw_surface,BATTLE_VIEW_SIZE)
 	var cue := ""
 	if encounter_presentation.transition<1.8:
-		cue=UIText.t("battle.return_cleared" if encounter_presentation.return_success else "battle.return_main") if encounter_presentation.departure else UIText.t("hyperspace."+encounter_presentation.route)
+		if encounter_presentation.departure:
+			cue=UIText.t("battle.return_cleared" if encounter_presentation.return_success else "battle.return_main")
+		elif not encounter_presentation.route.is_empty():
+			cue=UIText.t("hyperspace."+encounter_presentation.route)
 	elif encounter_presentation.clear_age<1.8:
 		cue=UIText.t("battle.finale_cleared")
 	if not cue.is_empty():
 		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x
 		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,34)),Color("101b2b"))
 		draw_surface.draw_string(font,Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,86),cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18,encounter_presentation.accent)
-	super.draw_battle()
 
 func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 	if is_instance_valid(overlay_layer) and draw_surface==overlay_layer:
