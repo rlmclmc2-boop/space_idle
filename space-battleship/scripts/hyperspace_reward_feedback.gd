@@ -63,6 +63,9 @@ func view_drone() -> void:
  if id.is_empty() or not s.inventory.drones.has(id):return
  panel.host.select_system(9)
  panel.selected_id=id
+ # An explicit reward action must reveal its card even under an old filter.
+ panel.weapon_filter.select(0);panel.quality_filter.select(0);panel.sort_order.select(0)
+ panel.inventory_dirty=true
  # Use the actual warehouse page rather than selecting an invisible last-page item.
  var position=s.inventory.warehouse.find(id)
  panel.page=maxi(0,int(position/panel.PAGE_SIZE))
