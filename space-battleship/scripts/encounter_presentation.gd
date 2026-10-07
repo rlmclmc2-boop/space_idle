@@ -6,7 +6,7 @@ var tier := "normal"
 var leader_uid := -1
 var identity := ""
 var age := 0.0
-var transition := 2.0
+var transition := 2.0 # Inactive on startup; only an actual route change starts it.
 var departure := false
 var leader_fall := 2.0
 var focus := Vector2(286,190)
@@ -66,7 +66,7 @@ func draw_space(canvas:CanvasItem,size:Vector2) -> void:
 				canvas.draw_arc(center,opening-24,0,PI,40,Color(accent,0.18),7.0,true)
 				# A terminal crossbar closes the corridor behind the fleet.
 				canvas.draw_line(Vector2(68,42),Vector2(size.x-68,42),Color(accent,0.55),4.0,true)
-	if transition<1.2:
+	if transition<1.2 and (departure or not route.is_empty()):
 		var progress := smoothstep(0.0,1.2,transition)
 		var inset := (1.0-progress if departure else progress)*size.x*0.46
 		for x in [inset,size.x-inset]:
