@@ -1,7 +1,7 @@
 extends Node
 ## Equipment-only immutable style tiles. No controls, page snapshots or frame loop.
-## Child viewports bake one small native StyleBoxFlat each, then UPDATE_ONCE
-## disables them. Their textures live and die with this equipment page.
+## Child viewports bake one small native StyleBoxFlat each, then a post-draw
+## readback freezes the pixels and releases the viewport. Textures stay page-owned.
 
 var tiles: Dictionary = {}
 const PAD_LEFT := 4.0
@@ -41,7 +41,12 @@ func panel_style(fill:Color,edge:Color,radius:int) -> StyleBoxTexture:
 		var body:=Rect2(Vector2(PAD_LEFT,PAD_TOP),Vector2.ONE*body_size)
 		painter.draw.connect(func():painter.draw_style_box(source,body))
 		painter.queue_redraw()
-		tiles[key]=view.get_texture()
+		# Controls keep this wrapper throughout the bake-to-static handoff.
+		# The first frame uses the original viewport texture, not an empty image.
+		var shared:=AtlasTexture.new()
+		shared.atlas=view.get_texture()
+		tiles[key]=shared
+		RenderingServer.frame_post_draw.connect(_freeze_tile.bind(view,shared),CONNECT_ONE_SHOT)
 	# Return a fresh style resource: existing callers duplicate/change content
 	# margins, while only the immutable baked texture is shared.
 	var box:=StyleBoxTexture.new()
@@ -57,3 +62,14 @@ func panel_style(fill:Color,edge:Color,radius:int) -> StyleBoxTexture:
 	box.set_expand_margin(SIDE_BOTTOM,PAD_BOTTOM)
 	box.set_content_margin_all(12)
 	return box
+
+func _freeze_tile(view:SubViewport,shared:AtlasTexture) -> void:
+	if not is_instance_valid(view):return
+	var pixels:Image=view.get_texture().get_image()
+	# Keep the valid UPDATE_ONCE texture if a renderer cannot read it back.
+	if pixels==null or pixels.is_empty():return
+	var frozen:=ImageTexture.create_from_image(pixels)
+	# AtlasTexture emits changed to its existing StyleBoxTexture users. No
+	# control traversal, style replacement or page redraw framework is needed.
+	shared.atlas=frozen
+	view.queue_free()
