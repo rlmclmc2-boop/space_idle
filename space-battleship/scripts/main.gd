@@ -1774,7 +1774,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 	return angle
 
 func beam_style(shot: Dictionary) -> Dictionary:
-	var weapon: Dictionary = game.db.enemy_weapon(shot.entry.name) if shot.hostile else game.db.equip(shot.entry.key,int(shot.entry.level))
+	var weapon: Dictionary = game.db.enemy_weapon(shot.entry.name) if shot.hostile else shot.weapon # Match damage source.
 	var multiplier := game.long_laser_multiplier(weapon,maxf(0,float(shot.elapsed)-maxf(0,float(shot.charge))))
 	var power := clampf((multiplier-1.0)/(float(weapon.para2)-1.0),0,1) if float(weapon.para2)>1 else 1.0
 	var first_hit := float(shot.charge) if float(shot.charge)>=0 else float(shot.weapon.cd)

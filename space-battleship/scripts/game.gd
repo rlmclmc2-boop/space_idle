@@ -2213,11 +2213,12 @@ func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	var interval := float(weapon.cd)
-	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
 	var previous_hit_time := enemy_shield_hit_time
 	enemy_shield_hit_time=enemy_shield_time-float(shot.elapsed)+due
 	shot.ticks += 1
-	var duration := due-first_hit if float(shot.charge)>=0 else due
+	# Charged ramp age is an integer period count. Subtracting absolute times
+	# (for example 0.8 - 0.6) can add a spurious point at damage ceiling.
+	var duration := float(shot.ticks-1)*interval if float(shot.charge)>=0 else due
 	var multiplier := long_laser_multiplier(weapon, duration)
 	event.emit("beam_hit", {"shot":shot})
 	if shot.hostile:

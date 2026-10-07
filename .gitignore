@@ -1,6 +1,7 @@
 # Keep the project and original design workbook together.
 /*
 !/.gitignore
+!/.gitattributes
 !/AGENTS.md
 !/太空战舰.xlsx
 !/space-battleship/

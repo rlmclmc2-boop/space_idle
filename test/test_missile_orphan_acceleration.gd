@@ -10,6 +10,12 @@ func _initialize()->void:call_deferred("run")
 func fixture(count:=2,launchers:=1):
 	var g=Presented.new(ShipDatabase.new(),false)
 	g.stat_cache_enabled=true
+	# Dedicated boundary fixture: preserve five staggered launchers with a slow
+	# cruise so all carriers are still on screen when the youngest loses lock.
+	g.db.equipment.missile[0].para1=5
+	g.db.equipment.missile[0].para2=420.0/g.db.projectile_pixels_per_unit()
+	g.MISSILE_CRUISE_SPEED=420.0
+	g.EJECTION_GAP=0.28
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	g.profile.loadout={"weapons":[],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
 	for i in launchers:g.profile.loadout.weapons.append({"key":"missile","level":150})

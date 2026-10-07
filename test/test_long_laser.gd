@@ -10,6 +10,7 @@ func fixture() -> BattleGame:
 	var db := ShipDatabase.new()
 	db.equipment.longLaser = [{"name":"longLaser", "level":1,"dmg":10,"dmgtype":1,"cd":0.2,"para1":1.0,"para2":3.0,"unlock":0}]
 	db.equipment.erase("longLaser-mon")
+	db.data.enemy_weapon_base.longLaser=db.equipment.longLaser[0].duplicate(true)
 	var g := BattleGame.new(db, false)
 	g.start(1, false)
 	g.spawn_group()
@@ -22,6 +23,18 @@ func fixture() -> BattleGame:
 		e.armourType = 2
 		e.equipment = []
 	return g
+func repeat_fixture(g:BattleGame,probability:=1.0)->void:
+	# The removed socket gem is now the shared repeat effect. Keep this timing
+	# fixture at its first gate so other enhancement effects cannot change damage.
+	g.profile.cleared=range(1,41);g.rebuild_unlocks()
+	g.profile.enhancementOrder.weapons=["repeat","proficiency","critical"]
+	g.profile.enhancementLevel=g.enhancement_effect_threshold(0)
+	g.db.data.enhance_config.repeat_probability.value=probability
+	g.db.data.enhance_config.repeat_growth.value=0.2/float(g.profile.enhancementLevel)
+	g.db.data.enhance_config.repeat_delay.value=0.5
+	g.db.data.enhance_config.base_critical_rate.value=0.0
+	g.db.data.enhance_config.base_critical_multiplier.value=2.0
+	g.invalidate_stat_cache()
 func _initialize() -> void:
 	call_deferred("run")
 func run() -> void:
@@ -61,12 +74,17 @@ func run() -> void:
 	g.tick(0.1)
 	check(g.projectiles.is_empty(), "removed mount interrupts beam")
 	var hostile := fixture()
+	hostile.db.data.enemy_weapon_base.longLaser.para3 = null
 	hostile.profile.loadout = hostile.empty_loadout(hostile.profile.selectedShip)
+	hostile.profile.loadout.defence[0] = {"key":"armour","level":1}
+	hostile.db.equipment.armour[0].para1 = 100000
+	hostile.invalidate_stat_cache()
 	hostile.player.armour = 100000
 	hostile.player.shield = 0
 	var shooter: Dictionary = hostile.enemies[0]
 	shooter.equipment = [{"name":"longLaser-mon"},{"name":"longLaser-mon"}]
 	shooter.cooldowns = [0.0,0.0]
+	shooter.dmgMultiple = 1.0 # Timing fixture must emit nonzero damage.
 	hostile.tick(0.1)
 	check(hostile.projectiles.size()==2 and hostile.player.armour==100000, "enemy mounts independently lock without damage")
 	hostile.tick(0.1)
@@ -105,7 +123,8 @@ func run() -> void:
 	charged.tick(0.3)
 	check(victim.hp==99976 and charged.projectiles[0].ticks==0, "interruption requires full recharge")
 	charged.db.equipment["longLaser-mon"] = [{"name":"longLaser-mon","level":1,"para3":null}]
-	check(charged.db.enemy_weapon("longLaser-mon").para3==0.6, "enemy charge inherits missing field")
+	charged.db.data.enemy_weapon_base.longLaser.para3=0.6
+	check(charged.db.enemy_weapon("longLaser-mon").para3==0.6, "enemy missing charge uses its independent authoritative fallback")
 	charged.db.equipment["longLaser-mon"][0].para3 = 0.9
 	check(charged.db.enemy_weapon("longLaser-mon").para3==0.9, "enemy explicit charge preserved")
 	charged.profile.loadout = charged.empty_loadout(charged.profile.selectedShip)
@@ -124,11 +143,7 @@ func run() -> void:
 	check(instant.projectiles[0].ticks==1, "explicit zero charge fires immediately")
 	var twin := fixture()
 	twin.db.equipment.longLaser[0].para3 = 0.2
-	twin.db.config.equipmentSocket = 10
-	twin.db.data.jewel["4"].para_2 = 1.0
-	twin.db.data.jewel["4"].para_4 = 0.2
-	var twin_entry := twin.slot_entry("weapons",0)
-	twin_entry.sockets = [twin.new_jewel("4",1)]
+	repeat_fixture(twin)
 	twin.tick(0.2)
 	check(twin.jewel_repeats.size()==1, "primary beam enters shared repeat queue")
 	twin.advance_jewel_repeats(0.49)
@@ -144,10 +159,10 @@ func run() -> void:
 	twin.tick_projectiles(0.1)
 	check(secondary.target.hp==secondary_hp-12, "secondary first hit applies repeat multiplier without inherited ramp")
 	twin.db.equipment.longLaser[0].cri = 1.0
-	twin.db.config.baseCriDmg = 2.0
+	twin.db.data.enhance_config.base_critical_multiplier.value = 2.0
 	secondary_hp = secondary.target.hp
 	twin.tick_projectiles(0.2)
-	check(secondary.target.hp==secondary_hp-34, "secondary combines critical repeat and independent ramp")
+	check(secondary.target.hp==secondary_hp-17, "active secondary keeps its noncritical launch snapshot after equipment changes")
 	for i in 20:
 		twin.tick(0.1)
 	check(twin.projectiles.size()==2 and twin.jewel_repeats.is_empty(), "repeat beams neither recurse nor accumulate each cd")
@@ -158,34 +173,40 @@ func run() -> void:
 	twin.profile.loadout.weapons[0] = {"key":"", "level":1}
 	twin.tick(0.1)
 	check(twin.projectiles.is_empty(), "unequipped mount removes both beams")
+	var critical_twin:=fixture()
+	critical_twin.db.equipment.longLaser[0].para3=0.2
+	critical_twin.db.equipment.longLaser[0].cri=1.0
+	repeat_fixture(critical_twin)
+	critical_twin.tick(0.2);critical_twin.advance_jewel_repeats(0.5)
+	var critical_copy:Dictionary=critical_twin.projectiles[1]
+	var critical_hp:float=critical_copy.target.hp
+	critical_twin.tick_projectiles(0.2)
+	check(critical_copy.target.hp==critical_hp-24,"secondary combines snapshotted critical and repeat at its first emission")
+	critical_twin.db.equipment.longLaser[0].cri=0.0
+	critical_hp=critical_copy.target.hp;critical_twin.tick_projectiles(0.2)
+	check(critical_copy.target.hp==critical_hp-34,"secondary keeps critical snapshot while its own ramp grows")
 	var solo := fixture()
 	solo.enemies.resize(1)
 	solo.db.equipment.longLaser[0].para3 = 0.2
-	solo.db.config.equipmentSocket = 10
-	solo.db.data.jewel["4"].para_2 = 1.0
-	solo.slot_entry("weapons",0).sockets = [solo.new_jewel("4",1)]
+	repeat_fixture(solo)
 	solo.tick(0.2)
 	solo.advance_jewel_repeats(0.5)
 	check(solo.projectiles.size()==2 and is_same(solo.projectiles[0].target,solo.projectiles[1].target), "single target supports two beams")
 	check(solo.projectiles[0].x!=solo.projectiles[1].x, "same-target beams have distinct muzzle offsets")
 	var cancel := fixture()
-	cancel.db.config.equipmentSocket = 10
-	cancel.db.data.jewel["4"].para_2 = 1.0
-	cancel.slot_entry("weapons",0).sockets = [cancel.new_jewel("4",1)]
+	repeat_fixture(cancel)
 	cancel.tick(0.2)
 	cancel.projectiles.clear()
 	cancel.advance_jewel_repeats(0.5)
 	check(cancel.projectiles.is_empty() and cancel.jewel_repeats.is_empty(), "broken parent cancels delayed secondary")
 	var once := fixture()
-	once.db.config.equipmentSocket = 10
 	once.db.equipment.longLaser[0].para3 = 0.6
-	once.db.data.jewel["4"].para_2 = 0.0
-	once.slot_entry("weapons",0).sockets = [once.new_jewel("4",1)]
+	repeat_fixture(once,0.0)
 	once.tick(0.59)
 	check(once.jewel_repeats.is_empty(), "windup does not roll double fire")
 	once.tick(0.01)
 	check(once.jewel_repeats.is_empty(), "first emission can fail double fire roll")
-	once.db.data.jewel["4"].para_2 = 1.0
+	once.db.data.enhance_config.repeat_probability.value = 1.0
 	for i in 20:once.tick(0.1)
 	check(once.projectiles.size()==1 and once.jewel_repeats.is_empty(), "later damage ticks never retry failed first roll")
 	once.projectiles.clear()
@@ -197,7 +218,11 @@ func run() -> void:
 	scene.automation_args = []
 	scene.set_process(false)
 	scene.game.save_enabled = false
+	# Explicit UI timing fixture; authored balance rows are tested separately.
+	scene.db.equipment.longLaser = fixture().db.equipment.longLaser.duplicate(true)
 	scene.db.equipment.longLaser[0].para3 = null
+	scene.game.invalidate_stat_cache()
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://.runtime"))
 	scene.game.start(1,false)
 	scene.game.spawn_group()
 	scene.game.profile.unlocked.append("longLaser")
@@ -222,36 +247,39 @@ func run() -> void:
 	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "beam redraw preserves equipment card and static background")
 	var live: Dictionary = scene.game.projectiles[0]
 	var low: Dictionary = scene.beam_style(live)
+	scene.db.equipment.longLaser[0].para2 = 9.0
+	check(scene.beam_style(live)==low, "active visual keeps launch snapshot after equipment changes")
+	scene.db.equipment.longLaser[0].para2 = 3.0
 	var events := [0]
 	scene.game.event.connect(func(kind,_info):
 		if kind=="beam_hit":events[0]+=1)
 	scene.game.tick(0.19)
-	check(events[0]==1 and scene.particles.any(func(p):return p.has("flash") and p.size<=8.0 and p.duration<=0.08), "each CD emits a small burn flash through existing particles")
+	check(events[0]==1 and float(scene.beam_style(live).pulse)>0.99, "each CD emits the continuous renderer contact pulse")
 	var flash: Dictionary = scene.beam_style(live)
 	scene.game.tick(0.12)
 	check(float(flash.width)>float(scene.beam_style(live).width), "CD pulse decays between hits")
 	scene.game.tick(1.68)
-	scene.sync_beam_visuals()
-	check(events[0]==10 and scene.beam_visuals[0].full, "all scheduled hits notify and full power triggers")
+	scene._process(0)
+	check(events[0]==10 and scene.beam_full_started.has(int(live.serial)), "all scheduled hits notify and full power triggers")
 	check(float(scene.beam_style(live).width)>float(low.width) and float(scene.beam_style(live).glow)>float(low.glow), "width and glow grow with damage multiplier")
-	var count: int = scene.particles.size()
-	scene.sync_beam_visuals()
-	check(scene.particles.size()==count, "full power feedback occurs once per lock")
+	var count: int = scene.beam_full_cue_count
+	scene._process(0)
+	check(scene.beam_full_cue_count==count, "full power feedback occurs once per lock")
 	scene.battle_layer.queue_redraw()
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.runtime/long-laser-full.png")
 	scene.game.paused = true
-	var life: float = scene.particles.back().life
+	var life: float = scene.fx_time
 	scene._process(0.1)
-	check(scene.particles.back().life==life and scene.particles.size()==count, "pause freezes feedback without repeated effects")
+	check(scene.fx_time==life and scene.beam_full_cue_count==count, "pause freezes feedback without repeated effects")
 	scene.game.paused = false
 	scene.game.projectiles.clear()
-	scene.sync_beam_visuals()
-	check(scene.beam_visuals.is_empty() and scene.particles.any(func(p):return p.has("beam_end")), "interruption leaves a short retracting afterglow")
-	count = scene.particles.size()
-	scene.sync_beam_visuals()
-	check(scene.particles.size()==count, "interruption feedback fires once")
+	scene._process(0)
+	check(scene.beam_visuals.is_empty() and scene.beam_full_started.is_empty() and not scene.particles.any(func(p):return p.has("beam_end")), "interruption removes continuous beam and full cue without a ghost tail")
+	count = scene.beam_full_cue_count
+	scene._process(0)
+	check(scene.beam_full_cue_count==count, "interruption feedback fires once")
 	scene.battle_layer.queue_redraw()
 	await process_frame
 	await RenderingServer.frame_post_draw
@@ -285,10 +313,10 @@ func run() -> void:
 				bright_core=true
 	check(bright_core,"charging bright core stays visible in front of the hull")
 	check(scene.equipment_panel.cards.weapons_0==card and background_draws[0]==0, "charge drawing preserves unrelated UI")
-	scene.db.config.equipmentSocket = 10
-	scene.db.data.jewel["4"].para_2 = 1.0
-	scene.game.slot_entry("weapons",0).sockets = [scene.game.new_jewel("4",1)]
+	repeat_fixture(scene.game)
+	scene.game.projectiles.clear() # New source settings apply only to the next beam startup.
 	scene.game.tick(0.5)
+	scene.game.tick_projectiles(0.5) # First emission queues its launch-time repeat plan.
 	scene.game.advance_jewel_repeats(0.5)
 	scene.game.tick_projectiles(1.0)
 	scene.sync_beam_visuals()

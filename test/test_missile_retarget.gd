@@ -147,7 +147,12 @@ func run()->void:
 	g.tick(1.0/60.0)
 	check(g.projectiles.is_empty() and g.missile_queue.is_empty(),"Final group clear retains unified projectile/salvo cleanup")
 	var original:=ShipDatabase.new()
-	check(int(original.equipment.missile[0].para1)==4 and int(g.db.equipment.missile[0].para1)==5,"Player-only five-shot projection leaves source/enemy equipment untouched")
+	check(g.db.equipment.missile[0]==original.equipment.missile[0] and g.db.enemy_weapon("missile-mon")==original.enemy_weapon("missile-mon"),"Migrated player equipment retains authored values and independent hostile source")
+	var legacy:=ShipDatabase.new();legacy.data.erase("weapon_motion");legacy.equipment.missile[0].para1=4
+	var legacy_row:Dictionary=legacy.equipment.missile[0].duplicate(true)
+	var legacy_hostile:Dictionary=legacy.enemy_weapon("missile-mon")
+	var projected=Presented.new(legacy,false)
+	check(int(projected.db.equipment.missile[0].para1)==5 and legacy.equipment.missile[0]==legacy_row and projected.db.enemy_weapon("missile-mon")==legacy_hostile,"Legacy player-only five-shot projection leaves source/enemy equipment untouched")
 	var hostile:Dictionary={"x":200.0,"y":100.0,"uid":77}
 	g.fire(hostile,g.player,g.db.enemy_weapon("missile-mon"),10,true,"missile-mon")
 	check(not g.projectiles.back().get("prototype_missile",false) and g.projectiles.back().direction==Vector2.DOWN,"Hostile missile retains its independent simplified path")
