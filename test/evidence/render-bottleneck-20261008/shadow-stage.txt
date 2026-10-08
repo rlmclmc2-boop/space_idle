@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+MATERIALS pool=10 entries=10 modules=3
+baseline_1 {"draw_calls":274.0,"root_cpu":8.36679835279449,"root_gpu":15.4157394841939,"ship_cpu":15.1641092781259,"ship_gpu":15.7991933341788,"ship_primitives":9036.0,"ship_shadow_calls":0.0,"ship_visible_calls":55.0,"ship_visible_objects":55.0,"wall_ms":35.3744369747899} scale=0.60450822114944 tab=0 window=(1180, 812)
+shadow_disabled_diagnostic_1 {"draw_calls":248.0,"root_cpu":8.36509245784343,"root_gpu":15.4723361440066,"ship_cpu":9.08467225868161,"ship_gpu":9.77263020267006,"ship_primitives":9036.0,"ship_shadow_calls":0.0,"ship_visible_calls":29.0,"ship_visible_objects":29.0,"wall_ms":29.2687983193277} scale=0.60450822114944 tab=0 window=(1180, 812)
+baseline_2 {"draw_calls":274.0,"root_cpu":9.32779827839186,"root_gpu":16.8085714067732,"ship_cpu":16.2491428711835,"ship_gpu":17.0462352928995,"ship_primitives":9036.0,"ship_shadow_calls":0.0,"ship_visible_calls":55.0,"ship_visible_objects":55.0,"wall_ms":38.1730168067227} scale=0.60450822114944 tab=0 window=(1180, 812)
+shadow_disabled_diagnostic_2 {"draw_calls":248.0,"root_cpu":9.09618489081118,"root_gpu":16.3430252155336,"ship_cpu":9.5552016747098,"ship_gpu":10.3177479094818,"ship_primitives":9036.0,"ship_shadow_calls":0.0,"ship_visible_calls":29.0,"ship_visible_objects":29.0,"wall_ms":30.8646218487395} scale=0.60450822114944 tab=0 window=(1180, 812)
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

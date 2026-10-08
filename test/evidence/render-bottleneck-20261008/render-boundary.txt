@@ -1,0 +1,13 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+baseline_1 {"draw_calls":274.0,"root_cpu":8.25595797610884,"root_gpu":15.2546890563324,"ship_cpu":14.8056806596387,"ship_gpu":15.3892436869004,"wall_ms":34.4832773109244}
+equipment_hidden {"draw_calls":373.0,"root_cpu":9.84037816825033,"root_gpu":19.9842016556684,"ship_cpu":16.0207310524307,"ship_gpu":16.595159690921,"wall_ms":41.3876386554622}
+baseline_2 {"draw_calls":274.0,"root_cpu":9.13023530334986,"root_gpu":16.7337142960364,"ship_cpu":16.6635546403773,"ship_gpu":17.3094537879239,"wall_ms":38.2815042016806}
+composite_hidden_gpu_active {"draw_calls":273.0,"root_cpu":3.40161345185352,"root_gpu":14.8068067726969,"ship_cpu":16.0112184797015,"ship_gpu":16.4026470745311,"wall_ms":35.0760840336135}
+ship_gpu_disabled_composite_visible {"draw_calls":219.0,"root_cpu":2.92636974118337,"root_gpu":14.6166806661782,"ship_cpu":16.5779991149902,"ship_gpu":16.5219993591309,"wall_ms":18.7311848739496}
+baseline_3 {"draw_calls":274.0,"root_cpu":7.54683194240602,"root_gpu":15.5810168049917,"ship_cpu":15.4505042228378,"ship_gpu":15.4558235136401,"wall_ms":34.7465462184874}
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

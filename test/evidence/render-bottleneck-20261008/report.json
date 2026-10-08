@@ -1,0 +1,65 @@
+{
+  "source": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "environment": {
+    "engine": "Godot 4.6.3 official",
+    "renderer": "Compatibility Mesa llvmpipe",
+    "display": ":91",
+    "window": [
+      1180,
+      812
+    ],
+    "LP_NUM_THREADS": 4,
+    "measured_3d_scale": 0.60450822114944
+  },
+  "fixture": "Constructed isolated stage34, Frigate, three laser34, armour34/shield34, three enemies. Stat cache explicitly true, save false. Main process frozen to isolate rendering; not parent fixed34 snapshot, natural FPS, gameplay/balance comparison or acceptance. Initial log scale=1 precedes deferred layout; sampled phases log final scale 0.604508.",
+  "samples": "119 measured frames per mode after15 warmup; four stage-shadow modes in ABAB order",
+  "shadow_pairs": [
+    {
+      "baseline_wall_ms": 35.3744369747899,
+      "without_shadow_wall_ms": 29.2687983193277,
+      "wall_delta_ms": 6.105638655462201,
+      "baseline_ship_gpu_ms": 15.7991933341788,
+      "without_shadow_ship_gpu_ms": 9.77263020267006,
+      "ship_gpu_delta_ms": 6.026563131508739,
+      "baseline_root_gpu_ms": 15.4157394841939,
+      "without_shadow_root_gpu_ms": 15.4723361440066,
+      "total_calls": [
+        274.0,
+        248.0
+      ],
+      "ship_reported_visible_calls": [
+        55.0,
+        29.0
+      ]
+    },
+    {
+      "baseline_wall_ms": 38.1730168067227,
+      "without_shadow_wall_ms": 30.8646218487395,
+      "wall_delta_ms": 7.3083949579832,
+      "baseline_ship_gpu_ms": 17.0462352928995,
+      "without_shadow_ship_gpu_ms": 10.3177479094818,
+      "ship_gpu_delta_ms": 6.728487383417699,
+      "baseline_root_gpu_ms": 16.8085714067732,
+      "without_shadow_root_gpu_ms": 16.3430252155336,
+      "total_calls": [
+        274.0,
+        248.0
+      ],
+      "ship_reported_visible_calls": [
+        55.0,
+        29.0
+      ]
+    }
+  ],
+  "finding": "Changing only KeyLight.shadow_enabled removes26 draw calls and about6-7ms Ship GPU. Root GPU nearly unchanged. Disabling shadows reduces quality and is strictly a diagnostic ablation, never a proposed production fix.",
+  "handoff_to_parent_astra": "Inspect grouping static hull/weapon geometry under unchanged materials and moving-pivot boundaries, preserving UV/normals/world transforms, shadows and muzzle providers. No implementation supplied; net gain and picture/behavior equivalence remain pending.",
+  "invalid_or_negative_attempts": [
+    "equipment_hidden in render-boundary changes TabContainer page and increases draw calls: excluded",
+    "disabled ShipViewport retains stale per-viewport CPU/GPU values: cannot sum them as current frame cost",
+    "root background hide reduces about4ms, but only44-nebula-circles ABAB has no stable gain: nebula claim rejected",
+    "initial shadow probe had wrong viewport_get_render_info argument order, failed to compile and produced no measurements; error retained, corrected using engine ClassDB reflection",
+    "Compatibility reports shadow-specific render info zero even with shadows enabled: do not use that counter as independent proof of no shadow rendering"
+  ],
+  "source_changes": "None; only diagnostic scripts and evidence. Shader36fe673 not used. No parent/local player saves edited.",
+  "screenshots": "Local constructed-baseline.png was viewed; excluded from Git. No screenshot readback within timed samples."
+}

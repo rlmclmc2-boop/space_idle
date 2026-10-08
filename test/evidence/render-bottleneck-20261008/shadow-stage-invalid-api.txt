@@ -1,0 +1,39 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfo" as "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 2 should be "RenderingServer.ViewportRenderInfoType" but is "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfoType" as "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 3 should be "RenderingServer.ViewportRenderInfo" but is "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfo" as "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 2 should be "RenderingServer.ViewportRenderInfoType" but is "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfoType" as "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 3 should be "RenderingServer.ViewportRenderInfo" but is "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfo" as "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 2 should be "RenderingServer.ViewportRenderInfoType" but is "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfoType" as "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 3 should be "RenderingServer.ViewportRenderInfo" but is "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfo" as "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 2 should be "RenderingServer.ViewportRenderInfoType" but is "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Cannot pass a value of type "RenderingServer.ViewportRenderInfoType" as "RenderingServer.ViewportRenderInfo".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+SCRIPT ERROR: Parse Error: Invalid argument for "viewport_get_render_info()" function: argument 3 should be "RenderingServer.ViewportRenderInfo" but is "RenderingServer.ViewportRenderInfoType".
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/shadow-stage.gd:14)
+ERROR: Failed to load script "/workspace/bug-qa/performance-20261008/shadow-stage.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2907)
