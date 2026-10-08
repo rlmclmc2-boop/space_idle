@@ -1,0 +1,251 @@
+{
+  "source": "ea7b1a2d4122b4c9d69e52e8147734cdba4ad814",
+  "production_edits": false,
+  "environment": "original cloud :91 / Godot4.6.3 / Compatibility llvmpipe / LP_NUM_THREADS=4 / requested1600x1000 / audio-driver Dummy",
+  "scope": "GUI synthetic Delta3 wave1, default weapon layout levels14, normal engine delta, music player started, stat cache ON. 0/1/5 gold drones; five is forced-capacity stress fixture. Synthetic history, player/enemy hp1e100. No clear acceptance or natural player-save evidence.",
+  "error_handling": "Initial instrumented run failed parse: counters inserted before extends and mixed tab/space wrapper. Corrected runtime-only instrumentation, excluded all parse-contaminated runs. Final whole-frame-logic-fixed.txt has no SCRIPT ERROR/ERROR and all 3 segments completed.",
+  "measurement_limits": [
+    "Nested timers overlap; never add core totals to tick or pose to logical_pose.",
+    "ship_writes/drone_writes count instrumented separate statement matches only, not every inline/component assignment; counts are lower bounds. Exact set_pose/sync/pose/guard call counts recorded.",
+    "Synthetic segments vary actual wall/simulation duration and are not paired performance gains. No performance fix claim.",
+    "Active segments only; no paused GPU claim. Prior measured GPU values may be stale when a viewport is disabled.",
+    "Dummy audio still runs playback object but is not audible-quality acceptance. Father actual mute comparison separately found no major music contribution.",
+    "No normal-player input occurred in this locating probe; screenshots were inspected as diagnostic, not first-time gameplay.",
+    "Logical pose uses live Node3D transforms to provide launches/muzzles; skipping it or batching without equivalent mathematical poses risks attacks/RNG/targeting."
+  ],
+  "summary": [
+    {
+      "drone_count": 0,
+      "measured_frames": 40,
+      "mean": {
+        "wall_ms": 44.4599,
+        "process_us": 7185.75,
+        "advance_total_us": 4612.5,
+        "tick_us": 2798.275,
+        "logical_pose_us": 1802.65,
+        "turrets_us_nested": 792.525,
+        "steps": 2.675,
+        "root_gpu": 20.59440007209778,
+        "ship_gpu": 8.182475006580352,
+        "ship_writes": 18.375,
+        "drone_writes": 0.0,
+        "draw_calls": 261.025
+      },
+      "method_mean": {
+        "ship": {
+          "us": {
+            "set_rendering": 6.625,
+            "_update_carriers": 24.475,
+            "set_loadout": 112.525,
+            "set_pose": 251.1,
+            "aim_at": 31.35,
+            "set_slot_angles": 8.2
+          },
+          "calls": {
+            "set_rendering": 1,
+            "_update_carriers": 3.675,
+            "set_loadout": 3.675,
+            "set_pose": 3.675,
+            "aim_at": 3.675,
+            "set_slot_angles": 1.075
+          }
+        },
+        "drone": {
+          "us": {
+            "sync": 41.3,
+            "pose": 42.025
+          },
+          "calls": {
+            "sync": 3.675,
+            "pose": 3.675
+          }
+        },
+        "baker": {
+          "us": {
+            "request_shadow_sync": 11.925,
+            "guard_resolution": 82.475
+          },
+          "calls": {
+            "request_shadow_sync": 8.35,
+            "guard_resolution": 7.35
+          }
+        },
+        "core": {
+          "us": {
+            "hyperspace_totals": 11.775,
+            "advance_auto_gen": 52.65,
+            "advance_planets": 22.075,
+            "advance_hightech": 197.95,
+            "combat_weapon_entries": 200.625,
+            "tick_projectiles": 906.85
+          },
+          "calls": {
+            "hyperspace_totals": 12.9,
+            "advance_auto_gen": 2.675,
+            "advance_planets": 2.675,
+            "advance_hightech": 2.675,
+            "combat_weapon_entries": 61.4,
+            "tick_projectiles": 2.675
+          }
+        }
+      }
+    },
+    {
+      "drone_count": 1,
+      "measured_frames": 40,
+      "mean": {
+        "wall_ms": 50.0875,
+        "process_us": 8355.825,
+        "advance_total_us": 5632.125,
+        "tick_us": 3460.825,
+        "logical_pose_us": 2159.025,
+        "turrets_us_nested": 965.425,
+        "steps": 3.025,
+        "root_gpu": 23.38892498016357,
+        "ship_gpu": 9.61954991817474,
+        "ship_writes": 20.125,
+        "drone_writes": 12.075,
+        "draw_calls": 266.575
+      },
+      "method_mean": {
+        "ship": {
+          "us": {
+            "set_rendering": 6.075,
+            "_update_carriers": 44.975,
+            "set_loadout": 122.675,
+            "set_pose": 297.6,
+            "aim_at": 39.9,
+            "set_slot_angles": 8.15
+          },
+          "calls": {
+            "set_rendering": 1,
+            "_update_carriers": 4.025,
+            "set_loadout": 4.025,
+            "set_pose": 4.025,
+            "aim_at": 4.025,
+            "set_slot_angles": 1.1
+          }
+        },
+        "drone": {
+          "us": {
+            "sync": 77.225,
+            "pose": 97.625
+          },
+          "calls": {
+            "sync": 4.025,
+            "pose": 4.025
+          }
+        },
+        "baker": {
+          "us": {
+            "request_shadow_sync": 11.425,
+            "guard_resolution": 104.125
+          },
+          "calls": {
+            "request_shadow_sync": 9.05,
+            "guard_resolution": 8.05
+          }
+        },
+        "core": {
+          "us": {
+            "hyperspace_totals": 19.275,
+            "advance_auto_gen": 55.525,
+            "advance_planets": 23.625,
+            "advance_hightech": 239,
+            "combat_weapon_entries": 86.275,
+            "tick_projectiles": 1252.45
+          },
+          "calls": {
+            "hyperspace_totals": 26,
+            "advance_auto_gen": 3.025,
+            "advance_planets": 3.025,
+            "advance_hightech": 3.025,
+            "combat_weapon_entries": 85.9,
+            "tick_projectiles": 3.025
+          }
+        }
+      }
+    },
+    {
+      "drone_count": 5,
+      "measured_frames": 40,
+      "mean": {
+        "wall_ms": 49.997475,
+        "process_us": 9045.925,
+        "advance_total_us": 6367.475,
+        "tick_us": 4163.6,
+        "logical_pose_us": 2190.8,
+        "turrets_us_nested": 915.825,
+        "steps": 3.025,
+        "root_gpu": 22.432975006103515,
+        "ship_gpu": 9.678624999523162,
+        "ship_writes": 20.125,
+        "drone_writes": 60.375,
+        "draw_calls": 290.175
+      },
+      "method_mean": {
+        "ship": {
+          "us": {
+            "set_rendering": 7.2,
+            "_update_carriers": 29.025,
+            "set_loadout": 126.6,
+            "set_pose": 342.25,
+            "aim_at": 37.05,
+            "set_slot_angles": 10.225
+          },
+          "calls": {
+            "set_rendering": 1,
+            "_update_carriers": 4.025,
+            "set_loadout": 4.025,
+            "set_pose": 4.025,
+            "aim_at": 4.025,
+            "set_slot_angles": 1.1
+          }
+        },
+        "drone": {
+          "us": {
+            "sync": 115.575,
+            "pose": 180.625
+          },
+          "calls": {
+            "sync": 4.025,
+            "pose": 4.025
+          }
+        },
+        "baker": {
+          "us": {
+            "request_shadow_sync": 32.65,
+            "guard_resolution": 204.1
+          },
+          "calls": {
+            "request_shadow_sync": 9.05,
+            "guard_resolution": 8.05
+          }
+        },
+        "core": {
+          "us": {
+            "hyperspace_totals": 28.15,
+            "advance_auto_gen": 57.225,
+            "advance_planets": 24.825,
+            "advance_hightech": 217.225,
+            "combat_weapon_entries": 122.6,
+            "tick_projectiles": 1523.85
+          },
+          "calls": {
+            "hyperspace_totals": 42.325,
+            "advance_auto_gen": 3.025,
+            "advance_planets": 3.025,
+            "advance_hightech": 3.025,
+            "combat_weapon_entries": 161.225,
+            "tick_projectiles": 3.025
+          }
+        }
+      }
+    }
+  ],
+  "screenshots": {
+    "/workspace/bug-qa/performance-20261008/whole-frame-logic-0.png": "243f711010df34e7b72f574b130d6f044d91eddd2cde376f77e3c9038b2bff32",
+    "/workspace/bug-qa/performance-20261008/whole-frame-logic-1.png": "26f36f197080782990076b5796a0ed1786af0d168ea37fcc0952954ace7d5364",
+    "/workspace/bug-qa/performance-20261008/whole-frame-logic-5.png": "4fdcc31b3009f52205e63ba2122db16e3fbd2a37eee596bd43c4f9beb1c879ea"
+  }
+}
