@@ -8220,6 +8220,13 @@
         "next_level",
         "next"
       ]
+    },
+    "hyperspace.level_choice_hint": {
+      "params": [
+        "minimum",
+        "material",
+        "count"
+      ]
     }
   },
   "bindings": {

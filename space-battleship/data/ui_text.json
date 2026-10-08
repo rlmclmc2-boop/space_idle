@@ -15357,5 +15357,11 @@
     "text": "{effects}：本级 +{current}% → {next_level}级 +{next}%。\n安装到已装备的无人机上才生效。",
     "params": "effects,current,next_level,next",
     "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.level_choice_hint",
+    "text": "最低{minimum}级。提高等级会遇到更强敌人；掉落无人机时，其等级与探索等级相同。\n该等级通关材料：{material} ×{count}。",
+    "params": "minimum,material,count",
+    "category": "hyperspace"
   }
 ]
