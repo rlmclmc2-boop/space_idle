@@ -16157,5 +16157,12 @@
     "params": "level,type",
     "category": "equipment",
     "note": "已装备且真实抗性大于零的防御类型；零抗性不标"
+  },
+  {
+    "key": "navigation.upgrade_available",
+    "text": "可升级 · 打开页面不会清除",
+    "params": "",
+    "category": "navigation",
+    "note": "系统入口的带加号红点，区别于旧未读或待激活圆点"
   }
 ]

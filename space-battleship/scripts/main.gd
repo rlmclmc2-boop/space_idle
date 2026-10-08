@@ -2161,6 +2161,10 @@ func build_workspace_shell() -> void:
 			dot.draw.connect(func():dot.draw_circle(Vector2(5, 5), 5, Color("f05261")))
 			dot.visible = false
 
+	var upgrade_badges := preload("res://scripts/system_upgrade_badges.gd").new()
+	system_nav.add_child(upgrade_badges)
+	upgrade_badges.setup(game,system_nav_buttons)
+
 func select_system(index: int) -> void:
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
 	set_ui_value(equipment_tabs,"current_tab",index)
