@@ -8867,6 +8867,22 @@
       "params": [
         "count"
       ]
+    },
+    "hyperspace.forge_action_info": {
+      "params": []
+    },
+    "hyperspace.ultimate_confirmation_consequence": {
+      "params": [
+        "cores"
+      ]
+    },
+    "hyperspace.restore_confirmation_consequence": {
+      "params": []
+    },
+    "hyperspace.ultimate_effect_summary": {
+      "params": [
+        "levels"
+      ]
     }
   },
   "bindings": {

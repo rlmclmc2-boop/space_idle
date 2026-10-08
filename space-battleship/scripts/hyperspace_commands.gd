@@ -28,6 +28,7 @@ var totals_dialog: AcceptDialog
 var totals_label: Label
 var guide_dialog: AcceptDialog
 var guide_label: Label
+var guide_choice: OptionButton
 var guide_scroll: ScrollContainer
 var result_scroll: ScrollContainer
 var result_details: Label
@@ -419,17 +420,27 @@ func refresh_totals() -> void:
    if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(value*100.0)}))
  panel.put(totals_label,"text","\n".join(lines) if not lines.is_empty() else t("totals_empty"))
 
-func show_guide() -> void:
+func show_guide(topic:String="overview") -> void:
  if not bool(game().profile.hyperspace.unlocked_drones):return
  if guide_dialog==null:
-  guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(740,510)
+  guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(740,540)
   var body=content(guide_dialog)
-  guide_scroll=ScrollContainer.new();guide_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;guide_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(guide_scroll)
-  guide_label=Label.new();guide_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-  guide_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;guide_label.add_theme_font_size_override("font_size",21);guide_label.add_theme_color_override("font_color",Color("243d50"));guide_scroll.add_child(guide_label)
- var op=str(operation.get_item_metadata(operation.selected))
- if op=="none":return
- guide_dialog.title=t("operation_"+op)
- panel.put(guide_label,"text",t("forge_guide_body")+"\n\n"+t("forge_guide_"+op))
+  guide_choice=panel.option(body);guide_choice.item_selected.connect(func(index):render_guide(str(guide_choice.get_item_metadata(index))))
+  guide_scroll=ScrollContainer.new();guide_scroll.custom_minimum_size=Vector2(680,350);guide_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;guide_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(guide_scroll)
+  guide_label=dialog_label(guide_scroll,"",21,660)
+ guide_choice.clear();guide_choice.add_item(t("forge_guide"));guide_choice.set_item_metadata(0,"overview")
+ var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
+ var topics:Array[String]=[]
+ for op in forge_actions.ACTIONS:
+  if forge_actions.visible_action(op,d):topics.append("disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op)
+ topics.append("dismantle")
+ if topic!="overview" and not topics.has(topic):topics.append(topic)
+ for op in topics:
+  guide_choice.add_item(t("operation_"+op));guide_choice.set_item_metadata(guide_choice.item_count-1,op)
+  if op==topic:guide_choice.select(guide_choice.item_count-1)
+ render_guide(topic);guide_dialog.popup_centered()
+func render_guide(topic:String) -> void:
+ guide_dialog.title=t("forge_guide") if topic=="overview" else t("operation_"+topic)
+ panel.put(guide_label,"text",t("forge_guide_body") if topic=="overview" else t("forge_guide_"+topic))
+ if topic=="ultimate":guide_label.text=t("ultimate_effect_summary",{"levels":str(int(h().config.ultimate_weapon_bonus))})+"\n\n"+guide_label.text
  guide_scroll.scroll_vertical=0
- guide_dialog.popup_centered()

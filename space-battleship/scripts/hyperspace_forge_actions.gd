@@ -7,6 +7,7 @@ var commands:
  get:return commands_ref.get_ref()
 var cells:Dictionary={}
 var buttons:Dictionary={}
+var info_buttons:Dictionary={}
 var selectors:Dictionary={}
 var maximum:CheckBox
 var confirmation:ConfirmationDialog
@@ -15,12 +16,17 @@ func build(parent:Node) -> void:
  var grid=GridContainer.new();grid.columns=3;grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",8);parent.add_child(grid)
  for op in ACTIONS:
   var cell=commands.panel.box(grid,3);cells[op]=cell
-  var button=commands.panel.button(cell,"operation_"+op,func():act(op));button.custom_minimum_size=Vector2(210,80)
+  var action_row=commands.panel.row(cell);action_row.add_theme_constant_override("separation",4)
+  var button=commands.panel.button(action_row,"operation_"+op,func():act(op));button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size=Vector2(210,80)
   button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;button.add_theme_font_size_override("font_size",18);buttons[op]=button
+  var info=commands.panel.button(action_row,"forge_action_info",func():show_help(op));info.custom_minimum_size=Vector2(36,36);info.size_flags_vertical=Control.SIZE_SHRINK_CENTER;info_buttons[op]=info
   if op in ["replace_affix","legendary"]:
    var selector=commands.panel.option(cell);selectors[op]=selector;selector.item_selected.connect(func(_i):refresh())
   if op=="reroll_values":
    maximum=CheckBox.new();maximum.text=commands.t("guaranteed_max");commands.panel.checkbox_skin(maximum);cell.add_child(maximum);maximum.toggled.connect(func(_value):refresh())
+func show_help(op:String) -> void:
+ var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
+ commands.show_guide("disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op)
 func selected_target(op:String) -> String:
  if not selectors.has(op):return ""
  var selector:OptionButton=selectors[op]
@@ -98,7 +104,8 @@ func act(op:String) -> void:
   confirmation.title=commands.t("operation_"+effective)
   var detail=commands.modernization_text(req)+"\n" if effective=="modernize" else ""
   if effective=="promote_affix":detail+=commands.t("promotion_risk_hint")+"\n"
-  if effective=="restore_ultimate":detail+=commands.t("restore_modernize_hint")+"\n"
+  if effective=="ultimate":detail+=commands.t("ultimate_effect_summary",{"levels":str(int(commands.h().config.ultimate_weapon_bonus))})+"\n\n"+commands.t("ultimate_confirmation_consequence",{"cores":str(int(commands.h().config.forge_costs.restore_ultimate.get("ultimate_cores",0)))})+"\n\n"
+  if effective=="restore_ultimate":detail+=commands.t("restore_confirmation_consequence")+"\n\n"
   confirmation.dialog_text=detail+commands.t("quote_result",{"cost":commands.cost_text(result.cost),"draws":str(int(result.get("draws",0)))})
   confirmation.popup_centered(Vector2i(700,370));return
  commands.execute_quote()
