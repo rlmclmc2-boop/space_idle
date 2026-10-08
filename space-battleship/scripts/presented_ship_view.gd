@@ -40,6 +40,9 @@ var material_pool: Dictionary = {}
 var exhaust_materials: Array[ShaderMaterial] = []
 var exhaust_nodes: Array[MeshInstance3D] = []
 var world: Node3D
+var flat_compositor := preload("res://scripts/flat_ship_compositor.gd").new()
+var rendering_paused := false
+var fleet_redraw_pending := false
 var body_baker := preload("res://scripts/ship_body_baker.gd").new()
 var rendered_height := 0.0
 var rendered_position := Vector2.ZERO
@@ -109,6 +112,12 @@ func _ready() -> void:
 	world.add_child(camera)
 	body_baker.source_world = world
 	add_child(body_baker)
+	body_baker.presentation_changed.connect(request_fleet_redraw)
+	flat_compositor.name = "FlatShipCandidate"
+	add_child(flat_compositor)
+	# Explicit candidate opt-in; the accepted live path remains the default.
+	flat_compositor.enabled = OS.get_environment("SPACE_IDLE_FLAT_SHIPS") == "1"
+	flat_compositor.configure(self)
 	# Keep the logical viewport and camera projection fixed. Only the internal
 	# 3D buffer follows displayed pixels; all unproject_position users therefore
 	# continue receiving the same canonical battlefield coordinates.
@@ -143,11 +152,14 @@ func _sync_render_scale() -> void:
 	if native_scale <= 0.0:return
 	# Engine-supported scaling range; no quality preset or FPS feedback loop.
 	var desired_scale: float = clampf(native_scale,0.25,2.0)
-	if is_equal_approx(viewport.scaling_3d_scale,desired_scale):return
-	viewport.scaling_3d_scale = desired_scale
-	body_baker.guard_resolution(float(int(viewport.size.x*desired_scale))/camera.size)
-	if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
-		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	if not is_equal_approx(viewport.scaling_3d_scale,desired_scale):
+		viewport.scaling_3d_scale = desired_scale
+		body_baker.guard_resolution(float(int(viewport.size.x*desired_scale))/camera.size)
+		if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED and not flat_compositor.active:
+			viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	# Native pixel coverage can change even when the engine scale is clamped,
+	# or when only one layout axis changes. Recheck without rebuilding assets.
+	if flat_compositor.enabled or flat_compositor.active:flat_compositor.request_recheck()
 
 
 func set_hull(key: String) -> bool:
@@ -339,6 +351,7 @@ func _add_exhausts() -> void:
 
 
 func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: bool, weapon_only := false) -> void:
+	flat_compositor.invalidate()
 	last_settings = settings.duplicate()
 	last_toon_enabled = toon_enabled
 	last_rim_enabled = rim_enabled
@@ -448,7 +461,29 @@ func set_accelerated_quality(enabled: bool) -> void:
 	body_baker.request_shadow_sync()
 
 
+func request_fleet_redraw() -> void:
+	if fleet_redraw_pending or not is_inside_tree() or body_baker.export_mode:return
+	fleet_redraw_pending = true
+	_commit_fleet_redraw.call_deferred()
+
+
+func _commit_fleet_redraw() -> void:
+	fleet_redraw_pending = false
+	# Publish complete appearance/pose batches even when battlefield's paused
+	# pose signature is unchanged. Both flat and live output need this edge.
+	if flat_compositor.enabled:
+		flat_compositor.invalidate()
+	else:
+		set_rendering(visible,rendering_paused)
+
+
 func set_rendering(enabled: bool, paused := false) -> void:
-	visible = enabled
-	if enabled: body_baker.request_shadow_sync()
-	viewport.render_target_update_mode = (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled else SubViewport.UPDATE_DISABLED
+	rendering_paused = paused
+	if visible != enabled:visible = enabled
+	if enabled:body_baker.request_shadow_sync()
+	var complete: bool = enabled and flat_compositor.sync()
+	var output := get_node("ShipComposite") as TextureRect
+	if output.visible == complete:output.visible = not complete
+	if not enabled and flat_compositor.visible:flat_compositor.visible = false
+	var mode := (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled and not complete else SubViewport.UPDATE_DISABLED
+	if viewport.render_target_update_mode != mode:viewport.render_target_update_mode = mode
