@@ -15363,5 +15363,180 @@
     "text": "最低{minimum}级。提高等级会遇到更强敌人；掉落无人机时，其等级与探索等级相同。\n该等级通关材料：{material} ×{count}。",
     "params": "minimum,material,count",
     "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.layer_first_win",
+    "text": "选一条路线，先挑战第 1 层。胜利后就能在主线战斗中后台探索这一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_current",
+    "text": "已通关第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_unstarted",
+    "text": "这条路线还未通关",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_once",
+    "text": "后台探索第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenge",
+    "text": "挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_stop",
+    "text": "停止后台探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_exit",
+    "text": "退出挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_record",
+    "text": "这一层最快 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_time",
+    "text": "后台每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck",
+    "text": "幸运 {value}",
+    "params": "{value}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_sources",
+    "text": "船员 {crew} + 重铸 {permanent}；幸运让词条 T 阶多抽后取最好的一次。",
+    "params": "{crew},{permanent}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_rules",
+    "text": "每 100 幸运多抽一次 T 阶，不满 100 的部分按比例再抽一次。只影响 T 阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_hint",
+    "text": "后台探索时可继续主线；挑战下一层会进入战斗，胜利后推进一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_work",
+    "text": "后台探索 · {work} / {duration} 秒",
+    "params": "{work},{duration}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_none",
+    "text": "后台探索尚未开始",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenging",
+    "text": "正在挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_record",
+    "text": "先挑战并通关这一层，再开始后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_busy",
+    "text": "已有任务进行中，请先停止或退出。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_crew",
+    "text": "先选一名可用船员。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_warehouse",
+    "text": "仓库已满，先整理无人机或领取待收奖励。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_unavailable",
+    "text": "暂时无法开始，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_start",
+    "text": "让船员连续探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_detail",
+    "text": "每轮 {time} 秒 · 幸运 {luck}",
+    "params": "{time},{luck}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_hint",
+    "text": "船员会反复探索当前已通关层；想去下一层，返回路线页点「挑战」。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_task_pending",
+    "text": "奖励待领取；先整理仓库。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
   }
 ]

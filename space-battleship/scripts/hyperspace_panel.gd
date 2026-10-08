@@ -13,6 +13,7 @@ var manual_ready_provider: Callable
 var manual_projection: Dictionary={}
 var manual_snapshot_reads=0
 var reward_feedback=preload("res://scripts/hyperspace_reward_feedback.gd").new()
+var route_ui=preload("res://scripts/hyperspace_route_ui.gd").new()
 var equipment_ui=preload("res://scripts/hyperspace_equipment_ui.gd").new()
 var exit_button: Button
 var manual_reason: Label
@@ -121,14 +122,15 @@ func thumbnail(parent: Node,width: float) -> TextureRect:
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
- host=owner;commands.setup(self)
+ host=owner;commands.setup(self);route_ui.setup(self)
  reward_feedback.setup(self)
  equipment_ui.setup(self)
- manual_adapter=func(selected_route,selected_level):
-  if not host.game.request_hyperspace(selected_route,selected_level):status.text=t("command_failed")
- manual_ready_provider=func():return bool(manual_projection.get("manual_ready",false))
+ manual_adapter=func(selected_route,_selected_level):
+  if host.game.has_method("start_hyperspace_challenge"):return host.game.start_hyperspace_challenge(selected_route)
+  return false
+ manual_ready_provider=func():return str(route_ui.view().get("reasons",{}).get("challenge","unavailable")).is_empty()
  refresh_manual_status()
- crew_adapter=commands.show_crew
+ crew_adapter=route_ui.show_crew
  hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
  preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
  affix_catalog_provider=func():return host.game.hyperspace.config.affixes.keys()
@@ -182,19 +184,8 @@ func build_exploration(parent: Node) -> void:
   label(text,t(str(key)),25).mouse_filter=Control.MOUSE_FILTER_IGNORE
   label(text,t("route_reward",{"material":t(config.material)}),20).mouse_filter=Control.MOUSE_FILTER_IGNORE
   routes.append(b)
- var levels=row(parent);var title=label(levels,t("level"));title.custom_minimum_size.x=160;title.autowrap_mode=TextServer.AUTOWRAP_OFF
- level=SpinBox.new();level.min_value=5;level.max_value=5;level.step=1;level.custom_minimum_size.x=160;levels.add_child(level);input_skin(level.get_line_edit());level.value_changed.connect(func(_v):refresh_status())
- level_choice_hint=label(parent,"",20)
- var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
- label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
- label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
- var commands=row(parent);start_button=button(commands,"queue_start",start_manual);cancel_queue_button=button(commands,"queue_cancel",func():host.game.cancel_hyperspace_request();refresh_progress());cancel_queue_button.visible=false;exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
-  if crew_adapter.is_valid():crew_adapter.call())
- queue_departure_hint=label(parent,t("queue_departure_hint"),20);queue_departure_hint.visible=false
- manual_reason=label(parent,"",20)
- recent_result=label(parent,"",20);recent_result.visible=false
- resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
- first_win=label(parent,t("first_win"),22)
+ route_ui.build(parent)
+ first_win=label(parent,t("layer_first_win"),22)
  reward_feedback.build(exploration_receipt_area)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
@@ -316,7 +307,7 @@ func _process(_delta: float) -> void:
  if not is_visible_in_tree():return
  if dirty:refresh()
  reward_feedback.mark_viewed()
- if section_index==0:refresh_progress()
+ if section_index==0:route_ui.tick(_delta)
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
@@ -341,74 +332,12 @@ func refresh() -> void:
  dirty=false
 func refresh_status() -> void:
  if host==null:return
- var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
- put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
- put(level_choice_hint,"text",t("level_choice_hint",{"minimum":str(int(h.config.minimum_level)),"material":t(str(h.config.routes[route].material)),"count":str(preload("res://scripts/drone_rewards.gd").material_amount(h.online_config(g),int(level.value)))}))
- put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
- var ticket=display_ticket(s)
- put(energy,"text",energy_caption(s,float(h.online_config(g).energy_cap),ticket))
- var best_time=float(h.best_x1(g,route,int(level.value)))
- put(best,"text",t("best",{"time":t("time_seconds",{"value":"%.2f"%best_time}) if best_time>0 else t("none")}))
- refresh_start_reason()
- put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
-
- for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
+ route_ui.refresh()
+ for i in routes.size():skin_selection(routes[i],str(host.game.hyperspace.config.routes.keys()[i])==route)
 func refresh_start_reason() -> void:
- var reason=""
- var g=host.game;var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace
- if not manual_ready():reason=manual_error_text()
- elif not g.manual_hyperspace.queued.is_empty():reason=t("queue_already")
- elif not s.active.is_empty():reason=t("manual_busy")
- elif not h.eligible_level(g,route,int(level.value)):reason=t("manual_level_unavailable")
- elif float(s.energy)<float(h.config.ticket):reason=t("manual_energy_needed",{"ticket":"%.0f"%float(h.config.ticket)})
- var explanation=reason
- if reason.is_empty() and g.manual_hyperspace.queue_error=="invalid_main_return":explanation=t("queue_failed_invalid_main_return")
- put(start_button,"disabled",not reason.is_empty());put(start_button,"tooltip_text",explanation)
- put(manual_reason,"visible",not explanation.is_empty());put(manual_reason,"text",explanation)
-func display_ticket(s: Dictionary) -> float:
- if not s.active.is_empty():return float(s.active.ticket)
- var h=host.game.hyperspace
- if s.auto.enabled:return float(h.auto_quote(0.0,h.Permission.crew_level(host.game,str(s.auto.crew_id))).ticket)
- return float(h.config.ticket)
-func energy_caption(s:Dictionary,cap:float,ticket:float) -> String:
- var caption=t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%cap,"ticket":"%.0f"%ticket})
- if float(s.energy)>cap:caption+="\n"+t("energy_refund_over_cap")
- return caption
+ route_ui.refresh()
 func refresh_progress() -> void:
- var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
- var text=t("auto_waiting") if s.auto.enabled else t("auto_stopped");var fill=0.0
- var effective=host.game.hyperspace.online_config(host.game)
- if s.auto.enabled and a.is_empty():
-  if s.blocked:text=t("auto_waiting_warehouse")
-  elif host.game.hyperspace.auto_eligible(host.game) and float(s.energy)<float(effective.energy_cap):text=t("auto_waiting_energy")
- var session=host.game.manual_hyperspace
- var result:Dictionary=session.last_result
- put(recent_result,"visible",not result.is_empty() and not reward_feedback.card.visible)
- put(resource_reference_hint,"visible",not reward_feedback.card.visible)
- if result.get("reason","")=="interrupted_reload":
-  put(recent_result,"text",t("recent_interrupted_refund",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"refund":"%.0f"%float(result.refund)}))
- elif not result.is_empty():
-  put(recent_result,"text",t("recent_result",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"reason":t("result_"+str(result.reason)),"elapsed":"%.1f"%float(result.elapsed),"point":str(result.end_point),"refund":"%.0f"%float(result.refund),"stage":str(result.return_stage),"main_point":str(result.return_point)}))
- put(cancel_queue_button,"visible",not session.queued.is_empty())
- put(queue_departure_hint,"visible",not session.queued.is_empty())
- if not session.queued.is_empty():
-  var waiting=session.boundary_reason(host.game)
-  text=t("queue_wait",{"weapon":t(host.game.hyperspace.config.routes[session.queued.route].weapon),"level":str(int(session.queued.level)),"reason":t("queue_wait_"+waiting) if waiting in ["battle","guard","unlock","projectiles"] else t("queue_wait_ready")})
- elif not session.queue_error.is_empty():text=t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload","invalid_main_return","setup_failed"] else t("command_failed")
- if not a.is_empty():
-  if a.status=="completed_pending":text=t("blocked") if s.blocked else t("pending");fill=100.0
-  elif a.mode=="auto":
-   fill=100.0*float(a.work)/maxf(0.001,float(a.duration));text=t("progress",{"work":"%.1f"%float(a.work),"duration":"%.1f"%float(a.duration)})
-  else:text=t("manual")
-  if not session.queue_error.is_empty():text+="\n"+(t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload","invalid_main_return","setup_failed"] else t("command_failed"))
- put(status,"text",text);put(status,"modulate",Color("ff7979") if (s.blocked and s.auto.enabled) or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
- put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
- put(exit_button,"visible",host.game.manual_hyperspace.active)
- refresh_start_reason()
- # Energy is a scalar read: never duplicate the entire inventory in a frame update.
- put(energy_bar,"max_value",float(effective.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(effective.energy_cap)))
- var ticket=display_ticket(s)
- put(energy,"text",energy_caption(s,float(effective.energy_cap),ticket))
+ route_ui.refresh()
 func refresh_list() -> void:
  list_refreshes+=1
  var ids: Array=bag.warehouse+bag.overflow
@@ -549,8 +478,7 @@ func manual_error_text() -> String:
 func manual_ready() -> bool:
  return manual_adapter.is_valid() and manual_ready_provider.is_valid() and manual_ready_provider.call()
 func start_manual() -> void:
- # The formal session validates route groups before it charges a ticket.
- if manual_ready():manual_adapter.call(route,int(level.value))
+ route_ui.act("start_hyperspace_challenge")
 func preview_filter() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
  put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")}) if valid_draft(rule) else t("filter_string_invalid"))

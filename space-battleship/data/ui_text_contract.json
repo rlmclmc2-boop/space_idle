@@ -8227,6 +8227,104 @@
         "material",
         "count"
       ]
+    },
+    "hyperspace.layer_first_win": {
+      "params": []
+    },
+    "hyperspace.layer_current": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_unstarted": {
+      "params": []
+    },
+    "hyperspace.layer_idle_once": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_challenge": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_stop": {
+      "params": []
+    },
+    "hyperspace.layer_exit": {
+      "params": []
+    },
+    "hyperspace.layer_record": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_idle_time": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_luck": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.layer_luck_sources": {
+      "params": [
+        "crew",
+        "permanent"
+      ]
+    },
+    "hyperspace.layer_luck_rules": {
+      "params": []
+    },
+    "hyperspace.layer_hint": {
+      "params": []
+    },
+    "hyperspace.layer_idle_work": {
+      "params": [
+        "work",
+        "duration"
+      ]
+    },
+    "hyperspace.layer_idle_none": {
+      "params": []
+    },
+    "hyperspace.layer_challenging": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_reason_record": {
+      "params": []
+    },
+    "hyperspace.layer_reason_busy": {
+      "params": []
+    },
+    "hyperspace.layer_reason_crew": {
+      "params": []
+    },
+    "hyperspace.layer_reason_warehouse": {
+      "params": []
+    },
+    "hyperspace.layer_reason_unavailable": {
+      "params": []
+    },
+    "hyperspace.layer_crew_start": {
+      "params": []
+    },
+    "hyperspace.layer_crew_detail": {
+      "params": [
+        "time",
+        "luck"
+      ]
+    },
+    "hyperspace.layer_crew_hint": {
+      "params": []
+    },
+    "hyperspace.layer_task_pending": {
+      "params": []
     }
   },
   "bindings": {

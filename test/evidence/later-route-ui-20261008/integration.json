@@ -1,0 +1,25 @@
+{
+  "kind": "UI checkpoint; not graphical acceptance",
+  "core_contract": "7ba5fb14676593899d650771106857d617b5c91d",
+  "remote_main_checked": "766da2eb5375bee1ba1fb75d28e467af8e654dfa",
+  "route_view_reads": ["current_layer", "next_layer", "best_time", "duration", "task_mode", "background", "challenge", "reasons", "total_luck", "crew_luck", "permanent_luck"],
+  "crew_preview": "hyperspace_route_view(route, selected_crew_id); duration and total luck must describe the selected crew's current-layer background quote",
+  "default_view": "duration should describe configured current-layer background quote; challenge receipt duration must not replace it",
+  "receipt_shape": "background/challenge dictionaries contain status, work, duration and level; empty dictionary means no task",
+  "reason_policy": "empty string permits action; unknown nonempty codes show a short unavailable hint, never permit action",
+  "actions": ["start_hyperspace_idle", "start_hyperspace_challenge", "stop_hyperspace_idle", "exit_hyperspace_challenge", "set_hyperspace_auto"],
+  "ownership": "new route helper replaces old crew dialog entry; hyperspace_commands.gd crew functions remain unused and untouched for peer ownership",
+  "refresh": "reuse controls; property writes only on changed values; route progress refreshed at 5Hz while exploration is visible; crew quote only while its native dialog is visible",
+  "remaining_core_dependencies": [
+    "Core implementation is not yet in fetched branch, only interface checkpoint",
+    "Confirm default/selected crew duration field and stable reason codes",
+    "Existing reward UI assumes active receipt; core must relay scoped reward/round/run in completed_pending and claimed events before simultaneous idle/challenge acceptance",
+    "Confirm how completed pending background reward is claimed; fixed Game ABI has no claim method"
+  ],
+  "checks": {
+    "ui_text": "2253 rows valid",
+    "helper_syntax": "Godot 4.6.3 --check-only passed with isolated XDG",
+    "panel_standalone_syntax": "Blocked by unregistered global UIText in current project cache; command does not import class cache",
+    "graphical": "Not run for new layer API; core unavailable. Earlier real stage-34 continuation evidence is separately committed and must not be treated as this rule's acceptance."
+  }
+}
