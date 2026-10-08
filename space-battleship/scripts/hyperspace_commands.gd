@@ -283,6 +283,8 @@ func show_modules() -> void:
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
  if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots"),21)
+ var module_scroll=ScrollContainer.new();module_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;module_scroll.custom_minimum_size.y=120;module_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(module_scroll)
+ var choices=panel.box(module_scroll);choices.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var unlocked=0;var available=0;var has_zero_level=false
  for key in h().config.hanging_modules:
   var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
@@ -291,7 +293,10 @@ func show_modules() -> void:
   available+=int(usable);has_zero_level=has_zero_level or (usable and int(progress.level)==0)
   var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key)
   choice.visible=usable;choice.disabled=not usable or int(d.hanging_slots)==0 or d.ultimate or panel.bag.sealed.has(module_id)
-  body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  choices.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  if choice.visible:
+   var description=dialog_label(choices,module_effect_text(str(key),int(progress.level)),18)
+   description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;description.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   choice.toggled.connect(func(_pressed):refresh_module_apply())
  if unlocked==0:dialog_label(body,t("module_none_unlocked"),21)
  elif available==0:dialog_label(body,t("module_none_available"),21)
@@ -308,6 +313,10 @@ func show_modules() -> void:
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
  refresh_module_apply()
  module_dialog.popup_centered(Vector2i(740,510))
+func module_effect_text(key:String,level:int) -> String:
+ var config:Dictionary=h().config.hanging_modules[key];var effects:Array[String]=[]
+ for effect in config.effects:effects.append(t("module_effect."+str(effect)))
+ return t("module_effect_preview",{"effects":"、".join(effects),"current":"%.1f"%((pow(1.0+float(config.effect_growth),level)-1.0)*100.0),"next_level":str(level+1),"next":"%.1f"%((pow(1.0+float(config.effect_growth),level+1)-1.0)*100.0)})
 func refresh_module_apply() -> void:
  if not is_instance_valid(module_apply):return
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(module_id,{})
