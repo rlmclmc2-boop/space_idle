@@ -1,0 +1,16 @@
+UTC: 2026-10-08T06:05:37.202654+00:00
+Environment: original /workspace, no replacement environment
+Engine: Godot 4.6.3.stable.official.7d41c59c4
+Initial default-XDG checks: both exit 134, user directory permission failures.
+Isolated-XDG first check: crew_system exit 0; crew_panel exit 1, locked.svg not imported.
+Resource-only editor import: exit 0, no gameplay launch.
+Final syntax-only commands (XDG_DATA_HOME=/tmp/crew-draft-check/data; cache/config under same temporary root):
+godot --headless --path space-battleship --check-only --script res://scripts/crew_panel.gd
+Exit: 0
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+godot --headless --path space-battleship --check-only --script res://scripts/crew_system.gd
+Exit: 0
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+git diff --check: exit 0 before commit
+No new screenshots or GUI acceptance claimed; parent owns final normal-input acceptance.
+Removed 174 newly generated untracked import/UID metadata files only.

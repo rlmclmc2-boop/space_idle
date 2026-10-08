@@ -43,3 +43,11 @@
 31张原始PNG未改像素，manifest含时间/哈希；46条真实输入请求，first-impressions记录首次困惑及纠正。只读核对字段在verified-final-checkpoint-fields.json，完整玩家存档不上传Git。
 
 私有续玩目录：`/workspace/space_idle/test/work/tutorial-opening/integrated-eleven-43842f56/`。完整CP为 `checkpoint-eleven-five-new-hull-crew-released.json`，SHA256 `b9747f6d02511b7acac0f916547697f282c4daf6baf1efc68ab3e872f99e4909`，05:14:00手动保存。暂停是当前窗口状态，不宣称重新加载仍暂停。同云可直接续接，跨云可私下复制该完整原生JSON，附版本和继承时粒说明。旧ada7220目录、旧CP和此前bdef957通9/10证据均保留。
+
+## 父验收追修：数量和岗位共同确认
+
+父在自然存档实际发现：已确认AI×1后，只选择×10，未点“确认变更”，当前效果便立即变为×10。原数量下拉直接调用领域写入，与岗位下拉的待确认语义不一致。
+
+现在数量只保存在页面草稿，预告读草稿，“当前效果”仍读已确认状态。点击确认先验证完整岗位、目标和数量，再一次提交；验证拒绝时不修改任一已确认字段。离开页面、切换船员、重新选中船员或成功解除分配会重置未确认选择。经验/等级刷新不会清掉正在编辑的草稿。只确认数量使用原有set_upgrade_mode路径，保留既有定时截止点；变更岗位仍按原规则重新计时。四参数领域调用保持兼容，费用、间隔与可选数量不变。
+
+本追修仅改crew_panel.gd、crew_system.gd。断线后在原云环境续接，PID23754仍在；未重启原窗口、未编辑玩家存档、未新增GUI复测或玩法测试。两脚本Godot4.6.3 --check-only最终均退出0，git diff --check通过。初次检查因默认用户目录权限退出134；换临时XDG目录后crew_panel遇到未导入SVG，完成本工作树资源导入后通过。生成的未跟踪.import/.uid已经移除，检查日志见draft-confirmation-checks.txt。最新补丁未加载原6e9c0d5窗口，没有新增截图；确认、取消和定时语义的最终普通输入GUI验收由父完成。
