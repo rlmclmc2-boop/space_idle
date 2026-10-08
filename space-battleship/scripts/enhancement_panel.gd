@@ -340,10 +340,9 @@ func refresh() -> void:
 			var card: Dictionary = effect_cards[category][index]
 			var kind := str(order[index]) if index<order.size() else ""
 			host.set_ui_value(card.title,"text",effect_name(kind))
-
-			host.set_ui_value(card.description,"text",effect_overview(kind))
-			host.set_ui_value(card.description,"tooltip_text",effect_details_text(kind))
 			var active := game.enhancement_effective_level()>=threshold_level(index)
+			host.set_ui_value(card.description,"text",effect_overview(kind) if active or kind.is_empty() else UIText.t("enhance.candidate."+kind))
+			host.set_ui_value(card.description,"tooltip_text",effect_details_text(kind))
 			var state_key := "enhance.effect.active" if active else "enhance.effect.reorder" if game.enhancement_effective_level()>=threshold_level(0) else "enhance.effect.first_upgrade"
 			var state_values := {"count":eligible_count(category,index)} if active else {}
 			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t(state_key,state_values))

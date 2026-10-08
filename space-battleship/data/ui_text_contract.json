@@ -8679,6 +8679,24 @@
       "params": [
         "count"
       ]
+    },
+    "enhance.candidate.proficiency": {
+      "params": []
+    },
+    "enhance.candidate.adaptation": {
+      "params": []
+    },
+    "enhance.candidate.repeat": {
+      "params": []
+    },
+    "enhance.candidate.critical": {
+      "params": []
+    },
+    "enhance.candidate.memory_material": {
+      "params": []
+    },
+    "enhance.candidate.delayed_damage": {
+      "params": []
     }
   },
   "bindings": {

@@ -16195,5 +16195,41 @@
     "text": "当前每件装备生效前 {count} 个效果；用 ↑↓ 调整顺位，试试不同搭配",
     "params": "{count}",
     "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.proficiency",
+    "text": "越打越熟练，逐渐提高伤害",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.adaptation",
+    "text": "挨过的攻击越多，防御越强",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.repeat",
+    "text": "有机会追加攻击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.critical",
+    "text": "有机会打出更高伤害",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.memory_material",
+    "text": "持续修复，并积累护盾",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.delayed_damage",
+    "text": "把部分伤害延后承受",
+    "params": "",
+    "category": "enhance"
   }
 ]
