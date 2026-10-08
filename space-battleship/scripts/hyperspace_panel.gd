@@ -45,6 +45,7 @@ var section_index=0
 var section_buttons: Array[Button]=[]
 var sections: Array[Control]=[]
 var exploration_scroll: ScrollContainer
+var exploration_receipt_area: VBoxContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
@@ -140,6 +141,7 @@ func setup(owner) -> void:
  var tabs=row(root_box)
  for key in ["section_explore","section_drones","section_forge","section_rules"]:
   var index=section_buttons.size();var b=button(tabs,key,func():select_section(index));b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;section_buttons.append(b)
+ exploration_receipt_area=box(root_box,4);exploration_receipt_area.visible=false
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
   var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
@@ -164,8 +166,7 @@ func select_section(index: int) -> void:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
  if host!=null and not bag.is_empty():refresh()
- if section_index==0 and reward_feedback.unread:
-  exploration_scroll.ensure_control_visible.call_deferred(reward_feedback.card)
+ reward_feedback.sync_receipt_area()
  if section_index==2 and commands!=null:commands.configure_operation()
 func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
@@ -194,7 +195,7 @@ func build_exploration(parent: Node) -> void:
  recent_result=label(parent,"",20);recent_result.visible=false
  resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
  first_win=label(parent,t("first_win"),22)
- reward_feedback.build(parent)
+ reward_feedback.build(exploration_receipt_area)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
  drone_locked=label(parent,t("first_win"),24)
