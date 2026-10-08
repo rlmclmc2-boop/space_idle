@@ -234,6 +234,7 @@ func _process(delta: float) -> void:
 	# the logical pose/entry cache or combat providers.
 	if encounter_presentation.sync(game,minf(delta,0.1)):
 		stars_layer.queue_redraw()
+		battle_layer.queue_redraw()
 		battle_hud_layer.queue_redraw()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
@@ -377,6 +378,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		encounter_presentation.return_success=bool(info.get("success",false))
 		encounter_presentation.sync(game,0.0)
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
+		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
 	if kind=="explode" and int(info.get("uid",-2))==encounter_presentation.leader_uid:
 		encounter_presentation.leader_fall=0.0

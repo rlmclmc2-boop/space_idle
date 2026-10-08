@@ -27,6 +27,12 @@ func sync(game,delta:float) -> bool:
 		if not departure:
 			scenery_route=route
 			accent={"alpha":Color("81d5da"),"beta":Color("d9a67b"),"gamma":Color("a8bacd"),"delta":Color("b1a0dc")}.get(route,Color("81d5da"))
+		elif game.paused:
+			# Returning restores the mainline pause state. Finish presentation now;
+			# never unpause gameplay just to drain a departure animation timer.
+			scenery_presence=0.0
+			scenery_route=""
+			transition=2.0
 	var next_identity := str([route,game.stage,game.group_index,game.encounter_tier()])
 	if next_identity!=identity:
 		identity=next_identity
