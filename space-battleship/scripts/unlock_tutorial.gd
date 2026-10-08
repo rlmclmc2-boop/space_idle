@@ -93,8 +93,7 @@ func dot(parent: Node) -> Label:
 	parent.add_child(label)
 	return label
 
-func system_for(id: String) -> String:
-	var row: Dictionary = host.game.tutorial_unlock_row(id)
+func row_system(row: Dictionary) -> String:
 	match str(row.get("type","")):
 		"equipment":return "equipment"
 		"ship":return "ships"
@@ -133,7 +132,9 @@ func open_entry(id: String) -> void:
 	refresh()
 
 func refresh_detail() -> void:
-	var row: Dictionary = host.game.tutorial_unlock_row(selected)
+	show_detail(host.game.tutorial_unlock_row(selected))
+
+func show_detail(row: Dictionary) -> void:
 	host.set_ui_value(title,"text",str(row.get("title","")))
 	host.set_ui_value(description,"text",str(row.get("desc",UIText.t("tutorial.select_entry"))))
 
@@ -154,13 +155,27 @@ func refresh() -> void:
 	host.set_ui_value(content,"position",rect.position-host.ui.position+Vector2(50,90)*scale_value)
 	host.set_ui_value(content,"scale",Vector2.ONE*scale_value)
 	if not showing_archive:return
+	# IDs already passed tutorial_unlocks eligibility. Read their current config rows
+	# directly; only the synthetic entry needs the domain projection. No cross-frame cache.
+	var definitions: Dictionary = host.game.db.data.get("unlock",{})
+	var rows: Dictionary = {}
+	var grouped: Dictionary = {}
+	var unread_ids: Dictionary = {}
+	var unread_systems: Dictionary = {}
+	for id in unread:unread_ids[id] = true
+	for id in ids:
+		var row: Dictionary = host.game.tutorial_unlock_row(id) if id=="hyperspace" else definitions.get(id,{})
+		rows[id] = row
+		var category := row_system(row)
+		if not grouped.has(category):grouped[category] = []
+		grouped[category].append(id)
+		if unread_ids.has(id):unread_systems[category] = true
 	for id in SYSTEMS:
-		var available: bool = ids.any(func(key):return system_for(key)==id)
-		host.set_ui_value(category_buttons[id].button,"visible",available)
+		host.set_ui_value(category_buttons[id].button,"visible",grouped.has(id))
 		host.set_ui_value(category_buttons[id].button,"button_pressed",system==id)
-		host.set_ui_value(category_buttons[id].badge,"visible",unread.any(func(key):return system_for(key)==id))
-	if not ids.any(func(key):return system_for(key)==system) and not ids.is_empty():system = system_for(ids[0])
-	var filtered: Array = ids.filter(func(key):return system_for(key)==system)
+		host.set_ui_value(category_buttons[id].badge,"visible",unread_systems.has(id))
+	if not grouped.has(system) and not ids.is_empty():system = row_system(rows[ids[0]])
+	var filtered: Array = grouped.get(system,[])
 	# Reconcile only archive entries. Existing controls and scroll survive reads.
 	if snapshot != filtered:
 		for id in entry_buttons.keys():
@@ -170,7 +185,7 @@ func refresh() -> void:
 				entry_buttons.erase(id)
 		for id in filtered:
 			if entry_buttons.has(id):continue
-			var row: Dictionary = host.game.tutorial_unlock_row(id)
+			var row: Dictionary = rows[id]
 			var button := make_button(entries,str(row.get("title","")),open_entry.bind(id))
 			button.toggle_mode = true
 			button.custom_minimum_size = Vector2(192,48)
@@ -180,6 +195,6 @@ func refresh() -> void:
 			entry_buttons[id] = {"button":button,"badge":badge}
 		snapshot = filtered.duplicate()
 	for id in entry_buttons:
-		host.set_ui_value(entry_buttons[id].badge,"visible",unread.has(id))
+		host.set_ui_value(entry_buttons[id].badge,"visible",unread_ids.has(id))
 		host.set_ui_value(entry_buttons[id].button,"button_pressed",selected==id)
-	refresh_detail()
+	show_detail(rows.get(selected,{}))

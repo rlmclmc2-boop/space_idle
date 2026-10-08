@@ -14949,7 +14949,7 @@
   },
   {
     "key": "tutorial.hyperspace.description",
-    "text": "选择一条已开放路线和关卡，点「手动开始」挑战。探索能源会随在线时间恢复；先在页面核对本次消耗。",
+    "text": "选一条路线，点「挑战第1层」。通关后，点「后台探索」重复获取这一层的奖励；也可以挑战下一层。收到无人机后，点「查看无人机」试着装到战舰上。",
     "params": "",
     "category": "tutorial"
   },
@@ -16087,5 +16087,54 @@
     "params": "",
     "category": "hyperspace",
     "note": "当前装备没有非零属性或有效模块、传说效果时的单句提示"
+  },
+  {
+    "key": "battle.enemy_name.armour_flagship",
+    "text": "装甲旗舰 · 持续光束有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.shield_flagship",
+    "text": "护盾旗舰 · 磁轨火炮有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.armour_dreadnought",
+    "text": "重装巨舰 · 持续光束有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.shield_dreadnought",
+    "text": "护盾巨舰 · 磁轨火炮有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "hyperspace.layer_route_challenge_pending",
+    "text": "挑战奖励待领",
+    "params": "",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "hyperspace.layer_route_challenge",
+    "text": "挑战中",
+    "params": "",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "hyperspace.layer_reason_challenge_pending",
+    "text": "先到「{route}」领取挑战奖励，再开始下一次挑战。",
+    "params": "{route}",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
   }
 ]

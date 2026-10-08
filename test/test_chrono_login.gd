@@ -40,7 +40,7 @@ func run() -> void:
 	check(scene.game.login_chrono_particles>=12 and scene.game.login_chrono_particles<14 and dialog.dialog_text.contains(str(int(scene.game.login_chrono_particles))),"Dialog reports the actual newly collected particles")
 	check(dialog.title==UIText.t("chrono.login_title") and dialog.ok_button_text==UIText.t("system.confirm"),"Dialog uses registered UI text")
 	if DisplayServer.get_name() != "headless":
-		check(root.get_node_or_null("QATools")==null,"Development QA window waits until the login report closes")
+		check(root.get_node_or_null("QATools")==null,"Login report does not open a QA window")
 		await RenderingServer.frame_post_draw
 		var texture := dialog.get_texture()
 		if texture != null:texture.get_image().save_png("res://.runtime/chrono-login.png")
@@ -50,6 +50,11 @@ func run() -> void:
 	dialog.confirmed.emit()
 	await process_frame
 	check(not is_instance_valid(dialog) and scene.chrono_panel==panel and scene.game.profile.chronoParticles==particles_before and scene.game.profile.resources==resources_before,"Dismissing report preserves particles, resources and page instances")
+	check(root.get_node_or_null("QATools")==null,"Confirming login report does not open QA")
+	scene.show_chrono_login_report()
+	scene.chrono_login_dialog.canceled.emit()
+	await process_frame
+	check(root.get_node_or_null("QATools")==null,"Canceling login report does not open QA")
 	scene.queue_free()
 	await process_frame
 	raw.chronoParticles=seed.chrono_capacity()

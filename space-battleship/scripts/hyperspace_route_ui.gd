@@ -56,6 +56,9 @@ func reason(code:String) -> String:
  if code.is_empty():return ""
  if code=="other_route":return t("layer_reason_other_route")
  if code=="max_layer":return t("layer_reason_max_layer")
+ if code=="challenge_busy":
+  var receipt:Dictionary=game().profile.hyperspace.get("active",{})
+  if receipt.get("status","")=="completed_pending":return t("layer_reason_challenge_pending",{"route":t(str(receipt.get("route","")))})
  if code in ["no_record","record","no_best_time","not_cleared","no_cleared_layer","no_history","invalid_record"]:return t("layer_reason_record")
  if code in ["busy","active","challenge_active","idle_active","background_active","auto_enabled","background_busy","challenge_busy"]:return t("layer_reason_busy")
  if code in ["crew","crew_missing","crew_unavailable","crew_occupied","no_crew"]:return t("layer_reason_crew")
@@ -70,13 +73,18 @@ func tick(delta:float) -> void:
  if elapsed<0.2:return
  elapsed=0.0;refresh()
 func refresh_route_markers() -> void:
- var background:Dictionary=game().profile.hyperspace.get("idle",{})
- var running_route=str(background.get("route",""))
+ var state:Dictionary=game().profile.hyperspace
+ var background:Dictionary=state.get("idle",{})
+ var challenge:Dictionary=state.get("active",{})
  for index in panel.routes.size():
   var marker:Label=panel.route_markers[index]
-  var visible=not background.is_empty() and str(panel.routes[index].get_meta("route",""))==running_route
-  panel.put(marker,"visible",visible)
-  if visible:panel.put(marker,"text",t("layer_route_pending") if background.get("status","")=="completed_pending" else t("layer_route_background"))
+  var route_id=str(panel.routes[index].get_meta("route",""));var labels:Array[String]=[]
+  if not background.is_empty() and str(background.get("route",""))==route_id:
+   labels.append(t("layer_route_pending") if background.get("status","")=="completed_pending" else t("layer_route_background"))
+  if not challenge.is_empty() and str(challenge.get("route",""))==route_id:
+   labels.append(t("layer_route_challenge_pending") if challenge.get("status","")=="completed_pending" else t("layer_route_challenge"))
+  panel.put(marker,"visible",not labels.is_empty())
+  if not labels.is_empty():panel.put(marker,"text"," · ".join(labels))
 func refresh() -> void:
  if current==null:return
  refresh_route_markers()
