@@ -1,0 +1,34 @@
+[
+  {
+    "key": "hyperspace.module_source_hint",
+    "before": {
+      "key": "hyperspace.module_source_hint",
+      "text": "拆解多余无人机会随机获得模块；再次获得同种模块，可用于升级。",
+      "params": "",
+      "category": "hyperspace"
+    },
+    "after": {
+      "key": "hyperspace.module_source_hint",
+      "text": "到「改造」选择「拆解无人机」可随机获得模块；再次获得同种模块可升级。",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_none_unlocked",
+    "before": {
+      "key": "hyperspace.module_none_unlocked",
+      "text": "还没有解锁模块。拆解多余无人机可随机获得，种类不能指定。",
+      "params": "",
+      "category": "hyperspace",
+      "note": "仅按当前无人机／模块状态提示"
+    },
+    "after": {
+      "key": "hyperspace.module_none_unlocked",
+      "text": "还没有解锁模块。到「改造」选择「拆解无人机」，可随机获得；种类不能指定。",
+      "params": "",
+      "category": "hyperspace",
+      "note": "仅按当前无人机／模块状态提示"
+    }
+  }
+]

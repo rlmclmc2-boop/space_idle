@@ -1,0 +1,62 @@
+[
+  {
+    "file": "09-no-slots.png",
+    "sha256": "10c7b4c39c908831dcb746eb96c03432ff316c8485e5ff390ca9dda9616bed44",
+    "bytes": 219769,
+    "captured_unix": 1791435097.2176154
+  },
+  {
+    "file": "13-slot-cost.png",
+    "sha256": "654b06914402e943bec131f3c5d2ea6121f4ae7119e768b2b9b641269e8d134a",
+    "bytes": 209989,
+    "captured_unix": 1791435137.957145
+  },
+  {
+    "file": "14-material-route.png",
+    "sha256": "d2b63d2f0a041e593fb2bbaab93ab24a4e6996d8d71d163e4ac58f16117c7c1e",
+    "bytes": 227639,
+    "captured_unix": 1791435151.848985
+  },
+  {
+    "file": "19-beta-ending.png",
+    "sha256": "fa4c15826a567626a57a036dcaf4cffa5df00855e183e1f69b3afdc24c31589f",
+    "bytes": 214808,
+    "captured_unix": 1791435256.1917732
+  },
+  {
+    "file": "21-view-gold.png",
+    "sha256": "6e8f70d4da3aa48dc66e9cf18fa51cb6df3650380c1ed20b081b5c878fecf109",
+    "bytes": 238586,
+    "captured_unix": 1791435309.7111776
+  },
+  {
+    "file": "27-dismantle-preview.png",
+    "sha256": "add2df4c3eae33079c033ad21ee0ca0684a3344c81f6d3ec1f32951de4f278f9",
+    "bytes": 208657,
+    "captured_unix": 1791435393.7702024
+  },
+  {
+    "file": "28-dismantle-result.png",
+    "sha256": "6b6fd88142c86e4a6a0abad06436d1976809e86178fa016eaf730ee6e751c673",
+    "bytes": 203495,
+    "captured_unix": 1791435406.7380505
+  },
+  {
+    "file": "29-modules-earned.png",
+    "sha256": "ab990285d53ef526ddb6387bf91d8e93a3f56d49af4a2bf46f3e891439308403",
+    "bytes": 203863,
+    "captured_unix": 1791435419.2699046
+  },
+  {
+    "file": "30-unlocked-no-slot.png",
+    "sha256": "e7d9b48b175cfb6f7d366ce95e84adf3bdf3695c58a09f8f2dffb536d063bbb4",
+    "bytes": 221115,
+    "captured_unix": 1791435433.409741
+  },
+  {
+    "file": "32-saved.png",
+    "sha256": "48f9a5f4741b0c101de935569435f71ee3cf8b6817fe27cf3778656c7212df80",
+    "bytes": 192039,
+    "captured_unix": 1791435493.56104
+  }
+]
