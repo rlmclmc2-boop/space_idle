@@ -228,7 +228,7 @@ func commit() -> void:
  if quoted_request.is_empty():return
  if quoted_request.operation=="dismantle":
   if dismantle_dialog==null:
-   dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.dialog_text=t("dismantle_confirm");panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog);dismantle_dialog.confirmed.connect(execute_quote)
+   dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.title=t("operation_dismantle");dismantle_dialog.dialog_text=t("dismantle_confirm");panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog);dismantle_dialog.confirmed.connect(execute_quote)
   dismantle_dialog.popup_centered();return
  execute_quote()
 func execute_quote() -> void:

@@ -13266,7 +13266,7 @@
   },
   {
     "key": "hyperspace.filter_disabled",
-    "text": "自动筛选尚未启用",
+    "text": "自动处理未启用",
     "params": "",
     "category": "hyperspace"
   },
@@ -13734,7 +13734,7 @@
   },
   {
     "key": "hyperspace.filter_domain_hint",
-    "text": "最多五条件；导入先预览，保存后执行所选处理动作。",
+    "text": "只处理之后的新掉落，不动现有仓库。拆解会返还材料和随机挂载模块副本。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13746,13 +13746,13 @@
   },
   {
     "key": "hyperspace.filter_action_keep_matches",
-    "text": "保留匹配项",
+    "text": "保留符合条件的，其余拆解",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.filter_action_clear_matches",
-    "text": "销毁匹配项",
+    "text": "拆解符合条件的，其余保留",
     "params": "",
     "category": "hyperspace"
   },

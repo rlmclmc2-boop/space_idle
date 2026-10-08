@@ -295,7 +295,7 @@ func import_filter_draft() -> void:
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
+ if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")+"\n"+filter_policy_summary(rule)
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
  reward_feedback.on_event(kind,_payload)
@@ -482,9 +482,12 @@ func manual_ready() -> bool:
  return manual_adapter.is_valid() and manual_ready_provider.is_valid() and manual_ready_provider.call()
 func start_manual() -> void:
  route_ui.act("start_hyperspace_challenge")
+func filter_policy_summary(rule:Dictionary) -> String:
+ var action=t("filter_action_"+str(rule.action))
+ return action if bool(rule.enabled) else t("filter_disabled")+" · "+action
 func preview_filter() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")}) if valid_draft(rule) else t("filter_string_invalid"))
+ put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")})+"\n"+filter_policy_summary(rule) if valid_draft(rule) else t("filter_string_invalid"))
 func build_filter_draft() -> void:
  var conditions: Array=[]
  for i in 5:
