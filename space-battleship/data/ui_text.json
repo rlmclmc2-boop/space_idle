@@ -16444,5 +16444,75 @@
     "params": "",
     "category": "hyperspace",
     "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.layer_queue_view",
+    "text": "查看占用任务",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_claim",
+    "text": "前往领取收获",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_cancel",
+    "text": "取消排队挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_stop",
+    "text": "停止占用的后台任务",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_challenge",
+    "text": "挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_auto",
+    "text": "船员连续后台",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_background",
+    "text": "手动后台",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_queue_occupied",
+    "text": "队列由 {route} 的{task}占用。先处理这项任务，再开始另一项。",
+    "params": "route,task",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_paused",
+    "text": "后台进度已暂停并保留，剩余 {time} 秒。",
+    "params": "time",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.layer_resume",
+    "text": "继续暂停的后台",
+    "params": "",
+    "category": "hyperspace",
+    "note": "使用领域共享队列和暂停回执投影，不另判权限"
   }
 ]

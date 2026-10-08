@@ -333,7 +333,7 @@ func save_filter() -> void:
 func on_event(kind: String,_payload: Dictionary) -> void:
  reward_feedback.on_event(kind,_payload)
  commands.exchange_ui.on_event(kind,_payload)
- if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
+ if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","hyperspace_drone_restored","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
    if commands.materials_box!=null and commands.materials_box.is_visible_in_tree():

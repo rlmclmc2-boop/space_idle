@@ -8808,6 +8808,41 @@
     },
     "hyperspace.challenge_result_failed": {
       "params": []
+    },
+    "hyperspace.layer_queue_view": {
+      "params": []
+    },
+    "hyperspace.layer_queue_claim": {
+      "params": []
+    },
+    "hyperspace.layer_queue_cancel": {
+      "params": []
+    },
+    "hyperspace.layer_queue_stop": {
+      "params": []
+    },
+    "hyperspace.layer_queue_challenge": {
+      "params": []
+    },
+    "hyperspace.layer_queue_auto": {
+      "params": []
+    },
+    "hyperspace.layer_queue_background": {
+      "params": []
+    },
+    "hyperspace.layer_queue_occupied": {
+      "params": [
+        "route",
+        "task"
+      ]
+    },
+    "hyperspace.layer_paused": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_resume": {
+      "params": []
     }
   },
   "bindings": {
