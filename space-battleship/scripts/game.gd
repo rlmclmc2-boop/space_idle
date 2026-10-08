@@ -268,8 +268,16 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
+	var existing:=false
+	for suffix in ["", ".bak", ".import-prev"]:
+		existing=existing or FileAccess.file_exists(SAVE_PATH+suffix)
 	var raw = progress_writer.read_progress(SAVE_PATH)
-	if raw is Dictionary:load_progress_data(raw)
+	if raw is Dictionary:
+		load_progress_data(raw)
+		if hyperspace.last_error.is_empty():return
+	elif not existing:return
+	# A rejected existing save must never become an autosaved fresh profile.
+	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
