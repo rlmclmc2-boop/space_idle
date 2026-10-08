@@ -40,6 +40,9 @@ func advance(owner,g,dt: float) -> void:
 	var c: Dictionary=owner.config
 	if not is_finite(dt) or dt<=0 or g.paused or int(g.profile.highestLevel)<int(c.unlock_stage):return
 	c=owner.online_config(g)
+	# A challenge owns the global slot; even legacy background rewards stay frozen.
+	if not g.profile.hyperspace.active.is_empty() and g.profile.hyperspace.active.status=="started":
+		charge(g.profile.hyperspace,c,dt);return
 	var remaining:=dt+float(g.profile.hyperspace.pending_time)
 	g.profile.hyperspace.pending_time=0.0
 	var completions:=0
@@ -57,7 +60,7 @@ func advance(owner,g,dt: float) -> void:
 			if not owner.start_auto(g):charge(s,c,remaining);return
 			s=g.profile.hyperspace
 		var a:Dictionary=s.idle
-		var once:bool=a.mode=="idle"
+		var once:bool=a.mode=="idle" or not s.auto.enabled
 		var step:=minf(remaining,maxf(0.0,float(a.duration)-float(a.work)))
 		a.work=minf(float(a.duration),float(a.work)+step);charge(s,c,step);remaining-=step
 		if float(a.work)+0.000000001<float(a.duration):return
