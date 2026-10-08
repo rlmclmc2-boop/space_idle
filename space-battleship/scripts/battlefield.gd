@@ -218,7 +218,6 @@ func before_logical_game_tick(dt:float) -> void:
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
 		hyperspace_visual.sync(game.profile.hyperspace.inventory)
 		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
-		ship_view.sync_render_region(close_up)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
 	advance_turrets(dt)
@@ -284,7 +283,6 @@ func _process_battlefield(delta: float) -> void:
 	paused_presentation_signature = pose_signature
 	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
 	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
-	ship_view.sync_render_region(close_up)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
 	var angles: Array = []

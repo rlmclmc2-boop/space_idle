@@ -12,17 +12,6 @@ const WORLD_PER_PIXEL := 0.05
 
 var viewport: SubViewport
 var camera: Camera3D
-# Public camera stays on the canonical viewport for every launch/socket caller.
-var projection_viewport: SubViewport
-var render_camera: Camera3D
-var composite: TextureRect
-var roi_rect := Rect2i()
-var roi_internal_top := 0
-var full_internal_size := Vector2i.ZERO
-var roi_model_radius := -1.0
-var roi_blocked := false
-var roi_close_up := false
-var roi_pose_ready := false
 var ship: Node3D
 var weapon_mount: Node3D
 var weapon: Node3D
@@ -75,13 +64,12 @@ func _ready() -> void:
 	viewport.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	add_child(viewport)
-	composite = TextureRect.new()
-	composite.name = "ShipComposite"
-	composite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	composite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	composite.size = size
-	composite.texture = viewport.get_texture()
-	add_child(composite)
+	var output := TextureRect.new()
+	output.name = "ShipComposite"
+	output.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	output.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	output.texture = viewport.get_texture()
+	add_child(output)
 	world = Node3D.new()
 	viewport.add_child(world)
 	var environment_node := WorldEnvironment.new()
@@ -117,19 +105,7 @@ func _ready() -> void:
 	camera.position = Vector3(0,60,0)
 	# Exact top-down projection: model -Z points to screen top; no turntable camera.
 	camera.rotation_degrees.x = -90
-	# This viewport never renders. Camera3D.unproject_position still sees the
-	# original logical rectangle, independently of internal resolution and ROI.
-	projection_viewport = SubViewport.new()
-	projection_viewport.name = "CanonicalShipProjection"
-	projection_viewport.size = viewport.size
-	projection_viewport.own_world_3d = true
-	projection_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	add_child(projection_viewport)
-	projection_viewport.add_child(camera)
-	render_camera = camera.duplicate() as Camera3D
-	render_camera.name = "ShipRenderCamera"
-	world.add_child(render_camera)
-	render_camera.make_current()
+	world.add_child(camera)
 	# Keep the logical viewport and camera projection fixed. Only the internal
 	# 3D buffer follows displayed pixels; all unproject_position users therefore
 	# continue receiving the same canonical battlefield coordinates.
@@ -164,114 +140,10 @@ func _sync_render_scale() -> void:
 	if native_scale <= 0.0:return
 	# Engine-supported scaling range; no quality preset or FPS feedback loop.
 	var desired_scale: float = clampf(native_scale,0.25,2.0)
-	if is_equal_approx(viewport.scaling_3d_scale,desired_scale) and full_internal_size != Vector2i.ZERO:return
+	if is_equal_approx(viewport.scaling_3d_scale,desired_scale):return
 	viewport.scaling_3d_scale = desired_scale
-	_rebuild_roi_grid()
-	sync_render_region(roi_close_up)
 	if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
 		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-
-
-func _rebuild_roi_grid() -> void:
-	var full_size := projection_viewport.size
-	var internal := Vector2i(Vector2(full_size) * viewport.scaling_3d_scale)
-	if internal == full_internal_size: return
-	full_internal_size = internal
-	roi_rect = Rect2i(Vector2i.ZERO, full_size)
-	roi_internal_top = 0
-	roi_blocked = false
-	if internal.x < 1 or internal.y < 1: return
-	# Keep full width and the original bottom edge. Both upscale passes must
-	# retain their original texel phase: integral logical AND internal origins,
-	# and exactly the same internal/logical height ratio after truncation.
-	for top in range(int(full_size.y * 0.6), 0, -1):
-		if (top * internal.y) % full_size.y != 0: continue
-		var internal_top := int(float(top * internal.y) / float(full_size.y))
-		var crop_height := full_size.y - top
-		if int(crop_height * viewport.scaling_3d_scale) != internal.y - internal_top: continue
-		roi_rect = Rect2i(0, top, full_size.x, crop_height)
-		roi_internal_top = internal_top
-		break
-
-
-func sync_render_region(close_up: bool) -> void:
-	if not is_instance_valid(render_camera): return
-	if close_up != roi_close_up:
-		roi_close_up = close_up
-		roi_blocked = false
-	var eligible := roi_pose_ready and not close_up and not roi_blocked
-	eligible = eligible and roi_model_radius >= 0.0 and roi_internal_top > 0 and carriers.is_empty()
-	# The hyperspace formation is populated after set_pose. The caller invokes
-	# this again after that sync; all nonempty external roots retain full frame.
-	for child in world.get_children():
-		if child == ship or child == render_camera or child is WorldEnvironment or child is Light3D: continue
-		if child.get_child_count() > 0 or child is VisualInstance3D:
-			eligible = false
-	if eligible:
-		var radius := roi_model_radius * maxf(absf(ship.scale.x), maxf(absf(ship.scale.y), absf(ship.scale.z)))
-		var pixels_per_world := float(full_internal_size.x) / camera.size
-		var top_pixel := (ship.position.z - radius - camera.position.z) * pixels_per_world + full_internal_size.y * 0.5
-		if top_pixel < roi_internal_top + 8.0:
-			eligible = false
-			# A moving anchor must not resize the render target back and forth.
-			# Retry only after a structural, zoom or display-grid change.
-			roi_blocked = true
-	var full_size := projection_viewport.size
-	var desired := roi_rect if eligible else Rect2i(Vector2i.ZERO, full_size)
-	var camera_position := camera.position
-	if eligible:
-		# A crop of K internal rows moves the camera by K/2 original texels.
-		# Canonical camera and all gameplay-facing projection results stay fixed.
-		camera_position.z += roi_internal_top * 0.5 * camera.size / float(full_internal_size.x)
-	if viewport.size == desired.size and composite.position == Vector2(desired.position) and render_camera.position == camera_position: return
-	if viewport.size != desired.size: viewport.size = desired.size
-	if composite.position != Vector2(desired.position): composite.position = Vector2(desired.position)
-	if composite.size != Vector2(desired.size): composite.size = Vector2(desired.size)
-	if render_camera.position != camera_position: render_camera.position = camera_position
-	if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED and visible:
-		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-
-
-func _refresh_roi_bounds() -> void:
-	roi_model_radius = _swept_model_radius(ship)
-	roi_blocked = false
-
-
-func _swept_model_radius(node: Node) -> float:
-	# Build only when the hull/loadout changes. Triangle-inequality bounds cover
-	# every pivot rotation, not just the current aim. No pixel readbacks.
-	if node is AnimationPlayer or node is AnimationTree or node is Skeleton3D: return -1.0
-	if node.get_script() != null: return -1.0
-	var radius := 0.0
-	if node is MeshInstance3D:
-		var mesh_node := node as MeshInstance3D
-		if mesh_node.mesh == null or mesh_node.skin != null: return -1.0
-		if mesh_node.mesh is ArrayMesh:
-			var array_mesh := mesh_node.mesh as ArrayMesh
-			if array_mesh.get_blend_shape_count() > 0: return -1.0
-		elif not mesh_node.mesh is PrimitiveMesh:
-			return -1.0
-		for surface in mesh_node.mesh.get_surface_count():
-			var material := mesh_node.get_active_material(surface) as ShaderMaterial
-			if material == null or material.shader not in [TOON, SHIELD, EXHAUST]: return -1.0
-		var bounds := mesh_node.get_aabb()
-		for corner in 8: radius = maxf(radius, bounds.get_endpoint(corner).length())
-	elif node is VisualInstance3D:
-		return -1.0
-	for child in node.get_children():
-		var child_radius := _swept_model_radius(child)
-		if child_radius < 0.0: return -1.0
-		if child is Node3D:
-			if child.top_level: return -1.0
-			var basis: Basis = child.transform.basis
-			if absf(basis.x.normalized().dot(basis.y.normalized())) > 0.0001 or absf(basis.x.normalized().dot(basis.z.normalized())) > 0.0001 or absf(basis.y.normalized().dot(basis.z.normalized())) > 0.0001: return -1.0
-			var stretch := maxf(basis.x.length(), maxf(basis.y.length(), basis.z.length()))
-			# Exhaust animation changes only scale.z in [0.94, 1.06]. Its shader
-			# changes alpha, not vertices. Always include maximum plume geometry.
-			if child in exhaust_nodes: stretch = maxf(stretch, 1.06)
-			child_radius = child.position.length() + stretch * child_radius
-		radius = maxf(radius, child_radius)
-	return radius
 
 
 func set_hull(key: String) -> bool:
@@ -289,7 +161,6 @@ func set_hull(key: String) -> bool:
 	exhaust_nodes.clear()
 	exhaust_materials.clear()
 	loadout_signature = ""
-	roi_pose_ready = false
 	hull_key = key
 	hull_config = manifest.hulls[key]
 	model_span = float(hull_config.model_span)
@@ -326,8 +197,6 @@ func set_hull(key: String) -> bool:
 	shield_material.shader = SHIELD
 	shield.material_override = shield_material
 	ship.add_child(shield)
-	_refresh_roi_bounds()
-	sync_render_region(roi_close_up)
 	if not last_settings.is_empty(): apply_parameters(last_settings,last_toon_enabled,last_rim_enabled)
 	return true
 
@@ -415,8 +284,6 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 				if socket!=null:socket.position.z=-0.495
 		_install_materials(node,"weapon")
 	loadout_signature = signature
-	_refresh_roi_bounds()
-	sync_render_region(roi_close_up)
 	weapon = modules[0].node if not modules.is_empty() else null
 	turret = modules[0].pivot if not modules.is_empty() else null
 	muzzle = modules[0].muzzle if not modules.is_empty() else null
@@ -525,8 +392,6 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(time,3.8)/0.6))
 	for i in exhaust_nodes.size():
 		exhaust_nodes[i].scale.z = 1.0+sin(time*9+float(i))*0.06
-	roi_pose_ready = true
-	sync_render_region(close_up)
 	# A paused diagnostic changes presentation without ticking gameplay. Request precisely one redraw.
 	if viewport.render_target_update_mode != SubViewport.UPDATE_ALWAYS:
 		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
@@ -576,5 +441,4 @@ func set_accelerated_quality(enabled: bool) -> void:
 
 func set_rendering(enabled: bool, paused := false) -> void:
 	visible = enabled
-	if enabled: sync_render_region(roi_close_up)
 	viewport.render_target_update_mode = (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled else SubViewport.UPDATE_DISABLED
