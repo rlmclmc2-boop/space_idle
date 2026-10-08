@@ -2613,8 +2613,8 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 	var enemy_bounds: Array[Rect2] = []
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
-		var half_width := enemy_render_width(enemy)
 		var center := enemy_render_position(enemy)
+		var half_width := enemy_render_width_at_y(enemy,center.y)
 		var hover_margin := Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
 		var envelope := Vector2(half_width*0.6,half_width*1.15)+hover_margin
 		enemy_bounds.append(Rect2(center-envelope,envelope*2.0))
