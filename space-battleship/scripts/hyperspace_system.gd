@@ -268,6 +268,40 @@ func route_view(g,route:String,crew_id:String="")->Dictionary:
 func advance(g,dt:float)->void:
 	scheduler.advance(self,g,dt)
 
+func material_exchange_quote(g,source:String,target:String,amount:Variant)->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	var result:Dictionary={"error":"","source":source,"target":target,"amount":0,"source_owned":int(s.materials.get(source,0)),"target_owned":int(s.materials.get(target,0)),"cost":{},"received":{},"max_receive":0,"request":{}}
+	var keys:Array=config.routes.values().map(func(route):return str(route.material))
+	if source not in keys or target not in keys:result.error="invalid_material";return result
+	if source==target:result.error="same_material";return result
+	var limit:=9000000000000000
+	result.max_receive=mini(int(result.source_owned)/2,limit-int(result.target_owned))
+	if not C.integer(amount) or amount<=0 or amount>limit/2:result.error="invalid_amount";return result
+	var count:=int(amount);var debit:=count*2
+	result.amount=count;result.cost={source:debit};result.received={target:count}
+	if debit>int(result.source_owned):result.error="insufficient_materials";return result
+	if count>limit-int(result.target_owned):result.error="material_limit";return result
+	result.request={"round_id":int(s.round_id),"command_seq":int(s.command_seq),"source":source,"target":target,"amount":count}
+	return result
+
+func exchange_materials(g,request:Dictionary)->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	if not C.integer(request.get("round_id")) or int(request.round_id)!=int(s.round_id):return Forge.error("stale_round")
+	if not C.integer(request.get("command_seq")):return Forge.error("stale_command")
+	if not request.get("source") is String or not request.get("target") is String or not C.integer(request.get("amount")):return Forge.error("invalid_arguments")
+	var fingerprint:=JSON.stringify({"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount)},"",true,true)
+	if not s.last_command.is_empty() and int(request.command_seq)==int(s.last_command.seq):
+		return Forge.restore_result(s.last_command.result_json) if fingerprint==s.last_command.fingerprint else Forge.error("command_conflict")
+	if int(request.command_seq)!=int(s.command_seq):return Forge.error("stale_command")
+	var quote:=material_exchange_quote(g,request.source,request.target,request.amount)
+	if not quote.error.is_empty():return Forge.error(quote.error)
+	var next:Dictionary=s.duplicate(true)
+	next.materials[request.source]-=int(quote.cost[request.source]);next.materials[request.target]+=int(request.amount)
+	var result:Dictionary={"error":"","applied":true,"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount),"cost":quote.cost,"received":quote.received,"source_after":int(next.materials[request.source]),"target_after":int(next.materials[request.target])}
+	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
+	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
+	publish(g,next,"materials_exchanged");return result
+
 func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=null) -> bool:
 	if bag.is_empty():bag=g.profile.hyperspace.inventory
 	var count:=0;var higgs:=false

@@ -33,6 +33,9 @@ static func restore_result(encoded: String) -> Dictionary:
 	for key in ["draws","index"]:
 		if result.has(key):result[key]=int(result[key])
 	for key in result.get("cost",{}):result.cost[key]=int(result.cost[key])
+	if result.get("operation")=="material_exchange":
+		for key in ["amount","source_after","target_after"]:result[key]=int(result[key])
+		for key in result.received:result.received[key]=int(result.received[key])
 	return result
 
 static func error(reason: String) -> Dictionary:

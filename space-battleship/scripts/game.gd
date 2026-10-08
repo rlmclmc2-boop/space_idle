@@ -1956,6 +1956,12 @@ func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
 		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
 	return claimed
 
+func hyperspace_material_exchange_quote(source:String,target:String,amount:Variant)->Dictionary:
+	return hyperspace.material_exchange_quote(self,source,target,amount)
+
+func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
+	return hyperspace.exchange_materials(self,request)
+
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
 		return false
