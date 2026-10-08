@@ -441,7 +441,12 @@ func icon_for(key: String) -> Texture2D:
 
 func card_level_text(entry: Dictionary, category: String, active: bool) -> String:
 	var level := UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})
-	if category!="weapons" or not active or str(entry.get("key","")) not in BattleGame.WEAPON_KEYS:return level
+	if not active or str(entry.get("key",""))=="":return level
+	if category=="defence":
+		var defence: Dictionary = host.db.equip(str(entry.key),int(entry.level))
+		if int(defence.get("dmgtype",-1)) not in [1,2] or host.game.enhancement_branches.resistance(host.game,entry,float(host.db.config.dmgReduce))<=0:return level
+		return UIText.t("equipment.card_defence_context",{"level":level,"type":UIText.t("equipment.energy" if int(defence.dmgtype)==1 else "equipment.physical")})
+	if category!="weapons" or str(entry.key) not in BattleGame.WEAPON_KEYS:return level
 	var row: Dictionary = host.game.player_weapon_row(entry)
 	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
 

@@ -16146,9 +16146,16 @@
   },
   {
     "key": "weapon.card_beam_expected",
-    "text": "逐次期望",
+    "text": "起始伤害",
     "params": "",
     "category": "weapon",
-    "note": "持续光束静态单次期望，未计持续锁定增伤，不是整轮总伤害"
+    "note": "持续光束未叠持续锁定增伤的单次平均值，不是整轮总伤害"
+  },
+  {
+    "key": "equipment.card_defence_context",
+    "text": "{level} 抗{type}",
+    "params": "level,type",
+    "category": "equipment",
+    "note": "已装备且真实抗性大于零的防御类型；零抗性不标"
   }
 ]

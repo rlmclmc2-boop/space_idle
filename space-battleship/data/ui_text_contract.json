@@ -8651,6 +8651,12 @@
     },
     "weapon.card_beam_expected": {
       "params": []
+    },
+    "equipment.card_defence_context": {
+      "params": [
+        "level",
+        "type"
+      ]
     }
   },
   "bindings": {
