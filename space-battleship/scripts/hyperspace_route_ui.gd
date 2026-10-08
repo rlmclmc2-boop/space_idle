@@ -132,6 +132,8 @@ func refresh() -> void:
  var work=float(background.get("work",0.0));var task_duration=float(background.get("duration",0.0))
  var pending=str(background.get("status",""))=="completed_pending"
  panel.put(claim_background_button,"visible",pending)
+ # A retained paused task is described by paused_info, not the empty live receipt.
+ panel.put(background_status,"visible",not paused)
  panel.put(background_status,"text",t("layer_task_pending") if pending else (t("layer_idle_work",{"work":"%.1f"%work,"duration":"%.1f"%task_duration}) if not background.is_empty() else t("layer_idle_none")))
  panel.put(progress,"visible",not background.is_empty())
  panel.put(progress,"value",100.0 if pending else clampf(100.0*work/maxf(0.001,task_duration),0.0,100.0))
