@@ -15567,8 +15567,8 @@
   },
   {
     "key": "crew.preview.scientist",
-    "text": "确认后每{interval}秒按正常费用花铁，建造{amount}并均分到研发；买不起时等待。",
-    "params": "interval,amount",
+    "text": "确认后每{interval}秒按正常费用消耗{resources}，建造{amount}并均分到研发；买不起时等待。",
+    "params": "interval,resources,amount",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
   },

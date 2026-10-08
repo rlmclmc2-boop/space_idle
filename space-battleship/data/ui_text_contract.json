@@ -8333,6 +8333,7 @@
     "crew.preview.scientist": {
       "params": [
         "interval",
+        "resources",
         "amount"
       ]
     },

@@ -518,7 +518,11 @@ func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
 	var mode:=str(item.get("upgradeMode","1"))
 	if kind=="AUTO_UPGRADE":
 		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)
-	elif kind=="AUTO_SCIENTIST":values.amount=g.crew.upgrade_mode_text(mode,kind)
+	elif kind=="AUTO_SCIENTIST":
+		values.amount=g.crew.upgrade_mode_text(mode,kind)
+		var resources:=PackedStringArray()
+		for id in g.scientist_cost():resources.append(UIText.data_text("resources",str(id)))
+		values.resources="、".join(resources)
 	return UIText.t("crew.preview."+key,values)
 
 func refresh_actions() -> void:
