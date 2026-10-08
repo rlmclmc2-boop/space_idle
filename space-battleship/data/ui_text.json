@@ -15557,5 +15557,40 @@
     "params": "{slot},{quality},{weapon},{level}",
     "category": "hyperspace",
     "note": "替换候选显示槽位、品质和装备，避免同名同等级无人机混淆"
+  },
+  {
+    "key": "crew.preview.equipment",
+    "text": "确认后每{interval}秒按正常费用花铁，让各装备位{amount}；买不起的先跳过。",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.scientist",
+    "text": "确认后每{interval}秒按正常费用花铁，建造{amount}并均分到研发；买不起时等待。",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.enhancement",
+    "text": "确认后每{interval}秒按正常费用花强化碎片升1级；碎片不足时等待。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.reactor",
+    "text": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.maximum",
+    "text": "升到当前买得起的等级",
+    "params": "",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
   }
 ]

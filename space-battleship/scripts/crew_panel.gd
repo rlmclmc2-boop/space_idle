@@ -19,6 +19,7 @@ var upgrade_picker: OptionButton
 var mode_ids: Array[String] = []
 var assign_button: Button
 var assignment_reason: Label
+var assignment_preview: Label
 var release_button: Button
 var job_ids: Array = []
 var target_ids: Array = []
@@ -182,6 +183,8 @@ func setup(owner_ui: Node) -> void:
 	target_picker.item_selected.connect(func(_index):refresh_actions())
 	upgrade_picker=picker(parameter_column)
 	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index],job_ids[jobs.selected]))
+	assignment_preview=label(assignment_section,"",20,MUTED)
+	assignment_preview.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var buttons:=HBoxContainer.new()
 	buttons.add_theme_constant_override("separation",24)
 	assignment_section.add_child(buttons)
@@ -504,6 +507,20 @@ func refresh_detail_status(item: Dictionary) -> void:
 		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":"%.1f" % (value*100)})
 	host.set_ui_value(description,"text",text)
 
+func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
+	var kind:=str(row.get("effectType",""))
+	var key: String={"AUTO_UPGRADE":"equipment","AUTO_SCIENTIST":"scientist","AUTO_COMBINE":"enhancement","AUTO_REACTOR":"reactor"}.get(kind,"")
+	if key.is_empty() or jobs.selected<0:return ""
+	var g=host.game
+	var value: float=g.crew.effect_value(g,{"crewId":item.crewId,"assignmentType":job_ids[jobs.selected]})
+	if value<=0:return ""
+	var values: Dictionary={"interval":"%.1f" % (float(row.interval)/value)}
+	var mode:=str(item.get("upgradeMode","1"))
+	if kind=="AUTO_UPGRADE":
+		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)
+	elif kind=="AUTO_SCIENTIST":values.amount=g.crew.upgrade_mode_text(mode,kind)
+	return UIText.t("crew.preview."+key,values)
+
 func refresh_actions() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
@@ -530,6 +547,9 @@ func refresh_actions() -> void:
 		upgrade_picker.set_meta("effect_type",str(row.get("effectType","")))
 	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(str(item.get("upgradeMode",""))))
 	host.set_ui_value(upgrade_picker,"disabled",item.is_empty())
+	var preview: String=assignment_preview_text(item,row)
+	host.set_ui_value(assignment_preview,"text",preview)
+	host.set_ui_value(assignment_preview,"visible",not preview.is_empty())
 	var valid:=jobs.selected>=0 and target_picker.selected>=0
 	var space_reserved:=hyperspace_reserved(selected)
 	host.set_ui_value(assignment_reason,"visible",space_reserved)

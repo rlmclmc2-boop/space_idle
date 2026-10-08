@@ -8323,6 +8323,31 @@
         "weapon",
         "level"
       ]
+    },
+    "crew.preview.equipment": {
+      "params": [
+        "interval",
+        "amount"
+      ]
+    },
+    "crew.preview.scientist": {
+      "params": [
+        "interval",
+        "amount"
+      ]
+    },
+    "crew.preview.enhancement": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.preview.reactor": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.preview.maximum": {
+      "params": []
     }
   },
   "bindings": {
