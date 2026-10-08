@@ -298,6 +298,9 @@ func save_filter() -> void:
  if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")+"\n"+filter_policy_summary(rule)
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
+ # Ordinary proficiency/adaptation counters do not change drone base details,
+ # equipment slots, inventory, or hyperspace totals. Other consumers still receive them.
+ if kind=="equipment_stats" and bool(_payload.get("counter_only",false)):return
  reward_feedback.on_event(kind,_payload)
  commands.exchange_ui.on_event(kind,_payload)
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:

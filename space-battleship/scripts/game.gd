@@ -3238,12 +3238,12 @@ func shared_enhancement_effect_count() -> int:
 func record_enhancement_attack() -> void:
 	profile.enhancementAttacks += 1
 	for key in WEAPON_KEYS:invalidate_equipment_counter(key)
-	event.emit("equipment_stats",{"category":"weapons"})
+	event.emit("equipment_stats",{"category":"weapons","counter_only":true})
 
 func record_enhancement_hit() -> void:
 	profile.enhancementHits += 1
 	for key in DEFENSE_KEYS:invalidate_equipment_counter(key)
-	event.emit("equipment_stats",{"category":"defence"})
+	event.emit("equipment_stats",{"category":"defence","counter_only":true})
 
 func enhancement_currency_changed() -> void:
 	save_dirty = true
