@@ -328,8 +328,6 @@ func _ready() -> void:
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
 		if not from_save_import:call_deferred("show_chrono_login_report")
-	elif OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
-		call_deferred("show_qa_tools")
 
 func show_chrono_login_report() -> void:
 	if is_instance_valid(chrono_login_dialog):
@@ -351,8 +349,6 @@ func show_chrono_login_report() -> void:
 	chrono_login_dialog.exclusive = true
 	var close_report := func():
 		chrono_login_dialog.queue_free()
-		if OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
-			call_deferred("show_qa_tools")
 	chrono_login_dialog.confirmed.connect(close_report)
 	chrono_login_dialog.canceled.connect(close_report)
 	add_child(chrono_login_dialog)
