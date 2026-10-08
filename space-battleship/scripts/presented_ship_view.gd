@@ -444,9 +444,10 @@ func set_accelerated_quality(enabled: bool) -> void:
 	if accelerated_quality == enabled:return
 	accelerated_quality = enabled
 	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
-	world.get_node("KeyLight").shadow_enabled = not enabled
+	body_baker.request_shadow_sync()
 
 
 func set_rendering(enabled: bool, paused := false) -> void:
 	visible = enabled
+	if enabled: body_baker.request_shadow_sync()
 	viewport.render_target_update_mode = (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled else SubViewport.UPDATE_DISABLED
