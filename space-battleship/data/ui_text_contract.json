@@ -8921,6 +8921,31 @@
         "before",
         "after"
       ]
+    },
+    "planet.shipyard_ready_hint": {
+      "params": []
+    },
+    "planet.shipyard_built_hint": {
+      "params": []
+    },
+    "planet.reforge_next_planet": {
+      "params": []
+    },
+    "planet.reforge_reward_details": {
+      "params": []
+    },
+    "planet.reforge_rule_details": {
+      "params": []
+    },
+    "planet.reforge_gain_brief": {
+      "params": [
+        "rewards"
+      ]
+    },
+    "planet.reforge_start_brief": {
+      "params": [
+        "level"
+      ]
     }
   },
   "bindings": {

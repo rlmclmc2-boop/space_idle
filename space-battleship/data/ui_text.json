@@ -16640,5 +16640,54 @@
     "params": "name,before,after",
     "category": "enhance",
     "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "planet.shipyard_ready_hint",
+    "text": "船坞已建好。点「启用」后可查看重铸内容，再决定是否开始新一轮。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.shipyard_built_hint",
+    "text": "点「重铸新舰」先查看本次永久变化和保留对象，再决定是否开始新一轮。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_next_planet",
+    "text": "开放下一颗可探索星球；到达对应关卡后解锁。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_reward_details",
+    "text": "全部永久变化",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_rule_details",
+    "text": "重置与保留详情",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_gain_brief",
+    "text": "带进下一轮：{rewards}",
+    "params": "rewards",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_start_brief",
+    "text": "从第{level}关重新出发；本轮成长与异空间材料重置，铁、铀和时空粒子保留。",
+    "params": "level",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
   }
 ]

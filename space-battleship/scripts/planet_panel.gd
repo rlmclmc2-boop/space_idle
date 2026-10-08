@@ -735,7 +735,7 @@ func _refresh_facility_dialog() -> void:
 	var numeric := kind in ["refinery", "equipment"]
 	host.set_ui_value(facility_dialog, "title", str(row.name))
 	host.set_ui_value(facility_title, "text", str(row.name))
-	host.set_ui_value(facility_description, "text", str(row.des))
+	host.set_ui_value(facility_description, "text", UIText.t("planet.shipyard_ready_hint") if kind=="shipyard" and status=="ready" else UIText.t("planet.shipyard_built_hint") if kind=="shipyard" and built else str(row.des))
 	host.set_ui_value(facility_icon, "texture", Art.facility(kind))
 	host.set_ui_value(facility_effect_heading, "text", UIText.t("planet.effect.current" if built else "planet.effect.after_build"))
 	if numeric:
@@ -834,7 +834,9 @@ func _confirm_reforge(id: String) -> void:
 	var rewards: Array=host.game.db.data.get("planet_buff",{}).values().filter(func(row):return str(int(row.planet_id))==id and str(row.source)=="conquer")
 	rewards.sort_custom(func(a,b):return float(a.order)<float(b.order) if a.order!=b.order else int(a.id)<int(b.id))
 	var descriptions: PackedStringArray=[]
-	for row in rewards:descriptions.append(host.game.planet_buffs.description(row))
+	for row in rewards:
+		if str(row.buff_type)=="planet_unlock" and not host.game.planet_unlocked(str(int(row.value))):descriptions.append(UIText.t("planet.reforge_next_planet"))
+		else:descriptions.append(host.game.planet_buffs.description(row))
 	dialog.setup(host.game,id,"\n".join(descriptions))
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)

@@ -38,5 +38,19 @@ func run()->void:
  check(planet.facility_status.text.contains("142/180 次探索") and planet.facility_status.text.contains(UIText.t("planet.builder_choice_hint")),"Construction dialog gives progress unit and equal-builder choice basis")
  state.status="built";planet._refresh_facility_dialog()
  check(not planet.facility_status.text.contains(UIText.t("planet.builder_choice_hint")),"Completed facility omits obsolete construction instructions")
+ check(planet.facility_description.text==UIText.t("planet.shipyard_built_hint"),"Built shipyard teaches the currently available action")
+ var d=preload("res://scripts/drone_rewards.gd").create_drone(g.rng,g.hyperspace.config,"first-use-retain","white","laser",6,"1")
+ g.profile.hyperspace.unlocked_drones=true;g.profile.hyperspace.inventory.drones[d.id]=d;g.profile.hyperspace.inventory.warehouse.append(d.id)
+ snapshot=JSON.stringify(g.profile);rng_state=g.rng.state
+ planet.facility_dialog.hide()
+ planet._confirm_reforge("1")
+ var dialog=planet.get_children().filter(func(child):return child.get_script()==preload("res://scripts/hyperspace_reforge_dialog.gd")).back()
+ check(dialog.reward_brief.text.contains("+35") and dialog.reward_brief.text.contains("+25") and dialog.feedback.text.contains("第5关"),"Reforge draft puts authoritative permanent gains and restart point beside retention")
+ check(dialog.rewards_text.contains(UIText.t("planet.reforge_next_planet")) and not dialog.rewards_text.contains(str(g.planet_row("2").name)),"Unopened next planet is described without revealing its identity")
+ check(dialog.rules_text.contains(UIText.t("planet.reforge_confirm_basic",{"level":5})) and dialog.rules_text.contains(UIText.t("planet.reforge_drones")),"Detailed reset and retention rules remain available for active lookup")
+ dialog.choices[d.id].button_pressed=true
+ check(dialog.selected==[d.id] and JSON.stringify(g.profile)==snapshot and g.rng.state==rng_state,"Draft retention selection leaves the live save and RNG unchanged")
+ dialog.canceled.emit();await process_frame
+ check(JSON.stringify(g.profile)==snapshot,"Canceling first-view draft applies no reforge")
  print("Later first use: ",checks," checks, ",failures," failures")
  scene.queue_free();await process_frame;quit(1 if failures else 0)
