@@ -14,6 +14,13 @@ var missile_attacks:=0
 func reset() -> void:
 	delayed.clear();disabled.clear();rebuild_bonus=0.0;rebuild_stacks=0;dodge_cooldown=0.0
 	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;missile_attacks=0
+func restore_disabled(g,reason: String) -> void:
+	if disabled.is_empty():return
+	var restored: Array=disabled.duplicate()
+	disabled.clear()
+	# Only availability ends here; existing rebuild bonuses/stacks keep their rule.
+	g.invalidate_stat_cache()
+	g.event.emit("hyperspace_drone_restored",{"drone_ids":restored,"reason":reason})
 func effect(g,key: String) -> Dictionary:
 	if g.profile.hyperspace.inventory.equipped.is_empty():return {}
 	return g.hyperspace_totals().legendary.get(key,{})

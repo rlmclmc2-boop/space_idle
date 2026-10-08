@@ -717,8 +717,8 @@ func combat_weapon_entries() -> Array:
 
 func drone_weapon_entry(d: Dictionary) -> Dictionary:
 	var maximum:=1
-	for entry in module_entries("weapons"):
-		if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
+	for entry in weapon_entries():
+		if not str(entry.get("key","")).is_empty():maximum=maxi(maximum,int(entry.level))
 	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
@@ -1845,6 +1845,7 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if next != State.COMBAT:drone_combat.restore_disabled(self,"state_exit")
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and p.get("endless",false) and not p.get("repeated",false)))
 	if next == State.TRAVEL:
@@ -2039,6 +2040,7 @@ func is_boss_encounter() -> bool:
 	return encounter_tier() in ["boss","ultimate"]
 
 func spawn_group(keep_distance := false) -> void:
+	drone_combat.restore_disabled(self,"wave_start")
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
 	if manual_hyperspace.active and manual_hyperspace.reward_binder!=null:
@@ -2839,6 +2841,7 @@ func tick(dt: float) -> void:
 	tick_projectiles(dt)
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 	if state == State.COMBAT and not has_alive_enemy():
+		drone_combat.restore_disabled(self,"wave_clear")
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
 				guard_engaged = false

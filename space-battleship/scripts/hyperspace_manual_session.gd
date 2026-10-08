@@ -134,6 +134,7 @@ func finish(g,success: bool,reason: String="failed") -> bool:
 	return_journey={};return_state={};base_db=null
 	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.groupIndex)}
 	Return.restore(g,frozen,point)
+	g.drone_combat.restore_disabled(g,"scene_return")
 	# A pending reward no longer owns a suspended main state after it has returned.
 	if not g.profile.hyperspace.active.is_empty():
 		g.profile.hyperspace.active.return_journey={};g.profile.hyperspace.active.return_state={}
