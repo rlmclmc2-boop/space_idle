@@ -1,0 +1,1 @@
+PASS: validate_planets live/alternate value and invalid cases; XLSX projection and all old cells/JSON fields unchanged

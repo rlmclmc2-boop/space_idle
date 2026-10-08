@@ -25,3 +25,13 @@
 Python检查当前/不同有效系数、非法系数拒绝、工作簿投影、原有全部单元格及JSON字段保持一致；UI合同2270条有效，crew_panel Godot --check-only退出0，diff检查通过。检查文件随交接保存。首次局部夹具选Lv1000000时误期待60秒基准能小于1毫秒（实为约1.2毫秒），保留失败日志；改用Lv2000000这个正确的亚毫秒边界，保留原断言和容差，没有改游戏规则迎合断言。XLSX最初用openpyxl保存使原空字符串读回None，已改成原ZIP/XML只追加两行，原单元格完全一致。
 
 没有最新界面截图或GUI验收声明；旧原进程仍是6e9c0d5。父最终集成检查船员说明和核心实际加成。旧用户存档未编辑；跨云通过本工作分支和提交取补丁，私有完整检查点仍保留原位置。
+
+## 追加：星球重铸永久幸运（07:27决定）
+
+船员源码检查点06d197b已推独立分支。追加planet_buff.xlsx六行，ID36–41对应星球1–6：source=conquer、condition=conquered、buff_type=luck、target=all、value=100、stack=add、order=7。各行value可配置，说明模板“永久幸运 +{value}”。FIELDS映射luck:all→hyperspace_luck；BUG取planet_buffs.totals(g).get("hyperspace_luck",0)与crew.hyperspace_luck合计。没有加玩家存档字段、重复计数或改game.gd；既有conquered真值包括旧存档会直接派生一次，每个星球原can_reforge只允许未conquered时成功重铸。
+
+planet_panel现有重铸确认奖励、汇总文字和永久奖励卡使用planet_buffs.description(row)代入真实配置value，幸运卡归永久组。旧buff没有该占位符，显示文本保持原样；数值逻辑不读取说明文本。导入校验注册luck/all并要求conquer/conquered/add及非负整数value，保留原校验。
+
+追加领域夹具：未重铸0；旧形态conquered星球1得100，20次重复totals不改profile或加倍；两星球200，六星球600；第一项配置125后总625且说明为“永久幸运 +125”；纯JSON读回原标记仍625。工作簿原38行及JSON原字段保持一致，新六行投影一致。validate_planets实际/不同值和非法target/source/condition/stack/value拒绝检查通过；首次Python探针误调用validate_crew未覆盖星球校验，随后使用正确validate_planets重新通过，没有修改断言或业务迎合错误探针。planet_panel Godot4.6.3 --check-only退出0，diff检查通过。
+
+仍无新增GUI画面或实机重铸声明。幸运抽样、两种奖励来源的快照、全局+船员合计与后台多轮均待父整合BUG核心验收；本线程不碰drone_rewards/hyperspace_commands/game.gd。

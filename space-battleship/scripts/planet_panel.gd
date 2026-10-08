@@ -355,7 +355,7 @@ func bonus_text(id: String) -> String:
 		if str(row.type) in ["refinery", "equipment"]:
 			description += "\n" + UIText.t("planet.build_effect", {"mult":GrowthNumber.text(g.planet_buildings.building_multiplier(g,id,row))})
 		lines.append(description)
-	for row in g.planet_buffs.rows(g,id):lines.append(str(row.des))
+	for row in g.planet_buffs.rows(g,id):lines.append(g.planet_buffs.description(row))
 	return "\n\n".join(lines) if not lines.is_empty() else UIText.t("planet.bonuses_empty")
 
 # Dialog controls are created once; keyed effect rows survive refresh and planet switches.
@@ -436,8 +436,10 @@ func _refresh_bonus_dialog() -> void:
 		var mult = g.planet_buildings.building_multiplier(g, id, row) if numeric else 1
 		entries.append({"key":"building:" + str(row.id), "group":"production" if numeric else "exploration", "title":UIText.t("planet.effect." + kind) if numeric else str(row.name), "metric":_multiplier_percent(mult) if numeric else UIText.t("planet.effect.active"), "kind":kind, "detail":str(row.des) + ("\n" + UIText.t("planet.build_effect", {"mult":GrowthNumber.text(mult)}) if numeric else "")})
 	for row in g.planet_buffs.rows(g, id):
-		var display := _description_metric(str(row.des)) if str(row.buff_type) in ["level_bonus", "free_charge"] else [str(row.des), ""]
-		entries.append({"key":"buff:" + str(int(row.id)), "group":"permanent" if str(row.buff_type) in ["level_bonus", "free_charge"] else "exploration", "title":display[0], "metric":display[1], "kind":"", "detail":str(row.des)})
+		var text: String=g.planet_buffs.description(row)
+		var permanent := str(row.buff_type) in ["level_bonus", "free_charge", "luck"]
+		var display := _description_metric(text) if permanent else [text, ""]
+		entries.append({"key":"buff:" + str(int(row.id)), "group":"permanent" if permanent else "exploration", "title":display[0], "metric":display[1], "kind":"", "detail":text})
 	var wanted := {}
 	var groups := {}
 	for entry in entries:
@@ -831,7 +833,7 @@ func _confirm_reforge(id: String) -> void:
 	var rewards: Array=host.game.db.data.get("planet_buff",{}).values().filter(func(row):return str(int(row.planet_id))==id and str(row.source)=="conquer")
 	rewards.sort_custom(func(a,b):return float(a.order)<float(b.order) if a.order!=b.order else int(a.id)<int(b.id))
 	var descriptions: PackedStringArray=[]
-	for row in rewards:descriptions.append(str(row.des))
+	for row in rewards:descriptions.append(host.game.planet_buffs.description(row))
 	dialog.setup(host.game,id,"\n".join(descriptions))
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)

@@ -583,12 +583,14 @@ def validate_planets(data):
             raise ValueError(f'planet_buff {id}: unsupported source or condition')
         if row['condition']=='building_complete' and str(row['source_id']) not in data.get('planet_build', {}):
             raise ValueError(f'planet_buff {id}: unknown building')
-        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('level_bonus','enhancement'),('crew_exp_share','all'),('planet_unlock','planet')):
+        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('level_bonus','enhancement'),('crew_exp_share','all'),('planet_unlock','planet'),('luck','all')):
             raise ValueError(f'planet_buff {id}: unsupported buff target')
         if row['stack'] not in ('add','mul','max'):
             raise ValueError(f'planet_buff {id}: unsupported stack')
         if row['buff_type']=='crew_exp_share' and (row['stack']!='max' or row['value'] not in (0,1)):
             raise ValueError(f'planet_buff {id}: crew_exp_share requires max and 0/1')
+        if row['buff_type']=='luck' and (row['stack']!='add' or row['source']!='conquer' or row['condition']!='conquered' or isinstance(row['value'],bool)):
+            raise ValueError(f'planet_buff {id}: luck requires conquest and additive numeric value')
         for key in ('value','order'):positive(row[key],f'planet_buff {id} {key}',True)
         if row['order'] != int(row['order']) or (row['buff_type'] != 'free_charge' and row['stack'] != 'mul' and row['value'] != int(row['value'])):
             raise ValueError(f'planet_buff {id}: expected integer level/order')
