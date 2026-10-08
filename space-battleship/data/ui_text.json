@@ -16521,5 +16521,26 @@
     "params": "",
     "category": "hyperspace",
     "note": "改造对象选择模式的取消入口"
+  },
+  {
+    "key": "hyperspace.omen_on_action",
+    "text": "预兆已开启 · 点击关闭",
+    "params": "",
+    "category": "hyperspace",
+    "note": "独立改造按钮状态"
+  },
+  {
+    "key": "hyperspace.action_available",
+    "text": "可操作",
+    "params": "",
+    "category": "hyperspace",
+    "note": "独立改造按钮状态"
+  },
+  {
+    "key": "hyperspace.action_guaranteed_cost",
+    "text": "保底：点击核算累计消耗",
+    "params": "",
+    "category": "hyperspace",
+    "note": "独立改造按钮状态"
   }
 ]

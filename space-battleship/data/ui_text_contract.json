@@ -8863,6 +8863,15 @@
     },
     "hyperspace.forge_pick_cancel": {
       "params": []
+    },
+    "hyperspace.omen_on_action": {
+      "params": []
+    },
+    "hyperspace.action_available": {
+      "params": []
+    },
+    "hyperspace.action_guaranteed_cost": {
+      "params": []
     }
   },
   "bindings": {
