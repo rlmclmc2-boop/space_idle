@@ -8697,6 +8697,26 @@
     },
     "enhance.candidate.delayed_damage": {
       "params": []
+    },
+    "equipment.refit_comparison": {
+      "params": [
+        "current",
+        "current_stat",
+        "current_type",
+        "level",
+        "next",
+        "next_stat",
+        "next_type"
+      ]
+    },
+    "equipment.refit_resistance": {
+      "params": [
+        "type",
+        "percent"
+      ]
+    },
+    "equipment.refit_empty": {
+      "params": []
     }
   },
   "bindings": {

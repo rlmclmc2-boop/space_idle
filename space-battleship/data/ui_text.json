@@ -124,13 +124,13 @@
   },
   {
     "key": "enhance.overview.proficiency",
-    "text": "攻击越多，伤害越高 · 历史增伤 +{value}%",
+    "text": "攻击越多，伤害越高 · 当前加成 +{value}%",
     "params": "{value}",
     "category": "enhance"
   },
   {
     "key": "enhance.overview.adaptation",
-    "text": "受击越多，防御越强 · 历史增幅 +{value}%",
+    "text": "受击越多，防御越强 · 当前加成 +{value}%",
     "params": "{value}",
     "category": "enhance"
   },
@@ -172,13 +172,13 @@
   },
   {
     "key": "enhance.description.proficiency.runtime",
-    "text": "适用武器的历史增伤为 {bonus}%，以本件武器强化前伤害为基准；已启用 A 分支固定增伤 {branch}% 另乘。全局累计主攻击 {count} 次。持续锁定的短时增长见分支。",
+    "text": "适用武器的当前伤害加成为 {bonus}%，以本件武器强化前伤害为基准；已启用 A 分支固定增伤 {branch}% 另乘。全局累计主攻击 {count} 次。持续锁定的短时增长见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
   {
     "key": "enhance.description.adaptation.runtime",
-    "text": "适用防御模块的历史增幅为 {bonus}%，以本模块强化前最大防御为基准；已启用 A 分支固定增幅 {branch}% 另乘。全局累计受击 {count} 次。其他减伤与护罩见分支。",
+    "text": "适用防御模块的当前防御加成为 {bonus}%，以本模块强化前最大防御为基准；已启用 A 分支固定增幅 {branch}% 另乘。全局累计受击 {count} 次。其他减伤与护罩见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
@@ -16231,5 +16231,23 @@
     "text": "把部分伤害延后承受",
     "params": "",
     "category": "enhance"
+  },
+  {
+    "key": "equipment.refit_comparison",
+    "text": "当前：{current}\n{current_stat} · {current_type}\n换装后（Lv.{level}）：{next}\n{next_stat} · {next_type}",
+    "params": "{current},{current_stat},{current_type},{level},{next},{next_stat},{next_type}",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_resistance",
+    "text": "抗{type} {percent}%",
+    "params": "{type},{percent}",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_empty",
+    "text": "无装配",
+    "params": "",
+    "category": "equipment"
   }
 ]
