@@ -13610,7 +13610,7 @@
   },
   {
     "key": "hyperspace.hanging_name.hyperspace_charge",
-    "text": "异空间充能",
+    "text": "异空间采集器",
     "params": "",
     "category": "hyperspace"
   },
@@ -15667,5 +15667,12 @@
     "params": "efficiency,luck",
     "category": "crew",
     "note": "已派遣异空间船员的等级效果；幸运只影响该路线探索奖励词缀品阶，核心负责抽样"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_material_income",
+    "text": "常规异空间材料产出（究极核心除外）",
+    "params": "",
+    "category": "hyperspace",
+    "note": "保留hyperspace_charge存档ID，材料采集效果替代能量恢复/容量"
   }
 ]

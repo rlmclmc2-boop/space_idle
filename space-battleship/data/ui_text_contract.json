@@ -8397,6 +8397,9 @@
         "efficiency",
         "luck"
       ]
+    },
+    "hyperspace.module_effect.hyperspace_material_income": {
+      "params": []
     }
   },
   "bindings": {

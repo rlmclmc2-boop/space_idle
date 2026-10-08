@@ -1,0 +1,4 @@
+PASS: read_bundle two authoritative workbooks; config matches committed JSON; all other projected outputs unchanged.
+PASS: scale/probability invalid-value rejection and alternate valid parameters.
+PASS: old material/cost/core fields unchanged, workbook targeted-cell audit passed.
+No gameplay/GUI execution or acceptance claimed.
