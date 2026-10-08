@@ -28,6 +28,11 @@ func run() -> void:
 		DirAccess.remove_absolute("res://data/.import_state.json")
 	change_scene_to_file("res://main.tscn")
 	await scene_changed
+	await process_frame
+	check(root.get_node_or_null("QATools")==null,"Startup does not open QA automatically")
+	var open_qa := InputEventKey.new()
+	open_qa.keycode=KEY_F1;open_qa.pressed=true
+	current_scene._unhandled_input(open_qa)
 	await wait_for(func():return root.has_node("QATools"))
 	var panel = root.get_node("QATools")
 	var panel_id: int = panel.get_instance_id()

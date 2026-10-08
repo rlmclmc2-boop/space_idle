@@ -10,6 +10,12 @@ uniform float near_speed = 90.0;
 uniform float density = 1.0;
 uniform float mid_opacity = 0.16;
 uniform float fog_opacity = 0.22;
+uniform float hyperspace = 0.0;
+uniform sampler2D route_atlas : source_color, filter_linear, repeat_disable;
+uniform vec2 route_origin = vec2(0.0);
+// Slow, pause-aware motion is evaluated once by the caller, not per pixel.
+uniform vec2 scene_motion = vec2(0.0);
+varying vec2 scenery_uv;
 varying vec2 local_pos;
 varying float radius;
 varying float tail;
@@ -17,6 +23,9 @@ varying float opacity;
 varying float layer;
 
 void vertex() {
+	// Atlas gutters are created by sampling an inset, not by rebuilding art.
+	// Motion stays inside that inset, including bilinear filtering at seams.
+	scenery_uv = route_origin + (vec2(0.025) + UV*0.95 + scene_motion*0.008)*0.5;
 	float seed = COLOR.r;
 	layer = COLOR.a < 0.5 ? -1.0 : (seed > 0.965 ? 1.0 : (seed > 0.87 ? 2.0 : 0.0));
 	radius = seed * 1.25;
@@ -33,12 +42,26 @@ void vertex() {
 }
 void fragment() {
 	if (layer < 0.0) {
-		// Low-frequency periodic fog drifts without a visible wrap seam or TIME.
-		vec2 p = UV * vec2(3.0,5.0);
-		p.y -= flight_time * far_speed / 960.0;
-		float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
-		float haze = pow(clamp(cloud*0.5+0.5,0.0,1.0),3.0);
-		COLOR = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
+		vec4 fog = vec4(0.0);
+		if (hyperspace < 1.0) {
+			// Low-frequency periodic fog drifts without a wrap seam or TIME.
+			vec2 p = UV * vec2(3.0,5.0);
+			p.y -= flight_time * far_speed / 960.0;
+			float cloud = sin(p.x*1.7+sin(p.y*1.3))*sin(p.y*0.8+p.x*0.4);
+			float haze = clamp(cloud*0.5+0.5,0.0,1.0);
+			// Same cubic density curve; no general-purpose fragment pow.
+			haze = haze*haze*haze;
+			fog = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
+		}
+		COLOR = fog;
+		if (hyperspace > 0.0) {
+			float presence = smoothstep(0.0,1.0,hyperspace);
+			// All environment detail is baked into the fixed ImageGen atlas.
+			vec4 destination = vec4(texture(route_atlas,scenery_uv).rgb*0.52,0.94);
+			// Mix premultiplied colors, then restore straight alpha for blend_mix.
+			float alpha = mix(fog.a,destination.a,presence);
+			COLOR = vec4(mix(fog.rgb*fog.a,destination.rgb*destination.a,presence)/max(alpha,0.0001),alpha);
+		}
 	} else if (layer == 1.0) {
 		vec2 p = local_pos / radius;
 		float shape = max(abs(p.x)*0.85+abs(p.y)*0.4,abs(p.y));

@@ -7,7 +7,8 @@ static func empty_reward() -> Dictionary:
 
 static func material_amount(c: Dictionary,level: int) -> int:
 	var base:=int(c.material_base_reward)+maxi(0,level-int(c.material_reward_start_level))/int(c.material_reward_level_step)
-	return floori(float(base)*float(c.get("material_reward_multiplier",1.0)))
+	var amount:=float(base)*float(c.get("material_reward_multiplier",1.0))*float(c.get("material_unit_scale",10))
+	return floori(amount) if C.number(amount) and amount>=0 else -1
 
 static func affix(rng: RandomNumberGenerator,c: Dictionary,weapon: String,forced_key: String="") -> Dictionary:
 	var weights: Dictionary={}
@@ -45,10 +46,54 @@ static func create_drone(rng: RandomNumberGenerator,c: Dictionary,id: String,qua
 	d.forge_rng_state=str(private_rng.state)
 	return d
 
+# Luck uses a receipt-owned stream, leaving quality/count/type and forge seeds untouched.
+static func lucky_tier(rng:RandomNumberGenerator,weights:Dictionary,extra:int)->int:
+	var tiers:Array=weights.keys();tiers.sort_custom(func(a,b):return int(a)<int(b))
+	var total:=0.0
+	for tier in tiers:total+=float(weights[tier])
+	var draw:=rng.randf();var remaining:=total
+	for tier in tiers:
+		var before:=pow(remaining/total,extra)
+		remaining=maxf(0.0,remaining-float(weights[tier]))
+		var chance:=before-pow(remaining/total,extra)
+		draw-=chance
+		if draw<0:return int(tier)
+	return int(tiers.back())
+
+static func apply_luck(drone:Dictionary,c:Dictionary,luck:float,state:String)->void:
+	if luck<=0 or drone.is_empty():return
+	var rng:=R.restore(state)
+	for entry in drone.affixes:
+		var extra:=floori(luck/100.0)
+		var remainder:=fposmod(luck,100.0)/100.0
+		if remainder>0 and rng.randf()<remainder:extra+=1
+		if extra==0:continue
+		var weights:Dictionary={}
+		for tier in c.tier_weights:
+			if c.affixes[entry.key].ranges.has(tier):weights[tier]=c.tier_weights[tier]
+		var tier:=mini(int(entry.tier),lucky_tier(rng,weights,extra))
+		if tier==int(entry.tier):continue
+		entry.tier=tier
+		entry.value=R.quantized(rng,c.affixes[entry.key].ranges[str(tier)],float(c.value_precision))
+
+static func quality_weights(c:Dictionary)->Dictionary:
+	var probability:=float(c.get("ultimate_core_probability",0.002))
+	if not C.number(probability) or probability<0 or probability>1:return {}
+	var weights:Dictionary=c.quality_weights.duplicate();var total:=0.0
+	for key in weights:
+		if key!="ultimate_core":total+=float(weights[key])
+	if total<=0:return {}
+	for key in weights:
+		if key!="ultimate_core":weights[key]=(1.0-probability)*float(weights[key])/total
+	weights.ultimate_core=probability
+	return weights
+
 static func generate(s: Dictionary,c: Dictionary,request: Dictionary,planet_id: String) -> Dictionary:
 	if c.policies.core_reward not in ["exclusive","additional"]:return {"error":"core_reward_policy_required"}
 	var rng:=R.restore(s.random_state)
-	var outcome:=R.weighted(rng,c.quality_weights)
+	var normalized:=quality_weights(c)
+	if normalized.is_empty():return {"error":"invalid_core_probability"}
+	var outcome:=R.weighted(rng,normalized)
 	var reward:=empty_reward()
 	if outcome=="ultimate_core":
 		reward.ultimate_cores=1
@@ -57,7 +102,9 @@ static func generate(s: Dictionary,c: Dictionary,request: Dictionary,planet_id: 
 			outcome=R.weighted(rng,weights)
 	if outcome!="ultimate_core":
 		reward.drone=create_drone(rng,c,"space:%d:%d"%[int(request.round_id),int(request.run_id)],outcome,c.routes[request.route].weapon,int(request.level),planet_id)
+	apply_luck(reward.drone,c,float(request.get("luck",0.0)),str(request.get("luck_state","0")))
 	var amount:=material_amount(c,int(request.level))
+	if amount<0:return {"error":"material_value_limit"}
 	reward.materials[c.routes[request.route].material]=int(amount)
 	return {"error":"","reward":reward,"random_state":str(rng.state)}
 
@@ -70,7 +117,7 @@ static func dismantle(d: Dictionary,c: Dictionary,rng: RandomNumberGenerator) ->
 		var key: String=keys[rng.randi_range(0,keys.size()-1)]
 		drops[key]=int(drops.get(key,0))+1
 	var route: String=c.routes.keys().filter(func(key):return c.routes[key].weapon==d.weapon)[0]
-	return {"materials":{c.routes[route].material:amount},"hanging_rewards":drops}
+	return {"materials":{c.routes[route].material:amount*int(c.get("material_unit_scale",10))},"hanging_rewards":drops}
 
 static func module_progress(c: Dictionary) -> Dictionary:
 	var result: Dictionary={}

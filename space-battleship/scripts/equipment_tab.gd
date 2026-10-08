@@ -1,6 +1,7 @@
 extends Control
 ## Module projection; growth and equipment remain authoritative in BattleGame.
 const Card = preload("res://scripts/equipment_card.gd")
+var style_tiles := preload("res://scripts/equipment_style_tiles.gd").new()
 var host: Node
 var cards: Dictionary = {}
 var items: Dictionary = {}
@@ -26,7 +27,7 @@ var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {}
 var selected_next_stat = 0.0
 var detail_dirty := true
-var details_open := true
+var details_open := false
 var footer: Panel
 var footer_title: Label
 var footer_buttons: Dictionary = {}
@@ -50,10 +51,19 @@ var detail_scroll: ScrollContainer
 var detail_frame: Panel
 var detail_body: Control
 var detail_actions: GridContainer
+var new_weapon: Button
+var new_weapon_dismiss: Button
+var new_weapon_id := ""
+var category_picker: OptionButton
 
 func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
 	return UIText.t(key)
+
+func module_card_id(category: String, index: int) -> String:
+	# Stored modules keep their own identity when a smaller hull makes them dormant.
+	# Combat slot IDs may instead identify drones beyond the active weapon count.
+	return "%s_%d" % [category,index]
 
 func equipment_choices(category: String,index: int = -1) -> Array:
 	if host.game.slot_equipment_locked(category,index):return ["armour"]
@@ -81,19 +91,15 @@ func select_box(parent: Control, rect: Rect2, keys: Array, callback: Callable) -
 	parent.add_child(box)
 	return box
 
+# Other pages reuse this public skin helper. Keep their vector styling intact.
 func panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = fill
-	box.border_color = edge
-	box.set_border_width_all(3)
-	box.set_corner_radius_all(radius)
-	box.shadow_color = Color(0.02,0.05,0.08,0.35)
-	box.shadow_size = 3
-	box.shadow_offset = Vector2(0,3)
-	box.set_content_margin_all(12)
-	return box
+	return style_tiles.native_style(fill,edge,radius)
 
-func skin_button(button: Button, primary := false) -> void:
+func textured_panel_style(fill: Color, edge := NAVY, radius := 16) -> StyleBoxTexture:
+	return style_tiles.panel_style(fill,edge,radius)
+
+# Shared callers retain the original vector skin; equipment opts in explicitly.
+func skin_button(button: Button, primary := false, textured := false) -> void:
 	button.add_theme_font_override("font",host.font)
 	button.add_theme_font_size_override("font_size",20)
 	for state in ["normal","hover","pressed","disabled"]:
@@ -101,30 +107,32 @@ func skin_button(button: Button, primary := false) -> void:
 		if state=="hover":fill=fill.lightened(0.13)
 		if state=="pressed":fill=fill.darkened(0.12)
 		if state=="disabled":fill=Color("8b9a9e")
-		button.add_theme_stylebox_override(state,panel_style(fill))
-	button.add_theme_stylebox_override("focus",panel_style(Color.TRANSPARENT,TEAL,14))
+		button.add_theme_stylebox_override(state,textured_panel_style(fill) if textured else panel_style(fill))
+	button.add_theme_stylebox_override("focus",textured_panel_style(Color.TRANSPARENT,TEAL,14) if textured else panel_style(Color.TRANSPARENT,TEAL,14))
 	button.add_theme_color_override("font_color",NAVY)
 	button.add_theme_color_override("font_hover_color",NAVY)
 	button.add_theme_color_override("font_focus_color",NAVY)
 	button.add_theme_color_override("font_pressed_color",NAVY)
 	button.add_theme_color_override("font_disabled_color",NAVY)
 
-func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false) -> Button:
+func action_button(parent: Control, text_key: String, action_id: String, callback: Callable, primary := false, parameters: Dictionary = {}) -> Button:
 	var button := Button.new()
-	button.text = UIText.t(text_key)
+	button.text = UIText.t(text_key,parameters)
 	button.set_meta("action_id",action_id)
 	button.custom_minimum_size = Vector2(120,48)
-	skin_button(button,primary)
+	skin_button(button,primary,true)
 	button.pressed.connect(callback)
 	parent.add_child(button)
 	return button
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
+	style_tiles.name="EquipmentStyleTiles"
+	add_child(style_tiles)
 	var backdrop := Panel.new()
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	backdrop.add_theme_stylebox_override("panel",panel_style(Color("304c60")))
+	backdrop.add_theme_stylebox_override("panel",textured_panel_style(Color("304c60")))
 	add_child(backdrop)
 	total = label(self,"",Rect2(24,16,1250,42),27,PAPER)
 	summary = label(self,UIText.t("equipment.refit_hint"),Rect2(24,58,1230,32),20,Color("bedbdc"))
@@ -142,8 +150,17 @@ func setup(owner_ui: Node) -> void:
 	filters = Control.new()
 	filters.position = Vector2(0,0)
 	toolbar.add_child(filters)
-	var category_box := select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
-	skin_button(category_box)
+	category_picker = select_box(filters,Rect2(512,0,210,48),["equipment.all","weapon.tab","defense.tab"],func(i):category_filter=i; apply_filters())
+	skin_button(category_picker,false,true)
+	new_weapon = action_button(toolbar,"equipment.new_weapon","new_weapon",show_new_weapon,true,{"weapon":""})
+	new_weapon.position = Vector2(746,0)
+	new_weapon.size = Vector2(370,48)
+	new_weapon.add_theme_font_size_override("font_size",18)
+	new_weapon_dismiss = action_button(toolbar,"equipment.new_weapon_dismiss","dismiss_new_weapon",dismiss_new_weapon)
+	new_weapon_dismiss.position = Vector2(1126,0)
+	new_weapon_dismiss.custom_minimum_size.x = 76
+	new_weapon_dismiss.size = Vector2(76,48)
+	new_weapon_dismiss.add_theme_font_size_override("font_size",18)
 	grid_scroll = ScrollContainer.new()
 	grid_scroll.name = "EquipmentGrid"
 	grid_scroll.position = Vector2(22,165)
@@ -171,7 +188,7 @@ func setup(owner_ui: Node) -> void:
 		else:grid_defence=category_grid
 	empty = label(self,UIText.t("equipment.empty"),Rect2(40,220,840,32),20,PAPER)
 	footer = Panel.new()
-	footer.add_theme_stylebox_override("panel",panel_style(Color("dae4df")))
+	footer.add_theme_stylebox_override("panel",textured_panel_style(Color("dae4df")))
 	add_child(footer)
 	footer_title = label(footer,"",Rect2(18,14,560,42),22,NAVY)
 	var footer_actions := HBoxContainer.new()
@@ -188,7 +205,7 @@ func setup(owner_ui: Node) -> void:
 func build_detail() -> void:
 	detail_frame = Panel.new()
 	detail_frame.name = "EquipmentInspectorFrame"
-	detail_frame.add_theme_stylebox_override("panel",panel_style(PAPER))
+	detail_frame.add_theme_stylebox_override("panel",textured_panel_style(PAPER))
 	add_child(detail_frame)
 	detail_scroll = ScrollContainer.new()
 	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -210,7 +227,7 @@ func build_detail() -> void:
 	detail.primary = label(detail_body,"",Rect2(18,104,540,36),24,NAVY)
 	detail.status = label(detail_body,"",Rect2(18,145,540,30),19,NAVY)
 	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],choose_equipment)
-	skin_button(detail.slots,true)
+	skin_button(detail.slots,true,true)
 	detail.equip = action_button(detail_body,"equipment.confirm_free","equip_confirm",confirm_equipment,true)
 	detail.equip.position = Vector2(18,254)
 	detail.equip.size = Vector2(535,52)
@@ -226,12 +243,16 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
-	detail.more = action_button(detail_body,"equipment.attributes.hide","toggle_stats",toggle_details)
+	detail.more = action_button(detail_body,"equipment.attributes.show","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
 	detail.more.size = Vector2(535,48)
 	detail.stats = label(detail_body,"",Rect2(18,608,535,300),20,NAVY)
 	detail.stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.stats.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	detail.stats.hide()
+	detail.basics = label(detail_body,"",Rect2(18,608,535,180),20,NAVY)
+	detail.basics.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail.basics.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	detail.stats.resized.connect(update_detail_height)
 	detail_frame.hide()
 
@@ -264,7 +285,7 @@ func layout_contents() -> void:
 
 func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
-	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount)
+	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount,true)
 	var quotes := {}
 	for id in items:
 		update_card_cost(items[id],quotes)
@@ -308,11 +329,67 @@ func open_picker(id: String) -> void:
 	if cards.has(id) and not cards[id].name_button.disabled:
 		cards[id].name_button.show_popup()
 
+func refresh_new_weapon() -> void:
+	new_weapon_id = ""
+	for id in host.game.unread_tutorial_unlocks():
+		var row: Dictionary = host.db.data.unlock.get(id,{})
+		var key := str(row.get("target",""))
+		if row.get("type","")!="equipment" or (not BattleGame.WEAPON_KEYS.has(key) and not BattleGame.DEFENSE_KEYS.has(key)) or int(row.get("level",0))<=0:continue
+		if not host.game.content_unlocked("equipment",key):continue
+		var category := "weapons" if BattleGame.WEAPON_KEYS.has(key) else "defence"
+		if host.game.module_entries(category).any(func(entry):return str(entry.key)==key):continue
+		if discovery_target(category).is_empty():continue
+		new_weapon_id = id
+		break
+	host.set_ui_value(new_weapon,"visible",not new_weapon_id.is_empty())
+	host.set_ui_value(new_weapon_dismiss,"visible",not new_weapon_id.is_empty())
+	if not new_weapon_id.is_empty():
+		var key := str(host.db.data.unlock[new_weapon_id].target)
+		host.set_ui_value(new_weapon,"text",UIText.t("equipment.new_weapon",{"weapon":str(host.NAMES.get(key,key))}))
+
+func discovery_target(category: String) -> String:
+	if items.has(selected) and items[selected].category==category and not items[selected].locked and not items[selected].get("refit_locked",false):return selected
+	for index in host.game.active_slot_count(category):
+		if not host.game.slot_equipment_locked(category,index):return module_card_id(category,index)
+	return ""
+
+func show_new_weapon() -> void:
+	var id := new_weapon_id
+	if id.is_empty():return
+	var key := str(host.db.data.unlock.get(id,{}).get("target",""))
+	var target_slot: String = discovery_target("weapons" if BattleGame.WEAPON_KEYS.has(key) else "defence")
+	if not cards.has(target_slot) or not cards[target_slot].equipment_options.has(key):return
+	category_filter = 0
+	category_picker.select(0)
+	apply_filters()
+	grid_scroll.ensure_control_visible(cards[target_slot])
+	select_item(target_slot)
+	open_picker(target_slot)
+	if cards[target_slot].name_button.get_popup().visible:
+		host.game.read_tutorial_unlock(id)
+		refresh_new_weapon()
+
+func dismiss_new_weapon() -> void:
+	if new_weapon_id.is_empty():return
+	host.game.read_tutorial_unlock(new_weapon_id)
+	refresh_new_weapon()
+
+func read_tried_equipment(key: String) -> void:
+	if not BattleGame.WEAPON_KEYS.has(key) and not BattleGame.DEFENSE_KEYS.has(key):return
+	var id: String = host.db.unlock_id("equipment",key)
+	if not id.is_empty():host.game.read_tutorial_unlock(id)
+
+func refit_equipment(category: String, index: int, key: String) -> void:
+	var previous_key := str(host.game.slot_entry(category,index).get("key",""))
+	var succeeded: bool = host.game.unequip_slot(category,index) if key.is_empty() else host.game.equip_slot(category,index,key)
+	if succeeded:
+		read_tried_equipment(previous_key)
+		read_tried_equipment(key)
+
 func change_card_equipment(id: String, key: String) -> void:
 	if not items.has(id) or items[id].locked:return
 	var item: Dictionary = items[id]
-	if key.is_empty():host.game.unequip_slot(item.category,int(item.index))
-	else:host.game.equip_slot(item.category,int(item.index),key)
+	refit_equipment(item.category,int(item.index),key)
 	refresh(id)
 
 func choose_equipment(index: int) -> void:
@@ -346,13 +423,14 @@ func get_action_anchor(action: String, slot_id := "") -> Control:
 func toggle_details() -> void:
 	details_open = not details_open
 	host.set_ui_value(detail.stats,"visible",details_open)
+	host.set_ui_value(detail.basics,"visible",not details_open)
 	host.set_ui_value(detail.more,"text",UIText.t("equipment.attributes.hide" if details_open else "equipment.attributes.show"))
 	update_detail_height()
 
 func update_detail_height(force := false) -> void:
 	if not is_instance_valid(detail_body):return
 	if not force and not detail_frame.is_visible_in_tree():return
-	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else 604.0
+	var bottom: float = detail.stats.position.y+maxf(detail.stats.size.y,detail.stats.get_minimum_size().y) if details_open else detail.basics.position.y+maxf(detail.basics.size.y,detail.basics.get_minimum_size().y)
 	host.set_ui_value(detail_body,"custom_minimum_size",Vector2(570,bottom+24))
 
 func icon_for(key: String) -> Texture2D:
@@ -360,6 +438,17 @@ func icon_for(key: String) -> Texture2D:
 		var path := "res://assets/ui/equipment/%s.svg" % (("cartoon_"+key) if key in BattleGame.EQUIPMENT else key)
 		icons[key] = load(path) if ResourceLoader.exists(path) else null
 	return icons[key]
+
+func card_level_text(entry: Dictionary, category: String, active: bool) -> String:
+	var level := UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})
+	if not active or str(entry.get("key",""))=="":return level
+	if category=="defence":
+		var defence: Dictionary = host.db.equip(str(entry.key),int(entry.level))
+		if int(defence.get("dmgtype",-1)) not in [1,2] or host.game.enhancement_branches.resistance(host.game,entry,float(host.db.config.dmgReduce))<=0:return level
+		return UIText.t("equipment.card_defence_context",{"level":level,"type":UIText.t("equipment.energy" if int(defence.dmgtype)==1 else "equipment.physical")})
+	if category!="weapons" or str(entry.key) not in BattleGame.WEAPON_KEYS:return level
+	var row: Dictionary = host.game.player_weapon_row(entry)
+	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
 
 func equipment_item(category: String, index: int) -> Dictionary:
 	var entry: Dictionary = host.game.module_entry(category,index)
@@ -371,11 +460,11 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
-	return {"id":host.game.slot_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
-		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
+	return {"id":module_card_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
+		"cardLevelText":card_level_text(entry,category,active),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
-		"slots":[index],"mainStatLabel":UIText.t("weapon.expected_damage" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
+		"slots":[index],"mainStatLabel":UIText.t(("weapon.card_beam_expected" if key=="longLaser" else "weapon.expected_damage") if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
 
@@ -404,7 +493,7 @@ func refresh_slots(changed: Array) -> void:
 	var quotes := {}
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
-			var id: String = host.game.slot_id(category,index)
+			var id: String = module_card_id(category,index)
 			if changed.is_empty() or dirty or changed.has(id) or not items.has(id):
 				items[id] = equipment_item(category,index)
 				stats_dirty.erase(id)
@@ -428,6 +517,7 @@ func refresh_slots(changed: Array) -> void:
 	dirty = false
 	observed_resources = host.game.profile.resources.duplicate()
 	refresh_total()
+	refresh_new_weapon()
 	if structure_changed:layout_contents()
 	apply_filters()
 	if detail_changed:refresh_detail()
@@ -435,6 +525,7 @@ func refresh_slots(changed: Array) -> void:
 
 func refresh_pending() -> void:
 	if not is_visible_in_tree():return
+	refresh_new_weapon()
 	if dirty:
 		refresh()
 	elif observed_resources!=host.game.profile.resources:
@@ -469,7 +560,9 @@ func refresh_stats() -> void:
 				selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
 			else:detail_dirty=true
 			selected_changed = selected_changed or projection_changed
-		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed:continue
+		var context := card_level_text(entry,item.category,not item.locked)
+		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed and context==item.cardLevelText:continue
+		item.cardLevelText=context
 		item.projection=projection
 		item.tooltip=module_tooltip(entry,("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2),host.NAMES.get(item.key,UIText.t("equipment.vacant")),projection)
 		item.mainStatNumber = value
@@ -601,7 +694,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	host.set_ui_value(detail.status,"text",UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
+	host.set_ui_value(detail.status,"text",UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)
@@ -622,17 +715,23 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.description,"text",item.description)
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
+	var row: Dictionary = (host.game.player_weapon_row(entry) if category=="weapons" else host.db.equip(key,int(entry.level))) if not key.is_empty() else {}
+	var basic_text := ""
+	if not row.is_empty():
+		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":host.number(float(row.cd))})
+		else:basic_text=UIText.t("equipment.current_reduction",{"percent":host.number(float(host.db.config.dmgReduce)*100)})
+		basic_text+="\n"+equipment_attributes(entry,false)
+	host.set_ui_value(detail.basics,"text",basic_text)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)
 
 func change_equipment(key: String) -> void:
 	if not items.has(selected):return
 	var category: String = items[selected].category
-	if key.is_empty():host.game.unequip_slot(category,selected_slot)
-	else:host.game.equip_slot(category,selected_slot,key)
+	refit_equipment(category,selected_slot,key)
 	refresh(selected)
 
-func equipment_attributes(entry: Dictionary) -> String:
+func equipment_attributes(entry: Dictionary, include_enhancement := true) -> String:
 	var key: String = entry.key
 	var row: Dictionary = host.db.equip(key,int(entry.level))
 	var lines: Array[String] = []
@@ -646,7 +745,7 @@ func equipment_attributes(entry: Dictionary) -> String:
 		"shield":fields=[["recovery_percent",float(row.para2)*100],["recovery_delay",float(row.para3)]]
 	for field in fields:
 		lines.append(UIText.t("equipment.attribute",{"label":equipment_text("attribute."+str(field[0])),"value":host.number(float(field[1]))}))
-	if host.game.enhancement_unlocked():
+	if include_enhancement and host.game.enhancement_unlocked():
 		lines.append(UIText.t("enhance.equipment_slots",{"count":host.game.available_effect_count(entry)}))
 		if is_instance_valid(host.enhancement_panel):
 			for effect in host.game.enhancement_effects(entry):

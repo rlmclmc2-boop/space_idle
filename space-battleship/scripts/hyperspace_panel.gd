@@ -12,6 +12,9 @@ var manual_adapter: Callable
 var manual_ready_provider: Callable
 var manual_projection: Dictionary={}
 var manual_snapshot_reads=0
+var reward_feedback=preload("res://scripts/hyperspace_reward_feedback.gd").new()
+var route_ui=preload("res://scripts/hyperspace_route_ui.gd").new()
+var equipment_ui=preload("res://scripts/hyperspace_equipment_ui.gd").new()
 var exit_button: Button
 var manual_reason: Label
 var recent_result: Label
@@ -42,15 +45,19 @@ var route="alpha"
 var section_index=0
 var section_buttons: Array[Button]=[]
 var sections: Array[Control]=[]
+var exploration_scroll: ScrollContainer
+var exploration_receipt_area: VBoxContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
 var cards: Array[Button]=[]
+var module_manage: Button
 var card_icons: Array[TextureRect]=[]
 var card_titles: Array[Label]=[]
 var card_subtitles: Array[Label]=[]
 var card_flags: Array[Label]=[]
 var level: SpinBox
+var level_choice_hint: Label
 var energy: Label
 var energy_bar: ProgressBar
 var best: Label
@@ -86,6 +93,7 @@ var forge_title: Label
 var forge_details: Label
 var forge_icon: TextureRect
 var routes: Array[Button]=[]
+var route_markers:Array[Label]=[]
 var commands=preload("res://scripts/hyperspace_commands.gd").new()
 var filter_enabled: CheckBox
 var filter_action: OptionButton
@@ -99,8 +107,8 @@ func put(control: Object,key: StringName,value: Variant) -> void:
 func label(parent: Node,text: String,font_size=22) -> Label:
  var n=Label.new();n.text=text;n.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  n.add_theme_font_size_override("font_size",font_size);n.add_theme_color_override("font_color",Color("243d50"));parent.add_child(n);return n
-func button(parent: Node,key: String,action: Callable) -> Button:
- var n=Button.new();n.text=t(key);n.custom_minimum_size=Vector2(116,44)
+func button(parent: Node,key: String,action: Callable,params:Dictionary={}) -> Button:
+ var n=Button.new();n.text=t(key,params);n.custom_minimum_size=Vector2(116,44)
  preload("res://scripts/dialog_presentation.gd").button_skin(n,false)
  parent.add_child(n);n.pressed.connect(action);return n
 func row(parent: Node) -> HBoxContainer:
@@ -115,12 +123,15 @@ func thumbnail(parent: Node,width: float) -> TextureRect:
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
- host=owner;commands.setup(self)
- manual_adapter=func(selected_route,selected_level):
-  if not host.game.request_hyperspace(selected_route,selected_level):status.text=t("command_failed")
- manual_ready_provider=func():return bool(manual_projection.get("manual_ready",false))
+ host=owner;commands.setup(self);route_ui.setup(self)
+ reward_feedback.setup(self)
+ equipment_ui.setup(self)
+ manual_adapter=func(selected_route,_selected_level):
+  if host.game.has_method("start_hyperspace_challenge"):return host.game.start_hyperspace_challenge(selected_route)
+  return false
+ manual_ready_provider=func():return str(route_ui.view().get("reasons",{}).get("challenge","unavailable")).is_empty()
  refresh_manual_status()
- crew_adapter=commands.show_crew
+ crew_adapter=route_ui.show_crew
  hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
  preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
  affix_catalog_provider=func():return host.game.hyperspace.config.affixes.keys()
@@ -133,24 +144,38 @@ func setup(owner) -> void:
  var tabs=row(root_box)
  for key in ["section_explore","section_drones","section_forge","section_rules"]:
   var index=section_buttons.size();var b=button(tabs,key,func():select_section(index));b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;section_buttons.append(b)
+ exploration_receipt_area=box(root_box,4);exploration_receipt_area.visible=false
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
-  var content=VBoxContainer.new();content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);content.add_theme_constant_override("separation",14);stack.add_child(content);sections.append(content)
- build_exploration(sections[0]);build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
+  var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
+  if i==0:
+   exploration_scroll=ScrollContainer.new();exploration_scroll.name="ExplorationScroll"
+   exploration_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+   exploration_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+   exploration_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+   exploration_scroll.follow_focus=true;stack.add_child(exploration_scroll)
+   content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;exploration_scroll.add_child(content)
+   sections.append(exploration_scroll);build_exploration(content)
+  else:
+   content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
+ build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
  host.game.event.connect(on_event);visibility_changed.connect(func():
   if is_visible_in_tree():refresh())
  select_section(0);set_process(true);refresh()
 func select_section(index: int) -> void:
  section_index=clampi(index,0,3)
+ if section_index>1 and host!=null and not bool(host.game.profile.hyperspace.unlocked_drones):section_index=0
  for i in 4:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
  if host!=null and not bag.is_empty():refresh()
+ reward_feedback.sync_receipt_area()
+ if section_index==2 and commands!=null:commands.configure_operation()
 func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
  var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",14);grid.add_theme_constant_override("v_separation",14);parent.add_child(grid)
  for key in host.game.hyperspace.config.routes:
-  var b=button(grid,str(key),func():route=str(key);refresh_status());b.text="";b.custom_minimum_size.y=140;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+  var b=button(grid,str(key),func():route=str(key);refresh_status());b.set_meta("route",str(key));b.text="";b.custom_minimum_size.y=140;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   var margin=MarginContainer.new();margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
   for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,14)
   margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(margin)
@@ -159,23 +184,16 @@ func build_exploration(parent: Node) -> void:
   var text=box(content,10);text.mouse_filter=Control.MOUSE_FILTER_IGNORE
   label(text,t(str(key)),25).mouse_filter=Control.MOUSE_FILTER_IGNORE
   label(text,t("route_reward",{"material":t(config.material)}),20).mouse_filter=Control.MOUSE_FILTER_IGNORE
+  var marker=label(text,"",18);marker.mouse_filter=Control.MOUSE_FILTER_IGNORE;marker.visible=false;route_markers.append(marker)
   routes.append(b)
- var levels=row(parent);var title=label(levels,t("level"));title.custom_minimum_size.x=160;title.autowrap_mode=TextServer.AUTOWRAP_OFF
- level=SpinBox.new();level.min_value=5;level.max_value=5;level.step=1;level.custom_minimum_size.x=160;levels.add_child(level);input_skin(level.get_line_edit());level.value_changed.connect(func(_v):refresh_status())
- var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
- label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
- label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
- var commands=row(parent);start_button=button(commands,"queue_start",start_manual);cancel_queue_button=button(commands,"queue_cancel",func():host.game.cancel_hyperspace_request();refresh_progress());cancel_queue_button.visible=false;exit_button=button(commands,"exit_manual",func():host.game.begin_retreat();refresh());exit_button.visible=false;crew_button=button(commands,"crew",func():
-  if crew_adapter.is_valid():crew_adapter.call())
- queue_departure_hint=label(parent,t("queue_departure_hint"),20);queue_departure_hint.visible=false
- manual_reason=label(parent,"",20)
- recent_result=label(parent,"",20);recent_result.visible=false
- resource_reference_hint=label(parent,"",20);label(parent,t("auto_hint"),20)
- first_win=label(parent,t("first_win"),22)
+ route_ui.build(parent)
+ first_win=label(parent,t("layer_first_win"),22)
+ reward_feedback.build(exploration_receipt_area)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
- drone_locked=label(parent,t("first_win"),24)
+ drone_locked=label(parent,t("layer_drone_locked"),24)
  inventory_box=box(parent);inventory_box.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ equipment_ui.build(inventory_box)
  var split=row(inventory_box);split.size_flags_vertical=Control.SIZE_EXPAND_FILL
  var list=box(split);list.size_flags_stretch_ratio=1.55
  var selectors=row(list);weapon_filter=option(selectors);weapon_filter.add_item(t("all"))
@@ -203,7 +221,7 @@ func build_inventory(parent: Node) -> void:
  label(detail,t("selected_heading"),25)
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
- equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));button(actions,"module_manage",commands.show_modules)
+ equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
@@ -277,27 +295,36 @@ func import_filter_draft() -> void:
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")
+ if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")+"\n"+filter_policy_summary(rule)
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
- if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state"]:
+ reward_feedback.on_event(kind,_payload)
+ commands.exchange_ui.on_event(kind,_payload)
+ if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
+  if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
+   if commands.materials_box!=null and commands.materials_box.is_visible_in_tree():
+    commands.refresh_materials.call_deferred()
   if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
 func _process(_delta: float) -> void:
  if not is_visible_in_tree():return
  if dirty:refresh()
- if section_index==0:refresh_progress()
+ reward_feedback.mark_viewed()
+ if section_index==0:route_ui.tick(_delta)
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
+ for i in [2,3]:put(section_buttons[i],"visible",bool(s.unlocked_drones))
+ if section_index>1 and not bool(s.unlocked_drones):select_section(0);return
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
-  refresh_manual_status()
+  refresh_manual_status(section_index!=0 or bag.is_empty())
  elif dirty and bag.presets!=s.inventory.presets:
   bag.presets=s.inventory.presets.duplicate(true);inventory_dirty=true
  if section_index==0:
   put(first_win,"visible",not bool(s.unlocked_drones));refresh_status();refresh_progress()
  elif section_index==1:
+  put(capacity,"visible",bool(s.unlocked_drones));put(budgets,"visible",bool(s.unlocked_drones))
   put(inventory_box,"visible",bool(s.unlocked_drones));put(drone_locked,"visible",not bool(s.unlocked_drones))
   if inventory_dirty:refresh_list()
   else:refresh_details()
@@ -309,68 +336,12 @@ func refresh() -> void:
  dirty=false
 func refresh_status() -> void:
  if host==null:return
- var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
- put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
- put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
- var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(h.online_config(g).energy_cap),"ticket":"%.0f"%ticket}))
- var best_time=float(h.best_x1(g,route,int(level.value)))
- put(best,"text",t("best",{"time":"%.2f s"%best_time if best_time>0 else t("none")}))
- refresh_start_reason()
- put(crew_button,"disabled",not crew_adapter.is_valid());put(crew_button,"tooltip_text","" if crew_adapter.is_valid() else t("adapter"))
-
- for i in routes.size():skin_selection(routes[i],str(h.config.routes.keys()[i])==route)
+ route_ui.refresh()
+ for i in routes.size():skin_selection(routes[i],str(host.game.hyperspace.config.routes.keys()[i])==route)
 func refresh_start_reason() -> void:
- var reason=""
- var g=host.game;var h=g.hyperspace;var s:Dictionary=g.profile.hyperspace
- if not manual_ready():reason=manual_error_text()
- elif not g.manual_hyperspace.queued.is_empty():reason=t("queue_already")
- elif not s.active.is_empty():reason=t("manual_busy")
- elif not h.eligible_level(g,route,int(level.value)):reason=t("manual_level_unavailable")
- elif float(s.energy)<float(h.config.ticket):reason=t("manual_energy_needed",{"ticket":"%.0f"%float(h.config.ticket)})
- var explanation=reason
- if reason.is_empty() and g.manual_hyperspace.queue_error=="invalid_main_return":explanation=t("queue_failed_invalid_main_return")
- put(start_button,"disabled",not reason.is_empty());put(start_button,"tooltip_text",explanation)
- put(manual_reason,"visible",not explanation.is_empty());put(manual_reason,"text",explanation)
-func display_ticket(s: Dictionary) -> float:
- if not s.active.is_empty():return float(s.active.ticket)
- var h=host.game.hyperspace
- if s.auto.enabled:return float(h.auto_quote(0.0,h.Permission.crew_level(host.game,str(s.auto.crew_id))).ticket)
- return float(h.config.ticket)
+ route_ui.refresh()
 func refresh_progress() -> void:
- var s: Dictionary=host.game.profile.hyperspace;var a: Dictionary=s.active
- var text=t("auto_waiting") if s.auto.enabled else t("auto_stopped");var fill=0.0
- var effective=host.game.hyperspace.online_config(host.game)
- if s.auto.enabled and a.is_empty():
-  if s.blocked:text=t("auto_waiting_warehouse")
-  elif host.game.hyperspace.auto_eligible(host.game) and float(s.energy)<float(effective.energy_cap):text=t("auto_waiting_energy")
- var session=host.game.manual_hyperspace
- var result:Dictionary=session.last_result
- put(recent_result,"visible",not result.is_empty())
- if result.get("reason","")=="interrupted_reload":
-  put(recent_result,"text",t("recent_interrupted_refund",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"refund":"%.0f"%float(result.refund)}))
- elif not result.is_empty():
-  put(recent_result,"text",t("recent_result",{"weapon":t(host.game.hyperspace.config.routes[result.route].weapon),"level":str(result.level),"reason":t("result_"+str(result.reason)),"elapsed":"%.1f"%float(result.elapsed),"point":str(result.end_point),"refund":"%.0f"%float(result.refund),"stage":str(result.return_stage),"main_point":str(result.return_point)}))
- put(cancel_queue_button,"visible",not session.queued.is_empty())
- put(queue_departure_hint,"visible",not session.queued.is_empty())
- if not session.queued.is_empty():
-  var waiting=session.boundary_reason(host.game)
-  text=t("queue_wait",{"weapon":t(host.game.hyperspace.config.routes[session.queued.route].weapon),"level":str(int(session.queued.level)),"reason":t("queue_wait_"+waiting) if waiting in ["battle","guard","unlock","projectiles"] else t("queue_wait_ready")})
- elif not session.queue_error.is_empty():text=t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload","invalid_main_return","setup_failed"] else t("command_failed")
- if not a.is_empty():
-  if a.status=="completed_pending":text=t("blocked") if s.blocked else t("pending");fill=100.0
-  elif a.mode=="auto":
-   fill=100.0*float(a.work)/maxf(0.001,float(a.duration));text=t("progress",{"work":"%.1f"%float(a.work),"duration":"%.1f"%float(a.duration)})
-  else:text=t("manual")
-  if not session.queue_error.is_empty():text+="\n"+(t("queue_failed_"+session.queue_error) if session.queue_error in ["energy","busy","unavailable","round_changed","reload","invalid_main_return","setup_failed"] else t("command_failed"))
- put(status,"text",text);put(status,"modulate",Color("ff7979") if (s.blocked and s.auto.enabled) or (not a.is_empty() and a.status=="completed_pending") else Color("243d50"));put(progress,"value",fill)
- put(claim_button,"disabled",a.is_empty() or a.get("status")!="completed_pending")
- put(exit_button,"visible",host.game.manual_hyperspace.active)
- refresh_start_reason()
- # Energy is a scalar read: never duplicate the entire inventory in a frame update.
- put(energy_bar,"max_value",float(effective.energy_cap));put(energy_bar,"value",minf(float(s.energy),float(effective.energy_cap)))
- var ticket=display_ticket(s)
- put(energy,"text",t("energy",{"current":"%.0f"%float(s.energy),"cap":"%.0f"%float(effective.energy_cap),"ticket":"%.0f"%ticket}))
+ route_ui.refresh()
 func refresh_list() -> void:
  list_refreshes+=1
  var ids: Array=bag.warehouse+bag.overflow
@@ -395,11 +366,7 @@ func refresh_list() -> void:
  inventory_dirty=false
  put(previous,"disabled",page==0);put(next,"disabled",page==pages-1);put(page_label,"text",t("page",{"page":str(page+1),"pages":str(pages)}))
  put(capacity,"text",t("capacity",{"used":str(bag.warehouse.size()),"cap":str(Bag.capacity(bag,host.game.hyperspace.config)),"overflow":str(bag.overflow.size()),"retention":str(Bag.retention_capacity(bag,host.game.hyperspace.config))}))
- var legendary=0;var ultimate=0
- for id in bag.equipped:
-  legendary+=int(bag.drones[id].legendary);ultimate+=int(bag.drones[id].ultimate)
- var cap_text=str(hull_capacity_provider.call()) if hull_capacity_provider.is_valid() else "?"
- put(budgets,"text",t("budgets",{"equipped":str(bag.equipped.size()),"cap":cap_text,"legendary":str(legendary),"ultimate":str(ultimate)}));refresh_details()
+ refresh_details()
 func flags(id: String,d: Dictionary) -> String:
  var names: Array[String]=[]
  if d.legendary:names.append(t("legendary"))
@@ -416,21 +383,38 @@ func protection_flags(id: String) -> String:
   if p.drone_ids.has(id):names.append(t("preset"));break
  return " · ".join(names)
 func refresh_details() -> void:
+ put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
-  put(forge_details,"text",t("choose") if not valid else t("forge_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"slots":str(int(bag.drones[selected_id].hanging_slots)),"revision":str(int(bag.drones[selected_id].forge_revision))}))
+  put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
   forge_icon.call("apply",bag.drones[selected_id]) if valid else forge_icon.call("clear")
   return
  if section_index!=1:return
+ equipment_ui.refresh()
+ var g=host.game;var rare:Array[String]=[];var legendary=0;var ultimate=0;var has_legendary=false;var has_ultimate=false
+ for id in bag.drones:
+  has_legendary=has_legendary or bool(bag.drones[id].legendary);has_ultimate=has_ultimate or bool(bag.drones[id].ultimate)
+ for id in bag.equipped:
+  legendary+=int(bag.drones[id].legendary);ultimate+=int(bag.drones[id].ultimate)
+ if has_legendary:rare.append(t("rare_legendary_budget",{"used":str(legendary),"capacity":str(int(g.hyperspace.config.maximum_legendary))}))
+ if has_ultimate:rare.append(t("rare_ultimate_budget",{"used":str(ultimate),"capacity":str(int(g.hyperspace.config.maximum_ultimate))}))
+ put(budgets,"visible",not rare.is_empty());put(budgets,"text"," · ".join(rare))
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
  var gate=int(bag.sealed.get(selected_id,0))
  put(unseal,"disabled",not valid or gate<1 or int(host.game.profile.highestLevel)<gate)
  put(unseal,"tooltip_text",t("sealed_gate",{"level":str(gate)}) if gate>0 else "")
  var totals:Dictionary=host.game.hyperspace_totals()
- put(totals_summary,"text",t("totals_summary",{"affixes":str(totals.affixes.size()),"hangings":str(totals.hangings.size()),"damage":"%.1f"%((float(totals.damage)-1.0)*100.0)}))
+ var active_effects:Array[String]=[]
+ for key in totals.affixes:
+  if float(totals.affixes[key])!=0.0:active_effects.append(affix_name(str(key)))
+ for key in totals.hangings:
+  if float(totals.hangings[key])!=0.0:active_effects.append(hanging_name(str(key)))
+ for key in totals.legendary:active_effects.append(effect_name(str(key)))
+ put(totals_summary,"visible",not active_effects.is_empty())
+ put(totals_summary,"text",t("active_effects_summary",{"items":" · ".join(active_effects)}))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
  detail_icon.call("apply",bag.drones[selected_id]) if valid else detail_icon.call("clear")
@@ -440,7 +424,11 @@ func quality_caption(drone: Dictionary) -> String:
  return t("legendary")+(" · "+origin if drone.origin_quality!="legendary" else "") if drone.legendary else origin
 func drone_description(d: Dictionary) -> String:
  var protection=protection_flags(str(d.id))
- var lines: Array[String]=[t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")})]
+ var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
+ var fire_params={"interval":"%.2f"%float(row.cd)}
+ if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
+ var lines: Array[String]=[t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}),t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}),t("drone_fire_"+str(d.weapon),fire_params)]
+ lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
   var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
@@ -473,36 +461,35 @@ func hanging_name(key: String) -> String:
  if hanging_display_provider.is_valid():return str(hanging_display_provider.call(key))
  return catalog_name("hyperspace_hangings",key,"unknown_hanging")
 func toggle_equipped() -> void:
- if not hull_capacity_provider.is_valid():return
- var ids: Array=bag.equipped.duplicate()
- if ids.has(selected_id):ids.erase(selected_id)
- else:ids.append(selected_id)
- host.game.hyperspace.set_equipped(host.game,ids,int(hull_capacity_provider.call()))
+ equipment_ui.activate()
 func toggle_favorite() -> void:
  var ids: Array=bag.favorites.duplicate()
  if ids.has(selected_id):ids.erase(selected_id)
  else:ids.append(selected_id)
  host.game.hyperspace.set_favorites(host.game,ids)
 func claim() -> void:
- var a: Dictionary=host.game.profile.hyperspace.active
- if not a.is_empty():host.game.hyperspace.claim(host.game,int(a.round_id),int(a.run_id))
-func refresh_manual_status() -> void:
+ if host.game.has_method("claim_hyperspace"):
+  host.game.claim_hyperspace();dirty=true;route_ui.refresh()
+func refresh_manual_status(include_inventory:=true) -> void:
  # A route load/reload or inventory generation boundary may refresh this snapshot; progress never does.
- var projection:Dictionary=host.game.hyperspace.snapshot(host.game);manual_snapshot_reads+=1
- manual_projection={"manual_ready":projection.manual_ready,"manual_error":projection.manual_error}
- if generation!=int(projection.inventory.generation) or round_id!=int(projection.round_id) or bag.is_empty():
-  bag=projection.inventory;generation=int(bag.generation);round_id=int(projection.round_id);inventory_dirty=true
+ var g=host.game;var s:Dictionary=g.profile.hyperspace
+ manual_projection={"manual_ready":g.manual_hyperspace.production_accepted,"manual_error":g.manual_hyperspace.last_error}
+ if include_inventory and (generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty()):
+  bag=s.inventory.duplicate(true);manual_snapshot_reads+=1
+  generation=int(bag.generation);round_id=int(s.round_id);inventory_dirty=true
  dirty=true
 func manual_error_text() -> String:
  return t("manual_review_wait") if manual_projection.get("manual_error")=="space_data_not_accepted" else t("manual_not_ready")
 func manual_ready() -> bool:
  return manual_adapter.is_valid() and manual_ready_provider.is_valid() and manual_ready_provider.call()
 func start_manual() -> void:
- # The formal session validates route groups before it charges a ticket.
- if manual_ready():manual_adapter.call(route,int(level.value))
+ route_ui.act("start_hyperspace_challenge")
+func filter_policy_summary(rule:Dictionary) -> String:
+ var action=t("filter_action_"+str(rule.action))
+ return action if bool(rule.enabled) else t("filter_disabled")+" · "+action
 func preview_filter() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")}) if valid_draft(rule) else t("filter_string_invalid"))
+ put(filter_result,"text",t("filter_valid",{"count":str(rule.conditions.size()),"mode":t("filter_and") if rule.mode=="all" else t("filter_or")})+"\n"+filter_policy_summary(rule) if valid_draft(rule) else t("filter_string_invalid"))
 func build_filter_draft() -> void:
  var conditions: Array=[]
  for i in 5:

@@ -1,5 +1,7 @@
 extends Node2D
 
+var space_pause_held := false
+
 const BG := Color("080e1b")
 const PANEL := Color("101c2c")
 const LINE := Color("26384b")
@@ -197,6 +199,7 @@ var resource_layer: Node2D
 var overlay_layer: Node2D
 var enhancement_panel: Panel
 var beginner_guide: Control
+var enemy_defence_inspector: Control
 var chrono_login_dialog: AcceptDialog
 var save_panel: Control
 var save_confirmation_text: Label
@@ -254,8 +257,13 @@ func _ready() -> void:
 	if not game.startup_error.is_empty():
 		set_process(false);set_process_unhandled_input(false)
 		var problem := AcceptDialog.new()
-		problem.title = UIText.t("hyperspace.invalid_config_title")
-		problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
+		if game.startup_error=="invalid_progress_save":
+			problem.title = UIText.t("startup.invalid_progress_title")
+			problem.dialog_text = UIText.t("startup.invalid_progress_body")
+			problem.ok_button_text = UIText.t("startup.keep_save_ack")
+		else:
+			problem.title = UIText.t("hyperspace.invalid_config_title")
+			problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
 		add_child(problem);problem.popup_centered(Vector2i(900,420))
 		return
 	railgun_fx.configure(db)
@@ -296,6 +304,9 @@ func _ready() -> void:
 		music.play()
 	game.resume_progress()
 	build_ui()
+	enemy_defence_inspector = preload("res://scripts/enemy_defence_inspector.gd").new()
+	add_child(enemy_defence_inspector)
+	enemy_defence_inspector.setup(self)
 	if get_tree().has_meta("save_import_backup"):
 		var backup: String=get_tree().get_meta("save_import_backup")
 		get_tree().remove_meta("save_import_backup")
@@ -317,16 +328,16 @@ func _ready() -> void:
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
 		if not from_save_import:call_deferred("show_chrono_login_report")
-	elif OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
-		call_deferred("show_qa_tools")
 
 func show_chrono_login_report() -> void:
 	if is_instance_valid(chrono_login_dialog):
 		return
+	var amount := float(game.login_chrono_particles)
+	if amount <= 0.0:
+		return
 	var qa_tools := get_tree().root.get_node_or_null("QATools")
 	if qa_tools is Window and qa_tools.visible:
 		qa_tools.hide()
-	var amount := float(game.login_chrono_particles)
 	var display := str(int(amount)) if is_equal_approx(amount,roundf(amount)) else str(amount)
 	chrono_login_dialog = AcceptDialog.new()
 	chrono_login_dialog.name = "ChronoLoginDialog"
@@ -338,8 +349,6 @@ func show_chrono_login_report() -> void:
 	chrono_login_dialog.exclusive = true
 	var close_report := func():
 		chrono_login_dialog.queue_free()
-		if OS.has_feature("debug") and DisplayServer.get_name() != "headless" and not automation_args.has("--capture"):
-			call_deferred("show_qa_tools")
 	chrono_login_dialog.confirmed.connect(close_report)
 	chrono_login_dialog.canceled.connect(close_report)
 	add_child(chrono_login_dialog)
@@ -386,6 +395,7 @@ func show_qa_tools() -> void:
 	panel.show()
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:space_pause_held = false
 	if game == null:
 		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not background_unfocused:
@@ -533,6 +543,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				game.paused = not game.paused
 
 func _input(event: InputEvent) -> void:
+	# Space pauses after a mouse purchase; Enter still activates the focused button.
+	# Consume the release too, so GUI ui_accept cannot buy another upgrade.
+	if event is InputEventKey and event.keycode == KEY_SPACE:
+		if space_pause_held:
+			if not event.pressed:space_pause_held = false
+			get_viewport().set_input_as_handled()
+			return
+		var focus := get_viewport().gui_get_focus_owner()
+		if event.pressed and not event.echo and focus is Button and not focus is OptionButton and focus.get_window() == get_window():
+			if not (is_instance_valid(balance_lab) and balance_lab.visible):
+				space_pause_held = true
+				_unhandled_input(event)
+				get_viewport().set_input_as_handled()
+				return
 	# Motion may end on a GUI control after crossing exposed battlefield space.
 	if event is InputEventMouseMotion and is_instance_valid(battle_clip):
 		collect_render_path(event.position-event.relative,event.position)
@@ -1212,38 +1236,42 @@ func enemy_render_angle(enemy:Dictionary)->float:
 	var pose:=enemy_pose(enemy)
 	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 
-func enemy_component_pose(enemy:Dictionary,component)->Dictionary:
+# Supplied positions stay within one synchronous solve; no value survives it.
+func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
 	var point:Dictionary=component.hardpoint
-	var width:=enemy_render_width(enemy)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var width:=enemy_render_width_at_y(enemy,position.y)
 	var hull_angle:=enemy_render_angle(enemy)
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	var module_width:=width*0.42*class_scale
-	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(point.get("base_rotation",0)))
+	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot,position)+deg_to_rad(float(point.get("base_rotation",0)))
 	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
 	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
 	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
 
-func enemy_port_offset(enemy: Dictionary, index: int) -> Vector2:
+func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
 	var component=enemy_component_for_slot(enemy,index)
-	if component!=null:return enemy_component_pose(enemy,component).muzzle
+	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
 	# Unknown external configurations keep the previous logical mount fallback.
 	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
 	if point.is_empty():return Vector2.ZERO
-	var width:=enemy_render_width(enemy)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var width:=enemy_render_width_at_y(enemy,position.y)
 	var angle:=float(enemy_pose(enemy).rotation)
 	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
 
-func enemy_weapon_angle(enemy: Dictionary, index: int) -> float:
+func enemy_weapon_angle(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> float:
 	var component = enemy_component_for_slot(enemy,index)
 	if component==null:return 0.0
 	var role: String = component.mode()
 	if role!="main" and role!="secondary":return 0.0
 	var pose_angle := enemy_render_angle(enemy)
-	var desired := wrapf((player_render_position()-enemy_render_position(enemy)).angle()-PI/2-pose_angle,-PI,PI)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var desired := wrapf((player_render_position()-position).angle()-PI/2-pose_angle,-PI,PI)
 	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
 	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
 
@@ -1268,6 +1296,9 @@ func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
 func advance_turrets(dt: float) -> void:
 	if game.paused:return
 	var entries := game.weapon_entries()
+	# Targets remain selected per mount. Reuse only their visual positions for
+	# this invocation; identity guards slot reuse, and nothing survives a step.
+	var target_positions: Dictionary = {}
 	for index in turret_visuals.keys():
 		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
 	for index in entries.size():
@@ -1291,7 +1322,14 @@ func advance_turrets(dt: float) -> void:
 		if not target.is_empty():
 			var pivot := player_render_position()+player_mount_center(str(game.profile.selectedShip),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
-			desired = clampf(wrapf((entity_render_position(target)-pivot).angle()+PI/2-player_idle_angle(),-PI,PI),-limit,limit)
+			var target_slot := int(target.get("slot",-1))
+			var target_position: Vector2
+			if target_positions.has(target_slot) and is_same(target_positions[target_slot].entity,target):
+				target_position = target_positions[target_slot].position
+			else:
+				target_position = entity_render_position(target)
+				target_positions[target_slot] = {"entity":target,"position":target_position}
+			desired = clampf(wrapf((target_position-pivot).angle()+PI/2-player_idle_angle(),-PI,PI),-limit,limit)
 		var speed := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_turn_degrees_per_second",240.0)))
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
@@ -1303,13 +1341,16 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 		var distance := INF
 		for enemy in game.enemies:
 			if is_same(enemy,shot.get("source",{})):
-				return battle_logical_point(enemy_render_position(enemy)+enemy_port_offset(enemy,enemy_shot_mount(enemy,shot)))
+				var position:=enemy_render_position(enemy)
+				return battle_logical_point(position+enemy_port_offset(enemy,enemy_shot_mount(enemy,shot),position))
 			for index in enemy.equipment.size():
 				var candidate := pos.distance_squared_to(Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,index))
 				if candidate<distance:
 					distance=candidate
 					nearest=enemy
-		if not nearest.is_empty():return battle_logical_point(enemy_render_position(nearest)+enemy_port_offset(nearest,enemy_shot_mount(nearest,shot)))
+		if not nearest.is_empty():
+			var position:=enemy_render_position(nearest)
+			return battle_logical_point(position+enemy_port_offset(nearest,enemy_shot_mount(nearest,shot),position))
 		return pos
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
@@ -1415,6 +1456,11 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
 	var depth := clampf((y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*float(enemy_pose(enemy).variance)
+	# Explicit formations reserve fixed screen-pixel mount/protection margins.
+	# On compact windows, reduce the drawn hull as well as its mount envelope;
+	# never validate with a larger fake screen scale or waive real collisions.
+	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
+		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
 	# Full five-column fleets reserve space for hover and protection outlines.
 	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
 
@@ -1544,7 +1590,8 @@ func battle_point(point: Vector2) -> Vector2:
 	return Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
 
 func enemy_drop_anchor(enemy: Dictionary) -> Vector2:
-	return enemy_render_position(enemy)+Vector2(0,enemy_render_width(enemy)+12.0)
+	var position:=enemy_render_position(enemy)
+	return position+Vector2(0,enemy_render_width_at_y(enemy,position.y)+12.0)
 
 func drop_render_position(drop: Dictionary) -> Vector2:
 	var source_uid := int(drop.get("source_uid",-1))
@@ -1802,6 +1849,37 @@ func beam_ring(pos: Vector2, color: Color, duration: float, radius: float) -> vo
 	if fast_mode_enabled():return
 	if particles.size()>=WEAPON_PARTICLE_LIMIT or decoration_budget(pos,1)==0:return
 	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"ring":true})
+
+func reset_battle_transients_for_scene() -> void:
+	# A scene boundary invalidates visual history, not authoritative projectiles.
+	# Do not expire old beams through sync_beam_visuals: that emits more particles.
+	particles.clear()
+	beam_visuals.clear()
+	projectile_visuals.clear()
+	damage_pending.clear()
+	floats.clear()
+	pickup_effects.clear()
+	resource_hover_feedback.clear()
+	shake=0.0
+	wave_hint=0.0
+	for pose in turret_visuals.values():
+		pose.fired_at=-100.0
+		pose.recoil=0.0
+	for pose in enemy_poses.values():
+		for key in pose.keys():
+			if str(key).begins_with("rail_fired_"):pose.erase(key)
+	for voice in railgun_audio.values():
+		if is_instance_valid(voice) and voice.playing:voice.stop()
+	railgun_sound_times.clear()
+	# Rebuild only live beam bookkeeping, without launch/hit callbacks or RNG.
+	# draw_battle already reads projectile heads directly from game.projectiles;
+	# no historical flight trail can be reconstructed from that current state.
+	if not fast_mode_enabled():
+		for shot in game.projectiles:
+			if shot.get("beam",false) and game.long_laser_valid(shot):
+				beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(entity_render_position(shot.target)),"full":float(beam_style(shot).power)>=1.0})
+	for layer in [battle_layer,overlay_layer,drop_layer]:
+		if is_instance_valid(layer):layer.queue_redraw()
 
 func sync_beam_visuals() -> void:
 	if fast_mode_enabled():
@@ -2086,6 +2164,7 @@ func build_workspace_shell() -> void:
 func select_system(index: int) -> void:
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
 	set_ui_value(equipment_tabs,"current_tab",index)
+	if index==9 and unread_hyperspace_reward():hyperspace_panel.select_section(0)
 	refresh_system_nav()
 
 func refresh_planet_activation_badge() -> void:
@@ -2093,11 +2172,17 @@ func refresh_planet_activation_badge() -> void:
 	var dot := system_nav_buttons[6].get_node_or_null("ActivationBadge")
 	if is_instance_valid(dot):set_ui_value(dot, "visible", game.planet_buildings.has_ready(game))
 
+func unread_hyperspace_reward() -> bool:
+	return is_instance_valid(hyperspace_panel) and bool(hyperspace_panel.reward_feedback.unread)
+
 func refresh_hyperspace_badge() -> void:
 	if system_nav_buttons.size()<=9:return
 	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
 	var s:Dictionary=game.profile.hyperspace
-	if is_instance_valid(dot):set_ui_value(dot,"visible",(bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
+	var unread=unread_hyperspace_reward()
+	if is_instance_valid(dot):set_ui_value(dot,"visible",unread or (bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
+	set_ui_value(system_nav_buttons[9],"text",hyperspace_panel.t(hyperspace_panel.reward_feedback.nav_key()) if unread else UIText.t(SYSTEM_TITLES[9]))
+	set_ui_value(system_nav_buttons[9],"tooltip_text",hyperspace_panel.t("reward_nav_hint") if unread else equipment_tabs.get_tab_bar().get_tab_tooltip(9))
 
 func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
@@ -2110,8 +2195,9 @@ func refresh_system_nav() -> void:
 		set_ui_value(navigation,"visible",available)
 		if not available:continue
 		var caption := UIText.t(SYSTEM_TITLES[index])
-		set_ui_value(navigation,"text",caption)
-		set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
+		if index!=9:
+			set_ui_value(navigation,"text",caption)
+			set_ui_value(navigation,"tooltip_text",equipment_tabs.get_tab_bar().get_tab_tooltip(index))
 		if not navigation.has_meta("selected") or bool(navigation.get_meta("selected"))!=(index==selected):
 			navigation.set_meta("selected",index==selected)
 			SHELL_PRESENTATION.skin_navigation(navigation,index==selected)
@@ -2181,7 +2267,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())
-	pages.append(int(game.profile.highestLevel)>=int(game.hyperspace.config.unlock_stage))
+	pages.append(game.hyperspace.is_unlocked(game))
 	pages.append(true) # Save is always the final page, independent of unlocks.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
@@ -2458,22 +2544,27 @@ func damage_feedback_text(amount, absorbed = 0, exact := false) -> String:
 		return UIText.t("battle.damage_absorbed",{"absorbed":absorbed_text})
 	return UIText.t("battle.damage_with_absorption",{"damage":damage_text,"absorbed":absorbed_text})
 
+func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) -> String:
+	var value := damage_feedback_text(amount,absorbed,exact)
+	if damage_type not in [1,2]:return value
+	return UIText.t("battle.incoming_damage",{"type":UIText.t("equipment.energy" if damage_type==1 else "equipment.physical"),"damage":value})
+
 func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
 	var absorbed = info.get("absorbed",0)
-	var exact := damage_feedback_text(info.amount,absorbed,true)
+	var exact := incoming_damage_text(info.amount,absorbed,int(info.type),true) if info.player else damage_feedback_text(info.amount,absorbed,true)
 	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
 	if damage_history.size()>40:damage_history.pop_front()
 	if not show_damage_numbers:return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
-	var category := int(info.type) if damage_mode==1 else 0
+	var category := int(info.type) if damage_mode==1 or info.player else 0
 	for entries in [floats,damage_pending]:
 		for entry in entries:
 			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
 				entry.amount = GrowthNumber.add(entry.amount,info.amount)
 				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
-				entry.text = damage_feedback_text(entry.amount,entry.absorbed)
+				entry.text = incoming_damage_text(entry.amount,entry.absorbed,entry.type) if target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
 				if entry.pos!=Vector2.ZERO:
 					var adjusted := damage_text_position(entry.origin,entry.text,entry.size,entry)
 					if adjusted!=Vector2.INF:
@@ -2490,7 +2581,7 @@ func queue_damage_number(info: Dictionary) -> void:
 				height = enemy_render_width(enemy)
 				anchor = enemy_render_position(enemy)
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":damage_feedback_text(info.amount,absorbed),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":incoming_damage_text(info.amount,absorbed,int(info.type)) if info.player else damage_feedback_text(info.amount,absorbed),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
 	flush_damage_numbers()
 

@@ -151,7 +151,8 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false}
+	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.enhancementVersion = 1
 	profile.enhancementLevel = 0
@@ -218,7 +219,15 @@ func tutorial_unlocks() -> Array[String]:
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
 		if unlock_available(str(id)) or profile.get("seenUnlocks", []).has(id):result.append(str(id))
+	if hyperspace.is_unlocked(self) or profile.get("seenUnlocks", []).has("hyperspace"):
+		if not result.has("hyperspace"):result.append("hyperspace")
 	return result
+
+func tutorial_unlock_row(id: String) -> Dictionary:
+	if not tutorial_unlocks().has(id):return {}
+	if id=="hyperspace":
+		return {"type":"feature","target":"hyperspace","title":UIText.t("hyperspace.title"),"desc":UIText.t("tutorial.hyperspace.description")}
+	return db.data.get("unlock",{}).get(id,{})
 
 func unread_tutorial_unlocks() -> Array[String]:
 	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
@@ -226,6 +235,7 @@ func unread_tutorial_unlocks() -> Array[String]:
 func read_tutorial_unlock(id: String) -> bool:
 	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
 	profile.readUnlocks.append(id)
+	if id=="hyperspace" and not profile.seenUnlocks.has(id):profile.seenUnlocks.append(id)
 	save_dirty = true
 	event.emit("tutorial_read", {"id":id})
 	return true
@@ -258,8 +268,16 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
+	var existing:=false
+	for suffix in ["", ".bak", ".import-prev"]:
+		existing=existing or FileAccess.file_exists(SAVE_PATH+suffix)
 	var raw = progress_writer.read_progress(SAVE_PATH)
-	if raw is Dictionary:load_progress_data(raw)
+	if raw is Dictionary:
+		load_progress_data(raw)
+		if hyperspace.last_error.is_empty():return
+	elif not existing:return
+	# A rejected existing save must never become an autosaved fresh profile.
+	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
@@ -283,10 +301,16 @@ func load_progress_data(raw: Dictionary) -> void:
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
 	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true}
 	if raw.get("onboarding") is Dictionary:
 		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
+		profile.onboarding.retreatSeen = raw.onboarding.get("retreatSeen",profile.onboarding.completed) == true
+	# Optional UI-only receipt metadata. Legacy/invalid markers remain quiet.
+	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
+	var receipt = raw.get("hyperspaceReceipt",{})
+	if receipt is Dictionary and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("round")) and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("run")) and receipt.round>=0 and receipt.run>=0 and receipt.get("drone_id") is String and receipt.get("unread") is bool:
+		profile.hyperspaceReceipt = {"round":int(receipt.round),"run":int(receipt.run),"drone_id":str(receipt.drone_id),"unread":bool(receipt.unread)}
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -685,14 +709,17 @@ func combat_weapon_entries() -> Array:
 		for id in profile.hyperspace.inventory.equipped:
 			if profile.hyperspace.inventory.sealed.has(id) or drone_combat.disabled.has(id):continue
 			var d: Dictionary=profile.hyperspace.inventory.drones[id]
-			var maximum:=1
-			for entry in module_entries("weapons"):
-				if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
-			var level:=maximum+DroneEffects.weapon_bonus(d,hyperspace.config)
+			var projected:=drone_weapon_entry(d)
 			var old: Dictionary=previous.get(id,{})
-			combat_sources.append(old if old.get("key")==d.weapon and old.get("level")==level else {"key":d.weapon,"level":level,"drone_id":id})
+			combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
 	combat_sources_dirty=false
 	return combat_sources
+
+func drone_weapon_entry(d: Dictionary) -> Dictionary:
+	var maximum:=1
+	for entry in module_entries("weapons"):
+		if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
+	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
 	var entries:=combat_weapon_entries()
@@ -1461,6 +1488,8 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
+	if hyperspace.is_unlocked(self) and not next.seenUnlocks.has("hyperspace"):
+		next.seenUnlocks.append("hyperspace")
 	for gate_id in available_unlocks():
 		var gate: Dictionary = db.data.unlock[gate_id]
 		if not next.seenUnlocks.has(gate_id):next.seenUnlocks.append(gate_id)
@@ -1901,6 +1930,38 @@ func cancel_hyperspace_request()->bool:
 func start_hyperspace(route: String,level: int) -> bool:
 	return manual_hyperspace.start(self,route,level)
 
+func hyperspace_route_view(route:String,crew_id:String="")->Dictionary:
+	return hyperspace.route_view(self,route,crew_id)
+
+func start_hyperspace_idle(route:String)->bool:
+	return hyperspace.start_idle(self,route)
+
+func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
+	return hyperspace.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
+
+func stop_hyperspace_idle(route:String)->bool:
+	return hyperspace.stop_idle(self,route)
+
+func start_hyperspace_challenge(route:String)->bool:
+	return manual_hyperspace.start(self,route,hyperspace.current_layer(self,route)+1)
+
+func exit_hyperspace_challenge()->bool:
+	return manual_hyperspace.finish(self,false,"user_exit")
+
+func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
+	if round_id>=0 and run_id>=0:return hyperspace.claim(self,round_id,run_id)
+	var claimed:=false
+	for slot in ["active","idle"]:
+		var receipt:Dictionary=profile.hyperspace[slot]
+		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
+	return claimed
+
+func hyperspace_material_exchange_quote(source:String,target:String,amount:Variant)->Dictionary:
+	return hyperspace.material_exchange_quote(self,source,target,amount)
+
+func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
+	return hyperspace.exchange_materials(self,request)
+
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
 		return false
@@ -1911,7 +1972,7 @@ func next_stage() -> int:
 
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
-	if level < 1 or level > int(profile.highestLevel):
+	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
 	if N.compare(stat("armour"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_armour"})

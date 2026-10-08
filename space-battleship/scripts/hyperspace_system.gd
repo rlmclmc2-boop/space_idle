@@ -25,8 +25,8 @@ func online_config(g) -> Dictionary:
 	var material_multiplier:int=int(config.get("late_material_reward_multiplier",1)) if supplied else 1
 	if multiplier==1.0 and rate_multiplier==1.0 and material_multiplier==1:return config
 	var next: Dictionary=config.duplicate()
-	next.energy_cap=float(config.energy_cap)*multiplier;next.energy_rate=float(config.energy_rate)*multiplier*rate_multiplier
-	next.material_reward_multiplier=material_multiplier
+	next.energy_cap=float(config.energy_cap);next.energy_rate=float(config.energy_rate)*rate_multiplier
+	next.exploration_material_multiplier=multiplier;next.material_reward_multiplier=float(material_multiplier)*multiplier
 	if g.stat_cache_enabled:g.stat_cache[cache_key]=next
 	return ramp_config(g,next,supplied)
 
@@ -39,7 +39,7 @@ func ramp_config(g,c:Dictionary,supplied:bool)->Dictionary:
 	next.late_supply_elapsed=elapsed
 	next.late_supply_base_rate=float(c.energy_rate)/float(config.late_energy_rate_multiplier)
 	next.energy_rate=float(next.late_supply_base_rate)*lerpf(1.0,float(config.late_energy_rate_multiplier),progress)
-	next.material_reward_multiplier=lerpf(1.0,float(config.late_material_reward_multiplier),progress)
+	next.material_reward_multiplier=float(c.get("exploration_material_multiplier",1.0))*lerpf(1.0,float(config.late_material_reward_multiplier),progress)
 	return next
 
 func fresh() -> Dictionary:
@@ -50,7 +50,7 @@ func load_state(g,raw: Variant) -> bool:
 	if raw==null:g.profile.hyperspace=fresh();return true
 	if not raw is Dictionary or not S.valid(raw,config,g.db.levels.size()):
 		last_error="invalid_hyperspace_save";return false
-	g.profile.hyperspace=raw.duplicate(true)
+	g.profile.hyperspace=S.migrate(raw,config)
 	var receipt: Dictionary=g.profile.hyperspace.active
 	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
 		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
@@ -88,45 +88,79 @@ func publish(g,next: Dictionary,kind: String) -> void:
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})
 
-func eligible_level(g,route: String,level: int) -> bool:
-	return int(g.profile.highestLevel)>=int(config.unlock_stage) and config.routes.has(route) and level>=int(config.minimum_level) and level<=int(g.profile.highestLevel) and level<=g.db.levels.size()
+func is_unlocked(g) -> bool:
+	return int(g.profile.highestLevel)>=int(config.unlock_stage)
 
-func best_x1(g,route: String,level: int) -> float:
-	if not eligible_level(g,route,level):return 0.0
-	return float(g.profile.hyperspace.history.get(route,{}).get(str(level),0.0))
+func current_layer(g,route:String)->int:
+	var current:=0
+	for level in g.profile.hyperspace.history.get(route,{}):
+		if float(g.profile.hyperspace.history[route][level])>0:current=maxi(current,int(level))
+	return current
 
-func auto_quote(best:float,crew_level:int) -> Dictionary:
-	var duration_base:=float(config.auto_duration_crew_base)
-	var ticket_base:=float(config.auto_ticket_crew_base)
-	return {"duration":maxf(float(config.minimum_duration),best*duration_base/(duration_base+crew_level)),"ticket":float(config.ticket)*ticket_base/(ticket_base+crew_level)}
+func eligible_level(g,route:String,level:int)->bool:
+	return is_unlocked(g) and config.routes.has(route) and level==current_layer(g,route)+1 and level<=g.db.levels.size()
 
-func start(g,route: String,level: int,mode: String,crew_id: String="",main_return:Dictionary={}) -> Dictionary:
-	var s: Dictionary=g.profile.hyperspace
-	if not eligible_level(g,route,level) or not s.active.is_empty() or mode not in ["manual","auto"] or not generation_ready():return {}
+func best_x1(g,route:String,level:int)->float:
+	return float(g.profile.hyperspace.history.get(route,{}).get(str(level),0.0)) if config.routes.has(route) and level>0 else 0.0
+
+func configured_crew(g,route:String)->String:
+	var auto:Dictionary=g.profile.hyperspace.auto
+	return str(auto.crew_id) if str(auto.route)==route else ""
+
+func luck_snapshot(g,route:String,preview_crew_id:String="")->Dictionary:
+	var id:=preview_crew_id if not preview_crew_id.is_empty() else configured_crew(g,route)
+	var permanent:=maxf(0.0,float(g.planet_buffs.totals(g).get("hyperspace_luck",0.0)))
+	var crew_luck:=0.0
+	if not id.is_empty() and g.crew.has_method("hyperspace_luck"):crew_luck=maxf(0.0,float(g.crew.hyperspace_luck(g,id)))
+	return {"crew_snapshot":id,"permanent_luck":permanent,"crew_luck":crew_luck,"luck":permanent+crew_luck}
+
+func idle_duration(g,best:float,crew_id:String)->float:
+	var efficiency:=1.0
+	if not crew_id.is_empty():
+		efficiency=float(g.crew.hyperspace_efficiency(g,crew_id)) if g.crew.has_method("hyperspace_efficiency") else (20.0+Permission.crew_level(g,crew_id))/20.0
+	return best/maxf(1.0,efficiency)
+
+func auto_quote(best:float,crew_level:int,g=null)->Dictionary:
+	var base:=20.0 if g==null else float(g.db.data.crew_config.hyperspace_duration_k.value)
+	return {"duration":best*base/(base+crew_level),"ticket":0.0}
+
+func receipt_slot(s:Dictionary,round_id:int,run_id:int)->String:
+	for slot in ["active","idle"]:
+		var a:Dictionary=s.get(slot,{})
+		if not a.is_empty() and int(a.round_id)==round_id and int(a.run_id)==run_id:return slot
+	return ""
+
+func start(g,route:String,level:int,mode:String,crew_id:String="",main_return:Dictionary={})->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	var slot:="active" if mode=="manual" else "idle"
+	if mode not in ["manual","idle","auto"] or not is_unlocked(g) or not config.routes.has(route) or not s[slot].is_empty() or not generation_ready():return {}
+	var duration:=0.0
+	if mode=="manual":
+		if not eligible_level(g,route,level):return {}
+	elif level!=current_layer(g,route) or best_x1(g,route,level)<=0 or not Bag.has_space(s.inventory,config):return {}
 	if not main_return.is_empty() and (mode!="manual" or not main_return.get("journey") is Dictionary or not main_return.get("state") is Dictionary or not preload("res://scripts/hyperspace_main_return.gd").valid(main_return.state,main_return.journey,g.db.levels.size())):return {}
-	var duration:=0.0;var ticket:=float(config.ticket)
-	if mode=="auto":
-		if not Bag.has_space(s.inventory,config) or float(s.energy)<float(online_config(g).energy_cap):return {}
-		var best:=best_x1(g,route,level)
-		if best<=0 or not Permission.crew_available(g,crew_id):return {}
-		var crew_level:=Permission.crew_level(g,crew_id)
-		var quote:=auto_quote(best,crew_level)
-		duration=float(quote.duration);ticket=float(quote.ticket)
-	if float(s.energy)<ticket:return {}
-	var next: Dictionary=s.duplicate(true)
-	next.energy=float(s.energy)-ticket;next.blocked=false
-	next.active={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
-	if not main_return.is_empty():next.active.return_state=main_return.state.duplicate(true)
-	next.next_run+=1;publish(g,next,"started")
-	return next.active.duplicate(true)
+	if mode=="auto" and not Permission.crew_available(g,crew_id):return {}
+	if mode!="manual":duration=idle_duration(g,best_x1(g,route,level),crew_id if mode=="auto" else "")
+	if mode!="manual" and (not is_finite(duration) or duration<=0):return {}
+	var next:Dictionary=s.duplicate(true)
+	var receipt:Dictionary={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":0.0,"duration":duration,"work":0.0,"reward":{}}
+	receipt.merge(luck_snapshot(g,route))
+	var private_rng:=RandomNumberGenerator.new()
+	private_rng.seed=(str(s.random_state)+"|"+route+"|"+str(s.round_id)+"|"+str(s.next_run)).hash()
+	receipt.luck_state=str(private_rng.state)
+	if not main_return.is_empty():receipt.return_state=main_return.state.duplicate(true)
+	next[slot]=receipt;next.next_run+=1;next.blocked=false;publish(g,next,"started")
+	return receipt.duplicate(true)
 
 func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1_seconds: float=0.0,record_x1: bool=false) -> bool:
 	var s: Dictionary=g.profile.hyperspace
-	var a: Dictionary=s.active
+	var slot:=receipt_slot(s,round_id,run_id)
+	if slot.is_empty():return false
+	var a: Dictionary=s[slot]
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="started":return false
 	var next: Dictionary=s.duplicate(true)
 	if not success:
-		next.energy=float(next.energy)+float(a.ticket);next.settled_run=run_id;next.active={};next.blocked=false;next.pending_time=0.0
+		next.energy=float(next.energy)+float(a.ticket);next.settled_run=maxi(int(next.settled_run),run_id);next[slot]={};next.blocked=false;next.pending_time=0.0 if slot=="idle" else next.pending_time
 		scheduler.reset();publish(g,next,"refunded");return true
 	if not reward.is_empty():last_error="external_reward_forbidden";return false
 	var generated:=Rewards.generate(next,online_config(g),a,Permission.planet_for_level(g.db.data,int(a.level)))
@@ -141,7 +175,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 		frozen.hanging_rewards=dismantled.hanging_rewards;frozen.drone={}
 	if not S.valid_reward(frozen,str(a.route),config):last_error="invalid_reward";return false
 	if record_x1 and (a.mode!="manual" or not C.number(x1_seconds) or x1_seconds<=0):return false
-	next.active.status="completed_pending";next.active.reward=frozen;next.unlocked_drones=true
+	next[slot].status="completed_pending";next[slot].reward=frozen;next.unlocked_drones=true
 	if record_x1:
 		var history: Dictionary=next.history.get(a.route,{})
 		var old:=float(history.get(str(int(a.level)),0.0))
@@ -151,7 +185,9 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 	publish(g,next,"completed_pending");return true
 
 func claim(g,round_id: int,run_id: int) -> bool:
-	var s: Dictionary=g.profile.hyperspace;var a: Dictionary=s.active
+	var s: Dictionary=g.profile.hyperspace;var slot:=receipt_slot(s,round_id,run_id)
+	if slot.is_empty():return false
+	var a: Dictionary=s[slot]
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="completed_pending":return false
 	if not a.reward.drone.is_empty() and not Bag.has_space(s.inventory,config):s.blocked=true;return false
 	var next: Dictionary=s.duplicate(true)
@@ -164,33 +200,107 @@ func claim(g,round_id: int,run_id: int) -> bool:
 		next.materials[key]=amount
 	next.ultimate_cores+=int(a.reward.ultimate_cores)
 	if not Rewards.credit_modules(next,config,a.reward.hanging_rewards):return false
-	next.settled_run=run_id;next.active={};next.blocked=not Bag.has_space(next.inventory,config)
+	next.settled_run=maxi(int(next.settled_run),run_id);next[slot]={};next.blocked=not Bag.has_space(next.inventory,config)
 	publish(g,next,"claimed");return true
 
-func set_auto(g,enabled: bool,route: String,level: int,crew_id: String) -> bool:
-	var active: Dictionary=g.profile.hyperspace.active
-	if enabled and not active.is_empty() and active.mode=="auto" and active.crew_id!=crew_id:return false
-	if enabled and (not eligible_level(g,route,level) or best_x1(g,route,level)<=0 or not Permission.crew_available(g,crew_id)):return false
-	var next: Dictionary=g.profile.hyperspace.duplicate(true)
+func start_idle(g,route:String)->bool:
+	if g.profile.hyperspace.auto.enabled:return false
+	return not start(g,route,current_layer(g,route),"idle").is_empty()
+
+func stop_idle(g,route:String)->bool:
+	var s:Dictionary=g.profile.hyperspace
+	var a:Dictionary=s.idle
+	if not a.is_empty() and str(a.route)!=route:return false
+	if not a.is_empty() and a.status=="completed_pending":return false
+	var next:Dictionary=s.duplicate(true)
+	if not a.is_empty():next.settled_run=maxi(int(next.settled_run),int(a.run_id));next.idle={}
+	if str(next.auto.route)==route:next.auto.enabled=false
+	next.pending_time=0.0;publish(g,next,"idle_stopped");return true
+
+func set_auto(g,enabled:bool,route:String,_level:int,crew_id:String)->bool:
+	var s:Dictionary=g.profile.hyperspace
+	if not config.routes.has(route):return false
+	if enabled and (current_layer(g,route)<1 or not Permission.crew_available(g,crew_id) or (not s.idle.is_empty() and (s.idle.mode!="auto" or s.idle.route!=route or s.idle.crew_id!=crew_id))):return false
+	if not enabled and not s.idle.is_empty() and s.idle.route==route and s.idle.status=="completed_pending":return false
+	var next:Dictionary=s.duplicate(true)
 	next.pending_time=0.0
-	next.auto={"enabled":enabled,"route":route if enabled else "","level":level if enabled else 0,"crew_id":crew_id if enabled else ""}
-	scheduler.reset();publish(g,next,"auto_changed");return true
+	next.auto={"enabled":enabled,"route":route,"level":current_layer(g,route),"crew_id":crew_id if not crew_id.is_empty() else configured_crew(g,route)}
+	if not enabled and not next.idle.is_empty() and next.idle.route==route:
+		next.settled_run=maxi(int(next.settled_run),int(next.idle.run_id));next.idle={}
+	publish(g,next,"auto_changed");return true
 
-func auto_eligible(g) -> bool:
-	var auto: Dictionary=g.profile.hyperspace.auto
-	return auto.enabled and generation_ready() and best_x1(g,str(auto.route),int(auto.level))>0 and Permission.crew_available(g,str(auto.crew_id))
+func auto_eligible(g)->bool:
+	var auto:Dictionary=g.profile.hyperspace.auto
+	return auto.enabled and generation_ready() and best_x1(g,str(auto.route),current_layer(g,str(auto.route)))>0 and Permission.crew_available(g,str(auto.crew_id))
 
-func start_auto(g) -> bool:
-	var auto: Dictionary=g.profile.hyperspace.auto
-	return not start(g,str(auto.route),int(auto.level),"auto",str(auto.crew_id)).is_empty()
+func start_auto(g)->bool:
+	var auto:Dictionary=g.profile.hyperspace.auto
+	return not start(g,str(auto.route),current_layer(g,str(auto.route)),"auto",str(auto.crew_id)).is_empty()
 
-func complete_auto(g) -> bool:
-	var a: Dictionary=g.profile.hyperspace.active
-	if a.is_empty() or a.mode!="auto" or float(a.work)<float(a.duration):return false
+func complete_auto(g)->bool:
+	var a:Dictionary=g.profile.hyperspace.idle
+	if a.is_empty() or float(a.work)<float(a.duration):return false
 	return complete(g,int(a.round_id),int(a.run_id),true)
 
-func advance(g,dt: float) -> void:
+func route_view(g,route:String,crew_id:String="")->Dictionary:
+	var current:=current_layer(g,route);var best:=best_x1(g,route,current)
+	var s:Dictionary=g.profile.hyperspace;var idle:Dictionary=s.idle;var active:Dictionary=s.active
+	var receipt:Dictionary=active if not active.is_empty() and active.route==route else (idle if not idle.is_empty() and idle.route==route else {})
+	var reasons:Dictionary={"idle_once":"","crew_idle":"","challenge":"","stop":"","exit":""}
+	if not is_unlocked(g) or not config.routes.has(route):
+		for key in reasons:reasons[key]="locked"
+	else:
+		if current==0:reasons.idle_once="no_cleared_layer";reasons.crew_idle="no_cleared_layer"
+		if not idle.is_empty() or s.auto.enabled:reasons.idle_once="background_busy"
+		if not Bag.has_space(s.inventory,config):reasons.idle_once="inventory_full";reasons.crew_idle="inventory_full"
+		if crew_id.is_empty():crew_id=configured_crew(g,route)
+		if crew_id.is_empty() or not Permission.crew_available(g,crew_id):reasons.crew_idle="crew_unavailable"
+		if not idle.is_empty() and (idle.mode!="auto" or idle.route!=route or idle.crew_id!=crew_id):reasons.crew_idle="background_busy"
+		if not active.is_empty():reasons.challenge="challenge_busy"
+		if current>=g.db.levels.size():reasons.challenge="max_layer"
+		if not g.manual_hyperspace.production_accepted:reasons.challenge="unavailable"
+		if idle.is_empty() and not (s.auto.enabled and s.auto.route==route):reasons.stop="no_background"
+		elif not idle.is_empty() and (idle.route!=route or idle.status=="completed_pending"):reasons.stop="pending_reward" if idle.route==route else "other_route"
+		if not g.manual_hyperspace.active or active.is_empty() or active.route!=route:reasons.exit="no_challenge"
+	var luck:=luck_snapshot(g,route,crew_id)
+	return {"route":route,"current_layer":current,"next_layer":current+1,"best_time":best,"task_mode":"none" if receipt.is_empty() else ("challenge" if receipt.mode=="manual" else "crew_idle" if receipt.mode=="auto" else "manual_idle"),"work":float(receipt.get("work",0.0)),"duration":float(receipt.get("duration",0.0)),"round_id":int(receipt.get("round_id",s.round_id)),"run_id":int(receipt.get("run_id",0)),"status":str(receipt.get("status","")),"background":idle.duplicate(true) if idle.get("route","")==route else {},"challenge":active.duplicate(true) if active.get("route","")==route else {},"reasons":reasons,"total_luck":luck.luck,"crew_luck":luck.crew_luck,"permanent_luck":luck.permanent_luck,"idle_duration":best,"crew_duration":idle_duration(g,best,crew_id),"crew_id":configured_crew(g,route)}
+
+func advance(g,dt:float)->void:
 	scheduler.advance(self,g,dt)
+
+func material_exchange_quote(g,source:String,target:String,amount:Variant)->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	var result:Dictionary={"error":"","source":source,"target":target,"amount":0,"source_owned":int(s.materials.get(source,0)),"target_owned":int(s.materials.get(target,0)),"cost":{},"received":{},"max_receive":0,"request":{}}
+	var keys:Array=config.routes.values().map(func(route):return str(route.material))
+	if source not in keys or target not in keys:result.error="invalid_material";return result
+	if source==target:result.error="same_material";return result
+	var limit:=9000000000000000
+	result.max_receive=mini(int(result.source_owned)/2,limit-1-int(result.target_owned))
+	if not C.integer(amount) or amount<=0 or amount>limit/2:result.error="invalid_amount";return result
+	var count:=int(amount);var debit:=count*2
+	result.amount=count;result.cost={source:debit};result.received={target:count}
+	if debit>int(result.source_owned):result.error="insufficient_materials";return result
+	if count>limit-1-int(result.target_owned):result.error="material_limit";return result
+	result.request={"round_id":int(s.round_id),"command_seq":int(s.command_seq),"source":source,"target":target,"amount":count}
+	return result
+
+func exchange_materials(g,request:Dictionary)->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	if not C.integer(request.get("round_id")) or int(request.round_id)!=int(s.round_id):return Forge.error("stale_round")
+	if not C.integer(request.get("command_seq")):return Forge.error("stale_command")
+	if not request.get("source") is String or not request.get("target") is String or not C.integer(request.get("amount")):return Forge.error("invalid_arguments")
+	var fingerprint:=JSON.stringify({"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount)},"",true,true)
+	if not s.last_command.is_empty() and int(request.command_seq)==int(s.last_command.seq):
+		return Forge.restore_result(s.last_command.result_json) if fingerprint==s.last_command.fingerprint else Forge.error("command_conflict")
+	if int(request.command_seq)!=int(s.command_seq):return Forge.error("stale_command")
+	var quote:=material_exchange_quote(g,request.source,request.target,request.amount)
+	if not quote.error.is_empty():return Forge.error(quote.error)
+	var next:Dictionary=s.duplicate(true)
+	next.materials[request.source]-=int(quote.cost[request.source]);next.materials[request.target]+=int(request.amount)
+	var result:Dictionary={"error":"","applied":true,"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount),"cost":quote.cost,"received":quote.received,"source_after":int(next.materials[request.source]),"target_after":int(next.materials[request.target])}
+	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
+	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
+	publish(g,next,"materials_exchanged");return result
 
 func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=null) -> bool:
 	if bag.is_empty():bag=g.profile.hyperspace.inventory
@@ -203,6 +313,46 @@ func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=nul
 		if d.weapon=="cannon":count+=1
 		if d.legendary and d.legendary_effect.get("effect_id")=="higgs_cannon":higgs=true
 	return not higgs or count<=int(config.legendary_effects.higgs_cannon.constants.maximum_cannon_sources)
+
+## Select an explicit replacement on multi-slot hulls; single-slot hulls have one unambiguous target.
+## Build and validate the final loadout before publishing so rejected changes never unequip anything.
+func equip_drone(g,id: String,replace_id: String="") -> Dictionary:
+	var bag: Dictionary=g.profile.hyperspace.inventory
+	var ids: Array=bag.equipped.duplicate()
+	var capacity:=mini(Permission.hull_capacity(g,config),int(config.maximum_equipped))
+	var result: Dictionary={"ok":false,"reason":"","changed":false,"capacity":capacity,"equipped":ids.duplicate(),"replaced_id":""}
+	if not bag.drones.has(id):result.reason="unknown_drone";return result
+	if bag.sealed.has(id):result.reason="sealed";return result
+	if not bag.warehouse.has(id):result.reason="not_in_warehouse";return result
+	if ids.has(id):result.ok=true;result.reason="already_equipped";return result
+	if capacity<=0:result.reason="no_slots";return result
+	var target:=replace_id
+	if not target.is_empty():
+		if not ids.has(target):result.reason="replacement_not_equipped";return result
+	elif ids.size()>=capacity:
+		if capacity==1 and ids.size()==1:target=str(ids[0])
+		else:result.reason="select_replacement";return result
+	if target.is_empty():ids.append(id)
+	else:ids[ids.find(target)]=id
+	if ids.size()>capacity:result.reason="capacity_exceeded";return result
+	var legendary:=0;var ultimate:=0
+	for equipped_id in ids:
+		legendary+=int(bag.drones[equipped_id].legendary);ultimate+=int(bag.drones[equipped_id].ultimate)
+	if legendary>int(config.maximum_legendary):result.reason="legendary_limit";return result
+	if ultimate>int(config.maximum_ultimate):result.reason="ultimate_limit";return result
+	if not equipment_constraints(g,ids,bag):result.reason="weapon_constraint";return result
+	if not set_equipped(g,ids):result.reason="invalid_loadout";return result
+	result.ok=true;result.changed=true;result.reason="equipped";result.equipped=ids;result.replaced_id=target
+	return result
+
+func unequip_drone(g,id: String) -> Dictionary:
+	var ids: Array=g.profile.hyperspace.inventory.equipped.duplicate()
+	var result: Dictionary={"ok":true,"reason":"already_unequipped","changed":false,"capacity":mini(Permission.hull_capacity(g,config),int(config.maximum_equipped)),"equipped":ids.duplicate(),"replaced_id":""}
+	if not ids.has(id):return result
+	ids.erase(id)
+	if not set_equipped(g,ids):result.ok=false;result.reason="invalid_loadout";return result
+	result.changed=true;result.reason="unequipped";result.equipped=ids
+	return result
 
 func set_equipped(g,ids: Array,hull_capacity: int=-1) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)

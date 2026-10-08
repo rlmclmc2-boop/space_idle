@@ -229,7 +229,7 @@ func refresh() -> void:
 		active+=capacity
 		var list_index := 0
 		for index in capacity:
-			var id: String = host.game.slot_id(category,index)
+			var id: String = "%s_%d" % [category,index] # Candidate hull uses permanent module slots, not active combat sources.
 			if not mounts.has(id):
 				var mount := Button.new()
 				mount.add_theme_font_override("font",host.font)
@@ -266,7 +266,9 @@ func refresh() -> void:
 				text+="\n"+host.NAMES.get(key,UIText.t("equipment.vacant"))
 				if assignment.get("carrier","")=="drone":text+=" · "+UIText.t("ship.refit.carrier")
 			host.set_ui_value(button,"text",text)
-			host.set_ui_value(button,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":host.NAMES.get(key,UIText.t("equipment.vacant")),"level":str(entry.get("level",1))}))
+			var module_hint:=UIText.t("ship.refit.module",{"slot":prefix,"name":host.NAMES.get(key,UIText.t("equipment.vacant")),"level":str(entry.get("level",1))})
+			if assignment.get("carrier","")=="drone":module_hint+="\n"+UIText.t("ship.refit.carrier_hint")
+			host.set_ui_value(button,"tooltip_text",module_hint)
 			host.set_ui_value(button,"disabled",candidate!=current)
 			if host.ui_state_changed(button,[key]):button.add_theme_stylebox_override("normal",host.equipment_panel.panel_style(TEAL))
 	host.set_ui_value(result,"text",UIText.t("ship.refit.active_count",{"active":str(active)}))
@@ -344,11 +346,11 @@ func refresh_drone_strip(assignments: Dictionary, locked: bool, current: String)
 		host.set_ui_value(card,"visible",ordinal<slots.size())
 		if ordinal>=slots.size():continue
 		var slot:=slots[ordinal]
-		var id:String=host.game.slot_id("weapons",slot)
+		var id:String="weapons_%d" % slot
 		if card.get_meta("slot_id","")!=id:card.set_meta("slot_id",id)
 		var entry:Dictionary=host.game.module_entry("weapons",slot)
 		var prefix:="W"+str(slot+1).pad_zeros(2)
 		var name:String=host.NAMES.get(str(entry.get("key","")),UIText.t("equipment.vacant"))
 		host.set_ui_value(drone_titles[index],"text",prefix+" · "+name)
-		host.set_ui_value(card,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":name,"level":str(entry.get("level",1))}))
+		host.set_ui_value(card,"tooltip_text",UIText.t("ship.refit.module",{"slot":prefix,"name":name,"level":str(entry.get("level",1))})+"\n"+UIText.t("ship.refit.carrier_hint"))
 		host.set_ui_value(card,"disabled",candidate!=current)

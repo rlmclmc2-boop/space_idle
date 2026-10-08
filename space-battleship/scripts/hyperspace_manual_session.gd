@@ -63,12 +63,9 @@ func configure(g,routes: Dictionary,separate: Dictionary={}) -> bool:
 			seen[id]=true
 	route_ids=routes.duplicate(true);registry=separate.duplicate(true);production_accepted=false;last_error="";return true
 func request(g,route:String,level:int)->bool:
-	if active or not g.profile.hyperspace.active.is_empty():queue_error="busy";return false
-	if not production_accepted or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level):queue_error="unavailable";return false
-	if float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):queue_error="energy";return false
-	if not queued.is_empty():return queued.route==route and int(queued.level)==level
-	queued={"route":route,"level":level,"round":int(g.profile.hyperspace.round_id)};queue_error=""
-	g.event.emit("hyperspace_queue",{"status":"queued"});return true
+	queue_error=""
+	if not g.hyperspace.eligible_level(g,route,level):queue_error="unavailable";return false
+	return start(g,route,level)
 func cancel_queue(g,reason:String="")->bool:
 	if queued.is_empty():return false
 	queued={};queue_error=reason;g.event.emit("hyperspace_queue",{"status":"cancelled","reason":reason});return true
@@ -98,16 +95,17 @@ func reset_for_load(g)->void:
 	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={};last_result={}
 func start(g,route: String,level: int) -> bool:
 	last_error=""
-	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket) or not boundary_reason(g).is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
+	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
 		bound_registry=reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g))
 		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
 		production_accepted=true
 	# Existing earned drops settle by their ordinary rule, before freezing the main run.
+	g.settle_drops()
 	var point=Return.journey(g);var frozen=Return.capture(g)
 	if not Return.valid(frozen,point,g.db.levels.size()):last_error="invalid_main_return";return false
-	g.settle_drops();frozen.run_resources=g.run_resources.duplicate(true)
+	frozen.run_resources=g.run_resources.duplicate(true)
 	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual","",{"journey":point,"state":frozen})
 	if receipt.is_empty():return false
 	base_db=g.db;return_journey=point;return_state=frozen;round_id=int(receipt.round_id);run_id=int(receipt.run_id)

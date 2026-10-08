@@ -101,15 +101,20 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	# Empty slots retain both actions without overlapping the shared bottom button.
 	for state in ["normal","hover","pressed","disabled"]:
 		var box: StyleBox = equip_button.get_theme_stylebox(state).duplicate()
+		# Resource.duplicate does not preserve the source style's signal link.
+		# This copy also needs its draw commands invalidated after tile freezing.
+		if box is StyleBoxTexture and box.texture is AtlasTexture:
+			if not box.texture.changed.is_connected(box.emit_changed):
+				box.texture.changed.connect(box.emit_changed)
 		box.content_margin_top = 2
 		box.content_margin_bottom = 2
 		equip_button.add_theme_stylebox_override(state,box)
 	equip_button.custom_minimum_size = Vector2(246,36)
 	equip_button.size = Vector2(246,36)
 	resized.connect(layout_contents)
-	add_theme_stylebox_override("hover",panel.panel_style(Color("f8f7e9"),Color("519caa")))
-	add_theme_stylebox_override("pressed",panel.panel_style(Color("d8e6de")))
-	add_theme_stylebox_override("focus",panel.panel_style(Color.TRANSPARENT,panel.TEAL))
+	add_theme_stylebox_override("hover",panel.textured_panel_style(Color("f8f7e9"),Color("519caa")))
+	add_theme_stylebox_override("pressed",panel.textured_panel_style(Color("d8e6de")))
+	add_theme_stylebox_override("focus",panel.textured_panel_style(Color.TRANSPARENT,panel.TEAL))
 	layout_contents()
 
 func layout_contents() -> void:
@@ -128,7 +133,7 @@ func layout_contents() -> void:
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
+	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state
@@ -145,7 +150,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	name_button.set_meta("slot_id",slot_id)
 	host.set_ui_value(name_button,"disabled",item.locked or item.get("refit_locked",false))
 	host.set_ui_value(fields.title,"text",item.name)
-	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
+	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
 	host.set_ui_value(fields.caption,"text",item.mainStatLabel)
 	host.set_ui_value(fields.stat,"text",item.mainStatValue)
@@ -161,7 +166,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(upgrade_button,"text",UIText.t("equipment.upgrade_cost",{"cost":item.get("cost","—")}))
 	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
-	add_theme_stylebox_override("normal",panel.panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
+	add_theme_stylebox_override("normal",panel.textured_panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
 func refresh_options(item: Dictionary) -> void:
 	var options: Array = panel.equipment_choices(item.category,int(item.index))

@@ -15,6 +15,9 @@ var review := false
 var manually_opened := false
 var elapsed := 0.0
 var equip_target := ""
+var retreat_pending := false
+var retreat_defence: Array = []
+var action_id := ""
 
 func setup(owner: Node) -> void:
 	host = owner
@@ -79,6 +82,8 @@ func flags() -> Dictionary:
 	return host.game.profile.onboarding
 
 func dismiss() -> void:
+	retreat_pending = false
+	retreat_defence.clear()
 	flags().dismissed = true
 	manually_opened = false
 	review = false
@@ -96,6 +101,8 @@ func decide() -> Dictionary:
 	var game: BattleGame = host.game
 	var state := flags()
 	var empty_slot := ""
+	var empty_defence := ""
+	var defence_adjusted := false
 	var upgrade_slot := ""
 	var waiting_slot := ""
 	var any_upgraded := false
@@ -104,10 +111,15 @@ func decide() -> Dictionary:
 		for index in game.active_slot_count(category):
 			var entry: Dictionary = game.slot_entry(category,index)
 			var id := game.slot_id(category,index)
-			if int(entry.level)>1:any_upgraded = true
+			if int(entry.level)>1:
+				any_upgraded = true
+				if category=="defence" and not str(entry.key).is_empty():defence_adjusted = true
+			if category=="defence" and index>0 and not str(entry.key).is_empty():defence_adjusted = true
 			if category=="weapons" and not str(entry.key).is_empty():occupied_weapons += 1
 			if str(entry.key).is_empty():
-				if category=="weapons" and empty_slot.is_empty():empty_slot = id
+				if has_equipment_choice(category,index):
+					if category=="weapons" and empty_slot.is_empty():empty_slot = id
+					if category=="defence" and empty_defence.is_empty():empty_defence = id
 				continue
 			if not game.slot_upgrade_cost(category,index).is_empty() and waiting_slot.is_empty():waiting_slot = id
 			if game.can_upgrade_slot(category,index) and upgrade_slot.is_empty():upgrade_slot = id
@@ -121,10 +133,19 @@ func decide() -> Dictionary:
 		var parts := equip_target.split("_")
 		var entry := game.slot_entry(parts[0],int(parts[1]))
 		if not entry.is_empty() and not str(entry.key).is_empty():state.equipped = true
-	var available_weapon := game.WEAPON_KEYS.any(func(key):return game.profile.unlocked.has(key))
-	if empty_slot.is_empty() or not available_weapon:state.equipped = true
+	if empty_slot.is_empty():state.equipped = true
 	if review:return {"phase":"review"}
 	if not game.pending_unlocks.is_empty():return {"phase":"unlock","action":"continue"}
+	if retreat_pending:
+		if not empty_defence.is_empty():return {"phase":"retreat","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
+		for index in game.active_slot_count("defence"):
+			if not str(game.slot_entry("defence",index).key).is_empty():
+				return {"phase":"retreat","slot":game.slot_id("defence",index),"action":"show_upgrade","anchor":"upgrade_action"}
+		return {"phase":"retreat","action":"show_equipment"}
+	if enhancement_ready():
+		var step := {"phase":"enhancement","anchor":"enhancement_upgrade"}
+		if host.equipment_tabs.current_tab!=4:step.action="show_enhancement"
+		return step
 	if not state.intro:return {"phase":"intro","action":"next"}
 	if game.state==BattleGame.State.RETREAT:return {"phase":"retreat","action":"show_equipment"}
 	if not state.equipped:
@@ -136,19 +157,55 @@ func decide() -> Dictionary:
 			var parts := waiting_slot.split("_")
 			return {"phase":"waiting","slot":waiting_slot,"action":"show_upgrade","anchor":"upgrade_action","cost":host.cost_text(game.slot_upgrade_cost(parts[0],int(parts[1])))}
 		state.upgraded = true
+	if not defence_adjusted and not empty_defence.is_empty():
+		return {"phase":"defence","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
 	if not game.profile.cleared.is_empty():
 		state.completed = true
 		manually_opened = false
 		return {"phase":"clear"}
 	return {"phase":"paused" if game.paused else "progress"}
 
+func has_equipment_choice(category: String, index: int) -> bool:
+	# Share the picker eligibility; an earned ID alone need not be an equip option.
+	var game: BattleGame = host.game
+	if game.slot_equipment_locked(category,index):return false
+	var choices: Array = host.equipment_panel.equipment_choices(category,index)
+	return choices.any(func(key):return not str(key).is_empty() and game.profile.unlocked.has(key))
+
+func enhancement_ready() -> bool:
+	var game: BattleGame = host.game
+	var state := flags()
+	# Existing purchase state ends this earned-action hint; no new saved flag.
+	return state.completed and state.equipped and state.upgraded and not state.dismissed and game.stage>=8 and game.stage<=10 and game.enhancement_level()==0 and game.can_upgrade_enhancement()
+
+func defence_snapshot() -> Array:
+	var result: Array = []
+	for index in host.game.active_slot_count("defence"):
+		var entry: Dictionary = host.game.slot_entry("defence",index)
+		result.append([str(entry.key),int(entry.level)])
+	return result
+
+func recovery_adjusted() -> bool:
+	var current := defence_snapshot()
+	for index in current.size():
+		var previous: Array = retreat_defence[index] if index<retreat_defence.size() else ["",0]
+		if not str(current[index][0]).is_empty() and (current[index][0]!=previous[0] or int(current[index][1])>int(previous[1])):return true
+	return false
+
 func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
 	var playing: bool = host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT]
 	var modal_blocked: bool = (is_instance_valid(host.chrono_login_dialog) and host.chrono_login_dialog.visible) or (is_instance_valid(host.balance_lab) and host.balance_lab.visible)
+	if playing and host.game.state==BattleGame.State.RETREAT and not flags().get("retreatSeen",true) and not retreat_pending:
+		retreat_pending = not flags().dismissed
+		retreat_defence = defence_snapshot()
+	if retreat_pending and recovery_adjusted():
+		retreat_pending = false
+		retreat_defence.clear()
 	# Reconcile completion before deciding visibility, including while dismissed.
-	var step := decide() if playing and (not flags().completed or manually_opened) else {"phase":"review"}
-	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and not flags().completed))
+	var enhancement_pending := enhancement_ready()
+	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending) else {"phase":"review"}
+	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
 	if show_reopen:
@@ -161,9 +218,11 @@ func refresh() -> void:
 		host.set_ui_value(outline,"visible",false)
 		return
 	phase = step.phase
+	action_id = str(step.get("action",""))
 	host.set_ui_value(panel,"position",host.BATTLE_ORIGIN-host.ui.position+Vector2(16,16 if phase=="unlock" else 570))
 	target_slot = step.get("slot","")
 	host.set_ui_value(body,"text",UIText.t("onboarding."+phase,{"cost":step.cost} if step.has("cost") else {}))
+	if phase=="retreat" and panel.is_visible_in_tree():flags().retreatSeen = true
 	host.set_ui_value(action,"visible",step.has("action"))
 	if step.has("action"):host.set_ui_value(action,"text",UIText.t("onboarding."+str(step.action)))
 	target = resolve_anchor(str(step.get("anchor","")),target_slot)
@@ -187,10 +246,13 @@ func visible_anchor_rect(control: Control) -> Rect2:
 
 func resolve_anchor(id: String, slot: String) -> Control:
 	if id.is_empty():return null
+	if id=="enhancement_upgrade":
+		if host.equipment_tabs.current_tab!=4:return host.system_nav_buttons.get(4)
+		return host.enhancement_panel.upgrade_button
 	if host.equipment_tabs.current_tab!=0:return host.system_nav_buttons[0]
 	var equipment: Control = host.equipment_panel
 	if equipment.has_method("get_action_anchor"):
-		var confirm = equipment.call("get_action_anchor","equip_confirm",slot) if phase=="equip" else null
+		var confirm = equipment.call("get_action_anchor","equip_confirm",slot) if action_id in ["show_slot","show_defence"] else null
 		if is_instance_valid(confirm) and confirm.is_visible_in_tree():return confirm
 		return equipment.call("get_action_anchor",id,slot)
 	# Compatibility with the pre-redesign module panel; semantic references only.
@@ -200,6 +262,7 @@ func resolve_anchor(id: String, slot: String) -> Control:
 func activate() -> void:
 	match phase:
 		"intro":flags().intro = true
+		"enhancement":host.select_system(4)
 		"unlock":
 			# Reuse the existing explicit acknowledgement action.
 			host.continue_button.pressed.emit()
@@ -207,7 +270,10 @@ func activate() -> void:
 			host.select_system(0)
 			if not target_slot.is_empty():
 				host.equipment_panel.select_item(target_slot)
-				if phase in ["upgrade","waiting"] and host.equipment_panel.has_method("set_upgrade_amount"):host.equipment_panel.set_upgrade_amount(1)
+				if action_id=="show_upgrade" and host.equipment_panel.has_method("set_upgrade_amount"):host.equipment_panel.set_upgrade_amount(1)
 				if host.equipment_panel.cards.has(target_slot):host.equipment_panel.grid_scroll.ensure_control_visible(host.equipment_panel.cards[target_slot])
-				if phase=="equip" and host.equipment_panel.has_method("open_picker"):host.equipment_panel.open_picker(target_slot)
+				if action_id in ["show_slot","show_defence"] and host.equipment_panel.has_method("open_picker"):host.equipment_panel.open_picker(target_slot)
+	if phase=="retreat":
+		retreat_pending = false
+		retreat_defence.clear()
 	refresh()

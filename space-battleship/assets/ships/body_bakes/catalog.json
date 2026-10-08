@@ -1,0 +1,222 @@
+{
+	"05ea62b8e69603ea3db3a0a2f370ee194fe914ba2332f574eae1ebf9ecf78649": {
+		"center": [
+			0.0,
+			0.0,
+			-0.33590841293335
+		],
+		"path": "res://assets/ships/body_bakes/05ea62b8e69603ea3db3a0a2f370ee194fe914ba2332f574eae1ebf9ecf78649.png",
+		"source": "drone:cannon:gold",
+		"span": 2.59003806114197
+	},
+	"0a80ee13597f1ab6b143cfdf1c5e434b6bd234a789fd5b68d4341d9203ebc835": {
+		"center": [
+			0.0,
+			0.0,
+			-0.029236376285553
+		],
+		"path": "res://assets/ships/body_bakes/0a80ee13597f1ab6b143cfdf1c5e434b6bd234a789fd5b68d4341d9203ebc835.png",
+		"source": "drone:laser:gold",
+		"span": 1.92762625217438
+	},
+	"0d2784334dd723f6a4188e72d6747b78956c4fafb316d9167a99b25c6ca0d832": {
+		"center": [
+			0.0,
+			-0.799999952316284,
+			-0.0730786323547363
+		],
+		"path": "res://assets/ships/body_bakes/0d2784334dd723f6a4188e72d6747b78956c4fafb316d9167a99b25c6ca0d832.png",
+		"source": "hull:Heavy_Battleship",
+		"span": 7.35928964614868
+	},
+	"10d50cfe8bf544c71e52d93d01b8eaeee45ff4c1e9d5d1de1b933470109b0bbd": {
+		"center": [
+			0.0,
+			0.0,
+			-0.0334084033966064
+		],
+		"path": "res://assets/ships/body_bakes/10d50cfe8bf544c71e52d93d01b8eaeee45ff4c1e9d5d1de1b933470109b0bbd.png",
+		"source": "drone:missile:legendary",
+		"span": 1.93663787841797
+	},
+	"118cbd3b5a6db1b63567c2565d207864245de1878f0335b9136432c2f08b50e0": {
+		"center": [
+			0.0,
+			-0.620000004768372,
+			-0.0230000019073486
+		],
+		"path": "res://assets/ships/body_bakes/118cbd3b5a6db1b63567c2565d207864245de1878f0335b9136432c2f08b50e0.png",
+		"source": "hull:Battleship",
+		"span": 6.84072017669678
+	},
+	"13e509b59088820fe6d09dc29a4eb95487c26f72f9df015f3cb16f85401b1fae": {
+		"center": [
+			0.0,
+			0.0,
+			-0.0334084033966064
+		],
+		"path": "res://assets/ships/body_bakes/13e509b59088820fe6d09dc29a4eb95487c26f72f9df015f3cb16f85401b1fae.png",
+		"source": "drone:missile:gold",
+		"span": 1.93663787841797
+	},
+	"2c13b733abeed83b7893404c043fab5ea899b88ab6227dda016019c5631538e8": {
+		"center": [
+			0.0,
+			0.0,
+			-0.0334084033966064
+		],
+		"path": "res://assets/ships/body_bakes/2c13b733abeed83b7893404c043fab5ea899b88ab6227dda016019c5631538e8.png",
+		"source": "drone:missile:blue",
+		"span": 1.93663787841797
+	},
+	"3615098ea578733cf813a4f2d696766bc87cfef809014957af6a07219bf5dba4": {
+		"center": [
+			0.0,
+			-0.529999971389771,
+			0.068199634552002
+		],
+		"path": "res://assets/ships/body_bakes/3615098ea578733cf813a4f2d696766bc87cfef809014957af6a07219bf5dba4.png",
+		"source": "hull:Destroyer",
+		"span": 6.18148946762085
+	},
+	"396b2046f302dea02a5292f7b97d064337f9e0c36d10cb26d1ec1ac1c3cb6131": {
+		"center": [
+			0.0,
+			0.0,
+			-0.33590841293335
+		],
+		"path": "res://assets/ships/body_bakes/396b2046f302dea02a5292f7b97d064337f9e0c36d10cb26d1ec1ac1c3cb6131.png",
+		"source": "drone:cannon:blue",
+		"span": 2.59003806114197
+	},
+	"4c8401ad3228c6f44abfff79102a6c2e7a606afa869c9e22706c647462b986dd": {
+		"center": [
+			0.0,
+			0.0,
+			-0.211474657058716
+		],
+		"path": "res://assets/ships/body_bakes/4c8401ad3228c6f44abfff79102a6c2e7a606afa869c9e22706c647462b986dd.png",
+		"source": "drone:longLaser:white",
+		"span": 2.32126092910767
+	},
+	"4f10174ddc517df48ab0018bae04258a3dc7beb40df8afed6a1339295f885d74": {
+		"center": [
+			0.0,
+			0.0,
+			-0.029236376285553
+		],
+		"path": "res://assets/ships/body_bakes/4f10174ddc517df48ab0018bae04258a3dc7beb40df8afed6a1339295f885d74.png",
+		"source": "drone:laser:blue",
+		"span": 1.92762625217438
+	},
+	"56be98ecfef765c5636ee47643cb154efee3a07d97528f31019466d7d65777ab": {
+		"center": [
+			0.0,
+			-0.489999949932098,
+			-0.290847778320312
+		],
+		"path": "res://assets/ships/body_bakes/56be98ecfef765c5636ee47643cb154efee3a07d97528f31019466d7d65777ab.png",
+		"source": "hull:Frigate",
+		"span": 6.1232705116272
+	},
+	"5c8871256cd0005c73308fdd33c761c71f4faf0b5474ef21f5f696f3d8e7310b": {
+		"center": [
+			0.0,
+			0.0,
+			-0.029236376285553
+		],
+		"path": "res://assets/ships/body_bakes/5c8871256cd0005c73308fdd33c761c71f4faf0b5474ef21f5f696f3d8e7310b.png",
+		"source": "drone:laser:legendary",
+		"span": 1.92762625217438
+	},
+	"7767cefe3000d5a5a47272ada303e57bad3712c78ec7400cddce80da2336ebf1": {
+		"center": [
+			0.0,
+			0.0,
+			-0.33590841293335
+		],
+		"path": "res://assets/ships/body_bakes/7767cefe3000d5a5a47272ada303e57bad3712c78ec7400cddce80da2336ebf1.png",
+		"source": "drone:cannon:white",
+		"span": 2.59003806114197
+	},
+	"851f2c499e63944544e9d4ed5a7522f57d1d9cffd9a080162dd7a8e778784bfb": {
+		"center": [
+			0.0,
+			0.0,
+			-0.211474657058716
+		],
+		"path": "res://assets/ships/body_bakes/851f2c499e63944544e9d4ed5a7522f57d1d9cffd9a080162dd7a8e778784bfb.png",
+		"source": "drone:longLaser:blue",
+		"span": 2.32126092910767
+	},
+	"8c23c06544a6b9b45d34effa8d0142c79ff0a76baf8034c849d88c0f65200fdf": {
+		"center": [
+			0.0,
+			0.0,
+			-0.211474657058716
+		],
+		"path": "res://assets/ships/body_bakes/8c23c06544a6b9b45d34effa8d0142c79ff0a76baf8034c849d88c0f65200fdf.png",
+		"source": "drone:longLaser:legendary",
+		"span": 2.32126092910767
+	},
+	"917bab3c81b55fc0e50cd38984793c6db742be86fd229bc8e1052f7c993e3705": {
+		"center": [
+			0.0,
+			0.0,
+			-0.029236376285553
+		],
+		"path": "res://assets/ships/body_bakes/917bab3c81b55fc0e50cd38984793c6db742be86fd229bc8e1052f7c993e3705.png",
+		"source": "drone:laser:white",
+		"span": 1.92762625217438
+	},
+	"9ad8f1840a15c2738f2442f8f297d7a70138e06526ac99ed60bfe7978f105e06": {
+		"center": [
+			0.0,
+			0.0,
+			-0.33590841293335
+		],
+		"path": "res://assets/ships/body_bakes/9ad8f1840a15c2738f2442f8f297d7a70138e06526ac99ed60bfe7978f105e06.png",
+		"source": "drone:cannon:legendary",
+		"span": 2.59003806114197
+	},
+	"b6886f4313c5676bb37869486eb3c2664b30c5457555f19f24f9f53abc9418fc": {
+		"center": [
+			0.0,
+			-0.469999998807907,
+			-0.118232250213623
+		],
+		"path": "res://assets/ships/body_bakes/b6886f4313c5676bb37869486eb3c2664b30c5457555f19f24f9f53abc9418fc.png",
+		"source": "hull:Cruiser",
+		"span": 7.10689163208008
+	},
+	"b6e6365833ae475a599f7e5f9a20c10cde0bd7d1b6c3f8368fed1e83db8f95cf": {
+		"center": [
+			0.0,
+			-0.310000002384186,
+			0.0608146190643311
+		],
+		"path": "res://assets/ships/body_bakes/b6e6365833ae475a599f7e5f9a20c10cde0bd7d1b6c3f8368fed1e83db8f95cf.png",
+		"source": "carrier",
+		"span": 2.5772807598114
+	},
+	"c5612b8112daf5226cf28b10eda52bf250838e5901e7cb44025be1ce369d53a3": {
+		"center": [
+			0.0,
+			0.0,
+			-0.211474657058716
+		],
+		"path": "res://assets/ships/body_bakes/c5612b8112daf5226cf28b10eda52bf250838e5901e7cb44025be1ce369d53a3.png",
+		"source": "drone:longLaser:gold",
+		"span": 2.32126092910767
+	},
+	"d4a4fcdbbc0df4ec606f560a1c2aed80a9ee7453bcae8b98dfab05696c04afd8": {
+		"center": [
+			0.0,
+			0.0,
+			-0.0334084033966064
+		],
+		"path": "res://assets/ships/body_bakes/d4a4fcdbbc0df4ec606f560a1c2aed80a9ee7453bcae8b98dfab05696c04afd8.png",
+		"source": "drone:missile:white",
+		"span": 1.93663787841797
+	}
+}

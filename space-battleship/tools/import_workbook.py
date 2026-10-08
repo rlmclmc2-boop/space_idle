@@ -481,6 +481,16 @@ def validate_crew(data):
     if data.get('crew'):
         settings = data.get('crew_config', {})
         positive(settings.get('base_exp', {}).get('value'), 'crew_config base_exp')
+        duration_k = settings.get('hyperspace_duration_k', {}).get('value')
+        positive(duration_k, 'crew_config hyperspace_duration_k')
+        if isinstance(duration_k, bool):
+            raise ValueError('crew_config hyperspace_duration_k: expected number')
+        if not math.isfinite((duration_k + 9e18) / duration_k):
+            raise ValueError('crew_config hyperspace_duration_k: efficiency exceeds numeric range')
+        luck_per_level = settings.get('hyperspace_luck_per_level', {}).get('value')
+        positive(luck_per_level, 'crew_config hyperspace_luck_per_level', True)
+        if isinstance(luck_per_level, bool) or not math.isfinite(luck_per_level * 9e18):
+            raise ValueError('crew_config hyperspace_luck_per_level: invalid numeric range')
         multiplier = settings.get('exp_multiplier', {}).get('value')
         for key in ('equip_bonus', 'tech_ai_per_level', 'tech_speed', 'gem_bonus', 'charge_bonus'):
             row = settings.get(key, {})
@@ -573,12 +583,14 @@ def validate_planets(data):
             raise ValueError(f'planet_buff {id}: unsupported source or condition')
         if row['condition']=='building_complete' and str(row['source_id']) not in data.get('planet_build', {}):
             raise ValueError(f'planet_buff {id}: unknown building')
-        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('level_bonus','enhancement'),('crew_exp_share','all'),('planet_unlock','planet')):
+        if (row['buff_type'],row['target']) not in (('level_bonus','equipment'),('level_bonus','hightech'),('free_charge','all'),('level_bonus','enhancement'),('crew_exp_share','all'),('planet_unlock','planet'),('luck','all')):
             raise ValueError(f'planet_buff {id}: unsupported buff target')
         if row['stack'] not in ('add','mul','max'):
             raise ValueError(f'planet_buff {id}: unsupported stack')
         if row['buff_type']=='crew_exp_share' and (row['stack']!='max' or row['value'] not in (0,1)):
             raise ValueError(f'planet_buff {id}: crew_exp_share requires max and 0/1')
+        if row['buff_type']=='luck' and (row['stack']!='add' or row['source']!='conquer' or row['condition']!='conquered' or isinstance(row['value'],bool)):
+            raise ValueError(f'planet_buff {id}: luck requires conquest and additive numeric value')
         for key in ('value','order'):positive(row[key],f'planet_buff {id} {key}',True)
         if row['order'] != int(row['order']) or (row['buff_type'] != 'free_charge' and row['stack'] != 'mul' and row['value'] != int(row['value'])):
             raise ValueError(f'planet_buff {id}: expected integer level/order')

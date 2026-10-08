@@ -175,6 +175,14 @@ def validate_config(c):
     for key in positive + positive_int:
         if not finite(c[key]) or c[key] <= 0 or (key in positive_int and int(c[key]) != c[key]):
             raise ValueError('Invalid positive config field: ' + key)
+    scale = c.get('material_unit_scale')
+    if not finite(scale) or int(scale) != scale or scale <= 0:
+        raise ValueError('Invalid positive material unit scale')
+    probability = c.get('ultimate_core_probability')
+    if not finite(probability) or not 0 <= probability <= 1:
+        raise ValueError('Invalid actual ultimate core probability')
+    if c['hanging_modules']['hyperspace_charge']['effects'] != ['hyperspace_material_income']:
+        raise ValueError('Collector must affect ordinary hyperspace materials only')
     for key in ['initial_retention_capacity','ultimate_weapon_bonus']:
         if not finite(c[key]) or int(c[key]) != c[key] or c[key] < 0:
             raise ValueError('Invalid nonnegative integer: ' + key)

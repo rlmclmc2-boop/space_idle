@@ -28,7 +28,9 @@ static func claim_stages(s: Dictionary,ids: Array,data: Dictionary) -> Dictionar
 	return stages
 
 static func reserved_crew(s: Dictionary) -> String:
-	if not s.active.is_empty() and s.active.mode=="auto":return str(s.active.crew_id)
+	var idle:Dictionary=s.get("idle",{})
+	if not idle.is_empty() and idle.mode=="auto":return str(idle.crew_id)
+	if s.get("version")==4 and not s.active.is_empty() and s.active.mode=="auto":return str(s.active.crew_id)
 	return str(s.auto.crew_id) if s.auto.enabled else ""
 
 static func crew_available(g,id: String) -> bool:
@@ -50,13 +52,14 @@ static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -
 	for id in bag.drones:
 		var d: Dictionary=bag.drones[id]
 		if not data.get("planet",{}).has(d.planet_id) or d.planet_id!=planet_for_level(data,int(d.level)):return false
-	if not s.active.is_empty() and s.active.status=="completed_pending" and not s.active.reward.drone.is_empty():
-		var reward_drone: Dictionary=s.active.reward.drone
-		if reward_drone.planet_id!=planet_for_level(data,int(reward_drone.level)):return false
+	for receipt in [s.active,s.get("idle",{})]:
+		if not receipt.is_empty() and receipt.status=="completed_pending" and not receipt.reward.drone.is_empty():
+			var reward_drone:Dictionary=receipt.reward.drone
+			if reward_drone.planet_id!=planet_for_level(data,int(reward_drone.level)):return false
 	for id in bag.sealed:
 		if int(bag.sealed[id])!=planet_stage(data,str(bag.drones[id].planet_id)):return false
 	var crew_id:=reserved_crew(s)
-	if crew_id.is_empty():return not s.auto.enabled and (s.active.is_empty() or s.active.mode!="auto")
+	if crew_id.is_empty():return not s.auto.enabled and s.get("idle",{}).get("mode","")!="auto" and (s.active.is_empty() or s.active.mode!="auto")
 	var found:=false
 	for item in profile.get("crew",[]):
 		if item.get("crewId")==crew_id:
@@ -67,7 +70,7 @@ static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -
 	if not gate_id.is_empty():
 		var gate: Dictionary=data.get("unlock",{}).get(gate_id,{})
 		if gate.is_empty():return false
-		var unlocked: bool=profile.get("grantedUnlocks",[]).has(gate_id) or int(gate.level)==0 or (int(profile.get("highestLevel",1))>int(gate.level) if gate.get("mode","cleared")=="reached" else profile.get("cleared",[]).has(int(gate.level)))
+		var unlocked: bool=profile.get("grantedUnlocks",[]).has(gate_id) or int(gate.level)==0 or (int(profile.get("highestLevel",1))>int(gate.level) if gate.get("mode","cleared")=="reached" else profile.get("cleared",[]).any(func(level):return preload("res://scripts/hyperspace_config.gd").integer(level) and int(level)==int(gate.level)))
 		if not unlocked:return false
 	for planet in profile.get("planets",{}).values():
 		if planet.get("crewId","")==crew_id:return false

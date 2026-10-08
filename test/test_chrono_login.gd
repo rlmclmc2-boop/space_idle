@@ -13,6 +13,15 @@ func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	var fresh := preload("res://scripts/main.gd").new()
+	root.add_child(fresh)
+	fresh.set_process(false)
+	await process_frame
+	check(fresh.game.login_chrono_particles==0 and not is_instance_valid(fresh.chrono_login_dialog),"Fresh profiles enter play without an empty offline report")
+	fresh.beginner_guide.refresh()
+	check(fresh.beginner_guide.panel.visible,"Fresh guidance is available without dismissing a login modal")
+	fresh.queue_free()
+	await process_frame
 	var db := ShipDatabase.new()
 	var seed := BattleGame.new(db,false)
 	seed.save_enabled=true
@@ -27,11 +36,11 @@ func run() -> void:
 	scene.set_process(false)
 	await process_frame
 	var dialog: AcceptDialog=scene.chrono_login_dialog
-	check(is_instance_valid(dialog) and dialog.visible,"Every normal startup opens the collection dialog")
+	check(is_instance_valid(dialog) and dialog.visible,"Positive offline collection opens the report")
 	check(scene.game.login_chrono_particles>=12 and scene.game.login_chrono_particles<14 and dialog.dialog_text.contains(str(int(scene.game.login_chrono_particles))),"Dialog reports the actual newly collected particles")
 	check(dialog.title==UIText.t("chrono.login_title") and dialog.ok_button_text==UIText.t("system.confirm"),"Dialog uses registered UI text")
 	if DisplayServer.get_name() != "headless":
-		check(root.get_node_or_null("QATools")==null,"Development QA window waits until the login report closes")
+		check(root.get_node_or_null("QATools")==null,"Login report does not open a QA window")
 		await RenderingServer.frame_post_draw
 		var texture := dialog.get_texture()
 		if texture != null:texture.get_image().save_png("res://.runtime/chrono-login.png")
@@ -41,6 +50,11 @@ func run() -> void:
 	dialog.confirmed.emit()
 	await process_frame
 	check(not is_instance_valid(dialog) and scene.chrono_panel==panel and scene.game.profile.chronoParticles==particles_before and scene.game.profile.resources==resources_before,"Dismissing report preserves particles, resources and page instances")
+	check(root.get_node_or_null("QATools")==null,"Confirming login report does not open QA")
+	scene.show_chrono_login_report()
+	scene.chrono_login_dialog.canceled.emit()
+	await process_frame
+	check(root.get_node_or_null("QATools")==null,"Canceling login report does not open QA")
 	scene.queue_free()
 	await process_frame
 	raw.chronoParticles=seed.chrono_capacity()
@@ -51,11 +65,8 @@ func run() -> void:
 	root.add_child(again)
 	again.set_process(false)
 	await process_frame
-	check(again.game.login_chrono_particles==0 and is_instance_valid(again.chrono_login_dialog) and again.chrono_login_dialog.visible and again.chrono_login_dialog.dialog_text.contains("0"),"Next startup still reports zero when storage was already full")
-	if DisplayServer.get_name() != "headless":
-		var qa_tools := root.get_node_or_null("QATools")
-		check(qa_tools==null or not qa_tools.visible,"Existing QA window stays behind the next login report")
-	again.chrono_login_dialog.confirmed.emit()
+	check(again.game.login_chrono_particles==0 and not is_instance_valid(again.chrono_login_dialog),"Full storage does not open an empty offline report")
+	check(float(again.game.profile.chronoParticles)==seed.chrono_capacity(),"Suppressing an empty report preserves full storage")
 	await process_frame
 	again.queue_free()
 	await process_frame

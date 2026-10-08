@@ -1,5 +1,33 @@
 [
   {
+    "key": "battle.finale_cleared",
+    "text": "终局已肃清",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_cleared",
+    "text": "异空间突破 · 已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_main",
+    "text": "已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.finale",
+    "text": "终局战",
+    "params": "",
+    "category": "battle",
+    "note": "ultimate战斗表现标题，不参与规则"
+  },
+  {
     "key": "hyperspace.visual_tier",
     "text": " · T{tier}",
     "params": "{tier}",
@@ -798,13 +826,13 @@
   },
   {
     "key": "enhance.level",
-    "text": "购买等级 Lv.{level}",
+    "text": "强化等级 Lv.{level}",
     "params": "{level}",
     "category": "enhance"
   },
   {
     "key": "enhance.bonus",
-    "text": "星球附加 +{bonus}  ·  效果等级 {effective}",
+    "text": "星球附加 +{bonus}  ·  生效等级 Lv.{effective}",
     "params": "{bonus},{effective}",
     "category": "enhance"
   },
@@ -1128,7 +1156,7 @@
   },
   {
     "key": "onboarding.next",
-    "text": "知道了",
+    "text": "试试装备",
     "params": "",
     "category": "onboarding"
   },
@@ -1158,49 +1186,49 @@
   },
   {
     "key": "onboarding.intro",
-    "text": "战舰会自动航行、开火和收集战利品。你可以同时管理装备，不必手动瞄准。先给空武器位装上武器。",
+    "text": "下方是你的战舰，它会自己开火。试试右侧的装配和升级，看看战舰与装备卡片的变化。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.equip",
-    "text": "这个空武器位已经开放。选择已解锁武器后确认装配，装配本身不消耗资源；模块升级才需要资源。",
+    "text": "在空武器位选「免费装配」，再从选单里选一种武器；选中就装上了。看看舰上多出的炮口。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.upgrade",
-    "text": "武器已就位。选择一个已装配模块，点击「升级」增强它；当前资源足够升一级。",
+    "text": "点亮框里的「升级」，升一级后看看卡片上的数值，再看看战斗。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.waiting",
-    "text": "升级需要：{cost}。当前资源不足，可继续自动战斗收集资源；不用停在这里等待。",
+    "text": "升级费用：{cost}。先让战舰继续战斗；有足够资源时，升级按钮会亮起。",
     "params": "{cost}",
     "category": "onboarding"
   },
   {
     "key": "onboarding.progress",
-    "text": "装备与升级会直接影响战斗。击败关卡首领后会自动继续推进；解锁通知需要点击「继续」后继续战斗。",
+    "text": "现在看看战斗：武器负责清敌，装甲撑住生命。打完本关最后一队敌舰，就会自动驶向下一关。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.clear",
-    "text": "已完成一次通关！继续补齐空模块、升级装备，再挑战后续关卡。随时可从「入门指引」回看。",
+    "text": "首关已通过！继续试试装配和升级；「操作指南」里能回看入门与已解锁内容。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.retreat",
-    "text": "战舰耐久耗尽后会撤退修复，并按驻守设置重新出发。已有装备与升级仍会保留；可趁现在检查空模块和升级费用。",
+    "text": "刚才生命归零，战舰会修复后重试。装备和资源都还在；补上空防御位或升一级装甲，再看看能否撑住。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.unlock",
-    "text": "新内容已解锁。先阅读提示并点击「继续」，战斗才会继续；装备面板仍可操作。",
+    "text": "新内容来了。3秒后自动确认；也可以点「确认」。没来得及看，去顶部「操作指南 → 系统解锁」回看。",
     "params": "",
     "category": "onboarding"
   },
@@ -1212,13 +1240,13 @@
   },
   {
     "key": "onboarding.review",
-    "text": "自动战斗获得资源 → 免费装配已解锁武器 → 花资源升级模块 → 通关解锁新内容。撤退会修复战舰，装备与升级保留。",
+    "text": "先补齐免费装备，再花铁升级。武器卡看伤害，防御卡看装甲或护盾。失败会撤退修复；装备、等级和资源都保留。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.continue",
-    "text": "继续战斗",
+    "text": "确认解锁",
     "params": "",
     "category": "onboarding"
   },
@@ -1686,11 +1714,27 @@
     "note": "效果类型与数值"
   },
   {
+    "key": "research.effect.damage_unbuilt",
+    "text": "尚未建成 · 首次建成后，武器伤害为原来的 {value}",
+    "params": "value",
+    "category": "research",
+    "note": "未建成工位：用现有公式首级预览，与当前效果区分",
+    "source": "hightech_presentation.gd"
+  },
+  {
     "key": "research.effect.health",
     "text": "生命上限为原来的 {value}",
     "params": "value",
     "category": "research",
     "note": "效果类型与数值"
+  },
+  {
+    "key": "research.effect.health_unbuilt",
+    "text": "尚未建成 · 首次建成后，生命与护盾上限为原来的 {value}",
+    "params": "value",
+    "category": "research",
+    "note": "未建成工位：用现有公式首级预览，与当前效果区分",
+    "source": "hightech_presentation.gd"
   },
   {
     "key": "research.effect.generic",
@@ -5041,7 +5085,7 @@
   },
   {
     "key": "main.draw_help.text_02",
-    "text": "01   战舰自动前进、锁定并攻击敌人。",
+    "text": "先试一次：点「入门指引」，跟着装备一件武器。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5049,7 +5093,7 @@
   },
   {
     "key": "main.draw_help.text_03",
-    "text": "02   点击下方装备的升级按钮，立即强化对应装备。",
+    "text": "战舰会自动前进和攻击，你可以随时调整装备。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5057,7 +5101,7 @@
   },
   {
     "key": "main.draw_help.text_04",
-    "text": "03   驻守设置可选择死亡后取消、返回原点或退后就地驻守。",
+    "text": "想变强？在「装备」选一个槽位，点「升级」。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5065,7 +5109,7 @@
   },
   {
     "key": "main.draw_help.text_05",
-    "text": "04   未解锁装备不显示；获得新装备时会弹窗通知。",
+    "text": "升级武器不会回血；升级防御只补上新增的容量。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5073,7 +5117,7 @@
   },
   {
     "key": "main.draw_help.text_06",
-    "text": "05   驻守在清敌后按航行间隔刷新；跃迁可前往已通关关卡。",
+    "text": "看到残骸，把鼠标移过去收集；自动收集会少一些。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5081,7 +5125,7 @@
   },
   {
     "key": "main.draw_help.text_07",
-    "text": "06   鼠标悬停残骸获得全额资源，超时自动拾取有损耗。",
+    "text": "打不过？先升级再试；生命归零不会扣掉已有资源。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5089,7 +5133,7 @@
   },
   {
     "key": "main.draw_help.text_08",
-    "text": "空格 / Esc：暂停或继续；QA 工具可切换 ×1 / ×2 / ×5",
+    "text": "空格 / Esc：暂停或继续。点「知道了」可关闭帮助。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5097,7 +5141,7 @@
   },
   {
     "key": "main.draw_help.text_09",
-    "text": "升级武器不会恢复生命；升级防御装备仅增加提升的容量。",
+    "text": "想重复战斗？用顶部「驻守」；回旧关用「跃迁至关卡」。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5105,7 +5149,7 @@
   },
   {
     "key": "main.draw_help.text_10",
-    "text": "资源与装备自动保存；生命归零不会扣除已获得资源。",
+    "text": "新系统忘了怎么用？点「系统解锁」按分类回看。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -5489,7 +5533,7 @@
   },
   {
     "key": "main.draw_unlock.text_03",
-    "text": "点击继续后恢复自动前进。",
+    "text": "3秒后自动确认；已解锁内容可在「操作指南」回看。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -8851,7 +8895,7 @@
   },
   {
     "key": "equipment.description.missile",
-    "text": "按存活目标轮转分配；目标不足仍发满表设整批，逐枚离管。",
+    "text": "连续发射多枚导弹，依次分给存活敌人并自动追踪；敌人较少时，多枚导弹会追踪同一个目标。",
     "params": "",
     "category": "weapon",
     "note": "依据当前装备机制的简短说明"
@@ -9075,7 +9119,7 @@
   },
   {
     "key": "ship.refit.carrier",
-    "text": "无人机",
+    "text": "伴飞挂载",
     "params": "",
     "category": "ship",
     "note": "舰体静态预览与真实槽位显示"
@@ -10063,7 +10107,7 @@
   },
   {
     "key": "unlock.next",
-    "text": "点击继续查看下一项解锁。",
+    "text": "可点「确认」查看下一项解锁。",
     "params": "",
     "category": "main",
     "note": "多项解锁逐项确认",
@@ -11948,7 +11992,7 @@
   },
   {
     "key": "weapon.expected_damage_details",
-    "text": "单次基础伤害 {base}\n暴击触发率 {trigger}% · 伤害比例生效概率 {bonus}%\n暴击伤害为基础的 {multiplier}%\n当前期望伤害 {expected}\n仅表示暴击概率对应的均值，实际单发仍按战斗规则判定",
+    "text": "单次基础伤害 {base}\n暴击触发率 {trigger}% · 伤害比例生效概率 {bonus}%\n暴击伤害为基础的 {multiplier}%\n当前平均伤害 {expected}\n这是计入暴击概率的平均值，每发伤害可能不同。",
     "params": "{base},{trigger},{bonus},{multiplier},{expected}",
     "category": "weapon",
     "note": "仅展示，不消费随机数或改变战斗伤害"
@@ -12137,7 +12181,7 @@
   },
   {
     "key": "ship.refit.active_count",
-    "text": "启用 {active}",
+    "text": "可用槽位 {active}",
     "params": "{active}",
     "category": "ship",
     "note": "候选舰体实际启用槽位数量"
@@ -12260,13 +12304,13 @@
   },
   {
     "key": "ship.refit.carrier_empty",
-    "text": "没有已装载武器的无人机",
+    "text": "暂无伴飞武器挂载",
     "params": "",
     "category": "ship"
   },
   {
     "key": "ship.refit.carrier_page",
-    "text": "武器无人机 · {page}/{pages} 页 · 共 {count} 架",
+    "text": "伴飞武器挂载 · {page}/{pages} 页 · 共 {count} 处",
     "params": "{page},{pages},{count}",
     "category": "ship"
   },
@@ -12576,13 +12620,13 @@
   },
   {
     "key": "hyperspace.energy",
-    "text": "能量 {current} / {cap} · 实际门票 {ticket}",
+    "text": "能量 {current} / {cap}\n每次消耗 {ticket} 能量",
     "params": "{current},{cap},{ticket}",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.best",
-    "text": "历史最佳 X1：{time}",
+    "text": "最快用时（按1倍速）：{time}",
     "params": "{time}",
     "category": "hyperspace"
   },
@@ -12654,7 +12698,7 @@
   },
   {
     "key": "hyperspace.first_win",
-    "text": "首次探索胜利后解锁无人机",
+    "text": "先选路线，点「排队挑战」。赢下首次探索后，再到「无人机」装备。",
     "params": "",
     "category": "hyperspace"
   },
@@ -12822,7 +12866,7 @@
   },
   {
     "key": "hyperspace.hanging",
-    "text": "挂设：{items}",
+    "text": "挂载模块：{items}",
     "params": "{items}",
     "category": "hyperspace"
   },
@@ -12918,7 +12962,7 @@
   },
   {
     "key": "hyperspace.auto_hint",
-    "text": "自动探索仅显示进度；派遣占用船员，能量满后启动。",
+    "text": "想让船员代你探索？先亲自赢一次，再点「自动船员管理」派一名空闲船员。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13158,7 +13202,7 @@
   },
   {
     "key": "hyperspace.no_hangings",
-    "text": "暂无挂设",
+    "text": "暂无挂载模块",
     "params": "",
     "category": "hyperspace"
   },
@@ -13176,7 +13220,7 @@
   },
   {
     "key": "hyperspace.unknown_hanging",
-    "text": "未识别挂设",
+    "text": "未识别挂载模块",
     "params": "",
     "category": "hyperspace"
   },
@@ -13266,7 +13310,7 @@
   },
   {
     "key": "hyperspace.filter_disabled",
-    "text": "自动筛选尚未启用",
+    "text": "自动处理未启用",
     "params": "",
     "category": "hyperspace"
   },
@@ -13566,7 +13610,7 @@
   },
   {
     "key": "hyperspace.hanging_name.hyperspace_charge",
-    "text": "异空间充能",
+    "text": "异空间采集器",
     "params": "",
     "category": "hyperspace"
   },
@@ -13578,25 +13622,25 @@
   },
   {
     "key": "hyperspace.commit_forge",
-    "text": "执行此报价",
+    "text": "确认改造",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.quote_first",
-    "text": "先预览：费用与随机次数由改造领域计算。",
+    "text": "点「预览改造」查看费用；预览不会扣材料。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.quote_ready",
-    "text": "报价可执行；条件变化后需重新预览。",
+    "text": "材料够了，可以确认改造。更换无人机或项目后需重新预览。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.quote_result",
-    "text": "消耗：{cost}\n抽取次数：{draws}",
+    "text": "需要材料：{cost}\n改造次数：{draws}",
     "params": "cost,draws",
     "category": "hyperspace"
   },
@@ -13644,7 +13688,7 @@
   },
   {
     "key": "hyperspace.forge_summary",
-    "text": "词条 {affixes} 项 · 挂设槽 {slots} 个 · 改造版本 {revision}",
+    "text": "词条 {affixes} 项 · 挂载槽 {slots} 个 · 改造版本 {revision}",
     "params": "affixes,slots,revision",
     "category": "hyperspace"
   },
@@ -13686,7 +13730,7 @@
   },
   {
     "key": "hyperspace.auto_projection",
-    "text": "实际门票 {ticket}\n预计耗时 {duration} 秒\n{status}；无 X1 记录时不能开启。",
+    "text": "每次消耗能量 {ticket}\n预计用时 {duration} 秒\n{status}；没有通关记录时不能开启。",
     "params": "ticket,duration,status",
     "category": "hyperspace"
   },
@@ -13704,13 +13748,13 @@
   },
   {
     "key": "hyperspace.module_manage",
-    "text": "管理挂设",
+    "text": "管理挂载模块",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.module_slots",
-    "text": "挂设 {used} / {cap}（同架不可重复）",
+    "text": "已安装 {used} / {cap}（同一种模块不能重复装）",
     "params": "used,cap",
     "category": "hyperspace"
   },
@@ -13722,19 +13766,19 @@
   },
   {
     "key": "hyperspace.module_apply",
-    "text": "应用挂设",
+    "text": "应用挂载模块",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.module_rejected",
-    "text": "挂设未通过领域校验",
+    "text": "未能安装模块，请检查挂载槽和已解锁模块。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.filter_domain_hint",
-    "text": "最多五条件；导入先预览，保存后执行所选处理动作。",
+    "text": "只处理之后的新掉落，不动现有仓库。拆解会返还材料和随机挂载模块副本。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13746,13 +13790,13 @@
   },
   {
     "key": "hyperspace.filter_action_keep_matches",
-    "text": "保留匹配项",
+    "text": "保留符合条件的，其余拆解",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.filter_action_clear_matches",
-    "text": "销毁匹配项",
+    "text": "拆解符合条件的，其余保留",
     "params": "",
     "category": "hyperspace"
   },
@@ -13836,7 +13880,7 @@
   },
   {
     "key": "hyperspace.operation_add_hanging_slot",
-    "text": "添加挂设槽",
+    "text": "添加挂载槽",
     "params": "",
     "category": "hyperspace"
   },
@@ -13944,19 +13988,19 @@
   },
   {
     "key": "hyperspace.command_error_insufficient_materials",
-    "text": "材料不足；报价显示实际所需材料。",
+    "text": "材料不足；先看报价缺哪种材料，再去产出它的路线探索。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.command_error_affix_limit",
-    "text": "已到品质词条上限。",
+    "text": "这架无人机没有空余词条位。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.command_error_hanging_limit",
-    "text": "已到品质挂设槽上限。",
+    "text": "这架无人机没有空余挂载槽容量，不能再加槽。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13974,19 +14018,19 @@
   },
   {
     "key": "hyperspace.command_error_forecast_limit",
-    "text": "保底抽取超过领域上限。",
+    "text": "随机替换次数过多，未生成报价；可改选「随机」只换一次。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.command_error_cost_limit",
-    "text": "消耗超过领域允许范围。",
+    "text": "本次花费超出可处理范围；请改选其他操作。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.command_error_no_new_record",
-    "text": "同路线没有更高等级首胜记录。",
+    "text": "先通关这架无人机对应路线的更高等级，再来现代化。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14184,7 +14228,7 @@
   },
   {
     "key": "hyperspace.dismantle_confirm",
-    "text": "拆解将移除此无人机，获得对应材料和随机挂设副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+    "text": "拆解将移除此无人机，获得对应材料和随机挂载模块副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
     "params": "",
     "category": "hyperspace"
   },
@@ -14202,13 +14246,13 @@
   },
   {
     "key": "hyperspace.totals_summary",
-    "text": "装备总加成：伤害 +{damage}%\n生效词条 {affixes} 类 · 挂设 {hangings} 类",
+    "text": "装备总加成：伤害 +{damage}%\n生效词条 {affixes} 类 · 挂载模块 {hangings} 类",
     "params": "damage,affixes,hangings",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.totals_authority",
-    "text": "当前装备总加成（领域投影）",
+    "text": "当前装备总加成",
     "params": "",
     "category": "hyperspace"
   },
@@ -14274,19 +14318,19 @@
   },
   {
     "key": "hyperspace.total_hangings",
-    "text": "已生效挂设总加成",
+    "text": "已生效挂载模块总加成",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.reforge_module_reset",
-    "text": "重铸重置模块解锁、等级与经验。\n保留挂设待本轮重新解锁后生效。",
+    "text": "重铸后需要重新获得模块；保留下来的安装记录不会自动解锁模块。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.total_legendary",
-    "text": "生效传说效果（领域择取）",
+    "text": "生效传说效果",
     "params": "",
     "category": "hyperspace"
   },
@@ -14520,7 +14564,7 @@
   },
   {
     "key": "hyperspace.recent_result",
-    "text": "最近探索 · {weapon} {level}级 · {reason}\n投入 {elapsed} X1秒 · 到达通道 {point}/10 · 已退票 {refund}\n主线返回 第{stage}关 · 战点 {main_point}",
+    "text": "最近探索 · {weapon} {level}级 · {reason}\n用时（按1倍速）：{elapsed} 秒 · 到达战点 {point}/10 · 退回能量 {refund}\n返回主线 第{stage}关 · 战点 {main_point}",
     "params": "{weapon},{level},{reason},{elapsed},{point},{refund},{stage},{main_point}",
     "category": "hyperspace",
     "note": "当前会话最近探索结果，不是QA超时"
@@ -14555,7 +14599,7 @@
   },
   {
     "key": "hyperspace.result_formation_invalid",
-    "text": "敌舰布局异常，探索已结束并退回实际可容纳的能量",
+    "text": "敌舰布局异常，探索已结束，消耗的能量已全额退回",
     "params": "",
     "category": "hyperspace",
     "note": "显示布局校验拒绝后的事务失败结果"
@@ -14587,7 +14631,7 @@
   },
   {
     "key": "hyperspace.resource_reference_hint",
-    "text": "所选战斗等级 {level}；普通材料（铁/铀、强化碎片）按已通关 {cleared}；无人机/专材需探索通关。",
+    "text": "挑战 {level} 级敌人；铁、铀与强化碎片按主线已通关 {cleared} 级结算。胜利后另获这条路线的无人机与材料。",
     "params": "level,cleared",
     "category": "hyperspace"
   },
@@ -14607,7 +14651,7 @@
   },
   {
     "key": "hyperspace.promotion_risk_hint",
-    "text": "随机选择一个未锁定词条尝试升阶；失败仍消耗报价材料，成功只升一阶并重新随机数值。凶兆开启时，仅从最差阶级的未锁定词条中选择。",
+    "text": "随机选一条未锁词条尝试升一阶；失败仍扣材料。T1已是最高阶。",
     "params": "",
     "category": "hyperspace",
     "note": "真实失败归因与付费预期反馈"
@@ -14685,13 +14729,13 @@
   },
   {
     "key": "hyperspace.dismantle_source_hint",
-    "text": "拆解多余无人机可获得对应武器材料和随机挂设副本。首次副本解锁模块（0级）；后续副本提供成长经验。",
+    "text": "先看返还预览，再决定拆解；装备、收藏或预设中的无人机需先解除保护。",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.module_source_hint",
-    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。\n资源收集器：提高战斗掉落铁/铀、自动生成铀和铁熔炉产出。\n不影响异空间材料、宝石/强化碎片或星系自动铁/铀。",
+    "text": "到「改造」选择「拆解无人机」可随机获得模块；再次获得同种模块可升级。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14703,7 +14747,7 @@
   },
   {
     "key": "hyperspace.dismantle_preview",
-    "text": "拆解收益：{materials}\n随机挂设副本 {count} 份（具体模块以实际结果为准）。",
+    "text": "拆解收益：{materials}\n随机挂载模块副本 {count} 份（具体模块以实际结果为准）。",
     "params": "materials,count",
     "category": "hyperspace"
   },
@@ -14733,7 +14777,7 @@
   },
   {
     "key": "hyperspace.restore_modernize_hint",
-    "text": "还原不提升等级；后续现代化另需对应材料。\n材料不足不会退回已消耗的还原核心。",
+    "text": "还原只解除究极状态。想提升等级，还需另做现代化；先确认材料够用。",
     "params": "",
     "category": "hyperspace",
     "note": "还原前静态提示，不承诺后续现代化可支付"
@@ -14747,7 +14791,7 @@
   },
   {
     "key": "hyperspace.recent_interrupted_refund",
-    "text": "已付探索因读档中断 · {weapon} {level}级\n已退票 {refund} 超空间能量。",
+    "text": "探索因读档中断 · {weapon} {level}级\n已全额退回 {refund} 能量。",
     "params": "{weapon},{level},{refund}",
     "category": "hyperspace",
     "note": "仅本次正式读档真实结算退票后显示；不持久化或重复宣称退款"
@@ -14774,8 +14818,1344 @@
   },
   {
     "key": "hyperspace.forge_guide_body",
-    "text": "先选无人机，再到“改造”选择操作。先点“预览报价”，确认消耗和结果提示后，再点执行。报价本身不扣材料；切换无人机、操作或完成其他改造后，要重新预览。所有金额以当前报价为准。\n\n一、先分清三个概念\n品质决定基础能力与词条／挂设容量；T阶表示词条档次，T1最高、T5最低；无人机等级影响参与等级放大的词条。升级等级不会自动升T阶，传说和究极也不是T阶。蓝色来源传说仍保留蓝色武器模块加成。\n\n二、添加与替换词条\n“添加词条”增加一条随机词条，不能超过当前品质上限。“替换未锁词条”随机选一个未锁词条，重新生成类型、T阶和数值。想保留的词条应先锁定，但锁定对象本身也是随机的。\n选择指定词条时，报价会计算连续替换直到首次出现该类型的总消耗；可能改到多个未锁词条，不代表指定某个位置，也不保证T阶或最大值。报价太贵可以放弃，不必执行。\n\n三、随机锁定\n从全部未锁词条中等概率选择一个并永久锁定。已有锁定不再参与抽取，未来预兆不会帮你定向锁定。锁定数量越多，后续锁定费用越高。当前没有解锁词条的操作；不要把差词条全锁住。\n\n四、升阶一阶\n随机选择一个未锁词条，按阶级权重判定成功。成功只升一阶，并在新阶范围内重新随机数值；失败仍消耗本次费用，词条保持原样。T1不能再升。未来预兆不改变升阶目标。T3是成长配装参考，不是系统上限。\n\n五、重随机数值\n保留词条类型与T阶，重新随机所有未锁词条的数值；传说效果的随机参数也会参与。锁定词条不变。“保底最大值”会把本次涉及的数值取到各自范围上限，费用可能非常高；先看报价，不要将它理解为免费补满或只洗一条。\n\n六、未来预兆\n开启后，仅替换词条时优先替换未锁词条中的最低阶：先T5，再T4，以此类推；同阶随机。它不提高新词条抽取概率，不保证升阶，也不影响锁定和升阶的选取。关闭后恢复普通随机替换。\n\n七、挂设槽与挂设\n添加挂设槽不能突破当前容量。挂设需要先解锁，再在无人机详情里配置；同一种挂设不能在同一架重复安装。低品质转为传说会保留已有挂设槽和已安装挂设，因此若需要经济型传说，应先考虑挂设，再传说化。究极状态不能更换挂设。\n\n八、传说化\n获得一个传说效果，保留全部现有词条、锁定、已有挂设槽及已安装挂设。保底指定效果必须先发现并加入收藏，且符合武器限制。首次见到的效果不等于已加入收藏。当前不支持再次传说化来重抽效果。当前传说同时最多装备2架；究极独立最多1架。同时具备传说和究极的无人机，会同时占用两种名额。\n\n九、现代化\n只提升无人机等级，不改变已有词条类型、T阶或原始随机值。目标取该武器对应异空间路线当前可用的最高已通记录，并受本轮主线最大关卡限制；不是自动跟随主线。\n例如主线已通60、开放61，但对应路线最高只通55，则现代化到55。重铸前的历史记录可保留，重铸后要重新推进到相应主线关卡才可使用。没有更高可用记录时不能现代化。\n费用由目标等级、基础系数、现有词条阶级和传说倍率计算；基础系数包含1。高阶词条会提高费用。先看预览中的前后等级、属性和材料消耗。\n\n十、究极化与还原\n究极是独立状态，可以与传说同时存在。究极化使武器模块等级+5，并增加额外词条，但此后不能直接进行普通改造或更换挂设。想继续现代化，要先还原究极，再现代化，最后按需要重新究极化；每步分别报价和付款。\n还原不会重新抽掉原来的究极额外词条：它暂时失效，再次究极化时恢复原词条。等级提升后，参与等级放大的效果随新等级计算。\n\n十一、拆解与保护\n拆解会永久移除该无人机，获得对应路线材料；挂设奖励按当前规则结算。已装备、已收藏或被预设引用的无人机会受到保护，需要先解除相应保护才能拆解。拆解前核对名称和返还预览，确认框不会帮你保留原机。重铸清除未保留无人机不算拆解，不发拆解奖励。\n\n十二、常见操作顺序\n先选适合当前武器与用途的无人机，补需要的词条／挂设，再决定替换、升阶和锁定；确认长期保留后再考虑昂贵保底、传说化与究极化。现代化前先比较等级收益与材料成本。不要仅为追T3或更高阶牺牲所有成长资源。\n\n失败提示怎么处理\n材料不足：回对应路线获得材料，或改选较便宜操作。没有未锁词条：当前可修改目标已用尽。已达上限：检查品质容量。记录不足：先通对应异空间路线。报价失效：重新预览。究极禁止改造：先还原。仓库或保护限制：检查装备、收藏、预设和空位。",
+    "text": "先在「无人机」选一架，再选你想做的改造。\n点「预览改造」看费用，合适再点「确认改造」。预览不扣材料；换了无人机或操作，就重新预览。",
     "params": "",
     "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.forge_guide_add_affix",
+    "text": "想多一条属性？\n「添加词条」会随机生成一条，出现在无人机详情中。先看看是否还有空位：白色没有词条位；品质决定容量。添加不会改变已有词条。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_replace_affix",
+    "text": "想换掉不合适的词条？\n选「随机」只换一条未锁词条，类型、T阶和数值都会重抽。\n想要某种词条，就在目标中选它。报价包含一直替换到它出现的总花费，中途可能改掉其他未锁词条；不会保证T阶或最大值。太贵就放弃报价。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_lock_affix",
+    "text": "想保住已有词条？\n锁定会随机选一条未锁词条，不能指定位置。锁定后，它不再参与替换、升阶或数值重抽。\n锁定无法解除，后续锁定也会更贵；先确认每条候选都值得保留。未来预兆不会改变锁定目标。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_promote_affix",
+    "text": "想让词条升一阶？\nT1最高，T5最低。系统随机选一条未锁词条尝试升阶。成功只升一阶，并重抽该阶数值；失败仍扣材料，词条不变。\n未来预兆不会改变升阶目标。提升无人机等级也不会自动升T阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_reroll_values",
+    "text": "类型和T阶满意，只想重抽数值？\n本次会重抽所有未锁词条的数值，类型和T阶不变；传说效果中的随机参数也参与。锁定词条保持原样。\n勾选「保底最大值」会将本次涉及的数值取到各自上限，费用也可能很高。先看报价。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_enable_omen",
+    "text": "想优先换掉低阶词条？\n开启后，替换时优先选未锁词条中最低的一阶：先T5，再T4；同阶随机。\n它不会提高新词条的抽取概率，也不会保证升阶；锁定和升阶仍随机选目标。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_disable_omen",
+    "text": "想恢复普通替换？\n关闭后，「替换未锁词条」重新从所有未锁词条中随机选一条，不再优先选最低阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_add_hanging_slot",
+    "text": "先给这架添加一个挂载槽，再回详情点「管理挂载模块」，勾选已解锁模块后应用。\n还没有模块？拆解多余无人机可随机获得，不能指定种类。0级只表示已解锁，尚无加成；再次获得同种模块可升到1级。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_legendary",
+    "text": "想给无人机一个传说效果？\n传说化会保留已有词条、锁定、挂载槽与挂载模块，并获得一个传说效果；蓝色来源的武器模块加成也保留。\n想指定效果，先在「传说收藏」中收藏已发现且符合武器的效果。首次发现不等于收藏。已经传说化的无人机不能再次重抽。\n同时最多装备2架传说；若也为究极，会同时占用两种名额。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_modernize",
+    "text": "想保留这架无人机，只提升等级？\n先通它对应路线的更高等级，再预览现代化，比较前后等级和属性。词条类型、T阶和原始随机值保持不变。\n目标取该路线当前可用的最高通关记录，并受本轮主线最大关卡限制，不会自动跟随主线升级。重铸后也需重新推进主线，才能使用旧记录。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_ultimate",
+    "text": "想把它变为究极？\n究极化会使武器模块等级+5，并增加一条额外词条；可以与传说同时存在。最多装备1架究极。\n究极状态不能做普通改造或更换挂载模块。若还想现代化，先查看「还原究极」的说明；每一步都要分别报价和付款。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_restore_ultimate",
+    "text": "想继续改造一架究极无人机？\n先还原，做完需要的改造后，再决定是否重新究极化。原究极额外词条暂时失效，重新究极化会恢复它，不会重抽。\n还原不会提升等级，也不会退回核心；现代化另需材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_guide_dismantle",
+    "text": "想清掉一架多余无人机？\n先解除装备、收藏与预设保护，再看返还预览。拆解会永久删除这架无人机，并获得对应路线材料；随机挂载模块副本首次解锁模块，之后提供成长经验。\n核对对象后再确认。重铸删除未保留无人机不算拆解，不会发拆解奖励。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
+  },
+  {
+    "key": "hyperspace.forge_capacity_summary",
+    "text": "词条 {affixes}/{affix_cap} · 挂载槽 {slots}/{slot_cap}",
+    "params": "affixes,affix_cap,slots,slot_cap",
+    "category": "hyperspace",
+    "note": "实际词条与挂设容量；隐藏开发改造版本号"
+  },
+  {
+    "key": "hyperspace.forge_result_current",
+    "text": "改造后的属性（可在此直接查看）：",
+    "params": "",
+    "category": "hyperspace",
+    "note": "执行成功后读取同一架无人机的现有结果；不重抽"
+  },
+  {
+    "key": "onboarding.defence",
+    "text": "再给空防御位装上装甲。选中后，看看左下生命上限和防御卡的变化。",
+    "params": "",
+    "category": "onboarding",
+    "note": "入门防御操作"
+  },
+  {
+    "key": "onboarding.show_defence",
+    "text": "补上防御",
+    "params": "",
+    "category": "onboarding",
+    "note": "入门防御操作"
+  },
+  {
+    "key": "tutorial.system.hyperspace",
+    "text": "异空间",
+    "params": "",
+    "category": "tutorial"
+  },
+  {
+    "key": "tutorial.hyperspace.description",
+    "text": "选一条路线，点「挑战第1层」。通关后，点「后台探索」重复获取这一层的奖励；也可以挑战下一层。收到无人机后，点「查看无人机」试着装到战舰上。",
+    "params": "",
+    "category": "tutorial"
+  },
+  {
+    "key": "planet.reforge_confirm_basic",
+    "text": "确认重铸新船？\n\n重置本轮装备、AI工厂与科学家、反应炉、强化及强化材料、宝石、攻击历史与战舰成长。从第{level}关重新出发，恢复此前对应的解锁项目。\n\n保留铁与铀余额、时空粒子、船员及其等级和装备、星球与星系永久进度、历史最高关卡经验倍率。进行中的星球探索继续，已见过的解锁提示不再重复。\n\n每颗星球只能重铸一次。",
+    "params": "level",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_hyperspace",
+    "text": "异空间能源、材料与探索设置重置；保留异空间通关时间记录。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_drones",
+    "text": "改造命令与挂载模块成长重置。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。请在本窗口选择保留名单；未选择的无人机将删除。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "planet.reforge_brief_basic",
+    "text": "本轮成长重置；铁、铀和时空粒子保留。",
+    "params": "",
+    "category": "planet"
+  },
+  {
+    "key": "hyperspace.module_source_hint_basic",
+    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.material_heading",
+    "text": "本次需求 · 持有 · 缺少",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_owned",
+    "text": "{material} {owned}",
+    "params": "{material},{owned}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_requirement",
+    "text": "{material}：需要 {need}　持有 {owned}　缺少 {missing}",
+    "params": "{material},{need},{owned},{missing}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_forecast_needed",
+    "text": "点「预览改造」计算保底总费用；预览不扣材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_explore",
+    "text": "去探索补材料",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_view_drone",
+    "text": "查看无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_drone_received",
+    "text": "已获得：{quality} · {weapon}无人机 · 等级 {level}",
+    "params": "{quality},{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_materials_received",
+    "text": "探索奖励已入库",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_first_drone",
+    "text": "获得第一架无人机！",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.reward_equip_next",
+    "text": "点「查看无人机」，再点「装备到空位」，看看它加入战舰。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_empty",
+    "text": "空位",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_locked",
+    "text": "未开放",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slots_heading",
+    "text": "战舰无人机槽　{used} / {capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_drone",
+    "text": "{weapon} · 等级 {level}",
+    "params": "{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_capacity_source",
+    "text": "当前战舰「{ship}」提供 {capacity} 个无人机槽。",
+    "params": "{ship},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_next_hull",
+    "text": "通关第 {level} 关可解锁「{ship}」，切换后可增加无人机槽。",
+    "params": "{ship},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_unequip",
+    "text": "卸下这架",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_replace",
+    "text": "替换已装无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_equip",
+    "text": "装备到空位",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_choose_replacement",
+    "text": "选择要换下的无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_changed",
+    "text": "战舰无人机已更新；上方槽位显示当前装备。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_rejected",
+    "text": "未能装备，当前装备保持不变。请检查封存、仓库位置及品质装备名额。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.material_white_condition",
+    "text": "白色无人机没有词条位，不能添加词条；回到基础改造，可查看这架能否添加挂载槽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_sealed",
+    "text": "这架仍在封存；达到详情中的领取关卡后，先领取再装备。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_not_in_warehouse",
+    "text": "这架不在仓库；先腾出仓库位置，再领取或整理。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_unknown_drone",
+    "text": "这架无人机已不在库存，请重新选择。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_no_slots",
+    "text": "当前战舰没有无人机槽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_replacement_not_equipped",
+    "text": "要换下的无人机已不在战舰上，请重新选择槽位。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_capacity_exceeded",
+    "text": "当前战舰槽位已满，请选择要换下的无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_select_replacement",
+    "text": "请先选择要换下的无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_legendary_limit",
+    "text": "装备后会超过传说名额，请改选要换下的传说无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_ultimate_limit",
+    "text": "装备后会超过究极名额，请改选要换下的究极无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_weapon_constraint",
+    "text": "这个组合不符合磁轨炮装备限制；当前装备保持不变。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.equipment_error_invalid_loadout",
+    "text": "这个组合无法装备；当前装备保持不变。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "ship.refit.carrier_hint",
+    "text": "主舰挂点以外的舰载武器由伴飞平台承载，W 编号仍对应原武器槽。不占用异空间无人机槽。",
+    "params": "",
+    "category": "ship",
+    "note": "区分溢出武器挂载与异空间独立无人机，仅表现说明"
+  },
+  {
+    "key": "hyperspace.slot_switch_hull",
+    "text": "已有更多槽位的战舰：去「战舰」切换到「{ship}」，可使用 {capacity} 个无人机槽。",
+    "params": "{ship},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.slot_next_hull_reached",
+    "text": "推进到第 {level} 关之后可解锁「{ship}」，切换后可增加无人机槽。",
+    "params": "{ship},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_independent_weapon",
+    "text": "装备后独立开火：{weapon} · 武器等级 {level}",
+    "params": "{weapon},{level}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_base_damage",
+    "text": "基础伤害 {damage}；额外加成和暴击另计。",
+    "params": "{damage}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_laser",
+    "text": "脉冲独立发射，射击间隔 {interval} 秒。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_missile",
+    "text": "每轮 {count} 枚导弹，逐个分配目标；间隔 {interval} 秒。",
+    "params": "{interval},{count}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_cannon",
+    "text": "磁轨炮独立发射，射击间隔 {interval} 秒。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.drone_fire_longLaser",
+    "text": "持续锁定目标，每 {interval} 秒判定一次伤害。",
+    "params": "{interval}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.rare_legendary_budget",
+    "text": "传说名额 {used}/{capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.rare_ultimate_budget",
+    "text": "究极名额 {used}/{capacity}",
+    "params": "{used},{capacity}",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.more_operations",
+    "text": "更多改造与条件",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.basic_operations",
+    "text": "回到基础改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.no_basic_operation",
+    "text": "暂无适合这架的基础改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.basic_operations_hint",
+    "text": "先做适合这架的操作；缺材料时可去对应路线探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "hyperspace.advanced_operations_hint",
+    "text": "后续改造可在这里查条件；选一项，材料区会显示当前限制。",
+    "params": "",
+    "category": "hyperspace",
+    "note": ""
+  },
+  {
+    "key": "onboarding.enhancement",
+    "text": "强化碎片够了。试着升1级，再看武器和防御旁的生效数量、数值变化。",
+    "params": "",
+    "category": "onboarding",
+    "note": "第8–10关已解锁且可首次购买时，提示一次真实操作；升过级后自动收起"
+  },
+  {
+    "key": "onboarding.show_enhancement",
+    "text": "去装备强化",
+    "params": "",
+    "category": "onboarding",
+    "note": "导航到已解锁的现有界面，不代替玩家购买"
+  },
+  {
+    "key": "battle.incoming_damage",
+    "text": "{type} {damage}",
+    "params": "{type} {damage}",
+    "category": "battle",
+    "note": "实际受击飘字与已有伤害明细：类型来自命中事件，不推断武器外观",
+    "source": "main.gd:incoming_damage_text"
+  },
+  {
+    "key": "equipment.fixed_armour",
+    "text": "基础装甲 · 这个槽位只能升级",
+    "params": "",
+    "category": "weapon",
+    "note": "基础防御槽详情中说明既有换装限制",
+    "source": "equipment_tab.gd:refresh_detail"
+  },
+  {
+    "key": "equipment.new_weapon",
+    "text": "新装备：{weapon} · 去换装",
+    "params": "{weapon}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.new_weapon_dismiss",
+    "text": "收起",
+    "params": "",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.attack_interval",
+    "text": "攻击间隔 {seconds} 秒",
+    "params": "{seconds}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "equipment.current_reduction",
+    "text": "对应类型伤害减少 {percent}%",
+    "params": "{percent}",
+    "category": "equipment",
+    "note": "装备页开局可发现入口与默认必要属性",
+    "source": "equipment_tab.gd"
+  },
+  {
+    "key": "battle.enemy_defence.hint",
+    "text": "指向敌舰看防御",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.title",
+    "text": "敌舰防御",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.resistance",
+    "text": "抵抗{type}伤害",
+    "params": "{type}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.neutral",
+    "text": "无类型抗性",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.armour",
+    "text": "装甲：{resistance}",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.no_shield",
+    "text": "无护盾",
+    "params": "",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.shield",
+    "text": "护盾：{resistance} · 先承受伤害",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "battle.enemy_defence.broken_shield",
+    "text": "护盾已破（{resistance}）",
+    "params": "{resistance}",
+    "category": "battle",
+    "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
+    "source": "enemy_defence_inspector.gd"
+  },
+  {
+    "key": "hyperspace.active_effects_summary",
+    "text": "当前装备生效：{items}",
+    "params": "{items}",
+    "category": "hyperspace",
+    "note": "仅列战斗汇总中非零词条、非零挂载模块及生效传说效果；不固定展示伤害0%"
+  },
+  {
+    "key": "hyperspace.reward_nav_drone",
+    "text": "新无人机",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "hyperspace.reward_nav_received",
+    "text": "新奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "hyperspace.reward_nav_hint",
+    "text": "异空间探索有新奖励；点击查看回执，再决定是否换装。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未读探索回执的既有导航入口；不强制切页"
+  },
+  {
+    "key": "research.effect.iron_unbuilt",
+    "text": "尚未建成 · 建成后每 {time} 秒生成铁块",
+    "params": "time",
+    "category": "research",
+    "note": "炼铁炉等级0：区分施工与建成作用，不把当前0产量当成未来收益",
+    "source": "hightech_presentation.gd"
+  },
+  {
+    "key": "hyperspace.energy_refund_over_cap",
+    "text": "退回能量保留，超限时暂缓恢复。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅当前能量超过实际容量时显示，不裁掉退款、不改变恢复逻辑"
+  },
+  {
+    "key": "hyperspace.time_seconds",
+    "text": "{value}秒",
+    "params": "{value}",
+    "category": "hyperspace",
+    "note": "时间数值的秒单位格式，保持暂无成绩无需单位"
+  },
+  {
+    "key": "hyperspace.module_no_slots",
+    "text": "这架没有挂载槽。先到「改造」添加一个挂载槽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_none_unlocked",
+    "text": "还没有解锁模块。到「改造」选择「拆解无人机」，可随机获得；种类不能指定。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_none_available",
+    "text": "当前没有可安装的模块；继续推进主线后再回来查看。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_zero_level",
+    "text": "0级表示已解锁，尚无加成；再次获得同种模块可升到1级。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_ultimate_locked",
+    "text": "这架处于究极状态，当前不能更换挂载模块。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.module_sealed_locked",
+    "text": "这架仍在封存，先领取后再安装模块。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.slot_replacement_candidate",
+    "text": "{slot}号槽 · {quality} · {weapon} · 等级{level}",
+    "params": "{slot},{quality},{weapon},{level}",
+    "category": "hyperspace",
+    "note": "替换候选显示槽位、品质和装备，避免同名同等级无人机混淆"
+  },
+  {
+    "key": "hyperspace.module_effect.iron_income",
+    "text": "铁产出",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.uranium_income",
+    "text": "铀产出",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.ai_speed",
+    "text": "科研进度积累速度",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.reactor_energy_cap",
+    "text": "反应炉能源上限",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.gem_income",
+    "text": "强化碎片产出（掉落与熔炼）",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_rate",
+    "text": "探索能量恢复速度",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_cap",
+    "text": "探索能量上限",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect_preview",
+    "text": "{effects}：本级 +{current}% → {next_level}级 +{next}%。\n安装到已装备的无人机上才生效。",
+    "params": "effects,current,next_level,next",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.level_choice_hint",
+    "text": "最低{minimum}级。提高等级会遇到更强敌人；掉落无人机时，其等级与探索等级相同。\n该等级通关材料：{material} ×{count}。",
+    "params": "minimum,material,count",
+    "category": "hyperspace"
+  },
+  {
+    "key": "crew.preview.equipment",
+    "text": "确认后每{interval}秒按正常费用花铁，让各装备位{amount}；买不起的先跳过。",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.scientist",
+    "text": "确认后每{interval}秒按正常费用消耗{resources}，建造{amount}并均分到研发；买不起时等待。",
+    "params": "interval,resources,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.enhancement",
+    "text": "确认后每{interval}秒按正常费用花强化碎片升1级；碎片不足时等待。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.reactor",
+    "text": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.maximum",
+    "text": "升到当前买得起的等级",
+    "params": "",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.hyperspace_duration_title",
+    "text": "异空间挂机",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_base",
+    "text": "按当前层最佳通关时间挂机。",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_effect",
+    "text": "挂机速度 ×{efficiency}\n幸运 +{luck}：奖励词缀有机会重新抽品阶，保留更好的。",
+    "params": "efficiency,luck",
+    "category": "crew",
+    "note": "已派遣异空间船员的等级效果；幸运只影响该路线探索奖励词缀品阶，核心负责抽样"
+  },
+  {
+    "key": "hyperspace.layer_first_win",
+    "text": "选一条路线，先挑战第 1 层。胜利后就能在主线战斗中后台探索这一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_current",
+    "text": "已通关第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_unstarted",
+    "text": "这条路线还未通关",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_once",
+    "text": "后台探索第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenge",
+    "text": "挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_stop",
+    "text": "停止后台探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_exit",
+    "text": "退出挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_record",
+    "text": "这一层最快 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_time",
+    "text": "后台每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck",
+    "text": "幸运 {value}",
+    "params": "{value}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_sources",
+    "text": "船员 {crew} + 重铸 {permanent}；幸运让词条 T 阶多抽后取最好的一次。",
+    "params": "{crew},{permanent}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_rules",
+    "text": "每 100 幸运多抽一次 T 阶，不满 100 的部分按比例再抽一次。只影响 T 阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_hint",
+    "text": "后台探索时可继续主线；挑战下一层会进入战斗，胜利后推进一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_work",
+    "text": "后台探索 · {work} / {duration} 秒",
+    "params": "{work},{duration}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_none",
+    "text": "本路线后台探索尚未开始",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenging",
+    "text": "正在挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_record",
+    "text": "先挑战并通关这一层，再开始后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_busy",
+    "text": "已有任务进行中，请先停止或退出。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_crew",
+    "text": "先选一名可用船员。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_warehouse",
+    "text": "仓库已满，先整理无人机或领取待收奖励。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_unavailable",
+    "text": "暂时无法开始，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_start",
+    "text": "让船员连续探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_detail",
+    "text": "每轮 {time} 秒 · 幸运 {luck}",
+    "params": "{time},{luck}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_hint",
+    "text": "船员会反复探索当前已通关层；想去下一层，返回路线页点「挑战」。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_task_pending",
+    "text": "奖励已保留，点「领取」收下；仓满时先整理无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_choice",
+    "text": "{name} · {status}",
+    "params": "{name},{status}",
+    "category": "hyperspace",
+    "note": "船员等级未解锁前的路线船员选择"
+  },
+  {
+    "key": "hyperspace.layer_claim_challenge",
+    "text": "领取挑战奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_background",
+    "text": "领取后台奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_retry",
+    "text": "暂未领到奖励。先在「无人机」页腾出仓位，再回来领取；奖励会保留。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_crew_time",
+    "text": "选中船员：每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "候选船员时长报价；核心幸运快照目前只含已配置船员，不冒充候选报价"
+  },
+  {
+    "key": "hyperspace.layer_reason_other_route",
+    "text": "另一条路线正在后台探索，先到那条路线停止探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 other_route 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_reason_max_layer",
+    "text": "这条路线已经全部通关，可以继续后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 max_layer 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_drone_locked",
+    "text": "到「探索」选一条路线，点「挑战第 1 层」。胜利后回来查看并装备无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未解锁无人机页的实际挑战入口，不使用旧排队提示"
+  },
+  {
+    "key": "startup.invalid_progress_title",
+    "text": "存档未能读取",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.invalid_progress_body",
+    "text": "原存档文件已保留。游戏已暂停启动，并停止写入存档。\n请保留 progress.json 和备份文件，排查后重新启动游戏。",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.keep_save_ack",
+    "text": "知道了",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "hyperspace.exchange_title",
+    "text": "材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_close",
+    "text": "关闭",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_source",
+    "text": "拿什么兑换？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_target",
+    "text": "想换成什么？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_amount",
+    "text": "希望获得多少？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_maximum",
+    "text": "填入最大数量",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_review",
+    "text": "兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm_title",
+    "text": "确认材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm",
+    "text": "确认兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_cancel",
+    "text": "返回",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_summary",
+    "text": "扣除 {cost} {source}\n获得 {received} {target}",
+    "params": "{cost},{source},{received},{target}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_owned",
+    "text": "持有 {amount}",
+    "params": "{amount}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_same",
+    "text": "选两种不同材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_insufficient",
+    "text": "来源材料不够，减少数量或换个来源。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_invalid_amount",
+    "text": "请输入正整数。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_material_limit",
+    "text": "本次数量超过目标持有上限，请减少数量。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_stale",
+    "text": "材料或改造状态已变化，请重新查看兑换并确认。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_unavailable",
+    "text": "暂时无法兑换，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_success",
+    "text": "兑换完成。\n{summary}",
+    "params": "{summary}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.layer_route_background",
+    "text": "后台中",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实际后台收据所在路线的卡片标记，不跟随当前选择路线"
+  },
+  {
+    "key": "hyperspace.layer_route_pending",
+    "text": "待领取",
+    "params": "",
+    "category": "hyperspace",
+    "note": "后台待领奖励所在路线的卡片标记"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_material_income",
+    "text": "常规异空间材料产出（究极核心除外）",
+    "params": "",
+    "category": "hyperspace",
+    "note": "保留hyperspace_charge存档ID，材料采集效果替代能量恢复/容量"
+  },
+  {
+    "key": "hyperspace.total_module_bonus",
+    "text": "{module} · {effects} {bonus}",
+    "params": "{module},{effects},{bonus}",
+    "category": "hyperspace",
+    "note": "当前非零模块加成及实际作用对象；读取配置effects，不改变数值"
+  },
+  {
+    "key": "hyperspace.totals_empty",
+    "text": "当前暂无加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前装备没有非零属性或有效模块、传说效果时的单句提示"
+  },
+  {
+    "key": "battle.enemy_name.armour_flagship",
+    "text": "装甲旗舰 · 持续光束有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.shield_flagship",
+    "text": "护盾旗舰 · 磁轨火炮有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.armour_dreadnought",
+    "text": "重装巨舰 · 持续光束有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "battle.enemy_name.shield_dreadnought",
+    "text": "护盾巨舰 · 磁轨火炮有效",
+    "params": "",
+    "category": "battle",
+    "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
+  },
+  {
+    "key": "hyperspace.layer_route_challenge_pending",
+    "text": "挑战奖励待领",
+    "params": "",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "hyperspace.layer_route_challenge",
+    "text": "挑战中",
+    "params": "",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "hyperspace.layer_reason_challenge_pending",
+    "text": "先到「{route}」领取挑战奖励，再开始下一次挑战。",
+    "params": "{route}",
+    "category": "hyperspace",
+    "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "equipment.card_weapon_context",
+    "text": "{level} {type}/{seconds}秒",
+    "params": "level,type,seconds",
+    "category": "equipment",
+    "note": "已装备武器等级行；沿用战斗实际间隔，不计算DPS"
+  },
+  {
+    "key": "weapon.card_beam_expected",
+    "text": "起始伤害",
+    "params": "",
+    "category": "weapon",
+    "note": "持续光束未叠持续锁定增伤的单次平均值，不是整轮总伤害"
+  },
+  {
+    "key": "equipment.card_defence_context",
+    "text": "{level} 抗{type}",
+    "params": "level,type",
+    "category": "equipment",
+    "note": "已装备且真实抗性大于零的防御类型；零抗性不标"
   }
 ]

@@ -12,6 +12,9 @@ const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
 var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
+const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
+var scenery_material_route := ""
+const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshader")
 
 @export_group("Toon ship prototype")
 @export_range(0.0,1.0,0.01) var toon_shadow_threshold := 0.60
@@ -78,6 +81,7 @@ var shield_before_hit: Variant = 0.0
 var destruction_events: Array[Dictionary] = []
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
+var encounter_presentation := preload("res://scripts/encounter_presentation.gd").new()
 
 
 func _ready() -> void:
@@ -226,6 +230,12 @@ func _process(delta: float) -> void:
 	enemy_entry_batch_active=true
 	enemy_entry_distance_time=-INF
 	_process_battlefield(delta)
+	# Wall-clock presentation survives accelerated simulation without changing
+	# the logical pose/entry cache or combat providers.
+	if encounter_presentation.sync(game,minf(delta,0.1)):
+		stars_layer.queue_redraw()
+		battle_layer.queue_redraw()
+		battle_hud_layer.queue_redraw()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
 
@@ -362,6 +372,18 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="encounter":encounter_presentation.sync(game,0.0)
+	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0
+	if kind=="hyperspace_manual":
+		encounter_presentation.return_success=bool(info.get("success",false))
+		encounter_presentation.sync(game,0.0)
+		if not bool(info.get("active",false)):
+			reset_battle_transients_for_scene()
+		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
+		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
+		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
+	if kind=="explode" and int(info.get("uid",-2))==encounter_presentation.leader_uid:
+		encounter_presentation.leader_fall=0.0
 	if kind=="projectile_impact" and info.shot.get("chain_hop",false):return
 	if kind=="hit" and bool(info.get("player",false)):
 		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
@@ -374,7 +396,7 @@ func on_event(kind:String,info:Dictionary)->void:
 			if int(enemy.uid)==int(info.get("uid",-1)):
 				point=battle_logical_point(enemy_render_position(enemy));width=enemy_render_width(enemy)
 		if destruction_events.size()>=24:destruction_events.pop_front()
-		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0))})
+		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0)),"hyperspace":bool(game.manual_hyperspace.active)})
 		if bool(info.get("boss",false)):shake=maxf(shake,float(battle_visual.boss_destroy_shake))
 		beep(90)
 		return
@@ -395,6 +417,24 @@ func on_event(kind:String,info:Dictionary)->void:
 		return
 	super.on_event(kind,info)
 
+
+func reset_battle_transients_for_scene() -> void:
+	destruction_events.clear()
+	rail_events.clear()
+	missile_events.clear()
+	pulse_events.clear()
+	enemy_impacts.clear()
+	beam_full_started.clear()
+	player_hit_at=-100.0
+	encounter_presentation.leader_fall=2.0
+	encounter_presentation.clear_age=2.0
+	paused_presentation_signature=""
+	super.reset_battle_transients_for_scene()
+	# A restored full-power beam is ongoing, not a fresh full-power flash.
+	for shot in game.projectiles:
+		if shot.get("beam",false) and game.long_laser_valid(shot) and int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999:
+			beam_full_started[int(shot.serial)]=fx_time-100.0
+	if is_instance_valid(pulse_layer):pulse_layer.queue_redraw()
 
 func sync_beam_visuals()->void:
 	if prototype_enabled and continuous_beam_enabled:
@@ -652,7 +692,10 @@ func player_render_position() -> Vector2:
 
 
 func draw_battle() -> void:
-	if effects_enabled: super.draw_battle()
+	if effects_enabled:
+		draw_encounter_backdrop()
+		# The inherited renderer owns batch entry/exit and cache invalidation.
+		super.draw_battle()
 
 
 
@@ -680,6 +723,17 @@ func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
 	style.bg_color=color
 	draw_surface.draw_style_box(style,Rect2(rect.position,Vector2(rect.size.x*clampf(ratio,0,1),rect.size.y)))
 
+func create_draw_layers() -> void:
+	super.create_draw_layers()
+	var star_material:ShaderMaterial=stars_layer.material
+	star_material.set_shader_parameter("route_atlas",ROUTE_SCENERY_ATLAS)
+	scenery_material_route=""
+	# This override draws only opaque, untextured rectangles. Keep the material
+	# off the legacy main.gd background and all star/route/effect/texture layers.
+	var solid_material := ShaderMaterial.new()
+	solid_material.shader = SOLID_BACKGROUND_SHADER
+	background_layer.material = solid_material
+
 func draw_background()->void:
 	# This static frame shares the equipment palette without covering the playfield.
 	draw_surface.draw_rect(get_viewport_rect(),BG)
@@ -689,14 +743,17 @@ func draw_background()->void:
 func draw_vertical_battle_hud()->void:
 	battle_panel(BATTLE_HEADER_RECT)
 	draw_surface.draw_rect(Rect2(44,115,4,24),BATTLE_TEAL)
-	text_at(UIText.t("battle.stage",{"stage":str(int(game.stage))}),Vector2(60,134),23,BATTLE_CREAM)
+	var route := str(game.profile.hyperspace.active.get("route","")) if game.manual_hyperspace.active else ""
+	var title := UIText.t("hyperspace."+route) if not route.is_empty() else UIText.t("battle.stage",{"stage":str(int(game.stage))})
+	text_at(title,Vector2(60,134),18 if not route.is_empty() else 23,BATTLE_CREAM)
 	var state_key:="hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"
 	if game.paused and game.pending_unlocks.is_empty():state_key="hud.state.paused"
-	text_at(UIText.t(state_key),Vector2(208,132),16,BATTLE_TEAL)
+	text_at(UIText.t(state_key),Vector2(250 if not route.is_empty() else 208,132),16,BATTLE_TEAL)
 	text_at(UIText.t("battle.draw_battle.text_08",{"group_index":str(game.group_index),"value":str(game.db.levels[game.stage-1].groups.size())}),Vector2(425,132),15,Color("9eb4bd"))
 	battle_meter(Rect2(44,147,524,5),game.distance/maxf(1,float(game.db.levels[game.stage-1].length)),BATTLE_TEAL)
 	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
-		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(315,132),14,BATTLE_WARM)
+		var tier_key := "battle.finale" if game.encounter_tier()=="ultimate" else "battle.encounter_tier."+game.encounter_tier()
+		text_at(UIText.t(tier_key),Vector2(330,132),14,BATTLE_WARM)
 	battle_panel(Rect2(30,1132,552,114))
 	var status := game.enhancement_protection_status()
 	var layers := defense_hud_layers(status)
@@ -788,52 +845,135 @@ func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
-	var dimensions:=Vector2(width,width*2.0)
+	var leader := encounter_presentation.is_leader(enemy)
+	# The armor silhouette alone grows. Hardpoints, contact geometry, entry
+	# bounds and all provider coordinates retain their original cached values.
+	var hull_width := width*(1.65 if leader and encounter_presentation.tier=="ultimate" else 1.35 if leader else 1.0)
+	var dimensions:=Vector2(hull_width,hull_width*2.0)
 	var angle:=enemy_render_angle(enemy)
 	var light:=enemy_hull_light(enemy)
+	if boss_battle:
+		light=1.20 if leader else maxf(0.72,light*0.84)
+	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
-	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
+	# Scale only the protection draw transform, never the shared geometry
+	# packet/pose cache consumed by entry limits and combat providers.
+	var protection_scale:float=hull_width/width if width>0.0 else 1.0
+	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE*protection_scale)
+	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
+	var outline:PackedVector2Array=protection_outline
+	if leader:
+		outline=PackedVector2Array()
+		for point in protection_outline:outline.append(point*protection_scale)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
-	var layout:=enemy_status_layout(enemy,pos,width,angle,outline)
+	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
 		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
-	if boss_battle:text_at(layout.caption,layout.caption_position,12,BATTLE_CREAM)
+	if boss_battle and leader:text_at(layout.caption,layout.caption_position,17,BATTLE_CREAM)
+
+func encounter_leader_name(enemy:Dictionary)->String:
+	# Mainline display bindings must not resolve the manual hyperspace registry's IDs.
+	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
+	var caption:=str(row.get("des","")).strip_edges()
+	if not game.manual_hyperspace.active and not caption.is_empty():
+		caption=UIText.data_text("enemies",str(int(enemy.id)),"des",caption)
+	if not caption.is_empty():return caption
+	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
+		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
+		var group_row:Dictionary=game.db.groups.get(str(int(group.id)),{})
+		return str(group_row.get("description","")).strip_edges()
+	return ""
 
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
-	# Shared actual draw/validation authority; preserve the existing pixel layout.
+	# Status placement follows the drawn hull/protection, not combat bounds.
 	var dimensions:=Vector2(width,width*2.0)
 	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
+	var bottom:=pos.y
 	for corner in [used.position,Vector2(used.end.x,used.position.y),used.end,Vector2(used.position.x,used.end.y)]:
-		top=minf(top,pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y)
-	for point in outline:top=minf(top,pos.y+point.rotated(PI+angle).y)
+		var corner_y:float=pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y
+		top=minf(top,corner_y)
+		bottom=maxf(bottom,corner_y)
+	for point in outline:
+		var point_y:float=pos.y+point.rotated(PI+angle).y
+		top=minf(top,point_y)
+		bottom=maxf(bottom,point_y)
 	top-=9.0
 	var bar_width:=clampf(width*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
+	if encounter_presentation.is_leader(enemy):
+		# text_at renders at least 17 px: measure the same font size. Place the
+		# name and meters as one block, never clamp three rows independently.
+		var name:=encounter_leader_name(enemy)
+		if name.is_empty():name=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
+		name=fit_battle_text(name,260.0,17)
+		var name_size:=font.get_string_size(name,HORIZONTAL_ALIGNMENT_LEFT,-1,17)
+		var ascent:float=font.get_ascent(17)
+		var descent:float=font.get_descent(17)
+		var name_height:float=ascent+descent
+		var has_shield:bool=float(enemy.get("max_shield",0))>0.0
+		var block_height:float=name_height+6.0+(11.0 if has_shield else 4.0)
+		var block_top:float=top+4.0-block_height
+		# An enlarged ultimate can reach the header. Move the whole block
+		# below its visible outline instead of laying text across hull/meters.
+		if block_top<12.0:block_top=bottom+12.0
+		block_top=clampf(block_top,12.0,BATTLE_VIEW_SIZE.y-block_height-12.0)
+		var name_left:float=clampf(pos.x-name_size.x*0.5,12.0,BATTLE_VIEW_SIZE.x-name_size.x-12.0)
+		var baseline:=Vector2(name_left,block_top+ascent)
+		var first_meter_y:float=block_top+name_height+6.0
+		return {"health":Rect2(left,first_meter_y+(7.0 if has_shield else 0.0),bar_width,4),"shield":Rect2(left,first_meter_y,bar_width,4),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
 	var outer_wing:bool=enemy.get("explicit_formation",false) and absf(float(enemy.x)-BATTLE_VIEW_SIZE.x*0.5)>150.0
 	if outer_wing:
 		# Meters use the same free outer-wing space as their captions.
 		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
-	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,12)
+	var caption_font_size:=12
+	var caption_size:=font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,caption_font_size)
 	var caption_left:=left
 	if outer_wing:
 		# Outer wing labels use the space away from the neighbouring centre fleet.
 		caption_left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-caption_size.x,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
 	var caption_position:=Vector2(caption_left,maxf(20,top-5))
-	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(12)),Vector2(caption_size.x,font.get_ascent(12)+font.get_descent(12)))}
+	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(caption_font_size)),Vector2(caption_size.x,font.get_ascent(caption_font_size)+font.get_descent(caption_font_size)))}
 
 func draw_environment_event(_offset:Vector2)->void:
-	# Distant geometry belongs to the background; combat space stays quiet.
-	pass
+	encounter_presentation.draw_fall(draw_surface)
+
+func draw_stars()->void:
+	var mat:ShaderMaterial=stars_layer.material
+	mat.set_shader_parameter("hyperspace",encounter_presentation.scenery_presence)
+	if scenery_material_route!=encounter_presentation.scenery_route:
+		scenery_material_route=encounter_presentation.scenery_route
+		var route_index:int=maxi(0,["alpha","beta","gamma","delta"].find(scenery_material_route))
+		mat.set_shader_parameter("route_origin",Vector2(float(route_index%2)*0.5,0.5 if route_index>=2 else 0.0))
+	var scenery_time:float=encounter_presentation.scenery_time
+	mat.set_shader_parameter("scene_motion",Vector2(sin(scenery_time*0.075),sin(scenery_time*0.11)))
+	super.draw_stars()
+
+func draw_encounter_backdrop()->void:
+	# These ordinary CanvasItem primitives must not inherit the star mesh's
+	# metadata shader. Use the existing battle layer, behind combat drawings.
+	encounter_presentation.draw_space(draw_surface,BATTLE_VIEW_SIZE)
+	var cue := ""
+	if encounter_presentation.transition<1.8:
+		if encounter_presentation.departure:
+			cue=UIText.t("battle.return_cleared" if encounter_presentation.return_success else "battle.return_main")
+		elif not encounter_presentation.route.is_empty():
+			cue=UIText.t("hyperspace."+encounter_presentation.route)
+	elif encounter_presentation.clear_age<1.8:
+		cue=UIText.t("battle.finale_cleared")
+	if not cue.is_empty():
+		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x
+		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,34)),Color("101b2b"))
+		draw_surface.draw_string(font,Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,86),cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18,encounter_presentation.accent)
 
 func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 	if is_instance_valid(overlay_layer) and draw_surface==overlay_layer:

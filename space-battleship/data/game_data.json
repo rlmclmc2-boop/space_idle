@@ -316677,7 +316677,7 @@
       "level": 0,
       "mode": "cleared",
       "title": "复合装甲",
-      "desc": "装备已自动装载，可在下方直接升级。"
+      "desc": "左下生命条来自装甲。试着升一级装甲，再看看防御卡和生命上限的变化。"
     },
     "shield": {
       "name": "shield",
@@ -316686,7 +316686,7 @@
       "level": 2,
       "mode": "cleared",
       "title": "偏转护盾",
-      "desc": "偏转护盾可以抵御能量武器,并且一段时间不受攻击后即能自动恢复"
+      "desc": "在可换装的防御位选「偏转护盾」，看看左下多出的护盾条。避开攻击一段时间后，它会自己恢复。"
     },
     "laser": {
       "name": "laser",
@@ -316695,7 +316695,7 @@
       "level": 0,
       "mode": "cleared",
       "title": "脉冲激光",
-      "desc": "装备已自动装载，可在下方直接升级。"
+      "desc": "战舰已装好一门脉冲激光。给空武器位再装一门，看看舰上多出的炮口；装配免费。"
     },
     "missile": {
       "name": "missile",
@@ -316704,7 +316704,7 @@
       "level": 1,
       "mode": "cleared",
       "title": "追踪导弹",
-      "desc": "我们的科学家研发了导弹,导弹可以同时打击多个敌人,并且当然,能偏转能量的偏转护盾对它效果并不大"
+      "desc": "试着把一个武器位换成追踪导弹。它会追着目标飞；换装免费，这个位置的等级也会保留。"
     },
     "cannon": {
       "name": "cannon",
@@ -316713,7 +316713,7 @@
       "level": 2,
       "mode": "cleared",
       "title": "磁轨火炮",
-      "desc": "谁会喜欢软绵绵的光束?用轰鸣的大炮将对面射成筛子吧.磁轨火炮将洞穿你的敌人,尤其是那些觉得能躲在护盾后面一辈子的软蛋!"
+      "desc": "换一门磁轨火炮，看看它一发打掉多少血，再看下一发要等多久。换装免费，等级保留。"
     },
     "longLaser": {
       "name": "longLaser",
@@ -316722,7 +316722,7 @@
       "level": 5,
       "mode": "cleared",
       "title": "持续锁定光束",
-      "desc": "第6关会遇到持续恢复护盾的敌舰。光束保持锁定时伤害逐渐增强，可突破恢复；短促攻击可能被恢复抵消。"
+      "desc": "先把一门武器换成光束，看看同一艘敌舰的血条是否降得越来越快。光束持续照射才会增伤；若打不动，指向敌舰查看防御，再试另一类伤害。"
     },
     "ship/Frigate": {
       "name": "ship/Frigate",
@@ -316740,7 +316740,7 @@
       "level": 10,
       "mode": "cleared",
       "title": "飞燕护卫舰",
-      "desc": "当然,我们的科学家研发了新的战舰,你可以立即试试了...撕碎你的敌人吧"
+      "desc": "到「战舰」启用飞燕护卫舰，再点新增W04空槽免费装武器，看它随舰开火。"
     },
     "ship/Cruiser": {
       "name": "ship/Cruiser",
@@ -316776,7 +316776,7 @@
       "level": 1,
       "mode": "cleared",
       "title": "反应炉",
-      "desc": "我们调查这些..铀?得到了一些东西.利用它可以生产大量能量,然后增强我们的所有系统.不过要注意,往同一个系统注入过多能量,会使得能量不稳定,我们将额外分配一些能量用于维持系统,这会导致能量的效果降低."
+      "desc": "反应炉已接通。去「反应炉」点「均分」，看看各模块的加成；也可以拖动能量条，把更多能源分给想加强的模块。"
     },
     "hightech/超时空炼铁炉": {
       "name": "hightech/超时空炼铁炉",
@@ -316785,7 +316785,7 @@
       "level": 3,
       "mode": "cleared",
       "title": "超时空炼铁炉",
-      "desc": "哦对对对,看看这个新玩意,AI工厂!这些不知疲倦的劳工将解决我们的资源生产问题..当然,我知道,资源的需求是永无止境的..."
+      "desc": "打开「AI工厂」，先「生成×1」，再给炼铁炉分配「+1 AI」。看看施工开始；建好后，它会定时产出铁。"
     },
     "hightech/正电子聚焦装置": {
       "name": "hightech/正电子聚焦装置",
@@ -316830,7 +316830,7 @@
       "level": 10,
       "mode": "cleared",
       "title": "船员01",
-      "desc": "嗯,也许你需要一些真人来陪你,我们解冻了一名优秀的船员,你就好好利用他吧"
+      "desc": "去「船员」看看岗位会做什么、会花什么，再决定分配；随时可解除分配。"
     },
     "crew/engineer": {
       "name": "crew/engineer",
@@ -316884,7 +316884,7 @@
       "level": 30,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "通关30后可派遣空闲船员探索首颗星球。探索中建设新型船坞，并派入建筑要求的额外船员；建成后领取设施，开启重铸。重铸保留铁与铀余额与永久探索奖励，重置本轮养成，从第5关再出发。"
+      "desc": "去「星球探索」，派一名空闲船员出发。完成一次探索后，看看探索度和星球加成的变化；设施可用时，点设施继续建设。"
     },
     "feature/crew_level": {
       "name": "feature/crew_level",
@@ -317524,6 +317524,18 @@
       "value": "",
       "des": "专属AI {ai}",
       "targetType": ""
+    },
+    "hyperspace_duration_k": {
+      "id": "hyperspace_duration_k",
+      "value": 20,
+      "des": "船员等级越高，异空间挂机耗时越短。",
+      "targetType": ""
+    },
+    "hyperspace_luck_per_level": {
+      "id": "hyperspace_luck_per_level",
+      "value": 1,
+      "des": "每级增加幸运；探索奖励的词缀品阶可额外重抽并保留最好结果。",
+      "targetType": ""
     }
   },
   "planet_build": {
@@ -317578,7 +317590,7 @@
     "shipyard": {
       "id": "shipyard",
       "name": "新式船坞",
-      "des": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有铁与铀余额与永久星球奖励。",
+      "des": "点「分配施工船员」开工；建好后领取船坞，再决定是否重铸。重铸前会显示保留内容和本轮重置范围。",
       "min_planet": 1,
       "planet_rule": "only",
       "planet_value": "1",
@@ -317594,7 +317606,7 @@
     "shipyard_later": {
       "id": "shipyard_later",
       "name": "新式船坞",
-      "des": "首颗星球重铸准备：达到探索条件后，派遣额外船员建设新型船坞。建成后领取设施，再选择重铸；重铸保留现有铁与铀余额与永久星球奖励。",
+      "des": "点「分配施工船员」开工；建好后领取船坞，再决定是否重铸。重铸前会显示保留内容和本轮重置范围。",
       "min_planet": 1,
       "planet_rule": "exclude",
       "planet_value": "1",
@@ -318063,6 +318075,84 @@
       "stack": "max",
       "order": 6,
       "des": "能够探索新星球：脉冲星-PSR T46+38"
+    },
+    "36": {
+      "id": 36,
+      "planet_id": 1,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "37": {
+      "id": 37,
+      "planet_id": 2,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "38": {
+      "id": 38,
+      "planet_id": 3,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "39": {
+      "id": 39,
+      "planet_id": 4,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "40": {
+      "id": 40,
+      "planet_id": 5,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "41": {
+      "id": 41,
+      "planet_id": 6,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
     }
   },
   "galaxy": {

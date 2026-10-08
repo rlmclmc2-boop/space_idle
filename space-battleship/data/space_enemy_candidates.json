@@ -22,16 +22,16 @@
         null,
         null
       ],
-      "description": "裂壳双哨",
+      "description": "光束前哨",
       "combatTier": "normal",
       "formation_positions": [
         [
           286,
-          137
+          155
         ],
         [
-          166,
-          235
+          286,
+          285
         ],
         null,
         null,
@@ -70,20 +70,20 @@
         null,
         null
       ],
-      "description": "三瓣弹巢",
+      "description": "脉冲前哨",
       "combatTier": "normal",
       "formation_positions": [
         [
           286,
-          137
+          115
         ],
         [
-          166,
-          221
+          226,
+          285
         ],
         [
-          406,
-          221
+          346,
+          285
         ],
         null,
         null,
@@ -121,24 +121,24 @@
         null,
         null
       ],
-      "description": "四角断光",
+      "description": "复充哨塔",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          155
         ],
         [
-          194,
-          233.23662
+          166,
+          285
         ],
         [
-          378,
-          233.23662
+          286,
+          285
         ],
         [
-          114,
-          281.86812
+          406,
+          285
         ],
         null,
         null,
@@ -175,28 +175,28 @@
         null,
         null
       ],
-      "description": "五针铁幕",
+      "description": "分列弹巢",
       "combatTier": "normal",
       "formation_positions": [
         [
-          202,
-          220
+          106,
+          285
         ],
         [
-          362,
-          220
+          226,
+          285
         ],
         [
-          122,
-          278.51858
+          346,
+          285
         ],
         [
-          442,
-          278.51858
+          466,
+          285
         ],
         [
-          282,
-          271.61065
+          286,
+          115
         ],
         null,
         null,
@@ -232,36 +232,36 @@
         null,
         null
       ],
-      "description": "六枝脉冲",
+      "description": "导弹靶群",
       "combatTier": "normal",
       "formation_positions": [
         [
-          242,
-          156
+          286,
+          115
+        ],
+        [
+          106,
+          255
+        ],
+        [
+          226,
+          255
         ],
         [
           346,
-          156
+          255
         ],
         [
-          162,
-          256.59688
+          466,
+          255
         ],
         [
-          390,
-          285
+          214,
+          335
         ],
         [
-          55,
-          245
-        ],
-        [
-          518,
-          230
-        ],
-        [
-          286,
-          334
+          358,
+          335
         ],
         null,
         null,
@@ -295,16 +295,16 @@
         null,
         null
       ],
-      "description": "对门重炮",
+      "description": "持续压制",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          155
         ],
         [
-          202,
-          233.23662
+          286,
+          285
         ],
         null,
         null,
@@ -343,36 +343,36 @@
         null,
         null
       ],
-      "description": "七星追猎",
+      "description": "逐点护卫",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          115
         ],
         [
-          194,
-          212
+          106,
+          255
         ],
         [
-          378,
-          204
+          226,
+          255
         ],
         [
-          114,
-          271.61065
+          346,
+          255
         ],
         [
-          458,
-          271.61065
+          466,
+          255
         ],
         [
-          74,
-          322.26439
+          214,
+          335
         ],
         [
-          490,
-          322.26439
+          358,
+          335
         ],
         null,
         null,
@@ -406,20 +406,20 @@
         null,
         null
       ],
-      "description": "三层空甲",
+      "description": "破甲前哨",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          155
         ],
         [
-          282,
-          248.15105
+          226,
+          285
         ],
         [
-          178,
-          291.60006
+          346,
+          285
         ],
         null,
         null,
@@ -457,24 +457,24 @@
         null,
         null
       ],
-      "description": "四拍复明",
+      "description": "铁门护卫",
       "combatTier": "normal",
       "formation_positions": [
         [
-          242,
-          164
+          286,
+          155
         ],
         [
-          370,
-          164
+          166,
+          285
         ],
         [
-          146,
-          288.40181
+          286,
+          285
         ],
         [
-          426,
-          288.40181
+          406,
+          285
         ],
         null,
         null,
@@ -511,32 +511,32 @@
         null,
         null
       ],
-      "description": "折翼矛阵",
+      "description": "双翼哨群",
       "combatTier": "normal",
       "formation_positions": [
         [
-          385,
-          95
+          286,
+          115
         ],
         [
-          202,
-          233.23662
+          106,
+          255
         ],
         [
-          362,
-          233.23662
+          226,
+          255
         ],
         [
-          122,
-          285.16003
+          346,
+          255
         ],
         [
-          442,
-          285.16003
+          466,
+          255
         ],
         [
           286,
-          300
+          335
         ],
         null,
         null,
@@ -571,24 +571,24 @@
         null,
         null
       ],
-      "description": "双核长照",
+      "description": "单核重垒",
       "combatTier": "normal",
       "formation_positions": [
         [
-          242,
-          156
+          286,
+          155
         ],
         [
-          346,
-          156
+          166,
+          285
         ],
         [
-          178,
-          256.59688
+          286,
+          285
         ],
         [
-          394,
-          256.59688
+          406,
+          285
         ],
         null,
         null,
@@ -625,36 +625,36 @@
         null,
         null
       ],
-      "description": "六点铁砂",
+      "description": "分散巡弋",
       "combatTier": "normal",
       "formation_positions": [
         [
-          135,
-          85
+          106,
+          255
         ],
         [
-          440,
-          85
-        ],
-        [
-          202,
-          252.47888
-        ],
-        [
-          378,
-          252.47888
-        ],
-        [
-          122,
-          297.88884
-        ],
-        [
-          442,
-          297.88884
+          226,
+          255
         ],
         [
           286,
-          319
+          115
+        ],
+        [
+          346,
+          255
+        ],
+        [
+          466,
+          255
+        ],
+        [
+          214,
+          335
+        ],
+        [
+          358,
+          335
         ],
         null,
         null,
@@ -688,20 +688,20 @@
         null,
         null
       ],
-      "description": "三叉光阱",
+      "description": "护盾前线",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          172
+          226,
+          285
         ],
         [
-          186,
-          256.59688
+          286,
+          155
         ],
         [
-          378,
-          256.59688
+          346,
+          285
         ],
         null,
         null,
@@ -739,28 +739,28 @@
         null,
         null
       ],
-      "description": "五重空门",
+      "description": "交错火线",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          118
+          106,
+          285
+        ],
+        [
+          286,
+          115
         ],
         [
           226,
-          238.62927
+          285
         ],
         [
-          362,
-          248.15105
+          346,
+          285
         ],
         [
-          146,
-          288.40181
-        ],
-        [
-          442,
-          304.067
+          466,
+          285
         ],
         null,
         null,
@@ -796,24 +796,24 @@
         null,
         null
       ],
-      "description": "四舰换层",
+      "description": "交替重卫",
       "combatTier": "normal",
       "formation_positions": [
         [
-          282,
-          172
+          286,
+          155
         ],
         [
-          154,
-          180
+          166,
+          285
         ],
         [
-          394,
-          180
+          286,
+          285
         ],
         [
-          122,
-          288.40181
+          406,
+          285
         ],
         null,
         null,
@@ -850,40 +850,40 @@
         null,
         null
       ],
-      "description": "八芒轻猎",
+      "description": "八点警戒",
       "combatTier": "normal",
       "formation_positions": [
         [
-          242,
-          148
+          286,
+          115
         ],
         [
-          322,
-          148
+          106,
+          255
         ],
         [
-          202,
-          243.56033
+          226,
+          255
         ],
         [
-          378,
-          243.56033
+          346,
+          255
         ],
         [
-          122,
-          288.40181
+          466,
+          255
         ],
         [
-          442,
-          288.40181
+          141,
+          335
         ],
         [
-          58,
-          325.28608
+          286,
+          335
         ],
         [
-          514,
-          325.28608
+          431,
+          335
         ],
         null,
         null,
@@ -916,20 +916,20 @@
         null,
         null
       ],
-      "description": "断续双堡",
+      "description": "充能堡垒",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          156
+          286,
+          155
         ],
         [
-          162,
-          264.34701
+          226,
+          285
         ],
         [
-          402,
-          264.34701
+          346,
+          285
         ],
         null,
         null,
@@ -967,39 +967,39 @@
         null,
         null
       ],
-      "description": "交错炮垒",
+      "description": "指挥哨站",
       "combatTier": "elite",
       "formation_positions": [
         [
+          106,
+          255
+        ],
+        [
+          226,
+          255
+        ],
+        [
+          346,
+          255
+        ],
+        [
+          466,
+          255
+        ],
+        [
           286,
-          158
+          155
         ],
         [
-          160,
-          218
+          141,
+          335
         ],
         [
-          412,
-          223
+          286,
+          335
         ],
         [
-          70,
-          280
-        ],
-        [
-          490,
-          280
-        ],
-        [
-          190,
-          307
-        ],
-        [
-          350,
-          310
-        ],
-        [
-          480,
+          431,
           335
         ],
         null,
@@ -1033,32 +1033,32 @@
         null,
         null
       ],
-      "description": "六盏脉冲",
+      "description": "脉冲屏卫",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          172
-        ],
-        [
-          162,
-          220
-        ],
-        [
-          402,
-          220
-        ],
-        [
           106,
-          285.16003
+          255
         ],
         [
-          458,
-          285.16003
+          226,
+          255
         ],
         [
-          58,
-          331.35111
+          346,
+          255
+        ],
+        [
+          286,
+          115
+        ],
+        [
+          466,
+          255
+        ],
+        [
+          286,
+          335
         ],
         null,
         null,
@@ -1093,28 +1093,28 @@
         null,
         null
       ],
-      "description": "双脊弹幕",
+      "description": "双层充能",
       "combatTier": "elite",
       "formation_positions": [
         [
-          242,
-          148
+          286,
+          155
+        ],
+        [
+          106,
+          285
+        ],
+        [
+          226,
+          285
         ],
         [
           346,
-          148
+          285
         ],
         [
-          162,
-          248.15105
-        ],
-        [
-          362,
-          252.47888
-        ],
-        [
-          122,
-          300.98948
+          466,
+          285
         ],
         null,
         null,
@@ -1150,36 +1150,36 @@
         null,
         null
       ],
-      "description": "分流七翼",
+      "description": "纵深弹幕",
       "combatTier": "elite",
       "formation_positions": [
         [
-          242,
-          172
+          106,
+          255
         ],
         [
-          378,
-          172
+          286,
+          155
         ],
         [
-          135,
-          264
+          226,
+          255
         ],
         [
-          442,
-          271.61065
+          346,
+          255
         ],
         [
-          82,
-          310.16896
+          466,
+          255
         ],
         [
-          506,
-          310.16896
+          214,
+          335
         ],
         [
-          170,
-          325.28608
+          358,
+          335
         ],
         null,
         null,
@@ -1213,20 +1213,20 @@
         null,
         null
       ],
-      "description": "三座铁门",
+      "description": "重甲指挥",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          155
         ],
         [
-          202,
-          252.47888
+          226,
+          285
         ],
         [
-          362,
-          248.15105
+          346,
+          285
         ],
         null,
         null,
@@ -1264,32 +1264,32 @@
         null,
         null
       ],
-      "description": "六角光井",
+      "description": "护卫集群",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          145
+          286,
+          155
         ],
         [
-          130,
-          230
+          106,
+          255
         ],
         [
-          400,
-          232
+          226,
+          255
         ],
         [
-          70,
-          305
+          346,
+          255
         ],
         [
-          238,
-          323
+          466,
+          255
         ],
         [
-          490,
-          310
+          286,
+          335
         ],
         null,
         null,
@@ -1324,40 +1324,40 @@
         null,
         null
       ],
-      "description": "八针追索",
+      "description": "外环守卫",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          148
+          106,
+          255
         ],
         [
-          194,
-          204
+          286,
+          115
         ],
         [
-          378,
-          204
+          226,
+          255
         ],
         [
-          114,
-          271.61065
+          346,
+          255
         ],
         [
-          458,
-          271.61065
+          466,
+          255
         ],
         [
-          66,
-          337.46914
+          141,
+          335
         ],
         [
-          506,
-          337.46914
+          286,
+          335
         ],
         [
-          202,
-          328.31381
+          431,
+          335
         ],
         null,
         null,
@@ -1390,24 +1390,24 @@
         null,
         null
       ],
-      "description": "三堡窄照",
+      "description": "重盾守卫",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          148
+          166,
+          285
         ],
         [
-          162,
-          180
+          286,
+          155
         ],
         [
-          370,
-          180
+          286,
+          285
         ],
         [
-          122,
-          288.40181
+          406,
+          285
         ],
         null,
         null,
@@ -1444,28 +1444,28 @@
         null,
         null
       ],
-      "description": "五阶破城",
+      "description": "城垒护卫",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          172
+          286,
+          155
         ],
         [
-          178,
-          243.56033
+          106,
+          285
         ],
         [
-          378,
-          264.34701
+          226,
+          285
         ],
         [
-          122,
-          291.60006
+          346,
+          285
         ],
         [
-          442,
-          313.20102
+          466,
+          285
         ],
         null,
         null,
@@ -1501,36 +1501,36 @@
         null,
         null
       ],
-      "description": "七灯残月",
+      "description": "重装弹巢",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          148
+          106,
+          255
         ],
         [
-          202,
-          233.23662
+          226,
+          255
         ],
         [
-          370,
-          238.62927
+          346,
+          255
         ],
         [
-          122,
-          285.16003
+          286,
+          155
         ],
         [
-          458,
-          285.16003
+          466,
+          255
         ],
         [
-          58,
-          325.28608
+          214,
+          335
         ],
         [
-          514,
-          328.31381
+          358,
+          335
         ],
         null,
         null,
@@ -1564,24 +1564,24 @@
         null,
         null
       ],
-      "description": "四核抛射",
+      "description": "锚点火线",
       "combatTier": "elite",
       "formation_positions": [
         [
-          242,
-          156
+          286,
+          155
         ],
         [
-          346,
-          156
+          166,
+          285
         ],
         [
-          146,
-          288.40181
+          286,
+          285
         ],
         [
-          426,
-          288.40181
+          406,
+          285
         ],
         null,
         null,
@@ -1618,32 +1618,32 @@
         null,
         null
       ],
-      "description": "六重极光",
+      "description": "扇面截击",
       "combatTier": "elite",
       "formation_positions": [
         [
-          242,
-          188
+          106,
+          255
         ],
         [
-          386,
-          188
+          226,
+          255
         ],
         [
-          130,
-          278.51858
+          286,
+          115
         ],
         [
-          442,
-          288.40181
+          346,
+          255
         ],
         [
-          114,
-          325.28608
+          466,
+          255
         ],
         [
-          498,
-          328.31381
+          286,
+          335
         ],
         null,
         null,
@@ -1678,40 +1678,40 @@
         null,
         null
       ],
-      "description": "八舰散炮",
+      "description": "蜂群屏障",
       "combatTier": "elite",
       "formation_positions": [
         [
-          242,
-          148
-        ],
-        [
-          330,
-          148
-        ],
-        [
-          178,
-          256.59688
-        ],
-        [
-          370,
-          243.56033
-        ],
-        [
           106,
-          291.60006
+          255
         ],
         [
-          442,
-          288.40181
+          286,
+          115
         ],
         [
-          58,
-          337.46914
+          226,
+          255
         ],
         [
-          514,
-          325.28608
+          346,
+          255
+        ],
+        [
+          466,
+          255
+        ],
+        [
+          141,
+          335
+        ],
+        [
+          286,
+          335
+        ],
+        [
+          431,
+          335
         ],
         null,
         null,
@@ -1744,28 +1744,28 @@
         null,
         null
       ],
-      "description": "四臂静光",
+      "description": "破城护卫",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          172
+          286,
+          155
         ],
         [
-          154,
-          238.62927
+          106,
+          285
         ],
         [
-          402,
-          264.34701
+          226,
+          285
         ],
         [
-          90,
-          310.16896
+          346,
+          285
         ],
         [
-          490,
-          310.16896
+          466,
+          285
         ],
         null,
         null,
@@ -1801,32 +1801,32 @@
         null,
         null
       ],
-      "description": "六刃双潮",
+      "description": "护盾纵深",
       "combatTier": "elite",
       "formation_positions": [
         [
-          282,
-          156
+          286,
+          155
         ],
         [
-          202,
-          248.15105
+          106,
+          285
         ],
         [
-          362,
-          248.15105
+          226,
+          285
         ],
         [
-          122,
-          300.98948
+          346,
+          285
         ],
         [
-          442,
-          300.98948
+          466,
+          285
         ],
         [
-          202,
-          319.24527
+          286,
+          350
         ],
         null,
         null,
@@ -1847,10 +1847,10 @@
       "slots": [
         703300,
         703301,
-        703302,
-        703303,
-        703304,
-        703305,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -1861,33 +1861,21 @@
         null,
         null
       ],
-      "description": "双门督军",
+      "description": "弹巢统领",
       "combatTier": "boss",
       "formation_positions": [
         [
-          282,
-          160
-        ],
-        [
-          162,
-          230
-        ],
-        [
-          394,
-          230
-        ],
-        [
-          82,
-          310
+          286,
+          190
         ],
         [
           286,
-          335
+          350
         ],
-        [
-          474,
-          310
-        ],
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -1907,8 +1895,8 @@
       "slots": [
         700680,
         700681,
-        700682,
-        700683,
+        null,
+        null,
         null,
         null,
         null,
@@ -1921,25 +1909,19 @@
         null,
         null
       ],
-      "description": "三炮锚王",
+      "description": "锚王",
       "combatTier": "boss",
       "formation_positions": [
         [
-          282,
-          148
+          286,
+          190
         ],
         [
-          258,
-          281.86812
+          286,
+          350
         ],
-        [
-          130,
-          291.60006
-        ],
-        [
-          394,
-          291.60006
-        ],
+        null,
+        null,
         null,
         null,
         null,
@@ -1961,11 +1943,11 @@
       "slots": [
         700700,
         700701,
-        700702,
-        700703,
-        700704,
-        700705,
-        700706,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -1975,37 +1957,22 @@
         null,
         null
       ],
-      "description": "七星断充王",
+      "description": "断充堡垒",
       "combatTier": "boss",
       "formation_positions": [
         [
-          282,
-          172
+          286,
+          190
         ],
         [
-          162,
-          204
+          286,
+          350
         ],
-        [
-          394,
-          204
-        ],
-        [
-          82,
-          278.51858
-        ],
-        [
-          474,
-          278.51858
-        ],
-        [
-          178,
-          325.28608
-        ],
-        [
-          378,
-          325.28608
-        ],
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2025,62 +1992,41 @@
         703600,
         703601,
         703602,
-        703603,
-        703604,
-        703605,
-        703606,
-        703607,
-        703608,
-        703609,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
         null,
         null
       ],
-      "description": "双垒追猎王",
+      "description": "追猎旗舰",
       "combatTier": "boss",
       "formation_positions": [
         [
           286,
-          130
+          190
         ],
         [
-          155,
-          230
+          166,
+          350
         ],
         [
-          405,
-          240
+          406,
+          350
         ],
-        [
-          70,
-          305
-        ],
-        [
-          175,
-          333
-        ],
-        [
-          395,
-          333
-        ],
-        [
-          505,
-          305
-        ],
-        [
-          58,
-          155
-        ],
-        [
-          515,
-          155
-        ],
-        [
-          286,
-          268
-        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2097,11 +2043,11 @@
         703700,
         703701,
         703702,
-        703703,
-        703704,
-        703705,
-        703706,
-        703707,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2110,41 +2056,26 @@
         null,
         null
       ],
-      "description": "极昼三核",
+      "description": "极昼核心",
       "combatTier": "ultimate",
       "formation_positions": [
         [
           286,
-          150
+          210
         ],
         [
-          160,
-          235
+          166,
+          350
         ],
         [
-          410,
-          235
+          406,
+          350
         ],
-        [
-          55,
-          300
-        ],
-        [
-          175,
-          320
-        ],
-        [
-          285,
-          300
-        ],
-        [
-          395,
-          320
-        ],
-        [
-          515,
-          300
-        ],
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2161,68 +2092,38 @@
     "7038": {
       "slots": [
         703800,
-        703801,
-        703802,
-        703803,
-        703804,
-        703805,
-        703806,
-        703807,
-        703808,
-        703809,
-        703810,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
         null
       ],
-      "description": "七舰铁潮",
+      "description": "铁潮核心",
       "combatTier": "ultimate",
       "formation_positions": [
         [
-          245,
-          140
+          286,
+          215
         ],
-        [
-          355,
-          180
-        ],
-        [
-          145,
-          255
-        ],
-        [
-          447,
-          282
-        ],
-        [
-          58,
-          180
-        ],
-        [
-          515,
-          180
-        ],
-        [
-          282,
-          273
-        ],
-        [
-          70,
-          325
-        ],
-        [
-          175,
-          333
-        ],
-        [
-          380,
-          334
-        ],
-        [
-          518,
-          334
-        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2236,10 +2137,10 @@
     "7039": {
       "slots": [
         700780,
-        700781,
-        700782,
-        700783,
-        700784,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2251,29 +2152,17 @@
         null,
         null
       ],
-      "description": "裂环五核",
+      "description": "裂环核心",
       "combatTier": "ultimate",
       "formation_positions": [
         [
-          282,
-          172
+          286,
+          215
         ],
-        [
-          138,
-          233.23662
-        ],
-        [
-          402,
-          233.23662
-        ],
-        [
-          74,
-          322.26439
-        ],
-        [
-          482,
-          281.86812
-        ],
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2293,12 +2182,12 @@
     "7040": {
       "slots": [
         700800,
-        700801,
-        700802,
-        700803,
-        700804,
-        700805,
-        700806,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2308,37 +2197,19 @@
         null,
         null
       ],
-      "description": "七刃终城",
+      "description": "终城主炮",
       "combatTier": "ultimate",
       "formation_positions": [
         [
-          282,
-          164
+          286,
+          215
         ],
-        [
-          154,
-          233.23662
-        ],
-        [
-          394,
-          233.23662
-        ],
-        [
-          90,
-          319.24527
-        ],
-        [
-          474,
-          285.16003
-        ],
-        [
-          210,
-          319.24527
-        ],
-        [
-          410,
-          334.40162
-        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -2356,21 +2227,21 @@
   },
   "enemies": {
     "700020": {
-      "size": 2,
-      "health": 31000,
+      "size": 4,
+      "health": 12960,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 2592,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.03861032175000001,
+      "dmgMultiple": 0.1728,
       "id": 700020,
-      "des": "裂壳双哨",
+      "des": "光束前哨",
       "drops": [
         {
           "resourceId": 1,
@@ -2399,21 +2270,21 @@
       "res": ""
     },
     "700021": {
-      "size": 1,
-      "health": 1800,
+      "size": 2,
+      "health": 5040,
       "armourType": 2,
-      "shield": 800,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1008,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.0663005525,
+      "dmgMultiple": 0.0672,
       "id": 700021,
-      "des": "裂壳双哨",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2432,8 +2303,8 @@
       "res": ""
     },
     "700040": {
-      "size": 2,
-      "health": 9000,
+      "size": 3,
+      "health": 5250,
       "armourType": 2,
       "shield": 0,
       "shieldType": 0,
@@ -2444,9 +2315,9 @@
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.0983983,
+      "dmgMultiple": 0.42,
       "id": 700040,
-      "des": "三瓣弹巢",
+      "des": "脉冲前哨",
       "drops": [
         {
           "resourceId": 1,
@@ -2466,20 +2337,20 @@
     },
     "700041": {
       "size": 1,
-      "health": 3000,
-      "armourType": 1,
+      "health": 4875,
+      "armourType": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.07603505,
+      "dmgMultiple": 0.39,
       "id": 700041,
-      "des": "三瓣弹巢",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2499,20 +2370,20 @@
     },
     "700042": {
       "size": 1,
-      "health": 3000,
-      "armourType": 1,
+      "health": 4875,
+      "armourType": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.07603505,
+      "dmgMultiple": 0.39,
       "id": 700042,
-      "des": "三瓣弹巢",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2531,21 +2402,21 @@
       "res": ""
     },
     "700060": {
-      "size": 2,
-      "health": 3500,
+      "size": 4,
+      "health": 18001,
       "armourType": 2,
-      "shield": 14000,
+      "shield": 4500,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.0433719,
+      "dmgMultiple": 0.3456,
       "id": 700060,
-      "des": "四角断光",
+      "des": "复充哨塔",
       "drops": [
         {
           "resourceId": 1,
@@ -2564,21 +2435,21 @@
       "res": ""
     },
     "700061": {
-      "size": 1,
-      "health": 1000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 2333,
+      "armourType": 2,
+      "shield": 583,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.03351465,
+      "dmgMultiple": 0.0448,
       "id": 700061,
-      "des": "四角断光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2597,21 +2468,21 @@
       "res": ""
     },
     "700062": {
-      "size": 1,
-      "health": 1000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 2333,
+      "armourType": 2,
+      "shield": 583,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.03351465,
+      "dmgMultiple": 0.0448,
       "id": 700062,
-      "des": "四角断光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2630,21 +2501,21 @@
       "res": ""
     },
     "700063": {
-      "size": 1,
-      "health": 1000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 2333,
+      "armourType": 2,
+      "shield": 583,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.03351465,
+      "dmgMultiple": 0.0448,
       "id": 700063,
-      "des": "四角断光",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -2652,20 +2523,20 @@
     },
     "700080": {
       "size": 1,
-      "health": 4200,
+      "health": 3900,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 117,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.333404,
+      "dmgMultiple": 0.39,
       "id": 700080,
-      "des": "五针铁幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2695,20 +2566,20 @@
     },
     "700081": {
       "size": 1,
-      "health": 4200,
+      "health": 3900,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 117,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.333404,
+      "dmgMultiple": 0.39,
       "id": 700081,
-      "des": "五针铁幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2738,20 +2609,20 @@
     },
     "700082": {
       "size": 1,
-      "health": 4200,
+      "health": 3900,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 117,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.333404,
+      "dmgMultiple": 0.39,
       "id": 700082,
-      "des": "五针铁幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2781,20 +2652,20 @@
     },
     "700083": {
       "size": 1,
-      "health": 4200,
+      "health": 3900,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 117,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.333404,
+      "dmgMultiple": 0.39,
       "id": 700083,
-      "des": "五针铁幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2823,21 +2694,21 @@
       "res": ""
     },
     "700084": {
-      "size": 2,
-      "health": 10000,
+      "size": 3,
+      "health": 8400,
       "armourType": 2,
-      "shield": 2200,
-      "shieldType": 1,
+      "shield": 252,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.431464,
+      "dmgMultiple": 0.84,
       "id": 700084,
-      "des": "五针铁幕",
+      "des": "分列弹巢",
       "drops": [
         {
           "resourceId": 1,
@@ -2857,7 +2728,7 @@
     },
     "700100": {
       "size": 2,
-      "health": 7750,
+      "health": 4284,
       "armourType": 1,
       "shield": 0,
       "shieldType": 0,
@@ -2868,9 +2739,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.200690325,
+      "dmgMultiple": 0.021428571,
       "id": 700100,
-      "des": "六枝脉冲",
+      "des": "导弹靶群",
       "drops": [
         {
           "resourceId": 1,
@@ -2909,8 +2780,8 @@
       "res": ""
     },
     "700101": {
-      "size": 2,
-      "health": 7750,
+      "size": 1,
+      "health": 4286,
       "armourType": 1,
       "shield": 0,
       "shieldType": 0,
@@ -2921,9 +2792,9 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.200690325,
+      "dmgMultiple": 0.021428571,
       "id": 700101,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2953,20 +2824,20 @@
     },
     "700102": {
       "size": 1,
-      "health": 7600,
+      "health": 4286,
       "armourType": 1,
-      "shield": 60,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1550788875,
+      "dmgMultiple": 0.021428571,
       "id": 700102,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -2996,20 +2867,20 @@
     },
     "700103": {
       "size": 1,
-      "health": 7600,
+      "health": 4286,
       "armourType": 1,
-      "shield": 60,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1550788875,
+      "dmgMultiple": 0.021428571,
       "id": 700103,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3039,20 +2910,20 @@
     },
     "700104": {
       "size": 1,
-      "health": 7600,
+      "health": 4286,
       "armourType": 1,
-      "shield": 60,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1550788875,
+      "dmgMultiple": 0.021428571,
       "id": 700104,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3082,20 +2953,20 @@
     },
     "700105": {
       "size": 1,
-      "health": 7600,
+      "health": 4286,
       "armourType": 1,
-      "shield": 60,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.1550788875,
+      "dmgMultiple": 0.021428571,
       "id": 700105,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3124,21 +2995,21 @@
       "res": ""
     },
     "700120": {
-      "size": 3,
-      "health": 26000,
+      "size": 4,
+      "health": 24480,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 6120,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.1629315,
+      "dmgMultiple": 0.576,
       "id": 700120,
-      "des": "对门重炮",
+      "des": "持续压制",
       "drops": [
         {
           "resourceId": 1,
@@ -3168,20 +3039,20 @@
     },
     "700121": {
       "size": 2,
-      "health": 8200,
-      "armourType": 1,
-      "shield": 2500,
-      "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "health": 9520,
+      "armourType": 2,
+      "shield": 2380,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.132759,
+      "dmgMultiple": 0.224,
       "id": 700121,
-      "des": "对门重炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3200,21 +3071,21 @@
       "res": ""
     },
     "700140": {
-      "size": 2,
-      "health": 9035,
-      "armourType": 0,
-      "shield": 3070,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "size": 3,
+      "health": 11198,
+      "armourType": 2,
+      "shield": 336,
+      "shieldType": 2,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.08958015,
+      "dmgMultiple": 1.4,
       "id": 700140,
-      "des": "七星追猎",
+      "des": "逐点护卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3244,20 +3115,20 @@
     },
     "700141": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700141,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3287,20 +3158,20 @@
     },
     "700142": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700142,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3320,20 +3191,20 @@
     },
     "700143": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700143,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3353,20 +3224,20 @@
     },
     "700144": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700144,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3386,20 +3257,20 @@
     },
     "700145": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700145,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3419,20 +3290,20 @@
     },
     "700146": {
       "size": 1,
-      "health": 4000,
+      "health": 3467,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 104,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.06922105,
+      "dmgMultiple": 0.433333333,
       "id": 700146,
-      "des": "七星追猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3451,21 +3322,21 @@
       "res": ""
     },
     "700160": {
-      "size": 3,
-      "health": 26021,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 4,
+      "health": 13000,
+      "armourType": 1,
+      "shield": 1040,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.4999995,
+      "dmgMultiple": 0.0975,
       "id": 700160,
-      "des": "三层空甲",
+      "des": "破甲前哨",
       "drops": [
         {
           "resourceId": 1,
@@ -3485,20 +3356,20 @@
     },
     "700161": {
       "size": 2,
-      "health": 4571,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 3500,
+      "armourType": 1,
+      "shield": 280,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.407407,
+      "dmgMultiple": 0.02625,
       "id": 700161,
-      "des": "三层空甲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3517,21 +3388,21 @@
       "res": ""
     },
     "700162": {
-      "size": 1,
-      "health": 2010,
+      "size": 2,
+      "health": 3500,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 280,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.3148145,
+      "dmgMultiple": 0.02625,
       "id": 700162,
-      "des": "三层空甲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3550,21 +3421,21 @@
       "res": ""
     },
     "700180": {
-      "size": 2,
-      "health": 6082,
+      "size": 4,
+      "health": 17550,
       "armourType": 1,
-      "shield": 6100,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 1755,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.15598605000000001,
+      "dmgMultiple": 0.195,
       "id": 700180,
-      "des": "四拍复明",
+      "des": "铁门护卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3584,20 +3455,20 @@
     },
     "700181": {
       "size": 2,
-      "health": 6082,
+      "health": 3150,
       "armourType": 1,
-      "shield": 6100,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 315,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.15598605000000001,
+      "dmgMultiple": 0.035,
       "id": 700181,
-      "des": "四拍复明",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3616,21 +3487,21 @@
       "res": ""
     },
     "700182": {
-      "size": 1,
-      "health": 4400,
-      "armourType": 2,
-      "shield": 300,
+      "size": 2,
+      "health": 3150,
+      "armourType": 1,
+      "shield": 315,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.120534675,
+      "dmgMultiple": 0.035,
       "id": 700182,
-      "des": "四拍复明",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3649,42 +3520,42 @@
       "res": ""
     },
     "700183": {
-      "size": 1,
-      "health": 4400,
-      "armourType": 2,
-      "shield": 300,
+      "size": 2,
+      "health": 3150,
+      "armourType": 1,
+      "shield": 315,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.120534675,
+      "dmgMultiple": 0.035,
       "id": 700183,
-      "des": "四拍复明",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700200": {
-      "size": 3,
-      "health": 15950,
+      "size": 2,
+      "health": 6665,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.87920316,
+      "dmgMultiple": 0.05,
       "id": 700200,
-      "des": "折翼矛阵",
+      "des": "双翼哨群",
       "drops": [
         {
           "resourceId": 1,
@@ -3704,20 +3575,20 @@
     },
     "700201": {
       "size": 1,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "health": 6667,
+      "armourType": 1,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.55357236,
+      "dmgMultiple": 0.05,
       "id": 700201,
-      "des": "折翼矛阵",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -3725,20 +3596,20 @@
     },
     "700202": {
       "size": 1,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "health": 6667,
+      "armourType": 1,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.55357236,
+      "dmgMultiple": 0.05,
       "id": 700202,
-      "des": "折翼矛阵",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -3746,20 +3617,20 @@
     },
     "700203": {
       "size": 1,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "health": 6667,
+      "armourType": 1,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.55357236,
+      "dmgMultiple": 0.05,
       "id": 700203,
-      "des": "折翼矛阵",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -3767,41 +3638,41 @@
     },
     "700204": {
       "size": 1,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "health": 6667,
+      "armourType": 1,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.55357236,
+      "dmgMultiple": 0.05,
       "id": 700204,
-      "des": "折翼矛阵",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700220": {
-      "size": 3,
-      "health": 12583,
+      "size": 4,
+      "health": 23400,
       "armourType": 1,
-      "shield": 4824,
+      "shield": 2340,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.04100625,
+      "dmgMultiple": 0.325,
       "id": 700220,
-      "des": "双核长照",
+      "des": "单核重垒",
       "drops": [
         {
           "resourceId": 1,
@@ -3821,20 +3692,20 @@
     },
     "700221": {
       "size": 2,
-      "health": 6316,
-      "armourType": 0,
-      "shield": 2018,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "health": 4200,
+      "armourType": 1,
+      "shield": 420,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.0334125,
+      "dmgMultiple": 0.058333333,
       "id": 700221,
-      "des": "双核长照",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3853,21 +3724,21 @@
       "res": ""
     },
     "700222": {
-      "size": 1,
-      "health": 1512,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 2,
+      "health": 4200,
+      "armourType": 1,
+      "shield": 420,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.041310000000000006,
+      "dmgMultiple": 0.058333333,
       "id": 700222,
-      "des": "双核长照",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3886,42 +3757,42 @@
       "res": ""
     },
     "700223": {
-      "size": 1,
-      "health": 1512,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 2,
+      "health": 4200,
+      "armourType": 1,
+      "shield": 420,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.041310000000000006,
+      "dmgMultiple": 0.058333333,
       "id": 700223,
-      "des": "双核长照",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700240": {
-      "size": 2,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "size": 1,
+      "health": 7429,
+      "armourType": 1,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.5040444749999999,
+      "dmgMultiple": 0.071428572,
       "id": 700240,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3940,21 +3811,21 @@
       "res": ""
     },
     "700241": {
-      "size": 2,
-      "health": 6000,
-      "armourType": 0,
-      "shield": 1000,
-      "shieldType": 2,
+      "size": 1,
+      "health": 7429,
+      "armourType": 1,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.5040444749999999,
+      "dmgMultiple": 0.071428572,
       "id": 700241,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -3973,21 +3844,21 @@
       "res": ""
     },
     "700242": {
-      "size": 1,
-      "health": 8000,
+      "size": 2,
+      "health": 7426,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.38948891250000006,
+      "dmgMultiple": 0.071428572,
       "id": 700242,
-      "des": "六点铁砂",
+      "des": "分散巡弋",
       "drops": [
         {
           "resourceId": 1,
@@ -4007,20 +3878,20 @@
     },
     "700243": {
       "size": 1,
-      "health": 8000,
+      "health": 7429,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.38948891250000006,
+      "dmgMultiple": 0.071428572,
       "id": 700243,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -4028,20 +3899,20 @@
     },
     "700244": {
       "size": 1,
-      "health": 8000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 7429,
+      "armourType": 1,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.38948891250000006,
+      "dmgMultiple": 0.071428572,
       "id": 700244,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -4049,41 +3920,41 @@
     },
     "700245": {
       "size": 1,
-      "health": 8000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 7429,
+      "armourType": 1,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.38948891250000006,
+      "dmgMultiple": 0.071428572,
       "id": 700245,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700260": {
-      "size": 3,
-      "health": 2200,
+      "size": 2,
+      "health": 6160,
       "armourType": 2,
-      "shield": 200,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1725,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.0230236425,
+      "dmgMultiple": 0.196,
       "id": 700260,
-      "des": "三叉光阱",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4102,21 +3973,21 @@
       "res": ""
     },
     "700261": {
-      "size": 2,
-      "health": 6500,
+      "size": 4,
+      "health": 31680,
       "armourType": 2,
-      "shield": 6000,
+      "shield": 8870,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.018760005,
+      "dmgMultiple": 1.008,
       "id": 700261,
-      "des": "三叉光阱",
+      "des": "护盾前线",
       "drops": [
         {
           "resourceId": 1,
@@ -4136,20 +4007,20 @@
     },
     "700262": {
       "size": 2,
-      "health": 6500,
+      "health": 6160,
       "armourType": 2,
-      "shield": 6000,
+      "shield": 1725,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 0.018760005,
+      "dmgMultiple": 0.196,
       "id": 700262,
-      "des": "三叉光阱",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4168,21 +4039,21 @@
       "res": ""
     },
     "700280": {
-      "size": 2,
-      "health": 4500,
+      "size": 1,
+      "health": 6825,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 341,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.263813,
+      "dmgMultiple": 1.1375,
       "id": 700280,
-      "des": "五重空门",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4201,21 +4072,21 @@
       "res": ""
     },
     "700281": {
-      "size": 2,
-      "health": 13000,
+      "size": 3,
+      "health": 14700,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 735,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.263813,
+      "dmgMultiple": 2.45,
       "id": 700281,
-      "des": "五重空门",
+      "des": "交错火线",
       "drops": [
         {
           "resourceId": 1,
@@ -4235,20 +4106,20 @@
     },
     "700282": {
       "size": 1,
-      "health": 3000,
-      "armourType": 1,
-      "shield": 200,
+      "health": 6825,
+      "armourType": 2,
+      "shield": 341,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.2038555,
+      "dmgMultiple": 1.1375,
       "id": 700282,
-      "des": "五重空门",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4268,20 +4139,20 @@
     },
     "700283": {
       "size": 1,
-      "health": 3000,
-      "armourType": 1,
-      "shield": 200,
+      "health": 6825,
+      "armourType": 2,
+      "shield": 341,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.2038555,
+      "dmgMultiple": 1.1375,
       "id": 700283,
-      "des": "五重空门",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -4289,41 +4160,41 @@
     },
     "700284": {
       "size": 1,
-      "health": 3000,
-      "armourType": 1,
-      "shield": 200,
+      "health": 6825,
+      "armourType": 2,
+      "shield": 341,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 0.2038555,
+      "dmgMultiple": 1.1375,
       "id": 700284,
-      "des": "五重空门",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700300": {
-      "size": 3,
-      "health": 10253,
+      "size": 4,
+      "health": 29899,
       "armourType": 1,
-      "shield": 5344,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 3588,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.03109725,
+      "dmgMultiple": 0.56875,
       "id": 700300,
-      "des": "四舰换层",
+      "des": "交替重卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4343,62 +4214,62 @@
     },
     "700301": {
       "size": 2,
-      "health": 5147,
-      "armourType": 2,
-      "shield": 2012,
+      "health": 5367,
+      "armourType": 1,
+      "shield": 644,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.0253385,
+      "dmgMultiple": 0.102083333,
       "id": 700301,
-      "des": "四舰换层",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700302": {
-      "size": 1,
-      "health": 1782,
+      "size": 2,
+      "health": 5367,
       "armourType": 1,
-      "shield": 697,
+      "shield": 644,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.031327600000000004,
+      "dmgMultiple": 0.102083333,
       "id": 700302,
-      "des": "四舰换层",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700303": {
-      "size": 1,
-      "health": 1782,
+      "size": 2,
+      "health": 5367,
       "armourType": 1,
-      "shield": 697,
+      "shield": 644,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.031327600000000004,
+      "dmgMultiple": 0.102083333,
       "id": 700303,
-      "des": "四舰换层",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -4406,20 +4277,20 @@
     },
     "700320": {
       "size": 2,
-      "health": 10000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 8250,
+      "armourType": 1,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.11803,
+      "dmgMultiple": 0.109375,
       "id": 700320,
-      "des": "八芒轻猎",
+      "des": "八点警戒",
       "drops": [
         {
           "resourceId": 1,
@@ -4449,20 +4320,20 @@
     },
     "700321": {
       "size": 1,
-      "health": 4000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 8250,
+      "armourType": 1,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700321,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4492,20 +4363,20 @@
     },
     "700322": {
       "size": 1,
-      "health": 4000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 8250,
+      "armourType": 1,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700322,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4535,20 +4406,20 @@
     },
     "700323": {
       "size": 1,
-      "health": 4000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 8250,
+      "armourType": 1,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700323,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4578,20 +4449,20 @@
     },
     "700324": {
       "size": 1,
-      "health": 4000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 8250,
+      "armourType": 1,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700324,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4621,20 +4492,20 @@
     },
     "700325": {
       "size": 1,
-      "health": 2300,
+      "health": 8250,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700325,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4664,20 +4535,20 @@
     },
     "700326": {
       "size": 1,
-      "health": 2300,
+      "health": 8250,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700326,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4707,20 +4578,20 @@
     },
     "700327": {
       "size": 1,
-      "health": 2300,
+      "health": 8250,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 165,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.091205,
+      "dmgMultiple": 0.109375,
       "id": 700327,
-      "des": "八芒轻猎",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4739,21 +4610,21 @@
       "res": ""
     },
     "700340": {
-      "size": 4,
-      "health": 52899,
+      "size": 5,
+      "health": 48960,
       "armourType": 2,
-      "shield": 26388,
+      "shield": 14688,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 11.789353,
+      "dmgMultiple": 2.304,
       "id": 700340,
-      "des": "断续双堡",
+      "des": "充能堡垒",
       "drops": [
         {
           "resourceId": 1,
@@ -4793,20 +4664,20 @@
     },
     "700341": {
       "size": 2,
-      "health": 20352,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "health": 9520,
+      "armourType": 2,
+      "shield": 2856,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 8.1051802,
+      "dmgMultiple": 0.448,
       "id": 700341,
-      "des": "断续双堡",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4825,21 +4696,21 @@
       "res": ""
     },
     "700342": {
-      "size": 1,
-      "health": 4385,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 9520,
+      "armourType": 2,
+      "shield": 2856,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 6.2630938,
+      "dmgMultiple": 0.448,
       "id": 700342,
-      "des": "断续双堡",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4858,21 +4729,21 @@
       "res": ""
     },
     "700380": {
-      "size": 4,
-      "health": 13500,
+      "size": 1,
+      "health": 14400,
       "armourType": 1,
-      "shield": 1000,
+      "shield": 432,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.3627333759999996,
+      "dmgMultiple": 0.288,
       "id": 700380,
-      "des": "六盏脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4941,21 +4812,21 @@
       "res": ""
     },
     "700381": {
-      "size": 2,
-      "health": 15500,
-      "armourType": 0,
-      "shield": 50,
-      "shieldType": 2,
+      "size": 1,
+      "health": 14400,
+      "armourType": 1,
+      "shield": 432,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3.686879196,
+      "dmgMultiple": 0.288,
       "id": 700381,
-      "des": "六盏脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -4994,21 +4865,21 @@
       "res": ""
     },
     "700382": {
-      "size": 2,
-      "health": 15500,
-      "armourType": 0,
-      "shield": 50,
-      "shieldType": 2,
+      "size": 1,
+      "health": 14400,
+      "armourType": 1,
+      "shield": 432,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3.686879196,
+      "dmgMultiple": 0.288,
       "id": 700382,
-      "des": "六盏脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5047,21 +4918,21 @@
       "res": ""
     },
     "700383": {
-      "size": 1,
-      "health": 15600,
+      "size": 2,
+      "health": 28000,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 840,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.848952106,
+      "dmgMultiple": 0.56,
       "id": 700383,
-      "des": "六盏脉冲",
+      "des": "脉冲屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5081,20 +4952,20 @@
     },
     "700384": {
       "size": 1,
-      "health": 15600,
+      "health": 14400,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 432,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.848952106,
+      "dmgMultiple": 0.288,
       "id": 700384,
-      "des": "六盏脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5114,20 +4985,20 @@
     },
     "700385": {
       "size": 1,
-      "health": 15600,
+      "health": 14400,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 432,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.848952106,
+      "dmgMultiple": 0.288,
       "id": 700385,
-      "des": "六盏脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5146,21 +5017,21 @@
       "res": ""
     },
     "700400": {
-      "size": 4,
-      "health": 53000,
+      "size": 5,
+      "health": 61920,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 18576,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 34.56,
+      "dmgMultiple": 3.744,
       "id": 700400,
-      "des": "双脊弹幕",
+      "des": "双层充能",
       "drops": [
         {
           "resourceId": 1,
@@ -5189,21 +5060,21 @@
       "res": ""
     },
     "700401": {
-      "size": 3,
-      "health": 19000,
-      "armourType": 0,
-      "shield": 4000,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "size": 2,
+      "health": 6020,
+      "armourType": 2,
+      "shield": 1806,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 29.16,
+      "dmgMultiple": 0.364,
       "id": 700401,
-      "des": "双脊弹幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5223,20 +5094,20 @@
     },
     "700402": {
       "size": 2,
-      "health": 6500,
+      "health": 6020,
       "armourType": 2,
-      "shield": 2500,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1806,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 23.76,
+      "dmgMultiple": 0.364,
       "id": 700402,
-      "des": "双脊弹幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5255,21 +5126,21 @@
       "res": ""
     },
     "700403": {
-      "size": 1,
-      "health": 3500,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 6020,
+      "armourType": 2,
+      "shield": 1806,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 18.36,
+      "dmgMultiple": 0.364,
       "id": 700403,
-      "des": "双脊弹幕",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5288,42 +5159,42 @@
       "res": ""
     },
     "700404": {
-      "size": 1,
-      "health": 3500,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 6020,
+      "armourType": 2,
+      "shield": 1806,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 18.36,
+      "dmgMultiple": 0.364,
       "id": 700404,
-      "des": "双脊弹幕",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700420": {
-      "size": 3,
-      "health": 6000,
-      "armourType": 1,
-      "shield": 2500,
+      "size": 1,
+      "health": 7733,
+      "armourType": 2,
+      "shield": 464,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 6.067881072,
+      "dmgMultiple": 2.513333332,
       "id": 700420,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5342,21 +5213,21 @@
       "res": ""
     },
     "700421": {
-      "size": 3,
-      "health": 10000,
+      "size": 5,
+      "health": 33602,
       "armourType": 2,
-      "shield": 2000,
+      "shield": 2016,
       "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 6.067881072,
+      "dmgMultiple": 10.92,
       "id": 700421,
-      "des": "分流七翼",
+      "des": "纵深弹幕",
       "drops": [
         {
           "resourceId": 1,
@@ -5375,21 +5246,21 @@
       "res": ""
     },
     "700422": {
-      "size": 2,
-      "health": 7900,
+      "size": 1,
+      "health": 7733,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 464,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 4.944199392,
+      "dmgMultiple": 2.513333332,
       "id": 700422,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5409,20 +5280,20 @@
     },
     "700423": {
       "size": 1,
-      "health": 5700,
+      "health": 7733,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 464,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.8205177120000005,
+      "dmgMultiple": 2.513333332,
       "id": 700423,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5442,20 +5313,20 @@
     },
     "700424": {
       "size": 1,
-      "health": 5700,
+      "health": 7733,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 464,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.8205177120000005,
+      "dmgMultiple": 2.513333332,
       "id": 700424,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5475,20 +5346,20 @@
     },
     "700425": {
       "size": 1,
-      "health": 4500,
+      "health": 7733,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 464,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.8205177120000005,
+      "dmgMultiple": 2.513333332,
       "id": 700425,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -5496,41 +5367,41 @@
     },
     "700426": {
       "size": 1,
-      "health": 4500,
+      "health": 7733,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 464,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.8205177120000005,
+      "dmgMultiple": 2.513333332,
       "id": 700426,
-      "des": "分流七翼",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700440": {
-      "size": 4,
-      "health": 109445,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 5,
+      "health": 46800,
+      "armourType": 1,
+      "shield": 6084,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 13.362816,
+      "dmgMultiple": 1.3,
       "id": 700440,
-      "des": "三座铁门",
+      "des": "重甲指挥",
       "drops": [
         {
           "resourceId": 1,
@@ -5549,21 +5420,21 @@
       "res": ""
     },
     "700441": {
-      "size": 3,
-      "health": 33556,
+      "size": 2,
+      "health": 12600,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 1638,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 11.274876,
+      "dmgMultiple": 0.35,
       "id": 700441,
-      "des": "三座铁门",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5583,20 +5454,20 @@
     },
     "700442": {
       "size": 2,
-      "health": 15159,
+      "health": 12600,
       "armourType": 1,
-      "shield": 6948,
+      "shield": 1638,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 9.186936,
+      "dmgMultiple": 0.35,
       "id": 700442,
-      "des": "三座铁门",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5615,21 +5486,21 @@
       "res": ""
     },
     "700460": {
-      "size": 4,
-      "health": 10000,
+      "size": 5,
+      "health": 41160,
       "armourType": 2,
-      "shield": 4000,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "shield": 2470,
+      "shieldType": 2,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 10.1310935,
+      "dmgMultiple": 18.48,
       "id": 700460,
-      "des": "六角光井",
+      "des": "护卫集群",
       "drops": [
         {
           "resourceId": 1,
@@ -5658,21 +5529,21 @@
       "res": ""
     },
     "700461": {
-      "size": 3,
-      "health": 7000,
+      "size": 1,
+      "health": 11368,
       "armourType": 2,
-      "shield": 3000,
-      "shieldType": 1,
+      "shield": 682,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 8.54811014,
+      "dmgMultiple": 5.104,
       "id": 700461,
-      "des": "六角光井",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5691,21 +5562,21 @@
       "res": ""
     },
     "700462": {
-      "size": 2,
-      "health": 12000,
+      "size": 1,
+      "health": 11368,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 682,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 6.96512678,
+      "dmgMultiple": 5.104,
       "id": 700462,
-      "des": "六角光井",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5725,20 +5596,20 @@
     },
     "700463": {
       "size": 1,
-      "health": 5500,
+      "health": 11368,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 682,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 5.38214342,
+      "dmgMultiple": 5.104,
       "id": 700463,
-      "des": "六角光井",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5758,20 +5629,20 @@
     },
     "700464": {
       "size": 1,
-      "health": 5500,
+      "health": 11368,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 682,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 5.38214342,
+      "dmgMultiple": 5.104,
       "id": 700464,
-      "des": "六角光井",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -5779,41 +5650,41 @@
     },
     "700465": {
       "size": 1,
-      "health": 5500,
+      "health": 11368,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 682,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 5.38214342,
+      "dmgMultiple": 5.104,
       "id": 700465,
-      "des": "六角光井",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700480": {
-      "size": 3,
-      "health": 15500,
-      "armourType": 0,
-      "shield": 50,
-      "shieldType": 2,
+      "size": 1,
+      "health": 12857,
+      "armourType": 1,
+      "shield": 514,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 6.546404836053505,
+      "dmgMultiple": 0.334285714,
       "id": 700480,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5863,20 +5734,20 @@
     },
     "700481": {
       "size": 2,
-      "health": 15600,
+      "health": 35001,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 1400,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.334107644191746,
+      "dmgMultiple": 0.91,
       "id": 700481,
-      "des": "八针追索",
+      "des": "外环守卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5915,21 +5786,21 @@
       "res": ""
     },
     "700482": {
-      "size": 2,
-      "health": 15600,
+      "size": 1,
+      "health": 12857,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 514,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5.334107644191746,
+      "dmgMultiple": 0.334285714,
       "id": 700482,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -5969,20 +5840,20 @@
     },
     "700483": {
       "size": 1,
-      "health": 15500,
+      "health": 12857,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 514,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 4.121810452329985,
+      "dmgMultiple": 0.334285714,
       "id": 700483,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6002,20 +5873,20 @@
     },
     "700484": {
       "size": 1,
-      "health": 7800,
+      "health": 12857,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 514,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 4.121810452329985,
+      "dmgMultiple": 0.334285714,
       "id": 700484,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6035,20 +5906,20 @@
     },
     "700485": {
       "size": 1,
-      "health": 7800,
+      "health": 12857,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 514,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 4.121810452329985,
+      "dmgMultiple": 0.334285714,
       "id": 700485,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6068,20 +5939,20 @@
     },
     "700486": {
       "size": 1,
-      "health": 7800,
+      "health": 12857,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 514,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 4.121810452329985,
+      "dmgMultiple": 0.334285714,
       "id": 700486,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6101,20 +5972,20 @@
     },
     "700487": {
       "size": 1,
-      "health": 7800,
+      "health": 12857,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 514,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 4.121810452329985,
+      "dmgMultiple": 0.334285714,
       "id": 700487,
-      "des": "八针追索",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6133,21 +6004,21 @@
       "res": ""
     },
     "700500": {
-      "size": 4,
-      "health": 35388,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 10080,
+      "armourType": 2,
+      "shield": 3226,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 7.1807231674829985,
+      "dmgMultiple": 0.821333335,
       "id": 700500,
-      "des": "三堡窄照",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6166,21 +6037,21 @@
       "res": ""
     },
     "700501": {
-      "size": 4,
-      "health": 32000,
+      "size": 5,
+      "health": 77760,
       "armourType": 2,
-      "shield": 14471,
+      "shield": 24883,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 7.9811149845000005,
+      "dmgMultiple": 6.336,
       "id": 700501,
-      "des": "三堡窄照",
+      "des": "重盾守卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6200,20 +6071,20 @@
     },
     "700502": {
       "size": 2,
-      "health": 7860,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "health": 10080,
+      "armourType": 2,
+      "shield": 3226,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 5.22573005,
+      "dmgMultiple": 0.821333335,
       "id": 700502,
-      "des": "三堡窄照",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6232,42 +6103,42 @@
       "res": ""
     },
     "700503": {
-      "size": 1,
-      "health": 3300,
+      "size": 2,
+      "health": 10080,
       "armourType": 2,
-      "shield": 1175,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 3226,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 4.03806413,
+      "dmgMultiple": 0.821333335,
       "id": 700503,
-      "des": "三堡窄照",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700520": {
-      "size": 4,
-      "health": 26145,
+      "size": 5,
+      "health": 58500,
       "armourType": 1,
-      "shield": 14593,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 7605,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 13.77286588,
+      "dmgMultiple": 2.1125,
       "id": 700520,
-      "des": "五阶破城",
+      "des": "城垒护卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6296,21 +6167,21 @@
       "res": ""
     },
     "700521": {
-      "size": 3,
-      "health": 40081,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 2,
+      "health": 7875,
+      "armourType": 1,
+      "shield": 1024,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 11.6208556,
+      "dmgMultiple": 0.284375,
       "id": 700521,
-      "des": "五阶破城",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6330,20 +6201,20 @@
     },
     "700522": {
       "size": 2,
-      "health": 10059,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 7875,
+      "armourType": 1,
+      "shield": 1024,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 9.46884531,
+      "dmgMultiple": 0.284375,
       "id": 700522,
-      "des": "五阶破城",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6362,21 +6233,21 @@
       "res": ""
     },
     "700523": {
-      "size": 1,
-      "health": 2786,
+      "size": 2,
+      "health": 7875,
       "armourType": 1,
-      "shield": 1166,
+      "shield": 1024,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 7.31683503,
+      "dmgMultiple": 0.284375,
       "id": 700523,
-      "des": "五阶破城",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6395,42 +6266,42 @@
       "res": ""
     },
     "700524": {
-      "size": 1,
-      "health": 2786,
+      "size": 2,
+      "health": 7875,
       "armourType": 1,
-      "shield": 1166,
+      "shield": 1024,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 7.31683503,
+      "dmgMultiple": 0.284375,
       "id": 700524,
-      "des": "五阶破城",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700540": {
-      "size": 4,
-      "health": 4000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 1,
+      "health": 11600,
+      "armourType": 2,
+      "shield": 928,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 6.994278405528267,
+      "dmgMultiple": 6.573333333,
       "id": 700540,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6489,21 +6360,21 @@
       "res": ""
     },
     "700541": {
-      "size": 3,
-      "health": 2500,
-      "armourType": 1,
-      "shield": 400,
-      "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "size": 1,
+      "health": 11600,
+      "armourType": 2,
+      "shield": 928,
+      "shieldType": 2,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 5.901422404664476,
+      "dmgMultiple": 6.573333333,
       "id": 700541,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6552,21 +6423,21 @@
       "res": ""
     },
     "700542": {
-      "size": 2,
-      "health": 2500,
-      "armourType": 1,
-      "shield": 200,
+      "size": 1,
+      "health": 11600,
+      "armourType": 2,
+      "shield": 928,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 4.8085664038006835,
+      "dmgMultiple": 6.573333333,
       "id": 700542,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6595,21 +6466,21 @@
       "res": ""
     },
     "700543": {
-      "size": 1,
-      "health": 11800,
+      "size": 5,
+      "health": 50400,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 4032,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.7157104029368924,
+      "dmgMultiple": 28.56,
       "id": 700543,
-      "des": "七灯残月",
+      "des": "重装弹巢",
       "drops": [
         {
           "resourceId": 1,
@@ -6629,20 +6500,20 @@
     },
     "700544": {
       "size": 1,
-      "health": 11800,
+      "health": 11600,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 928,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.7157104029368924,
+      "dmgMultiple": 6.573333333,
       "id": 700544,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6662,20 +6533,20 @@
     },
     "700545": {
       "size": 1,
-      "health": 8000,
+      "health": 11600,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 928,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.7157104029368924,
+      "dmgMultiple": 6.573333333,
       "id": 700545,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6695,20 +6566,20 @@
     },
     "700546": {
       "size": 1,
-      "health": 8000,
+      "health": 11600,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 928,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.7157104029368924,
+      "dmgMultiple": 6.573333333,
       "id": 700546,
-      "des": "七灯残月",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6727,21 +6598,21 @@
       "res": ""
     },
     "700560": {
-      "size": 4,
-      "health": 47061,
-      "armourType": 0,
-      "shield": 7712,
-      "shieldType": 2,
+      "size": 5,
+      "health": 72799,
+      "armourType": 1,
+      "shield": 10920,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 61.056,
+      "dmgMultiple": 3.575,
       "id": 700560,
-      "des": "四核抛射",
+      "des": "锚点火线",
       "drops": [
         {
           "resourceId": 1,
@@ -6760,21 +6631,21 @@
       "res": ""
     },
     "700561": {
-      "size": 3,
-      "health": 19239,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 2,
+      "health": 13067,
+      "armourType": 1,
+      "shield": 1960,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 51.516,
+      "dmgMultiple": 0.641666665,
       "id": 700561,
-      "des": "四核抛射",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6793,21 +6664,21 @@
       "res": ""
     },
     "700562": {
-      "size": 3,
-      "health": 15391,
-      "armourType": 2,
-      "shield": 6053,
+      "size": 2,
+      "health": 13067,
+      "armourType": 1,
+      "shield": 1960,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 51.516,
+      "dmgMultiple": 0.641666665,
       "id": 700562,
-      "des": "四核抛射",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6827,41 +6698,41 @@
     },
     "700563": {
       "size": 2,
-      "health": 8691,
-      "armourType": 0,
-      "shield": 2849,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "health": 13067,
+      "armourType": 1,
+      "shield": 1960,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 41.976,
+      "dmgMultiple": 0.641666665,
       "id": 700563,
-      "des": "四核抛射",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700580": {
-      "size": 4,
-      "health": 7700,
-      "armourType": 2,
-      "shield": 200,
+      "size": 1,
+      "health": 22320,
+      "armourType": 1,
+      "shield": 893,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3.7164481380000005,
+      "dmgMultiple": 0.792,
       "id": 700580,
-      "des": "六重极光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6890,21 +6761,21 @@
       "res": ""
     },
     "700581": {
-      "size": 3,
-      "health": 15500,
+      "size": 1,
+      "health": 22320,
       "armourType": 1,
-      "shield": 50,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 893,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3.135753114,
+      "dmgMultiple": 0.792,
       "id": 700581,
-      "des": "六重极光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6924,20 +6795,20 @@
     },
     "700582": {
       "size": 2,
-      "health": 15600,
+      "health": 43400,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 1736,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.55505809,
+      "dmgMultiple": 1.54,
       "id": 700582,
-      "des": "六重极光",
+      "des": "扇面截击",
       "drops": [
         {
           "resourceId": 1,
@@ -6956,21 +6827,21 @@
       "res": ""
     },
     "700583": {
-      "size": 2,
-      "health": 15600,
+      "size": 1,
+      "health": 22320,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 893,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.55505809,
+      "dmgMultiple": 0.792,
       "id": 700583,
-      "des": "六重极光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -6990,20 +6861,20 @@
     },
     "700584": {
       "size": 1,
-      "health": 15600,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 22320,
+      "armourType": 1,
+      "shield": 893,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.9743630660000002,
+      "dmgMultiple": 0.792,
       "id": 700584,
-      "des": "六重极光",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -7011,44 +6882,41 @@
     },
     "700585": {
       "size": 1,
-      "health": 15600,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 22320,
+      "armourType": 1,
+      "shield": 893,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.9743630660000002,
+      "dmgMultiple": 0.792,
       "id": 700585,
-      "des": "六重极光",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700600": {
-      "size": 3,
-      "health": 11600,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 1,
+      "health": 19029,
+      "armourType": 1,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
-        },
-        {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3.3,
+      "dmgMultiple": 0.874285714,
       "id": 700600,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7097,21 +6965,21 @@
       "res": ""
     },
     "700601": {
-      "size": 3,
-      "health": 23500,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 2,
+      "health": 51797,
+      "armourType": 1,
+      "shield": 2590,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2,
+      "dmgMultiple": 2.38,
       "id": 700601,
-      "des": "八舰散炮",
+      "des": "蜂群屏障",
       "drops": [
         {
           "resourceId": 1,
@@ -7160,21 +7028,21 @@
       "res": ""
     },
     "700602": {
-      "size": 2,
-      "health": 15500,
-      "armourType": 0,
-      "shield": 50,
-      "shieldType": 2,
+      "size": 1,
+      "health": 19029,
+      "armourType": 1,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2,
+      "dmgMultiple": 0.874285714,
       "id": 700602,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7204,20 +7072,20 @@
     },
     "700603": {
       "size": 1,
-      "health": 8000,
+      "health": 19029,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 0.874285714,
       "id": 700603,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7237,20 +7105,20 @@
     },
     "700604": {
       "size": 1,
-      "health": 8000,
+      "health": 19029,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 0.874285714,
       "id": 700604,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7270,20 +7138,20 @@
     },
     "700605": {
       "size": 1,
-      "health": 8000,
+      "health": 19029,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 0.874285714,
       "id": 700605,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7303,20 +7171,20 @@
     },
     "700606": {
       "size": 1,
-      "health": 8000,
+      "health": 19029,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 0.874285714,
       "id": 700606,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7336,20 +7204,20 @@
     },
     "700607": {
       "size": 1,
-      "health": 8000,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 19029,
+      "armourType": 1,
+      "shield": 951,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 0.874285714,
       "id": 700607,
-      "des": "八舰散炮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7368,21 +7236,21 @@
       "res": ""
     },
     "700620": {
-      "size": 4,
-      "health": 25993,
+      "size": 5,
+      "health": 89700,
       "armourType": 1,
-      "shield": 10260,
+      "shield": 13455,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 6.7950221,
+      "dmgMultiple": 5.525,
       "id": 700620,
-      "des": "四臂静光",
+      "des": "破城护卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7401,21 +7269,21 @@
       "res": ""
     },
     "700621": {
-      "size": 3,
-      "health": 15939,
-      "armourType": 0,
-      "shield": 5243,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
+      "size": 2,
+      "health": 12075,
+      "armourType": 1,
+      "shield": 1811,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 5.7332999,
+      "dmgMultiple": 0.74375,
       "id": 700621,
-      "des": "四臂静光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7435,20 +7303,20 @@
     },
     "700622": {
       "size": 2,
-      "health": 7111,
-      "armourType": 2,
-      "shield": 2807,
+      "health": 12075,
+      "armourType": 1,
+      "shield": 1811,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 4.6715777,
+      "dmgMultiple": 0.74375,
       "id": 700622,
-      "des": "四臂静光",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7468,62 +7336,62 @@
     },
     "700623": {
       "size": 2,
-      "health": 7111,
-      "armourType": 2,
-      "shield": 2807,
+      "health": 12075,
+      "armourType": 1,
+      "shield": 1811,
       "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 4.6715777,
+      "dmgMultiple": 0.74375,
       "id": 700623,
-      "des": "四臂静光",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700624": {
-      "size": 1,
-      "health": 2189,
+      "size": 2,
+      "health": 12075,
       "armourType": 1,
-      "shield": 1152,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shield": 1811,
+      "shieldType": 1,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 3.6098555,
+      "dmgMultiple": 0.74375,
       "id": 700624,
-      "des": "四臂静光",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700640": {
-      "size": 4,
-      "health": 35912,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 5,
+      "health": 95040,
+      "armourType": 2,
+      "shield": 30413,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 30.735360000000004,
+      "dmgMultiple": 9.792,
       "id": 700640,
-      "des": "六刃双潮",
+      "des": "护盾纵深",
       "drops": [
         {
           "resourceId": 1,
@@ -7552,21 +7420,21 @@
       "res": ""
     },
     "700641": {
-      "size": 3,
-      "health": 13050,
+      "size": 2,
+      "health": 7392,
       "armourType": 2,
-      "shield": 5220,
+      "shield": 2365,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 25.93296,
+      "dmgMultiple": 0.7616,
       "id": 700641,
-      "des": "六刃双潮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7585,21 +7453,21 @@
       "res": ""
     },
     "700642": {
-      "size": 3,
-      "health": 8075,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "size": 2,
+      "health": 7392,
+      "armourType": 2,
+      "shield": 2365,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 25.93296,
+      "dmgMultiple": 0.7616,
       "id": 700642,
-      "des": "六刃双潮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7619,20 +7487,20 @@
     },
     "700643": {
       "size": 2,
-      "health": 5731,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "health": 7392,
+      "armourType": 2,
+      "shield": 2365,
+      "shieldType": 2,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 21.13056,
+      "dmgMultiple": 0.7616,
       "id": 700643,
-      "des": "六刃双潮",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -7651,63 +7519,63 @@
       "res": ""
     },
     "700644": {
-      "size": 1,
-      "health": 3780,
-      "armourType": 0,
-      "shield": 540,
+      "size": 2,
+      "health": 7392,
+      "armourType": 2,
+      "shield": 2365,
       "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 16.32816,
+      "dmgMultiple": 0.7616,
       "id": 700644,
-      "des": "六刃双潮",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700645": {
-      "size": 1,
-      "health": 3780,
-      "armourType": 0,
-      "shield": 540,
+      "size": 2,
+      "health": 7392,
+      "armourType": 2,
+      "shield": 2365,
       "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 16.32816,
+      "dmgMultiple": 0.7616,
       "id": 700645,
-      "des": "六刃双潮",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700680": {
-      "size": 5,
-      "health": 208249,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "size": 6,
+      "health": 200000,
+      "armourType": 1,
+      "shield": 36000,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 8.203936,
+      "dmgMultiple": 13,
       "id": 700680,
-      "des": "三炮锚王",
+      "des": "锚王",
       "drops": [
         {
           "resourceId": 1,
@@ -7726,84 +7594,42 @@
       "res": ""
     },
     "700681": {
-      "size": 4,
-      "health": 57003,
-      "armourType": 2,
-      "shield": 25841,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 7.095296,
-      "id": 700681,
-      "des": "三炮锚王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700682": {
       "size": 2,
-      "health": 19738,
+      "health": 50000,
       "armourType": 1,
-      "shield": 8948,
+      "shield": 9000,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 4.878016,
-      "id": 700682,
-      "des": "三炮锚王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700683": {
-      "size": 1,
-      "health": 4725,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "missile-mon"
-        }
-      ],
-      "dmgMultiple": 3.769376,
-      "id": 700683,
-      "des": "三炮锚王",
+      "dmgMultiple": 3.25,
+      "id": 700681,
+      "des": "统领护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "700700": {
-      "size": 5,
-      "health": 92555,
+      "size": 6,
+      "health": 192000,
       "armourType": 2,
-      "shield": 45352,
+      "shield": 67200,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 3.7,
+      "dmgMultiple": 20.8,
       "id": 700700,
-      "des": "七星断充王",
+      "des": "断充堡垒",
       "drops": [
         {
           "resourceId": 1,
@@ -7822,126 +7648,21 @@
       "res": ""
     },
     "700701": {
-      "size": 3,
-      "health": 12671,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 3.1104,
-      "id": 700701,
-      "des": "七星断充王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700702": {
       "size": 2,
-      "health": 6360,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 2.5343999999999998,
-      "id": 700702,
-      "des": "七星断充王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700703": {
-      "size": 1,
-      "health": 6000,
-      "armourType": 1,
-      "shield": 3360,
+      "health": 48000,
+      "armourType": 2,
+      "shield": 16800,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 1.7,
-      "id": 700703,
-      "des": "七星断充王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700704": {
-      "size": 1,
-      "health": 6000,
-      "armourType": 1,
-      "shield": 3360,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
-      "equipment": [
-        {
-          "name": "longLaser-mon"
-        }
-      ],
-      "dmgMultiple": 1.7,
-      "id": 700704,
-      "des": "七星断充王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700705": {
-      "size": 1,
-      "health": 6000,
-      "armourType": 1,
-      "shield": 3360,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
-      "equipment": [
-        {
-          "name": "longLaser-mon"
-        }
-      ],
-      "dmgMultiple": 1.7,
-      "id": 700705,
-      "des": "七星断充王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700706": {
-      "size": 1,
-      "health": 6000,
-      "armourType": 1,
-      "shield": 3360,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
-      "equipment": [
-        {
-          "name": "longLaser-mon"
-        }
-      ],
-      "dmgMultiple": 1.7,
-      "id": 700706,
-      "des": "七星断充王",
+      "dmgMultiple": 5.2,
+      "id": 700701,
+      "des": "统领护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -7949,137 +7670,20 @@
     },
     "700780": {
       "size": 6,
-      "health": 240194,
-      "armourType": 0,
-      "shield": 86878,
-      "shieldType": 0,
-      "shieldRecovery": 0.15,
-      "shieldDelay": 0.35,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 3.024,
-      "id": 700780,
-      "des": "裂环五核",
-      "drops": [
-        {
-          "resourceId": 1,
-          "amount": 120.0,
-          "chance": 1.0
-        }
-      ],
-      "rewardDrops": [
-        {
-          "resourceId": 1,
-          "amount": 120.0,
-          "chance": 1.0
-        }
-      ],
-      "jewelDropRolls": 1,
-      "res": ""
-    },
-    "700781": {
-      "size": 5,
-      "health": 156603,
+      "health": 440000,
       "armourType": 2,
-      "shield": 67972,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 2.664,
-      "id": 700781,
-      "des": "裂环五核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700782": {
-      "size": 3,
-      "health": 65714,
-      "armourType": 2,
-      "shield": 33276,
+      "shield": 176000,
       "shieldType": 2,
-      "shieldRecovery": 0.18,
-      "shieldDelay": 0.3,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.944,
-      "id": 700782,
-      "des": "裂环五核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700783": {
-      "size": 2,
-      "health": 41230,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.584,
-      "id": 700783,
-      "des": "裂环五核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700784": {
-      "size": 1,
-      "health": 8883,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldRecovery": 0.02,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "longLaser-mon"
         }
       ],
-      "dmgMultiple": 1.224,
-      "id": 700784,
-      "des": "裂环五核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700800": {
-      "size": 6,
-      "health": 318129,
-      "armourType": 0,
-      "shield": 63881,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "missile-mon"
-        }
-      ],
-      "dmgMultiple": 35.9856,
-      "id": 700800,
-      "des": "七刃终城",
+      "dmgMultiple": 48,
+      "id": 700780,
+      "des": "裂环核心",
       "drops": [
         {
           "resourceId": 1,
@@ -8097,148 +7701,55 @@
       "jewelDropRolls": 1,
       "res": ""
     },
-    "700801": {
-      "size": 4,
-      "health": 115430,
+    "700800": {
+      "size": 6,
+      "health": 460000,
       "armourType": 1,
-      "shield": 46172,
+      "shield": 92000,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
-      "equipment": [
-        {
-          "name": "missile-mon"
-        }
-      ],
-      "dmgMultiple": 27.4176,
-      "id": 700801,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700802": {
-      "size": 3,
-      "health": 78647,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "missile-mon"
-        }
-      ],
-      "dmgMultiple": 23.1336,
-      "id": 700802,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700803": {
-      "size": 2,
-      "health": 31581,
-      "armourType": 1,
-      "shield": 16843,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
-      "equipment": [
-        {
-          "name": "missile-mon"
-        }
-      ],
-      "dmgMultiple": 18.8496,
-      "id": 700803,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700804": {
-      "size": 1,
-      "health": 12150,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 14.5656,
-      "id": 700804,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700805": {
-      "size": 1,
-      "health": 12150,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
+      "dmgMultiple": 30,
+      "id": 700800,
+      "des": "终城主炮",
+      "drops": [
         {
-          "name": "cannon-mon"
+          "resourceId": 1,
+          "amount": 120.0,
+          "chance": 1.0
         }
       ],
-      "dmgMultiple": 14.5656,
-      "id": 700805,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "700806": {
-      "size": 1,
-      "health": 12150,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
+      "rewardDrops": [
         {
-          "name": "cannon-mon"
+          "resourceId": 1,
+          "amount": 120.0,
+          "chance": 1.0
         }
       ],
-      "dmgMultiple": 14.5656,
-      "id": 700806,
-      "des": "七刃终城",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
+      "jewelDropRolls": 1,
       "res": ""
     },
     "701800": {
-      "size": 4,
-      "health": 3000,
+      "size": 1,
+      "health": 5386,
       "armourType": 2,
-      "shield": 1500,
-      "shieldType": 1,
+      "shield": 269,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 8.4,
+      "dmgMultiple": 1.325714287,
       "id": 701800,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -8267,21 +7778,21 @@
       "res": ""
     },
     "701801": {
-      "size": 3,
-      "health": 7000,
+      "size": 1,
+      "health": 5386,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 269,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 6,
+      "dmgMultiple": 1.325714287,
       "id": 701801,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -8301,20 +7812,20 @@
     },
     "701802": {
       "size": 1,
-      "health": 1000,
-      "armourType": 1,
-      "shield": 200,
+      "health": 5386,
+      "armourType": 2,
+      "shield": 269,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 1.325714287,
       "id": 701802,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -8334,20 +7845,20 @@
     },
     "701803": {
       "size": 1,
-      "health": 1000,
-      "armourType": 1,
-      "shield": 200,
+      "health": 5386,
+      "armourType": 2,
+      "shield": 269,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 1.325714287,
       "id": 701803,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -8366,21 +7877,21 @@
       "res": ""
     },
     "701804": {
-      "size": 1,
-      "health": 8000,
+      "size": 5,
+      "health": 27298,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 1365,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 6.72,
       "id": 701804,
-      "des": "交错炮垒",
+      "des": "指挥哨站",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -8388,20 +7899,20 @@
     },
     "701805": {
       "size": 1,
-      "health": 8000,
+      "health": 5386,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 269,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 1.325714287,
       "id": 701805,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -8409,20 +7920,20 @@
     },
     "701806": {
       "size": 1,
-      "health": 8000,
+      "health": 5386,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 269,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 1.325714287,
       "id": 701806,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -8430,41 +7941,41 @@
     },
     "701807": {
       "size": 1,
-      "health": 8000,
+      "health": 5386,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 269,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
           "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3.5999999999999996,
+      "dmgMultiple": 1.325714287,
       "id": 701807,
-      "des": "交错炮垒",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "703300": {
-      "size": 5,
-      "health": 100000,
+      "size": 6,
+      "health": 176000,
       "armourType": 2,
-      "shield": 5000,
+      "shield": 21120,
       "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 12.3,
+      "dmgMultiple": 104,
       "id": 703300,
-      "des": "双门督军",
+      "des": "弹巢统领",
       "drops": [
         {
           "resourceId": 1,
@@ -8483,126 +7994,42 @@
       "res": ""
     },
     "703301": {
-      "size": 3,
-      "health": 14000,
+      "size": 1,
+      "health": 44000,
       "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 5280,
+      "shieldType": 2,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 3,
+      "dmgMultiple": 26,
       "id": 703301,
-      "des": "双门督军",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703302": {
-      "size": 3,
-      "health": 14000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 3,
-      "id": 703302,
-      "des": "双门督军",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703303": {
-      "size": 1,
-      "health": 2000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 45,
-      "id": 703303,
-      "des": "双门督军",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703304": {
-      "size": 1,
-      "health": 2000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 45,
-      "id": 703304,
-      "des": "双门督军",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703305": {
-      "size": 1,
-      "health": 2000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 45,
-      "id": 703305,
-      "des": "双门督军",
+      "des": "统领护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "703600": {
-      "size": 5,
-      "health": 30000,
+      "size": 6,
+      "health": 264000,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 21120,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 38.57044988159999,
+      "dmgMultiple": 13,
       "id": 703600,
-      "des": "双垒追猎王",
+      "des": "追猎旗舰",
       "drops": [
         {
           "resourceId": 1,
@@ -8621,185 +8048,42 @@
       "res": ""
     },
     "703601": {
-      "size": 2,
-      "health": 30000,
+      "size": 1,
+      "health": 33000,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 2,
+      "shield": 2640,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.8576799999999998,
+      "dmgMultiple": 1.625,
       "id": 703601,
-      "des": "双垒追猎王",
+      "des": "统领护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "703602": {
-      "size": 2,
-      "health": 30000,
+      "size": 1,
+      "health": 33000,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 2640,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 2.8576799999999998,
+      "dmgMultiple": 1.625,
       "id": 703602,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703603": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [],
-      "dmgMultiple": 2.0575295999999996,
-      "id": 703603,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703604": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 12.495205799999997,
-      "id": 703604,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703605": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 1.1430719999999999,
-      "id": 703605,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703606": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 2.8576799999999998,
-      "id": 703606,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703607": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 1.5876000000000001,
-      "id": 703607,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703608": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 1.5876000000000001,
-      "id": 703608,
-      "des": "双垒追猎王",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703609": {
-      "size": 1,
-      "health": 23000,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 1.5876000000000001,
-      "id": 703609,
-      "des": "双垒追猎王",
+      "des": "统领护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -8807,20 +8091,20 @@
     },
     "703700": {
       "size": 6,
-      "health": 390000,
+      "health": 414400,
       "armourType": 1,
-      "shield": 25000,
+      "shield": 41440,
       "shieldType": 1,
-      "shieldRecovery": 0.12,
-      "shieldDelay": 0.45,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 5,
+      "dmgMultiple": 24,
       "id": 703700,
-      "des": "极昼三核",
+      "des": "极昼核心",
       "drops": [
         {
           "resourceId": 1,
@@ -8839,147 +8123,42 @@
       "res": ""
     },
     "703701": {
-      "size": 3,
-      "health": 35000,
+      "size": 1,
+      "health": 72800,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 7280,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 9,
+      "dmgMultiple": 3,
       "id": 703701,
-      "des": "极昼三核",
+      "des": "核心护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
       "res": ""
     },
     "703702": {
-      "size": 3,
-      "health": 35000,
+      "size": 1,
+      "health": 72800,
       "armourType": 1,
-      "shield": 0,
-      "shieldType": 0,
+      "shield": 7280,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "longLaser-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 7.2,
+      "dmgMultiple": 3,
       "id": 703702,
-      "des": "极昼三核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703703": {
-      "size": 1,
-      "health": 14500,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.5,
-      "id": 703703,
-      "des": "极昼三核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703704": {
-      "size": 1,
-      "health": 14500,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.5,
-      "id": 703704,
-      "des": "极昼三核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703705": {
-      "size": 1,
-      "health": 14500,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.5,
-      "id": 703705,
-      "des": "极昼三核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703706": {
-      "size": 1,
-      "health": 14500,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.5,
-      "id": 703706,
-      "des": "极昼三核",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703707": {
-      "size": 1,
-      "health": 14500,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.5,
-      "id": 703707,
-      "des": "极昼三核",
+      "des": "核心护卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -8987,20 +8166,20 @@
     },
     "703800": {
       "size": 6,
-      "health": 310000,
+      "health": 420000,
       "armourType": 2,
-      "shield": 40000,
+      "shield": 63000,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
+      "shieldRecovery": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "missile-mon"
         }
       ],
-      "dmgMultiple": 5.2,
+      "dmgMultiple": 240,
       "id": 703800,
-      "des": "七舰铁潮",
+      "des": "铁潮核心",
       "drops": [
         {
           "resourceId": 1,
@@ -9018,228 +8197,22 @@
       "jewelDropRolls": 1,
       "res": ""
     },
-    "703801": {
-      "size": 4,
-      "health": 40000,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 2,
-      "id": 703801,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703802": {
-      "size": 2,
-      "health": 12000,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 0.4,
-      "id": 703802,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703803": {
-      "size": 2,
-      "health": 12000,
-      "armourType": 1,
-      "shield": 0,
-      "shieldType": 1,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 0.4,
-      "id": 703803,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703804": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703804,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703805": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703805,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703806": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703806,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703807": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703807,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703808": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703808,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703809": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703809,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
-    "703810": {
-      "size": 1,
-      "health": 2400,
-      "armourType": 2,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "equipment": [
-        {
-          "name": "cannon-mon"
-        }
-      ],
-      "dmgMultiple": 22,
-      "id": 703810,
-      "des": "七舰铁潮",
-      "drops": [],
-      "rewardDrops": [],
-      "jewelDropRolls": 0,
-      "res": ""
-    },
     "800106": {
       "size": 1,
-      "health": 4000,
+      "health": 4286,
       "armourType": 1,
-      "shield": 60,
-      "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 0.6,
-      "equipment": [],
-      "dmgMultiple": 0.03375,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.021428571,
       "id": 800106,
-      "des": "六枝脉冲",
+      "des": "屏卫",
       "drops": [
         {
           "resourceId": 1,
@@ -9269,20 +8242,20 @@
     },
     "800205": {
       "size": 1,
-      "health": 7900,
-      "armourType": 0,
-      "shield": 100,
-      "shieldType": 2,
+      "health": 6667,
+      "armourType": 1,
+      "shield": 133,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "missile-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.08000000000000002,
+      "dmgMultiple": 0.05,
       "id": 800205,
-      "des": "折翼矛阵",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,
@@ -9290,20 +8263,20 @@
     },
     "800246": {
       "size": 1,
-      "health": 4200,
-      "armourType": 0,
-      "shield": 0,
-      "shieldType": 0,
+      "health": 7429,
+      "armourType": 1,
+      "shield": 149,
+      "shieldType": 1,
       "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shieldDelay": 3,
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.0425,
+      "dmgMultiple": 0.071428572,
       "id": 800246,
-      "des": "六点铁砂",
+      "des": "屏卫",
       "drops": [],
       "rewardDrops": [],
       "jewelDropRolls": 0,

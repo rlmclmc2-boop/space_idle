@@ -15,6 +15,8 @@ static func valid(c: Dictionary) -> bool:
 	for key in ["unlock_stage","minimum_level","warehouse_capacity","overflow_capacity","reforge_capacity_gain","retention_capacity_gain","maximum_equipped","maximum_legendary","maximum_ultimate","completion_budget","amplification_start_level"]:
 		if not integer(c.get(key)) or int(c[key])<=0:return false
 	if not integer(c.get("initial_retention_capacity")) or int(c.initial_retention_capacity)<0:return false
+	if c.has("material_unit_scale") and (not integer(c.material_unit_scale) or c.material_unit_scale<=0):return false
+	if c.has("ultimate_core_probability") and (not number(c.ultimate_core_probability) or c.ultimate_core_probability<0 or c.ultimate_core_probability>1):return false
 	if c.maximum_equipped>5 or c.maximum_legendary>2 or c.maximum_ultimate>1 or c.overflow_capacity!=10:return false
 	if not c.get("routes") is Dictionary or c.routes.size()!=4:return false
 	for route in c.routes.values():

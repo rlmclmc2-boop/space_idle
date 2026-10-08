@@ -36,9 +36,14 @@ var muzzle: Node3D
 var shield: MeshInstance3D
 var shield_material: ShaderMaterial
 var material_entries: Array[Dictionary] = []
+var material_pool: Dictionary = {}
 var exhaust_materials: Array[ShaderMaterial] = []
 var exhaust_nodes: Array[MeshInstance3D] = []
 var world: Node3D
+var flat_compositor := preload("res://scripts/flat_ship_compositor.gd").new()
+var rendering_paused := false
+var fleet_redraw_pending := false
+var body_baker := preload("res://scripts/ship_body_baker.gd").new()
 var rendered_height := 0.0
 var rendered_position := Vector2.ZERO
 var model_span := 1.0
@@ -48,6 +53,7 @@ var last_settings: Dictionary = {}
 var last_toon_enabled := true
 var last_rim_enabled := true
 var accelerated_quality := false
+var render_scale_sync_pending := false
 
 
 func _ready() -> void:
@@ -59,6 +65,7 @@ func _ready() -> void:
 	viewport.transparent_bg = true
 	viewport.own_world_3d = true
 	viewport.msaa_3d = Viewport.MSAA_4X
+	viewport.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	add_child(viewport)
 	var output := TextureRect.new()
@@ -103,6 +110,56 @@ func _ready() -> void:
 	# Exact top-down projection: model -Z points to screen top; no turntable camera.
 	camera.rotation_degrees.x = -90
 	world.add_child(camera)
+	body_baker.source_world = world
+	add_child(body_baker)
+	body_baker.presentation_changed.connect(request_fleet_redraw)
+	flat_compositor.name = "FlatShipCandidate"
+	add_child(flat_compositor)
+	# Explicit candidate opt-in; the accepted live path remains the default.
+	flat_compositor.enabled = OS.get_environment("SPACE_IDLE_FLAT_SHIPS") == "1"
+	flat_compositor.configure(self)
+	# Keep the logical viewport and camera projection fixed. Only the internal
+	# 3D buffer follows displayed pixels; all unproject_position users therefore
+	# continue receiving the same canonical battlefield coordinates.
+	get_viewport().size_changed.connect(_request_render_scale_sync)
+	resized.connect(_request_render_scale_sync)
+	visibility_changed.connect(_request_render_scale_sync)
+	set_notify_transform(true)
+	_request_render_scale_sync()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED:
+		_request_render_scale_sync()
+
+
+func _request_render_scale_sync() -> void:
+	if not is_instance_valid(viewport) or render_scale_sync_pending:return
+	render_scale_sync_pending = true
+	# Resize/layout signals can arrive together. Read the final canvas stretch
+	# once, after layout, including paused resize and hidden-to-visible restore.
+	_sync_render_scale.call_deferred()
+
+
+func _sync_render_scale() -> void:
+	render_scale_sync_pending = false
+	if not is_instance_valid(viewport) or not is_visible_in_tree():return
+	if size.x <= 0.0 or size.y <= 0.0:return
+	var pixels: Transform2D = get_viewport().get_stretch_transform()*get_global_transform_with_canvas()
+	# Prefer the larger axis for nonuniform host scaling; normal
+	# aspect-preserving windows use one ratio, within the engine limits below.
+	var native_scale: float = maxf(pixels.x.length(),pixels.y.length())
+	if native_scale <= 0.0:return
+	# Engine-supported scaling range; no quality preset or FPS feedback loop.
+	var desired_scale: float = clampf(native_scale,0.25,2.0)
+	if not is_equal_approx(viewport.scaling_3d_scale,desired_scale):
+		viewport.scaling_3d_scale = desired_scale
+		body_baker.guard_resolution(float(int(viewport.size.x*desired_scale))/camera.size)
+		if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED and not flat_compositor.active:
+			viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	# Native pixel coverage can change even when the engine scale is clamped,
+	# or when only one layout axis changes. Recheck without rebuilding assets.
+	if flat_compositor.enabled or flat_compositor.active:flat_compositor.request_recheck()
 
 
 func set_hull(key: String) -> bool:
@@ -116,6 +173,7 @@ func set_hull(key: String) -> bool:
 	modules.clear()
 	carriers.clear()
 	material_entries.clear()
+	material_pool.clear()
 	exhaust_nodes.clear()
 	exhaust_materials.clear()
 	loadout_signature = ""
@@ -137,6 +195,7 @@ func set_hull(key: String) -> bool:
 	world.add_child(ship)
 	weapon_mount = ship.find_child("WeaponMount01",true,false)
 	_install_materials(ship)
+	body_baker.attach(ship,"hull:"+key)
 	_add_exhausts()
 	shield = MeshInstance3D.new()
 	shield.name = "PrototypeShield"
@@ -164,16 +223,24 @@ func _install_materials(node: Node, owner := "hull") -> void:
 	if node is MeshInstance3D:
 		for index in node.mesh.get_surface_count():
 			var source: StandardMaterial3D = node.mesh.surface_get_material(index)
-			var mat := ShaderMaterial.new()
-			mat.shader = TOON
-			mat.set_shader_parameter("albedo",source.albedo_color)
-			mat.set_shader_parameter("clamp_diffuse_to_max",true)
-			mat.set_shader_parameter("use_attenuation",true)
-			mat.set_shader_parameter("steepness",1.0)
-			mat.set_shader_parameter("specular_shininess",9.0)
-			mat.set_shader_parameter("emission_color",source.emission)
+			# Repeated surfaces/instances of an imported material have identical
+			# toon inputs. Share their material RID instead of allocating per face
+			# group; keep owners separate for weapon-only parameter updates.
+			# Resource identity avoids rounding/color-name equivalence assumptions.
+			var pool_key:String=owner+":"+str(source.get_instance_id())
+			if not material_pool.has(pool_key):
+				var shared := ShaderMaterial.new()
+				shared.shader = TOON
+				shared.set_shader_parameter("albedo",source.albedo_color)
+				shared.set_shader_parameter("clamp_diffuse_to_max",true)
+				shared.set_shader_parameter("use_attenuation",true)
+				shared.set_shader_parameter("steepness",1.0)
+				shared.set_shader_parameter("specular_shininess",9.0)
+				shared.set_shader_parameter("emission_color",source.emission)
+				material_pool[pool_key]=shared
+				material_entries.append({"material":shared,"name":source.resource_name,"owner":owner,"pool_key":pool_key})
+			var mat:ShaderMaterial=material_pool[pool_key]
 			node.set_surface_override_material(index,mat)
-			material_entries.append({"material":mat,"name":source.resource_name,"owner":owner})
 	for child in node.get_children():
 		_install_materials(child,owner)
 
@@ -195,6 +262,10 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 	carriers.clear()
 	carrier_states.clear()
 	material_entries = material_entries.filter(func(entry): return entry.owner=="hull")
+	# Match the existing model lifetime: discard removed loadout resources,
+	# retain only hull materials, then populate the new weapon/carrier set.
+	material_pool.clear()
+	for entry in material_entries:material_pool[entry.pool_key]=entry.material
 	for item in assignment:
 		var mount: Node3D
 		if item.carrier == "hull":
@@ -212,6 +283,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			carrier.visible = false
 			carriers.append(carrier)
 			_install_materials(carrier,"carrier")
+			body_baker.attach(carrier,"carrier:"+str(manifest.drone.path))
 			mount = carrier.find_child("WeaponMount01",true,false) as Node3D
 		if mount == null:
 			push_error("Missing independent visual mount")
@@ -279,6 +351,7 @@ func _add_exhausts() -> void:
 
 
 func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: bool, weapon_only := false) -> void:
+	flat_compositor.invalidate()
 	last_settings = settings.duplicate()
 	last_toon_enabled = toon_enabled
 	last_rim_enabled = rim_enabled
@@ -319,6 +392,7 @@ func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: boo
 		for mat in exhaust_materials:
 			mat.set_shader_parameter("engine_emission",float(settings.engine_emission)*float(settings.emission_strength))
 		shield_material.set_shader_parameter("shield_opacity",float(settings.shield_opacity))
+		body_baker.invalidate_materials()
 
 
 func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vector2, time: float, shield_enabled: bool, close_up: bool, visual_delta := 0.0) -> void:
@@ -333,6 +407,7 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	ship.position = orbit_center+Vector3(0,0,sin(orbit_elapsed*TAU/8.0)*1.2*WORLD_PER_PIXEL)
 	ship.rotation = Vector3(0,-angle+sin(orbit_elapsed*TAU/10.0)*deg_to_rad(0.65),0)
 	_update_carriers(scale_value,visual_delta)
+	body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
 	aim_at(target)
 	shield.visible = shield_enabled
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(time,3.8)/0.6))
@@ -382,9 +457,33 @@ func set_accelerated_quality(enabled: bool) -> void:
 	if accelerated_quality == enabled:return
 	accelerated_quality = enabled
 	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
-	world.get_node("KeyLight").shadow_enabled = not enabled
+	body_baker.live_shadows_allowed = not enabled
+	body_baker.request_shadow_sync()
+
+
+func request_fleet_redraw() -> void:
+	if fleet_redraw_pending or not is_inside_tree() or body_baker.export_mode:return
+	fleet_redraw_pending = true
+	_commit_fleet_redraw.call_deferred()
+
+
+func _commit_fleet_redraw() -> void:
+	fleet_redraw_pending = false
+	# Publish complete appearance/pose batches even when battlefield's paused
+	# pose signature is unchanged. Both flat and live output need this edge.
+	if flat_compositor.enabled:
+		flat_compositor.invalidate()
+	else:
+		set_rendering(visible,rendering_paused)
 
 
 func set_rendering(enabled: bool, paused := false) -> void:
-	visible = enabled
-	viewport.render_target_update_mode = (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled else SubViewport.UPDATE_DISABLED
+	rendering_paused = paused
+	if visible != enabled:visible = enabled
+	if enabled:body_baker.request_shadow_sync()
+	var complete: bool = enabled and flat_compositor.sync()
+	var output := get_node("ShipComposite") as TextureRect
+	if output.visible == complete:output.visible = not complete
+	if not enabled and flat_compositor.visible:flat_compositor.visible = false
+	var mode := (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled and not complete else SubViewport.UPDATE_DISABLED
+	if viewport.render_target_update_mode != mode:viewport.render_target_update_mode = mode

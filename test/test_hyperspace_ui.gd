@@ -152,7 +152,7 @@ func run() -> void:
  check(g.hyperspace.set_equipped(g,[]),"Clear equipped")
  p.preset_adapter.call(0);check(g.profile.hyperspace.inventory.equipped==["ui:8"],"Preset applies actual domain")
  # Quoting is read-only; commit uses the frozen command and localizes failures.
- p.selected_id="ui:8";p.select_section(2);p.commands.operation.select(5);p.commands.configure_operation()
+ p.selected_id="ui:8";p.select_section(2);p.commands.select_operation("reroll_values")
  var before_quote=JSON.stringify(g.profile.hyperspace);p.commands.preview()
  check(JSON.stringify(g.profile.hyperspace)==before_quote and p.commands.commit_button.disabled,"Insufficient quote is read-only")
  check(p.commands.feedback.text.contains("材料不足") and not p.commands.quote_label.text.contains("antiproton"),"Quote costs and errors localized")
@@ -179,7 +179,7 @@ func run() -> void:
  # Module settings validate slots, unlock and no-repeat through the domain.
  g.profile.hyperspace.inventory.drones["ui:8"].hanging_slots=1;g.profile.hyperspace.inventory.generation+=1;g.profile.hyperspace.hanging_modules.resource_collector.unlocked=true
  p.dirty=true;p.refresh();p.selected_id="ui:8";p.commands.show_modules();await capture_window(p.commands.module_dialog,"module-manager")
- check(p.commands.module_choices.size()==g.hyperspace.config.hanging_modules.size(),"Module manager uses config catalog")
+ check(p.commands.module_choices.size()==1 and p.commands.module_choices[0].get_meta("module_key")=="resource_collector","Module manager shows the unlocked module without revealing the unowned catalog")
  check(g.hyperspace.attach_hangings(g,"ui:8",["resource_collector"]),"Attach unlocked module")
  check(not g.hyperspace.attach_hangings(g,"ui:8",["resource_collector","resource_collector"]),"Domain rejects same-drone duplicate")
  p.commands.module_dialog.hide()

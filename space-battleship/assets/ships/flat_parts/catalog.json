@@ -1,0 +1,1027 @@
+{
+	"body_proxy_shader": "d3c0363cd7a8d6ace1aef19ad55807b091d71b6f322eb552813636fa8f33b48d",
+	"exhaust_shader": "bb78ec21addf3a7ec4905ca1254f4274afdc8993aaec34aebb658b24e7125501",
+	"light": "1b0c9b752acaa0a07c01f49702fdd79b16b633b7063c6a2472b815d5cdda85fc",
+	"ornaments": {
+		"051c254ffb75192e02f041d18af548ed7c7f4a762926125f0036fe88541f2e04": {
+			"atlas": "res://assets/ships/flat_parts/1a20852b00625291cd1e99d68e0ea42171ac2098ae91f001d24e6dbbf9f6f4ec.png",
+			"height": 0.160000003874302,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue::6",
+			"span": 2.71562743186951
+		},
+		"06a62262f9f9bf68d51b04f97504ece4a025f5b5a8d30c51b6746575f4c0185d": {
+			"atlas": "res://assets/ships/flat_parts/ac8a6dc117eedf55d6881aaf240e2c643533926c76f47f162ebaad42a2cd2dec.png",
+			"height": 0.16499999910593,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold::6",
+			"span": 2.69439697265625
+		},
+		"06d0e7264c9035a9b249111127e9f6fa0040456734a44394f97ee1bfc7fd1241": {
+			"atlas": "res://assets/ships/flat_parts/09733f413d4c98b042e4aecf29c29ef15847318e6452a069a0b9d50419b6aefd.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:chain:2",
+			"span": 3.69928789138794
+		},
+		"0877a812e333ad2256c94ad8f4dc363e928115884823246c24e4a389f4c54cd0": {
+			"atlas": "res://assets/ships/flat_parts/54b52eceb2e33f947632ddc881a1c8f14389681095a1e788214231a9323a9350.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:shield:2",
+			"span": 3.88261604309082
+		},
+		"08b50498cf15bc23815031bfd4f0429681fe79722856ed3d13d6d233d60792b2": {
+			"atlas": "res://assets/ships/flat_parts/47f609df4da946d7565826c0bc57e78f39bd9519c1281efecd5e5e8e128a5fc7.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:tempo:1",
+			"span": 3.90095996856689
+		},
+		"08f3a0e2e7186c3734035c188bd829b86bc3728f7072b0a54d02750839d4e6a6": {
+			"atlas": "res://assets/ships/flat_parts/5539ecd21181a948ec12a4d85a5eb048cddfd7d4e08978bb623d9038865cd3a3.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:attack:1",
+			"span": 3.94120240211487
+		},
+		"093599eb8407655e782d56272dbb2a765d07deb4ef660d962544117ea41dcc89": {
+			"atlas": "res://assets/ships/flat_parts/deb9b172e1537eaccc93c791f506dd35342f1da2e6705de5d79f890775cd9660.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:tempo:2",
+			"span": 3.56554961204529
+		},
+		"09898298f1e887069bdafee7ca6a7b84f75a70473f408be77c3dac7b11b369c0": {
+			"atlas": "res://assets/ships/flat_parts/4d86db241fe5ef9365b48a4dedc368c88de23172c3f651291add27f1ee7e13cb.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:attack:2",
+			"span": 3.60511684417725
+		},
+		"0ad8bf708bc8b2d74ddc3c7459998bff9ac1fee06185c51d3a3699fa477b2d92": {
+			"atlas": "res://assets/ships/flat_parts/1ff3035d78504b780e685335eae146a83b0604c1911491037bd9c8f9db1372ce.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:attack:1",
+			"span": 3.83524584770203
+		},
+		"0cd7668b652de8ad97a8788afb6ff2b030e61b74a6630add7224d60ead52a0d3": {
+			"atlas": "res://assets/ships/flat_parts/e1fb3f23b38b38cad62ba592f33aaa88a86347f79e1ba0d6ca8f5ad80b28431f.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:shield:2",
+			"span": 3.8147554397583
+		},
+		"0e076d4002a5744e8f3a634f5424e02e970db7899de5fab994130a86548e16f9": {
+			"atlas": "res://assets/ships/flat_parts/ef1ca7b34f43c8d40b5f22a0b3f5234afe22534e1988a328be4ff8af66bee860.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:shield:1",
+			"span": 3.83524584770203
+		},
+		"0ffcb848c8ab156b2f9517568ecaf83859c49239a2534e10b1b3810885108659": {
+			"atlas": "res://assets/ships/flat_parts/026848e4293c6752854f5e447f858242f7cf0d2c9d6921ca29f44db5233b831c.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:chain:2",
+			"span": 3.58619117736816
+		},
+		"113e56d01b9bd9752b60dce453a75e8a441d61b15e1b67b7a6d6ea5d2c3e7e3d": {
+			"atlas": "res://assets/ships/flat_parts/204de58637322f56343961a78811eac07b14b180ad7e6b619d93e506951884ae.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:tempo:2",
+			"span": 2.64240860939026
+		},
+		"1b016555a791d8aa1c0431105f82575a6b4ce02b316002b9c67fddeccc07dd4f": {
+			"atlas": "res://assets/ships/flat_parts/7c05370c6e91e3f1e26487a04035fb082bb937be88985bce1c2745d516167b20.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:chain:2",
+			"span": 3.55856251716614
+		},
+		"1b5b6638350a34a3e3788be773c606d5570472027cd93e71df4c8dbf967120bc": {
+			"atlas": "res://assets/ships/flat_parts/1868f6bd6a2f1a5dc4933ffc5f82aec6ea4cb45c0e213773fd3209336a0cb4b9.png",
+			"height": 0.0839999914169312,
+			"low": 0.508000016212463,
+			"size": 256,
+			"source": "laser:white:shield:2",
+			"span": 3.08047485351562
+		},
+		"1c6c9aa651ae8bc00f60ef688f0313814f07d546de0d0d11664c431f88768ff3": {
+			"atlas": "res://assets/ships/flat_parts/474e48d0997f190c670859d136a5499cc0ee2b19c9f16e0a01786524a6079faf.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:chain:1",
+			"span": 3.96852540969849
+		},
+		"1e637e94750a0d97fc88a73eaac87ec476716c08295f5fe6fb384929100e0b0d": {
+			"atlas": "res://assets/ships/flat_parts/9fdd8cb5c1633c8ecefa326056a74f2286d74cb2179e43e45ede54ff9f98d240.png",
+			"height": 0.499999977648258,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary::6",
+			"span": 3.03127694129944
+		},
+		"203f0b4daa9364356d00fb62d43a535ec6f990ea364fec449fd2fdcc5c8b82e0": {
+			"atlas": "res://assets/ships/flat_parts/355d8f30ced6bc1252da69301bfd8017625f6c0afc5087e723f3781fad3649a4.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:attack:1",
+			"span": 3.83524584770203
+		},
+		"2087f12579e807eb8599e9b3c4b3428e0e2aa546ec17620e85451c6b398a98e7": {
+			"atlas": "res://assets/ships/flat_parts/8c675f5cd44546102786cf79374eb74c5690ec12165803f4ec2c3c0f6e391203.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:tempo:2",
+			"span": 3.49019193649292
+		},
+		"2ca2a229531cab97cfbc3a67d35a153fa6500a8d7608e5e0cc1e78aece5077e6": {
+			"atlas": "res://assets/ships/flat_parts/074d3ae97670a2972ed440a85fdff368adf7c680b07dfe0ca210d77d04eead0f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:tempo:1",
+			"span": 3.87436866760254
+		},
+		"2dbaab6fc9466e0e3af4d9effb9d30eba346425f7bbbeb7f705cd80f4adfb7d1": {
+			"atlas": "res://assets/ships/flat_parts/a4814119f0ee46cb07cb77ca4a4122287bebdffa4892a62d1457470f731292cf.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:tempo:2",
+			"span": 3.46044516563416
+		},
+		"2e0bfd8207e66e8c85631b19a819112f864993a963130592d609a7571a28db8f": {
+			"atlas": "res://assets/ships/flat_parts/e09fa8f2fa35c92e5b643c9a4a86e91de6f6bd0993336273dd30db96861f6ee0.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:attack:1",
+			"span": 3.14063143730164
+		},
+		"31e333fd7eeb44038fcde3a5dd1c88cd9c30f44f36eb651e27360b8859266e34": {
+			"atlas": "res://assets/ships/flat_parts/9a9f16a4a6321c582fdd8fa085201a71ff7eb588cf8f236c421e360bccee4e71.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:shield:1",
+			"span": 3.94120240211487
+		},
+		"3274ceaa99e84579ef66b57a30c34b828afbde6b0f3ec034d67c3039bf7b6a99": {
+			"atlas": "res://assets/ships/flat_parts/bb5ffba0ea2f45521b0ff05251257aee15d20e1925d74b2630fd459d79d4a670.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:tempo:1",
+			"span": 3.87436866760254
+		},
+		"344fe85289cb69aefffb2c6dfa909b50aae5b487eb05add320a59cc0456d7ac5": {
+			"atlas": "res://assets/ships/flat_parts/e87698f4456031a254c2faa6741e9c1ccd2e795415ab594952619912ae3af22d.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:tempo:1",
+			"span": 3.90095996856689
+		},
+		"34936016bdf879f922d82a0819af5e1db1a9d0bd3b4cea0cb23caed446d39954": {
+			"atlas": "res://assets/ships/flat_parts/72c31417d614d0b804522140be5a26583466ff37b4b6c7297ea1e84732227b19.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:attack:2",
+			"span": 3.53523015975952
+		},
+		"35554c07f9480a0030140da7291ef7b7155fac711e6b46c9d101400adc0384b2": {
+			"atlas": "res://assets/ships/flat_parts/31e87e28dfe7a1312e6ea05214b7e85bcc190f133038526bbdab71c1401aafd3.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:shield:2",
+			"span": 3.74877882003784
+		},
+		"3aee20756cb4d394c3b4a3afb3347b4dcb7fbaf8317454d6a9af1245dbac3286": {
+			"atlas": "res://assets/ships/flat_parts/d496dad6449a05968390f3198c5deb1125003dfa86d4cec8483f136d79bdea1f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:attack:2",
+			"span": 3.63367962837219
+		},
+		"3d79bad3e9b615adab4ebbcd72ed5087c8773c0c932ed1cc2f2d778664330add": {
+			"atlas": "res://assets/ships/flat_parts/6456874c0a5f2aee01e39781087b64281b6d83730ab17c471877e5077bc1e938.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:tempo:2",
+			"span": 3.38757491111755
+		},
+		"3f4a597bc8916012ef9eece4b4837c923912d20363b154be65da8efb3494a228": {
+			"atlas": "res://assets/ships/flat_parts/1af77cdb21a4c59dfa8c8a06d1cb2d928c1c4a5d6046e545c9f83a042388bd1e.png",
+			"height": 0.160000003874302,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue::6",
+			"span": 2.71562743186951
+		},
+		"466a43b597f4b53f1eea256d2c00db8a5a6f9b31b1ccf50e978c57f4fcb1c916": {
+			"atlas": "res://assets/ships/flat_parts/0717166d2030cd9a75b94f6f23193293c50fa47079481cbfcb8c5c9faa791ced.png",
+			"height": 0.160000003874302,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue::6",
+			"span": 2.60014581680298
+		},
+		"480d7dc49301cb8608f86bba683333bf92591630a3d0e6a2dbb75b4095c92406": {
+			"atlas": "res://assets/ships/flat_parts/4d5db90bb2c157ac8c04524369b3faf4d471042d469d1676fd94cea32ae3ad36.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:attack:1",
+			"span": 3.90095996856689
+		},
+		"4ab43085438681c6481431c295cd376b4f5a188209b1983bf8994f09858ff041": {
+			"atlas": "res://assets/ships/flat_parts/8e5c65a8e749a0462c7d18cc68a413330caae031e92edbf3ae54416c962f01a8.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:shield:1",
+			"span": 3.80942463874817
+		},
+		"4bf7003c152aed7a9ea69f462b47c303b2f26010d53cf7def0019f3f7a13478b": {
+			"atlas": "res://assets/ships/flat_parts/7fce5bf13f7b2d5a7df8ea214976398e9330935193690dabc57e9159a18f4fa9.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:chain:1",
+			"span": 3.80942463874817
+		},
+		"4d1f4ca4f7c3cbe139df4826a630c126f4303defa35538b699906f045d54d42b": {
+			"atlas": "res://assets/ships/flat_parts/9ad9d4aef5188595a61e7b8caa3d167d6b8485532c1aeb2b9b81ceea4c553cac.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:tempo:2",
+			"span": 3.53511309623718
+		},
+		"4e8d90d83cb352e08c3ced4a6b4aebb593453b2f846f32d7fb5a9519eeadedb5": {
+			"atlas": "res://assets/ships/flat_parts/963685b6f891b1dbdcf17c029e9c4114058091e30541f1c69306bf639ff4aaf1.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:shield:2",
+			"span": 3.8147554397583
+		},
+		"542f9d81cdceaed9ed949a851acf08b0a1a6c3deb16da7e39b258ce07569e78f": {
+			"atlas": "res://assets/ships/flat_parts/90f1d37d4ba605476673f2ce25f4ff1bb6f92e2dce29857235823b138d78fbd8.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:attack:1",
+			"span": 3.96852540969849
+		},
+		"54faa8adfa62a803a857865925104a4d6a8b40fcba292e3888b4ecc62f751c1b": {
+			"atlas": "res://assets/ships/flat_parts/3e15e271f96f36e12bcc1200153e7027344f8d959ec82c8d020857bfd5397b08.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:shield:1",
+			"span": 3.83524584770203
+		},
+		"55a4a5bccc9de2b151373bc2340e39375e63ed50eac56ad0a1181fa8c2a0d58a": {
+			"atlas": "res://assets/ships/flat_parts/5255693b1def47147e5601d82550142e5331fe05f18f9aa4606d36b536dd4de3.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:shield:1",
+			"span": 3.90095996856689
+		},
+		"56946da58cc9463d70d4bae37d41a8095427490f4b4ec0e22a14cdd2c2e29547": {
+			"atlas": "res://assets/ships/flat_parts/8a82f52a67b3d31a44b92b9d030093bfd90dd549908e44eac142c47ed2a6d2e9.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:tempo:1",
+			"span": 3.94120240211487
+		},
+		"59bc64441528803b8b3a407264c9ca13dac285a21fbb335e76c153b1645fe025": {
+			"atlas": "res://assets/ships/flat_parts/fdca5c8474ef6949f260ff9bd155de9c44afd6147db358ea1e09dc12093614fb.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:shield:1",
+			"span": 3.96852540969849
+		},
+		"5acfbe54d243b56da1405d9cb214f0d5429b5382a73e977c1d70a2bd6d79a3be": {
+			"atlas": "res://assets/ships/flat_parts/45fc2a4369d2363e5eb1a648642b822fa15d56361db1401f4e5f407973f26be8.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:chain:1",
+			"span": 3.87436866760254
+		},
+		"5be0ae34e0663df1756f6a606e3ca060397ed8a0f6e6033843a71d22277af4b3": {
+			"atlas": "res://assets/ships/flat_parts/a48d8e9ecf85a00bf18f4d642b2289f862934461bdac64371184db63c6898e48.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:chain:1",
+			"span": 3.80942463874817
+		},
+		"5c9a066ee0d6bab06da0c5caba77aade5ae02cba86b8943cf7c775befffb5b2f": {
+			"atlas": "res://assets/ships/flat_parts/5d02fc9cfa29211913a5c997378c4f3d34bc5123e4f9d3c9afd44ced31a148d3.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:shield:2",
+			"span": 3.84175968170166
+		},
+		"60443002cc7798d640c77afd05f0d4332811c349b541b0af77b46dd7bfca2d50": {
+			"atlas": "res://assets/ships/flat_parts/6265b880046a4c245a7f9e06f260684d7bc08aad91c89a59e2f023c2a3897026.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:shield:1",
+			"span": 3.87436866760254
+		},
+		"60da75823aeab2ae4b6b96dfdc8e1299edfac001f74878c9a2d82be0eb01b610": {
+			"atlas": "res://assets/ships/flat_parts/02d594286e4fbf89a6a42b8a9964b2751e8aea2f344a868c7b82a5d76a02061f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:chain:1",
+			"span": 3.96852540969849
+		},
+		"6435b8d8321490ec9298b3c8816e8f0863c1461c300ffb0644187a78d05ffc1b": {
+			"atlas": "res://assets/ships/flat_parts/1a373ad35ca210711e0943a86ba087a3105cf40341b3772a4a3404d344eb9df4.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:tempo:1",
+			"span": 3.96852540969849
+		},
+		"66d0ca2269c8d32afedaf1ea303a38cfec57c7b867abe4ecb420faf358e668e1": {
+			"atlas": "res://assets/ships/flat_parts/992ff21442ffab1a723a65aeee96457bbf8eb228b7e757ad20a69d96cbc3e38f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:attack:2",
+			"span": 3.63367962837219
+		},
+		"6c262ed5a137017b2ace76c8e786748b7e6554c0760f98d33e60f6daade04435": {
+			"atlas": "res://assets/ships/flat_parts/e1cf660ad64223b9e8ffef495cf6956e136b24fa22cbd70dcd7690ffa4244185.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:chain:1",
+			"span": 3.83524584770203
+		},
+		"6e694de0070f7660852711a7d069a3a8fda482b25a2c8218075a5d32371f12a8": {
+			"atlas": "res://assets/ships/flat_parts/fbbf2530b24914113d59f14992da527cfb0cf045edb2b7d0dd1a5688510db70a.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:chain:2",
+			"span": 3.65638399124146
+		},
+		"7365f68b479b6325c1deed6b9f99e73a35c05d819fa6e6e5b7f1c69b02351364": {
+			"atlas": "res://assets/ships/flat_parts/bf19eb51d450dddb6dbc3efb5e8cb5499febc7faef34bb87b111547357af2ec8.png",
+			"height": 0.499999977648258,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary::6",
+			"span": 3.06671762466431
+		},
+		"74d4d66bea3f98946685dae0a99f384a0cd9b2b05e4a4e706cd8dd55f82a4468": {
+			"atlas": "res://assets/ships/flat_parts/68a973394261a48033ccec09c5875d0a4c80a3002d5c0713e3b9cfd80ace02e7.png",
+			"height": 0.16499999910593,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold::6",
+			"span": 2.80766987800598
+		},
+		"76264e2b4c70e6dbd13e1f598ce2433272d6d6ee3c3ae7217c55965a1ab42f42": {
+			"atlas": "res://assets/ships/flat_parts/4fa9cf30009fa3cf36c037aade7df8d7be4c845bf435f3dddd675eec3a108ca3.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:chain:2",
+			"span": 3.58619117736816
+		},
+		"788df44d16013686d0f30e1ad68c45a428b998076dddcb600a35824bd3e6b780": {
+			"atlas": "res://assets/ships/flat_parts/cbdca0a37428ec68e328f34c63f5a9838232b61a6b8164e86d728d5c56290920.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:shield:2",
+			"span": 3.91034841537476
+		},
+		"78940ee42e7507490bb332ec81a65029cac70d1fb5571fe79db2372f8392dca8": {
+			"atlas": "res://assets/ships/flat_parts/b4b2ba824214d3dc0a44c79777ffb1cf4fcd121fc3e8e24c5e3f7b9813f03a67.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:shield:1",
+			"span": 3.90095996856689
+		},
+		"81bef94b2a55faae7fcf193c3516da8b4c373e7f5c3071ee9494cb698ca26946": {
+			"atlas": "res://assets/ships/flat_parts/d88d58fdec3111f44159520dd27e9b0e3204bcb2770a42b2d59356123a5a15d7.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:attack:2",
+			"span": 3.70612096786499
+		},
+		"827916a0a9a6465069b7707323ed0f8c5fa5d045dfabf3304fa62af0d6125b1d": {
+			"atlas": "res://assets/ships/flat_parts/103d328d285e76ea1b0d238cd9514bd0d6dfe3733a829ab98e2948a6840eff1d.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:attack:1",
+			"span": 3.94120240211487
+		},
+		"86d3509b376a34d90d19b16ff26feee7c21871a69fc498aca16da359a19a8408": {
+			"atlas": "res://assets/ships/flat_parts/b588434d21bc87a143459d381975656d2905351e932a3d3e106121e9390b9d9e.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:attack:2",
+			"span": 3.53523015975952
+		},
+		"8e4e3121202beb9e7e08e0e9b04619a1f266b2f29c1250bfad9e907c5f565513": {
+			"atlas": "res://assets/ships/flat_parts/7c513d7131aaa2b48032cfb4be2a5b5ad58ba343e0ab5aa987b5a58d425d64eb.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:tempo:2",
+			"span": 3.56554961204529
+		},
+		"9405861fccc1976396f11215572a4c3632ac38c5122228620db5ab29a4f2fbf3": {
+			"atlas": "res://assets/ships/flat_parts/b787655e9e5d498ce28f27054c8a6e1196d2e0bc51131fa471863d0c031e22fb.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:tempo:1",
+			"span": 3.80942463874817
+		},
+		"978f23420a082de719f2f738d1c566ddd82de5e1961f0d79908da17525c7ee47": {
+			"atlas": "res://assets/ships/flat_parts/139f58757184964da3e1b64fccf09ea0ccfe549d286bc01764c1e25e734318dc.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:shield:2",
+			"span": 3.91034841537476
+		},
+		"9c03495f44102b5de0d5425d9b69570d280e0b3cc6d8b533868716b26410c3a6": {
+			"atlas": "res://assets/ships/flat_parts/8a7bb13f2ed45e942c6e5cc162971cc502bd63cf5c41c59649303052d255dd05.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:attack:2",
+			"span": 3.67684841156006
+		},
+		"9f406363912b8bf56081659c3d42d8dff7ff0dbd3c7a0a437183ce8de47b5267": {
+			"atlas": "res://assets/ships/flat_parts/086428a2aa277a00e7f060fa09752fee1e466b1e36e782ba963657cf0d1d1d51.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:shield:1",
+			"span": 3.94120240211487
+		},
+		"9f5edeb6de5f1fc0b436c347543f0620fe75f4482eec7421dd9213a2c188187c": {
+			"atlas": "res://assets/ships/flat_parts/a69bb83fa66db930502662a09fa6503455cda24ec9a13bfe44cbd43f8e68c2f7.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:attack:1",
+			"span": 3.96852540969849
+		},
+		"9fb4e8ba2ea92a5b4bddb08fccc6ee35c6acc932f030e1da8e0d1aad0c0dfac3": {
+			"atlas": "res://assets/ships/flat_parts/621e910ee31ef96e0dfb819dd45a072f7fcdc492a8db1e0f5912ae9567cbf816.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:tempo:2",
+			"span": 3.53511309623718
+		},
+		"a0209e5cbf779a00ac2dd223535b80b25393f6ea9c9d47d8491222b37e19dbba": {
+			"atlas": "res://assets/ships/flat_parts/b0fb268b65f20e4f23cc9b3b6e6c8ea55e71f3fb23be6fc67bbbbf7bcac1a085.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:tempo:1",
+			"span": 3.96852540969849
+		},
+		"a1cdbf7a75be40f46095668eae09257c1c90d1c472735234c479a724c9c53410": {
+			"atlas": "res://assets/ships/flat_parts/44675ba13dc67a4f56a3c022175af283cadac59ce50b35d78ee9d27fc6358d25.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:attack:1",
+			"span": 3.80942463874817
+		},
+		"a2114ff50ee59592d353e1f51665c161c0bc2d520b96fb7c0978277086908e00": {
+			"atlas": "res://assets/ships/flat_parts/3dff1d99258d339dc9f71bc125018f36b7181222bba5df62d5662292d81a5d5b.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:tempo:1",
+			"span": 3.1651816368103
+		},
+		"a9cd36f422db00e4a55f47438e6dbbff2b6511d2be04f15b5c2008bf9422bc62": {
+			"atlas": "res://assets/ships/flat_parts/097bd28cb35d73c52b03188add0b481727f9f454d0aa54bfecc8ed7b0635ea3a.png",
+			"height": 0.499999977648258,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary::6",
+			"span": 3.06671762466431
+		},
+		"adecabb95e5f1ab026563c36609c05582f10320b644eeed9ff0439389799fc74": {
+			"atlas": "res://assets/ships/flat_parts/d8e0051d22ccd60a4ba4b2df50c70975da57ee7995057358748e68d8fb09d027.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:chain:2",
+			"span": 3.62800002098083
+		},
+		"ae61258208a7ec310844e0144382e124d136a93069adf2ac9d281889f904ca85": {
+			"atlas": "res://assets/ships/flat_parts/1887de8356ee806e95ced7d9df51feab4f05c6a8a9970a160063d4ddaed1f96d.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:chain:2",
+			"span": 3.72838425636292
+		},
+		"b17dd7f3c359c4d4c5dbfb68d82b9ac16b107442b350a415e93e23a85318f0fb": {
+			"atlas": "res://assets/ships/flat_parts/34599a67e8dba2236a00d73a99905dbcdd4b1a853d7b6bf5f9e304f1b8760401.png",
+			"height": 0.160000003874302,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue::6",
+			"span": 2.60014581680298
+		},
+		"b231a4e44af05f1088648b0466d719a3155b6c9f755d3b0c9be8a44f858ed7d2": {
+			"atlas": "res://assets/ships/flat_parts/ebbdebb9be8da10c34bda583c13022f1249ccf5505dbbc35f4938927564ae8a5.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:tempo:2",
+			"span": 3.46044516563416
+		},
+		"b57a0db848095017b675b193a3c3a930342bd25aae39412edf5bad8483777c6b": {
+			"atlas": "res://assets/ships/flat_parts/44308d06cd4fd1d7e795553d94c378a0fe057e9186801ff1d75a8470d959bfc6.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:chain:2",
+			"span": 3.69928789138794
+		},
+		"b5c13c2238d78bde4cf5ab06ba36c24b56504c84b42dd3c8395dab25c7972afe": {
+			"atlas": "res://assets/ships/flat_parts/d979e077b4ff2b72dcb1e73a965b92e2d0d618be73c48822cd359a62686f6bd1.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:shield:1",
+			"span": 3.87436866760254
+		},
+		"ba5d6cdab7fbeac8b40f45c57b6e025c2bc60677c0a8487cd992967080bddce1": {
+			"atlas": "res://assets/ships/flat_parts/c66faf173d00805fcceb30cba7e62fbc0ba250929febbc06fc68a726ea7ca096.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:chain:2",
+			"span": 3.62800002098083
+		},
+		"bbd31fb92e79e880dc54245ba86c746557498f128111c95a725a4e05b53e94a4": {
+			"atlas": "res://assets/ships/flat_parts/eaabfd3beee61cf7e847824c6d1f142c40c6b60a5a3e76cd1452250024e3e98a.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:shield:1",
+			"span": 3.80942463874817
+		},
+		"bd3182fa99a4b2400ef8c6d32cffb5f43483e091f7545b2e5fef9d5fe583dbde": {
+			"atlas": "res://assets/ships/flat_parts/f981a888fe4a082fb1e0b4777506df436591d34a32f89920a551172c84359473.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:shield:2",
+			"span": 3.84175968170166
+		},
+		"c01543700304708e0fb41452e17ce0298725f36e02c4a3124306717c60128e75": {
+			"atlas": "res://assets/ships/flat_parts/2fa8967be4ba7319855db5ef2451be0768c1a91cc0ab8a6284e730ef958bfe3a.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:attack:2",
+			"span": 3.70612096786499
+		},
+		"c0fb453d72c820b7b9a9aaaa4ac4d91a8a3365991b3e6125090edfb29fdc5459": {
+			"atlas": "res://assets/ships/flat_parts/109af27dc0ac1b6e7ac6cae55ac111000e11e2ef8edf1d1762d0f42fdaf060f4.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:attack:2",
+			"span": 3.56303954124451
+		},
+		"c37896745db5b0dcc8e739db49dd8eb716946af05e1ba6b681b0c37075b1b83d": {
+			"atlas": "res://assets/ships/flat_parts/cb7581f671e60834fb096255960080500e0efb47867806d4d9466c00e3570b00.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:attack:1",
+			"span": 3.80942463874817
+		},
+		"c42a0a8b6e1e6aa2099334a9b2c2ceae3c3fed3ec42015f77bd945f7ba5c31d5": {
+			"atlas": "res://assets/ships/flat_parts/63ab9d0b31337cd27c964ca31e3776718728116e1ff372f76ef9a6690aaba046.png",
+			"height": 0.499999977648258,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary::6",
+			"span": 3.03127694129944
+		},
+		"c6e5a4d38b439d9285409e57c3ca73d054cb27a6c85da7a8e3e132891094c06b": {
+			"atlas": "res://assets/ships/flat_parts/3c4bc388601cbf808a8938c6c5f05cd06d0a245dc26633a5bc7bcaa0e8fff9f1.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:tempo:1",
+			"span": 3.80942463874817
+		},
+		"c6f067f235d45bde97094428fe63621688ee9d7c23ee143f2c195c5432b11d31": {
+			"atlas": "res://assets/ships/flat_parts/df5a4240933b6420c39c50e5f56813aeae1a94d675b62cb9a06efdf3ebf2895f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:tempo:2",
+			"span": 3.49019193649292
+		},
+		"c7a1f6c2cd560c9b017d8a12cd037b70d73e9e84e17e77144a9c56c3b95b32b5": {
+			"atlas": "res://assets/ships/flat_parts/80eee2da3998e63c1d7077537d1d986e3ae44486ec65599f48af3d29a88b87a2.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:chain:1",
+			"span": 3.94120240211487
+		},
+		"c8afc8835e629369727d8550938a28a3d022c7fd947308f2279870df125ef149": {
+			"atlas": "res://assets/ships/flat_parts/fea3cd16fb31d3ae236488f5a6625573809691c4ee8be59e06967dc4d1d3341a.png",
+			"height": 0.16499999910593,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold::6",
+			"span": 2.69439697265625
+		},
+		"cae5fb43b8820b8cd654e5b0bebb4b81abe1c5d3e31e48b32ba43853a7278d14": {
+			"atlas": "res://assets/ships/flat_parts/61a888f52a56c8ca07c84e870798b4fa48418963c1aedf1d59868da91ffd0c3c.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:chain:1",
+			"span": 3.87436866760254
+		},
+		"cb62917163b13602ecb57d970c94eb17a29557f00e88f0e2903ed7b1127ea136": {
+			"atlas": "res://assets/ships/flat_parts/e79e6d4d7e3be7bec94cb1ada2ca505f01c99fc9dd85c68f5647c008760f9948.png",
+			"height": 0.16499999910593,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold::6",
+			"span": 2.80766987800598
+		},
+		"cb8a7880a67bfb7d6319a0a104c6b8b30b34e682153b81c9d917f436413f665e": {
+			"atlas": "res://assets/ships/flat_parts/b6415e277160679da483d324440880bde525554d85048ecbbd8cd34f1ce3e85a.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:blue:chain:2",
+			"span": 3.55856251716614
+		},
+		"cfa36df958099478db0289321af795b16673b62031cab452b5507844299c783b": {
+			"atlas": "res://assets/ships/flat_parts/d74536ea622c4efd660f8acb3a54d1fd3db5814a39c956de335526aa1e0f48d6.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:tempo:2",
+			"span": 3.41658616065979
+		},
+		"d3f591c932f9ae8305cfc557bf1a733a6786edb0a7d39f2ec9c9e84daf8a3727": {
+			"atlas": "res://assets/ships/flat_parts/cbee09d6e78b408b73ccdb4b2948e266bba7c5579b10aafeb6fb53e17da3e13a.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:shield:2",
+			"span": 3.88261604309082
+		},
+		"d4c557835a3cc8d9a3c2646c67965d329409944c628c234f625989786346b0c3": {
+			"atlas": "res://assets/ships/flat_parts/d741da0f409d0fcffdf00b68bb7b365a86d222a3d3ba1ee4ed595f8e335d9ff8.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:legendary:attack:2",
+			"span": 3.67684841156006
+		},
+		"d515763fa201cfbe3ab4d1bb60d12a178842e9cf0da5dfba336b36beb77af56a": {
+			"atlas": "res://assets/ships/flat_parts/937e02e7e813574a1794b0094c4ba6692863390d230490654cace610aafe1553.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:attack:2",
+			"span": 3.60511684417725
+		},
+		"d648753a08075d39799c9ecd023a10348e0e49f50dc09e961317c2e14aa40da7": {
+			"atlas": "res://assets/ships/flat_parts/b1649ea2726b57d20c2599fc3af4b24b7e5b9191ecec242e9a016fc77da86c97.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:chain:1",
+			"span": 3.16846060752869
+		},
+		"dac88d05078e7273983cf02f3c2d84bc1eeb4a54db256d8090b45673ba875bae": {
+			"atlas": "res://assets/ships/flat_parts/7d20668e49fb46111ec74a962c7ff8d84b7e56a8a5cd915162b8a15bff4d2227.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:tempo:2",
+			"span": 3.38757491111755
+		},
+		"db68971608d80a313883c91372aa8d535771b146b60c6ad2dc094d94f9be46bb": {
+			"atlas": "res://assets/ships/flat_parts/2573eadee73a672b12ae69a7f8c40377af962e5d38686793ae503f09dae5d418.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "laser:gold:attack:1",
+			"span": 3.87436866760254
+		},
+		"dbf5655cb72193f045c149a07fccea9a349f5bc03df2ccb092a170aa8c3672f7": {
+			"atlas": "res://assets/ships/flat_parts/7c83d27d5c3ce174d2c44ce13b0a7da2ab5207ccd5b07f24469cc0788b37a5a8.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:chain:1",
+			"span": 3.83524584770203
+		},
+		"de79548ddfad1b298e937483db349ddf0a8df5be43b703b3c55ede57b0932ee6": {
+			"atlas": "res://assets/ships/flat_parts/507d59e8d1a5d21b65a8fb04ba95e8daa4fdd3dc4489b3ea9809ecb582c6b592.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:blue:shield:2",
+			"span": 3.74877882003784
+		},
+		"df07e6b1a87c8543817ecad580af0836c1961807a17a49496a36e92b7a3fa1ca": {
+			"atlas": "res://assets/ships/flat_parts/2b37a1e3c33df66c238b4776fa6ec37502af7c47695a2826c7d00a6b432741f9.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:gold:chain:1",
+			"span": 3.90095996856689
+		},
+		"e3c99ec613146f745fae8aacded5fccd41c8739cc8be6b85ff2892c3ad34ba3c": {
+			"atlas": "res://assets/ships/flat_parts/3fc8e84db120cb4044112bd41420fc49b03226025fc05b1f7418cdc8d5744209.png",
+			"height": 0.0839999914169312,
+			"low": 0.508000016212463,
+			"size": 256,
+			"source": "laser:white:shield:1",
+			"span": 3.15399694442749
+		},
+		"e3f52595f01e89fbe25216012829326fe299a54bc3d53533cff509517d7c46ef": {
+			"atlas": "res://assets/ships/flat_parts/1c1f63577f484de9985618f21cc605be40fe93343caf3156574c9468f74d9607.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:legendary:chain:2",
+			"span": 3.72838425636292
+		},
+		"e7348bd0e3d7ab85e031d9fe32f91f3655b2f684a1f7ec634387a8c511bc6a6c": {
+			"atlas": "res://assets/ships/flat_parts/6a20ca39836407ba844d39e08bc6516cf0fd678a00fd4a8f25c09626b050ff0a.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:attack:1",
+			"span": 3.90095996856689
+		},
+		"e7612c7dd24ec71dc39d020cac53a77f7ab95eb17d1169d2fc25cc0c77fa4b88": {
+			"atlas": "res://assets/ships/flat_parts/0b10c4146ecd48327d84cadcec2fd99d74e93528af80fdce2e5437c989329156.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:tempo:1",
+			"span": 3.83524584770203
+		},
+		"e78dd350c320f4499aa2a1cd3c92310723c65b44161c0802b8a7e7ac90081a19": {
+			"atlas": "res://assets/ships/flat_parts/23c7619e364008a5f0e60a7d1c6d380fddfaddfbdb84abcd7ff008f81c1bdb3f.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:tempo:1",
+			"span": 3.94120240211487
+		},
+		"eb22301311555579aae10398851c1a47537af164e2edbf5f5c6831f239cfa348": {
+			"atlas": "res://assets/ships/flat_parts/7c77f5f8006c06058cfa8b380f4e5fc4ec768cb8b4601b948479f5c831db0e28.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:gold:attack:1",
+			"span": 3.87436866760254
+		},
+		"eb299e466954d8b96b45242fb7d66375bc83e0c1f4d4f9245df71096aca327a9": {
+			"atlas": "res://assets/ships/flat_parts/0659f111de73b8ec09907f2d5edfe0135805dc7c3ad3cf7d12badca67e71a11c.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:attack:2",
+			"span": 2.78474950790405
+		},
+		"ec2ce532b0817468b28b6b7cce0c58cc8135d0d9e80731df0bab26ead0d8d819": {
+			"atlas": "res://assets/ships/flat_parts/144dfed2958923b729febdfd78c5947995d25ea228d574c25492be0b1f5487a0.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:tempo:2",
+			"span": 3.41658616065979
+		},
+		"f3d60016d7c74ae76590517404434e3076970e8af9804bc27e35e57f87178f35": {
+			"atlas": "res://assets/ships/flat_parts/88f3b81b1f838fde961410fcacaa74bfdfda61b6df1b47e86fdae08be7af5a9a.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:chain:2",
+			"span": 3.65638399124146
+		},
+		"f496d020c1c252c665a2848e7462e90fa1958bc2834ac7a32e16dd1bc5cadd79": {
+			"atlas": "res://assets/ships/flat_parts/479508447704194dcf6dd6aac6dded0bff8a6c551948cb53bead30fcf5a95c08.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:tempo:1",
+			"span": 3.83524584770203
+		},
+		"f57f0812ee42a1c714d825e5a086b1718b3e097b522f8ded9c8a7f0ba4f3d1bc": {
+			"atlas": "res://assets/ships/flat_parts/285c5537b9fa3501395a5c7d759832dfeda018a79871965328cfa9c3598c80d1.png",
+			"height": 0.0599999986588955,
+			"low": -0.0299999993294477,
+			"size": 256,
+			"source": "ultimate orbit",
+			"span": 1.44498181343079
+		},
+		"f67ce9a2ec7e6b2bab0472706f5da617aee98a43b3392a4429a7514a55bb0800": {
+			"atlas": "res://assets/ships/flat_parts/afb1f50993b833fbee7947c3b633213b44053f944b1a4d2bed3c97accabc0ab9.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "missile:legendary:chain:1",
+			"span": 3.94120240211487
+		},
+		"f83c27984e319b587c2243cd23adfde2d66f1664ed9bf54fd5dfa05b05d1cff8": {
+			"atlas": "res://assets/ships/flat_parts/4ae90fd099343b2c89f4221ec579803e0c20461a3cb74019a8cb129d0fca0080.png",
+			"height": 0.167999982833862,
+			"low": 0.466000020503998,
+			"size": 256,
+			"source": "laser:white:chain:2",
+			"span": 2.86195659637451
+		},
+		"fae48993614aadd976e15d579ab3ed009ddf08316b8be51c469d5ef5570f4176": {
+			"atlas": "res://assets/ships/flat_parts/0f4a11d6ccf718116dc010cca1b2ec3bead203ce0bd84fb20af18a046076942b.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:blue:shield:2",
+			"span": 3.77501535415649
+		},
+		"fb1fae72b63cc2c3b8664a93a6d08b8306fc1d81741e7d7702059cbcf8e9a993": {
+			"atlas": "res://assets/ships/flat_parts/e6010f659485274ee81932ee75d1cc84b61c3bd5f9afa1beabe7ff6fe5fd7d3e.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "cannon:legendary:shield:1",
+			"span": 3.96852540969849
+		},
+		"fd7803555b6f356e1ec1f1ec3b6b78347d2bd985babba69d68983bb90031b633": {
+			"atlas": "res://assets/ships/flat_parts/5c6c8e367145eea94db34c56b4840d7942ea4b310ca853d8ed709d487307dcbe.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:gold:chain:1",
+			"span": 3.90095996856689
+		},
+		"feba43c80f4f596d41a24ed298eadf4096cb7b64f76e75a42e6f04dee6adea3b": {
+			"atlas": "res://assets/ships/flat_parts/41cf6791aa0c1585ec6d6f9ab091915c6deb7e51f852a0d2d6d13e676d2020bb.png",
+			"height": 0.572000004351139,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:shield:2",
+			"span": 3.77501535415649
+		},
+		"ff7ff5612df191411192015fc1f75834a5137dce6b459332ccd36e29cc35ceb3": {
+			"atlas": "res://assets/ships/flat_parts/0a80075f7f11c0e817daa651b6823f7200ee71de87b9ebdd4f6fbdee94b501b2.png",
+			"height": 0.614000000059605,
+			"low": 0.0200000032782555,
+			"size": 256,
+			"source": "longLaser:blue:attack:2",
+			"span": 3.56303954124451
+		}
+	},
+	"parts": {
+		"017dd615614163ba9bfcdaff479101637b33875c05635546f17a9f2935447859": {
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192.0,
+			"source": "cannon bearing",
+			"span": 1.22188055515289
+		},
+		"01bde4ff34ff3e4d6ae69fc1cb1fd4aef74a4882c5f75b900407e97067dfa50b": {
+			"atlas": "res://assets/ships/flat_parts/37561c9c6a1f464ce028b9709aa141dfba0d7f5dbc9b5673eeec525e1fc04ae1.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.634693562984467,
+			"low": 0.0550000071525574,
+			"size": 192.0,
+			"source": "laser turret",
+			"span": 2.1402485370636
+		},
+		"055de536fa5c363cd7371b7870673279fd4d325b86524f42028e25bd0e1b3c85": {
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192.0,
+			"source": "laser bearing",
+			"span": 1.22188055515289
+		},
+		"4b8d78b837bc18b1c41bba6a35b490aa0384c326c855b9ac8829e8fa1e74f04d": {
+			"atlas": "res://assets/ships/flat_parts/328109df3489bb41aeccaa33ae9ac57e2b80a2abc31c76eb5813570563295676.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.599999964237213,
+			"low": 0.0550000071525574,
+			"size": 192.0,
+			"source": "longLaser turret",
+			"span": 2.07281231880188
+		},
+		"5554ba2f489712992b9b2ce07250dc505ceabaad08d3122fa23d786a7e7c2adc": {
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192.0,
+			"source": "missile bearing",
+			"span": 1.22188055515289
+		},
+		"83c7597c230e05c671d9c58f9e9f5508d82bf9345edf00963cadd8e0c02b4e66": {
+			"atlas": "res://assets/ships/flat_parts/6d2f6f551e73eb37a2d14ced724593497e6edfd580008c772d2415596522b4b1.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.612499952316284,
+			"low": 0.0550000071525574,
+			"size": 192.0,
+			"source": "missile turret",
+			"span": 1.8278820514679
+		},
+		"cf75924be907cf22911399f72baf75dd04b2f6bc5abcc8700dd3ed0bce514a1f": {
+			"atlas": "res://assets/ships/flat_parts/313132d49e7b126e9ec2f918835ce1ed485dd2b2ea49392392ba395045e11945.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.615500032901764,
+			"low": 0.0549999475479126,
+			"size": 192.0,
+			"source": "cannon turret",
+			"span": 2.65838074684143
+		},
+		"f27291de1a0dbc6c68e25fbbe341aeea318e87f0f550a9d9a4337115a0df7e62": {
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png",
+			"columns": 8.0,
+			"frames": 64.0,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192.0,
+			"source": "longLaser bearing",
+			"span": 1.22188055515289
+		}
+	},
+	"shield_map": "res://assets/ships/flat_parts/becfb7ef5271f3635a2d0a24280bf403bb20459d9f99732f9d36995f041e1cac.png",
+	"shield_shader": "9c85ae1ce0b19fda090e40162d7a6a796efa5cf4f32c2a707bae08c5506c8f96"
+}
