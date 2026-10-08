@@ -1,0 +1,9 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+NORMAL SPEED requested10 accepted=true cost=9.0 statcache=true grant120particles=diagnostic_fixture
+SAMPLES 100 wall_seconds=6.855967 source43842f56 stage=28 paused=false cache=true scale=0.60450822114944 normal_x10_existing_accelerated_quality=true
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance
