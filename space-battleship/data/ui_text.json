@@ -16171,5 +16171,29 @@
     "params": "",
     "category": "reactor",
     "note": "升级按原比例分配新增整数能源，包含闲置能源"
+  },
+  {
+    "key": "enhance.effect.active",
+    "text": "正在生效 · {count} 件装备",
+    "params": "{count}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.reorder",
+    "text": "当前未生效 · 用 ↑ 调整顺位",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.effect.first_upgrade",
+    "text": "先升一级，激活首位效果",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.overview.current",
+    "text": "当前每件装备生效前 {count} 个效果；用 ↑↓ 调整顺位，试试不同搭配",
+    "params": "{count}",
+    "category": "enhance"
   }
 ]

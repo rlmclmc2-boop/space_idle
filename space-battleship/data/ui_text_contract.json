@@ -8663,6 +8663,22 @@
     },
     "reactor.upgrade_shares": {
       "params": []
+    },
+    "enhance.effect.active": {
+      "params": [
+        "count"
+      ]
+    },
+    "enhance.effect.reorder": {
+      "params": []
+    },
+    "enhance.effect.first_upgrade": {
+      "params": []
+    },
+    "enhance.overview.current": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {
