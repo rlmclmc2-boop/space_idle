@@ -34,7 +34,7 @@ static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool
 	return true
 
 static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
-	if s.get("version") not in [4,VERSION]:return false
+	if not C.integer(s.get("version")) or int(s.version) not in [4,VERSION]:return false
 	var legacy:bool=s.version==4
 	if not legacy and not s.get("idle") is Dictionary:return false
 	if not R.valid_state(s.get("random_state")) or not C.integer(s.get("ultimate_cores")) or s.ultimate_cores<0 or not C.integer(s.get("command_seq")) or s.command_seq<1:return false

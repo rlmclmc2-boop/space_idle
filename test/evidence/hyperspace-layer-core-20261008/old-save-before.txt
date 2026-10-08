@@ -1,0 +1,5 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+OLD_SAVE start-save.json global_version=5.0 hyperspace_version=4.0 state=false binding=true actual_highest=1 expected_highest=34.0 error=invalid_hyperspace_save
+OLD_SAVE final-save.json global_version=5.0 hyperspace_version=4.0 state=false binding=true actual_highest=1 expected_highest=34.0 error=invalid_hyperspace_save
+OLD_SAVE progress.json global_version=5.0 hyperspace_version=4.0 state=false binding=true actual_highest=1 expected_highest=1.0 error=invalid_hyperspace_save

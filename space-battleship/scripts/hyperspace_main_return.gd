@@ -29,9 +29,9 @@ static func shape(value,spec)->bool:
 static func valid(state:Dictionary,journey:Dictionary,max_stage:int)->bool:
  var spec:=schema()
  if state.get("version")==1:spec.erase("battle_json")
- if not shape(state,spec) or state.version not in [1,VERSION]:return false
+ if not shape(state,spec) or int(state.version) not in [1,VERSION]:return false
  if state.version==VERSION and not Actors.valid(state.battle_json):return false
- if state.version==1 and (journey.get("state") not in [0,1,2,4,6] or journey.get("loop")!=false or not journey.get("pendingUnlocks") is Array or not journey.pendingUnlocks.is_empty()):return false
+ if state.version==1 and (not C.integer(journey.get("state")) or int(journey.state) not in [0,1,2,4,6] or journey.get("loop")!=false or not journey.get("pendingUnlocks") is Array or not journey.pendingUnlocks.is_empty()):return false
  for key in ["stage","groupIndex","state"]:
   if not C.integer(journey.get(key)):return false
  if journey.stage<1 or journey.stage>max_stage or journey.groupIndex<0 or not int(journey.state) in [0,1,2,3,4,5,6,7]:return false
@@ -51,7 +51,7 @@ static func binding_valid(point:Dictionary,profile:Dictionary,data:Dictionary)->
  if index<0 or index>=levels.size() or index+1>int(profile.get("highestLevel",1)):return false
  var row:Dictionary=levels[index]
  if float(point.distance)>float(row.length) or int(point.groupIndex)>row.groups.size():return false
- if int(point.state)==4 and (int(point.groupIndex)!=row.groups.size() or not profile.get("cleared",[]).has(index+1)):return false
+ if int(point.state)==4 and (int(point.groupIndex)!=row.groups.size() or not profile.get("cleared",[]).any(func(level):return C.integer(level) and int(level)==index+1)):return false
  return true
 static func journey(g)->Dictionary:
  return {"stage":g.stage,"distance":g.distance,"groupIndex":g.group_index,"state":int(g.state),"guardArrived":g.guard_arrived,"retreatBossPending":g.retreat_boss_pending,"pendingUnlocks":g.pending_unlocks.duplicate(),"loop":g.profile.loop}

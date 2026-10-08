@@ -70,7 +70,7 @@ static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -
 	if not gate_id.is_empty():
 		var gate: Dictionary=data.get("unlock",{}).get(gate_id,{})
 		if gate.is_empty():return false
-		var unlocked: bool=profile.get("grantedUnlocks",[]).has(gate_id) or int(gate.level)==0 or (int(profile.get("highestLevel",1))>int(gate.level) if gate.get("mode","cleared")=="reached" else profile.get("cleared",[]).has(int(gate.level)))
+		var unlocked: bool=profile.get("grantedUnlocks",[]).has(gate_id) or int(gate.level)==0 or (int(profile.get("highestLevel",1))>int(gate.level) if gate.get("mode","cleared")=="reached" else profile.get("cleared",[]).any(func(level):return preload("res://scripts/hyperspace_config.gd").integer(level) and int(level)==int(gate.level)))
 		if not unlocked:return false
 	for planet in profile.get("planets",{}).values():
 		if planet.get("crewId","")==crew_id:return false
