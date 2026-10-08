@@ -1,0 +1,178 @@
+{
+  "source": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "remote_main_checked": "766da2eb5375bee1ba1fb75d28e467af8e654dfa",
+  "scope": "Original BUG renderer continuation only; constructed frozen stage34, cache=true, save=false, three laser34/armour34/shield34, three enemies; NOT parent historical34 full save or normal-speed performance acceptance.",
+  "environment": {
+    "engine": "Godot4.6.3 official",
+    "renderer": "Compatibility Mesa llvmpipe",
+    "LP_NUM_THREADS": 4,
+    "window": [
+      1180,
+      812
+    ],
+    "3d_scale": 0.60450822114944,
+    "tab": 0
+  },
+  "actual_background": "battlefield.gd draw_background overrides legacy main.gd; actual background consists of three opaque colored rectangles.",
+  "solid_shader": "shader_type canvas_item; render_mode unshaded, blend_disabled; varying vec4 solid_color; void vertex(){solid_color=COLOR;} void fragment(){COLOR=solid_color;}",
+  "candidate": "Apply only to actual background_layer. Removes default texture sampling/multiply/blending for its opaque solid rectangles; does not remove geometry, shadows, textures elsewhere, animation, or alter resolution. Diagnostic implementation only; parent Astra owns presentation production implementation.",
+  "sampling": "119frames after15warm each; ABAB then BABABA in a new process; screenshots outside measured samples; five paired comparisons. Initial scale=1 log is pre-layout, measured0.6045.",
+  "pairs": [
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.47587400324204,
+        "root_gpu": 15.3826134705744,
+        "ship_cpu": 14.9510336082523,
+        "ship_gpu": 15.7326554450668,
+        "wall_ms": 34.7124117647059
+      },
+      "candidate": {
+        "draw_calls": 274.0,
+        "root_cpu": 5.94263865366703,
+        "root_gpu": 13.1383781192683,
+        "ship_cpu": 15.0002100888421,
+        "ship_gpu": 15.7894118092641,
+        "wall_ms": 32.955487394958
+      },
+      "wall_reduction_ms": 1.7569243697478996,
+      "root_gpu_reduction_ms": 2.2442353513061004
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.63811768603926,
+        "root_gpu": 15.9782100805715,
+        "ship_cpu": 14.9534286050236,
+        "ship_gpu": 15.6674537418269,
+        "wall_ms": 35.802487394958
+      },
+      "candidate": {
+        "draw_calls": 274.0,
+        "root_cpu": 6.05616806334808,
+        "root_gpu": 13.6038235095369,
+        "ship_cpu": 15.7484957991528,
+        "ship_gpu": 16.4935378226913,
+        "wall_ms": 34.3098823529412
+      },
+      "wall_reduction_ms": 1.4926050420167982,
+      "root_gpu_reduction_ms": 2.3743865710346004
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.73030252216243,
+        "root_gpu": 16.424394952149,
+        "ship_cpu": 16.3535126277379,
+        "ship_gpu": 16.845655425256,
+        "wall_ms": 37.038512605042
+      },
+      "candidate": {
+        "draw_calls": 274.0,
+        "root_cpu": 5.43684033586198,
+        "root_gpu": 12.6910839962358,
+        "ship_cpu": 15.1145966634029,
+        "ship_gpu": 15.6507562989948,
+        "wall_ms": 31.9304369747899
+      },
+      "wall_reduction_ms": 5.108075630252102,
+      "root_gpu_reduction_ms": 3.7333109559132005
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.5267311164311,
+        "root_gpu": 16.055916000815,
+        "ship_cpu": 15.6096302080555,
+        "ship_gpu": 16.0841008595058,
+        "wall_ms": 36.4926638655462
+      },
+      "candidate": {
+        "draw_calls": 274.0,
+        "root_cpu": 5.76829412203877,
+        "root_gpu": 13.7658991693449,
+        "ship_cpu": 16.7508739663773,
+        "ship_gpu": 17.1408067671191,
+        "wall_ms": 35.8675966386555
+      },
+      "wall_reduction_ms": 0.6250672268906996,
+      "root_gpu_reduction_ms": 2.2900168314700995
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 9.41373110218208,
+        "root_gpu": 17.4003950086962,
+        "ship_cpu": 16.8304117988138,
+        "ship_gpu": 17.3912184979735,
+        "wall_ms": 38.7394369747899
+      },
+      "candidate": {
+        "draw_calls": 274.0,
+        "root_cpu": 5.76682354021473,
+        "root_gpu": 13.0569663568705,
+        "ship_cpu": 15.4130252309206,
+        "ship_gpu": 15.9733360595062,
+        "wall_ms": 33.0718823529412
+      },
+      "wall_reduction_ms": 5.667554621848701,
+      "root_gpu_reduction_ms": 4.3434286518257
+    }
+  ],
+  "median_wall_reduction_ms": 1.7569243697478996,
+  "median_root_gpu_reduction_ms": 2.3743865710346004,
+  "interpretation": "All five rootGPU and wall comparisons improve; draw_calls274 unchanged. RootGPU reduction about2.2–4.3ms, wall reduction0.63–5.67ms with simultaneous ShipGPU variation. Promising equivalent candidate, not guaranteed whole-game FPS benefit. Needs parent same-full-save A/B and original Astra implementation; not accepted performance fix.",
+  "picture": {
+    "solid_different_pixels": 68,
+    "bounds_yxyx": [
+      664,
+      676,
+      161,
+      184
+    ],
+    "max_channel_delta": 14,
+    "other_pixels": "exactly equal",
+    "interpretation": "Differences confined to visible engine plume; dev/toon_ship/exhaust.gdshader uses TIME. Temporal attribution is an inference, no masked tolerance assertion. Viewed actual solid-after screenshot.",
+    "local_files": {
+      "solid-before.png": {
+        "path": "/workspace/bug-qa/performance-20261008/solid-before.png",
+        "sha256": "c473b135419caf36229ec9dd2066b1627cd3403399107f03ac8e395e92c9a851"
+      },
+      "solid-after.png": {
+        "path": "/workspace/bug-qa/performance-20261008/solid-after.png",
+        "sha256": "00e62976bd99ae49ac983f4527626c6716d20855bf55d28e0997a73c464090c6"
+      },
+      "opaque-before.png": {
+        "path": "/workspace/bug-qa/performance-20261008/opaque-before.png",
+        "sha256": "1a2c83f239c3f9b2e79c48aab716033752e4cfc04532c153ca865d7c7e9cd0c1"
+      },
+      "opaque-after.png": {
+        "path": "/workspace/bug-qa/performance-20261008/opaque-after.png",
+        "sha256": "bbe7a39870ec9b47e855b69a3afa50db3d797457bba124a4d8f1dd490f9c37ce"
+      }
+    }
+  },
+  "style_refresh": {
+    "actual_upgrades": 8,
+    "baseline_command_us_mean": 2888.875,
+    "guard_command_us_mean": 2814.875,
+    "theme_changed_events": [
+      8,
+      0
+    ],
+    "card_draw_events": [
+      40,
+      32
+    ],
+    "resource_count": [
+      236,
+      236
+    ],
+    "final_state": "identical level42, cost110K, resources998978825, normal texture pixel, null focus",
+    "decision": "No net frame gain established. No leak found. Guard not production adopted."
+  },
+  "opaque_blend_only": "Two AB pairs wall gains0.42/0.10ms, too small for reliable whole-game conclusion; not adopted.",
+  "invalid_probes": "nebula-only and fullscreen-fill copied legacy main.gd background rather than actual battlefield.gd override. Both withdrawn; original raw evidence preserved, earlier report corrected.",
+  "production_changes": "None. Original/runtime equipment_card restored byte-identical to baseline. No saves, screenshots, caches added to Git. No old long-run or new broad tests.",
+  "astra_dfa7d0b7": "Parent reports draw501→465 but mixed wall/GPU; not re-run here, root candidate prioritized. No claim that batching performance passed."
+}

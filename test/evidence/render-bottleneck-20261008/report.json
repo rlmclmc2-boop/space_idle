@@ -56,7 +56,7 @@
   "invalid_or_negative_attempts": [
     "equipment_hidden in render-boundary changes TabContainer page and increases draw calls: excluded",
     "disabled ShipViewport retains stale per-viewport CPU/GPU values: cannot sum them as current frame cost",
-    "root background hide reduces about4ms, but only44-nebula-circles ABAB has no stable gain: nebula claim rejected",
+    "WITHDRAWN: nebula-only.gd copied main.gd legacy background instead of actual battlefield.gd override; neither 44-circle removal nor its timing represents production background. Original raw data retained.",
     "initial shadow probe had wrong viewport_get_render_info argument order, failed to compile and produced no measurements; error retained, corrected using engine ClassDB reflection",
     "Compatibility reports shadow-specific render info zero even with shadows enabled: do not use that counter as independent proof of no shadow rendering"
   ],
