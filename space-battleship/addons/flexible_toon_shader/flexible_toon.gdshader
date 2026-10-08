@@ -96,20 +96,7 @@ void light() {
 	if (use_specular) {
 		vec3 H = normalize(LIGHT + VIEW);
 		float NdotH = max(dot(NORMAL, H), 0.0);
-		float specular_power;
-		if (specular_shininess == 9.0 && NdotH >= 0.0) {
-			// Common ship material: x^(9*9) = x^64 * x^16 * x.
-			float x2 = NdotH*NdotH;
-			float x4 = x2*x2;
-			float x8 = x4*x4;
-			float x16 = x8*x8;
-			float x32 = x16*x16;
-			float x64 = x32*x32;
-			specular_power = x64*x16*NdotH;
-		} else {
-			specular_power = pow(NdotH, specular_shininess*specular_shininess);
-		}
-		float specular_amount = max(specular_power, 0.0f)
+		float specular_amount = max(pow(NdotH, specular_shininess*specular_shininess), 0.0f)
 							    * texture(specular_map, UV).r
 								* attenuation;
 		specular_amount = split_specular(specular_amount);
@@ -119,21 +106,7 @@ void light() {
 	// Simple rim lighting.
 	if (use_rim) {
 		float NdotV = dot(NORMAL, VIEW);
-		float rim_base = 1.0 - NdotV;
-		float rim_light;
-		// Exact exponent checks retain arbitrary editor/material parameters.
-		// Do not clamp the base or alter the original pow path outside its domain.
-		if (rim_base >= 0.0 && (rim_width == 8.0 || rim_width == 4.5)) {
-			float x2 = rim_base*rim_base;
-			float x4 = x2*x2;
-			if (rim_width == 8.0) {
-				rim_light = x4*x4;
-			} else {
-				rim_light = x4*sqrt(rim_base);
-			}
-		} else {
-			rim_light = pow(rim_base, rim_width);
-		}
+		float rim_light = pow(1.0 - NdotV, rim_width);
 		SPECULAR_LIGHT += rim_light * rim_color.rgb * rim_color.a * LIGHT_COLOR / PI; //Changed DIFFUSE_LIGHT to SPECULAR_LIGHT while migrating for similar result
 	}
 }
