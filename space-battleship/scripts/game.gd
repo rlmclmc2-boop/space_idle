@@ -718,7 +718,7 @@ func combat_weapon_entries() -> Array:
 func drone_weapon_entry(d: Dictionary) -> Dictionary:
 	var maximum:=1
 	for entry in weapon_entries():
-		if not str(entry.get("key","")).is_empty():maximum=maxi(maximum,int(entry.level))
+		maximum=maxi(maximum,int(entry.level))
 	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
