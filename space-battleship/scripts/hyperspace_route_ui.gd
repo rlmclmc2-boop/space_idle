@@ -15,6 +15,9 @@ var stop_button:Button
 var exit_button:Button
 var crew_button:Button
 var claim_button:Button
+var claim_background_button:Button
+var claim_feedback:Label
+var claim_failed_key=""
 var crew_dialog:AcceptDialog
 var crew_choice:OptionButton
 var crew_info:Label
@@ -37,7 +40,9 @@ func build(parent:Node) -> void:
  background_status=panel.label(tasks,"")
  progress=ProgressBar.new();progress.show_percentage=false;progress.custom_minimum_size.y=26;tasks.add_child(progress)
  challenge_status=panel.label(tasks,"")
- claim_button=panel.button(tasks,"claim",panel.claim);claim_button.visible=false
+ claim_button=panel.button(tasks,"layer_claim_challenge",func():claim_receipt("challenge"));claim_button.visible=false
+ claim_background_button=panel.button(tasks,"layer_claim_background",func():claim_receipt("background"));claim_background_button.visible=false
+ claim_feedback=panel.label(tasks,"",20);claim_feedback.visible=false
  var actions=panel.row(parent)
  idle_button=panel.button(actions,"layer_idle_once",func():act("start_hyperspace_idle"))
  challenge_button=panel.button(actions,"layer_challenge",func():act("start_hyperspace_challenge"))
@@ -48,10 +53,12 @@ func build(parent:Node) -> void:
  hint=panel.label(parent,"",20)
 func reason(code:String) -> String:
  if code.is_empty():return ""
+ if code=="other_route":return t("layer_reason_other_route")
+ if code=="max_layer":return t("layer_reason_max_layer")
  if code in ["no_record","record","no_best_time","not_cleared","no_cleared_layer","no_history","invalid_record"]:return t("layer_reason_record")
- if code in ["busy","active","challenge_active","idle_active","background_active","auto_enabled"]:return t("layer_reason_busy")
+ if code in ["busy","active","challenge_active","idle_active","background_active","auto_enabled","background_busy","challenge_busy"]:return t("layer_reason_busy")
  if code in ["crew","crew_missing","crew_unavailable","crew_occupied","no_crew"]:return t("layer_reason_crew")
- if code in ["warehouse","warehouse_full","blocked","pending","completed_pending"]:return t("layer_reason_warehouse")
+ if code in ["warehouse","warehouse_full","blocked","pending","completed_pending","inventory_full","pending_reward"]:return t("layer_reason_warehouse")
  return t("layer_reason_unavailable")
 func availability(control:Button,reasons:Dictionary,key:String) -> void:
  var code=str(reasons.get(key,"unavailable"))
@@ -73,7 +80,7 @@ func refresh() -> void:
  panel.put(challenge_button,"text",t("layer_challenge",{"layer":str(next_layer)}))
  panel.put(record,"visible",layer>0)
  panel.put(record,"text",t("layer_record",{"time":"%.2f"%float(v.get("best_time",0.0))}))
- var duration=float(v.get("duration",v.get("best_time",0.0)))
+ var duration=float(v.get("idle_duration",0.0))
  panel.put(idle_time,"visible",layer>0 and duration>0.0)
  panel.put(idle_time,"text",t("layer_idle_time",{"time":"%.2f"%duration}))
  var total=float(v.get("total_luck",0.0))
@@ -91,11 +98,13 @@ func refresh() -> void:
  if background.is_empty() and mode in ["manual_idle","crew_idle"]:background=v
  var work=float(background.get("work",0.0));var task_duration=float(background.get("duration",0.0))
  var pending=str(background.get("status",""))=="completed_pending"
+ panel.put(claim_background_button,"visible",pending)
  panel.put(background_status,"text",t("layer_task_pending") if pending else (t("layer_idle_work",{"work":"%.1f"%work,"duration":"%.1f"%task_duration}) if not background.is_empty() else t("layer_idle_none")))
  panel.put(progress,"visible",not background.is_empty())
  panel.put(progress,"value",100.0 if pending else clampf(100.0*work/maxf(0.001,task_duration),0.0,100.0))
  var challenge_pending=str(challenge.get("status",""))=="completed_pending"
  panel.put(claim_button,"visible",challenge_pending)
+ panel.put(claim_feedback,"visible",not claim_failed_key.is_empty() and ((pending and panel.reward_feedback.receipt_key(background)==claim_failed_key) or (challenge_pending and panel.reward_feedback.receipt_key(challenge)==claim_failed_key)))
  var challenging=not challenge.is_empty() or mode=="challenge"
  panel.put(challenge_status,"visible",challenging)
  panel.put(challenge_status,"text",t("layer_task_pending") if challenge_pending else t("layer_challenging",{"layer":str(int(challenge.get("level",next_layer)))}))
@@ -103,6 +112,14 @@ func refresh() -> void:
  panel.put(hint,"text",t("layer_reason_unavailable") if v.is_empty() else t("layer_hint"))
  # Preview updates only while its own native dialog is visible. Preserve selection and focus.
  if crew_dialog!=null and crew_dialog.visible:refresh_crew()
+func claim_receipt(slot:String) -> void:
+ var receipt:Dictionary=view().get(slot,{})
+ if receipt.get("status","")!="completed_pending" or not game().has_method("claim_hyperspace"):return
+ var key=panel.reward_feedback.receipt_key(receipt)
+ var claimed=bool(game().claim_hyperspace(int(receipt.round_id),int(receipt.run_id)))
+ claim_failed_key="" if claimed else key
+ panel.put(claim_feedback,"text",t("layer_claim_retry") if not claimed else "")
+ panel.dirty=true;refresh()
 func act(method:String,with_route=true) -> void:
  if not game().has_method(method):return
  var ok=game().call(method,panel.route) if with_route else game().call(method)
@@ -140,8 +157,10 @@ func selected_crew() -> String:
  return str(crew_choice.get_item_metadata(crew_choice.selected)) if crew_choice.selected>=0 else ""
 func refresh_crew() -> void:
  var id=selected_crew();var v=view(id)
- panel.put(crew_info,"text",t("layer_crew_detail",{"time":"%.2f"%float(v.get("duration",0.0)),"luck":"%.0f"%float(v.get("total_luck",0.0))}))
- panel.put(crew_info,"tooltip_text",t("layer_luck_sources",{"crew":"%.0f"%float(v.get("crew_luck",0.0)),"permanent":"%.0f"%float(v.get("permanent_luck",0.0))})+"\n"+t("layer_luck_rules"))
+ var time="%.2f"%float(v.get("crew_duration",0.0))
+ var configured=id==str(v.get("crew_id","")) and not id.is_empty()
+ panel.put(crew_info,"text",t("layer_crew_detail",{"time":time,"luck":"%.0f"%float(v.get("total_luck",0.0))}) if configured else t("layer_crew_time",{"time":time}))
+ panel.put(crew_info,"tooltip_text",(t("layer_luck_sources",{"crew":"%.0f"%float(v.get("crew_luck",0.0)),"permanent":"%.0f"%float(v.get("permanent_luck",0.0))})+"\n"+t("layer_luck_rules")) if configured else "")
  var code=str(v.get("reasons",{}).get("crew_idle","unavailable"))
  if id.is_empty():code="crew_missing"
  panel.put(crew_enable,"disabled",not code.is_empty())

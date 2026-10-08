@@ -464,8 +464,8 @@ func toggle_favorite() -> void:
  else:ids.append(selected_id)
  host.game.hyperspace.set_favorites(host.game,ids)
 func claim() -> void:
- var a: Dictionary=host.game.profile.hyperspace.active
- if not a.is_empty():host.game.hyperspace.claim(host.game,int(a.round_id),int(a.run_id))
+ if host.game.has_method("claim_hyperspace"):
+  host.game.claim_hyperspace();dirty=true;route_ui.refresh()
 func refresh_manual_status() -> void:
  # A route load/reload or inventory generation boundary may refresh this snapshot; progress never does.
  var projection:Dictionary=host.game.hyperspace.snapshot(host.game);manual_snapshot_reads+=1

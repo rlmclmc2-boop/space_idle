@@ -8331,6 +8331,26 @@
         "name",
         "status"
       ]
+    },
+    "hyperspace.layer_claim_challenge": {
+      "params": []
+    },
+    "hyperspace.layer_claim_background": {
+      "params": []
+    },
+    "hyperspace.layer_claim_retry": {
+      "params": []
+    },
+    "hyperspace.layer_crew_time": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_reason_other_route": {
+      "params": []
+    },
+    "hyperspace.layer_reason_max_layer": {
+      "params": []
     }
   },
   "bindings": {

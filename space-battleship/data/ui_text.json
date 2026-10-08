@@ -15534,7 +15534,7 @@
   },
   {
     "key": "hyperspace.layer_task_pending",
-    "text": "奖励待领取；先整理仓库。",
+    "text": "奖励已保留，点「领取」收下；仓满时先整理无人机。",
     "params": "",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15545,5 +15545,47 @@
     "params": "{name},{status}",
     "category": "hyperspace",
     "note": "船员等级未解锁前的路线船员选择"
+  },
+  {
+    "key": "hyperspace.layer_claim_challenge",
+    "text": "领取挑战奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_background",
+    "text": "领取后台奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_retry",
+    "text": "暂未领到奖励。先在「无人机」页腾出仓位，再回来领取；奖励会保留。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_crew_time",
+    "text": "选中船员：每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "候选船员时长报价；核心幸运快照目前只含已配置船员，不冒充候选报价"
+  },
+  {
+    "key": "hyperspace.layer_reason_other_route",
+    "text": "另一条路线正在后台探索，先到那条路线停止探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 other_route 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_reason_max_layer",
+    "text": "这条路线已经全部通关，可以继续后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 max_layer 原因码的操作提示"
   }
 ]
