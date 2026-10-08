@@ -6,7 +6,6 @@ const DEFAULT_WEAPON := preload("res://assets/ships/player/toon_v1/weapons/pulse
 const TOON := preload("res://addons/flexible_toon_shader/flexible_toon.gdshader")
 const SHIELD := preload("res://dev/toon_ship/shield.gdshader")
 const EXHAUST := preload("res://dev/toon_ship/exhaust.gdshader")
-const STATIC_SHIP_BATCH := preload("res://scripts/static_ship_batch.gd")
 const WORLD_PER_PIXEL := 0.05
 
 @export var weapon_scene: PackedScene = DEFAULT_WEAPON
@@ -38,7 +37,6 @@ var shield: MeshInstance3D
 var shield_material: ShaderMaterial
 var material_entries: Array[Dictionary] = []
 var material_pool: Dictionary = {}
-var static_ship_batch := STATIC_SHIP_BATCH.new()
 var exhaust_materials: Array[ShaderMaterial] = []
 var exhaust_nodes: Array[MeshInstance3D] = []
 var world: Node3D
@@ -180,7 +178,6 @@ func set_hull(key: String) -> bool:
 	ship.name = "PrototypeShip"
 	world.add_child(ship)
 	weapon_mount = ship.find_child("WeaponMount01",true,false)
-	static_ship_batch.apply(ship, str(hull_config.path))
 	_install_materials(ship)
 	_add_exhausts()
 	shield = MeshInstance3D.new()
@@ -206,7 +203,7 @@ func set_hull(key: String) -> bool:
 
 
 func _install_materials(node: Node, owner := "hull") -> void:
-	if node is MeshInstance3D and node.mesh != null:
+	if node is MeshInstance3D:
 		for index in node.mesh.get_surface_count():
 			var source: StandardMaterial3D = node.mesh.surface_get_material(index)
 			# Repeated surfaces/instances of an imported material have identical
@@ -268,7 +265,6 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			# Never show the world origin while a freshly created formation awaits a pose.
 			carrier.visible = false
 			carriers.append(carrier)
-			static_ship_batch.apply(carrier, str(manifest.drone.path))
 			_install_materials(carrier,"carrier")
 			mount = carrier.find_child("WeaponMount01",true,false) as Node3D
 		if mount == null:
