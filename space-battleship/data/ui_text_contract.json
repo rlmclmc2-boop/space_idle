@@ -8325,6 +8325,12 @@
     },
     "hyperspace.layer_task_pending": {
       "params": []
+    },
+    "hyperspace.layer_crew_choice": {
+      "params": [
+        "name",
+        "status"
+      ]
     }
   },
   "bindings": {

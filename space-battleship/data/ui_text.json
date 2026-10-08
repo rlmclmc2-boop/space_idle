@@ -15538,5 +15538,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_choice",
+    "text": "{name} · {status}",
+    "params": "{name},{status}",
+    "category": "hyperspace",
+    "note": "船员等级未解锁前的路线船员选择"
   }
 ]

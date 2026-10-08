@@ -124,8 +124,12 @@ func show_crew() -> void:
   if not game().crew.unlocked(game(),id):continue
   var available=game().hyperspace.Permission.crew_available(game(),id)
   var name=str(game().crew.definitions(game())[id].name)
-  var level=game().hyperspace.Permission.crew_level(game(),id)
-  crew_choice.add_item(t("crew_choice",{"name":name,"level":str(level),"status":t("crew_available") if available else t("crew_occupied")}))
+  var availability_text=t("crew_available") if available else t("crew_occupied")
+  var caption=t("layer_crew_choice",{"name":name,"status":availability_text})
+  if game().crew.levels_unlocked(game()):
+   var level=game().hyperspace.Permission.crew_level(game(),id)
+   caption=t("crew_choice",{"name":name,"level":str(level),"status":availability_text})
+  crew_choice.add_item(caption)
   var index=crew_choice.item_count-1
   crew_choice.set_item_metadata(index,id);crew_choice.set_item_disabled(index,not available)
   if id==reserved:crew_choice.select(index)
