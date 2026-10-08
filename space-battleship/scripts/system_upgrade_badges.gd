@@ -13,6 +13,7 @@ var quotes: Dictionary = {}
 var price_dirty: Dictionary = {}
 var balance_dirty: Dictionary = {}
 var queued := false
+var active := false
 
 class UpgradeBadge extends Control:
 	func _draw() -> void:
@@ -23,7 +24,9 @@ class UpgradeBadge extends Control:
 func setup(source, navigation: Array[Button]) -> void:
 	game = source
 	buttons = navigation.duplicate()
+	active = true
 	for index in SUPPORTED:
+		if index>=buttons.size() or not is_instance_valid(buttons[index]):continue
 		var badge := UpgradeBadge.new()
 		badge.name = "UpgradeBadge"
 		badge.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -39,7 +42,12 @@ func setup(source, navigation: Array[Button]) -> void:
 	invalidate(SUPPORTED,true)
 
 func _exit_tree() -> void:
-	if game != null and game.event.is_connected(on_event):game.event.disconnect(on_event)
+	active = false
+	if is_instance_valid(game) and game.event.is_connected(on_event):game.event.disconnect(on_event)
+	game = null
+	queued = false
+	price_dirty.clear()
+	balance_dirty.clear()
 	quotes.clear()
 	buttons.clear()
 	badges.clear()
@@ -48,7 +56,7 @@ func _visibility_changed(index: int) -> void:
 	invalidate([index],true)
 
 func invalidate(indices: Array, prices: bool) -> void:
-	if indices.is_empty():return
+	if not active or indices.is_empty():return
 	for index in indices:
 		balance_dirty[index] = true
 		if prices:price_dirty[index] = true
@@ -57,6 +65,7 @@ func invalidate(indices: Array, prices: bool) -> void:
 		call_deferred("flush")
 
 func on_event(kind: String, info: Dictionary) -> void:
+	if not active:return
 	match kind:
 		"resources_changed":
 			var affected: Array = []
@@ -82,15 +91,23 @@ func on_event(kind: String, info: Dictionary) -> void:
 
 func flush() -> void:
 	queued = false
+	if not active or not is_instance_valid(game):return
 	var prices := price_dirty.keys()
 	var balances := balance_dirty.keys()
 	price_dirty.clear()
 	balance_dirty.clear()
 	for index in prices:
+		if not valid_navigation(index):
+			quotes.erase(index)
+			continue
 		quotes[index] = build_quotes(index) if buttons[index].visible else []
 	for index in balances:
+		if not valid_navigation(index):continue
 		var available := buttons[index].visible and affordable(index)
 		if badges[index].visible != available:badges[index].visible = available
+
+func valid_navigation(index: int) -> bool:
+	return index>=0 and index<buttons.size() and is_instance_valid(buttons[index]) and is_instance_valid(badges.get(index))
 
 func build_quotes(index: int) -> Array:
 	var result: Array = []

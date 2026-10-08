@@ -106,8 +106,28 @@ func run() -> void:
 	game.event.emit("hyperspace_changed",{"reason":"unsealed"})
 	await process_frame
 	assert(badge.quotes[9].is_empty())
-	badge.queue_free()
+	# Leave the owner alive outside the tree while its already-deferred flush runs.
+	game.event.emit("upgrade",{})
+	assert(badge.queued)
+	root.remove_child(badge)
 	await process_frame
 	assert(game.event.get_connections().size() == original_listeners,"owner teardown disconnects its listener")
+	assert(not badge.active and not badge.queued and badge.price_dirty.is_empty() and badge.balance_dirty.is_empty())
+	badge.free()
+	var empty := Badges.new()
+	root.add_child(empty)
+	empty.setup(game,[])
+	await process_frame
+	assert(empty.builds.is_empty(),"missing navigation cannot build quotes or index buttons")
+	empty.free()
+	var partial := Badges.new()
+	root.add_child(partial)
+	var one_button: Array[Button] = [Button.new()]
+	root.add_child(one_button[0])
+	partial.setup(game,one_button)
+	one_button[0].free()
+	await process_frame
+	assert(partial.builds.is_empty(),"navigation freed before flush is ignored")
+	partial.free()
 	print("PASS system upgrade badges: exact affordability, hidden/reveal, read persistence, cached/coalesced currency, drone side effects and old badge")
 	quit()
