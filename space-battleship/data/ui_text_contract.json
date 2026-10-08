@@ -8883,6 +8883,19 @@
       "params": [
         "levels"
       ]
+    },
+    "hyperspace.forge_promoted_affix": {
+      "params": [
+        "name",
+        "before",
+        "after",
+        "cost"
+      ]
+    },
+    "hyperspace.forge_promotion_failed": {
+      "params": [
+        "cost"
+      ]
     }
   },
   "bindings": {

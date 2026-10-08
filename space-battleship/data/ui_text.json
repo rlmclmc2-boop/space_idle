@@ -16584,5 +16584,19 @@
     "params": "levels",
     "category": "hyperspace",
     "note": "究极化主动查阅与确认效果"
+  },
+  {
+    "key": "hyperspace.forge_promoted_affix",
+    "text": "{name}：T{before} → T{after} · 消耗 {cost}",
+    "params": "name,before,after,cost",
+    "category": "hyperspace",
+    "note": "升阶实际结果与已支付材料"
+  },
+  {
+    "key": "hyperspace.forge_promotion_failed",
+    "text": "本次未升阶，词缀保持原样。已消耗 {cost}。",
+    "params": "cost",
+    "category": "hyperspace",
+    "note": "付费升阶失败的实际结果"
   }
 ]

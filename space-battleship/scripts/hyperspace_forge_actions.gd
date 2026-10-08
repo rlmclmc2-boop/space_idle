@@ -17,9 +17,9 @@ func build(parent:Node) -> void:
  for op in ACTIONS:
   var cell=commands.panel.box(grid,3);cells[op]=cell
   var action_row=commands.panel.row(cell);action_row.add_theme_constant_override("separation",4)
-  var button=commands.panel.button(action_row,"operation_"+op,func():act(op));button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size=Vector2(210,80)
-  button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;button.add_theme_font_size_override("font_size",18);buttons[op]=button
-  var info=commands.panel.button(action_row,"forge_action_info",func():show_help(op));info.custom_minimum_size=Vector2(36,36);info.size_flags_vertical=Control.SIZE_SHRINK_CENTER;info_buttons[op]=info
+  var button=commands.panel.button(action_row,"operation_"+op,func():act(op));button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size=Vector2(145,74)
+  button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;button.add_theme_font_size_override("font_size",16);buttons[op]=button
+  var info=commands.panel.button(action_row,"forge_action_info",func():show_help(op));info.custom_minimum_size=Vector2(28,28);info.size_flags_vertical=Control.SIZE_SHRINK_CENTER;info_buttons[op]=info
   if op in ["replace_affix","legendary"]:
    var selector=commands.panel.option(cell);selectors[op]=selector;selector.item_selected.connect(func(_i):refresh())
   if op=="reroll_values":

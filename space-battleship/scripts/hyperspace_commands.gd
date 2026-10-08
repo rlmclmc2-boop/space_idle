@@ -74,13 +74,13 @@ func build_forge(parent: Node) -> void:
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
  restore_hint=panel.label(parent,t("restore_modernize_hint"),21)
  feedback=panel.label(parent,"",21);quote_label=panel.label(parent,t("quote_first"),21)
- result_scroll=ScrollContainer.new();result_scroll.custom_minimum_size.y=180;result_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
- result_details=panel.label(result_scroll,"",21);result_details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_scroll.visible=false
+ result_scroll=ScrollContainer.new();result_scroll.custom_minimum_size.y=96;result_scroll.size_flags_vertical=Control.SIZE_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
+ result_details=panel.label(result_scroll,"",18);result_details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_scroll.visible=false
  promotion_hint.visible=false;dismantle_hint.visible=false;restore_hint.visible=false;quote_label.visible=false
  configure_operation()
 func invalidate() -> void:
  quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first");feedback.text=""
- result_scroll.visible=false
+ refresh_result(game().profile.hyperspace.inventory.drones.get(panel.selected_id,{}))
  refresh_materials.call_deferred()
 func refresh_materials(quoted: Dictionary={}) -> void:
  if materials_box==null:return
@@ -268,6 +268,7 @@ func execute_quote() -> void:
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var drone_id=str(quoted_request.drone_id)
  var operation_id=str(quoted_request.operation)
+ var previous:Dictionary=game().profile.hyperspace.inventory.drones.get(drone_id,{}).duplicate(true)
  var result: Dictionary=h().forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
  if str(result.error).is_empty() and result.get("applied",false):
@@ -277,12 +278,22 @@ func execute_quote() -> void:
  if str(result.error).is_empty() and bool(result.get("applied",false)) and bool(result.get("outcome",true)) and not current.is_empty():
   if operation_id=="add_affix" and not current.affixes.is_empty():feedback.text=t("forge_added_affix",{"affix":panel.affix_summary(current.affixes.back(),current)})
   elif operation_id=="add_hanging_slot":feedback.text=t("forge_added_slot",{"count":str(int(current.hanging_slots))})
+  elif operation_id=="promote_affix":
+   var index=int(result.get("index",-1))
+   if index>=0 and index<current.affixes.size() and index<previous.affixes.size():feedback.text=t("forge_promoted_affix",{"name":panel.affix_name(str(current.affixes[index].key)),"before":str(int(previous.affixes[index].tier)),"after":str(int(current.affixes[index].tier)),"cost":cost_text(result.get("cost",{}))})
+ if operation_id=="promote_affix" and str(result.error).is_empty() and bool(result.get("applied",false)) and not bool(result.get("outcome",true)):feedback.text=t("forge_promotion_failed",{"cost":cost_text(result.get("cost",{}))})
  result_scroll.visible=str(result.error).is_empty() and result.get("applied",false) and not current.is_empty()
  if result_scroll.visible:
-  panel.put(result_details,"text",t("forge_result_current")+"\n"+panel.drone_description(current))
+  refresh_result(current)
   result_scroll.scroll_vertical=0
  panel.dirty=true;panel.refresh()
  refresh_materials()
+func refresh_result(d:Dictionary) -> void:
+ var lines:Array[String]=[]
+ if not d.is_empty():
+  for a in d.affixes+([d.ultimate_affix] if bool(d.get("ultimate",false)) and not d.ultimate_affix.is_empty() else []):lines.append(panel.affix_summary(a,d))
+ panel.put(result_scroll,"visible",not lines.is_empty())
+ panel.put(result_details,"text","\n".join(lines))
 func build_dialog(title: String) -> AcceptDialog:
  var dialog=AcceptDialog.new();dialog.title=t(title);dialog.min_size=Vector2i(660,370);dialog.size=Vector2i(740,470);panel.add_child(dialog);preload("res://scripts/dialog_presentation.gd").dialog(dialog)
  return dialog

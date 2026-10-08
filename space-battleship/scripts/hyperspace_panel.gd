@@ -264,11 +264,12 @@ func build_inventory(parent: Node) -> void:
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
- var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
+ var selected_row=row(selected);forge_icon=thumbnail(selected_row,70);var text=box(selected_row);forge_title=label(text,t("none_selected"),22);forge_details=label(text,t("choose"),21)
  forge_legendary_button=button(selected,"legendary_info",show_selected_legendary,{"name":""});forge_legendary_button.visible=false
  button(selected,"go_warehouse",begin_forge_pick)
  commands.build_forge(parent)
  commands.feedback.reparent(selected)
+ commands.result_scroll.reparent(selected)
 func build_rules(parent: Node) -> void:
  label(parent,t("presets"),25)
  for index in 3:
@@ -443,6 +444,7 @@ func refresh_details() -> void:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
   forge_icon.call("apply",bag.drones[selected_id]) if valid else forge_icon.call("clear")
+  commands.refresh_result(bag.drones[selected_id] if valid else {})
   return
  if section_index!=1:return
  equipment_ui.refresh()
