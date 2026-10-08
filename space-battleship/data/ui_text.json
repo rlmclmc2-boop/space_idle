@@ -15779,28 +15779,28 @@
   },
   {
     "key": "battle.enemy_name.armour_flagship",
-    "text": "装甲旗舰 · 试试持续锁定光束",
+    "text": "装甲旗舰 · 持续光束有效",
     "params": "",
     "category": "battle",
     "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
   },
   {
     "key": "battle.enemy_name.shield_flagship",
-    "text": "护盾旗舰 · 试试磁轨火炮",
+    "text": "护盾旗舰 · 磁轨火炮有效",
     "params": "",
     "category": "battle",
     "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
   },
   {
     "key": "battle.enemy_name.armour_dreadnought",
-    "text": "重装巨舰 · 试试持续锁定光束",
+    "text": "重装巨舰 · 持续光束有效",
     "params": "",
     "category": "battle",
     "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
   },
   {
     "key": "battle.enemy_name.shield_dreadnought",
-    "text": "护盾巨舰 · 试试磁轨火炮",
+    "text": "护盾巨舰 · 磁轨火炮有效",
     "params": "",
     "category": "battle",
     "note": "主线旗舰玩家名称与既有武器提示；绑定主线敌人ID，不使用模板/变体作者标记"
