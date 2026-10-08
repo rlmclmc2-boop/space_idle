@@ -378,9 +378,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		encounter_presentation.return_success=bool(info.get("success",false))
 		encounter_presentation.sync(game,0.0)
 		if not bool(info.get("active",false)):
-			# Keep unrelated mainline feedback; discard only challenge explosions.
-			destruction_events=destruction_events.filter(func(e):return not bool(e.get("hyperspace",false)))
-			if is_instance_valid(pulse_layer):pulse_layer.queue_redraw()
+			reset_battle_transients_for_scene()
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
@@ -419,6 +417,24 @@ func on_event(kind:String,info:Dictionary)->void:
 		return
 	super.on_event(kind,info)
 
+
+func reset_battle_transients_for_scene() -> void:
+	destruction_events.clear()
+	rail_events.clear()
+	missile_events.clear()
+	pulse_events.clear()
+	enemy_impacts.clear()
+	beam_full_started.clear()
+	player_hit_at=-100.0
+	encounter_presentation.leader_fall=2.0
+	encounter_presentation.clear_age=2.0
+	paused_presentation_signature=""
+	super.reset_battle_transients_for_scene()
+	# A restored full-power beam is ongoing, not a fresh full-power flash.
+	for shot in game.projectiles:
+		if shot.get("beam",false) and game.long_laser_valid(shot) and int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999:
+			beam_full_started[int(shot.serial)]=fx_time-100.0
+	if is_instance_valid(pulse_layer):pulse_layer.queue_redraw()
 
 func sync_beam_visuals()->void:
 	if prototype_enabled and continuous_beam_enabled:
