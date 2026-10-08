@@ -9,6 +9,7 @@ var appearance_generation=-1
 var model_creations=0
 var style_updates=0
 var animated=true
+var body_bake_pending=true
 const TOON=preload("res://addons/flexible_toon_shader/flexible_toon.gdshader")
 const OFFSETS=[Vector2(-130,-28),Vector2(130,-60),Vector2(-130,-116),Vector2(130,-148),Vector2(0,-224)]
 var signature=""
@@ -48,6 +49,7 @@ func sync(bag: Dictionary) -> bool:
    install_materials(node,style);Appearance.build_ornaments(node,style);style_keys[id]=key;style_updates+=1
   nodes.append(node);identities.append(id)
  signature=next;appearance_generation=generation
+ body_bake_pending=true
  if member_changed:rebuilds+=1
  return true
 
@@ -80,6 +82,11 @@ func screen_muzzle_for_drone(id: String,ordinal: int,view) -> Vector2:
  if sockets.is_empty():return view.rendered_position
  return view.camera.unproject_position(sockets[posmod(ordinal,sockets.size())].global_position)
 func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
+ if body_bake_pending:
+  # Bake only fixed bodies after appearance changes; ornaments and sockets stay live.
+  for i in nodes.size():
+   view.body_baker.attach(nodes[i],"hyperspace:"+str(nodes[i].get_meta("weapon"))+":"+str(style_keys[identities[i]]))
+  body_bake_pending=false
  for i in nodes.size():
   var offset: Vector2=OFFSETS[i];var bob=sin(view.orbit_elapsed*TAU/8.0+i)*2.0
   var center: Vector2=view.rendered_position+(offset+Vector2(0,bob))*zoom
@@ -90,3 +97,4 @@ func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
   nodes[i].visible=not disabled.has(identities[i])
   var ring=nodes[i].get_node_or_null("Appearance/UltimateOrbit")
   if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45
+ view.body_baker.guard_resolution(float(int(view.viewport.size.x*view.viewport.scaling_3d_scale))/view.camera.size)
