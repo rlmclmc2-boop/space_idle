@@ -735,7 +735,10 @@ func _refresh_facility_dialog() -> void:
 	var numeric := kind in ["refinery", "equipment"]
 	host.set_ui_value(facility_dialog, "title", str(row.name))
 	host.set_ui_value(facility_title, "text", str(row.name))
-	host.set_ui_value(facility_description, "text", UIText.t("planet.shipyard_ready_hint") if kind=="shipyard" and status=="ready" else UIText.t("planet.shipyard_built_hint") if kind=="shipyard" and built else str(row.des))
+	var description=UIText.t("planet.shipyard_ready_hint") if kind=="shipyard" and status=="ready" else UIText.t("planet.shipyard_built_hint") if kind=="shipyard" and built else str(row.des)
+	if kind=="shipyard" and built and bool(g.planet_progress(id).get("conquered",false)):
+		description=preload("res://scripts/hyperspace_reforge_dialog.gd").retention_receipt_text(g)
+	host.set_ui_value(facility_description,"text",description)
 	host.set_ui_value(facility_icon, "texture", Art.facility(kind))
 	host.set_ui_value(facility_effect_heading, "text", UIText.t("planet.effect.current" if built else "planet.effect.after_build"))
 	if numeric:

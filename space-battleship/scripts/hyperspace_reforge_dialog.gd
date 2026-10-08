@@ -111,7 +111,30 @@ func commit(allow_zero:=false)->void:
   confirm_zero_retention();return
  if not game.reforge_planet(planet_id,selected.duplicate()):
   feedback.text=Text.t("planet.reforge_failed");return
+ var receipt=AcceptDialog.new()
+ receipt.title=Text.t("planet.reforge_completed")
+ receipt.dialog_text=retention_receipt_text(game)
+ var discarded=candidates.size()-selected.size()
+ if discarded>0:receipt.dialog_text+="\n"+Text.t("planet.reforge_discarded_receipt",{"count":str(discarded)})
+ receipt.min_size=Vector2i(520,200);receipt.size=Vector2i(660,270)
+ preload("res://scripts/dialog_presentation.gd").dialog(receipt)
+ receipt.confirmed.connect(receipt.queue_free);receipt.canceled.connect(receipt.queue_free)
+ # The old page is rebuilt after reforge; attach its receipt to the surviving root window.
+ get_tree().root.add_child(receipt)
  queue_free()
+ receipt.call_deferred("popup_centered")
+
+static func retention_receipt_text(g)->String:
+ var sealed:Dictionary=g.profile.hyperspace.inventory.sealed
+ if sealed.is_empty():return Text.t("planet.reforge_no_retained_receipt")
+ var counts:Dictionary={}
+ for id in sealed:
+  var gate=int(sealed[id]);counts[gate]=int(counts.get(gate,0))+1
+ var gates=counts.keys();gates.sort()
+ var lines:PackedStringArray=[]
+ for gate in gates:lines.append(Text.t("planet.reforge_sealed_receipt",{"count":str(counts[gate]),"level":str(gate)}))
+ lines.append(Text.t("planet.reforge_reclaim_path"))
+ return "\n".join(lines)
 
 func confirm_zero_retention()->void:
  if is_instance_valid(zero_confirmation):return

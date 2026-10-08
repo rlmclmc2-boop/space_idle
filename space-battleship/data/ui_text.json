@@ -16689,5 +16689,40 @@
     "params": "level",
     "category": "planet",
     "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_completed",
+    "text": "重铸完成",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_sealed_receipt",
+    "text": "{count}架保留无人机已封存，到本轮第{level}关可领取。",
+    "params": "count,level",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_reclaim_path",
+    "text": "异空间入口开放后，在「无人机」页选中封存机，再点「领取封存机」。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_discarded_receipt",
+    "text": "未选的{count}架无人机已移除。",
+    "params": "count",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_no_retained_receipt",
+    "text": "本轮没有封存的无人机。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
   }
 ]

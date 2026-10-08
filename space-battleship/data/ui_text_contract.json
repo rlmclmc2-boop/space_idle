@@ -8946,6 +8946,26 @@
       "params": [
         "level"
       ]
+    },
+    "planet.reforge_completed": {
+      "params": []
+    },
+    "planet.reforge_sealed_receipt": {
+      "params": [
+        "count",
+        "level"
+      ]
+    },
+    "planet.reforge_reclaim_path": {
+      "params": []
+    },
+    "planet.reforge_discarded_receipt": {
+      "params": [
+        "count"
+      ]
+    },
+    "planet.reforge_no_retained_receipt": {
+      "params": []
     }
   },
   "bindings": {
