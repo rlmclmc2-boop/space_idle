@@ -798,13 +798,13 @@
   },
   {
     "key": "enhance.level",
-    "text": "购买等级 Lv.{level}",
+    "text": "强化等级 Lv.{level}",
     "params": "{level}",
     "category": "enhance"
   },
   {
     "key": "enhance.bonus",
-    "text": "星球附加 +{bonus}  ·  效果等级 {effective}",
+    "text": "星球附加 +{bonus}  ·  生效等级 Lv.{effective}",
     "params": "{bonus},{effective}",
     "category": "enhance"
   },
