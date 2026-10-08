@@ -1,0 +1,16 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+BATCHES 1
+{"draw_calls":274.0,"mode":"baseline-lod0.0","ship_primitives":9432,"threshold":0.0}
+{"draw_calls":264.0,"mode":"batched-lod0.0","ship_primitives":9432,"threshold":0.0}
+{"draw_calls":274.0,"mode":"baseline-lod1.0","ship_primitives":9036,"threshold":1.0}
+{"draw_calls":264.0,"mode":"batched-lod1.0","ship_primitives":9036,"threshold":1.0}
+{"draw_calls":274.0,"mode":"baseline-lod16.0","ship_primitives":3540,"threshold":16.0}
+{"draw_calls":264.0,"mode":"batched-lod16.0","ship_primitives":3540,"threshold":16.0}
+{"draw_calls":274.0,"mode":"baseline-lod64.0","ship_primitives":2692,"threshold":64.0}
+{"draw_calls":264.0,"mode":"batched-lod64.0","ship_primitives":2692,"threshold":64.0}
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

@@ -1,0 +1,210 @@
+{
+  "baseline_source": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "candidate_delta_only": "dfa7d0b7f71313ff954e2207cd2455a048a2f36f",
+  "excluded": "Inherited shader36fe not copied. Only two-file static-batch delta applied to temporary runtime. Background shader absent, normal baseline equipment_card unchanged.",
+  "scope": "Same existing constructed frozen stage34, cache=true, save=false, three laser34/armour34/shield34, three enemies. One Frigate static hull batch, no carrier formation. Not parent full historical34 or natural FPS.",
+  "environment": "Godot4.6.3 Compatibility llvmpipe LP4 :91 window1180x812 scale0.60450822114944 equipment tab0.",
+  "protocol": "Single process ABABAB;119frames after15warm each; originally authored meshes restored plus original Toon material installation for A, originals mesh=null with candidate batch visible for B. State frozen. Screenshots outside timed samples.",
+  "pairs": [
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.73130252180981,
+        "root_gpu": 16.0924706018272,
+        "ship_cpu": 15.6947899105168,
+        "ship_gpu": 16.2707814929866,
+        "wall_ms": 36.5499831932773
+      },
+      "candidate": {
+        "draw_calls": 264.0,
+        "root_cpu": 8.65786557237641,
+        "root_gpu": 16.1173277141667,
+        "ship_cpu": 15.7404621749365,
+        "ship_gpu": 16.2129999609555,
+        "wall_ms": 36.4988823529412
+      },
+      "wall_change_ms_candidate_minus_baseline": -0.05110084033609752,
+      "ship_gpu_change_ms_candidate_minus_baseline": -0.05778153203110037
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.69797478603716,
+        "root_gpu": 16.0504370376843,
+        "ship_cpu": 15.7283949972201,
+        "ship_gpu": 16.2567731232202,
+        "wall_ms": 36.439974789916
+      },
+      "candidate": {
+        "draw_calls": 264.0,
+        "root_cpu": 8.80903363828899,
+        "root_gpu": 16.0939496304809,
+        "ship_cpu": 15.9849076070705,
+        "ship_gpu": 16.5350588389805,
+        "wall_ms": 36.7879075630252
+      },
+      "wall_change_ms_candidate_minus_baseline": 0.3479327731091999,
+      "ship_gpu_change_ms_candidate_minus_baseline": 0.27828571576030114
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 8.5563361544569,
+        "root_gpu": 16.0656218889381,
+        "ship_cpu": 15.5646471376179,
+        "ship_gpu": 16.0432773077187,
+        "wall_ms": 36.0273025210084
+      },
+      "candidate": {
+        "draw_calls": 264.0,
+        "root_cpu": 8.66335292223121,
+        "root_gpu": 16.0481428018137,
+        "ship_cpu": 15.7910756503834,
+        "ship_gpu": 16.3988991905661,
+        "wall_ms": 36.852294117647
+      },
+      "wall_change_ms_candidate_minus_baseline": 0.824991596638597,
+      "ship_gpu_change_ms_candidate_minus_baseline": 0.3556218828474016
+    }
+  ],
+  "finding": "Draw274→264 confirmed; three wall/GPU pairs do not establish net frame benefit. Do not accept as low-FPS repair.",
+  "lod_probe": [
+    {
+      "draw_calls": 274.0,
+      "mode": "baseline-lod0.0",
+      "ship_primitives": 9432,
+      "threshold": 0.0
+    },
+    {
+      "draw_calls": 264.0,
+      "mode": "batched-lod0.0",
+      "ship_primitives": 9432,
+      "threshold": 0.0
+    },
+    {
+      "draw_calls": 274.0,
+      "mode": "baseline-lod1.0",
+      "ship_primitives": 9036,
+      "threshold": 1.0
+    },
+    {
+      "draw_calls": 264.0,
+      "mode": "batched-lod1.0",
+      "ship_primitives": 9036,
+      "threshold": 1.0
+    },
+    {
+      "draw_calls": 274.0,
+      "mode": "baseline-lod16.0",
+      "ship_primitives": 3540,
+      "threshold": 16.0
+    },
+    {
+      "draw_calls": 264.0,
+      "mode": "batched-lod16.0",
+      "ship_primitives": 3540,
+      "threshold": 16.0
+    },
+    {
+      "draw_calls": 274.0,
+      "mode": "baseline-lod64.0",
+      "ship_primitives": 2692,
+      "threshold": 64.0
+    },
+    {
+      "draw_calls": 264.0,
+      "mode": "batched-lod64.0",
+      "ship_primitives": 2692,
+      "threshold": 64.0
+    }
+  ],
+  "lod_scope": "Same Frigate only; threshold0(noLOD),1(default),16,64. These are diagnostic settings, not production quality changes. Primitive counts exactly equal at each threshold:9432/9036/3540/2692.",
+  "pictures": [
+    {
+      "threshold": 0.0,
+      "different_pixels": 72,
+      "bounds_yxyx": [
+        664,
+        675,
+        161,
+        184
+      ],
+      "max_channel_delta": 10,
+      "outside_known_plume_rectangle": [],
+      "local_files": {
+        "baseline-lod0.0.png": "6e39f373f94d7d59abf2fd05308d577aa5a07f8f20c8d9572bf81dd59dd0eba7",
+        "batched-lod0.0.png": "557c5d1809a792fb0326498127f38b077b4922c771aca5d5b2acaf2adf0d97cc"
+      }
+    },
+    {
+      "threshold": 1.0,
+      "different_pixels": 50,
+      "bounds_yxyx": [
+        664,
+        676,
+        161,
+        182
+      ],
+      "max_channel_delta": 9,
+      "outside_known_plume_rectangle": [],
+      "local_files": {
+        "baseline-lod1.0.png": "2504662c956e02e1aa5f49e86d6b97bdf899e80f7f0dac2baef25014e5ac8db5",
+        "batched-lod1.0.png": "55ccbff21303ab56d81140b087b4e0534cb71aa0a2789fb9be9a52381f304e86"
+      }
+    },
+    {
+      "threshold": 16.0,
+      "different_pixels": 33,
+      "bounds_yxyx": [
+        664,
+        673,
+        162,
+        183
+      ],
+      "max_channel_delta": 3,
+      "outside_known_plume_rectangle": [],
+      "local_files": {
+        "baseline-lod16.0.png": "babb295e2c3446a8d51a58e21b8ded393b09b5471e57b52c2690d981f5b10045",
+        "batched-lod16.0.png": "4aefbd62d6105de7987b6e976156245ae93270918a87418a91b880b644b9f826"
+      }
+    },
+    {
+      "threshold": 64.0,
+      "different_pixels": 31,
+      "bounds_yxyx": [
+        654,
+        674,
+        163,
+        187
+      ],
+      "max_channel_delta": 3,
+      "outside_known_plume_rectangle": [
+        {
+          "y": 654,
+          "x": 187,
+          "before": [
+            68,
+            88,
+            99,
+            255
+          ],
+          "after": [
+            68,
+            88,
+            100,
+            255
+          ]
+        }
+      ],
+      "local_files": {
+        "baseline-lod64.0.png": "71d8a73c6f677c20e425e5ba95f41244d20283d6a1a19eaba8b4ef8b81776b36",
+        "batched-lod64.0.png": "8633479662768707f714533345ef35c201248bd0db162ccea5f56d4073f7e7a0"
+      }
+    }
+  ],
+  "picture_finding": "threshold0/1/16 differences confined to known TIME animated plume box. Threshold64 additionally has ONE unexplained outside pixel y654 x187 blue99→100. This residual is disclosed; no masked tolerance/pass or all-shape equivalence claim. Viewed actual batched-lod64 screenshot.",
+  "engine_source": "https://raw.githubusercontent.com/godotengine/godot/4.6/drivers/gles3/rasterizer_scene_gles3.cpp#L1273-L1289",
+  "source_observation": "Engine GLES3 orthographic uses lod_distance1, perspective uses transformed AABB distance. Runtime camera orthographic. This supports only that camera boundary, not arbitrary future perspective rendering.",
+  "invalid_attempts": "First restoring source meshes omitted Toon installation; aborted and excluded. Restart overlapped lingering prior process and common output log; all mixed results excluded and preserved invalid-overlap files. Clean run started only after killing own residual PID and confirming completion. Clean run EXIT0;LOD probe EXIT0.",
+  "production_changes": "None; temporary runtime restored to pre-candidate after probes. No screenshots, saves, caches added to Git. No other micro-optimizations or new progression runs."
+}

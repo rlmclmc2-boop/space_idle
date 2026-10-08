@@ -1,0 +1,9 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+BATCHES 1
+baseline_1 {"draw_calls":274.0,"root_cpu":9.07075625708123,"root_gpu":17.3465461169972,"ship_cpu":18.7480168382661,"ship_gpu":19.348310919369,"wall_ms":41.1825042016807} scale=0.60450822114944 tab=0 window=(1180, 812)
+batched_1 {"draw_calls":264.0,"root_cpu":8.36992438500669,"root_gpu":15.7828739791357,"ship_cpu":15.3036051036931,"ship_gpu":15.6492437074164,"wall_ms":35.5592268907563} scale=0.60450822114944 tab=0 window=(1180, 812)
