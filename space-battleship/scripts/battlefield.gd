@@ -12,6 +12,7 @@ const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
 var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
+const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshader")
 
 @export_group("Toon ship prototype")
 @export_range(0.0,1.0,0.01) var toon_shadow_threshold := 0.60
@@ -697,6 +698,14 @@ func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
 	style=style.duplicate()
 	style.bg_color=color
 	draw_surface.draw_style_box(style,Rect2(rect.position,Vector2(rect.size.x*clampf(ratio,0,1),rect.size.y)))
+
+func create_draw_layers() -> void:
+	super.create_draw_layers()
+	# This override draws only opaque, untextured rectangles. Keep the material
+	# off the legacy main.gd background and all star/route/effect/texture layers.
+	var solid_material := ShaderMaterial.new()
+	solid_material.shader = SOLID_BACKGROUND_SHADER
+	background_layer.material = solid_material
 
 func draw_background()->void:
 	# This static frame shares the equipment palette without covering the playfield.
