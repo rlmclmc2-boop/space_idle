@@ -879,10 +879,11 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if boss_battle and leader:text_at(layout.caption,layout.caption_position,17,BATTLE_CREAM)
 
 func encounter_leader_name(enemy:Dictionary)->String:
-	# Manual hyperspace swaps game.db to its own live encounter registry.
-	# Do not resolve these IDs through the mainline UIText data bindings.
+	# Mainline display bindings must not resolve the manual hyperspace registry's IDs.
 	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
 	var caption:=str(row.get("des","")).strip_edges()
+	if not game.manual_hyperspace.active and not caption.is_empty():
+		caption=UIText.data_text("enemies",str(int(enemy.id)),"des",caption)
 	if not caption.is_empty():return caption
 	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
 		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
