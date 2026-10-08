@@ -202,9 +202,11 @@ func dismantle_preview_text(request_data: Dictionary) -> String:
  var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
  if d.is_empty():return ""
  var quality: String="legendary" if d.legendary else str(d.origin_quality)
- var count: int=int(h().config.dismantle_amounts[quality])
+ var copies: int=int(h().config.dismantle_amounts[quality])
+ # Match Rewards.dismantle's material units; module copies retain their authored count.
+ var material_count: int=copies*int(h().config.get("material_unit_scale",10))
  var route: String=h().config.routes.keys().filter(func(key):return h().config.routes[key].weapon==d.weapon)[0]
- return t("dismantle_preview",{"materials":received_materials_text({str(h().config.routes[route].material):count}),"count":str(count)})
+ return t("dismantle_preview",{"materials":received_materials_text({str(h().config.routes[route].material):material_count}),"count":str(copies)})
 func received_rewards_text(rewards: Dictionary) -> String:
  var lines: Array[String]=[t("dismantle_received_materials",{"materials":received_materials_text(rewards.get("materials",{}))})]
  for key in rewards.get("modules",{}):
