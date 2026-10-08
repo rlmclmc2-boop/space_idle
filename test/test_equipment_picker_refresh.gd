@@ -110,6 +110,8 @@ func run() -> void:
 	choose(panel,"missile")
 	var cards: Dictionary=panel.cards.duplicate()
 	var tabs: int=scene.equipment_tabs.get_instance_id()
+	# Scrolling and preservation checks require an explicitly expanded inspector.
+	if not panel.details_open:panel.toggle_details()
 	panel.detail.slots.grab_focus()
 	await process_frame
 	panel.detail_scroll.scroll_vertical=60
@@ -153,24 +155,43 @@ func run() -> void:
 	choose(panel,"longLaser")
 	scene.game.switch_ship("Frigate")
 	check(panel.items.weapons_7.locked and panel.pending_key==panel.items.weapons_7.key and panel.detail.equip.disabled,"Ship capacity removal invalidates draft safely")
+	for index in range(scene.game.active_slot_count("weapons"),scene.game.module_entries("weapons").size()):
+		var id := "weapons_%d" % index
+		check(panel.items.has(id) and panel.items[id].id==id and panel.items[id].locked and is_same(panel.cards[id],cards[id]),"Each dormant weapon retains its unique locked card: "+id)
+	check(not panel.items.has("drone:invalid"),"Dormant module cards do not use a combat drone placeholder")
 	scene.game.switch_ship("Heavy_Battleship")
+	check(is_same(panel.cards.weapons_7,cards.weapons_7) and not panel.items.weapons_7.locked,"Restoring hull capacity reactivates the same W08 card")
 	panel.select_item("weapons_1")
 	panel.show_inspector()
 	choose(panel,"missile")
+	# Revoke the authoritative progress condition, not only its derived cache.
+	var old_cleared: Array=scene.game.profile.cleared.duplicate()
+	var old_highest: int=scene.game.profile.highestLevel
+	var old_grants: Array=scene.game.profile.grantedUnlocks.duplicate()
+	var missile_unlock: String=scene.game.db.unlock_id("equipment","missile")
+	var missile_row: Dictionary=scene.game.db.data.unlock[missile_unlock]
+	scene.game.profile.grantedUnlocks.erase(missile_unlock)
+	if missile_row.get("mode","cleared")=="reached":scene.game.profile.highestLevel=int(missile_row.level)
+	else:scene.game.profile.cleared.erase(int(missile_row.level))
 	scene.game.profile.unlocked.erase("missile")
+	check(not scene.game.content_unlocked("equipment","missile"),"Fixture truly revokes missile availability")
 	panel.refresh()
 	check(panel.pending_key=="cannon","Unavailable candidate restores equipped choice")
+	scene.game.profile.cleared=old_cleared
+	scene.game.profile.highestLevel=old_highest
+	scene.game.profile.grantedUnlocks=old_grants
 	scene.game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	panel.refresh()
 	panel.detail_frame.hide()
-	panel.grid_scroll.ensure_control_visible(panel.cards.defence_0)
+	panel.grid_scroll.ensure_control_visible(panel.cards.defence_1)
 	await process_frame
 	await process_frame
-	await click(panel.cards.defence_0.name_button,Vector2(20,17))
-	check((panel.cards.defence_0.name_button.get_popup().visible or DisplayServer.get_name()=="headless") and not panel.detail_frame.visible,"Defence title opens inline menu")
-	panel.cards.defence_0.name_button.get_popup().hide()
-	panel.cards.defence_0.name_button.item_selected.emit(panel.cards.defence_0.equipment_options.find(BattleGame.DEFENSE_KEYS[0]))
-	check(scene.game.module_entry("defence",0).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
+	await click(panel.cards.defence_1.name_button,Vector2(20,17))
+	# D01 is fixed armour; exercise the native refit menu on replaceable D02.
+	check((panel.cards.defence_1.name_button.get_popup().visible or DisplayServer.get_name()=="headless") and not panel.detail_frame.visible,"Defence title opens inline menu")
+	panel.cards.defence_1.name_button.get_popup().hide()
+	panel.cards.defence_1.name_button.item_selected.emit(panel.cards.defence_1.equipment_options.find(BattleGame.DEFENSE_KEYS[0]))
+	check(scene.game.module_entry("defence",1).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
 	check(not panel.detail.has("enhancement") and panel.get_action_anchor("enhancement")==null,"Equipment picker and inspector have no enhancement navigation")
 	scene.select_system(4)
 	check(scene.enhancement_panel.visible,"Independent enhancement main page entry remains available")
