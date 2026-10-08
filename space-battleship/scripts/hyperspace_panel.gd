@@ -49,6 +49,7 @@ var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
 var cards: Array[Button]=[]
+var module_manage: Button
 var card_icons: Array[TextureRect]=[]
 var card_titles: Array[Label]=[]
 var card_subtitles: Array[Label]=[]
@@ -224,7 +225,7 @@ func build_inventory(parent: Node) -> void:
  label(detail,t("selected_heading"),25)
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
- equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));button(actions,"module_manage",commands.show_modules)
+ equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
@@ -445,6 +446,7 @@ func protection_flags(id: String) -> String:
   if p.drone_ids.has(id):names.append(t("preset"));break
  return " · ".join(names)
 func refresh_details() -> void:
+ put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
  if section_index==2:
