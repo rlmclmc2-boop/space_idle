@@ -16157,5 +16157,19 @@
     "params": "level,type",
     "category": "equipment",
     "note": "已装备且真实抗性大于零的防御类型；零抗性不标"
+  },
+  {
+    "key": "reactor.upgrade_idle",
+    "text": "尚未分配：升级后仍预留能源，可点均分供能",
+    "params": "",
+    "category": "reactor",
+    "note": "升级按原比例分配新增整数能源，包含闲置能源"
+  },
+  {
+    "key": "reactor.upgrade_shares",
+    "text": "升级保留分配与预留比例；零分配模块仍为零",
+    "params": "",
+    "category": "reactor",
+    "note": "升级按原比例分配新增整数能源，包含闲置能源"
   }
 ]

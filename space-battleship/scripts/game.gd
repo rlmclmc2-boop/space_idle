@@ -1080,8 +1080,15 @@ func upgrade_reactor(amount: int) -> bool:
 		var cost := reactor_upgrade_cost(int(profile.reactorLevel)+offset)
 		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
 		total += cost
+	var old_capacity := reactor_capacity()
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
+	profile.reactorAllocation = preload("res://scripts/reactor_allocation_growth.gd").expand(Array(reactor_modules()),profile.reactorAllocation,old_capacity,reactor_capacity())
+	invalidate_stat_cache()
+	# Growing maxima preserves battle damage; buying power is not a heal.
+	player.armour = N.minimum(player.armour,stat("armour"))
+	player.shield = N.minimum(player.shield,max_shield())
+	for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	resources_changed([str(int(db.config.reactorUraniumId))])
 	save_dirty = true
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
@@ -1132,7 +1139,9 @@ func load_reactor(raw: Dictionary) -> void:
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	for key in reactor_modules():
 		var value = saved.get(key)
-		if reactor_module_unlocked(key) and nonnegative_number(value):profile.reactorAllocation[key] = mini(int(floor(float(value))),maxi(0,reactor_capacity()-reactor_allocated()))
+		if reactor_module_unlocked(key) and nonnegative_number(value):
+			var units: int = value if value is int else int(floor(float(value)))
+			profile.reactorAllocation[key] = mini(units,maxi(0,reactor_capacity()-reactor_allocated()))
 
 func hightech_level(key: String) -> int:
 	return int(profile.get("hightechLevels", {}).get(key, 0))

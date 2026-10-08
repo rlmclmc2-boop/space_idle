@@ -15,6 +15,8 @@ func run() -> void:
 	# Pin this arithmetic fixture; production upgrade pricing may change independently.
 	db.config.reactorUpgradeBase = 100.0
 	db.config.reactorUpgradeGrowth = 1.4
+	db.config.reactorPercentScale = 100.0 # Fixed arithmetic fixture, separate from live config.
+	db.config.reactorEnergyGrowth = 1.2 # Existing level-4 expectation is 100 * 1.2^3 = 172.8.
 	check(not db.data.has("charge"),"Old charge table removed")
 	var game := BattleGame.new(db,false)
 	check(game.profile.reactorLevel == 1 and game.reactor_energy() == 100.0,"Initial level and energy")

@@ -8657,6 +8657,12 @@
         "level",
         "type"
       ]
+    },
+    "reactor.upgrade_idle": {
+      "params": []
+    },
+    "reactor.upgrade_shares": {
+      "params": []
     }
   },
   "bindings": {

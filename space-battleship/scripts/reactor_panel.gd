@@ -27,6 +27,7 @@ var next_label: Label
 var cost_label: Label
 var scroll_hint: Label
 var allocation_label: Label
+var allocation_hint: Label
 var remaining_label: Label
 var total_track: Control
 var upgrade_buttons: Dictionary = {}
@@ -233,6 +234,7 @@ func setup(owner_ui: Node) -> void:
 	button_style(equalize_button,CYAN)
 	equalize_button.pressed.connect(func():host.game.equalize_reactor_allocation();refresh())
 	add_child(equalize_button)
+	allocation_hint = make_label(self,"",Vector2(60,619),520,16,MUTED,25)
 	capacity_label = clipped_readout(self,Vector2(66,653),Vector2(246,65),CYAN)
 	allocation_label = clipped_readout(self,Vector2(74,1088),Vector2(490,38),SKIN.PAPER)
 	remaining_label = clipped_readout(self,Vector2(338,653),Vector2(244,65),INK)
@@ -453,6 +455,8 @@ func refresh() -> void:
 	var game = host.game
 	var capacity: int = game.reactor_capacity()
 	var allocated: int = game.reactor_allocated()
+	if host.ui_state_changed(allocation_hint,[allocated]):
+		host.set_ui_value(allocation_hint,"text",UIText.t("reactor.upgrade_idle" if allocated == 0 else "reactor.upgrade_shares"))
 	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
 	var reactor_enabled: bool = game.reactor_unlocked()
 	var free_ratio: float = game.charge_free_ratio()
@@ -513,7 +517,7 @@ func refresh() -> void:
 		set_readout(controls.energy,UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
 		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
 		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
-		var percent: float = (game.reactor_multiplier(key)-1.0)*float(host.db.config.reactorPercentScale)
+		var percent: float = (game.reactor_multiplier(key)-1.0)*100.0
 		var effect_percent: String = NumberFormat.percentage(percent)
 		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.flow.free",{"energy":energy_text(free_energy),"percent":percent_text(free_ratio*100.0 if enabled else 0.0)}))
 		var effect_key := "reactor.module.%s.effect" % key
