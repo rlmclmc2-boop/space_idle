@@ -1940,8 +1940,13 @@ func start_hyperspace_challenge(route:String)->bool:
 func exit_hyperspace_challenge()->bool:
 	return manual_hyperspace.finish(self,false,"user_exit")
 
-func claim_hyperspace(round_id:int,run_id:int)->bool:
-	return hyperspace.claim(self,round_id,run_id)
+func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
+	if round_id>=0 and run_id>=0:return hyperspace.claim(self,round_id,run_id)
+	var claimed:=false
+	for slot in ["active","idle"]:
+		var receipt:Dictionary=profile.hyperspace[slot]
+		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
+	return claimed
 
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
