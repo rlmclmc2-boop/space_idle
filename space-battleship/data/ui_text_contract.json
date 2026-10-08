@@ -8289,6 +8289,14 @@
       "params": [
         "value"
       ]
+    },
+    "hyperspace.slot_replacement_candidate": {
+      "params": [
+        "slot",
+        "quality",
+        "weapon",
+        "level"
+      ]
     }
   },
   "bindings": {

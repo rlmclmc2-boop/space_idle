@@ -15494,5 +15494,12 @@
     "category": "research",
     "note": "炼铁炉等级0：区分施工与建成作用，不把当前0产量当成未来收益",
     "source": "hightech_presentation.gd"
+  },
+  {
+    "key": "hyperspace.slot_replacement_candidate",
+    "text": "{slot}号槽 · {quality} · {weapon} · 等级{level}",
+    "params": "{slot},{quality},{weapon},{level}",
+    "category": "hyperspace",
+    "note": "替换候选显示槽位、品质和装备，避免同名同等级无人机混淆"
   }
 ]
