@@ -1,0 +1,14 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+CACHE region=[P: (450, 56), S: (730, 703)] image=(1180, 759) rootstretch=[X: (0.604508, 0.0), Y: (0.0, 0.604299), O: (0.0, 0.0)] workspace=[P: (748.0, 96.0), S: (1204.0, 1160.0)] title=[P: (768.0, 108.0), S: (1100.0, 36.0)] tabs=[P: (756.0, 150.0), S: (1193.5, 1050.0)]
+baseline_1 {"draw_calls":274.0,"root_cpu":12.6702604614386,"root_gpu":17.5175630264923,"ship_cpu":16.8098738774532,"ship_gpu":17.2968906915488,"wall_ms":39.146974789916} scale=0.60450822114944 tab=0 window=(1180, 812)
+cached_1 {"draw_calls":194.0,"root_cpu":8.71691599212775,"root_gpu":11.6051596873949,"ship_cpu":16.0906723326996,"ship_gpu":16.5584957860097,"wall_ms":32.426756302521} scale=0.60450822114944 tab=0 window=(1180, 812)
+baseline_2 {"draw_calls":274.0,"root_cpu":10.0589159556798,"root_gpu":17.79571426616,"ship_cpu":17.0924706258694,"ship_gpu":17.6373865624436,"wall_ms":40.6501932773109} scale=0.60450822114944 tab=0 window=(1180, 812)
+cached_2 {"draw_calls":194.0,"root_cpu":9.11685716404634,"root_gpu":12.4187478939024,"ship_cpu":16.6040083540588,"ship_gpu":17.2377647512099,"wall_ms":33.6899327731092} scale=0.60450822114944 tab=0 window=(1180, 812)
+baseline_3 {"draw_calls":274.0,"root_cpu":9.44835294194582,"root_gpu":16.8506890545372,"ship_cpu":16.8352521287293,"ship_gpu":17.4174285295631,"wall_ms":38.7507226890756} scale=0.60450822114944 tab=0 window=(1180, 812)
+cached_3 {"draw_calls":194.0,"root_cpu":8.433521046358,"root_gpu":11.4438738943148,"ship_cpu":16.0191008623909,"ship_gpu":16.4716218259154,"wall_ms":31.9256134453781} scale=0.60450822114944 tab=0 window=(1180, 812)
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

@@ -1,0 +1,108 @@
+{
+  "baseline_source": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "scope": "Original root/UI diagnosis, static-workspace upper bound only. Existing constructed frozen stage34/cache=true/save=false, three laser34/armour34/shield34,three enemies, Frigate. Not parent full historical34 or natural performance acceptance.",
+  "environment": "Godot4.6.3 Compatibility llvmpipe LP4 :91 window1180x812 rootimage1180x759 ship3Dscale0.60450822114944. Baseline rootstretchX0.604508,Y0.604299.",
+  "implementation": "Capture actual root workspace frame pixel rect outward padded2px,region450,56,730,703. One ImageTexture/TextureRect at physical pixel position withCanvasLayer inverse rootstretch, nearest filter. Hide whole equipment_tabs plusworkspace_frame/title, not current child. Original game state not paused or altered by cache operation. All measured phase tab logsremain0.",
+  "sampling": "Single-process ABABAB,119frames after15warm perphase; capture/readback/cache creation outside measured samples. Initial screenshot readback occurs before firstphase with15warm afterwards; subsequent screenshots afterphase with15warm before next.",
+  "pairs": [
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 12.6702604614386,
+        "root_gpu": 17.5175630264923,
+        "ship_cpu": 16.8098738774532,
+        "ship_gpu": 17.2968906915488,
+        "wall_ms": 39.146974789916
+      },
+      "cached": {
+        "draw_calls": 194.0,
+        "root_cpu": 8.71691599212775,
+        "root_gpu": 11.6051596873949,
+        "ship_cpu": 16.0906723326996,
+        "ship_gpu": 16.5584957860097,
+        "wall_ms": 32.426756302521
+      },
+      "wall_reduction_ms": 6.720218487395002,
+      "root_gpu_reduction_ms": 5.9124033390974,
+      "ship_gpu_reduction_ms": 0.7383949055390993
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 10.0589159556798,
+        "root_gpu": 17.79571426616,
+        "ship_cpu": 17.0924706258694,
+        "ship_gpu": 17.6373865624436,
+        "wall_ms": 40.6501932773109
+      },
+      "cached": {
+        "draw_calls": 194.0,
+        "root_cpu": 9.11685716404634,
+        "root_gpu": 12.4187478939024,
+        "ship_cpu": 16.6040083540588,
+        "ship_gpu": 17.2377647512099,
+        "wall_ms": 33.6899327731092
+      },
+      "wall_reduction_ms": 6.960260504201699,
+      "root_gpu_reduction_ms": 5.3769663722576,
+      "ship_gpu_reduction_ms": 0.3996218112336969
+    },
+    {
+      "baseline": {
+        "draw_calls": 274.0,
+        "root_cpu": 9.44835294194582,
+        "root_gpu": 16.8506890545372,
+        "ship_cpu": 16.8352521287293,
+        "ship_gpu": 17.4174285295631,
+        "wall_ms": 38.7507226890756
+      },
+      "cached": {
+        "draw_calls": 194.0,
+        "root_cpu": 8.433521046358,
+        "root_gpu": 11.4438738943148,
+        "ship_cpu": 16.0191008623909,
+        "ship_gpu": 16.4716218259154,
+        "wall_ms": 31.9256134453781
+      },
+      "wall_reduction_ms": 6.825109243697501,
+      "root_gpu_reduction_ms": 5.406815160222399,
+      "ship_gpu_reduction_ms": 0.9458067036477011
+    }
+  ],
+  "median_wall_reduction_ms": 6.825109243697501,
+  "median_root_gpu_reduction_ms": 5.406815160222399,
+  "draw_calls": [
+    274,
+    194
+  ],
+  "finding": "Clear static-render upper bound: wall6.72/6.96/6.83ms,rootGPU5.91/5.38/5.41ms lower. ShipGPUalso0.74/0.40/0.95ms lower, so do not assign entirewallgain causallytoUI. Worth parent originalAstra implementation evaluation, not accepted whole-game improvement.",
+  "picture": {
+    "workspace_region_different_pixels": 0,
+    "full_image_different_pixels": 66,
+    "bounds_yxyx": [
+      664,
+      676,
+      161,
+      183
+    ],
+    "max_channel_delta": 17,
+    "interpretation": "Workspace exact byte-for-byte; all66fullimage differingpixels confined toTIME-animated engine plume. Viewed actual workspace-after screenshot.",
+    "local_files": {
+      "workspace-before.png": {
+        "path": "/workspace/bug-qa/performance-20261008/workspace-before.png",
+        "sha256": "1ba773f8aaae1c7393554a0ec752f9b8a50aec2e1dd888f2c09109ed7967fe35"
+      },
+      "workspace-after.png": {
+        "path": "/workspace/bug-qa/performance-20261008/workspace-after.png",
+        "sha256": "c0f49a4c66a54fa9c38040c6d1d317f60ceebfef291dd62bbe0168d67c4006ef"
+      },
+      "workspace-snapshot.png": {
+        "path": "/workspace/bug-qa/performance-20261008/workspace-snapshot.png",
+        "sha256": "45278b6ae81348cb4351149edffa21b5aeaf7c68e2dc97146a55e28ddc38e0f0"
+      }
+    }
+  },
+  "limitations": "No dynamicUI/input acceptance. Hidingoriginalcontrols makes them noninteractive; the diagnostic does not implement forwarding,focus,hover,tooltips,popup/floating surfaces,refresh,invalidation,resizes,page switching or accessibility. No snapshot refresh/upload cost measured. Original scene-process frozen is preexisting fixture, not changed to improve cache comparison. Realgame state/timers must remain active in production.",
+  "handoff": "Original Astra only if parent chooses: legal dirty/invalidation ownership and input handling required. Do not copy hide-original diagnostic into production as an interactive solution; same-full-save and normal-speed verification byparent/BUG still required.",
+  "production_changes": "None. No ROI,background shader orstatic batching candidate present. No screenshots/cache/saves inGit; PNGs localonly withhashes. No newprogression/system/workthread."
+}
