@@ -1,0 +1,698 @@
+{
+  "production_changes": false,
+  "decision": "Defer loadout micro-optimization. Highest measured render component is active 3D ship viewport; static workspace is next paused component. Ask original Astra through parent for fixed-view pre-render asset design preserving separate dynamic turret/plume/shield/carrier effects.",
+  "environment": {
+    "godot": "4.6.3",
+    "renderer": "Compatibility Mesa llvmpipe LLVM19.1.7 256bits",
+    "LP_NUM_THREADS": 4,
+    "display": ":91",
+    "window": [
+      1180,
+      812
+    ],
+    "cache": true
+  },
+  "source": {
+    "branch": "work/hyperspace-layer-core-20261008",
+    "core": "31fe8c9ea1c9d30cf021978fddbaeed3f797b04b",
+    "UI_base": "be430bd2",
+    "peer_crew_planet": "e3cdefda301d1636418b7695fab30aba463da2c2",
+    "config": "cd680ec02cd0d058c4104db083d37bc57ad62f22",
+    "parent_latest_1f7edc5d_not_available": true
+  },
+  "runtime_hashes": {
+    "main.gd": "dce79cc7aa5991329cb5da80322ff8ab0a64cb797adf2e6d7add7af4874bff87",
+    "battlefield.gd": "b29adfe3a1ce03530300759894971dee56c7e7cf67d71121fc2112215c5cf940",
+    "presented_ship_view.gd": "7f58dbdaf24bdd5e29044712358824d7009074c05c1ecc1cfea30b2a6bfc4173",
+    "game.gd": "c36a4d7d346acfb006473514976e6a2ac1f63a50377e226dfdadb29f3edd888f"
+  },
+  "limits": [
+    "Synthetic level34 3 lasers+shield diagnostic with 1e100 actor/player HP to prevent scenario transition; no gameplay balance change.",
+    "Live X1 uses normal engine delta, so faster ablations execute fewer fixed ticks per frame and different simulation duration. Nested timing fields overlap; never add them.",
+    "Full save + actor-graph fingerprints differ between reconstructed scenes despite identical visible actor/loadout fixture and seeded RNG in second run. Thus live ablation differences are exploratory, NOT same-complete-save optimization benchmarks. No 10x/100x or net-gain claim.",
+    "Paused viewport measured GPU=0; UPDATE_ONCE enum1 in game-frame sampling does not prove repeated rendering. Disabled viewports retain stale measured render times in some prior probes.",
+    "Frozen old viewport-disable probe is the retained direct isolated-render evidence: same scene with gameplay processing disabled, still not real X1/pause.",
+    "all_render_off is removal of all visuals; its ~1.5ms floor does not preserve output and is not a production optimization.",
+    "No screenshots committed or player saves touched. Images remain local and were visually inspected."
+  ],
+  "screenshots": {
+    "/workspace/bug-qa/performance-20261008/x1-pause-false.png": "af180874d918803a692685b226a30a41923c81d0a2e6d431da09cd57af2c0290",
+    "/workspace/bug-qa/performance-20261008/x1-pause-true.png": "4090d3fc73ffc70626505e4c9f139f922a307895b20dcfee8033a0d091cc1fb1"
+  },
+  "old_summary": {
+    "root-components": [
+      {
+        "mode": "baseline_1",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.48026887709353,
+          "root_gpu": 15.9426218241203,
+          "ship_cpu": 15.8224874304122,
+          "ship_gpu": 16.3559159190715,
+          "wall_ms": 36.5017142857143
+        }
+      },
+      {
+        "mode": "background_hidden",
+        "mean": {
+          "draw_calls": 273.0,
+          "root_cpu": 4.71655461768142,
+          "root_gpu": 12.0095714761429,
+          "ship_cpu": 15.6480083705998,
+          "ship_gpu": 16.1566302756301,
+          "wall_ms": 32.3103445378151
+        }
+      },
+      {
+        "mode": "baseline_2",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.31183195514839,
+          "root_gpu": 15.4119579411354,
+          "ship_cpu": 15.4856385623707,
+          "ship_gpu": 16.0044957810089,
+          "wall_ms": 35.7182100840336
+        }
+      },
+      {
+        "mode": "stars_hidden",
+        "mean": {
+          "draw_calls": 273.0,
+          "root_cpu": 7.61770589011056,
+          "root_gpu": 14.5293865844983,
+          "ship_cpu": 15.2065630279669,
+          "ship_gpu": 15.6552436572163,
+          "wall_ms": 33.9614369747899
+        }
+      },
+      {
+        "mode": "workspace_hidden_same_tab",
+        "mean": {
+          "draw_calls": 195.0,
+          "root_cpu": 8.28285715760303,
+          "root_gpu": 12.2920587764067,
+          "ship_cpu": 16.5373529145698,
+          "ship_gpu": 17.0546638665079,
+          "wall_ms": 33.7365378151261
+        }
+      },
+      {
+        "mode": "baseline_3",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 7.88051259417494,
+          "root_gpu": 15.0084370204381,
+          "ship_cpu": 14.9163277089095,
+          "ship_gpu": 15.3742688844184,
+          "wall_ms": 34.4414201680672
+        }
+      }
+    ],
+    "render-boundary": [
+      {
+        "mode": "baseline_1",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.25595797610884,
+          "root_gpu": 15.2546890563324,
+          "ship_cpu": 14.8056806596387,
+          "ship_gpu": 15.3892436869004,
+          "wall_ms": 34.4832773109244
+        }
+      },
+      {
+        "mode": "equipment_hidden",
+        "mean": {
+          "draw_calls": 373.0,
+          "root_cpu": 9.84037816825033,
+          "root_gpu": 19.9842016556684,
+          "ship_cpu": 16.0207310524307,
+          "ship_gpu": 16.595159690921,
+          "wall_ms": 41.3876386554622
+        }
+      },
+      {
+        "mode": "baseline_2",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 9.13023530334986,
+          "root_gpu": 16.7337142960364,
+          "ship_cpu": 16.6635546403773,
+          "ship_gpu": 17.3094537879239,
+          "wall_ms": 38.2815042016806
+        }
+      },
+      {
+        "mode": "composite_hidden_gpu_active",
+        "mean": {
+          "draw_calls": 273.0,
+          "root_cpu": 3.40161345185352,
+          "root_gpu": 14.8068067726969,
+          "ship_cpu": 16.0112184797015,
+          "ship_gpu": 16.4026470745311,
+          "wall_ms": 35.0760840336135
+        }
+      },
+      {
+        "mode": "ship_gpu_disabled_composite_visible",
+        "mean": {
+          "draw_calls": 219.0,
+          "root_cpu": 2.92636974118337,
+          "root_gpu": 14.6166806661782,
+          "ship_cpu": 16.5779991149902,
+          "ship_gpu": 16.5219993591309,
+          "wall_ms": 18.7311848739496
+        }
+      },
+      {
+        "mode": "baseline_3",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 7.54683194240602,
+          "root_gpu": 15.5810168049917,
+          "ship_cpu": 15.4505042228378,
+          "ship_gpu": 15.4558235136401,
+          "wall_ms": 34.7465462184874
+        }
+      }
+    ],
+    "workspace-cache": [
+      {
+        "mode": "baseline_1",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 12.6702604614386,
+          "root_gpu": 17.5175630264923,
+          "ship_cpu": 16.8098738774532,
+          "ship_gpu": 17.2968906915488,
+          "wall_ms": 39.146974789916
+        }
+      },
+      {
+        "mode": "cached_1",
+        "mean": {
+          "draw_calls": 194.0,
+          "root_cpu": 8.71691599212775,
+          "root_gpu": 11.6051596873949,
+          "ship_cpu": 16.0906723326996,
+          "ship_gpu": 16.5584957860097,
+          "wall_ms": 32.426756302521
+        }
+      },
+      {
+        "mode": "baseline_2",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 10.0589159556798,
+          "root_gpu": 17.79571426616,
+          "ship_cpu": 17.0924706258694,
+          "ship_gpu": 17.6373865624436,
+          "wall_ms": 40.6501932773109
+        }
+      },
+      {
+        "mode": "cached_2",
+        "mean": {
+          "draw_calls": 194.0,
+          "root_cpu": 9.11685716404634,
+          "root_gpu": 12.4187478939024,
+          "ship_cpu": 16.6040083540588,
+          "ship_gpu": 17.2377647512099,
+          "wall_ms": 33.6899327731092
+        }
+      },
+      {
+        "mode": "baseline_3",
+        "mean": {
+          "draw_calls": 274.0,
+          "root_cpu": 9.44835294194582,
+          "root_gpu": 16.8506890545372,
+          "ship_cpu": 16.8352521287293,
+          "ship_gpu": 17.4174285295631,
+          "wall_ms": 38.7507226890756
+        }
+      },
+      {
+        "mode": "cached_3",
+        "mean": {
+          "draw_calls": 194.0,
+          "root_cpu": 8.433521046358,
+          "root_gpu": 11.4438738943148,
+          "ship_cpu": 16.0191008623909,
+          "ship_gpu": 16.4716218259154,
+          "wall_ms": 31.9256134453781
+        }
+      }
+    ]
+  },
+  "new_summary": [
+    {
+      "paused": false,
+      "mode": "baseline",
+      "mean": {
+        "advance_total_us": 4760.82608695652,
+        "cards_us": 559.173913043478,
+        "clamped_dt": 0.048293038647343,
+        "draw_calls": 286.086956521739,
+        "draw_layer_refresh_us": 218.04347826087,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 177.826086956522,
+        "enemy_render_position_calls": 9.26086956521739,
+        "enemy_render_position_us_nested": 1839.60869565217,
+        "engine_delta": 0.048293038647343,
+        "logical_pose_us": 1976.78260869565,
+        "navigation_us": 615.304347826087,
+        "particles": 0.0,
+        "player_art_scale_calls": 54.8260869565217,
+        "player_art_scale_us_nested": 168.347826086957,
+        "process_us": 7031.08695652174,
+        "projectiles": 5.34782608695652,
+        "root_gpu": 15.7120000175808,
+        "ship_gpu": 19.5467825350554,
+        "ship_update_mode": 4.0,
+        "sim_seconds": 0.0485507246376812,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 2.91304347826087,
+        "targets_calls": 0.260869565217391,
+        "targets_us_nested": 5.08695652173913,
+        "tick_us": 2766.78260869565,
+        "turrets_us_nested": 889.95652173913,
+        "wall_ms": 48.3431739130435,
+        "weapon_entries_calls": 67.6086956521739,
+        "weapon_entries_us_nested": 197.521739130435
+      },
+      "wall_seconds": 1.368576
+    },
+    {
+      "paused": false,
+      "mode": "logic_off",
+      "mean": {
+        "advance_total_us": 0.652173913043478,
+        "cards_us": 551.652173913044,
+        "clamped_dt": 0.041739558629776,
+        "draw_calls": 274.0,
+        "draw_layer_refresh_us": 303.173913043478,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 38.7826086956522,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 401.608695652174,
+        "engine_delta": 0.041739558629776,
+        "navigation_us": 522.347826086957,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 41.304347826087,
+        "process_us": 2394.26086956522,
+        "projectiles": 0.0,
+        "root_gpu": 14.8877825529679,
+        "ship_gpu": 17.535521838976,
+        "ship_update_mode": 4.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 41.1719130434783,
+        "weapon_entries_calls": 2.0,
+        "weapon_entries_us_nested": 27.2173913043478
+      },
+      "wall_seconds": 1.148827
+    },
+    {
+      "paused": false,
+      "mode": "battle_draw_off",
+      "mean": {
+        "advance_total_us": 3804.82608695652,
+        "cards_us": 514.695652173913,
+        "clamped_dt": 0.0406465362318841,
+        "draw_calls": 200.913043478261,
+        "draw_layer_refresh_us": 229.434782608696,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 164.782608695652,
+        "enemy_render_position_calls": 8.30434782608696,
+        "enemy_render_position_us_nested": 1418.13043478261,
+        "engine_delta": 0.0406465362318841,
+        "logical_pose_us": 1502.86956521739,
+        "navigation_us": 506.521739130435,
+        "particles": 0.0,
+        "player_art_scale_calls": 49.7391304347826,
+        "player_art_scale_us_nested": 153.130434782609,
+        "process_us": 5786.82608695652,
+        "projectiles": 4.56521739130435,
+        "root_gpu": 13.5121738599694,
+        "ship_gpu": 17.913999930672,
+        "ship_update_mode": 4.0,
+        "sim_seconds": 0.0405797101449275,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 2.43478260869565,
+        "targets_calls": 0.260869565217391,
+        "targets_us_nested": 5.26086956521739,
+        "tick_us": 2287.39130434783,
+        "turrets_us_nested": 674.434782608696,
+        "wall_ms": 40.5953913043478,
+        "weapon_entries_calls": 57.5652173913044,
+        "weapon_entries_us_nested": 163.0
+      },
+      "wall_seconds": 1.151326
+    },
+    {
+      "paused": false,
+      "mode": "workspace_off",
+      "mean": {
+        "advance_total_us": 3435.04347826087,
+        "cards_us": 3.21739130434783,
+        "clamped_dt": 0.0377679468599034,
+        "draw_calls": 202.565217391304,
+        "draw_layer_refresh_us": 207.826086956522,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 138.826086956522,
+        "enemy_render_position_calls": 6.30434782608696,
+        "enemy_render_position_us_nested": 1316.5652173913,
+        "engine_delta": 0.0377679468599034,
+        "logical_pose_us": 1511.08695652174,
+        "navigation_us": 598.347826086957,
+        "particles": 0.0,
+        "player_art_scale_calls": 42.4347826086956,
+        "player_art_scale_us_nested": 121.608695652174,
+        "process_us": 4968.30434782609,
+        "projectiles": 4.17391304347826,
+        "root_gpu": 10.3307391664256,
+        "ship_gpu": 17.0028696060181,
+        "ship_update_mode": 4.0,
+        "sim_seconds": 0.0376811594202899,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 2.26086956521739,
+        "targets_calls": 0.260869565217391,
+        "targets_us_nested": 4.91304347826087,
+        "tick_us": 1910.5652173913,
+        "turrets_us_nested": 612.478260869565,
+        "wall_ms": 37.277,
+        "weapon_entries_calls": 53.6521739130435,
+        "weapon_entries_us_nested": 134.913043478261
+      },
+      "wall_seconds": 1.053491
+    },
+    {
+      "paused": false,
+      "mode": "ship_gpu_off",
+      "mean": {
+        "advance_total_us": 2362.17391304348,
+        "cards_us": 471.652173913043,
+        "clamped_dt": 0.0235619025032938,
+        "draw_calls": 223.086956521739,
+        "draw_layer_refresh_us": 247.260869565217,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 114.95652173913,
+        "enemy_render_position_calls": 4.17391304347826,
+        "enemy_render_position_us_nested": 1020.39130434783,
+        "engine_delta": 0.0235619025032938,
+        "logical_pose_us": 1145.17391304348,
+        "navigation_us": 495.130434782609,
+        "particles": 0.0,
+        "player_art_scale_calls": 31.0869565217391,
+        "player_art_scale_us_nested": 96.9130434782609,
+        "process_us": 4300.13043478261,
+        "projectiles": 1.82608695652174,
+        "root_gpu": 13.4463913129724,
+        "ship_gpu": 16.2759990692139,
+        "ship_update_mode": 0.0,
+        "sim_seconds": 0.0231884057971015,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 1.39130434782609,
+        "targets_calls": 0.130434782608696,
+        "targets_us_nested": 2.8695652173913,
+        "tick_us": 1204.26086956522,
+        "turrets_us_nested": 449.782608695652,
+        "wall_ms": 24.2519565217391,
+        "weapon_entries_calls": 33.4347826086957,
+        "weapon_entries_us_nested": 98.695652173913
+      },
+      "wall_seconds": 0.678079
+    },
+    {
+      "paused": false,
+      "mode": "all_render_off",
+      "mean": {
+        "advance_total_us": 213.434782608696,
+        "cards_us": 271.0,
+        "clamped_dt": 0.00306140085668931,
+        "draw_calls": 274.0,
+        "draw_layer_refresh_us": 144.695652173913,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 38.4347826086956,
+        "enemy_render_position_calls": 1.34782608695652,
+        "enemy_render_position_us_nested": 299.304347826087,
+        "engine_delta": 0.00306140085668931,
+        "logical_pose_us": 105.913043478261,
+        "navigation_us": 400.782608695652,
+        "particles": 0.0,
+        "player_art_scale_calls": 10.6086956521739,
+        "player_art_scale_us_nested": 29.3913043478261,
+        "process_us": 1498.34782608696,
+        "projectiles": 0.0,
+        "root_gpu": 16.1590003967285,
+        "ship_gpu": 18.2119998931885,
+        "ship_update_mode": 0.0,
+        "sim_seconds": 0.00289855072463768,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.173913043478261,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 105.478260869565,
+        "turrets_us_nested": 51.6086956521739,
+        "wall_ms": 3.05965217391304,
+        "weapon_entries_calls": 5.65217391304348,
+        "weapon_entries_us_nested": 15.5217391304348
+      },
+      "wall_seconds": 0.094208
+    },
+    {
+      "paused": true,
+      "mode": "baseline",
+      "mean": {
+        "cards_us": 529.217391304348,
+        "clamped_dt": 0.0224907391304348,
+        "draw_calls": 219.0,
+        "draw_layer_refresh_us": 307.217391304348,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 40.4347826086957,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 378.304347826087,
+        "engine_delta": 0.0224907391304348,
+        "navigation_us": 551.04347826087,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 41.3478260869565,
+        "process_us": 2145.5652173913,
+        "projectiles": 0.0,
+        "root_gpu": 14.5125217437744,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 1.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 23.0245652173913,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 25.3478260869565
+      },
+      "wall_seconds": 0.638089
+    },
+    {
+      "paused": true,
+      "mode": "logic_off",
+      "mean": {
+        "cards_us": 547.434782608696,
+        "clamped_dt": 0.0202898550724638,
+        "draw_calls": 219.0,
+        "draw_layer_refresh_us": 496.739130434783,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 43.1304347826087,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 510.434782608696,
+        "engine_delta": 0.0202898550724638,
+        "navigation_us": 546.869565217391,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 54.7391304347826,
+        "process_us": 2594.73913043478,
+        "projectiles": 0.0,
+        "root_gpu": 13.8303913033527,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 1.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 20.6812608695652,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 21.9565217391304
+      },
+      "wall_seconds": 0.608673
+    },
+    {
+      "paused": true,
+      "mode": "battle_draw_off",
+      "mean": {
+        "cards_us": 792.434782608696,
+        "clamped_dt": 0.0227690579710145,
+        "draw_calls": 146.0,
+        "draw_layer_refresh_us": 394.95652173913,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 41.7826086956522,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 412.782608695652,
+        "engine_delta": 0.0227690579710145,
+        "navigation_us": 638.478260869565,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 100.173913043478,
+        "process_us": 2809.91304347826,
+        "projectiles": 0.0,
+        "root_gpu": 14.0376086857008,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 1.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 22.8856521739131,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 26.1304347826087
+      },
+      "wall_seconds": 0.638404
+    },
+    {
+      "paused": true,
+      "mode": "workspace_off",
+      "mean": {
+        "cards_us": 4.21739130434783,
+        "clamped_dt": 0.0160766038647343,
+        "draw_calls": 140.0,
+        "draw_layer_refresh_us": 340.434782608696,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 38.7391304347826,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 371.565217391304,
+        "engine_delta": 0.0160766038647343,
+        "navigation_us": 731.04347826087,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 48.9130434782609,
+        "process_us": 1842.13043478261,
+        "projectiles": 0.0,
+        "root_gpu": 9.19808698737103,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 1.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 16.2579565217391,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 20.6521739130435
+      },
+      "wall_seconds": 0.45233
+    },
+    {
+      "paused": true,
+      "mode": "ship_gpu_off",
+      "mean": {
+        "cards_us": 549.173913043478,
+        "clamped_dt": 0.019687038647343,
+        "draw_calls": 219.0,
+        "draw_layer_refresh_us": 312.739130434783,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 50.9130434782609,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 417.695652173913,
+        "engine_delta": 0.019687038647343,
+        "navigation_us": 582.869565217391,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 91.9130434782608,
+        "process_us": 2335.65217391304,
+        "projectiles": 0.0,
+        "root_gpu": 13.8816087142281,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 0.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 20.3631304347826,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 22.0869565217391
+      },
+      "wall_seconds": 0.568829
+    },
+    {
+      "paused": true,
+      "mode": "all_render_off",
+      "mean": {
+        "cards_us": 269.608695652174,
+        "clamped_dt": 0.00157024637681159,
+        "draw_calls": 219.0,
+        "draw_layer_refresh_us": 188.913043478261,
+        "enemies": 3.0,
+        "enemy_pose_us_nested": 32.2173913043478,
+        "enemy_render_position_calls": 1.0,
+        "enemy_render_position_us_nested": 255.739130434783,
+        "engine_delta": 0.00157024637681159,
+        "navigation_us": 541.173913043478,
+        "particles": 0.0,
+        "player_art_scale_calls": 8.0,
+        "player_art_scale_us_nested": 31.3478260869565,
+        "process_us": 1406.73913043478,
+        "projectiles": 0.0,
+        "root_gpu": 13.331000328064,
+        "ship_gpu": 0.0,
+        "ship_update_mode": 0.0,
+        "sim_seconds": 0.0,
+        "speed": 1.0,
+        "stage": 34.0,
+        "state": 3.0,
+        "steps": 0.0,
+        "targets_calls": 0.0,
+        "targets_us_nested": 0.0,
+        "tick_us": 0.0,
+        "wall_ms": 1.63495652173913,
+        "weapon_entries_calls": 1.0,
+        "weapon_entries_us_nested": 4.60869565217391
+      },
+      "wall_seconds": 0.047552
+    }
+  ]
+}
