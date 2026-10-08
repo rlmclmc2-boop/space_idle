@@ -189,7 +189,7 @@ func build_exploration(parent: Node) -> void:
  reward_feedback.build(exploration_receipt_area)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
- drone_locked=label(parent,t("first_win"),24)
+ drone_locked=label(parent,t("layer_drone_locked"),24)
  inventory_box=box(parent);inventory_box.size_flags_vertical=Control.SIZE_EXPAND_FILL
  equipment_ui.build(inventory_box)
  var split=row(inventory_box);split.size_flags_vertical=Control.SIZE_EXPAND_FILL

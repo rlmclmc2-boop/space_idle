@@ -15587,5 +15587,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "核心 max_layer 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_drone_locked",
+    "text": "到「探索」选一条路线，点「挑战第 1 层」。胜利后回来查看并装备无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未解锁无人机页的实际挑战入口，不使用旧排队提示"
   }
 ]

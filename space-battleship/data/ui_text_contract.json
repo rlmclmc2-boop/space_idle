@@ -8351,6 +8351,9 @@
     },
     "hyperspace.layer_reason_max_layer": {
       "params": []
+    },
+    "hyperspace.layer_drone_locked": {
+      "params": []
     }
   },
   "bindings": {
