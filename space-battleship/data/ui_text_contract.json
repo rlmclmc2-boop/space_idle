@@ -8435,6 +8435,16 @@
     },
     "hyperspace.layer_route_pending": {
       "params": []
+    },
+    "hyperspace.total_module_bonus": {
+      "params": [
+        "module",
+        "effects",
+        "bonus"
+      ]
+    },
+    "hyperspace.totals_empty": {
+      "params": []
     }
   },
   "bindings": {

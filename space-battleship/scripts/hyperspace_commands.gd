@@ -353,25 +353,32 @@ func show_collection() -> void:
 
 func show_totals() -> void:
  if totals_dialog==null:
-  totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);totals_label=dialog_label(sc,"",21)
+  totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);sc.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;totals_label=dialog_label(sc,"",21,body.custom_minimum_size.x)
  refresh_totals();totals_dialog.popup_centered(Vector2i(740,510))
 func refresh_totals() -> void:
  if totals_label==null:return
- var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[t("totals_authority")]
+ var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[]
  for key in ["damage","critical_chance","critical_damage","repeat_chance","attack_speed","defence","armour","shield"]:
   var value=float(totals[key]);var additive=value if key in ["critical_chance","repeat_chance"] else value-1.0
-  lines.append(t("total_"+key)+": "+t("percent",{"value":"%.1f"%(additive*100.0)}))
- lines.append(t("total_chain_count")+": "+t("times",{"value":str(int(totals.chain_count))}))
- for weapon in totals.weapon_damage:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%.1f"%((float(totals.weapon_damage[weapon])-1.0)*100.0)}))
- lines.append(t("total_hangings"))
- for key in totals.hangings:lines.append(panel.hanging_name(key)+": "+t("percent",{"value":"%.1f"%(float(totals.hangings[key])*100.0)}))
- if totals.hangings.is_empty():lines.append(t("no_hangings"))
- lines.append(t("total_legendary"))
+  if additive==0.0:continue
+  lines.append(t("total_"+key)+": "+t("percent",{"value":"%+.1f"%(additive*100.0)}))
+ if int(totals.chain_count)!=0:lines.append(t("total_chain_count")+": "+t("times",{"value":"%+d"%int(totals.chain_count)}))
+ for weapon in totals.weapon_damage:
+  var bonus=float(totals.weapon_damage[weapon])-1.0
+  if bonus!=0.0:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%+.1f"%(bonus*100.0)}))
+ for key in totals.hangings:
+  var bonus=float(totals.hangings[key])
+  if bonus==0.0:continue
+  var effects:Array[String]=[]
+  for effect in h().config.hanging_modules[key].effects:effects.append(t("module_effect."+str(effect)))
+  lines.append(t("total_module_bonus",{"module":panel.hanging_name(str(key)),"effects":"、".join(effects),"bonus":t("percent",{"value":"%+.1f"%(bonus*100.0)})}))
  for key in totals.legendary:
+  # An active legendary effect can work through constants even without nonzero random parameters.
   lines.append(panel.effect_name(key))
-  for parameter in totals.legendary[key].parameters:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(totals.legendary[key].parameters[parameter])*100.0)}))
- if totals.legendary.is_empty():lines.append(t("no_active_legendary"))
- totals_label.text="\n".join(lines)
+  for parameter in totals.legendary[key].parameters:
+   var value=float(totals.legendary[key].parameters[parameter])
+   if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(value*100.0)}))
+ panel.put(totals_label,"text","\n".join(lines) if not lines.is_empty() else t("totals_empty"))
 
 func show_guide() -> void:
  if not bool(game().profile.hyperspace.unlocked_drones):return

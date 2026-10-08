@@ -14208,7 +14208,7 @@
   },
   {
     "key": "hyperspace.totals_authority",
-    "text": "当前装备总加成（领域投影）",
+    "text": "当前装备总加成",
     "params": "",
     "category": "hyperspace"
   },
@@ -14286,7 +14286,7 @@
   },
   {
     "key": "hyperspace.total_legendary",
-    "text": "生效传说效果（领域择取）",
+    "text": "生效传说效果",
     "params": "",
     "category": "hyperspace"
   },
@@ -15336,7 +15336,7 @@
   },
   {
     "key": "hyperspace.module_effect.gem_income",
-    "text": "宝石碎片产出",
+    "text": "强化碎片产出（掉落与熔炼）",
     "params": "",
     "category": "hyperspace"
   },
@@ -15762,5 +15762,19 @@
     "params": "",
     "category": "hyperspace",
     "note": "后台待领奖励所在路线的卡片标记"
+  },
+  {
+    "key": "hyperspace.total_module_bonus",
+    "text": "{module} · {effects} {bonus}",
+    "params": "{module},{effects},{bonus}",
+    "category": "hyperspace",
+    "note": "当前非零模块加成及实际作用对象；读取配置effects，不改变数值"
+  },
+  {
+    "key": "hyperspace.totals_empty",
+    "text": "当前暂无加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前装备没有非零属性或有效模块、传说效果时的单句提示"
   }
 ]
