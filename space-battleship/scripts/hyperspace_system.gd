@@ -107,8 +107,8 @@ func configured_crew(g,route:String)->String:
 	var auto:Dictionary=g.profile.hyperspace.auto
 	return str(auto.crew_id) if str(auto.route)==route else ""
 
-func luck_snapshot(g,route:String)->Dictionary:
-	var id:=configured_crew(g,route)
+func luck_snapshot(g,route:String,preview_crew_id:String="")->Dictionary:
+	var id:=preview_crew_id if not preview_crew_id.is_empty() else configured_crew(g,route)
 	var permanent:=maxf(0.0,float(g.planet_buffs.totals(g).get("hyperspace_luck",0.0)))
 	var crew_luck:=0.0
 	if not id.is_empty() and g.crew.has_method("hyperspace_luck"):crew_luck=maxf(0.0,float(g.crew.hyperspace_luck(g,id)))
@@ -262,7 +262,7 @@ func route_view(g,route:String,crew_id:String="")->Dictionary:
 		if idle.is_empty() and not (s.auto.enabled and s.auto.route==route):reasons.stop="no_background"
 		elif not idle.is_empty() and (idle.route!=route or idle.status=="completed_pending"):reasons.stop="pending_reward" if idle.route==route else "other_route"
 		if not g.manual_hyperspace.active or active.is_empty() or active.route!=route:reasons.exit="no_challenge"
-	var luck:=luck_snapshot(g,route)
+	var luck:=luck_snapshot(g,route,crew_id)
 	return {"route":route,"current_layer":current,"next_layer":current+1,"best_time":best,"task_mode":"none" if receipt.is_empty() else ("challenge" if receipt.mode=="manual" else "crew_idle" if receipt.mode=="auto" else "manual_idle"),"work":float(receipt.get("work",0.0)),"duration":float(receipt.get("duration",0.0)),"round_id":int(receipt.get("round_id",s.round_id)),"run_id":int(receipt.get("run_id",0)),"status":str(receipt.get("status","")),"background":idle.duplicate(true) if idle.get("route","")==route else {},"challenge":active.duplicate(true) if active.get("route","")==route else {},"reasons":reasons,"total_luck":luck.luck,"crew_luck":luck.crew_luck,"permanent_luck":luck.permanent_luck,"idle_duration":best,"crew_duration":idle_duration(g,best,crew_id),"crew_id":configured_crew(g,route)}
 
 func advance(g,dt:float)->void:
