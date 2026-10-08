@@ -510,7 +510,15 @@ func refresh_detail_status(item: Dictionary) -> void:
 	elif assigned and not g.crew.active(g,item):state=UIText.t("crew.paused")
 	host.set_ui_value(status,"text",state)
 	host.set_ui_value(status,"tooltip_text",UIText.t("crew.hyperspace_busy_reason") if hyperspace_reserved(str(item.crewId)) else "")
-	host.set_ui_value(effect_section,"visible",assigned and planet_id.is_empty())
+	var space_reserved := hyperspace_reserved(str(item.crewId))
+	host.set_ui_value(effect_section,"visible",(assigned or space_reserved) and planet_id.is_empty())
+	if space_reserved:
+		host.set_ui_value(effect_title,"text",UIText.t("crew.hyperspace_duration_title"))
+		var text := UIText.t("crew.hyperspace_duration_base")
+		if g.crew.levels_unlocked(g):
+			text=UIText.t("crew.hyperspace_duration_effect",{"efficiency":NumberFormat.precise(g.crew.hyperspace_efficiency(g,str(item.crewId))),"luck":NumberFormat.precise(g.crew.hyperspace_luck(g,str(item.crewId)))})
+		host.set_ui_value(description,"text",text)
+		return
 	if not assigned:return
 	var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
 	var kind:=str(job.get("effectType",""))

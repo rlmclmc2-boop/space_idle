@@ -8385,6 +8385,18 @@
     },
     "crew.preview.maximum": {
       "params": []
+    },
+    "crew.hyperspace_duration_title": {
+      "params": []
+    },
+    "crew.hyperspace_duration_base": {
+      "params": []
+    },
+    "crew.hyperspace_duration_effect": {
+      "params": [
+        "efficiency",
+        "luck"
+      ]
     }
   },
   "bindings": {

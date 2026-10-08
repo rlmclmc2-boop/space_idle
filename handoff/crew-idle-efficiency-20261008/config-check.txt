@@ -1,0 +1,1 @@
+PASS: live/alternate/invalid coefficients; XLSX/JSON projection; all old workbook cells and JSON fields unchanged

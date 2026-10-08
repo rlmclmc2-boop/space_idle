@@ -15646,5 +15646,26 @@
     "params": "",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.hyperspace_duration_title",
+    "text": "异空间挂机",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_base",
+    "text": "按当前层最佳通关时间挂机。",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_effect",
+    "text": "挂机速度 ×{efficiency}\n幸运 +{luck}：奖励词缀有机会重新抽品阶，保留更好的。",
+    "params": "efficiency,luck",
+    "category": "crew",
+    "note": "已派遣异空间船员的等级效果；幸运只影响该路线探索奖励词缀品阶，核心负责抽样"
   }
 ]

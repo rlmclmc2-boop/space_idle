@@ -317524,6 +317524,18 @@
       "value": "",
       "des": "专属AI {ai}",
       "targetType": ""
+    },
+    "hyperspace_duration_k": {
+      "id": "hyperspace_duration_k",
+      "value": 20,
+      "des": "船员等级越高，异空间挂机耗时越短。",
+      "targetType": ""
+    },
+    "hyperspace_luck_per_level": {
+      "id": "hyperspace_luck_per_level",
+      "value": 1,
+      "des": "每级增加幸运；探索奖励的词缀品阶可额外重抽并保留最好结果。",
+      "targetType": ""
     }
   },
   "planet_build": {

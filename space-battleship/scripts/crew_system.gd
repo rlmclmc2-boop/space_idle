@@ -150,6 +150,18 @@ func assignments(g) -> Dictionary:
 func required_exp(g, level: int) -> float:
 	return maxf(1.0,roundf(config_value(g,"base_exp")*pow(config_value(g,"exp_multiplier"),maxi(0,level))))
 
+func hyperspace_level(g, crew_id: String) -> int:
+	var item := entry(g,crew_id)
+	return maxi(0,int(item.get("level",0))) if levels_unlocked(g) and unlocked(g,crew_id) else 0
+
+func hyperspace_efficiency(g, crew_id: String) -> float:
+	var level := hyperspace_level(g,crew_id)
+	var k := config_value(g,"hyperspace_duration_k")
+	return (k+float(level))/k
+
+func hyperspace_luck(g, crew_id: String) -> float:
+	return config_value(g,"hyperspace_luck_per_level")*float(hyperspace_level(g,crew_id))
+
 func unlocked(g, id: String) -> bool:
 	var definition: Dictionary = definitions(g).get(id, {})
 	var gate := str(definition.get("unlockId", ""))
