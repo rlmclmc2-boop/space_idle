@@ -217,9 +217,11 @@ func before_logical_game_tick(dt:float) -> void:
 		demo_time+=dt
 		var aim:Vector2=player_render_position()+Vector2(0,-450)
 		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
+		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt,false)
 		hyperspace_visual.sync(game.profile.hyperspace.inventory)
-		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
+		# Keep substep poses and muzzle providers live; validate the completed
+		# fleet once at the display boundary below, not twice per logical tick.
+		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,false)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
 	advance_turrets(dt)
@@ -284,8 +286,10 @@ func _process_battlefield(delta: float) -> void:
 	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
-	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
+	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
+	# Last pose writer: one guard reads actual current global scales for all
+	# bodies, including newly attached/hidden/restored members. No scale cache.
+	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,true)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
 	var angles: Array = []

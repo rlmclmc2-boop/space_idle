@@ -395,7 +395,7 @@ func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: boo
 		body_baker.invalidate_materials()
 
 
-func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vector2, time: float, shield_enabled: bool, close_up: bool, visual_delta := 0.0) -> void:
+func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vector2, time: float, shield_enabled: bool, close_up: bool, visual_delta := 0.0, check_body_resolution := true) -> void:
 	elapsed = time
 	rendered_height = height_pixels * (2.8 if close_up else 1.0)
 	rendered_position = size*Vector2(0.5,0.58) if close_up else center
@@ -407,7 +407,10 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	ship.position = orbit_center+Vector3(0,0,sin(orbit_elapsed*TAU/8.0)*1.2*WORLD_PER_PIXEL)
 	ship.rotation = Vector3(0,-angle+sin(orbit_elapsed*TAU/10.0)*deg_to_rad(0.65),0)
 	_update_carriers(scale_value,visual_delta)
-	body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
+	# Logical callers retain every transform/socket update; only the visual
+	# whole-fleet guard may be deferred to their final presentation boundary.
+	if check_body_resolution:
+		body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
 	aim_at(target)
 	shield.visible = shield_enabled
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(time,3.8)/0.6))
