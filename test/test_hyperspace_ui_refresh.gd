@@ -5,6 +5,7 @@ class Domain extends RefCounted:
  func snapshot(g)->Dictionary:return g.profile.hyperspace.duplicate(true)
 class GameFixture extends RefCounted:
  var profile={"hyperspace":{"round_id":1,"unlocked_drones":true,"inventory":{"generation":1,"drones":{"one":{"id":"one"}},"warehouse":["one"],"presets":[]}}}
+ var drone_combat={"disabled":[]}
  var hyperspace=Domain.new()
  var manual_hyperspace={"production_accepted":true,"last_error":""}
 class Host extends RefCounted:
