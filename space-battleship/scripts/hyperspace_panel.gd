@@ -93,6 +93,7 @@ var forge_title: Label
 var forge_details: Label
 var forge_icon: TextureRect
 var routes: Array[Button]=[]
+var route_markers:Array[Label]=[]
 var commands=preload("res://scripts/hyperspace_commands.gd").new()
 var filter_enabled: CheckBox
 var filter_action: OptionButton
@@ -174,7 +175,7 @@ func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
  var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",14);grid.add_theme_constant_override("v_separation",14);parent.add_child(grid)
  for key in host.game.hyperspace.config.routes:
-  var b=button(grid,str(key),func():route=str(key);refresh_status());b.text="";b.custom_minimum_size.y=140;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+  var b=button(grid,str(key),func():route=str(key);refresh_status());b.set_meta("route",str(key));b.text="";b.custom_minimum_size.y=140;b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   var margin=MarginContainer.new();margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
   for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,14)
   margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(margin)
@@ -183,6 +184,7 @@ func build_exploration(parent: Node) -> void:
   var text=box(content,10);text.mouse_filter=Control.MOUSE_FILTER_IGNORE
   label(text,t(str(key)),25).mouse_filter=Control.MOUSE_FILTER_IGNORE
   label(text,t("route_reward",{"material":t(config.material)}),20).mouse_filter=Control.MOUSE_FILTER_IGNORE
+  var marker=label(text,"",18);marker.mouse_filter=Control.MOUSE_FILTER_IGNORE;marker.visible=false;route_markers.append(marker)
   routes.append(b)
  route_ui.build(parent)
  first_win=label(parent,t("layer_first_win"),22)

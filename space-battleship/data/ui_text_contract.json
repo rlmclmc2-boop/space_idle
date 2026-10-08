@@ -8429,6 +8429,12 @@
       "params": [
         "summary"
       ]
+    },
+    "hyperspace.layer_route_background": {
+      "params": []
+    },
+    "hyperspace.layer_route_pending": {
+      "params": []
     }
   },
   "bindings": {

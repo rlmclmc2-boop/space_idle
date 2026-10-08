@@ -15464,7 +15464,7 @@
   },
   {
     "key": "hyperspace.layer_idle_none",
-    "text": "后台探索尚未开始",
+    "text": "本路线后台探索尚未开始",
     "params": "",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15748,5 +15748,19 @@
     "params": "{summary}",
     "category": "hyperspace",
     "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.layer_route_background",
+    "text": "后台中",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实际后台收据所在路线的卡片标记，不跟随当前选择路线"
+  },
+  {
+    "key": "hyperspace.layer_route_pending",
+    "text": "待领取",
+    "params": "",
+    "category": "hyperspace",
+    "note": "后台待领奖励所在路线的卡片标记"
   }
 ]

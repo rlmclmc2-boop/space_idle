@@ -69,8 +69,17 @@ func tick(delta:float) -> void:
  elapsed+=delta
  if elapsed<0.2:return
  elapsed=0.0;refresh()
+func refresh_route_markers() -> void:
+ var background:Dictionary=game().profile.hyperspace.get("idle",{})
+ var running_route=str(background.get("route",""))
+ for index in panel.routes.size():
+  var marker:Label=panel.route_markers[index]
+  var visible=not background.is_empty() and str(panel.routes[index].get_meta("route",""))==running_route
+  panel.put(marker,"visible",visible)
+  if visible:panel.put(marker,"text",t("layer_route_pending") if background.get("status","")=="completed_pending" else t("layer_route_background"))
 func refresh() -> void:
  if current==null:return
+ refresh_route_markers()
  var v=view();var reasons:Dictionary=v.get("reasons",{})
  var layer=int(v.get("current_layer",0));var next_layer=int(v.get("next_layer",1))
  if panel.first_win!=null:panel.put(panel.first_win,"visible",layer==0 and not v.is_empty())
