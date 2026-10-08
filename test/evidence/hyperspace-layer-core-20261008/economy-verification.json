@@ -1,0 +1,40 @@
+{
+  "scope": "authorized material economy change; no long benchmark or independent player acceptance",
+  "source_base": "17b6715",
+  "runtime_config_owner": "cd680ec02cd0d058c4104db083d37bc57ad62f22; hyperspace_config.json and hyperspace_entity_schema.json in isolated runtime only",
+  "runtime_crew_planet_inputs": "e3cdefda301d1636418b7695fab30aba463da2c2",
+  "engine": "Godot 4.6.3 official, headless",
+  "checks": {
+    "material_economy": 70,
+    "historical_disk_migration": 41,
+    "exchange": 15
+  },
+  "failures": 0,
+  "material_units": {
+    "namespace_version": 5,
+    "material_unit_version": 2,
+    "absent_marker": 1,
+    "unit_scale": 10,
+    "once_migrated": [
+      "four balances",
+      "active/idle frozen materials",
+      "cached material command results"
+    ],
+    "preserved": [
+      "core amounts/costs",
+      "drone fields",
+      "module copies/experience",
+      "history",
+      "all RNG streams",
+      "receipt identities",
+      "command identity"
+    ]
+  },
+  "material_formula": "floor(complete authored exploration base * existing late supply multiplier * equipped collector multiplier * material_unit_scale); forge scales completed authored material cost; dismantle scales material only",
+  "collector": "1 + sum((1 + effect_growth)^level - 1) for equipped same-type copies; exploration materials only",
+  "core_probability": "ultimate_core_probability / normalized total = 0.002; ordinary quality weights retain relative ratios; additional-drone policy uses original noncore relative weights",
+  "migration_overflow": "reject before mutating profile, do not truncate; existing startup rejection protection applies",
+  "config_files_modified_by_this_thread": false,
+  "player_save_files_modified": false,
+  "new_graphical_acceptance": false
+}

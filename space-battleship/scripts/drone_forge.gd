@@ -153,6 +153,9 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 			Bag.remove(s.inventory,id);Bag.organize(s.inventory,c)
 			return {"error":"","applied":true,"outcome":true,"cost":{},"draws":1,"drone_id":id,"operation":op,"rewards":{"materials":drops.materials.duplicate(true),"modules":module_outcomes}}
 		_:return error("unknown_operation")
+	# Scale after the complete base formula; cores retain their authored units.
+	for key in cost:
+		if key in s.materials:cost[key]=float(cost[key])*float(c.get("material_unit_scale",10))
 	for value in cost.values():
 		if not C.integer(value) or value<0:return error("cost_limit")
 	if not can_pay(s,cost):return {"error":"insufficient_materials","applied":false,"cost":cost,"draws":draws}

@@ -17,6 +17,8 @@ func verify(raw:Dictionary,db:ShipDatabase,label:String)->void:
 	if raw.has("hyperspace"):
 		check(g.hyperspace.last_error.is_empty() and g.profile.hyperspace.version==5,label+" accepted and migrated subsystem")
 		check(g.profile.hyperspace.history==raw.hyperspace.history,label+" keeps only actual historical wins")
+		var unit_scale:=1 if int(raw.hyperspace.get("material_unit_version",1))==2 else int(g.hyperspace.config.get("material_unit_scale",10))
+		for key in raw.hyperspace.materials:check(g.profile.hyperspace.materials[key]==int(raw.hyperspace.materials[key])*unit_scale,label+" preserves material purchasing power "+key)
 func _initialize()->void:
 	var db:=ShipDatabase.new();db.config.offlineMax=0
 	# Optional paths are existing full files, read-only: no player save is embedded here.

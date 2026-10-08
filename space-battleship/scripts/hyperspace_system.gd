@@ -25,8 +25,8 @@ func online_config(g) -> Dictionary:
 	var material_multiplier:int=int(config.get("late_material_reward_multiplier",1)) if supplied else 1
 	if multiplier==1.0 and rate_multiplier==1.0 and material_multiplier==1:return config
 	var next: Dictionary=config.duplicate()
-	next.energy_cap=float(config.energy_cap)*multiplier;next.energy_rate=float(config.energy_rate)*multiplier*rate_multiplier
-	next.material_reward_multiplier=material_multiplier
+	next.energy_cap=float(config.energy_cap);next.energy_rate=float(config.energy_rate)*rate_multiplier
+	next.exploration_material_multiplier=multiplier;next.material_reward_multiplier=float(material_multiplier)*multiplier
 	if g.stat_cache_enabled:g.stat_cache[cache_key]=next
 	return ramp_config(g,next,supplied)
 
@@ -39,7 +39,7 @@ func ramp_config(g,c:Dictionary,supplied:bool)->Dictionary:
 	next.late_supply_elapsed=elapsed
 	next.late_supply_base_rate=float(c.energy_rate)/float(config.late_energy_rate_multiplier)
 	next.energy_rate=float(next.late_supply_base_rate)*lerpf(1.0,float(config.late_energy_rate_multiplier),progress)
-	next.material_reward_multiplier=lerpf(1.0,float(config.late_material_reward_multiplier),progress)
+	next.material_reward_multiplier=float(c.get("exploration_material_multiplier",1.0))*lerpf(1.0,float(config.late_material_reward_multiplier),progress)
 	return next
 
 func fresh() -> Dictionary:
@@ -50,7 +50,7 @@ func load_state(g,raw: Variant) -> bool:
 	if raw==null:g.profile.hyperspace=fresh();return true
 	if not raw is Dictionary or not S.valid(raw,config,g.db.levels.size()):
 		last_error="invalid_hyperspace_save";return false
-	g.profile.hyperspace=S.migrate(raw)
+	g.profile.hyperspace=S.migrate(raw,config)
 	var receipt: Dictionary=g.profile.hyperspace.active
 	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
 		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
@@ -275,12 +275,12 @@ func material_exchange_quote(g,source:String,target:String,amount:Variant)->Dict
 	if source not in keys or target not in keys:result.error="invalid_material";return result
 	if source==target:result.error="same_material";return result
 	var limit:=9000000000000000
-	result.max_receive=mini(int(result.source_owned)/2,limit-int(result.target_owned))
+	result.max_receive=mini(int(result.source_owned)/2,limit-1-int(result.target_owned))
 	if not C.integer(amount) or amount<=0 or amount>limit/2:result.error="invalid_amount";return result
 	var count:=int(amount);var debit:=count*2
 	result.amount=count;result.cost={source:debit};result.received={target:count}
 	if debit>int(result.source_owned):result.error="insufficient_materials";return result
-	if count>limit-int(result.target_owned):result.error="material_limit";return result
+	if count>limit-1-int(result.target_owned):result.error="material_limit";return result
 	result.request={"round_id":int(s.round_id),"command_seq":int(s.command_seq),"source":source,"target":target,"amount":count}
 	return result
 
