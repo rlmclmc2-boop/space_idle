@@ -1481,8 +1481,10 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 		outlines.append(packet.outer)
 		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
 	var top:=0.0
+	# A synchronous outline query shares one ship angle across all vertices.
+	var angle:=PI+enemy_render_angle(enemy)
 	for outline in outlines:
-		for point in outline:top=minf(top,Vector2(point).rotated(PI+enemy_render_angle(enemy)).y)
+		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
 	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
 	var status_space:=28.0 if game.is_boss_encounter() else 16.0
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
