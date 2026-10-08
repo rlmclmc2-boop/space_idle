@@ -25,17 +25,19 @@ func run():
   var entry=g.module_entry("weapons",i);var row=g.player_weapon_row(entry)
   var card=panel.cards["weapons_%d"%i];var label=card.fields.level
   check(label.text.contains(UIText.t("equipment.energy" if int(row.dmgtype)==1 else "equipment.physical")),"Card exposes authoritative damage type")
-  check(label.text.contains(scene.number(float(row.cd))+"秒"),"Card exposes combat interval")
+  check(label.text.contains("秒升满") if entry.key=="longLaser" else not label.text.contains("秒"),"Card keeps type and beam stage; ordinary intervals move to detail")
   check(label.get_theme_font("font").get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,label.get_theme_font_size("font_size")).x<=label.size.x,"Context fits existing level line")
   check(card.custom_minimum_size==Vector2(310,176),"Card height is unchanged")
- check(panel.cards.weapons_1.fields.caption.text==UIText.t("weapon.card_beam_expected"),"Beam labels the individual expectation, not a volley total")
+ check(panel.cards.weapons_1.fields.caption.text==UIText.t("weapon.rate") and panel.cards.weapons_1.fields.stat.text.contains("→"),"Beam shows its determinate rate range")
  panel.select_item("weapons_1");panel.show_inspector()
  check(panel.detail.basics.text.contains(UIText.t("equipment.attack_interval",{"seconds":scene.number(float(g.player_weapon_row(g.module_entry("weapons",1)).cd))})),"Inspector shares combat interval")
- var card=panel.cards.weapons_1;var damage=panel.items.weapons_1.mainStatNumber
+ var card=panel.cards.weapons_1;var damage=panel.items.weapons_1.projection.expected
+ var old_rate=panel.items.weapons_1.mainStatNumber
  g.db.equipment.longLaser[0].cd=float(g.db.equipment.longLaser[0].cd)*0.8
  panel.invalidate_stats({"slot":"weapons_1","detail":true});panel.refresh_pending()
- check(panel.cards.weapons_1==card and card.fields.level.text.contains(scene.number(float(g.player_weapon_row(g.module_entry("weapons",1)).cd))+"秒"),"Interval-only update reuses card and refreshes context")
- check(GrowthNumber.compare(damage,panel.items.weapons_1.mainStatNumber)==0,"Interval context does not change damage")
+ check(panel.cards.weapons_1==card and GrowthNumber.compare(old_rate,panel.items.weapons_1.mainStatNumber)!=0,"Interval-only update reuses card and refreshes context")
+ check(GrowthNumber.compare(damage,panel.items.weapons_1.projection.expected)==0,"Interval context does not change damage")
+ check(not panel.cards.defence_0.name_button.visible and panel.cards.defence_0.fields.title.visible and panel.cards.defence_0.fields.title.text.contains("固定"),"Fixed armour has no swap arrow and explains fixed identity")
  var defence=g.module_entry("defence",0)
  for key in ["armour","shield"]:
   defence.key=key;defence.level=107;g.invalidate_stat_cache();panel.refresh()

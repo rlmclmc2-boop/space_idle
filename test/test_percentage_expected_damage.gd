@@ -36,6 +36,12 @@ func click(control: Control) -> void:
 		var event:=InputEventMouseButton.new();event.position=position;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down
 		root.push_input(event,true)
 		await frames()
+func expected_rate(g, entry: Dictionary):
+	var repeats := 0.0
+	for effect in g.enhancement_effects(entry):
+		if effect.kind=="repeat":repeats+=g.enhancement_branches.repeat_probability(g,entry)*(1.0+float(effect.p4)*int(effect.level))
+	return N.multiply(DISPLAY.snapshot(g,entry).expected,(1.0+repeats)/float(g.player_weapon_row(entry).cd))
+
 func verify_expected(g, entry: Dictionary, probability: float, multiplier: float, label: String) -> void:
 	var base=g.jewel_equipment_stat(entry,-1,null,false)
 	var rng_state=g.rng.state
@@ -125,13 +131,13 @@ func run() -> void:
 	await click(scene.system_nav_buttons[0])
 	var panel=scene.equipment_panel
 	await click(panel.cards.weapons_0)
-	check(panel.items.weapons_0.mainStatLabel==UIText.t("weapon.expected_damage") and equal(panel.items.weapons_0.mainStatNumber,DISPLAY.snapshot(g,entry).expected),"Module card labels and displays expected damage")
+	check(panel.items.weapons_0.mainStatLabel==UIText.t("weapon.rate_base") and equal(panel.items.weapons_0.mainStatNumber,expected_rate(g,entry)),"Module card labels and displays expected damage")
 	await capture("modules")
 	panel.show_inspector()
-	check(panel.items.weapons_0.tooltip.contains("伤害比例生效概率") and panel.detail.primary.tooltip_text.contains("期望伤害"),"Precise detail exposes base, trigger, multiplier and expectation")
+	check(panel.items.weapons_0.tooltip.contains("伤害比例生效概率") and panel.detail.primary.tooltip_text.contains("当前平均伤害"),"Precise detail exposes base, trigger, multiplier and expectation")
 	if not panel.details_open:await click(panel.detail.more)
 	await capture("detail")
-	check(panel.detail.stats.visible and panel.detail.stats.text.contains("期望伤害") and panel.detail.stats.text.contains("单次基础伤害"),"Expanded inspector and next-level preview share expectation")
+	check(panel.detail.stats.visible and panel.detail.stats.text.contains("当前平均伤害") and panel.detail.stats.text.contains("单次基础伤害"),"Expanded inspector and next-level preview share expectation")
 	var values: Dictionary=panel.items.weapons_0.projection
 	for field in ["base","expected"]:
 		check(panel.detail.stats.text.contains(FORMAT.compact(values[field])) and not panel.detail.stats.text.contains(FORMAT.precise(values[field])),"Visible "+field+" uses quantity compact format")
@@ -176,7 +182,7 @@ func run() -> void:
 	g.enhancement_branches.advance_weapons(g,.1);panel.refresh_pending()
 	check(scene.writes.is_empty() and scene.projections.is_empty(),"Hidden timed changes perform no equipment UI work")
 	scene.select_system(0);await frames();panel.refresh_pending()
-	check(equal(panel.items.weapons_0.mainStatNumber,DISPLAY.snapshot(g,entry).expected) and panel.cards.weapons_0==card,"Reveal retains stable projection without rebuilding card")
+	check(equal(panel.items.weapons_0.mainStatNumber,expected_rate(g,entry)) and panel.cards.weapons_0==card,"Reveal retains stable projection without rebuilding card")
 	# Persisted attack history remains a display dependency, unlike timed buffs.
 	before=panel.items.weapons_0.mainStatNumber
 	g.profile.enhancementAttacks=1000000;g.event.emit("equipment_stats",{"category":"weapons"});panel.refresh_pending()

@@ -8657,6 +8657,92 @@
         "level",
         "type"
       ]
+    },
+    "equipment.card_weapon_type": {
+      "params": [
+        "level",
+        "type"
+      ]
+    },
+    "equipment.card_beam_stage": {
+      "params": [
+        "level",
+        "type",
+        "seconds"
+      ]
+    },
+    "weapon.rate": {
+      "params": []
+    },
+    "weapon.rate_base": {
+      "params": []
+    },
+    "weapon.rate_assumption": {
+      "params": []
+    },
+    "weapon.rate_beam_time": {
+      "params": [
+        "charge",
+        "first",
+        "stage"
+      ]
+    },
+    "weapon.rate_conditions": {
+      "params": [
+        "conditions"
+      ]
+    },
+    "weapon.rate_preview": {
+      "params": [
+        "label",
+        "current",
+        "next"
+      ]
+    },
+    "weapon.rate_single": {
+      "params": [
+        "damage",
+        "seconds"
+      ]
+    },
+    "weapon.rate_condition.history": {
+      "params": []
+    },
+    "weapon.rate_condition.targets": {
+      "params": []
+    },
+    "weapon.rate_condition.incoming": {
+      "params": []
+    },
+    "weapon.rate_condition.shared": {
+      "params": []
+    },
+    "weapon.rate_condition.kills": {
+      "params": []
+    },
+    "weapon.rate_condition.beam_repeat": {
+      "params": []
+    },
+    "weapon.rate_condition.interval": {
+      "params": []
+    },
+    "equipment.fixed_card_name": {
+      "params": [
+        "name"
+      ]
+    },
+    "weapon.rate_single_missile": {
+      "params": [
+        "damage",
+        "seconds",
+        "count"
+      ]
+    },
+    "weapon.rate_condition.target_stacks": {
+      "params": []
+    },
+    "weapon.rate_condition.beam_owner": {
+      "params": []
     }
   },
   "bindings": {

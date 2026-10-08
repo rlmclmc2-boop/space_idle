@@ -16157,5 +16157,145 @@
     "params": "level,type",
     "category": "equipment",
     "note": "已装备且真实抗性大于零的防御类型；零抗性不标"
+  },
+  {
+    "key": "equipment.card_weapon_type",
+    "text": "{level} {type}",
+    "params": "level,type",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "equipment.card_beam_stage",
+    "text": "{level} {type}·{seconds}秒升满",
+    "params": "level,type,seconds",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate",
+    "text": "每秒伤害",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_base",
+    "text": "基础每秒",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_assumption",
+    "text": "仅一个目标、持续命中；未计敌方减伤。",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_beam_time",
+    "text": "蓄力{charge}秒，首次命中{first}秒；自身增伤在{stage}秒达到右值。",
+    "params": "charge,first,stage",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_conditions",
+    "text": "条件加成另计：{conditions}。",
+    "params": "conditions",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_preview",
+    "text": "{label} {current}；升级后 {next}",
+    "params": "label,current,next",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_single",
+    "text": "单次平均伤害 {damage} · 间隔 {seconds}秒",
+    "params": "damage,seconds",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.history",
+    "text": "历史、持续锁定与临时加成",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.targets",
+    "text": "其他目标",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.incoming",
+    "text": "受击与反击",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.shared",
+    "text": "共享攻击计数",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.kills",
+    "text": "击杀奖励",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.beam_repeat",
+    "text": "额外光束的蓄力与增伤",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "weapon.rate_condition.interval",
+    "text": "无有效攻击间隔",
+    "params": "",
+    "category": "weapon",
+    "note": "只读单目标每秒伤害展示，条件另计"
+  },
+  {
+    "key": "equipment.fixed_card_name",
+    "text": "{name} · 固定",
+    "params": "name",
+    "category": "equipment",
+    "note": "固定模块使用原标题Label，不显示可换装箭头"
+  },
+  {
+    "key": "weapon.rate_single_missile",
+    "text": "单枚平均伤害 {damage} · 间隔 {seconds}秒 · 齐射{count}枚",
+    "params": "damage,seconds,count",
+    "category": "weapon",
+    "note": "导弹单枚与整轮口径区别"
+  },
+  {
+    "key": "weapon.rate_condition.target_stacks",
+    "text": "目标受击叠层",
+    "params": "",
+    "category": "weapon",
+    "note": "有条件的攻击加成不计入基础每秒"
+  },
+  {
+    "key": "weapon.rate_condition.beam_owner",
+    "text": "共享光束加成",
+    "params": "",
+    "category": "weapon",
+    "note": "有条件的攻击加成不计入基础每秒"
   }
 ]
