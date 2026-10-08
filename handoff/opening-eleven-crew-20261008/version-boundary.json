@@ -1,0 +1,14 @@
+{
+  "previous_runtime_version": "ada722017c603e151304ddb3dc136e27663da407",
+  "runtime_version": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "native_before_update_sha256": "45a3f94256c488963004c97e27ae0858f4892e558d2f3b40ef1d188089350fb6",
+  "copied_without_edits": true,
+  "progress": "cleared1-10; current11/1",
+  "inherited_QA_chrono_not_spendable": 43200,
+  "update_utc": "2026-10-08T04:49:30.747818+00:00",
+  "scope": "same existing campaign continues in preserved original cloud; no new-save acceptance; X1 only",
+  "integrated_game_pid": 23147,
+  "window_id": "0x200003",
+  "first_ready_screenshot": "002-integrated-ready.png",
+  "first_ready_observation": "11/2, normal battle resumed on load; pause not persisted"
+}

@@ -1,0 +1,188 @@
+[
+  {
+    "file": "000-original-eleven-paused.png",
+    "captured_utc": "2026-10-08T04:48:46.836937+00:00",
+    "sha256": "53cde481f53202e010cf2fb850f26e31e862a35f7c5539d078647784080effb2",
+    "bytes": 211080
+  },
+  {
+    "file": "002-integrated-ready.png",
+    "captured_utc": "2026-10-08T04:50:55.084973+00:00",
+    "sha256": "2f37841ae3e698b247e5250db1a5c4882a49c158d834f8a1b98c1ca835db9b59",
+    "bytes": 243052
+  },
+  {
+    "file": "003-first-open-new-ship.png",
+    "captured_utc": "2026-10-08T04:51:10.772976+00:00",
+    "sha256": "a3d5f3e5077e6998e05ab1dcd769dac31fd1fe301888f5535b3f824bdf53bba5",
+    "bytes": 244329
+  },
+  {
+    "file": "004-ship-page-after-visible-navigation.png",
+    "captured_utc": "2026-10-08T04:51:19.388978+00:00",
+    "sha256": "b25a16ebafb0230e2820e2f97c6caf9b8491f3e67c05b211031716a57b27c741",
+    "bytes": 257421
+  },
+  {
+    "file": "005-retry-ship-page.png",
+    "captured_utc": "2026-10-08T04:51:44.672985+00:00",
+    "sha256": "c00f105ad904c5eddb3b2b0f4669528335754571e788f219eae430601684ca93",
+    "bytes": 269939
+  },
+  {
+    "file": "006-pause-for-reading-ship.png",
+    "captured_utc": "2026-10-08T04:51:45.384985+00:00",
+    "sha256": "97f2be0d807ff80a3808e4ac3d2ebffef16cc2f90b2f361c87712ab999acb5e3",
+    "bytes": 268297
+  },
+  {
+    "file": "007-first-select-unlocked-hull.png",
+    "captured_utc": "2026-10-08T04:52:11.904993+00:00",
+    "sha256": "e8edbfaee50f0c53cd67ef48c54f2d73974de16c4b268a6e7ea8c92a658f8a5a",
+    "bytes": 278957
+  },
+  {
+    "file": "008-first-activate-new-hull.png",
+    "captured_utc": "2026-10-08T04:52:23.408996+00:00",
+    "sha256": "53ff6705fad2abe40c0d1a5d938d2198af4bb6440282fe0a3bbfb31deafa3dec",
+    "bytes": 280171
+  },
+  {
+    "file": "009-first-new-weapon-slot.png",
+    "captured_utc": "2026-10-08T04:52:36.892999+00:00",
+    "sha256": "478ef0fea596d8e936bb5070d3c6b0e082800e82c2ff430b620cb5c1befa4606",
+    "bytes": 265535
+  },
+  {
+    "file": "010-first-free-equip-new-slot.png",
+    "captured_utc": "2026-10-08T04:52:48.041003+00:00",
+    "sha256": "fbb689eb7f35b00a68401f08af62fba0192cba2b48fb1b4e49ad1e736ca9898e",
+    "bytes": 271877
+  },
+  {
+    "file": "011-fit-first-new-slot-cannon.png",
+    "captured_utc": "2026-10-08T04:53:01.173006+00:00",
+    "sha256": "533ebccd0c32d4aa848ad6f4fb5b607dece8167aecb93636bac91fc37c0eff01",
+    "bytes": 266974
+  },
+  {
+    "file": "012-see-new-slot-on-hull.png",
+    "captured_utc": "2026-10-08T04:53:02.617007+00:00",
+    "sha256": "7130a4f5bd9e4c34b5b2beabf029d2146ab600aad0cc86b907c8c7da65316fdf",
+    "bytes": 290737
+  },
+  {
+    "file": "013-first-open-crew.png",
+    "captured_utc": "2026-10-08T04:54:45.705037+00:00",
+    "sha256": "e2a75a5418b5d88c570ef9872ddb4bb589d9847d56ac6d18164de2cee3679f0b",
+    "bytes": 183905
+  },
+  {
+    "file": "014-hover-unassigned-crew-role.png",
+    "captured_utc": "2026-10-08T04:55:18.993047+00:00",
+    "sha256": "23226718838869a5b68f43626b3f1e30d6f139accad63c8e60efcf8f35ae28a4",
+    "bytes": 183881
+  },
+  {
+    "file": "015-open-available-crew-roles.png",
+    "captured_utc": "2026-10-08T04:55:20.469047+00:00",
+    "sha256": "e6f66135b1aec4dd762f659d054a1872620a233a3dcf846c25949e0ab5239f24",
+    "bytes": 193245
+  },
+  {
+    "file": "018-system-unlock-archive.png",
+    "captured_utc": "2026-10-08T04:55:53.281045+00:00",
+    "sha256": "2fe08f8b376d73df21b66c27e4fe5300d98cf32ebe5e52a7e7175f50ebd58b3d",
+    "bytes": 164365
+  },
+  {
+    "file": "019-earned-crew-category.png",
+    "captured_utc": "2026-10-08T04:56:03.961028+00:00",
+    "sha256": "1e2c9ccb97b5f5042d482bc3e3ca0345bb91a9bad75ce913b88875a15ac60fd0",
+    "bytes": 147857
+  },
+  {
+    "file": "020-read-earned-first-crew-guide.png",
+    "captured_utc": "2026-10-08T04:56:14.557027+00:00",
+    "sha256": "a2b1ecdec04aa3beb8cdf414709faf7ab2555e12d64e1f8af5a7654762c4517f",
+    "bytes": 150535
+  },
+  {
+    "file": "027-first-crew-preview-before-confirm.png",
+    "captured_utc": "2026-10-08T05:03:08.297118+00:00",
+    "sha256": "9934ad60aa87290500575f8aa2d4d8ee1aca0b9e1f19fc68ee22a048005e9ed7",
+    "bytes": 192203
+  },
+  {
+    "file": "029-read-ai-job-before-confirm.png",
+    "captured_utc": "2026-10-08T05:04:06.781136+00:00",
+    "sha256": "c576763d02053f78b910d1e6445d50485323273fbb60e1515f3c93fc5304c2bd",
+    "bytes": 190663
+  },
+  {
+    "file": "031-read-enhancement-job-before-confirm.png",
+    "captured_utc": "2026-10-08T05:04:09.653136+00:00",
+    "sha256": "da9344a4c883ec4d9b913475d7d1ff9cf53b82cd049e514dc67f626948f18b1b",
+    "bytes": 186153
+  },
+  {
+    "file": "033-read-reactor-job-before-confirm.png",
+    "captured_utc": "2026-10-08T05:04:12.545137+00:00",
+    "sha256": "431638152cb4a3118b82f555fa20d2a8c933896c524700a3b5f7c9cbfb5d3a66",
+    "bytes": 187506
+  },
+  {
+    "file": "036-confirm-first-equipment-automation-while-paused.png",
+    "captured_utc": "2026-10-08T05:04:47.197145+00:00",
+    "sha256": "961511ecabb621763a7519afacc12922dcd6a4759e661c7f2f9174d08e395d33",
+    "bytes": 207886
+  },
+  {
+    "file": "038-watch-equipment-auto-upgrades.png",
+    "captured_utc": "2026-10-08T05:05:18.897155+00:00",
+    "sha256": "b431534e2781976056e710c9594b742b8b24c22a4dadd43ae2d89d9764583d63",
+    "bytes": 256299
+  },
+  {
+    "file": "042-pause-after-first-auto-upgrades.png",
+    "captured_utc": "2026-10-08T05:05:23.169157+00:00",
+    "sha256": "68f9a527665c0bf976bb94e45695d5bace7f0c9bc2746c7a59d53d7a92d42a97",
+    "bytes": 257719
+  },
+  {
+    "file": "043-open-crew-to-release.png",
+    "captured_utc": "2026-10-08T05:05:24.605157+00:00",
+    "sha256": "af8d3b89e5f0b281411d0c749dbe2fe37c8ac0c2289090e1c12b363a0bada736",
+    "bytes": 203017
+  },
+  {
+    "file": "044-release-first-auto-upgrade-job.png",
+    "captured_utc": "2026-10-08T05:06:02.969167+00:00",
+    "sha256": "bd35775ce0647dd09c3f7cddc971a59700dbbdc08387b9c891c257b36b5ad4d5",
+    "bytes": 183128
+  },
+  {
+    "file": "050-pause-after-first-automation-flow.png",
+    "captured_utc": "2026-10-08T05:06:09.373169+00:00",
+    "sha256": "3bbac09f80d62fbf3ca85c6511968c6b3f1c2946fce71b94b29c5dd6d9cff999",
+    "bytes": 264741
+  },
+  {
+    "file": "053-earned-hull-category.png",
+    "captured_utc": "2026-10-08T05:07:02.857185+00:00",
+    "sha256": "d59cce4793db8205c54b7f570a7b6868173664a0e61b6887984022ae314fae22",
+    "bytes": 149068
+  },
+  {
+    "file": "054-read-earned-new-hull-entry.png",
+    "captured_utc": "2026-10-08T05:07:13.221188+00:00",
+    "sha256": "9d67371828e3564caac5400ab8e3f0ff339899cd3951ff4842255ec0bec3c8e0",
+    "bytes": 152595
+  },
+  {
+    "file": "057-save-after-new-hull-and-first-automation.png",
+    "captured_utc": "2026-10-08T05:14:01.349309+00:00",
+    "sha256": "bd794f28617a17a1d2a21a347f643f6e5c67e203080e4c34d8b7b17090a247a1",
+    "bytes": 243710
+  }
+]

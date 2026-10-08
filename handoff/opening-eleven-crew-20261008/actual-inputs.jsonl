@@ -1,0 +1,46 @@
+{"unix": 1791435069.3748865, "requested": ["click", "548", "309", "003-first-open-new-ship"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435103.309363, "requested": ["click", "548", "309", "005-retry-ship-page"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435104.7117524, "requested": ["key", "Escape", "006-pause-for-reading-ship"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435130.5001552, "requested": ["click", "725", "347", "007-first-select-unlocked-hull"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435141.943616, "requested": ["click", "1460", "875", "008-first-activate-new-hull"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435155.4550722, "requested": ["click", "1460", "440", "009-first-new-weapon-slot"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435166.604941, "requested": ["click", "1450", "331", "010-first-free-equip-new-slot"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435179.7304432, "requested": ["click", "1440", "426", "011-fit-first-new-slot-cannon"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435181.2121854, "requested": ["click", "548", "309", "012-see-new-slot-on-hull"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435284.2973814, "requested": ["click", "548", "439", "013-first-open-crew"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435318.380478, "requested": ["hover", "1128", "389", "014-hover-unassigned-crew-role"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435319.0493367, "requested": ["click", "1128", "389", "015-open-available-crew-roles"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435339.3192666, "requested": ["click", "1200", "580", "016-close-crew-role-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435340.7788136, "requested": ["click", "1496", "33", "017-look-up-earned-tutorial"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435351.9264584, "requested": ["click", "1218", "347", "018-system-unlock-archive"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435362.5850377, "requested": ["click", "786", "561", "019-earned-crew-category"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435373.2156024, "requested": ["click", "938", "403", "020-read-earned-first-crew-guide"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435701.2512288, "requested": ["click", "1018", "714", "021-close-earned-crew-guide"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435702.6879253, "requested": ["click", "548", "632", "022-open-save-before-preview-patch"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435704.134791, "requested": ["click", "1100", "291", "023-save-continuation-before-preview-patch"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435786.1356099, "requested": ["key", "Escape", "026-pause-normal-continuation-after-patch"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435786.8631997, "requested": ["click", "548", "439", "027-first-crew-preview-before-confirm"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435843.9704635, "requested": ["click", "1128", "389", "028-read-alternate-job-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435845.3904452, "requested": ["click", "1128", "465", "029-read-ai-job-before-confirm"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435846.8225067, "requested": ["click", "1128", "389", "030-read-enhancement-job-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435848.2650988, "requested": ["click", "1128", "496", "031-read-enhancement-job-before-confirm"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435849.7160962, "requested": ["click", "1128", "389", "032-read-reactor-job-menu"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435851.1628146, "requested": ["click", "1128", "528", "033-read-reactor-job-before-confirm"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435882.920033, "requested": ["click", "1128", "389", "034-choose-first-automation-job"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435884.361068, "requested": ["click", "1128", "434", "035-return-to-equipment-preview"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435885.7876573, "requested": ["click", "1267", "473", "036-confirm-first-equipment-automation-while-paused"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435916.822649, "requested": ["key", "Escape", "037-resume-first-assigned-automation"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435917.4478672, "requested": ["click", "548", "112", "038-watch-equipment-auto-upgrades"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435922.548422, "requested": ["key", "Escape", "042-pause-after-first-auto-upgrades"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435923.2308037, "requested": ["click", "548", "439", "043-open-crew-to-release"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435961.5451527, "requested": ["click", "1404", "584", "044-release-first-auto-upgrade-job"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435963.0138237, "requested": ["key", "Escape", "045-resume-after-releasing-crew"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435963.6460629, "requested": ["click", "548", "112", "046-watch-after-releasing-crew"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435968.7026606, "requested": ["key", "Escape", "050-pause-after-first-automation-flow"], "source": "external real mouse/keyboard only"}
+{"unix": 1791435986.0466914, "requested": ["click", "1496", "33", "051-read-earned-new-hull-guide"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436020.1274173, "requested": ["click", "1218", "347", "052-return-earned-unlock-archive"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436021.5110178, "requested": ["click", "786", "430", "053-earned-hull-category"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436031.8611276, "requested": ["click", "938", "445", "054-read-earned-new-hull-entry"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436436.9805126, "requested": ["click", "1018", "714", "055-close-earned-hull-guide"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436438.440233, "requested": ["click", "548", "632", "056-open-final-continuation-save"], "source": "external real mouse/keyboard only"}
+{"unix": 1791436439.9312558, "requested": ["click", "1100", "291", "057-save-after-new-hull-and-first-automation"], "source": "external real mouse/keyboard only"}

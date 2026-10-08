@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-08T05:02:18.422222+00:00",
+  "previous_version": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "runtime_version": "6e9c0d53b77163f6ea4d2ad880b251bed42a67a1",
+  "files_sha256": {
+    "scripts/crew_panel.gd": "0712952bd90d8a79fb0fad1a88fab10c2b60b5004feca2f5b84bb42e39e45998",
+    "data/ui_text.json": "21dd674c775daf4d48f43fee6d92288b7588e977dce08ddb339a304221943637",
+    "data/ui_text_contract.json": "8294b43502e18f03f4bb6c3e44a0b0a9a58c771f8a538dc0ee0ff32856dd6cb0"
+  },
+  "native_progress_unchanged_before_restart_sha256": "2e88878ffdba31f82b9661cf92bd510127dcf02f71e981c3da570d3a0ba2c717",
+  "reason": "normal continuation after minimal crew assignment preview fix; no fixture or independent replay",
+  "game_pid": 23754,
+  "window_id": "0x200003",
+  "final_state": "11/5 paused, first crew released, first new hull in use"
+}

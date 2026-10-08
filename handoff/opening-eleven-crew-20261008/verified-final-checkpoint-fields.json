@@ -1,0 +1,96 @@
+{
+  "saved_utc": "2026-10-08T05:14:00.742506+00:00",
+  "checkpoint_sha256": "b9747f6d02511b7acac0f916547697f282c4daf6baf1efc68ab3e872f99e4909",
+  "runtime_version": "6e9c0d53b77163f6ea4d2ad880b251bed42a67a1",
+  "profile_fields": {
+    "cleared": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "journey": {
+      "distance": 500.0,
+      "groupIndex": 5,
+      "guardArrived": false,
+      "pendingUnlocks": [],
+      "retreatBossPending": false,
+      "stage": 11,
+      "state": 3
+    },
+    "loadout": {
+      "defence": [
+        {
+          "key": "armour",
+          "level": 51
+        },
+        {
+          "key": "shield",
+          "level": 52
+        }
+      ],
+      "weapons": [
+        {
+          "key": "longLaser",
+          "level": 49
+        },
+        {
+          "key": "longLaser",
+          "level": 47
+        },
+        {
+          "key": "longLaser",
+          "level": 46
+        },
+        {
+          "key": "cannon",
+          "level": 6
+        }
+      ]
+    },
+    "reactorLevel": 27,
+    "reactorAllocation": {
+      "condensation": 0,
+      "defence": 240,
+      "smelting": 0,
+      "weapons": 214
+    },
+    "enhancementLevel": 2,
+    "chronoParticles": 43200.0,
+    "resources": {
+      "1": 64958.0,
+      "2": 72489.2002229491
+    },
+    "selectedShip": "Destroyer",
+    "readUnlocks": [
+      "reactor",
+      "longLaser",
+      "cannon",
+      "shield",
+      "missile",
+      "armour",
+      "laser",
+      "crew/navigator",
+      "ship/Destroyer"
+    ]
+  },
+  "first_crew": {
+    "assignmentType": "",
+    "crewId": "navigator",
+    "equipmentSlots": [
+      null,
+      null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+  },
+  "pause": "window paused per screenshots, not asserted as persisted on reload"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "key": "ship.refit.active_count",
+    "before": "启用 {active}",
+    "after": "可用槽位 {active}",
+    "params": "{active}"
+  },
+  {
+    "key": "crew.preview.equipment",
+    "before": null,
+    "after": "确认后每{interval}秒按正常费用花铁，让各装备位{amount}；买不起的先跳过。",
+    "params": "interval,amount"
+  },
+  {
+    "key": "crew.preview.scientist",
+    "before": null,
+    "after": "确认后每{interval}秒按正常费用花铁，建造{amount}并均分到研发；买不起时等待。",
+    "params": "interval,amount"
+  },
+  {
+    "key": "crew.preview.enhancement",
+    "before": null,
+    "after": "确认后每{interval}秒按正常费用花强化碎片升1级；碎片不足时等待。",
+    "params": "interval"
+  },
+  {
+    "key": "crew.preview.reactor",
+    "before": null,
+    "after": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "params": "interval"
+  },
+  {
+    "key": "crew.preview.maximum",
+    "before": null,
+    "after": "升到当前买得起的等级",
+    "params": ""
+  }
+]
