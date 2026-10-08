@@ -303,7 +303,8 @@ func on_event(kind: String,_payload: Dictionary) -> void:
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
-   commands.refresh_materials.call_deferred()
+   if commands.materials_box!=null and commands.materials_box.is_visible_in_tree():
+    commands.refresh_materials.call_deferred()
   if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
 func _process(_delta: float) -> void:
@@ -317,7 +318,7 @@ func refresh() -> void:
  for i in [2,3]:put(section_buttons[i],"visible",bool(s.unlocked_drones))
  if section_index>1 and not bool(s.unlocked_drones):select_section(0);return
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
-  refresh_manual_status()
+  refresh_manual_status(section_index!=0 or bag.is_empty())
  elif dirty and bag.presets!=s.inventory.presets:
   bag.presets=s.inventory.presets.duplicate(true);inventory_dirty=true
  if section_index==0:
@@ -469,12 +470,13 @@ func toggle_favorite() -> void:
 func claim() -> void:
  if host.game.has_method("claim_hyperspace"):
   host.game.claim_hyperspace();dirty=true;route_ui.refresh()
-func refresh_manual_status() -> void:
+func refresh_manual_status(include_inventory:=true) -> void:
  # A route load/reload or inventory generation boundary may refresh this snapshot; progress never does.
- var projection:Dictionary=host.game.hyperspace.snapshot(host.game);manual_snapshot_reads+=1
- manual_projection={"manual_ready":projection.manual_ready,"manual_error":projection.manual_error}
- if generation!=int(projection.inventory.generation) or round_id!=int(projection.round_id) or bag.is_empty():
-  bag=projection.inventory;generation=int(bag.generation);round_id=int(projection.round_id);inventory_dirty=true
+ var g=host.game;var s:Dictionary=g.profile.hyperspace
+ manual_projection={"manual_ready":g.manual_hyperspace.production_accepted,"manual_error":g.manual_hyperspace.last_error}
+ if include_inventory and (generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty()):
+  bag=s.inventory.duplicate(true);manual_snapshot_reads+=1
+  generation=int(bag.generation);round_id=int(s.round_id);inventory_dirty=true
  dirty=true
 func manual_error_text() -> String:
  return t("manual_review_wait") if manual_projection.get("manual_error")=="space_data_not_accepted" else t("manual_not_ready")
