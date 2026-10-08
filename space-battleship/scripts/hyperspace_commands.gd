@@ -1,6 +1,6 @@
 extends RefCounted
 ## UI command controller. Domain previews own all prices and randomness.
-const OPERATIONS=["add_affix","replace_affix","add_hanging_slot","lock_affix","promote_affix","reroll_values","enable_omen","disable_omen","legendary","modernize","ultimate","restore_ultimate","dismantle"]
+const OPERATIONS=["add_affix","replace_affix","add_hanging_slot","lock_affix","promote_affix","reroll_values","enable_omen","disable_omen","legendary","modernize","ultimate","restore_ultimate"]
 var panel
 var exchange_ui=preload("res://scripts/hyperspace_material_exchange_ui.gd").new()
 var operation: OptionButton
@@ -41,6 +41,7 @@ var show_advanced=false
 var configured_drone=""
 var operation_hint: Label
 var more_operations: Button
+var dismantle_request: Dictionary={}
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
  panel=p;exchange_ui.setup(p)
@@ -130,7 +131,7 @@ func basic_available(op:String,d:Dictionary) -> bool:
 func rebuild_choices(wanted:String="") -> void:
  if wanted.is_empty() and operation.selected>=0:wanted=str(operation.get_item_metadata(operation.selected))
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
- var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate","dismantle"].filter(func(op):return basic_available(op,d))
+ var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate"].filter(func(op):return basic_available(op,d))
  operation.clear()
  if choices.is_empty():operation.add_item(t("no_basic_operation"));operation.set_item_metadata(0,"none")
  for op in choices:
@@ -226,11 +227,35 @@ func preview() -> void:
  commit_button.disabled=not str(result.error).is_empty()
 func commit() -> void:
  if quoted_request.is_empty():return
- if quoted_request.operation=="dismantle":
-  if dismantle_dialog==null:
-   dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.title=t("operation_dismantle");dismantle_dialog.dialog_text=t("dismantle_confirm");panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog);dismantle_dialog.confirmed.connect(execute_quote)
-  dismantle_dialog.popup_centered();return
  execute_quote()
+func show_inventory_dismantle() -> void:
+ dismantle_request=request("dismantle")
+ if dismantle_request.is_empty():return
+ var result:Dictionary=h().preview_forge(game(),dismantle_request)
+ var reason=str(result.get("error",""))
+ if dismantle_dialog==null:
+  dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.title=t("operation_dismantle")
+  panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog)
+  dismantle_dialog.confirmed.connect(execute_inventory_dismantle)
+  dismantle_dialog.canceled.connect(func():dismantle_request={})
+ var d:Dictionary=game().profile.hyperspace.inventory.drones.get(dismantle_request.drone_id,{})
+ var title=t("card",{"weapon":t(str(d.weapon)),"level":str(int(d.level)),"quality":panel.quality_caption(d),"flags":""})
+ var text=title+"\n\n"+dismantle_preview_text(dismantle_request)
+ if not reason.is_empty():
+  var flags=panel.protection_flags(str(d.id))
+  text+="\n\n"+error_text(reason)+(": "+flags if not flags.is_empty() else "")
+ else:text+="\n\n"+t("dismantle_confirm")
+ dismantle_dialog.dialog_text=text;dismantle_dialog.get_ok_button().disabled=not reason.is_empty()
+ dismantle_dialog.popup_centered(Vector2i(700,370))
+func execute_inventory_dismantle() -> void:
+ if dismantle_request.is_empty():return
+ var req=dismantle_request;dismantle_request={}
+ var result:Dictionary=h().forge(game(),req)
+ panel.put(panel.inventory_feedback,"visible",true)
+ panel.put(panel.inventory_feedback,"text",error_text(str(result.error)) if not str(result.error).is_empty() else received_rewards_text(result.get("rewards",{})))
+ if str(result.error).is_empty() and bool(result.get("applied",false)):
+  if panel.selected_id==str(req.drone_id):panel.selected_id=""
+ panel.refresh_manual_status();panel.inventory_dirty=true;panel.refresh()
 func execute_quote() -> void:
  if quoted_request.is_empty():return
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.

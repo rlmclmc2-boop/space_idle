@@ -8860,6 +8860,9 @@
       "params": [
         "limit"
       ]
+    },
+    "hyperspace.forge_pick_cancel": {
+      "params": []
     }
   },
   "bindings": {

@@ -16514,5 +16514,12 @@
     "params": "limit",
     "category": "hyperspace",
     "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.forge_pick_cancel",
+    "text": "取消选择，返回改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": "改造对象选择模式的取消入口"
   }
 ]

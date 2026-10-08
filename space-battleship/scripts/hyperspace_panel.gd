@@ -80,6 +80,10 @@ var legendary_group: VBoxContainer
 var legendary_button: Button
 var legendary_summary: Label
 var forge_legendary_button: Button
+var dismantle_button: Button
+var inventory_feedback: Label
+var forge_pick_cancel: Button
+var forge_pick_state: Dictionary={}
 var details: Label
 var detail_title: Label
 var detail_icon: TextureRect
@@ -169,6 +173,7 @@ func setup(owner) -> void:
   if is_visible_in_tree():refresh())
  select_section(0);set_process(true);refresh()
 func select_section(index: int) -> void:
+ if index!=1 and not forge_pick_state.is_empty():finish_forge_pick("",true);return
  section_index=clampi(index,0,3)
  if section_index>1 and host!=null and not bool(host.game.profile.hyperspace.unlocked_drones):section_index=0
  for i in 4:
@@ -199,6 +204,7 @@ func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
  drone_locked=label(parent,t("layer_drone_locked"),24)
  inventory_box=box(parent);inventory_box.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ var picking=row(inventory_box);forge_pick_cancel=button(picking,"forge_pick_cancel",func():finish_forge_pick("",true));forge_pick_cancel.visible=false
  equipment_ui.build(inventory_box)
  var split=row(inventory_box);split.size_flags_vertical=Control.SIZE_EXPAND_FILL
  var list=box(split);list.size_flags_stretch_ratio=1.55
@@ -220,13 +226,15 @@ func build_inventory(parent: Node) -> void:
   var title=label(text,"",21);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_titles.append(title)
   var quality=label(text,"",19);quality.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_subtitles.append(quality)
   var flags_label=label(text,"",18);flags_label.max_lines_visible=2;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
-  b.pressed.connect(func():selected_id=str(b.get_meta("drone_id",""));commands.configure_operation();refresh_details());cards.append(b)
+  b.pressed.connect(func():choose_drone(str(b.get_meta("drone_id",""))));cards.append(b)
  empty=label(list,t("no_items"),24)
  var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
  var detail=surface(split);detail.custom_minimum_size.x=360;detail.size_flags_vertical=Control.SIZE_EXPAND_FILL
  label(detail,t("selected_heading"),25)
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
+ dismantle_button=button(actions,"operation_dismantle",commands.show_inventory_dismantle)
+ inventory_feedback=label(detail,"",19);inventory_feedback.visible=false
  equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
  legendary_group=box(detail,4);legendary_group.visible=false
  legendary_button=button(legendary_group,"legendary_info",show_selected_legendary,{"name":""})
@@ -238,7 +246,7 @@ func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
  var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
  forge_legendary_button=button(selected,"legendary_info",show_selected_legendary,{"name":""});forge_legendary_button.visible=false
- button(selected,"go_warehouse",func():select_section(1))
+ button(selected,"go_warehouse",begin_forge_pick)
  commands.build_forge(parent)
 func build_rules(parent: Node) -> void:
  label(parent,t("presets"),25)
@@ -400,6 +408,7 @@ func refresh_details() -> void:
  put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
+ put(dismantle_button,"disabled",not valid or not forge_pick_state.is_empty())
  var has_effect=valid and bool(bag.drones[selected_id].get("legendary",false))
  var effect:Dictionary=bag.drones[selected_id].get("legendary_effect",{}) if has_effect else {}
  var effect_id=str(effect.get("effect_id",""))
@@ -444,6 +453,25 @@ func refresh_details() -> void:
 func quality_caption(drone: Dictionary) -> String:
  var origin=t(str(drone.origin_quality))
  return t("legendary")+(" · "+origin if drone.origin_quality!="legendary" else "") if drone.legendary else origin
+func choose_drone(id:String) -> void:
+ if not forge_pick_state.is_empty():finish_forge_pick(id);return
+ selected_id=id;commands.configure_operation();refresh_details()
+func begin_forge_pick() -> void:
+ forge_pick_state={"id":selected_id,"operation":str(commands.operation.get_item_metadata(commands.operation.selected)),"advanced":commands.show_advanced,"guarantee":str(commands.guarantee.get_item_metadata(commands.guarantee.selected)) if commands.guarantee.selected>=0 else "","maximum":commands.maximum.button_pressed}
+ put(forge_pick_cancel,"visible",true);select_section(1)
+func finish_forge_pick(id:String,cancelled:=false) -> void:
+ if forge_pick_state.is_empty():return
+ var state=forge_pick_state;forge_pick_state={}
+ selected_id=str(state.id) if cancelled else id
+ put(forge_pick_cancel,"visible",false)
+ commands.select_operation(str(state.operation))
+ if cancelled:
+  commands.show_advanced=bool(state.advanced)
+  commands.rebuild_choices(str(state.operation))
+ select_section(2)
+ for i in commands.guarantee.item_count:
+  if str(commands.guarantee.get_item_metadata(i))==str(state.guarantee):commands.guarantee.select(i);break
+ commands.maximum.button_pressed=bool(state.maximum)
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
   legendary_help.show(bag.drones[selected_id].legendary_effect)

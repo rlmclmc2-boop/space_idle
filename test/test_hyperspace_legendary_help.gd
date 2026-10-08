@@ -13,6 +13,7 @@ func run() -> void:
  g.profile.highestLevel=34;g.profile.cleared=range(1,34);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.onboarding.completed=true
  scene.refresh_tab_visibility();scene.select_system(9)
  await process_frame
+ g.profile.hyperspace.unlocked_drones=true
  var p=scene.hyperspace_panel;var bag:Dictionary=g.profile.hyperspace.inventory
  var rng=RandomNumberGenerator.new();rng.seed=391
  var d=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"legend-help","legendary","laser",5,"1")
