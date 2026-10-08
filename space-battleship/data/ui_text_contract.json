@@ -8872,6 +8872,28 @@
     },
     "hyperspace.action_guaranteed_cost": {
       "params": []
+    },
+    "hyperspace.challenge_recent_result": {
+      "params": [
+        "route",
+        "layer",
+        "result"
+      ]
+    },
+    "hyperspace.challenge_result_success": {
+      "params": []
+    },
+    "hyperspace.challenge_result_defeat": {
+      "params": []
+    },
+    "hyperspace.challenge_result_exit": {
+      "params": []
+    },
+    "hyperspace.challenge_result_interrupted": {
+      "params": []
+    },
+    "hyperspace.challenge_result_failed": {
+      "params": []
     }
   },
   "bindings": {

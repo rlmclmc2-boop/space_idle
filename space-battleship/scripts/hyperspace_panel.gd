@@ -46,6 +46,7 @@ var section_index=0
 var section_buttons: Array[Button]=[]
 var sections: Array[Control]=[]
 var exploration_scroll: ScrollContainer
+var challenge_result_area: VBoxContainer
 var exploration_receipt_area: VBoxContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
@@ -154,6 +155,8 @@ func setup(owner) -> void:
  var tabs=row(root_box)
  for key in ["section_explore","section_drones","section_forge","section_rules"]:
   var index=section_buttons.size();var b=button(tabs,key,func():select_section(index));b.size_flags_horizontal=Control.SIZE_EXPAND_FILL;section_buttons.append(b)
+ challenge_result_area=box(root_box,4);challenge_result_area.visible=false
+ recent_result=label(challenge_result_area,"",21)
  exploration_receipt_area=box(root_box,4);exploration_receipt_area.visible=false
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
@@ -180,8 +183,20 @@ func select_section(index: int) -> void:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
  if host!=null and not bag.is_empty():refresh()
- reward_feedback.sync_receipt_area()
+ reward_feedback.sync_receipt_area();refresh_challenge_result()
  if section_index==2 and commands!=null:commands.configure_operation()
+func refresh_challenge_result() -> void:
+ if recent_result==null or host==null:return
+ # Session result belongs to manual challenge, independent of the reward receipt.
+ var result:Dictionary=host.game.manual_hyperspace.last_result
+ put(challenge_result_area,"visible",section_index==0 and not result.is_empty())
+ if result.is_empty() or section_index!=0:return
+ var reason=str(result.get("reason",""));var key="challenge_result_failed"
+ if reason=="success":key="challenge_result_success"
+ elif reason=="defeat":key="challenge_result_defeat"
+ elif reason=="user_exit":key="challenge_result_exit"
+ elif reason=="interrupted_reload":key="challenge_result_interrupted"
+ put(recent_result,"text",t("challenge_recent_result",{"route":t(str(result.get("route",""))),"layer":str(int(result.get("level",0))),"result":t(key)}))
 func build_exploration(parent: Node) -> void:
  label(parent,t("routes"),26)
  var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",14);grid.add_theme_constant_override("v_separation",14);parent.add_child(grid)

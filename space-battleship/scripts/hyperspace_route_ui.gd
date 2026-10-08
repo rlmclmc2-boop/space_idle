@@ -87,7 +87,7 @@ func refresh_route_markers() -> void:
   if not labels.is_empty():panel.put(marker,"text"," · ".join(labels))
 func refresh() -> void:
  if current==null:return
- refresh_route_markers()
+ panel.refresh_challenge_result();refresh_route_markers()
  var v=view();var reasons:Dictionary=v.get("reasons",{})
  var layer=int(v.get("current_layer",0));var next_layer=int(v.get("next_layer",1))
  if panel.first_win!=null:panel.put(panel.first_win,"visible",layer==0 and not v.is_empty())

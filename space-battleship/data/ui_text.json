@@ -16542,5 +16542,47 @@
     "params": "",
     "category": "hyperspace",
     "note": "独立改造按钮状态"
+  },
+  {
+    "key": "hyperspace.challenge_recent_result",
+    "text": "最近挑战 · {route} 第 {layer} 层：{result}",
+    "params": "route,layer,result",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.challenge_result_success",
+    "text": "已通过，本层记录已更新。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.challenge_result_defeat",
+    "text": "战舰战败，本层未推进。调整装备后再试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.challenge_result_exit",
+    "text": "已退出，本层未推进。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.challenge_result_interrupted",
+    "text": "重开后挑战中止，本层未推进。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
+  },
+  {
+    "key": "hyperspace.challenge_result_failed",
+    "text": "挑战未完成，本层未推进。可重新尝试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "本次会话最近挑战结果，与收获回执独立"
   }
 ]
