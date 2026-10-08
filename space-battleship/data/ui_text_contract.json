@@ -8468,6 +8468,9 @@
       "params": [
         "route"
       ]
+    },
+    "tutorial.hyperspace.description": {
+      "params": []
     }
   },
   "bindings": {

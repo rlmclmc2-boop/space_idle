@@ -15825,5 +15825,11 @@
     "params": "{route}",
     "category": "hyperspace",
     "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "tutorial.hyperspace.description",
+    "text": "选一条路线，点「挑战第1层」。通关后，点「后台探索」重复获取这一层的奖励；也可以挑战下一层。收到无人机后，点「查看无人机」试着装到战舰上。",
+    "params": "",
+    "category": "tutorial"
   }
 ]
