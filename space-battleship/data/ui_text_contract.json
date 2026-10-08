@@ -8323,6 +8323,68 @@
         "weapon",
         "level"
       ]
+    },
+    "hyperspace.module_effect.iron_income": {
+      "params": []
+    },
+    "hyperspace.module_effect.uranium_income": {
+      "params": []
+    },
+    "hyperspace.module_effect.ai_speed": {
+      "params": []
+    },
+    "hyperspace.module_effect.reactor_energy_cap": {
+      "params": []
+    },
+    "hyperspace.module_effect.gem_income": {
+      "params": []
+    },
+    "hyperspace.module_effect.hyperspace_energy_rate": {
+      "params": []
+    },
+    "hyperspace.module_effect.hyperspace_energy_cap": {
+      "params": []
+    },
+    "hyperspace.module_effect_preview": {
+      "params": [
+        "effects",
+        "current",
+        "next_level",
+        "next"
+      ]
+    },
+    "hyperspace.level_choice_hint": {
+      "params": [
+        "minimum",
+        "material",
+        "count"
+      ]
+    },
+    "crew.preview.equipment": {
+      "params": [
+        "interval",
+        "amount"
+      ]
+    },
+    "crew.preview.scientist": {
+      "params": [
+        "interval",
+        "resources",
+        "amount"
+      ]
+    },
+    "crew.preview.enhancement": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.preview.reactor": {
+      "params": [
+        "interval"
+      ]
+    },
+    "crew.preview.maximum": {
+      "params": []
     }
   },
   "bindings": {

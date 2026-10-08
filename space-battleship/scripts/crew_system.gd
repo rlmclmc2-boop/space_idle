@@ -249,16 +249,19 @@ func can_assign(g, id: String, assignment: String, target: String, restoring := 
 		if item.crewId!=id and occupied.get("targetType")==assignments(g)[assignment].targetType and item.targetId==target:count+=1
 	return count < int(assignments(g)[assignment].maxCrew)
 
-func assign(g, id: String, assignment: String, target: String) -> bool:
+func assign(g, id: String, assignment: String, target: String, upgrade_mode := "") -> bool:
 	if not can_assign(g,id,assignment,target):return false
+	if not upgrade_mode.is_empty() and (assignment.is_empty() or not upgrade_modes(g,assignment).has(upgrade_mode)):return false
 	var item := entry(g,id)
-	if item.assignmentType==assignment and item.targetId==target:return true
+	if item.assignmentType==assignment and item.targetId==target:
+		return set_upgrade_mode(g,id,upgrade_mode,assignment) if not upgrade_mode.is_empty() else true
 	g.capture_refit_health()
 	var previous := item.duplicate(true)
 	if item.assignmentType=="galaxy_explore":g.galaxy.flush_pending(g,str(item.targetId))
 	if assignment=="galaxy_explore":g.galaxy.flush_pending(g,target)
 	item.assignmentType=assignment
 	item.targetId=target
+	if not upgrade_mode.is_empty():item.upgradeMode=upgrade_mode
 	if assignment=="galaxy_explore":g.galaxy.start(g,target)
 	timers.erase(id)
 	intervals.erase(id)

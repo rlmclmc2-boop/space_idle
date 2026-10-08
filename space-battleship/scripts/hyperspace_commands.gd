@@ -114,6 +114,7 @@ func explore_missing_material() -> void:
    panel.route=str(key);panel.select_section(0);return
 func basic_available(op:String,d:Dictionary) -> bool:
  if d.is_empty() or game().profile.hyperspace.inventory.sealed.has(str(d.id)):return false
+ if op=="dismantle":return not panel.Bag.protected(game().profile.hyperspace.inventory,str(d.id))
  if d.ultimate:return op=="restore_ultimate"
  var unlocked=d.affixes.any(func(a):return not a.locked)
  match op:
@@ -126,7 +127,7 @@ func basic_available(op:String,d:Dictionary) -> bool:
 func rebuild_choices(wanted:String="") -> void:
  if wanted.is_empty() and operation.selected>=0:wanted=str(operation.get_item_metadata(operation.selected))
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
- var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate"].filter(func(op):return basic_available(op,d))
+ var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate","dismantle"].filter(func(op):return basic_available(op,d))
  operation.clear()
  if choices.is_empty():operation.add_item(t("no_basic_operation"));operation.set_item_metadata(0,"none")
  for op in choices:
@@ -141,9 +142,7 @@ func configure_operation() -> void:
  if configured_drone!=panel.selected_id:
   configured_drone=panel.selected_id;show_advanced=false;rebuild_choices()
  elif not show_advanced:
-  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
-  var op=str(operation.get_item_metadata(operation.selected))
-  if not basic_available(op,d):rebuild_choices()
+  rebuild_choices()
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
  promotion_hint.visible=op=="promote_affix"
@@ -284,17 +283,22 @@ func show_modules() -> void:
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
  if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots"),21)
+ var module_scroll=ScrollContainer.new();module_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;module_scroll.custom_minimum_size.y=120;module_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(module_scroll)
+ var choices=panel.box(module_scroll);choices.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var unlocked=0;var available=0;var has_zero_level=false
  for key in h().config.hanging_modules:
-  var progress: Dictionary=game().profile.hyperspace.hanging_modules[key]
-  var known: bool=progress.unlocked or int(progress.level)>0 or float(progress.exp)>0 or game().profile.hyperspace.inventory.drones.values().any(func(drone):return drone.hangings.has(key))
+  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
+  var known:bool=progress.unlocked or int(progress.level)>0 or float(progress.exp)>0 or game().profile.hyperspace.inventory.drones.values().any(func(drone):return drone.hangings.has(key))
   if not known:continue
   unlocked+=int(progress.unlocked)
   var usable=bool(progress.unlocked) and int(game().profile.highestLevel)>=int(h().config.hanging_modules[key].unlock_stage)
   available+=int(usable);has_zero_level=has_zero_level or (usable and int(progress.level)==0)
   var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key)
   choice.visible=known;choice.disabled=not usable or int(d.hanging_slots)==0 or d.ultimate or panel.bag.sealed.has(module_id)
-  body.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  choices.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
+  if choice.visible:
+   var description=dialog_label(choices,module_effect_text(str(key),int(progress.level)),18)
+   description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;description.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   choice.toggled.connect(func(_pressed):refresh_module_apply())
  if unlocked==0:dialog_label(body,t("module_none_unlocked"),21)
  elif available==0:dialog_label(body,t("module_none_available"),21)
@@ -311,6 +315,10 @@ func show_modules() -> void:
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
  refresh_module_apply()
  module_dialog.popup_centered(Vector2i(740,510))
+func module_effect_text(key:String,level:int) -> String:
+ var config:Dictionary=h().config.hanging_modules[key];var effects:Array[String]=[]
+ for effect in config.effects:effects.append(t("module_effect."+str(effect)))
+ return t("module_effect_preview",{"effects":"、".join(effects),"current":"%.1f"%((pow(1.0+float(config.effect_growth),level)-1.0)*100.0),"next_level":str(level+1),"next":"%.1f"%((pow(1.0+float(config.effect_growth),level+1)-1.0)*100.0)})
 func refresh_module_apply() -> void:
  if not is_instance_valid(module_apply):return
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(module_id,{})

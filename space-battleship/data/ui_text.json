@@ -1,5 +1,33 @@
 [
   {
+    "key": "battle.finale_cleared",
+    "text": "终局已肃清",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_cleared",
+    "text": "异空间突破 · 已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.return_main",
+    "text": "已返回主线",
+    "params": "",
+    "category": "battle",
+    "note": "战斗结果事件的表现反馈，不参与规则"
+  },
+  {
+    "key": "battle.finale",
+    "text": "终局战",
+    "params": "",
+    "category": "battle",
+    "note": "ultimate战斗表现标题，不参与规则"
+  },
+  {
     "key": "hyperspace.visual_tier",
     "text": " · T{tier}",
     "params": "{tier}",
@@ -12153,7 +12181,7 @@
   },
   {
     "key": "ship.refit.active_count",
-    "text": "启用 {active}",
+    "text": "可用槽位 {active}",
     "params": "{active}",
     "category": "ship",
     "note": "候选舰体实际启用槽位数量"
@@ -14707,7 +14735,7 @@
   },
   {
     "key": "hyperspace.module_source_hint",
-    "text": "拆解多余无人机会随机获得模块；再次获得同种模块，可用于升级。",
+    "text": "到「改造」选择「拆解无人机」可随机获得模块；再次获得同种模块可升级。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14954,34 +14982,6 @@
     "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
     "params": "",
     "category": "hyperspace"
-  },
-  {
-    "key": "battle.finale_cleared",
-    "text": "终局已肃清",
-    "params": "",
-    "category": "battle",
-    "note": "战斗结果事件的表现反馈，不参与规则"
-  },
-  {
-    "key": "battle.return_cleared",
-    "text": "异空间突破 · 已返回主线",
-    "params": "",
-    "category": "battle",
-    "note": "战斗结果事件的表现反馈，不参与规则"
-  },
-  {
-    "key": "battle.return_main",
-    "text": "已返回主线",
-    "params": "",
-    "category": "battle",
-    "note": "战斗结果事件的表现反馈，不参与规则"
-  },
-  {
-    "key": "battle.finale",
-    "text": "终局战",
-    "params": "",
-    "category": "battle",
-    "note": "ultimate战斗表现标题，不参与规则"
   },
   {
     "key": "hyperspace.material_heading",
@@ -15518,7 +15518,7 @@
   },
   {
     "key": "hyperspace.module_none_unlocked",
-    "text": "还没有解锁模块。拆解多余无人机可随机获得，种类不能指定。",
+    "text": "还没有解锁模块。到「改造」选择「拆解无人机」，可随机获得；种类不能指定。",
     "params": "",
     "category": "hyperspace",
     "note": "仅按当前无人机／模块状态提示"
@@ -15557,5 +15557,94 @@
     "params": "{slot},{quality},{weapon},{level}",
     "category": "hyperspace",
     "note": "替换候选显示槽位、品质和装备，避免同名同等级无人机混淆"
+  },
+  {
+    "key": "hyperspace.module_effect.iron_income",
+    "text": "铁产出",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.uranium_income",
+    "text": "铀产出",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.ai_speed",
+    "text": "科研进度积累速度",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.reactor_energy_cap",
+    "text": "反应炉能源上限",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.gem_income",
+    "text": "宝石碎片产出",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_rate",
+    "text": "探索能量恢复速度",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_cap",
+    "text": "探索能量上限",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_effect_preview",
+    "text": "{effects}：本级 +{current}% → {next_level}级 +{next}%。\n安装到已装备的无人机上才生效。",
+    "params": "effects,current,next_level,next",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.level_choice_hint",
+    "text": "最低{minimum}级。提高等级会遇到更强敌人；掉落无人机时，其等级与探索等级相同。\n该等级通关材料：{material} ×{count}。",
+    "params": "minimum,material,count",
+    "category": "hyperspace"
+  },
+  {
+    "key": "crew.preview.equipment",
+    "text": "确认后每{interval}秒按正常费用花铁，让各装备位{amount}；买不起的先跳过。",
+    "params": "interval,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.scientist",
+    "text": "确认后每{interval}秒按正常费用消耗{resources}，建造{amount}并均分到研发；买不起时等待。",
+    "params": "interval,resources,amount",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.enhancement",
+    "text": "确认后每{interval}秒按正常费用花强化碎片升1级；碎片不足时等待。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.reactor",
+    "text": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "params": "interval",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.preview.maximum",
+    "text": "升到当前买得起的等级",
+    "params": "",
+    "category": "crew",
+    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
   }
 ]

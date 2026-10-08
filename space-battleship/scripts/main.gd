@@ -1291,6 +1291,9 @@ func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
 func advance_turrets(dt: float) -> void:
 	if game.paused:return
 	var entries := game.weapon_entries()
+	# Targets remain selected per mount. Reuse only their visual positions for
+	# this invocation; identity guards slot reuse, and nothing survives a step.
+	var target_positions: Dictionary = {}
 	for index in turret_visuals.keys():
 		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
 	for index in entries.size():
@@ -1314,7 +1317,14 @@ func advance_turrets(dt: float) -> void:
 		if not target.is_empty():
 			var pivot := player_render_position()+player_mount_center(str(game.profile.selectedShip),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
-			desired = clampf(wrapf((entity_render_position(target)-pivot).angle()+PI/2-player_idle_angle(),-PI,PI),-limit,limit)
+			var target_slot := int(target.get("slot",-1))
+			var target_position: Vector2
+			if target_positions.has(target_slot) and is_same(target_positions[target_slot].entity,target):
+				target_position = target_positions[target_slot].position
+			else:
+				target_position = entity_render_position(target)
+				target_positions[target_slot] = {"entity":target,"position":target_position}
+			desired = clampf(wrapf((target_position-pivot).angle()+PI/2-player_idle_angle(),-PI,PI),-limit,limit)
 		var speed := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_turn_degrees_per_second",240.0)))
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 

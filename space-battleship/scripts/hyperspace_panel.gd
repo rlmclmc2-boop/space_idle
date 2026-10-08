@@ -55,6 +55,7 @@ var card_titles: Array[Label]=[]
 var card_subtitles: Array[Label]=[]
 var card_flags: Array[Label]=[]
 var level: SpinBox
+var level_choice_hint: Label
 var energy: Label
 var energy_bar: ProgressBar
 var best: Label
@@ -182,6 +183,7 @@ func build_exploration(parent: Node) -> void:
   routes.append(b)
  var levels=row(parent);var title=label(levels,t("level"));title.custom_minimum_size.x=160;title.autowrap_mode=TextServer.AUTOWRAP_OFF
  level=SpinBox.new();level.min_value=5;level.max_value=5;level.step=1;level.custom_minimum_size.x=160;levels.add_child(level);input_skin(level.get_line_edit());level.value_changed.connect(func(_v):refresh_status())
+ level_choice_hint=label(parent,"",20)
  var summaries=row(parent);var reserve=surface(summaries);var mission=surface(summaries)
  label(reserve,t("energy_heading"),25);energy=label(reserve,"");energy_bar=ProgressBar.new();energy_bar.custom_minimum_size.y=26;energy_bar.show_percentage=false;reserve.add_child(energy_bar);best=label(reserve,"")
  label(mission,t("mission_heading"),25);status=label(mission,"");progress=ProgressBar.new();progress.custom_minimum_size.y=26;progress.show_percentage=false;mission.add_child(progress);claim_button=button(mission,"claim",claim)
@@ -340,6 +342,7 @@ func refresh_status() -> void:
  if host==null:return
  var g=host.game;var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
  put(level,"max_value",maxi(5,int(g.profile.highestLevel)))
+ put(level_choice_hint,"text",t("level_choice_hint",{"minimum":str(int(h.config.minimum_level)),"material":t(str(h.config.routes[route].material)),"count":str(preload("res://scripts/drone_rewards.gd").material_amount(h.online_config(g),int(level.value)))}))
  put(resource_reference_hint,"text",t("resource_reference_hint",{"level":str(int(level.value)),"cleared":str(preload("res://scripts/hyperspace_reward_binding.gd").latest_cleared_level(g))}))
  var ticket=display_ticket(s)
  put(energy,"text",energy_caption(s,float(h.online_config(g).energy_cap),ticket))

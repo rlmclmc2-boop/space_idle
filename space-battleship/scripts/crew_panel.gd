@@ -17,8 +17,11 @@ var target_picker: OptionButton
 var target_label: Label
 var upgrade_picker: OptionButton
 var mode_ids: Array[String] = []
+var draft_mode := "1"
+var draft_source: Array = []
 var assign_button: Button
 var assignment_reason: Label
+var assignment_preview: Label
 var release_button: Button
 var job_ids: Array = []
 var target_ids: Array = []
@@ -181,14 +184,14 @@ func setup(owner_ui: Node) -> void:
 	target_picker=picker(parameter_column)
 	target_picker.item_selected.connect(func(_index):refresh_actions())
 	upgrade_picker=picker(parameter_column)
-	upgrade_picker.item_selected.connect(func(index):host.game.crew.set_upgrade_mode(host.game,selected,mode_ids[index],job_ids[jobs.selected]))
+	upgrade_picker.item_selected.connect(func(index):draft_mode=mode_ids[index];refresh_actions())
+	assignment_preview=label(assignment_section,"",20,MUTED)
+	assignment_preview.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var buttons:=HBoxContainer.new()
 	buttons.add_theme_constant_override("separation",24)
 	assignment_section.add_child(buttons)
-	assign_button=action("crew.confirm_assign",func():
-		if jobs.selected>=0 and target_picker.selected>=0:
-			if not host.game.crew.assign(host.game,selected,job_ids[jobs.selected],target_ids[target_picker.selected]):refresh_actions(),buttons,true)
-	release_button=action("crew.release",func():host.game.crew.assign(host.game,selected,"",""),buttons)
+	assign_button=action("crew.confirm_assign",confirm_assignment,buttons,true)
+	release_button=action("crew.release",release_assignment,buttons)
 	assignment_reason=label(assignment_section,UIText.t("crew.hyperspace_busy_reason"),20,MUTED)
 	assignment_reason.visible=false
 	locked_preview=Button.new()
@@ -206,7 +209,8 @@ func setup(owner_ui: Node) -> void:
 	locked_preview.add_theme_stylebox_override("disabled",locked_style)
 	list.add_child(locked_preview)
 	visibility_changed.connect(func():
-		if is_visible_in_tree():refresh())
+		if is_visible_in_tree():refresh()
+		else:draft_source.clear())
 	refresh()
 
 func picker(parent: Control) -> OptionButton:
@@ -377,12 +381,31 @@ func select(id: String) -> void:
 	selected=id
 	refresh_selection()
 	var item: Dictionary=host.game.crew.entry(host.game,id)
-	var index:=job_ids.find(item.assignmentType)
-	if index>=0:jobs.select(index)
-	refresh_targets()
-	index=target_ids.find(item.targetId)
-	if index>=0:target_picker.select(index)
+	reset_assignment_draft(item)
 	refresh_detail()
+
+func assignment_state(item: Dictionary) -> Array:
+	return [item.crewId,item.assignmentType,item.targetId,item.get("upgradeMode","1")]
+
+func reset_assignment_draft(item: Dictionary) -> void:
+	draft_source=assignment_state(item)
+	draft_mode=str(item.get("upgradeMode","1"))
+	var index:=job_ids.find(str(item.assignmentType))
+	host.set_ui_value(jobs,"selected",index if index>=0 else (0 if not job_ids.is_empty() else -1))
+	refresh_targets()
+	index=target_ids.find(str(item.targetId))
+	host.set_ui_value(target_picker,"selected",index if index>=0 else (0 if not target_ids.is_empty() else -1))
+
+func confirm_assignment() -> void:
+	if jobs.selected<0 or target_picker.selected<0:return
+	var g=host.game
+	var mode:=draft_mode if not mode_ids.is_empty() else ""
+	if not g.crew.assign(g,selected,job_ids[jobs.selected],target_ids[target_picker.selected],mode):refresh_actions()
+
+func release_assignment() -> void:
+	var g=host.game
+	if g.crew.assign(g,selected,"",""):select(selected)
+	else:refresh_actions()
 
 func refresh_selection() -> void:
 	for id in rows:
@@ -445,6 +468,7 @@ func refresh_detail() -> void:
 	host.set_ui_value(detail_body,"visible",not item.is_empty())
 	host.set_ui_value(empty_label,"visible",item.is_empty())
 	if item.is_empty():return
+	if draft_source!=assignment_state(item):reset_assignment_draft(item)
 	var row: Dictionary=g.crew.definitions(g)[selected]
 	host.set_ui_value(title,"text",g.crew.display_name(g,item))
 	host.set_ui_value(portrait,"texture",member_portrait(item))
@@ -504,6 +528,24 @@ func refresh_detail_status(item: Dictionary) -> void:
 		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":"%.1f" % (value*100)})
 	host.set_ui_value(description,"text",text)
 
+func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
+	var kind:=str(row.get("effectType",""))
+	var key: String={"AUTO_UPGRADE":"equipment","AUTO_SCIENTIST":"scientist","AUTO_COMBINE":"enhancement","AUTO_REACTOR":"reactor"}.get(kind,"")
+	if key.is_empty() or jobs.selected<0:return ""
+	var g=host.game
+	var value: float=g.crew.effect_value(g,{"crewId":item.crewId,"assignmentType":job_ids[jobs.selected]})
+	if value<=0:return ""
+	var values: Dictionary={"interval":"%.1f" % (float(row.interval)/value)}
+	var mode:=draft_mode
+	if kind=="AUTO_UPGRADE":
+		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)
+	elif kind=="AUTO_SCIENTIST":
+		values.amount=g.crew.upgrade_mode_text(mode,kind)
+		var resources:=PackedStringArray()
+		for id in g.scientist_cost():resources.append(UIText.data_text("resources",str(id)))
+		values.resources="、".join(resources)
+	return UIText.t("crew.preview."+key,values)
+
 func refresh_actions() -> void:
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
@@ -528,8 +570,12 @@ func refresh_actions() -> void:
 		for mode in modes:
 			upgrade_picker.add_item((UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})) if equipment else g.crew.upgrade_mode_text(mode,str(row.effectType)))
 		upgrade_picker.set_meta("effect_type",str(row.get("effectType","")))
-	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(str(item.get("upgradeMode",""))))
+	if not mode_ids.is_empty() and not mode_ids.has(draft_mode):draft_mode=mode_ids[0]
+	host.set_ui_value(upgrade_picker,"selected",mode_ids.find(draft_mode))
 	host.set_ui_value(upgrade_picker,"disabled",item.is_empty())
+	var preview: String=assignment_preview_text(item,row)
+	host.set_ui_value(assignment_preview,"text",preview)
+	host.set_ui_value(assignment_preview,"visible",not preview.is_empty())
 	var valid:=jobs.selected>=0 and target_picker.selected>=0
 	var space_reserved:=hyperspace_reserved(selected)
 	host.set_ui_value(assignment_reason,"visible",space_reserved)
