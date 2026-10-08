@@ -9043,6 +9043,29 @@
     },
     "hyperspace.promotion_no_change": {
       "params": []
+    },
+    "equipment.refit_comparison": {
+      "params": [
+        "current",
+        "current_stat",
+        "current_type",
+        "level",
+        "next",
+        "next_stat",
+        "next_type"
+      ]
+    },
+    "equipment.refit_resistance": {
+      "params": [
+        "type",
+        "percent"
+      ]
+    },
+    "equipment.refit_empty": {
+      "params": []
+    },
+    "equipment.refit_rate_scope": {
+      "params": []
     }
   },
   "bindings": {

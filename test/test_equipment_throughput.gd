@@ -56,6 +56,31 @@ func run():
  check(Display.throughput(g,entry).reasons.has("beam_owner"),"Shared Prism owner is conditional, not a guaranteed per-module bonus")
  entry.key="missile";g.hyperspace_totals().legendary.precise_guidance={}
  check(Display.throughput(g,entry).reasons.has("target_stacks"),"Enemy guidance history is excluded and explained")
+ # Type replacement retains source identity, not the old loadout's laser count.
+ entry.key="cannon";entry.level=12;other.key="laser"
+ g.stat_cache.erase("hyperspace_endless_source")
+ g.hyperspace_totals().legendary.laser_charge={"parameters":{"maximum_bonus":1.0},"constants":{"bonus_per_laser":0.1}}
+ var old_count:int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
+ var profile_before:=JSON.stringify(g.profile);var refit_rng:=g.rng.state
+ var replacement:=Display.refit_snapshot(g,entry,"laser")
+ check(equal(replacement.rate.single,N.multiply(replacement.expected,1.0+0.1*(old_count+1))),"Refit Laser Charge counts candidate laser, including unchanged sources")
+ check(JSON.stringify(g.profile)==profile_before and g.rng.state==refit_rng,"Legendary refit preview preserves actual profile/RNG")
+ entry.key="laser"
+ check(equal(Display.snapshot(g,entry).rate.start,replacement.rate.start),"Laser type preview equals projection after actual fixture replacement")
+ entry.key="cannon";entry.level=14;other.key="longLaser";other.level=13
+ g.stat_cache.erase("hyperspace_endless_source")
+ profile_before=JSON.stringify(g.profile);refit_rng=g.rng.state
+ replacement=Display.refit_snapshot(g,entry,"longLaser")
+ check(equal(replacement.rate.end,N.multiply(replacement.rate.start,4.0)),"Type refit reselects strongest beam and includes its Endless bonus")
+ check(replacement.rate.reasons.has("beam_owner"),"Candidate beam keeps conditional Prism ownership explicit")
+ check(JSON.stringify(g.profile)==profile_before and g.rng.state==refit_rng,"Strongest-source preview is read-only")
+ entry.key="longLaser";g.stat_cache.erase("hyperspace_endless_source")
+ check(equal(Display.snapshot(g,entry).rate.end,replacement.rate.end),"Candidate beam range equals actual replacement projection")
+ entry.key="cannon";entry.level=12;g.stat_cache.erase("hyperspace_endless_source")
+ replacement=Display.refit_snapshot(g,entry,"longLaser")
+ check(equal(replacement.rate.end,N.multiply(replacement.rate.start,3.0)),"Weaker replacement beam cannot borrow another source's Endless")
+ replacement=Display.refit_snapshot(g,entry,"missile")
+ check(equal(replacement.rate.start,N.multiply(replacement.rate.single,float(replacement.rate.salvo)/float(replacement.rate.interval))),"Refit missile compares whole-salvo DPS, never single projectile damage")
  entry.key="longLaser"
  source.cd=0
  check(not Display.throughput(g,entry).valid,"Invalid interval never produces infinite rate")
