@@ -1,0 +1,89 @@
+{
+	"exhaust_shader": "bb78ec21addf3a7ec4905ca1254f4274afdc8993aaec34aebb658b24e7125501",
+	"light": "1b0c9b752acaa0a07c01f49702fdd79b16b633b7063c6a2472b815d5cdda85fc",
+	"parts": {
+		"017dd615614163ba9bfcdaff479101637b33875c05635546f17a9f2935447859": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192,
+			"source": "cannon bearing",
+			"span": 1.22188055515289,
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png"
+		},
+		"01bde4ff34ff3e4d6ae69fc1cb1fd4aef74a4882c5f75b900407e97067dfa50b": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.634693562984467,
+			"low": 0.0550000071525574,
+			"size": 192,
+			"source": "laser turret",
+			"span": 2.1402485370636,
+			"atlas": "res://assets/ships/flat_parts/37561c9c6a1f464ce028b9709aa141dfba0d7f5dbc9b5673eeec525e1fc04ae1.png"
+		},
+		"055de536fa5c363cd7371b7870673279fd4d325b86524f42028e25bd0e1b3c85": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192,
+			"source": "laser bearing",
+			"span": 1.22188055515289,
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png"
+		},
+		"4b8d78b837bc18b1c41bba6a35b490aa0384c326c855b9ac8829e8fa1e74f04d": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.599999964237213,
+			"low": 0.0550000071525574,
+			"size": 192,
+			"source": "longLaser turret",
+			"span": 2.07281231880188,
+			"atlas": "res://assets/ships/flat_parts/328109df3489bb41aeccaa33ae9ac57e2b80a2abc31c76eb5813570563295676.png"
+		},
+		"5554ba2f489712992b9b2ce07250dc505ceabaad08d3122fa23d786a7e7c2adc": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192,
+			"source": "missile bearing",
+			"span": 1.22188055515289,
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png"
+		},
+		"83c7597c230e05c671d9c58f9e9f5508d82bf9345edf00963cadd8e0c02b4e66": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.612499952316284,
+			"low": 0.0550000071525574,
+			"size": 192,
+			"source": "missile turret",
+			"span": 1.8278820514679,
+			"atlas": "res://assets/ships/flat_parts/6d2f6f551e73eb37a2d14ced724593497e6edfd580008c772d2415596522b4b1.png"
+		},
+		"cf75924be907cf22911399f72baf75dd04b2f6bc5abcc8700dd3ed0bce514a1f": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.615500032901764,
+			"low": 0.0549999475479126,
+			"size": 192,
+			"source": "cannon turret",
+			"span": 2.65838074684143,
+			"atlas": "res://assets/ships/flat_parts/313132d49e7b126e9ec2f918835ce1ed485dd2b2ea49392392ba395045e11945.png"
+		},
+		"f27291de1a0dbc6c68e25fbbe341aeea318e87f0f550a9d9a4337115a0df7e62": {
+			"columns": 8,
+			"frames": 64,
+			"height": 0.0900000035762787,
+			"low": 0.0,
+			"size": 192,
+			"source": "longLaser bearing",
+			"span": 1.22188055515289,
+			"atlas": "res://assets/ships/flat_parts/d8f984749f94f7fa6e6139e3817e5ce13fcc62142a76d42b58266b5dc94e4d06.png"
+		}
+	},
+	"shield_map": "res://assets/ships/flat_parts/becfb7ef5271f3635a2d0a24280bf403bb20459d9f99732f9d36995f041e1cac.png",
+	"shield_shader": "9c85ae1ce0b19fda090e40162d7a6a796efa5cf4f32c2a707bae08c5506c8f96",
+	"body_proxy_shader": "d3c0363cd7a8d6ace1aef19ad55807b091d71b6f322eb552813636fa8f33b48d"
+}
