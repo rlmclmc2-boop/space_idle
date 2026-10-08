@@ -317524,6 +317524,18 @@
       "value": "",
       "des": "专属AI {ai}",
       "targetType": ""
+    },
+    "hyperspace_duration_k": {
+      "id": "hyperspace_duration_k",
+      "value": 20,
+      "des": "船员等级越高，异空间挂机耗时越短。",
+      "targetType": ""
+    },
+    "hyperspace_luck_per_level": {
+      "id": "hyperspace_luck_per_level",
+      "value": 1,
+      "des": "每级增加幸运；探索奖励的词缀品阶可额外重抽并保留最好结果。",
+      "targetType": ""
     }
   },
   "planet_build": {
@@ -318063,6 +318075,84 @@
       "stack": "max",
       "order": 6,
       "des": "能够探索新星球：脉冲星-PSR T46+38"
+    },
+    "36": {
+      "id": 36,
+      "planet_id": 1,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "37": {
+      "id": 37,
+      "planet_id": 2,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "38": {
+      "id": 38,
+      "planet_id": 3,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "39": {
+      "id": 39,
+      "planet_id": 4,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "40": {
+      "id": 40,
+      "planet_id": 5,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
+    },
+    "41": {
+      "id": 41,
+      "planet_id": 6,
+      "source": "conquer",
+      "source_id": 0,
+      "condition": "conquered",
+      "buff_type": "luck",
+      "target": "all",
+      "value": 100,
+      "stack": "add",
+      "order": 7,
+      "des": "永久幸运 +{value}"
     }
   },
   "galaxy": {

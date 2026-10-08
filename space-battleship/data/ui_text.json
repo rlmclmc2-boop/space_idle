@@ -13310,7 +13310,7 @@
   },
   {
     "key": "hyperspace.filter_disabled",
-    "text": "自动筛选尚未启用",
+    "text": "自动处理未启用",
     "params": "",
     "category": "hyperspace"
   },
@@ -13610,7 +13610,7 @@
   },
   {
     "key": "hyperspace.hanging_name.hyperspace_charge",
-    "text": "异空间充能",
+    "text": "异空间采集器",
     "params": "",
     "category": "hyperspace"
   },
@@ -13778,7 +13778,7 @@
   },
   {
     "key": "hyperspace.filter_domain_hint",
-    "text": "最多五条件；导入先预览，保存后执行所选处理动作。",
+    "text": "只处理之后的新掉落，不动现有仓库。拆解会返还材料和随机挂载模块副本。",
     "params": "",
     "category": "hyperspace"
   },
@@ -13790,13 +13790,13 @@
   },
   {
     "key": "hyperspace.filter_action_keep_matches",
-    "text": "保留匹配项",
+    "text": "保留符合条件的，其余拆解",
     "params": "",
     "category": "hyperspace"
   },
   {
     "key": "hyperspace.filter_action_clear_matches",
-    "text": "销毁匹配项",
+    "text": "拆解符合条件的，其余保留",
     "params": "",
     "category": "hyperspace"
   },
@@ -14252,7 +14252,7 @@
   },
   {
     "key": "hyperspace.totals_authority",
-    "text": "当前装备总加成（领域投影）",
+    "text": "当前装备总加成",
     "params": "",
     "category": "hyperspace"
   },
@@ -14330,7 +14330,7 @@
   },
   {
     "key": "hyperspace.total_legendary",
-    "text": "生效传说效果（领域择取）",
+    "text": "生效传说效果",
     "params": "",
     "category": "hyperspace"
   },
@@ -15584,7 +15584,7 @@
   },
   {
     "key": "hyperspace.module_effect.gem_income",
-    "text": "宝石碎片产出",
+    "text": "强化碎片产出（掉落与熔炼）",
     "params": "",
     "category": "hyperspace"
   },
@@ -15646,5 +15646,446 @@
     "params": "",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
+  },
+  {
+    "key": "crew.hyperspace_duration_title",
+    "text": "异空间挂机",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_base",
+    "text": "按当前层最佳通关时间挂机。",
+    "params": "",
+    "category": "crew",
+    "note": "已派遣异空间挂机的船员说明；不改变奖励产量"
+  },
+  {
+    "key": "crew.hyperspace_duration_effect",
+    "text": "挂机速度 ×{efficiency}\n幸运 +{luck}：奖励词缀有机会重新抽品阶，保留更好的。",
+    "params": "efficiency,luck",
+    "category": "crew",
+    "note": "已派遣异空间船员的等级效果；幸运只影响该路线探索奖励词缀品阶，核心负责抽样"
+  },
+  {
+    "key": "hyperspace.layer_first_win",
+    "text": "选一条路线，先挑战第 1 层。胜利后就能在主线战斗中后台探索这一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_current",
+    "text": "已通关第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_unstarted",
+    "text": "这条路线还未通关",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_once",
+    "text": "后台探索第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenge",
+    "text": "挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_stop",
+    "text": "停止后台探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_exit",
+    "text": "退出挑战",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_record",
+    "text": "这一层最快 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_time",
+    "text": "后台每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck",
+    "text": "幸运 {value}",
+    "params": "{value}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_sources",
+    "text": "船员 {crew} + 重铸 {permanent}；幸运让词条 T 阶多抽后取最好的一次。",
+    "params": "{crew},{permanent}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_luck_rules",
+    "text": "每 100 幸运多抽一次 T 阶，不满 100 的部分按比例再抽一次。只影响 T 阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_hint",
+    "text": "后台探索时可继续主线；挑战下一层会进入战斗，胜利后推进一层。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_work",
+    "text": "后台探索 · {work} / {duration} 秒",
+    "params": "{work},{duration}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_idle_none",
+    "text": "本路线后台探索尚未开始",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_challenging",
+    "text": "正在挑战第 {layer} 层",
+    "params": "{layer}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_record",
+    "text": "先挑战并通关这一层，再开始后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_busy",
+    "text": "已有任务进行中，请先停止或退出。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_crew",
+    "text": "先选一名可用船员。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_warehouse",
+    "text": "仓库已满，先整理无人机或领取待收奖励。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_reason_unavailable",
+    "text": "暂时无法开始，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_start",
+    "text": "让船员连续探索",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_detail",
+    "text": "每轮 {time} 秒 · 幸运 {luck}",
+    "params": "{time},{luck}",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_hint",
+    "text": "船员会反复探索当前已通关层；想去下一层，返回路线页点「挑战」。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_task_pending",
+    "text": "奖励已保留，点「领取」收下；仓满时先整理无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "路线当前层与下一层界面；仅展示核心快照"
+  },
+  {
+    "key": "hyperspace.layer_crew_choice",
+    "text": "{name} · {status}",
+    "params": "{name},{status}",
+    "category": "hyperspace",
+    "note": "船员等级未解锁前的路线船员选择"
+  },
+  {
+    "key": "hyperspace.layer_claim_challenge",
+    "text": "领取挑战奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_background",
+    "text": "领取后台奖励",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_claim_retry",
+    "text": "暂未领到奖励。先在「无人机」页腾出仓位，再回来领取；奖励会保留。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "统一领取接口的收据领取入口与失败反馈"
+  },
+  {
+    "key": "hyperspace.layer_crew_time",
+    "text": "选中船员：每轮 {time} 秒",
+    "params": "{time}",
+    "category": "hyperspace",
+    "note": "候选船员时长报价；核心幸运快照目前只含已配置船员，不冒充候选报价"
+  },
+  {
+    "key": "hyperspace.layer_reason_other_route",
+    "text": "另一条路线正在后台探索，先到那条路线停止探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 other_route 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_reason_max_layer",
+    "text": "这条路线已经全部通关，可以继续后台探索。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "核心 max_layer 原因码的操作提示"
+  },
+  {
+    "key": "hyperspace.layer_drone_locked",
+    "text": "到「探索」选一条路线，点「挑战第 1 层」。胜利后回来查看并装备无人机。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "未解锁无人机页的实际挑战入口，不使用旧排队提示"
+  },
+  {
+    "key": "startup.invalid_progress_title",
+    "text": "存档未能读取",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.invalid_progress_body",
+    "text": "原存档文件已保留。游戏已暂停启动，并停止写入存档。\n请保留 progress.json 和备份文件，排查后重新启动游戏。",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.keep_save_ack",
+    "text": "知道了",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "hyperspace.exchange_title",
+    "text": "材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_close",
+    "text": "关闭",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_source",
+    "text": "拿什么兑换？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_target",
+    "text": "想换成什么？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_amount",
+    "text": "希望获得多少？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_maximum",
+    "text": "填入最大数量",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_review",
+    "text": "兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm_title",
+    "text": "确认材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm",
+    "text": "确认兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_cancel",
+    "text": "返回",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_summary",
+    "text": "扣除 {cost} {source}\n获得 {received} {target}",
+    "params": "{cost},{source},{received},{target}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_owned",
+    "text": "持有 {amount}",
+    "params": "{amount}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_same",
+    "text": "选两种不同材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_insufficient",
+    "text": "来源材料不够，减少数量或换个来源。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_invalid_amount",
+    "text": "请输入正整数。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_material_limit",
+    "text": "本次数量超过目标持有上限，请减少数量。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_stale",
+    "text": "材料或改造状态已变化，请重新查看兑换并确认。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_unavailable",
+    "text": "暂时无法兑换，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_success",
+    "text": "兑换完成。\n{summary}",
+    "params": "{summary}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.layer_route_background",
+    "text": "后台中",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实际后台收据所在路线的卡片标记，不跟随当前选择路线"
+  },
+  {
+    "key": "hyperspace.layer_route_pending",
+    "text": "待领取",
+    "params": "",
+    "category": "hyperspace",
+    "note": "后台待领奖励所在路线的卡片标记"
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_material_income",
+    "text": "常规异空间材料产出（究极核心除外）",
+    "params": "",
+    "category": "hyperspace",
+    "note": "保留hyperspace_charge存档ID，材料采集效果替代能量恢复/容量"
+  },
+  {
+    "key": "hyperspace.total_module_bonus",
+    "text": "{module} · {effects} {bonus}",
+    "params": "{module},{effects},{bonus}",
+    "category": "hyperspace",
+    "note": "当前非零模块加成及实际作用对象；读取配置effects，不改变数值"
+  },
+  {
+    "key": "hyperspace.totals_empty",
+    "text": "当前暂无加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前装备没有非零属性或有效模块、传说效果时的单句提示"
   }
 ]

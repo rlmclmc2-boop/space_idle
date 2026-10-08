@@ -2,6 +2,9 @@ extends RefCounted
 ## Screen-only encounter hierarchy. Never supplies combat geometry or changes entities.
 
 var route := ""
+var scenery_route := ""
+var scenery_presence := 0.0
+var scenery_time := 0.0
 var tier := "normal"
 var leader_uid := -1
 var identity := ""
@@ -22,6 +25,7 @@ func sync(game,delta:float) -> bool:
 		route=next_route
 		transition=0.0
 		if not departure:
+			scenery_route=route
 			accent={"alpha":Color("81d5da"),"beta":Color("d9a67b"),"gamma":Color("a8bacd"),"delta":Color("b1a0dc")}.get(route,Color("81d5da"))
 	var next_identity := str([route,game.stage,game.group_index,game.encounter_tier()])
 	if next_identity!=identity:
@@ -37,6 +41,8 @@ func sync(game,delta:float) -> bool:
 				largest=int(enemy.size)
 				leader_uid=int(enemy.uid)
 	if not game.paused:
+		scenery_time+=delta
+		scenery_presence=move_toward(scenery_presence,0.0 if route.is_empty() else 1.0,delta/1.6)
 		age+=delta
 		transition=minf(2.0,transition+delta)
 		leader_fall=minf(2.0,leader_fall+delta)
@@ -48,19 +54,11 @@ func is_leader(enemy:Dictionary) -> bool:
 
 func draw_space(canvas:CanvasItem,size:Vector2) -> void:
 	if not route.is_empty():
-		# Large solid side structures establish a different place at a glance.
-		# Their empty center preserves targets, muzzle flashes and enemy fire.
+		# Route scenery lives in the persistent star mesh, below every combat
+		# primitive. Keep only the encounter endpoint cues on this dynamic layer.
 		var center := Vector2(size.x*0.5,190)
 		var final := tier=="ultimate"
 		var opening := 174.0 if final else 210.0
-		var entrance := (1.0-smoothstep(0.0,1.2,age))*36.0
-		for side_value in [-1.0,1.0]:
-			var side:float=float(side_value)
-			var edge:float=center.x+side*(opening+entrance)
-			var outer:float=0.0 if side<0 else size.x
-			var points := PackedVector2Array([Vector2(outer,0),Vector2(edge,0),Vector2(edge-side*28,100),Vector2(edge+side*20,360),Vector2(outer,size.y)])
-			canvas.draw_colored_polygon(points,Color("101b2b"))
-			canvas.draw_polyline(PackedVector2Array([Vector2(edge,0),Vector2(edge-side*28,100),Vector2(edge+side*20,360)]),Color(accent,0.4),2.0,true)
 		if tier in ["boss","ultimate"]:
 			canvas.draw_arc(center,opening-24,PI,TAU,40,Color(accent,0.27),7.0,true)
 			if final:

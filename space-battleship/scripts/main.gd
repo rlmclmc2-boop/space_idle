@@ -257,8 +257,13 @@ func _ready() -> void:
 	if not game.startup_error.is_empty():
 		set_process(false);set_process_unhandled_input(false)
 		var problem := AcceptDialog.new()
-		problem.title = UIText.t("hyperspace.invalid_config_title")
-		problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
+		if game.startup_error=="invalid_progress_save":
+			problem.title = UIText.t("startup.invalid_progress_title")
+			problem.dialog_text = UIText.t("startup.invalid_progress_body")
+			problem.ok_button_text = UIText.t("startup.keep_save_ack")
+		else:
+			problem.title = UIText.t("hyperspace.invalid_config_title")
+			problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
 		add_child(problem);problem.popup_centered(Vector2i(900,420))
 		return
 	railgun_fx.configure(db)
@@ -1235,38 +1240,42 @@ func enemy_render_angle(enemy:Dictionary)->float:
 	var pose:=enemy_pose(enemy)
 	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 
-func enemy_component_pose(enemy:Dictionary,component)->Dictionary:
+# Supplied positions stay within one synchronous solve; no value survives it.
+func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
 	var point:Dictionary=component.hardpoint
-	var width:=enemy_render_width(enemy)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var width:=enemy_render_width_at_y(enemy,position.y)
 	var hull_angle:=enemy_render_angle(enemy)
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	var module_width:=width*0.42*class_scale
-	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot)+deg_to_rad(float(point.get("base_rotation",0)))
+	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot,position)+deg_to_rad(float(point.get("base_rotation",0)))
 	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
 	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
 	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
 
-func enemy_port_offset(enemy: Dictionary, index: int) -> Vector2:
+func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
 	var component=enemy_component_for_slot(enemy,index)
-	if component!=null:return enemy_component_pose(enemy,component).muzzle
+	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
 	# Unknown external configurations keep the previous logical mount fallback.
 	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
 	if point.is_empty():return Vector2.ZERO
-	var width:=enemy_render_width(enemy)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var width:=enemy_render_width_at_y(enemy,position.y)
 	var angle:=float(enemy_pose(enemy).rotation)
 	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
 
-func enemy_weapon_angle(enemy: Dictionary, index: int) -> float:
+func enemy_weapon_angle(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> float:
 	var component = enemy_component_for_slot(enemy,index)
 	if component==null:return 0.0
 	var role: String = component.mode()
 	if role!="main" and role!="secondary":return 0.0
 	var pose_angle := enemy_render_angle(enemy)
-	var desired := wrapf((player_render_position()-enemy_render_position(enemy)).angle()-PI/2-pose_angle,-PI,PI)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var desired := wrapf((player_render_position()-position).angle()-PI/2-pose_angle,-PI,PI)
 	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
 	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
 
@@ -1336,13 +1345,16 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 		var distance := INF
 		for enemy in game.enemies:
 			if is_same(enemy,shot.get("source",{})):
-				return battle_logical_point(enemy_render_position(enemy)+enemy_port_offset(enemy,enemy_shot_mount(enemy,shot)))
+				var position:=enemy_render_position(enemy)
+				return battle_logical_point(position+enemy_port_offset(enemy,enemy_shot_mount(enemy,shot),position))
 			for index in enemy.equipment.size():
 				var candidate := pos.distance_squared_to(Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,index))
 				if candidate<distance:
 					distance=candidate
 					nearest=enemy
-		if not nearest.is_empty():return battle_logical_point(enemy_render_position(nearest)+enemy_port_offset(nearest,enemy_shot_mount(nearest,shot)))
+		if not nearest.is_empty():
+			var position:=enemy_render_position(nearest)
+			return battle_logical_point(position+enemy_port_offset(nearest,enemy_shot_mount(nearest,shot),position))
 		return pos
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
@@ -1582,7 +1594,8 @@ func battle_point(point: Vector2) -> Vector2:
 	return Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
 
 func enemy_drop_anchor(enemy: Dictionary) -> Vector2:
-	return enemy_render_position(enemy)+Vector2(0,enemy_render_width(enemy)+12.0)
+	var position:=enemy_render_position(enemy)
+	return position+Vector2(0,enemy_render_width_at_y(enemy,position.y)+12.0)
 
 func drop_render_position(drop: Dictionary) -> Vector2:
 	var source_uid := int(drop.get("source_uid",-1))

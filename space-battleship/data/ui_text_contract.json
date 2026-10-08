@@ -8385,6 +8385,239 @@
     },
     "crew.preview.maximum": {
       "params": []
+    },
+    "crew.hyperspace_duration_title": {
+      "params": []
+    },
+    "crew.hyperspace_duration_base": {
+      "params": []
+    },
+    "crew.hyperspace_duration_effect": {
+      "params": [
+        "efficiency",
+        "luck"
+      ]
+    },
+    "hyperspace.layer_first_win": {
+      "params": []
+    },
+    "hyperspace.layer_current": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_unstarted": {
+      "params": []
+    },
+    "hyperspace.layer_idle_once": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_challenge": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_stop": {
+      "params": []
+    },
+    "hyperspace.layer_exit": {
+      "params": []
+    },
+    "hyperspace.layer_record": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_idle_time": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_luck": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.layer_luck_sources": {
+      "params": [
+        "crew",
+        "permanent"
+      ]
+    },
+    "hyperspace.layer_luck_rules": {
+      "params": []
+    },
+    "hyperspace.layer_hint": {
+      "params": []
+    },
+    "hyperspace.layer_idle_work": {
+      "params": [
+        "work",
+        "duration"
+      ]
+    },
+    "hyperspace.layer_idle_none": {
+      "params": []
+    },
+    "hyperspace.layer_challenging": {
+      "params": [
+        "layer"
+      ]
+    },
+    "hyperspace.layer_reason_record": {
+      "params": []
+    },
+    "hyperspace.layer_reason_busy": {
+      "params": []
+    },
+    "hyperspace.layer_reason_crew": {
+      "params": []
+    },
+    "hyperspace.layer_reason_warehouse": {
+      "params": []
+    },
+    "hyperspace.layer_reason_unavailable": {
+      "params": []
+    },
+    "hyperspace.layer_crew_start": {
+      "params": []
+    },
+    "hyperspace.layer_crew_detail": {
+      "params": [
+        "time",
+        "luck"
+      ]
+    },
+    "hyperspace.layer_crew_hint": {
+      "params": []
+    },
+    "hyperspace.layer_task_pending": {
+      "params": []
+    },
+    "hyperspace.layer_crew_choice": {
+      "params": [
+        "name",
+        "status"
+      ]
+    },
+    "hyperspace.layer_claim_challenge": {
+      "params": []
+    },
+    "hyperspace.layer_claim_background": {
+      "params": []
+    },
+    "hyperspace.layer_claim_retry": {
+      "params": []
+    },
+    "hyperspace.layer_crew_time": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_reason_other_route": {
+      "params": []
+    },
+    "hyperspace.layer_reason_max_layer": {
+      "params": []
+    },
+    "hyperspace.layer_drone_locked": {
+      "params": []
+    },
+    "startup.invalid_progress_title": {
+      "params": []
+    },
+    "startup.invalid_progress_body": {
+      "params": []
+    },
+    "startup.keep_save_ack": {
+      "params": []
+    },
+    "hyperspace.exchange_title": {
+      "params": []
+    },
+    "hyperspace.exchange_close": {
+      "params": []
+    },
+    "hyperspace.exchange_source": {
+      "params": []
+    },
+    "hyperspace.exchange_target": {
+      "params": []
+    },
+    "hyperspace.exchange_amount": {
+      "params": []
+    },
+    "hyperspace.exchange_maximum": {
+      "params": []
+    },
+    "hyperspace.exchange_review": {
+      "params": []
+    },
+    "hyperspace.exchange_confirm_title": {
+      "params": []
+    },
+    "hyperspace.exchange_confirm": {
+      "params": []
+    },
+    "hyperspace.exchange_cancel": {
+      "params": []
+    },
+    "hyperspace.exchange_summary": {
+      "params": [
+        "cost",
+        "source",
+        "received",
+        "target"
+      ]
+    },
+    "hyperspace.exchange_owned": {
+      "params": [
+        "amount"
+      ]
+    },
+    "hyperspace.exchange_same": {
+      "params": []
+    },
+    "hyperspace.exchange_insufficient": {
+      "params": []
+    },
+    "hyperspace.exchange_invalid_amount": {
+      "params": []
+    },
+    "hyperspace.exchange_material_limit": {
+      "params": []
+    },
+    "hyperspace.exchange_stale": {
+      "params": []
+    },
+    "hyperspace.exchange_unavailable": {
+      "params": []
+    },
+    "hyperspace.exchange_success": {
+      "params": [
+        "summary"
+      ]
+    },
+    "hyperspace.layer_route_background": {
+      "params": []
+    },
+    "hyperspace.layer_route_pending": {
+      "params": []
+    },
+    "hyperspace.module_effect.hyperspace_material_income": {
+      "params": []
+    },
+    "hyperspace.total_module_bonus": {
+      "params": [
+        "module",
+        "effects",
+        "bonus"
+      ]
+    },
+    "hyperspace.totals_empty": {
+      "params": []
     }
   },
   "bindings": {

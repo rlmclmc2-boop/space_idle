@@ -268,8 +268,16 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
+	var existing:=false
+	for suffix in ["", ".bak", ".import-prev"]:
+		existing=existing or FileAccess.file_exists(SAVE_PATH+suffix)
 	var raw = progress_writer.read_progress(SAVE_PATH)
-	if raw is Dictionary:load_progress_data(raw)
+	if raw is Dictionary:
+		load_progress_data(raw)
+		if hyperspace.last_error.is_empty():return
+	elif not existing:return
+	# A rejected existing save must never become an autosaved fresh profile.
+	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
@@ -1922,6 +1930,38 @@ func cancel_hyperspace_request()->bool:
 func start_hyperspace(route: String,level: int) -> bool:
 	return manual_hyperspace.start(self,route,level)
 
+func hyperspace_route_view(route:String,crew_id:String="")->Dictionary:
+	return hyperspace.route_view(self,route,crew_id)
+
+func start_hyperspace_idle(route:String)->bool:
+	return hyperspace.start_idle(self,route)
+
+func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
+	return hyperspace.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
+
+func stop_hyperspace_idle(route:String)->bool:
+	return hyperspace.stop_idle(self,route)
+
+func start_hyperspace_challenge(route:String)->bool:
+	return manual_hyperspace.start(self,route,hyperspace.current_layer(self,route)+1)
+
+func exit_hyperspace_challenge()->bool:
+	return manual_hyperspace.finish(self,false,"user_exit")
+
+func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
+	if round_id>=0 and run_id>=0:return hyperspace.claim(self,round_id,run_id)
+	var claimed:=false
+	for slot in ["active","idle"]:
+		var receipt:Dictionary=profile.hyperspace[slot]
+		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
+	return claimed
+
+func hyperspace_material_exchange_quote(source:String,target:String,amount:Variant)->Dictionary:
+	return hyperspace.material_exchange_quote(self,source,target,amount)
+
+func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
+	return hyperspace.exchange_materials(self,request)
+
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
 		return false
@@ -1932,7 +1972,7 @@ func next_stage() -> int:
 
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
-	if level < 1 or level > int(profile.highestLevel):
+	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
 	if N.compare(stat("armour"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_armour"})

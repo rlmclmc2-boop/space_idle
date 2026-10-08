@@ -23,7 +23,7 @@ static func has_space(bag: Dictionary,c: Dictionary) -> bool:
 static func valid_drone(d: Dictionary,c: Dictionary) -> bool:
 	if not d.get("id") is String or d.id.is_empty() or d.id.length()>96:return false
 	if not d.get("origin_quality") in c.quality_limits or not d.get("weapon") in ["laser","missile","cannon","longLaser"]:return false
-	if not C.integer(d.get("level")) or d.level<int(c.minimum_level):return false
+	if not C.integer(d.get("level")) or d.level<1:return false
 	if not d.get("legendary") is bool or not d.get("ultimate") is bool or not d.get("blue_source_bonus") is bool:return false
 	if d.blue_source_bonus and d.origin_quality!="blue":return false
 	if d.origin_quality=="legendary" and not d.legendary:return false

@@ -5,7 +5,11 @@ const FIELDS := {
 	"level_bonus:hightech":"hightech_level_bonus",
 	"free_charge:all":"charge_free_ratio",
 	"level_bonus:enhancement":"gem_drop_level_bonus",
+	"luck:all":"hyperspace_luck",
 }
+
+func description(row: Dictionary) -> String:
+	return str(row.des).replace("{value}",NumberFormat.precise(float(row.value)))
 
 func active(g, row: Dictionary) -> bool:
 	var planet_id := str(int(row.planet_id))

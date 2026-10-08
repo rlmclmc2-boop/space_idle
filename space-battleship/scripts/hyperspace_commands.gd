@@ -2,6 +2,7 @@ extends RefCounted
 ## UI command controller. Domain previews own all prices and randomness.
 const OPERATIONS=["add_affix","replace_affix","add_hanging_slot","lock_affix","promote_affix","reroll_values","enable_omen","disable_omen","legendary","modernize","ultimate","restore_ultimate","dismantle"]
 var panel
+var exchange_ui=preload("res://scripts/hyperspace_material_exchange_ui.gd").new()
 var operation: OptionButton
 var guarantee: OptionButton
 var maximum: CheckBox
@@ -42,7 +43,7 @@ var operation_hint: Label
 var more_operations: Button
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
- panel=p
+ panel=p;exchange_ui.setup(p)
 func t(key: String,params: Dictionary={}) -> String:return panel.t(key,params)
 func game():return panel.host.game
 func h():return game().hyperspace
@@ -59,7 +60,9 @@ func build_forge(parent: Node) -> void:
  for key in ["degenerate_matter","glueball","antiproton","zero_point_energy","ultimate_cores"]:
   material_rows[key]=panel.label(materials_box,"",21)
  material_stock=panel.label(materials_box,"",18)
- material_route_button=panel.button(materials_box,"material_explore",explore_missing_material)
+ var material_actions=panel.row(materials_box)
+ material_route_button=panel.button(material_actions,"material_explore",explore_missing_material)
+ panel.button(material_actions,"exchange_title",exchange_ui.show)
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
@@ -199,9 +202,11 @@ func dismantle_preview_text(request_data: Dictionary) -> String:
  var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
  if d.is_empty():return ""
  var quality: String="legendary" if d.legendary else str(d.origin_quality)
- var count: int=int(h().config.dismantle_amounts[quality])
+ var copies: int=int(h().config.dismantle_amounts[quality])
+ # Match Rewards.dismantle's material units; module copies retain their authored count.
+ var material_count: int=copies*int(h().config.get("material_unit_scale",10))
  var route: String=h().config.routes.keys().filter(func(key):return h().config.routes[key].weapon==d.weapon)[0]
- return t("dismantle_preview",{"materials":received_materials_text({str(h().config.routes[route].material):count}),"count":str(count)})
+ return t("dismantle_preview",{"materials":received_materials_text({str(h().config.routes[route].material):material_count}),"count":str(copies)})
 func received_rewards_text(rewards: Dictionary) -> String:
  var lines: Array[String]=[t("dismantle_received_materials",{"materials":received_materials_text(rewards.get("materials",{}))})]
  for key in rewards.get("modules",{}):
@@ -223,7 +228,7 @@ func commit() -> void:
  if quoted_request.is_empty():return
  if quoted_request.operation=="dismantle":
   if dismantle_dialog==null:
-   dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.dialog_text=t("dismantle_confirm");panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog);dismantle_dialog.confirmed.connect(execute_quote)
+   dismantle_dialog=ConfirmationDialog.new();dismantle_dialog.title=t("operation_dismantle");dismantle_dialog.dialog_text=t("dismantle_confirm");panel.add_child(dismantle_dialog);preload("res://scripts/dialog_presentation.gd").dialog(dismantle_dialog);dismantle_dialog.confirmed.connect(execute_quote)
   dismantle_dialog.popup_centered();return
  execute_quote()
 func execute_quote() -> void:
@@ -247,9 +252,14 @@ func build_dialog(title: String) -> AcceptDialog:
  return dialog
 func content(dialog: AcceptDialog) -> VBoxContainer:
  var box=panel.box(dialog);box.custom_minimum_size=Vector2(680,250);return box
-# Set wrap mode before attaching: a transient zero-width label can enlarge a native popup.
-func dialog_label(parent: Node,text: String,font_size: int) -> Label:
- var result=Label.new();result.text=text;result.autowrap_mode=TextServer.AUTOWRAP_OFF;result.add_theme_font_size_override("font_size",font_size);result.add_theme_color_override("font_color",Color("243d50"));parent.add_child(result);return result
+# Long dialog text needs a known width before wrapping or attachment to the native window.
+func dialog_label(parent: Node,text: String,font_size: int,wrap_width:float=0.0) -> Label:
+ var result=Label.new();result.autowrap_mode=TextServer.AUTOWRAP_OFF
+ result.add_theme_font_size_override("font_size",font_size);result.add_theme_color_override("font_color",Color("243d50"))
+ if wrap_width>0.0:
+  result.custom_minimum_size.x=wrap_width;result.size=Vector2(wrap_width,0.0)
+  result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+ result.text=text;parent.add_child(result);return result
 func show_crew() -> void:
  if crew_dialog==null:
   crew_dialog=build_dialog("crew");var body=content(crew_dialog);crew_choice=panel.option(body);crew_info=dialog_label(body,"",21);var actions=panel.row(body)
@@ -345,25 +355,32 @@ func show_collection() -> void:
 
 func show_totals() -> void:
  if totals_dialog==null:
-  totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);totals_label=dialog_label(sc,"",21)
+  totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);sc.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;totals_label=dialog_label(sc,"",21,body.custom_minimum_size.x)
  refresh_totals();totals_dialog.popup_centered(Vector2i(740,510))
 func refresh_totals() -> void:
  if totals_label==null:return
- var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[t("totals_authority")]
+ var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[]
  for key in ["damage","critical_chance","critical_damage","repeat_chance","attack_speed","defence","armour","shield"]:
   var value=float(totals[key]);var additive=value if key in ["critical_chance","repeat_chance"] else value-1.0
-  lines.append(t("total_"+key)+": "+t("percent",{"value":"%.1f"%(additive*100.0)}))
- lines.append(t("total_chain_count")+": "+t("times",{"value":str(int(totals.chain_count))}))
- for weapon in totals.weapon_damage:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%.1f"%((float(totals.weapon_damage[weapon])-1.0)*100.0)}))
- lines.append(t("total_hangings"))
- for key in totals.hangings:lines.append(panel.hanging_name(key)+": "+t("percent",{"value":"%.1f"%(float(totals.hangings[key])*100.0)}))
- if totals.hangings.is_empty():lines.append(t("no_hangings"))
- lines.append(t("total_legendary"))
+  if additive==0.0:continue
+  lines.append(t("total_"+key)+": "+t("percent",{"value":"%+.1f"%(additive*100.0)}))
+ if int(totals.chain_count)!=0:lines.append(t("total_chain_count")+": "+t("times",{"value":"%+d"%int(totals.chain_count)}))
+ for weapon in totals.weapon_damage:
+  var bonus=float(totals.weapon_damage[weapon])-1.0
+  if bonus!=0.0:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%+.1f"%(bonus*100.0)}))
+ for key in totals.hangings:
+  var bonus=float(totals.hangings[key])
+  if bonus==0.0:continue
+  var effects:Array[String]=[]
+  for effect in h().config.hanging_modules[key].effects:effects.append(t("module_effect."+str(effect)))
+  lines.append(t("total_module_bonus",{"module":panel.hanging_name(str(key)),"effects":"、".join(effects),"bonus":t("percent",{"value":"%+.1f"%(bonus*100.0)})}))
  for key in totals.legendary:
+  # An active legendary effect can work through constants even without nonzero random parameters.
   lines.append(panel.effect_name(key))
-  for parameter in totals.legendary[key].parameters:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(totals.legendary[key].parameters[parameter])*100.0)}))
- if totals.legendary.is_empty():lines.append(t("no_active_legendary"))
- totals_label.text="\n".join(lines)
+  for parameter in totals.legendary[key].parameters:
+   var value=float(totals.legendary[key].parameters[parameter])
+   if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(value*100.0)}))
+ panel.put(totals_label,"text","\n".join(lines) if not lines.is_empty() else t("totals_empty"))
 
 func show_guide() -> void:
  if not bool(game().profile.hyperspace.unlocked_drones):return

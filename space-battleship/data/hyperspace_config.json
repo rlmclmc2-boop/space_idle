@@ -522,8 +522,7 @@
       "effect_growth": 0.1,
       "unlock_stage": 0,
       "effects": [
-        "hyperspace_energy_rate",
-        "hyperspace_energy_cap"
+        "hyperspace_material_income"
       ]
     }
   },
@@ -698,5 +697,7 @@
   "late_supply_ramp_seconds": 600,
   "modernization_base_coefficient": 1.0,
   "auto_duration_crew_base": 100.0,
-  "auto_ticket_crew_base": 20.0
+  "auto_ticket_crew_base": 20.0,
+  "material_unit_scale": 10,
+  "ultimate_core_probability": 0.002
 }
