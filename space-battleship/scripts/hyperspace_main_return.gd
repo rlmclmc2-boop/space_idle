@@ -31,6 +31,7 @@ static func valid(state:Dictionary,journey:Dictionary,max_stage:int)->bool:
  if state.get("version")==1:spec.erase("battle_json")
  if not shape(state,spec) or state.version not in [1,VERSION]:return false
  if state.version==VERSION and not Actors.valid(state.battle_json):return false
+ if state.version==1 and (journey.get("state") not in [0,1,2,4,6] or journey.get("loop")!=false or not journey.get("pendingUnlocks") is Array or not journey.pendingUnlocks.is_empty()):return false
  for key in ["stage","groupIndex","state"]:
   if not C.integer(journey.get(key)):return false
  if journey.stage<1 or journey.stage>max_stage or journey.groupIndex<0 or not int(journey.state) in [0,1,2,3,4,5,6,7]:return false

@@ -120,8 +120,8 @@ func idle_duration(g,best:float,crew_id:String)->float:
 		efficiency=float(g.crew.hyperspace_efficiency(g,crew_id)) if g.crew.has_method("hyperspace_efficiency") else (20.0+Permission.crew_level(g,crew_id))/20.0
 	return best/maxf(1.0,efficiency)
 
-func auto_quote(best:float,crew_level:int)->Dictionary:
-	var base:=float(config.auto_duration_crew_base)
+func auto_quote(best:float,crew_level:int,g=null)->Dictionary:
+	var base:=20.0 if g==null else float(g.db.data.crew_config.hyperspace_duration_k.value)
 	return {"duration":best*base/(base+crew_level),"ticket":0.0}
 
 func receipt_slot(s:Dictionary,round_id:int,run_id:int)->String:

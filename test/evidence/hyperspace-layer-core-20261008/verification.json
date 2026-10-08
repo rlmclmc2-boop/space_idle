@@ -1,0 +1,54 @@
+{
+  "environment": "original cloud workspace; no new environment or agent",
+  "godot": "4.6.3 official",
+  "renderer": "Compatibility Mesa llvmpipe; LP_NUM_THREADS=4; Xvfb :91",
+  "remote_main": "766da2eb5375bee1ba1fb75d28e467af8e654dfa",
+  "source_base": "be430bd2 plus 7c67b31",
+  "runtime_dependencies": {
+    "crew_system.gd": "e3cdefda301d1636418b7695fab30aba463da2c2",
+    "planet_buffs.gd": "e3cdefda301d1636418b7695fab30aba463da2c2",
+    "game_data.json": "e3cdefda301d1636418b7695fab30aba463da2c2"
+  },
+  "domain_checks": 217,
+  "domain_failures": 0,
+  "graphics_checks": 3,
+  "graphics_failures": 0,
+  "graphics_scope": "real main.tscn, isolated fixture, short normal X1 segment, routed mouse clicks on QA buttons; paused screenshots. No player-clear or tutorial acceptance. Parent UI branch not integrated.",
+  "claim_api": "claim_hyperspace(round_id=-1,run_id=-1); IDs claim either receipt; omitted IDs try active and idle; inventory-full pending remains frozen. Auto retries on unpaused tick.",
+  "route_view_added": [
+    "total_luck",
+    "crew_luck",
+    "permanent_luck",
+    "idle_duration",
+    "crew_duration",
+    "crew_id"
+  ],
+  "screenshots": [
+    {
+      "path": "/workspace/bug-qa/performance-20261008/layer-live-main-before.png",
+      "sha256": "105af2eae4af3944cdc415046bd7f6626cb8e297994465d5ab8dc908e90173a3"
+    },
+    {
+      "path": "/workspace/bug-qa/performance-20261008/layer-live-challenge.png",
+      "sha256": "a721240e05c1162156f7fa9073ee67d4398c046d8d3a59266ab4d77955f4832c"
+    },
+    {
+      "path": "/workspace/bug-qa/performance-20261008/layer-live-main-after.png",
+      "sha256": "dd7bb2aebfc2a4043240ccce4b71ea1b38e3361c686cd3f8ff7cf42fce5028f9"
+    }
+  ],
+  "invalid_runs_retained_locally": [
+    "layer-core-debug.txt StringName unsupported corrected",
+    "layer-return-debug.txt exact float roundtrip corrected",
+    "layer-core-8/9/10.txt invalid full-bag fixture config corrected retaining fixed ten overflow slots",
+    "layer-live-1/2.txt short-run defeat and viewport mouse coordinates corrected"
+  ],
+  "unrun": [
+    "integrated parent UI",
+    "normal new-player full tutorial acceptance",
+    "complete challenge playthrough",
+    "old61-200 long runs"
+  ],
+  "player_saves_changed": false,
+  "publication": false
+}

@@ -96,6 +96,29 @@ func _initialize()->void:
 	check(h.start_auto(g),"crew loop starts current won layer")
 	check(g.profile.hyperspace.idle.level==2 and g.profile.hyperspace.idle.duration==7.0,"locked crew levels give zero efficiency, exact current best")
 	check(g.stop_hyperspace_idle("alpha") and not g.profile.hyperspace.auto.enabled,"stop releases continuous job")
+	var member:Dictionary=g.crew.entry(g,"navigator");member.level=40
+	g.profile.planets["1"].conquered=true
+	check(g.set_hyperspace_auto("alpha","navigator",true) and h.start_auto(g),"leveled crew starts configured route")
+	var combined:Dictionary=g.profile.hyperspace.idle.duplicate(true)
+	check(combined.duration==7.0*20.0/60.0 and combined.luck==140.0 and combined.crew_luck==40.0 and combined.permanent_luck==100.0,"K20 duration and additive crew/permanent luck")
+	member.level=90;g.profile.planets["1"].conquered=false
+	check(g.profile.hyperspace.idle==combined,"crew changes do not alter existing duration or luck")
+	g.stop_hyperspace_idle("alpha")
+	var blocked=opened(db);var config:Dictionary=blocked.hyperspace.config.duplicate(true)
+	config.warehouse_capacity=1;config.overflow_capacity=10;
+	for key in config.quality_weights:config.quality_weights[key]=1.0 if key=="white" else 0.0
+	check(blocked.hyperspace.configure(config),"full-bag test config valid");blocked.profile.hyperspace.history={"alpha":{"1":3.0}}
+	var occupied_rng:=RandomNumberGenerator.new();occupied_rng.seed=5
+	var Bag=preload("res://scripts/drone_inventory.gd")
+	Bag.insert(blocked.profile.hyperspace.inventory,Rewards.create_drone(occupied_rng,config,"occupied","blue","laser",1,"1"),config)
+	check(blocked.start_hyperspace_idle("alpha"),"full-bag job starts with one free slot")
+	for i in 10:Bag.insert(blocked.profile.hyperspace.inventory,Rewards.create_drone(occupied_rng,config,"occupied_extra"+str(i),"blue","laser",1,"1"),config)
+	blocked.hyperspace.advance(blocked,3.0)
+	var blocked_receipt:Dictionary=blocked.profile.hyperspace.idle.duplicate(true)
+	check(blocked_receipt.status=="completed_pending" and not blocked.claim_hyperspace() and not blocked.stop_hyperspace_idle("alpha"),"full bag retains pending prize and refuses destructive stop")
+	blocked.hyperspace.remove_unprotected(blocked,"occupied")
+	check(blocked.claim_hyperspace(blocked_receipt.round_id,blocked_receipt.run_id) and not blocked.claim_hyperspace(blocked_receipt.round_id,blocked_receipt.run_id),"background pending claim after capacity freed settles once")
+	check(S.valid(blocked.profile.hyperspace,config,db.levels.size()),"full-bag recovery stays saveable")
 	# Legacy paid manual interruption refunds exactly once; pending prizes stay frozen.
 	var old:Dictionary=h.fresh();old.version=4;old.erase("idle");old.next_run=2;old.energy=0.0
 	old.active={"round_id":1,"run_id":1,"status":"started","mode":"manual","route":"alpha","level":5,"crew_id":"","return_journey":{},"ticket":108000.0,"duration":0.0,"work":0.0,"reward":{}}
