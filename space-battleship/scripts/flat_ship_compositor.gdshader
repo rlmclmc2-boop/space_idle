@@ -48,19 +48,24 @@ void fragment() {
 			vec4 c1=atlas_sample(int(asset.y),p1,second,effect.x,false);
 			float weight=effect.y;
 			// Premultiplication avoids black fringes during interpolation.
-			color=mix(vec4(c0.rgb*c0.a,c0.a),vec4(c1.rgb*c1.a,c1.a),weight);
+			color=mix(c0,c1,weight);
 			if(color.a>0.00001)color.rgb/=color.a;
 			vec4 d0=atlas_sample(int(asset.y),p0,first,effect.x,true);
 			vec4 d1=atlas_sample(int(asset.y),p1,second,effect.x,true);
 			float w0=(1.0-weight)*d0.a,w1=weight*d1.a;
-			depth+=parameter.z+parameter.w*(d0.r*w0+d1.r*w1)/max(w0+w1,0.00001);
+			depth+=parameter.z+parameter.w*(d0.r*(1.0-weight)+d1.r*weight)/max(w0+w1,0.00001);
 		} else {
 			if(any(greaterThan(abs(local),vec2(0.5))))continue;
-			if(kind==0)color=sample_asset(int(asset.y),local+0.5);
+			if(kind==4) {
+				color=atlas_sample(int(asset.y),local,0.0,1.0,false);
+				vec4 height=atlas_sample(int(asset.y),local,0.0,1.0,true);
+				if(color.a>0.00001)color.rgb/=color.a;
+				depth+=parameter.z+parameter.w*height.r/max(height.a,0.00001);
+			} else if(kind==0)color=sample_asset(int(asset.y),local+0.5);
 			else if(kind==2) {
 				// Exported interpolants from the original 32x16 sphere mesh.
 				vec4 map=sample_asset(int(asset.y),local+0.5);
-				vec3 point=map.rgb*2.0-1.0;
+				vec3 point=map.rgb/max(map.a,0.00001)*2.0-1.0;
 				vec3 normal=normalize(point/vec3(effect.z,1.0,effect.w));
 				float edge=pow(1.0-abs(normal.y),3.2);
 				float distance_to_hit=length(normalize(point)-normalize(vec3(-0.45,0.65,-0.6)));
@@ -94,8 +99,12 @@ void fragment() {
 	for(int i=0;i<48;i++) {
 		if(i>=count)break;
 		vec4 c=colors[i];
-		if(additive[i])result.rgb+=c.rgb*c.a;
+		if(additive[i])result+=vec4(c.rgb*c.a,c.a*c.a);
 		else result=vec4(c.rgb*c.a,c.a)+result*(1.0-c.a);
+		result=clamp(result,vec4(0.0),vec4(1.0));
 	}
-	COLOR=result;
+	// Match both original stages: transparent 3D target accumulates premultiplied
+	// RGB; ShipComposite uses the default CanvasItem blend_mix afterwards.
+	result=clamp(result,vec4(0.0),vec4(1.0));
+	COLOR=vec4(result.rgb*result.a,result.a);
 }

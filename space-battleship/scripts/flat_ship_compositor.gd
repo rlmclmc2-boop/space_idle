@@ -1,10 +1,16 @@
 extends ColorRect
 ## Opt-in all-or-nothing presentation candidate. Owns no simulation state.
+const ORNAMENT := preload("res://scripts/flat_ornament_recipe.gd")
 const MAX_ITEMS := 48
 const MAX_TEXTURES := 12
 const RECIPE := "res://assets/ships/flat_parts/catalog.json"
 const SOURCE := preload("res://scripts/flat_ship_compositor.gdshader")
-var enabled := false
+var enabled := false:
+	set(value):
+		if enabled == value:return
+		enabled = value
+		invalidate()
+var recheck_pending := false
 var active := false
 var fallback_reason := "candidate disabled"
 var view
@@ -14,7 +20,10 @@ var geometry: Array[VisualInstance3D] = []
 var covered: Dictionary = {}
 var textures: Array[Texture2D] = []
 var shader_cache: Dictionary = {}
-var dirty := true
+var dirty := true:
+	set(value):
+		dirty = value
+		if value:request_recheck()
 var observed: Dictionary = {}
 var changed_geometry: Dictionary = {}
 var last_uniforms: Dictionary = {}
@@ -38,15 +47,26 @@ func _watch(node: Node) -> void:
 	observed[node.get_instance_id()] = true
 	node.child_entered_tree.connect(_watch)
 	node.child_exiting_tree.connect(_unwatch)
+	if node is Node3D:node.visibility_changed.connect(request_recheck)
 	for child in node.get_children():_watch(child)
-	dirty = true
+	invalidate()
 
 func _unwatch(node: Node) -> void:
 	observed.erase(node.get_instance_id())
-	dirty = true
+	invalidate()
 
 func invalidate() -> void:
 	dirty = true
+	request_recheck()
+
+func request_recheck() -> void:
+	if recheck_pending or not is_instance_valid(view) or not is_inside_tree():return
+	recheck_pending = true
+	_recheck.call_deferred()
+
+func _recheck() -> void:
+	recheck_pending = false
+	if is_instance_valid(view) and view.is_inside_tree():view.set_rendering(view.visible,view.rendering_paused)
 
 func _texture(texture: Texture2D) -> int:
 	var found := textures.find(texture)
@@ -97,6 +117,16 @@ func _part(root: Node3D, pivot: bool) -> Dictionary:
 	for part in parts:_cover(part.source)
 	return {"node":root,"kind":1,"asset":asset,"parts":parts,"color":_texture(texture),"depth":_texture(texture)}
 
+func _add_ornament(root: Node3D) -> void:
+	var parts := ORNAMENT.collect(root)
+	if parts.is_empty():return
+	var asset: Dictionary = catalog.get("ornaments",{}).get(ORNAMENT.signature(parts),{})
+	if asset.is_empty() or not ResourceLoader.exists(str(asset.get("atlas",""))):return
+	var texture := load(str(asset.atlas)) as Texture2D
+	if texture == null:return
+	for part in parts:_cover(part.source)
+	items.append({"node":root,"kind":4,"parts":parts,"asset":asset,"color":_texture(texture)})
+
 func _lighting_identity() -> String:
 	var values: Array = []
 	for child in view.world.get_children():
@@ -116,6 +146,12 @@ func _rebuild() -> void:
 	items.clear();geometry.clear();covered.clear();textures.clear()
 	for node in view.world.find_children("*","VisualInstance3D",true,false):
 		if node != light:geometry.append(node)
+		if node is MeshInstance3D and node.mesh != null:
+			if not node.mesh.changed.is_connected(invalidate):node.mesh.changed.connect(invalidate)
+			for surface in node.mesh.get_surface_count():
+				var mat: Material = node.get_active_material(surface)
+				if mat != null and not mat.changed.is_connected(invalidate):mat.changed.connect(invalidate)
+				if mat is ShaderMaterial and not mat.shader.changed.is_connected(invalidate):mat.shader.changed.connect(invalidate)
 	for record in view.body_baker.records.values():
 		if not is_instance_valid(record.plane) or not view.body_baker.textures.has(record.key):continue
 		var entry: Dictionary = view.body_baker.textures[record.key]
@@ -132,6 +168,10 @@ func _rebuild() -> void:
 		if texture != null:
 			items.append({"node":view.shield,"kind":2,"color":_texture(texture)})
 			_cover(view.shield)
+	for rig in view.world.find_children("Appearance","Node3D",true,false):
+		_add_ornament(rig)
+		var orbit: Node3D = rig.get_node_or_null("UltimateOrbit")
+		if orbit != null:_add_ornament(orbit)
 	for plume in view.exhaust_nodes:
 		items.append({"node":plume,"kind":3})
 		_cover(plume)
@@ -205,7 +245,7 @@ func sync() -> bool:
 			var mat := node.material_override as ShaderMaterial
 			if mat == null or mat.shader.code.sha256_text()!=catalog.body_proxy_shader or mat.get_shader_parameter("body_texture")!=textures[color_index]:return _fail("body proxy material changed")
 			span = Vector2.ONE*float(item.span)
-		elif item.kind==1:
+		elif item.kind==1 or item.kind==4:
 			for part in item.parts:
 				if not is_instance_valid(part.source) or not part.source.is_visible_in_tree() or part.source.mesh!=part.mesh or _relative_to(part.source,node)!=part.transform:return _fail("turret mesh or local pose changed")
 				for surface in part.materials.size():
@@ -215,11 +255,14 @@ func sync() -> bool:
 			span = Vector2.ONE*float(asset.span)
 			depth_low = float(asset.low)*scale.y
 			depth_span = float(asset.height)*scale.y
-			var direction := fposmod(yaw,TAU)*float(asset.frames)/TAU
-			var first := floorf(direction)
-			var residual := -yaw+first*TAU/float(asset.frames)
-			orientation = Vector2(first,fposmod(first+1.0,float(asset.frames)))
-			effect = Vector4(float(asset.columns),direction-first,cos(residual),sin(residual))
+			if item.kind==4:
+				span = Vector2.ONE*float(asset.span)
+			else:
+				var direction := fposmod(yaw,TAU)*float(asset.frames)/TAU
+				var first := floorf(direction)
+				var residual := -yaw+first*TAU/float(asset.frames)
+				orientation = Vector2(first,fposmod(first+1.0,float(asset.frames)))
+				effect = Vector4(float(asset.columns),direction-first,cos(residual),sin(residual))
 		elif item.kind==2:
 			var sphere := node.mesh as SphereMesh
 			if sphere == null or sphere.radius!=1.0 or sphere.height!=2.0 or sphere.radial_segments!=32 or sphere.rings!=16 or sphere.flip_faces:return _fail("shield geometry changed")
@@ -236,8 +279,8 @@ func sync() -> bool:
 			span = node.mesh.size
 			effect = Vector4(float(mat.get_shader_parameter("engine_emission")),float(mat.get_shader_parameter("phase")),0,0)
 		span *= Vector2(scale.x,scale.z)/view.WORLD_PER_PIXEL
-		var native := maxf(span.x*density.x,span.y*density.y)
-		var limit := int(item.asset.size) if item.kind==1 else 1024
+		var native := maxf(span.x,span.y)*maxf(density.x,density.y)
+		var limit := int(item.asset.size) if item.kind in [1,4] else 1024
 		if item.kind!=3 and native>limit:return _fail("asset would exceed native pixel precision")
 		var radius := span.length()*0.5
 		var rect := Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2.0)

@@ -150,13 +150,14 @@ func _sync_render_scale() -> void:
 	if native_scale <= 0.0:return
 	# Engine-supported scaling range; no quality preset or FPS feedback loop.
 	var desired_scale: float = clampf(native_scale,0.25,2.0)
-	if is_equal_approx(viewport.scaling_3d_scale,desired_scale):return
-	viewport.scaling_3d_scale = desired_scale
-	flat_compositor.invalidate()
-	body_baker.guard_resolution(float(int(viewport.size.x*desired_scale))/camera.size)
-	if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
-		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-	if flat_compositor.enabled:set_rendering(visible,rendering_paused)
+	if not is_equal_approx(viewport.scaling_3d_scale,desired_scale):
+		viewport.scaling_3d_scale = desired_scale
+		body_baker.guard_resolution(float(int(viewport.size.x*desired_scale))/camera.size)
+		if viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED and not flat_compositor.active:
+			viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	# Native pixel coverage can change even when the engine scale is clamped,
+	# or when only one layout axis changes. Recheck without rebuilding assets.
+	if flat_compositor.enabled or flat_compositor.active:flat_compositor.request_recheck()
 
 
 func set_hull(key: String) -> bool:

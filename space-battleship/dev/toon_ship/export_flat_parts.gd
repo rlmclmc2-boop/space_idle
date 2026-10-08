@@ -34,17 +34,20 @@ func _initialize() -> void:
 
 func export_art() -> void:
 	DirAccess.make_dir_recursive_absolute(OUTPUT)
+	var ornaments_only := "--ornaments-only" in OS.get_cmdline_user_args()
+	if ornaments_only:catalog=JSON.parse_string(FileAccess.get_file_as_string(OUTPUT+"catalog.json"))
 	view=load("res://scripts/presented_ship_view.gd").new()
 	view.size=Vector2(572,960)
 	root.add_child(view)
 	view.flat_compositor.enabled=false
 	view.visible=false
 	view.viewport.render_target_update_mode=SubViewport.UPDATE_DISABLED
-	view.set_hull("corvette")
-	# Use an actual manifest key if the authored hull IDs differ.
-	if view.ship==null:view.set_hull(str(view.manifest.hulls.keys()[0]))
-	view.set_loadout([{ "key":"laser" },{ "key":"missile" },{ "key":"cannon" },{ "key":"longLaser" }],4)
-	view.apply_parameters(SETTINGS,true,true)
+	if not ornaments_only:
+		view.set_hull("corvette")
+		# Use an actual manifest key if the authored hull IDs differ.
+		if view.ship==null:view.set_hull(str(view.manifest.hulls.keys()[0]))
+		view.set_loadout([{ "key":"laser" },{ "key":"missile" },{ "key":"cannon" },{ "key":"longLaser" }],4)
+		view.apply_parameters(SETTINGS,true,true)
 	stage=SubViewport.new();stage.size=Vector2i(PIXELS,PIXELS)
 	stage.own_world_3d=true;stage.transparent_bg=true;stage.msaa_3d=Viewport.MSAA_4X
 	stage.render_target_update_mode=SubViewport.UPDATE_DISABLED
@@ -58,14 +61,17 @@ func export_art() -> void:
 	camera=Camera3D.new();camera.projection=Camera3D.PROJECTION_ORTHOGONAL
 	camera.keep_aspect=Camera3D.KEEP_WIDTH;camera.position=Vector3(0,60,0)
 	camera.rotation_degrees.x=-90;camera.far=110;scene.add_child(camera)
-	for module in view.modules:
-		await export_part(module.node,false,str(module.key)+" bearing")
-		await export_part(module.pivot,true,str(module.key)+" turret")
-	await export_shield_map()
-	catalog.shield_shader=view.shield_material.shader.code.sha256_text()
-	catalog.exhaust_shader=view.EXHAUST.code.sha256_text()
-	catalog.light=lighting_identity(view.world)
-	catalog.body_proxy_shader=view.body_baker.BODY_SHADER.code.sha256_text()
+	if not ornaments_only:
+		for module in view.modules:
+			await export_part(module.node,false,str(module.key)+" bearing")
+			await export_part(module.pivot,true,str(module.key)+" turret")
+		await export_shield_map()
+	await export_ornaments()
+	if not ornaments_only:
+		catalog.shield_shader=view.shield_material.shader.code.sha256_text()
+		catalog.exhaust_shader=view.EXHAUST.code.sha256_text()
+		catalog.light=lighting_identity(view.world)
+		catalog.body_proxy_shader=view.body_baker.BODY_SHADER.code.sha256_text()
 	var file=FileAccess.open(OUTPUT+"catalog.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(catalog,"\t")+"\n")
 	print("FLAT PART ART EXPORT COMPLETE: ",catalog.parts.size()," parts")
@@ -165,3 +171,55 @@ func export_shield_map() -> void:
 	scene.add_child(mesh)
 	catalog.shield_map=save_image(await capture())
 	mesh.free()
+
+func export_ornaments() -> void:
+	var appearance = load("res://scripts/hyperspace_appearance.gd")
+	catalog.ornaments = {}
+	stage.size=Vector2i(256,256)
+	for weapon in ["laser","missile","cannon","longLaser"]:
+		for quality in ["white","blue","gold","legendary"]:
+			for category in ["","attack","chain","shield","tempo"]:
+				for tier in ([6] if category.is_empty() else [1,2]):
+					var style: Dictionary=appearance.project({"weapon":weapon,"origin_quality":quality,"ultimate":true})
+					style.category=category;style.tier=tier
+					var model:=Node3D.new();view.world.add_child(model)
+					var ornament: Node3D=appearance.build_ornaments(model,style)
+					await export_ornament_group(ornament,weapon+":"+quality+":"+category+":"+str(tier))
+					await export_ornament_group(ornament.get_node("UltimateOrbit"),"ultimate orbit")
+					model.free()
+	print("EXPORTED ORNAMENT GROUPS: ",catalog.ornaments.size())
+
+func export_ornament_group(source: Node3D, label: String) -> void:
+	var recipe=load("res://scripts/flat_ornament_recipe.gd")
+	var parts: Array[Dictionary]=recipe.collect(source)
+	if parts.is_empty():return
+	var signature: String=recipe.signature(parts)
+	if catalog.ornaments.has(signature):return
+	if signature=="unsupported":push_error("Unsupported ornament material");quit(1);return
+	rig=Node3D.new();scene.add_child(rig)
+	var low:=INF;var high:=-INF;var radius:=0.0
+	for part in parts:
+		var copy:=MeshInstance3D.new();copy.mesh=part.mesh;copy.transform=part.transform
+		for surface in part.materials.size():copy.set_surface_override_material(surface,part.materials[surface])
+		rig.add_child(copy)
+		var bounds: AABB=part.transform*part.source.get_aabb()
+		low=minf(low,bounds.position.y);high=maxf(high,bounds.end.y)
+		for index in 8:
+			var corner:=bounds.get_endpoint(index)
+			radius=maxf(radius,Vector2(corner.x,corner.z).length())
+	camera.size=radius*2.0*1.08
+	var color: Image=await capture()
+	var shader:=Shader.new();shader.code=DEPTH_CODE
+	for mesh in rig.get_children():
+		var baked:=SurfaceTool.new();baked.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for surface in mesh.mesh.get_surface_count():baked.append_from(mesh.mesh,surface,mesh.transform)
+		mesh.mesh=baked.commit();mesh.transform=Transform3D.IDENTITY
+		var mat:=ShaderMaterial.new();mat.shader=shader
+		mat.set_shader_parameter("bottom",low);mat.set_shader_parameter("height",maxf(high-low,0.0001))
+		mesh.material_override=mat
+	var depth: Image=await capture()
+	var atlas:=Image.create(256,512,false,Image.FORMAT_RGBA8)
+	atlas.blit_rect(color,Rect2i(Vector2i.ZERO,color.get_size()),Vector2i.ZERO)
+	atlas.blit_rect(depth,Rect2i(Vector2i.ZERO,depth.get_size()),Vector2i(0,256))
+	catalog.ornaments[signature]={"atlas":save_image(atlas),"span":camera.size,"low":low,"height":maxf(high-low,0.0001),"size":256,"source":label}
+	rig.free()
