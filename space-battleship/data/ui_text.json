@@ -14735,7 +14735,7 @@
   },
   {
     "key": "hyperspace.module_source_hint",
-    "text": "到「改造」选择「拆解无人机」可随机获得模块；再次获得同种模块可升级。",
+    "text": "在「无人机」页拆解闲置无人机，可获得随机模块；重复获得同种模块可升级。",
     "params": "",
     "category": "hyperspace"
   },
@@ -14908,7 +14908,7 @@
   },
   {
     "key": "hyperspace.forge_guide_dismantle",
-    "text": "想清掉一架多余无人机？\n先解除装备、收藏与预设保护，再看返还预览。拆解会永久删除这架无人机，并获得对应路线材料；随机挂载模块副本首次解锁模块，之后提供成长经验。\n核对对象后再确认。重铸删除未保留无人机不算拆解，不会发拆解奖励。",
+    "text": "想清掉一架多余无人机？\n在「无人机」页选中它，点「拆解无人机」查看返还。装备、收藏或预设保护会阻止拆解，确认窗会说明原因。\n核对对象后再确认。首次模块副本解锁模块，之后提供成长经验；重铸删除不算拆解。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -15518,7 +15518,7 @@
   },
   {
     "key": "hyperspace.module_none_unlocked",
-    "text": "还没有解锁模块。到「改造」选择「拆解无人机」，可随机获得；种类不能指定。",
+    "text": "还没有解锁模块。在「无人机」页选一架闲置无人机，点「拆解无人机」，可随机获得；种类不能指定。",
     "params": "",
     "category": "hyperspace",
     "note": "仅按当前无人机／模块状态提示"
@@ -16514,5 +16514,47 @@
     "params": "",
     "category": "hyperspace",
     "note": "使用领域共享队列和暂停回执投影，不另判权限"
+  },
+  {
+    "key": "hyperspace.action_missing",
+    "text": "还缺 {materials}",
+    "params": "materials",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
+  },
+  {
+    "key": "hyperspace.action_no_affix_slots",
+    "text": "这架无人机没有词条位。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
+  },
+  {
+    "key": "hyperspace.action_affix_full",
+    "text": "词条位已满。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
+  },
+  {
+    "key": "hyperspace.action_no_new_record",
+    "text": "这条路线还没有更高层通关记录。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
+  },
+  {
+    "key": "hyperspace.forge_added_affix",
+    "text": "新增：{affix}",
+    "params": "affix",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
+  },
+  {
+    "key": "hyperspace.forge_added_slot",
+    "text": "挂载槽已增加至 {count} 个。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "实机改造反馈，直接说明缺口与变化"
   }
 ]

@@ -31,7 +31,7 @@ func refresh() -> void:
   panel.skin_selection(slots[i],not id.is_empty() and id==panel.selected_id)
  var text=panel.t("slot_capacity_source",{"ship":UIText.data_text("ship",str(g.profile.selectedShip),"des"),"capacity":str(cap)})
  var next=next_hull(g,cap)
- if not next.is_empty():
+ if not next.is_empty() and bool(next.available):
   var name=UIText.data_text("ship",str(next.id),"des")
   text+="\n"+panel.t("slot_switch_hull",{"ship":name,"capacity":str(next.capacity)}) if next.available else "\n"+panel.t("slot_next_hull_reached" if next.mode=="reached" else "slot_next_hull",{"ship":name,"level":str(next.level)})
  panel.put(capacity_hint,"text",text)

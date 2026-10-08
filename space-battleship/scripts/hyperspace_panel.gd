@@ -46,6 +46,8 @@ var section_index=0
 var section_buttons: Array[Button]=[]
 var sections: Array[Control]=[]
 var exploration_scroll: ScrollContainer
+var forge_scroll: ScrollContainer
+var forge_content: VBoxContainer
 var challenge_result_area: VBoxContainer
 var exploration_receipt_area: VBoxContainer
 var root_box: VBoxContainer
@@ -161,17 +163,19 @@ func setup(owner) -> void:
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
   var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
-  if i==0:
-   exploration_scroll=ScrollContainer.new();exploration_scroll.name="ExplorationScroll"
-   exploration_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-   exploration_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-   exploration_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
-   exploration_scroll.follow_focus=true;stack.add_child(exploration_scroll)
-   content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;exploration_scroll.add_child(content)
-   sections.append(exploration_scroll);build_exploration(content)
+  if i in [0,2]:
+   var page_scroll=ScrollContainer.new();page_scroll.name="ExplorationScroll" if i==0 else "ForgeScroll"
+   page_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+   page_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+   page_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+   page_scroll.follow_focus=true;stack.add_child(page_scroll)
+   content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;page_scroll.add_child(content)
+   sections.append(page_scroll)
+   if i==0:exploration_scroll=page_scroll;build_exploration(content)
+   else:forge_scroll=page_scroll;forge_content=content
   else:
    content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
- build_inventory(sections[1]);build_forge(sections[2]);build_rules(sections[3])
+ build_inventory(sections[1]);build_forge(forge_content);build_rules(sections[3])
  host.game.event.connect(on_event);visibility_changed.connect(func():
   if is_visible_in_tree():refresh())
  select_section(0);set_process(true);refresh()
@@ -255,7 +259,8 @@ func build_inventory(parent: Node) -> void:
  legendary_button=button(legendary_group,"legendary_info",show_selected_legendary,{"name":""})
  legendary_summary=label(legendary_group,"",20)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
- details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ var detail_body=box(scroll,6);inventory_feedback.reparent(detail_body)
+ details=label(detail_body,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
@@ -263,6 +268,7 @@ func build_forge(parent: Node) -> void:
  forge_legendary_button=button(selected,"legendary_info",show_selected_legendary,{"name":""});forge_legendary_button.visible=false
  button(selected,"go_warehouse",begin_forge_pick)
  commands.build_forge(parent)
+ commands.feedback.reparent(selected)
 func build_rules(parent: Node) -> void:
  label(parent,t("presets"),25)
  for index in 3:
@@ -423,6 +429,7 @@ func refresh_details() -> void:
  put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
+ if valid:put(inventory_feedback,"visible",false)
  put(dismantle_button,"disabled",not valid or not forge_pick_state.is_empty())
  var has_effect=valid and bool(bag.drones[selected_id].get("legendary",false))
  var effect:Dictionary=bag.drones[selected_id].get("legendary_effect",{}) if has_effect else {}
@@ -501,12 +508,7 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
-  if affix_display_provider.is_valid():
-   var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
-   if projection is Dictionary:
-    value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
-  lines.append(t("affix",{"key":name_text,"tier":str(int(a.tier)),"value":value_text,"locked":t("locked") if a.locked else ""}))
+  lines.append(affix_summary(a,d))
  if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))
@@ -516,6 +518,13 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  for key in d.hangings:hangings.append(hanging_name(str(key)))
  lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
  return "\n".join(lines)
+func affix_summary(a:Dictionary,d:Dictionary) -> String:
+ var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
+ if affix_display_provider.is_valid():
+  var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
+  if projection is Dictionary:
+   value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
+ return t("affix",{"key":name_text,"tier":str(int(a.tier)),"value":value_text,"locked":t("locked") if a.locked else ""})
 func legendary_trigger(id:String) -> String:
  return legendary_help.summary(id)
 func catalog_name(group: String,key: String,fallback: String) -> String:

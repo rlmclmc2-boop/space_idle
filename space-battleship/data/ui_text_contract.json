@@ -8843,6 +8843,30 @@
     },
     "hyperspace.layer_resume": {
       "params": []
+    },
+    "hyperspace.action_missing": {
+      "params": [
+        "materials"
+      ]
+    },
+    "hyperspace.action_no_affix_slots": {
+      "params": []
+    },
+    "hyperspace.action_affix_full": {
+      "params": []
+    },
+    "hyperspace.action_no_new_record": {
+      "params": []
+    },
+    "hyperspace.forge_added_affix": {
+      "params": [
+        "affix"
+      ]
+    },
+    "hyperspace.forge_added_slot": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {

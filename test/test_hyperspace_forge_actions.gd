@@ -46,7 +46,7 @@ func run() -> void:
  a.confirmation.confirmed.emit();a.confirmation.hide()
  check(g.profile.hyperspace.inventory.drones[d.id].affixes[0].locked,"Explicit confirmation performs original lock command")
  var saved_stock=g.profile.hyperspace.materials.degenerate_matter;g.profile.hyperspace.materials.degenerate_matter=0;a.refresh()
- check(a.buttons.add_affix.disabled and a.buttons.add_affix.text.contains(c.error_text("insufficient_materials")),"Unavailable action shows authoritative shortage on its button")
+ check(a.buttons.add_affix.disabled and a.buttons.add_affix.text.contains("还缺") and a.buttons.add_affix.text.contains(c.t("degenerate_matter")+" "+str(int(g.hyperspace.config.forge_costs.add_affix.degenerate_matter)*int(g.hyperspace.config.material_unit_scale))),"Unavailable action shows authoritative shortage on its button")
  g.profile.hyperspace.materials.degenerate_matter=saved_stock
  print("Forge actions: ",checks," checks, ",failures," failures")
  scene.queue_free();await process_frame;quit(1 if failures else 0)

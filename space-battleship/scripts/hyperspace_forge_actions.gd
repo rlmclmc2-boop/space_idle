@@ -71,6 +71,14 @@ func refresh() -> void:
   var cost_lines:Array[String]=[]
   for key in costs:cost_lines.append(commands.t(str(key))+" "+str(int(costs[key])))
   var status=commands.t("action_available") if reason.is_empty() else commands.error_text(reason)
+  if reason=="insufficient_materials":
+   var missing:Array[String]=[]
+   for key in costs:
+    var owned=int(commands.game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(commands.game().profile.hyperspace.materials.get(key,0))
+    if int(costs[key])>owned:missing.append(commands.t(str(key))+" "+str(int(costs[key])-owned))
+   status=commands.t("action_missing",{"materials":" · ".join(missing)})
+  elif reason=="affix_limit":status=commands.t("action_no_affix_slots" if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else "action_affix_full")
+  elif reason=="no_new_record":status=commands.t("action_no_new_record")
   if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
   commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty())

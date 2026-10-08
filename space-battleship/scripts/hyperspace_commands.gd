@@ -73,7 +73,7 @@ func build_forge(parent: Node) -> void:
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
  restore_hint=panel.label(parent,t("restore_modernize_hint"),21)
  feedback=panel.label(parent,"",21);quote_label=panel.label(parent,t("quote_first"),21)
- result_scroll=ScrollContainer.new();result_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
+ result_scroll=ScrollContainer.new();result_scroll.custom_minimum_size.y=180;result_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
  result_details=panel.label(result_scroll,"",21);result_details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_scroll.visible=false
  promotion_hint.visible=false;dismantle_hint.visible=false;restore_hint.visible=false;quote_label.visible=false
  configure_operation()
@@ -266,12 +266,16 @@ func execute_quote() -> void:
  if quoted_request.is_empty():return
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var drone_id=str(quoted_request.drone_id)
+ var operation_id=str(quoted_request.operation)
  var result: Dictionary=h().forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
  if str(result.error).is_empty() and result.get("applied",false):
   quote_label.text=received_rewards_text(result.rewards) if result.has("rewards") else t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
  var current:Dictionary=game().profile.hyperspace.inventory.drones.get(drone_id,{})
+ if str(result.error).is_empty() and bool(result.get("applied",false)) and bool(result.get("outcome",true)) and not current.is_empty():
+  if operation_id=="add_affix" and not current.affixes.is_empty():feedback.text=t("forge_added_affix",{"affix":panel.affix_summary(current.affixes.back(),current)})
+  elif operation_id=="add_hanging_slot":feedback.text=t("forge_added_slot",{"count":str(int(current.hanging_slots))})
  result_scroll.visible=str(result.error).is_empty() and result.get("applied",false) and not current.is_empty()
  if result_scroll.visible:
   panel.put(result_details,"text",t("forge_result_current")+"\n"+panel.drone_description(current))
