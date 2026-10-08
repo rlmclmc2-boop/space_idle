@@ -22,6 +22,8 @@ const MUSIC_SETTINGS_PATH := "user://music_settings.cfg"
 const EQUIPMENT_DISPLAY := preload("res://scripts/equipment_display.gd")
 const BATTLE_ORIGIN := Vector2(20,160)
 const BATTLE_VIEW_SIZE := Vector2(572,960)
+const ENEMY_FORMATION_WIDTH_CAP := 74.0
+const DAMAGE_ENEMY_BOUNDS_SCALE := Vector2(0.6,1.15)
 # Defaults share the existing ProjectSettings visuals namespace; presentation only.
 const BATTLE_VISUAL_DEFAULTS := {
 	"player_ship_y":0.91, "player_hud_gap":14.0, "player_core_scale":0.65,
@@ -1462,7 +1464,7 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
 		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
 	# Full five-column fleets reserve space for hover and protection outlines.
-	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
+	return minf(width,ENEMY_FORMATION_WIDTH_CAP) if int(enemy.get("formation_count",0))>=4 else width
 
 func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	var pose:=enemy_pose(enemy)
@@ -1479,8 +1481,10 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 		outlines.append(packet.outer)
 		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
 	var top:=0.0
+	# A synchronous outline query shares one ship angle across all vertices.
+	var angle:=PI+enemy_render_angle(enemy)
 	for outline in outlines:
-		for point in outline:top=minf(top,Vector2(point).rotated(PI+enemy_render_angle(enemy)).y)
+		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
 	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
 	var status_space:=28.0 if game.is_boss_encounter() else 16.0
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
@@ -2608,16 +2612,37 @@ func damage_text_rect(pos: Vector2, value: String, size_value := 19) -> Rect2:
 	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
 	return Rect2(pos-Vector2(maxf(0,92-width)/2,font.get_ascent(size_value)),Vector2(maxf(92,width),font.get_height(size_value))).grow(4)
 
-func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}) -> Vector2:
-	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+func damage_text_enemy_bounds() -> Array[Rect2]:
 	var enemy_bounds: Array[Rect2] = []
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
-		var half_width := enemy_render_width(enemy)
 		var center := enemy_render_position(enemy)
+		var half_width := enemy_render_width_at_y(enemy,center.y)
 		var hover_margin := Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
-		var envelope := Vector2(half_width*0.6,half_width*1.15)+hover_margin
+		var envelope := DAMAGE_ENEMY_BOUNDS_SCALE*half_width+hover_margin
 		enemy_bounds.append(Rect2(center-envelope,envelope*2.0))
+	return enemy_bounds
+
+func damage_text_enemy_bottom() -> float:
+	var bottom := -INF
+	for enemy in game.enemies:
+		if enemy.hp<=0:continue
+		# Keep first-pose initialization at the same event boundary even when the
+		# label is below the fleet and never needs its animated coordinates.
+		enemy_pose(enemy)
+		var limit := floorf(enemy_frontline_y_limit(enemy))
+		# Four-or-more formations have a hard width cap. Other fleets use both
+		# depth endpoints, covering either direction of the width interpolation.
+		var width := ENEMY_FORMATION_WIDTH_CAP if int(enemy.get("formation_count",0))>=4 else maxf(enemy_render_width_at_y(enemy,90.0),enemy_render_width_at_y(enemy,limit))
+		bottom=maxf(bottom,limit+width*DAMAGE_ENEMY_BOUNDS_SCALE.y+absf(float(battle_visual.enemy_idle_y)))
+	return bottom
+
+func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}) -> Vector2:
+	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	var enemy_bounds: Array[Rect2] = []
+	var bounds_ready := false
+	# Drawing may hold a precomputed position; retain its original full query.
+	var fleet_bottom := INF if battle_draw_active else damage_text_enemy_bottom()
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
 			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
@@ -2626,8 +2651,12 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 			var blocked := false
 			for entry in floats:
 				if entry.get("damage",false) and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
-			for obstacle in enemy_bounds:
-				if bounds.intersects(obstacle):blocked = true
+			if blocked:continue
+			if bounds.position.y<fleet_bottom:
+				if not bounds_ready:
+					enemy_bounds=damage_text_enemy_bounds();bounds_ready=true
+				for obstacle in enemy_bounds:
+					if bounds.intersects(obstacle):blocked = true
 			if not blocked:return pos
 	return Vector2.INF
 
