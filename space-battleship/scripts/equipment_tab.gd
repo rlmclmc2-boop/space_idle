@@ -60,6 +60,11 @@ func equipment_text(suffix: String) -> String:
 	var key := "equipment."+suffix
 	return UIText.t(key)
 
+func module_card_id(category: String, index: int) -> String:
+	# Stored modules keep their own identity when a smaller hull makes them dormant.
+	# Combat slot IDs may instead identify drones beyond the active weapon count.
+	return "%s_%d" % [category,index]
+
 func equipment_choices(category: String,index: int = -1) -> Array:
 	if host.game.slot_equipment_locked(category,index):return ["armour"]
 	var options: Array = [""]
@@ -345,7 +350,7 @@ func refresh_new_weapon() -> void:
 func discovery_target(category: String) -> String:
 	if items.has(selected) and items[selected].category==category and not items[selected].locked and not items[selected].get("refit_locked",false):return selected
 	for index in host.game.active_slot_count(category):
-		if not host.game.slot_equipment_locked(category,index):return host.game.slot_id(category,index)
+		if not host.game.slot_equipment_locked(category,index):return module_card_id(category,index)
 	return ""
 
 func show_new_weapon() -> void:
@@ -444,7 +449,7 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
-	return {"id":host.game.slot_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
+	return {"id":module_card_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
 		"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
@@ -477,7 +482,7 @@ func refresh_slots(changed: Array) -> void:
 	var quotes := {}
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
-			var id: String = host.game.slot_id(category,index)
+			var id: String = module_card_id(category,index)
 			if changed.is_empty() or dirty or changed.has(id) or not items.has(id):
 				items[id] = equipment_item(category,index)
 				stats_dirty.erase(id)
