@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_disabled, depth_prepass_alpha, ambient_light_disabled, specular_disabled;
+render_mode unshaded, cull_disabled, depth_prepass_alpha;
 uniform sampler2D body_texture : source_color, filter_linear, repeat_disable;
 
 void fragment() {
@@ -9,8 +9,5 @@ void fragment() {
 	ALPHA_SCISSOR_THRESHOLD = 0.01;
 }
 
-void light() {
-	// The texture already contains the fixed key light and self-shadow.
-	// Receive live turret/formation shadows without lighting the image twice.
-	DIFFUSE_LIGHT += ALBEDO * mix(0.35, 1.0, ATTENUATION);
-}
+// Self-lighting and self-shadow are already in the asset. Do not apply another
+// light/shadow response to its color; that darkened the original candidate.

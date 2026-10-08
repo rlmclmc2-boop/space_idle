@@ -9,19 +9,47 @@ var textures: Dictionary = {}
 var pending: Array[String] = []
 var finish_connected := false
 var pixels_per_world := 20.0
+var export_mode := false # Set only by the offline art exporter, never gameplay.
+var catalog: Dictionary = {}
+var source_hashes: Dictionary = {}
 
 
-func attach(root: Node3D, key: String) -> void:
+func _ready() -> void:
+	var path := "res://assets/ships/body_bakes/catalog.json"
+	if FileAccess.file_exists(path): catalog = JSON.parse_string(FileAccess.get_file_as_string(path))
+
+
+func attach(root: Node3D, key: String, refresh := false) -> void:
 	var id := root.get_instance_id()
-	if records.has(id) and records[id].key == key: return
-	_release_root(id)
+	if records.has(id) and records[id].request == key and not refresh: return
 	var parts: Array[Dictionary] = []
-	if not _collect(root, root, Transform3D.IDENTITY, parts) or parts.is_empty(): return
-	if not textures.has(key):
-		textures[key] = _create_texture(parts)
-		pending.append(key)
-		_schedule_finish()
-	var entry: Dictionary = textures[key]
+	if records.has(id): parts = records[id].parts
+	_release_root(id)
+	if parts.is_empty():
+		if not _collect(root, root, Transform3D.IDENTITY, parts) or parts.is_empty(): return
+	else:
+		# Refresh only the registered body meshes, never newly attached weapons,
+		# shields, exhaust or ornaments elsewhere under the same model root.
+		for part in parts:
+			part.materials.clear()
+			for surface in part.source.mesh.get_surface_count(): part.materials.append(part.source.get_active_material(surface))
+	var signature := appearance_signature(parts)
+	var cache_key := key+":"+signature
+	var release := _release_root.bind(id)
+	if not root.tree_exiting.is_connected(release): root.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+	records[id] = {"key": cache_key, "request": key, "parts": parts, "plane": null, "root": root, "active": false}
+	if not textures.has(cache_key):
+		if export_mode:
+			textures[cache_key] = _create_texture(parts)
+			pending.append(cache_key)
+			_schedule_finish()
+		elif catalog.has(signature):
+			var asset := _load_asset(catalog[signature])
+			if asset.is_empty(): return
+			textures[cache_key] = asset
+		else:
+			return # Unexported appearance stays live; no startup rendering/readback.
+	var entry: Dictionary = textures[cache_key]
 	entry.users.append(id)
 	var plane := MeshInstance3D.new()
 	plane.name = "BakedBody"
@@ -36,10 +64,49 @@ func attach(root: Node3D, key: String) -> void:
 	plane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	plane.visible = false
 	root.add_child(plane)
-	records[id] = {"key": key, "parts": parts, "plane": plane, "root": root, "active": false}
-	var release := _release_root.bind(id)
-	if not root.tree_exiting.is_connected(release): root.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+	records[id].plane = plane
 	if entry.ready: _activate(records[id])
+
+
+func _load_asset(asset: Dictionary) -> Dictionary:
+	if not ResourceLoader.exists(str(asset.path)): return {}
+	var texture := load(str(asset.path)) as Texture2D
+	if texture == null: return {}
+	var material := ShaderMaterial.new()
+	material.shader = BODY_SHADER
+	material.set_shader_parameter("body_texture",texture)
+	var center: Array = asset.center
+	return {"viewport": null, "scene": null, "material": material,
+		"center": Vector3(float(center[0]),float(center[1]),float(center[2])),
+		"span": float(asset.span), "users": [], "ready": true}
+
+
+func appearance_signature(parts: Array[Dictionary]) -> String:
+	# Content/material identity, not slot or cosmetic labels. Unknown geometry,
+	# shader edits and non-exported settings fail closed to the original meshes.
+	var data: Array = []
+	for part in parts:
+		var original: MeshInstance3D = part.source
+		var path: String = str(part.source_path)
+		if not source_hashes.has(path): source_hashes[path] = FileAccess.get_sha256(path) if FileAccess.file_exists(path) else ""
+		if str(source_hashes[path]).is_empty(): return "unsupported"
+		# Imported subresource IDs can differ between machines; authored node names
+		# plus the GLB content hash and local transform identify the same geometry.
+		data.append([path,source_hashes[path],str(original.name),var_to_str(part.transform)])
+		for material in part.materials:
+			if not material is ShaderMaterial: return "unsupported"
+			data.append(material.shader.code.sha256_text())
+			var values: Array[String] = []
+			for uniform in material.shader.get_shader_uniform_list():
+				var value: Variant = material.get_shader_parameter(uniform.name)
+				if value is GradientTexture1D:
+					value = [value.width,value.gradient.offsets,value.gradient.colors,value.gradient.interpolation_mode]
+				elif value is Resource:
+					return "unsupported"
+				values.append(str(uniform.name)+"="+var_to_str(value))
+			values.sort()
+			data.append(values)
+	return var_to_str(data).sha256_text()
 
 
 func _collect(root: Node3D, node: Node, relative: Transform3D, parts: Array[Dictionary]) -> bool:
@@ -59,7 +126,7 @@ func _collect(root: Node3D, node: Node, relative: Transform3D, parts: Array[Dict
 			var material := original.get_active_material(surface)
 			if material == null: return false
 			materials.append(material)
-		parts.append({"source": original, "transform": transform, "materials": materials, "visible": original.visible})
+		parts.append({"source": original, "source_path": root.scene_file_path, "transform": transform, "materials": materials, "visible": original.visible})
 	elif node is VisualInstance3D:
 		return false
 	for child in node.get_children():
@@ -114,11 +181,19 @@ func _create_texture(parts: Array[Dictionary]) -> Dictionary:
 	var material := ShaderMaterial.new()
 	material.shader = BODY_SHADER
 	material.set_shader_parameter("body_texture", bake.get_texture())
+	# The image has no volumetric depth. Put its depth proxy at the body bottom
+	# so it cannot cover live turret bases mounted within the original hull.
+	center.y = bounds.position.y
 	return {"viewport": bake, "scene": scene, "material": material, "center": center,
 		"span": camera.size, "users": [], "ready": false}
 
 
 func invalidate_materials() -> void:
+	if not export_mode:
+		for id in records.keys():
+			var record: Dictionary = records[id]
+			attach(record.root,record.request,true)
+		return
 	# Source and bake copies share their appearance materials. Render one new
 	# snapshot after parameter writes; never tie this to pose or logical ticks.
 	for key in textures:
