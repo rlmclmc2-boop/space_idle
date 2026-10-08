@@ -1,0 +1,13 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+INTERNAL_GRID (345, 580) world_per_logical_y=0.05008454173083
+ROI original=(572, 960) alpha_used=[P: (238, 842), S: (96, 118)] crop=[P: (0, 720), S: (572, 240)] ship_pose=(286.0, 897.5425) shadow=true msaa=2
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=false
+baseline_1 {"draw_calls":274.0,"root_cpu":9.18592438577604,"root_gpu":16.810386561546,"ship_cpu":16.4432353572685,"ship_gpu":17.1744705648983,"wall_ms":38.6882857142857} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 896.9338) muzzle=(286.0, 859.6699) cropped=true
+roi_1 {"draw_calls":274.0,"root_cpu":8.3112940788269,"root_gpu":16.0249075128251,"ship_cpu":12.9864285653379,"ship_gpu":13.0779747361896,"wall_ms":33.2385714285714} scale=0.60450822114944 tab=0 window=(1180, 812)
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

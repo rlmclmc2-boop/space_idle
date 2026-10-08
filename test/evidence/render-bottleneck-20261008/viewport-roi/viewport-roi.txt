@@ -1,0 +1,14 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+ROI original=(572, 960) alpha_used=[P: (238, 842), S: (96, 118)] crop=[P: (0, 736), S: (572, 224)] ship_pose=(286.0, 897.5425) shadow=true msaa=2
+baseline_1 {"draw_calls":274.0,"root_cpu":8.52521010006175,"root_gpu":15.9351932782085,"ship_cpu":15.8164789696701,"ship_gpu":16.3543529270076,"wall_ms":36.7887142857143} scale=0.60450822114944 tab=0 window=(1180, 812)
+roi_1 {"draw_calls":274.0,"root_cpu":7.91003361068854,"root_gpu":15.1572857143498,"ship_cpu":12.7569159579878,"ship_gpu":12.8556302335082,"wall_ms":32.1711680672269} scale=0.60450822114944 tab=0 window=(1180, 812)
+baseline_2 {"draw_calls":274.0,"root_cpu":8.66090753699551,"root_gpu":15.7917815216449,"ship_cpu":15.6821344760286,"ship_gpu":16.3649831579513,"wall_ms":36.3246638655462} scale=0.60450822114944 tab=0 window=(1180, 812)
+roi_2 {"draw_calls":274.0,"root_cpu":8.3738991192409,"root_gpu":15.2653529143133,"ship_cpu":13.0666554635312,"ship_gpu":13.2063949408651,"wall_ms":32.4856638655462} scale=0.60450822114944 tab=0 window=(1180, 812)
+baseline_3 {"draw_calls":274.0,"root_cpu":8.76888236678949,"root_gpu":16.0695293570767,"ship_cpu":15.9118067396789,"ship_gpu":16.4882857619213,"wall_ms":36.9842100840336} scale=0.60450822114944 tab=0 window=(1180, 812)
+roi_3 {"draw_calls":274.0,"root_cpu":7.94599998297812,"root_gpu":15.0065546596751,"ship_cpu":12.9216638212444,"ship_gpu":13.0433612871571,"wall_ms":31.9268319327731} scale=0.60450822114944 tab=0 window=(1180, 812)
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

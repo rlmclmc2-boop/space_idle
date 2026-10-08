@@ -1,0 +1,20 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+FIXTURE cache=true source=43842f56 stage=34 enemies=3 frozen_process=true scale=1.0 engine=4.6.3-stable (official)
+ROI original=(572, 960) alpha_used=[P: (238, 842), S: (96, 118)] crop=[P: (0, 720), S: (572, 240)] ship_pose=(286.0, 897.5425) shadow=true msaa=2
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=false
+baseline_1 {"draw_calls":274.0,"root_cpu":8.75342014056294,"root_gpu":16.0861260550363,"ship_cpu":15.7563361240034,"ship_gpu":16.2884285950861,"wall_ms":36.5839327731092} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=true
+roi_1 {"draw_calls":274.0,"root_cpu":8.18252941941013,"root_gpu":15.2725546540332,"ship_cpu":12.5227562559753,"ship_gpu":12.6904537777941,"wall_ms":31.9306638655462} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=false
+baseline_2 {"draw_calls":274.0,"root_cpu":8.92545379510447,"root_gpu":16.5804117747716,"ship_cpu":15.8386555359143,"ship_gpu":16.3342184980376,"wall_ms":37.0610504201681} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=true
+roi_2 {"draw_calls":274.0,"root_cpu":8.20380674891111,"root_gpu":15.6566386663613,"ship_cpu":12.6504286197053,"ship_gpu":12.7439663991207,"wall_ms":32.5033025210084} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=false
+baseline_3 {"draw_calls":274.0,"root_cpu":8.72474789018391,"root_gpu":16.3439075806562,"ship_cpu":15.8087898863464,"ship_gpu":16.3505713999772,"wall_ms":37.0606050420168} scale=0.60450822114944 tab=0 window=(1180, 812)
+PROJECTED center=(286.0, 897.5425) muzzle=(286.0, 860.2787) cropped=true
+roi_3 {"draw_calls":274.0,"root_cpu":8.49702521732875,"root_gpu":16.030075626213,"ship_cpu":13.0939411836512,"ship_gpu":13.1462100934582,"wall_ms":33.1643529411765} scale=0.60450822114944 tab=0 window=(1180, 812)
+DONE diagnostic only; hidden/frozen modes are not production optimizations or gameplay acceptance

@@ -1,0 +1,259 @@
+{
+  "baseline_source": "43842f56c81e4bd7428118cf5f86d4554784be06",
+  "environment": "Godot4.6.3 Compatibility llvmpipe LP4 :91 equipment page0 window1180x812 scale0.60450822114944.",
+  "fixture": "Existing constructed frozen stage34, cache=true/save=false, three laser34/armour34/shield34, three enemies. One Frigate, no carrier formation. Not parent full historical34 or natural performance acceptance.",
+  "scope": "Temporary viewport cropping diagnostic only. No production code modified. No static hull batching, no background candidate shader, no shader36fe.",
+  "preserved": "Same world/ship matrices, camera width28.6 KEEP_WIDTH orthographic, viewport scale0.6045,4xMSAA, live shadows, all material shaders, original right/bottom boundaries, full572width. No hull shrinking or new alpha cropping of its current frame.",
+  "alpha_bounds": {
+    "original_viewport": [
+      572,
+      960
+    ],
+    "used_rect": [
+      238,
+      842,
+      96,
+      118
+    ],
+    "original_crop": [
+      0,
+      736,
+      572,
+      224
+    ],
+    "aligned_crop": [
+      0,
+      720,
+      572,
+      240
+    ],
+    "nonzero_alpha_removed_above736": 0,
+    "top_margin_original": 106,
+    "top_margin_aligned": 122,
+    "note": "Single frozen pose only. Preserves current shield/plume/shadow output; future moving carriers/shields/rotations not certified. Original alpha already reaches960 bottom; no additional bottom boundary introduced."
+  },
+  "sampling": "Each AB pair119frames after15warm. SixphaseABABAB original ROI and aligned ROI. Grid correction only one AB pair. Screenshots outside timed samples; all3processesEXIT0, no script errors.",
+  "measurements": {
+    "viewport-roi": [
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.52521010006175,
+          "root_gpu": 15.9351932782085,
+          "ship_cpu": 15.8164789696701,
+          "ship_gpu": 16.3543529270076,
+          "wall_ms": 36.7887142857143
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 7.91003361068854,
+          "root_gpu": 15.1572857143498,
+          "ship_cpu": 12.7569159579878,
+          "ship_gpu": 12.8556302335082,
+          "wall_ms": 32.1711680672269
+        },
+        "wall_reduction_ms": 4.617546218487398,
+        "ship_gpu_reduction_ms": 3.498722693499399
+      },
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.66090753699551,
+          "root_gpu": 15.7917815216449,
+          "ship_cpu": 15.6821344760286,
+          "ship_gpu": 16.3649831579513,
+          "wall_ms": 36.3246638655462
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.3738991192409,
+          "root_gpu": 15.2653529143133,
+          "ship_cpu": 13.0666554635312,
+          "ship_gpu": 13.2063949408651,
+          "wall_ms": 32.4856638655462
+        },
+        "wall_reduction_ms": 3.8389999999999986,
+        "ship_gpu_reduction_ms": 3.1585882170862014
+      },
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.76888236678949,
+          "root_gpu": 16.0695293570767,
+          "ship_cpu": 15.9118067396789,
+          "ship_gpu": 16.4882857619213,
+          "wall_ms": 36.9842100840336
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 7.94599998297812,
+          "root_gpu": 15.0065546596751,
+          "ship_cpu": 12.9216638212444,
+          "ship_gpu": 13.0433612871571,
+          "wall_ms": 31.9268319327731
+        },
+        "wall_reduction_ms": 5.057378151260497,
+        "ship_gpu_reduction_ms": 3.4449244747642
+      }
+    ],
+    "viewport-roi-aligned": [
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.75342014056294,
+          "root_gpu": 16.0861260550363,
+          "ship_cpu": 15.7563361240034,
+          "ship_gpu": 16.2884285950861,
+          "wall_ms": 36.5839327731092
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.18252941941013,
+          "root_gpu": 15.2725546540332,
+          "ship_cpu": 12.5227562559753,
+          "ship_gpu": 12.6904537777941,
+          "wall_ms": 31.9306638655462
+        },
+        "wall_reduction_ms": 4.653268907562996,
+        "ship_gpu_reduction_ms": 3.5979748172919983
+      },
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.92545379510447,
+          "root_gpu": 16.5804117747716,
+          "ship_cpu": 15.8386555359143,
+          "ship_gpu": 16.3342184980376,
+          "wall_ms": 37.0610504201681
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.20380674891111,
+          "root_gpu": 15.6566386663613,
+          "ship_cpu": 12.6504286197053,
+          "ship_gpu": 12.7439663991207,
+          "wall_ms": 32.5033025210084
+        },
+        "wall_reduction_ms": 4.5577478991597005,
+        "ship_gpu_reduction_ms": 3.590252098916901
+      },
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.72474789018391,
+          "root_gpu": 16.3439075806562,
+          "ship_cpu": 15.8087898863464,
+          "ship_gpu": 16.3505713999772,
+          "wall_ms": 37.0606050420168
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.49702521732875,
+          "root_gpu": 16.030075626213,
+          "ship_cpu": 13.0939411836512,
+          "ship_gpu": 13.1462100934582,
+          "wall_ms": 33.1643529411765
+        },
+        "wall_reduction_ms": 3.8962521008403,
+        "ship_gpu_reduction_ms": 3.204361306518999
+      }
+    ],
+    "viewport-roi-grid": [
+      {
+        "baseline": {
+          "draw_calls": 274.0,
+          "root_cpu": 9.18592438577604,
+          "root_gpu": 16.810386561546,
+          "ship_cpu": 16.4432353572685,
+          "ship_gpu": 17.1744705648983,
+          "wall_ms": 38.6882857142857
+        },
+        "roi": {
+          "draw_calls": 274.0,
+          "root_cpu": 8.3112940788269,
+          "root_gpu": 16.0249075128251,
+          "ship_cpu": 12.9864285653379,
+          "ship_gpu": 13.0779747361896,
+          "wall_ms": 33.2385714285714
+        },
+        "wall_reduction_ms": 5.4497142857143,
+        "ship_gpu_reduction_ms": 4.096495828708701
+      }
+    ]
+  },
+  "timing_finding": "Clear measurable ROI attribution: original224height three wall reductions4.62/3.84/5.06ms,ShipGPU3.50/3.16/3.44ms. Aligned240height and corrected grid also improve. Calls274 unchanged. Does not independently distinguish clear,MSAA resolve,canvas composite or camera/shading changes.",
+  "pictures": [
+    {
+      "variant": "roi",
+      "different_pixels": 2249,
+      "outside_prior_plume_box": 2050,
+      "bounds_yxyx": [
+        605,
+        676,
+        144,
+        201
+      ],
+      "max_channel_delta": 105,
+      "local_files": {
+        "roi-before.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-before.png",
+          "sha256": "8c49151888b1481b066fdc94b781dfb89d34c0ad80d10bf1d2257416f2d8d47f"
+        },
+        "roi-after.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-after.png",
+          "sha256": "99c750c5913fe2f29924a2b7b58c573945ee2577754c6cf12ddf0578c0711494"
+        }
+      }
+    },
+    {
+      "variant": "roi-aligned",
+      "different_pixels": 2190,
+      "outside_prior_plume_box": 2012,
+      "bounds_yxyx": [
+        605,
+        674,
+        144,
+        201
+      ],
+      "max_channel_delta": 92,
+      "local_files": {
+        "roi-aligned-before.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-aligned-before.png",
+          "sha256": "589ead8cfec7c0183e694f9412dc4a53588c3ad84cb48f7e152cf5b41079d1e2"
+        },
+        "roi-aligned-after.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-aligned-after.png",
+          "sha256": "1d87b280fb142ef31d661e57cb321a9434d1e87f958f879bd3775aad7ffb1000"
+        }
+      }
+    },
+    {
+      "variant": "roi-grid",
+      "different_pixels": 1990,
+      "outside_prior_plume_box": 1818,
+      "bounds_yxyx": [
+        606,
+        676,
+        144,
+        201
+      ],
+      "max_channel_delta": 63,
+      "local_files": {
+        "roi-grid-before.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-grid-before.png",
+          "sha256": "d1ae748f609a6e889a40eee280c36cded32084c48048a88b8eafcede933c8c2c"
+        },
+        "roi-grid-after.png": {
+          "path": "/workspace/bug-qa/performance-20261008/roi-grid-after.png",
+          "sha256": "7f36d35f8701bb0fb4c97d76eaebc4dff9d916ee72d3b768274ce50768916b62"
+        }
+      }
+    }
+  ],
+  "quality_finding": "NOT EQUIVALENT. Original/aligned images change2249/2190 pixels across hull. Grid correction still1990 different pixels,maxchannel63,1818 outside prior plume box. Therefore no claim of retained rendered quality, shape/lighting equality or production optimization acceptance.",
+  "projection": "Original/aligned diagnostic: unproject+crop offset logs samecenter286,897.5425 andmuzzle286,860.2787. Corrected grid variant:center286,896.9338/muzzle286,859.6699 =>0.6087canonicalY shift. Only these two points checked; six direct camera callers and runtime gameplay NOT validated.",
+  "engine_source": "https://raw.githubusercontent.com/godotengine/godot/4.6/servers/rendering/renderer_viewport.cpp",
+  "engine_observation": "render sizes truncated to integer atlines196–208; rendering camera receivesinternal_size at291–292. Actual345x580 full,345x145 aligned crop. Correction uses worldperlogicalY0.05008454173083 rather than0.05 but does NOT restore image equality.",
+  "handoff": "Parent may send original Astra evidence that transparent-area direction has measurable cost; temporary ROI is not a safe production patch. Production must preserve actual sampling, shading/shadows and complete canonical coordinate dependencies. No solution implemented or promised. Stop further expansion here, no new microoptimization/progression tests.",
+  "deliverables": "Probe gd/txt/gzJSON and report in Git. PNGs local only withhashes, notGit; parent can reproduce same scripts in own cloud. Existing saves untouched."
+}
