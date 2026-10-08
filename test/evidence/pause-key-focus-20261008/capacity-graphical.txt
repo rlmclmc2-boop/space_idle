@@ -1,0 +1,10 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+CAPACITY before ship=Heavy_Battleship pending=longLaser key= context=["weapons_7", "", false]
+CONNECTIONS [{ "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": RefCounted(crew_system.gd)::on_event, "flags": 0 }, { "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": Node2D::on_event, "flags": 0 }, { "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": Control(hightech_workshop.gd)::on_game_event, "flags": 0 }, { "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": Panel(reactor_panel.gd)::on_game_event, "flags": 0 }, { "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": Control(planet_panel.gd)::_on_log_event, "flags": 0 }, { "signal": RefCounted(presented_battle_game.gd)::[signal]event, "callable": Control(hyperspace_panel.gd)::on_event, "flags": 0 }] panel_visible=true
+COUNTS 3 dbship={ "name": "Frigate", "des": "游隼侦察艇", "weaponSlots": 3.0, "defenseSlots": 2.0, "movement": 50.0, "size": 1.0, "sameEquipmentLimit": 999.0 } host_same_game=true
+CAPACITY after switched=true ship=Frigate item_locked=true pending= key= confirm_disabled=true visible=true context=["weapons_7", "", true]
+GRAPHICAL constructed Heavy_Battleship to Frigate; isolated profile; no natural progression claim

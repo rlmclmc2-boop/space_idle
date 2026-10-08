@@ -1,0 +1,20 @@
+{
+  "base": "b4dcca402edb555f6b22241fb0bda94bed2a978a",
+  "ui_fix": "7f6e2761e6f204d0364b312030241038b6780f19",
+  "source_scope": "equipment_tab.gd UI stored-module identity only; game.gd combat slot_id unchanged",
+  "fixture_adaptation": [
+    "Expand inspector explicitly before scroll/focus preservation checks",
+    "Revoke missile progress gate and permanent grant in the in-memory fixture; restore afterward",
+    "Use replaceable D02 for native defence refit menu"
+  ],
+  "original_checks": 33,
+  "checks_after": 41,
+  "failures": 0,
+  "additional_checks": "5 dormant weapon card identities and retained instances, no drone placeholder, same card reactivated after hull restore, authoritative unlock fixture precondition",
+  "execution": "Godot 4.6.3 graphical Xvfb :91 llvmpipe; frozen isolated in-memory progress through 89, no save writes. Constructed fixture, not natural progression. No assertion removed or relaxed.",
+  "graphical_capture": {
+    "path": "/workspace/bug-qa/pause-key-evidence/capacity-shrink-fixed.png",
+    "sha256": "0674dd539facca9fc0bfd66b5bbaac1e9bed79acedf5c800dbe7a967abd7db06",
+    "observed": "W08 inspector shows dormant status, disabled selection and confirmation; headings count 5 dormant weapons. Constructed graphical scenario, not natural progress."
+  }
+}
