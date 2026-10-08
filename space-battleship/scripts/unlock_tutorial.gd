@@ -155,14 +155,16 @@ func refresh() -> void:
 	host.set_ui_value(content,"position",rect.position-host.ui.position+Vector2(50,90)*scale_value)
 	host.set_ui_value(content,"scale",Vector2.ONE*scale_value)
 	if not showing_archive:return
-	# Resolve each authoritative row once for this refresh; never retain it across frames.
+	# IDs already passed tutorial_unlocks eligibility. Read their current config rows
+	# directly; only the synthetic entry needs the domain projection. No cross-frame cache.
+	var definitions: Dictionary = host.game.db.data.get("unlock",{})
 	var rows: Dictionary = {}
 	var grouped: Dictionary = {}
 	var unread_ids: Dictionary = {}
 	var unread_systems: Dictionary = {}
 	for id in unread:unread_ids[id] = true
 	for id in ids:
-		var row: Dictionary = host.game.tutorial_unlock_row(id)
+		var row: Dictionary = host.game.tutorial_unlock_row(id) if id=="hyperspace" else definitions.get(id,{})
 		rows[id] = row
 		var category := row_system(row)
 		if not grouped.has(category):grouped[category] = []
