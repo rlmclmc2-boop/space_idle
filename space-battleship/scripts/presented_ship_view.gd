@@ -268,7 +268,7 @@ func _swept_model_radius(node: Node) -> float:
 			var stretch := maxf(basis.x.length(), maxf(basis.y.length(), basis.z.length()))
 			# Exhaust animation changes only scale.z in [0.94, 1.06]. Its shader
 			# changes alpha, not vertices. Always include maximum plume geometry.
-			if child is MeshInstance3D and child in exhaust_nodes: stretch = maxf(stretch, 1.06)
+			if child in exhaust_nodes: stretch = maxf(stretch, 1.06)
 			child_radius = child.position.length() + stretch * child_radius
 		radius = maxf(radius, child_radius)
 	return radius
