@@ -114,6 +114,7 @@ func explore_missing_material() -> void:
    panel.route=str(key);panel.select_section(0);return
 func basic_available(op:String,d:Dictionary) -> bool:
  if d.is_empty() or game().profile.hyperspace.inventory.sealed.has(str(d.id)):return false
+ if op=="dismantle":return not panel.Bag.protected(game().profile.hyperspace.inventory,str(d.id))
  if d.ultimate:return op=="restore_ultimate"
  var unlocked=d.affixes.any(func(a):return not a.locked)
  match op:
@@ -126,7 +127,7 @@ func basic_available(op:String,d:Dictionary) -> bool:
 func rebuild_choices(wanted:String="") -> void:
  if wanted.is_empty() and operation.selected>=0:wanted=str(operation.get_item_metadata(operation.selected))
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
- var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate"].filter(func(op):return basic_available(op,d))
+ var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate","dismantle"].filter(func(op):return basic_available(op,d))
  operation.clear()
  if choices.is_empty():operation.add_item(t("no_basic_operation"));operation.set_item_metadata(0,"none")
  for op in choices:
@@ -141,9 +142,7 @@ func configure_operation() -> void:
  if configured_drone!=panel.selected_id:
   configured_drone=panel.selected_id;show_advanced=false;rebuild_choices()
  elif not show_advanced:
-  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
-  var op=str(operation.get_item_metadata(operation.selected))
-  if not basic_available(op,d):rebuild_choices()
+  rebuild_choices()
  invalidate();guarantee.clear();guarantee.add_item(t("random_choice"));guarantee.set_item_metadata(0,"")
  var op=str(operation.get_item_metadata(operation.selected));guarantee.visible=op in ["replace_affix","legendary"];maximum.visible=op=="reroll_values"
  promotion_hint.visible=op=="promote_affix"
