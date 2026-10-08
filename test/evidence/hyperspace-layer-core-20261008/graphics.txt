@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+CLICK_POSITION (538.0123, 45.73328) root_final=[X: (0.604508, 0.0), Y: (0.0, 0.604299), O: (0.0, 27.0)]
+START_CALLBACK true error=
+LIVE_CHECK real input starts immediate layer1 challenge=true
+CLICK_POSITION (538.0123, 45.73328) root_final=[X: (0.604508, 0.0), Y: (0.0, 0.604299), O: (0.0, 27.0)]
+LIVE_CHECK real input returns main health and encounter=true
+LIVE_CHECK actual rendered battle graph exact after return=true
+LIVE_SCOPE normalX1 short segment, actual rendered scene and routed mouse clicks; isolated QA fixture, no clear acceptance. source4cf702a+working claim API; engine=4.6.3-stable (official) checks3 failures=0
