@@ -44,8 +44,9 @@ func build(parent:Node) -> void:
  claim_background_button=panel.button(tasks,"layer_claim_background",func():claim_receipt("background"));claim_background_button.visible=false
  claim_feedback=panel.label(tasks,"",20);claim_feedback.visible=false
  var actions=panel.row(parent)
- idle_button=panel.button(actions,"layer_idle_once",func():act("start_hyperspace_idle"))
- challenge_button=panel.button(actions,"layer_challenge",func():act("start_hyperspace_challenge"))
+ var initial_view=view()
+ idle_button=panel.button(actions,"layer_idle_once",func():act("start_hyperspace_idle"),{"layer":str(int(initial_view.get("current_layer",0)))})
+ challenge_button=panel.button(actions,"layer_challenge",func():act("start_hyperspace_challenge"),{"layer":str(int(initial_view.get("next_layer",1)))})
  var management=panel.row(parent)
  stop_button=panel.button(management,"layer_stop",func():act("stop_hyperspace_idle"))
  exit_button=panel.button(management,"layer_exit",func():act("exit_hyperspace_challenge",false))

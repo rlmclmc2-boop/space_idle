@@ -106,8 +106,8 @@ func put(control: Object,key: StringName,value: Variant) -> void:
 func label(parent: Node,text: String,font_size=22) -> Label:
  var n=Label.new();n.text=text;n.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  n.add_theme_font_size_override("font_size",font_size);n.add_theme_color_override("font_color",Color("243d50"));parent.add_child(n);return n
-func button(parent: Node,key: String,action: Callable) -> Button:
- var n=Button.new();n.text=t(key);n.custom_minimum_size=Vector2(116,44)
+func button(parent: Node,key: String,action: Callable,params:Dictionary={}) -> Button:
+ var n=Button.new();n.text=t(key,params);n.custom_minimum_size=Vector2(116,44)
  preload("res://scripts/dialog_presentation.gd").button_skin(n,false)
  parent.add_child(n);n.pressed.connect(action);return n
 func row(parent: Node) -> HBoxContainer:
