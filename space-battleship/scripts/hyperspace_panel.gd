@@ -297,6 +297,7 @@ func save_filter() -> void:
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
  reward_feedback.on_event(kind,_payload)
+ commands.exchange_ui.on_event(kind,_payload)
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):

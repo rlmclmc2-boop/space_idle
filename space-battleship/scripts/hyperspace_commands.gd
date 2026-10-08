@@ -2,6 +2,7 @@ extends RefCounted
 ## UI command controller. Domain previews own all prices and randomness.
 const OPERATIONS=["add_affix","replace_affix","add_hanging_slot","lock_affix","promote_affix","reroll_values","enable_omen","disable_omen","legendary","modernize","ultimate","restore_ultimate","dismantle"]
 var panel
+var exchange_ui=preload("res://scripts/hyperspace_material_exchange_ui.gd").new()
 var operation: OptionButton
 var guarantee: OptionButton
 var maximum: CheckBox
@@ -42,7 +43,7 @@ var operation_hint: Label
 var more_operations: Button
 var dismantle_dialog: ConfirmationDialog
 func setup(p) -> void:
- panel=p
+ panel=p;exchange_ui.setup(p)
 func t(key: String,params: Dictionary={}) -> String:return panel.t(key,params)
 func game():return panel.host.game
 func h():return game().hyperspace
@@ -59,7 +60,9 @@ func build_forge(parent: Node) -> void:
  for key in ["degenerate_matter","glueball","antiproton","zero_point_energy","ultimate_cores"]:
   material_rows[key]=panel.label(materials_box,"",21)
  material_stock=panel.label(materials_box,"",18)
- material_route_button=panel.button(materials_box,"material_explore",explore_missing_material)
+ var material_actions=panel.row(materials_box)
+ material_route_button=panel.button(material_actions,"material_explore",explore_missing_material)
+ panel.button(material_actions,"exchange_title",exchange_ui.show)
  var actions=panel.row(parent);panel.button(actions,"quote",preview);panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)

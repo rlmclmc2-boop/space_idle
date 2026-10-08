@@ -1,0 +1,19 @@
+{
+  "kind": "Source/interface verification; no GUI acceptance",
+  "core_api_commit": "17b67151b023ee29fc4d83b0f3453df1c880c8cc",
+  "quote_api": "game.hyperspace_material_exchange_quote(source,target,receive_amount)",
+  "quote_fields": ["error","source_owned","target_owned","cost","received","max_receive","request"],
+  "commit_api": "game.exchange_hyperspace_materials(quote.request)",
+  "entry": "Forge material area; independent of selected drone or operation",
+  "scope": "Only four regular materials. Core currency is never offered. UI never scales old balances or applies material modifiers.",
+  "confirmation": "Snapshot one quote.request for the confirmation. Consume local snapshot once on confirm. Never regenerate requests on repeated confirm. Core owns atomicity/replay and stale/conflict rejection.",
+  "refresh": "Quote refreshes on source/target/amount change or visible dialog material-state events. Selection and amount persist. Core max_receive fills quantity; source==target is rejected. Successful exchange invalidates old forge quote and refreshes material area.",
+  "checks": {
+    "catalog": "2283 rows valid",
+    "diff": "git diff --check passed",
+    "helper_syntax": "Godot 4.6.3 --check-only passed using existing imported runtime resource cache and isolated XDG; did not launch gameplay or load player save",
+    "root_cache": "Initial direct syntax command was blocked by unimported SVG/global UIText dependency; existing imported cache resolved that check environment issue",
+    "gui": "Not run; parent owns integrated graphical acceptance"
+  },
+  "configuration_peer": "Opening branch cd680ec0 already supplies collector name and hyperspace_material_income text. No duplicate production/config changes in this UI commit."
+}

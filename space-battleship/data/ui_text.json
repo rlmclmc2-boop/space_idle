@@ -15615,5 +15615,138 @@
     "params": "",
     "category": "startup",
     "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "hyperspace.exchange_title",
+    "text": "材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_close",
+    "text": "关闭",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_source",
+    "text": "拿什么兑换？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_target",
+    "text": "想换成什么？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_amount",
+    "text": "希望获得多少？",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_maximum",
+    "text": "填入最大数量",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_review",
+    "text": "兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm_title",
+    "text": "确认材料兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_confirm",
+    "text": "确认兑换",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_cancel",
+    "text": "返回",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_summary",
+    "text": "扣除 {cost} {source}\n获得 {received} {target}",
+    "params": "{cost},{source},{received},{target}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_owned",
+    "text": "持有 {amount}",
+    "params": "{amount}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_same",
+    "text": "选两种不同材料。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_insufficient",
+    "text": "来源材料不够，减少数量或换个来源。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_invalid_amount",
+    "text": "请输入正整数。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_material_limit",
+    "text": "本次数量超过目标持有上限，请减少数量。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_stale",
+    "text": "材料或改造状态已变化，请重新查看兑换并确认。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_unavailable",
+    "text": "暂时无法兑换，请稍后重试。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
+  },
+  {
+    "key": "hyperspace.exchange_success",
+    "text": "兑换完成。\n{summary}",
+    "params": "{summary}",
+    "category": "hyperspace",
+    "note": "四种常规材料兑换；展示领域报价，不在UI修改材料"
   }
 ]
