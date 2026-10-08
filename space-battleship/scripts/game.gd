@@ -1922,6 +1922,27 @@ func cancel_hyperspace_request()->bool:
 func start_hyperspace(route: String,level: int) -> bool:
 	return manual_hyperspace.start(self,route,level)
 
+func hyperspace_route_view(route:String,crew_id:String="")->Dictionary:
+	return hyperspace.route_view(self,route,crew_id)
+
+func start_hyperspace_idle(route:String)->bool:
+	return hyperspace.start_idle(self,route)
+
+func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
+	return hyperspace.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
+
+func stop_hyperspace_idle(route:String)->bool:
+	return hyperspace.stop_idle(self,route)
+
+func start_hyperspace_challenge(route:String)->bool:
+	return manual_hyperspace.start(self,route,hyperspace.current_layer(self,route)+1)
+
+func exit_hyperspace_challenge()->bool:
+	return manual_hyperspace.finish(self,false,"user_exit")
+
+func claim_hyperspace(round_id:int,run_id:int)->bool:
+	return hyperspace.claim(self,round_id,run_id)
+
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
 		return false
@@ -1932,7 +1953,7 @@ func next_stage() -> int:
 
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
-	if level < 1 or level > int(profile.highestLevel):
+	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
 	if N.compare(stat("armour"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_armour"})

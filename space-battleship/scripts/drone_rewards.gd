@@ -45,6 +45,36 @@ static func create_drone(rng: RandomNumberGenerator,c: Dictionary,id: String,qua
 	d.forge_rng_state=str(private_rng.state)
 	return d
 
+# Luck uses a receipt-owned stream, leaving quality/count/type and forge seeds untouched.
+static func lucky_tier(rng:RandomNumberGenerator,weights:Dictionary,extra:int)->int:
+	var tiers:Array=weights.keys();tiers.sort_custom(func(a,b):return int(a)<int(b))
+	var total:=0.0
+	for tier in tiers:total+=float(weights[tier])
+	var draw:=rng.randf();var remaining:=total
+	for tier in tiers:
+		var before:=pow(remaining/total,extra)
+		remaining=maxf(0.0,remaining-float(weights[tier]))
+		var chance:=before-pow(remaining/total,extra)
+		draw-=chance
+		if draw<0:return int(tier)
+	return int(tiers.back())
+
+static func apply_luck(drone:Dictionary,c:Dictionary,luck:float,state:String)->void:
+	if luck<=0 or drone.is_empty():return
+	var rng:=R.restore(state)
+	for entry in drone.affixes:
+		var extra:=floori(luck/100.0)
+		var remainder:=fposmod(luck,100.0)/100.0
+		if remainder>0 and rng.randf()<remainder:extra+=1
+		if extra==0:continue
+		var weights:Dictionary={}
+		for tier in c.tier_weights:
+			if c.affixes[entry.key].ranges.has(tier):weights[tier]=c.tier_weights[tier]
+		var tier:=mini(int(entry.tier),lucky_tier(rng,weights,extra))
+		if tier==int(entry.tier):continue
+		entry.tier=tier
+		entry.value=R.quantized(rng,c.affixes[entry.key].ranges[str(tier)],float(c.value_precision))
+
 static func generate(s: Dictionary,c: Dictionary,request: Dictionary,planet_id: String) -> Dictionary:
 	if c.policies.core_reward not in ["exclusive","additional"]:return {"error":"core_reward_policy_required"}
 	var rng:=R.restore(s.random_state)
@@ -57,6 +87,7 @@ static func generate(s: Dictionary,c: Dictionary,request: Dictionary,planet_id: 
 			outcome=R.weighted(rng,weights)
 	if outcome!="ultimate_core":
 		reward.drone=create_drone(rng,c,"space:%d:%d"%[int(request.round_id),int(request.run_id)],outcome,c.routes[request.route].weapon,int(request.level),planet_id)
+	apply_luck(reward.drone,c,float(request.get("luck",0.0)),str(request.get("luck_state","0")))
 	var amount:=material_amount(c,int(request.level))
 	reward.materials[c.routes[request.route].material]=int(amount)
 	return {"error":"","reward":reward,"random_state":str(rng.state)}
