@@ -82,6 +82,7 @@ func screen_muzzle_for_drone(id: String,ordinal: int,view) -> Vector2:
  if sockets.is_empty():return view.rendered_position
  return view.camera.unproject_position(sockets[posmod(ordinal,sockets.size())].global_position)
 func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
+ var changed: bool=body_bake_pending
  if body_bake_pending:
   # Bake only fixed bodies after appearance changes; ornaments and sockets stay live.
   for i in nodes.size():
@@ -98,3 +99,6 @@ func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
   var ring=nodes[i].get_node_or_null("Appearance/UltimateOrbit")
   if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45
  view.body_baker.guard_resolution(float(int(view.viewport.size.x*view.viewport.scaling_3d_scale))/view.camera.size)
+ # Finish membership/style changes after every body, orbit, transform and
+ # visibility has been assigned, including while the logical game is paused.
+ if changed:view.request_fleet_redraw()

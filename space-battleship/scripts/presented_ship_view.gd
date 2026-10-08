@@ -42,6 +42,7 @@ var exhaust_nodes: Array[MeshInstance3D] = []
 var world: Node3D
 var flat_compositor := preload("res://scripts/flat_ship_compositor.gd").new()
 var rendering_paused := false
+var fleet_redraw_pending := false
 var body_baker := preload("res://scripts/ship_body_baker.gd").new()
 var rendered_height := 0.0
 var rendered_position := Vector2.ZERO
@@ -111,6 +112,7 @@ func _ready() -> void:
 	world.add_child(camera)
 	body_baker.source_world = world
 	add_child(body_baker)
+	body_baker.presentation_changed.connect(request_fleet_redraw)
 	flat_compositor.name = "FlatShipCandidate"
 	add_child(flat_compositor)
 	# Explicit candidate opt-in; the accepted live path remains the default.
@@ -457,6 +459,22 @@ func set_accelerated_quality(enabled: bool) -> void:
 	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
 	body_baker.live_shadows_allowed = not enabled
 	body_baker.request_shadow_sync()
+
+
+func request_fleet_redraw() -> void:
+	if fleet_redraw_pending or not is_inside_tree() or body_baker.export_mode:return
+	fleet_redraw_pending = true
+	_commit_fleet_redraw.call_deferred()
+
+
+func _commit_fleet_redraw() -> void:
+	fleet_redraw_pending = false
+	# Publish complete appearance/pose batches even when battlefield's paused
+	# pose signature is unchanged. Both flat and live output need this edge.
+	if flat_compositor.enabled:
+		flat_compositor.invalidate()
+	else:
+		set_rendering(visible,rendering_paused)
 
 
 func set_rendering(enabled: bool, paused := false) -> void:

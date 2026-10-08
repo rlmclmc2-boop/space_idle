@@ -1,6 +1,9 @@
 extends Node
 ## Per-view, appearance-owned fixed-camera body textures. No gameplay authority.
 ## Original sockets/transforms survive. Turrets, shield, exhaust and ornaments do not bake.
+signal presentation_changed
+var presentation_pending := false
+
 const BODY_SHADER := preload("res://scripts/baked_ship_body.gdshader")
 const BAKE_SIZE := 1024
 var source_world: Node3D
@@ -25,6 +28,7 @@ func _ready() -> void:
 func attach(root: Node3D, key: String, refresh := false) -> void:
 	var id := root.get_instance_id()
 	if records.has(id) and records[id].request == key and not refresh: return
+	presentation_pending = true
 	var parts: Array[Dictionary] = []
 	if records.has(id): parts = records[id].parts
 	_release_root(id)
@@ -256,6 +260,8 @@ func _activate(record: Dictionary) -> void:
 		if is_instance_valid(part.source) and part.source.visible: part.source.visible = false
 	if not record.plane.visible: record.plane.visible = true
 	record.active = true
+	presentation_pending = true
+	request_shadow_sync()
 
 
 func guard_resolution(pixel_density: float) -> void:
@@ -298,13 +304,21 @@ func _sync_shadow_policy() -> void:
 	var needs_shadows := live_shadows_allowed and not (has_visible_body and all_offline)
 	# Baked self-shadow remains in the texture. This intentionally omits live
 	# turret/ornament self-projection only while every visible body is offline.
-	if light.shadow_enabled != needs_shadows: light.shadow_enabled = needs_shadows
+	if light.shadow_enabled != needs_shadows:
+		light.shadow_enabled = needs_shadows
+		presentation_pending = true
+	# Publish after record/plane activation and the coalesced shadow decision,
+	# not from child_entered_tree while attach() is still filling its record.
+	if presentation_pending:
+		presentation_pending = false
+		presentation_changed.emit()
 
 
 func _release_root(id: int) -> void:
 	body_roots.erase(id)
 	request_shadow_sync()
 	if not records.has(id): return
+	presentation_pending = true
 	var record: Dictionary = records[id]
 	_restore(record)
 	if is_instance_valid(record.plane): record.plane.queue_free()
@@ -324,6 +338,8 @@ func _restore(record: Dictionary) -> void:
 		if is_instance_valid(part.source) and part.source.visible != part.visible: part.source.visible = part.visible
 	if is_instance_valid(record.plane) and record.plane.visible: record.plane.visible = false
 	record.active = false
+	presentation_pending = true
+	request_shadow_sync()
 
 
 func _exit_tree() -> void:
