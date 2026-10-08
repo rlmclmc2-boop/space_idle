@@ -15550,5 +15550,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "仅按当前无人机／模块状态提示"
+  },
+  {
+    "key": "hyperspace.slot_replacement_candidate",
+    "text": "{slot}号槽 · {quality} · {weapon} · 等级{level}",
+    "params": "{slot},{quality},{weapon},{level}",
+    "category": "hyperspace",
+    "note": "替换候选显示槽位、品质和装备，避免同名同等级无人机混淆"
   }
 ]

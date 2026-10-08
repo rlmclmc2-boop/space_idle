@@ -70,9 +70,10 @@ func activate() -> void:
   var box=panel.commands.content(replacement_dialog);replacement_choice=panel.option(box)
   replacement_dialog.confirmed.connect(func():replace(incoming,str(replacement_choice.get_item_metadata(replacement_choice.selected))))
  replacement_choice.clear()
- for old in bag.equipped:
+ for index in bag.equipped.size():
+  var old=bag.equipped[index]
   var d:Dictionary=bag.drones[old]
-  replacement_choice.add_item(panel.t("slot_drone",{"weapon":panel.t(str(d.weapon)),"level":str(int(d.level))}));replacement_choice.set_item_metadata(replacement_choice.item_count-1,old)
+  replacement_choice.add_item(panel.t("slot_replacement_candidate",{"slot":str(index+1),"quality":panel.quality_caption(d),"weapon":panel.t(str(d.weapon)),"level":str(int(d.level))}));replacement_choice.set_item_metadata(replacement_choice.item_count-1,old)
  replacement_dialog.popup_centered(Vector2i(660,370))
 func replace(new_id:String,old_id:String) -> void:
  var h=panel.host.game.hyperspace

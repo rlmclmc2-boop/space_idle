@@ -8315,6 +8315,14 @@
     },
     "hyperspace.module_sealed_locked": {
       "params": []
+    },
+    "hyperspace.slot_replacement_candidate": {
+      "params": [
+        "slot",
+        "quality",
+        "weapon",
+        "level"
+      ]
     }
   },
   "bindings": {
