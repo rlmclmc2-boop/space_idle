@@ -1,0 +1,79 @@
+{
+  "status": "Interface checkpoint before core implementation, parent to relay to originalUI/crew threads. No newthread/task.",
+  "baseline": "be430bd212eca9c6a39e4fca8375f464505a5bf4 plus7c67b31 local enemypositionfix",
+  "public_game_api": {
+    "hyperspace_route_view(route:String,crew_id:String=\"\")->Dictionary": {
+      "fields": [
+        "route",
+        "current_layer",
+        "next_layer",
+        "best_time",
+        "task_mode",
+        "work",
+        "duration",
+        "round_id",
+        "run_id",
+        "status",
+        "background",
+        "challenge",
+        "reasons"
+      ],
+      "task_mode": [
+        "none",
+        "challenge",
+        "manual_idle",
+        "crew_idle"
+      ],
+      "reasons_keys": [
+        "idle_once",
+        "crew_idle",
+        "challenge",
+        "stop",
+        "exit"
+      ],
+      "reason_policy": "emptystring=available,otherwise stablecode; UI localizescodes. current_layer0=nevercleared,next_layer1;best_time exactcurrentlayerrecord,neverborrowpriorlayer."
+    },
+    "start_hyperspace_idle(route:String)->bool": "One background manual round atcurrentclearedlayer;no battlefield switch. duration=exactbest_time;creditsonce atduration. Requiresrealrecord.",
+    "set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool": "Continuous background rounds atcurrentclearedlayer. Crewreservedviaexistingpermission; workcarryandcompletionbudget preservehighlevelbenefits withoutloopingforever.",
+    "stop_hyperspace_idle(route:String)->bool": "Stopcontinuouspolicy andcancelunfinishedbackgroundround onroute. Completedpendingrewardpreserved, notregenerated/deleted.",
+    "start_hyperspace_challenge(route:String)->bool": "Immediate nextlayerlivecombat, no ticket, no safe-boundary queue. Mainrun suspended/resumed; layersadvanceonlyrealwins.",
+    "exit_hyperspace_challenge()->bool": "Exitcurrentchallenge, no partialreward orprogress;restoremainrun safely."
+  },
+  "state": {
+    "active": "Existing field keepslivechallenge receipt+frozen mainreturn,mode=manual, ticket=0 fornewruns.",
+    "idle": "New independent receipt foronebackgroundslot,mode=idle(one-shot) orauto(crewcontinuous). Backgroundcancontinuewhilechallenging. Existingglobalauto selection retained; no arbitrarylevelauthority.",
+    "receipt": "Existingunique round_id/run_id,status,route,level,work,duration,reward retained. Legacy receipts/pendingrewards migrate withoutregeneration;claimonce.",
+    "progress": "Derived frompositive route/history[level] realwinrecords. Legacy selectedlevel/auto.level/highestmain areNOTclearproof. Perlayerhistory retained; oldleveltime nevercopied tothenext."
+  },
+  "crew_interface": "Call crew.hyperspace_efficiency(g,crew_id), expectedpositivefinite(K+level)/K,defaultK20 fromopeningownedconfig. duration=best_time/efficiency, no yieldmultiplier, no exponentialformula orfractionalproductionledger.",
+  "file_ownership": {
+    "bug_core": [
+      "scripts/hyperspace_system.gd",
+      "scripts/hyperspace_state.gd",
+      "scripts/hyperspace_scheduler.gd",
+      "scripts/hyperspace_manual_session.gd",
+      "scripts/hyperspace_main_return.gd",
+      "scripts/hyperspace_permissions.gd",
+      "scripts/game.gd",
+      "scripts/save_transfer.gd",
+      "focused coretests andnecessarycorehelpers"
+    ],
+    "ui_peer": [
+      "hyperspace_panel.gd",
+      "hyperspace_equipment_ui.gd andpanel helpers",
+      "ui_text.json andcontract"
+    ],
+    "opening_peer": [
+      "crew_system.gd hyperspace_efficiency",
+      "Kconfig auto_duration_crew_base default20 inauthoritativeworkbook/generatedconfig",
+      "crewformula/display/help"
+    ],
+    "coordination": "BUG willnotedit panel/ui_text orcrew_system/Kconfig. Coreignoreslegacyticket/minimumselectioncost; ticketconfig canremainlegacyunused untilconfigowner updates it. No outboundcrosscloud tool, parent relays thiscontract."
+  },
+  "open_implementation_work": [
+    "Safeanytime mainbattle suspension/restore includingliveactors andprojectile aliases; oldjourney-only return isinsufficient forCOMBAT.",
+    "V4→newstate migration preservingpaidpendingreceipt, exacthistories andrewardidentity.",
+    "Independentbackground scheduler highlevelmanyroundcarry withboundedworkbudget andno lostlogicaltime.",
+    "Scopedfunctional/migration/reentry tests; parentnaturalgraphicalacceptance."
+  ]
+}
