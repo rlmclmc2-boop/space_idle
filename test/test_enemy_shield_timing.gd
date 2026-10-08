@@ -100,6 +100,26 @@ func run():
  g=fixture();e=g.enemies[0];g.enemy_shield_time=1.4;g.db.equipment.longLaser[0].para3=1;g.db.equipment.longLaser[0].cd=2
  shot=beam(g);g.tick_long_laser(shot,1.4)
  check(is_equal_approx(g.enemy_shield_time,1.4) and is_equal_approx(e.shield_hit_at,1.0),"low-level beam resolver uses caller clock and scheduled due without advancing clock twice")
+ # Live membership must be checked again after each beam-hit callback.
+ for mutation in ["erase","reverse","clear_and_fire"]:
+  var sample=fixture();sample.profile.loadout.weapons[1]={"key":"longLaser","level":1}
+  var a:Dictionary=beam(sample);var b:Dictionary=beam(sample,1);var added:Array=[]
+  sample.event.connect(func(kind,payload):
+   if kind!="beam_hit" or not is_same(payload.shot,a) or int(a.ticks)!=1:return
+   if mutation=="erase":sample.projectiles.erase(b)
+   elif mutation=="reverse":sample.projectiles.reverse()
+   else:
+    sample.projectiles.clear();added.append(beam(sample)))
+  sample.tick_projectiles(1.0)
+  check(a.ticks==(1 if mutation=="clear_and_fire" else 5),"primary beam periods obey callback membership: "+mutation)
+  check(b.ticks==(5 if mutation=="reverse" else 0),"removed/reordered beam periods obey live membership: "+mutation)
+  if mutation=="clear_and_fire":check(added.size()==1 and added[0].ticks==0,"new callback beam waits for next snapshot")
+ # The collection pass must also tolerate a live order differing from pending.
+ g=fixture();g.profile.loadout.weapons[1]={"key":"longLaser","level":1}
+ first=beam(g);second=beam(g,1)
+ var beam_pending:Array=g.projectiles.duplicate();g.projectiles.reverse();g.enemy_shield_time=.4
+ g.tick_shield_beams(beam_pending,.4)
+ check(first.ticks==2 and second.ticks==2,"collection retains both beams after live reorder")
  # FAST here is the Lab implementation choice, never a game speed multiplier.
  var exact=fixture(Balanced);var fast=fixture(Balanced);fast.simulation_mode="fast"
  for sample in [exact,fast]:

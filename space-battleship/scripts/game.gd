@@ -2316,7 +2316,9 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 	var hits: Array[Dictionary] = []
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
-		if not shot.get("beam",false) or not projectiles.has(shot):continue
+		if not shot.get("beam",false):continue
+		# Check the current position each time; callbacks may reorder or clear it.
+		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):continue
 		if not advance_long_laser(shot,dt):continue
 		var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 		while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
@@ -2326,7 +2328,9 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 	hits.sort_custom(func(a,b):return a.index<b.index if a.at==b.at else a.at<b.at)
 	for item in hits:
 		var shot: Dictionary = item.shot
-		if not projectiles.has(shot) or not long_laser_valid(shot):continue
+		var index: int=int(item.index)
+		if (index>=projectiles.size() or not is_same(projectiles[index],shot)) and not projectiles.has(shot):continue
+		if not long_laser_valid(shot):continue
 		apply_long_laser_hit(shot,float(item.due))
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
