@@ -8445,6 +8445,29 @@
     },
     "hyperspace.totals_empty": {
       "params": []
+    },
+    "battle.enemy_name.armour_flagship": {
+      "params": []
+    },
+    "battle.enemy_name.shield_flagship": {
+      "params": []
+    },
+    "battle.enemy_name.armour_dreadnought": {
+      "params": []
+    },
+    "battle.enemy_name.shield_dreadnought": {
+      "params": []
+    },
+    "hyperspace.layer_route_challenge_pending": {
+      "params": []
+    },
+    "hyperspace.layer_route_challenge": {
+      "params": []
+    },
+    "hyperspace.layer_reason_challenge_pending": {
+      "params": [
+        "route"
+      ]
     }
   },
   "bindings": {
@@ -8661,6 +8684,909 @@
       },
       "8": {
         "des": "battle.enemies.8.des"
+      },
+      "1087": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "1088": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "1089": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "1090": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "2087": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "2088": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "2089": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "2090": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "46187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "47187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "48187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "49187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "50187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "51187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "52187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "53187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "54187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "55187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "56187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "57187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "58187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "59187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "60127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "60147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "60167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "60187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "61187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "62187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "63187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "64187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "65127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "65147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "65167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "65187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "66187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "67187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "68187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "69187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "70127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "70147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "70167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "70187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "71187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "72187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "73187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "74187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "75127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "75147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "75167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "75187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "76187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "77187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "78187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "79187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "80127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "80147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "80167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "80187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "81187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "82187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "83187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "84187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "85127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "85147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "85167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "85187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "86187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "87187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "88187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "89187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "90127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "90147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "90167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "90187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "91187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "92187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "93187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "94187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "95127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "95147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "95167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "95187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "96187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "97187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "98187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "99187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "100127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "100147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "100167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "100187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "101187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "102187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "103187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "104187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "105127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "105147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "105167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "105187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "106187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "107187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "108187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "109187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "110127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "110147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "110167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "110187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "111187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "112187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "113187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "114187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "115187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "116187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "117187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "118187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "119187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "120127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "120147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "120167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "120187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "121187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "122187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "123187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "124187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "125187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "126187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "127187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "128187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "129187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "130127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "130147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "130167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "130187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "131187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "132187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "133187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "134187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "135187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "136187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "137187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "138187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "139187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "140127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "140147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "140167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "140187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "141187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "142187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "143187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "144187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "145187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "146187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "147187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "148187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "149187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "150127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "150147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "150167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "150187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "151187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "152187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "153187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "154187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "155187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "156187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "157187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "158187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "159187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "160127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "160147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "160167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "160187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "161187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "162187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "163187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "164187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "165187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "166187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "167187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "168187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "169187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "170127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "170147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "170167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "170187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "171187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "172187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "173187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "174187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "175187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "176187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "177187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "178187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "179187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "180127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "180147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "180167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "180187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "181187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "182187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "183187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "184187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "185187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "186187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "187187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "188187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "189187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "190127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "190147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "190167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "190187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "191187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "192187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "193187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "194187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "195187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "196187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "197187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "198187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "199187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "200127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "200147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "200167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "200187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "201187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "202187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "203187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "204187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "205187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "206187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "207187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "208187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "209187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "210127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "210147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "210167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "210187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "211187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "212187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "213187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "214187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "215187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "216187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "217187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "218187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "219187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "220127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "220147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "220167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "220187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "221187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "222187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "223187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "224187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "225187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "226187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "227187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "228187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "229187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "230127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "230147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "230167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "230187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "231187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "232187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "233187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "234187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "235187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "236187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "237187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "238187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "239187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "240127": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "240147": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "240167": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "240187": {
+        "des": "battle.enemy_name.shield_dreadnought"
+      },
+      "241187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "242187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "243187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "244187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "245187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "246187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "247187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "248187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "249187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "250127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "250147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "250167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "250187": {
+        "des": "battle.enemy_name.armour_dreadnought"
+      },
+      "251187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "252187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "253187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "254187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "255187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "256187": {
+        "des": "battle.enemy_name.shield_flagship"
+      },
+      "257187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "258187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "259187": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "260127": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "260147": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "260167": {
+        "des": "battle.enemy_name.armour_flagship"
+      },
+      "260187": {
+        "des": "battle.enemy_name.armour_dreadnought"
       }
     },
     "jewel": {
