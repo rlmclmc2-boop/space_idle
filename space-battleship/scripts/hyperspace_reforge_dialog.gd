@@ -128,12 +128,15 @@ static func retention_receipt_text(g)->String:
  var sealed:Dictionary=g.profile.hyperspace.inventory.sealed
  if sealed.is_empty():return Text.t("planet.reforge_no_retained_receipt")
  var counts:Dictionary={}
+ var has_modules:=false
  for id in sealed:
   var gate=int(sealed[id]);counts[gate]=int(counts.get(gate,0))+1
+  if not g.profile.hyperspace.inventory.drones[id].get("hangings",[]).is_empty():has_modules=true
  var gates=counts.keys();gates.sort()
  var lines:PackedStringArray=[]
  for gate in gates:lines.append(Text.t("planet.reforge_sealed_receipt",{"count":str(counts[gate]),"level":str(gate)}))
  lines.append(Text.t("planet.reforge_reclaim_path"))
+ if has_modules:lines.append(Text.t("planet.reforge_module_receipt"))
  return "\n".join(lines)
 
 func confirm_zero_retention()->void:

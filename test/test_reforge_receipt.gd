@@ -11,13 +11,15 @@ func run()->void:
  g.profile.highestLevel=gate+1;g.profile.cleared=range(1,gate+1);g.rebuild_unlocks();g.pending_unlocks.clear()
  var state=g.planet_buildings.state(g,"1","shipyard");state.status="built"
  var d=preload("res://scripts/drone_rewards.gd").create_drone(g.rng,g.hyperspace.config,"receipt-retain","white","laser",1,"1")
+ # Explicit valid mounting fixture exercises the retained-record/reset-growth distinction.
+ d.hanging_slots=1;d.hangings=["resource_collector"]
  g.profile.hyperspace.unlocked_drones=true;g.profile.hyperspace.inventory.drones[d.id]=d;g.profile.hyperspace.inventory.warehouse.append(d.id)
  var draft=preload("res://scripts/hyperspace_reforge_dialog.gd").new();draft.setup(g,"1","");scene.add_child(draft)
  draft.choices[d.id].button_pressed=true;draft.commit()
  await process_frame;await process_frame
  var receipts=root.get_children().filter(func(child):return child is AcceptDialog and child.title==UIText.t("planet.reforge_completed"))
  check(not is_instance_valid(draft) and receipts.size()==1,"Successful reforge receipt survives destruction of the old draft/page")
- var expected=UIText.t("planet.reforge_sealed_receipt",{"count":"1","level":str(gate)})+"\n"+UIText.t("planet.reforge_reclaim_path")
+ var expected=UIText.t("planet.reforge_sealed_receipt",{"count":"1","level":str(gate)})+"\n"+UIText.t("planet.reforge_reclaim_path")+"\n"+UIText.t("planet.reforge_module_receipt")
  check(receipts.size()==1 and receipts[0].dialog_text==expected,"Receipt states actual retained count, table-derived gate and real reclaim path")
  for receipt in receipts:receipt.hide()
  scene.refresh_tab_visibility();scene.select_system(6);await process_frame

@@ -8966,6 +8966,9 @@
     },
     "planet.reforge_no_retained_receipt": {
       "params": []
+    },
+    "planet.reforge_module_receipt": {
+      "params": []
     }
   },
   "bindings": {
