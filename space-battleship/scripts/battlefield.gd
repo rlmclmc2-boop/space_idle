@@ -377,6 +377,8 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="hyperspace_manual":
 		encounter_presentation.return_success=bool(info.get("success",false))
 		encounter_presentation.sync(game,0.0)
+		if not bool(info.get("active",false)):
+			reset_battle_transients_for_scene()
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
@@ -394,7 +396,7 @@ func on_event(kind:String,info:Dictionary)->void:
 			if int(enemy.uid)==int(info.get("uid",-1)):
 				point=battle_logical_point(enemy_render_position(enemy));width=enemy_render_width(enemy)
 		if destruction_events.size()>=24:destruction_events.pop_front()
-		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0))})
+		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0)),"hyperspace":bool(game.manual_hyperspace.active)})
 		if bool(info.get("boss",false)):shake=maxf(shake,float(battle_visual.boss_destroy_shake))
 		beep(90)
 		return
@@ -415,6 +417,24 @@ func on_event(kind:String,info:Dictionary)->void:
 		return
 	super.on_event(kind,info)
 
+
+func reset_battle_transients_for_scene() -> void:
+	destruction_events.clear()
+	rail_events.clear()
+	missile_events.clear()
+	pulse_events.clear()
+	enemy_impacts.clear()
+	beam_full_started.clear()
+	player_hit_at=-100.0
+	encounter_presentation.leader_fall=2.0
+	encounter_presentation.clear_age=2.0
+	paused_presentation_signature=""
+	super.reset_battle_transients_for_scene()
+	# A restored full-power beam is ongoing, not a fresh full-power flash.
+	for shot in game.projectiles:
+		if shot.get("beam",false) and game.long_laser_valid(shot) and int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999:
+			beam_full_started[int(shot.serial)]=fx_time-100.0
+	if is_instance_valid(pulse_layer):pulse_layer.queue_redraw()
 
 func sync_beam_visuals()->void:
 	if prototype_enabled and continuous_beam_enabled:

@@ -12,6 +12,9 @@ var pixels_per_world := 20.0
 var export_mode := false # Set only by the offline art exporter, never gameplay.
 var catalog: Dictionary = {}
 var source_hashes: Dictionary = {}
+var body_roots: Dictionary = {} # Includes unsupported bodies with no bake record.
+var shadow_sync_pending := false
+var live_shadows_allowed := true
 
 
 func _ready() -> void:
@@ -25,6 +28,11 @@ func attach(root: Node3D, key: String, refresh := false) -> void:
 	var parts: Array[Dictionary] = []
 	if records.has(id): parts = records[id].parts
 	_release_root(id)
+	body_roots[id] = root
+	var release := _release_root.bind(id)
+	if not root.tree_exiting.is_connected(release): root.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+	if not root.visibility_changed.is_connected(request_shadow_sync): root.visibility_changed.connect(request_shadow_sync)
+	request_shadow_sync()
 	if parts.is_empty():
 		if not _collect(root, root, Transform3D.IDENTITY, parts) or parts.is_empty(): return
 	else:
@@ -35,8 +43,6 @@ func attach(root: Node3D, key: String, refresh := false) -> void:
 			for surface in part.source.mesh.get_surface_count(): part.materials.append(part.source.get_active_material(surface))
 	var signature := appearance_signature(parts)
 	var cache_key := key+":"+signature
-	var release := _release_root.bind(id)
-	if not root.tree_exiting.is_connected(release): root.tree_exiting.connect(release, CONNECT_ONE_SHOT)
 	records[id] = {"key": cache_key, "request": key, "parts": parts, "plane": null, "root": root, "active": false}
 	if not textures.has(cache_key):
 		if export_mode:
@@ -235,6 +241,7 @@ func _finish() -> void:
 			else:
 				_restore(records[id])
 	pending.clear()
+	request_shadow_sync()
 
 
 func _activate(record: Dictionary) -> void:
@@ -257,9 +264,46 @@ func guard_resolution(pixel_density: float) -> void:
 	pixels_per_world = pixel_density
 	for record in records.values():
 		if textures.has(record.key) and textures[record.key].ready: _activate(record)
+	request_shadow_sync()
+
+
+func request_shadow_sync() -> void:
+	if shadow_sync_pending or not is_inside_tree(): return
+	shadow_sync_pending = true
+	# Pose, visibility, loadout and appearance can change together. Decide after
+	# that batch, rather than toggling a shadow map for each intermediate body.
+	_sync_shadow_policy.call_deferred()
+
+
+func _sync_shadow_policy() -> void:
+	shadow_sync_pending = false
+	if not is_instance_valid(source_world) or not is_inside_tree(): return
+	var light := source_world.get_node_or_null("KeyLight") as DirectionalLight3D
+	if light == null: return
+	var all_offline := not export_mode
+	var has_visible_body := false
+	for id in body_roots:
+		var root: Node3D = body_roots[id]
+		if not is_instance_valid(root) or not root.is_visible_in_tree(): continue
+		has_visible_body = true
+		# Missing catalog/unsupported geometry must count as live, not disappear
+		# from the decision. Resolution fallback sets active=false before this.
+		if not records.has(id) or not records[id].active:
+			all_offline = false
+			break
+		var record: Dictionary = records[id]
+		if not is_instance_valid(record.plane) or not record.plane.visible or not textures.has(record.key) or not textures[record.key].ready:
+			all_offline = false
+			break
+	var needs_shadows := live_shadows_allowed and not (has_visible_body and all_offline)
+	# Baked self-shadow remains in the texture. This intentionally omits live
+	# turret/ornament self-projection only while every visible body is offline.
+	if light.shadow_enabled != needs_shadows: light.shadow_enabled = needs_shadows
 
 
 func _release_root(id: int) -> void:
+	body_roots.erase(id)
+	request_shadow_sync()
 	if not records.has(id): return
 	var record: Dictionary = records[id]
 	_restore(record)
@@ -286,5 +330,7 @@ func _exit_tree() -> void:
 	if RenderingServer.frame_post_draw.is_connected(_finish): RenderingServer.frame_post_draw.disconnect(_finish)
 	# Cached bake scenes are detached between changes and need explicit release.
 	for id in records.keys(): _release_root(int(id))
+	body_roots.clear()
 	pending.clear()
 	finish_connected = false
+	shadow_sync_pending = false

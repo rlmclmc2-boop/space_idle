@@ -1854,6 +1854,37 @@ func beam_ring(pos: Vector2, color: Color, duration: float, radius: float) -> vo
 	if particles.size()>=WEAPON_PARTICLE_LIMIT or decoration_budget(pos,1)==0:return
 	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"ring":true})
 
+func reset_battle_transients_for_scene() -> void:
+	# A scene boundary invalidates visual history, not authoritative projectiles.
+	# Do not expire old beams through sync_beam_visuals: that emits more particles.
+	particles.clear()
+	beam_visuals.clear()
+	projectile_visuals.clear()
+	damage_pending.clear()
+	floats.clear()
+	pickup_effects.clear()
+	resource_hover_feedback.clear()
+	shake=0.0
+	wave_hint=0.0
+	for pose in turret_visuals.values():
+		pose.fired_at=-100.0
+		pose.recoil=0.0
+	for pose in enemy_poses.values():
+		for key in pose.keys():
+			if str(key).begins_with("rail_fired_"):pose.erase(key)
+	for voice in railgun_audio.values():
+		if is_instance_valid(voice) and voice.playing:voice.stop()
+	railgun_sound_times.clear()
+	# Rebuild only live beam bookkeeping, without launch/hit callbacks or RNG.
+	# draw_battle already reads projectile heads directly from game.projectiles;
+	# no historical flight trail can be reconstructed from that current state.
+	if not fast_mode_enabled():
+		for shot in game.projectiles:
+			if shot.get("beam",false) and game.long_laser_valid(shot):
+				beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(entity_render_position(shot.target)),"full":float(beam_style(shot).power)>=1.0})
+	for layer in [battle_layer,overlay_layer,drop_layer]:
+		if is_instance_valid(layer):layer.queue_redraw()
+
 func sync_beam_visuals() -> void:
 	if fast_mode_enabled():
 		beam_visuals.clear()
