@@ -14,6 +14,7 @@ var catalog: Dictionary = {}
 var source_hashes: Dictionary = {}
 var body_roots: Dictionary = {} # Includes unsupported bodies with no bake record.
 var shadow_sync_pending := false
+var live_shadows_allowed := true
 
 
 func _ready() -> void:
@@ -294,7 +295,7 @@ func _sync_shadow_policy() -> void:
 		if not is_instance_valid(record.plane) or not record.plane.visible or not textures.has(record.key) or not textures[record.key].ready:
 			all_offline = false
 			break
-	var needs_shadows := not (has_visible_body and all_offline)
+	var needs_shadows := live_shadows_allowed and not (has_visible_body and all_offline)
 	# Baked self-shadow remains in the texture. This intentionally omits live
 	# turret/ornament self-projection only while every visible body is offline.
 	if light.shadow_enabled != needs_shadows: light.shadow_enabled = needs_shadows

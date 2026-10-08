@@ -444,6 +444,7 @@ func set_accelerated_quality(enabled: bool) -> void:
 	if accelerated_quality == enabled:return
 	accelerated_quality = enabled
 	viewport.msaa_3d = Viewport.MSAA_DISABLED if enabled else Viewport.MSAA_4X
+	body_baker.live_shadows_allowed = not enabled
 	body_baker.request_shadow_sync()
 
 
