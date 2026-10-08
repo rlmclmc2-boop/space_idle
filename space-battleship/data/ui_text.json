@@ -15594,5 +15594,26 @@
     "params": "",
     "category": "hyperspace",
     "note": "未解锁无人机页的实际挑战入口，不使用旧排队提示"
+  },
+  {
+    "key": "startup.invalid_progress_title",
+    "text": "存档未能读取",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.invalid_progress_body",
+    "text": "原存档文件已保留。游戏已暂停启动，并停止写入存档。\n请保留 progress.json 和备份文件，排查后重新启动游戏。",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
+  },
+  {
+    "key": "startup.keep_save_ack",
+    "text": "知道了",
+    "params": "",
+    "category": "startup",
+    "note": "存档拒绝读取后的保留文件提示；按钮只关闭提示，不重置或写入存档"
   }
 ]

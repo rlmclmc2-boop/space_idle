@@ -8354,6 +8354,15 @@
     },
     "hyperspace.layer_drone_locked": {
       "params": []
+    },
+    "startup.invalid_progress_title": {
+      "params": []
+    },
+    "startup.invalid_progress_body": {
+      "params": []
+    },
+    "startup.keep_save_ack": {
+      "params": []
     }
   },
   "bindings": {

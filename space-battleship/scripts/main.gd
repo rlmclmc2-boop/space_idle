@@ -254,8 +254,13 @@ func _ready() -> void:
 	if not game.startup_error.is_empty():
 		set_process(false);set_process_unhandled_input(false)
 		var problem := AcceptDialog.new()
-		problem.title = UIText.t("hyperspace.invalid_config_title")
-		problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
+		if game.startup_error=="invalid_progress_save":
+			problem.title = UIText.t("startup.invalid_progress_title")
+			problem.dialog_text = UIText.t("startup.invalid_progress_body")
+			problem.ok_button_text = UIText.t("startup.keep_save_ack")
+		else:
+			problem.title = UIText.t("hyperspace.invalid_config_title")
+			problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
 		add_child(problem);problem.popup_centered(Vector2i(900,420))
 		return
 	railgun_fx.configure(db)
