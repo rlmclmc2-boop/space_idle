@@ -1575,7 +1575,7 @@
   },
   {
     "key": "planet.facility_progress",
-    "text": "建设：已完成 {progress}/{total} 次探索",
+    "text": "{progress}/{total} 次探索",
     "params": "{progress},{total}",
     "category": "planet",
     "note": "星球探索第一阶段布局"
