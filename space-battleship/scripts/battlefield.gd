@@ -377,6 +377,10 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="hyperspace_manual":
 		encounter_presentation.return_success=bool(info.get("success",false))
 		encounter_presentation.sync(game,0.0)
+		if not bool(info.get("active",false)):
+			# Keep unrelated mainline feedback; discard only challenge explosions.
+			destruction_events=destruction_events.filter(func(e):return not bool(e.get("hyperspace",false)))
+			if is_instance_valid(pulse_layer):pulse_layer.queue_redraw()
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
@@ -394,7 +398,7 @@ func on_event(kind:String,info:Dictionary)->void:
 			if int(enemy.uid)==int(info.get("uid",-1)):
 				point=battle_logical_point(enemy_render_position(enemy));width=enemy_render_width(enemy)
 		if destruction_events.size()>=24:destruction_events.pop_front()
-		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0))})
+		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0)),"hyperspace":bool(game.manual_hyperspace.active)})
 		if bool(info.get("boss",false)):shake=maxf(shake,float(battle_visual.boss_destroy_shake))
 		beep(90)
 		return

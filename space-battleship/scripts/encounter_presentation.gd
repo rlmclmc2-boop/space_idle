@@ -24,6 +24,11 @@ func sync(game,delta:float) -> bool:
 		departure=next_route.is_empty()
 		route=next_route
 		transition=0.0
+		if departure:
+			# Challenge-owned transients must not follow a restored mainline scene,
+			# whose pause state may intentionally stop all presentation clocks.
+			leader_fall=2.0
+			clear_age=2.0
 		if not departure:
 			scenery_route=route
 			accent={"alpha":Color("81d5da"),"beta":Color("d9a67b"),"gamma":Color("a8bacd"),"delta":Color("b1a0dc")}.get(route,Color("81d5da"))
