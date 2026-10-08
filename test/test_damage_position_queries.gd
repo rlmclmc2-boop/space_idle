@@ -26,7 +26,8 @@ func run()->void:
     scene.measuring=true;scene.reads=0
     var position:Vector2=scene.damage_text_position(origin,value,19)
     scene.measuring=false
-    check(scene.reads==15,"one coordinate read per live enemy in one placement query")
+    check(scene.reads in [0,15],"placement skips the fleet or reads every live enemy once")
+    if origin.y==680:check(scene.reads==0,"player feedback below the fleet avoids all animated coordinate queries")
     if position==Vector2.INF:continue
     finite+=1;var rect:Rect2=scene.damage_text_rect(scene.battle_point(position),value,19)
     var clear:=true
@@ -35,6 +36,14 @@ func run()->void:
      var envelope:Vector2=Vector2(width*0.6,width*1.15)+Vector2(float(scene.battle_visual.enemy_idle_x),float(scene.battle_visual.enemy_idle_y))
      if rect.intersects(Rect2(center-envelope,envelope*2.0)):clear=false
     check(clear,"ordinary and explicit fleet footprints still exclude returned text placement")
+ scene.battle_draw_active=true;scene.measuring=true;scene.reads=0
+ scene.damage_text_position(Vector2(286,680),"408",19);scene.measuring=false
+ check(scene.reads==15,"drawing retains full query of its cached enemy positions")
+ scene.battle_draw_active=false
+ for enemy in g.enemies:enemy.hp=0
+ scene.measuring=true;scene.reads=0
+ var empty_position:Vector2=scene.damage_text_position(Vector2(286,680),"408",19);scene.measuring=false
+ check(scene.reads==0 and empty_position!=Vector2.INF,"dead fleet never requests coordinates or blocks safe feedback")
  check(finite>0 and g.profile==profile,"placement remains read-only and admits safe player feedback")
  scene.queue_free();await process_frame
  print("DAMAGE_POSITION_QUERIES %d checks %d failures"%[checks,failures]);quit(1 if failures else 0)
