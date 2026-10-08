@@ -1,0 +1,5 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+CAPACITY before ship=Heavy_Battleship pending=longLaser key= context=["weapons_7", "", false]
+CAPACITY after switched=true ship=Frigate item_locked=false pending=longLaser key= confirm_disabled=false visible=true context=["weapons_7", "", false]
+UNLOCK pending=missile equipped=cannon available=true cached=false option_present=true confirm_disabled=true

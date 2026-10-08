@@ -1,0 +1,44 @@
+{
+  "baseline": "bb1f0ebc4e37b325fd3ed9815ccb625b6a9abd08",
+  "fixed": "b4dcca402edb555f6b22241fb0bda94bed2a978a",
+  "six_same_failure_labels": true,
+  "assertions": [
+    {
+      "line": 118,
+      "label": "Fixture exercises actual nonzero inspector scroll",
+      "classification": "Stale expanded-detail fixture",
+      "cause": "65d9419 makes details_open false; test never expands before setting scroll. Exact scroll/layout values not logged."
+    },
+    {
+      "line": 127,
+      "label": "Auto-upgrade preserves focus, expanded state and scroll",
+      "classification": "Stale default-state expectation",
+      "cause": "Compound assertion requires details_open true; now defaults false. Logs cannot establish that focus or scroll were lost."
+    },
+    {
+      "line": 132,
+      "label": "Collapsed detail survives auto-upgrade",
+      "classification": "Stale toggle precondition",
+      "cause": "Test toggles initially collapsed detail into expanded state, then asserts collapsed."
+    },
+    {
+      "line": 155,
+      "label": "Ship capacity removal invalidates draft safely",
+      "classification": "Existing production module identity defect, independent of Space patch",
+      "cause": "64e5cff7 slot_id maps inactive weapons to drone:invalid. Equipment UI uses this battle identity for stored module cards, aliases dormant slots and leaves old weapons_7 unlocked. Short headless state probe confirms active capacity 3 while weapons_7.locked=false, pending=longLaser, confirmation enabled. Natural GUI shrink-flow reproduction still pending."
+    },
+    {
+      "line": 162,
+      "label": "Unavailable candidate restores equipped choice",
+      "classification": "Invalid unlock fixture mutation",
+      "cause": "Test erases profile.unlocked cache only. Existing cleared level 1 still unlocks missile via content_unlocked. Probe: available=true, cached=false, option_present=true, pending=missile, confirmation disabled. Current candidate remains legitimately unlocked by progress."
+    },
+    {
+      "line": 170,
+      "label": "Defence title opens inline menu",
+      "classification": "Stale fixed-armour contract",
+      "cause": "D01 is fixed armour since fd34ffa2; name_button disabled by refit_locked. Test clicks defence_0 instead of replaceable defence_1."
+    }
+  ],
+  "run_scope": "Reused existing graphical baseline/fixed logs; supplementary headless boundary-only probe for capacity/unlock fields. No 33-check rerun in this follow-up. No source or assertion edits."
+}
