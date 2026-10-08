@@ -52,7 +52,7 @@ static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -
 	for id in bag.drones:
 		var d: Dictionary=bag.drones[id]
 		if not data.get("planet",{}).has(d.planet_id) or d.planet_id!=planet_for_level(data,int(d.level)):return false
-	for receipt in [s.active,s.get("idle",{})]:
+	for receipt in [s.active,s.get("idle",{})]+s.get("paused",[]):
 		if not receipt.is_empty() and receipt.status=="completed_pending" and not receipt.reward.drone.is_empty():
 			var reward_drone:Dictionary=receipt.reward.drone
 			if reward_drone.planet_id!=planet_for_level(data,int(reward_drone.level)):return false

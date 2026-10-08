@@ -1,5 +1,9 @@
 extends SceneTree
 class UI extends "res://scripts/battlefield.gd":
+	var entry_solves := 0
+	func enemy_safe_entry_distance() -> float:
+		if not enemy_entry_batch_active or enemy_entry_distance_time!=fx_time:entry_solves+=1
+		return super.enemy_safe_entry_distance()
 	func create_battle_game(_persist: bool) -> BattleGame:return super.create_battle_game(false)
 	func show_qa_tools() -> void:pass
 	func show_chrono_login_report() -> void:pass
@@ -17,14 +21,22 @@ func run() -> void:
 	await process_frame
 	var enemy=g.enemies[0]
 	# Distinct valid in-memory states verify actual fields, not a colour legend.
-	enemy.armourType=2;enemy.max_shield=10;enemy.shield=10;enemy.shieldType=1
+	enemy.armourType=2;enemy.hp=1234.2;enemy.max_shield=10;enemy.shield=9.1;enemy.shieldType=1
 	var original=g.enemies.duplicate(true);var profile=g.profile.duplicate(true);var rng=g.rng.state;var clock=g.enemy_shield_time
 	var point: Vector2=scene.enemy_render_position(enemy)
 	view.refresh_at(point)
-	check(view.panel.visible and view.description.text.contains("装甲：抵抗物理伤害") and view.description.text.contains("护盾：抵抗能量伤害"),"Hover distinguishes armour from the active shield using true fields")
+	check(view.panel.visible and view.description.text.contains("装甲：1235 · 抵抗物理伤害") and view.description.text.contains("护盾：10 · 抵抗能量伤害"),"Hover distinguishes remaining integer armour and shield with their true resistance")
 	check(g.enemies==original and g.profile==profile and g.rng.state==rng and g.enemy_shield_time==clock,"Inspection does not settle shields or mutate battle, saves or RNG")
 	enemy.shield=0;view.refresh_at(point)
-	check(view.description.text.contains("护盾已破") and view.description.text.contains("装甲：抵抗物理伤害"),"Broken shield exposes armour without changing its resistance label")
+	check(view.description.text.contains("护盾：0（已破）") and view.description.text.contains("装甲：1235 · 抵抗物理伤害"),"Broken shield shows zero without changing armour or its resistance label")
+	enemy.hp=.2;enemy.shield=.2;view.refresh_at(point)
+	check(view.description.text.contains("装甲：1 ·") and view.description.text.contains("护盾：1 ·"),"Positive fractional remaining layers never appear already empty")
+	check(view.remaining_text(-.2)=="0" and view.remaining_text(12000)=="12000","Remaining display is nonnegative and integer without compact decimals")
+	var old_active=scene.enemy_entry_batch_active;var old_time=scene.enemy_entry_distance_time;var old_distance=scene.enemy_entry_distance_value
+	var solves=scene.entry_solves
+	check(view.enemy_at(Vector2(-10000,-10000)).is_empty(),"Full fleet hit-test miss stays empty")
+	check(scene.entry_solves-solves<=1,"One hover query solves the fleet entry limit at most once")
+	check(scene.enemy_entry_batch_active==old_active and scene.enemy_entry_distance_time==old_time and scene.enemy_entry_distance_value==old_distance,"Hover restores the caller's presentation cache scope")
 	enemy.max_shield=0;enemy.armourType=0;view.refresh_at(point)
 	check(view.description.text.contains("无护盾") and view.description.text.contains("无类型抗性"),"Neutral and unshielded enemies are explicit")
 	view.refresh_at(Vector2(-10,-10));check(not view.panel.visible,"Leaving the battlefield closes the local readout")

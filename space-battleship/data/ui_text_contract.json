@@ -8657,6 +8657,392 @@
         "level",
         "type"
       ]
+    },
+    "reactor.upgrade_idle": {
+      "params": []
+    },
+    "reactor.upgrade_shares": {
+      "params": []
+    },
+    "enhance.effect.active": {
+      "params": [
+        "count"
+      ]
+    },
+    "enhance.effect.reorder": {
+      "params": []
+    },
+    "enhance.effect.first_upgrade": {
+      "params": []
+    },
+    "enhance.overview.current": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.effect_trigger_drone_rebuild": {
+      "params": [
+        "limit"
+      ]
+    },
+    "hyperspace.rebuild_disabled_short": {
+      "params": []
+    },
+    "hyperspace.rebuild_disabled": {
+      "params": []
+    },
+    "hyperspace.drone_dynamic_weapon_hint": {
+      "params": []
+    },
+    "hyperspace.legendary_info": {
+      "params": [
+        "name"
+      ]
+    },
+    "hyperspace.legendary_details_title": {
+      "params": []
+    },
+    "hyperspace.legendary_derived_rule": {
+      "params": []
+    },
+    "hyperspace.legendary_core.higgs_cannon": {
+      "params": []
+    },
+    "hyperspace.legendary_core.scatter_pulse": {
+      "params": []
+    },
+    "hyperspace.legendary_core.precise_guidance": {
+      "params": []
+    },
+    "hyperspace.legendary_core.prism_tower": {
+      "params": []
+    },
+    "hyperspace.legendary_core.strange_matter": {
+      "params": []
+    },
+    "hyperspace.legendary_core.laser_charge": {
+      "params": []
+    },
+    "hyperspace.legendary_core.wild_missile": {
+      "params": []
+    },
+    "hyperspace.legendary_core.endless_beam": {
+      "params": []
+    },
+    "hyperspace.legendary_core.dodge_counter": {
+      "params": []
+    },
+    "hyperspace.legendary_core.drone_master": {
+      "params": []
+    },
+    "hyperspace.legendary_core.black_hole": {
+      "params": []
+    },
+    "hyperspace.legendary_core.drone_rebuild": {
+      "params": []
+    },
+    "hyperspace.legendary_details.higgs_cannon": {
+      "params": []
+    },
+    "hyperspace.legendary_details.scatter_pulse": {
+      "params": []
+    },
+    "hyperspace.legendary_details.precise_guidance": {
+      "params": [
+        "factor"
+      ]
+    },
+    "hyperspace.legendary_details.prism_tower": {
+      "params": [
+        "targets"
+      ]
+    },
+    "hyperspace.legendary_details.strange_matter": {
+      "params": [
+        "chance",
+        "count",
+        "delay"
+      ]
+    },
+    "hyperspace.legendary_details.laser_charge": {
+      "params": [
+        "bonus"
+      ]
+    },
+    "hyperspace.legendary_details.wild_missile": {
+      "params": [
+        "period",
+        "blast"
+      ]
+    },
+    "hyperspace.legendary_details.endless_beam": {
+      "params": []
+    },
+    "hyperspace.legendary_details.dodge_counter": {
+      "params": [
+        "cooldown"
+      ]
+    },
+    "hyperspace.legendary_details.drone_master": {
+      "params": []
+    },
+    "hyperspace.legendary_details.black_hole": {
+      "params": [
+        "period",
+        "duration"
+      ]
+    },
+    "hyperspace.legendary_details.drone_rebuild": {
+      "params": [
+        "limit"
+      ]
+    },
+    "hyperspace.forge_pick_cancel": {
+      "params": []
+    },
+    "hyperspace.omen_on_action": {
+      "params": []
+    },
+    "hyperspace.action_available": {
+      "params": []
+    },
+    "hyperspace.action_guaranteed_cost": {
+      "params": []
+    },
+    "hyperspace.challenge_recent_result": {
+      "params": [
+        "route",
+        "layer",
+        "result"
+      ]
+    },
+    "hyperspace.challenge_result_success": {
+      "params": []
+    },
+    "hyperspace.challenge_result_defeat": {
+      "params": []
+    },
+    "hyperspace.challenge_result_exit": {
+      "params": []
+    },
+    "hyperspace.challenge_result_interrupted": {
+      "params": []
+    },
+    "hyperspace.challenge_result_failed": {
+      "params": []
+    },
+    "hyperspace.layer_queue_view": {
+      "params": []
+    },
+    "hyperspace.layer_queue_claim": {
+      "params": []
+    },
+    "hyperspace.layer_queue_cancel": {
+      "params": []
+    },
+    "hyperspace.layer_queue_stop": {
+      "params": []
+    },
+    "hyperspace.layer_queue_challenge": {
+      "params": []
+    },
+    "hyperspace.layer_queue_auto": {
+      "params": []
+    },
+    "hyperspace.layer_queue_background": {
+      "params": []
+    },
+    "hyperspace.layer_queue_occupied": {
+      "params": [
+        "route",
+        "task"
+      ]
+    },
+    "hyperspace.layer_paused": {
+      "params": [
+        "time"
+      ]
+    },
+    "hyperspace.layer_resume": {
+      "params": []
+    },
+    "hyperspace.action_missing": {
+      "params": [
+        "materials"
+      ]
+    },
+    "hyperspace.action_no_affix_slots": {
+      "params": []
+    },
+    "hyperspace.action_affix_full": {
+      "params": []
+    },
+    "hyperspace.action_no_new_record": {
+      "params": []
+    },
+    "hyperspace.forge_added_affix": {
+      "params": [
+        "affix"
+      ]
+    },
+    "hyperspace.forge_added_slot": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.forge_action_info": {
+      "params": []
+    },
+    "hyperspace.ultimate_confirmation_consequence": {
+      "params": [
+        "cores"
+      ]
+    },
+    "hyperspace.restore_confirmation_consequence": {
+      "params": []
+    },
+    "hyperspace.ultimate_effect_summary": {
+      "params": [
+        "levels"
+      ]
+    },
+    "hyperspace.forge_promoted_affix": {
+      "params": [
+        "name",
+        "before",
+        "after",
+        "cost"
+      ]
+    },
+    "hyperspace.forge_promotion_failed": {
+      "params": [
+        "cost"
+      ]
+    },
+    "equipment.card_weapon_type": {
+      "params": [
+        "level",
+        "type"
+      ]
+    },
+    "equipment.card_beam_stage": {
+      "params": [
+        "level",
+        "type",
+        "seconds"
+      ]
+    },
+    "weapon.rate": {
+      "params": []
+    },
+    "weapon.rate_base": {
+      "params": []
+    },
+    "weapon.rate_assumption": {
+      "params": []
+    },
+    "weapon.rate_beam_time": {
+      "params": [
+        "charge",
+        "first",
+        "stage"
+      ]
+    },
+    "weapon.rate_conditions": {
+      "params": [
+        "conditions"
+      ]
+    },
+    "weapon.rate_preview": {
+      "params": [
+        "label",
+        "current",
+        "next"
+      ]
+    },
+    "weapon.rate_single": {
+      "params": [
+        "damage",
+        "seconds"
+      ]
+    },
+    "weapon.rate_condition.history": {
+      "params": []
+    },
+    "weapon.rate_condition.targets": {
+      "params": []
+    },
+    "weapon.rate_condition.incoming": {
+      "params": []
+    },
+    "weapon.rate_condition.shared": {
+      "params": []
+    },
+    "weapon.rate_condition.kills": {
+      "params": []
+    },
+    "weapon.rate_condition.beam_repeat": {
+      "params": []
+    },
+    "weapon.rate_condition.interval": {
+      "params": []
+    },
+    "equipment.fixed_card_name": {
+      "params": [
+        "name"
+      ]
+    },
+    "weapon.rate_single_missile": {
+      "params": [
+        "damage",
+        "seconds",
+        "count"
+      ]
+    },
+    "weapon.rate_condition.target_stacks": {
+      "params": []
+    },
+    "weapon.rate_condition.beam_owner": {
+      "params": []
+    },
+    "navigation.upgrade_available": {
+      "params": []
+    },
+    "battle.enemy_defence.armour_remaining": {
+      "params": [
+        "value",
+        "resistance"
+      ]
+    },
+    "battle.enemy_defence.shield_remaining": {
+      "params": [
+        "value",
+        "resistance"
+      ]
+    },
+    "battle.enemy_defence.broken_shield_remaining": {
+      "params": [
+        "value",
+        "resistance"
+      ]
+    },
+    "hyperspace.promotion_attempts": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.promotion_batch_hint": {
+      "params": []
+    },
+    "hyperspace.promotion_batch_result": {
+      "params": [
+        "count",
+        "changes",
+        "cost"
+      ]
+    },
+    "hyperspace.promotion_no_change": {
+      "params": []
     }
   },
   "bindings": {

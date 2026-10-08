@@ -82,7 +82,7 @@ func dispatch_queued(g)->bool:
 	if queued.is_empty():return false
 	if int(queued.round)!=int(g.profile.hyperspace.round_id):cancel_queue(g,"round_changed");return false
 	if not production_accepted or not route_ids.has(queued.route) or not g.hyperspace.eligible_level(g,str(queued.route),int(queued.level)):cancel_queue(g,"unavailable");return false
-	if not g.profile.hyperspace.active.is_empty():cancel_queue(g,"busy");return false
+	if g.hyperspace.reject_busy(g,true,false):queue_error="queue_busy";return false
 	if float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):cancel_queue(g,"energy");return false
 	if not boundary_reason(g).is_empty():return false
 	var choice=queued.duplicate();queued={}
@@ -95,6 +95,7 @@ func reset_for_load(g)->void:
 	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={};last_result={}
 func start(g,route: String,level: int) -> bool:
 	last_error=""
+	if g.hyperspace.reject_busy(g):last_error="queue_busy";queue_error=last_error;return false
 	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
@@ -134,6 +135,7 @@ func finish(g,success: bool,reason: String="failed") -> bool:
 	return_journey={};return_state={};base_db=null
 	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.groupIndex)}
 	Return.restore(g,frozen,point)
+	g.drone_combat.restore_disabled(g,"scene_return")
 	# A pending reward no longer owns a suspended main state after it has returned.
 	if not g.profile.hyperspace.active.is_empty():
 		g.profile.hyperspace.active.return_journey={};g.profile.hyperspace.active.return_state={}

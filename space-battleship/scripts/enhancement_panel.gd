@@ -101,6 +101,7 @@ func setup(owner_node: Node) -> void:
 			var card := create_effect_card(section,Rect2(14,62+index*184,608,180),category,index)
 			effect_cards[category].append(card)
 	rule_label = text_label(self,"",Rect2(24,840,1280,32),21,PAPER)
+	rule_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	history_label = text_label(self,"",Rect2(24,1128,880,32),20,TEAL)
 	feedback = text_label(self,"",Rect2(905,887,395,32),20,TEAL)
 	feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -342,13 +343,20 @@ func refresh() -> void:
 
 			host.set_ui_value(card.description,"text",effect_overview(kind))
 			host.set_ui_value(card.description,"tooltip_text",effect_details_text(kind))
-			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(category,index)}))
+			var active := game.enhancement_effective_level()>=threshold_level(index)
+			var state_key := "enhance.effect.active" if active else "enhance.effect.reorder" if game.enhancement_effective_level()>=threshold_level(0) else "enhance.effect.first_upgrade"
+			var state_values := {"count":eligible_count(category,index)} if active else {}
+			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t(state_key,state_values))
 			host.set_ui_value(card.up,"disabled",index==0)
 			host.set_ui_value(card.down,"disabled",index==2)
 			host.set_ui_value(card.details,"disabled",kind.is_empty())
 			host.set_ui_value(card.branches,"disabled",kind.is_empty())
 			host.set_ui_value(card.branches,"tooltip_text",branch_summary(category,kind))
-	host.set_ui_value(rule_label,"text",UIText.t("enhance.overview.thresholds",{"first":threshold_level(0),"second":threshold_level(1),"third":threshold_level(2)}))
+	var active_count := 0
+	for index in 3:
+		if game.enhancement_effective_level()>=threshold_level(index):active_count+=1
+	host.set_ui_value(rule_label,"text",UIText.t("enhance.overview.current",{"count":active_count}) if active_count>0 else UIText.t("enhance.effect.first_upgrade"))
+	host.set_ui_value(rule_label,"tooltip_text",UIText.t("enhance.overview.thresholds",{"first":threshold_level(0),"second":threshold_level(1),"third":threshold_level(2)}))
 	refresh_branches()
 	refresh_effect_details()
 	host.set_ui_value(level_label,"tooltip_text",UIText.t("enhance.history",{"attacks":FORMAT.compact(game.profile.get("enhancementAttacks",0)),"hits":FORMAT.compact(game.profile.get("enhancementHits",0))}))

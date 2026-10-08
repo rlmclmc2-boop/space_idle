@@ -717,8 +717,8 @@ func combat_weapon_entries() -> Array:
 
 func drone_weapon_entry(d: Dictionary) -> Dictionary:
 	var maximum:=1
-	for entry in module_entries("weapons"):
-		if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
+	for entry in weapon_entries():
+		maximum=maxi(maximum,int(entry.level))
 	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
@@ -1080,8 +1080,15 @@ func upgrade_reactor(amount: int) -> bool:
 		var cost := reactor_upgrade_cost(int(profile.reactorLevel)+offset)
 		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
 		total += cost
+	var old_capacity := reactor_capacity()
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
+	profile.reactorAllocation = preload("res://scripts/reactor_allocation_growth.gd").expand(Array(reactor_modules()),profile.reactorAllocation,old_capacity,reactor_capacity())
+	invalidate_stat_cache()
+	# Growing maxima preserves battle damage; buying power is not a heal.
+	player.armour = N.minimum(player.armour,stat("armour"))
+	player.shield = N.minimum(player.shield,max_shield())
+	for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	resources_changed([str(int(db.config.reactorUraniumId))])
 	save_dirty = true
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
@@ -1132,7 +1139,9 @@ func load_reactor(raw: Dictionary) -> void:
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	for key in reactor_modules():
 		var value = saved.get(key)
-		if reactor_module_unlocked(key) and nonnegative_number(value):profile.reactorAllocation[key] = mini(int(floor(float(value))),maxi(0,reactor_capacity()-reactor_allocated()))
+		if reactor_module_unlocked(key) and nonnegative_number(value):
+			var units: int = value if value is int else int(floor(float(value)))
+			profile.reactorAllocation[key] = mini(units,maxi(0,reactor_capacity()-reactor_allocated()))
 
 func hightech_level(key: String) -> int:
 	return int(profile.get("hightechLevels", {}).get(key, 0))
@@ -1845,6 +1854,7 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if next != State.COMBAT:drone_combat.restore_disabled(self,"state_exit")
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and p.get("endless",false) and not p.get("repeated",false)))
 	if next == State.TRAVEL:
@@ -2039,6 +2049,7 @@ func is_boss_encounter() -> bool:
 	return encounter_tier() in ["boss","ultimate"]
 
 func spawn_group(keep_distance := false) -> void:
+	drone_combat.restore_disabled(self,"wave_start")
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
 	if manual_hyperspace.active and manual_hyperspace.reward_binder!=null:
@@ -2839,6 +2850,7 @@ func tick(dt: float) -> void:
 	tick_projectiles(dt)
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 	if state == State.COMBAT and not has_alive_enemy():
+		drone_combat.restore_disabled(self,"wave_clear")
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
 				guard_engaged = false
@@ -3238,12 +3250,12 @@ func shared_enhancement_effect_count() -> int:
 func record_enhancement_attack() -> void:
 	profile.enhancementAttacks += 1
 	for key in WEAPON_KEYS:invalidate_equipment_counter(key)
-	event.emit("equipment_stats",{"category":"weapons"})
+	event.emit("equipment_stats",{"category":"weapons","counter_only":true})
 
 func record_enhancement_hit() -> void:
 	profile.enhancementHits += 1
 	for key in DEFENSE_KEYS:invalidate_equipment_counter(key)
-	event.emit("equipment_stats",{"category":"defence"})
+	event.emit("equipment_stats",{"category":"defence","counter_only":true})
 
 func enhancement_currency_changed() -> void:
 	save_dirty = true

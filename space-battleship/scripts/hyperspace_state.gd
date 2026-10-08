@@ -10,14 +10,14 @@ const MATERIAL_UNIT_VERSION:=2
 static func fresh(c: Dictionary) -> Dictionary:
 	var materials: Dictionary={}
 	for route in c.routes.values():materials[route.material]=0
-	return {"version":VERSION,"material_unit_version":MATERIAL_UNIT_VERSION,"round_id":1,"next_run":1,"settled_run":0,"energy":float(c.energy_cap),"pending_time":0.0,"materials":materials,"history":{},"inventory":Bag.fresh(),"active":{},"idle":{},"auto":{"enabled":false,"route":"","level":0,"crew_id":""},"unlocked_drones":false,"blocked":false,"ultimate_cores":0,"hanging_modules":Rewards.module_progress(c),"random_state":R.initial_state(),"command_seq":1,"last_command":{},"filter":Filter.fresh(),"legendary_seen":[],"legendary_collection":[]}
+	return {"version":VERSION,"material_unit_version":MATERIAL_UNIT_VERSION,"round_id":1,"next_run":1,"settled_run":0,"energy":float(c.energy_cap),"pending_time":0.0,"materials":materials,"history":{},"inventory":Bag.fresh(),"active":{},"idle":{},"paused":[],"queue_policy_version":1,"auto":{"enabled":false,"route":"","level":0,"crew_id":""},"unlocked_drones":false,"blocked":false,"ultimate_cores":0,"hanging_modules":Rewards.module_progress(c),"random_state":R.initial_state(),"command_seq":1,"last_command":{},"filter":Filter.fresh(),"legendary_seen":[],"legendary_collection":[]}
 
 static func schema() -> Dictionary:
 	var affix: Dictionary={"key":"s","tier":"i","value":"n","locked":"b"}
 	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","planet_id":"s","hanging_slots":"i","preserved_hanging_slots":"i","omen":"b","forge_revision":"i","forge_rng_state":"s","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","parameters":{"*":"n"}},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
 	var reward: Dictionary={"drone":drone,"materials":{"*":"i"},"ultimate_cores":"i","hanging_rewards":{"*":"i"}}
-	var receipt:Dictionary={"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","crew_snapshot":"s","luck":"n","crew_luck":"n","permanent_luck":"n","luck_state":"s","return_state":preload("res://scripts/hyperspace_main_return.gd").schema(),"return_journey":{"stage":"i","distance":"n","groupIndex":"i","state":"i","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"],"loop":"b"},"ticket":"n","duration":"n","work":"n","reward":reward}
-	return {"version":"i","material_unit_version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","late_supply_work":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":receipt,"idle":receipt,"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
+	var receipt:Dictionary={"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","crew_snapshot":"s","luck":"n","crew_luck":"n","permanent_luck":"n","luck_state":"s","return_state":preload("res://scripts/hyperspace_main_return.gd").schema(),"return_journey":{"stage":"i","distance":"n","groupIndex":"i","state":"i","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"],"loop":"b"},"ticket":"n","duration":"n","work":"n","pending_time":"n","reward":reward}
+	return {"version":"i","material_unit_version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","late_supply_work":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":receipt,"idle":receipt,"paused":[receipt],"queue_policy_version":"i","auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
 
 static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool:
 	if not c.routes.has(route) or not reward.get("drone") is Dictionary or not reward.get("materials") is Dictionary or not reward.get("hanging_rewards") is Dictionary:return false
@@ -81,9 +81,18 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	if not auto.get("enabled") is bool or not auto.get("route") is String or not C.integer(auto.get("level")) or not auto.get("crew_id") is String:return false
 	if auto.enabled and (not c.routes.has(auto.route) or auto.level<(int(c.minimum_level) if legacy else 1) or auto.level>max_stage or auto.crew_id.is_empty()):return false
 	if legacy and s.next_run!=s.settled_run+(1 if s.active.is_empty() else 2):return false
+	if s.has("paused") and not s.paused is Array:return false
+	if s.has("queue_policy_version") and (not C.integer(s.queue_policy_version) or s.queue_policy_version!=1):return false
+	if not legacy and s.get("queue_policy_version",0)==1 and not s.active.is_empty() and (not s.idle.is_empty() or s.auto.enabled):return false
 	var runs:Dictionary={}
-	for slot in (["active"] if legacy else ["active","idle"]):
-		var a:Dictionary=s[slot]
+	var receipts:Array=[]
+	for slot in (["active"] if legacy else ["active","idle"]):receipts.append({"slot":slot,"receipt":s[slot]})
+	for paused in s.get("paused",[]):
+		if not paused is Dictionary or paused.is_empty():return false
+		receipts.append({"slot":"paused","receipt":paused})
+	for item in receipts:
+		var slot:String=item.slot
+		var a:Dictionary=item.receipt
 		if a.is_empty():continue
 		for key in ["round_id","run_id","level"]:
 			if not C.integer(a.get(key)):return false
@@ -94,6 +103,7 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 		if a.get("mode") not in (["manual","auto"] if legacy else (["manual"] if slot=="active" else ["idle","auto"])):return false
 		for key in ["ticket","duration","work"]:
 			if not C.number(a.get(key)) or a[key]<0:return false
+		if a.has("pending_time") and (not C.number(a.pending_time) or a.pending_time<0):return false
 		if not a.get("return_journey") is Dictionary:return false
 		if a.has("return_state"):
 			if not a.return_state is Dictionary or (a.mode=="manual" and a.status=="started" and a.return_state.is_empty()):return false
@@ -127,13 +137,21 @@ static func migrate(raw:Dictionary,c:Dictionary={})->Dictionary:
 				history[str(int(a.level))]=minf(old,float(a.work)) if old>0 else float(a.work)
 				s.history[a.route]=history
 			if a.mode=="auto":s.idle=a;s.active={}
+	if not s.has("paused"):s.paused=[]
+	# Old saves can contain one challenge plus one background receipt. Preserve
+	# the background unchanged, but require an explicit continue after returning.
+	if not s.has("queue_policy_version"):
+		if not s.active.is_empty():
+			if not s.idle.is_empty():
+				s.idle.pending_time=float(s.pending_time);s.paused.append(s.idle);s.idle={};s.pending_time=0.0
+			s.auto.enabled=false
+		s.queue_policy_version=1
 	# The stored auto layer is informational; real progression comes only from wins.
 	if int(s.get("material_unit_version",1))==1:
 		if c.is_empty():c=C.load_config()
 		var scale:=int(c.get("material_unit_scale",10))
 		for key in s.materials:s.materials[key]=int(s.materials[key])*scale
-		for slot in ["active","idle"]:
-			var receipt:Dictionary=s[slot]
+		for receipt in [s.active,s.idle]+s.paused:
 			if not receipt.is_empty() and receipt.status=="completed_pending":scale_material_dict(receipt.reward.materials,scale)
 		if not s.last_command.is_empty():
 			var result:Dictionary=JSON.parse_string(s.last_command.result_json)
@@ -165,8 +183,7 @@ static func units_valid(s:Dictionary,c:Dictionary)->bool:
 	if int(version)==MATERIAL_UNIT_VERSION:return true
 	var scale:=float(c.get("material_unit_scale",10))
 	if not C.integer(scale) or scale<=0 or not scaled_values_valid(s.materials,scale):return false
-	for slot in ["active","idle"]:
-		var receipt:Dictionary=s.get(slot,{})
+	for receipt in [s.get("active",{}),s.get("idle",{})]+s.get("paused",[]):
 		if not receipt.is_empty() and receipt.status=="completed_pending" and not scaled_values_valid(receipt.reward.materials,scale):return false
 	if not s.last_command.is_empty():
 		var result:Dictionary=JSON.parse_string(s.last_command.result_json)

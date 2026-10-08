@@ -127,6 +127,7 @@ func layout_contents() -> void:
 	host.set_ui_value(fields.stat,"position",Vector2(126 if is_weapon else 92,74))
 	host.set_ui_value(fields.stat,"size",Vector2(size.x-(140 if is_weapon else 106),44))
 	fields.status.size.x = size.x-28
+	fit_stat_text()
 	upgrade_button.position = Vector2((size.x-ACTION_SIZE.x)/2,118)
 	upgrade_button.size = ACTION_SIZE
 	equip_button.position = Vector2((size.x-246)/2,76)
@@ -149,11 +150,16 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	equip_button.set_meta("slot_id",slot_id)
 	name_button.set_meta("slot_id",slot_id)
 	host.set_ui_value(name_button,"disabled",item.locked or item.get("refit_locked",false))
-	host.set_ui_value(fields.title,"text",item.name)
+	var fixed:bool=item.get("refit_locked",false)
+	host.set_ui_value(name_button,"visible",not fixed)
+	host.set_ui_value(fields.title,"visible",fixed)
+	host.set_ui_value(fields.title,"text",UIText.t("equipment.fixed_card_name",{"name":item.name}) if fixed else item.name)
+	fields.level.add_theme_font_size_override("font_size",18 if item.key=="longLaser" else 21)
 	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
 	host.set_ui_value(fields.caption,"text",item.mainStatLabel)
 	host.set_ui_value(fields.stat,"text",item.mainStatValue)
+	fit_stat_text()
 	host.set_ui_value(fields.caption,"visible",item.equipped and not item.locked)
 	host.set_ui_value(fields.stat,"visible",item.equipped and not item.locked)
 	host.set_ui_value(fields.status,"text",UIText.t("equipment.dormant") if item.locked else "")
@@ -209,3 +215,9 @@ func place_refit_menu() -> void:
 	point.x=clampf(point.x,bounds.position.x,maxf(bounds.position.x,bounds.end.x-extent.x))
 	point.y=clampf(point.y,bounds.position.y,maxf(bounds.position.y,bounds.end.y-extent.y))
 	menu.position=Vector2i(point)
+
+func fit_stat_text() -> void:
+	var font_size := 24 if fields.stat.text.contains("→") else 30
+	var font: Font=fields.stat.get_theme_font("font")
+	while font_size>18 and font.get_string_size(fields.stat.text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x>fields.stat.size.x:font_size-=1
+	fields.stat.add_theme_font_size_override("font_size",font_size)

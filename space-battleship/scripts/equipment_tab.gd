@@ -439,7 +439,7 @@ func icon_for(key: String) -> Texture2D:
 		icons[key] = load(path) if ResourceLoader.exists(path) else null
 	return icons[key]
 
-func card_level_text(entry: Dictionary, category: String, active: bool) -> String:
+func card_level_text(entry: Dictionary, category: String, active: bool, projection: Dictionary = {}) -> String:
 	var level := UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})
 	if not active or str(entry.get("key",""))=="":return level
 	if category=="defence":
@@ -448,7 +448,36 @@ func card_level_text(entry: Dictionary, category: String, active: bool) -> Strin
 		return UIText.t("equipment.card_defence_context",{"level":level,"type":UIText.t("equipment.energy" if int(defence.dmgtype)==1 else "equipment.physical")})
 	if category!="weapons" or str(entry.key) not in BattleGame.WEAPON_KEYS:return level
 	var row: Dictionary = host.game.player_weapon_row(entry)
-	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
+	var type := UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical")
+	if entry.key=="longLaser" and projection.has("rate"):
+		return UIText.t("equipment.card_beam_stage",{"level":level,"type":type,"seconds":host.number(float(projection.rate.get("stage_time",0)))})
+	return UIText.t("equipment.card_weapon_type",{"level":level,"type":type})
+
+func rate_title(projection: Dictionary) -> String:
+	return UIText.t("weapon.rate_base" if projection.get("rate",{}).get("conditional",false) else "weapon.rate")
+
+func rate_value(projection: Dictionary) -> String:
+	if not projection.has("rate"):return host.number(projection.expected)
+	var rate: Dictionary=projection.rate
+	if not rate.valid:return "—"
+	return host.number(rate.start)+"→"+host.number(rate.end) if rate.beam else host.number(rate.start)
+
+func rate_notes(projection: Dictionary) -> String:
+	var rate: Dictionary=projection.get("rate",{})
+	var text := UIText.t("weapon.rate_assumption")
+	if rate.get("beam",false):text+="\n"+UIText.t("weapon.rate_beam_time",{"charge":host.number(float(rate.get("charge",0))),"first":host.number(float(rate.get("first_hit",0))),"stage":host.number(float(rate.get("stage_time",0)))})
+	if rate.get("conditional",false):
+		var notes:Array[String]=[]
+		for reason in rate.get("reasons",[]):
+			var note:=UIText.t("weapon.rate_condition."+str(reason))
+			if not notes.has(note):notes.append(note)
+		text+="\n"+UIText.t("weapon.rate_conditions",{"conditions":"、".join(notes)})
+	return text
+
+func rate_detail(current: Dictionary, next: Dictionary) -> String:
+	var rate: Dictionary=current.get("rate",{})
+	var single := UIText.t("weapon.rate_single_missile",{"damage":host.number(rate.get("single",0)),"seconds":host.number(float(rate.get("interval",0))),"count":str(rate.get("salvo",1))}) if rate.get("key","")=="missile" else UIText.t("weapon.rate_single",{"damage":host.number(rate.get("single",0)),"seconds":host.number(float(rate.get("interval",0)))})
+	return UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)})+"\n"+single+"\n"+rate_notes(current)
 
 func equipment_item(category: String, index: int) -> Dictionary:
 	var entry: Dictionary = host.game.module_entry(category,index)
@@ -456,20 +485,20 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var active: bool = index<host.game.active_slot_count(category)
 	var equipped := not key.is_empty()
 	var projection: Dictionary=host.equipment_display_snapshot(entry) if equipped else {"base":0.0,"expected":0.0}
-	var value = projection.expected
+	var value = host.EQUIPMENT_DISPLAY.displayed_value(projection)
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
 	return {"id":module_card_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
-		"cardLevelText":card_level_text(entry,category,active),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
+		"cardLevelText":card_level_text(entry,category,active,projection),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
-		"slots":[index],"mainStatLabel":UIText.t(("weapon.card_beam_expected" if key=="longLaser" else "weapon.expected_damage") if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
-		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
+		"slots":[index],"mainStatLabel":rate_title(projection) if category=="weapons" and equipped else UIText.t("weapon.rate" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
+		"mainStatValue":rate_value(projection) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
 
 func module_tooltip(entry: Dictionary, prefix: String, name: String, projection: Dictionary) -> String:
-	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
+	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+rate_title(projection)+" "+rate_value(projection)+"\n"+rate_notes(projection)+"\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
 
 func refresh(only_slot := "") -> void:
 	refresh_slots([] if only_slot.is_empty() else [only_slot])
@@ -552,7 +581,7 @@ func refresh_stats() -> void:
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
 		var projection: Dictionary=host.equipment_display_snapshot(entry)
-		var value = projection.expected
+		var value = host.EQUIPMENT_DISPLAY.displayed_value(projection)
 		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():
 			if detail_frame.is_visible_in_tree():
@@ -560,13 +589,14 @@ func refresh_stats() -> void:
 				selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
 			else:detail_dirty=true
 			selected_changed = selected_changed or projection_changed
-		var context := card_level_text(entry,item.category,not item.locked)
+		var context := card_level_text(entry,item.category,not item.locked,projection)
 		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed and context==item.cardLevelText:continue
 		item.cardLevelText=context
 		item.projection=projection
 		item.tooltip=module_tooltip(entry,("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2),host.NAMES.get(item.key,UIText.t("equipment.vacant")),projection)
 		item.mainStatNumber = value
-		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
+		item.mainStatValue = rate_value(projection) if not item.key.is_empty() else "—"
+		if item.category=="weapons":item.mainStatLabel=rate_title(projection)
 		# A damage/probability-only event leaves its already quoted upgrade cost valid.
 		cards[id].refresh(item,selected==id)
 		sort_dirty = sort_dirty or sort_mode==2
@@ -707,7 +737,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
 	var description: String = ""
 	if not key.is_empty():
-		description=host.equipment_stat_text(entry,item.projection,next_projection)+"\n"
+		description=(rate_detail(item.projection,next_projection) if category=="weapons" else host.equipment_stat_text(entry,item.projection,next_projection))+"\n"
 		if category=="weapons":description+=host.equipment_expected_details(entry,item.projection)+"\n"
 		description+=host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
 		if key=="longLaser":description=UIText.t("equipment.continuous_beam_snapshot_hint")+"\n"+description
@@ -721,6 +751,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":host.number(float(row.cd))})
 		else:basic_text=UIText.t("equipment.current_reduction",{"percent":host.number(float(host.db.config.dmgReduce)*100)})
 		basic_text+="\n"+equipment_attributes(entry,false)
+		if category=="weapons":basic_text+="\n"+rate_notes(item.projection)
 	host.set_ui_value(detail.basics,"text",basic_text)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)

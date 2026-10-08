@@ -1,6 +1,9 @@
 extends RefCounted
 ## Route controls read domain views; they never infer progression or calculate crew rewards.
 var panel
+var queue_info:Label
+var queue_action:Button
+var paused_info:Label
 var current:Label
 var record:Label
 var idle_time:Label
@@ -31,6 +34,8 @@ func view(crew_id:String="") -> Dictionary:
  if not game().has_method("hyperspace_route_view"):return {}
  return game().hyperspace_route_view(panel.route,crew_id)
 func build(parent:Node) -> void:
+ queue_info=panel.label(parent,"",21);queue_info.visible=false
+ queue_action=panel.button(parent,"layer_queue_view",act_on_queue);queue_action.visible=false
  current=panel.label(parent,"",26)
  var summaries=panel.row(parent)
  var history=panel.surface(summaries)
@@ -38,6 +43,7 @@ func build(parent:Node) -> void:
  luck=panel.label(history,"");luck.mouse_filter=Control.MOUSE_FILTER_STOP
  var tasks=panel.surface(summaries)
  background_status=panel.label(tasks,"")
+ paused_info=panel.label(tasks,"",20);paused_info.visible=false
  progress=ProgressBar.new();progress.show_percentage=false;progress.custom_minimum_size.y=26;tasks.add_child(progress)
  challenge_status=panel.label(tasks,"")
  claim_button=panel.button(tasks,"layer_claim_challenge",func():claim_receipt("challenge"));claim_button.visible=false
@@ -54,6 +60,7 @@ func build(parent:Node) -> void:
  hint=panel.label(parent,"",20)
 func reason(code:String) -> String:
  if code.is_empty():return ""
+ if code=="queue_busy":return queue_message(view().get("queue",{}))
  if code=="other_route":return t("layer_reason_other_route")
  if code=="max_layer":return t("layer_reason_max_layer")
  if code=="challenge_busy":
@@ -87,12 +94,20 @@ func refresh_route_markers() -> void:
   if not labels.is_empty():panel.put(marker,"text"," · ".join(labels))
 func refresh() -> void:
  if current==null:return
- refresh_route_markers()
+ panel.refresh_challenge_result();refresh_route_markers()
  var v=view();var reasons:Dictionary=v.get("reasons",{})
+ var queue:Dictionary=v.get("queue",{});var busy=bool(queue.get("busy",false))
+ panel.put(queue_info,"visible",busy);panel.put(queue_action,"visible",busy)
+ if busy:
+  panel.put(queue_info,"text",queue_message(queue))
+  var key="layer_queue_claim" if str(queue.get("status",""))=="completed_pending" else "layer_queue_cancel" if str(queue.get("status",""))=="queued" else "layer_queue_stop" if str(queue.get("mode","")) in ["idle","auto"] else "layer_queue_view"
+  panel.put(queue_action,"text",t(key))
+ var paused=bool(v.get("paused",false));panel.put(paused_info,"visible",paused)
+ if paused:panel.put(paused_info,"text",t("layer_paused",{"time":"%.1f"%float(v.get("paused_remaining",0.0))}))
  var layer=int(v.get("current_layer",0));var next_layer=int(v.get("next_layer",1))
  if panel.first_win!=null:panel.put(panel.first_win,"visible",layer==0 and not v.is_empty())
  panel.put(current,"text",t("layer_current",{"layer":str(layer)}) if layer>0 else t("layer_unstarted"))
- panel.put(idle_button,"text",t("layer_idle_once",{"layer":str(layer)}))
+ panel.put(idle_button,"text",t("layer_resume") if paused else t("layer_idle_once",{"layer":str(layer)}))
  panel.put(idle_button,"visible",layer>0)
  panel.put(crew_button,"visible",layer>0)
  panel.put(challenge_button,"text",t("layer_challenge",{"layer":str(next_layer)}))
@@ -112,7 +127,7 @@ func refresh() -> void:
  var background:Dictionary=v.get("background",{})
  var challenge:Dictionary=v.get("challenge",{})
  var mode=str(v.get("task_mode","none"))
- # The domain supplies both receipts, so a concurrent challenge never hides background work.
+ # Receipt display follows the domain; global occupancy is supplied separately.
  if background.is_empty() and mode in ["manual_idle","crew_idle"]:background=v
  var work=float(background.get("work",0.0));var task_duration=float(background.get("duration",0.0))
  var pending=str(background.get("status",""))=="completed_pending"
@@ -130,6 +145,21 @@ func refresh() -> void:
  panel.put(hint,"text",t("layer_reason_unavailable") if v.is_empty() else t("layer_hint"))
  # Preview updates only while its own native dialog is visible. Preserve selection and focus.
  if crew_dialog!=null and crew_dialog.visible:refresh_crew()
+func queue_message(queue:Dictionary) -> String:
+ if not bool(queue.get("busy",false)):return t("layer_reason_busy")
+ var mode=str(queue.get("mode",""));var key="layer_queue_challenge" if mode=="manual" else "layer_queue_auto" if mode=="auto" else "layer_queue_background"
+ return t("layer_queue_occupied",{"route":t(str(queue.get("route",""))),"task":t(key)})
+func act_on_queue() -> void:
+ var queue:Dictionary=view().get("queue",{})
+ if not bool(queue.get("busy",false)):refresh();return
+ var status=str(queue.get("status",""));var mode=str(queue.get("mode",""))
+ if status=="queued" and game().has_method("cancel_hyperspace_request"):
+  game().cancel_hyperspace_request()
+ elif status!="completed_pending" and mode in ["idle","auto"] and game().has_method("stop_hyperspace_idle"):
+  game().stop_hyperspace_idle(str(queue.route))
+ else:
+  panel.route=str(queue.get("route",panel.route));panel.select_section(0)
+ panel.dirty=true;refresh()
 func claim_receipt(slot:String) -> void:
  var receipt:Dictionary=view().get(slot,{})
  if receipt.get("status","")!="completed_pending" or not game().has_method("claim_hyperspace"):return
@@ -141,7 +171,7 @@ func claim_receipt(slot:String) -> void:
 func act(method:String,with_route=true) -> void:
  if not game().has_method(method):return
  var ok=game().call(method,panel.route) if with_route else game().call(method)
- if not ok:panel.put(hint,"text",t("command_failed"));panel.put(hint,"visible",true)
+ if not ok:panel.put(hint,"text",queue_message(view().get("queue",{})) if bool(view().get("queue",{}).get("busy",false)) else t("command_failed"));panel.put(hint,"visible",true)
  else:panel.dirty=true;refresh()
 func show_crew() -> void:
  if crew_dialog==null:

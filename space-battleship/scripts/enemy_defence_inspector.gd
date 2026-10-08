@@ -48,19 +48,36 @@ func resistance_text(value: int) -> String:
 	return UIText.t("battle.enemy_defence.resistance",{"type":UIText.t("equipment.energy" if value==1 else "equipment.physical")})
 
 func defence_text(enemy: Dictionary) -> String:
-	var armour := UIText.t("battle.enemy_defence.armour",{"resistance":resistance_text(int(enemy.get("armourType",0)))})
+	var armour := UIText.t("battle.enemy_defence.armour_remaining",{"value":remaining_text(enemy.get("hp",0)),"resistance":resistance_text(int(enemy.get("armourType",0)))})
 	var shield := UIText.t("battle.enemy_defence.no_shield")
 	if N.compare(enemy.get("max_shield",0),0)>0:
-		shield = UIText.t("battle.enemy_defence.shield" if N.compare(enemy.get("shield",0),0)>0 else "battle.enemy_defence.broken_shield",{"resistance":resistance_text(int(enemy.get("shieldType",0)))})
+		shield = UIText.t("battle.enemy_defence.shield_remaining" if N.compare(enemy.get("shield",0),0)>0 else "battle.enemy_defence.broken_shield_remaining",{"value":remaining_text(enemy.get("shield",0)),"resistance":resistance_text(int(enemy.get("shieldType",0)))})
 	return UIText.t("battle.enemy_defence.title")+"\n"+armour+"\n"+shield
 
+func remaining_text(value: Variant) -> String:
+	# Presentation only: positive fractions still represent a surviving layer.
+	return NumberFormat.plain(N.ceiling(N.maximum(value,0)))
+
 func enemy_at(point: Vector2) -> Dictionary:
+	# Input/poll queries run outside the draw callback. Scope shared entry work
+	# to this synchronous hit-test and restore any caller's cache afterwards.
+	var previous_active: bool = host.enemy_entry_batch_active
+	var previous_time: float = host.enemy_entry_distance_time
+	var previous_distance: float = host.enemy_entry_distance_value
+	host.enemy_entry_batch_active = true
+	host.enemy_entry_distance_time = -INF
+	var found: Dictionary = {}
 	for enemy in host.game.enemies:
 		if N.compare(enemy.get("hp",0),0)<=0:continue
 		var centre: Vector2 = host.enemy_render_position(enemy)
-		var width: float = host.enemy_render_width(enemy)
-		if Rect2(centre-Vector2(width/2,width),Vector2(width,width*2)).grow(5).has_point(point):return enemy
-	return {}
+		var width: float = host.enemy_render_width_at_y(enemy,centre.y)
+		if Rect2(centre-Vector2(width/2,width),Vector2(width,width*2)).grow(5).has_point(point):
+			found=enemy
+			break
+	host.enemy_entry_batch_active = previous_active
+	host.enemy_entry_distance_time = previous_time
+	host.enemy_entry_distance_value = previous_distance
+	return found
 
 func refresh_at(point: Vector2) -> void:
 	var enabled := available()

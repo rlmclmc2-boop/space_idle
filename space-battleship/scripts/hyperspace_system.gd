@@ -68,6 +68,7 @@ func snapshot(g) -> Dictionary:
 	result.auto.crew_level=Permission.crew_level(g,str(result.auto.crew_id))
 	result.next_command={"round_id":result.round_id,"command_seq":result.command_seq}
 	result.combat={"disabled_drones":g.drone_combat.disabled.duplicate(),"rebuild_stacks":g.drone_combat.rebuild_stacks}
+	result.queue=queue_status(g)
 	result.manual_ready=g.manual_hyperspace.production_accepted
 	result.manual_error=g.manual_hyperspace.last_error
 	return result
@@ -130,9 +131,49 @@ func receipt_slot(s:Dictionary,round_id:int,run_id:int)->String:
 		if not a.is_empty() and int(a.round_id)==round_id and int(a.run_id)==run_id:return slot
 	return ""
 
+## A continuation policy reserves the same global slot between its receipts.
+func queue_status(g,include_policy:bool=true,include_queued:bool=true)->Dictionary:
+	var s:Dictionary=g.profile.hyperspace
+	var receipt:Dictionary=s.active if not s.active.is_empty() else s.idle
+	var route:=str(receipt.get("route",""));var mode:=str(receipt.get("mode",""))
+	var status:=str(receipt.get("status",""))
+	if receipt.is_empty() and include_queued and not g.manual_hyperspace.queued.is_empty():
+		route=str(g.manual_hyperspace.queued.route);mode="manual";status="queued"
+	if mode.is_empty() and include_policy and s.auto.enabled:
+		route=str(s.auto.route);mode="auto";status="continuing"
+	var label:="挑战" if mode=="manual" else "船员连续后台" if mode=="auto" else "手动后台"
+	return {"busy":not mode.is_empty(),"reason":"queue_busy" if not mode.is_empty() else "","message":"超空间正由 %s 的%s占用"%[route,label] if not mode.is_empty() else "","route":route,"mode":mode,"status":status,"run_id":int(receipt.get("run_id",0))}
+
+func reject_busy(g,include_policy:bool=true,include_queued:bool=true)->bool:
+	if not queue_status(g,include_policy,include_queued).busy:return false
+	last_error="queue_busy";return true
+
+func paused_for_route(g,route:String)->Array:
+	return g.profile.hyperspace.get("paused",[]).filter(func(a):return str(a.route)==route).duplicate(true)
+
+func resume_paused(g,route:String,crew_id:String="")->bool:
+	var s:Dictionary=g.profile.hyperspace
+	if reject_busy(g):return false
+	var index:=-1
+	for i in s.get("paused",[]).size():
+		if str(s.paused[i].route)==route:index=i;break
+	if index<0:return false
+	var a:Dictionary=s.paused[index]
+	if a.mode=="auto" and (not Permission.crew_available(g,str(a.crew_id)) or (not crew_id.is_empty() and crew_id!=str(a.crew_id))):last_error="crew_unavailable";return false
+	var next:Dictionary=s.duplicate(true)
+	next.idle=next.paused.pop_at(index);next.pending_time=float(next.idle.get("pending_time",0.0));next.idle.erase("pending_time")
+	next.blocked=false;publish(g,next,"resumed");return true
+
+func pause_idle(next:Dictionary)->void:
+	if next.idle.is_empty():return
+	if not next.has("paused"):next.paused=[]
+	next.idle.pending_time=float(next.pending_time);next.paused.append(next.idle);next.idle={};next.pending_time=0.0
+
 func start(g,route:String,level:int,mode:String,crew_id:String="",main_return:Dictionary={})->Dictionary:
 	var s:Dictionary=g.profile.hyperspace
 	var slot:="active" if mode=="manual" else "idle"
+	var own_policy:bool=mode=="auto" and s.auto.enabled and str(s.auto.route)==route and str(s.auto.crew_id)==crew_id
+	if reject_busy(g,not own_policy):return {}
 	if mode not in ["manual","idle","auto"] or not is_unlocked(g) or not config.routes.has(route) or not s[slot].is_empty() or not generation_ready():return {}
 	var duration:=0.0
 	if mode=="manual":
@@ -156,12 +197,14 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 	var s: Dictionary=g.profile.hyperspace
 	var slot:=receipt_slot(s,round_id,run_id)
 	if slot.is_empty():return false
+	if slot=="idle" and not s.active.is_empty():last_error="queue_busy";return false
 	var a: Dictionary=s[slot]
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="started":return false
 	var next: Dictionary=s.duplicate(true)
 	if not success:
 		next.energy=float(next.energy)+float(a.ticket);next.settled_run=maxi(int(next.settled_run),run_id);next[slot]={};next.blocked=false;next.pending_time=0.0 if slot=="idle" else next.pending_time
 		scheduler.reset();publish(g,next,"refunded");return true
+	if slot=="idle" and float(a.work)+0.000000001<float(a.duration):last_error="incomplete_work";return false
 	if not reward.is_empty():last_error="external_reward_forbidden";return false
 	var generated:=Rewards.generate(next,online_config(g),a,Permission.planet_for_level(g.db.data,int(a.level)))
 	if not generated.error.is_empty():last_error=generated.error;return false
@@ -187,6 +230,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 func claim(g,round_id: int,run_id: int) -> bool:
 	var s: Dictionary=g.profile.hyperspace;var slot:=receipt_slot(s,round_id,run_id)
 	if slot.is_empty():return false
+	if slot=="idle" and not s.active.is_empty():last_error="queue_busy";return false
 	var a: Dictionary=s[slot]
 	if a.is_empty() or a.round_id!=round_id or a.run_id!=run_id or a.status!="completed_pending":return false
 	if not a.reward.drone.is_empty() and not Bag.has_space(s.inventory,config):s.blocked=true;return false
@@ -204,34 +248,36 @@ func claim(g,round_id: int,run_id: int) -> bool:
 	publish(g,next,"claimed");return true
 
 func start_idle(g,route:String)->bool:
-	if g.profile.hyperspace.auto.enabled:return false
+	if reject_busy(g):return false
+	if not paused_for_route(g,route).is_empty():return resume_paused(g,route)
 	return not start(g,route,current_layer(g,route),"idle").is_empty()
 
 func stop_idle(g,route:String)->bool:
 	var s:Dictionary=g.profile.hyperspace
-	var a:Dictionary=s.idle
-	if not a.is_empty() and str(a.route)!=route:return false
-	if not a.is_empty() and a.status=="completed_pending":return false
+	if not s.idle.is_empty() and str(s.idle.route)!=route:return false
+	if s.idle.is_empty() and not (s.auto.enabled and str(s.auto.route)==route):return false
 	var next:Dictionary=s.duplicate(true)
-	if not a.is_empty():next.settled_run=maxi(int(next.settled_run),int(a.run_id));next.idle={}
-	if str(next.auto.route)==route:next.auto.enabled=false
-	next.pending_time=0.0;publish(g,next,"idle_stopped");return true
+	pause_idle(next);next.auto.enabled=false
+	publish(g,next,"idle_paused");return true
 
 func set_auto(g,enabled:bool,route:String,_level:int,crew_id:String)->bool:
 	var s:Dictionary=g.profile.hyperspace
 	if not config.routes.has(route):return false
-	if enabled and (current_layer(g,route)<1 or not Permission.crew_available(g,crew_id) or (not s.idle.is_empty() and (s.idle.mode!="auto" or s.idle.route!=route or s.idle.crew_id!=crew_id))):return false
-	if not enabled and not s.idle.is_empty() and s.idle.route==route and s.idle.status=="completed_pending":return false
-	var next:Dictionary=s.duplicate(true)
-	next.pending_time=0.0
-	next.auto={"enabled":enabled,"route":route,"level":current_layer(g,route),"crew_id":crew_id if not crew_id.is_empty() else configured_crew(g,route)}
-	if not enabled and not next.idle.is_empty() and next.idle.route==route:
-		next.settled_run=maxi(int(next.settled_run),int(next.idle.run_id));next.idle={}
+	if not enabled:return stop_idle(g,route)
+	if reject_busy(g):return false
+	if current_layer(g,route)<1 or not Permission.crew_available(g,crew_id):return false
+	if not paused_for_route(g,route).is_empty() and not resume_paused(g,route,crew_id):return false
+	var next:Dictionary=g.profile.hyperspace.duplicate(true)
+	if not next.idle.is_empty():
+		# A resumed receipt retains its original mode, crew, luck and elapsed work.
+		# Manual one-shot progress may finish before the newly requested strategy.
+		if next.idle.mode=="auto" and str(next.idle.crew_id)!=crew_id:return false
+	next.auto={"enabled":true,"route":route,"level":current_layer(g,route),"crew_id":crew_id}
 	publish(g,next,"auto_changed");return true
 
 func auto_eligible(g)->bool:
 	var auto:Dictionary=g.profile.hyperspace.auto
-	return auto.enabled and generation_ready() and best_x1(g,str(auto.route),current_layer(g,str(auto.route)))>0 and Permission.crew_available(g,str(auto.crew_id))
+	return g.profile.hyperspace.active.is_empty() and g.manual_hyperspace.queued.is_empty() and auto.enabled and generation_ready() and best_x1(g,str(auto.route),current_layer(g,str(auto.route)))>0 and Permission.crew_available(g,str(auto.crew_id))
 
 func start_auto(g)->bool:
 	var auto:Dictionary=g.profile.hyperspace.auto
@@ -260,10 +306,14 @@ func route_view(g,route:String,crew_id:String="")->Dictionary:
 		if current>=g.db.levels.size():reasons.challenge="max_layer"
 		if not g.manual_hyperspace.production_accepted:reasons.challenge="unavailable"
 		if idle.is_empty() and not (s.auto.enabled and s.auto.route==route):reasons.stop="no_background"
-		elif not idle.is_empty() and (idle.route!=route or idle.status=="completed_pending"):reasons.stop="pending_reward" if idle.route==route else "other_route"
+		elif not idle.is_empty() and idle.route!=route:reasons.stop="other_route"
 		if not g.manual_hyperspace.active or active.is_empty() or active.route!=route:reasons.exit="no_challenge"
+	var busy:=queue_status(g)
+	if busy.busy:
+		for key in ["idle_once","crew_idle","challenge"]:reasons[key]="queue_busy"
+	var paused:=paused_for_route(g,route)
 	var luck:=luck_snapshot(g,route,crew_id)
-	return {"route":route,"current_layer":current,"next_layer":current+1,"best_time":best,"task_mode":"none" if receipt.is_empty() else ("challenge" if receipt.mode=="manual" else "crew_idle" if receipt.mode=="auto" else "manual_idle"),"work":float(receipt.get("work",0.0)),"duration":float(receipt.get("duration",0.0)),"round_id":int(receipt.get("round_id",s.round_id)),"run_id":int(receipt.get("run_id",0)),"status":str(receipt.get("status","")),"background":idle.duplicate(true) if idle.get("route","")==route else {},"challenge":active.duplicate(true) if active.get("route","")==route else {},"reasons":reasons,"total_luck":luck.luck,"crew_luck":luck.crew_luck,"permanent_luck":luck.permanent_luck,"idle_duration":best,"crew_duration":idle_duration(g,best,crew_id),"crew_id":configured_crew(g,route)}
+	return {"queue":busy,"paused":not paused.is_empty(),"paused_receipts":paused,"paused_remaining":maxf(0.0,float(paused[0].duration)-float(paused[0].work)) if not paused.is_empty() else 0.0,"route":route,"current_layer":current,"next_layer":current+1,"best_time":best,"task_mode":"none" if receipt.is_empty() else ("challenge" if receipt.mode=="manual" else "crew_idle" if receipt.mode=="auto" else "manual_idle"),"work":float(receipt.get("work",0.0)),"duration":float(receipt.get("duration",0.0)),"round_id":int(receipt.get("round_id",s.round_id)),"run_id":int(receipt.get("run_id",0)),"status":str(receipt.get("status","")),"background":idle.duplicate(true) if idle.get("route","")==route else {},"challenge":active.duplicate(true) if active.get("route","")==route else {},"reasons":reasons,"total_luck":luck.luck,"crew_luck":luck.crew_luck,"permanent_luck":luck.permanent_luck,"idle_duration":best,"crew_duration":idle_duration(g,best,crew_id),"crew_id":configured_crew(g,route)}
 
 func advance(g,dt:float)->void:
 	scheduler.advance(self,g,dt)

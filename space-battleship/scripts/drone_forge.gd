@@ -82,14 +82,23 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 			index=int(indices[rng.randi_range(0,indices.size()-1)]);d.affixes[index].locked=true;mutation=true
 		"promote_affix":
 			if c.policies.promotion_success!="weighted_draw_stronger":return error("promotion_policy_required")
+			var attempts_value = args.get("attempts",1)
+			if not C.integer(attempts_value) or int(attempts_value) not in [1,10,100]:return error("invalid_arguments")
 			if indices.is_empty():return error("no_unlocked_affix")
-			index=int(indices[rng.randi_range(0,indices.size()-1)])
-			var a: Dictionary=d.affixes[index]
-			if int(a.tier)<=1:return error("already_highest_tier")
-			var proposed:=int(R.weighted(rng,c.tier_weights))
-			outcome=proposed<int(a.tier)
-			if outcome:
-				a.tier=int(a.tier)-1;a.value=R.quantized(rng,c.affixes[a.key].ranges[str(a.tier)],float(c.value_precision));mutation=true
+			# Highest-grade affixes cannot consume the deterministic preview's target.
+			indices=indices.filter(func(i):return int(d.affixes[i].tier)>1)
+			if indices.is_empty():return error("already_highest_tier")
+			draws=0;outcome=false
+			for attempt in int(attempts_value):
+				indices=indices.filter(func(i):return int(d.affixes[i].tier)>1)
+				if indices.is_empty():break
+				index=int(indices[rng.randi_range(0,indices.size()-1)])
+				var a: Dictionary=d.affixes[index]
+				var proposed:=int(R.weighted(rng,c.tier_weights))
+				draws+=1
+				if proposed<int(a.tier):
+					a.tier=int(a.tier)-1;a.value=R.quantized(rng,c.affixes[a.key].ranges[str(a.tier)],float(c.value_precision));mutation=true;outcome=true
+			for key in cost:cost[key]=float(cost[key])*draws
 		"reroll_values":
 			var unlocked: Array=d.affixes.filter(func(a):return not a.locked)
 			if unlocked.is_empty() and d.legendary_effect.is_empty():return error("no_unlocked_values")
