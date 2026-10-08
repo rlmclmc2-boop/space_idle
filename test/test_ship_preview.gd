@@ -124,6 +124,28 @@ func run() -> void:
 	check(panel.mounts.weapons_4.get_parent()==panel.preview and panel.mounts.weapons_7.text.contains(UIText.t("ship.refit.carrier")),"Larger candidate previews stored dormant modules using its capacity")
 	panel.candidate="Frigate"
 	panel.refresh()
+	# Switching to a smaller active hull must not turn a dormant preview slot into a drone ID.
+	check(scene.game.switch_ship("Destroyer"),"Activate four-slot hull for preview transition")
+	scene.game.module_entry("weapons",3).key="missile"
+	scene.game.module_entry("weapons",3).level=107
+	panel.candidate="Destroyer"
+	panel.refresh()
+	check(scene.game.switch_ship("Frigate"),"Activate three-slot hull for preview transition")
+	panel.candidate="Destroyer"
+	var smaller_profile := JSON.stringify(scene.game.profile)
+	panel.refresh()
+	var fourth_rows := 0
+	for child in panel.mount_lists.weapons.get_children():
+		if child is Button and child.visible and child.text.begins_with("W04"):fourth_rows+=1
+	check(fourth_rows==1,"Four-slot candidate has exactly one W04 row after activating three-slot hull")
+	check(panel.mounts.weapons_3.get_meta("slot_id")=="weapons_3" and panel.mounts.weapons_3.disabled,"Dormant W04 retains module identity and read-only preview")
+	var fourth_card := false
+	for card in panel.drone_cards:
+		if card.visible and card.get_meta("slot_id","")=="weapons_3":fourth_card=true
+	check(fourth_card,"Companion preview card retains the same permanent W04 identity")
+	check(JSON.stringify(scene.game.profile)==smaller_profile,"Candidate refresh does not activate or change stored modules")
+	panel.candidate="Frigate"
+	panel.refresh()
 	var cached:Texture2D=panel.picture.texture
 	scene.equipment_tabs.current_tab=0
 	await process_frame

@@ -229,7 +229,7 @@ func refresh() -> void:
 		active+=capacity
 		var list_index := 0
 		for index in capacity:
-			var id: String = host.game.slot_id(category,index)
+			var id: String = "%s_%d" % [category,index] # Candidate hull uses permanent module slots, not active combat sources.
 			if not mounts.has(id):
 				var mount := Button.new()
 				mount.add_theme_font_override("font",host.font)
@@ -346,7 +346,7 @@ func refresh_drone_strip(assignments: Dictionary, locked: bool, current: String)
 		host.set_ui_value(card,"visible",ordinal<slots.size())
 		if ordinal>=slots.size():continue
 		var slot:=slots[ordinal]
-		var id:String=host.game.slot_id("weapons",slot)
+		var id:String="weapons_%d" % slot
 		if card.get_meta("slot_id","")!=id:card.set_meta("slot_id",id)
 		var entry:Dictionary=host.game.module_entry("weapons",slot)
 		var prefix:="W"+str(slot+1).pad_zeros(2)
