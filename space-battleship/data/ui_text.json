@@ -16835,5 +16835,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "连续升阶操作与真实结算反馈"
+  },
+  {
+    "key": "hyperspace.forge_ultimate_extra",
+    "text": "究极额外 · {affix}",
+    "params": "affix",
+    "category": "hyperspace",
+    "note": "改造结果的独立究极词缀标记；不参与规则"
   }
 ]
