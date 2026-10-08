@@ -921,7 +921,10 @@ func draw_environment_event(_offset:Vector2)->void:
 
 func draw_stars()->void:
 	var mat:ShaderMaterial=stars_layer.material
-	mat.set_shader_parameter("hyperspace",0.0 if encounter_presentation.route.is_empty() else 1.0)
+	mat.set_shader_parameter("hyperspace",encounter_presentation.scenery_presence)
+	mat.set_shader_parameter("route_index",["alpha","beta","gamma","delta"].find(encounter_presentation.scenery_route))
+	var scenery_time:float=encounter_presentation.scenery_time
+	mat.set_shader_parameter("scene_motion",Vector3(sin(scenery_time*0.075),sin(scenery_time*0.11),sin(scenery_time*0.32)))
 	mat.set_shader_parameter("route_color",Vector3(encounter_presentation.accent.r,encounter_presentation.accent.g,encounter_presentation.accent.b))
 	super.draw_stars()
 
