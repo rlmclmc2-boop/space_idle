@@ -8896,6 +8896,31 @@
       "params": [
         "cost"
       ]
+    },
+    "planet.builder_choice_hint": {
+      "params": []
+    },
+    "enhance.preview_button": {
+      "params": []
+    },
+    "enhance.preview_not_active": {
+      "params": []
+    },
+    "enhance.preview_heading": {
+      "params": [
+        "level",
+        "cost"
+      ]
+    },
+    "enhance.preview_scope": {
+      "params": []
+    },
+    "enhance.preview_effect": {
+      "params": [
+        "name",
+        "before",
+        "after"
+      ]
     }
   },
   "bindings": {

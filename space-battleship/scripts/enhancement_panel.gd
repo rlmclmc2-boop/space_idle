@@ -19,6 +19,9 @@ var cost_label: Label
 var progress: ProgressBar
 var upgrade_button: Button
 var max_button: Button
+var preview_button: Button
+var preview_dialog: AcceptDialog
+var preview_body: RichTextLabel
 var history_label: Label
 var feedback: Label
 var rule_label: Label
@@ -82,6 +85,7 @@ func setup(owner_node: Node) -> void:
 	progress.add_theme_stylebox_override("fill",SKIN.surface(TEAL,NAVY,0))
 	header.add_child(progress)
 	upgrade_button = button(header,"enhance.upgrade",Rect2(985,98,144,48),func():purchase(1),true)
+	preview_button = button(header,"enhance.preview_button",Rect2(148,120,210,38),show_upgrade_preview)
 	max_button = button(header,"enhance.upgrade_max",Rect2(1140,98,145,48),func():purchase(-1))
 
 	scroll = ScrollContainer.new()
@@ -287,8 +291,9 @@ func compact_branch_path(category: String, kind: String) -> String:
 func effect_overview_text(key: String, value: Variant, unit := "%") -> String:
 	return PARAMETER_TEXT.render(key,{"value":FORMAT.percentage(value)},{"value":{"role":"effect","unit":unit}})
 
-func effect_overview(kind: String) -> String:
-	var runtime: Dictionary = game.enhancement_effect_runtime(kind)
+func effect_overview(kind: String, context: BattleGame = null) -> String:
+	if context==null:context=game
+	var runtime: Dictionary = context.enhancement_effect_runtime(kind)
 	var level := int(runtime.effective_level)
 	match kind:
 		"proficiency","adaptation":
@@ -298,13 +303,52 @@ func effect_overview(kind: String) -> String:
 		"repeat":
 			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(100.0+float(runtime.damage_percent))},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"critical":
-			var guaranteed := game.enhancement_branch_choice("weapons",kind,3)=="B" and game.enhancement_branch_unlocked("weapons",kind,3) and int(runtime.eligible_modules)>0
+			var guaranteed := context.enhancement_branch_choice("weapons",kind,3)=="B" and context.enhancement_branch_unlocked("weapons",kind,3) and int(runtime.eligible_modules)>0
 			var values := {"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(N.multiply(runtime.damage_multiplier,100.0))}
 			if guaranteed:values.underlying=FORMAT.percentage(runtime.underlying_probability_percent)
 			return PARAMETER_TEXT.render("enhance.overview.critical_guaranteed" if guaranteed else "enhance.overview.critical",values,{"chance":{"role":"effect","unit":"%"},"underlying":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.heal_percent)/float(runtime.interval),"%/秒")
 		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.percentage(runtime.fraction_percent),"chance":FORMAT.percentage(runtime.probability_percent)},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
 	return UIText.t("enhance.description.pending")
+
+func upgrade_preview_text() -> String:
+	if game.enhancement_at_limit():return UIText.t("enhance.limit_reached")
+	# Project through the existing game queries on an isolated copy, only on request.
+	var projected := BattleGame.new(game.db,false)
+	projected.profile=game.profile.duplicate(true)
+	var current:Array[String]=[]
+	var kinds:Array[String]=[]
+	for category in ["weapons","defence"]:
+		var order:Array=game.enhancement_order(category)
+		for index in order.size():
+			if game.enhancement_effective_level()+1<threshold_level(index):continue
+			var kind=str(order[index])
+			kinds.append(kind)
+			current.append(effect_overview(kind,projected) if game.enhancement_effective_level()>=threshold_level(index) else UIText.t("enhance.preview_not_active"))
+	projected.profile.enhancementLevel=int(projected.profile.enhancementLevel)+1
+	var lines:Array[String]=[UIText.t("enhance.preview_heading",{"level":str(game.enhancement_level()+1),"cost":FORMAT.compact(game.enhancement_cost())}),UIText.t("enhance.preview_scope")]
+	for index in kinds.size():
+		var after=effect_overview(kinds[index],projected)
+		if current[index]==after:continue
+		var parts=changed_preview_parts(current[index],after)
+		lines.append(UIText.t("enhance.preview_effect",{"name":effect_name(kinds[index]),"before":parts[0],"after":parts[1]}))
+	return "\n\n".join(lines)
+
+func changed_preview_parts(before:String,after:String) -> Array[String]:
+	var old=before.split(" · ");var next=after.split(" · ")
+	if old.size()!=next.size():return [before,after]
+	var old_changed:Array[String]=[];var new_changed:Array[String]=[]
+	for index in old.size():
+		if old[index]!=next[index]:old_changed.append(old[index]);new_changed.append(next[index])
+	return [" · ".join(old_changed)," · ".join(new_changed)]
+
+func show_upgrade_preview() -> void:
+	if not is_instance_valid(preview_dialog):
+		preview_dialog=AcceptDialog.new();SKIN.dialog(preview_dialog);add_child(preview_dialog)
+		preview_body=RichTextLabel.new();preview_body.add_theme_font_size_override("normal_font_size",20);preview_body.bbcode_enabled=true;preview_body.selection_enabled=true;preview_body.scroll_active=true;preview_body.custom_minimum_size=Vector2(600,360);preview_dialog.add_child(preview_body)
+	preview_dialog.title=UIText.t("enhance.preview_button")
+	preview_body.text=upgrade_preview_text()
+	preview_dialog.popup_centered(Vector2i(740,500))
 
 func eligible_count(category: String, index: int) -> int:
 	var count := 0

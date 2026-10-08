@@ -16598,5 +16598,47 @@
     "params": "cost",
     "category": "hyperspace",
     "note": "付费升阶失败的实际结果"
+  },
+  {
+    "key": "planet.builder_choice_hint",
+    "text": "施工人数够了，每完成一次星球探索就推进1次建设；派谁施工都一样。",
+    "params": "",
+    "category": "planet",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_button",
+    "text": "下一级变化",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_not_active",
+    "text": "尚未启用",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_heading",
+    "text": "升到 Lv{level} · 消耗 {cost} 强化碎片",
+    "params": "level,cost",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_scope",
+    "text": "按当前配置与累计次数预览，不包含临时战斗状态；查看不会花费碎片。",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_effect",
+    "text": "{name}：{before} → {after}",
+    "params": "name,before,after",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
   }
 ]

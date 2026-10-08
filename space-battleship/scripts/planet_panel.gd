@@ -748,7 +748,7 @@ func _refresh_facility_dialog() -> void:
 		status_text += " · " + UIText.t("planet.facility_remaining", {"count":exploration_count_text(GrowthNumber.ceiling(GrowthNumber.subtract(row.unlock_explore, g.planet_progress(id).degree)))})
 	elif status == "building":
 		status_text += " · " + UIText.t("planet.facility_progress", {"progress":exploration_count_text(state.get("build_progress", 0)), "total":exploration_count_text(row.build_explore)})
-		if int(row.extra_crew) > 0:status_text += "\n" + UIText.t("planet.extra", {"count":state.get("crew", []).size(), "required":exploration_count_text(row.extra_crew)})
+		if int(row.extra_crew) > 0:status_text += "\n" + UIText.t("planet.extra", {"count":state.get("crew", []).size(), "required":exploration_count_text(row.extra_crew)}) + "\n" + UIText.t("planet.builder_choice_hint")
 	host.set_ui_value(facility_status, "text", status_text)
 	var can_build := status == "building" and int(row.extra_crew) > 0
 	var can_auto := built and kind == "auto_explore"
@@ -799,6 +799,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 		if g.idle_planet_crew(str(member.crewId)):
 			ids.append(str(member.crewId))
 			popup.add_item(str(g.crew.definitions(g)[member.crewId].name))
+			popup.set_item_tooltip(popup.item_count-1,UIText.t("planet.builder_choice_hint"))
 			if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
 	for member_id in builders:
 		ids.append(str(member_id))
