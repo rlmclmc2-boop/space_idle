@@ -323,7 +323,9 @@ func refresh() -> void:
 	var cost = game.enhancement_cost()
 	var balance = game.profile.get("jewelFragments",0)
 	host.set_ui_value(level_label,"text",UIText.t("enhance.level",{"level":level}))
-	host.set_ui_value(bonus_label,"text",UIText.t("enhance.bonus",{"bonus":bonus,"effective":game.enhancement_effective_level()}))
+	host.set_ui_value(bonus_label,"visible",bonus!=0)
+	if bonus!=0:
+		host.set_ui_value(bonus_label,"text",UIText.t("enhance.bonus",{"bonus":bonus,"effective":game.enhancement_effective_level()}))
 	host.set_ui_value(balance_label,"text",UIText.t("enhance.balance",{"amount":FORMAT.compact(balance)}))
 	host.set_ui_value(balance_label,"tooltip_text",UIText.t("enhance.balance",{"amount":display(balance)}))
 	host.set_ui_value(cost_label,"text",UIText.t("enhance.limit_reached") if at_limit else UIText.t("enhance.cost",{"level":level+1,"cost":FORMAT.compact(cost)}))
