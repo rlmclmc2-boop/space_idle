@@ -4,6 +4,7 @@ uniform vec2 origin;
 uniform vec2 extent;
 uniform int item_count = 0;
 uniform float animation_time = 0.0;
+uniform vec2 tile_masks[64];
 uniform vec4 centers[48];
 uniform vec4 params[48];
 uniform vec4 assets[48];
@@ -25,12 +26,16 @@ vec4 atlas_sample(int index, vec2 p, float frame, float columns, bool height_map
 }
 void fragment() {
 	vec2 screen=origin+UV*extent;
+	ivec2 tile=clamp(ivec2(UV*8.0),ivec2(0),ivec2(7));
+	uvec2 mask=uvec2(tile_masks[tile.y*8+tile.x]);
 	vec4 colors[48];
 	float depths[48];
 	bool additive[48];
 	int count=0;
 	for(int i=0;i<48;i++) {
 		if(i>=item_count)break;
+		uint bits=i<24 ? mask.x : mask.y;
+		if((bits & (1u << uint(i%24)))==0u)continue;
 		vec4 center=centers[i], parameter=params[i], asset=assets[i], effect=effects[i];
 		int kind=int(asset.x);
 		vec2 world=(screen-center.xy)/center.zw;
@@ -49,7 +54,8 @@ void fragment() {
 			float weight=effect.y;
 			// Premultiplication avoids black fringes during interpolation.
 			color=mix(c0,c1,weight);
-			if(color.a>0.00001)color.rgb/=color.a;
+			if(color.a<=0.00001)continue;
+			color.rgb/=color.a;
 			vec4 d0=atlas_sample(int(asset.y),p0,first,effect.x,true);
 			vec4 d1=atlas_sample(int(asset.y),p1,second,effect.x,true);
 			float w0=(1.0-weight)*d0.a,w1=weight*d1.a;
@@ -58,6 +64,7 @@ void fragment() {
 			if(any(greaterThan(abs(local),vec2(0.5))))continue;
 			if(kind==4) {
 				color=atlas_sample(int(asset.y),local,0.0,1.0,false);
+				if(color.a<=0.00001)continue;
 				vec4 height=atlas_sample(int(asset.y),local,0.0,1.0,true);
 				if(color.a>0.00001)color.rgb/=color.a;
 				depth+=parameter.z+parameter.w*height.r/max(height.a,0.00001);
@@ -65,6 +72,7 @@ void fragment() {
 			else if(kind==2) {
 				// Exported interpolants from the original 32x16 sphere mesh.
 				vec4 map=sample_asset(int(asset.y),local+0.5);
+				if(map.a<=0.00001)continue;
 				vec3 point=map.rgb/max(map.a,0.00001)*2.0-1.0;
 				vec3 normal=normalize(point/vec3(effect.z,1.0,effect.w));
 				float edge=pow(1.0-abs(normal.y),3.2);
@@ -88,8 +96,7 @@ void fragment() {
 		// Only overlapping fragments enter this list. Sort actual depth, not
 		// ship-center order: carriers and turret bases may cross the flagship.
 		int cursor=count;
-		for(int j=47;j>0;j--) {
-			if(j>cursor)continue;
+		for(int j=count;j>0;j--) {
 			if(depths[j-1]<=depth)break;
 			colors[j]=colors[j-1];depths[j]=depths[j-1];additive[j]=additive[j-1];cursor=j-1;
 		}

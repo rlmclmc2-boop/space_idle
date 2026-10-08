@@ -9,6 +9,7 @@ var enabled := false:
 	set(value):
 		if enabled == value:return
 		enabled = value
+		set_process(value)
 		invalidate()
 var recheck_pending := false
 var active := false
@@ -20,6 +21,9 @@ var geometry: Array[VisualInstance3D] = []
 var covered: Dictionary = {}
 var textures: Array[Texture2D] = []
 var shader_cache: Dictionary = {}
+var shader_capacity := MAX_ITEMS
+var mesh_identities: Dictionary = {}
+const TILE_SIDE := 8
 var dirty := true:
 	set(value):
 		dirty = value
@@ -32,9 +36,24 @@ var light_values: Array = []
 
 func configure(owner_view) -> void:
 	view = owner_view
+	set_process(enabled)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 	if enabled:_initialize_catalog()
+
+func _process(_delta: float) -> void:
+	# A direct MeshInstance3D.mesh assignment has no Resource.changed signal.
+	# Paused owners skip pose sync; inspect only registered identities here.
+	if not enabled or not is_instance_valid(view) or not view.rendering_paused or not view.visible:return
+	for record in mesh_identities.values():
+		if not is_instance_valid(record.node):continue
+		if record.current != record.node.mesh:
+			record.current = record.node.mesh
+			invalidate()
+
+func _mesh_replaced(node: MeshInstance3D) -> bool:
+	var id := node.get_instance_id()
+	return mesh_identities.has(id) and mesh_identities[id].original != node.mesh
 
 func _initialize_catalog() -> void:
 	if FileAccess.file_exists(RECIPE):
@@ -96,7 +115,7 @@ func _part(root: Node3D, pivot: bool) -> Dictionary:
 	while source_root.scene_file_path.is_empty():source_root = source_root.get_parent() as Node3D
 	for mesh in root.find_children("*","MeshInstance3D",true,false):
 		if not pivot and root.find_child("TurretPivot",true,false).is_ancestor_of(mesh):continue
-		if mesh.mesh.resource_path.is_empty() or changed_geometry.has(mesh.mesh.get_instance_id()):return {}
+		if _mesh_replaced(mesh) or mesh.mesh == null or mesh.mesh.resource_path.is_empty() or changed_geometry.has(mesh.mesh.get_instance_id()):return {}
 		var reject := _mesh_changed.bind(mesh.mesh.get_instance_id())
 		if not mesh.mesh.changed.is_connected(reject):mesh.mesh.changed.connect(reject)
 		var mats: Array[Material] = []
@@ -120,6 +139,8 @@ func _part(root: Node3D, pivot: bool) -> Dictionary:
 func _add_ornament(root: Node3D) -> void:
 	var parts := ORNAMENT.collect(root)
 	if parts.is_empty():return
+	for part in parts:
+		if _mesh_replaced(part.source):return
 	var asset: Dictionary = catalog.get("ornaments",{}).get(ORNAMENT.signature(parts),{})
 	if asset.is_empty() or not ResourceLoader.exists(str(asset.get("atlas",""))):return
 	var texture := load(str(asset.atlas)) as Texture2D
@@ -144,16 +165,20 @@ func _rebuild() -> void:
 	var light: DirectionalLight3D = view.world.get_node("KeyLight")
 	light_values = [light.transform,light.light_color,light.light_energy]
 	items.clear();geometry.clear();covered.clear();textures.clear()
+	for id in mesh_identities.keys():
+		if not is_instance_valid(mesh_identities[id].node):mesh_identities.erase(id)
 	for node in view.world.find_children("*","VisualInstance3D",true,false):
 		if node != light:geometry.append(node)
 		if node is MeshInstance3D and node.mesh != null:
+			if not mesh_identities.has(node.get_instance_id()):
+				mesh_identities[node.get_instance_id()]={"node":node,"original":node.mesh,"current":node.mesh}
 			if not node.mesh.changed.is_connected(invalidate):node.mesh.changed.connect(invalidate)
 			for surface in node.mesh.get_surface_count():
 				var mat: Material = node.get_active_material(surface)
 				if mat != null and not mat.changed.is_connected(invalidate):mat.changed.connect(invalidate)
 				if mat is ShaderMaterial and not mat.shader.changed.is_connected(invalidate):mat.shader.changed.connect(invalidate)
 	for record in view.body_baker.records.values():
-		if not is_instance_valid(record.plane) or not view.body_baker.textures.has(record.key):continue
+		if not is_instance_valid(record.plane) or _mesh_replaced(record.plane) or not view.body_baker.textures.has(record.key):continue
 		var entry: Dictionary = view.body_baker.textures[record.key]
 		var texture: Texture2D = entry.material.get_shader_parameter("body_texture")
 		if texture == null:continue
@@ -176,8 +201,9 @@ func _rebuild() -> void:
 		items.append({"node":plume,"kind":3})
 		_cover(plume)
 	if textures.size()>MAX_TEXTURES:return
-	# One shader per texture-count layout; no shader compilation on pose changes.
-	var key := str(textures.size())
+	# Specialize per appearance capacity; never compile on ordinary pose changes.
+	shader_capacity = clampi(items.size(),1,MAX_ITEMS)
+	var key := str(textures.size())+":"+str(shader_capacity)
 	if not shader_cache.has(key):
 		var declarations := ""
 		var sampler := "vec4 sample_asset(int index, vec2 uv) {\n"
@@ -186,7 +212,7 @@ func _rebuild() -> void:
 			sampler += "if (index == %d) return texture(asset_%d, uv);\n"%[i,i]
 		sampler += "return vec4(0.0);\n}\n"
 		var shader := Shader.new()
-		shader.code = SOURCE.code.replace("vec4 sample_asset(int index, vec2 uv) { return vec4(0.0); }",declarations+sampler)
+		shader.code = SOURCE.code.replace("[48]","[%d]"%shader_capacity).replace("i<48","i<%d"%shader_capacity).replace("vec4 sample_asset(int index, vec2 uv) { return vec4(0.0); }",declarations+sampler)
 		shader_cache[key] = shader
 	var result := ShaderMaterial.new();result.shader = shader_cache[key]
 	material = result
@@ -225,6 +251,7 @@ func sync() -> bool:
 	var assets := PackedVector4Array()
 	var effects := PackedVector4Array()
 	var bounds := Rect2()
+	var item_rects: Array[Rect2] = []
 	var density: Vector2 = (get_viewport().get_stretch_transform()*view.get_global_transform_with_canvas()).get_scale().abs()
 	for item in items:
 		var node: Node3D = item.node
@@ -282,8 +309,12 @@ func sync() -> bool:
 		var native := maxf(span.x,span.y)*maxf(density.x,density.y)
 		var limit := int(item.asset.size) if item.kind in [1,4] else 1024
 		if item.kind!=3 and native>limit:return _fail("asset would exceed native pixel precision")
-		var radius := span.length()*0.5
-		var rect := Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2.0)
+		# Conservative rotated rectangle, including the weapon's two registered
+		# samples. Do not use an all-direction circle for every nonrotating body.
+		var half := Vector2(absf(cos(yaw))*span.x+absf(sin(yaw))*span.y,absf(sin(yaw))*span.x+absf(cos(yaw))*span.y)*0.5
+		if item.kind==1:half=Vector2.ONE*span.x*sqrt(0.5)
+		var rect := Rect2(center-half,half*2.0).grow(1.0)
+		item_rects.append(rect)
 		bounds = rect if centers.is_empty() else bounds.merge(rect)
 		centers.append(Vector4(center.x,center.y,span.x,span.y))
 		params.append(Vector4(0.0,node.global_position.y,depth_low,depth_span))
@@ -297,7 +328,21 @@ func sync() -> bool:
 	_uniform("extent",bounds.size)
 	_uniform("item_count",centers.size())
 	_uniform("animation_time",float(view.elapsed))
-	centers.resize(MAX_ITEMS);params.resize(MAX_ITEMS);assets.resize(MAX_ITEMS);effects.resize(MAX_ITEMS)
+	# Tile lists reject distant items before shader coordinate math/sampling.
+	# Two exact 24-bit halves fit float uniforms on the Compatibility backend.
+	var masks := PackedVector2Array()
+	masks.resize(TILE_SIDE*TILE_SIDE)
+	for index in item_rects.size():
+		var low := ((item_rects[index].position-bounds.position)/bounds.size*TILE_SIDE).floor()
+		var high := ((item_rects[index].end-bounds.position)/bounds.size*TILE_SIDE).floor()
+		var bit := float(1 << (index%24))
+		for y in range(clampi(int(low.y),0,TILE_SIDE-1),clampi(int(high.y),0,TILE_SIDE-1)+1):
+			for x in range(clampi(int(low.x),0,TILE_SIDE-1),clampi(int(high.x),0,TILE_SIDE-1)+1):
+				var cell: int = y*TILE_SIDE+x
+				if index<24:masks[cell].x+=bit
+				else:masks[cell].y+=bit
+	_uniform("tile_masks",masks)
+	centers.resize(shader_capacity);params.resize(shader_capacity);assets.resize(shader_capacity);effects.resize(shader_capacity)
 	_uniform("centers",centers);_uniform("params",params);_uniform("assets",assets);_uniform("effects",effects)
 	active=true;fallback_reason=""
 	if not visible:visible=true
