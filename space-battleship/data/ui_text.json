@@ -12153,7 +12153,7 @@
   },
   {
     "key": "ship.refit.active_count",
-    "text": "启用 {active}",
+    "text": "可用槽位 {active}",
     "params": "{active}",
     "category": "ship",
     "note": "候选舰体实际启用槽位数量"
