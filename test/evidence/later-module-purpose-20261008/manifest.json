@@ -1,0 +1,32 @@
+[
+  {
+    "file": "39-module-purpose.png",
+    "sha256": "bed8f0bd34bbe7f910370c0800d4a31905c7ef749f7de582ecddd5133cb811dc",
+    "captured_unix": 1791436078.634241,
+    "bytes": 253093
+  },
+  {
+    "file": "40-second-purpose.png",
+    "sha256": "2b08a45439fb20d71d0df8fcd19aa8f484c580d5d57c036a4bb1391a5fc284c0",
+    "captured_unix": 1791436116.357802,
+    "bytes": 256326
+  },
+  {
+    "file": "41-basic-dismantle-visible.png",
+    "sha256": "262909a92677bab85267204c688030f61e7192458558162eaaa528d6f9b5ac52",
+    "captured_unix": 1791436140.8855164,
+    "bytes": 186989
+  },
+  {
+    "file": "42-protected-basic-menu.png",
+    "sha256": "c803c852875fa6eebdde6bf848e05806782cfa0e443f03ee8907ce4266f8b96f",
+    "captured_unix": 1791436264.0520844,
+    "bytes": 196541
+  },
+  {
+    "file": "43-purpose-saved.png",
+    "sha256": "ff2ba69221ea9d705c0214ab06208140c0777acf345da77307ee4ac1ba8461dc",
+    "captured_unix": 1791436327.3513463,
+    "bytes": 214631
+  }
+]

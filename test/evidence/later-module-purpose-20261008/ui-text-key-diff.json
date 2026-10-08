@@ -1,0 +1,92 @@
+[
+  {
+    "key": "hyperspace.module_effect.iron_income",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.iron_income",
+      "text": "铁产出",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.uranium_income",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.uranium_income",
+      "text": "铀产出",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.ai_speed",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.ai_speed",
+      "text": "科研进度积累速度",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.reactor_energy_cap",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.reactor_energy_cap",
+      "text": "反应炉能源上限",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.gem_income",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.gem_income",
+      "text": "宝石碎片产出",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_rate",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.hyperspace_energy_rate",
+      "text": "探索能量恢复速度",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect.hyperspace_energy_cap",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect.hyperspace_energy_cap",
+      "text": "探索能量上限",
+      "params": "",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.module_effect_preview",
+    "before": null,
+    "after": {
+      "key": "hyperspace.module_effect_preview",
+      "text": "{effects}：本级 +{current}% → {next_level}级 +{next}%。\n安装到已装备的无人机上才生效。",
+      "params": "effects,current,next_level,next",
+      "category": "hyperspace"
+    }
+  },
+  {
+    "key": "hyperspace.level_choice_hint",
+    "before": null,
+    "after": {
+      "key": "hyperspace.level_choice_hint",
+      "text": "最低{minimum}级。提高等级会遇到更强敌人；掉落无人机时，其等级与探索等级相同。\n该等级通关材料：{material} ×{count}。",
+      "params": "minimum,material,count",
+      "category": "hyperspace"
+    }
+  }
+]
