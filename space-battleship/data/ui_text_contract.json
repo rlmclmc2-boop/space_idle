@@ -8641,6 +8641,16 @@
       "params": [
         "route"
       ]
+    },
+    "equipment.card_weapon_context": {
+      "params": [
+        "level",
+        "type",
+        "seconds"
+      ]
+    },
+    "weapon.card_beam_expected": {
+      "params": []
     }
   },
   "bindings": {

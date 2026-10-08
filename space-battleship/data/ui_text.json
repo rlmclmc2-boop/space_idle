@@ -16136,5 +16136,19 @@
     "params": "{route}",
     "category": "hyperspace",
     "note": "切路线后仍能找到挑战与待领收据；仅显示实际状态"
+  },
+  {
+    "key": "equipment.card_weapon_context",
+    "text": "{level} {type}/{seconds}秒",
+    "params": "level,type,seconds",
+    "category": "equipment",
+    "note": "已装备武器等级行；沿用战斗实际间隔，不计算DPS"
+  },
+  {
+    "key": "weapon.card_beam_expected",
+    "text": "逐次期望",
+    "params": "",
+    "category": "weapon",
+    "note": "持续光束静态单次期望，未计持续锁定增伤，不是整轮总伤害"
   }
 ]

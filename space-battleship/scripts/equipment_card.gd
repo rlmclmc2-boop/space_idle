@@ -133,7 +133,7 @@ func layout_contents() -> void:
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
+	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state
@@ -150,7 +150,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	name_button.set_meta("slot_id",slot_id)
 	host.set_ui_value(name_button,"disabled",item.locked or item.get("refit_locked",false))
 	host.set_ui_value(fields.title,"text",item.name)
-	host.set_ui_value(fields.level,"text",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))}))
+	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
 	host.set_ui_value(fields.caption,"text",item.mainStatLabel)
 	host.set_ui_value(fields.stat,"text",item.mainStatValue)
