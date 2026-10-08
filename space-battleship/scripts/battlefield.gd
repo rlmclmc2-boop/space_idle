@@ -12,6 +12,8 @@ const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
 var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
+const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
+var scenery_material_route := ""
 const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshader")
 
 @export_group("Toon ship prototype")
@@ -701,6 +703,9 @@ func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
 
 func create_draw_layers() -> void:
 	super.create_draw_layers()
+	var star_material:ShaderMaterial=stars_layer.material
+	star_material.set_shader_parameter("route_atlas",ROUTE_SCENERY_ATLAS)
+	scenery_material_route=""
 	# This override draws only opaque, untextured rectangles. Keep the material
 	# off the legacy main.gd background and all star/route/effect/texture layers.
 	var solid_material := ShaderMaterial.new()
@@ -921,8 +926,13 @@ func draw_environment_event(_offset:Vector2)->void:
 
 func draw_stars()->void:
 	var mat:ShaderMaterial=stars_layer.material
-	mat.set_shader_parameter("hyperspace",0.0 if encounter_presentation.route.is_empty() else 1.0)
-	mat.set_shader_parameter("route_color",Vector3(encounter_presentation.accent.r,encounter_presentation.accent.g,encounter_presentation.accent.b))
+	mat.set_shader_parameter("hyperspace",encounter_presentation.scenery_presence)
+	if scenery_material_route!=encounter_presentation.scenery_route:
+		scenery_material_route=encounter_presentation.scenery_route
+		var route_index:int=maxi(0,["alpha","beta","gamma","delta"].find(scenery_material_route))
+		mat.set_shader_parameter("route_origin",Vector2(float(route_index%2)*0.5,0.5 if route_index>=2 else 0.0))
+	var scenery_time:float=encounter_presentation.scenery_time
+	mat.set_shader_parameter("scene_motion",Vector2(sin(scenery_time*0.075),sin(scenery_time*0.11)))
 	super.draw_stars()
 
 func draw_encounter_backdrop()->void:
