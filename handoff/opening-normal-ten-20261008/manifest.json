@@ -1,0 +1,218 @@
+[
+  {
+    "file": "156-resumed-task-state.png",
+    "bytes": 216059,
+    "sha256": "1a0e6cf74475176895f0b399838b833138139001653c3f3556ff180d290de3f1",
+    "captured_utc": "2026-10-08T00:52:38.873037+00:00"
+  },
+  {
+    "file": "197-defence-allocation-visible.png",
+    "bytes": 360981,
+    "sha256": "526044ba99c59792d770b1f65c8046807340ab111efdf24d18a9a1203dbc758a",
+    "captured_utc": "2026-10-08T00:56:15.805097+00:00"
+  },
+  {
+    "file": "311-recovered-armour-play.png",
+    "bytes": 208515,
+    "sha256": "aada7d41febbd78dd351e6f5ae4b539bdf4de0cedbbdb22c55b9d387c91ac258",
+    "captured_utc": "2026-10-08T01:03:28.413242+00:00"
+  },
+  {
+    "file": "312-recovered-armour-play.png",
+    "bytes": 224751,
+    "sha256": "43b615eef5e5e1d2b92b90bb32ef42e9127ef29970e982cfb16463b35cc4682c",
+    "captured_utc": "2026-10-08T01:03:30.613243+00:00"
+  },
+  {
+    "file": "438-eight-enemy-visible-defence.png",
+    "bytes": 234271,
+    "sha256": "cb6a9462de8cd8f97ea9a45e70161d51446f34e73bdf34290681718646f75a54",
+    "captured_utc": "2026-10-08T01:15:32.989446+00:00"
+  },
+  {
+    "file": "486-two-cannons-at-eight-visible.png",
+    "bytes": 234422,
+    "sha256": "3de11535264c0f7f13e3a37c6aea0bb6337bac10edb4dde00b3a2e949827acec",
+    "captured_utc": "2026-10-08T01:22:36.933568+00:00"
+  },
+  {
+    "file": "501-eight-last-race-result.png",
+    "bytes": 213263,
+    "sha256": "e3cee7e1a4a49d1c12a66b9c220505cbe8e92d5351661a9c3db42d2b1ad616a0",
+    "captured_utc": "2026-10-08T01:25:30.097616+00:00"
+  },
+  {
+    "file": "509-two-cannon-full-round.png",
+    "bytes": 216649,
+    "sha256": "c6862e3b22fbc2353a56bacb92bf4209fb488f3b5a5850069d62bf9a711ff5b2",
+    "captured_utc": "2026-10-08T01:26:28.297632+00:00"
+  },
+  {
+    "file": "514-two-cannon-full-round.png",
+    "bytes": 225869,
+    "sha256": "d46714ab88f03713576a281c84cd7e81f1161c40a8527132ab70bd28257b3357",
+    "captured_utc": "2026-10-08T01:26:39.201633+00:00"
+  },
+  {
+    "file": "519-two-cannon-full-round.png",
+    "bytes": 234815,
+    "sha256": "e5dc5a15ddb1dc04e3bf6d6273ce5d7166222a396b3352e601ed187c6c1d37d3",
+    "captured_utc": "2026-10-08T01:26:50.269636+00:00"
+  },
+  {
+    "file": "575-boss-growth-real-play.png",
+    "bytes": 221799,
+    "sha256": "0e19d7e6be27e10e96bf3150953473d16a2a33c52984a252c5f8e1274e745975",
+    "captured_utc": "2026-10-08T01:32:47.005733+00:00"
+  },
+  {
+    "file": "580-boss-growth-real-play.png",
+    "bytes": 232888,
+    "sha256": "80e5e14011a041633f9a01b1dc84a9b35fc594ddf18d62db4ac7b851c7fa04a4",
+    "captured_utc": "2026-10-08T01:32:57.917737+00:00"
+  },
+  {
+    "file": "655-ten-armour-type-visible.png",
+    "bytes": 234029,
+    "sha256": "18afbed3b84148d635d1e978b25393df87f3039cae7a79b18439711e906cb3db",
+    "captured_utc": "2026-10-08T01:39:58.305854+00:00"
+  },
+  {
+    "file": "674-ten-mixed-weapons-play.png",
+    "bytes": 244685,
+    "sha256": "f8e9effa5353d263803d6e51b4574b06b3c56162679783db7ce0ecbb9f5d8471",
+    "captured_utc": "2026-10-08T01:43:56.153923+00:00"
+  },
+  {
+    "file": "701-ten-checkpoint-equipment.png",
+    "bytes": 215703,
+    "sha256": "25756d1d4daad0cd141c028be278320089fa1cf07ecc6b48652462d2d7b03ee0",
+    "captured_utc": "2026-10-08T01:49:42.730022+00:00"
+  },
+  {
+    "file": "732-two-energy-one-physical-ten.png",
+    "bytes": 228076,
+    "sha256": "4739bca9c6ea2f4a9d3efa06714c3c0c05c1f9046cddff00c81ea04ca3fbbe41",
+    "captured_utc": "2026-10-08T01:55:45.054124+00:00"
+  },
+  {
+    "file": "733-current-original-ten.png",
+    "bytes": 223838,
+    "sha256": "34c73f7c8de985a387e51adcfb3263104697677d1f57e8dff3f3f76d9184ed77",
+    "captured_utc": "2026-10-08T01:59:27.694192+00:00"
+  },
+  {
+    "file": "738-beam-details.png",
+    "bytes": 318180,
+    "sha256": "47cb7439630d14f4f6bc6483434a23082cd620fd34fbdac9908d6f6670517d0e",
+    "captured_utc": "2026-10-08T01:59:42.762197+00:00"
+  },
+  {
+    "file": "741-open-reactor.png",
+    "bytes": 358724,
+    "sha256": "d21c8081334712d0338abb0b4459e45b5d62e8338e7bd95b6a6b3cf430ab000c",
+    "captured_utc": "2026-10-08T02:00:05.002202+00:00"
+  },
+  {
+    "file": "750-ten-eight-normal-play.png",
+    "bytes": 241821,
+    "sha256": "00ab29d722200e1692c5e8a7bce74f075403514adc4d3d5f985d8284f51267b1",
+    "captured_utc": "2026-10-08T02:00:33.006208+00:00"
+  },
+  {
+    "file": "761-return-pulse-energy.png",
+    "bytes": 225806,
+    "sha256": "1677839b9e23066f40b300d55ab630b09450e9e4d302eef4d7fede7d06a0d24f",
+    "captured_utc": "2026-10-08T02:00:59.442215+00:00"
+  },
+  {
+    "file": "767-ten-armor-play.png",
+    "bytes": 240700,
+    "sha256": "e8bd1c4aabca7224b03f1feabad1748efd3806c312d07870b65db1d10550ae65",
+    "captured_utc": "2026-10-08T02:01:23.990223+00:00"
+  },
+  {
+    "file": "783-fit-three-long-beam.png",
+    "bytes": 238388,
+    "sha256": "01c605ddca297c3ae6fe969749afefba88d651c1cd47696ac31cf84b7122451c",
+    "captured_utc": "2026-10-08T02:01:48.538229+00:00"
+  },
+  {
+    "file": "789-ten-boss-long-beams.png",
+    "bytes": 211190,
+    "sha256": "356c1a2ef2a93742e247bb35776e8cc5f61bc5cc3f34f926bd0197daf408d5dd",
+    "captured_utc": "2026-10-08T02:02:12.562238+00:00"
+  },
+  {
+    "file": "805-wave-current.png",
+    "bytes": 224205,
+    "sha256": "5c39541fa6283bfdbbcb3545274fc4cdacbb90f6573e7592b72aaa510848195f",
+    "captured_utc": "2026-10-08T02:02:51.702250+00:00"
+  },
+  {
+    "file": "829-ten-boss-second-beam-attempt.png",
+    "bytes": 249701,
+    "sha256": "81e4dd17015bb50e9d0f8073d97556554bc080563252c5e71125057930ce05ff",
+    "captured_utc": "2026-10-08T02:03:49.874266+00:00"
+  },
+  {
+    "file": "838-ten-mixed-beams-cannon.png",
+    "bytes": 207975,
+    "sha256": "f9bb07a4d918e3b781f830c2fa6f07353a54f9b39531c23db2a6c77e500deba9",
+    "captured_utc": "2026-10-08T02:04:14.422273+00:00"
+  },
+  {
+    "file": "873-pause-eight-last-enemy.png",
+    "bytes": 244004,
+    "sha256": "9d0cf9982c53ab68ba9b137f85cdfcaa382565d1e91379dbb827e2fe9ad70a46",
+    "captured_utc": "2026-10-08T02:05:53.266301+00:00"
+  },
+  {
+    "file": "879-resume-boss-ready.png",
+    "bytes": 257496,
+    "sha256": "e0737ceeb6c6fea71a495b7ace167c85ecbde4c94d9e7ca2422fdb334fb81d79",
+    "captured_utc": "2026-10-08T02:06:01.338304+00:00"
+  },
+  {
+    "file": "887-ten-boss-prepared-shield.png",
+    "bytes": 213064,
+    "sha256": "2818ae36b9ab3f1a4e3e83a58f3367d4ef0f42432fbc9fe9fddf5c6f81e0a9d0",
+    "captured_utc": "2026-10-08T02:06:22.834310+00:00"
+  },
+  {
+    "file": "889-open-earned-enhancement.png",
+    "bytes": 293229,
+    "sha256": "8e5ea10c155bcc127e938c75efa9017343d026375b701e5e1fef98901b3869d4",
+    "captured_utc": "2026-10-08T02:07:16.682324+00:00"
+  },
+  {
+    "file": "892-boss-current-equipment.png",
+    "bytes": 254421,
+    "sha256": "5db18ed16e090f7411721bf1e89cf850cd9d75c71b5fa8b9f8379d9bbf5aa163",
+    "captured_utc": "2026-10-08T02:07:37.570330+00:00"
+  },
+  {
+    "file": "893-pause-verified-boss.png",
+    "bytes": 226453,
+    "sha256": "3418aeb8f104fecf7bf60fadeeb0a88acb3dbd5281c5d088b99b6b1a67788215",
+    "captured_utc": "2026-10-08T02:07:59.478337+00:00"
+  },
+  {
+    "file": "894-earned-boss-shield-max.png",
+    "bytes": 229215,
+    "sha256": "1e4fe82768e00d97797a0381e9d206f94b4968522c805ced72baae0e5c77a7d0",
+    "captured_utc": "2026-10-08T02:08:00.958338+00:00"
+  },
+  {
+    "file": "895-save-after-ten-cleared.png",
+    "bytes": 211189,
+    "sha256": "46bd94e2534dc8483d317f94175750189b30a6dd402e2cce00c5046e6ef3f2be",
+    "captured_utc": "2026-10-08T02:08:18.366343+00:00"
+  },
+  {
+    "file": "896-manual-save-paused-eleven.png",
+    "bytes": 213632,
+    "sha256": "28cda8ce181d2e0dee6880cfd4c7f37d3f5b7a914b59e78e22086a929a3b3893",
+    "captured_utc": "2026-10-08T02:09:33.794365+00:00"
+  }
+]

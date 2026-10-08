@@ -1,0 +1,69 @@
+{
+  "runtime_version": "ada722017c603e151304ddb3dc136e27663da407",
+  "evidence_before_shield52": "893-pause-verified-boss.png",
+  "first_recorded_clear_utc": "2026-10-08T02:07:59.478337+00:00",
+  "task_start_utc": "2026-10-08T00:52:38.873037+00:00",
+  "checkpoint_saved_utc": "2026-10-08T02:09:33.219058+00:00",
+  "private_checkpoint_sha256": "0104605e3582113fac5088c5c619a97407f71c2f32d5e0a25f5fe91170364a2e",
+  "profile_fields": {
+    "cleared": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "journey": {
+      "distance": 100.0,
+      "groupIndex": 1,
+      "guardArrived": false,
+      "pendingUnlocks": [],
+      "retreatBossPending": false,
+      "stage": 11,
+      "state": 3
+    },
+    "loadout": {
+      "defence": [
+        {
+          "key": "armour",
+          "level": 50
+        },
+        {
+          "key": "shield",
+          "level": 52
+        }
+      ],
+      "weapons": [
+        {
+          "key": "longLaser",
+          "level": 48
+        },
+        {
+          "key": "longLaser",
+          "level": 45
+        },
+        {
+          "key": "longLaser",
+          "level": 45
+        }
+      ]
+    },
+    "reactorLevel": 27,
+    "reactorAllocation": {
+      "condensation": 0,
+      "defence": 240,
+      "smelting": 0,
+      "weapons": 214
+    },
+    "enhancementLevel": 2,
+    "chronoParticles": 43200.0,
+    "selectedShip": "Frigate"
+  },
+  "input_requests": 236,
+  "screenshots": 36
+}
