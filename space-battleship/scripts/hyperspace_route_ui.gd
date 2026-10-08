@@ -139,9 +139,9 @@ func show_crew() -> void:
  if crew_dialog==null:
   crew_dialog=panel.commands.build_dialog("crew")
   var body=panel.commands.content(crew_dialog)
-  crew_choice=panel.option(body);crew_info=panel.label(body,"",21)
-  crew_reason=panel.label(body,"",20)
-  panel.label(body,t("layer_crew_hint"),20)
+  crew_choice=panel.option(body);crew_info=panel.commands.dialog_label(body,"",21)
+  crew_reason=panel.commands.dialog_label(body,"",20)
+  panel.commands.dialog_label(body,t("layer_crew_hint"),20,body.custom_minimum_size.x)
   crew_enable=panel.button(body,"layer_crew_start",start_crew)
   crew_choice.item_selected.connect(func(_index):refresh_crew())
  crew_choice.clear()

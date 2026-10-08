@@ -250,9 +250,14 @@ func build_dialog(title: String) -> AcceptDialog:
  return dialog
 func content(dialog: AcceptDialog) -> VBoxContainer:
  var box=panel.box(dialog);box.custom_minimum_size=Vector2(680,250);return box
-# Set wrap mode before attaching: a transient zero-width label can enlarge a native popup.
-func dialog_label(parent: Node,text: String,font_size: int) -> Label:
- var result=Label.new();result.text=text;result.autowrap_mode=TextServer.AUTOWRAP_OFF;result.add_theme_font_size_override("font_size",font_size);result.add_theme_color_override("font_color",Color("243d50"));parent.add_child(result);return result
+# Long dialog text needs a known width before wrapping or attachment to the native window.
+func dialog_label(parent: Node,text: String,font_size: int,wrap_width:float=0.0) -> Label:
+ var result=Label.new();result.autowrap_mode=TextServer.AUTOWRAP_OFF
+ result.add_theme_font_size_override("font_size",font_size);result.add_theme_color_override("font_color",Color("243d50"))
+ if wrap_width>0.0:
+  result.custom_minimum_size.x=wrap_width;result.size=Vector2(wrap_width,0.0)
+  result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+ result.text=text;parent.add_child(result);return result
 func show_crew() -> void:
  if crew_dialog==null:
   crew_dialog=build_dialog("crew");var body=content(crew_dialog);crew_choice=panel.option(body);crew_info=dialog_label(body,"",21);var actions=panel.row(body)
