@@ -1,0 +1,6 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Mixed use of tabs and spaces for indentation.
+          at: GDScript::reload (/workspace/bug-qa/performance-20261008/enemy-helper-equivalence.gd:7)
+ERROR: Failed to load script "/workspace/bug-qa/performance-20261008/enemy-helper-equivalence.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2907)

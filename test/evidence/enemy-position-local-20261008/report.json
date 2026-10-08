@@ -1,0 +1,35 @@
+{
+  "baseline": "be430bd212eca9c6a39e4fca8375f464505a5bf4",
+  "source_commit": "7c67b31c714f0f3fd3ce1d27cac8318b998b545a",
+  "environment": "Originalcloud recovered andread/writeworking. Godot4.6.3 headless withisolated cachedruntime/userdata,statcache=true/save=false. No newtask/thread orlongbenchmark.",
+  "production": "Onlymain.gd: optionalknownposition passed visual_muzzle→enemy_port_offset→enemy_component_pose→enemy_weapon_angle. Widthusesexistingenemy_render_width_at_y withknownY. Dropanchor usesonesolvecenterandwidth. No global/persistentcache, no gameplaynumbers/shader/quality/statechanges.",
+  "safe_boundary": "One synchronous helpercall. No game.tick,scene_process,await,eventdispatch,entitymotion or fx_time mutation inthese helperbodies. Exactpassedentityposition only; existingdefaultcaller signatures remainusable. Valuesreleasedonreturn.",
+  "do_not_cache_across": "Samefx_time alone isinsufficient: game.tickmay mutate/removeenemies,HP/shield,boss/group/finalencounterconditions,targetidentity/slotreuse ornamespace/playerhull. MovementX/Y,size,equipment,posefields,shieldgeometry,formationflags,visualsettings,viewport/recognitionscale,selectedship ordb changes requirefreshsolve. Current change storesnone oftheseacrosscalls.",
+  "other_sites": "Projectile/beamtargetproviders mayrunbetweencombat mutationsandhave differententitylifetimes, so notmemoized. draw_battle alreadyhas scopedbattle_draw_enemy_positions. No attempt to enlargeitslifetime orcacheall providersbytimestamp. Damage_text/explosion duplicateposition sites remain outside thismuzzle/drop smallchange; no blanketoptimization.",
+  "checks": 795,
+  "failures": 0,
+  "rng_unchanged": true,
+  "strict_comparison": "Vector2/dictionary outputs exact==, no tolerances. Actualdbstage13/14/34firstgroup enemies extendedonlyinmemory tosize1–6/mixed4weaponfixture,times0/.1/1/5. Muzzleknownsource/nearestorphanfallback/componentposes/dropanchor andmovementfreshcall comparedagainst baseline bodiesreadfrombe430bd. Baseline/candidate samegame/db,identity andtime,visualconfig andprojectvisualsettings loaded.",
+  "solve_counts": [
+    {
+      "kind": "drop",
+      "before_calls": 2,
+      "after_calls": 1,
+      "cases": 72
+    },
+    {
+      "kind": "muzzle",
+      "before_calls": 2,
+      "after_calls": 1,
+      "cases": 156
+    },
+    {
+      "kind": "muzzle",
+      "before_calls": 3,
+      "after_calls": 1,
+      "cases": 132
+    }
+  ],
+  "invalid_attempts": "First generatedfixture mixed tabs/spaces failedcompile; retained. Second fixtureomittedvisual_config initialization and emittednulltexture/geometryscripterrors despiteEXIT0/507checks; explicitlyexcluded,logcompressedretained. Correctedfixture795checksEXIT0 andZERO script/error lines. No assertion removed/relaxed; properconfig activatesadditional componentcases.",
+  "acceptance_boundary": "Headlesshelperequivalence only, not graphical/natural14/doublebeam+firearm+missile+2drones FPS acceptance orfull combat trace. No frame ornetFPSgain claimed. Parentcancherrypicksourcecommitseparatelyfromevidence andacceptwithown naturalchain. Remaining3–6FPS andnominal10xenergyshortfall remain open."
+}
