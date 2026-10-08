@@ -56,6 +56,7 @@ var card_icons: Array[TextureRect]=[]
 var card_titles: Array[Label]=[]
 var card_subtitles: Array[Label]=[]
 var card_flags: Array[Label]=[]
+var disabled_snapshot:Array=[]
 var level: SpinBox
 var level_choice_hint: Label
 var energy: Label
@@ -74,6 +75,11 @@ var budgets: Label
 var page_label: Label
 var previous: Button
 var next: Button
+var legendary_help=preload("res://scripts/hyperspace_legendary_help.gd").new()
+var legendary_group: VBoxContainer
+var legendary_button: Button
+var legendary_summary: Label
+var forge_legendary_button: Button
 var details: Label
 var detail_title: Label
 var detail_icon: TextureRect
@@ -123,7 +129,7 @@ func thumbnail(parent: Node,width: float) -> TextureRect:
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
 func setup(owner) -> void:
- host=owner;commands.setup(self);route_ui.setup(self)
+ host=owner;commands.setup(self);route_ui.setup(self);legendary_help.setup(self)
  reward_feedback.setup(self)
  equipment_ui.setup(self)
  manual_adapter=func(selected_route,_selected_level):
@@ -222,12 +228,16 @@ func build_inventory(parent: Node) -> void:
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
  equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
+ legendary_group=box(detail,4);legendary_group.visible=false
+ legendary_button=button(legendary_group,"legendary_info",show_selected_legendary,{"name":""})
+ legendary_summary=label(legendary_group,"",20)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
  var selected=surface(parent);label(selected,t("forge_selected"),25)
  var selected_row=row(selected);forge_icon=thumbnail(selected_row,110);var text=box(selected_row);forge_title=label(text,t("none_selected"),26);forge_details=label(text,t("choose"),21)
+ forge_legendary_button=button(selected,"legendary_info",show_selected_legendary,{"name":""});forge_legendary_button.visible=false
  button(selected,"go_warehouse",func():select_section(1))
  commands.build_forge(parent)
 func build_rules(parent: Node) -> void:
@@ -315,6 +325,8 @@ func _process(_delta: float) -> void:
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
+ if disabled_snapshot!=host.game.drone_combat.disabled:
+  disabled_snapshot=host.game.drone_combat.disabled.duplicate();inventory_dirty=true
  for i in [2,3]:put(section_buttons[i],"visible",bool(s.unlocked_drones))
  if section_index>1 and not bool(s.unlocked_drones):select_section(0);return
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
@@ -376,7 +388,9 @@ func flags(id: String,d: Dictionary) -> String:
  return " · ".join(names)
 func protection_flags(id: String) -> String:
  var names: Array[String]=[]
- if bag.equipped.has(id):names.append(t("equipped"))
+ if bag.equipped.has(id):
+  names.append(t("equipped"))
+  if host.game.drone_combat.disabled.has(id):names.append(t("rebuild_disabled_short"))
  if bag.favorites.has(id):names.append(t("favorite"))
  if bag.sealed.has(id):names.append(t("sealed"))
  for p in bag.presets:
@@ -386,6 +400,14 @@ func refresh_details() -> void:
  put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
+ var has_effect=valid and bool(bag.drones[selected_id].get("legendary",false))
+ var effect:Dictionary=bag.drones[selected_id].get("legendary_effect",{}) if has_effect else {}
+ var effect_id=str(effect.get("effect_id",""))
+ put(legendary_group,"visible",has_effect);put(forge_legendary_button,"visible",has_effect)
+ if has_effect:
+  var caption=t("legendary_info",{"name":effect_name(effect_id)})
+  put(legendary_button,"text",caption);put(forge_legendary_button,"text",caption)
+  put(legendary_summary,"text",legendary_help.summary(effect_id))
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
@@ -415,19 +437,24 @@ func refresh_details() -> void:
  for key in totals.legendary:active_effects.append(effect_name(str(key)))
  put(totals_summary,"visible",not active_effects.is_empty())
  put(totals_summary,"text",t("active_effects_summary",{"items":" · ".join(active_effects)}))
- put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id]))
+ put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id],false))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
  detail_icon.call("apply",bag.drones[selected_id]) if valid else detail_icon.call("clear")
  for b in cards:skin_selection(b,b.get_meta("drone_id","")==selected_id)
 func quality_caption(drone: Dictionary) -> String:
  var origin=t(str(drone.origin_quality))
  return t("legendary")+(" · "+origin if drone.origin_quality!="legendary" else "") if drone.legendary else origin
-func drone_description(d: Dictionary) -> String:
+func show_selected_legendary() -> void:
+ if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
+  legendary_help.show(bag.drones[selected_id].legendary_effect)
+func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
  var fire_params={"interval":"%.2f"%float(row.cd)}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
  var lines: Array[String]=[t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}),t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}),t("drone_fire_"+str(d.weapon),fire_params)]
+ lines.insert(1,t("drone_dynamic_weapon_hint"))
+ if bag.equipped.has(str(d.id)) and g.drone_combat.disabled.has(str(d.id)):lines.insert(0,t("rebuild_disabled"))
  lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
@@ -437,14 +464,17 @@ func drone_description(d: Dictionary) -> String:
    if projection is Dictionary:
     value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
   lines.append(t("affix",{"key":name_text,"tier":str(int(a.tier)),"value":value_text,"locked":t("locked") if a.locked else ""}))
- if d.legendary:
+ if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))
-  for parameter in effect.get("parameters",{}):lines.append(t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(float(effect.parameters[parameter])*100.0)}))
+  var trigger:=legendary_trigger(str(effect.get("effect_id","")))
+  if not trigger.is_empty():lines.append(trigger)
  var hangings: Array[String]=[]
  for key in d.hangings:hangings.append(hanging_name(str(key)))
  lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
  return "\n".join(lines)
+func legendary_trigger(id:String) -> String:
+ return legendary_help.summary(id)
 func catalog_name(group: String,key: String,fallback: String) -> String:
  if not UIText.loaded:UIText.reload_catalog()
  var bindings:Dictionary=UIText.bindings.get(group,{})

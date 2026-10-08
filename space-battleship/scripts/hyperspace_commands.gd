@@ -377,6 +377,8 @@ func refresh_totals() -> void:
  for key in totals.legendary:
   # An active legendary effect can work through constants even without nonzero random parameters.
   lines.append(panel.effect_name(key))
+  var trigger=panel.legendary_trigger(key)
+  if not trigger.is_empty():lines.append(trigger)
   for parameter in totals.legendary[key].parameters:
    var value=float(totals.legendary[key].parameters[parameter])
    if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(value*100.0)}))

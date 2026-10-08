@@ -14222,7 +14222,7 @@
   },
   {
     "key": "hyperspace.effect_parameter_damage_and_defence_bonus",
-    "text": "伤害与防御加成",
+    "text": "每次重组的伤害与防御加成",
     "params": "",
     "category": "hyperspace"
   },
@@ -16297,5 +16297,222 @@
     "params": "",
     "category": "weapon",
     "note": "有条件的攻击加成不计入基础每秒"
+  },
+  {
+    "key": "hyperspace.effect_trigger_drone_rebuild",
+    "text": "装甲耗尽且仍有可用无人机时，禁用品质最低的一架，恢复装甲与护盾，并叠加下方加成；本战点最多{limit}次。",
+    "params": "limit",
+    "category": "hyperspace",
+    "note": "重组触发、装备关系及当前停用状态"
+  },
+  {
+    "key": "hyperspace.rebuild_disabled_short",
+    "text": "重组停用",
+    "params": "",
+    "category": "hyperspace",
+    "note": "重组触发、装备关系及当前停用状态"
+  },
+  {
+    "key": "hyperspace.rebuild_disabled",
+    "text": "已装备；因重组在本战点暂时停用，不出战且不提供自身加成。装备关系保留，战点结束或战败后恢复。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "重组触发、装备关系及当前停用状态"
+  },
+  {
+    "key": "hyperspace.drone_dynamic_weapon_hint",
+    "text": "武器跟随当前启用主武器中的最高等级，与武器类型无关；保留品质加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前核心投影决定实际等级，UI不另算等级"
+  },
+  {
+    "key": "hyperspace.legendary_info",
+    "text": "传说 · {name} · 详情",
+    "params": "name",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details_title",
+    "text": "传说效果",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_derived_rule",
+    "text": "由效果产生的追加攻击不会再次触发其他效果。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.higgs_cannon",
+    "text": "电磁炮伤害提高，贯穿范围更宽。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.scatter_pulse",
+    "text": "脉冲激光同时攻击多个目标；只剩一个目标时伤害提高。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.precise_guidance",
+    "text": "导弹连续命中同一敌人，后续齐射的伤害越来越高。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.prism_tower",
+    "text": "一束持续激光获得更高的倍率上限，并连击附近敌人。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.strange_matter",
+    "text": "电磁炮命中可能产生延迟范围攻击；击杀时必定产生。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.laser_charge",
+    "text": "可用的脉冲激光越多，脉冲激光伤害越高。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.wild_missile",
+    "text": "每隔几轮齐射，改为发射一枚强力导弹并引发范围爆炸。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.endless_beam",
+    "text": "最强主武器持续激光的倍率上限提高，航行后继续蓄力。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.dodge_counter",
+    "text": "有机会闪避来袭攻击，并用随机可用武器反击。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.drone_master",
+    "text": "已装备可用无人机的最高品质越高，受到的伤害越低。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.black_hole",
+    "text": "定期开启黑洞，吸收双方伤害，随后释放范围攻击。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_core.drone_rebuild",
+    "text": "承受致命伤害时，停用一架无人机，修复并强化战舰。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.higgs_cannon",
+    "text": "装备生效后，电磁炮的伤害提高，贯穿宽度扩大。命中范围内的其他敌人也会受到攻击；下方加成分别作用于伤害和宽度。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.scatter_pulse",
+    "text": "脉冲激光会向当前每个可攻击目标各发射一次。当前只有一个目标时，才获得下方的单目标伤害加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.precise_guidance",
+    "text": "导弹每轮齐射首次命中同一敌人时，给该敌人增加一层引导。后续齐射对它的伤害乘以 {factor} 的层数次方；同一轮中的多枚导弹不会重复加层。换目标后分别计数。",
+    "params": "factor",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.prism_tower",
+    "text": "最先符合条件的一束持续激光变为棱镜塔，倍率上限获得下方加成，并连击最多 {targets} 个附近目标。同时最多存在一座棱镜塔，重复攻击产生的光束不获得此效果。",
+    "params": "targets",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.strange_matter",
+    "text": "电磁炮主攻击命中后，若敌人存活，有 {chance}% 概率产生一次追加攻击；若击杀敌人，则产生 {count} 次。每次在 {delay} 秒后攻击所有存活敌人，伤害为触发时伤害乘以下方倍率。",
+    "params": "chance,count,delay",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.laser_charge",
+    "text": "每个可用脉冲激光来源提供 {bonus}% 伤害加成，包括主武器与已装备且未停用的无人机。所有脉冲激光共享此加成，累计到下方上限为止。",
+    "params": "bonus",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.wild_missile",
+    "text": "每第 {period} 轮导弹主攻击，将整轮齐射替换为一枚强力导弹，伤害乘以下方倍率。命中时，再对所有存活敌人造成该次伤害 {blast}% 的爆炸伤害，包含原目标。各导弹来源共享轮数。",
+    "params": "period,blast",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.endless_beam",
+    "text": "当前启用主武器中最强的持续激光获得下方倍率上限加成。航行期间暂停蓄力计时，到下一个战点后保留原有进度并重新锁定目标。无人机和重复攻击产生的光束不获得此效果。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.dodge_counter",
+    "text": "受到可触发效果的攻击时，按当前可用武器中的最高暴击率尝试闪避，概率不超过下方上限。成功则免除该次伤害，并随机选一个可用武器反击，反击伤害获得下方加成。反击间隔至少 {cooldown} 秒；间隔期间仍可闪避。",
+    "params": "cooldown",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.drone_master",
+    "text": "取已装备且未停用的无人机中最高品质，按品质折算下方减伤上限。它减少战舰受到的伤害；下方数字是此效果的最高值，不是当前一定达到的减伤率。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.black_hole",
+    "text": "每 {period} 秒开启一次黑洞，持续 {duration} 秒。期间双方攻击的伤害都被吸收，暂不伤及目标；结束时，将吸收总量乘以下方倍率，攻击所有存活敌人。",
+    "params": "period,duration",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
+  },
+  {
+    "key": "hyperspace.legendary_details.drone_rebuild",
+    "text": "装甲耗尽且仍有可用无人机时，停用品质最低的一架，恢复满装甲与护盾，并叠加下方伤害与防御加成。品质相同时按无人机编号优先。本战点最多 {limit} 次。停用后不出战，也不提供自身加成，但保留装备关系；战点结束或战败后恢复。",
+    "params": "limit",
+    "category": "hyperspace",
+    "note": "已拥有传说效果的简述或主动查阅说明"
   }
 ]
