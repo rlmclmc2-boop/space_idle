@@ -1,6 +1,5 @@
-Pure independent cloud playtest checkpoint only.
-Frozen candidate70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
-Manualsave2026-10-09 21:23UTC stage11wave3 paused; newlyunlocked飞燕护卫舰enabled (4weapons/2defenses/2drone slots), crew高坚果assignedequipmentnormalpaid+1eachcycle.
-Wbeam46/cannon48/cannon48/beam51, armor46/deflectionshield48, reactor25evenlyallocated, AI30alloc10/10/10, enhancement1, twoordinarybluebeam drones equipped. Δfirstlayerbackgroundstarted21:23:11explicit0/75.5sec; previousonecompletedanddoesnotautomaticallyrepeat. No crafting/reroll/injection/microspending.1x.
-Originalcloudprocess2788 window2097155 DISPLAY=:91 Xvfb755 XDG/workspace/playtest-independent-20261009/{data,config,cache}. Envccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA. RuntimeGodot4.6.3 LP_NUM_THREADS4 gl_compatibility maxfps60.
-SaveUIopen. VerifyoriginalcurrentUIbeforetogglingpause/import; continuingfirstarrival20thensaveandclose, noreset.
+Pure independent cloud test save only, no local-player data.
+Frozen70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
+2026-10-09 21:30UTC manualsave stage14 paused; first11+crew/hull progression confirmedto14. 飞燕护卫舰4weapons2defenses2ordinarybluebeamdrone slots. Crewequipmentnormalpaid+1working, AI30all10. No manualgearupgradessince11unpause, reactor33 evenlyallocated viaordinaryMAX8 purchase.
+Originalprocess2788 window2097155 DISPLAY91 Xvfb755 XDG/workspace/playtest-independent-20261009/{data,config,cache}, cloudenvccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA. Godot4.6.3 LP_NUM_THREADS4 gl_compatibility maxfps60. 1x no particlesused/no resourceorwordinjection. SaveUIopen.
+ContinueoriginalexistingstateafterUIverification. Normal驻守tooltiplocksCURRENTBATTLEPOINTandrepeat; leftoffthrough14. First20stopmustsaveandcloseimmediately; mayuseordinary驻守near19 toavoidovershoot, no20playthrough.
