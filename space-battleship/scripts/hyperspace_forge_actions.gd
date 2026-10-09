@@ -15,13 +15,16 @@ var maximum:CheckBox
 var promotion_details_button:Button
 var confirmation:ConfirmationDialog
 var advanced_toggle:Button
+var available_grid:GridContainer
+var unavailable_grid:GridContainer
 var advanced_expanded:=false
 func setup(owner) -> void:commands_ref=weakref(owner)
 func build(parent:Node) -> void:
+ available_grid=GridContainer.new();available_grid.columns=3;available_grid.add_theme_constant_override("h_separation",8);available_grid.add_theme_constant_override("v_separation",8);parent.add_child(available_grid)
  advanced_toggle=commands.panel.button(parent,"forge_expand_unavailable",func():advanced_expanded=not advanced_expanded;refresh(),{"count":"0"})
- var grid=GridContainer.new();grid.columns=3;grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",8);parent.add_child(grid)
+ unavailable_grid=GridContainer.new();unavailable_grid.columns=3;unavailable_grid.add_theme_constant_override("h_separation",8);unavailable_grid.add_theme_constant_override("v_separation",8);parent.add_child(unavailable_grid)
  for op in ACTIONS:
-  var cell=commands.panel.box(grid,3);cells[op]=cell
+  var cell=commands.panel.box(available_grid,3);cells[op]=cell
   var action_row=commands.panel.row(cell);action_row.add_theme_constant_override("separation",4)
   var button=commands.panel.button(action_row,"operation_"+op,func():act(op));button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size=Vector2(145,74)
   button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;button.add_theme_font_size_override("font_size",16);buttons[op]=button
@@ -90,6 +93,7 @@ func refresh() -> void:
  if buttons.is_empty():return
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
  var later:=0
+ var available_index:=0
  for op in ACTIONS:
   var offered=visible_action(op,d) or (not d.is_empty() and not bool(d.get("ultimate",false)) and op!="restore_ultimate")
   if not offered:commands.panel.put(cells[op],"visible",false);continue
@@ -99,6 +103,11 @@ func refresh() -> void:
   var result:Dictionary=commands.h().preview_forge(commands.game(),req) if not req.is_empty() else {"error":"unavailable_drone"}
   var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
   var current=reason.is_empty() or ((op in BASIC or guaranteed) and reason=="insufficient_materials")
+  var destination:GridContainer=available_grid if current else unavailable_grid
+  if cells[op].get_parent()!=destination:cells[op].reparent(destination,false)
+  var position:int=available_index if current else later
+  if cells[op].get_index()!=position:destination.move_child(cells[op],position)
+  if current:available_index+=1
   if not current:later+=1
   commands.panel.put(cells[op],"visible",current or advanced_expanded)
   var shortage=exchange_shortage(op,result)
@@ -126,7 +135,8 @@ func refresh() -> void:
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
   commands.panel.put(buttons[op],"tooltip_text",name+"\n"+commands.cost_text(costs,true)+"\n"+status)
   commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage.is_empty())
- commands.panel.put(advanced_toggle,"visible",later>0 or advanced_expanded)
+ commands.panel.put(advanced_toggle,"visible",later>0)
+ commands.panel.put(unavailable_grid,"visible",later>0 and advanced_expanded)
  commands.panel.put(advanced_toggle,"text",commands.t("forge_collapse_unavailable") if advanced_expanded else commands.t("forge_expand_unavailable",{"count":str(later)}))
 func act(op:String) -> void:
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})

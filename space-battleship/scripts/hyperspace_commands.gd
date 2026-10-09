@@ -69,7 +69,7 @@ func build_forge(parent: Node) -> void:
  material_stock=panel.label(materials_box,"",18)
  var material_actions=panel.row(materials_box)
  material_route_button=panel.button(material_actions,"material_explore",explore_missing_material)
- panel.button(material_actions,"exchange_title",exchange_ui.show)
+ panel.button(material_actions,"exchange_title",exchange_ui.show_for_forge)
  var actions=panel.row(parent);var legacy_preview=panel.button(actions,"quote",preview);legacy_preview.visible=false;panel.button(actions,"collection_manage",show_collection);commit_button=panel.button(actions,"commit_forge",commit);commit_button.disabled=true;commit_button.visible=false
  promotion_hint=panel.label(parent,t("promotion_risk_hint"),21)
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)

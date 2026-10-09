@@ -105,6 +105,9 @@ func run() -> void:
  var saved_stock=g.profile.hyperspace.materials.degenerate_matter;g.profile.hyperspace.materials.degenerate_matter=0;a.refresh()
  check(not a.buttons.add_affix.disabled and a.buttons.add_affix.text.contains("先兑换") and a.buttons.add_affix.text.contains(c.t("degenerate_matter")+" "+str(int(g.hyperspace.config.forge_costs.add_affix.degenerate_matter)*int(g.hyperspace.config.material_unit_scale))),"Missing add-affix materials offer the exact-scaled exchange instead of a forge purchase")
  var before_exchange=JSON.stringify(g.profile)
+ c.select_operation("add_affix");c.exchange_ui.show_for_forge()
+ check(c.exchange_ui.material(c.exchange_ui.target)=="degenerate_matter" and int(c.exchange_ui.amount.value)==int(g.hyperspace.config.forge_costs.add_affix.degenerate_matter)*int(g.hyperspace.config.material_unit_scale) and JSON.stringify(g.profile)==before_exchange,"Forge material header prefills the selected operation's actual missing material without spending")
+ c.exchange_ui.dialog.hide()
  a.buttons.add_affix.pressed.emit()
  var exchange=c.exchange_ui
  check(exchange.dialog.visible and exchange.material(exchange.source)=="zero_point_energy" and exchange.material(exchange.target)=="degenerate_matter" and int(exchange.amount.value)==int(g.hyperspace.config.forge_costs.add_affix.degenerate_matter)*int(g.hyperspace.config.material_unit_scale),"Button opens existing exchange prefilled with current scaled shortage")
@@ -117,6 +120,7 @@ func run() -> void:
  var source_before=int(g.profile.hyperspace.materials.zero_point_energy);var received=int(exchange.amount.value)
  exchange.confirmation.confirmed.emit();exchange.confirmation.hide();exchange.dialog.hide()
  check(int(g.profile.hyperspace.materials.zero_point_energy)==source_before-2*received and int(g.profile.hyperspace.materials.degenerate_matter)==received,"Only explicit confirmation exchanges exact2:1 shortage, without performing forge")
+ check(a.cells.add_affix.get_parent()==a.available_grid and not a.buttons.add_affix.disabled,"After material exchange, the affordable action is in the available group immediately")
  # Reproduce the real100-glue upgrade with90 owned and30 degenerate.
  var saved_glue=int(g.profile.hyperspace.materials.glueball)
  var saved_deg=int(g.profile.hyperspace.materials.degenerate_matter)
@@ -148,9 +152,11 @@ func run() -> void:
  g.profile.hyperspace.materials.glueball=saved_glue;g.profile.hyperspace.materials.degenerate_matter=saved_deg
  a.advanced_expanded=true;a.refresh();g.profile.hyperspace.materials.zero_point_energy=0;a.refresh()
  check(a.advanced_expanded and a.cells.legendary.visible and not a.buttons.legendary.disabled and a.buttons.legendary.text.contains("先兑换"),"Resource refresh preserves expanded controls and shortage exchange entry")
+ check(a.cells.legendary.get_parent()==a.unavailable_grid,"Unfunded advanced forge action belongs only to the expanded unavailable group")
  a.advanced_expanded=false;a.refresh()
  check(not a.cells.legendary.visible,"Explicit collapse hides unavailable advanced operation")
  g.profile.hyperspace.materials.zero_point_energy=zero_stock
+ a.refresh();check(a.cells.legendary.get_parent()==a.available_grid,"Restored sufficient materials move the same action out of the unavailable group")
  g.profile.hyperspace.materials.degenerate_matter=saved_stock
  a.buttons.add_affix.pressed.emit();a.refresh()
  var before_tiers=g.profile.hyperspace.inventory.drones[d.id].affixes.map(func(affix):return int(affix.tier))

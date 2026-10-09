@@ -24,6 +24,17 @@ func material(choice:OptionButton) -> String:
 func show() -> void:
  if dialog==null:build()
  refresh_quote(true);dialog.popup_centered(Vector2i(760,540))
+func show_for_forge() -> void:
+ var op:String=str(panel.commands.operation.get_item_metadata(panel.commands.operation.selected))
+ var request:Dictionary=panel.commands.forge_actions.request(op)
+ var result:Dictionary=panel.commands.h().preview_forge(game(),request) if not request.is_empty() else {}
+ var shortage:Dictionary=panel.commands.forge_actions.exchange_shortage(op,result)
+ if not shortage.is_empty():show_prefilled(shortage.source,shortage.target,int(shortage.amount));return
+ var costs:Dictionary=result.get("cost",{})
+ if costs.size()==1 and str(costs.keys()[0]) in MATERIALS:
+  var to:String=str(costs.keys()[0]);var from:String="zero_point_energy" if to=="degenerate_matter" else "degenerate_matter"
+  show_prefilled(from,to,1);return
+ show()
 func show_prefilled(from:String,to:String,count:int) -> void:
  if dialog==null:build()
  for i in source.item_count:
