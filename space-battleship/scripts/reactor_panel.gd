@@ -214,6 +214,8 @@ func setup(owner_ui: Node) -> void:
 	readout_plate(self,Vector2(745,55),Vector2(580,360))
 	level_label = make_label(self,"",Vector2(766,72),530,44,CYAN,60)
 	energy_label = make_label(self,"",Vector2(766,153),272,28,CYAN)
+	energy_label.tooltip_text = UIText.t("reactor.version_note")
+	energy_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	uranium_label = make_label(self,"",Vector2(1055,153),250,26,INK)
 	next_label = make_label(self,"",Vector2(766,201),270,23,INK,32)
 	cost_label = make_label(self,"",Vector2(1055,201),260,22,INK,32)
@@ -485,7 +487,7 @@ func refresh() -> void:
 		set_readout(capacity_label,energy_label.text)
 	if host.ui_state_changed(uranium_label,[available]):
 		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
-	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
+	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,capacity,game.reactor_energy(),host.db.config.reactorEnergyGrowth,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
 		var max_count: int = game.reactor_max_upgrades()
 		affordable_count = max_count
 		host.set_ui_value(equalize_button,"disabled",not reactor_enabled)
@@ -554,6 +556,7 @@ func refresh_upgrade_preview() -> void:
 		var title: String = UIText.t("reactor.upgrade.max",{"count":str(count)}) if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
 		host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.purchase_button",{"title":title,"cost":purchase_cost_text(quote.cost),"energy":energy_text(quote.next_capacity-quote.capacity)}))
 		var details: String = UIText.t("reactor.purchase_details",{"count":str(count),"cost":purchase_cost_text(quote.cost,false),"current":energy_text(quote.capacity),"next":energy_text(quote.next_capacity)})
+		if count>0 and not game.reactor_can_grow(count):details += "\n"+UIText.t("reactor.capacity_boundary")
 		for key in quote.effects:
 			var effect: Dictionary = quote.effects[key]
 			details += "\n"+UIText.t("reactor.purchase_effect",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain})

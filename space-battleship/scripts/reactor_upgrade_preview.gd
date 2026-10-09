@@ -5,7 +5,7 @@ const Growth := preload("res://scripts/reactor_allocation_growth.gd")
 static func quote(game: BattleGame, count: int) -> Dictionary:
 	var level := int(game.profile.reactorLevel)
 	var capacity := game.reactor_capacity()
-	var next_capacity := capacity if count <= 0 else maxi(0,int(floor(game.reactor_energy(level+count))))
+	var next_capacity := capacity if count <= 0 else preload("res://scripts/reactor_growth.gd").capacity(game.reactor_energy(level+count))
 	var allocation: Dictionary = Growth.expand(Array(game.reactor_modules()),game.profile.reactorAllocation,capacity,next_capacity)
 	var cost := 0.0
 	for offset in maxi(0,count):cost += game.reactor_upgrade_cost(level+offset)

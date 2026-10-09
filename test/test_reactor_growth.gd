@@ -30,9 +30,10 @@ func run() -> void:
 	game.player.armour = 1.0
 	game.player.shield = 0.0
 	assert(game.upgrade_reactor(1))
-	assert(game.reactor_capacity() == 106)
-	assert(game.profile.reactorAllocation.weapons == 43 and game.profile.reactorAllocation.defence == 21 and game.profile.reactorAllocation.smelting == 0)
-	assert(game.reactor_capacity()-game.reactor_allocated() == 42)
+	var expected_capacity := floori(float(db.config.reactorEnergyBase)*float(db.config.reactorEnergyGrowth))
+	assert(game.reactor_capacity() == expected_capacity)
+	assert(game.profile.reactorAllocation == Growth.expand(Array(game.reactor_modules()),{"weapons":40,"defence":20,"smelting":0,"condensation":0},100,expected_capacity))
+	assert(game.profile.reactorAllocation.smelting == 0 and game.reactor_capacity()-game.reactor_allocated()>0)
 	assert(game.player.armour == 1.0 and game.player.shield == 0.0,"power purchase cannot heal")
 	var saved := {"reactorLevel":game.profile.reactorLevel,"reactorAllocation":game.profile.reactorAllocation.duplicate()}
 	var restored := BattleGame.new(db,false)
@@ -73,5 +74,31 @@ func run() -> void:
 	restored.profile.resources["2"] = 1.0e6
 	assert(restored.upgrade_reactor(1))
 	assert(is_equal_approx(alternate.effects.weapons.next,restored.reactor_multiplier("weapons")),"projection reads alternate valid config")
+	# This candidate is a new config version, not a legacy-economy migration.
+	var candidate_db := ShipDatabase.new()
+	var same_level := BattleGame.new(candidate_db,false)
+	same_level.profile.cleared=[1];same_level.rebuild_unlocks()
+	var raw: Dictionary=JSON.parse_string(JSON.stringify({"reactorLevel":47,"reactorAllocation":{"weapons":100,"defence":100,"smelting":0}}))
+	same_level.load_reactor(raw)
+	assert(is_equal_approx(same_level.reactor_energy(),float(candidate_db.config.reactorEnergyBase)*pow(float(candidate_db.config.reactorEnergyGrowth),46)),"existing test level uses the same current formula, without persistent capacity or migration")
+	var base_energy := same_level.reactor_energy()
+	for speed_value in [1.0,2.0,10.0]:
+		same_level.speed=speed_value;same_level.tick(0.01)
+	assert(same_level.reactor_energy()==base_energy,"time and speed do not compound capacity")
+	var boundary := BattleGame.new(candidate_db,false)
+	boundary.profile.cleared=[1];boundary.rebuild_unlocks()
+	var limit: int=preload("res://scripts/reactor_growth.gd").CAPACITY_LIMIT
+	var last_level := 1+floori(log(float(limit)/float(candidate_db.config.reactorEnergyBase))/log(float(candidate_db.config.reactorEnergyGrowth)))
+	boundary.profile.reactorLevel=last_level-1
+	boundary.profile.resources["2"]=1.0e60
+	assert(boundary.reactor_max_upgrades()==1)
+	var before_boundary: Dictionary=boundary.profile.duplicate(true)
+	assert(not boundary.upgrade_reactor(10) and boundary.profile==before_boundary,"overflowing batch cannot charge or change allocations")
+	var boundary_quote := Preview.quote(boundary,boundary.reactor_max_upgrades())
+	assert(boundary.upgrade_reactor(1) and boundary.reactor_capacity()==boundary_quote.next_capacity,"last safe MAX quote agrees with purchase")
+	before_boundary=boundary.profile.duplicate(true)
+	assert(boundary.reactor_max_upgrades()==0 and not boundary.upgrade_reactor(1) and boundary.profile==before_boundary,"integer boundary stops charging unusable levels")
+	assert(Preview.quote(boundary,10).next_capacity==limit,"disabled overflow preview clamps safely without integer wraparound")
+	print("PASS reactor candidate: same-level config formula / JSON test load, speed independence, MAX quote and integer-boundary atomicity")
 	print("PASS reactor growth: idle/zero shares, integer remainders, float/int64 boundaries, live config/research, purchase/no-heal and save round-trip")
 	quit()
