@@ -9382,6 +9382,9 @@
     },
     "hyperspace.promotion_details_action": {
       "params": []
+    },
+    "reactor.allocation_pointer_hint": {
+      "params": []
     }
   },
   "bindings": {

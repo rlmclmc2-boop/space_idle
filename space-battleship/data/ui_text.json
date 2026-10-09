@@ -17377,5 +17377,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "reactor.allocation_pointer_hint",
+    "text": "点击轨道或拖动把手调整。增加只用闲置能源；没有闲置时，先减少其他模块的分配。",
+    "params": "",
+    "category": "reactor",
+    "note": "现有全轨道输入及available_max限制的提示；不自动挪用其他模块能源"
   }
 ]

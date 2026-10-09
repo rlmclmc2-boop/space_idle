@@ -282,9 +282,9 @@ func draw_track() -> void:
 	var available_x := size.x*clampf(available_ratio,0.0,1.0)
 	if available_ratio < 0.999:
 		draw_line(Vector2(available_x,3),Vector2(available_x,size.y-3),Color("6c858c"),2.0,true)
-	var thumb_x := clampf(fill*size.x,4.0,size.x-4.0)
-	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,-2,8,4))
-	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-4,size.y-2,8,4))
+	var thumb_x := clampf(fill*size.x,9.0,size.x-9.0)
+	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-9,2,18,size.y-4))
+	for offset in [-3.0,3.0]:draw_line(Vector2(thumb_x+offset,8),Vector2(thumb_x+offset,size.y-8),Color("243d50"),2.0,true)
 	if hovered:
 		draw_line(Vector2(6,size.y+3),Vector2(size.x-6,size.y+3),accent,2.0,true)
 

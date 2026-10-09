@@ -345,6 +345,8 @@ func setup(owner_ui: Node) -> void:
 		var input := preload("res://scripts/reactor_power_input.gd").new()
 		input.position = Vector2(112,34)
 		input.size = Vector2(350,44)
+		input.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+		input.tooltip_text=UIText.t("reactor.allocation_pointer_hint")
 		input.slider = slider
 		input.track = track
 		allocation_row.add_child(input)
