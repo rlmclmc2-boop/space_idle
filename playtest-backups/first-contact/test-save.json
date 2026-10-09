@@ -21,7 +21,7 @@
 		19
 	],
 	"chronoParticles": 82.0,
-	"chronoSavedAt": 1791547627.93112,
+	"chronoSavedAt": 1791548249.31869,
 	"cleared": [
 		1,
 		2,
@@ -2140,7 +2140,7 @@
 		"crew/navigator",
 		"reactor_module/condensation"
 	],
-	"guardDeath": 1,
+	"guardDeath": 0,
 	"guardDistance": 200.0,
 	"guardIndex": 1,
 	"guardStage": 20,
@@ -2181,7 +2181,7 @@
 		"",
 		""
 	],
-	"hightechSavedAt": 1791547627.93112,
+	"hightechSavedAt": 1791548249.31869,
 	"hightechVersion": 2,
 	"hyperspace": {
 		"active": {
@@ -2395,7 +2395,7 @@
 	"journey": {
 		"distance": 200.0,
 		"groupIndex": 2,
-		"guardArrived": true,
+		"guardArrived": false,
 		"pendingUnlocks": [],
 		"retreatBossPending": false,
 		"stage": 20,
@@ -2440,7 +2440,7 @@
 			}
 		]
 	},
-	"loop": true,
+	"loop": false,
 	"loopLevel": 0,
 	"moduleVersion": 1,
 	"onboarding": {
