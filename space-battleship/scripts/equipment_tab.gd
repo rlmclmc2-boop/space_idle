@@ -810,7 +810,11 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var comparing: bool = pending_key!=key
 	var comparison: Dictionary=refit_comparison(entry) if comparing else {}
 	host.set_ui_value(detail.description,"text",comparison.text if comparing else item.description)
-	host.set_ui_value(detail.description,"tooltip_text",comparison.tooltip if comparing else item.description)
+	var description_tooltip: String=comparison.tooltip if comparing else item.description
+	if key=="shield" or (comparing and pending_key=="shield"):
+		var shield_row: Dictionary=host.db.equip("shield",int(entry.level))
+		description_tooltip+="\n\n"+UIText.t("equipment.shield_recovery_hint",{"delay":host.number(float(shield_row.para3)),"percent":host.number(float(shield_row.para2)*100)})
+	host.set_ui_value(detail.description,"tooltip_text",description_tooltip)
 	# Keep the comparison beside the confirmation; retain all control instances.
 	var comparison_extra := (140.0 if item.category=="weapons" else 80.0) if comparing else 0.0
 	if comparing:comparison_extra=maxf(comparison_extra,detail.description.get_minimum_size().y-70.0)

@@ -8916,7 +8916,7 @@
   },
   {
     "key": "equipment.description.shield",
-    "text": "优先承受伤害；脱离攻击一段时间后恢复。",
+    "text": "优先承受伤害；这格护盾停止承伤一段时间后恢复。",
     "params": "",
     "category": "weapon",
     "note": "依据当前装备机制的简短说明"
@@ -9028,7 +9028,7 @@
   },
   {
     "key": "equipment.attribute.recovery_delay",
-    "text": "受击后恢复等待（秒）",
+    "text": "本格承伤后恢复等待（秒）",
     "params": "",
     "category": "weapon",
     "note": "装备展开视图与分层详情"
@@ -17685,5 +17685,12 @@
     "params": "stage,wave",
     "category": "equipment",
     "note": "战败比较无法找到已装或实际可换的对应防御；不假定已解锁，不装配。"
+  },
+  {
+    "key": "equipment.shield_recovery_hint",
+    "text": "这格停止承伤{delay}秒后，每秒恢复其护盾上限的{percent}%。\n等待按这格护盾与记忆临时防护的实际承伤计时；护盾归零后，仅装甲受伤不会打断等待。恢复出的护盾再次承伤时重新计时；延迟伤害的结算也按实际承伤判定。",
+    "params": "delay,percent",
+    "category": "equipment",
+    "note": "现有装备说明悬停；配置值来自当前等级护盾行，未更改恢复机制。"
   }
 ]

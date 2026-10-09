@@ -9567,6 +9567,12 @@
         "stage",
         "wave"
       ]
+    },
+    "equipment.shield_recovery_hint": {
+      "params": [
+        "delay",
+        "percent"
+      ]
     }
   },
   "bindings": {
