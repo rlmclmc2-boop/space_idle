@@ -17857,5 +17857,12 @@
     "params": "damage,seconds,count",
     "category": "weapon",
     "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "settings.guard_hint",
+    "text": "锁定当前战点，反复作战；关闭后继续前进。",
+    "params": "",
+    "category": "settings",
+    "note": "驻守按钮短悬停，区别关卡跳转"
   }
 ]

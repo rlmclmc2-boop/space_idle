@@ -9705,6 +9705,9 @@
         "seconds",
         "count"
       ]
+    },
+    "settings.guard_hint": {
+      "params": []
     }
   },
   "bindings": {
