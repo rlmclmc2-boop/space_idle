@@ -9112,7 +9112,7 @@
   },
   {
     "key": "ship.refit.static_hint",
-    "text": "槽号对应实际武器挂点；右侧仅展示该舰体可用槽位。",
+    "text": "槽号对应武器挂点；右侧的装备模块槽与战斗无人机槽分别显示。",
     "params": "",
     "category": "ship",
     "note": "舰体静态预览与真实槽位显示"
@@ -12181,7 +12181,7 @@
   },
   {
     "key": "ship.refit.active_count",
-    "text": "可用槽位 {active}",
+    "text": "装备模块槽 {active}",
     "params": "{active}",
     "category": "ship",
     "note": "候选舰体实际启用槽位数量"
@@ -16899,5 +16899,21 @@
     "category": "reactor",
     "note": "测试版本换版提示；不声称旧进度经济连续可比",
     "source": "reactor_panel.gd"
+  },
+  {
+    "key": "ship.refit.combat_drone_slots",
+    "text": "战斗无人机槽\n当前 {current} → 候选 {next}",
+    "params": "current,next",
+    "category": "ship",
+    "note": "换舰预览复用无人机容量权威；不改变库存或换舰规则",
+    "source": "ship_panel.gd"
+  },
+  {
+    "key": "ship.refit.combat_drone_shrink",
+    "text": "将卸下 {count} 架超额无人机\n仍保留在仓库",
+    "params": "count",
+    "category": "ship",
+    "note": "换舰预览复用无人机容量权威；不改变库存或换舰规则",
+    "source": "ship_panel.gd"
   }
 ]

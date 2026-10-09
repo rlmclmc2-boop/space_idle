@@ -9088,6 +9088,17 @@
     },
     "reactor.version_note": {
       "params": []
+    },
+    "ship.refit.combat_drone_slots": {
+      "params": [
+        "current",
+        "next"
+      ]
+    },
+    "ship.refit.combat_drone_shrink": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {
