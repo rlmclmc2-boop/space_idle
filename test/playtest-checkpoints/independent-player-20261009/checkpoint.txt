@@ -1,6 +1,6 @@
 Independent normal graphical recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
 Own cloud fresh XDG save only,1x microparticles0 reverified17,noQA/injections/restart.
-2026-10-09 22:02:18 UTC first observed18wave2/9; pausedmanualsave afternormalMAXreactor/AIand3beam1cannonsetup.
-Escort,weapon121/120/119/114,dualarmor114/114,normalcrew equipment auto,enhance2 memory10percent/sec active. Savebytes authoritative state.
-OriginalPID962 display91; watch stage-clear pause reset, first20 saveclose.
+First observed19 at2026-10-09 22:06:07 UTC wave0/9. Originalenvironment actualcheck22:09:41 samePID962 started19:20:54 matcheswindowPID962 display91, manualsave22:09:42 successfulstill19/0paused.
+Escort,weapon126/124/124/124 (3beam1cannon),dualarmor123/123;AI80verified20/20/20/20,furnace17 output26fragments/block20sec;enhance2 memory active,385fragments,next400. Nativeequipmentcrew active.
+Actualsavebytes authoritative; resume originalruntime, first20 immediatelysaveclose.

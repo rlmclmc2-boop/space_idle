@@ -11,10 +11,11 @@
 		14,
 		15,
 		16,
-		17
+		17,
+		18
 	],
 	"chronoParticles": 0.0,
-	"chronoSavedAt": 1791583440.28763,
+	"chronoSavedAt": 1791583814.64222,
 	"cleared": [
 		1,
 		2,
@@ -32,7 +33,8 @@
 		14,
 		15,
 		16,
-		17
+		17,
+		18
 	],
 	"crew": [
 		{
@@ -279,8 +281,8 @@
 	"crewEquipment": {
 
 	},
-	"droneWeaponFloor": 114,
-	"enhancementAttacks": 6032,
+	"droneWeaponFloor": 124,
+	"enhancementAttacks": 6137,
 	"enhancementBranches": {
 		"defence": {
 			"adaptation": {
@@ -305,7 +307,7 @@
 			}
 		}
 	},
-	"enhancementHits": 23881,
+	"enhancementHits": 24016,
 	"enhancementLevel": 2,
 	"enhancementOrder": {
 		"defence": [
@@ -320,8 +322,8 @@
 		]
 	},
 	"enhancementVersion": 1,
-	"furnaceElapsed": 11.7999999999419,
-	"furnaceIncomePeak": 1245813721340.0,
+	"furnaceElapsed": 8.11666666660752,
+	"furnaceIncomePeak": 6319104857087.0,
 	"galaxies": {
 		"galaxy_1": {
 			"bag": [
@@ -2131,25 +2133,23 @@
 		"crew/navigator",
 		"reactor_module/condensation"
 	],
-	"highestLevel": 18,
+	"highestLevel": 19,
 	"hightechDrops": [
 		{
-			"age": 0.183333333335955,
-			"amount": 23.0,
+			"age": 8.11666666660752,
+			"amount": 10940767712559.0,
 			"hightech": true,
-			"id": "jewel",
-			"jewel": true,
-			"jewelRatio": 1.0,
-			"uid": 3753,
-			"x": 172.718078613281,
-			"y": 425.147033691406
+			"id": "1",
+			"uid": 3815,
+			"x": 274.803100585938,
+			"y": 429.295227050781
 		}
 	],
 	"hightechLevels": {
-		"宝石熔炼炉": 15,
-		"正电子聚焦装置": 29,
-		"简并态装甲": 29,
-		"超时空炼铁炉": 30
+		"宝石熔炼炉": 17,
+		"正电子聚焦装置": 30,
+		"简并态装甲": 30,
+		"超时空炼铁炉": 31
 	},
 	"hightechOrder": [
 		"超时空炼铁炉",
@@ -2159,7 +2159,7 @@
 		"",
 		""
 	],
-	"hightechSavedAt": 1791583440.28763,
+	"hightechSavedAt": 1791583814.64222,
 	"hightechVersion": 2,
 	"hyperspace": {
 		"active": {
@@ -2288,55 +2288,55 @@
 		"run": 1,
 		"unread": false
 	},
-	"jewelFragments": 323.4,
-	"jewelFurnaceElapsed": 0.183333333335955,
+	"jewelFragments": 385.8,
+	"jewelFurnaceElapsed": 16.5000000000033,
 	"jewelFurnaceIncomePeak": 73.6,
 	"jewels": [],
 	"journey": {
-		"distance": 200.0,
-		"groupIndex": 2,
+		"distance": 0.0,
+		"groupIndex": 0,
 		"guardArrived": false,
 		"pendingUnlocks": [],
 		"retreatBossPending": false,
-		"stage": 18,
-		"state": 3
+		"stage": 19,
+		"state": 2
 	},
 	"levels": {
-		"armour": 114,
-		"cannon": 114,
+		"armour": 123,
+		"cannon": 124,
 		"laser": 1,
-		"longLaser": 121,
+		"longLaser": 126,
 		"missile": 1,
 		"shield": 1
 	},
-	"lifetime_max_stage": 18,
+	"lifetime_max_stage": 19,
 	"loadout": {
 		"defence": [
 			{
 				"key": "armour",
-				"level": 114
+				"level": 123
 			},
 			{
 				"key": "armour",
-				"level": 114
+				"level": 123
 			}
 		],
 		"weapons": [
 			{
 				"key": "longLaser",
-				"level": 121
+				"level": 126
 			},
 			{
 				"key": "longLaser",
-				"level": 120
+				"level": 124
 			},
 			{
 				"key": "longLaser",
-				"level": 119
+				"level": 124
 			},
 			{
 				"key": "cannon",
-				"level": 114
+				"level": 124
 			}
 		]
 	},
@@ -2533,12 +2533,12 @@
 			"unlocked": false
 		}
 	},
-	"productionElapsed": 4763.66666668149,
+	"productionElapsed": 4819.98333334734,
 	"reactorAllocation": {
 		"condensation": 0,
-		"defence": 364049,
-		"smelting": 363941,
-		"weapons": 364062
+		"defence": 754893,
+		"smelting": 754668,
+		"weapons": 754919
 	},
 	"reactorAutomation": {
 		"allocate": false,
@@ -2565,7 +2565,7 @@
 		"upgrade": true
 	},
 	"reactorIntegerVersion": 1,
-	"reactorLevel": 52,
+	"reactorLevel": 56,
 	"readUnlocks": [
 		"laser",
 		"armour",
@@ -2575,224 +2575,6 @@
 		"longLaser"
 	],
 	"resourceSamples": [
-		{
-			"amount": 15477023801.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 15477023801.0,
-			"production_time": 4704.85000001568,
-			"time": 1791583175.07584
-		},
-		{
-			"amount": 15477023801.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 15477023801.0,
-			"production_time": 4706.36666668233,
-			"time": 1791583176.59703
-		},
-		{
-			"amount": 15477023801.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 15477023801.0,
-			"production_time": 4708.3666666823,
-			"time": 1791583178.62145
-		},
-		{
-			"amount": 4.2,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 4710.83333334893,
-			"time": 1791583181.08726
-		},
-		{
-			"amount": 18174986964.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18174986964.0,
-			"production_time": 4712.33333334891,
-			"time": 1791583182.56736
-		},
-		{
-			"amount": 10.0,
-			"id": "jewel",
-			"origin": "furnace",
-			"production_time": 4713.48333334889,
-			"time": 1791583183.7464
-		},
-		{
-			"amount": 18174986964.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18174986964.0,
-			"production_time": 4713.83333334889,
-			"time": 1791583184.0976
-		},
-		{
-			"amount": 18174986964.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18174986964.0,
-			"production_time": 4714.83333334887,
-			"time": 1791583185.08999
-		},
-		{
-			"amount": 20872950127.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 20872950127.0,
-			"production_time": 4718.83333334881,
-			"time": 1791583189.06108
-		},
-		{
-			"amount": 20872950127.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 20872950127.0,
-			"production_time": 4720.35000001546,
-			"time": 1791583190.60831
-		},
-		{
-			"amount": 20872950127.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 20872950127.0,
-			"production_time": 4722.35000001543,
-			"time": 1791583192.59529
-		},
-		{
-			"amount": 24970621.0,
-			"id": "2",
-			"origin": "drop",
-			"production_base": 24970621.0,
-			"production_time": 4723.06666668208,
-			"time": 1791583193.33609
-		},
-		{
-			"amount": 4.2,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 4724.85000001539,
-			"time": 1791583195.0856
-		},
-		{
-			"amount": 4.2,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 4727.35000001536,
-			"time": 1791583197.58839
-		},
-		{
-			"amount": 47141826579.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 47141826579.0,
-			"production_time": 4727.85000001535,
-			"time": 1791583198.11
-		},
-		{
-			"amount": 47141826579.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 47141826579.0,
-			"production_time": 4730.35000001531,
-			"time": 1791583200.59881
-		},
-		{
-			"amount": 571952168117.0,
-			"id": "1",
-			"origin": "furnace",
-			"production_base": 571952168117.0,
-			"production_time": 4731.88333334862,
-			"time": 1791583202.14485
-		},
-		{
-			"amount": 47141826579.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 47141826579.0,
-			"production_time": 4733.35000001527,
-			"time": 1791583203.60517
-		},
-		{
-			"amount": 11.0,
-			"id": "jewel",
-			"origin": "furnace",
-			"production_time": 4733.4833333486,
-			"time": 1791583203.74852
-		},
-		{
-			"amount": 52537752904.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 52537752904.0,
-			"production_time": 4738.85000001519,
-			"time": 1791583209.06841
-		},
-		{
-			"amount": 52537752904.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 52537752904.0,
-			"production_time": 4740.85000001516,
-			"time": 1791583211.11812
-		},
-		{
-			"amount": 52537752904.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 52537752904.0,
-			"production_time": 4743.35000001512,
-			"time": 1791583315.53337
-		},
-		{
-			"amount": 77503064616.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 77503064616.0,
-			"production_time": 4748.35000001505,
-			"time": 1791583320.53081
-		},
-		{
-			"amount": 77503064616.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 77503064616.0,
-			"production_time": 4750.35000001502,
-			"time": 1791583322.50366
-		},
-		{
-			"amount": 77503064616.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 77503064616.0,
-			"production_time": 4752.35000001499,
-			"time": 1791583324.54077
-		},
-		{
-			"amount": 36090818.0,
-			"id": "2",
-			"origin": "drop",
-			"production_base": 36090818.0,
-			"production_time": 4753.06666668165,
-			"time": 1791583325.26434
-		},
-		{
-			"amount": 11.0,
-			"id": "jewel",
-			"origin": "furnace",
-			"production_time": 4753.48333334831,
-			"time": 1791583325.63767
-		},
-		{
-			"amount": 508330067415.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 508330067415.0,
-			"production_time": 4755.35000001495,
-			"time": 1791583327.50307
-		},
 		{
 			"amount": 4.4,
 			"id": "jewel",
@@ -2822,20 +2604,347 @@
 			"production_base": 42360838952.0,
 			"production_time": 4763.3666666815,
 			"time": 1791583335.71278
+		},
+		{
+			"amount": 42360838952.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 42360838952.0,
+			"production_time": 4764.36666668148,
+			"time": 1791583448.15967
+		},
+		{
+			"amount": 42360838952.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 42360838952.0,
+			"production_time": 4765.36666668147,
+			"time": 1791583449.17372
+		},
+		{
+			"amount": 62112609323.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 62112609323.0,
+			"production_time": 4768.86666668142,
+			"time": 1791583452.64856
+		},
+		{
+			"amount": 62112609323.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 62112609323.0,
+			"production_time": 4770.3666666814,
+			"time": 1791583454.16085
+		},
+		{
+			"amount": 62112609323.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 62112609323.0,
+			"production_time": 4771.86666668137,
+			"time": 1791583455.79153
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4772.36666668137,
+			"time": 1791583456.32502
+		},
+		{
+			"amount": 12.0,
+			"id": "jewel",
+			"origin": "furnace",
+			"production_time": 4773.48333334802,
+			"time": 1791583457.39306
+		},
+		{
+			"amount": 75226056129.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 75226056129.0,
+			"production_time": 4775.36666668132,
+			"time": 1791583459.27848
+		},
+		{
+			"amount": 75226056129.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 75226056129.0,
+			"production_time": 4776.8666666813,
+			"time": 1791583460.78991
+		},
+		{
+			"amount": 75226056129.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 75226056129.0,
+			"production_time": 4777.38333334796,
+			"time": 1791583461.30172
+		},
+		{
+			"amount": 88339502935.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 88339502935.0,
+			"production_time": 4781.3833333479,
+			"time": 1791583465.33924
+		},
+		{
+			"amount": 88339502935.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 88339502935.0,
+			"production_time": 4782.88333334788,
+			"time": 1791583466.81963
+		},
+		{
+			"amount": 88339502935.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 88339502935.0,
+			"production_time": 4782.90000001455,
+			"time": 1791583466.82352
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4783.90000001453,
+			"time": 1791583467.80023
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4785.41666668118,
+			"time": 1791583469.34905
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4785.9000000145,
+			"time": 1791583469.80886
+		},
+		{
+			"amount": 66790032.0,
+			"id": "2",
+			"origin": "drop",
+			"production_base": 66790032.0,
+			"production_time": 4786.08333334783,
+			"time": 1791583469.99855
+		},
+		{
+			"amount": 101452949741.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 101452949741.0,
+			"production_time": 4786.90000001449,
+			"time": 1791583470.80072
+		},
+		{
+			"amount": 101452949741.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 101452949741.0,
+			"production_time": 4788.41666668113,
+			"time": 1791583472.34954
+		},
+		{
+			"amount": 101452949741.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 101452949741.0,
+			"production_time": 4788.90000001446,
+			"time": 1791583472.81098
+		},
+		{
+			"amount": 2532283448979.0,
+			"id": "1",
+			"origin": "furnace",
+			"production_base": 2532283448979.0,
+			"production_time": 4791.88333334775,
+			"time": 1791583475.793
+		},
+		{
+			"amount": 137479675855.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 137479675855.0,
+			"production_time": 4793.40000001439,
+			"time": 1791583477.32776
+		},
+		{
+			"amount": 12.0,
+			"id": "jewel",
+			"origin": "furnace",
+			"production_time": 4793.48333334773,
+			"time": 1791583477.37812
+		},
+		{
+			"amount": 137479675855.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 137479675855.0,
+			"production_time": 4794.41666668105,
+			"time": 1791583478.3349
+		},
+		{
+			"amount": 137479675855.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 137479675855.0,
+			"production_time": 4795.90000001436,
+			"time": 1791583479.82769
+		},
+		{
+			"amount": 137479675855.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 137479675855.0,
+			"production_time": 4797.93333334766,
+			"time": 1791583481.85057
+		},
+		{
+			"amount": 137479675855.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 137479675855.0,
+			"production_time": 4798.40000001432,
+			"time": 1791583482.35367
+		},
+		{
+			"amount": 153215812022.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 153215812022.0,
+			"production_time": 4802.40000001426,
+			"time": 1791583546.67942
+		},
+		{
+			"amount": 153215812022.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 153215812022.0,
+			"production_time": 4803.91666668091,
+			"time": 1791583548.17476
+		},
+		{
+			"amount": 205021018715.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 205021018715.0,
+			"production_time": 4804.40000001423,
+			"time": 1791583548.68431
+		},
+		{
+			"amount": 205021018715.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 205021018715.0,
+			"production_time": 4805.90000001421,
+			"time": 1791583550.15196
+		},
+		{
+			"amount": 205021018715.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 205021018715.0,
+			"production_time": 4807.43333334752,
+			"time": 1791583551.70754
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4809.95000001415,
+			"time": 1791583554.19885
+		},
+		{
+			"amount": 226077844542.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 226077844542.0,
+			"production_time": 4811.43333334747,
+			"time": 1791583555.68967
+		},
+		{
+			"amount": 226077844542.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 226077844542.0,
+			"production_time": 4812.95000001411,
+			"time": 1791583557.20461
+		},
+		{
+			"amount": 226077844542.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 226077844542.0,
+			"production_time": 4813.43333334744,
+			"time": 1791583557.68145
+		},
+		{
+			"amount": 12.0,
+			"id": "jewel",
+			"origin": "furnace",
+			"production_time": 4813.48333334744,
+			"time": 1791583557.737
+		},
+		{
+			"amount": 226077844542.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 226077844542.0,
+			"production_time": 4815.43333334741,
+			"time": 1791583559.67013
+		},
+		{
+			"amount": 113361529.0,
+			"id": "2",
+			"origin": "drop",
+			"production_base": 113361529.0,
+			"production_time": 4816.0833333474,
+			"time": 1791583560.35058
+		},
+		{
+			"amount": 226077844542.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 226077844542.0,
+			"production_time": 4816.46666668073,
+			"time": 1791583560.72117
+		},
+		{
+			"amount": 4.4,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 4818.98333334736,
+			"time": 1791583563.2434
+		},
+		{
+			"amount": 2471346703673.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 2471346703673.0,
+			"production_time": 4819.98333334734,
+			"time": 1791583564.2393
 		}
 	],
 	"resources": {
-		"1": 546809142720.0,
-		"2": 3373587.0
+		"1": 2517277384025.0,
+		"2": 8436304.0
 	},
 	"saveIntervalMinutes": "1",
 	"scientistAssignments": {
-		"宝石熔炼炉": 19,
-		"正电子聚焦装置": 19,
-		"简并态装甲": 19,
-		"超时空炼铁炉": 19
+		"宝石熔炼炉": 20,
+		"正电子聚焦装置": 20,
+		"简并态装甲": 20,
+		"超时空炼铁炉": 20
 	},
-	"scientists": 76,
+	"scientists": 80,
 	"seenUnlocks": [
 		"missile",
 		"reactor",
@@ -2853,10 +2962,10 @@
 	],
 	"selectedShip": "Destroyer",
 	"techPoints": {
-		"宝石熔炼炉": 953.550000000005,
-		"正电子聚焦装置": 1698.4999999992,
-		"简并态装甲": 501.099999999521,
-		"超时空炼铁炉": 1022.49999999934
+		"宝石熔炼炉": 323.600000000112,
+		"正电子聚焦装置": 1430.64999999894,
+		"简并态装甲": 171.149999999309,
+		"超时空炼铁炉": 634.649999999198
 	},
 	"unlocked": [
 		"armour",
