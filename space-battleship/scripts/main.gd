@@ -2091,6 +2091,7 @@ func build_ui() -> void:
 	preload("res://scripts/dialog_presentation.gd").option(loop_select,false)
 	loop_select.get_popup().about_to_popup.connect(limit_warp_popup)
 	loop_button = button(UIText.t("settings.guard",{"state":UIText.t("main.build_ui.text_10") if game.profile.loop else UIText.t("gem.setup.text_03")}),Rect2(860,20,130,40),func():game.toggle_loop();refresh_navigation(),false,game.state == BattleGame.State.RETREAT)
+	loop_button.tooltip_text = UIText.t("settings.guard_hint")
 	guard_settings = MenuButton.new()
 	guard_settings.text = UIText.t("main.build_ui.text_12")
 	guard_settings.position = Vector2(1000,20)

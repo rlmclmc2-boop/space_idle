@@ -269,7 +269,7 @@ func received_rewards_text(rewards: Dictionary) -> String:
  var lines: Array[String]=[t("dismantle_received_materials",{"materials":received_materials_text(rewards.get("materials",{}))})]
  for key in rewards.get("modules",{}):
   var outcome: Dictionary=rewards.modules[key]
-  lines.append(t("dismantle_received_module",{"name":panel.hanging_name(str(key)),"count":str(int(outcome.copies)),"state":t("module_first_unlock") if outcome.newly_unlocked else t("module_duplicate"),"level":str(int(outcome.level)),"exp":"%.0f"%float(outcome.experience_added)}))
+  lines.append(t("dismantle_received_module",{"name":panel.hanging_name(str(key)),"count":str(int(outcome.copies)),"state":t("module_first_unlock") if outcome.newly_unlocked else t("module_duplicate"),"level":str(int(outcome.level)),"exp":NumberFormat.compact(roundf(float(outcome.experience_added)))}))
  return "\n".join(lines)
 func preview() -> void:
  quoted_request=request()
@@ -411,7 +411,7 @@ func show_modules() -> void:
   unlocked+=int(progress.unlocked)
   var usable=bool(progress.unlocked) and int(game().profile.highestLevel)>=int(h().config.hanging_modules[key].unlock_stage)
   available+=int(usable);has_zero_level=has_zero_level or (usable and int(progress.level)==0)
-  var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":"%.0f"%float(progress.exp)});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key)
+  var choice=CheckBox.new();choice.text=t("module_choice",{"name":panel.hanging_name(key),"level":str(int(progress.level)),"exp":NumberFormat.compact(roundf(float(progress.exp)))});choice.set_meta("module_key",key);choice.button_pressed=d.hangings.has(key)
   choice.visible=known;choice.disabled=not usable or int(d.hanging_slots)==0 or d.ultimate or panel.bag.sealed.has(module_id)
   choices.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
   if choice.visible:

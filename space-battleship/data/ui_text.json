@@ -5205,10 +5205,10 @@
   },
   {
     "key": "weapon.equipment_detail_text.text_02",
-    "text": "CD {cd} → {cd_2} 秒",
+    "text": "基础间隔 {cd} → {cd_2} 秒",
     "params": "{cd},{cd_2}",
     "category": "weapon",
-    "note": "动态显示；蓝色参数由程序填入",
+    "note": "升级前后基础间隔；动态攻速后的间隔另列并标约值",
     "source": "main.gd:equipment_detail_text · cd = number(float(row.cd))；cd_2 = number(float(db.equip(key,mini(lv+1,db.max_equipment_level(key))).cd))"
   },
   {
@@ -12746,7 +12746,7 @@
   },
   {
     "key": "hyperspace.card",
-    "text": "{weapon} · 等级 {level}\n{quality} · {flags}",
+    "text": "{weapon} · 改造等级 {level}\n{quality} · {flags}",
     "params": "{weapon},{level},{quality},{flags}",
     "category": "hyperspace"
   },
@@ -15076,7 +15076,7 @@
   },
   {
     "key": "hyperspace.slot_drone",
-    "text": "{weapon} · 等级 {level}",
+    "text": "{weapon} · 武器等级 {level}",
     "params": "{weapon},{level}",
     "category": "hyperspace",
     "note": ""
@@ -15719,14 +15719,14 @@
   },
   {
     "key": "hyperspace.layer_record",
-    "text": "这一层最快 {time} 秒",
+    "text": "这一层最快约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
   },
   {
     "key": "hyperspace.layer_idle_time",
-    "text": "后台每轮 {time} 秒",
+    "text": "后台每轮约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15761,7 +15761,7 @@
   },
   {
     "key": "hyperspace.layer_idle_work",
-    "text": "后台探索 · {work} / {duration} 秒",
+    "text": "后台探索 · 约 {work} / {duration} 秒",
     "params": "{work},{duration}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15824,7 +15824,7 @@
   },
   {
     "key": "hyperspace.layer_crew_detail",
-    "text": "每轮 {time} 秒 · 幸运 {luck}",
+    "text": "每轮约 {time} 秒 · 幸运 {luck}",
     "params": "{time},{luck}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15873,7 +15873,7 @@
   },
   {
     "key": "hyperspace.layer_crew_time",
-    "text": "选中船员：每轮 {time} 秒",
+    "text": "选中船员：每轮约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "候选船员时长报价；核心幸运快照目前只含已配置船员，不冒充候选报价"
@@ -16541,7 +16541,7 @@
   },
   {
     "key": "hyperspace.layer_paused",
-    "text": "后台进度已暂停并保留，剩余 {time} 秒。",
+    "text": "后台进度已暂停并保留，剩余约 {time} 秒。",
     "params": "time",
     "category": "hyperspace",
     "note": "使用领域共享队列和暂停回执投影，不另判权限"
@@ -16562,7 +16562,7 @@
   },
   {
     "key": "hyperspace.action_no_affix_slots",
-    "text": "这架无人机没有词条位。",
+    "text": "当前品质没有词条位。",
     "params": "",
     "category": "hyperspace",
     "note": "实机改造反馈，直接说明缺口与变化"
@@ -17737,7 +17737,7 @@
   },
   {
     "key": "enhance.description.delayed_damage.cadence",
-    "text": "适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，{cadence}；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
+    "text": "满血也可能仍有待承受伤害。适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，{cadence}；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
     "params": "{fraction},{duration},{ticks},{cadence},{chance}",
     "category": "enhance",
     "note": "固定结算周期仅用准确秒数或频率；不量化机制"
@@ -17829,5 +17829,131 @@
     "params": "target",
     "category": "crew",
     "note": "按钮显示待确认岗位"
+  },
+  {
+    "key": "equipment.candidate_attributes",
+    "text": "待确认：{name}的属性",
+    "params": "{name}",
+    "category": "equipment",
+    "note": "仅展开候选换装属性，明确区别当前装备"
+  },
+  {
+    "key": "equipment.attack_interval_approx",
+    "text": "攻击间隔约 {seconds} 秒",
+    "params": "seconds",
+    "category": "equipment",
+    "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "weapon.rate_single_approx",
+    "text": "单次平均伤害 {damage} · 间隔约 {seconds}秒",
+    "params": "damage,seconds",
+    "category": "weapon",
+    "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "weapon.rate_single_missile_approx",
+    "text": "单枚平均伤害 {damage} · 间隔约 {seconds}秒 · 齐射{count}枚",
+    "params": "damage,seconds,count",
+    "category": "weapon",
+    "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "settings.guard_hint",
+    "text": "锁定当前战点，反复作战；关闭后继续前进。",
+    "params": "",
+    "category": "settings",
+    "note": "驻守按钮短悬停，区别关卡跳转"
+  },
+  {
+    "key": "hyperspace.drone_details_show",
+    "text": "详细属性",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_details_hide",
+    "text": "收起属性",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.layer_task_busy_here",
+    "text": "当前路线已有任务进行中。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.crew_route_title",
+    "text": "{route} · 船员探索",
+    "params": "route",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.crew_route_start",
+    "text": "派往{route}连续探索",
+    "params": "route",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_laser_approx",
+    "text": "脉冲独立发射，射击间隔 约 {interval} 秒。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_missile_approx",
+    "text": "每轮 {count} 枚导弹，逐个分配目标；间隔 约 {interval} 秒。",
+    "params": "interval,count",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_cannon_approx",
+    "text": "磁轨炮独立发射，射击间隔 约 {interval} 秒。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_longLaser_approx",
+    "text": "持续锁定目标，每 约 {interval} 秒判定一次伤害。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.warehouse_capacity",
+    "text": "仓库 {used}/{cap}",
+    "params": "used,cap",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.warehouse_overflow",
+    "text": "缓存 {count}/{cap}",
+    "params": "count,cap",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.warehouse_retention",
+    "text": "保留名额 {count}",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.action_affix_full_count",
+    "text": "词条位已满（{count}/{capacity}）。",
+    "params": "count,capacity",
+    "category": "hyperspace",
+    "note": "有材料仍受真实词条容量限制；不改变分类权限"
   }
 ]

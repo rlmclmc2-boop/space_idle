@@ -23,8 +23,9 @@ func refresh() -> void:
  var cap=mini(int(panel.hull_capacity_provider.call()),int(g.hyperspace.config.maximum_equipped))
  panel.put(heading,"text",panel.t("slots_heading",{"used":str(bag.equipped.size()),"capacity":str(cap)}))
  for i in slots.size():
+  panel.put(slots[i],"visible",i<cap)
   var id=str(bag.equipped[i]) if i<bag.equipped.size() else ""
-  var name=panel.t("slot_locked") if i>=cap else panel.t("slot_empty") if id.is_empty() else panel.t("slot_drone",{"weapon":panel.t(str(bag.drones[id].weapon)),"level":str(int(bag.drones[id].level))})
+  var name=panel.t("slot_locked") if i>=cap else panel.t("slot_empty") if id.is_empty() else panel.t("slot_drone",{"weapon":panel.t(str(bag.drones[id].weapon)),"level":str(int(g.drone_weapon_entry(bag.drones[id]).level))})
   if not id.is_empty() and g.drone_combat.disabled.has(id):name+=" · "+panel.t("rebuild_disabled_short")
   panel.put(slots[i],"tooltip_text",panel.t("rebuild_disabled") if not id.is_empty() and g.drone_combat.disabled.has(id) else "")
   panel.put(slots[i],"text",str(i+1)+" · "+name);panel.put(slots[i],"disabled",id.is_empty())
