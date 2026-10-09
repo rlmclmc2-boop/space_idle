@@ -1,5 +1,4 @@
-Pure independent cloud test save only, no local-player data.
-Frozen70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
-2026-10-09 21:30:55UTC manualsave stage15wave3 paused; first11+crew/hull progression confirmedto15. 飞燕护卫舰4weapons2defenses2ordinarybluebeamdrone slots. Crewequipmentnormalpaid+1working, AI30all10. No manualgearupgradessince11unpause, reactor34 evenlyallocated viaordinaryMAX purchase (liveincomechangedcount).
-Originalprocess2788 window2097155 DISPLAY91 Xvfb755 XDG/workspace/playtest-independent-20261009/{data,config,cache}, cloudenvccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA. Godot4.6.3 LP_NUM_THREADS4 gl_compatibility maxfps60. 1x no particlesused/no resourceorwordinjection. SaveUIopen.
-ContinueoriginalexistingstateafterUIverification. Normal驻守tooltiplocksCURRENTBATTLEPOINTandrepeat; leftoffthrough15. First20stopmustsaveandcloseimmediately; mayuseordinary驻守near19 toavoidovershoot, no20playthrough.
+Independent cloud test checkpoint, no local-player data.
+Candidate 70cc9300159916bdfae0b4e190f8b9017be42e4a; tree a418e01825f3b82518dc02722937b43b4bfb2c88.
+Manual save 2026-10-09 21:43:55 UTC: stage19 wave2 paused, ordinary enhancement Lv8, reactor52, crew equipment +1. Normal resources; 1x, no particles spent, no injections.
+Own XDG /workspace/playtest-independent-20261009/data; original cloud Godot2788 window2097155 DISPLAY=:91, Godot4.6.3 gl_compatibility LP_NUM_THREADS4. Resume original process only after UI verification. First arrival20 must save and close.
