@@ -1,7 +1,6 @@
-Frozen candidate46829d6cdeff62d08474546f875d6d2b8e848367, gameplayunchanged; independentnormalnewsave/nooldreportssavesstrategy/gameplaysource.
-CloudXorg:99softwareOpenGLGodot4.6.3, GUIx1audio unverified.
-Checkpoint9 14:21:26UTC stage7wave5/9pausedGUI saved.
-Completed1-6. FirsthyperspaceA1passed, actualbluepulseLv1dronearmor16%equipped; spent10materialrandomaddedglobalcrit1%. A1backgroundstarted92sec despitecrewunlocktextstage10. AI8furnace3weapon2armor3.
-Recent7failureenergy; W01missile13candidate19Kphysdespiteenemyphysresist; W02/W03beam14. D01armor16 D02shield15, HP68.8/71.8K shield26.4K; normalupgrades only.
-Nextcontinue7 and observeactualvalue; background/material/droneresults. Noenvironmentblocker.
-Stopreaching20, saveclose; nofarm20or21.
+Frozen candidate46829d6cdeff62d08474546f875d6d2b8e848367, gameplaydiff0confirmed14:26:14UTC. Independentnormalnewsave, nooldreportssavesstrategy/gameplaysource.
+CloudXorg:99softwareOpenGLGodot4.6.3, GUIx1 audio unverified. Actualmouse/screenshot/saveconfirmedoriginalenvironmentworking14:26:13-14.
+Checkpoint10 14:26:14UTC stage7wave6/9paused GUIsaved. Completed1-6, A1sidechallengepassedandbackground92secactive.
+Originalbluedronearmor16crit1retained; normalbackgroundgoldpulsehasweaponquality+1anddamage14%, weakerthanbluequality+3/base10.9KbyactualUI. Noidealdroporresourceinjection.
+AI8furnace3weapon2armor3; reactor14, missilesW01Lv14 beamsW02/W03Lv15; armorD01Lv18 shieldD02Lv17. Current124/134KHP,35.2/48.3Kshield, Fe38U10.
+Nextcontinue7wave6 andbackgroundresults; ordinarygrowth. Stopreaching20saveclose, nofarm20or21.
