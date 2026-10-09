@@ -102,7 +102,7 @@ func refresh() -> void:
   var req=request(effective);var guaranteed=not selected_target(op).is_empty()
   var result:Dictionary=commands.h().preview_forge(commands.game(),req) if not req.is_empty() else {"error":"unavailable_drone"}
   var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
-  var current=reason.is_empty() or ((op in BASIC or guaranteed) and reason=="insufficient_materials")
+  var current=reason.is_empty() or ((op in BASIC or guaranteed or (op=="legendary" and not bool(d.get("legendary",false)))) and reason=="insufficient_materials")
   var destination:GridContainer=available_grid if current else unavailable_grid
   if cells[op].get_parent()!=destination:cells[op].reparent(destination,false)
   var position:int=available_index if current else later
@@ -130,6 +130,7 @@ func refresh() -> void:
   if not shortage.is_empty():
    status=commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
   if op=="add_hanging_slot":status+="\n"+commands.hanging_slot_scope(d)
+  if op=="legendary" and not bool(d.get("legendary",false)):status+="\n"+commands.t("legendary_cultivation_short")
   if op=="enable_omen":status=commands.t("omen_scope_short") if reason.is_empty() else status+"\n"+commands.t("omen_scope_short")
   if op=="enable_omen" and d.affixes.is_empty():status+="\n"+commands.t("omen_empty_short")
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
@@ -160,6 +161,7 @@ func act(op:String) -> void:
   promotion_details_button.visible=effective=="promote_affix"
   confirmation.title=commands.t("operation_"+effective)
   var detail=commands.modernization_text(req)+"\n" if effective=="modernize" else ""
+  if effective=="legendary" and not bool(d.get("legendary",false)):detail+=commands.t("legendary_slots_confirmation",{"slots":str(int(d.hanging_slots)),"capacity":str(commands.panel.Bag.hanging_limit(d,commands.h().config))})+"\n\n"
   if effective=="promote_affix":detail+=commands.promotion_summary(d)+"\n"+commands.t("promotion_scope",{"count":str(int(commands.promotion_forecast(d).get("count",0)))})+"\n"+commands.t("promotion_risk_hint")+"\n"+commands.t("promotion_batch_hint")+"\n"
   if effective=="ultimate":detail+=commands.t("ultimate_effect_summary",{"levels":str(int(commands.h().config.ultimate_weapon_bonus))})+"\n\n"+commands.t("ultimate_confirmation_consequence",{"cores":str(int(commands.h().config.forge_costs.restore_ultimate.get("ultimate_cores",0)))})+"\n\n"
   if effective=="restore_ultimate":detail+=commands.t("restore_confirmation_consequence")+"\n\n"

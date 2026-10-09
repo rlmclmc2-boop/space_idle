@@ -14228,7 +14228,7 @@
   },
   {
     "key": "hyperspace.dismantle_confirm",
-    "text": "拆解将移除此无人机，获得对应材料和随机挂载模块副本。\n首次副本解锁为0级；后续副本提供经验。继续？",
+    "text": "拆解将移除此无人机，获得对应材料和随机挂载模块副本。\n首次获得即解锁为1级；后续同种副本提供升级经验。继续？",
     "params": "",
     "category": "hyperspace"
   },
@@ -14873,7 +14873,7 @@
   },
   {
     "key": "hyperspace.forge_guide_add_hanging_slot",
-    "text": "先给这架添加一个挂载槽，再回详情点「管理挂载模块」，勾选已解锁模块后应用。\n还没有模块？拆解多余无人机可随机获得，不能指定种类。0级只表示已解锁，尚无加成；再次获得同种模块可升到1级。",
+    "text": "给这架添加挂载位，再点「管理挂载模块」选择模块。\n拆解多余无人机可随机获得模块，不能指定种类。首次获得即为1级；安装到已装备的无人机后生效。开槽本身不增加属性。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -14908,7 +14908,7 @@
   },
   {
     "key": "hyperspace.forge_guide_dismantle",
-    "text": "想清掉一架多余无人机？\n在「无人机」页选中它，点「拆解无人机」查看返还。装备、收藏或预设保护会阻止拆解，确认窗会说明原因。\n核对对象后再确认。首次模块副本解锁模块，之后提供成长经验；重铸删除不算拆解。",
+    "text": "拆解将移除此无人机，获得对应材料和随机挂载模块副本。\n首次获得即解锁为1级；后续同种副本提供升级经验。继续？",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -14979,7 +14979,7 @@
   },
   {
     "key": "hyperspace.module_source_hint_basic",
-    "text": "拆解多余无人机获得随机挂设副本。\n首次解锁为0级；后续副本提供经验升级。",
+    "text": "拆解多余无人机获得随机挂载模块副本。\n首次获得即为1级；后续同种副本提供升级经验。",
     "params": "",
     "category": "hyperspace"
   },
@@ -15532,7 +15532,7 @@
   },
   {
     "key": "hyperspace.module_zero_level",
-    "text": "0级表示已解锁，尚无加成；再次获得同种模块可升到1级。",
+    "text": "模块首次获得即为1级；安装到已装备的无人机后生效。",
     "params": "",
     "category": "hyperspace",
     "note": "仅按当前无人机／模块状态提示"
@@ -17955,5 +17955,125 @@
     "params": "count,capacity",
     "category": "hyperspace",
     "note": "有材料仍受真实词条容量限制；不改变分类权限"
+  },
+  {
+    "key": "hyperspace.drone_hanging_capacity",
+    "text": "挂载 {opened}/{capacity}",
+    "params": "opened,capacity",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.drone_affix_capacity",
+    "text": "词条 {used}/{capacity}",
+    "params": "used,capacity",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.drone_quality_weapon_bonus",
+    "text": "品质武器等级加成 +{levels}",
+    "params": "levels",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_receipt_install",
+    "text": "安装挂载模块",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_receipt_choose_carrier",
+    "text": "先选择要安装模块的无人机；装备载体后才能生效。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_module_purpose",
+    "text": "首次获得即为1级；安装到已装备的无人机可提高系统效率。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.dismantle_module_progress",
+    "text": "{name} ×{count}：{state}；经验 +{exp}。",
+    "params": "name,count,state,exp",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_unlocked_grown",
+    "text": "首次解锁并升至{level}级",
+    "params": "level",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_level_grown",
+    "text": "升级 {before}→{after}级",
+    "params": "before,after",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_experience_received",
+    "text": "获得升级经验，等级未变",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_applied_change",
+    "text": "{effects}总加成：{before}%→{after}%（已生效）",
+    "params": "effects,before,after",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_saved_inactive",
+    "text": "挂载已保存；装备此无人机后生效。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_saved_unchanged",
+    "text": "挂载已保存；当前系统总加成未变化。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.legendary_cultivation_short",
+    "text": "保留已有挂载位，开放3个词条位",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.legendary_slots_confirmation",
+    "text": "传说化将保留已有 {slots} 个挂载位（当前上限 {capacity}）。未开的容量不会继承；转化后无法再增开挂载位。开放3个普通词条位，需要另行添加词条。",
+    "params": "slots,capacity",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_choose_carrier",
+    "text": "选择无人机安装",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_no_carrier",
+    "text": "没有可安装的载体：现有无人机无挂载容量、被封存或为究极。获得有挂载位或可开槽的无人机后再安装。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_carrier_no_capacity",
+    "text": "此无人机不能增加挂载位，请选择其他无人机安装。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_open_slot",
+    "text": "去改造开槽 · {cost}",
+    "params": "cost",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_integer_progress",
+    "text": "升至{level}级：经验 {current}/{required}",
+    "params": "level,current,required",
+    "category": "hyperspace"
   }
 ]

@@ -86,6 +86,7 @@ var legendary_summary: Label
 var forge_legendary_button: Button
 var dismantle_button: Button
 var inventory_feedback: Label
+var inventory_module_next: Button
 var forge_pick_cancel: Button
 var forge_pick_state: Dictionary={}
 var details: Label
@@ -245,7 +246,7 @@ func build_inventory(parent: Node) -> void:
  for selector in [weapon_filter,quality_filter,sort_order]:selector.item_selected.connect(func(_i):page=0;refresh_list())
  var grid=GridContainer.new();grid.columns=2;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10);list.add_child(grid)
  for i in PAGE_SIZE:
-  var b=button(grid,"none_selected",func():pass);b.text="";b.custom_minimum_size=Vector2(250,136);b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+  var b=button(grid,"none_selected",func():pass);b.text="";b.custom_minimum_size=Vector2(250,146);b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   var margin=MarginContainer.new();margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
   for edge in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+edge,10)
   margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;b.add_child(margin)
@@ -253,7 +254,7 @@ func build_inventory(parent: Node) -> void:
   var text=box(content,3);text.mouse_filter=Control.MOUSE_FILTER_IGNORE
   var title=label(text,"",21);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_titles.append(title)
   var quality=label(text,"",19);quality.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_subtitles.append(quality)
-  var flags_label=label(text,"",18);flags_label.max_lines_visible=2;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
+  var flags_label=label(text,"",16);flags_label.max_lines_visible=3;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
   b.pressed.connect(func():choose_drone(str(b.get_meta("drone_id",""))));cards.append(b)
  empty=label(list,t("no_items"),24)
  var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
@@ -271,6 +272,7 @@ func build_inventory(parent: Node) -> void:
  legendary_summary=label(legendary_group,"",20)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  var detail_body=box(scroll,6);inventory_feedback.reparent(detail_body)
+ inventory_module_next=button(detail_body,"module_receipt_install",commands.show_module_entry);inventory_module_next.visible=false
  details=label(detail_body,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
@@ -424,8 +426,10 @@ func refresh_list() -> void:
   put(card_subtitles[i],"text",quality_caption(d)+(t("visual_tier",{"tier":str(int(appearance.tier))}) if not appearance.category.is_empty() else ""))
   var caption_color:Color=appearance.color.darkened(0.4)
   if card_subtitles[i].get_theme_color("font_color")!=caption_color:card_subtitles[i].add_theme_color_override("font_color",caption_color)
-  put(card_flags[i],"text",flags(id,d))
-  put(card_flags[i],"visible",not flags(id,d).is_empty())
+  var capability=capability_summary(d)
+  put(card_flags[i],"text",capability+("\n"+flags(id,d) if not flags(id,d).is_empty() else ""))
+  put(card_flags[i],"tooltip_text",card_flags[i].text)
+  put(card_flags[i],"visible",true)
   skin_selection(b,id==selected_id)
  put(empty,"visible",ids.is_empty())
  inventory_dirty=false
@@ -457,7 +461,10 @@ func refresh_details() -> void:
  put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
- if valid:put(inventory_feedback,"visible",false)
+ put(inventory_module_next,"visible",inventory_feedback.visible and commands.has_effective_modules())
+ put(inventory_module_next,"disabled",false)
+ put(inventory_module_next,"text",t("module_receipt_install" if valid else "module_choose_carrier"))
+ put(inventory_module_next,"tooltip_text",t("module_receipt_choose_carrier") if not valid else "")
  put(dismantle_button,"disabled",not valid or not forge_pick_state.is_empty())
  var has_effect=valid and bool(bag.drones[selected_id].get("legendary",false))
  var effect:Dictionary=bag.drones[selected_id].get("legendary_effect",{}) if has_effect else {}
@@ -530,6 +537,12 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
   legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
+func capability_summary(d:Dictionary) -> String:
+ var config:Dictionary=host.game.hyperspace.config
+ var parts:Array[String]=[t("drone_hanging_capacity",{"opened":str(int(d.hanging_slots)),"capacity":str(Bag.hanging_limit(d,config))})]
+ var affix_cap:int=Bag.affix_limit(d,config)
+ if affix_cap>0:parts.append(t("drone_affix_capacity",{"used":str(d.affixes.size()),"capacity":str(affix_cap)}))
+ return " · ".join(parts)
 func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
@@ -545,6 +558,9 @@ func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> 
  if bag.equipped.has(str(d.id)) and g.drone_combat.disabled.has(str(d.id)):lines.insert(0,t("rebuild_disabled"))
  if not compact or not protection.is_empty():lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
+ lines.insert(0,capability_summary(d))
+ var weapon_bonus:int=preload("res://scripts/drone_effect_aggregator.gd").weapon_bonus(d,g.hyperspace.config)
+ if weapon_bonus>0:lines.append(t("drone_quality_weapon_bonus",{"levels":str(weapon_bonus)}))
  lines.insert(0,t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
  if not compact:lines.append(t("drone_dynamic_weapon_hint"))
  lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))

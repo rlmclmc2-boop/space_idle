@@ -88,7 +88,7 @@ static func valid(c: Dictionary) -> bool:
 		if not row is Dictionary:return false
 		for key in ["base_exp","exp_growth","effect_growth"]:
 			if not number(row.get(key)) or row[key]<0:return false
-		if row.base_exp<=0 or not integer(row.get("unlock_stage")) or row.unlock_stage<0:return false
+		if not integer(row.base_exp) or row.base_exp<=0 or not integer(row.get("unlock_stage")) or row.unlock_stage<0:return false
 	for cost in c.forge_costs.values():
 		if not cost is Dictionary:return false
 		for value in cost.values():
