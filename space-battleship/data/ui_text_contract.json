@@ -9399,6 +9399,34 @@
     },
     "hyperspace.master_other_source": {
       "params": []
+    },
+    "equipment.current_attributes": {
+      "params": [
+        "name"
+      ]
+    },
+    "tutorial.ship_access_reached": {
+      "params": [
+        "level",
+        "ship"
+      ]
+    },
+    "tutorial.ship_access_cleared": {
+      "params": [
+        "level",
+        "ship"
+      ]
+    },
+    "hyperspace.modernize_scope_none": {
+      "params": []
+    },
+    "hyperspace.modernize_scope_growth": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.hyperspace_entry_hint": {
+      "params": []
     }
   },
   "bindings": {

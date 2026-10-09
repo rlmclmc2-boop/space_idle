@@ -134,9 +134,21 @@ func open_entry(id: String) -> void:
 func refresh_detail() -> void:
 	show_detail(host.game.tutorial_unlock_row(selected))
 
+func ship_access_hint() -> String:
+	if host.unlocked_ship_keys().size()>1:return ""
+	var next:Dictionary={}
+	for row in host.db.data.get("unlock",{}).values():
+		if str(row.get("type",""))!="ship" or host.game.ship_unlocked(str(row.get("target",""))):continue
+		if next.is_empty() or int(row.level)<int(next.level):next=row
+	if next.is_empty():return ""
+	return UIText.t("tutorial.ship_access_reached" if str(next.get("mode","cleared"))=="reached" else "tutorial.ship_access_cleared",{"level":str(int(next.level)),"ship":str(next.title)})
 func show_detail(row: Dictionary) -> void:
 	host.set_ui_value(title,"text",str(row.get("title","")))
-	host.set_ui_value(description,"text",str(row.get("desc",UIText.t("tutorial.select_entry"))))
+	var text:String=str(row.get("desc",UIText.t("tutorial.select_entry")))
+	if str(row.get("type",""))=="ship" and str(row.get("target",""))==str(host.game.profile.selectedShip):
+		var access:String=ship_access_hint()
+		if not access.is_empty():text=access
+	host.set_ui_value(description,"text",text)
 
 func refresh() -> void:
 	if not is_instance_valid(host):return

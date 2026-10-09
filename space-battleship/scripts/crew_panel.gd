@@ -22,6 +22,7 @@ var draft_source: Array = []
 var assign_button: Button
 var assignment_reason: Label
 var assignment_preview: Label
+var hyperspace_hint:Label
 var release_button: Button
 var job_ids: Array = []
 var target_ids: Array = []
@@ -185,6 +186,8 @@ func setup(owner_ui: Node) -> void:
 	target_picker.item_selected.connect(func(_index):refresh_actions())
 	upgrade_picker=picker(parameter_column)
 	upgrade_picker.item_selected.connect(func(index):draft_mode=mode_ids[index];refresh_actions())
+	hyperspace_hint=label(assignment_section,UIText.t("crew.hyperspace_entry_hint"),18,MUTED)
+	hyperspace_hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	assignment_preview=label(assignment_section,"",20,MUTED)
 	assignment_preview.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var buttons:=HBoxContainer.new()
@@ -463,6 +466,7 @@ func refresh_job_availability() -> void:
 	refresh_targets()
 
 func refresh_detail() -> void:
+	host.set_ui_value(hyperspace_hint,"visible",host.game.hyperspace.is_unlocked(host.game))
 	var g=host.game
 	var item: Dictionary=g.crew.entry(g,selected)
 	host.set_ui_value(detail_body,"visible",not item.is_empty())

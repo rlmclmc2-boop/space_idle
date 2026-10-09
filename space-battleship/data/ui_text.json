@@ -17412,5 +17412,47 @@
     "params": "",
     "category": "hyperspace",
     "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "equipment.current_attributes",
+    "text": "当前装备属性 · {name}",
+    "params": "name",
+    "category": "equipment",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "tutorial.ship_access_reached",
+    "text": "当前舰体已自动启用。主线到达第{level}关解锁「{ship}」后，「战舰」页才会出现，可在那里切换。",
+    "params": "level,ship",
+    "category": "tutorial",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "tutorial.ship_access_cleared",
+    "text": "当前舰体已自动启用。主线通关第{level}关解锁「{ship}」后，「战舰」页才会出现，可在那里切换。",
+    "params": "level,ship",
+    "category": "tutorial",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "hyperspace.modernize_scope_none",
+    "text": "本次词条数值不变；无人机等级不是主武器等级。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "hyperspace.modernize_scope_growth",
+    "text": "{count}条词条随等级增长；主武器等级另算。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "crew.hyperspace_entry_hint",
+    "text": "异空间派遣：到「异空间」选路线，点「自动船员管理」，再点「让船员连续探索」。需船员空闲；可先解除岗位或等待其他任务结束。",
+    "params": "",
+    "category": "crew",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
   }
 ]

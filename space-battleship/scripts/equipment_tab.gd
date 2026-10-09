@@ -787,9 +787,9 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
-	var description: String = ""
+	var description: String = UIText.t("equipment.current_attributes",{"name":item.name})+"\n"
 	if not key.is_empty():
-		description=(rate_detail(item.projection,next_projection) if category=="weapons" else host.equipment_stat_text(entry,item.projection,next_projection))+"\n"
+		description+=(rate_detail(item.projection,next_projection) if category=="weapons" else host.equipment_stat_text(entry,item.projection,next_projection))+"\n"
 		if category=="weapons":description+=host.equipment_expected_details(entry,item.projection)+"\n"
 		description+=host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
 		if key=="longLaser":description=UIText.t("equipment.continuous_beam_snapshot_hint")+"\n"+description
@@ -814,7 +814,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		else:basic_text=UIText.t("equipment.current_reduction",{"percent":host.number(float(host.db.config.dmgReduce)*100)})
 		basic_text+="\n"+equipment_attributes(entry,false)
 		if category=="weapons":basic_text+="\n"+rate_notes(item.projection)
-	host.set_ui_value(detail.basics,"text",basic_text)
+	host.set_ui_value(detail.basics,"text",UIText.t("equipment.current_attributes",{"name":item.name})+"\n"+basic_text)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)
 
