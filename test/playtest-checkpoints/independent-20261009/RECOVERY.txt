@@ -1,4 +1,3 @@
-Independent cloud test checkpoint, no local-player data.
-Candidate 70cc9300159916bdfae0b4e190f8b9017be42e4a; tree a418e01825f3b82518dc02722937b43b4bfb2c88.
-Manual save 2026-10-09 21:43:55 UTC: stage19 wave2 paused, ordinary enhancement Lv8, reactor52, crew equipment +1. Normal resources; 1x, no particles spent, no injections.
-Own XDG /workspace/playtest-independent-20261009/data; original cloud Godot2788 window2097155 DISPLAY=:91, Godot4.6.3 gl_compatibility LP_NUM_THREADS4. Resume original process only after UI verification. First arrival20 must save and close.
+Completed independent normal-resource cloud test. First arrival stage20 wave1, paused immediately and manual saved2026-10-09 21:46:01UTC; game window2097155 and ownGodot2788 closed. Do not resume this completed round.
+Frozen candidate70cc9300159916bdfae0b4e190f8b9017be42e4a; treea418e01825f3b82518dc02722937b43b4bfb2c88. Fresh independent XDG /workspace/playtest-independent-20261009/data, LinuxGodot4.6.3 gl_compatibility maxfps60 LP_NUM_THREADS4 DISPLAY91. Normal1x throughout, no particles spent, no resources/affixes injected. Ordinary crew equipment+1, reactor52, enhancement8, flying-swallow hull and2normalbluebeam drones.
+Only pure test save and this minimal recovery checkpoint are published. No local-player save, credentials, cache, screenshots or detailed report.
