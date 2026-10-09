@@ -28,6 +28,14 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if (mode in ["network","branch","footer_conduit"] or mode.begins_with("scene_") or mode in ["track","busbar","pipe_horizontal","pipe_vertical"]) and ratio <= 0.0:set_process(false)
 	if mode == "core":build_core_layers()
+	if mode == "allocation_grip":set_process(false)
+	if mode == "track":
+		var grip:Control=get_script().new()
+		grip.mode="allocation_grip"
+		grip.size=size
+		grip.z_index=1
+		add_child(grip)
+		layers.grip=grip
 	if mode == "network":route = ROUTES.main_route()
 	if not route.is_empty():
 		network_route = route
@@ -70,6 +78,7 @@ func _process(delta: float) -> void:
 func set_ratio(value: float) -> void:
 	if is_equal_approx(ratio,value):return
 	ratio = value
+	if layers.has("grip"):layers.grip.set_ratio(value)
 	if mode == "network" and ratio<=0.0:
 		flow_distance=0.0
 		phase=0.0
@@ -90,6 +99,7 @@ func set_hovered(value: bool) -> void:
 func set_preview_ratio(value: float) -> void:
 	if is_equal_approx(preview_ratio,value):return
 	preview_ratio = value
+	if layers.has("grip"):layers.grip.set_preview_ratio(value)
 	queue_redraw()
 
 func set_available_ratio(value: float) -> void:
@@ -102,7 +112,8 @@ func flash_click() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	if mode == "track":draw_track()
+	if mode == "allocation_grip":draw_allocation_grip()
+	elif mode == "track":draw_track()
 	elif mode == "busbar":draw_busbar()
 	elif mode == "segments":draw_segments()
 	elif mode.begins_with("compact_"):draw_compact_fx()
@@ -282,11 +293,14 @@ func draw_track() -> void:
 	var available_x := size.x*clampf(available_ratio,0.0,1.0)
 	if available_ratio < 0.999:
 		draw_line(Vector2(available_x,3),Vector2(available_x,size.y-3),Color("6c858c"),2.0,true)
+	if hovered:
+		draw_line(Vector2(6,size.y+3),Vector2(size.x-6,size.y+3),accent,2.0,true)
+
+func draw_allocation_grip() -> void:
+	var fill := clampf(preview_ratio if preview_ratio >= 0.0 else ratio,0.0,1.0)
 	var thumb_x := clampf(fill*size.x,9.0,size.x-9.0)
 	draw_style_box(track_segment_style(Color("f4eddc")),Rect2(thumb_x-9,2,18,size.y-4))
 	for offset in [-3.0,3.0]:draw_line(Vector2(thumb_x+offset,8),Vector2(thumb_x+offset,size.y-8),Color("243d50"),2.0,true)
-	if hovered:
-		draw_line(Vector2(6,size.y+3),Vector2(size.x-6,size.y+3),accent,2.0,true)
 
 func track_segment_style(color: Color) -> StyleBoxFlat:
 	if segment_styles.has(color):return segment_styles[color]
