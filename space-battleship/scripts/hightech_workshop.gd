@@ -11,6 +11,10 @@ const PRESENTATION=preload("res://scripts/hightech_presentation.gd")
 const NUMBER=preload("res://scripts/number_format.gd")
 const ROOM=preload("res://scripts/hightech_workshop_room.gd")
 const CONSTRUCTION=preload("res://scripts/hightech_workshop_construction.gd")
+class PurchaseButton extends Button:
+	var quote_text: Callable
+	func _make_custom_tooltip(_for_text: String) -> Object:
+		return EnhancementTooltip.content(quote_text.call())
 var game: BattleGame
 var selected: String=""
 var rows: Dictionary={}
@@ -80,8 +84,11 @@ func label(parent: Node, text: String, rect: Rect2, font_size:=22, color:=INK) -
 	l.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
 	return l
-func button(parent: Node, text: String, rect: Rect2, callback: Callable, primary:=false) -> Button:
-	var b:=Button.new()
+func button(parent: Node, text: String, rect: Rect2, callback: Callable, primary:=false, quote_text: Callable=Callable()) -> Button:
+	var b: Button=PurchaseButton.new() if quote_text.is_valid() else Button.new()
+	if b is PurchaseButton:
+		b.quote_text=quote_text
+		b.tooltip_text=UIText.t("research.ai_purchase_hover")
 	b.text=text
 	b.position=rect.position
 	b.size=rect.size
@@ -133,7 +140,7 @@ func setup(source: BattleGame) -> void:
 	cost=PRESENTATION.PARAMETERS.create_label(self,Rect2(44,108,600,38),21,SHELL.face(500),MUTED)
 	for i in 3:
 		var amount: int=[1,10,-1][i]
-		generate_actions[amount]=button(self,UIText.t(["research.dock_ai_one","research.dock_ai_ten","research.dock_ai_max"][i]),Rect2(670+i*117,101,108,50),func():game.generate_scientist(amount);dirty=true)
+		generate_actions[amount]=button(self,UIText.t(["research.dock_ai_one","research.dock_ai_ten","research.dock_ai_max"][i]),Rect2(670+i*117,101,108,50),func():game.generate_scientist(amount);dirty=true,false,generation_quote_text.bind(amount))
 	distribute=button(self,UIText.t("research.dock_distribute"),Rect2(1035,101,263,50),func():game.distribute_scientists();dirty=true,true)
 	distribute.tooltip_text=UIText.t("upgrade.build_hightech_tab.text_03")
 	stage=Control.new()
@@ -289,6 +296,27 @@ func on_game_event(kind: String, payload: Dictionary) -> void:
 			completion_key=key
 			completion_level=game.hightech_level(key)
 	if kind in ["scientists_changed","hightech_complete","crew_changed"]:dirty=true
+
+func generation_quote(amount: int) -> Dictionary:
+	# MAX asks the complete purchase authority only when its tooltip is opened;
+	# ordinary factory/resource refreshes retain the bounded availability check.
+	if amount<0:return game.scientist_purchase(amount)
+	var costs := {}
+	for offset in amount:
+		var unit_cost := game.scientist_cost(offset)
+		for id in unit_cost:
+			var value := float(unit_cost[id])
+			if not is_finite(value):return {"count":0,"costs":{}}
+			costs[id]=float(costs.get(id,0))+value
+	return {"count":amount,"costs":costs}
+
+func generation_quote_text(amount: int) -> String:
+	var quote := generation_quote(amount)
+	var costs := PackedStringArray()
+	for id in quote.costs:costs.append(NUMBER.precise(quote.costs[id])+" "+UIText.data_text("resources",str(id)))
+	var text := UIText.t("research.ai_purchase_quote",{"count":str(quote.count),"cost":" / ".join(costs) if not costs.is_empty() else "0"})
+	if amount>=0 and not game.can_generate_scientist(amount):text+="\n"+UIText.t("research.ai_purchase_insufficient")
+	return text
 
 func refresh() -> void:
 	if not is_visible_in_tree():return

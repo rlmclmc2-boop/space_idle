@@ -17185,5 +17185,29 @@
     "category": "ship",
     "note": "换舰预览复用无人机容量权威；不改变库存或换舰规则",
     "source": "ship_panel.gd"
+  },
+  {
+    "key": "research.ai_purchase_hover",
+    "text": "查看本次数量与总投入",
+    "params": "",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_quote",
+    "text": "本次生成 {count} AI\n总投入：{cost}",
+    "params": "count,cost",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_insufficient",
+    "text": "当前余额不足，不能生产该数量。",
+    "params": "",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
   }
 ]

@@ -9263,6 +9263,18 @@
       "params": [
         "count"
       ]
+    },
+    "research.ai_purchase_hover": {
+      "params": []
+    },
+    "research.ai_purchase_quote": {
+      "params": [
+        "count",
+        "cost"
+      ]
+    },
+    "research.ai_purchase_insufficient": {
+      "params": []
     }
   },
   "bindings": {
