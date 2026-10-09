@@ -1,7 +1,7 @@
-Candidate gameplay46829d6cdeff62d08474546f875d6d2b8e848367 unchanged.
-Independentnormal new save, nooldreports/saves/strategy/gameplaysource. CloudXorg:99 softwareOpenGL Godot4.6.3, GUIx1 audio unverified.
-Checkpoint7 14:04:39UTC: stage6bosswave9/9 paused, GUImanualsaved.
-Reachedstage6bossfirsttime. GUIhoverboss353Karmor340Kshield, resistphysical. Abilitylabelshield-sensing lacksobservedhover/clickdescription.
-Currentreactor11 offense65def34smelt0; beams10/10/10; D01armor13 D02shield11; AI5 furnace2weapon2armor1. NormalupgradeW03justcompleted.
-Nextcontinueboss; normalgrowthonly. Noenvironmentblocker. Earlybosswallobserved, noformalcompletion.
-Scopeendsat reaching20: saveclose, nofarm20or21.
+Candidategameplay46829d6cdeff62d08474546f875d6d2b8e848367 unchanged. Independentnormalnewsave, nooldreports/saves/strategy/gameplaysource.
+CloudXorg:99softwareOpenGLGodot4.6.3; GUIx1; audio unverified.
+Checkpoint8 14:12:08UTC: stage7wave0/9paused, GUImanualsaveconfirmed.
+Completedstages1-6; first6bossfinallyclearedfollowingnormalgrowth/offenseallocation/dualarmorcapacityattempt. Many6retries, wallclockincludespauses, noclaimedcontinuoustiming.
+Recentmanualpickupyielded476Fe fromvisiblefurnacechunk. AI5furnace2weapon2armor1; ordinaryequipment/reactorupgrades. CurrentHP78.8K/86.2K; shield0.
+Firstseenhyperspaceentry: fourroutesandchallengefirstfloor, notyetchallenged. Nextinspect/useactualinterfaceandcontinue7to20.
+Noconcreteenvironmentblocker. Stopatreaching20, saveclose, nofarm20or21.
