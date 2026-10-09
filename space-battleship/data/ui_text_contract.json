@@ -9089,6 +9089,170 @@
     "reactor.version_note": {
       "params": []
     },
+    "battle.defeat.main": {
+      "params": [
+        "cause",
+        "remaining"
+      ]
+    },
+    "battle.defeat.manual": {
+      "params": [
+        "cause",
+        "remaining"
+      ]
+    },
+    "battle.defeat.cause.physical": {
+      "params": []
+    },
+    "battle.defeat.cause.energy": {
+      "params": []
+    },
+    "battle.defeat.cause.mixed": {
+      "params": []
+    },
+    "battle.defeat.cause.unknown": {
+      "params": []
+    },
+    "battle.defeat.recall": {
+      "params": []
+    },
+    "battle.defeat.recent": {
+      "params": [
+        "place",
+        "result"
+      ]
+    },
+    "battle.defeat.main_place": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "battle.defeat.manual_place": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "planet.builder_choice_hint": {
+      "params": []
+    },
+    "enhance.preview_button": {
+      "params": []
+    },
+    "enhance.preview_not_active": {
+      "params": []
+    },
+    "enhance.preview_heading": {
+      "params": [
+        "level",
+        "cost"
+      ]
+    },
+    "enhance.preview_scope": {
+      "params": []
+    },
+    "enhance.preview_effect": {
+      "params": [
+        "name",
+        "before",
+        "after"
+      ]
+    },
+    "planet.shipyard_ready_hint": {
+      "params": []
+    },
+    "planet.shipyard_built_hint": {
+      "params": []
+    },
+    "planet.reforge_next_planet": {
+      "params": []
+    },
+    "planet.reforge_reward_details": {
+      "params": []
+    },
+    "planet.reforge_rule_details": {
+      "params": []
+    },
+    "planet.reforge_gain_brief": {
+      "params": [
+        "rewards"
+      ]
+    },
+    "planet.reforge_start_brief": {
+      "params": [
+        "level"
+      ]
+    },
+    "planet.reforge_completed": {
+      "params": []
+    },
+    "planet.reforge_sealed_receipt": {
+      "params": [
+        "count",
+        "level"
+      ]
+    },
+    "planet.reforge_reclaim_path": {
+      "params": []
+    },
+    "planet.reforge_discarded_receipt": {
+      "params": [
+        "count"
+      ]
+    },
+    "planet.reforge_no_retained_receipt": {
+      "params": []
+    },
+    "planet.reforge_module_receipt": {
+      "params": []
+    },
+    "hyperspace.forge_ultimate_extra": {
+      "params": [
+        "affix"
+      ]
+    },
+    "enhance.candidate.proficiency": {
+      "params": []
+    },
+    "enhance.candidate.adaptation": {
+      "params": []
+    },
+    "enhance.candidate.repeat": {
+      "params": []
+    },
+    "enhance.candidate.critical": {
+      "params": []
+    },
+    "enhance.candidate.memory_material": {
+      "params": []
+    },
+    "enhance.candidate.delayed_damage": {
+      "params": []
+    },
+    "equipment.refit_comparison": {
+      "params": [
+        "current",
+        "current_stat",
+        "current_type",
+        "level",
+        "next",
+        "next_stat",
+        "next_type"
+      ]
+    },
+    "equipment.refit_resistance": {
+      "params": [
+        "type",
+        "percent"
+      ]
+    },
+    "equipment.refit_empty": {
+      "params": []
+    },
+    "equipment.refit_rate_scope": {
+      "params": []
+    },
     "ship.refit.combat_drone_slots": {
       "params": [
         "current",

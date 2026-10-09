@@ -48,6 +48,12 @@ var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
 var enemy_poses: Dictionary = {}
 # Display anchors for drops from destroyed enemies; removed after their drops leave.
 var death_drop_positions: Dictionary = {}
+var defeat_feedback=preload("res://scripts/battle_defeat_feedback.gd").new()
+var pending_defeat_notice := ""
+var defeat_notice := ""
+var defeat_notice_time := 0.0
+var last_defeat_details := ""
+var defeat_recall: Label
 var compact_armour: Array[PackedVector2Array] = []
 var compact_bridges: Array[PackedVector2Array] = []
 # All ten configured slots share one rear display line.
@@ -456,6 +462,7 @@ func _process(delta: float) -> void:
 		flush_damage_numbers()
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
+	advance_defeat_notice(dt)
 	refresh_visible_cards(dt)
 	refresh_navigation()
 	refresh_draw_layers(dt)
@@ -634,6 +641,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	defeat_feedback.record(game,kind,info)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
 	match kind:
@@ -810,8 +818,17 @@ func on_event(kind: String, info: Dictionary) -> void:
 			help_open = false
 			refresh_structure()
 			refresh_navigation()
+		"battle_defeated":
+			var notice:String=defeat_feedback.text(game,info)
+			pending_defeat_notice="" if info.manual else notice
+			defeat_notice=notice
+			defeat_notice_time=3.5
+			var place=UIText.t("battle.defeat.manual_place" if info.manual else "battle.defeat.main_place",{"stage":str(info.get("stage",game.stage)),"wave":str(info.get("wave",game.group_index))})
+			last_defeat_details=UIText.t("battle.defeat.recent",{"place":place,"result":notice})
+			refresh_defeat_recall()
 		"retreat":
-			toast(UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
+			if pending_defeat_notice.is_empty():toast(UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
+			pending_defeat_notice=""
 		"save_error":
 			var error: Error = info.get("error", ERR_FILE_CANT_WRITE)
 			toast(UIText.t("save.failed", {"error":error_string(error)}))
@@ -849,6 +866,15 @@ func toggle_resource_display() -> void:
 	resource_rate_mode = not resource_rate_mode
 	resource_mode_button.text = UIText.t("main.build_ui.text_02") if resource_rate_mode else UIText.t("main.build_ui.text_03")
 	resource_layer.queue_redraw()
+
+func refresh_defeat_recall()->void:
+	if not is_instance_valid(defeat_recall):return
+	set_ui_value(defeat_recall,"tooltip_text",last_defeat_details)
+	set_ui_value(defeat_recall,"visible",not last_defeat_details.is_empty() and not help_open and game.pending_unlocks.is_empty())
+
+func advance_defeat_notice(dt:float)->void:
+	# Readable time belongs to this important result, independent of ordinary toasts.
+	if not help_open and game.pending_unlocks.is_empty():defeat_notice_time=maxf(0,defeat_notice_time-dt)
 
 func toast(value: String) -> void:
 	message = value
@@ -1481,8 +1507,10 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 		outlines.append(packet.outer)
 		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
 	var top:=0.0
+	# A synchronous outline query shares one ship angle across all vertices.
+	var angle:=PI+enemy_render_angle(enemy)
 	for outline in outlines:
-		for point in outline:top=minf(top,Vector2(point).rotated(PI+enemy_render_angle(enemy)).y)
+		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
 	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
 	var status_space:=28.0 if game.is_boss_encounter() else 16.0
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
@@ -2005,6 +2033,9 @@ func build_ui() -> void:
 	unlock_description.add_theme_font_size_override("font_size",18)
 	unlock_description.add_theme_color_override("font_color",INK)
 	layout_overlay_controls()
+	defeat_recall=equipment_card_label(ui,UIText.t("battle.defeat.recall"),Rect2(Vector2(510,1084)-ui.position,Vector2(52,28)),14,ORANGE)
+	defeat_recall.mouse_default_cursor_shape=Control.CURSOR_HELP
+	refresh_defeat_recall()
 	loop_select = OptionButton.new()
 	loop_select.allow_reselect = true
 	loop_select.position = Vector2(680,20)
@@ -2372,6 +2403,7 @@ func on_viewport_resized() -> void:
 	layout_overlay_controls()
 
 func refresh_navigation() -> void:
+	refresh_defeat_recall()
 	refresh_hyperspace_badge() # Scheduler capacity waits change without a command event.
 	if not is_instance_valid(advance_button):
 		return
@@ -2834,6 +2866,7 @@ func draw_resources() -> void:
 func battle_notices() -> Array[Dictionary]:
 	var notices: Array[Dictionary] = []
 	if help_open or not game.pending_unlocks.is_empty():return notices
+	if defeat_notice_time>0:notices.append({"text":defeat_notice,"color":MUTED,"alpha":1.0})
 	if message_time>0:notices.append({"text":message.replace("\n"," · "),"color":MUTED,"alpha":1.0})
 	var resource_text: PackedStringArray = []
 	var resource_ids: Array[String] = []

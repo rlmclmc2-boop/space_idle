@@ -108,6 +108,9 @@ func run() -> void:
 	panel.select_item("weapons_1")
 	panel.show_inspector()
 	choose(panel,"missile")
+	var missile_projection: Dictionary=scene.EQUIPMENT_DISPLAY.refit_snapshot(scene.game,scene.game.module_entry("weapons",1),"missile")
+	check(panel.detail.description.text.contains(panel.rate_title(missile_projection)+" "+panel.rate_value(missile_projection)) and panel.detail.description.text.contains(UIText.t("equipment.refit_rate_scope")),"Weapon draft uses card DPS title/value and explicit baseline scope")
+	check(panel.detail.description.tooltip_text.contains(panel.rate_notes(missile_projection)),"Candidate conditions remain available before confirmation")
 	var cards: Dictionary=panel.cards.duplicate()
 	var tabs: int=scene.equipment_tabs.get_instance_id()
 	# Scrolling and preservation checks require an explicitly expanded inspector.
@@ -193,6 +196,36 @@ func run() -> void:
 	panel.cards.defence_1.name_button.item_selected.emit(panel.cards.defence_1.equipment_options.find(BattleGame.DEFENSE_KEYS[0]))
 	check(scene.game.module_entry("defence",1).key==BattleGame.DEFENSE_KEYS[0],"Defence selection immediately equips category-valid module")
 	check(not panel.detail.has("enhancement") and panel.get_action_anchor("enhancement")==null,"Equipment picker and inspector have no enhancement navigation")
+	# Inspector draft compares the selected type at this slot's current level.
+	scene.game.equip_slot("defence",1,"shield")
+	scene.game.module_entry("defence",1).level=80
+	scene.game.invalidate_stat_cache()
+	panel.refresh()
+	panel.select_item("defence_1")
+	panel.show_inspector()
+	var original_profile: Dictionary=scene.game.profile.duplicate(true)
+	var original_rng: int=scene.game.rng.state
+	var original_armour=scene.game.player.armour
+	var original_shield=scene.game.player.shield
+	choose(panel,"armour")
+	var target_entry: Dictionary=scene.game.module_entry("defence",1).duplicate(true)
+	target_entry.key="armour"
+	var target_value=scene.equipment_display_snapshot(target_entry).expected
+	check(panel.detail.description.text.contains(scene.NAMES.shield) and panel.detail.description.text.contains(scene.NAMES.armour) and panel.detail.description.text.contains(scene.number(target_value)),"Draft shows current shield and same-level replacement armour value")
+	check(panel.detail.description.text.contains(UIText.t("equipment.energy")) and panel.detail.description.text.contains(UIText.t("equipment.physical")) and panel.detail.description.text.contains("80"),"Draft distinguishes resistance and retained level")
+	check(scene.game.profile==original_profile and scene.game.rng.state==original_rng and scene.game.player.armour==original_armour and scene.game.player.shield==original_shield,"Selecting and calculating preview cannot change profile, RNG or live health")
+	var description_control: Label=panel.detail.description
+	panel.refresh_detail()
+	check(is_same(description_control,panel.detail.description),"Draft reuses comparison control")
+	check(scene.game.profile==original_profile and scene.game.rng.state==original_rng,"Repeated refresh remains read-only")
+	panel.confirm_equipment()
+	check(scene.game.module_entry("defence",1).key=="armour" and scene.game.module_entry("defence",1).level==80 and GrowthNumber.compare(scene.equipment_display_snapshot(scene.game.module_entry("defence",1)).expected,target_value)==0,"Confirmed same-level armour matches preview")
+	panel.show_inspector()
+	choose(panel,"")
+	check(panel.detail.description.text.contains(UIText.t("equipment.refit_empty")) and scene.game.module_entry("defence",1).key=="armour","Empty-slot preview is safe and does not unload")
+	choose(panel,"armour")
+	check(panel.detail.description.text==panel.items.defence_1.description and panel.detail_actions.position.y==414,"Returning to current type restores description and compact layout")
+
 	scene.select_system(4)
 	check(scene.enhancement_panel.visible,"Independent enhancement main page entry remains available")
 	check(not scene.game.save_enabled,"No player save writes")

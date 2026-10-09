@@ -2,7 +2,7 @@ extends RefCounted
 ## Read-only module presentation. Combat continues to own every random roll.
 const N := preload("res://scripts/growth_number.gd")
 
-static func snapshot(g, entry: Dictionary, level := -1) -> Dictionary:
+static func snapshot(g, entry: Dictionary, level := -1, replacement_owner: Dictionary = {}) -> Dictionary:
 	var base = g.jewel_equipment_stat(entry,level,null,false)
 	if not BattleGame.WEAPON_KEYS.has(str(entry.get("key",""))):return {"base":base,"expected":base}
 	var projected: Dictionary=entry
@@ -19,8 +19,14 @@ static func snapshot(g, entry: Dictionary, level := -1) -> Dictionary:
 	var bonus_chance: float=underlying if guaranteed else 1.0
 	var bonus_probability: float=trigger*bonus_chance
 	var result := {"base":base,"expected":N.multiply(base,1.0+bonus_probability*(critical.y-1.0)),"trigger":trigger,"bonus_probability":bonus_probability,"critical_multiplier":critical.y,"guaranteed":guaranteed}
-	result.rate=_throughput(g,entry,projected,result)
+	result.rate=_throughput(g,entry if replacement_owner.is_empty() else replacement_owner,projected,result)
 	return result
+
+## Replace one logical source for count/strongest-source rules, never the live loadout.
+static func refit_snapshot(g, owner: Dictionary, key: String) -> Dictionary:
+	var candidate := owner.duplicate(true)
+	candidate.key=key
+	return snapshot(g,candidate,-1,owner)
 
 ## Static single-target presentation. No attack execution, random rolls or time stepping.
 static func throughput(g, entry: Dictionary, level := -1) -> Dictionary:
@@ -54,7 +60,10 @@ static func _throughput(g, owner: Dictionary, entry: Dictionary, values: Diction
 			reasons.append("targets")
 		if legendary.has("laser_charge"):
 			var charge:Dictionary=legendary.laser_charge
-			var count:int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
+			var count:=0
+			for source in g.combat_weapon_entries():
+				var replacement: Dictionary=entry if is_same(source,owner) else source
+				if replacement.key=="laser":count+=1
 			fixed*=1.0+minf(float(charge.parameters.maximum_bonus),float(charge.constants.bonus_per_laser)*count)
 	var effects:Array=g.jewel_effects(entry)
 	var repeats:=0.0

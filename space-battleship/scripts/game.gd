@@ -2358,6 +2358,9 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
+	# Snapshot actual survivors before retreat clears them or manual return restores main.
+	if state!=State.RETREAT and N.compare(player.armour,0)<=0:
+		event.emit("battle_defeated",{"stage":stage,"wave":group_index,"manual":manual_hyperspace.active,"remaining":enemies.filter(func(enemy):return N.compare(enemy.hp,0)>0).size()})
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
 	guard_arrived = false
