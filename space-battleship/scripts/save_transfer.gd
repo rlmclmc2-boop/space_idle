@@ -22,7 +22,7 @@ static func schema() -> Dictionary:
  result.reactorIntegerVersion="i"
  for key in ["furnaceIncomePeak","jewelFurnaceIncomePeak"]:result[key]="g"
  result.techPoints={"*":"n"}
- for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
+ for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel","droneWeaponFloor"]:result[key]="i"
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"g","hightech":"b","jewel":"b","jewelRatio":"n"}]

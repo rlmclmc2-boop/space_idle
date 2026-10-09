@@ -162,6 +162,7 @@ func fresh_profile() -> Dictionary:
 	profile.loadout = default_loadout(selected, starting)
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false}
 	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
+	profile.droneWeaponFloor = 1
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.enhancementVersion = 1
 	profile.enhancementLevel = 0
@@ -391,6 +392,9 @@ func load_progress_data(raw: Dictionary) -> void:
 				# Keep any explicit slot investment when a legacy name-level map is older.
 				entry.level = maxi(int(entry.level),migrated)
 	profile.moduleVersion = 1
+	var saved_drone_floor = raw.get("droneWeaponFloor",1)
+	profile.droneWeaponFloor = int(saved_drone_floor) if nonnegative_number(saved_drone_floor) and float(saved_drone_floor)==floorf(float(saved_drone_floor)) and float(saved_drone_floor)<9.22e18 else 1
+	refresh_drone_weapon_floor()
 	load_jewels(raw)
 	load_hightech(raw)
 	profile.hightechOrder = hightech_slots()
@@ -731,11 +735,27 @@ func combat_weapon_entries() -> Array:
 	combat_sources_dirty=false
 	return combat_sources
 
+func lowest_unlocked_weapon_level() -> int:
+	# Empty and dormant slots still count; changing hulls cannot hide a weak slot.
+	var count := active_slot_count("weapons")
+	for ship_key in db.ships:
+		if ship_unlocked(str(ship_key)):count=maxi(count,int(db.ship(str(ship_key)).weaponSlots))
+	var entries := module_entries("weapons")
+	var minimum := 9223372036854775807
+	for index in count:
+		minimum=mini(minimum,maxi(1,int(entries[index].level)) if index<entries.size() else 1)
+	return 1 if count==0 else minimum
+
+func refresh_drone_weapon_floor() -> void:
+	var next := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
+	if next==int(profile.get("droneWeaponFloor",1)):return
+	profile.droneWeaponFloor=next
+	save_dirty=true
+	combat_sources_dirty=true
+
 func drone_weapon_entry(d: Dictionary) -> Dictionary:
-	var maximum:=1
-	for entry in weapon_entries():
-		maximum=maxi(maximum,int(entry.level))
-	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
+	var inherited := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
+	return {"key":d.weapon,"level":inherited+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
 	var entries:=combat_weapon_entries()
@@ -954,6 +974,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
 	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
 	capture_refit_health()
+	refresh_drone_weapon_floor()
 	var old_weapon_count := active_slot_count("weapons")
 	profile.selectedShip = key
 	hyperspace.fit_hull(self)
@@ -2720,6 +2741,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
+	if category=="weapons":refresh_drone_weapon_floor()
 	resources_changed(costs.keys())
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
