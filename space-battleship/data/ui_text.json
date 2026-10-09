@@ -17335,5 +17335,12 @@
     "params": "count,cost,from,to",
     "category": "equipment",
     "note": "预购只读报价；悬停时取当前可购数量，不扣资源"
+  },
+  {
+    "key": "hyperspace.module_energy_allocate",
+    "text": "储能模块随无人机上阵生效；扩充的能源要到反应炉分配后才会产生加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "确认挂载储能类模块后的轻提示；不自动分配能源"
   }
 ]

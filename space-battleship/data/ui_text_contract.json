@@ -9352,6 +9352,9 @@
         "from",
         "to"
       ]
+    },
+    "hyperspace.module_energy_allocate": {
+      "params": []
     }
   },
   "bindings": {

@@ -384,7 +384,9 @@ func show_modules() -> void:
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
-  if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
+  if h().attach_hangings(game(),module_id,keys):
+   module_dialog.hide()
+   if keys.any(func(key):return h().config.hanging_modules[key].effects.has("reactor_energy_cap")):panel.host.toast(t("module_energy_allocate"))
   else:module_dialog.title=t("module_rejected"))
  if available>0:dialog_label(body,t("module_source_hint"),18)
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
