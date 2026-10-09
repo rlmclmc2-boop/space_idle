@@ -42,6 +42,9 @@ func run() -> void:
  await process_frame
  check(f.card.visible and p.exploration_receipt_area.visible and f.view_button.visible and f.summary.text.contains("等级 5"),"Settled drone receives visible receipt and action")
  check(f.notice!=null and f.notice.visible,"First acquired drone opens actionable notice")
+ var received_id=str(f.latest.drone.id)
+ p.route="gamma";p.refresh_status();f.show_receipt()
+ check(f.summary.text.begins_with("最近获得：") and p.exploration_receipt_area.visible and str(f.latest.drone.id)==received_id,"Changing route identifies the receipt as a recent acquisition and preserves its exact drone")
  p.select_section(1)
  check(not p.exploration_receipt_area.visible,"Other sections do not reserve the exploration receipt area")
  p.select_section(0);f.show_receipt()

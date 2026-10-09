@@ -558,7 +558,7 @@ func refresh() -> void:
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
 		host.set_ui_value(controls.boost,"modulate",Color(1.0,1.0,1.0,1.0) if visual_ratio > 0 else Color(0.72,0.72,0.72,1.0))
 		set_readout(controls.energy,UIText.t("reactor.flow.preset_active",{"preset":energy_text(preset),"active":energy_text(amount)}) if I.compare(preset,amount)!=0 else UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
-		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
+		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective_energy",{"energy":energy_text(effective_energy)}))
 		host.set_ui_value(controls.clear,"disabled",I.compare(amount,0)==0 or not enabled)
 		var percent = N.multiply(N.subtract(game.reactor_multiplier(key),1),100)
 		var effect_percent: String = NumberFormat.percentage(percent)

@@ -9,6 +9,7 @@ const LINE:=Color("34505e")
 const SHELL=preload("res://scripts/shell_presentation.gd")
 const PRESENTATION=preload("res://scripts/hightech_presentation.gd")
 const NUMBER=preload("res://scripts/number_format.gd")
+const N=preload("res://scripts/growth_number.gd")
 const ROOM=preload("res://scripts/hightech_workshop_room.gd")
 const CONSTRUCTION=preload("res://scripts/hightech_workshop_construction.gd")
 class PurchaseButton extends Button:
@@ -49,6 +50,9 @@ var refresh_count:=0
 var refresh_usec:=0
 var quote_evaluations:=0
 var quote_snapshot: Array=[]
+var maximum_quote: Dictionary={}
+var maximum_stamp: Array=[]
+var maximum_quote_evaluations:=0
 var effect_snapshot: Array=[]
 var dirty:=true
 var projects_dirty:=false
@@ -297,10 +301,31 @@ func on_game_event(kind: String, payload: Dictionary) -> void:
 			completion_level=game.hightech_level(key)
 	if kind in ["scientists_changed","hightech_complete","crew_changed"]:dirty=true
 
+func maximum_generation_quote() -> Dictionary:
+	var unlocked:bool=game.db.data.hightech.keys().any(func(key):return game.hightech_unlocked(key))
+	var stamp:Array=[game.profile.scientists,game.db.config.scientistCost,unlocked]
+	var valid:=stamp==maximum_stamp and not maximum_quote.is_empty()
+	if valid and unlocked:
+		var next_cost:Dictionary=game.scientist_cost(int(maximum_quote.count))
+		var next_affordable:=true
+		var next_paid:=false
+		for id in next_cost:
+			var budget=game.profile.resources.get(id,0)
+			var total_cost=maximum_quote.costs.get(id,0)
+			if N.compare(budget,total_cost)<0:valid=false
+			next_paid=next_paid or float(next_cost[id])>0
+			if not is_finite(float(next_cost[id])) or N.compare(budget,N.add(total_cost,next_cost[id]))<0:next_affordable=false
+		if next_affordable and next_paid:valid=false
+	if not valid:
+		maximum_stamp=stamp.duplicate(true)
+		maximum_quote=game.scientist_purchase(-1)
+		maximum_quote_evaluations+=1
+	return maximum_quote.duplicate(true)
+
 func generation_quote(amount: int) -> Dictionary:
-	# MAX asks the complete purchase authority only when its tooltip is opened;
-	# ordinary factory/resource refreshes retain the bounded availability check.
-	if amount<0:return game.scientist_purchase(amount)
+	# Default MAX quantity and hover share the purchase authority. Reuse the
+	# quote until funds cross its current/next complete-purchase boundary.
+	if amount<0:return maximum_generation_quote()
 	var costs := {}
 	for offset in amount:
 		var unit_cost := game.scientist_cost(offset)
@@ -330,7 +355,7 @@ func refresh() -> void:
 	put(total,"text",t("total",{"count":NUMBER.compact(game.profile.scientists)}))
 	put(idle,"text",t("idle",{"count":NUMBER.compact(game.idle_scientists())}))
 	# Quotes depend on the ordinary AI pool/resources/config, never research points.
-	# MAX availability asks the existing bounded predicate, not a MAX purchase quote.
+	# Income within the same MAX quantity reuses its complete purchase quote.
 	var next_quote: Array=[game.profile.scientists,game.profile.resources,game.db.config.scientistCost,rows.keys()]
 	if next_quote!=quote_snapshot:
 		quote_snapshot=next_quote.duplicate(true)
@@ -339,7 +364,9 @@ func refresh() -> void:
 		var current_cost:=game.scientist_cost()
 		for id in current_cost:costs.append("[color=#efb976]"+NUMBER.compact(current_cost[id])+" "+PRESENTATION.PARAMETERS.escape(UIText.data_text("resources",str(id)))+"[/color]")
 		put(cost,"text",t("cost",{"cost":" / ".join(costs)}))
-		for amount in generate_actions:put(generate_actions[amount],"disabled",not game.can_generate_scientist(amount))
+		var maximum:=maximum_generation_quote()
+		put(generate_actions[-1],"text",UIText.t("research.dock_ai_max_count",{"count":str(maximum.count)}))
+		for amount in generate_actions:put(generate_actions[amount],"disabled",int(maximum.count)<=0 if amount<0 else not game.can_generate_scientist(amount))
 	put(distribute,"disabled",rows.is_empty() or int(game.profile.scientists)<=0)
 	for key in rows:
 		var row: Dictionary=rows[key]

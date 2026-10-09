@@ -9630,6 +9630,16 @@
     },
     "enhance.cadence.periodic": {
       "params": []
+    },
+    "reactor.flow.effective_energy": {
+      "params": [
+        "energy"
+      ]
+    },
+    "research.dock_ai_max_count": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {

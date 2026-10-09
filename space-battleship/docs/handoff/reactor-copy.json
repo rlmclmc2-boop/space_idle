@@ -11,29 +11,39 @@
     "00ae119 fixed recovery/deferred periods described by exact frequency",
     "20ac2d2 actual integer reactor per-level fees; spendable whole-resource display and shortage disambiguation",
     "e5ab782 real player beam CD0.5/base62.5; charge1/ramp2 unchanged",
-    "7709b86 first hyperspace entry hides empty surfaces/receipt and emphasizes actual challenge"
+    "7709b86 first hyperspace entry hides empty surfaces/receipt and emphasizes actual challenge",
+    "d6a43ed enhancement controls follow actual unlocks; reward receipt labeled recent acquisition",
+    "9c33a50 merges parent be58e050 performance integration without overriding its two files",
+    "96a501b enemy armour/shield remaining values use shared compact ladder after ceiling",
+    "b453c9b supplied reactor energy readout and authoritative AI MAX count/hover quote"
   ],
   "verification": {
     "main_ui_checks": 97,
-    "ui_catalog_rows": 2569,
-    "remote_readback": "7709b869f1532a1de462052447ecf9f3d9da3edd",
+    "ui_catalog_rows": 2571,
+    "remote_readback": "b453c9b253d4b9f562db10398ac16ab22600a96f",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
     "parent_gui_verified": [
       "basic available-forge grouping and selected-shortage exchange",
-      "reactor left layout and integer percentages at1178x814"
+      "reactor left layout and integer percentages at1178x814",
+      "reactor actual MAX purchase and integer insufficient-stock state",
+      "uncleared hyperspace route empty surfaces removed and primary challenge clearer"
     ],
     "actual_workspace_success_utc": [
       "2026-10-09 10:38:05 UTC",
       "2026-10-09 10:43:47 UTC"
     ],
     "beam_core_checks": 23,
-    "hyperspace_entry_checks": 11
+    "hyperspace_entry_checks": 12,
+    "enhancement_entry_checks": 26,
+    "enemy_defence_number_checks": 13,
+    "reactor_supply_checks": 9,
+    "ai_max_quantity_checks": 11
   },
   "next": [
-    "Parent integrates independent stages and accepts original natural GUI/playtest flows",
-    "Master unified generation/reroll precision and guarantee-price decision remains pending"
+    "Parent natural GUI accepts enemy defence abbreviations, small supplied-energy readout and AI MAX quantity/total quote",
+    "Master real integer grid with independently configured original guarantee price proposed; approval pending"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "7709b869f1532a1de462052447ecf9f3d9da3edd"
+  "last_code_commit": "b453c9b253d4b9f562db10398ac16ab22600a96f"
 }
