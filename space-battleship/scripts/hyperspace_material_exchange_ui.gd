@@ -31,6 +31,7 @@ func show_prefilled(from:String,to:String,count:int) -> void:
  for i in target.item_count:
   if str(target.get_item_metadata(i))==to:target.select(i)
  amount.set_value_no_signal(maxi(1,count))
+ amount.get_line_edit().text=str(maxi(1,count))
  refresh_quote(true);dialog.popup_centered(Vector2i(760,540))
 func build() -> void:
  dialog=panel.commands.build_dialog("exchange_title");dialog.ok_button_text=t("exchange_close")
@@ -56,6 +57,7 @@ func build() -> void:
  source.item_selected.connect(func(_index):refresh_quote(true))
  target.item_selected.connect(func(_index):refresh_quote(true))
  amount.value_changed.connect(func(_value):refresh_quote(true))
+ amount.get_line_edit().text_changed.connect(func(_text):refresh_quote(true))
  confirmation=ConfirmationDialog.new();confirmation.title=t("exchange_confirm_title")
  confirmation.ok_button_text=t("exchange_confirm");confirmation.cancel_button_text=t("exchange_cancel")
  # Fixed two-line numeric quote fits this width; avoid zero-width autowrap minimum inflation.
@@ -76,12 +78,15 @@ func error_text(code:String) -> String:
   "material_limit":return t("exchange_material_limit")
   "stale_round","stale_command","command_conflict":return t("exchange_stale")
   _:return t("exchange_unavailable")
+func entered_amount():
+ var text:String=amount.get_line_edit().text.strip_edges()
+ return text.to_float() if text.is_valid_float() else text
 func refresh_quote(clear_feedback=false) -> void:
  if dialog==null:return
  var from=material(source);var to=material(target)
  quote={"error":"unavailable"}
  if game().has_method("hyperspace_material_exchange_quote"):
-  quote=game().hyperspace_material_exchange_quote(from,to,int(amount.value))
+  quote=game().hyperspace_material_exchange_quote(from,to,entered_amount())
  var balances:Dictionary=game().profile.hyperspace.materials
  panel.put(source_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("source_owned",balances.get(from,0))))}))
  panel.put(target_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("target_owned",balances.get(to,0))))}))
@@ -97,9 +102,16 @@ func refresh_quote(clear_feedback=false) -> void:
 func fill_maximum() -> void:
  refresh_quote()
  var count=int(quote.get("max_receive",0))
- if count>0:amount.value=count
+ if count>0:
+  amount.value=count
+  amount.get_line_edit().text=str(count)
+  refresh_quote(true)
 func review() -> void:
  # Refresh may reject a changed balance; preserve the exact quote the confirmation describes.
+ refresh_quote()
+ if exchange.disabled:return
+ # Commit the visible legal edit before freezing the immutable request.
+ amount.apply()
  refresh_quote()
  if exchange.disabled:return
  pending_request=quote.request.duplicate(true)

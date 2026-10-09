@@ -9451,6 +9451,17 @@
         "stage",
         "wave"
       ]
+    },
+    "hyperspace.forge_exchange_material_shortage": {
+      "params": [
+        "cost",
+        "source",
+        "amount",
+        "target"
+      ]
+    },
+    "hyperspace.forge_exchange_guaranteed_shortage": {
+      "params": []
     }
   },
   "bindings": {

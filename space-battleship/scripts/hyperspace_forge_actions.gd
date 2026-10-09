@@ -72,11 +72,20 @@ func visible_action(op:String,d:Dictionary) -> bool:
  if op=="legendary":return bool(d.legendary) or int(commands.game().profile.hyperspace.materials.get("zero_point_energy",0))>0 or not commands.game().profile.hyperspace.legendary_seen.is_empty()
  if op=="ultimate":return int(commands.game().profile.hyperspace.ultimate_cores)>0
  return true
-func exchange_shortage(op:String,result:Dictionary) -> int:
- if op!="add_affix" or str(result.get("error",""))!="insufficient_materials":return 0
+func exchange_shortage(_op:String,result:Dictionary) -> Dictionary:
+ if str(result.get("error",""))!="insufficient_materials":return {}
  var costs:Dictionary=result.get("cost",{})
- if costs.size()!=1 or not costs.has("degenerate_matter"):return 0
- return maxi(0,int(costs.degenerate_matter)-int(commands.game().profile.hyperspace.materials.degenerate_matter))
+ var materials:Array=commands.h().config.routes.values().map(func(route):return str(route.material))
+ if costs.size()!=1 or str(costs.keys()[0]) not in materials:return {}
+ var target:String=str(costs.keys()[0]);var balances:Dictionary=commands.game().profile.hyperspace.materials
+ var amount:int=maxi(0,int(costs[target])-int(balances.get(target,0)))
+ if amount<=0:return {}
+ var source:String="zero_point_energy" if target=="degenerate_matter" else "degenerate_matter"
+ var sources:Array=[source]+materials.filter(func(key):return key!=target and key!=source)
+ for candidate in sources:
+  if str(commands.h().material_exchange_quote(commands.game(),candidate,target,amount).error).is_empty():source=str(candidate);break
+ var quote:Dictionary=commands.h().material_exchange_quote(commands.game(),source,target,amount)
+ return {"source":source,"target":target,"amount":amount,"quote":quote}
 func refresh() -> void:
  if buttons.is_empty():return
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
@@ -111,12 +120,11 @@ func refresh() -> void:
   if op=="promote_affix" and reason.is_empty():status=commands.promotion_summary(d)
   if op=="add_affix" and reason.is_empty():status=commands.t("add_affix_random_short")
   if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
-  if shortage>0:
-   var exchange=commands.h().material_exchange_quote(commands.game(),"zero_point_energy","degenerate_matter",shortage)
-   status=commands.t("forge_exchange_shortage",{"cost":str(int(exchange.cost.get("zero_point_energy",0))),"amount":str(shortage)})
+  if not shortage.is_empty():
+   status=commands.t("forge_exchange_guaranteed_shortage") if deferred else commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
   commands.panel.put(buttons[op],"tooltip_text",name+"\n"+commands.cost_text(costs,true)+"\n"+status)
-  commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage<=0)
+  commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage.is_empty())
  commands.panel.put(advanced_toggle,"visible",later>0 or advanced_expanded)
  commands.panel.put(advanced_toggle,"text",commands.t("forge_collapse_unavailable") if advanced_expanded else commands.t("forge_expand_unavailable",{"count":str(later)}))
 func act(op:String) -> void:
@@ -127,8 +135,8 @@ func act(op:String) -> void:
  if req.is_empty():return
  var result:Dictionary=commands.h().preview_forge(commands.game(),req)
  var shortage=exchange_shortage(op,result)
- if shortage>0:
-  commands.exchange_ui.show_prefilled("zero_point_energy","degenerate_matter",shortage);return
+ if not shortage.is_empty():
+  commands.exchange_ui.show_prefilled(shortage.source,shortage.target,int(shortage.amount));return
  if not str(result.error).is_empty():commands.feedback.text=commands.error_text(str(result.error));refresh();return
  commands.quoted_request=req
  if op in CONFIRM or not selected_target(op).is_empty():
