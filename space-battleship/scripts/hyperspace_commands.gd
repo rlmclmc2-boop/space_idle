@@ -357,7 +357,7 @@ func show_modules() -> void:
   if child is VBoxContainer:child.free()
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
- if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots"),21)
+ if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots" if panel.Bag.hanging_limit(d,h().config)>0 else "module_no_capacity"),21)
  var module_scroll=ScrollContainer.new();module_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;module_scroll.custom_minimum_size.y=120;module_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(module_scroll)
  var choices=panel.box(module_scroll);choices.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var unlocked=0;var available=0;var has_zero_level=false
@@ -468,8 +468,34 @@ func show_guide(topic:String="overview") -> void:
   guide_choice.add_item(t("operation_"+op));guide_choice.set_item_metadata(guide_choice.item_count-1,op)
   if op==topic:guide_choice.select(guide_choice.item_count-1)
  render_guide(topic);guide_dialog.popup_centered()
+func add_affix_forecast(d:Dictionary) -> String:
+ if d.is_empty():return ""
+ var c:Dictionary=h().config
+ var keys:Array=c.affixes.keys().filter(func(key):return c.affixes[key].weapon.is_empty() or str(c.affixes[key].weapon)==str(d.weapon))
+ var weights:Dictionary={};var total:=0.0
+ for tier in c.tier_weights:
+  if keys.any(func(key):return c.affixes[key].ranges.has(tier)):
+   weights[tier]=float(c.tier_weights[tier]);total+=float(weights[tier])
+ if total<=0:return ""
+ var grades:Array[String]=[];var lines:Array[String]=[]
+ for tier in weights:grades.append("T"+str(tier)+" "+t("percent",{"value":"%.1f"%(100.0*float(weights[tier])/total)}))
+ lines.append(t("add_affix_grade_weights",{"grades":" · ".join(grades)}))
+ for key in keys:
+  var low:=INF;var high:=-INF;var common:Array[String]=[]
+  for tier in weights:
+   if not c.affixes[key].ranges.has(tier):continue
+   var bounds:Array=c.affixes[key].ranges[tier]
+   low=minf(low,float(bounds[0]));high=maxf(high,float(bounds[1]))
+   if str(tier)=="5":
+    for value in bounds:common.append(panel.affix_display({"key":key,"value":value,"tier":int(tier),"locked":false},d).value_text)
+  if not is_finite(low):continue
+  var minimum:Dictionary=panel.affix_display({"key":key,"value":low,"tier":5,"locked":false},d)
+  var maximum:Dictionary=panel.affix_display({"key":key,"value":high,"tier":1,"locked":false},d)
+  lines.append(t("add_affix_range",{"name":minimum.name,"common":"–".join(common) if not common.is_empty() else "—","minimum":minimum.value_text,"maximum":maximum.value_text}))
+ return "\n".join(lines)
 func render_guide(topic:String) -> void:
  guide_dialog.title=t("forge_guide") if topic=="overview" else t("operation_"+topic)
  panel.put(guide_label,"text",t("forge_guide_body") if topic=="overview" else t("forge_guide_"+topic))
+ if topic=="add_affix":guide_label.text+="\n\n"+add_affix_forecast(game().profile.hyperspace.inventory.drones.get(panel.selected_id,{}))
  if topic=="ultimate":guide_label.text=t("ultimate_effect_summary",{"levels":str(int(h().config.ultimate_weapon_bonus))})+"\n\n"+guide_label.text
  guide_scroll.scroll_vertical=0

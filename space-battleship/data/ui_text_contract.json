@@ -9303,6 +9303,35 @@
     },
     "hyperspace.forge_collapse_unavailable": {
       "params": []
+    },
+    "hyperspace.add_affix_random_short": {
+      "params": []
+    },
+    "hyperspace.add_affix_grade_weights": {
+      "params": [
+        "grades"
+      ]
+    },
+    "hyperspace.add_affix_range": {
+      "params": [
+        "name",
+        "common",
+        "minimum",
+        "maximum"
+      ]
+    },
+    "hyperspace.crew_unlock_reached": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.crew_unlock_cleared": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.module_no_capacity": {
+      "params": []
     }
   },
   "bindings": {

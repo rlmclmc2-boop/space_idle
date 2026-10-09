@@ -106,6 +106,7 @@ func refresh() -> void:
    status=commands.t("action_missing",{"materials":" · ".join(missing)})
   elif reason=="affix_limit":status=commands.t("action_no_affix_slots" if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else "action_affix_full")
   elif reason=="no_new_record":status=commands.t("action_no_new_record")
+  if op=="add_affix" and reason.is_empty():status=commands.t("add_affix_random_short")
   if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
   if shortage>0:
    var exchange=commands.h().material_exchange_quote(commands.game(),"zero_point_energy","degenerate_matter",shortage)

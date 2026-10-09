@@ -17258,5 +17258,47 @@
     "params": "",
     "category": "hyperspace",
     "note": "费用来自现行报价；仅打开玩家确认兑换，展开状态由玩家保持"
+  },
+  {
+    "key": "hyperspace.add_affix_random_short",
+    "text": "随机新增1条，可能是低阶小加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.add_affix_grade_weights",
+    "text": "阶级概率：{grades}。下方范围已按这架当前等级计算；只会随机获得其中一条，T1最好，T5最低。",
+    "params": "grades",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.add_affix_range",
+    "text": "{name}：T5 {common}；全部阶级 {minimum}–{maximum}",
+    "params": "name,common,minimum,maximum",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.crew_unlock_reached",
+    "text": "主线到达第{level}关后解锁首名船员；之后还需船员空闲。",
+    "params": "level",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.crew_unlock_cleared",
+    "text": "主线通关第{level}关后解锁首名船员；之后还需船员空闲。",
+    "params": "level",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.module_no_capacity",
+    "text": "这架没有可新增的挂载槽位。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
   }
 ]

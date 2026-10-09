@@ -522,6 +522,7 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var hangings: Array[String]=[]
  for key in d.hangings:hangings.append(hanging_name(str(key)))
  lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
+ if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  return "\n".join(lines)
 func affix_display(a:Dictionary,d:Dictionary) -> Dictionary:
  var value:float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,host.game.hyperspace.config)
