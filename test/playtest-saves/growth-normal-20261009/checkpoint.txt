@@ -1,4 +1,3 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 sourceunchanged. Independent normalnewsave originalcloud Xorg:99 x1 GUI.
-Checkpoint22 2026-10-09 15:48:51.899537+00:00 MAIN10wave3paused, completed1-9+A1/A2. Main9Boss firsthoverarmor19.8Mphysresist shield180Menergyresist, shield-first; clearednormally next55sec. Shield-sensingname actualmeaningunverified.
-Actual10enemy armor20.7Mphysresist/noshield; switchednormal3beams andordinaryupgrades. Normal13AI enhancement1burst/memory, reactor21 defense75weapon25; stationOFF. Noinjections/olddata/gameplaysource.
-Manualsave/mouse/screenshot actualsuccessoriginalenv. Nextcontinue10to20stop/save/close; crewunlocksafterclearing10peractualUI, notyetverified.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplayunchanged. Independentnormalnewsave originalcloud Xorg:99 x1 GUI.
+Checkpoint23 2026-10-09 15:55:24.091467+00:00 pausedMAIN10wave4 afterFIRST10/6physical-major failure actualcomparison. Completed1-9+A1/A2. First10normal20.7Marmorphysresist ->energybeams, continuedordinarygear+reactor22, first10/6fullhealththenfailed. FailureopensfixedD01onlyupgradable; manuallyD02shield->armor forphysicalcapacity. NormalW02/W03,D01/D02/reactorupgradesclicked withGUIresponsewait.
+Reactorallocation25weapon75def; enhancement1burst/memory AI13. Actualmouse/manualsave/screenshot originalenv success, noreset/injection/olddata/sourceknowledge. Nextcontinue10through20stop/save/close.
