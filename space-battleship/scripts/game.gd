@@ -2071,12 +2071,12 @@ func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
 		return false
-	return start(next_stage(), profile.loop and not guard_arrived)
+	return start(next_stage(), profile.loop and not guard_arrived, {}, paused)
 
 func next_stage() -> int:
 	return mini(stage + 1, db.levels.size())
 
-func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
+func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}, start_paused := false) -> bool:
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
 	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
@@ -2098,7 +2098,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	cooldowns.clear()
 	pending_unlocks.clear()
 	reset_player()
-	paused = false
+	paused = start_paused
 	profile.loop = loop_mode
 	if loop_mode:
 		guard_index = int(profile.get("guardIndex", 0))

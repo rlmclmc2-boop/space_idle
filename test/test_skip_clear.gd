@@ -40,7 +40,6 @@ func run() -> void:
 	g.paused = true
 	g.tick(1.0)
 	check(is_equal_approx(g.clear_timer,1.5), "Pause freezes the countdown")
-	g.paused = false
 	scene.queue_redraw()
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://skip-clear.png")
@@ -52,7 +51,12 @@ func run() -> void:
 		Input.parse_input_event(event)
 		await process_frame
 	check(g.stage == 2 and g.state == BattleGame.State.TRAVEL, "Button immediately advances")
+	check(g.paused, "Immediate clear preserves the player's pause")
+	var production_before := g.production_time()
+	g.tick(10.0)
+	check(g.group_index == 0 and is_zero_approx(g.distance) and g.production_time() == production_before, "Paused next stage does not travel, spawn waves or advance production")
 	check(not g.advance_after_clear() and g.stage == 2, "Repeated click cannot skip another stage")
+	check(g.start(2, false) and not g.paused, "Explicit start retains its normal resume intent")
 	g.select_loop_level(1)
 	g.spawn_group()
 	g.toggle_loop()
