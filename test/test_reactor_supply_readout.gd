@@ -20,5 +20,18 @@ func run() -> void:
   check(JSON.stringify(g.profile)==before and g.rng.state==rng and g.reactor_capacity()==capacity and g.reactor_multiplier("condensation")==gain,"Readout refresh changes no supply, output, capacity or RNG")
  p.change_allocation(5,"condensation");p.refresh()
  check(controls.share.text.contains("<1%") and not controls.bay_energy.text.contains("0%"),"Small supply retains its useful less-than-one-percent context without a misleading zero beside energy")
+ # K-scale quantities must use the same shared formatter as total capacity.
+ for sample in [[0,"0"],[5,"5"],[999,"999"],[1000,"1K"],[275666,"276K"],[599871,"600K"],[812394,"812K"],[199135,"199K"],[1887066,"1.89M"]]:
+  check(p.energy_text(sample[0])==sample[1],"Shared energy format at "+str(sample[0]))
+ g.profile.reactorLevel=55;g.profile.reactorAllocation={"weapons":599871,"defence":812394,"smelting":199135,"condensation":0};g.invalidate_stat_cache();p.refresh()
+ var before_large=JSON.stringify(g.profile);var rng_large=g.rng.state
+ var I=preload("res://scripts/reactor_integer.gd");var capacity_large=g.reactor_capacity();var assigned=g.reactor_allocated()
+ check(p.remaining_label.text==UIText.t("reactor.remaining",{"energy":NumberFormat.compact(I.as_growth(I.subtract(capacity_large,assigned)))}),"Remaining energy uses shared K abbreviation")
+ for key in ["weapons","defence","smelting"]:
+  var amount=g.reactor_active_allocation()[key];var row=p.module_controls[key]
+  check(row.energy.text==UIText.t("reactor.flow.manual",{"amount":NumberFormat.compact(amount),"capacity":NumberFormat.compact(I.as_growth(capacity_large))}),"Manual energy and capacity share one formatter: "+key)
+  check(row.bay_energy.text==UIText.t("reactor.flow.effective_energy",{"energy":NumberFormat.compact(amount)}),"Effective energy uses shared K abbreviation: "+key)
+ p.refresh()
+ check(JSON.stringify(g.profile)==before_large and g.rng.state==rng_large,"Abbreviated readout preserves actual allocation integers and RNG")
  print("Reactor supply readout: ",checks," checks, ",failures," failures")
  scene.queue_free();await process_frame;quit(1 if failures else 0)

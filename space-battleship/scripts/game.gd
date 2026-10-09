@@ -108,6 +108,7 @@ var last_save_error: Error = OK
 var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
 var main_attack_serial := 0
+var damage_stats=preload("res://scripts/battle_damage_stats.gd").new()
 var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
@@ -2137,6 +2138,7 @@ func is_boss_encounter() -> bool:
 	return encounter_tier() in ["boss","ultimate"]
 
 func spawn_group(keep_distance := false) -> void:
+	if damage_stats.enabled:damage_stats.clear()
 	drone_combat.restore_disabled(self,"wave_start")
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
@@ -2513,9 +2515,12 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			enemy.shield=N.subtract(enemy.shield,absorbed)
 			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
 	var amount = 0.0
+	var settled_hp = 0.0
 	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
+		if damage_stats.enabled:settled_hp=N.minimum(enemy.hp,amount)
 		enemy.hp=N.subtract(enemy.hp,amount)
+	if damage_stats.enabled and state==State.COMBAT:damage_stats.record(str(context.get("source_id","other")),N.add(settled_hp,absorbed))
 	amount=N.add(amount,absorbed)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	drone_combat.on_hit(self,enemy,base_raw,context)
@@ -2805,6 +2810,7 @@ func advance_enemy_shields(dt: float) -> void:
 
 func tick(dt: float) -> void:
 	if paused:return
+	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	manual_hyperspace.dispatch_queued(self)
 	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
 	profile.productionElapsed=production_time()+dt

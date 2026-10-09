@@ -9926,6 +9926,53 @@
       "params": [
         "percent"
       ]
+    },
+    "battle.damage_stats.title": {
+      "params": []
+    },
+    "battle.damage_stats.enable": {
+      "params": []
+    },
+    "battle.damage_stats.scope": {
+      "params": []
+    },
+    "battle.damage_stats.stopped": {
+      "params": []
+    },
+    "battle.damage_stats.total": {
+      "params": [
+        "dps",
+        "damage",
+        "seconds"
+      ]
+    },
+    "battle.damage_stats.row": {
+      "params": [
+        "source",
+        "dps",
+        "damage"
+      ]
+    },
+    "battle.damage_stats.module": {
+      "params": [
+        "slot"
+      ]
+    },
+    "battle.damage_stats.drone": {
+      "params": [
+        "index",
+        "weapon",
+        "slot"
+      ]
+    },
+    "battle.damage_stats.other": {
+      "params": []
+    },
+    "battle.damage_stats.black_hole": {
+      "params": []
+    },
+    "battle.damage_stats.advanced": {
+      "params": []
     }
   },
   "bindings": {

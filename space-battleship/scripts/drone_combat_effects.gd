@@ -10,10 +10,11 @@ var dodge_cooldown:=0.0
 var black_hole_elapsed:=0.0
 var black_hole_remaining:=0.0
 var black_hole_damage=0.0
+var black_hole_source:=""
 var missile_attacks:=0
 func reset() -> void:
 	delayed.clear();disabled.clear();rebuild_bonus=0.0;rebuild_stacks=0;dodge_cooldown=0.0
-	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;missile_attacks=0
+	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;black_hole_source="";missile_attacks=0
 func restore_disabled(g,reason: String) -> void:
 	if disabled.is_empty():return
 	var restored: Array=disabled.duplicate()
@@ -119,6 +120,7 @@ func advance(g,dt: float) -> void:
 			black_hole_elapsed+=step;remaining-=step
 			if black_hole_elapsed+0.000000001<float(black.constants.period):break
 			black_hole_elapsed=0.0;black_hole_remaining=float(black.constants.absorption_duration);black_hole_damage=0.0
+			black_hole_source="drone:"+str(black.drone_id)
 			g.event.emit("hyperspace_black_hole",{"active":true,"duration":black_hole_remaining})
 			continue
 		var step:=minf(remaining,black_hole_remaining)
@@ -126,7 +128,7 @@ func advance(g,dt: float) -> void:
 		if black_hole_remaining<=0.000000001:
 			black_hole_remaining=0.0
 			var damage=N.multiply(black_hole_damage,float(black.parameters.damage_multiplier));black_hole_damage=0.0
-			var context:=CC.derive(CC.root(0,"legendary:black_hole",""),"black_hole")
+			var context:=CC.derive(CC.root(0,black_hole_source,""),"black_hole")
 			for target in g.enemies.duplicate():
 				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.profile.hyperspace.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
 			g.event.emit("hyperspace_black_hole",{"active":false})

@@ -24,17 +24,20 @@ func button(parent:Node,key:String,action:Callable,values:Dictionary={}) -> Butt
  var b=Button.new();b.text=text(key,values);SKIN.button_skin(b);b.add_theme_font_size_override("font_size",18);b.pressed.connect(action);parent.add_child(b);return b
 func setup(owner) -> void:
  owner_ref=weakref(owner)
- panel.readout_plate(panel,Vector2(48,1100),Vector2(546,50))
- bar=HBoxContainer.new();bar.position=Vector2(60,1104);bar.size=Vector2(522,40);bar.add_theme_constant_override("separation",4);panel.add_child(bar)
+ panel.readout_plate(panel,Vector2(48,1080),Vector2(546,88))
+ bar=HBoxContainer.new();bar.position=Vector2(60,1084);bar.size=Vector2(522,40);bar.add_theme_constant_override("separation",4);panel.add_child(bar)
  upgrade=CheckBox.new();upgrade.text=text("upgrade");bar.add_child(upgrade)
  allocate=CheckBox.new();allocate.text=text("allocate");bar.add_child(allocate)
  for toggle in [upgrade,allocate]:
-  toggle.add_theme_font_size_override("font_size",18);toggle.add_theme_font_override("font",panel.host.font);toggle.add_theme_color_override("font_color",panel.INK);toggle.tooltip_text=text("requires_crew")
+  toggle.add_theme_font_size_override("font_size",18);toggle.add_theme_font_override("font",panel.host.font);
+  for state in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:toggle.add_theme_color_override(state,panel.INK)
+  toggle.tooltip_text=text("requires_crew")
  upgrade.toggled.connect(func(enabled):A.set_enabled(game(),"upgrade",enabled);refresh())
  allocate.toggled.connect(func(enabled):A.set_enabled(game(),"allocate",enabled);refresh())
- button(bar,"settings",show_settings)
- for index in 3:presets.append(button(bar,"slot",func():A.apply_slot(game(),index);panel.refresh(),{"slot":str(index+1)}))
- crew_hint=Label.new();crew_hint.position=Vector2(64,1154);crew_hint.size=Vector2(514,28);crew_hint.text=text("requires_crew");crew_hint.add_theme_font_size_override("font_size",18);crew_hint.add_theme_color_override("font_color",panel.INK);panel.add_child(crew_hint)
+ var choices=HBoxContainer.new();choices.position=Vector2(60,1126);choices.size=Vector2(522,40);choices.add_theme_constant_override("separation",8);panel.add_child(choices)
+ button(choices,"settings",show_settings)
+ for index in 3:presets.append(button(choices,"slot",func():A.apply_slot(game(),index);panel.refresh(),{"slot":str(index+1)}))
+ crew_hint=Label.new();crew_hint.position=Vector2(64,1168);crew_hint.size=Vector2(514,28);crew_hint.text=text("requires_crew");crew_hint.add_theme_font_size_override("font_size",18);crew_hint.add_theme_color_override("font_color",panel.INK);panel.add_child(crew_hint)
  panel.tree_exiting.connect(func():
   if is_instance_valid(dialog):dialog.queue_free())
  refresh()
@@ -61,8 +64,8 @@ func build_dialog() -> void:
  for key in game().reactor_modules():
   var row=HBoxContainer.new();body.add_child(row)
   var label=Label.new();label.custom_minimum_size.x=190;label.add_theme_font_size_override("font_size",20);row.add_child(label);captions[key]=label
-  var slider=HSlider.new();slider.min_value=0;slider.max_value=100;slider.step=1;slider.custom_minimum_size=Vector2(300,36);slider.size_flags_horizontal=Control.SIZE_EXPAND_FILL;row.add_child(slider);sliders[key]=slider
-  slider.value_changed.connect(func(value):edit_ratio(key,int(value)))
+  var slider=HSlider.new();slider.min_value=0;slider.max_value=100;slider.step=0.01;slider.custom_minimum_size=Vector2(300,36);slider.size_flags_horizontal=Control.SIZE_EXPAND_FILL;row.add_child(slider);sliders[key]=slider
+  slider.value_changed.connect(func(value):edit_ratio(key,value))
  idle=Label.new();idle.add_theme_font_size_override("font_size",18);body.add_child(idle)
  for index in 3:
   var row=HBoxContainer.new();body.add_child(row)
@@ -72,21 +75,25 @@ func build_dialog() -> void:
  dialog.confirmed.connect(func():A.apply(game(),draft);panel.refresh())
 func refresh_draft() -> void:
  changing=true
- var assigned=0
- for key in sliders:
-  var percent:int=int(I.share(100,I.normalize(draft.weights.get(key,0)),I.normalize(draft.total))[0])
-  sliders[key].set_value_no_signal(percent);sliders[key].editable=game().reactor_module_unlocked(key)
-  captions[key].text=UIText.data_text("reactor",key)+" "+str(percent)+"%";assigned+=percent
- idle.text=text("idle",{"percent":str(maxi(0,100-assigned))})
+ var keys:Array=sliders.keys();var weights:Array=[];var assigned=0
+ for key in keys:
+  var weight=I.normalize(draft.weights.get(key,0));weights.append(weight);assigned=I.add(assigned,weight)
+ weights.append(I.subtract(I.normalize(draft.total),assigned))
+ var displayed=preload("res://scripts/reactor_allocation_growth.gd").distribute(100,weights,I.normalize(draft.total))
+ for index in keys.size():
+  var key=keys[index]
+  sliders[key].set_value_no_signal(I.ratio(weights[index],I.normalize(draft.total))*100.0);sliders[key].editable=game().reactor_module_unlocked(key)
+  captions[key].text=UIText.data_text("reactor",key)+" "+str(displayed[index])+"%"
+ idle.text=text("idle",{"percent":str(displayed.back())})
  changing=false
-func edit_ratio(key:String,value:int) -> void:
+func edit_ratio(key:String,value:float) -> void:
  if changing:return
- var assigned=0
- for other in sliders:
-  if other!=key:assigned+=int(sliders[other].value)
- var weights:Dictionary={}
- for other in sliders:weights[other]=mini(value,maxi(0,100-assigned)) if other==key else int(sliders[other].value)
- draft={"total":100,"weights":weights};refresh_draft()
+ var total=I.normalize(draft.total);var assigned=0
+ for other in draft.weights:
+  if other!=key:assigned=I.add(assigned,I.normalize(draft.weights[other]))
+ # Preserve every untouched exact weight; only the dragged share is quantized.
+ draft.weights[key]=I.minimum(I.share(total,roundi(value*100.0),10000)[0],I.subtract(total,assigned))
+ refresh_draft()
 func refresh_slots() -> void:
  for index in 3:
   var empty:bool=game().profile.reactorAutomation.presets[index].is_empty()

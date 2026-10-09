@@ -4042,14 +4042,14 @@
   },
   {
     "key": "crew.core_title.reactor",
-    "text": "反应炉自动升级",
+    "text": "反应炉自动管理",
     "params": "",
     "category": "crew",
     "note": "船员反应炉岗位"
   },
   {
     "key": "crew.effect.reactor_auto",
-    "text": "每{interval}秒 · 按反应炉开关升级/分配",
+    "text": "每{interval}秒 · 按反应炉页面设置自动升级/分配",
     "params": "interval",
     "category": "crew",
     "note": "船员反应炉岗位"
@@ -15635,7 +15635,7 @@
   },
   {
     "key": "crew.preview.reactor",
-    "text": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "text": "确认后每{interval}秒按反应炉页面设置自动升级/分配；升级按正常费用花铀。",
     "params": "interval",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
@@ -18177,5 +18177,71 @@
     "text": "基础层变化：武器伤害、装甲/护盾上限 {percent}%",
     "params": "percent",
     "category": "hyperspace"
+  },
+  {
+    "key": "battle.damage_stats.title",
+    "text": "伤害统计",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.enable",
+    "text": "开始统计",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.scope",
+    "text": "从开启后计数 · 最近约8战斗秒 · 换波清空 · 关闭窗口停止",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.stopped",
+    "text": "统计未开启",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.total",
+    "text": "DPS {dps} · 实伤 {damage} · {seconds}战斗秒",
+    "params": "dps,damage,seconds",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.row",
+    "text": "{source}：DPS {dps} · 实伤 {damage}",
+    "params": "source,dps,damage",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.module",
+    "text": "武器槽 {slot}",
+    "params": "slot",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.drone",
+    "text": "无人机 {index} · {weapon}（装备槽 {slot}）",
+    "params": "index,weapon,slot",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.other",
+    "text": "未归属",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.black_hole",
+    "text": "黑洞释放",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.advanced",
+    "text": "高阶",
+    "params": "",
+    "category": "battle"
   }
 ]
