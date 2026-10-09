@@ -16297,5 +16297,47 @@
     "params": "",
     "category": "weapon",
     "note": "有条件的攻击加成不计入基础每秒"
+  },
+  {
+    "key": "battle.defeat.main",
+    "text": "主线战败 · {cause} · 尚余{remaining}艘",
+    "params": "{cause},{remaining}",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.manual",
+    "text": "异空间战败 · {cause} · 尚余{remaining}艘",
+    "params": "{cause},{remaining}",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.physical",
+    "text": "已记录物理损失为主",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.energy",
+    "text": "已记录能量损失为主",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.mixed",
+    "text": "已记录物理、能量损失相当",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.unknown",
+    "text": "损失类型不足以判断",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
   }
 ]

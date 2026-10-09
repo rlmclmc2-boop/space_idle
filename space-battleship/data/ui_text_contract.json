@@ -8743,6 +8743,30 @@
     },
     "weapon.rate_condition.beam_owner": {
       "params": []
+    },
+    "battle.defeat.main": {
+      "params": [
+        "cause",
+        "remaining"
+      ]
+    },
+    "battle.defeat.manual": {
+      "params": [
+        "cause",
+        "remaining"
+      ]
+    },
+    "battle.defeat.cause.physical": {
+      "params": []
+    },
+    "battle.defeat.cause.energy": {
+      "params": []
+    },
+    "battle.defeat.cause.mixed": {
+      "params": []
+    },
+    "battle.defeat.cause.unknown": {
+      "params": []
     }
   },
   "bindings": {

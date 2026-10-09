@@ -48,6 +48,8 @@ var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
 var enemy_poses: Dictionary = {}
 # Display anchors for drops from destroyed enemies; removed after their drops leave.
 var death_drop_positions: Dictionary = {}
+var defeat_feedback=preload("res://scripts/battle_defeat_feedback.gd").new()
+var pending_defeat_notice := ""
 var compact_armour: Array[PackedVector2Array] = []
 var compact_bridges: Array[PackedVector2Array] = []
 # All ten configured slots share one rear display line.
@@ -634,6 +636,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	defeat_feedback.record(game,kind,info)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
 	match kind:
@@ -810,8 +813,13 @@ func on_event(kind: String, info: Dictionary) -> void:
 			help_open = false
 			refresh_structure()
 			refresh_navigation()
+		"battle_defeated":
+			var notice:String=defeat_feedback.text(game,info)
+			pending_defeat_notice="" if info.manual else notice
+			toast(notice)
 		"retreat":
-			toast(UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
+			toast(pending_defeat_notice if not pending_defeat_notice.is_empty() else UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
+			pending_defeat_notice=""
 		"save_error":
 			var error: Error = info.get("error", ERR_FILE_CANT_WRITE)
 			toast(UIText.t("save.failed", {"error":error_string(error)}))
