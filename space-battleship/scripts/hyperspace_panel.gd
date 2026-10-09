@@ -1,5 +1,6 @@
 extends Control
 ## Persistent section controls; commands remain owned by the hyperspace domain.
+const N=preload("res://scripts/growth_number.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Codec=preload("res://scripts/hyperspace_filter.gd")
 const PAGE_SIZE=8
@@ -561,6 +562,8 @@ func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> 
  var fire_params={"interval":NumberFormat.scalar(float(row.cd))}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
  var lines:Array[String]=[]
+ var base_bonus=N.multiply(N.subtract(preload("res://scripts/drone_effect_aggregator.gd").base_multiplier(d,g.hyperspace.config),1.0),100)
+ lines.append(t("drone_base_support",{"percent":NumberFormat.percentage(base_bonus)}))
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
   if not compact or not is_zero_approx(preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,g.hyperspace.config)):lines.append(affix_summary(a,d))
  var hangings:Array[String]=[]

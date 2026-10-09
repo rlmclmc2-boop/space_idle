@@ -2,7 +2,9 @@ extends RefCounted
 ## One static equipped projection. No inventory scan in attack/hit loops.
 const N=preload("res://scripts/growth_number.gd")
 static func empty() -> Dictionary:
-	return {"affixes":{},"hangings":{},"legendary":{},"damage":1.0,"critical_chance":0.0,"critical_damage":1.0,"repeat_chance":0.0,"attack_speed":1.0,"defence":1.0,"armour":1.0,"shield":1.0,"chain_count":0,"weapon_damage":{"laser":1.0,"missile":1.0,"cannon":1.0,"longLaser":1.0}}
+	return {"base_damage":1.0,"base_defence":1.0,"affixes":{},"hangings":{},"legendary":{},"damage":1.0,"critical_chance":0.0,"critical_damage":1.0,"repeat_chance":0.0,"attack_speed":1.0,"defence":1.0,"armour":1.0,"shield":1.0,"chain_count":0,"weapon_damage":{"laser":1.0,"missile":1.0,"cannon":1.0,"longLaser":1.0}}
+static func base_multiplier(d:Dictionary,c:Dictionary):
+	return N.power(float(c.drone_base_growth),int(d.level))
 static func affix_value(a: Dictionary,d: Dictionary,c: Dictionary) -> float:
 	return float(a.value)*(pow(1.0+float(c.amplification_rate),int(d.level)-int(c.amplification_start_level)) if c.affixes[a.key].amplified else 1.0)
 static func project(g) -> Dictionary:
@@ -12,6 +14,8 @@ static func project(g) -> Dictionary:
 	for id in s.inventory.equipped:
 		if s.inventory.sealed.has(id) or g.drone_combat.disabled.has(id):continue
 		var d: Dictionary=s.inventory.drones[id]
+		var base_bonus=N.subtract(base_multiplier(d,c),1.0)
+		result.base_damage=N.add(result.base_damage,base_bonus);result.base_defence=N.add(result.base_defence,base_bonus)
 		var affixes: Array=d.affixes+[d.ultimate_affix] if d.ultimate else d.affixes
 		for a in affixes:
 			var value: float=affix_value(a,d,c)

@@ -18165,5 +18165,17 @@
     "text": "闲置 {percent}%",
     "params": "percent",
     "category": "reactor"
+  },
+  {
+    "key": "hyperspace.drone_base_support",
+    "text": "装备基础：武器伤害 +{percent}% · 装甲/护盾上限 +{percent}%",
+    "params": "percent,percent",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.drone_base_change",
+    "text": "基础层变化：武器伤害、装甲/护盾上限 {percent}%",
+    "params": "percent",
+    "category": "hyperspace"
   }
 ]

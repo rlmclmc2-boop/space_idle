@@ -9915,6 +9915,17 @@
       "params": [
         "percent"
       ]
+    },
+    "hyperspace.drone_base_support": {
+      "params": [
+        "percent",
+        "percent"
+      ]
+    },
+    "hyperspace.drone_base_change": {
+      "params": [
+        "percent"
+      ]
     }
   },
   "bindings": {

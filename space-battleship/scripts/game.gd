@@ -3420,7 +3420,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
 	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
-	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
+	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),N.multiply(drone_multiplier,drones.get("base_damage" if WEAPON_KEYS.has(str(entry.key)) else "base_defence",1.0)))
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
