@@ -28,6 +28,8 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 
 [rendering]
+; Skip the separate opaque depth pass; keep depth tests, lights, shadows and MSAA.
+driver/depth_prepass/enable=false
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.025, 0.037, 0.068, 1)
