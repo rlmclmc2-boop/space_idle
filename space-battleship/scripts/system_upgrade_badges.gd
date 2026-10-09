@@ -6,6 +6,9 @@ const Bag = preload("res://scripts/drone_inventory.gd")
 const Forge = preload("res://scripts/drone_forge.gd")
 const UIText = preload("res://scripts/ui_text.gd")
 const PAID_MODIFICATIONS = ["add_affix","replace_affix","add_hanging_slot","lock_affix","promote_affix","reroll_values","enable_omen","legendary","modernize","ultimate"]
+# Empty-argument plans use one attempt/draw and the authored base price for
+# these operations. Eligibility/result RNG still comes from Forge.plan.
+const FIXED_DEFAULT_PRICE = ["add_affix","replace_affix","add_hanging_slot","promote_affix","reroll_values","enable_omen","legendary","ultimate"]
 var game
 var buttons: Array[Button] = []
 var badges: Dictionary = {}
@@ -147,9 +150,29 @@ func drone_quotes() -> Array:
 	var result: Array = []
 	var state: Dictionary = game.profile.hyperspace
 	if not state.unlocked_drones:return result
+	# This navigation badge needs the set of attainable prices, not every
+	# possible mutation. Share only within this synchronous price rebuild.
+	# Failed plans never cover a class: later drones can still make it eligible.
+	var covered: Dictionary = {}
+	var modernization_targets: Dictionary = {}
 	for id in state.inventory.drones:
 		if state.inventory.sealed.has(id):continue
+		var drone: Dictionary=state.inventory.drones[id]
 		for operation in PAID_MODIFICATIONS:
+			var price_class: String=operation
+			if operation=="modernize":
+				var weapon:=str(drone.weapon)
+				if not modernization_targets.has(weapon):modernization_targets[weapon]=Forge.modernization_target(state,game.hyperspace.config,weapon,int(game.profile.highestLevel))
+				if int(drone.level)>=int(modernization_targets[weapon]):continue
+				var tiers: Array=[]
+				for affix in drone.affixes:tiers.append(int(affix.tier))
+				tiers.sort()
+				price_class=operation+":"+str([weapon,int(drone.level),bool(drone.legendary),tiers])
+			elif operation=="lock_affix":
+				price_class=operation+":"+str(drone.affixes.filter(func(affix):return affix.locked).size())
+			elif operation not in FIXED_DEFAULT_PRICE:
+				price_class=operation+":"+str(id)
+			if covered.has(price_class):continue
 			# Exact domain validation and pricing, with only the mutated drone copied.
 			# Local restored RNG cannot consume the player's forge RNG or command seq.
 			var preview: Dictionary = state.duplicate()
@@ -165,5 +188,6 @@ func drone_quotes() -> Array:
 			if not Bag.valid_drone(preview.inventory.drones[id],game.hyperspace.config):continue
 			if not Bag.equipment_valid(preview.inventory,preview.inventory.equipped,int(game.hyperspace.config.maximum_equipped),game.hyperspace.config):continue
 			if not game.hyperspace.equipment_constraints(game,preview.inventory.equipped,preview.inventory):continue
+			covered[price_class]=true
 			if not result.has(cost):result.append(cost)
 	return result
