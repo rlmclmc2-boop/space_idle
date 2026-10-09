@@ -1,7 +1,7 @@
 Independent normal graphical recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud fresh XDG save only;1x microparticles0 noQA/injections/restart.
-2026-10-09 21:35:52 UTC first observed13wave2/9, paused manualsave after normal setup.
-Escort hull, W74beam/73cannon/71beam/69cannon, armor69/67, reactorMAX33to34 requested, AI42equal11/11/10/10 verified.
-Enhancement2 normal200fragments spent, activeweaponpractice anddefensememory10percent/sec; newfragmentfurnace0 allocated10AI ETA2sec firstbuild. Crew equipment automation active, whitedrone1.
-Resume same cloud runtime first; only pure round test save and compact metadata.
+Own cloud fresh XDG save only,1x microparticles0,noQA/injections/restart.
+2026-10-09 21:40:12 UTC first observed14wave2/9, paused manually saved after enemy-based fourbeam setup.
+Escort hull,W84/81/81/80 allbeams,dualarmor79/77,reactor37equal,AI47equal12/12/12/11verified.
+Enhancement2 weaponpractice defensememory10percent/sec,fragmentfurnace5 actualbuilt;crew normal equipment automation,whitedrone1.
+Resume original cloud runtime first; only pure round test save and compact metadata.
