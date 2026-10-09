@@ -19,7 +19,7 @@ func run() -> void:
  var target=g.profile.reactorAutomation.ratio.duplicate(true);g.profile.resources["2"]=g.reactor_upgrade_cost();g.upgrade_reactor(1)
  check(g.profile.reactorAutomation.ratio==target,"Capacity upgrade is not mistaken for a user target edit")
  A.apply(g,target,false);check(g.profile.reactorAutomation.ratio==target,"Internal automatic application does not capture its rounded output as a new target")
- g.crew.assign(g,"navigator","","");scene.refresh_tab_visibility();scene.select_system(3);await process_frame
+ g.crew.assign(g,"navigator","","");scene.refresh_tab_visibility();scene.select_system(2);await process_frame
  var ui=scene.reactor_panel.automation_ui;ui.refresh()
  check(ui.crew_hint.visible and ui.allocate.button_pressed,"No-crew state exposes a nearby explanation while retaining saved preference")
  print("LAYOUT ",ui.bar.position," ",ui.bar.size," min=",ui.bar.get_combined_minimum_size()," hint=",ui.crew_hint.position," ",ui.crew_hint.size)
