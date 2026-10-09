@@ -158,6 +158,7 @@ func create_effect_card(parent: Node, rect: Rect2, category: String, index: int)
 	var description := PARAMETER_TEXT.create_label(card,Rect2(20,65,568,48),20,SHELL.face(500),NAVY)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverRichText)
+	description.preview_text=func():return effect_hover_text(category,index)
 	description.mouse_filter = Control.MOUSE_FILTER_PASS
 	var state := text_label(card,"",Rect2(20,132,314,32),21,MUTED)
 	var up := button(card,"enhance.move_up",Rect2(484,12,50,38),func():move_effect(category,index,-1))
@@ -404,6 +405,25 @@ func refresh() -> void:
 	refresh_effect_details()
 	host.set_ui_value(level_label,"tooltip_text",UIText.t("enhance.history",{"attacks":FORMAT.compact(game.profile.get("enhancementAttacks",0)),"hits":FORMAT.compact(game.profile.get("enhancementHits",0))}))
 
+func candidate_effect_preview(category:String,kind:String) -> String:
+	if game.enhancement_effective_level()<threshold_level(0):return UIText.t("enhance.preview_not_active")
+	# Only a requested hover/detail builds this isolated, permanent-state view.
+	# Fresh combat state excludes temporary stacks and pending attack bonuses.
+	var projected:=BattleGame.new(game.db,false)
+	projected.profile=game.profile.duplicate(true)
+	var order:Array=game.enhancement_order(category).duplicate()
+	order.erase(kind);order.push_front(kind)
+	projected.profile.enhancementOrder[category]=order
+	projected.invalidate_stat_cache()
+	var plain:=RichTextLabel.new();plain.bbcode_enabled=true
+	plain.text=effect_overview(kind,projected)
+	var summary:=plain.get_parsed_text();plain.free()
+	return UIText.t("enhance.candidate_current",{"level":str(game.enhancement_effective_level()),"summary":summary})
+
+func effect_hover_text(category:String,index:int) -> String:
+	var kind:=str(game.enhancement_order(category)[index])
+	return candidate_effect_preview(category,kind) if game.enhancement_effective_level()<threshold_level(index) else effect_details_text(kind)
+
 func effect_details_text(kind: String) -> String:
 	var text := effect_description(kind)
 	if kind in ["proficiency","adaptation"]:
@@ -431,7 +451,7 @@ func refresh_effect_details(force := false) -> void:
 	if not is_instance_valid(effect_detail_dialog) or (not force and not effect_detail_dialog.visible):return
 	var index := game.enhancement_order(detail_category).find(detail_effect)
 	host.set_ui_value(effect_detail_dialog,"title",effect_name(detail_effect))
-	var text := UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(detail_category,index)})+"\n\n"+effect_details_text(detail_effect)
+	var text := UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(detail_category,index)})+"\n\n"+(candidate_effect_preview(detail_category,detail_effect) if game.enhancement_effective_level()<threshold_level(index) else effect_details_text(detail_effect))
 	host.set_ui_value(effect_detail_body,"text",text)
 
 func build_branch_drawer() -> void:

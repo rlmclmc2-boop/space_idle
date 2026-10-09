@@ -9486,6 +9486,12 @@
     },
     "hyperspace.omen_empty_short": {
       "params": []
+    },
+    "enhance.candidate_current": {
+      "params": [
+        "level",
+        "summary"
+      ]
     }
   },
   "bindings": {

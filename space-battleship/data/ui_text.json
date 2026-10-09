@@ -17141,19 +17141,19 @@
   },
   {
     "key": "enhance.candidate.repeat",
-    "text": "有机会追加攻击",
+    "text": "追加攻击 · 悬浮看当前概率",
     "params": "",
     "category": "enhance"
   },
   {
     "key": "enhance.candidate.critical",
-    "text": "有机会打出更高伤害",
+    "text": "暴击增伤 · 悬浮看当前数值",
     "params": "",
     "category": "enhance"
   },
   {
     "key": "enhance.candidate.memory_material",
-    "text": "持续修复，并积累护盾",
+    "text": "持续修复 · 悬浮看当前恢复率",
     "params": "",
     "category": "enhance"
   },
@@ -17538,5 +17538,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "零词条可提前开启未来预兆，不会立即加属性，也不提高抽取概率。"
+  },
+  {
+    "key": "enhance.candidate_current",
+    "text": "当前 Lv{level} · 移到首位后\n{summary}",
+    "params": "level,summary",
+    "category": "enhance",
+    "note": "仅悬浮或详情时计算当前等级的移首候选；不含临时战斗叠层，不改变实际排序。"
   }
 ]
