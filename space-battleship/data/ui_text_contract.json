@@ -9470,6 +9470,19 @@
       "params": [
         "count"
       ]
+    },
+    "hyperspace.reward_receipt_empty": {
+      "params": []
+    },
+    "hyperspace.reward_auto_dismantled": {
+      "params": []
+    },
+    "hyperspace.reward_module_receipt": {
+      "params": [
+        "name",
+        "copies",
+        "level"
+      ]
     }
   },
   "bindings": {

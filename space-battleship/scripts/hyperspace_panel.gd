@@ -50,6 +50,7 @@ var forge_scroll: ScrollContainer
 var forge_content: VBoxContainer
 var challenge_result_area: VBoxContainer
 var exploration_receipt_area: VBoxContainer
+var exploration_receipt_scroll:ScrollContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
@@ -160,6 +161,10 @@ func setup(owner) -> void:
  challenge_result_area=box(root_box,4);challenge_result_area.visible=false
  recent_result=label(challenge_result_area,"",21)
  exploration_receipt_area=box(root_box,4);exploration_receipt_area.visible=false
+ exploration_receipt_scroll=ScrollContainer.new();exploration_receipt_scroll.custom_minimum_size.y=152
+ exploration_receipt_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+ exploration_receipt_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+ exploration_receipt_area.add_child(exploration_receipt_scroll)
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
   var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
@@ -175,6 +180,7 @@ func setup(owner) -> void:
    else:forge_scroll=page_scroll;forge_content=content
   else:
    content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
+ root_box.move_child(exploration_receipt_area,root_box.get_child_count()-1)
  build_inventory(sections[1]);build_forge(forge_content);build_rules(sections[3])
  host.game.event.connect(on_event);visibility_changed.connect(func():
   if is_visible_in_tree():refresh())
@@ -218,7 +224,7 @@ func build_exploration(parent: Node) -> void:
   routes.append(b)
  route_ui.build(parent)
  first_win=label(parent,t("layer_first_win"),22)
- reward_feedback.build(exploration_receipt_area)
+ reward_feedback.build(exploration_receipt_scroll)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
  drone_locked=label(parent,t("layer_drone_locked"),24)

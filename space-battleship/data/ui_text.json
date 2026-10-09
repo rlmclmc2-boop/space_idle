@@ -17510,5 +17510,26 @@
     "params": "count",
     "category": "hyperspace",
     "note": "以现行已解锁、可装、等级有效且尚未挂载的模块计数；不改变成长"
+  },
+  {
+    "key": "hyperspace.reward_receipt_empty",
+    "text": "当前没有本次奖励回执。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
+  },
+  {
+    "key": "hyperspace.reward_auto_dismantled",
+    "text": "已按自动筛选拆解，材料与模块已到账。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
+  },
+  {
+    "key": "hyperspace.reward_module_receipt",
+    "text": "{name} ×{copies} · 本次结算后 Lv{level}",
+    "params": "name,copies,level",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
   }
 ]
