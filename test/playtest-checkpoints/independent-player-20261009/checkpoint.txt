@@ -1,6 +1,6 @@
-Independent normal graphical recovery checkpoint
-Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud fresh XDG save only,1x microparticles0 reverified17,noQA/injections/restart.
-First observed19 at2026-10-09 22:06:07 UTC wave0/9. Originalenvironment actualcheck22:09:41 samePID962 started19:20:54 matcheswindowPID962 display91, manualsave22:09:42 successfulstill19/0paused.
-Escort,weapon126/124/124/124 (3beam1cannon),dualarmor123/123;AI80verified20/20/20/20,furnace17 output26fragments/block20sec;enhance2 memory active,385fragments,next400. Nativeequipmentcrew active.
-Actualsavebytes authoritative; resume originalruntime, first20 immediatelysaveclose.
+Independent normal graphical test final checkpoint
+Frozen code 70cc9300159916bdfae0b4e190f8b9017be42e4a tree a418e01825f3b82518dc02722937b43b4bfb2c88
+Fresh own cloud XDG,1x,microparticles0,noQA/injections/restart. Runtime PID962 display91 window0x200003 verified throughout.
+First observed20 at2026-10-09 22:17:04 UTC wave0/9; manualsave22:17:05. Stage transition reset pause and normal WM close did not take effect; unintended roughly20seconds auto progression reached20wave2 before pause22:17:20. Final manualsave22:17:33; PID962 terminated andwindowgone22:17:34. No intentional20play or newunlock exploration.
+Final actualsave bytes authoritative,20wave2paused. Escort,4cannons,dualarmor,normalequipmentcrew;enhancement3 practice/memory.
+Only own puretestsave and compact recovery metadata published; no report/screenshots/cache/credentials/code changes.
