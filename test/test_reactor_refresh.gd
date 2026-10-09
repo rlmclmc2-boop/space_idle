@@ -44,6 +44,34 @@ func run() -> void:
 	await process_frame
 	var panel=scene.reactor_panel
 	panel.refresh()
+	var fee_game:=BattleGame.new(scene.db,false);fee_game.profile.cleared=[1];fee_game.profile.reactorLevel=2;fee_game.profile.resources["2"]=6.9
+	check(fee_game.reactor_upgrade_cost()==7 and fee_game.reactor_max_upgrades()==0 and not fee_game.upgrade_reactor(1) and fee_game.profile.resources["2"]==6.9,"Fractional stock cannot buy the actual integer fee and is preserved")
+	fee_game.profile.resources["2"]=7.9
+	check(fee_game.upgrade_reactor(1) and is_equal_approx(float(fee_game.profile.resources["2"]),0.9),"Integer debit retains the unspent fractional balance")
+	var bulk:=BattleGame.new(scene.db,false);bulk.profile.cleared=[1];bulk.profile.resources["2"]=278.5
+	var unit_sum:=0.0
+	for level in range(1,11):unit_sum+=ceilf(float(scene.db.config.reactorUpgradeBase)*pow(float(scene.db.config.reactorUpgradeGrowth),level-1))
+	var preview=preload("res://scripts/reactor_upgrade_preview.gd")
+	check(unit_sum==278 and preview.quote(bulk,10).cost==unit_sum and bulk.reactor_max_upgrades()==10,"Batch quote and MAX use the independently rounded sum of ten level fees")
+	var singles:=BattleGame.new(scene.db,false);singles.profile.cleared=[1];singles.profile.resources["2"]=278.5
+	for i in 10:check(singles.upgrade_reactor(1),"Repeated single purchase is affordable")
+	check(bulk.upgrade_reactor(10) and bulk.profile.resources["2"]==singles.profile.resources["2"] and bulk.profile.resources["2"]==0.5,"Batch and split purchases debit the same actual integer total")
+	bulk.profile.reactorLevel=1;bulk.profile.resources["2"]=277.9
+	check(bulk.reactor_max_upgrades()==9 and not bulk.upgrade_reactor(10),"MAX respects the new integer batch boundary")
+	check(NumberFormat.resource(13.5)=="13" and NumberFormat.resource(39100)=="39.1K" and NumberFormat.resource_pair(1238.9,1239)=={"owned":"1238","cost":"1239","exact":true},"Whole-resource display preserves suffix precision and reveals hidden shortages")
+	var huge_pair:Dictionary=NumberFormat.resource_pair({"m":2.3004,"e":500},{"m":2.3005,"e":500})
+	check(huge_pair.exact and huge_pair.owned!=huge_pair.cost,"Huge resource shortages also retain distinct exact scientific significands")
+	var prior_level:int=g.profile.reactorLevel;var prior_budget=g.profile.resources["2"]
+	g.profile.reactorLevel=2;g.profile.resources["2"]=6.9;panel.refresh()
+	check(panel.uranium_label.text==UIText.t("reactor.uranium",{"uranium":"6"}) and panel.upgrade_buttons.x1.disabled and panel.upgrade_buttons.x1.text.contains("7铀") and scene.resource_display("2")=="6","Actual reactor and resource strip agree on integer fee/stock/disabled state")
+	for level in range(1,50):
+		g.profile.reactorLevel=level
+		var fee=g.reactor_upgrade_cost()
+		if fee>=1000 and NumberFormat.resource(fee-0.1)==NumberFormat.resource(fee):
+			g.profile.resources["2"]=fee-0.1;panel.refresh()
+			check(panel.upgrade_buttons.x1.disabled and panel.uranium_label.text==UIText.t("reactor.uranium",{"uranium":NumberFormat.resource(fee-0.1,true)}) and panel.upgrade_buttons.x1.text.contains(NumberFormat.resource(fee,true)),"Actual underfunded purchase expands a colliding suffix to unequal exact integers")
+			break
+	g.profile.reactorLevel=prior_level;g.profile.resources["2"]=prior_budget;g.invalidate_stat_cache();panel.refresh()
 	check(NumberFormat.scalar(3.24)=="3" and NumberFormat.scalar(3.26)=="3.5" and NumberFormat.scalar(-0.01)=="0","Ordinary display uses half units without negative zero")
 	check(NumberFormat.scalar(39100)=="39.1K" and NumberFormat.scalar({"m":3.91,"e":4})=="39.1K","Scalar display preserves suffix precision for native and large-number values")
 	check(NumberFormat.precise(6.75)=="6.75" and g.description_number(0.28)=="0.28","Formula literals and fractional economic values keep precision")

@@ -91,9 +91,8 @@ func percent_text(value) -> String:
 	return NumberFormat.percentage(value)
 
 func purchase_cost_text(value, compact := true) -> String:
-	if value is Dictionary:return NumberFormat.compact(value)
-	if compact and value>=1000.0:return host.number(value)
-	return ("%.2f" % value).trim_suffix("0").trim_suffix("0").trim_suffix(".")
+	var available=host.game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
+	return str(NumberFormat.resource_pair(available,value).cost) if compact else NumberFormat.resource(value,true)
 
 func supply_segment(parent: Control, color: Color) -> ColorRect:
 	var segment := ColorRect.new()
@@ -514,8 +513,6 @@ func refresh() -> void:
 	if host.ui_state_changed(energy_label,[capacity]):
 		host.set_ui_value(energy_label,"text",UIText.t("reactor.energy",{"energy":energy_text(capacity)}))
 		set_readout(capacity_label,energy_label.text)
-	if host.ui_state_changed(uranium_label,[available]):
-		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
 	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,capacity,game.reactor_energy(),host.db.config.reactorEnergyGrowth,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
 		var max_count: int = game.reactor_max_upgrades()
 		affordable_count = max_count
@@ -583,11 +580,14 @@ func refresh() -> void:
 
 func refresh_upgrade_preview() -> void:
 	var game: BattleGame = host.game
+	var available=game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
+	var exact_available:=false
 	var current_allocation:Dictionary=PREVIEW.active_allocation(game)
 	var temporarily_limited:bool=Array(game.reactor_modules()).any(func(key):return I.compare(game.profile.reactorAllocation.get(key,0),current_allocation.get(key,0))>0)
 	for mode in upgrade_buttons:
 		var count: int = affordable_count if mode == "MAX" else 10 if mode == "x10" else 1
 		var quote: Dictionary = PREVIEW.quote(game,count)
+		exact_available=exact_available or bool(NumberFormat.resource_pair(available,quote.cost).exact)
 		var title: String = UIText.t("reactor.upgrade.max",{"count":str(count)}) if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
 		host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.purchase_action",{"title":title,"cost":purchase_cost_text(quote.cost)}))
 		var details: String = UIText.t("reactor.purchase_details",{"count":str(count),"cost":purchase_cost_text(quote.cost,false),"current":energy_text(quote.capacity),"next":energy_text(quote.next_capacity)})
@@ -609,6 +609,7 @@ func refresh_upgrade_preview() -> void:
 			var lines := PackedStringArray()
 			for index in range(0,gains.size(),2):lines.append(gains[index]+(" · "+gains[index+1] if index+1<gains.size() else ""))
 			host.set_ui_value(benefit_label,"text",UIText.t("reactor.single_preview",{"effects":"\n".join(lines)}) if not gains.is_empty() else UIText.t("reactor.upgrade_idle"))
+	host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":NumberFormat.resource(available,exact_available)}))
 
 func show_upgrade_details() -> void:
 	refresh()

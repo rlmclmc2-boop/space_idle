@@ -853,7 +853,7 @@ func enemy_health(value: float) -> String:
 func cost_text(cost: Dictionary) -> String:
 	var result := ""
 	for id in cost:
-		result += UIText.t("main.cost_text.text_01", {"id":"%s" % (number(cost[id])), "id_2":"%s" % (UIText.data_text("resources",str(id)))})
+		result += UIText.t("main.cost_text.text_01", {"id":"%s" % (NUMBER_FORMAT.resource(cost[id])), "id_2":"%s" % (UIText.data_text("resources",str(id)))})
 	return result.strip_edges()
 
 func prune_resource_samples(now: float) -> void:
@@ -861,12 +861,12 @@ func prune_resource_samples(now: float) -> void:
 
 func resource_display(id: String, now := -1.0) -> String:
 	if not resource_rate_mode:
-		return number(game.profile.resources[id])
+		return NUMBER_FORMAT.resource(game.profile.resources[id])
 	if now < 0:
 		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)
 	var rate = GrowthNumber.divide(game.resource_minute_total(id,now),60.0)
-	return UIText.t("inventory.rate",{"rate":NUMBER_FORMAT.rate(rate)})
+	return UIText.t("inventory.rate",{"rate":NUMBER_FORMAT.resource(rate)})
 
 func toggle_resource_display() -> void:
 	resource_rate_mode = not resource_rate_mode

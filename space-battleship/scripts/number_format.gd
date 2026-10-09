@@ -44,6 +44,22 @@ static func scalar(value) -> String:
 static func scalar_is_exact(value: float) -> bool:
 	return is_finite(value) and is_equal_approx(value,roundf(value*2.0)/2.0)
 
+# Retain fractional stock internally; show only its spendable whole units.
+static func resource(value, exact := false) -> String:
+	if value is Dictionary:
+		if float(value.e)>=15:
+			return trimmed_decimal(float(value.m),16)+"e+"+str(int(value.e)) if exact else compact(value)
+		value=float(value.m)*pow(10.0,float(value.e))
+	var amount:=float(value)
+	if not is_finite(amount):return compact(value)
+	amount=floorf(amount)
+	return "%.0f" % amount if exact else compact(amount)
+
+# A rounded suffix must not make a shortage look like an equal balance.
+static func resource_pair(owned, cost) -> Dictionary:
+	var exact:=GrowthNumber.compare(owned,cost)<0 and resource(owned)==resource(cost)
+	return {"owned":resource(owned,exact),"cost":resource(cost,exact),"exact":exact}
+
 static func compact(value, suffix_decimals := -1) -> String:
 	var mantissa: float
 	var exponent: float

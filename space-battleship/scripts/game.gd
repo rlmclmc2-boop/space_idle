@@ -1099,7 +1099,8 @@ func reactor_can_grow(amount: int) -> bool:
 
 func reactor_upgrade_cost(level := -1):
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return N.multiply(float(db.config.reactorUpgradeBase),N.power(float(db.config.reactorUpgradeGrowth),actual-1))
+	# Round each level before batch quotes, affordability and debit share it.
+	return N.ceiling(N.multiply(float(db.config.reactorUpgradeBase),N.power(float(db.config.reactorUpgradeGrowth),actual-1)))
 
 func reactor_active_allocation(drone_totals: Dictionary = {}) -> Dictionary:
 	var capacity = reactor_capacity(drone_totals)

@@ -55,7 +55,7 @@ func run() -> void:
 	batch.profile.cleared = [1]
 	batch.profile.resources["2"] = 1000000.0
 	var expected_cost := 0.0
-	for level in range(1,11):expected_cost += 100.0*pow(1.4,level-1)
+	for level in range(1,11):expected_cost += ceilf(100.0*pow(1.4,level-1))
 	check(batch.upgrade_reactor(10),"x10 batch succeeds")
 	check(batch.profile.reactorLevel == 11 and absf(float(batch.profile.resources["2"])-(1000000.0-expected_cost))<0.00001,"x10 pays every level cost")
 	var smelt := BattleGame.new(db,false)
