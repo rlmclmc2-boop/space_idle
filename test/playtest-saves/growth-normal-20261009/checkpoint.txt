@@ -1,4 +1,3 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367, gameplay source diff0. Independent normal new save original cloud Xorg:99 x1 GUI.
-Checkpoint14 2026-10-09 14:53:25.626438+00:00 main8 wave4 paused after first8/6 failure, physically dominated per failure comparison. Completed1-7, sideA1/A2 normal rewards. Main7 first observedBoss cleared within next50sec, did not itself wall.
-Actual8 enemy hover energy-resistant armor213K/no shield, changed all3 weapons to missiles22/21/21 and dualarmor22/23, HP967K. Previousallbeam persistence was player mismatch, not exclusively balance failure. Reactor16 AI10, enhancement unlocked8 but only9/100fragments so no enhancement yet.
-Manual save/mouse/screenshot actual success confirms original environment. Next continue8 through20, stop20 save/close. No injections, no game source decisions, no old saves/reports.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367, gameplay source unchanged. Independent normal new save, originalcloud Xorg:99 x1 GUI.
+Checkpoint15 2026-10-09 14:59:00.813661+00:00 paused main8 wave6. Completed1-7, A1/A2. First8/6 energy-resistant elite2.2M armor/no shield, physical-major deaths. Ordinary missile/dualarmor then1rail/2missiles attempts still failed. Now testing3rails23/23/22, dualarmor23/23, reactor17 AI10. No injection/old data/source gameplay knowledge.
+Actual mouse/screenshot/manual save successful. Next continue normal8 through20 stop/save/close at20.
