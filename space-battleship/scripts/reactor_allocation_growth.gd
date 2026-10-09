@@ -23,6 +23,25 @@ static func product_share(amount: int, weight: int, total: int) -> Array[int]:
 		else:part_remainder *= 2
 	return [quotient,remainder]
 
+static func available(modules: Array, allocation: Dictionary, capacity: int) -> Dictionary:
+	var next:=allocation.duplicate()
+	var total:=0
+	var weights:Array[int]=[]
+	for key in modules:
+		var value:=maxi(0,int(allocation.get(key,0)))
+		next[key]=value;weights.append(value);total+=value
+	if total<=maxi(0,capacity):return next
+	var remainders:Array[int]=[]
+	var order:Array[int]=[]
+	var left:=maxi(0,capacity)
+	for index in modules.size():
+		var part:=product_share(maxi(0,capacity),weights[index],total)
+		next[modules[index]]=part[0];left-=part[0]
+		remainders.append(part[1]);order.append(index)
+	order.sort_custom(func(a,b):return remainders[a]>remainders[b] if remainders[a]!=remainders[b] else a<b)
+	for index in left:next[modules[order[index]]]+=1
+	return next
+
 static func expand(modules: Array, allocation: Dictionary, old_capacity: int, new_capacity: int) -> Dictionary:
 	var next := allocation.duplicate()
 	if old_capacity <= 0 or new_capacity <= old_capacity:return next

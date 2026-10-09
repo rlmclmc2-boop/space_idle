@@ -81,10 +81,11 @@ func publish(g,next: Dictionary,kind: String) -> void:
 	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
 	if refit:
 		var capacity: int=g.reactor_capacity()
-		var remaining: int=capacity
-		for key in g.reactor_modules():
-			g.profile.reactorAllocation[key]=mini(int(g.profile.reactorAllocation.get(key,0)),remaining)
-			remaining-=int(g.profile.reactorAllocation[key])
+		if g.drone_combat.disabled.is_empty():
+			var remaining: int=capacity
+			for key in g.reactor_modules():
+				g.profile.reactorAllocation[key]=mini(int(g.profile.reactorAllocation.get(key,0)),remaining)
+				remaining-=int(g.profile.reactorAllocation[key])
 		g.apply_refit_health()
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})

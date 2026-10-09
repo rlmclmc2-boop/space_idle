@@ -387,13 +387,14 @@ func load_progress_data(raw: Dictionary) -> void:
 	profile.hightechOrder = hightech_slots()
 	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
 	crew.load_state(self, raw.get("crew", []))
-	load_reactor(raw)
 	load_planets(raw.get("planets", {}))
 	galaxy.refresh_unlocks(self)
 	var particles = raw.get("chronoParticles", 0)
 	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
 	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
 	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
+	# Restore capacity-owning hanging modules before validating saved energy.
+	load_reactor(raw)
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -1051,18 +1052,22 @@ func reactor_upgrade_cost(level := -1) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
 	return float(db.config.reactorUpgradeBase) * pow(float(db.config.reactorUpgradeGrowth), actual - 1)
 
+func reactor_active_allocation(drone_totals: Dictionary = {}) -> Dictionary:
+	return preload("res://scripts/reactor_allocation_growth.gd").available(Array(reactor_modules()),profile.reactorAllocation,reactor_capacity(drone_totals))
+
 func reactor_allocated() -> int:
 	var total := 0
-	for key in reactor_modules():total += int(profile.reactorAllocation.get(key,0))
+	var active:=reactor_active_allocation()
+	for key in reactor_modules():total += int(active.get(key,0))
 	return total
 
 func reactor_effective_ratio(key: String) -> float:
 	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
-	return float(profile.reactorAllocation.get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
+	return float(reactor_active_allocation().get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
 
 func reactor_multiplier(key: String, drone_totals: Dictionary = {}) -> float:
 	if not reactor_module_unlocked(key):return 1.0
-	var allocation := float(profile.reactorAllocation.get(key,0))
+	var allocation := float(reactor_active_allocation(drone_totals).get(key,0))
 	if reactor_unlocked():allocation+=float(reactor_capacity(drone_totals))*charge_free_ratio()
 	return 1.0 + pow(float(allocation),float(db.config.reactorBoostExponent)) / float(db.config.reactorPercentScale) if allocation > 0 else 1.0
 
@@ -1088,9 +1093,10 @@ func upgrade_reactor(amount: int) -> bool:
 		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
 		total += cost
 	var old_capacity := reactor_capacity()
+	var current_allocation:=reactor_active_allocation()
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
-	profile.reactorAllocation = preload("res://scripts/reactor_allocation_growth.gd").expand(Array(reactor_modules()),profile.reactorAllocation,old_capacity,reactor_capacity())
+	profile.reactorAllocation = preload("res://scripts/reactor_allocation_growth.gd").expand(Array(reactor_modules()),current_allocation,old_capacity,reactor_capacity())
 	invalidate_stat_cache()
 	# Growing maxima preserves battle damage; buying power is not a heal.
 	player.armour = N.minimum(player.armour,stat("armour"))
@@ -1103,9 +1109,11 @@ func upgrade_reactor(amount: int) -> bool:
 
 func set_reactor_allocation(key: String, value: float) -> bool:
 	if not reactor_unlocked() or not reactor_module_unlocked(key) or not is_finite(value):return false
-	var allowed := maxi(0,reactor_capacity() - reactor_allocated() + int(profile.reactorAllocation.get(key,0)))
+	var active:=reactor_active_allocation()
+	var allowed := maxi(0,reactor_capacity() - reactor_allocated() + int(active.get(key,0)))
 	var next := clampi(int(floor(value)),0,allowed)
-	if next == int(profile.reactorAllocation.get(key,0)):return false
+	if next == int(active.get(key,0)) and active==profile.reactorAllocation:return false
+	profile.reactorAllocation=active
 	profile.reactorAllocation[key] = next
 	invalidate_stat_cache()
 	if key == "defence":
@@ -1123,7 +1131,7 @@ func equalize_reactor_allocation() -> bool:
 	if modules.is_empty():return false
 	var share := reactor_capacity()/modules.size()
 	var remainder := reactor_capacity()%modules.size()
-	var next: Dictionary = profile.reactorAllocation.duplicate()
+	var next: Dictionary = reactor_active_allocation()
 	for index in modules.size():
 		next[modules[index]] = share + (1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false

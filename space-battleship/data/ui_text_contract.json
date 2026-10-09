@@ -9543,6 +9543,18 @@
     },
     "battle.enemy_identity.hull.4": {
       "params": []
+    },
+    "reactor.temporary_supply": {
+      "params": []
+    },
+    "reactor.temporary_rearrange": {
+      "params": []
+    },
+    "reactor.flow.preset_active": {
+      "params": [
+        "preset",
+        "active"
+      ]
     }
   },
   "bindings": {

@@ -398,7 +398,7 @@ func on_game_event(kind: String, payload: Dictionary) -> void:
 			if str(payload.id)==str(int(host.db.config.reactorUraniumId)):invalidate()
 		"resources_changed":
 			if payload.ids.has(str(int(host.db.config.reactorUraniumId))):invalidate()
-		"reactor_changed","unlocks_changed","planet_reforged":invalidate()
+		"reactor_changed","unlocks_changed","planet_reforged","hyperspace_changed","hyperspace_rebuild","hyperspace_drone_restored":invalidate()
 		"planet_changed":
 			if payload.has("reward") or payload.has("activated"):invalidate()
 
@@ -414,7 +414,7 @@ func refresh_pending(delta := 0.0) -> void:
 	if delta<=0.0 or refresh_elapsed+0.000000001>=1.0:refresh()
 
 func step_allocation(key: String, direction: int) -> void:
-	change_allocation(float(host.game.profile.reactorAllocation.get(key,0))+direction*int(host.db.config.reactorAllocationStep),key)
+	change_allocation(float(PREVIEW.active_allocation(host.game).get(key,0))+direction*int(host.db.config.reactorAllocationStep),key)
 
 func upgrade(mode: String) -> void:
 	var amount: int = host.game.reactor_max_upgrades() if mode == "MAX" else 10 if mode == "x10" else 1
@@ -468,8 +468,14 @@ func refresh() -> void:
 	var game = host.game
 	var capacity: int = game.reactor_capacity()
 	var allocated: int = game.reactor_allocated()
-	if host.ui_state_changed(allocation_hint,[allocated]):
-		host.set_ui_value(allocation_hint,"text",UIText.t("reactor.upgrade_idle" if allocated == 0 else "reactor.upgrade_shares"))
+	var active_allocation:Dictionary=PREVIEW.active_allocation(game)
+	var temporarily_limited:=false
+	for key in game.reactor_modules():
+		if int(game.profile.reactorAllocation.get(key,0))>int(active_allocation.get(key,0)):temporarily_limited=true;break
+	if host.ui_state_changed(allocation_hint,[allocated,temporarily_limited]):
+		host.set_ui_value(allocation_hint,"text",UIText.t("reactor.temporary_supply") if temporarily_limited else UIText.t("reactor.upgrade_idle" if allocated == 0 else "reactor.upgrade_shares"))
+		host.set_ui_value(allocation_hint,"tooltip_text",UIText.t("reactor.temporary_supply")+"\n"+UIText.t("reactor.temporary_rearrange") if temporarily_limited else "")
+		host.set_ui_value(allocation_hint,"mouse_filter",Control.MOUSE_FILTER_PASS if temporarily_limited else Control.MOUSE_FILTER_IGNORE)
 	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
 	var reactor_enabled: bool = game.reactor_unlocked()
 	var free_ratio: float = game.charge_free_ratio()
@@ -496,15 +502,16 @@ func refresh() -> void:
 		for mode in upgrade_buttons:
 			var needed: int = max_count if mode == "MAX" else 10 if mode == "x10" else 1
 			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or max_count < needed or not reactor_enabled)
-	if host.ui_state_changed(benefit_label,[game.profile.reactorLevel,available,reactor_enabled,capacity,game.reactor_energy(),game.profile.reactorAllocation.duplicate(),free_ratio,Array(game.reactor_available_modules()),host.db.config.reactorEnergyGrowth,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale]):
+	if host.ui_state_changed(benefit_label,[game.profile.reactorLevel,available,reactor_enabled,capacity,game.reactor_energy(),game.profile.reactorAllocation.duplicate(),active_allocation.duplicate(),free_ratio,Array(game.reactor_available_modules()),host.db.config.reactorEnergyGrowth,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale]):
 		refresh_upgrade_preview()
 	for key in module_controls:
 		var controls: Dictionary = module_controls[key]
 		var slider: HSlider = controls.slider
 		var unlocked: bool = game.reactor_module_unlocked(key)
 		var enabled: bool = unlocked and reactor_enabled
-		var amount: int = int(game.profile.reactorAllocation.get(key,0)) if unlocked else 0
-		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,amount,free_ratio,source_strength,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
+		var preset:int=int(game.profile.reactorAllocation.get(key,0)) if unlocked else 0
+		var amount: int = int(active_allocation.get(key,0)) if unlocked else 0
+		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,preset,amount,temporarily_limited,free_ratio,source_strength,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
 		host.set_ui_value(slider,"editable",enabled)
 		host.set_ui_value(controls.input,"mouse_filter",Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE)
 		controls.input.capacity = capacity
@@ -529,7 +536,7 @@ func refresh() -> void:
 		var shade := 0.58 if not enabled else 0.32 if visual_ratio == 0 else 0.08*(1.0-sqrt(visual_ratio))
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
 		host.set_ui_value(controls.boost,"modulate",Color(1.0,1.0,1.0,1.0) if visual_ratio > 0 else Color(0.72,0.72,0.72,1.0))
-		set_readout(controls.energy,UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
+		set_readout(controls.energy,UIText.t("reactor.flow.preset_active",{"preset":energy_text(preset),"active":energy_text(amount)}) if preset!=amount else UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
 		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
 		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
 		var percent: float = (game.reactor_multiplier(key)-1.0)*100.0
@@ -538,7 +545,7 @@ func refresh() -> void:
 		var effect_key := "reactor.module.%s.effect" % key
 		var effect: String = UIText.t(effect_key) if MODULE_COLORS.has(key) else key
 		set_readout(controls.boost,effect+"  "+UIText.t("reactor.module.boost",{"percent":effect_percent}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
-		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.flow.details",{"manual":energy_text(amount),"share":manual_percent,"free":energy_text(free_energy),"free_percent":percent_text(free_ratio*100.0 if enabled else 0.0),"effective":energy_text(effective_energy),"effect":controls.boost.text})+("\n"+UIText.t("reactor.flow.smelting_scope") if key == "smelting" else "\n"+UIText.t("reactor.module.condensation.desc") if key == "condensation" else ""))
+		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.flow.details",{"manual":energy_text(amount),"share":manual_percent,"free":energy_text(free_energy),"free_percent":percent_text(free_ratio*100.0 if enabled else 0.0),"effective":energy_text(effective_energy),"effect":controls.boost.text})+("\n"+UIText.t("reactor.flow.smelting_scope") if key == "smelting" else "\n"+UIText.t("reactor.module.condensation.desc") if key == "condensation" else "")+("\n"+UIText.t("reactor.temporary_supply")+"\n"+UIText.t("reactor.temporary_rearrange") if temporarily_limited else ""))
 	update_module_animation_visibility()
 	core.set_ratio(source_strength)
 	network.set_ratio(source_strength)
@@ -546,18 +553,22 @@ func refresh() -> void:
 	if network.is_processing() != (animate and source_strength>0.0):network.set_process(animate and source_strength>0.0)
 	if host.ui_state_changed(allocation_label,[capacity,allocated]):
 		set_readout(allocation_label,UIText.t("reactor.allocated",{"allocated":energy_text(allocated),"total":energy_text(capacity)}))
-		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(capacity-allocated)}))
+		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(maxi(0,capacity-allocated))}))
 		total_track.set_ratio(float(allocated)/maxf(1.0,capacity))
 	refreshing = false
 
 func refresh_upgrade_preview() -> void:
 	var game: BattleGame = host.game
+	var current_allocation:Dictionary=PREVIEW.active_allocation(game)
+	var temporarily_limited:bool=Array(game.reactor_modules()).any(func(key):return int(game.profile.reactorAllocation.get(key,0))>int(current_allocation.get(key,0)))
 	for mode in upgrade_buttons:
 		var count: int = affordable_count if mode == "MAX" else 10 if mode == "x10" else 1
 		var quote: Dictionary = PREVIEW.quote(game,count)
 		var title: String = UIText.t("reactor.upgrade.max",{"count":str(count)}) if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
 		host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.purchase_button",{"title":title,"cost":purchase_cost_text(quote.cost),"energy":energy_text(quote.next_capacity-quote.capacity)}))
 		var details: String = UIText.t("reactor.purchase_details",{"count":str(count),"cost":purchase_cost_text(quote.cost,false),"current":energy_text(quote.capacity),"next":energy_text(quote.next_capacity)})
+		if temporarily_limited:
+			details+="\n"+UIText.t("reactor.temporary_supply")+"\n"+UIText.t("reactor.temporary_rearrange")
 		if count>0 and not game.reactor_can_grow(count):details += "\n"+UIText.t("reactor.capacity_boundary")
 		for key in quote.effects:
 			var effect: Dictionary = quote.effects[key]

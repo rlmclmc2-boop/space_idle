@@ -17650,5 +17650,26 @@
     "params": "",
     "category": "battle",
     "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "reactor.temporary_supply",
+    "text": "部分能源暂时停用，恢复后按原分配生效",
+    "params": "",
+    "category": "reactor",
+    "note": "临时容量减少的显示与明确操作前提；不写回分配，不参与计算。"
+  },
+  {
+    "key": "reactor.temporary_rearrange",
+    "text": "调整、均分或升级会按当前生效分配重新安排，覆盖暂存预设。",
+    "params": "",
+    "category": "reactor",
+    "note": "临时容量减少的显示与明确操作前提；不写回分配，不参与计算。"
+  },
+  {
+    "key": "reactor.flow.preset_active",
+    "text": "预设 {preset} · 生效 {active} 能源",
+    "params": "preset,active",
+    "category": "reactor",
+    "note": "临时容量减少的显示与明确操作前提；不写回分配，不参与计算。"
   }
 ]
