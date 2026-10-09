@@ -72,6 +72,11 @@ func run() -> void:
 			check(panel.upgrade_buttons.x1.disabled and panel.uranium_label.text==UIText.t("reactor.uranium",{"uranium":NumberFormat.resource(fee-0.1,true)}) and panel.upgrade_buttons.x1.text.contains(NumberFormat.resource(fee,true)),"Actual underfunded purchase expands a colliding suffix to unequal exact integers")
 			break
 	g.profile.reactorLevel=prior_level;g.profile.resources["2"]=prior_budget;g.invalidate_stat_cache();panel.refresh()
+	var prior_fragments=g.profile.jewelFragments
+	g.profile.jewelFragments=31.2;scene.select_system(4);scene.enhancement_panel.open();scene.enhancement_panel.refresh()
+	check(scene.enhancement_panel.balance_label.text==UIText.t("enhance.balance",{"amount":"31"}) and scene.enhancement_panel.balance_label.tooltip_text==UIText.t("enhance.balance",{"amount":"31"}) and g.profile.jewelFragments==31.2,"Actual fragment panel displays31 without discarding its internal0.2 balance")
+	check(scene.hyperspace_panel.commands.material_number(13)=="13" and scene.hyperspace_panel.commands.material_number(39100)=="39.1K","Other material panels use integer quantities and approved suffix precision")
+	g.profile.jewelFragments=prior_fragments;scene.select_system(2);panel.refresh()
 	check(NumberFormat.scalar(3.24)=="3" and NumberFormat.scalar(3.26)=="3.5" and NumberFormat.scalar(-0.01)=="0","Ordinary display uses half units without negative zero")
 	check(NumberFormat.scalar(39100)=="39.1K" and NumberFormat.scalar({"m":3.91,"e":4})=="39.1K","Scalar display preserves suffix precision for native and large-number values")
 	check(NumberFormat.precise(6.75)=="6.75" and g.description_number(0.28)=="0.28","Formula literals and fractional economic values keep precision")
@@ -86,11 +91,11 @@ func run() -> void:
 	check(NumberFormat.scalar_is_exact(0.5) and not NumberFormat.scalar_is_exact(0.28) and not NumberFormat.scalar_is_exact(3.24),"Fixed time gate rejects misleading half-unit rounding")
 	var beam_entry:Dictionary={"key":"longLaser","level":1}
 	var beam:Dictionary=scene.equipment_display_snapshot(beam_entry)
-	check(is_equal_approx(float(beam.rate.interval),0.28) and is_equal_approx(float(beam.rate.stage_time),3.24),"Current beam timing mechanism remains unchanged")
-	check(not scene.equipment_panel.card_level_text(beam_entry,"weapons",true,beam).contains("升满") and not scene.equipment_panel.rate_notes(beam).contains("达到右值"),"Current beam card and notes withhold an inaccurate rounded full-ramp time")
-	check(not scene.equipment_panel.rate_detail(beam,beam).contains(UIText.t("weapon.rate_single",{"damage":scene.number(beam.rate.single),"seconds":"0.5"})),"Current beam details never claim a half-second attack interval")
-	var clean_beam:Dictionary=beam.duplicate(true);clean_beam.rate.interval=0.5;clean_beam.rate.stage_time=3.0
-	check(scene.equipment_panel.card_level_text(beam_entry,"weapons",true,clean_beam).contains("3秒升满") and scene.equipment_panel.rate_notes(clean_beam).contains("达到右值"),"Exactly representable fixed timing remains discoverable")
+	check(is_equal_approx(float(beam.rate.interval),0.5) and is_equal_approx(float(beam.rate.stage_time),3.0),"Current clean beam mechanism matches its displayable timings")
+	check(scene.equipment_panel.card_level_text(beam_entry,"weapons",true,beam).contains("3秒升满") and scene.equipment_panel.rate_notes(beam).contains("达到右值"),"Mechanism-matched fixed beam timings remain discoverable")
+	check(scene.equipment_panel.rate_detail(beam,beam).contains(UIText.t("weapon.rate_single",{"damage":scene.number(beam.rate.single),"seconds":"0.5"})),"Actual beam details show the real half-second interval")
+	var previous_beam:Dictionary=beam.duplicate(true);previous_beam.rate.interval=0.28;previous_beam.rate.stage_time=3.24
+	check(not scene.equipment_panel.card_level_text(beam_entry,"weapons",true,previous_beam).contains("升满") and not scene.equipment_panel.rate_notes(previous_beam).contains("达到右值"),"Non-representable fixed timings remain protected from misleading rounding")
 	check(panel.capacity_label.get_parent().position.y>=panel.equalize_button.position.y+panel.equalize_button.size.y and panel.capacity_label.get_parent().position.y-panel.equalize_button.position.y-panel.equalize_button.size.y<=12,"Capacity follows control actions without the removed legend gap")
 	check(panel.allocation_hint.position.y>=panel.capacity_label.get_parent().position.y+panel.capacity_label.get_parent().size.y and panel.allocation_hint.position.y+panel.allocation_hint.size.y<=panel.allocation_scroll.position.y,"Temporary-supply warning has a reserved row clear of readouts and controls")
 	var slider: HSlider=panel.module_controls.weapons.slider
