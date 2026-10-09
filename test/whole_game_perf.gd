@@ -29,6 +29,15 @@ func stats(a):
 func views(node,rows):
  if node is SubViewport:rows.append({"path":str(node.get_path()),"size":str(node.size),"mode":node.render_target_update_mode,"calls":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)})
  for c in node.get_children():views(c,rows)
+func ship_inventory(scene):
+ var view=scene.ship_view
+ var bodies=[]
+ for record in view.body_baker.records.values():
+  bodies.append({"request":record.request,"active":record.active,"visible":record.root.is_visible_in_tree(),"asset_ready":view.body_baker.textures.has(record.key) and view.body_baker.textures[record.key].ready,"source_meshes":record.parts.size()})
+ var geometry=0
+ for node in view.world.find_children("*","GeometryInstance3D",true,false):
+  if node.is_visible_in_tree():geometry+=1
+ return {"battle_visible":scene.battle_layer.is_visible_in_tree(),"ship_visible":view.is_visible_in_tree(),"ship_render_scale":view.viewport.scaling_3d_scale,"ship_msaa":view.viewport.msaa_3d,"live_shadows":view.world.get_node("KeyLight").shadow_enabled,"body_roots":view.body_baker.body_roots.size(),"bodies":bodies,"visible_geometry":geometry,"flat_enabled":view.flat_compositor.enabled,"flat_active":view.flat_compositor.active,"flat_reason":view.flat_compositor.fallback_reason,"flat_items":view.flat_compositor.items.size(),"flat_textures":view.flat_compositor.textures.size()}
 func run():
  Engine.max_fps=0
  DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -81,6 +90,7 @@ func run():
   scenarios=[0]
   scene.equipment_panel.set_upgrade_amount(0)
  var scenario_index=-1
+ var render_inventory=OS.get_environment("PERF_RENDER_INVENTORY")=="1"
  for page in scenarios:
   scenario_index+=1
   var switch_started=Time.get_ticks_usec()
@@ -95,8 +105,9 @@ func run():
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
-  for i in range(count+15):
-   if i==15:
+  var warmup=int(OS.get_environment("PERF_WARMUP_FRAMES")) if not OS.get_environment("PERF_WARMUP_FRAMES").is_empty() else 15
+  for i in range(count+warmup):
+   if i==warmup:
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1":
@@ -104,7 +115,7 @@ func run():
    if not realtime:scene._process(1.0/60.0)
    var elapsed=Time.get_ticks_usec()-start
    await process_frame
-   if i>=15:
+   if i>=warmup:
     frames.append(Time.get_ticks_usec()-start);cpu.append(scene.last_process_us if realtime else elapsed)
     calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
     primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
@@ -112,6 +123,7 @@ func run():
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  if render_inventory:row.ship_inventory=ship_inventory(scene)
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw

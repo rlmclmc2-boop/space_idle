@@ -8,6 +8,7 @@ Examples:
 Use --instrument only for attribution, not final before/after frame comparisons.
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -37,9 +38,12 @@ def main():
     parser.add_argument('--instrument', action='store_true')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
     parser.add_argument('--frames', type=int, default=60)
+    parser.add_argument('--warmup-frames', type=int, default=15)
+    parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
     assert 1 <= args.frames <= 600
+    assert 1 <= args.warmup_frames <= 600
     work = ROOT / 'test/work'
     work.mkdir(exist_ok=True)
     area = args.reuse.resolve() if args.reuse else Path(tempfile.mkdtemp(prefix='whole-perf-', dir=work))
@@ -84,7 +88,7 @@ def main():
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
-    env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     with (area / (args.label + '-import.log')).open('w', encoding='utf-8') as log:
@@ -96,7 +100,16 @@ def main():
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
     expected = 1 if args.max_quote else len(args.pages.split(','))
-    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'exit': result.returncode, 'environment': environment, 'rows': rows}
+    measured_files = ['probe.gd', 'project.godot', 'main.tscn', 'data/game_data.json', 'galaxy_fixture.json',
+                      *['scripts/' + name for name in ('main.gd', 'battlefield.gd', 'game.gd', 'presented_battle_game.gd',
+                                                       'presented_ship_view.gd', 'ship_body_baker.gd', 'flat_ship_compositor.gd',
+                                                       'flat_ship_compositor.gdshader', 'galaxy_map.gd', 'galaxy_city_modules.gd')]]
+    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
+              'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
+              'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
+              'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
+              'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
+              'exit': result.returncode, 'environment': environment, 'rows': rows}
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
     if result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text:
