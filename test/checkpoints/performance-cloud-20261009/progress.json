@@ -6,13 +6,14 @@
   "qa_path": "test/checkpoints/parent/recovery-new-profile-20261009/progress.json",
   "qa_sha256": "40ae83541cc6bbf8957543bad7eae7e1f7c7be570d11695278eaad16706d3f36",
   "qa_provenance": "Completed20, brieflyentered21, returned20/1. Natural resources preserved. Stock5/equipped2; inventory schema9 is not drone count.",
-  "last_graphics_success_utc": "2026-10-09T13:37:25.861953Z",
+  "last_graphics_success_utc": "2026-10-09T14:10:47.770248Z",
   "environment": "Godot4.6.3 GL Compatibility / llvmpipe; no hardware GPU; not user49FPS acceptance.",
   "completed": [
     "Natural checkpoint shortwindow exit0: guardintermission20/1, host5.31ms anddrawcommands0.082ms versusframe68.23ms; originalQAfileunchanged.",
     "Built-in --gpu-profile exit0 without crashed viewportgetters: CanvasItems22.6-35.9ms exceeds 3Dtransparent8.4-13.1ms.",
     "NativeShipOutput bounded12percent average,noP95gain; foggrid no reliablegain. Neither production implementation.",
-    "Workspace retained raster diagnostic keeps sameGUI nodes/profile:210->126calls,43.2/47.6ms controls versus35.4ms candidate. Rootimage byteerror<=10; input,invalidation andcapture183ms stillunaccepted."
+    "Workspace retained raster diagnostic keeps sameGUI nodes/profile:210->126calls,43.2/47.6ms controls versus35.4ms candidate. Rootimage byteerror<=10; input,invalidation andcapture183ms stillunaccepted.",
+    "Workspace diagnostic uses built-in premultiplied material and four native strips; originals remain live until one unchanged generation completes. Actual GUI selection/popup/focus/wheel, layout, new/moved controls and teardown pass. Overflow clipping differs by one pixel, so overflowing ScrollContainers remain fully live. First preparation-frame max84ms, all update-capture-frame max120ms; old183ms spike reduced, not eliminated."
   ],
-  "next": "Continue same task: expand retained workspace scope to original UI subtree; validate real GUI input and immediate source-draw fallback before any default enable. Current production cache remains off; parentowns main/overall acceptance."
+  "next": "Continue same performance task: reduce remaining preparation/recapture peaks; coordinate main.gd owner before optional production hook. Candidate is diagnostic-only, production defaults unchanged; fixed46829d6c playtest unchanged. Real legal upgrade feedback unverified because natural checkpoint has no affordable visible upgrade; no resources injected. Parent owns quality/hardware/whole-game acceptance."
 }

@@ -99,4 +99,4 @@ Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --hea
 
 银河边界诊断：`whole_game_perf.py --label retained-boundaries --rich --pages 8 --retained-galaxy-boundaries` 验证鼠标缩放、拖动、真实升级/建造及移除夹具退回完整渲染，记录近码头的运输艇遮挡对照。当前码头边缘差异与准备峰值仍阻止默认启用；施工/升级动画必须维持完整渲染。诊断退出正常不等于画质或整体性能验收。
 
-自然 QA 成本入口：将 `checkpoint_scene_cost.gd` 复制到隔离候选工程，授权检查点副本命名为 `checkpoint20.json`，用 `--script res://checkpoint_scene_cost.gd` 启动；`--gpu-profile` 使用引擎原生分析，避免旧 Viewport 计时 getter。`retained_workspace_probe.gd` 同工程继承该入口，仅作固定姿态的工作区保留诊断；交互、失效与准备峰值通过前不得启用生产路径。版本与检查点来源见 `checkpoints/performance-cloud-20261009/progress.json`；该档曾进入21后返回20/1。
+自然 QA 成本入口：将 `checkpoint_scene_cost.gd` 复制到隔离候选工程，授权检查点副本命名为 `checkpoint20.json`，用 `--script res://checkpoint_scene_cost.gd` 启动；`--gpu-profile` 使用引擎原生分析，避免旧 Viewport 计时 getter。`retained_workspace_probe.gd` 继承该入口作固定姿态诊断；`retained_workspace_boundary.gd` 配合 `retained_workspace_controller.gd` 检查原位 GUI 输入、同帧回退及分帧准备。溢出滚动区保持原绘制；自然档无可负担升级时明确记为未验证。生产默认关闭，准备峰值与画质仍须父验收。版本与检查点来源见 `checkpoints/performance-cloud-20261009/progress.json`；该档曾进入21后返回20/1。
