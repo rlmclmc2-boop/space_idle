@@ -1,0 +1,1 @@
+QA-only independent normal new save. Fixed candidate 46829d6c. Started 2026-10-09 13:27 UTC, 1x, no resource injection. Snapshot 14:13 UTC around stage 7, after first clearing stage 6. GUI ongoing separately. Preserve as checkpoint, never overwrite a player save. Parent has prior project knowledge; not blind play. Code candidate unchanged. Stop at stage20.
