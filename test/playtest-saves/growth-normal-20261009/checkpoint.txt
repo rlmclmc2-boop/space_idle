@@ -1,3 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplayunchanged. Independentnormalnewsave originalcloud Xorg:99 x1 GUI.
-Checkpoint23 2026-10-09 15:55:24.091467+00:00 pausedMAIN10wave4 afterFIRST10/6physical-major failure actualcomparison. Completed1-9+A1/A2. First10normal20.7Marmorphysresist ->energybeams, continuedordinarygear+reactor22, first10/6fullhealththenfailed. FailureopensfixedD01onlyupgradable; manuallyD02shield->armor forphysicalcapacity. NormalW02/W03,D01/D02/reactorupgradesclicked withGUIresponsewait.
-Reactorallocation25weapon75def; enhancement1burst/memory AI13. Actualmouse/manualsave/screenshot originalenv success, noreset/injection/olddata/sourceknowledge. Nextcontinue10through20stop/save/close.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplaysource unchanged; independentnormalnewsave originalcloud Xorg:99 x1.
+Checkpoint24 2026-10-09 16:04:32.643445+00:00 pausedMAIN10wave7, FIRSTpassed10/6 afterdualarmor/energybeams; last2blueenemy actual24.3Marmorenergyresist ->firsthybrid2beams1rail, normalgear. First10/7 HP38.6/44M andiron104K. Reactor24 ordinaryupgrade, continuednormalgear.
+FactoryactualbeforeAIbuy furnace21weapon24armor21, AI13 allocation3/6/4. VisibleMAX+6 normalresourcepurchase selected, extra4weapon2armorallocated (AI19 expected; actualimage retainedprivate). Enhancement1burst/memory, stationOFF.
+Actualmouse/manualsave/screenshot successfuloriginalenv. Nextcontinue10through20stop/save/close. Noreset/injections/olddata/gameplaysourceknowledge. Completed1-9+A1/A2.
