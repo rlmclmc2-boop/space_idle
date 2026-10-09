@@ -540,7 +540,7 @@ func _refresh_task(id: String, refresh_roster := true) -> void:
 	var crew_id := str(progress.get("crewId", ""))
 	var active := not crew_id.is_empty()
 	var member: Dictionary = host.game.crew.definitions(host.game).get(crew_id, {})
-	var progress_text := Parameters.render("planet.exploring", {"crew":str(member.get("name", crew_id)), "remaining":"%.1f" % maxf(0, duration-float(progress.get("elapsed", 0)))}, {"remaining":{"role":"time", "unit":" 秒"}}) + "\n" + Parameters.escape(UIText.t(card.visual.work_state_key())) if active else Parameters.render("planet.duration_compact", {"seconds":"%.1f" % duration}, {"seconds":{"role":"time", "unit":" 秒"}})
+	var progress_text := Parameters.render("planet.exploring", {"crew":str(member.get("name", crew_id)), "remaining":NumberFormat.scalar(maxf(0, duration-float(progress.get("elapsed", 0))))}, {"remaining":{"role":"time", "unit":" 秒"}}) + "\n" + Parameters.escape(UIText.t(card.visual.work_state_key())) if active else Parameters.render("planet.duration_compact", {"seconds":NumberFormat.scalar(duration)}, {"seconds":{"role":"time", "unit":" 秒"}})
 	host.set_ui_value(card.progress, "text", progress_text)
 	host.set_ui_value(card.progress, "tooltip_text", card.progress.get_parsed_text())
 	var state_key := "planet.task_paused" if host.game.paused else ("planet.task_active" if active else "planet.task_idle")

@@ -422,7 +422,7 @@ func effect_text(g, item: Dictionary) -> String:
 	var key := str(row.get("descTextId", ""))
 	if key.is_empty():key="crew.effect.generic"
 	if not UIText.loaded:UIText.reload_catalog()
-	var possible := {"description":str(row.description),"value":"%.1f" % (value*100),"interval":"%.1f" % (float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text(str(item.get("upgradeMode","")),str(row.effectType))}
+	var possible := {"description":str(row.description),"value":NumberFormat.percentage(value*100),"interval":NumberFormat.scalar(float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text(str(item.get("upgradeMode","")),str(row.effectType))}
 	var values := {}
 	for parameter in UIText.contracts.get(key,{}).get("params",[]):
 		if possible.has(parameter):values[parameter]=possible[parameter]

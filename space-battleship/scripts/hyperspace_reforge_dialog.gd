@@ -67,7 +67,7 @@ func setup(g,id:String,rewards:String)->void:
   var lines:Array[String]=[]
   for affix in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
    var key:String=str(affix.key)
-   var value:String=Text.t("hyperspace.times",{"value":str(int(affix.value))}) if key in ["chain_count","extra_chain_count"] else Text.t("hyperspace.percent",{"value":"%.1f"%(float(affix.value)*100.0)})
+   var value:String=Text.t("hyperspace.times",{"value":str(int(affix.value))}) if key in ["chain_count","extra_chain_count"] else Text.t("hyperspace.percent",{"value":NumberFormat.percentage(float(affix.value)*100.0)})
    lines.append(Text.t("hyperspace.affix",{"key":Text.data_text("hyperspace_affixes",key,"name",Text.t("hyperspace.unknown_affix")),"tier":str(int(affix.tier)),"value":value,"locked":Text.t("hyperspace.locked") if affix.locked else ""}))
   if d.legendary:lines.append(Text.data_text("hyperspace_legendary_effects",str(d.legendary_effect.get("effect_id","")),"name",Text.t("hyperspace.unknown_effect")))
   if not lines.is_empty():make_label(content,"\n".join(lines))

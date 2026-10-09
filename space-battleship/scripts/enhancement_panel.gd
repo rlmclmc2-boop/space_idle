@@ -229,7 +229,7 @@ func parameter(key: String) -> float:
 	return game.enhancement_parameter(key)
 
 func display(value: Variant) -> String:
-	return FORMAT.precise(value)
+	return FORMAT.scalar(value)
 
 func threshold_level(index: int) -> int:
 	return game.enhancement_effect_threshold(index)
@@ -373,9 +373,9 @@ func refresh() -> void:
 	if bonus!=0:
 		host.set_ui_value(bonus_label,"text",UIText.t("enhance.bonus",{"bonus":bonus,"effective":game.enhancement_effective_level()}))
 	host.set_ui_value(balance_label,"text",UIText.t("enhance.balance",{"amount":FORMAT.compact(balance)}))
-	host.set_ui_value(balance_label,"tooltip_text",UIText.t("enhance.balance",{"amount":display(balance)}))
+	host.set_ui_value(balance_label,"tooltip_text",UIText.t("enhance.balance",{"amount":FORMAT.precise(balance)}))
 	host.set_ui_value(cost_label,"text",UIText.t("enhance.limit_reached") if at_limit else UIText.t("enhance.cost",{"level":level+1,"cost":FORMAT.compact(cost)}))
-	host.set_ui_value(cost_label,"tooltip_text",UIText.t("enhance.limit_reached") if at_limit else UIText.t("enhance.cost",{"level":level+1,"cost":display(cost)}))
+	host.set_ui_value(cost_label,"tooltip_text",UIText.t("enhance.limit_reached") if at_limit else UIText.t("enhance.cost",{"level":level+1,"cost":FORMAT.precise(cost)}))
 	host.set_ui_value(upgrade_button,"disabled",not game.can_upgrade_enhancement())
 	host.set_ui_value(max_button,"disabled",not game.can_upgrade_enhancement())
 	host.set_ui_value(progress,"value",clampf(floorf(N.ratio(balance,cost)*100),0,100) if N.compare(cost,0)>0 else 0.0)

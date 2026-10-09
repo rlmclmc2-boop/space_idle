@@ -47,6 +47,13 @@ func run() -> void:
 	check(NumberFormat.scalar(3.24)=="3" and NumberFormat.scalar(3.26)=="3.5" and NumberFormat.scalar(-0.01)=="0","Ordinary display uses half units without negative zero")
 	check(NumberFormat.scalar(39100)=="39.1K" and NumberFormat.scalar({"m":3.91,"e":4})=="39.1K","Scalar display preserves suffix precision for native and large-number values")
 	check(NumberFormat.precise(6.75)=="6.75" and g.description_number(0.28)=="0.28","Formula literals and fractional economic values keep precision")
+	check(g.format_description({"para1":1.4304762894},"{para1,百分比,保留两位小数}",1)=="143%","Legacy two-decimal percentage templates now use the shared presentation policy")
+	check(g.format_description({"para1":0.28},"{para1/0.28,百分比}",1)=="100%","Display policy never quantizes formula operands before evaluation")
+	var display_profile:=JSON.stringify(g.profile);var display_rng:=g.rng.state
+	var master_help:String=scene.hyperspace_panel.legendary_help.explanation({"effect_id":"drone_master","parameters":{"maximum_reduction":0.553}})
+	check(master_help.contains(scene.hyperspace_panel.t("percent",{"value":"55"})) and not master_help.contains("55.3%"),"Owned legendary details use integer percentage points")
+	check(JSON.stringify(g.profile)==display_profile and g.rng.state==display_rng,"Formatting legendary details preserves saved parameters and RNG")
+	check(scene.enhancement_panel.display(3.24)=="3" and scene.enhancement_panel.display(0.28)=="0.5","Enhancement duration details use the ordinary scalar entry")
 	check(panel.capacity_label.get_parent().position.y>=panel.equalize_button.position.y+panel.equalize_button.size.y and panel.capacity_label.get_parent().position.y-panel.equalize_button.position.y-panel.equalize_button.size.y<=12,"Capacity follows control actions without the removed legend gap")
 	check(panel.allocation_hint.position.y>=panel.capacity_label.get_parent().position.y+panel.capacity_label.get_parent().size.y and panel.allocation_hint.position.y+panel.allocation_hint.size.y<=panel.allocation_scroll.position.y,"Temporary-supply warning has a reserved row clear of readouts and controls")
 	var slider: HSlider=panel.module_controls.weapons.slider

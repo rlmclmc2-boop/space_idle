@@ -2811,10 +2811,10 @@ func enhancement_protection_state_text(status: Dictionary = {}) -> String:
 		duration = ceili(float(status.lockout)*10)/10.0
 	var arguments := {}
 	if mode in ["physical","energy"]:arguments.resistance=NUMBER_FORMAT.percentage(float(status.get("resistance",0))*100)
-	if mode in ["physical","energy"] or key=="enhance.protection_state.lockout":arguments.duration=NUMBER_FORMAT.precise(duration)
+	if mode in ["physical","energy"] or key=="enhance.protection_state.lockout":arguments.duration=NUMBER_FORMAT.scalar(duration)
 	var caption := mixed_protection_state_text(status) if mode=="mixed" else UIText.t(key,arguments)
 	if GrowthNumber.compare(status.get("cover_current",0),0)>0:
-		caption += " · "+UIText.t("enhance.protection_state.cover",{"amount":number(status.cover_current),"duration":NUMBER_FORMAT.precise(ceili(float(status.cover_remaining)*10)/10.0)})
+		caption += " · "+UIText.t("enhance.protection_state.cover",{"amount":number(status.cover_current),"duration":NUMBER_FORMAT.scalar(ceili(float(status.cover_remaining)*10)/10.0)})
 	return caption
 
 func mixed_protection_state_text(status: Dictionary) -> String:
@@ -2851,7 +2851,7 @@ func enhancement_protection_details() -> String:
 		var duration: float = component.lockout if float(component.lockout)>0 else component.remaining
 		var arguments := {}
 		if mode in ["physical","energy"] and float(component.lockout)<=0:arguments.resistance=NUMBER_FORMAT.percentage(float(component.resistance)*100)
-		if mode in ["physical","energy"] or float(component.lockout)>0:arguments.duration=NUMBER_FORMAT.precise(ceili(duration*10)/10.0)
+		if mode in ["physical","energy"] or float(component.lockout)>0:arguments.duration=NUMBER_FORMAT.scalar(ceili(duration*10)/10.0)
 		var state := UIText.t(key,arguments)
 		lines.append(UIText.t("enhance.protection_component",{"index":int(component.index)+1,"current":number(component.current),"capacity":number(component.capacity),"state":state}))
 	return "\n".join(lines)
@@ -3410,7 +3410,7 @@ func equipment_display_snapshot(entry: Dictionary, level := -1) -> Dictionary:
 func equipment_expected_details(entry: Dictionary, values: Dictionary = {}, exact := false) -> String:
 	if not BattleGame.WEAPON_KEYS.has(str(entry.get("key",""))):return ""
 	if values.is_empty():values=equipment_display_snapshot(entry)
-	return UIText.t("weapon.expected_damage_details",{"base":NUMBER_FORMAT.precise(values.base) if exact else number(values.base),"trigger":NUMBER_FORMAT.percentage(values.trigger*100.0),"bonus":NUMBER_FORMAT.percentage(values.bonus_probability*100.0),"multiplier":NUMBER_FORMAT.percentage(GrowthNumber.multiply(values.critical_multiplier,100.0)),"expected":NUMBER_FORMAT.precise(values.expected) if exact else number(values.expected)})
+	return UIText.t("weapon.expected_damage_details",{"base":NUMBER_FORMAT.scalar(values.base) if exact else number(values.base),"trigger":NUMBER_FORMAT.percentage(values.trigger*100.0),"bonus":NUMBER_FORMAT.percentage(values.bonus_probability*100.0),"multiplier":NUMBER_FORMAT.percentage(GrowthNumber.multiply(values.critical_multiplier,100.0)),"expected":NUMBER_FORMAT.scalar(values.expected) if exact else number(values.expected)})
 
 func equipment_stat_text(entry: Dictionary, current: Dictionary = {}, next: Dictionary = {}) -> String:
 	var key := str(entry.key)

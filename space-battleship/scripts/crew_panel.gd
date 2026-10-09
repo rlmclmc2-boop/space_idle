@@ -520,7 +520,7 @@ func refresh_detail_status(item: Dictionary) -> void:
 		host.set_ui_value(effect_title,"text",UIText.t("crew.hyperspace_duration_title"))
 		var text := UIText.t("crew.hyperspace_duration_base")
 		if g.crew.levels_unlocked(g):
-			text=UIText.t("crew.hyperspace_duration_effect",{"efficiency":NumberFormat.precise(g.crew.hyperspace_efficiency(g,str(item.crewId))),"luck":NumberFormat.precise(g.crew.hyperspace_luck(g,str(item.crewId)))})
+			text=UIText.t("crew.hyperspace_duration_effect",{"efficiency":NumberFormat.scalar(g.crew.hyperspace_efficiency(g,str(item.crewId))),"luck":NumberFormat.scalar(g.crew.hyperspace_luck(g,str(item.crewId)))})
 		host.set_ui_value(description,"text",text)
 		return
 	if not assigned:return
@@ -531,13 +531,13 @@ func refresh_detail_status(item: Dictionary) -> void:
 	var text: String=g.crew.effect_text(g,item)
 	if g.crew.active(g,item) and not effect_key.is_empty():
 		var value: float=g.crew.effect_value(g,item)
-		var interval: String="%.1f" % (float(job.interval)/value if value>0 else 0.0)
+		var interval: String=NumberFormat.scalar(float(job.interval)/value if value>0 else 0.0)
 		var mode: String=str(item.get("upgradeMode","1"))
 		if kind=="AUTO_UPGRADE":
 			text=UIText.t("crew.core_equipment",{"interval":interval,"amount":UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})})
 		elif kind=="AUTO_SCIENTIST":text=UIText.t("crew.core_scientist",{"interval":interval,"amount":g.crew.upgrade_mode_text(mode,kind)})
 		elif kind=="AUTO_COMBINE":text=UIText.t("crew.core_jewel",{"interval":interval})
-		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":"%.1f" % (value*100)})
+		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":NumberFormat.percentage(value*100)})
 	host.set_ui_value(description,"text",text)
 
 func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
@@ -547,7 +547,7 @@ func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
 	var g=host.game
 	var value: float=g.crew.effect_value(g,{"crewId":item.crewId,"assignmentType":job_ids[jobs.selected]})
 	if value<=0:return ""
-	var values: Dictionary={"interval":"%.1f" % (float(row.interval)/value)}
+	var values: Dictionary={"interval":NumberFormat.scalar(float(row.interval)/value)}
 	var mode:=draft_mode
 	if kind=="AUTO_UPGRADE":
 		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)

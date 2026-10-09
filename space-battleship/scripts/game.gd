@@ -1340,14 +1340,7 @@ func format_description(row: Dictionary, template: String, level: int, minute_in
 			if not expression.has_execute_failed() and (value is int or value is float) and is_finite(float(value)):
 				if options.has("百分比显示") or options.has("百分比"):
 					var percent := float(value) * 100.0
-					if options.has("四舍五入保留整数百分比部分"):
-						replacement = (NUMBER_FORMAT.precise(roundf(percent)) if percent < 1000.0 else NUMBER_FORMAT.compact(roundf(percent))) + "%"
-					elif options.has("即100.3%展示为100%"):
-						replacement = NUMBER_FORMAT.compact(floorf(percent + 0.00000001)) + "%"
-					elif options.has("保留两位小数") and percent < 1000.0:
-						replacement = "%.2f%%" % percent
-					else:
-						replacement = NUMBER_FORMAT.compact(percent) + "%"
+					replacement = NUMBER_FORMAT.percentage(floorf(percent + 0.00000001) if options.has("即100.3%展示为100%") else percent) + "%"
 				else:
 					replacement = NUMBER_FORMAT.compact(ceilf(float(value)) if options.has("向上取整") else float(value))
 		result = result.substr(0,block.get_start()) + replacement + result.substr(block.get_end())

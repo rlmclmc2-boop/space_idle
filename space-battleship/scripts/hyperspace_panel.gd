@@ -519,7 +519,7 @@ func show_selected_legendary() -> void:
 func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
- var fire_params={"interval":"%.2f"%float(row.cd)}
+ var fire_params={"interval":NumberFormat.scalar(float(row.cd))}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
  var lines:Array[String]=[]
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
@@ -543,7 +543,7 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  return "\n".join(lines)
 func affix_display(a:Dictionary,d:Dictionary) -> Dictionary:
  var value:float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,host.game.hyperspace.config)
- var result:Dictionary={"name":affix_name(str(a.key)),"value_text":t("times",{"value":str(int(value))}) if str(a.key) in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(value*100.0)})}
+ var result:Dictionary={"name":affix_name(str(a.key)),"value_text":t("times",{"value":str(int(value))}) if str(a.key) in COUNT_AFFIXES else t("percent",{"value":NumberFormat.percentage(value*100.0)})}
  if affix_display_provider.is_valid():
   var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
   if projection is Dictionary:

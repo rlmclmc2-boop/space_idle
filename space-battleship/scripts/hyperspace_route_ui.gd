@@ -103,7 +103,7 @@ func refresh() -> void:
   var key="layer_queue_claim" if str(queue.get("status",""))=="completed_pending" else "layer_queue_cancel" if str(queue.get("status",""))=="queued" else "layer_queue_stop" if str(queue.get("mode","")) in ["idle","auto"] else "layer_queue_view"
   panel.put(queue_action,"text",t(key))
  var paused=bool(v.get("paused",false));panel.put(paused_info,"visible",paused)
- if paused:panel.put(paused_info,"text",t("layer_paused",{"time":"%.1f"%float(v.get("paused_remaining",0.0))}))
+ if paused:panel.put(paused_info,"text",t("layer_paused",{"time":NumberFormat.scalar(float(v.get("paused_remaining",0.0)))}))
  var layer=int(v.get("current_layer",0));var next_layer=int(v.get("next_layer",1))
  if panel.first_win!=null:panel.put(panel.first_win,"visible",layer==0 and not v.is_empty())
  panel.put(current,"text",t("layer_current",{"layer":str(layer)}) if layer>0 else t("layer_unstarted"))
@@ -112,10 +112,10 @@ func refresh() -> void:
  panel.put(crew_button,"visible",layer>0)
  panel.put(challenge_button,"text",t("layer_challenge",{"layer":str(next_layer)}))
  panel.put(record,"visible",layer>0)
- panel.put(record,"text",t("layer_record",{"time":"%.2f"%float(v.get("best_time",0.0))}))
+ panel.put(record,"text",t("layer_record",{"time":NumberFormat.scalar(float(v.get("best_time",0.0)))}))
  var duration=float(v.get("idle_duration",0.0))
  panel.put(idle_time,"visible",layer>0 and duration>0.0)
- panel.put(idle_time,"text",t("layer_idle_time",{"time":"%.2f"%duration}))
+ panel.put(idle_time,"text",t("layer_idle_time",{"time":NumberFormat.scalar(duration)}))
  var total=float(v.get("total_luck",0.0))
  panel.put(luck,"visible",total>0.0)
  panel.put(luck,"text",t("layer_luck",{"value":"%.0f"%total}))
@@ -134,7 +134,7 @@ func refresh() -> void:
  panel.put(claim_background_button,"visible",pending)
  # A retained paused task is described by paused_info, not the empty live receipt.
  panel.put(background_status,"visible",not paused)
- panel.put(background_status,"text",t("layer_task_pending") if pending else (t("layer_idle_work",{"work":"%.1f"%work,"duration":"%.1f"%task_duration}) if not background.is_empty() else t("layer_idle_none")))
+ panel.put(background_status,"text",t("layer_task_pending") if pending else (t("layer_idle_work",{"work":NumberFormat.scalar(work),"duration":NumberFormat.scalar(task_duration)}) if not background.is_empty() else t("layer_idle_none")))
  panel.put(progress,"visible",not background.is_empty())
  panel.put(progress,"value",100.0 if pending else clampf(100.0*work/maxf(0.001,task_duration),0.0,100.0))
  var challenge_pending=str(challenge.get("status",""))=="completed_pending"
@@ -217,7 +217,7 @@ func crew_requirement() -> String:
  return t("crew_unlock_reached" if str(first.get("mode","cleared"))=="reached" else "crew_unlock_cleared",{"level":str(int(first.level))})
 func refresh_crew() -> void:
  var id=selected_crew();var v=view(id)
- var time="%.2f"%float(v.get("crew_duration",0.0))
+ var time=NumberFormat.scalar(float(v.get("crew_duration",0.0)))
  var configured=id==str(v.get("crew_id","")) and not id.is_empty()
  panel.put(crew_info,"text",t("layer_crew_detail",{"time":time,"luck":"%.0f"%float(v.get("total_luck",0.0))}) if configured else t("layer_crew_time",{"time":time}))
  panel.put(crew_info,"tooltip_text",(t("layer_luck_sources",{"crew":"%.0f"%float(v.get("crew_luck",0.0)),"permanent":"%.0f"%float(v.get("permanent_luck",0.0))})+"\n"+t("layer_luck_rules")) if configured else "")

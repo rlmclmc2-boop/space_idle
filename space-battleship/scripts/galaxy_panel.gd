@@ -219,7 +219,7 @@ func refresh() -> void:
 	map.crew_count=game.galaxy.crew_count(game,selected)
 	map.refresh()
 	set_text(state_label,UIText.t("galaxy.waiting_crew" if map.crew_count<=0 and region.state.status in ["exploring","developing"] else "galaxy.state_"+str(region.state.status)))
-	set_text(cards.exploration,"%.1f%%"%(region.progress()*100))
+	set_text(cards.exploration,NumberFormat.percentage(region.progress()*100)+"%")
 	set_text(cards.buildings,"%d / %d"%[region.occupied_count,region.slots.size()])
 	set_text(cards.max_level,str(region.max_level_count))
 	set_text(cards.crew,UIText.t("galaxy.crew_count",{"count":map.crew_count}))
@@ -228,7 +228,7 @@ func refresh() -> void:
 	game.galaxy.effects.refresh(game.galaxy)
 	var effect: Dictionary=game.galaxy.effects.cache[selected]
 	var rates: Dictionary=game.galaxy.effects.rates(game,game.galaxy,selected)
-	for key in ["crew_exp","equipment_value","charge_max","gem_fragment"]:set_text(cards[key],"×%.2f"%float(effect[key]))
+	for key in ["crew_exp","equipment_value","charge_max","gem_fragment"]:set_text(cards[key],"×"+NumberFormat.scalar(float(effect[key])))
 	for key in ["iron","uranium"]:set_text(cards[key],UIText.t("galaxy.rate",{"amount":NumberFormat.compact(rates[key])}))
 	host.set_ui_value(start_button,"visible",region.state.status=="available")
 	if crew_dialog.visible:refresh_crew_dialog()

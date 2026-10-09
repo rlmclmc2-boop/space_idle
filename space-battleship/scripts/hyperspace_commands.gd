@@ -243,13 +243,13 @@ func promotion_forecast(d:Dictionary) -> Dictionary:
  return {"count":indices.size(),"chance":probability,"rows":rows}
 func promotion_summary(d:Dictionary) -> String:
  var forecast:Dictionary=promotion_forecast(d)
- return t("promotion_current_chance",{"chance":"%.1f"%(100.0*float(forecast.chance))}) if not forecast.is_empty() else ""
+ return t("promotion_current_chance",{"chance":NumberFormat.percentage(100.0*float(forecast.chance))}) if not forecast.is_empty() else ""
 func promotion_details(d:Dictionary) -> String:
  var forecast:Dictionary=promotion_forecast(d)
  if forecast.is_empty():return ""
  var lines:Array[String]=[promotion_summary(d),t("promotion_scope",{"count":str(int(forecast.count))})]
  for row in forecast.rows:
-  lines.append(t("promotion_affix_range",{"index":str(int(row.index)+1),"name":str(row.name),"tier":str(int(row.tier)),"next":str(int(row.next_tier)),"chance":"%.1f"%(100.0*float(row.chance)),"minimum":str(row.minimum),"maximum":str(row.maximum)}))
+  lines.append(t("promotion_affix_range",{"index":str(int(row.index)+1),"name":str(row.name),"tier":str(int(row.tier)),"next":str(int(row.next_tier)),"chance":NumberFormat.percentage(100.0*float(row.chance)),"minimum":str(row.minimum),"maximum":str(row.maximum)}))
  lines.append(t("promotion_probability_note"))
  return "\n".join(lines)
 func received_materials_text(materials: Dictionary) -> String:
@@ -386,7 +386,7 @@ func show_crew() -> void:
 func refresh_crew() -> void:
  var id=str(crew_choice.get_item_metadata(crew_choice.selected));var lv=h().Permission.crew_level(game(),id);var best=h().best_x1(game(),panel.route,int(panel.level.value))
  var quote=h().auto_quote(best,lv);var ticket=float(quote.ticket);var duration=float(quote.duration)
- crew_info.text=t("auto_projection",{"ticket":"%.1f"%ticket,"duration":"%.1f"%duration,"status":t("auto_enabled") if game().profile.hyperspace.auto.enabled else t("auto_disabled")})
+ crew_info.text=t("auto_projection",{"ticket":NumberFormat.scalar(ticket),"duration":NumberFormat.scalar(duration),"status":t("auto_enabled") if game().profile.hyperspace.auto.enabled else t("auto_disabled")})
  crew_enable.disabled=id.is_empty() or not h().Permission.crew_available(game(),id) or best<=0
 func set_auto(enabled: bool) -> void:
  var id=str(crew_choice.get_item_metadata(crew_choice.selected))
@@ -438,7 +438,7 @@ func show_modules() -> void:
 func module_effect_text(key:String,level:int) -> String:
  var config:Dictionary=h().config.hanging_modules[key];var effects:Array[String]=[]
  for effect in config.effects:effects.append(t("module_effect."+str(effect)))
- return t("module_effect_preview",{"effects":"、".join(effects),"current":"%.1f"%((pow(1.0+float(config.effect_growth),level)-1.0)*100.0),"next_level":str(level+1),"next":"%.1f"%((pow(1.0+float(config.effect_growth),level+1)-1.0)*100.0)})
+ return t("module_effect_preview",{"effects":"、".join(effects),"current":NumberFormat.percentage((pow(1.0+float(config.effect_growth),level)-1.0)*100.0),"next_level":str(level+1),"next":NumberFormat.percentage((pow(1.0+float(config.effect_growth),level+1)-1.0)*100.0)})
 func refresh_module_apply() -> void:
  if not is_instance_valid(module_apply):return
  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(module_id,{})
@@ -491,7 +491,7 @@ func refresh_totals() -> void:
   if not trigger.is_empty():lines.append(trigger)
   for parameter in totals.legendary[key].parameters:
    var value=float(totals.legendary[key].parameters[parameter])
-   if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":"%.1f"%(value*100.0)}))
+   if value!=0.0:lines.append("  "+t("effect_parameter_"+str(parameter))+": "+t("percent",{"value":NumberFormat.percentage(value*100.0)}))
  panel.put(totals_label,"text","\n".join(lines) if not lines.is_empty() else t("totals_empty"))
 
 func show_guide(topic:String="overview") -> void:
@@ -523,7 +523,7 @@ func add_affix_forecast(d:Dictionary) -> String:
    weights[tier]=float(c.tier_weights[tier]);total+=float(weights[tier])
  if total<=0:return ""
  var grades:Array[String]=[];var lines:Array[String]=[]
- for tier in weights:grades.append("T"+str(tier)+" "+t("percent",{"value":"%.1f"%(100.0*float(weights[tier])/total)}))
+ for tier in weights:grades.append("T"+str(tier)+" "+t("percent",{"value":NumberFormat.percentage(100.0*float(weights[tier])/total)}))
  lines.append(t("add_affix_grade_weights",{"grades":" · ".join(grades)}))
  for key in keys:
   var low:=INF;var high:=-INF;var common:Array[String]=[]
