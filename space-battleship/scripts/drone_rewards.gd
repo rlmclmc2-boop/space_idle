@@ -129,6 +129,10 @@ static func normalize_unlocked_modules(s:Dictionary) -> void:
 	for progress in s.hanging_modules.values():
 		if bool(progress.unlocked) and int(progress.level)==0:progress.level=1
 
+# One repeat is enough for the first upgrade; level2 onward keeps the original curve.
+static func module_required_exp(row:Dictionary,level:int) -> float:
+	return float(row.base_exp)*pow(1.0+float(row.exp_growth),0 if level==1 else level)
+
 static func credit_modules(s: Dictionary,c: Dictionary,drops: Dictionary,outcomes: Dictionary={}) -> bool:
 	for key in drops:
 		var row: Dictionary=c.hanging_modules[key]
@@ -136,15 +140,15 @@ static func credit_modules(s: Dictionary,c: Dictionary,drops: Dictionary,outcome
 		var copies:=int(drops[key])
 		var newly_unlocked: bool=not progress.unlocked
 		if copies<=0:continue
-		if not progress.unlocked:progress.unlocked=true;progress.level=1;copies-=1
+		if not progress.unlocked:progress.unlocked=true;progress.level=0
 		elif int(progress.level)==0:progress.level=1
 		var experience_added:=copies*float(row.base_exp)
 		progress.exp+=experience_added
-		var needed:=float(row.base_exp)*pow(1.0+float(row.exp_growth),int(progress.level))
+		var needed:=module_required_exp(row,int(progress.level))
 		if not is_finite(needed):return false
 		while progress.exp+0.000000001>=needed:
 			progress.exp=maxf(0.0,float(progress.exp)-needed);progress.level+=1
-			needed=float(row.base_exp)*pow(1.0+float(row.exp_growth),int(progress.level))
+			needed=module_required_exp(row,int(progress.level))
 			if not is_finite(needed):return false
 		outcomes[key]={"copies":int(drops[key]),"newly_unlocked":newly_unlocked,"experience_added":experience_added,"level":int(progress.level)}
 	return true

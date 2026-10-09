@@ -47,7 +47,7 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	for key in s.hanging_modules:
 		var progress=s.hanging_modules[key]
 		if not c.hanging_modules.has(key) or not progress is Dictionary or not progress.get("unlocked") is bool or not C.integer(progress.get("level")) or progress.level<0 or not C.number(progress.get("exp")) or progress.exp<0:return false
-		var needed:=float(c.hanging_modules[key].base_exp)*pow(1.0+float(c.hanging_modules[key].exp_growth),int(progress.level))
+		var needed:=Rewards.module_required_exp(c.hanging_modules[key],int(progress.level))
 		if not is_finite(needed) or progress.exp>=needed:return false
 	for field in ["legendary_seen","legendary_collection"]:
 		if not s.get(field) is Array:return false
