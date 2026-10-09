@@ -11,6 +11,8 @@ import argparse
 import hashlib
 import json
 import os
+import signal
+import time
 from pathlib import Path
 import shutil
 import subprocess
@@ -23,10 +25,56 @@ ROOT = Path(__file__).resolve().parent.parent
 PARTS = ('scripts', 'data', 'assets', 'addons', 'dev', 'project.godot', 'main.tscn')
 
 
+def run_guarded(command, env, log_path, timeout=180):
+    """Own and clear the whole child process tree on errors, timeout or interruption."""
+    failed = False
+    with log_path.open('w', encoding='utf-8') as output:
+        options = {'start_new_session': True} if os.name != 'nt' else {}
+        process = subprocess.Popen(command, env=env, stdout=output, stderr=subprocess.STDOUT, **options)
+        started = time.monotonic()
+        try:
+            while process.poll() is None:
+                time.sleep(.2)
+                text = log_path.read_text(encoding='utf-8', errors='replace')
+                if any(marker in text for marker in ('SCRIPT ERROR', 'CHECKPOINT_FAILURE', 'handle_crash', 'ERROR:')) or time.monotonic()-started > timeout:
+                    failed = True
+                    break
+        finally:
+            if os.name == 'nt':
+                if process.poll() is None:
+                    subprocess.run(['taskkill', '/PID', str(process.pid), '/T', '/F'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            else:
+                # The group is private to this launch. Clear workers even if the
+                # leader exited; never kill unrelated Godot/editor processes.
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            try:
+                process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                if os.name != 'nt':
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                else:
+                    process.kill()
+                process.wait()
+            if os.name != 'nt':
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+    return process.returncode if process.returncode else (1 if failed else 0)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--label', required=True)
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
+    parser.add_argument('--checkpoint-round2', type=Path, help='Authorized natural QA7/group4/Frigate snapshot; attribution only, no cache experiment')
+    parser.add_argument('--gpu-profile', action='store_true', help='Native GPU stage averages; timing-query overhead, not final frame comparison')
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
     parser.add_argument('--headless', action='store_true')
@@ -45,6 +93,13 @@ def main():
     parser.add_argument('--retained-galaxy-boundaries', action='store_true', help='Camera/building fallback and dock-edge diagnostic; requires --rich --pages 8')
     args = parser.parse_args()
     retained = args.retained_galaxy_probe or args.retained_galaxy_boundaries
+    checkpoint = args.checkpoint_round2 is not None
+    if checkpoint and not args.ref:
+        parser.error('checkpoint-round2 requires a pinned --ref')
+    if checkpoint and (retained or args.rich or args.pages != '0' or args.headless or args.realtime or args.max_quote):
+        parser.error('checkpoint-round2 requires graphical --pages 0 without synthetic/rich/retained/realtime/max modes')
+    if checkpoint and hashlib.sha256(args.checkpoint_round2.read_bytes()).hexdigest() != 'bdc03716a07667d6067e22ddbbba6b4afadfbc0f4e4cc6abd534aab3dd6f770e':
+        parser.error('checkpoint-round2 must be the exact authorized parent602024d8 snapshot')
     if args.retained_galaxy_probe and args.retained_galaxy_boundaries:
         parser.error('choose one retained diagnostic')
     if retained and (not args.rich or args.pages != '8' or args.headless or args.instrument or args.realtime or args.max_quote):
@@ -73,7 +128,12 @@ def main():
         else:
             shutil.copy2(origin, target)
     probe = 'retained_galaxy_boundaries.gd' if args.retained_galaxy_boundaries else 'retained_galaxy_probe.gd' if retained else 'whole_game_perf.gd'
-    shutil.copy2(ROOT / 'test' / probe, project / 'probe.gd')
+    if checkpoint:
+        shutil.copy2(ROOT / 'test/retained_workspace_cost.gd', project / 'probe.gd')
+        shutil.copy2(ROOT / 'test/checkpoint_scene_cost.gd', project / 'checkpoint_scene_cost.gd')
+        shutil.copy2(args.checkpoint_round2, project / 'round2.json')
+    else:
+        shutil.copy2(ROOT / 'test' / probe, project / 'probe.gd')
     if args.retained_galaxy_boundaries:
         shutil.copy2(ROOT / 'test/retained_galaxy_probe.gd', project / 'retained_galaxy_probe.gd')
     if retained:
@@ -102,33 +162,49 @@ def main():
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
-    if retained:
+    if retained or checkpoint:
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
+    if checkpoint:
+        for key in ('PERF_BALANCE', 'PERF_RICH', 'PERF_MAX'):
+            env.pop(key, None)
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
-    with (area / (args.label + '-import.log')).open('w', encoding='utf-8') as log:
-        subprocess.run([*engine, '--headless', '--editor', '--import', '--quit'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180, check=True)
+    import_log = area / (args.label + '-import.log')
+    imported = run_guarded([*engine, '--headless', '--audio-driver', 'Dummy', '--editor', '--import', '--quit'], env, import_log)
+    if imported:
+        print('Import failed; no measurement started:', import_log)
+        return 1
     log_path = area / (args.label + '.log')
-    with log_path.open('w', encoding='utf-8') as log:
-        result = subprocess.run([*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync', '--script', 'res://probe.gd'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180)
+    command = [*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync']
+    if args.gpu_profile:
+        command.append('--gpu-profile')
+    command += ['--script', 'res://probe.gd']
+    if checkpoint:
+        command += ['--', '--attribution-only']
+    result_code = run_guarded(command, env, log_path)
     text = log_path.read_text(encoding='utf-8', errors='replace')
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
-    expected = 0 if args.retained_galaxy_boundaries else 2 if args.retained_galaxy_probe else 1 if args.max_quote else len(args.pages.split(','))
+    expected = 1 if checkpoint else 0 if args.retained_galaxy_boundaries else 2 if args.retained_galaxy_probe else 1 if args.max_quote else len(args.pages.split(','))
     measured_files = ['probe.gd', 'project.godot', 'main.tscn', 'data/game_data.json', 'galaxy_fixture.json',
                       *['scripts/' + name for name in ('main.gd', 'battlefield.gd', 'game.gd', 'presented_battle_game.gd',
                                                        'presented_ship_view.gd', 'ship_body_baker.gd', 'flat_ship_compositor.gd',
                                                        'flat_ship_compositor.gdshader', 'galaxy_map.gd', 'galaxy_city_modules.gd')]]
+    if checkpoint:
+        measured_files += ['checkpoint_scene_cost.gd', 'round2.json']
     if retained:
         measured_files += ['retained_galaxy_color.gdshader', 'retained_galaxy_depth.gdshader']
     if args.retained_galaxy_boundaries:
         measured_files += ['retained_galaxy_probe.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
+              'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
               'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
-              'exit': result.returncode, 'environment': environment, 'rows': rows,
+              'exit': result_code, 'environment': environment, 'rows': rows,
+              'gpu_profile_lines': [line for line in text.splitlines() if line.startswith('GPU PROFILE') or ('ms' in line and line.lstrip().startswith('-'))],
+              'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}
     boundary_failures = []
     if args.retained_galaxy_boundaries:
@@ -149,10 +225,18 @@ def main():
             boundary_failures.append('authority upgrade completion missing')
         if not events.get('BOUNDARY_BUILD_START', {}).get('built'):
             boundary_failures.append('authority build attempt missing')
+    if checkpoint and rows:
+        row = rows[0]
+        if not row.get('source_save_unchanged') or row.get('save_enabled') or row.get('flat_enabled'):
+            boundary_failures.append('checkpoint source/save/default invariant failed')
+        if row.get('sample_frames') != args.frames or any(value != 7 for value in row.get('stages', [])) or any(value != 4 for value in row.get('groups', [])) or any(value != 3 for value in row.get('states', [])):
+            boundary_failures.append('checkpoint encounter changed or sample count mismatched; not a fixedQA7/group4 combat window')
+    if args.gpu_profile and not report['gpu_profile_lines']:
+        boundary_failures.append('native GPU profile unavailable; no GPU stage evidence')
     report['boundary_failures'] = boundary_failures
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
-    print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
-    if boundary_failures or (args.retained_galaxy_boundaries and len(report['boundaries']) != 14) or result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text or (args.retained_galaxy_probe and any(not row.get('profile_equal') for row in rows)):
+    print('Exit:', result_code, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
+    if boundary_failures or (args.retained_galaxy_boundaries and len(report['boundaries']) != 14) or result_code or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text or (args.retained_galaxy_probe and any(not row.get('profile_equal') for row in rows)):
         print(text[-4000:])
         return 1
     return 0

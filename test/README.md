@@ -100,3 +100,16 @@ Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --hea
 银河边界诊断：`whole_game_perf.py --label retained-boundaries --rich --pages 8 --retained-galaxy-boundaries` 验证鼠标缩放、拖动、真实升级/建造及移除夹具退回完整渲染，记录近码头的运输艇遮挡对照。当前码头边缘差异与准备峰值仍阻止默认启用；施工/升级动画必须维持完整渲染。诊断退出正常不等于画质或整体性能验收。
 
 自然 QA 成本入口：将 `checkpoint_scene_cost.gd` 复制到隔离候选工程，授权检查点副本命名为 `checkpoint20.json`，用 `--script res://checkpoint_scene_cost.gd` 启动；`--gpu-profile` 使用引擎原生分析，避免旧 Viewport 计时 getter。`retained_workspace_probe.gd` 继承该入口作固定姿态诊断；`retained_workspace_boundary.gd` 配合 `retained_workspace_controller.gd` 检查原位 GUI 输入、同帧回退及分帧准备。溢出滚动区保持原绘制。`retained_workspace_cost.gd` 使用授权第7关副本 `round2.json`，检查合法升级、分帧/局部准备及频繁变化成本；可加 `--gpu-profile -- --attribution-only` 只取自然短窗成本。交错样本无一致净收益，缓存已拒绝作为生产修复，仅保留诊断反证；默认未接入生产。版本与检查点来源见 `checkpoints/performance-cloud-20261009/progress.json`；该档曾进入21后返回20/1。
+
+硬件验证依赖入口复用 `whole_game_perf.py`，当前无目标 GPU，不执行下列测量。仅在已获授权、实际确认硬件加速的云端 GPU 会话运行；Godot固定4.6.3，项目后端GL Compatibility，1373×883、关闭垂直同步、全视觉保留，音频Dummy。源代码固定46829；检查点来自父602024，第7关/第4组/Frigate，SHA256 `bdc03716a07667d6067e22ddbbba6b4afadfbc0f4e4cc6abd534aab3dd6f770e`。入口校验副本哈希、强制stat缓存正确且禁止存档写入，拒绝合成资源模式；检测报错/崩溃/180秒超时即清理自有进程树。POSIX清理已用无图形子进程验证，Windows taskkill路径尚未执行。
+
+```bash
+git fetch origin work/parent-current-20261009 work/parent-drone-checkpoint-20261009
+mkdir -p test/work/hardware-qa
+git show 602024d881518770e7b265b5743206412bd37712:test/checkpoints/parent/round2-20261009/progress.json > test/work/hardware-qa/round2.json
+# GODOT_4_6_3 指向目标云端的真实Godot4.6.3可执行文件；继承该GPU显示会话。
+python test/whole_game_perf.py --label hardware-clean --godot "$GODOT_4_6_3" --ref 46829d6cdeff62d08474546f875d6d2b8e848367 --checkpoint-round2 test/work/hardware-qa/round2.json --pages 0 --warmup-frames 15 --frames 120
+python test/whole_game_perf.py --label hardware-gpu --godot "$GODOT_4_6_3" --ref 46829d6cdeff62d08474546f875d6d2b8e848367 --checkpoint-round2 test/work/hardware-qa/round2.json --pages 0 --warmup-frames 15 --frames 120 --gpu-profile
+```
+
+每次输出独立 `test/work/whole-perf-*`：保存完整日志和JSON、引擎版本/实际适配器/驱动启动行/后端/分辨率、源码与运行文件SHA、QA不变证明、固定1/60逻辑步，135总步/120采样步、帧及主线程 `_process` 的mean/P50/P95/max（微秒）、逐帧关卡/组/状态/敌人/弹体数、ShipViewport的模式/尺寸/3D缩放/MSAA/调用与图元。关卡/组/战斗状态改变则入口返回失败，不把不同场景混成一份合格P95；原始失败证据仍保留。clean用于帧耗时，gpu单独用于阶段归因，有查询开销。`--gpu-profile`总数是最后一帧GPU时间，阶段是近一秒均值，首块可混启动/热身；不是阶段P95，不能相加冒充同一帧。用 `MEASUREMENT_SAMPLES_BEGIN` 与 `ROW` 辨识采样范围。未插桩draw CPU为null，不是零；主线程计时不包括全部引擎提交CPU。设备/驱动硬件证明仍需目标云端提供；软件适配器、引擎版本差异和短窗不能证明Windows49FPS修复。GPU阶段P95、实时玩法帧率、长期忙场景及整体验收仍未覆盖。否定结论见既有性能检查点，不重做缓存/ROI/合批/数学候选。

@@ -29,7 +29,7 @@ func stats(a):
  for v in a:total+=v
  return {"mean":total/a.size(),"p50":a[a.size()/2],"p95":a[int(a.size()*.95)],"max":a[-1]}
 func views(node,rows):
- if node is SubViewport:rows.append({"path":str(node.get_path()),"size":str(node.size),"mode":node.render_target_update_mode,"calls":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME),"primitives":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME)})
+ if node is SubViewport:rows.append({"path":str(node.get_path()),"size":str(node.size),"mode":node.render_target_update_mode,"scale_3d":node.scaling_3d_scale,"msaa_3d":node.msaa_3d,"calls":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME),"primitives":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME)})
  for child in node.get_children():views(child,rows)
 func fail(reason):printerr("CHECKPOINT_FAILURE ",reason);Engine.remove_meta("saved_perf");quit(2)
 func run():
@@ -49,17 +49,22 @@ func run():
 func measure(scene,g,save_hash):
  var frames=[];var cpu=[];var drawing=[];var calls=[];var primitives=[];var stages=[];var groups=[];var states=[];var enemies=[];var projectiles=[]
  await process_frame;await RenderingServer.frame_post_draw
- for i in 45:
+ var sample_frames = clampi(int(OS.get_environment("PERF_FRAMES")),1,600) if OS.has_environment("PERF_FRAMES") else 30
+ var warmup_frames = clampi(int(OS.get_environment("PERF_WARMUP_FRAMES")),1,600) if OS.has_environment("PERF_WARMUP_FRAMES") else 15
+ print("MEASUREMENT_BEGIN ",JSON.stringify({"warmup_frames":warmup_frames,"sample_frames":sample_frames,"step_seconds":1.0/60.0}))
+ for i in warmup_frames+sample_frames:
   if g.stage>20:fail("measurement crossedstage20");return
-  if i==15:meter.enabled=true;meter.times.clear()
+  if i==warmup_frames:
+   meter.enabled=true;meter.times.clear()
+   print("MEASUREMENT_SAMPLES_BEGIN ",JSON.stringify({"sample_frames":sample_frames}))
   meter.draw_us=0
   var began=Time.get_ticks_usec();scene._process(1.0/60.0)
   await process_frame;await RenderingServer.frame_post_draw
-  if i>=15:
+  if i>=warmup_frames:
    frames.append(Time.get_ticks_usec()-began);cpu.append(scene.last_process_us);drawing.append(meter.draw_us)
    calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME));primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
    stages.append(g.stage);groups.append(g.group_index);states.append(g.state);enemies.append(g.enemies.size());projectiles.append(g.projectiles.size())
  meter.enabled=false
  var inventory=[];views(root,inventory)
- print("ROW ",JSON.stringify({"frames_us":stats(frames),"host_process_us":stats(cpu),"battle_draw_us":stats(drawing) if meter.times.has("main.draw_battle") else null,"draw_command_instrumented":meter.times.has("main.draw_battle"),"timings":meter.times,"calls":stats(calls),"primitives":stats(primitives),"stages":stages,"groups":groups,"states":states,"enemies":enemies,"projectiles":projectiles,"views":inventory,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"logical_elapsed_seconds":45.0/60.0,"save_enabled":g.save_enabled,"ship_body_records":scene.ship_view.body_baker.records.size(),"flat_enabled":scene.ship_view.flat_compositor.enabled}))
+ print("ROW ",JSON.stringify({"frames_us":stats(frames),"host_process_us":stats(cpu),"battle_draw_us":stats(drawing) if meter.times.has("main.draw_battle") else null,"draw_command_instrumented":meter.times.has("main.draw_battle"),"timings":meter.times,"calls":stats(calls),"primitives":stats(primitives),"stages":stages,"groups":groups,"states":states,"enemies":enemies,"projectiles":projectiles,"views":inventory,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"warmup_frames":warmup_frames,"sample_frames":sample_frames,"logical_elapsed_seconds":float(warmup_frames+sample_frames)/60.0,"save_enabled":g.save_enabled,"ship_body_records":scene.ship_view.body_baker.records.size(),"flat_enabled":scene.ship_view.flat_compositor.enabled}))
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-scene.png")

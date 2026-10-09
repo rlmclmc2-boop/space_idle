@@ -1,5 +1,5 @@
 {
-  "state": "overall performance unaccepted; examined rendering candidates rejected",
+  "state": "hardware validation dependency; software measurements stopped; overall performance unaccepted",
   "branch": "perf/whole-game-20261009",
   "code_ref": "46829d6cdeff62d08474546f875d6d2b8e848367",
   "qa_ref": "602024d881518770e7b265b5743206412bd37712",
@@ -17,7 +17,8 @@
     "Stage7 source46829/QA6020:actualGUIupgrade spendsnormalresources,level/cardfeedback immediate live fallback; number redraw captures1strip andupgrade2strips. Workspace number/upgrade cached-versus-live images pixelidentical. Ownerexit restores actual original32bitmask. Initial8 allocation/captureframes max53.25ms;all recaptureframes max106.96ms.",
     "Frequent changing presentation scope:1second quiet eligibility produces0capture/0retainedframes;no optimizationbenefit. Quiet351->277draws but interleaved means45.5/38.7,44.8/74.9,67.8/38.7ms are inconsistent. Reject cache as production/overall repair;keep diagnostic only anddo not repeat this candidate as proven gain.",
     "NaturalQA7 45steps/0.75s remain7/group4 with9enemies and1->11shots:Canvas26.2-39.8ms,transparent3D7.1-11.4ms;bodyalreadyopaque,20shipcalls/4112primitives/1bake;other3Dviewsdisabled normally. Plain46829sourcehasno draw-CPUinstrumentation;empty0meter isnotzero work.",
-    "Shield uniformzero-hit-work branch finite0/1impacttest exit0;allrequiredvisuals retained/profileunchanged. Cleanreturn47.997ms versuscandidate48.371ms=no gain;reject andrestore. Firstcontrol661ms max withhostdelay cannotprove speedup."
+    "Shield uniformzero-hit-work branch finite0/1impacttest exit0;allrequiredvisuals retained/profileunchanged. Cleanreturn47.997ms versuscandidate48.371ms=no gain;reject andrestore. Firstcontrol661ms max withhostdelay cannotprove speedup.",
+    "Existingwhole_game_perf.py nowaccepts exactQA7hash andnativeGPUprofile;reuses existingSceneTreeprobe withoutcache path. Frames/warmup reuse existingPERF knobs;unknowndrawCPU remainsnull. Ownedprocessguard handles immediateerrors/crash/timeout/interruption;no graphics remeasure,onlynormal/error/timeout childsmoke checks andGDScriptparse."
   ],
-  "next": "No qualified whole-game rendering change identified after cache/transparent-source checks. Need authorizedcloud targetGPU/workload cost evidence to choose another high-impact quality-preserving direction;currentllvmpipe cannotprove Windows49FPS fix. Do notrepeat rejectedroutes oruseusercomputer. Main/defaults/fixed46829 unchanged."
+  "next": "Hardware handoff commands andmandatoryevidence in test/README.md. Fixedsource46829/Godot4.6.3/GLCompatibility/QA602024. Two separateclean/GPU runs120samples+15warmup;recordactualdevice/driver,stagecost averages andframe/hostCPU P95. GPUstageP95 unavailable;no unsafegetters. Targethardwareunavailable,currentsoftwaretestingstopped;verificationdependency,notavoidableidle. Allrejectedcandidates remainrejected."
 }
