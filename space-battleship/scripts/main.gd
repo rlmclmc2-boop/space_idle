@@ -2672,6 +2672,33 @@ func incoming_damage_origin(damage_type: int) -> Vector2:
 	var anchor := player_render_position()
 	return battle_logical_point(anchor-Vector2(0,height+16+(40 if damage_type==1 else 0)))
 
+func incoming_damage_display_number(amount) -> String:
+	if GrowthNumber.compare(amount,0)<=0:return "0"
+	var parts := GrowthNumber.parts(amount)
+	var exponent := float(parts[1])
+	var mantissa := float(parts[0])
+	if not amount is Dictionary and exponent< -300:mantissa=(float(amount)*1e300)/pow(10.0,exponent+300.0)
+	# Avoid expanding tiny fractions or an enormous exponent into hundreds of digits.
+	if exponent< -3 or absf(exponent)>=1000000:
+		var exponent_text := NUMBER_FORMAT.compact(absf(exponent)) if absf(exponent)>=1000000 else "%.0f" % absf(exponent)
+		if absf(exponent)>=1000000:exponent_text="("+exponent_text+")"
+		return NUMBER_FORMAT.trimmed_decimal(mantissa,2)+("e-" if exponent<0 else "e+")+exponent_text
+	return NUMBER_FORMAT.damage(amount)
+
+func incoming_damage_display_text(amount, absorbed, damage_type:int, size_value:int, maximum_width:float=556.0) -> String:
+	var kind := UIText.t("equipment.energy" if damage_type==1 else "equipment.physical")
+	var major := incoming_damage_display_number(amount)
+	var primary := UIText.t("battle.incoming_damage",{"type":kind,"damage":major})
+	if GrowthNumber.compare(absorbed,0)<=0:return primary
+	var absorption := incoming_damage_display_number(absorbed)
+	var value := UIText.t("battle.damage_absorbed",{"absorbed":absorption}) if GrowthNumber.compare(amount,0)<=0 else UIText.t("battle.damage_with_absorption",{"damage":major,"absorbed":absorption})
+	var full := UIText.t("battle.incoming_damage",{"type":kind,"damage":value})
+	if font.get_string_size(full,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x<=maximum_width:return full
+	# Main damage and type keep their font and full compact value; details yield first.
+	value=UIText.t("battle.damage_with_absorption",{"damage":major,"absorbed":"…"}) if GrowthNumber.compare(amount,0)>0 else UIText.t("battle.damage_absorbed",{"absorbed":absorption})
+	var short := UIText.t("battle.incoming_damage",{"type":kind,"damage":value})
+	return short if font.get_string_size(short,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x<=maximum_width else primary
+
 func queue_incoming_damage_number(info: Dictionary, absorbed) -> void:
 	var entry:Dictionary={}
 	for current in floats:
@@ -2689,18 +2716,21 @@ func queue_incoming_damage_number(info: Dictionary, absorbed) -> void:
 		entry.life=float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
 	entry.size=19 if entry.critical else 17
 	entry.color=CYAN if int(entry.type)==1 else ORANGE
-	entry.text=incoming_damage_text(entry.amount,entry.absorbed,int(entry.type))
+	entry.text=incoming_damage_display_text(entry.amount,entry.absorbed,int(entry.type),int(entry.size))
 	entry.origin=incoming_damage_origin(int(entry.type))
 	var width := font.get_string_size(entry.text,HORIZONTAL_ALIGNMENT_LEFT,-1,int(entry.size)).x
 	entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
+	move_damage_numbers_from_incoming(entry)
 
-func incoming_damage_bounds() -> Rect2:
-	# Reserve both short rows even before a hit, using the same text envelope.
-	var energy := battle_point(incoming_damage_origin(1))
-	var physical := battle_point(incoming_damage_origin(2))
-	var bounds := damage_text_rect(energy,"",19).merge(damage_text_rect(physical,"",19))
-	bounds.position.x=8;bounds.size.x=BATTLE_VIEW_SIZE.x-16
-	return bounds.grow(8)
+func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
+	var bounds := damage_text_rect(battle_point(incoming.pos),incoming.text,int(incoming.size)).grow(8)
+	for other in floats:
+		if not other.get("damage",false) or other.get("target","")=="player" or float(other.life)<=0:continue
+		if not bounds.intersects(damage_text_rect(battle_point(other.pos),other.text,int(other.size))):continue
+		# Reuse the same placement query, which already excludes actual visible labels.
+		var adjusted := damage_text_position(other.origin,other.text,int(other.size),other)
+		if adjusted!=Vector2.INF:other.pos=adjusted
+		else:other.life=0.0;other.retiring=true
 
 func flush_damage_numbers() -> void:
 	for entry in damage_pending.duplicate():
@@ -2756,15 +2786,14 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 	var bounds_ready := false
 	# Drawing may hold a precomputed position; retain its original full query.
 	var fleet_bottom := INF if battle_draw_active else damage_text_enemy_bottom()
-	var incoming_bounds := incoming_damage_bounds()
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
 			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
 			var bounds := damage_text_rect(battle_point(pos),value,size_value)
-			if bounds.position.y<8 or bounds.intersects(incoming_bounds):continue
+			if bounds.position.y<8:continue
 			var blocked := false
 			for entry in floats:
-				if entry.get("damage",false) and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
+				if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
 			if blocked:continue
 			if bounds.position.y<fleet_bottom:
 				if not bounds_ready:
