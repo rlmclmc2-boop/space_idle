@@ -94,7 +94,7 @@ func save_read_state() -> void:
 func nav_key() -> String:
  return "reward_nav_drone" if not latest.get("drone",{}).is_empty() else "reward_nav_received"
 func sync_receipt_area() -> void:
- panel.put(panel.exploration_receipt_area,"visible",panel.section_index==0)
+ panel.put(panel.exploration_receipt_area,"visible",panel.section_index==0 and is_instance_valid(card) and card.visible)
 func mark_viewed() -> void:
  if not unread or queued_notice or not panel.is_visible_in_tree():return
  if is_instance_valid(notice) and notice.visible:return
@@ -105,7 +105,7 @@ func mark_viewed() -> void:
   unread=false;save_read_state();panel.host.refresh_hyperspace_badge()
 func show_receipt() -> bool:
  if latest.is_empty():
-  panel.put(summary,"text",panel.t("reward_receipt_empty"));panel.put(card,"visible",true);panel.put(view_button,"visible",false);sync_receipt_area();return false
+  panel.put(summary,"text","");panel.put(card,"visible",false);panel.put(view_button,"visible",false);sync_receipt_area();return false
  var drone:Dictionary=latest.get("drone",{})
  var has_drone=not drone.is_empty() and panel.host.game.profile.hyperspace.inventory.drones.has(str(drone.id))
  summary.text=panel.t("reward_drone_received",{"weapon":panel.t(str(drone.weapon)),"level":str(int(drone.level)),"quality":panel.quality_caption(drone)}) if has_drone else panel.t("reward_materials_received")

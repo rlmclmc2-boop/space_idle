@@ -27,6 +27,9 @@ var crew_info:Label
 var crew_enable:Button
 var crew_reason:Label
 var elapsed=0.0
+var summaries:HBoxContainer
+var history_box:Control
+var task_box:Control
 func setup(owner) -> void:panel=owner
 func game():return panel.host.game
 func t(key:String,params:Dictionary={}) -> String:return panel.t(key,params)
@@ -37,11 +40,13 @@ func build(parent:Node) -> void:
  queue_info=panel.label(parent,"",21);queue_info.visible=false
  queue_action=panel.button(parent,"layer_queue_view",act_on_queue);queue_action.visible=false
  current=panel.label(parent,"",26)
- var summaries=panel.row(parent)
+ summaries=panel.row(parent)
  var history=panel.surface(summaries)
+ history_box=history.get_parent()
  record=panel.label(history,"");idle_time=panel.label(history,"")
  luck=panel.label(history,"");luck.mouse_filter=Control.MOUSE_FILTER_STOP
  var tasks=panel.surface(summaries)
+ task_box=tasks.get_parent()
  background_status=panel.label(tasks,"")
  paused_info=panel.label(tasks,"",20);paused_info.visible=false
  progress=ProgressBar.new();progress.show_percentage=false;progress.custom_minimum_size.y=26;tasks.add_child(progress)
@@ -53,6 +58,10 @@ func build(parent:Node) -> void:
  var initial_view=view()
  idle_button=panel.button(actions,"layer_idle_once",func():act("start_hyperspace_idle"),{"layer":str(int(initial_view.get("current_layer",0)))})
  challenge_button=panel.button(actions,"layer_challenge",func():act("start_hyperspace_challenge"),{"layer":str(int(initial_view.get("next_layer",1)))})
+ challenge_button.custom_minimum_size=Vector2(420,74)
+ challenge_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ challenge_button.add_theme_font_size_override("font_size",26)
+ preload("res://scripts/dialog_presentation.gd").button_skin(challenge_button,true)
  var management=panel.row(parent)
  stop_button=panel.button(management,"layer_stop",func():act("stop_hyperspace_idle"))
  exit_button=panel.button(management,"layer_exit",func():act("exit_hyperspace_challenge",false))
@@ -141,6 +150,10 @@ func refresh() -> void:
  panel.put(claim_button,"visible",challenge_pending)
  panel.put(claim_feedback,"visible",not claim_failed_key.is_empty() and ((pending and panel.reward_feedback.receipt_key(background)==claim_failed_key) or (challenge_pending and panel.reward_feedback.receipt_key(challenge)==claim_failed_key)))
  var challenging=not challenge.is_empty() or mode=="challenge"
+ var has_tasks=not background.is_empty() or challenging or paused or claim_feedback.visible
+ panel.put(history_box,"visible",layer>0 or total>0.0)
+ panel.put(task_box,"visible",has_tasks)
+ panel.put(summaries,"visible",history_box.visible or has_tasks)
  panel.put(challenge_status,"visible",challenging)
  panel.put(challenge_status,"text",t("layer_task_pending") if challenge_pending else t("layer_challenging",{"layer":str(int(challenge.get("level",next_layer)))}))
  panel.put(hint,"visible",layer>0 or v.is_empty())
