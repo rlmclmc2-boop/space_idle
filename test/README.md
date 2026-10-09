@@ -18,6 +18,7 @@
 | 战场X10舰船画质 | `test_accelerated_ship_quality.gd --headless` 检查高倍画质切换与X1恢复、全部槽位/发射管的规范坐标、持续渲染及暂停/隐藏策略；实际画质与性能须另做可见场景配对。 |
 | 入门指引 | `test_beginner_guide.gd` 检查首次引导、自动完成、关闭不复弹、帮助入口回看及正常存读档；图形运行核对入口和交互 |
 | UI 刷新、导航与弹层 | `test_performance_ui.gd` 检查船员局部更新、隐藏恢复、焦点/草稿/滚动、装备控件复用与 HUD 绘制依赖；`test_workspace_shell.gd`、`test_overlay_layout.gd`；按实际变化选页面专项。旧 `test_local_ui.gd` 依赖已删除的科研管理按钮，暂不作为验收入口。 |
+| 导航升级提示价格 | `test_system_upgrade_badges.gd --headless` 检查可负担、事件合并、隐藏恢复及释放；`test_upgrade_badge_price_classes.gd --headless` 对照逐无人机穷举的完整可达价格集合，覆盖现代化记录、不同费用配置、锁定、封存与装备，检查 profile/RNG 只读。 |
 | 属性缓存与失效 | `test_stat_cache.gd --headless` 对照缓存/直接计算的战斗、RNG、换装、升级、星球激活/探索/重铸；仅在隔离用户目录存在存档时读取其副本，否则使用内存夹具。 |
 | 战场坐标反算 | `test_battle_coordinate_inverse.gd --headless` 对照原20轮反算的精确输出，覆盖线性区边界、非线性区和回退范围。 |
 | 战场表现 | `test_weapon_fx.gd`、`test_turret_rotation.gd`、`test_player_visual_scale.gd`、`test_muzzle_visibility.gd`、`test_damage_numbers.gd`、`test_battle_transition_ui.gd`；入场边界复用与位置等价用 `test_enemy_entry_batch.gd`；含长模拟的 `test_portrait_presentation.gd` 仅按 `full` 选择 |
