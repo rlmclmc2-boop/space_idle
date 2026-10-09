@@ -651,6 +651,10 @@ func portable_save_data() -> Dictionary:
 	return _compose_save_data(saved)
 
 func _compose_save_data(saved: Dictionary) -> Dictionary:
+	var reactor_saved:Dictionary=saved.get("reactorAllocation",{}).duplicate()
+	for key in reactor_saved:reactor_saved[key]=preload("res://scripts/reactor_integer.gd").encode(reactor_saved[key])
+	saved.reactorAllocation=reactor_saved
+	saved.reactorIntegerVersion=1
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1154,8 +1158,8 @@ func load_reactor(raw: Dictionary) -> void:
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	for key in reactor_modules():
 		var value = saved.get(key)
-		if reactor_module_unlocked(key) and nonnegative_number(value):
-			var units: int = value if value is int else int(floor(float(value)))
+		if reactor_module_unlocked(key) and preload("res://scripts/reactor_integer.gd").valid(value):
+			var units: int = int(preload("res://scripts/reactor_integer.gd").minimum(preload("res://scripts/reactor_integer.gd").normalize(value),reactor_capacity()))
 			profile.reactorAllocation[key] = mini(units,maxi(0,reactor_capacity()-reactor_allocated()))
 
 func hightech_level(key: String) -> int:

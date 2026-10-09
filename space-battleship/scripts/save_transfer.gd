@@ -17,7 +17,9 @@ static func schema() -> Dictionary:
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","jewelFurnaceElapsed","jewelFurnaceIncomePeak","chronoParticles","chronoSavedAt","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","guardDeath","loopLevel","guardStage","guardIndex","guardDistance","reactorLevel"]:result[key]="n"
  for key in ["cleared","bossSeen"]:result[key]=["n"]
  for key in ["grantedUnlocks","seenUnlocks","readUnlocks","hightechOrder"]:result[key]=["s"]
- for key in ["hightechLevels","scientistAssignments","reactorAllocation"]:result[key]={"*":"i"}
+ for key in ["hightechLevels","scientistAssignments"]:result[key]={"*":"i"}
+ result.reactorAllocation={"*":"reactor_integer"}
+ result.reactorIntegerVersion="i"
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
  result.loop="b"
@@ -31,6 +33,7 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
  if depth>48:return false
  if spec is String:
   match spec:
+   "reactor_integer":return preload("res://scripts/reactor_integer.gd").valid(value)
    "filter_value":return value is String or ((value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)))
    "s":return value is String
    "b":return value is bool
