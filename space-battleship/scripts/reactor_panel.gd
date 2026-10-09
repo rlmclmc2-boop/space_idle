@@ -267,7 +267,7 @@ func setup(owner_ui: Node) -> void:
 	automation_ui=preload("res://scripts/reactor_automation_ui.gd").new();automation_ui.setup(self)
 	allocation_hint = make_label(self,"",Vector2(60,677),520,16,MUTED,25)
 	capacity_label = clipped_readout(self,Vector2(66,606),Vector2(246,65),CYAN)
-	allocation_label = clipped_readout(self,Vector2(74,1058),Vector2(490,38),SKIN.PAPER)
+	allocation_label = clipped_readout(self,Vector2(74,1018),Vector2(490,38),SKIN.PAPER)
 	remaining_label = clipped_readout(self,Vector2(338,606),Vector2(244,65),INK)
 	var count: int = host.game.reactor_modules().size()
 	module_scroll = preload("res://scripts/reactor_module_scroll.gd").new()
@@ -283,7 +283,7 @@ func setup(owner_ui: Node) -> void:
 	module_scroll.add_child(module_content)
 	allocation_scroll = preload("res://scripts/reactor_module_scroll.gd").new()
 	allocation_scroll.position = Vector2(48,714)
-	allocation_scroll.size = Vector2(546,330)
+	allocation_scroll.size = Vector2(546,290)
 	allocation_scroll.module_count = count
 	allocation_scroll.bay_height = 110
 	allocation_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -393,8 +393,8 @@ func setup(owner_ui: Node) -> void:
 			steps.append(step_button)
 		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
 		index += 1
-	move_child(readout_plate(self,Vector2(48,1050),Vector2(546,62)),allocation_label.get_parent().get_index())
-	total_track = visual(self,"segments",Vector2(63,1058),Vector2(510,40))
+	move_child(readout_plate(self,Vector2(48,1010),Vector2(546,62)),allocation_label.get_parent().get_index())
+	total_track = visual(self,"segments",Vector2(63,1018),Vector2(510,40))
 	move_child(total_track,allocation_label.get_parent().get_index())
 	footer_flow = visual(self,"footer_conduit",Vector2(648,1080),Vector2(110,90))
 	readout_plate(self,Vector2(760,1094),Vector2(578,68))
