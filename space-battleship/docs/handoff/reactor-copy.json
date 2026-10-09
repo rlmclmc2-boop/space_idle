@@ -3,20 +3,18 @@
   "branch": "work/reactor-value-copy",
   "baseline": "dfc9f047a8c24de8181a57208156052eaa373d6e",
   "completed": [
-    "757b205+4c64b10+56aaa66 approved master integer grid, guarantee1650 and explicit incompatible-save rejection",
-    "dca0b2a enhancement current state versus position threshold",
-    "90510b07 bounded reactor purchase tooltip and optional full detail",
-    "7a2fe576 pickup whole-unit display retaining credited fractions",
-    "45b254e1 exact master-save rejection and valid backup recovery boundary checks",
-    "b8c9d398 current crew job and pending target separated; unrelated hyperspace hint removed",
     "5f935ff mounted/candidate attributes and actual secondary attack intervals",
     "a0d559c hyperspace XP/luck shared suffix and variable time estimates",
-    "a4f07e0 supersedes arbitrary-decimal secondary intervals: missile base2.5/damage208.5, dynamic half-second estimates explicitly approximate"
+    "a4f07e0 supersedes arbitrary-decimal secondary intervals: missile base2.5/damage208.5, dynamic half-second estimates explicitly approximate",
+    "f4f9b67 current-battle-point guarding tooltip",
+    "1ae2f17 route-named crew dispatch and same-route normal queue context",
+    "25eb9a3 compact drone default cards, conditional empty-state visibility, modification versus actual weapon level",
+    "fb25aa3 requested full attributes wrap and expose complete buffer settlement hover"
   ],
   "verification": {
     "main_ui_checks": 97,
-    "ui_catalog_rows": 2583,
-    "remote_readback": "a4f07e0e6325779780cdb8b0cd058ac183fb5d02",
+    "ui_catalog_rows": 2596,
+    "remote_readback": "fb25aa365b1883069b635355e302035f73ba4647",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
     "parent_gui_verified": [
@@ -29,7 +27,7 @@
       "crew equipment-to-AI assignment, actual AI versus pending reactor, unrelated hyperspace guidance removed"
     ],
     "actual_workspace_success_utc": [
-      "2026-10-09 12:01:48 UTC"
+      "2026-10-09 12:18:02 UTC"
     ],
     "beam_core_checks": 23,
     "hyperspace_entry_checks": 12,
@@ -44,15 +42,18 @@
     "crew_assignment_checks": 10,
     "candidate_attribute_checks": 9,
     "hyperspace_secondary_checks": 7,
-    "missile_parameter_checks": 6
+    "missile_parameter_checks": 6,
+    "route_context_checks": 8,
+    "drone_default_readability_checks": 10,
+    "full_attribute_checks": 6
   },
   "next": [
-    "Parent judges missile half-grid candidate: nominal DPS+0.08%; actual existing damage rounding levels1..1000 varies-4%..+5.6%; no exact-DPS claim",
-    "Parent accepts mounted/candidate expanded attributes and natural secondary-number layout",
-    "Parent continues master generation/reroll/actual damage and enhancement position acceptance",
-    "Paused-refit HP change remains an unattributed observation; no mechanic changes"
+    "Parent performs only targeted acceptance of existing guard/route/drone/attribute issues; current round of play is stopped",
+    "Parent retains accepted missile half-grid candidate with actual existing damage-rounding drift-4%..+5.6%, without exact equivalence claims",
+    "A fresh normal-resource front20 comparison belongs to the next separately authorized round after the coherent improvements are ready"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "a4f07e0e6325779780cdb8b0cd058ac183fb5d02",
-  "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal."
+  "last_code_commit": "fb25aa365b1883069b635355e302035f73ba4647",
+  "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
+  "scope": "Default information layers, explicit dispatch target/queue context, meaningful numeric feedback and requested full details; current AI/reactor growth retained."
 }
