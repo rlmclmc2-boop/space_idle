@@ -1,4 +1,3 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplay unchanged. Independent normalnewsave cloud Xorg:99 x1.
-Checkpoint19 2026-10-09 15:22:14.352016+00:00 paused main9 wave5 after9/6 retries. Completed1-8+A1/A2. Actual9/6 firsthover elite66.1M armorenergy-resistant noshield. Defensive40weapon/59def allocation+ordinaryarmor26 didnotclear6.
-FIRST normalUI economy/stationing trial: reactor19 weapon40 defense40 smelt20, GUI iron+308%, station9ON. This is normal gameplay resourcebonus, no injection/idealRNG. Earlier0smelt wasmystrategychoice andmayhaveprolongedwall. Enhancement1 burst/memory retained, AI13.
-Actualmouse/manualsave/screenshot successful originalenv. Next collectnormalresources, ordinaryupgrades, turnstationOFFbeforemainadvance. Continue9to20stop/save/close. No olddata/gameplaysource knowledge.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplay unchanged. Independent normalnewsave originalcloud Xorg:99 x1 GUI.
+Checkpoint20 2026-10-09 15:33:54.162980+00:00 isCHECKPOINTNUMBER, main9wave4paused, NOTgame20. Completed1-8+A1/A2. Continued9/6 failures; deliberate20smelteconomy UI+356iron accumulated45.5K normalFe. Actualnormalgear spends: missilesall29,D01armor29,D02shield27, reactor20. CurrentFe69 U1.06K.
+Restoredprogression allocationweapon65def35smelt0, stationOFF visible. Enhancement1burst/memory, AI13. ActualGUI/mouse/manualsave/screenshot successful originalenv, noreset/injections/olddata/gameplaysource. Nextcontinue9through20stop/save/close.
