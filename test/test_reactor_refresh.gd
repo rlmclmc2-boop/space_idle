@@ -100,7 +100,7 @@ func run() -> void:
 	check(panel.allocation_hint.position.y>=panel.capacity_label.get_parent().position.y+panel.capacity_label.get_parent().size.y and panel.allocation_hint.position.y+panel.allocation_hint.size.y<=panel.allocation_scroll.position.y,"Temporary-supply warning has a reserved row clear of readouts and controls")
 	var slider: HSlider=panel.module_controls.weapons.slider
 	check(panel.upgrade_buttons.x1.text.contains(panel.purchase_cost_text(g.reactor_upgrade_cost())) and panel.upgrade_buttons.x1.text.split("\n").size()==2 and panel.upgrade_buttons.x1.tooltip_text.contains(panel.energy_text(g.reactor_capacity_at(int(g.profile.reactorLevel)+1))),"Single purchase shows action and fee; energy projection remains available in details")
-	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("收益"),"Batch and MAX expose purchase-specific effect previews")
+	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("能源") and str(panel.purchase_details.MAX).contains("收益"),"Batch and MAX expose purchase-specific effect previews")
 	check(panel.benefit_label.text==UIText.t("reactor.upgrade_idle") and panel.benefit_label.get_theme_font_size("font_size")>=25,"Zero supply offers the useful next action without a wall of zero percentages")
 	check(not panel.allocation_hint.visible and not panel.next_label.visible and not panel.cost_label.visible,"Default hides allocation convention and duplicated next-level cost")
 	check(panel.module_controls.values().all(func(c):return not c.allocation_boost.visible and c.allocation_boost.text.is_empty() and not c.share.text.contains("免费")),"No free supply means no default free-zero readouts")
@@ -210,7 +210,7 @@ func run() -> void:
 	var before_details:=JSON.stringify(g.profile);var rng_before:int=g.rng.state
 	panel.details_button.pressed.emit()
 	var scope:=UIText.t("reactor.purchase_scope")
-	check(panel.details_dialog.visible and ["x1","x10","MAX"].all(func(mode):return panel.details_text.text.contains(panel.upgrade_buttons[mode].tooltip_text.trim_suffix("\n"+scope))),"Explicit details retains every authoritative price/benefit projection")
+	check(panel.details_dialog.visible and ["x1","x10","MAX"].all(func(mode):return panel.details_text.text.contains(str(panel.purchase_details[mode]))),"Explicit details retains every authoritative price/benefit projection")
 	check(panel.details_text.text.count(scope)==1,"Expanded details explain the common projection scope once")
 	check(JSON.stringify(g.profile)==before_details and g.rng.state==rng_before,"Opening details never purchases or changes the player plan or RNG")
 	var fractional_percent:=RegEx.new();fractional_percent.compile("[0-9]+\\.[0-9]+%")

@@ -9649,6 +9649,19 @@
         "position",
         "level"
       ]
+    },
+    "reactor.purchase_hover": {
+      "params": [
+        "count",
+        "cost",
+        "effects"
+      ]
+    },
+    "reactor.purchase_energy": {
+      "params": [
+        "current",
+        "next"
+      ]
     }
   },
   "bindings": {

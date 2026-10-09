@@ -17787,5 +17787,19 @@
     "params": "{position},{level}",
     "category": "enhancement",
     "note": "Secondary note: threshold belongs to the ordered position, not the effect."
+  },
+  {
+    "key": "reactor.purchase_hover",
+    "text": "购买 {count} 级\n合计 {cost} 铀\n{effects}",
+    "params": "{count},{cost},{effects}",
+    "category": "reactor",
+    "note": "Bounded primary purchase quote; full rules remain in upgrade details."
+  },
+  {
+    "key": "reactor.purchase_energy",
+    "text": "能源 {current} → {next}",
+    "params": "{current},{next}",
+    "category": "reactor",
+    "note": "Capacity return in a purchase quote."
   }
 ]
