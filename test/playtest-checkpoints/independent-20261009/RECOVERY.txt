@@ -1,5 +1,4 @@
-Pure cloud playtest save, fresh normal-resource round. Code candidate70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
-Stage1 wave3 checkpoint; 1x only; W01pulseLv2,W02/W03pulseLv1,D01/D02armorLv1. No micro-particle use, no QA, no injection.
-Recover only this save into an isolated XDG_DATA_HOME godot/app_userdata/太空战舰 · 深空远征/progress.json. Do not mix with personal saves.
-Current original cloud display:91, game PID1440/window4194307. Data /workspace/playtest-independent-20261009/data; cache/config sister directories. Graphics1280x720,LP_NUM_THREADS2,LinuxGodot4.6.3. Read private checkpoint in evidence/checkpoint.txt before resume; do not create new save.
-Next: continue this player's independent GUI play to first arrival stage20 then save/close. Backup intentionally excludes screenshots, detailed report, caches, credentials and local-player data.
+Pure isolated cloud normal-resource 1x GUI playtest save. Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a/treea418e01825f3b82518dc02722937b43b4bfb2c88. NoQA,resourceinjection,micro-particlesuse.
+Stage4wave1 now; cleared3 naturally, firstobserved4at19:42:10UTC. W01cannon4,W02missile3,W03cannon3,D01/D02armor4,reactor5evenallocation. NoAIyet.
+Originalcloud:91,Xvfb755,Godot1440,window4194307,1280x720,LP_NUM_THREADS2,LinuxGodot4.6.3. XDG_DATA_HOME /workspace/playtest-independent-20261009/data,cache/configsisterroots. Restore only own progress.json to godot/app_userdata/太空战舰 · 深空远征/ undernewisolatedXDGroot iforiginalcannotrecover. Preferoriginalprocess/checkpoint.
+Privatecurrentevidence /workspace/playtest-independent-20261009/evidence/checkpoint.txt; readowncheckpointonly. ContinueindependentGUIplay,firstarrival20saveandclose. Next: AIwhen100iron5anchoravailable,readfactoryUI. Backupexcludeslocalplayers,credentials,caches,screenshots,detailedreports.
