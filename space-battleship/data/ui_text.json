@@ -17759,5 +17759,19 @@
     "text": "周期性结算",
     "params": "",
     "category": "enhance"
+  },
+  {
+    "key": "reactor.flow.effective_energy",
+    "text": "有效 {energy} 能源",
+    "params": "{energy}",
+    "category": "reactor",
+    "note": "Capacity share remains in the allocation column."
+  },
+  {
+    "key": "research.dock_ai_max_count",
+    "text": "MAX +{count}",
+    "params": "{count}",
+    "category": "research",
+    "note": "Actual affordable batch count."
   }
 ]
