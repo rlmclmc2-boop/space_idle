@@ -9,12 +9,13 @@
     "f4f9b67 current-battle-point guarding tooltip",
     "1ae2f17 route-named crew dispatch and same-route normal queue context",
     "25eb9a3 compact drone default cards, conditional empty-state visibility, modification versus actual weapon level",
-    "fb25aa3 requested full attributes wrap and expose complete buffer settlement hover"
+    "fb25aa3 requested full attributes wrap and expose complete buffer settlement hover",
+    "2d8943e add-affix unavailable state names actual quality capacity or used/cap; classification rules retained"
   ],
   "verification": {
     "main_ui_checks": 97,
-    "ui_catalog_rows": 2596,
-    "remote_readback": "fb25aa365b1883069b635355e302035f73ba4647",
+    "ui_catalog_rows": 2597,
+    "remote_readback": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
     "parent_gui_verified": [
@@ -45,15 +46,17 @@
     "missile_parameter_checks": 6,
     "route_context_checks": 8,
     "drone_default_readability_checks": 10,
-    "full_attribute_checks": 6
+    "full_attribute_checks": 6,
+    "add_affix_availability_checks": 7
   },
   "next": [
+    "Parent checks original material-rich add-affix case against displayed quality/capacity; no unrestricted misclassification reproduced in the focused fixture",
     "Parent performs only targeted acceptance of existing guard/route/drone/attribute issues; current round of play is stopped",
     "Parent retains accepted missile half-grid candidate with actual existing damage-rounding drift-4%..+5.6%, without exact equivalence claims",
     "A fresh normal-resource front20 comparison belongs to the next separately authorized round after the coherent improvements are ready"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "fb25aa365b1883069b635355e302035f73ba4647",
+  "last_code_commit": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
   "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
   "scope": "Default information layers, explicit dispatch target/queue context, meaningful numeric feedback and requested full details; current AI/reactor growth retained."
 }
