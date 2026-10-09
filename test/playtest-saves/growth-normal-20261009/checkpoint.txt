@@ -1,4 +1,5 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplay unchanged. Independent normalnewsave cloud Xorg:99 x1.
-Checkpoint19 2026-10-09 15:22:14.352016+00:00 paused main9 wave5 after9/6 retries. Completed1-8+A1/A2. Actual9/6 firsthover elite66.1M armorenergy-resistant noshield. Defensive40weapon/59def allocation+ordinaryarmor26 didnotclear6.
-FIRST normalUI economy/stationing trial: reactor19 weapon40 defense40 smelt20, GUI iron+308%, station9ON. This is normal gameplay resourcebonus, no injection/idealRNG. Earlier0smelt wasmystrategychoice andmayhaveprolongedwall. Enhancement1 burst/memory retained, AI13.
-Actualmouse/manualsave/screenshot successful originalenv. Next collectnormalresources, ordinaryupgrades, turnstationOFFbeforemainadvance. Continue9to20stop/save/close. No olddata/gameplaysource knowledge.
+Fixed gameplay candidate46829d6cdeff62d08474546f875d6d2b8e848367, source diff0. SAMEround independentnormalnewsave continuedfromownca75450 checkpoint19, rawGitrestorehash79e811bd47ceca61c609be5b8c2bf987ce6852ccd2acd5a8e92f23ffbf9ed540.
+Checkpoint20 2026-10-09 15:44:28.269459+00:00 ACTUALmain9wave5 paused, completed1-8+A1/A2, NOTstage20.
+Recoveryboundary: shared:99windowandoldbranchchangedwithoutmyrecordedinput, unknownchangesNOTaccepted. IsolatedSAMEoriginalcloudenvironment worktree /workspace/space_idle_growth_recovery, display:100, data /tmp/playtest-growth-resume/data. Branchplaytest/growth-normal-resume-20261009. No newround/retest/version. Actualmouse/screenshot/save succeeded.
+RestoredGUI25rails armor26shield25 verified; thennormalupgradesallrails26shield26reactor20. Station9ON, economy40/40/20 retained. Gameautomaticallysettled1171offlinemicroparticles fromrealgap, NEVERusedacceleration; x1, noresource/time edits. AI13 enhancement1burst/memory.
+Nextcontinue normalresourcegrowth, stationOFFwhenready, proceedmain9to20stop/save/close. Screenshots/reports/cachesexcludedGit.
