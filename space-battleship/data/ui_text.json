@@ -17720,5 +17720,44 @@
     "params": "module",
     "category": "reactor",
     "note": "当前阶段的简明动作与大致收益；精确对照放升级详情。"
+  },
+  {
+    "key": "enhance.description.memory_material.cadence",
+    "text": "{cadence}，每次回复最大防御的 {recovery}%。溢出积累无抗性临时防护，上限为最大防御的 {cap}%，不随时间衰减。",
+    "params": "{cadence},{recovery},{cap}",
+    "category": "enhance",
+    "note": "固定结算周期仅用准确秒数或频率；不量化机制"
+  },
+  {
+    "key": "enhance.description.memory_material.runtime.cadence",
+    "text": "首件启用防御模块参考：{cadence}，每次按该模块当前最大防御修复 {recovery}%；先修复本模块损失，仅多余部分转为中性临时防护。满值时每期充能为该模块最大防御的 {charge}%，容量为其最大防御的 {cap}%。每个模块独立计算、独立容量，不能以全舰总防御作为百分比基准；实时抗性见下方。",
+    "params": "{cadence},{recovery},{charge},{cap}",
+    "category": "enhance",
+    "note": "固定结算周期仅用准确秒数或频率；不量化机制"
+  },
+  {
+    "key": "enhance.description.delayed_damage.cadence",
+    "text": "适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，{cadence}；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
+    "params": "{fraction},{duration},{ticks},{cadence},{chance}",
+    "category": "enhance",
+    "note": "固定结算周期仅用准确秒数或频率；不量化机制"
+  },
+  {
+    "key": "enhance.cadence.seconds",
+    "text": "每 {value} 秒",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.cadence.frequency",
+    "text": "每秒 {value} 次",
+    "params": "{value}",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.cadence.periodic",
+    "text": "周期性结算",
+    "params": "",
+    "category": "enhance"
   }
 ]

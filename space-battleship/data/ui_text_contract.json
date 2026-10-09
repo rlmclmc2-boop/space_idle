@@ -9593,6 +9593,43 @@
       "params": [
         "module"
       ]
+    },
+    "enhance.description.memory_material.cadence": {
+      "params": [
+        "cadence",
+        "recovery",
+        "cap"
+      ]
+    },
+    "enhance.description.memory_material.runtime.cadence": {
+      "params": [
+        "cadence",
+        "recovery",
+        "charge",
+        "cap"
+      ]
+    },
+    "enhance.description.delayed_damage.cadence": {
+      "params": [
+        "fraction",
+        "duration",
+        "ticks",
+        "cadence",
+        "chance"
+      ]
+    },
+    "enhance.cadence.seconds": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.cadence.frequency": {
+      "params": [
+        "value"
+      ]
+    },
+    "enhance.cadence.periodic": {
+      "params": []
     }
   },
   "bindings": {

@@ -53,7 +53,8 @@ func run() -> void:
 	var master_help:String=scene.hyperspace_panel.legendary_help.explanation({"effect_id":"drone_master","parameters":{"maximum_reduction":0.553}})
 	check(master_help.contains(scene.hyperspace_panel.t("percent",{"value":"55"})) and not master_help.contains("55.3%"),"Owned legendary details use integer percentage points")
 	check(JSON.stringify(g.profile)==display_profile and g.rng.state==display_rng,"Formatting legendary details preserves saved parameters and RNG")
-	check(scene.enhancement_panel.display(3.24)=="3" and scene.enhancement_panel.display(0.28)=="0.5","Enhancement duration details use the ordinary scalar entry")
+	check(scene.enhancement_panel.cadence(0.2)==UIText.t("enhance.cadence.frequency",{"value":"5"}) and scene.enhancement_panel.cadence(0.28)==UIText.t("enhance.cadence.periodic"),"Fixed periodic timing uses an exact frequency or withholds an inaccurate interval")
+	check(scene.enhancement_panel.effect_description("memory_material").contains(UIText.t("enhance.cadence.frequency",{"value":"5"})) and scene.enhancement_panel.effect_description("delayed_damage").contains(UIText.t("enhance.cadence.frequency",{"value":"5"})),"Actual memory and deferred-damage descriptions do not show a zero-second interval")
 	check(NumberFormat.scalar_is_exact(0.5) and not NumberFormat.scalar_is_exact(0.28) and not NumberFormat.scalar_is_exact(3.24),"Fixed time gate rejects misleading half-unit rounding")
 	var beam_entry:Dictionary={"key":"longLaser","level":1}
 	var beam:Dictionary=scene.equipment_display_snapshot(beam_entry)

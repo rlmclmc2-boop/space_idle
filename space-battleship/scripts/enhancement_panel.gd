@@ -231,6 +231,11 @@ func parameter(key: String) -> float:
 func display(value: Variant) -> String:
 	return FORMAT.scalar(value)
 
+func cadence(interval: float) -> String:
+	if interval>0 and FORMAT.scalar_is_exact(interval):return UIText.t("enhance.cadence.seconds",{"value":FORMAT.scalar(interval)})
+	if interval>0 and FORMAT.scalar_is_exact(1.0/interval):return UIText.t("enhance.cadence.frequency",{"value":FORMAT.scalar(1.0/interval)})
+	return UIText.t("enhance.cadence.periodic")
+
 func threshold_level(index: int) -> int:
 	return game.enhancement_effect_threshold(index)
 
@@ -256,9 +261,9 @@ func effect_description(kind: String) -> String:
 			var duration := parameter("deferred_duration")
 			var interval := parameter("deferred_interval")
 			var ticks := ceili(duration/interval-0.000000001)
-			return UIText.t("enhance.description.delayed_damage",{"fraction":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"duration":display(duration),"interval":display(interval),"ticks":ticks,"chance":FORMAT.percentage(parameter("deferred_clear_probability")*100)})
+			return UIText.t("enhance.description.delayed_damage.cadence",{"fraction":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"duration":display(duration),"cadence":cadence(interval),"ticks":ticks,"chance":FORMAT.percentage(parameter("deferred_clear_probability")*100)})
 		"memory_material":
-			return UIText.t("enhance.description.memory_material",{"interval":display(parameter("memory_interval")),"recovery":FORMAT.percentage(parameter("memory_heal_fraction")*level*100),"cap":FORMAT.percentage(parameter("memory_buffer_fraction")*level*100)})
+			return UIText.t("enhance.description.memory_material.cadence",{"cadence":cadence(parameter("memory_interval")),"recovery":FORMAT.percentage(parameter("memory_heal_fraction")*level*100),"cap":FORMAT.percentage(parameter("memory_buffer_fraction")*level*100)})
 	return UIText.t("enhance.description.pending")
 
 func runtime_effect_description(kind: String) -> String:
@@ -277,10 +282,10 @@ func runtime_effect_description(kind: String) -> String:
 			if guaranteed:arguments.underlying=FORMAT.percentage(values.underlying_probability_percent)
 			return UIText.t(key,arguments)
 		"memory_material":
-			return UIText.t("enhance.description.memory_material.runtime",{"interval":display(values.interval),"recovery":FORMAT.percentage(values.heal_percent),"charge":FORMAT.percentage(values.charge_percent),"cap":FORMAT.percentage(values.capacity_percent)})
+			return UIText.t("enhance.description.memory_material.runtime.cadence",{"cadence":cadence(values.interval),"recovery":FORMAT.percentage(values.heal_percent),"charge":FORMAT.percentage(values.charge_percent),"cap":FORMAT.percentage(values.capacity_percent)})
 		"delayed_damage":
 			var ticks := ceili(float(values.duration)/float(values.interval)-0.000000001)
-			return UIText.t("enhance.description.delayed_damage",{"fraction":FORMAT.percentage(values.fraction_percent),"duration":display(values.duration),"interval":display(values.interval),"ticks":ticks,"chance":FORMAT.percentage(values.probability_percent)})
+			return UIText.t("enhance.description.delayed_damage.cadence",{"fraction":FORMAT.percentage(values.fraction_percent),"duration":display(values.duration),"cadence":cadence(values.interval),"ticks":ticks,"chance":FORMAT.percentage(values.probability_percent)})
 	return UIText.t("enhance.description.pending")
 
 func compact_branch_path(category: String, kind: String) -> String:
