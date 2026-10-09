@@ -9043,6 +9043,37 @@
     },
     "hyperspace.promotion_no_change": {
       "params": []
+    },
+    "reactor.purchase_button": {
+      "params": [
+        "title",
+        "cost",
+        "energy"
+      ]
+    },
+    "reactor.purchase_details": {
+      "params": [
+        "count",
+        "cost",
+        "current",
+        "next"
+      ]
+    },
+    "reactor.purchase_effect": {
+      "params": [
+        "module",
+        "current",
+        "next",
+        "gain"
+      ]
+    },
+    "reactor.purchase_scope": {
+      "params": []
+    },
+    "reactor.single_preview": {
+      "params": [
+        "effects"
+      ]
     }
   },
   "bindings": {

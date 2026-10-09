@@ -16160,14 +16160,14 @@
   },
   {
     "key": "reactor.upgrade_idle",
-    "text": "尚未分配：升级后仍预留能源，可点均分供能",
+    "text": "先点均分供能，让新增能源发挥作用",
     "params": "",
     "category": "reactor",
     "note": "升级按原比例分配新增整数能源，包含闲置能源"
   },
   {
     "key": "reactor.upgrade_shares",
-    "text": "升级保留分配与预留比例；零分配模块仍为零",
+    "text": "升级延续当前分配；预留能源仍预留",
     "params": "",
     "category": "reactor",
     "note": "升级按原比例分配新增整数能源，包含闲置能源"
@@ -16835,5 +16835,45 @@
     "params": "",
     "category": "hyperspace",
     "note": "连续升阶操作与真实结算反馈"
+  },
+  {
+    "key": "reactor.purchase_button",
+    "text": "{title}\n{cost}铀\n能源+{energy}",
+    "params": "title,cost,energy",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_details",
+    "text": "购买 {count} 级：{cost} 铀\n能源 {current} → {next}",
+    "params": "count,cost,current,next",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_effect",
+    "text": "{module}加成 {current}% → {next}%（收益 +{gain}%）",
+    "params": "module,current,next,gain",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_scope",
+    "text": "按当前分配预览；收益按购买前后倍率计算。预留能源仍预留，免费供能计入各模块。熔炼只增加敌舰铁掉落，碎片凝聚只增加直接掉落的强化碎片。",
+    "params": "",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.single_preview",
+    "text": "升一级：{effects}",
+    "params": "effects",
+    "category": "reactor",
+    "note": "单级武器与防御当前下一步收益",
+    "source": "reactor_panel.gd"
   }
 ]

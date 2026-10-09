@@ -1,6 +1,7 @@
 extends SceneTree
 const Growth = preload("res://scripts/reactor_allocation_growth.gd")
 const Main = preload("res://scripts/main.gd")
+const Preview = preload("res://scripts/reactor_upgrade_preview.gd")
 class LargeCapacityGame extends BattleGame:
 	func reactor_capacity() -> int:return 9007199254740999
 func _initialize() -> void:call_deferred("run")
@@ -44,5 +45,33 @@ func run() -> void:
 	large.rebuild_unlocks()
 	large.load_reactor({"reactorLevel":1,"reactorAllocation":{"weapons":9007199254740997}})
 	assert(large.profile.reactorAllocation.weapons == 9007199254740997,"integer save allocations do not round through float")
+	# Compare read-only quotes to actual purchases, including batch rounding and
+	# planetary free power. A quote must neither spend resources nor change shares.
+	for level in [2,37]:
+		for count in [1,10]:
+			var buyer := BattleGame.new(db,false)
+			buyer.profile.cleared = range(1,101)
+			buyer.rebuild_unlocks()
+			buyer.profile.reactorLevel = level
+			buyer.profile.resources["2"] = 1.0e12
+			buyer.profile.planets["1"].conquered = true
+			buyer.equalize_reactor_allocation()
+			var before: Dictionary = buyer.profile.duplicate(true)
+			var quote := Preview.quote(buyer,count)
+			assert(buyer.profile == before,"purchase preview is read-only")
+			assert(buyer.upgrade_reactor(count))
+			assert(quote.next_capacity == buyer.reactor_capacity() and quote.allocation == buyer.profile.reactorAllocation,"quote follows actual integer batch allocation")
+			assert(absf(float(before.resources["2"])-float(buyer.profile.resources["2"])-float(quote.cost))<0.001,"quote includes every purchased level cost")
+			for key in quote.effects:
+				assert(is_equal_approx(quote.effects[key].next,buyer.reactor_multiplier(key)),"quoted effect agrees with purchased effect including free power")
+	var idle_quote := Preview.quote(restored,0)
+	assert(idle_quote.count == 0 and idle_quote.cost == 0 and idle_quote.next_capacity == restored.reactor_capacity(),"unaffordable MAX quotes no purchase")
+	db.config.reactorEnergyGrowth = 1.12
+	db.config.reactorBoostExponent = 0.9
+	db.config.reactorPercentScale = 80
+	var alternate := Preview.quote(restored,1)
+	restored.profile.resources["2"] = 1.0e6
+	assert(restored.upgrade_reactor(1))
+	assert(is_equal_approx(alternate.effects.weapons.next,restored.reactor_multiplier("weapons")),"projection reads alternate valid config")
 	print("PASS reactor growth: idle/zero shares, integer remainders, float/int64 boundaries, live config/research, purchase/no-heal and save round-trip")
 	quit()
