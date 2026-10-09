@@ -21,6 +21,7 @@ func run()->void:
  scene.defeat_recall.gui_input.emit(click);await process_frame
  var p=scene.equipment_panel
  check(scene.equipment_tabs.current_tab==scene.equipment_tabs.get_tab_idx_from_control(p) and p.detail_frame.visible,"Actual recall click opens existing equipment inspector")
+ check(p.detail.status.text.contains("上次8/3：能量损失为主"),"Frozen defeat source is visible inside the opened inspector")
  var item:Dictionary=p.items[p.selected]
  var entry:Dictionary=g.module_entry(item.category,item.index)
  check(item.category=="defence","Missing energy-resistant equipment still opens defence comparison")
@@ -33,5 +34,9 @@ func run()->void:
  check(JSON.stringify(g.profile)==before and g.rng.state==rng_before,"Opening comparison does not change equipment, resources or RNG")
  scene.on_event("battle_defeated",{"manual":false,"remaining":1,"stage":9,"wave":2})
  check(scene.last_defeat_cause=="unknown" and not scene.defeat_recall.tooltip_text.contains("抗能量") and not scene.defeat_recall.tooltip_text.contains("抗物理"),"Unknown actual cause replaces old direction with neutral comparison")
+ p.select_item("weapons_0");p.show_inspector()
+ check(p.comparison_context.is_empty() and not p.detail.status.text.contains("上次"),"Normal object selection clears the defeat-specific context")
+ scene.open_defeat_comparison();p.detail_frame.hide()
+ check(p.comparison_context.is_empty(),"Closing the inspector clears source context")
  scene.queue_free();await process_frame
  print("DEFEAT COMPARISON: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

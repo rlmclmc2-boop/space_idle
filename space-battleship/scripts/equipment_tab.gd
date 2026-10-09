@@ -34,6 +34,7 @@ var footer_buttons: Dictionary = {}
 var upgrade_amount := 1
 var amount_buttons: Array[Button] = []
 var picker_open := false
+var comparison_context:=""
 var pending_key := ""
 # Draft belongs to the selected slot and its equipped identity, not its level.
 var draft_context: Array = []
@@ -259,6 +260,8 @@ func build_detail() -> void:
 	detail.basics.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	detail.stats.resized.connect(update_detail_height)
 	detail_frame.hide()
+	detail_frame.visibility_changed.connect(func():
+		if not detail_frame.visible:comparison_context="")
 
 func layout_contents() -> void:
 	if not is_inside_tree() or not is_instance_valid(detail_body):return
@@ -333,7 +336,8 @@ func upgrade_card(id: String) -> void:
 	if count>0:host.game.upgrade_slot(item.category,item.index,count)
 	refresh(id)
 
-func show_inspector() -> void:
+func show_inspector(context:="") -> void:
+	comparison_context=context
 	picker_open = false
 	refresh_pending()
 	refresh_detail({},true)
@@ -409,6 +413,7 @@ func change_card_equipment(id: String, key: String) -> void:
 
 func choose_equipment(index: int) -> void:
 	if index<0 or index>=slot_options.size():return
+	comparison_context=""
 	pending_key = str(slot_options[index])
 	refresh_detail({},true)
 	if picker_open and not detail.equip.disabled:
@@ -666,6 +671,7 @@ func refresh_total() -> void:
 func select_item(key: String) -> void:
 	if not items.has(key):return
 	var previous := selected
+	if previous!=key:comparison_context=""
 	selected = key
 	selected_slot = int(items[key].index)
 	if cards.has(previous):cards[previous].refresh(items[previous],false)
@@ -776,7 +782,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	host.set_ui_value(detail.status,"text",UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
+	host.set_ui_value(detail.status,"text",(UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))+(" · "+comparison_context if not comparison_context.is_empty() else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)

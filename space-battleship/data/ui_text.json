@@ -17454,5 +17454,33 @@
     "params": "",
     "category": "crew",
     "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "equipment.defeat_source_energy",
+    "text": "上次{stage}/{wave}：能量损失为主",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_physical",
+    "text": "上次{stage}/{wave}：物理损失为主",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_mixed",
+    "text": "上次{stage}/{wave}：物理与能量损失相当",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_unknown",
+    "text": "上次{stage}/{wave}：损失类型未明",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
   }
 ]

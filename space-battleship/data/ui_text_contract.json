@@ -9427,6 +9427,30 @@
     },
     "crew.hyperspace_entry_hint": {
       "params": []
+    },
+    "equipment.defeat_source_energy": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_physical": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_mixed": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_unknown": {
+      "params": [
+        "stage",
+        "wave"
+      ]
     }
   },
   "bindings": {
