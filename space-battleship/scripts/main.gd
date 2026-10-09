@@ -54,6 +54,8 @@ var defeat_notice := ""
 var defeat_notice_time := 0.0
 var last_defeat_details := ""
 var last_defeat_cause := "unknown"
+var last_defeat_stage:=0
+var last_defeat_wave:=0
 var defeat_recall: Label
 var compact_armour: Array[PackedVector2Array] = []
 var compact_bridges: Array[PackedVector2Array] = []
@@ -826,6 +828,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			defeat_notice_time=3.5
 			var place=UIText.t("battle.defeat.manual_place" if info.manual else "battle.defeat.main_place",{"stage":str(info.get("stage",game.stage)),"wave":str(info.get("wave",game.group_index))})
 			last_defeat_cause=defeat_feedback.cause(game)
+			last_defeat_stage=int(info.get("stage",game.stage))
+			last_defeat_wave=int(info.get("wave",game.group_index))
 			last_defeat_details=UIText.t("battle.defeat.recent",{"place":place,"result":notice})+"\n"+UIText.t("battle.defeat.compare_"+last_defeat_cause)
 			refresh_defeat_recall()
 		"retreat":
@@ -881,7 +885,7 @@ func open_defeat_comparison()->void:
 			if not str(entry.get("key","")).is_empty() and int(db.equip(str(entry.key),int(entry.level)).get("dmgtype",0))==damage_type:
 				target=equipment_panel.module_card_id("defence",index);break
 	if target.is_empty() and not equipment_panel.items.is_empty():target=str(equipment_panel.items.keys()[0])
-	if not target.is_empty():equipment_panel.select_item(target);equipment_panel.show_inspector()
+	if not target.is_empty():equipment_panel.select_item(target);equipment_panel.show_inspector(UIText.t("equipment.defeat_source_"+last_defeat_cause,{"stage":str(last_defeat_stage),"wave":str(last_defeat_wave)}))
 
 func refresh_defeat_recall()->void:
 	if not is_instance_valid(defeat_recall):return

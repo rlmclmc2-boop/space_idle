@@ -14859,7 +14859,7 @@
   },
   {
     "key": "hyperspace.forge_guide_enable_omen",
-    "text": "想优先换掉低阶词条？\n点「开启未来预兆」，按钮会立即显示已开启；以后点同一个按钮即可关闭。\n开启后，替换优先选未锁词条中的最低阶，同阶随机。它不提高抽取概率，也不改变锁定或升阶的目标选择。",
+    "text": "想优先换掉低阶词条？\n点「开启未来预兆」，按钮会立即显示已开启；以后点同一个按钮即可关闭。\n开启后，替换优先选未锁词条中的最低阶，同阶随机。它不提高抽取概率，也不改变锁定或升阶的目标选择。\n没有词条时可以提前开启；不会立即加属性，添词条后才有替换目标。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -17141,19 +17141,19 @@
   },
   {
     "key": "enhance.candidate.repeat",
-    "text": "有机会追加攻击",
+    "text": "追加攻击 · 悬浮看当前概率",
     "params": "",
     "category": "enhance"
   },
   {
     "key": "enhance.candidate.critical",
-    "text": "有机会打出更高伤害",
+    "text": "暴击增伤 · 悬浮看当前数值",
     "params": "",
     "category": "enhance"
   },
   {
     "key": "enhance.candidate.memory_material",
-    "text": "持续修复，并积累护盾",
+    "text": "持续修复 · 悬浮看当前恢复率",
     "params": "",
     "category": "enhance"
   },
@@ -17384,5 +17384,166 @@
     "params": "",
     "category": "reactor",
     "note": "现有全轨道输入及available_max限制的提示；不自动挪用其他模块能源"
+  },
+  {
+    "key": "hyperspace.master_current_reduction",
+    "text": "当前全舰减伤：{value}%",
+    "params": "value",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_owned_cap",
+    "text": "本架效果上限",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_not_active",
+    "text": "当前没有生效的无人机大师效果。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_other_source",
+    "text": "当前采用另一架的同类效果；同类只取最强。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "equipment.current_attributes",
+    "text": "当前装备属性 · {name}",
+    "params": "name",
+    "category": "equipment",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "tutorial.ship_access_reached",
+    "text": "当前舰体已自动启用。主线到达第{level}关解锁「{ship}」后，「战舰」页才会出现，可在那里切换。",
+    "params": "level,ship",
+    "category": "tutorial",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "tutorial.ship_access_cleared",
+    "text": "当前舰体已自动启用。主线通关第{level}关解锁「{ship}」后，「战舰」页才会出现，可在那里切换。",
+    "params": "level,ship",
+    "category": "tutorial",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "hyperspace.modernize_scope_none",
+    "text": "本次词条数值不变；无人机等级不是主武器等级。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "hyperspace.modernize_scope_growth",
+    "text": "{count}条词条随等级增长；主武器等级另算。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "crew.hyperspace_entry_hint",
+    "text": "异空间派遣：到「异空间」选路线，点「自动船员管理」，再点「让船员连续探索」。需船员空闲；可先解除岗位或等待其他任务结束。",
+    "params": "",
+    "category": "crew",
+    "note": "既有入口与当前属性的只读范围提示，不改变规则"
+  },
+  {
+    "key": "equipment.defeat_source_energy",
+    "text": "上次{stage}/{wave}：能量损失为主",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_physical",
+    "text": "上次{stage}/{wave}：物理损失为主",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_mixed",
+    "text": "上次{stage}/{wave}：物理与能量损失相当",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "equipment.defeat_source_unknown",
+    "text": "上次{stage}/{wave}：损失类型未明",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "仅由最近败因入口带入；换对象或关闭时清除"
+  },
+  {
+    "key": "hyperspace.forge_exchange_material_shortage",
+    "text": "先兑换：{cost}{source} → {amount}{target}",
+    "params": "cost,source,amount,target",
+    "category": "hyperspace",
+    "note": "单种材料缺口预填；报价来自核心，玩家仍选择来源并明确确认"
+  },
+  {
+    "key": "hyperspace.forge_exchange_guaranteed_shortage",
+    "text": "查看保证目标的实际缺口，再确认兑换。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "单种材料缺口预填；报价来自核心，玩家仍选择来源并明确确认"
+  },
+  {
+    "key": "hyperspace.hanging_slot_no_gain",
+    "text": "有效模块0种；开槽本身不加属性。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "以现行已解锁、可装、等级有效且尚未挂载的模块计数；不改变成长"
+  },
+  {
+    "key": "hyperspace.hanging_slot_available_gain",
+    "text": "可另装{count}种有加成模块。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "以现行已解锁、可装、等级有效且尚未挂载的模块计数；不改变成长"
+  },
+  {
+    "key": "hyperspace.reward_receipt_empty",
+    "text": "当前没有本次奖励回执。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
+  },
+  {
+    "key": "hyperspace.reward_auto_dismantled",
+    "text": "已按自动筛选拆解，材料与模块已到账。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
+  },
+  {
+    "key": "hyperspace.reward_module_receipt",
+    "text": "{name} ×{copies} · 本次结算后 Lv{level}",
+    "params": "name,copies,level",
+    "category": "hyperspace",
+    "note": "显示核心冻结奖励的实际模块副本与结算后等级；不生成或重算奖励"
+  },
+  {
+    "key": "hyperspace.omen_empty_short",
+    "text": "当前无词条；添词条后，替换才会优先最低阶。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "零词条可提前开启未来预兆，不会立即加属性，也不提高抽取概率。"
+  },
+  {
+    "key": "enhance.candidate_current",
+    "text": "当前 Lv{level} · 移到首位后\n{summary}",
+    "params": "level,summary",
+    "category": "enhance",
+    "note": "仅悬浮或详情时计算当前等级的移首候选；不含临时战斗叠层，不改变实际排序。"
   }
 ]

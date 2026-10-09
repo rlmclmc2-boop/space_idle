@@ -50,6 +50,7 @@ var forge_scroll: ScrollContainer
 var forge_content: VBoxContainer
 var challenge_result_area: VBoxContainer
 var exploration_receipt_area: VBoxContainer
+var exploration_receipt_scroll:ScrollContainer
 var root_box: VBoxContainer
 var inventory_box: VBoxContainer
 var scroll: ScrollContainer # Detail scroll only: card pagination and actions stay fixed.
@@ -160,6 +161,10 @@ func setup(owner) -> void:
  challenge_result_area=box(root_box,4);challenge_result_area.visible=false
  recent_result=label(challenge_result_area,"",21)
  exploration_receipt_area=box(root_box,4);exploration_receipt_area.visible=false
+ exploration_receipt_scroll=ScrollContainer.new();exploration_receipt_scroll.custom_minimum_size.y=152
+ exploration_receipt_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+ exploration_receipt_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+ exploration_receipt_area.add_child(exploration_receipt_scroll)
  var stack=Control.new();stack.size_flags_vertical=Control.SIZE_EXPAND_FILL;root_box.add_child(stack)
  for i in 4:
   var content=VBoxContainer.new();content.add_theme_constant_override("separation",14)
@@ -175,6 +180,7 @@ func setup(owner) -> void:
    else:forge_scroll=page_scroll;forge_content=content
   else:
    content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
+ root_box.move_child(exploration_receipt_area,root_box.get_child_count()-1)
  build_inventory(sections[1]);build_forge(forge_content);build_rules(sections[3])
  host.game.event.connect(on_event);visibility_changed.connect(func():
   if is_visible_in_tree():refresh())
@@ -218,7 +224,7 @@ func build_exploration(parent: Node) -> void:
   routes.append(b)
  route_ui.build(parent)
  first_win=label(parent,t("layer_first_win"),22)
- reward_feedback.build(exploration_receipt_area)
+ reward_feedback.build(exploration_receipt_scroll)
 func build_inventory(parent: Node) -> void:
  capacity=label(parent,"");budgets=label(parent,"")
  drone_locked=label(parent,t("layer_drone_locked"),24)
@@ -299,6 +305,10 @@ func build_rules(parent: Node) -> void:
  var actions=row(dialog_content);button(actions,"string_import",import_filter_draft);button(actions,"string_copy",func():
   var parsed=Codec.import_string(filter_text.text,host.game.hyperspace.config)
   if valid_draft(parsed):DisplayServer.clipboard_set(filter_text.text))
+ # Startup and save import both build a fresh panel. Restore controls once;
+ # ordinary refreshes must leave an unsaved draft untouched.
+ apply_filter_controls(host.game.profile.hyperspace.filter)
+ preview_filter()
 func affix_catalog() -> Array:
  return affix_catalog_provider.call() if affix_catalog_provider.is_valid() else []
 func configure_condition(index: int) -> void:
@@ -321,6 +331,10 @@ func valid_draft(rule: Dictionary) -> bool:
 func import_filter_draft() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
  if not valid_draft(rule):preview_filter();return
+ apply_filter_controls(rule)
+ preview_filter();string_dialog.hide()
+func apply_filter_controls(rule:Dictionary) -> void:
+ if not valid_draft(rule):return
  filter_mode.select(0 if rule.mode=="all" else 1);filter_enabled.button_pressed=rule.enabled;filter_action.select(0 if rule.action=="keep_matches" else 1)
  for i in 5:
   var condition:Dictionary=rule.conditions[i] if i<rule.conditions.size() else {"field":"none"}
@@ -331,7 +345,6 @@ func import_filter_draft() -> void:
    for n in condition_values[i].item_count:
     if condition_values[i].get_item_metadata(n)==target:condition_values[i].select(n);break
    if condition.field=="affix":condition_tiers[i].select(int(condition.tier)-1)
- preview_filter();string_dialog.hide()
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
@@ -345,6 +358,7 @@ func on_event(kind: String,_payload: Dictionary) -> void:
  commands.exchange_ui.on_event(kind,_payload)
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","hyperspace_drone_restored","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
+  legendary_help.refresh_open()
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
    if commands.materials_box!=null and commands.materials_box.is_visible_in_tree():
     commands.refresh_materials.call_deferred()
@@ -442,7 +456,7 @@ func refresh_details() -> void:
  if has_effect:
   var caption=t("legendary_info",{"name":effect_name(effect_id)})
   put(legendary_button,"text",caption);put(forge_legendary_button,"text",caption)
-  put(legendary_summary,"text",legendary_help.summary(effect_id))
+  put(legendary_summary,"text",legendary_help.summary(effect_id)+("\n"+legendary_help.master_status(selected_id) if effect_id=="drone_master" else ""))
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
@@ -501,28 +515,31 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
  commands.maximum.button_pressed=bool(state.maximum)
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
-  legendary_help.show(bag.drones[selected_id].legendary_effect)
+  legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
 func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
  var fire_params={"interval":"%.2f"%float(row.cd)}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
- var lines: Array[String]=[t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}),t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}),t("drone_fire_"+str(d.weapon),fire_params)]
- lines.insert(1,t("drone_dynamic_weapon_hint"))
+ var lines:Array[String]=[]
+ for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
+  lines.append(affix_summary(a,d))
+ var hangings:Array[String]=[]
+ for key in d.hangings:hangings.append(hanging_name(str(key)))
+ lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
+ if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  if bag.equipped.has(str(d.id)) and g.drone_combat.disabled.has(str(d.id)):lines.insert(0,t("rebuild_disabled"))
  lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
- for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  lines.append(affix_summary(a,d))
+ lines.append(t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
+ lines.append(t("drone_dynamic_weapon_hint"))
+ lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))
+ lines.append(t("drone_fire_"+str(d.weapon),fire_params))
  if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))
   var trigger:=legendary_trigger(str(effect.get("effect_id","")))
   if not trigger.is_empty():lines.append(trigger)
- var hangings: Array[String]=[]
- for key in d.hangings:hangings.append(hanging_name(str(key)))
- lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
- if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  return "\n".join(lines)
 func affix_display(a:Dictionary,d:Dictionary) -> Dictionary:
  var value:float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,host.game.hyperspace.config)

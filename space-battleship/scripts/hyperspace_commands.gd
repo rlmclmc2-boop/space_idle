@@ -198,6 +198,19 @@ func cost_text(cost: Dictionary,exact: bool=false) -> String:
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:
  return t("command_error_"+error) if UIText.entries.has("hyperspace.command_error_"+error) else t("command_failed")
+func hanging_slot_scope(d:Dictionary) -> String:
+ var count:=0
+ for key in h().config.hanging_modules:
+  var definition:Dictionary=h().config.hanging_modules[key]
+  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
+  if not bool(progress.unlocked) or int(game().profile.highestLevel)<int(definition.unlock_stage) or d.get("hangings",[]).has(key):continue
+  if pow(1.0+float(definition.effect_growth),int(progress.level))-1.0>0:count+=1
+ return t("hanging_slot_no_gain") if count==0 else t("hanging_slot_available_gain",{"count":str(count)})
+func modernization_scope(d:Dictionary) -> String:
+ var growing:=0
+ for a in d.get("affixes",[])+([d.ultimate_affix] if bool(d.get("ultimate",false)) and not d.get("ultimate_affix",{}).is_empty() else []):
+  if bool(h().config.affixes[a.key].amplified) and float(a.value)!=0:growing+=1
+ return t("modernize_scope_none") if growing==0 else t("modernize_scope_growth",{"count":str(growing)})
 func modernization_text(request_data: Dictionary) -> String:
  var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
  if d.is_empty():return ""
@@ -208,7 +221,7 @@ func modernization_text(request_data: Dictionary) -> String:
   var before:Dictionary=panel.affix_display(a,d)
   var after:Dictionary=panel.affix_display(a,projected)
   effects.append(t("modernize_effect",{"name":before.name,"before":before.value_text,"after":after.value_text}))
- return t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
+ return modernization_scope(d)+"\n"+t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
 func promotion_forecast(d:Dictionary) -> Dictionary:
  var c:Dictionary=h().config
  if d.is_empty() or str(c.policies.promotion_success)!="weighted_draw_stronger":return {}

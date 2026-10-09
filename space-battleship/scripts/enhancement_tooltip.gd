@@ -4,7 +4,9 @@ extends RefCounted
 class HoverLabel extends Label:
  func _make_custom_tooltip(for_text:String)->Object:return EnhancementTooltip.content(for_text)
 class HoverRichText extends RichTextLabel:
- func _make_custom_tooltip(for_text:String)->Object:return EnhancementTooltip.content(for_text)
+ var preview_text:Callable
+ func _make_custom_tooltip(for_text:String)->Object:
+  return EnhancementTooltip.content(str(preview_text.call()) if preview_text.is_valid() else for_text)
 static func content(for_text:String)->Control:
  var panel=PanelContainer.new()
  var box=StyleBoxFlat.new();box.bg_color=Color("182e3e");box.content_margin_left=12;box.content_margin_right=12;box.content_margin_top=10;box.content_margin_bottom=10

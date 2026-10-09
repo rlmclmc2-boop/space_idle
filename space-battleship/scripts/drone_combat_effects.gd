@@ -57,6 +57,16 @@ func on_hit(g,enemy: Dictionary,raw,context: Dictionary) -> void:
 		if not strange.is_empty():
 			var count:=int(strange.constants.kill_spawns) if N.compare(enemy.hp,0)<=0 else (1 if g.rng.randf()<float(strange.constants.spawn_probability) else 0)
 			for i in count:delayed.append({"remaining":float(strange.constants.delay),"damage":N.multiply(raw,float(strange.parameters.damage_multiplier)),"type":int(g.db.equip("cannon",1).dmgtype),"context":CC.derive(context,"strange_matter")})
+func master_reduction(g,master:Dictionary={}) -> float:
+	if master.is_empty():master=effect(g,"drone_master")
+	if master.is_empty():return 0.0
+	var quality_ratio:=0.0
+	for id in g.profile.hyperspace.inventory.equipped:
+		if disabled.has(id):continue
+		var d: Dictionary=g.profile.hyperspace.inventory.drones[id]
+		var q: String="ultimate" if d.ultimate else "legendary" if d.legendary else d.origin_quality
+		quality_ratio=maxf(quality_ratio,float(master.constants.quality_ratios[q]))
+	return float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate)
 func incoming(g,raw,context: Dictionary) -> Dictionary:
 	if absorb(g,raw,true):return {"absorbed":true,"damage":0.0}
 	var dodge:=effect(g,"dodge_counter")
@@ -72,14 +82,7 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 				if not indices.is_empty():g.fire_drone_counter(int(indices[g.rng.randi_range(0,indices.size()-1)]),1.0+float(dodge.parameters.counter_damage_bonus))
 			g.event.emit("hyperspace_dodge",{});return {"absorbed":true,"damage":0.0}
 	var master:=effect(g,"drone_master")
-	if not master.is_empty():
-		var quality_ratio:=0.0
-		for id in g.profile.hyperspace.inventory.equipped:
-			if disabled.has(id):continue
-			var d: Dictionary=g.profile.hyperspace.inventory.drones[id]
-			var q: String="ultimate" if d.ultimate else "legendary" if d.legendary else d.origin_quality
-			quality_ratio=maxf(quality_ratio,float(master.constants.quality_ratios[q]))
-		raw=N.multiply(raw,1.0-float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate))
+	if not master.is_empty():raw=N.multiply(raw,1.0-master_reduction(g,master))
 	return {"absorbed":false,"damage":raw}
 func try_rebuild(g) -> bool:
 	var rebuild:=effect(g,"drone_rebuild")

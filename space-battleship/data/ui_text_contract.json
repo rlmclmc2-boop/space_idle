@@ -9385,6 +9385,113 @@
     },
     "reactor.allocation_pointer_hint": {
       "params": []
+    },
+    "hyperspace.master_current_reduction": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.master_owned_cap": {
+      "params": []
+    },
+    "hyperspace.master_not_active": {
+      "params": []
+    },
+    "hyperspace.master_other_source": {
+      "params": []
+    },
+    "equipment.current_attributes": {
+      "params": [
+        "name"
+      ]
+    },
+    "tutorial.ship_access_reached": {
+      "params": [
+        "level",
+        "ship"
+      ]
+    },
+    "tutorial.ship_access_cleared": {
+      "params": [
+        "level",
+        "ship"
+      ]
+    },
+    "hyperspace.modernize_scope_none": {
+      "params": []
+    },
+    "hyperspace.modernize_scope_growth": {
+      "params": [
+        "count"
+      ]
+    },
+    "crew.hyperspace_entry_hint": {
+      "params": []
+    },
+    "equipment.defeat_source_energy": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_physical": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_mixed": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_source_unknown": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "hyperspace.forge_exchange_material_shortage": {
+      "params": [
+        "cost",
+        "source",
+        "amount",
+        "target"
+      ]
+    },
+    "hyperspace.forge_exchange_guaranteed_shortage": {
+      "params": []
+    },
+    "hyperspace.hanging_slot_no_gain": {
+      "params": []
+    },
+    "hyperspace.hanging_slot_available_gain": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.reward_receipt_empty": {
+      "params": []
+    },
+    "hyperspace.reward_auto_dismantled": {
+      "params": []
+    },
+    "hyperspace.reward_module_receipt": {
+      "params": [
+        "name",
+        "copies",
+        "level"
+      ]
+    },
+    "hyperspace.omen_empty_short": {
+      "params": []
+    },
+    "enhance.candidate_current": {
+      "params": [
+        "level",
+        "summary"
+      ]
     }
   },
   "bindings": {
