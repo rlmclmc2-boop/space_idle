@@ -9687,6 +9687,24 @@
       "params": [
         "name"
       ]
+    },
+    "equipment.attack_interval_approx": {
+      "params": [
+        "seconds"
+      ]
+    },
+    "weapon.rate_single_approx": {
+      "params": [
+        "damage",
+        "seconds"
+      ]
+    },
+    "weapon.rate_single_missile_approx": {
+      "params": [
+        "damage",
+        "seconds",
+        "count"
+      ]
     }
   },
   "bindings": {

@@ -501,7 +501,12 @@ func rate_notes(projection: Dictionary) -> String:
 
 func rate_detail(current: Dictionary, next: Dictionary) -> String:
 	var rate: Dictionary=current.get("rate",{})
-	var single := UIText.t("weapon.rate_single_missile",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.precise(float(rate.get("interval",0))),"count":str(rate.get("salvo",1))}) if rate.get("key","")=="missile" else UIText.t("weapon.rate_single",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.precise(float(rate.get("interval",0)))})
+	var interval:=float(rate.get("interval",0))
+	var single_key := "weapon.rate_single_missile" if rate.get("key","")=="missile" else "weapon.rate_single"
+	if not NumberFormat.scalar_is_exact(interval):single_key+="_approx"
+	var values: Dictionary={"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.scalar(interval)}
+	if rate.get("key","")=="missile":values.count=str(rate.get("salvo",1))
+	var single:=UIText.t(single_key,values)
 	return (rate_title(current)+" "+rate_value(current) if next.is_empty() else UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)}))+"\n"+single+"\n"+rate_notes(current)
 
 func equipment_item(category: String, index: int) -> Dictionary:
@@ -844,7 +849,7 @@ func basic_attributes(entry: Dictionary, projection: Dictionary) -> String:
 	if key.is_empty():return ""
 	var weapon: bool=key in BattleGame.WEAPON_KEYS
 	var row: Dictionary=host.game.player_weapon_row(entry) if weapon else host.db.equip(key,int(entry.level))
-	var text: String=UIText.t("equipment.attack_interval",{"seconds":NumberFormat.precise(float(row.cd))}) if weapon else ""
+	var text: String=UIText.t("equipment.attack_interval" if NumberFormat.scalar_is_exact(float(row.cd)) else "equipment.attack_interval_approx",{"seconds":NumberFormat.scalar(float(row.cd))}) if weapon else ""
 	if not weapon:text=UIText.t("equipment.current_reduction",{"percent":NumberFormat.percentage(float(host.db.config.dmgReduce)*100)})
 	text+="\n"+equipment_attributes(entry,false)
 	if weapon:text+="\n"+rate_notes(projection)

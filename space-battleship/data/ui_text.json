@@ -17836,5 +17836,26 @@
     "params": "{name}",
     "category": "equipment",
     "note": "仅展开候选换装属性，明确区别当前装备"
+  },
+  {
+    "key": "equipment.attack_interval_approx",
+    "text": "攻击间隔约 {seconds} 秒",
+    "params": "seconds",
+    "category": "equipment",
+    "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "weapon.rate_single_approx",
+    "text": "单次平均伤害 {damage} · 间隔约 {seconds}秒",
+    "params": "damage,seconds",
+    "category": "weapon",
+    "note": "动态派生时长使用半秒近似，内部值不变"
+  },
+  {
+    "key": "weapon.rate_single_missile_approx",
+    "text": "单枚平均伤害 {damage} · 间隔约 {seconds}秒 · 齐射{count}枚",
+    "params": "damage,seconds,count",
+    "category": "weapon",
+    "note": "动态派生时长使用半秒近似，内部值不变"
   }
 ]
