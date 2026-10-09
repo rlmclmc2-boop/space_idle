@@ -1,15 +1,9 @@
 {
   "candidate": "70cc9300159916bdfae0b4e190f8b9017be42e4a",
-  "mode": "normal fresh 1x idle-parent",
-  "save_utc": "2026-10-09T19:59:00Z",
-  "journey": {
-    "distance": 500.0,
-    "groupIndex": 5,
-    "guardArrived": false,
-    "pendingUnlocks": [],
-    "retreatBossPending": false,
-    "stage": 6,
-    "state": 3
-  },
-  "next_action": "Continue existing save with low-intervention visits; no acceleration or resource injection; stop at first stage20."
+  "mode": "parent normal resources idle, 1x",
+  "captured_utc": "2026-10-09T21:14:00Z",
+  "observed_stage": "10/6",
+  "resources_injected": false,
+  "qa_test_only": true,
+  "resume": "Use isolated XDG data directory. Do not use another player save."
 }
