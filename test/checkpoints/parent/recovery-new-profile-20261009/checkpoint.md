@@ -1,11 +1,10 @@
-# Parent natural QA checkpoint
+# Parent pure QA checkpoint
 
-2026-10-09 11:48 UTC; pure test save, normal resources, 1x, no injected resources, no particles spent. Multiple version restarts and inspection pauses; not a continuous pacing benchmark.
+2026-10-09 12:13 UTC. Normal resources, 1x, no resource injection or particles spent. Multiple version restarts and inspection pauses; not final-version continuous pacing proof.
+Code local99da18c9 / public0f0bcdce5eb7e7b19fb6b2e3a14c6d5f179f3b3d. Main not updated.
 
-Code: local 02f5d4f2, public candidate f5b6ed254efc7c3c5a08e56761867b5853963775. Main not updated.
+Actual20 clear screen seen12:04. Unlock countdown automatically advanced21/1 before next pause; immediately paused, returned20 with normal warp, no deliberate21 testing. Current20/1 paused and guarded. Reactor65, AI30, enhancement8. All upgrades normal paid. Crew1 equipment; second crew Alpha1 automatic exploration. Observed first90-second cycle reward and second36.5-second progress. First automatic reward natural legendary pulse1 (scatter pulse, single-target209%, attack speedT4 3%) and10 dense matter; equipped replacing white cannon in slot1, old drone retained. Gold beam remains slot2. Legendary weapon effective152 observed in scrolled detail, own dronelevel1 unchanged. No master effect in profile.
 
-Actual GUI: 19/1 paused, stage18 boss observed then cleared before pause. Manual save confirmed. Reactor47, AI30, enhancement5 (memory first; familiar first). Crew assigned to equipment normal paid auto-upgrades. Frigate, two drones. New condensation allocated by Equal at16/3 then normal paid MAX35->47 (display13.7M uranium). Enhancement1->2 paid200; later2->5 paid normal MAX, ending856 shards at17/6. No need to repeat purchases.
+Next: continue first20 unlocked flows, especially direct material shortage/forge. Existing code fixes pending next normal version checkpoint. Do not repeat paid operations. Preserve current paused state and version boundaries; code startup may resume automatically, verify after launch. Guard repeats current encounter, not whole stage.
 
-Next: continue through20 only, set hold at20; natural second crew and autoexplore. Preserve current save before new code. Latest crew UI irrelevant hyperspace instructions are reproduced; repair pending. Performance not accepted.
-
-Save SHA256: de0b9d303bf15806e7ecc98899ddef379550fd7256f3335da635003e1b37b591
+SHA256 40ae83541cc6bbf8957543bad7eae7e1f7c7be570d11695278eaad16706d3f36
