@@ -1,0 +1,27 @@
+{
+  "worker": "copy-reactor-value",
+  "branch": "work/reactor-value-copy",
+  "baseline": "dfc9f047a8c24de8181a57208156052eaa373d6e",
+  "content_head_before_checkpoint_commit": "00ae119a2673af76921f090ce9e00d5eab2c9958",
+  "completed": [
+    "28dc8f7 forge grouping and selected-shortage exchange context",
+    "d70a08e reactor control layout and integer-percent details",
+    "5d817d0 disconnect recovery rules;949ace3 explicit pure-test backup exception",
+    "1550c8d player display entry points; fixed-time approximation corrected by6f69ecf",
+    "6f69ecf beam timings withheld unless exact; reactor shared detail scope once",
+    "00ae119 fixed recovery/deferred periods described by exact frequency"
+  ],
+  "verification": {
+    "main_ui_checks": 76,
+    "ui_catalog_rows": 2569,
+    "remote_readback": "00ae119a2673af76921f090ce9e00d5eab2c9958",
+    "workspace_operations_succeeded": true,
+    "gui_acceptance_owner": "parent-coordinator"
+  },
+  "next": [
+    "Parent confirms reactor per-level integer actual fee scope; no transaction change applied",
+    "Parent decides beam actual parameter tradeoff and master precision/guarantee-cost scope; AI/reactor curves unchanged",
+    "Parent GUI checks fixed timing corrections and smaller window; defer hyperspace first-entry empty-state redesign"
+  ],
+  "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private."
+}
