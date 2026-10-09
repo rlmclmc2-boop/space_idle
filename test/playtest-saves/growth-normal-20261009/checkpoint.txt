@@ -1,7 +1,7 @@
-Candidategameplay46829d6cdeff62d08474546f875d6d2b8e848367 unchanged. Independentnormalnewsave, nooldreports/saves/strategy/gameplaysource.
-CloudXorg:99softwareOpenGLGodot4.6.3; GUIx1; audio unverified.
-Checkpoint8 14:12:08UTC: stage7wave0/9paused, GUImanualsaveconfirmed.
-Completedstages1-6; first6bossfinallyclearedfollowingnormalgrowth/offenseallocation/dualarmorcapacityattempt. Many6retries, wallclockincludespauses, noclaimedcontinuoustiming.
-Recentmanualpickupyielded476Fe fromvisiblefurnacechunk. AI5furnace2weapon2armor1; ordinaryequipment/reactorupgrades. CurrentHP78.8K/86.2K; shield0.
-Firstseenhyperspaceentry: fourroutesandchallengefirstfloor, notyetchallenged. Nextinspect/useactualinterfaceandcontinue7to20.
-Noconcreteenvironmentblocker. Stopatreaching20, saveclose, nofarm20or21.
+Frozen candidate46829d6cdeff62d08474546f875d6d2b8e848367, gameplayunchanged; independentnormalnewsave/nooldreportssavesstrategy/gameplaysource.
+CloudXorg:99softwareOpenGLGodot4.6.3, GUIx1audio unverified.
+Checkpoint9 14:21:26UTC stage7wave5/9pausedGUI saved.
+Completed1-6. FirsthyperspaceA1passed, actualbluepulseLv1dronearmor16%equipped; spent10materialrandomaddedglobalcrit1%. A1backgroundstarted92sec despitecrewunlocktextstage10. AI8furnace3weapon2armor3.
+Recent7failureenergy; W01missile13candidate19Kphysdespiteenemyphysresist; W02/W03beam14. D01armor16 D02shield15, HP68.8/71.8K shield26.4K; normalupgrades only.
+Nextcontinue7 and observeactualvalue; background/material/droneresults. Noenvironmentblocker.
+Stopreaching20, saveclose; nofarm20or21.
