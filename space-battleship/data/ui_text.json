@@ -17328,5 +17328,12 @@
     "params": "",
     "category": "battle",
     "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "equipment.max_quote",
+    "text": "MAX：可升{count}级 · Lv{from} → {to}\n总费用：{cost}",
+    "params": "count,cost,from,to",
+    "category": "equipment",
+    "note": "预购只读报价；悬停时取当前可购数量，不扣资源"
   }
 ]

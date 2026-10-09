@@ -1,5 +1,9 @@
 extends Control
 ## Module projection; growth and equipment remain authoritative in BattleGame.
+class MaxButton extends Button:
+	var quote_text: Callable
+	func _make_custom_tooltip(_for_text: String) -> Object:
+		return EnhancementTooltip.content(quote_text.call())
 const Card = preload("res://scripts/equipment_card.gd")
 var style_tiles := preload("res://scripts/equipment_style_tiles.gd").new()
 var host: Node
@@ -244,6 +248,9 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
+	detail.max.set_script(MaxButton)
+	detail.max.quote_text = max_upgrade_quote
+	detail.max.tooltip_text = UIText.t("equipment.action.max")
 	detail.more = action_button(detail_body,"equipment.attributes.show","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
 	detail.more.size = Vector2(535,48)
@@ -296,6 +303,7 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if item.locked:
 		item.cost = "—"
 		item.direct_upgradeable = false
+		item.upgrade_count = 0
 		return
 	# Module prices depend on category and level, not installed weapon type.
 	# Share only within this synchronous refresh; no quote survives a purchase,
@@ -305,12 +313,22 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if quotes.has(quote_key):
 		item.cost = quotes[quote_key].cost
 		item.direct_upgradeable = quotes[quote_key].available
+		item.upgrade_count = quotes[quote_key].count
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
+	item.upgrade_count = count
 	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
-	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable}
+	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable,"count":count}
+
+func max_upgrade_quote() -> String:
+	if selected_slot<0 or not items.has(selected):return UIText.t("equipment.action.max")
+	var item:Dictionary=items[selected]
+	var count:int=host.game.max_upgrade_amount_slot(item.category,selected_slot) if not item.locked else 0
+	var entry:Dictionary=host.game.slot_entry(item.category,selected_slot)
+	var costs:Dictionary=host.game.slot_upgrade_cost(item.category,selected_slot,count) if count>0 else {}
+	return UIText.t("equipment.max_quote",{"count":str(count),"cost":host.cost_text(costs) if count>0 else "—","from":str(entry.get("level",0)),"to":str(int(entry.get("level",0))+count)})
 
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return

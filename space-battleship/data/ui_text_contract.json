@@ -9344,6 +9344,14 @@
     },
     "battle.defeat.compare_unknown": {
       "params": []
+    },
+    "equipment.max_quote": {
+      "params": [
+        "count",
+        "cost",
+        "from",
+        "to"
+      ]
     }
   },
   "bindings": {

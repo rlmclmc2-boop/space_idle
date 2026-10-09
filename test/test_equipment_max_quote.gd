@@ -1,0 +1,32 @@
+extends SceneTree
+var checks:=0
+var failures:=0
+func check(ok:bool,label:String)->void:
+ checks+=1
+ if not ok:failures+=1;printerr("FAIL: ",label)
+func _initialize()->void:call_deferred("run")
+func run()->void:
+ var scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"]
+ root.add_child(scene);scene.set_process(false)
+ var g=scene.game;g.save_enabled=false;g.paused=true;g.pending_unlocks.clear();g.profile.onboarding.completed=true
+ var p=scene.equipment_panel
+ for id in g.profile.resources:g.profile.resources[id]=1e6
+ p.refresh();p.select_item("weapons_0");p.show_inspector()
+ var before:=JSON.stringify(g.profile);var rng_before:int=g.rng.state
+ var count:int=g.max_upgrade_amount_slot("weapons",0);var costs:Dictionary=g.slot_upgrade_cost("weapons",0,count)
+ var quote:String=p.max_upgrade_quote()
+ check(count>1 and quote.contains("可升%d级"%count) and quote.contains(scene.cost_text(costs)),"Inspector MAX shows authoritative affordable quantity and complete batch costs")
+ var tooltip=p.detail.max._make_custom_tooltip(p.detail.max.tooltip_text)
+ check(tooltip.get_child(0).text==quote,"Actual MAX hover obtains the live quote")
+ tooltip.free()
+ p.set_upgrade_amount(0)
+ check(p.items.weapons_0.upgrade_count==count and p.cards.weapons_0.upgrade_button.tooltip_text==quote,"Card global MAX reuses same refresh quantity and displays same quote")
+ check(JSON.stringify(g.profile)==before and g.rng.state==rng_before,"Preview changes neither profile nor RNG")
+ var old_level:int=g.module_entry("weapons",0).level
+ p.act("max")
+ check(int(g.module_entry("weapons",0).level)==old_level+count,"Existing purchase applies the quoted quantity")
+ for id in costs:check(GrowthNumber.compare(g.profile.resources[id],GrowthNumber.subtract(1e6,costs[id]))==0,"Existing purchase deducts quoted resource "+str(id))
+ for id in g.profile.resources:g.profile.resources[id]=0
+ check(p.max_upgrade_quote().contains("可升0级"),"Hover recomputes after resources change and reports zero quantity")
+ scene.queue_free();await process_frame
+ print("EQUIPMENT MAX: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
