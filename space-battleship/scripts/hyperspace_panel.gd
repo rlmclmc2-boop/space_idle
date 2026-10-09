@@ -272,7 +272,7 @@ func build_inventory(parent: Node) -> void:
  legendary_summary=label(legendary_group,"",20)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  var detail_body=box(scroll,6);inventory_feedback.reparent(detail_body)
- inventory_module_next=button(detail_body,"module_receipt_install",commands.show_modules);inventory_module_next.visible=false
+ inventory_module_next=button(detail_body,"module_receipt_install",commands.show_module_entry);inventory_module_next.visible=false
  details=label(detail_body,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
@@ -462,7 +462,8 @@ func refresh_details() -> void:
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
  put(inventory_module_next,"visible",inventory_feedback.visible and commands.has_effective_modules())
- put(inventory_module_next,"disabled",not valid)
+ put(inventory_module_next,"disabled",false)
+ put(inventory_module_next,"text",t("module_receipt_install" if valid else "module_choose_carrier"))
  put(inventory_module_next,"tooltip_text",t("module_receipt_choose_carrier") if not valid else "")
  put(dismantle_button,"disabled",not valid or not forge_pick_state.is_empty())
  var has_effect=valid and bool(bag.drones[selected_id].get("legendary",false))

@@ -17988,7 +17988,7 @@
   },
   {
     "key": "hyperspace.dismantle_module_purpose",
-    "text": "模块升级后，安装到已装备的无人机可提高系统效率。",
+    "text": "首次获得即为1级；安装到已装备的无人机可提高系统效率。",
     "params": "",
     "category": "hyperspace"
   },
@@ -18044,6 +18044,36 @@
     "key": "hyperspace.legendary_slots_confirmation",
     "text": "传说化将保留已有 {slots} 个挂载位（当前上限 {capacity}）。未开的容量不会继承；转化后无法再增开挂载位。开放3个普通词条位，需要另行添加词条。",
     "params": "slots,capacity",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_choose_carrier",
+    "text": "选择无人机安装",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_no_carrier",
+    "text": "没有可安装的载体：现有无人机无挂载容量、被封存或为究极。获得有挂载位或可开槽的无人机后再安装。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_carrier_no_capacity",
+    "text": "此无人机不能增加挂载位，请选择其他无人机安装。",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_open_slot",
+    "text": "去改造开槽 · {cost}",
+    "params": "cost",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.module_integer_progress",
+    "text": "升至{level}级：经验 {current}/{required}",
+    "params": "level,current,required",
     "category": "hyperspace"
   }
 ]

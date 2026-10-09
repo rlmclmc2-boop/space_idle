@@ -89,26 +89,48 @@ func run() -> void:
  var extra_state=g.profile.hyperspace.duplicate(true);var extra_before=extra_state.hanging_modules.duplicate(true);var extra_outcomes:Dictionary={}
  check(Rewards.credit_modules(extra_state,g.hyperspace.config,{"resource_collector":1},extra_outcomes) and extra_state.hanging_modules.resource_collector.level==2 and extra_state.hanging_modules.resource_collector.exp==100 and is_equal_approx(Rewards.module_required_exp(g.hyperspace.config.hanging_modules.resource_collector,2),144) and c.received_rewards_text({"materials":{},"modules":extra_outcomes},extra_before).contains("获得升级经验，等级未变"),"Third copy stays2 at100-of144 experience; normal growth resumes without fixed per-copy levels")
  var fourth=extra_state.duplicate(true)
- check(Rewards.credit_modules(fourth,g.hyperspace.config,{"resource_collector":1}) and fourth.hanging_modules.resource_collector.level==3 and is_equal_approx(float(fourth.hanging_modules.resource_collector.exp),56) and is_equal_approx(Rewards.module_required_exp(g.hyperspace.config.hanging_modules.resource_collector,3),172.8),"Fourth copy crosses original level2 threshold144, retains56 experience, then needs original172.8")
+ check(Rewards.credit_modules(fourth,g.hyperspace.config,{"resource_collector":1}) and fourth.hanging_modules.resource_collector.level==3 and is_equal_approx(float(fourth.hanging_modules.resource_collector.exp),56) and Rewards.module_required_exp(g.hyperspace.config.hanging_modules.resource_collector,3)==173 and fourth.hanging_modules.resource_collector.exp is int,"Fourth copy crosses original level2 threshold144, retains56 experience, then needs actual integer173")
  g.invalidate_stat_cache()
  check(is_equal_approx(float(g.hyperspace_totals().hangings.resource_collector),0.21) and State.valid(g.profile.hyperspace,g.hyperspace.config,g.db.levels.size()),"First actual upgrade produces21-percent applied efficiency and a valid save")
  var boundary=g.profile.hyperspace.duplicate(true);boundary.hanging_modules.resource_collector.level=1;boundary.hanging_modules.resource_collector.exp=100
  check(not State.valid(boundary,g.hyperspace.config,g.db.levels.size()),"Save validation shares the real level1 threshold and rejects unsettled100 experience")
+ var fractional=g.profile.hyperspace.duplicate(true);fractional.hanging_modules.resource_collector.exp=0.5
+ var before_bad_load=g.profile.hyperspace.duplicate(true)
+ check(not State.valid(fractional,g.hyperspace.config,g.db.levels.size()) and not g.hyperspace.load_state(g,fractional) and g.profile.hyperspace==before_bad_load,"Fractional accumulated module XP is rejected by real load, not merely hidden in display")
+ var fractional_config=g.hyperspace.config.duplicate(true);fractional_config.hanging_modules.resource_collector.base_exp=100.5
+ check(not preload("res://scripts/hyperspace_config.gd").valid(fractional_config),"Fractional awarded XP source is not a valid module config")
+ var exact_boundary=fourth.duplicate(true);exact_boundary.hanging_modules.resource_collector.exp=172
+ check(State.valid(exact_boundary,g.hyperspace.config,g.db.levels.size()) and Rewards.credit_modules(exact_boundary,g.hyperspace.config,{"resource_collector":1}) and exact_boundary.hanging_modules.resource_collector.level==4 and exact_boundary.hanging_modules.resource_collector.exp==99 and exact_boundary.hanging_modules.resource_collector.exp is int,"Integer threshold173 is truly debited when crossing3-to4, leaving99 instead of99.2")
+ check(c.module_progress_text("resource_collector").contains("经验 0/144"),"Module dialog progress displays same actual integer requirement used by settlement")
  var other=State.fresh(g.hyperspace.config)
  check(Rewards.credit_modules(other,g.hyperspace.config,{"distributed_algorithm":1,"resource_collector":0}) and other.hanging_modules.distributed_algorithm.level==1 and not other.hanging_modules.resource_collector.unlocked and other.hanging_modules.resource_collector.level==0,"Different module unlocks independently; zero awarded copies cannot unlock unreceived type")
  var batch=State.fresh(g.hyperspace.config)
  check(Rewards.credit_modules(batch,g.hyperspace.config,{"resource_collector":3}) and batch.hanging_modules.resource_collector.level==extra_state.hanging_modules.resource_collector.level and batch.hanging_modules.resource_collector.exp==extra_state.hanging_modules.resource_collector.exp,"Batch three copies equals sequential three copies without duplicate initial credit")
 
- var replacement=Rewards.create_drone(rng,g.hyperspace.config,"cultivation-replacement","blue","laser",1,"1");Bag.insert(g.profile.hyperspace.inventory,replacement,g.hyperspace.config)
+ var long_batch=State.fresh(g.hyperspace.config);var long_sequential=State.fresh(g.hyperspace.config)
+ var long_ok=Rewards.credit_modules(long_batch,g.hyperspace.config,{"resource_collector":20})
+ for i in 20:long_ok=long_ok and Rewards.credit_modules(long_sequential,g.hyperspace.config,{"resource_collector":1})
+ check(long_ok and long_batch.hanging_modules==long_sequential.hanging_modules and long_batch.hanging_modules.resource_collector.exp is int,"Twenty-copy batch equals individual credits through higher rounded requirements with integer remainder")
+ var replacement=Rewards.create_drone(rng,g.hyperspace.config,"cultivation-replacement","blue","laser",1,"1");replacement.hanging_slots=0;Bag.insert(g.profile.hyperspace.inventory,replacement,g.hyperspace.config)
  var invested=g.profile.hyperspace.inventory.drones[d.id].duplicate(true);var materials=g.profile.hyperspace.materials.duplicate(true)
  var replaced=g.hyperspace.equip_drone(g,replacement.id,d.id)
  check(replaced.ok and g.profile.hyperspace.inventory.warehouse.has(d.id) and g.profile.hyperspace.inventory.drones[d.id]==invested and g.profile.hyperspace.materials==materials and g.profile.hyperspace.hanging_modules.resource_collector.level==2,"Actual replacement retains the invested old drone, its slots/effect/level, shared module progress and materials")
  p.refresh_manual_status();p.refresh();p.selected_id=d.id;c.show_modules();c.module_apply.pressed.emit()
  check(p.inventory_feedback.text.contains("装备此无人机后生效") and is_zero_approx(float(g.hyperspace_totals().hangings.get("resource_collector",0))),"Warehouse installation receipt requests equipping and does not claim an active bonus")
  c.dismantle_request=c.request("dismantle");c.execute_inventory_dismantle()
- check(p.inventory_feedback.visible and not p.inventory_feedback.text.is_empty() and p.inventory_module_next.visible and p.inventory_module_next.disabled,"Actual dismantle keeps result and carrier-selection guidance when the dismantled target is gone")
- p.choose_drone(replacement.id)
- check(p.inventory_feedback.visible and not p.inventory_module_next.disabled and p.selected_id==replacement.id,"Selecting surviving carrier retains dismantle receipt and enables existing installation entry")
+ check(p.inventory_feedback.visible and not p.inventory_feedback.text.is_empty() and p.inventory_module_next.visible and not p.inventory_module_next.disabled and p.inventory_module_next.text=="选择无人机安装","Actual dismantle exposes actionable carrier choice rather than a greyed-out dead end")
+ var carrier_before=JSON.stringify(g.profile);var carrier_rng=g.rng.state
+ p.inventory_module_next.pressed.emit()
+ check(c.carrier_dialog.visible and c.carrier_buttons.size()==1 and c.carrier_buttons[0].get_meta("drone_id")==replacement.id,"Dismantle next action lists surviving cultivatable carrier in an explicit picker")
+ c.carrier_buttons[0].pressed.emit()
+ check(p.inventory_feedback.visible and p.selected_id==replacement.id and c.module_id==replacement.id and c.module_dialog.visible and c.module_apply.disabled and is_instance_valid(c.module_open_slot),"Selecting zero-slot carrier keeps receipt, names no-slot condition and offers existing forge link")
+ check(c.module_open_slot.text.contains("100") and c.module_open_slot.text.contains("胶球"),"Existing slot quote is visible on the forge link")
+ c.module_open_slot.pressed.emit()
+ check(p.section_index==2 and p.selected_id==replacement.id and str(c.operation.get_item_metadata(c.operation.selected))=="add_hanging_slot" and JSON.stringify(g.profile)==carrier_before and g.rng.state==carrier_rng,"Carrier-to-forge link preserves chosen carrier without buying, equipping, overwriting or RNG change")
+ var original_carrier_state=g.profile.hyperspace;g.profile.hyperspace=State.fresh(g.hyperspace.config)
+ c.show_module_carriers()
+ check(c.carrier_buttons.is_empty() and c.carrier_dialog.find_children("*","Label",true,false).any(func(item):return item.text.contains("没有可安装的载体")),"Empty inventory picker explains why no installation carrier exists")
+ c.carrier_dialog.hide();g.profile.hyperspace=original_carrier_state;g.invalidate_stat_cache()
  # Restore the invested drone only for the formal salvage quote below.
  Bag.insert(g.profile.hyperspace.inventory,invested,g.hyperspace.config)
  p.refresh_manual_status();p.selected_id=d.id

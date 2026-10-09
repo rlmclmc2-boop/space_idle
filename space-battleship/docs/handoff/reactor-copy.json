@@ -12,11 +12,12 @@
     "fb25aa3 requested full attributes wrap and expose complete buffer settlement hover",
     "2d8943e add-affix unavailable state names actual quality capacity or used/cap; classification rules retained",
     "Coherent cultivation/module flow: visible owned/max slots; dismantle receipt to existing carrier installation; actual applied system change; visible conversion goal and retained-capacity confirmation; first module level1 and idempotent obtained-zero normalization",
-    "Latest rule correction: every obtained copy credits full base experience; first copy reaches1, second reaches2, then original level2+ thresholds resume; shared quote/save threshold authority"
+    "Latest rule correction: every obtained copy credits full base experience; first copy reaches1, second reaches2, then original level2+ thresholds resume; shared quote/save threshold authority",
+    "Integer module XP gain/accumulation/ceil requirements share settlement and validation; actionable carrier picker and existing no-slot forge link preserve chosen carrier without automatic equipment/purchase"
   ],
   "verification": {
     "main_ui_checks": 97,
-    "ui_catalog_rows": 2597,
+    "ui_catalog_rows": 2617,
     "remote_readback": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
@@ -27,7 +28,8 @@
       "uncleared hyperspace route empty surfaces removed and primary challenge clearer",
       "AI MAX quantity/total tooltip and actual batch purchase",
       "enemy defence large-number abbreviation",
-      "crew equipment-to-AI assignment, actual AI versus pending reactor, unrelated hyperspace guidance removed"
+      "crew equipment-to-AI assignment, actual AI versus pending reactor, unrelated hyperspace guidance removed",
+      "Parent operation-copy verification: first collector level1/iron-uranium10%, level2/21%, warehouse-carrier inactive receipt"
     ],
     "actual_workspace_success_utc": [
       "2026-10-09 12:18:02 UTC"
@@ -50,15 +52,15 @@
     "drone_default_readability_checks": 10,
     "full_attribute_checks": 6,
     "add_affix_availability_checks": 7,
-    "white_cultivation_module_checks": 37,
+    "white_cultivation_module_checks": 46,
     "cultivation_flow_gui": "Pending parent targeted acceptance; no new natural-play round started"
   },
   "next": [
-    "Parent integrates this batch and checks owned/max slots, first useful module receipt, carrier-preserving installation, actual active/inactive feedback, conversion goal and irreversible-capacity confirmation",
-    "Only after coordinated acceptance: separately authorized fresh first20 play round; implementation worker does not start it"
+    "Parent integrates and verifies actual integer XP progress, post-dismantle carrier picker, zero-slot cause/quoted existing forge link, empty-carrier explanation and corrected first-module preview",
+    "Parent finishes batch GUI acceptance before separately authorized fresh first20 round; worker does not start play"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
   "last_code_commit": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
   "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
-  "scope": "Complete module/cultivation flow; guaranteed first useful module and one repeat upgrade, followed by original level2+ experience growth. Existing obtained-zero normalization retained."
+  "scope": "Coherent module/cultivation batch; true integer XP and upward-rounded final requirements, initial1/first-repeat2 preserved, actionable carrier-to-existing-forge flow. No broader save migration."
 }

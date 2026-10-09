@@ -9841,6 +9841,27 @@
         "slots",
         "capacity"
       ]
+    },
+    "hyperspace.module_choose_carrier": {
+      "params": []
+    },
+    "hyperspace.module_no_carrier": {
+      "params": []
+    },
+    "hyperspace.module_carrier_no_capacity": {
+      "params": []
+    },
+    "hyperspace.module_open_slot": {
+      "params": [
+        "cost"
+      ]
+    },
+    "hyperspace.module_integer_progress": {
+      "params": [
+        "level",
+        "current",
+        "required"
+      ]
     }
   },
   "bindings": {
