@@ -656,7 +656,8 @@
           "gold": 0.7,
           "legendary": 0.8,
           "ultimate": 0.9
-        }
+        },
+        "reduction_precision": 0.01
       },
       "stored_parameter_ranges": {
         "maximum_reduction": [

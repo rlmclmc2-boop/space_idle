@@ -66,7 +66,9 @@ func master_reduction(g,master:Dictionary={}) -> float:
 		var d: Dictionary=g.profile.hyperspace.inventory.drones[id]
 		var q: String="ultimate" if d.ultimate else "legendary" if d.legendary else d.origin_quality
 		quality_ratio=maxf(quality_ratio,float(master.constants.quality_ratios[q]))
-	return float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate)
+	var raw:=float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate)
+	var precision:=float(master.constants.get("reduction_precision",0.01))
+	return snappedf(raw,precision)
 func incoming(g,raw,context: Dictionary) -> Dictionary:
 	if absorb(g,raw,true):return {"absorbed":true,"damage":0.0}
 	var dodge:=effect(g,"dodge_counter")

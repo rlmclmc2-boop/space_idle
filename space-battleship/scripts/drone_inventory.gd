@@ -50,6 +50,9 @@ static func valid_drone(d: Dictionary,c: Dictionary) -> bool:
 		for key in effect.parameters:
 			if not row.parameters.has(key) or not C.number(effect.parameters[key]):return false
 			var value: float = float(effect.parameters[key])
+			if effect.effect_id=="drone_master" and key=="maximum_reduction":
+				var precision:=C.parameter_precision(c,str(effect.effect_id),str(key))
+				if absf(value/precision-roundf(value/precision))>0.0000001:return false
 			var current: Array = row.parameters[key]
 			var stored: Array = row.get("stored_parameter_ranges",{}).get(key,current)
 			if not (value>=float(current[0]) and value<=float(current[1])) and not (value>=float(stored[0]) and value<=float(stored[1])):return false

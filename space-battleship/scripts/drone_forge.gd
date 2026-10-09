@@ -119,8 +119,9 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 				var ranges: Dictionary=c.legendary_effects[d.legendary_effect.effect_id].parameters
 				for key in ranges:
 					var bounds: Array=ranges[key]
-					expectation*=float(roundi((float(bounds[1])-float(bounds[0]))/float(c.value_precision))+1)
-					d.legendary_effect.parameters[key]=float(bounds[1]) if maximum else R.quantized(rng,bounds,float(c.value_precision))
+					var precision:=C.parameter_precision(c,str(d.legendary_effect.effect_id),str(key))
+					expectation*=float(roundi((float(bounds[1])-float(bounds[0]))/precision)+1)
+					d.legendary_effect.parameters[key]=float(bounds[1]) if maximum else R.quantized(rng,bounds,precision)
 			if maximum:cost.antiproton=ceilf(float(cost.antiproton)*expectation*float(c.reroll_guarantee_multiplier))
 			mutation=true
 		"enable_omen":
