@@ -226,11 +226,13 @@ func build_detail() -> void:
 	detail.title = label(detail_body,"",Rect2(116,8,440,36),25,NAVY)
 	detail.meta = label(detail_body,"",Rect2(116,50,440,34),20,NAVY)
 	detail.primary = label(detail_body,"",Rect2(18,104,540,36),24,NAVY)
-	detail.status = label(detail_body,"",Rect2(18,145,540,30),19,NAVY)
-	detail.slots = select_box(detail_body,Rect2(18,190,535,52),[],choose_equipment)
+	detail.status = label(detail_body,"",Rect2(18,145,540,32),17,NAVY)
+	detail.defeat_cause = label(detail_body,"",Rect2(18,178,540,32),17,NAVY)
+	detail.defeat_cause.hide()
+	detail.slots = select_box(detail_body,Rect2(18,214,535,52),[],choose_equipment)
 	skin_button(detail.slots,true,true)
 	detail.equip = action_button(detail_body,"equipment.confirm_free","equip_confirm",confirm_equipment,true)
-	detail.equip.position = Vector2(18,254)
+	detail.equip.position = Vector2(18,270)
 	detail.equip.size = Vector2(535,52)
 	detail.description = label(detail_body,"",Rect2(18,326,535,70),20,NAVY)
 	detail.description.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverLabel)
@@ -261,7 +263,10 @@ func build_detail() -> void:
 	detail.stats.resized.connect(update_detail_height)
 	detail_frame.hide()
 	detail_frame.visibility_changed.connect(func():
-		if not detail_frame.visible:comparison_context="")
+		if not detail_frame.visible:
+			comparison_context=""
+			detail.defeat_cause.text=""
+			detail.defeat_cause.hide())
 
 func layout_contents() -> void:
 	if not is_inside_tree() or not is_instance_valid(detail_body):return
@@ -782,7 +787,9 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	host.set_ui_value(detail.status,"text",(UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))+(" · "+comparison_context if not comparison_context.is_empty() else ""))
+	host.set_ui_value(detail.status,"text",(UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else "")))
+	host.set_ui_value(detail.defeat_cause,"text",comparison_context)
+	host.set_ui_value(detail.defeat_cause,"visible",not comparison_context.is_empty())
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)
