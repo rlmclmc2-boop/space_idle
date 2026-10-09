@@ -41,6 +41,13 @@ static func restore_result(encoded: String) -> Dictionary:
 static func error(reason: String) -> Dictionary:
 	return {"error":reason,"applied":false}
 
+static func modernization_target(s: Dictionary,c: Dictionary,weapon: String,highest_level: int) -> int:
+	var route: String=c.routes.keys().filter(func(key):return c.routes[key].weapon==weapon)[0]
+	var target:=0
+	for key in s.history.get(route,{}):
+		if int(key)<=highest_level:target=maxi(target,int(key))
+	return target
+
 static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionary:
 	var op:=str(request.get("operation",""));var id:=str(request.get("drone_id",""))
 	var args: Dictionary=request.get("args",{}) if request.get("args",{}) is Dictionary else {}
@@ -137,9 +144,7 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 			if not s.legendary_seen.has(effect.effect_id):s.legendary_seen.append(effect.effect_id)
 		"modernize":
 			var route: String=c.routes.keys().filter(func(key):return c.routes[key].weapon==d.weapon)[0]
-			var target:=0
-			for key in s.history.get(route,{}):
-				if int(key)<=int(g.profile.highestLevel):target=maxi(target,int(key))
+			var target:=modernization_target(s,c,str(d.weapon),int(g.profile.highestLevel))
 			if target<=int(d.level):return error("no_new_record")
 			if args.has("target_level") and args.target_level!=target:return error("stale_modernization_target")
 			var coefficient:=float(c.modernization_base_coefficient)
