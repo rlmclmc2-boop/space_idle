@@ -22,11 +22,15 @@ func run()->void:
  root.add_child(tooltip)
  p.set_upgrade_amount(0)
  check(p.items.weapons_0.upgrade_count==count and p.cards.weapons_0.upgrade_button.tooltip_text==quote,"Card global MAX reuses same refresh quantity and displays same quote")
+ check(p.cards.weapons_0.fields.action.text=="升级+%d"%count and p.cards.weapons_0.upgrade_button.text.contains("升级+%d"%count),"MAX actual ink and native button show the existing quoted quantity")
+ check(p.cards.weapons_0.fields.action.get_theme_font("font").get_string_size(p.cards.weapons_0.fields.action.text,HORIZONTAL_ALIGNMENT_LEFT,-1,p.cards.weapons_0.fields.action.get_theme_font_size("font_size")).x<=p.cards.weapons_0.fields.action.size.x,"Visible quantity fits its reserved button width")
+ check(p.cards.weapons_0.fields.cost.get_theme_font("font").get_string_size(p.cards.weapons_0.fields.cost.text,HORIZONTAL_ALIGNMENT_LEFT,-1,p.cards.weapons_0.fields.cost.get_theme_font_size("font_size")).x<=p.cards.weapons_0.fields.cost.size.x,"Quoted cost remains readable beside the added quantity")
  var card_button=p.cards.weapons_0.upgrade_button
  var card_tooltip=card_button._make_custom_tooltip(card_button.tooltip_text);root.add_child(card_tooltip)
  for id in g.profile.resources:g.profile.resources[id]=1e9
  p.refresh_pending()
  var increased:String=p.max_upgrade_quote()
+ check(p.cards.weapons_0.fields.action.text=="升级+%d"%p.items.weapons_0.upgrade_count,"Visible MAX quantity follows the existing affordability refresh")
  check(increased!=quote and tooltip.get_child(0).text==increased,"Existing resource refresh updates already-open inspector MAX quote")
  check(card_tooltip.get_child(0).text==card_button.tooltip_text and card_tooltip.get_child(0).text==increased,"Already-open card MAX quote stays synchronized with live button costs")
  for id in g.profile.resources:g.profile.resources[id]=1e6
@@ -41,5 +45,7 @@ func run()->void:
  for id in costs:check(GrowthNumber.compare(g.profile.resources[id],GrowthNumber.subtract(1e6,costs[id]))==0,"Existing purchase deducts quoted resource "+str(id))
  for id in g.profile.resources:g.profile.resources[id]=0
  check(p.max_upgrade_quote().contains("可升0级"),"Hover recomputes after resources change and reports zero quantity")
+ p.set_upgrade_amount(1)
+ check(p.cards.weapons_0.fields.action.text==UIText.t("equipment.upgrade_cost",{"cost":""}).strip_edges() and p.cards.weapons_0.fields.action.size.x==50,"Returning to single upgrade restores its compact existing layout")
  scene.queue_free();await process_frame
  print("EQUIPMENT MAX: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

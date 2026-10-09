@@ -171,7 +171,19 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(picture,"texture",item.icon)
 	host.set_ui_value(equip_button,"visible",not item.equipped and not item.locked)
 	host.set_ui_value(upgrade_button,"disabled",not item.get("direct_upgradeable",false))
-	host.set_ui_value(upgrade_button,"text",UIText.t("equipment.upgrade_cost",{"cost":item.get("cost","—")}))
+	var max_mode:bool=panel.upgrade_amount==0
+	var action_text:String=UIText.t("equipment.upgrade_count",{"count":str(item.get("upgrade_count",0))}) if max_mode else UIText.t("equipment.upgrade_cost",{"cost":""}).strip_edges()
+	host.set_ui_value(fields.action,"text",action_text)
+	host.set_ui_value(fields.action,"size",Vector2(96 if max_mode else 50,56))
+	host.set_ui_value(fields.cost,"position",Vector2(112 if max_mode else 66,0))
+	host.set_ui_value(fields.cost,"size",Vector2(118 if max_mode else 164,56))
+	var action_font:int=18 if max_mode else 21
+	while action_font>12 and fields.action.get_theme_font("font").get_string_size(action_text,HORIZONTAL_ALIGNMENT_LEFT,-1,action_font).x>fields.action.size.x:action_font-=1
+	fields.action.add_theme_font_size_override("font_size",action_font)
+	var cost_font:int=21 if max_mode else 24
+	while max_mode and cost_font>14 and fields.cost.get_theme_font("font").get_string_size(str(item.get("cost","—")),HORIZONTAL_ALIGNMENT_LEFT,-1,cost_font).x>fields.cost.size.x:cost_font-=1
+	fields.cost.add_theme_font_size_override("font_size",cost_font)
+	host.set_ui_value(upgrade_button,"text",action_text+"  "+str(item.get("cost","—")))
 	host.set_ui_value(upgrade_button,"tooltip_text",UIText.t("equipment.max_quote",{"count":str(item.get("upgrade_count",0)),"cost":item.get("cost","—"),"from":str(item.level),"to":str(int(item.level)+int(item.get("upgrade_count",0)))}) if panel.upgrade_amount==0 else upgrade_button.text)
 	upgrade_button.refresh_open_quote()
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))

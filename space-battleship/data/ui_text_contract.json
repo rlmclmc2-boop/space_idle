@@ -9492,6 +9492,14 @@
         "level",
         "summary"
       ]
+    },
+    "hyperspace.omen_scope_short": {
+      "params": []
+    },
+    "equipment.upgrade_count": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {
