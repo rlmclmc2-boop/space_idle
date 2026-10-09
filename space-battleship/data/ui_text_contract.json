@@ -9573,6 +9573,26 @@
         "delay",
         "percent"
       ]
+    },
+    "reactor.purchase_action": {
+      "params": [
+        "title",
+        "cost"
+      ]
+    },
+    "reactor.upgrade_details": {
+      "params": []
+    },
+    "reactor.purchase_gain": {
+      "params": [
+        "module",
+        "gain"
+      ]
+    },
+    "reactor.purchase_small_gain": {
+      "params": [
+        "module"
+      ]
     }
   },
   "bindings": {

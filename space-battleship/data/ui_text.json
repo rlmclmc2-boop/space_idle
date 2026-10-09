@@ -11278,7 +11278,7 @@
   },
   {
     "key": "reactor.upgrade.max",
-    "text": "升级 MAX ({count})",
+    "text": "MAX +{count}级",
     "params": "{count}",
     "category": "reactor",
     "note": "反应炉页面",
@@ -17692,5 +17692,33 @@
     "params": "delay,percent",
     "category": "equipment",
     "note": "现有装备说明悬停；配置值来自当前等级护盾行，未更改恢复机制。"
+  },
+  {
+    "key": "reactor.purchase_action",
+    "text": "{title}\n{cost}铀",
+    "params": "title,cost",
+    "category": "reactor",
+    "note": "当前阶段的简明动作与大致收益；精确对照放升级详情。"
+  },
+  {
+    "key": "reactor.upgrade_details",
+    "text": "升级详情",
+    "params": "",
+    "category": "reactor",
+    "note": "当前阶段的简明动作与大致收益；精确对照放升级详情。"
+  },
+  {
+    "key": "reactor.purchase_gain",
+    "text": "{module}约+{gain}%",
+    "params": "module,gain",
+    "category": "reactor",
+    "note": "当前阶段的简明动作与大致收益；精确对照放升级详情。"
+  },
+  {
+    "key": "reactor.purchase_small_gain",
+    "text": "{module}小幅提升",
+    "params": "module",
+    "category": "reactor",
+    "note": "当前阶段的简明动作与大致收益；精确对照放升级详情。"
   }
 ]

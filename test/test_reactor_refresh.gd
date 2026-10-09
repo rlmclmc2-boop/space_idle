@@ -45,10 +45,22 @@ func run() -> void:
 	var panel=scene.reactor_panel
 	panel.refresh()
 	var slider: HSlider=panel.module_controls.weapons.slider
-	var expected_new_energy := floori(g.reactor_energy(int(g.profile.reactorLevel)+1))-g.reactor_capacity()
-	check(panel.upgrade_buttons.x1.text.contains(panel.purchase_cost_text(g.reactor_upgrade_cost())) and panel.upgrade_buttons.x1.text.contains("+"+str(expected_new_energy)),"Single purchase directly displays its configured fee and new energy")
+	check(panel.upgrade_buttons.x1.text.contains(panel.purchase_cost_text(g.reactor_upgrade_cost())) and panel.upgrade_buttons.x1.text.split("\n").size()==2 and panel.upgrade_buttons.x1.tooltip_text.contains(panel.energy_text(g.reactor_capacity_at(int(g.profile.reactorLevel)+1))),"Single purchase shows action and fee; energy projection remains available in details")
 	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("收益"),"Batch and MAX expose purchase-specific effect previews")
-	check(panel.benefit_label.text.contains("升一级") and panel.benefit_label.text.contains("0.00%"),"Visible single-step preview makes zero-allocation return explicit")
+	check(panel.benefit_label.text==UIText.t("reactor.upgrade_idle") and panel.benefit_label.get_theme_font_size("font_size")>=25,"Zero supply offers the useful next action without a wall of zero percentages")
+	check(not panel.allocation_hint.visible and not panel.next_label.visible and not panel.cost_label.visible,"Default hides allocation convention and duplicated next-level cost")
+	check(panel.module_controls.values().all(func(c):return not c.allocation_boost.visible and c.allocation_boost.text.is_empty() and not c.share.text.contains("免费")),"No free supply means no default free-zero readouts")
+	var xml:=XMLParser.new();xml.open("res://assets/ui/reactor/toon-console.svg")
+	var header_aligned:=false
+	while xml.read()==OK:
+		if xml.get_node_type()!=XMLParser.NODE_ELEMENT or xml.get_node_name()!="rect":continue
+		var a:Dictionary={}
+		for i in xml.get_attribute_count():a[xml.get_attribute_name(i)]=xml.get_attribute_value(i)
+		if str(a.get("fill",""))!="#243d50":continue
+		var outer:=Rect2(float(a.get("x",0)),float(a.get("y",0)),float(a.get("width",0)),float(a.get("height",0)))
+		var inner:=Rect2(panel.upgrade_plate.position,panel.upgrade_plate.size)
+		if outer.encloses(inner) and outer.position.y<inner.position.y and outer.position.x<inner.position.x and outer.end.y<=panel.module_scroll.position.y:header_aligned=true
+	check(header_aligned and panel.benefit_label.position.y+panel.benefit_label.size.y<=panel.upgrade_plate.position.y+panel.upgrade_plate.size.y-16,"Static header encloses the foreground, with summary bottom margin and no scroll overlap")
 	check(panel.benefit_label.position.y+panel.benefit_label.size.y<=panel.module_scroll.position.y,"Visible return stays clear of module bays")
 	for line in panel.benefit_label.text.split("\n"):
 		check(panel.benefit_label.get_theme_font("font").get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,panel.benefit_label.get_theme_font_size("font_size")).x<=panel.benefit_label.size.x,"Single-step return fits without truncation")
@@ -93,10 +105,10 @@ func run() -> void:
 	check(slider.value==20 and panel.module_controls.weapons.track.ratio>0,"Allocation feedback remains immediate")
 	g.profile.planets["1"].conquered=true
 	panel.refresh()
-	check(panel.module_controls.weapons.allocation_boost.text.contains("10%") and panel.module_controls.weapons.bay_energy.text.contains(panel.energy_text(g.reactor_effective_ratio("weapons")*g.reactor_capacity())),"Permanent free power invalidates module display")
+	check(panel.module_controls.weapons.share.text.contains("免费+10%") and panel.module_controls.weapons.bay_energy.text.contains(panel.energy_text(g.reactor_effective_ratio("weapons")*g.reactor_capacity())),"Nonzero permanent free power reveals its contribution without a duplicate overlapping label")
 	g.profile.planets["1"].conquered=false
 	panel.refresh()
-	check(panel.module_controls.weapons.allocation_boost.text==UIText.t("reactor.flow.free",{"energy":"0","percent":"0"}),"Removing bonus immediately clears display")
+	check(not panel.module_controls.weapons.allocation_boost.visible and panel.module_controls.weapons.allocation_boost.text.is_empty() and not panel.module_controls.weapons.share.text.contains("免费"),"Removing bonus immediately hides obsolete free supply")
 	g.db.config.reactorEnergyBase=float(g.db.config.reactorEnergyBase)*2
 	panel.refresh()
 	check(slider.max_value==g.reactor_capacity(),"Capacity dependency updates existing slider")
@@ -141,6 +153,11 @@ func run() -> void:
 	var focused_scroll: int=panel.module_scroll.scroll_vertical
 	panel.change_allocation(30,"weapons")
 	check(slider.value==30 and slider.has_focus() and panel.module_scroll.scroll_vertical==focused_scroll,"direct allocation refresh preserves focus, scroll and immediate value")
+	var before_details:=JSON.stringify(g.profile);var rng_before:int=g.rng.state
+	panel.details_button.pressed.emit()
+	check(panel.details_dialog.visible and panel.details_text.text.contains(panel.upgrade_buttons.x1.tooltip_text) and panel.details_text.text.contains(panel.upgrade_buttons.MAX.tooltip_text),"Explicit details contains the authoritative single and MAX price/benefit projections")
+	check(JSON.stringify(g.profile)==before_details and g.rng.state==rng_before,"Opening details never purchases or changes the player plan or RNG")
+	panel.details_dialog.hide()
 	scene.equipment_tabs.current_tab=0
 	g.profile.resources["2"]=0.0
 	g.resources_changed(["2"])
