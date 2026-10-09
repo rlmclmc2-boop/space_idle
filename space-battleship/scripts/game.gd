@@ -4187,10 +4187,14 @@ func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> vo
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	if kinds.has("hightech"):event.emit("scientists_changed",{})
 	if kinds.has("reactor"):
-		var remaining = reactor_capacity()
-		for key in reactor_modules():
-			profile.reactorAllocation[key]=RI.minimum(profile.reactorAllocation.get(key,0),remaining)
-			remaining=RI.subtract(remaining,profile.reactorAllocation[key])
+		# Passive level growth only adds permanent capacity. Do not clip a saved
+		# plan against temporarily disabled storage while awarding crew XP.
+		var passive_growth: bool=previous.get("assignmentType")==current.get("assignmentType") and previous.get("targetId")==current.get("targetId") and int(current.get("level",0))>int(previous.get("level",0))
+		if not passive_growth:
+			var remaining = reactor_capacity()
+			for key in reactor_modules():
+				profile.reactorAllocation[key]=RI.minimum(profile.reactorAllocation.get(key,0),remaining)
+				remaining=RI.subtract(remaining,profile.reactorAllocation[key])
 		invalidate_stat_cache()
 		apply_refit_health()
 		event.emit("reactor_changed",{})

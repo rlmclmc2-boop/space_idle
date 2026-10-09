@@ -317456,7 +317456,7 @@
     "equip_bonus": {
       "id": "equip_bonus",
       "value": 0.1,
-      "des": "已装备装备属性 {effect}",
+      "des": "装备伤害与防护 {effect}",
       "targetType": "equipment"
     },
     "tech_ai_per_level": {
@@ -317468,7 +317468,7 @@
     "tech_speed": {
       "id": "tech_speed",
       "value": 0.2,
-      "des": "AI工厂生产速度 {effect}",
+      "des": "全部项目研究速率 {effect}",
       "targetType": "hightech"
     },
     "gem_bonus": {
@@ -317480,7 +317480,7 @@
     "charge_bonus": {
       "id": "charge_bonus",
       "value": 0.3,
-      "des": "总能量 {effect}",
+      "des": "能源累计加成 {effect}",
       "targetType": "reactor"
     },
     "base_exp": {
