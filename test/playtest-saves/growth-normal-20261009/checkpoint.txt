@@ -1,3 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplay unchanged. Independent normalnewsave originalcloud Xorg:99 x1 GUI.
-Checkpoint20 2026-10-09 15:33:54.162980+00:00 isCHECKPOINTNUMBER, main9wave4paused, NOTgame20. Completed1-8+A1/A2. Continued9/6 failures; deliberate20smelteconomy UI+356iron accumulated45.5K normalFe. Actualnormalgear spends: missilesall29,D01armor29,D02shield27, reactor20. CurrentFe69 U1.06K.
-Restoredprogression allocationweapon65def35smelt0, stationOFF visible. Enhancement1burst/memory, AI13. ActualGUI/mouse/manualsave/screenshot successful originalenv, noreset/injections/olddata/gameplaysource. Nextcontinue9through20stop/save/close.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplaysource unchanged. Independentnormalnewsave.
+Recovery boundary 2026-10-09 15:38:17.145952+00:00 originalcloudXorg:99 actualtoolsmouse/screenshot succeeded15:33:54, NOTmerelyrunninglabel. Lasttrusted normalbackup remainsca75450 at15:22:14 main9wave5, completed1-8+A1/A2. progress.json unchangedhash08af5eb801357694b39174652be94dea700dcd0198b013e37e96f163a7a50e95.
+RecoveredGUI main9 hasunrecordedweapons/armorupgradesandswaps, sourceunknown. Thisgrowthnotcountedasindependentplay. Preserveownbackup, awaitexclusiveinputownershipconfirmation thenrestoreTHISroundcheckpoint viaGUI; donotresetnewround.
+Trustedcheckpointstation9ON, reactor19allocation40/40/20 iron+308%, rails25 armor26 shield25, AI13 enhancement1burst/memory. TurnstationOFFwhenready, continue9to20stop/save/close. Noinjections/gameplaysource/oldreports.
