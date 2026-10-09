@@ -9960,14 +9960,18 @@
     },
     "battle.damage_stats.drone": {
       "params": [
+        "index",
         "weapon",
-        "id"
+        "slot"
       ]
     },
     "battle.damage_stats.other": {
       "params": []
     },
     "battle.damage_stats.black_hole": {
+      "params": []
+    },
+    "battle.damage_stats.advanced": {
       "params": []
     }
   },

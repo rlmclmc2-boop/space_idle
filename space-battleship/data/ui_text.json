@@ -18222,8 +18222,8 @@
   },
   {
     "key": "battle.damage_stats.drone",
-    "text": "无人机 {weapon} · {id}",
-    "params": "weapon,id",
+    "text": "无人机 {index} · {weapon}（装备槽 {slot}）",
+    "params": "index,weapon,slot",
     "category": "battle"
   },
   {
@@ -18235,6 +18235,12 @@
   {
     "key": "battle.damage_stats.black_hole",
     "text": "黑洞释放",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.advanced",
+    "text": "高阶",
     "params": "",
     "category": "battle"
   }

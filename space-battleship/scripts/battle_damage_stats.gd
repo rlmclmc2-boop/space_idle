@@ -12,8 +12,10 @@ var totals:Dictionary={}
 var total=0.0
 func clear() -> void:
  elapsed=0.0;bucket_index=0;buckets.clear();totals.clear();total=0.0
- for i in COUNT:buckets.append({})
+ if enabled:
+  for i in COUNT:buckets.append({})
 func set_enabled(value:bool) -> void:
+ if enabled==value:return
  enabled=value;clear()
 func advance(dt:float) -> void:
  if not enabled or dt<=0:return
@@ -37,7 +39,8 @@ func record(source:String,amount) -> void:
  var bucket:Dictionary=buckets[bucket_index%COUNT]
  bucket[source]=N.add(bucket.get(source,0),amount);totals[source]=N.add(totals.get(source,0),amount);total=N.add(total,amount)
 func snapshot() -> Dictionary:
- var seconds:=minf(elapsed,WIDTH*COUNT)
+ # The oldest retained bucket starts here; denominator follows its actual range.
+ var seconds:=elapsed-maxf(0.0,float(bucket_index-COUNT+1)*WIDTH)
  var rows:Array=[]
  for source in totals:rows.append({"source":source,"damage":totals[source],"dps":N.divide(totals[source],seconds) if seconds>0 else 0.0})
  return {"seconds":seconds,"damage":total,"dps":N.divide(total,seconds) if seconds>0 else 0.0,"rows":rows}

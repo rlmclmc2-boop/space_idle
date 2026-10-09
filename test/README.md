@@ -9,6 +9,7 @@
 | 修改范围 | 按需选择的入口 |
 |---|---|
 | 星球加成弹窗 / 自动探索默认 | `test_planet_dialog_layout.gd` 检查分组、数值对齐、详情、四设施操作、六星球隔离、长文案、大数及隐藏/暂停；`test_planet_bonus_dialog.gd` 检查本星球已生效加成、倍率实时更新、真实点击、默认开启和手动关闭存读档 |
+| 可选伤害统计 | `test_battle_damage_stats.gd --headless` 检查实际扣盾/扣血、归属、桶边界、暂停/换波、四武器含无人机的开关伤害/RNG一致性与小样本CPU成本；图形模式检查重复打开、关闭、重建、行宽，用 `DAMAGE_STATS_EVIDENCE` 指定隔离目录内的 PNG 路径（云端画面不作本机性能结论）。 |
 | 伤害、取整与弹体 | 失锁加速用 `test_missile_orphan_acceleration.gd --headless`（同批五枚加速曲线与离屏），失锁/换波语义用 `test_missile_retarget.gd --headless`；`test_rule_rounding.gd`、`test_target_resistance.gd`、`test_projectile_lifecycle.gd`；命中回调中的删除/重排/清场新增用 `test_projectile_iteration.gd --headless`；持续光束用 `test_long_laser.gd`，溢出/坚韧用 `test_shield_overflow.gd` / `test_tenacity_survival.gd` |
 | 推进、驻守与跃迁 | `test_guard.gd`、`test_loop_retreat.gd`、`test_skip_clear.gd`；末敌清弹用 `test_boss_projectile_clear.gd`，冷却用 `test_travel_cooldowns.gd`，跃迁界面用 `test_warp_ui.gd` |
 | 强化解锁与首级门槛 | `test_enhancement_unlock_gate.gd --headless` 验证锁定消费者、0/1/10/20主效果、原分支门槛、迁移/永久加成及缓存；`test_shared_enhancement_ranks.gd` 验证排序、实际攻击与详情；源表校验用 `test_enhance_config.py`。 |

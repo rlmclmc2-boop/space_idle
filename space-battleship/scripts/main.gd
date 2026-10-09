@@ -2017,6 +2017,7 @@ func build_ui() -> void:
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
+	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	system_nav_buttons.clear()
 	system_nav = null
 	workspace_frame = null
@@ -2106,15 +2107,17 @@ func build_ui() -> void:
 		death_menu.set_item_checked(mode, mode == int(game.profile.get("guardDeath", 0)))
 	death_menu.add_separator(UIText.t("main.build_ui.text_17"))
 	death_menu.add_item(UIText.t("main.build_ui.text_18"),20)
-	death_menu.add_item(UIText.t("battle.damage_stats.title"),21)
+	var advanced_menu:=PopupMenu.new();advanced_menu.name="BattleAdvanced";death_menu.add_child(advanced_menu)
+	preload("res://scripts/dialog_presentation.gd").popup(advanced_menu)
+	advanced_menu.add_item(UIText.t("battle.damage_stats.title"),21)
+	death_menu.add_submenu_item(UIText.t("battle.damage_stats.advanced"),"BattleAdvanced")
 	damage_stats_ui=preload("res://scripts/battle_damage_stats_ui.gd").new();damage_stats_ui.setup(self)
+	advanced_menu.id_pressed.connect(func(_id):damage_stats_ui.show())
 	for mode in 3:
 		death_menu.add_radio_check_item([UIText.t("main.build_ui.text_19"), UIText.t("main.build_ui.text_20"), UIText.t("gem.setup.text_03")][mode],10+mode)
 		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
 	death_menu.id_pressed.connect(func(mode):
-		if mode==21:
-			damage_stats_ui.show()
-		elif mode==20:
+		if mode==20:
 			var details := AcceptDialog.new()
 			preload("res://scripts/dialog_presentation.gd").dialog(details)
 			details.ok_button_text = UIText.t("system.confirm")
