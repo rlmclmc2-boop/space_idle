@@ -9672,6 +9672,16 @@
       "params": [
         "id"
       ]
+    },
+    "crew.current_assignment": {
+      "params": [
+        "target"
+      ]
+    },
+    "crew.confirm_target": {
+      "params": [
+        "target"
+      ]
     }
   },
   "bindings": {

@@ -17815,5 +17815,19 @@
     "params": "{id}",
     "category": "main",
     "note": "Do not invent a positive gain when no currency was credited."
+  },
+  {
+    "key": "crew.current_assignment",
+    "text": "当前岗位：{target}",
+    "params": "target",
+    "category": "crew",
+    "note": "实际已分配岗位，与待确认选择区分"
+  },
+  {
+    "key": "crew.confirm_target",
+    "text": "分配到{target}",
+    "params": "target",
+    "category": "crew",
+    "note": "按钮显示待确认岗位"
   }
 ]
