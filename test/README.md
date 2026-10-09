@@ -96,3 +96,5 @@ python test/run.py test_rule_rounding.gd
 现有缺口与故障统一见 [STATUS](../space-battleship/docs/STATUS.md)。内存夹具通过不代表正式数值平衡验收，故障观察通过不代表事务安全。
 
 Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --headless` for logic; graphical run with `DRONE_PREVIEW_EVIDENCE` captures default, last-page and empty states.
+
+银河边界诊断：`whole_game_perf.py --label retained-boundaries --rich --pages 8 --retained-galaxy-boundaries` 验证鼠标缩放、拖动、真实升级/建造及移除夹具退回完整渲染，记录近码头的运输艇遮挡对照。当前码头边缘差异与准备峰值仍阻止默认启用；施工/升级动画必须维持完整渲染。诊断退出正常不等于画质或整体性能验收。

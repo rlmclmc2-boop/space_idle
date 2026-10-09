@@ -127,7 +127,7 @@ func run():
   if dynamic.has(original) or not original.is_visible_in_tree():continue
   var node=MeshInstance3D.new();node.mesh=original.mesh;node.material_override=depth_mat;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
   depth_world.add_child(node);node.global_transform=original.global_transform;node.lod_bias=original.lod_bias
- camera_copy(map.camera,depth,1)
+ var depth_camera=camera_copy(map.camera,depth,1)
  var lut_image=Image.create(256,1,false,Image.FORMAT_RF)
  for i in 256:
   var target=pow((float(i)/255.0+0.055)/1.055,2.4) if i>0 else 0.0
@@ -139,11 +139,14 @@ func run():
    else:hi=mid
   lut_image.set_pixel(i,0,Color((lo+hi)*0.5,0,0,1))
  var lut=ImageTexture.create_from_image(lut_image);depth_mat.set_shader_parameter("transfer_lut",lut)
- var dynamic_view=vp(map,"CachedDynamic",false);camera_copy(map.camera,dynamic_view,6)
+ var dynamic_view=vp(map,"CachedDynamic",false);var dynamic_camera=camera_copy(map.camera,dynamic_view,6)
  var plane=MeshInstance3D.new();var quad=QuadMesh.new();quad.size=Vector2(2,2);plane.mesh=quad;plane.layers=4;plane.extra_cull_margin=10000;plane.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
  var cache_mat=ShaderMaterial.new();cache_mat.shader=load("res://retained_galaxy_color.gdshader")
  cache_mat.set_shader_parameter("cached_color",map.view.get_texture());cache_mat.set_shader_parameter("cached_depth",depth.get_texture());cache_mat.set_shader_parameter("transfer_lut",lut);plane.material_override=cache_mat;plane.visible=false;map.world.add_child(plane)
  print("CACHE_CREATE_US ",Time.get_ticks_usec()-creation_start)
+ await check_retained(scene,map,g,original_profile,depth,dynamic_view,plane,depth_camera,dynamic_camera,depth_mat,cache_mat,quad)
+ scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()
+func check_retained(_scene,map,g,original_profile,depth,dynamic_view,plane,_depth_camera,_dynamic_camera,_depth_mat,_cache_mat,_quad):
  # Compare real geometry to retained color/depth at identical frozen actor poses.
  for phase in [0.45]:
   for i in map.transports.size():
@@ -173,4 +176,3 @@ func run():
   var v=[];views(root,v)
   print("ROW ",JSON.stringify({"kind":"retained_color_depth","phase":phase,"frames_us":stats(times),"profile_equal":original_profile==JSON.stringify(g.profile,"",true,true),"views":v}))
  plane.visible=false;map.camera.cull_mask=3;map.container.texture=map.view.get_texture();map.view.render_target_update_mode=SubViewport.UPDATE_ALWAYS
- scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()
