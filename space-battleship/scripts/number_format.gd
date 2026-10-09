@@ -29,6 +29,17 @@ static func trimmed_decimal(value: float, decimals: int) -> String:
 	var text := "%.*f" % [decimals,value]
 	return text.rstrip("0").trim_suffix(".") if text.contains(".") else text
 
+# Player-facing ordinary values use half units; formula literals keep precise().
+# Large values retain the shared suffix ladder (for example, 39.1K).
+static func scalar(value) -> String:
+	if value is Dictionary:
+		if float(value.e)>=3:return compact(value)
+		value=float(value.m)*pow(10.0,float(value.e))
+	var amount:=float(value)
+	if not is_finite(amount) or absf(amount)>=1000.0:return compact(value)
+	var rounded:=roundf(amount*2.0)/2.0
+	return trimmed_decimal(rounded,1) if rounded!=0.0 else "0"
+
 static func compact(value, suffix_decimals := -1) -> String:
 	var mantissa: float
 	var exponent: float

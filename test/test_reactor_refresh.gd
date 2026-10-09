@@ -44,6 +44,11 @@ func run() -> void:
 	await process_frame
 	var panel=scene.reactor_panel
 	panel.refresh()
+	check(NumberFormat.scalar(3.24)=="3" and NumberFormat.scalar(3.26)=="3.5" and NumberFormat.scalar(-0.01)=="0","Ordinary display uses half units without negative zero")
+	check(NumberFormat.scalar(39100)=="39.1K" and NumberFormat.scalar({"m":3.91,"e":4})=="39.1K","Scalar display preserves suffix precision for native and large-number values")
+	check(NumberFormat.precise(6.75)=="6.75" and g.description_number(0.28)=="0.28","Formula literals and fractional economic values keep precision")
+	check(panel.capacity_label.get_parent().position.y>=panel.equalize_button.position.y+panel.equalize_button.size.y and panel.capacity_label.get_parent().position.y-panel.equalize_button.position.y-panel.equalize_button.size.y<=12,"Capacity follows control actions without the removed legend gap")
+	check(panel.allocation_hint.position.y>=panel.capacity_label.get_parent().position.y+panel.capacity_label.get_parent().size.y and panel.allocation_hint.position.y+panel.allocation_hint.size.y<=panel.allocation_scroll.position.y,"Temporary-supply warning has a reserved row clear of readouts and controls")
 	var slider: HSlider=panel.module_controls.weapons.slider
 	check(panel.upgrade_buttons.x1.text.contains(panel.purchase_cost_text(g.reactor_upgrade_cost())) and panel.upgrade_buttons.x1.text.split("\n").size()==2 and panel.upgrade_buttons.x1.tooltip_text.contains(panel.energy_text(g.reactor_capacity_at(int(g.profile.reactorLevel)+1))),"Single purchase shows action and fee; energy projection remains available in details")
 	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("收益"),"Batch and MAX expose purchase-specific effect previews")
@@ -157,6 +162,8 @@ func run() -> void:
 	panel.details_button.pressed.emit()
 	check(panel.details_dialog.visible and panel.details_text.text.contains(panel.upgrade_buttons.x1.tooltip_text) and panel.details_text.text.contains(panel.upgrade_buttons.MAX.tooltip_text),"Explicit details contains the authoritative single and MAX price/benefit projections")
 	check(JSON.stringify(g.profile)==before_details and g.rng.state==rng_before,"Opening details never purchases or changes the player plan or RNG")
+	var fractional_percent:=RegEx.new();fractional_percent.compile("[0-9]+\\.[0-9]+%")
+	check(fractional_percent.search(panel.details_text.text)==null,"Expanded reactor projections use integer percentage points")
 	panel.details_dialog.hide()
 	scene.equipment_tabs.current_tab=0
 	g.profile.resources["2"]=0.0
