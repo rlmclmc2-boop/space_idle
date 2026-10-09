@@ -1,7 +1,7 @@
-Independent normal graphical playtest recovery checkpoint
+Independent normal graphical recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud XDG fresh save; speed1x microparticles0, noQA/injections/restart.
-2026-10-09 21:29:45 UTC first observed12wave1/9, manually saved paused after setup21:31.
-Flying Swallow escort4weapons2defense2drone slots, cannons63/62/62/60, armor56/54, reactorMAX27to30requested, AI31equal11/10/10verified, whitedrone1, enhancement1.
-Crew Gaojianguo normal equipment automation actual growth verified; first11Boss cleared naturally.
-Resume same original cloud runtime first; only pure round test save and compact metadata.
+Own cloud fresh XDG save only;1x microparticles0 noQA/injections/restart.
+2026-10-09 21:35:52 UTC first observed13wave2/9, paused manualsave after normal setup.
+Escort hull, W74beam/73cannon/71beam/69cannon, armor69/67, reactorMAX33to34 requested, AI42equal11/11/10/10 verified.
+Enhancement2 normal200fragments spent, activeweaponpractice anddefensememory10percent/sec; newfragmentfurnace0 allocated10AI ETA2sec firstbuild. Crew equipment automation active, whitedrone1.
+Resume same cloud runtime first; only pure round test save and compact metadata.
