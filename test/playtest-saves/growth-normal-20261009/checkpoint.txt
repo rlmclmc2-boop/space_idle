@@ -1,2 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Independent normal new save, original cloud Xorg:99 GUI, x1.
-Checkpoint11 2026-10-09 14:34 UTC: stage7 wave5/9 paused after natural wave6 failure. Completed main1-6, side A1 and background active. All three weapon slots now beams; ordinary upgrades made, no injections. Actual window screenshot and save successful. Next continue normal growth through20; stop at20 and close.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Gameplay code unchanged. Independent normal new save, original cloud Xorg:99 GUI, x1.
+Checkpoint12 2026-10-09 14:41:40.692734+00:00 paused in A2 side challenge wave4/10. Main completed1-6, current7; reached7 wave7 then failed, ordinary beam/shield/armor upgrades, reactor15 AI10.
+Correction: A1 background exploration was one completed run, not continuously active; current UI explicitly no background exploration. Blue pulse drone weapon21 retained, no new injected drops.
+Next finish actual A2 challenge then continue main7 through20, stop20/save/close. Original environment actual mouse/screenshot/save operations successful.
