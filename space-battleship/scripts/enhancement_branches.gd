@@ -132,9 +132,10 @@ func capacity_multiplier(g,entry: Dictionary) -> float:
 func cooldown_multiplier(g,entry: Dictionary) -> float:
  return g.enhancement_parameter("proficiency_b2_interval_multiplier") if active(g,entry,"proficiency",2,"B") else 1.0
 
-func repeat_probability(g,entry: Dictionary) -> float:
- if not g.has_enhancement_effect(entry,"repeat"):return clampf(float(g.hyperspace_totals().repeat_chance),0,1)
- return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(g.hyperspace_totals().repeat_chance),0,1)
+func repeat_probability(g,entry: Dictionary,drone_totals: Dictionary={}) -> float:
+ var drones: Dictionary=g.hyperspace_totals() if drone_totals.is_empty() else drone_totals
+ if not g.has_enhancement_effect(entry,"repeat"):return clampf(float(drones.repeat_chance),0,1)
+ return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(drones.repeat_chance),0,1)
 
 func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -> float:
  var row: Dictionary=g.db.equip(str(entry.key),int(entry.level))

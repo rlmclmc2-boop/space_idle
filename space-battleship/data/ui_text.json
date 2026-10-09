@@ -16667,7 +16667,7 @@
   },
   {
     "key": "weapon.rate_assumption",
-    "text": "仅一个目标、持续命中；未计敌方减伤。",
+    "text": "仅一个目标、持续命中；未计敌方减伤。\n基础值按当前装备与累计次数计算，不计战斗临时加成或无人机临时停用；实战以战场为准。",
     "params": "",
     "category": "weapon",
     "note": "只读单目标每秒伤害展示，条件另计"
@@ -17216,5 +17216,26 @@
     "params": "cost",
     "category": "research",
     "note": "AI购买总额短数摘要后的精确补充，不驱动购买逻辑"
+  },
+  {
+    "key": "equipment.base_armour",
+    "text": "基础装甲",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
+  },
+  {
+    "key": "equipment.base_shield",
+    "text": "基础护盾",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
+  },
+  {
+    "key": "equipment.baseline_scope",
+    "text": "基础值按当前装备与累计次数计算，不计战斗临时加成或无人机临时停用；实战以战场为准。",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
   }
 ]

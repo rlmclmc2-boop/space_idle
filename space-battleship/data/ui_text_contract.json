@@ -9280,6 +9280,15 @@
       "params": [
         "cost"
       ]
+    },
+    "equipment.base_armour": {
+      "params": []
+    },
+    "equipment.base_shield": {
+      "params": []
+    },
+    "equipment.baseline_scope": {
+      "params": []
     }
   },
   "bindings": {

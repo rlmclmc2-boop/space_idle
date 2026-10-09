@@ -494,12 +494,12 @@ func equipment_item(category: String, index: int) -> Dictionary:
 		"cardLevelText":card_level_text(entry,category,active,projection),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
-		"slots":[index],"mainStatLabel":rate_title(projection) if category=="weapons" and equipped else UIText.t("weapon.rate" if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
+		"slots":[index],"mainStatLabel":rate_title(projection) if category=="weapons" and equipped else UIText.t("weapon.rate" if category=="weapons" else ("equipment.base_shield" if key=="shield" else "equipment.base_armour")),
 		"mainStatValue":rate_value(projection) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
 
 func module_tooltip(entry: Dictionary, prefix: String, name: String, projection: Dictionary) -> String:
-	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+rate_title(projection)+" "+rate_value(projection)+"\n"+rate_notes(projection)+"\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
+	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+rate_title(projection)+" "+rate_value(projection)+"\n"+rate_notes(projection)+"\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "\n"+UIText.t("equipment.baseline_scope"))
 
 func refresh(only_slot := "") -> void:
 	refresh_slots([] if only_slot.is_empty() else [only_slot])

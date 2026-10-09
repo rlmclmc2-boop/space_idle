@@ -2,14 +2,28 @@ extends RefCounted
 ## Read-only module presentation. Combat continues to own every random roll.
 const N := preload("res://scripts/growth_number.gd")
 
+## Same aggregator and formulas, with a read-only combat-state facade.
+static func configured_drone_totals(g) -> Dictionary:
+	if g.drone_combat.disabled.is_empty() and g.drone_combat.rebuild_bonus==0:return g.hyperspace_totals()
+	return g.DroneEffects.project({"profile":g.profile,"hyperspace":g.hyperspace,"drone_combat":{"disabled":[],"rebuild_bonus":0.0}})
+
+static func configured_weapon_entries(g) -> Array:
+	if g.drone_combat.disabled.is_empty():return g.combat_weapon_entries()
+	var entries: Array=g.weapon_entries().duplicate()
+	for id in g.profile.hyperspace.inventory.equipped:
+		if not g.profile.hyperspace.inventory.sealed.has(id):entries.append(g.drone_weapon_entry(g.profile.hyperspace.inventory.drones[id]))
+	return entries
+
 static func snapshot(g, entry: Dictionary, level := -1, replacement_owner: Dictionary = {}) -> Dictionary:
-	var base = g.jewel_equipment_stat(entry,level,null,false)
+	var totals:=configured_drone_totals(g)
+	var drone_override: Dictionary=totals if not g.drone_combat.disabled.is_empty() or g.drone_combat.rebuild_bonus!=0 else {}
+	var base = g.jewel_equipment_stat(entry,level,null,false,drone_override)
 	if not BattleGame.WEAPON_KEYS.has(str(entry.get("key",""))):return {"base":base,"expected":base}
 	var projected: Dictionary=entry
 	if level>=0:
 		projected=entry.duplicate()
 		projected.level=level
-	var critical: Vector2=g.jewel_critical(projected,null,false)
+	var critical: Vector2=g.jewel_critical(projected,null,false,drone_override)
 	var guaranteed: bool=g.enhancement_branches.active(g,projected,"critical",3,"B")
 	var underlying: float=g.enhancement_branches.underlying_critical_rate(g,projected,false) if guaranteed or level>=0 else critical.x
 	# Timed dwell/critical stacks affect combat, never module cards or previews.
@@ -19,7 +33,7 @@ static func snapshot(g, entry: Dictionary, level := -1, replacement_owner: Dicti
 	var bonus_chance: float=underlying if guaranteed else 1.0
 	var bonus_probability: float=trigger*bonus_chance
 	var result := {"base":base,"expected":N.multiply(base,1.0+bonus_probability*(critical.y-1.0)),"trigger":trigger,"bonus_probability":bonus_probability,"critical_multiplier":critical.y,"guaranteed":guaranteed}
-	result.rate=_throughput(g,entry if replacement_owner.is_empty() else replacement_owner,projected,result)
+	result.rate=_throughput(g,entry if replacement_owner.is_empty() else replacement_owner,projected,result,totals,drone_override)
 	return result
 
 ## Replace one logical source for count/strongest-source rules, never the live loadout.
@@ -35,12 +49,11 @@ static func throughput(g, entry: Dictionary, level := -1) -> Dictionary:
 static func displayed_value(values: Dictionary):
 	return values.rate.start if values.has("rate") else values.expected
 
-static func _throughput(g, owner: Dictionary, entry: Dictionary, values: Dictionary) -> Dictionary:
+static func _throughput(g, owner: Dictionary, entry: Dictionary, values: Dictionary, totals: Dictionary, drone_override: Dictionary) -> Dictionary:
 	var key:=str(entry.key)
-	var row: Dictionary=g.player_weapon_row(entry)
+	var row: Dictionary=g.player_weapon_row(entry,drone_override)
 	var interval:=float(row.cd)
 	var reasons:Array[String]=[]
-	var totals:Dictionary=g.hyperspace_totals()
 	var legendary:Dictionary=totals.get("legendary",{})
 	# A level preview retains logical source identity; only the strongest beam gets Endless.
 	var endless:Dictionary=legendary.get("endless_beam",{})
@@ -61,7 +74,7 @@ static func _throughput(g, owner: Dictionary, entry: Dictionary, values: Diction
 		if legendary.has("laser_charge"):
 			var charge:Dictionary=legendary.laser_charge
 			var count:=0
-			for source in g.combat_weapon_entries():
+			for source in configured_weapon_entries(g):
 				var replacement: Dictionary=entry if is_same(source,owner) else source
 				if replacement.key=="laser":count+=1
 			fixed*=1.0+minf(float(charge.parameters.maximum_bonus),float(charge.constants.bonus_per_laser)*count)
@@ -72,7 +85,7 @@ static func _throughput(g, owner: Dictionary, entry: Dictionary, values: Diction
 		if effect.kind in ["proficiency","adaptation"] and float(effect.get("p2",0))*int(effect.level)!=0:reasons.append("history")
 		if effect.kind=="repeat":
 			found_repeat=true
-			repeats+=g.enhancement_branches.repeat_probability(g,entry)*(1.0+float(effect.p4)*int(effect.level))
+			repeats+=g.enhancement_branches.repeat_probability(g,entry,totals)*(1.0+float(effect.p4)*int(effect.level))
 	if not found_repeat:repeats=clampf(float(totals.repeat_chance),0,1)
 	for pair in [["proficiency",1],["critical",1],["critical",2]]:
 		if g.enhancement_branches.active(g,entry,pair[0],pair[1],"B") and not reasons.has("history"):reasons.append("history")
