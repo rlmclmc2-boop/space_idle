@@ -1,6 +1,6 @@
 Independent normal graphical recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud fresh XDG save only;1x microparticles0,noQA/injections/restart.
-2026-10-09 21:51:08 UTC actual original environment continuity check: stage15wave7/9, PID962 started19:20:54 matches window0x200003 _NET_WM_PID962 display91.
-Real graphical enemyclick/reactorMAX operations21:51-52 responded; reactor44 directlyverified,AI59lastverified. Fourcannons98/95/94/92,dualarmor92/92,crew normal equipment auto,memory2 active.
-Paused manuallysaved current15/7; no restart. Earlier MAX level estimates provisional; actual save and direct UI values prevail. Resume same original runtime to first20 then saveclose.
+Own cloud fresh XDG save only,1x microparticles0,noQA/injections/restart.
+First observed16 at2026-10-09 21:53:21 UTC wave4; 21:53:47 verifiedpaused wave7, actualwindowPID962 ondisplay91.
+Saved16/7 afternormalMAXreactor/AIand3beam1cannonsetup. Equipment107/106/104/100,dualarmor99/97,crew equipment auto,enhance2memory active. Savebytes are authoritative current levels.
+Stage-clear countdown does not preserve pause across transition; explicitly inspect before toggling. Resume original runtime; first20 saveclose.
