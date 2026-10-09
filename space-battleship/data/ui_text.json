@@ -17496,5 +17496,19 @@
     "params": "",
     "category": "hyperspace",
     "note": "单种材料缺口预填；报价来自核心，玩家仍选择来源并明确确认"
+  },
+  {
+    "key": "hyperspace.hanging_slot_no_gain",
+    "text": "有效模块0种；开槽本身不加属性。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "以现行已解锁、可装、等级有效且尚未挂载的模块计数；不改变成长"
+  },
+  {
+    "key": "hyperspace.hanging_slot_available_gain",
+    "text": "可另装{count}种有加成模块。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "以现行已解锁、可装、等级有效且尚未挂载的模块计数；不改变成长"
   }
 ]

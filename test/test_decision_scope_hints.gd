@@ -36,5 +36,10 @@ func run()->void:
  check(p.detail.basics.text.begins_with(title) and p.detail.stats.text.contains(title),"Candidate comparison marks underlying basic and expanded attributes as current equipment")
  var crew=scene.crew_panel;crew.refresh()
  check(crew.hyperspace_hint.text.contains(UIText.t("hyperspace.crew")) and crew.hyperspace_hint.text.contains(UIText.t("hyperspace.layer_crew_start")),"Crew page points to exact existing management and dispatch controls")
+ var storage:Dictionary=g.profile.hyperspace.hanging_modules.extra_storage
+ storage.unlocked=true;storage.level=0
+ check(c.hanging_slot_scope({"hangings":[]}).contains("有效模块0种"),"First unlockedLv0 module does not promise a slot return")
+ storage.level=1
+ check(c.hanging_slot_scope({"hangings":[]}).contains("1种") and c.hanging_slot_scope({"hangings":["extra_storage"]}).contains("有效模块0种"),"Only usable positive unmounted modules count as new-slot benefit")
  scene.queue_free();await process_frame
  print("DECISION SCOPE: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

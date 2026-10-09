@@ -9462,6 +9462,14 @@
     },
     "hyperspace.forge_exchange_guaranteed_shortage": {
       "params": []
+    },
+    "hyperspace.hanging_slot_no_gain": {
+      "params": []
+    },
+    "hyperspace.hanging_slot_available_gain": {
+      "params": [
+        "count"
+      ]
     }
   },
   "bindings": {

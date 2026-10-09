@@ -198,6 +198,14 @@ func cost_text(cost: Dictionary,exact: bool=false) -> String:
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:
  return t("command_error_"+error) if UIText.entries.has("hyperspace.command_error_"+error) else t("command_failed")
+func hanging_slot_scope(d:Dictionary) -> String:
+ var count:=0
+ for key in h().config.hanging_modules:
+  var definition:Dictionary=h().config.hanging_modules[key]
+  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
+  if not bool(progress.unlocked) or int(game().profile.highestLevel)<int(definition.unlock_stage) or d.get("hangings",[]).has(key):continue
+  if pow(1.0+float(definition.effect_growth),int(progress.level))-1.0>0:count+=1
+ return t("hanging_slot_no_gain") if count==0 else t("hanging_slot_available_gain",{"count":str(count)})
 func modernization_scope(d:Dictionary) -> String:
  var growing:=0
  for a in d.get("affixes",[])+([d.ultimate_affix] if bool(d.get("ultimate",false)) and not d.get("ultimate_affix",{}).is_empty() else []):
