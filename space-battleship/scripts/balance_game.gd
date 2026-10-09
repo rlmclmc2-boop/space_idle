@@ -80,8 +80,8 @@ func clear_pending_hits() -> void:
 	pending_hits.clear()
 	fresh_shots.clear()
 
-func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
-	var result := super.start(level,loop_mode,checkpoint)
+func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}, start_paused := false) -> bool:
+	var result := super.start(level,loop_mode,checkpoint,start_paused)
 	if result:clear_pending_hits()
 	return result
 
@@ -305,6 +305,6 @@ func upgrade_enhancement(count := 1) -> int:
 	return purchased
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
-	var result := super.settle_jewel_fragments(amount,source,ratio)
+	var result = super.settle_jewel_fragments(amount,source,ratio)
 	if metrics != null:metrics.add(metrics.income,"jewel_fragments",result)
 	return result
