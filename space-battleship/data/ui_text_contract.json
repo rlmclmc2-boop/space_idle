@@ -9708,6 +9708,19 @@
     },
     "settings.guard_hint": {
       "params": []
+    },
+    "hyperspace.layer_task_busy_here": {
+      "params": []
+    },
+    "hyperspace.crew_route_title": {
+      "params": [
+        "route"
+      ]
+    },
+    "hyperspace.crew_route_start": {
+      "params": [
+        "route"
+      ]
     }
   },
   "bindings": {

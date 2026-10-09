@@ -17864,5 +17864,26 @@
     "params": "",
     "category": "settings",
     "note": "驻守按钮短悬停，区别关卡跳转"
+  },
+  {
+    "key": "hyperspace.layer_task_busy_here",
+    "text": "当前路线已有任务进行中。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.crew_route_title",
+    "text": "{route} · 船员探索",
+    "params": "route",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.crew_route_start",
+    "text": "派往{route}连续探索",
+    "params": "route",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
   }
 ]

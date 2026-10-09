@@ -106,7 +106,9 @@ func refresh() -> void:
  panel.refresh_challenge_result();refresh_route_markers()
  var v=view();var reasons:Dictionary=v.get("reasons",{})
  var queue:Dictionary=v.get("queue",{});var busy=bool(queue.get("busy",false))
- panel.put(queue_info,"visible",busy);panel.put(queue_action,"visible",busy)
+ var other_route:=busy and str(queue.get("route",""))!=str(panel.route)
+ var queued:=busy and str(queue.get("status",""))=="queued"
+ panel.put(queue_info,"visible",other_route or queued);panel.put(queue_action,"visible",other_route or queued)
  if busy:
   panel.put(queue_info,"text",queue_message(queue))
   var key="layer_queue_claim" if str(queue.get("status",""))=="completed_pending" else "layer_queue_cancel" if str(queue.get("status",""))=="queued" else "layer_queue_stop" if str(queue.get("mode","")) in ["idle","auto"] else "layer_queue_view"
@@ -164,6 +166,7 @@ func refresh() -> void:
  if crew_dialog!=null and crew_dialog.visible:refresh_crew()
 func queue_message(queue:Dictionary) -> String:
  if not bool(queue.get("busy",false)):return t("layer_reason_busy")
+ if str(queue.get("route",""))==str(panel.route):return t("layer_task_busy_here")
  var mode=str(queue.get("mode",""));var key="layer_queue_challenge" if mode=="manual" else "layer_queue_auto" if mode=="auto" else "layer_queue_background"
  return t("layer_queue_occupied",{"route":t(str(queue.get("route",""))),"task":t(key)})
 func act_on_queue() -> void:
@@ -229,6 +232,8 @@ func crew_requirement() -> String:
  if first.is_empty():return t("no_crew")
  return t("crew_unlock_reached" if str(first.get("mode","cleared"))=="reached" else "crew_unlock_cleared",{"level":str(int(first.level))})
 func refresh_crew() -> void:
+ panel.put(crew_dialog,"title",t("crew_route_title",{"route":t(str(panel.route))}))
+ panel.put(crew_enable,"text",t("crew_route_start",{"route":t(str(panel.route))}))
  var id=selected_crew();var v=view(id)
  var time=NumberFormat.scalar(float(v.get("crew_duration",0.0)))
  var configured=id==str(v.get("crew_id","")) and not id.is_empty()
