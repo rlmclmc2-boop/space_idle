@@ -8,24 +8,29 @@
     "5d817d0 disconnect recovery rules;949ace3 explicit pure-test backup exception",
     "1550c8d player display entry points; fixed-time approximation corrected by6f69ecf",
     "6f69ecf beam timings withheld unless exact; reactor shared detail scope once",
-    "00ae119 fixed recovery/deferred periods described by exact frequency"
+    "00ae119 fixed recovery/deferred periods described by exact frequency",
+    "20ac2d2 actual integer reactor per-level fees; spendable whole-resource display and shortage disambiguation"
   ],
   "verification": {
-    "main_ui_checks": 76,
+    "main_ui_checks": 95,
     "ui_catalog_rows": 2569,
-    "remote_readback": "00ae119a2673af76921f090ce9e00d5eab2c9958",
+    "remote_readback": "20ac2d237ad12d47b7a16982f0507f37e60b734a",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
     "parent_gui_verified": [
       "basic available-forge grouping and selected-shortage exchange",
       "reactor left layout and integer percentages at1178x814"
+    ],
+    "actual_workspace_success_utc": [
+      "2026-10-09 10:38:05 UTC",
+      "2026-10-09 10:43:47 UTC"
     ]
   },
   "next": [
-    "Parent confirms reactor per-level integer actual fee scope; no transaction change applied",
-    "Parent decides beam actual parameter tradeoff and master precision/guarantee-cost scope; AI/reactor curves unchanged",
-    "Parent GUI checks fixed timing corrections and smaller window; defer hyperspace first-entry empty-state redesign"
+    "Implement approved beam CD0.5/base62.5 and minimum charge/damage/repeat checks as separate commit",
+    "Then streamline existing hyperspace first-entry empty panels and primary action",
+    "Master generation/reroll precision and guarantee-price decision remains pending"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "00ae119a2673af76921f090ce9e00d5eab2c9958"
+  "last_code_commit": "20ac2d237ad12d47b7a16982f0507f37e60b734a"
 }
