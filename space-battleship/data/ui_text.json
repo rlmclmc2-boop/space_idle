@@ -15761,7 +15761,7 @@
   },
   {
     "key": "hyperspace.layer_idle_work",
-    "text": "后台探索 · {work} / {duration} 秒",
+    "text": "后台探索 · 约 {work} / {duration} 秒",
     "params": "{work},{duration}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
