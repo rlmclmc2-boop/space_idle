@@ -94,7 +94,6 @@ func set_readout(label: Label, value: String) -> void:
 
 func energy_text(value) -> String:
 	var number = I.as_growth(value) if value is String else value
-	if N.compare(number,1000000)<0:return ("%.1f" % float(number)).trim_suffix(".0")
 	return NumberFormat.compact(number)
 
 func percent_text(value) -> String:
