@@ -17737,7 +17737,7 @@
   },
   {
     "key": "enhance.description.delayed_damage.cadence",
-    "text": "适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，{cadence}；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
+    "text": "满血也可能仍有待承受伤害。适用防御模块将已减伤后伤害的 {fraction}% 延迟承受，按 {duration} 秒分为 {ticks} 期。结算对齐全局游戏时间，{cadence}；首期不早于命中后一个间隔，可能再顺延不足一个间隔。有到期伤害时先承担本期，再以 {chance}% 概率免除尚未承受的全部延迟伤害；100% 也不能免除首期，若本期致死则不再清除。延迟结算不重复减伤或计入受击历史。",
     "params": "{fraction},{duration},{ticks},{cadence},{chance}",
     "category": "enhance",
     "note": "固定结算周期仅用准确秒数或频率；不量化机制"

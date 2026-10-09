@@ -260,6 +260,10 @@ func build_detail() -> void:
 	detail.basics = label(detail_body,"",Rect2(18,608,535,180),20,NAVY)
 	detail.basics.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.basics.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	for attributes in [detail.stats,detail.basics]:
+		attributes.clip_text=false
+		attributes.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING
+		attributes.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverLabel)
 	detail.stats.resized.connect(update_detail_height)
 	detail_frame.hide()
 	detail_frame.visibility_changed.connect(func():
@@ -841,7 +845,8 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		description+="\n\n"+heading+"\n"+candidate_details+"\n"+host.equipment_detail_text(candidate)+"\n"+equipment_attributes(candidate)
 		host.set_ui_value(detail.stats,"text",description)
 	host.set_ui_value(detail.basics,"text",basics)
-	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
+	host.set_ui_value(detail.basics,"tooltip_text",basics)
+	host.set_ui_value(detail.stats,"tooltip_text",description+"\n\n"+host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)
 
 func basic_attributes(entry: Dictionary, projection: Dictionary) -> String:
