@@ -620,8 +620,10 @@ func show_upgrade_details() -> void:
 		details_text.offset_left=16;details_text.offset_top=12;details_text.offset_right=-16;details_text.offset_bottom=-62
 		details_text.add_theme_font_size_override("normal_font_size",20)
 	var blocks := PackedStringArray()
+	var scope:=UIText.t("reactor.purchase_scope")
 	for mode in ["x1","x10","MAX"]:
-		blocks.append(upgrade_buttons[mode].text.get_slice("\n",0)+"\n"+upgrade_buttons[mode].tooltip_text)
+		blocks.append(upgrade_buttons[mode].text.get_slice("\n",0)+"\n"+upgrade_buttons[mode].tooltip_text.trim_suffix("\n"+scope))
+	blocks.append(scope)
 	blocks.append(UIText.t("reactor.upgrade_idle" if I.compare(host.game.reactor_allocated(),0)==0 else "reactor.upgrade_shares"))
 	details_text.text="\n\n".join(blocks)
 	details_text.scroll_to_line(0)

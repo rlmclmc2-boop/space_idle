@@ -54,6 +54,14 @@ func run() -> void:
 	check(master_help.contains(scene.hyperspace_panel.t("percent",{"value":"55"})) and not master_help.contains("55.3%"),"Owned legendary details use integer percentage points")
 	check(JSON.stringify(g.profile)==display_profile and g.rng.state==display_rng,"Formatting legendary details preserves saved parameters and RNG")
 	check(scene.enhancement_panel.display(3.24)=="3" and scene.enhancement_panel.display(0.28)=="0.5","Enhancement duration details use the ordinary scalar entry")
+	check(NumberFormat.scalar_is_exact(0.5) and not NumberFormat.scalar_is_exact(0.28) and not NumberFormat.scalar_is_exact(3.24),"Fixed time gate rejects misleading half-unit rounding")
+	var beam_entry:Dictionary={"key":"longLaser","level":1}
+	var beam:Dictionary=scene.equipment_display_snapshot(beam_entry)
+	check(is_equal_approx(float(beam.rate.interval),0.28) and is_equal_approx(float(beam.rate.stage_time),3.24),"Current beam timing mechanism remains unchanged")
+	check(not scene.equipment_panel.card_level_text(beam_entry,"weapons",true,beam).contains("升满") and not scene.equipment_panel.rate_notes(beam).contains("达到右值"),"Current beam card and notes withhold an inaccurate rounded full-ramp time")
+	check(not scene.equipment_panel.rate_detail(beam,beam).contains(UIText.t("weapon.rate_single",{"damage":scene.number(beam.rate.single),"seconds":"0.5"})),"Current beam details never claim a half-second attack interval")
+	var clean_beam:Dictionary=beam.duplicate(true);clean_beam.rate.interval=0.5;clean_beam.rate.stage_time=3.0
+	check(scene.equipment_panel.card_level_text(beam_entry,"weapons",true,clean_beam).contains("3秒升满") and scene.equipment_panel.rate_notes(clean_beam).contains("达到右值"),"Exactly representable fixed timing remains discoverable")
 	check(panel.capacity_label.get_parent().position.y>=panel.equalize_button.position.y+panel.equalize_button.size.y and panel.capacity_label.get_parent().position.y-panel.equalize_button.position.y-panel.equalize_button.size.y<=12,"Capacity follows control actions without the removed legend gap")
 	check(panel.allocation_hint.position.y>=panel.capacity_label.get_parent().position.y+panel.capacity_label.get_parent().size.y and panel.allocation_hint.position.y+panel.allocation_hint.size.y<=panel.allocation_scroll.position.y,"Temporary-supply warning has a reserved row clear of readouts and controls")
 	var slider: HSlider=panel.module_controls.weapons.slider
@@ -167,7 +175,9 @@ func run() -> void:
 	check(slider.value==30 and slider.has_focus() and panel.module_scroll.scroll_vertical==focused_scroll,"direct allocation refresh preserves focus, scroll and immediate value")
 	var before_details:=JSON.stringify(g.profile);var rng_before:int=g.rng.state
 	panel.details_button.pressed.emit()
-	check(panel.details_dialog.visible and panel.details_text.text.contains(panel.upgrade_buttons.x1.tooltip_text) and panel.details_text.text.contains(panel.upgrade_buttons.MAX.tooltip_text),"Explicit details contains the authoritative single and MAX price/benefit projections")
+	var scope:=UIText.t("reactor.purchase_scope")
+	check(panel.details_dialog.visible and ["x1","x10","MAX"].all(func(mode):return panel.details_text.text.contains(panel.upgrade_buttons[mode].tooltip_text.trim_suffix("\n"+scope))),"Explicit details retains every authoritative price/benefit projection")
+	check(panel.details_text.text.count(scope)==1,"Expanded details explain the common projection scope once")
 	check(JSON.stringify(g.profile)==before_details and g.rng.state==rng_before,"Opening details never purchases or changes the player plan or RNG")
 	var fractional_percent:=RegEx.new();fractional_percent.compile("[0-9]+\\.[0-9]+%")
 	check(fractional_percent.search(panel.details_text.text)==null,"Expanded reactor projections use integer percentage points")

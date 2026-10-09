@@ -534,7 +534,7 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  lines.append(t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
  lines.append(t("drone_dynamic_weapon_hint"))
  lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))
- lines.append(t("drone_fire_"+str(d.weapon),fire_params))
+ if NumberFormat.scalar_is_exact(float(row.cd)):lines.append(t("drone_fire_"+str(d.weapon),fire_params))
  if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))

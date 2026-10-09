@@ -474,7 +474,7 @@ func card_level_text(entry: Dictionary, category: String, active: bool, projecti
 	if category!="weapons" or str(entry.key) not in BattleGame.WEAPON_KEYS:return level
 	var row: Dictionary = host.game.player_weapon_row(entry)
 	var type := UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical")
-	if entry.key=="longLaser" and projection.has("rate"):
+	if entry.key=="longLaser" and projection.has("rate") and NumberFormat.scalar_is_exact(float(projection.rate.get("stage_time",0))):
 		return UIText.t("equipment.card_beam_stage",{"level":level,"type":type,"seconds":NumberFormat.scalar(float(projection.rate.get("stage_time",0)))})
 	return UIText.t("equipment.card_weapon_type",{"level":level,"type":type})
 
@@ -490,7 +490,7 @@ func rate_value(projection: Dictionary) -> String:
 func rate_notes(projection: Dictionary) -> String:
 	var rate: Dictionary=projection.get("rate",{})
 	var text := UIText.t("weapon.rate_assumption")
-	if rate.get("beam",false):text+="\n"+UIText.t("weapon.rate_beam_time",{"charge":NumberFormat.scalar(float(rate.get("charge",0))),"first":NumberFormat.scalar(float(rate.get("first_hit",0))),"stage":NumberFormat.scalar(float(rate.get("stage_time",0)))})
+	if rate.get("beam",false) and ["charge","first_hit","stage_time"].all(func(key):return NumberFormat.scalar_is_exact(float(rate.get(key,0)))):text+="\n"+UIText.t("weapon.rate_beam_time",{"charge":NumberFormat.scalar(float(rate.get("charge",0))),"first":NumberFormat.scalar(float(rate.get("first_hit",0))),"stage":NumberFormat.scalar(float(rate.get("stage_time",0)))})
 	if rate.get("conditional",false):
 		var notes:Array[String]=[]
 		for reason in rate.get("reasons",[]):
@@ -502,7 +502,7 @@ func rate_notes(projection: Dictionary) -> String:
 func rate_detail(current: Dictionary, next: Dictionary) -> String:
 	var rate: Dictionary=current.get("rate",{})
 	var single := UIText.t("weapon.rate_single_missile",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.scalar(float(rate.get("interval",0))),"count":str(rate.get("salvo",1))}) if rate.get("key","")=="missile" else UIText.t("weapon.rate_single",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.scalar(float(rate.get("interval",0)))})
-	return UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)})+"\n"+single+"\n"+rate_notes(current)
+	return UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)})+("\n"+single if NumberFormat.scalar_is_exact(float(rate.get("interval",0))) else "")+"\n"+rate_notes(current)
 
 func equipment_item(category: String, index: int) -> Dictionary:
 	var entry: Dictionary = host.game.module_entry(category,index)
@@ -827,7 +827,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var row: Dictionary = (host.game.player_weapon_row(entry) if category=="weapons" else host.db.equip(key,int(entry.level))) if not key.is_empty() else {}
 	var basic_text := ""
 	if not row.is_empty():
-		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":NumberFormat.scalar(float(row.cd))})
+		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":NumberFormat.scalar(float(row.cd))}) if NumberFormat.scalar_is_exact(float(row.cd)) else ""
 		else:basic_text=UIText.t("equipment.current_reduction",{"percent":NumberFormat.percentage(float(host.db.config.dmgReduce)*100)})
 		basic_text+="\n"+equipment_attributes(entry,false)
 		if category=="weapons":basic_text+="\n"+rate_notes(item.projection)

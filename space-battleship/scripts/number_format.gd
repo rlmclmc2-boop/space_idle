@@ -40,6 +40,10 @@ static func scalar(value) -> String:
 	var rounded:=roundf(amount*2.0)/2.0
 	return trimmed_decimal(rounded,1) if rounded!=0.0 else "0"
 
+# Fixed timings must not claim the rounded scalar is their actual interval.
+static func scalar_is_exact(value: float) -> bool:
+	return is_finite(value) and is_equal_approx(value,roundf(value*2.0)/2.0)
+
 static func compact(value, suffix_decimals := -1) -> String:
 	var mantissa: float
 	var exponent: float
