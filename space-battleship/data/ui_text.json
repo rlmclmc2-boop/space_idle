@@ -18177,5 +18177,65 @@
     "text": "基础层变化：武器伤害、装甲/护盾上限 {percent}%",
     "params": "percent",
     "category": "hyperspace"
+  },
+  {
+    "key": "battle.damage_stats.title",
+    "text": "伤害统计",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.enable",
+    "text": "开始统计",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.scope",
+    "text": "从开启后计数 · 最近约8战斗秒 · 换波清空 · 关闭窗口停止",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.stopped",
+    "text": "统计未开启",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.total",
+    "text": "DPS {dps} · 实伤 {damage} · {seconds}战斗秒",
+    "params": "dps,damage,seconds",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.row",
+    "text": "{source}：DPS {dps} · 实伤 {damage}",
+    "params": "source,dps,damage",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.module",
+    "text": "武器槽 {slot}",
+    "params": "slot",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.drone",
+    "text": "无人机 {weapon} · {id}",
+    "params": "weapon,id",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.other",
+    "text": "未归属",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "battle.damage_stats.black_hole",
+    "text": "黑洞释放",
+    "params": "",
+    "category": "battle"
   }
 ]
