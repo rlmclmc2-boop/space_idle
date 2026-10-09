@@ -56,7 +56,7 @@ func build() -> void:
  feedback=panel.commands.dialog_label(body,"",20)
  source.item_selected.connect(func(_index):refresh_quote(true))
  target.item_selected.connect(func(_index):refresh_quote(true))
- amount.value_changed.connect(func(_value):refresh_quote(true))
+ amount.value_changed.connect(func(_value):refresh_quote.call_deferred(true))
  amount.get_line_edit().text_changed.connect(func(_text):refresh_quote(true))
  confirmation=ConfirmationDialog.new();confirmation.title=t("exchange_confirm_title")
  confirmation.ok_button_text=t("exchange_confirm");confirmation.cancel_button_text=t("exchange_cancel")

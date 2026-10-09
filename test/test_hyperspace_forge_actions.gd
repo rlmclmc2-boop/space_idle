@@ -83,6 +83,8 @@ func run() -> void:
  a.buttons.add_hanging_slot.pressed.emit()
  check(exchange.dialog.visible and exchange.material(exchange.source)=="degenerate_matter" and exchange.material(exchange.target)=="glueball" and int(exchange.amount.value)==10,"Actual hanging-slot action prefills10 glue from20 degenerate, not generic1")
  check(JSON.stringify(g.profile)==shortage_state,"Opening shortage does not exchange or add a slot")
+ exchange.amount.value=3;await process_frame
+ check(int(exchange.quote.amount)==3,"Native spin-step quote refresh follows its updated visible text")
  exchange.amount.value=1
  var edit:LineEdit=exchange.amount.get_line_edit()
  edit.text="10";edit.text_changed.emit(edit.text)
