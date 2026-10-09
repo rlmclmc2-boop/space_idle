@@ -1,5 +1,10 @@
 {
 	"bossSeen": [
+		1,
+		2,
+		3,
+		4,
+		5,
 		6,
 		7,
 		8,
@@ -15,8 +20,8 @@
 		18,
 		19
 	],
-	"chronoParticles": 0.0,
-	"chronoSavedAt": 1791547104.77197,
+	"chronoParticles": 83.0,
+	"chronoSavedAt": 1791547608.28026,
 	"cleared": [
 		1,
 		2,
@@ -284,7 +289,7 @@
 
 	},
 	"droneWeaponFloor": 106,
-	"enhancementAttacks": 19415,
+	"enhancementAttacks": 19511,
 	"enhancementBranches": {
 		"defence": {
 			"adaptation": {
@@ -309,7 +314,7 @@
 			}
 		}
 	},
-	"enhancementHits": 49388,
+	"enhancementHits": 49881,
 	"enhancementLevel": 11,
 	"enhancementOrder": {
 		"defence": [
@@ -324,7 +329,7 @@
 		]
 	},
 	"enhancementVersion": 1,
-	"furnaceElapsed": 15.1999999998888,
+	"furnaceElapsed": 16.9666666665551,
 	"furnaceIncomePeak": 26415299482.0,
 	"galaxies": {
 		"galaxy_1": {
@@ -2135,23 +2140,12 @@
 		"crew/navigator",
 		"reactor_module/condensation"
 	],
+	"guardDeath": 0,
 	"guardDistance": 500.0,
 	"guardIndex": 4,
 	"guardStage": 20,
 	"highestLevel": 20,
-	"hightechDrops": [
-		{
-			"age": 0.694444444460061,
-			"amount": 19100.0,
-			"hightech": true,
-			"id": "jewel",
-			"jewel": true,
-			"jewelRatio": 1.0,
-			"uid": 9728,
-			"x": 204.299346923828,
-			"y": 350.274383544922
-		}
-	],
+	"hightechDrops": [],
 	"hightechLevels": {
 		"宝石熔炼炉": 31,
 		"正电子聚焦装置": 47,
@@ -2166,7 +2160,7 @@
 		"",
 		""
 	],
-	"hightechSavedAt": 1791547104.77197,
+	"hightechSavedAt": 1791547608.28026,
 	"hightechVersion": 2,
 	"hyperspace": {
 		"active": {
@@ -2175,43 +2169,43 @@
 		"auto": {
 			"crew_id": "navigator",
 			"enabled": true,
-			"level": 1,
+			"level": 1.0,
 			"route": "beta"
 		},
 		"blocked": false,
-		"command_seq": 7,
+		"command_seq": 7.0,
 		"energy": 216000.0,
 		"filter": {
 			"action": "keep_matches",
 			"conditions": [],
 			"enabled": false,
 			"mode": "all",
-			"version": 2
+			"version": 2.0
 		},
 		"hanging_modules": {
 			"distributed_algorithm": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"extra_storage": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": true
 			},
 			"gem_refiner": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"hyperspace_charge": {
 				"exp": 0.0,
-				"level": 1,
+				"level": 1.0,
 				"unlocked": true
 			},
 			"resource_collector": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			}
 		},
@@ -2230,7 +2224,7 @@
 			"duration": 73.8499999999971,
 			"level": 1,
 			"luck": 0.0,
-			"luck_state": "-4855399208456282933",
+			"luck_state": "2238241364537649260",
 			"mode": "auto",
 			"permanent_luck": 0.0,
 			"return_journey": {
@@ -2241,10 +2235,10 @@
 			},
 			"round_id": 1,
 			"route": "beta",
-			"run_id": 48,
+			"run_id": 49,
 			"status": "started",
 			"ticket": 0.0,
-			"work": 54.3666666666648
+			"work": 12.2833333333335
 		},
 		"inventory": {
 			"drones": {
@@ -2253,31 +2247,31 @@
 						{
 							"key": "armour_capacity",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.471
 						},
 						{
 							"key": "critical_chance",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.036
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8243530041661664804",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:10",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2289,25 +2283,25 @@
 						{
 							"key": "global_defence",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.051
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8346083439356496600",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:11",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2319,25 +2313,25 @@
 						{
 							"key": "global_damage",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.08
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-7494464187472758750",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:12",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2347,20 +2341,20 @@
 				"space:1:13": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "2457588479271266095",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:13",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2370,20 +2364,20 @@
 				"space:1:14": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "600851138793794136",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:14",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2395,25 +2389,25 @@
 						{
 							"key": "global_damage",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.234
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-206625817325666031",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:15",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2425,25 +2419,25 @@
 						{
 							"key": "attack_speed",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.031
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-2232286892220557769",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:16",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2455,14 +2449,14 @@
 						{
 							"key": "attack_speed",
 							"locked": false,
-							"tier": 2,
+							"tier": 2.0,
 							"value": 0.12
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "3649682165472146207",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:17",
 					"legendary": true,
@@ -2472,11 +2466,11 @@
 							"damage_and_defence_bonus": 0.734
 						}
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "legendary",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2486,20 +2480,20 @@
 				"space:1:18": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "772087794704787520",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:18",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2511,25 +2505,25 @@
 						{
 							"key": "critical_chance",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.03
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "7866473449459890841",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:19",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2541,26 +2535,26 @@
 						{
 							"key": "repeat_chance",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.018
 						},
 						{
 							"key": "damage_missile",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.588
 						},
 						{
 							"key": "critical_chance",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.031
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8864818165626790512",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:20",
 					"legendary": true,
@@ -2571,11 +2565,11 @@
 							"maximum_dodge": 0.863
 						}
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "legendary",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2587,25 +2581,25 @@
 						{
 							"key": "repeat_chance",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.012
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-1017638691905768561",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:21",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2615,20 +2609,20 @@
 				"space:1:22": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-1815443015240140259",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:22",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2640,31 +2634,31 @@
 						{
 							"key": "shield_capacity",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.156
 						},
 						{
 							"key": "damage_missile",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.143
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-4590516993199200257",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:23",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2674,20 +2668,20 @@
 				"space:1:24": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8906480216502371767",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:24",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2697,20 +2691,20 @@
 				"space:1:25": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-5830780828951223835",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:25",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2720,20 +2714,20 @@
 				"space:1:26": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "8440464446790496146",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:26",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2745,31 +2739,31 @@
 						{
 							"key": "critical_chance",
 							"locked": false,
-							"tier": 3,
+							"tier": 3.0,
 							"value": 0.073
 						},
 						{
 							"key": "global_critical_damage",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.081
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "3677558126988169465",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:27",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2779,20 +2773,20 @@
 				"space:1:28": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "1116995555066183539",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:28",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2802,20 +2796,20 @@
 				"space:1:29": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-961688336360501533",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:29",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2827,25 +2821,25 @@
 						{
 							"key": "attack_speed",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.019
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-4334723323645212494",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:30",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2857,25 +2851,25 @@
 						{
 							"key": "damage_missile",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.15
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-1281643290186001636",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:31",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2887,25 +2881,25 @@
 						{
 							"key": "global_critical_damage",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.298
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "1023207949881558337",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:32",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2915,20 +2909,20 @@
 				"space:1:33": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "3998730186529007532",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:33",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2938,20 +2932,20 @@
 				"space:1:34": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "3443374095139205772",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:34",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2963,14 +2957,14 @@
 						{
 							"key": "attack_speed",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.013
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-6647398611148243353",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:35",
 					"legendary": true,
@@ -2980,11 +2974,11 @@
 							"damage_multiplier": 1.386
 						}
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "legendary",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -2994,20 +2988,20 @@
 				"space:1:36": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-350455328067666106",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:36",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3017,20 +3011,20 @@
 				"space:1:37": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "8520580598848030141",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:37",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3042,25 +3036,25 @@
 						{
 							"key": "global_critical_damage",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.079
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-6460896888494421431",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:38",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "gold",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3072,25 +3066,25 @@
 						{
 							"key": "repeat_chance",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.015
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8823302054099828273",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:39",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3100,20 +3094,20 @@
 				"space:1:4": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-668871085950918316",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:4",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3123,20 +3117,20 @@
 				"space:1:40": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-5586986901540111870",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:40",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3146,20 +3140,20 @@
 				"space:1:41": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-3239898181041715953",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:41",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3171,14 +3165,14 @@
 						{
 							"key": "global_critical_damage",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.083
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-1386517092961222360",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:42",
 					"legendary": true,
@@ -3188,11 +3182,11 @@
 							"damage_multiplier": 8.47
 						}
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "legendary",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3202,20 +3196,20 @@
 				"space:1:43": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "5614236653914806489",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:43",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3227,25 +3221,25 @@
 						{
 							"key": "shield_capacity",
 							"locked": false,
-							"tier": 5,
+							"tier": 5.0,
 							"value": 0.104
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "8538827090025508215",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:44",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3255,20 +3249,20 @@
 				"space:1:45": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-5914723052354632030",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:45",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3278,20 +3272,20 @@
 				"space:1:46": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-8652758186863914704",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:46",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3301,11 +3295,34 @@
 				"space:1:47": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-6689185317917523651",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:47",
+					"legendary": false,
+					"legendary_effect": {
+
+					},
+					"level": 1.0,
+					"omen": false,
+					"origin_quality": "white",
+					"planet_id": "1",
+					"preserved_hanging_slots": 0.0,
+					"ultimate": false,
+					"ultimate_affix": {
+
+					},
+					"weapon": "missile"
+				},
+				"space:1:48": {
+					"affixes": [],
+					"blue_source_bonus": false,
+					"forge_revision": 0,
+					"forge_rng_state": "-2990101574832078617",
+					"hanging_slots": 0,
+					"hangings": [],
+					"id": "space:1:48",
 					"legendary": false,
 					"legendary_effect": {
 
@@ -3324,20 +3341,20 @@
 				"space:1:5": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-3951590855332092106",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:5",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3349,20 +3366,20 @@
 						{
 							"key": "global_defence",
 							"locked": false,
-							"tier": 3,
+							"tier": 3.0,
 							"value": 0.482
 						},
 						{
 							"key": "attack_speed",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.036
 						}
 					],
 					"blue_source_bonus": true,
-					"forge_revision": 1,
+					"forge_revision": 1.0,
 					"forge_rng_state": "-2085366356480767671",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [
 						"hyperspace_charge"
 					],
@@ -3371,11 +3388,11 @@
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "blue",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3387,20 +3404,20 @@
 						{
 							"key": "critical_chance",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.031
 						},
 						{
 							"key": "global_critical_damage",
 							"locked": false,
-							"tier": 4,
+							"tier": 4.0,
 							"value": 0.284
 						}
 					],
 					"blue_source_bonus": false,
-					"forge_revision": 1,
+					"forge_revision": 1.0,
 					"forge_rng_state": "-5893650514934064589",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:7",
 					"legendary": true,
@@ -3410,11 +3427,11 @@
 							"damage_multiplier": 9.906
 						}
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "legendary",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3424,20 +3441,20 @@
 				"space:1:8": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "7321460862954469011",
-					"hanging_slots": 1,
+					"hanging_slots": 1.0,
 					"hangings": [],
 					"id": "space:1:8",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3447,20 +3464,20 @@
 				"space:1:9": {
 					"affixes": [],
 					"blue_source_bonus": false,
-					"forge_revision": 0,
+					"forge_revision": 0.0,
 					"forge_rng_state": "-4954857959295912142",
-					"hanging_slots": 0,
+					"hanging_slots": 0.0,
 					"hangings": [],
 					"id": "space:1:9",
 					"legendary": false,
 					"legendary_effect": {
 
 					},
-					"level": 1,
+					"level": 1.0,
 					"omen": false,
 					"origin_quality": "white",
 					"planet_id": "1",
-					"preserved_hanging_slots": 0,
+					"preserved_hanging_slots": 0.0,
 					"ultimate": false,
 					"ultimate_affix": {
 
@@ -3473,10 +3490,10 @@
 				"space:1:7"
 			],
 			"favorites": [],
-			"generation": 56,
+			"generation": 57.0,
 			"overflow": [],
 			"presets": [],
-			"reforge_count": 0,
+			"reforge_count": 0.0,
 			"sealed": {
 
 			},
@@ -3524,13 +3541,14 @@
 				"space:1:44",
 				"space:1:45",
 				"space:1:46",
-				"space:1:47"
+				"space:1:47",
+				"space:1:48"
 			]
 		},
 		"last_command": {
 			"fingerprint": "{\"args\":{},\"drone_id\":\"space:1:6\",\"expected_revision\":0,\"operation\":\"add_hanging_slot\"}",
 			"result_json": "{\"affixes_changed\":false,\"applied\":true,\"cost\":{\"glueball\":100.0},\"draws\":1,\"drone_id\":\"space:1:6\",\"error\":\"\",\"index\":-1,\"operation\":\"add_hanging_slot\",\"outcome\":true}",
-			"seq": 6
+			"seq": 6.0
 		},
 		"legendary_collection": [],
 		"legendary_seen": [
@@ -3539,32 +3557,32 @@
 			"dodge_counter",
 			"black_hole"
 		],
-		"material_unit_version": 2,
+		"material_unit_version": 2.0,
 		"materials": {
-			"antiproton": 0,
-			"degenerate_matter": 0,
-			"glueball": 346,
-			"zero_point_energy": 60
+			"antiproton": 0.0,
+			"degenerate_matter": 0.0,
+			"glueball": 357,
+			"zero_point_energy": 60.0
 		},
-		"next_run": 49,
+		"next_run": 50.0,
 		"paused": [],
 		"pending_time": 0.0,
-		"queue_policy_version": 1,
-		"random_state": "5575733951460556735",
-		"round_id": 1,
-		"settled_run": 47,
-		"ultimate_cores": 0,
+		"queue_policy_version": 1.0,
+		"random_state": "-5461169937936109124",
+		"round_id": 1.0,
+		"settled_run": 48,
+		"ultimate_cores": 0.0,
 		"unlocked_drones": true,
-		"version": 5
+		"version": 5.0
 	},
 	"hyperspaceReceipt": {
-		"drone_id": "space:1:47",
+		"drone_id": "space:1:48",
 		"round": 1,
-		"run": 47,
+		"run": 48,
 		"unread": true
 	},
-	"jewelFragments": 132880.68,
-	"jewelFurnaceElapsed": 0.694444444460061,
+	"jewelFragments": 159227.64,
+	"jewelFurnaceElapsed": 12.4611111111271,
 	"jewelFurnaceIncomePeak": 30805.34,
 	"jewels": [],
 	"journey": {
@@ -3616,6 +3634,7 @@
 		]
 	},
 	"loop": true,
+	"loopLevel": 0,
 	"moduleVersion": 1,
 	"onboarding": {
 		"completed": true,
@@ -3631,29 +3650,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -3661,29 +3680,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -3691,29 +3710,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -3721,29 +3740,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -3751,29 +3770,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -3781,34 +3800,34 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		}
 	},
-	"productionElapsed": 8557.26666662647,
+	"productionElapsed": 8589.03333329271,
 	"reactorAllocation": {
 		"condensation": 220466,
 		"defence": 5674949,
@@ -3826,177 +3845,6 @@
 		"longLaser"
 	],
 	"resourceSamples": [
-		{
-			"amount": 527156518.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 527156518.0,
-			"production_time": 8497.79999996067,
-			"time": 1791546847.725
-		},
-		{
-			"amount": 527156518.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 527156518.0,
-			"production_time": 8498.41666662733,
-			"time": 1791546848.26669
-		},
-		{
-			"amount": 658945647.0,
-			"id": "2",
-			"origin": "drop",
-			"production_base": 658945647.0,
-			"production_time": 8498.49999996066,
-			"time": 1791546848.38703
-		},
-		{
-			"amount": 527156518.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 527156518.0,
-			"production_time": 8499.69999996064,
-			"time": 1791546849.54671
-		},
-		{
-			"amount": 527156518.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 527156518.0,
-			"production_time": 8500.24999996064,
-			"time": 1791546850.12288
-		},
-		{
-			"amount": 527156518.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 527156518.0,
-			"production_time": 8503.66666662725,
-			"time": 1791546854.45931
-		},
-		{
-			"amount": 1811.74,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 8506.54999996054,
-			"time": 1791546857.59562
-		},
-		{
-			"amount": 9242.0,
-			"id": "jewel",
-			"origin": "furnace",
-			"production_time": 8506.58333329388,
-			"time": 1791546857.65503
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8509.5499999605,
-			"time": 1791546860.95804
-		},
-		{
-			"amount": 1811.74,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 8510.31666662716,
-			"time": 1791546888.57554
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8513.31666662711,
-			"time": 1791546891.67983
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8514.18333329377,
-			"time": 1791546892.60339
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8516.31666662707,
-			"time": 1791546894.69286
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8519.11666662703,
-			"time": 1791546897.51013
-		},
-		{
-			"amount": 1811.74,
-			"id": "jewel",
-			"origin": "drop",
-			"production_time": 8520.13333329368,
-			"time": 1791546898.53537
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8520.29999996034,
-			"time": 1791546898.72341
-		},
-		{
-			"amount": 62075953783.0,
-			"id": "1",
-			"origin": "furnace",
-			"production_base": 62075953783.0,
-			"production_time": 8522.08333329365,
-			"time": 1791546929.7588
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8523.13333329364,
-			"time": 1791546930.84247
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8525.76666662693,
-			"time": 1791546933.5262
-		},
-		{
-			"amount": 9242.0,
-			"id": "jewel",
-			"origin": "furnace",
-			"production_time": 8526.58333329359,
-			"time": 1791546934.43685
-		},
-		{
-			"amount": 619050727.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 619050727.0,
-			"production_time": 8526.69999996025,
-			"time": 1791546934.55284
-		},
-		{
-			"amount": 773813409.0,
-			"id": "2",
-			"origin": "drop",
-			"production_base": 773813409.0,
-			"production_time": 8528.49999996022,
-			"time": 1791546936.64491
-		},
 		{
 			"amount": 619050727.0,
 			"id": "1",
@@ -4049,6 +3897,7 @@
 			"amount": 9242.0,
 			"id": "jewel",
 			"origin": "furnace",
+			"production_base": 9242.0,
 			"production_time": 8546.58333329329,
 			"time": 1791546995.55632
 		},
@@ -4099,10 +3948,148 @@
 			"production_base": 710944936.0,
 			"production_time": 8556.64999995981,
 			"time": 1791547027.10028
+		},
+		{
+			"amount": 9550.0,
+			"id": "jewel",
+			"origin": "furnace",
+			"production_time": 8566.58333329301,
+			"time": 1791547502.47606
+		},
+		{
+			"amount": 1811.74,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 8566.96666662634,
+			"time": 1791547502.90911
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8567.71666662633,
+			"time": 1791547503.64251
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8569.19999995964,
+			"time": 1791547505.15368
+		},
+		{
+			"amount": 1811.74,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 8569.36666662631,
+			"time": 1791547505.3995
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8569.9666666263,
+			"time": 1791547505.9567
+		},
+		{
+			"amount": 1811.74,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 8572.2999999596,
+			"time": 1791547508.5124
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8572.36666662627,
+			"time": 1791547508.52485
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8572.36666662627,
+			"time": 1791547508.52513
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8575.29999995956,
+			"time": 1791547511.47476
+		},
+		{
+			"amount": 1811.74,
+			"id": "jewel",
+			"origin": "drop",
+			"production_time": 8576.19999995955,
+			"time": 1791547512.35698
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8578.23333329285,
+			"time": 1791547514.81709
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8579.19999995951,
+			"time": 1791547515.81006
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8581.16666662615,
+			"time": 1791547517.78369
+		},
+		{
+			"amount": 62075953783.0,
+			"id": "1",
+			"origin": "furnace",
+			"production_base": 62075953783.0,
+			"production_time": 8582.0833332928,
+			"time": 1791547518.66361
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8583.61666662612,
+			"time": 1791547520.32776
+		},
+		{
+			"amount": 710944936.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 710944936.0,
+			"production_time": 8585.58333329276,
+			"time": 1791547522.30642
+		},
+		{
+			"amount": 9550.0,
+			"id": "jewel",
+			"origin": "furnace",
+			"production_time": 8586.58333329274,
+			"time": 1791547523.28313
 		}
 	],
 	"resources": {
-		"1": 104496681794.0,
+		"1": 174393029873.0,
 		"2": 2695371218.90148
 	},
 	"saveIntervalMinutes": "1",
@@ -4130,16 +4117,16 @@
 	],
 	"selectedShip": "Destroyer",
 	"techPoints": {
-		"宝石熔炼炉": 198.749999999493,
-		"正电子聚焦装置": 331.899999998457,
-		"简并态装甲": 1561.74999999711,
-		"超时空炼铁炉": 2606.19999999986
+		"宝石熔炼炉": 1056.44999999954,
+		"正电子聚焦装置": 1284.89999999846,
+		"简并态装甲": 2514.74999999711,
+		"超时空炼铁炉": 3559.19999999986
 	},
 	"unlocked": [
 		"armour",
 		"laser",
-		"missile",
 		"shield",
+		"missile",
 		"cannon",
 		"longLaser"
 	],
