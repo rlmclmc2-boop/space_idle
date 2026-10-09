@@ -15719,14 +15719,14 @@
   },
   {
     "key": "hyperspace.layer_record",
-    "text": "这一层最快 {time} 秒",
+    "text": "这一层最快约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
   },
   {
     "key": "hyperspace.layer_idle_time",
-    "text": "后台每轮 {time} 秒",
+    "text": "后台每轮约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15824,7 +15824,7 @@
   },
   {
     "key": "hyperspace.layer_crew_detail",
-    "text": "每轮 {time} 秒 · 幸运 {luck}",
+    "text": "每轮约 {time} 秒 · 幸运 {luck}",
     "params": "{time},{luck}",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -15873,7 +15873,7 @@
   },
   {
     "key": "hyperspace.layer_crew_time",
-    "text": "选中船员：每轮 {time} 秒",
+    "text": "选中船员：每轮约 {time} 秒",
     "params": "{time}",
     "category": "hyperspace",
     "note": "候选船员时长报价；核心幸运快照目前只含已配置船员，不冒充候选报价"
@@ -16541,7 +16541,7 @@
   },
   {
     "key": "hyperspace.layer_paused",
-    "text": "后台进度已暂停并保留，剩余 {time} 秒。",
+    "text": "后台进度已暂停并保留，剩余约 {time} 秒。",
     "params": "time",
     "category": "hyperspace",
     "note": "使用领域共享队列和暂停回执投影，不另判权限"
