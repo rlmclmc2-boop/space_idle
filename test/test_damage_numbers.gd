@@ -7,6 +7,64 @@ func check(ok: bool, label: String) -> void:
 		failures += 1
 		printerr("FAIL: ",label)
 func _initialize() -> void:call_deferred("run")
+func verify_incoming_lanes(scene) -> void:
+	scene.set_damage_mode(0)
+	var before=JSON.stringify(scene.game.profile);var rng=scene.game.rng.state
+	var energy={"player":true,"uid":0,"type":1,"amount":100.0,"absorbed":20.0,"critical":false}
+	var physical={"player":true,"uid":0,"type":2,"amount":300.0,"critical":false}
+	scene.queue_damage_number(physical);scene.queue_damage_number(energy)
+	var rows=scene.floats.filter(func(f):return f.get("incoming_lane",false))
+	check(rows.size()==2 and scene.damage_pending.is_empty(),"incoming types occupy two rows without the shared target backlog")
+	var e:Dictionary=rows.filter(func(f):return f.type==1)[0];var p:Dictionary=rows.filter(func(f):return f.type==2)[0]
+	var e_pos:Vector2=e.pos;var p_pos:Vector2=p.pos
+	check(e_pos.y<p_pos.y and e.text.begins_with("能量") and p.text.begins_with("物理") and e.color==scene.CYAN and p.color==scene.ORANGE,"energy stays above physical with type prefixes and distinct colors regardless of hit order")
+	check(not scene.damage_text_rect(scene.battle_point(e.pos),e.text,e.size).intersects(scene.damage_text_rect(scene.battle_point(p.pos),p.text,p.size)),"the fixed incoming rows do not overlap")
+	energy.amount=30.0;energy.absorbed=5.0;energy.critical=true;scene.fx_time+=0.1;scene.queue_damage_number(energy)
+	check(e.amount==130 and e.absorbed==25 and e.critical and e.size>p.size and p.amount==300 and scene.floats.size()==2,"same-type ordinary and critical hits aggregate within200ms without consuming the other type row")
+	var old_p:Dictionary=p.duplicate(true);scene.fx_time+=0.11;energy.amount=7.0;energy.absorbed=0;energy.critical=false;scene.queue_damage_number(energy)
+	check(e.amount==7 and not e.critical and is_equal_approx(e.pos.y,e_pos.y) and p==old_p and not p.get("retiring",false),"next energy window replaces only its own fixed row without retiring physical")
+	for i in 30:
+		scene.fx_time+=0.21;energy.amount=i+1;scene.queue_damage_number(energy)
+	check(scene.floats.size()==2 and scene.damage_pending.is_empty() and p==old_p,"sustained one-type pressure cannot evict the other type or grow a backlog")
+	var uid:int=scene.game.enemies[0].uid
+	for target in scene.game.enemies:scene.enemy_pose(target).born=0.0;target.hp=0 # Resolved killed-enemy fixture: no live hull can block its final damage label.
+	var enemy={"player":false,"uid":uid,"type":1,"amount":12345.0,"critical":false}
+	scene.queue_damage_number(enemy)
+	var outgoing:Dictionary=scene.floats.filter(func(f):return f.get("target","")=="enemy:%s" % uid)[0]
+	check(outgoing.text=="12.3K" and not outgoing.get("incoming_lane",false) and not rows.any(func(row):return scene.damage_text_rect(scene.battle_point(row.pos),row.text,row.size).grow(8).intersects(scene.damage_text_rect(scene.battle_point(outgoing.pos),outgoing.text,outgoing.size))),"enemy damage retains compact unsigned text outside reserved incoming rows")
+	check(JSON.stringify(scene.game.profile)==before and scene.game.rng.state==rng and scene.damage_history.back().contains("12345"),"display updates keep gameplay/RNG unchanged and full per-event history")
+	var frozen=scene.floats.duplicate(true);scene.game.paused=true;scene._process(0.1)
+	check(scene.floats==frozen,"pause freezes both incoming rows and outgoing labels")
+	scene.game.paused=false;scene._process(0.1)
+	check(is_equal_approx(e.pos.y,e_pos.y) and is_equal_approx(p.pos.y,p_pos.y),"incoming labels hold their type rows instead of floating into each other")
+	for mode in [1,0]:
+		scene.set_damage_mode(mode);scene.queue_damage_number(energy);scene.queue_damage_number(physical)
+		check(scene.floats.size()==2 and scene.floats.all(func(f):return f.get("incoming_lane",false)),"both enabled modes preserve the incoming two-type rows")
+	scene.set_damage_mode(2);scene.queue_damage_number(energy)
+	check(scene.floats.is_empty() and scene.damage_pending.is_empty(),"off clears rows and suppresses new labels")
+	scene.set_damage_mode(0)
+	var tiny=scene.incoming_damage_display_text(12345.0,1e-100,1,19)
+	check(tiny.begins_with("能量 12.3K") and tiny.contains("e-100") and scene.font.get_string_size(tiny,HORIZONTAL_ALIGNMENT_LEFT,-1,19).x<=556,"tiny absorption uses compact scientific notation without losing type or main damage")
+	var subnormal_amount:=pow(2.0,-1074.0)
+	var subnormal=scene.incoming_damage_display_text(subnormal_amount,0,1,19)
+	check(subnormal.contains("e-324") and not subnormal.contains("inf") and scene.font.get_string_size(subnormal,HORIZONTAL_ALIGNMENT_LEFT,-1,19).x<=556,"smallest finite damage remains a readable scientific value rather than overflowing its normalization")
+	var extreme=scene.incoming_damage_display_text({"m":1.23,"e":1e100},{"m":9.87,"e":1e100},2,19)
+	check(extreme.begins_with("物理 1.23e+") and scene.font.get_string_size(extreme,HORIZONTAL_ALIGNMENT_LEFT,-1,19).x<=556,"huge growth exponents remain legible within the row at unchanged19px")
+	var narrow=scene.incoming_damage_display_text(123456789.0,987654321.0,2,19,160.0)
+	check(narrow.begins_with("物理 123M") and scene.font.get_string_size(narrow,HORIZONTAL_ALIGNMENT_LEFT,-1,19).x<=160,"absorption yields before the type or main damage under a constrained text budget")
+	var free=scene.damage_text_position(Vector2(286,scene.incoming_damage_origin(1).y),"123M",19)
+	check(free!=Vector2.INF,"empty incoming rows reserve no area for enemy text")
+	scene.queue_damage_number(energy);scene.queue_damage_number(physical)
+	var single=scene.floats.filter(func(f):return f.type==1)[0];single.life=0.0
+	free=scene.damage_text_position(single.origin,"123M",19)
+	check(free!=Vector2.INF,"expired incoming row releases its actual rectangle while the other type remains visible")
+	var spare=scene.damage_text_position(Vector2(70,scene.incoming_damage_origin(2).y),"123M",19)
+	check(spare!=Vector2.INF,"visible incoming text leaves the unused horizontal part of its row available")
+	var blocker={"damage":true,"target":"enemy:boundary","type":0,"text":"123M","size":19,"life":0.42,"pos":scene.incoming_damage_origin(1),"origin":scene.incoming_damage_origin(1)}
+	scene.floats.append(blocker);scene.queue_damage_number(energy)
+	var incoming=scene.floats.filter(func(f):return f.get("incoming_lane",false) and f.type==1)[0]
+	check(blocker.life>0 and not scene.damage_text_rect(scene.battle_point(incoming.pos),incoming.text,incoming.size).grow(8).intersects(scene.damage_text_rect(scene.battle_point(blocker.pos),blocker.text,blocker.size)),"new incoming text moves an overlapping enemy label through the existing placement query without dropping it when space is available")
+	scene.set_damage_mode(0);scene.game.paused=false
 func run() -> void:
 	var scene = load("res://main.tscn").instantiate()
 	scene.automation_args = ["--capture"]
@@ -23,6 +81,11 @@ func run() -> void:
 		e.max_hp = 1e9
 		e.equipment = []
 	var enemy: Dictionary = scene.game.enemies[0]
+	if "--incoming-only" in OS.get_cmdline_user_args():
+		verify_incoming_lanes(scene)
+		scene.queue_free();await process_frame
+		print("Incoming damage rows: %d checks, %d failures" % [checks,failures])
+		quit(1 if failures else 0);return
 	var hit := {"player":false,"uid":999,"type":1,"x":286,"y":360,"amount":12345.0}
 	check(scene.damage_mode==0,"default simplified")
 	scene.on_event("hit",hit)

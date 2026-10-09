@@ -170,6 +170,7 @@ def validate_sources(sources,mainline,schema):
 
 
 def validate_config(c):
+    if not finite(c.get("drone_base_growth")) or not 1 <= c["drone_base_growth"] < 9e15:raise ValueError("Invalid drone base growth")
     positive = ['energy_rate','energy_cap','ticket','minimum_duration','value_precision','amplification_rate','lock_cost_multiplier','reroll_guarantee_multiplier','modernization_cost_base','modernization_level_step','modernization_legendary_multiplier','modernization_base_coefficient','auto_duration_crew_base','auto_ticket_crew_base','late_energy_rate_multiplier','late_supply_ramp_seconds']
     positive_int = ['unlock_stage','minimum_level','warehouse_capacity','reforge_capacity_gain','retention_capacity_gain','maximum_equipped','maximum_legendary','maximum_ultimate','completion_budget','material_base_reward','material_reward_start_level','material_reward_level_step','maximum_filter_conditions','maximum_filter_string_length','maximum_forecast_attempts','late_supply_unlock_stage','late_material_reward_multiplier','amplification_start_level']
     for key in positive + positive_int:

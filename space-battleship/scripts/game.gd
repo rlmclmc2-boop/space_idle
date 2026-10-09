@@ -178,6 +178,7 @@ func fresh_profile() -> Dictionary:
 	profile.jewelFurnaceIncomePeak = 0.0
 	profile.chronoParticles = 0.0
 	profile.reactorLevel = int(db.config.reactorInitialLevel)
+	profile.reactorAutomation = preload("res://scripts/reactor_automation.gd").fresh()
 	profile.reactorAllocation = {}
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	profile.hyperspace = hyperspace.fresh()
@@ -408,6 +409,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
 	# Restore capacity-owning hanging modules before validating saved energy.
 	load_reactor(raw)
+	crew.reset_schedule(self)
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -668,6 +670,7 @@ func portable_save_data() -> Dictionary:
 func _compose_save_data(saved: Dictionary) -> Dictionary:
 	var reactor_saved:Dictionary=saved.get("reactorAllocation",{}).duplicate()
 	for key in reactor_saved:reactor_saved[key]=preload("res://scripts/reactor_integer.gd").encode(reactor_saved[key])
+	saved.reactorAutomation=preload("res://scripts/reactor_automation.gd").encode_state(saved.reactorAutomation)
 	saved.reactorAllocation=reactor_saved
 	saved.reactorIntegerVersion=1
 	saved.saveIntervalMinutes = str(save_interval_minutes)
@@ -1187,6 +1190,7 @@ func set_reactor_allocation(key: String, value) -> bool:
 	if RI.compare(next,active.get(key,0))==0 and active==profile.reactorAllocation:return false
 	profile.reactorAllocation=active
 	profile.reactorAllocation[key] = next
+	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
 	if key == "defence":
 		player.armour = N.minimum(player.armour,stat("armour"))
@@ -1209,6 +1213,7 @@ func equalize_reactor_allocation() -> bool:
 		next[modules[index]] = RI.add(share,1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
 	profile.reactorAllocation=next
+	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))
@@ -1219,6 +1224,8 @@ func equalize_reactor_allocation() -> bool:
 	return true
 
 func load_reactor(raw: Dictionary) -> void:
+	var auto_state=raw.get("reactorAutomation")
+	profile.reactorAutomation=preload("res://scripts/reactor_automation.gd").normalize_state(auto_state) if preload("res://scripts/reactor_automation.gd").valid_state(self,auto_state) else preload("res://scripts/reactor_automation.gd").fresh()
 	invalidate_stat_cache()
 	var level = raw.get("reactorLevel")
 	if nonnegative_number(level) and level == floorf(float(level)) and level >= int(db.config.reactorInitialLevel) and reactor_capacity_at(int(level))!=null:profile.reactorLevel = int(level)
@@ -3413,7 +3420,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
 	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
-	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
+	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),N.multiply(drone_multiplier,drones.get("base_damage" if WEAPON_KEYS.has(str(entry.key)) else "base_defence",1.0)))
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))

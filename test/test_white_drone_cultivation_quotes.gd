@@ -71,7 +71,7 @@ func run() -> void:
  var first_outcome:Dictionary={};var first_before=g.profile.hyperspace.hanging_modules.duplicate(true)
  var credited=Rewards.credit_modules(g.profile.hyperspace,g.hyperspace.config,{"resource_collector":1},first_outcome)
  check(credited and progress.unlocked and progress.level==1 and progress.exp==0,"First matching module unlocks at useful level1, crediting all100 experience instead of deducting its first copy")
- p.select_section(1);p.inventory_feedback.text=c.received_rewards_text({"materials":{},"modules":first_outcome},first_before);p.inventory_feedback.visible=true;p.refresh_details()
+ p.select_section(1);p.show_inventory_receipt(c.received_rewards_text({"materials":{},"modules":first_outcome},first_before));p.refresh_details()
  check(p.inventory_feedback.text.contains("首次解锁并升至1级") and p.inventory_module_next.visible and not p.inventory_module_next.disabled,"First useful unlock receipt exposes installation for current carrier without claiming it already applies")
  check(g.hyperspace.equip_drone(g,d.id).ok,"Equip the invested carrier through actual domain before installation")
  p.refresh_manual_status();p.refresh();p.inventory_module_next.pressed.emit()
@@ -84,7 +84,7 @@ func run() -> void:
  credited=Rewards.credit_modules(g.profile.hyperspace,g.hyperspace.config,{"resource_collector":1},second_outcome)
  progress=g.profile.hyperspace.hanging_modules.resource_collector
  check(credited and progress.level==2 and progress.exp==0 and Rewards.module_required_exp(g.hyperspace.config.hanging_modules.resource_collector,1)==100,"Second matching copy guarantees1-to2 with100 experience and no leftover or free duplicate credit")
- p.inventory_feedback.text=c.received_rewards_text({"materials":{},"modules":second_outcome},second_before);p.refresh_details()
+ p.show_inventory_receipt(c.received_rewards_text({"materials":{},"modules":second_outcome},second_before));p.refresh_details()
  check(p.inventory_feedback.text.contains("升级 1→2级") and p.inventory_module_next.visible and not p.inventory_module_next.disabled,"Second copy reports the actual guaranteed first upgrade")
  var extra_state=g.profile.hyperspace.duplicate(true);var extra_before=extra_state.hanging_modules.duplicate(true);var extra_outcomes:Dictionary={}
  check(Rewards.credit_modules(extra_state,g.hyperspace.config,{"resource_collector":1},extra_outcomes) and extra_state.hanging_modules.resource_collector.level==2 and extra_state.hanging_modules.resource_collector.exp==100 and is_equal_approx(Rewards.module_required_exp(g.hyperspace.config.hanging_modules.resource_collector,2),144) and c.received_rewards_text({"materials":{},"modules":extra_outcomes},extra_before).contains("获得升级经验，等级未变"),"Third copy stays2 at100-of144 experience; normal growth resumes without fixed per-copy levels")
@@ -123,7 +123,7 @@ func run() -> void:
  p.inventory_module_next.pressed.emit()
  check(c.carrier_dialog.visible and c.carrier_buttons.size()==1 and c.carrier_buttons[0].get_meta("drone_id")==replacement.id,"Dismantle next action lists surviving cultivatable carrier in an explicit picker")
  c.carrier_buttons[0].pressed.emit()
- check(p.inventory_feedback.visible and p.selected_id==replacement.id and c.module_id==replacement.id and c.module_dialog.visible and c.module_apply.disabled and is_instance_valid(c.module_open_slot),"Selecting zero-slot carrier keeps receipt, names no-slot condition and offers existing forge link")
+ check(not p.inventory_feedback.visible and p.selected_id==replacement.id and c.module_id==replacement.id and c.module_dialog.visible and c.module_apply.disabled and is_instance_valid(c.module_open_slot),"Selecting a new zero-slot carrier clears the old receipt, names no-slot condition and offers existing forge link")
  check(c.module_open_slot.text.contains("100") and c.module_open_slot.text.contains("胶球"),"Existing slot quote is visible on the forge link")
  c.module_open_slot.pressed.emit()
  check(p.section_index==2 and p.selected_id==replacement.id and str(c.operation.get_item_metadata(c.operation.selected))=="add_hanging_slot" and JSON.stringify(g.profile)==carrier_before and g.rng.state==carrier_rng,"Carrier-to-forge link preserves chosen carrier without buying, equipping, overwriting or RNG change")

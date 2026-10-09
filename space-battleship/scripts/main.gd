@@ -458,7 +458,7 @@ func _process(delta: float) -> void:
 			particles = particles.filter(func(p):return p.life > 0)
 		for f in floats:
 			f.life -= dt
-			if f.get("damage",false):f.pos.y -= dt*12
+			if f.get("damage",false) and not f.get("incoming_lane",false):f.pos.y -= dt*12
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
@@ -2634,6 +2634,9 @@ func queue_damage_number(info: Dictionary) -> void:
 	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
 	if damage_history.size()>40:damage_history.pop_front()
 	if not show_damage_numbers:return
+	if info.player and int(info.type) in [1,2]:
+		queue_incoming_damage_number(info,absorbed)
+		return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
 	var category := int(info.type) if damage_mode==1 or info.player else 0
@@ -2663,12 +2666,78 @@ func queue_damage_number(info: Dictionary) -> void:
 	damage_pending.append(entry)
 	flush_damage_numbers()
 
+func incoming_damage_origin(damage_type: int) -> Vector2:
+	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
+	# Fixed rows reuse the current render anchor; hit order never selects a row.
+	var anchor := player_render_position()
+	return battle_logical_point(anchor-Vector2(0,height+16+(40 if damage_type==1 else 0)))
+
+func incoming_damage_display_number(amount) -> String:
+	if GrowthNumber.compare(amount,0)<=0:return "0"
+	var parts := GrowthNumber.parts(amount)
+	var exponent := float(parts[1])
+	var mantissa := float(parts[0])
+	if not amount is Dictionary and exponent< -300:mantissa=(float(amount)*1e300)/pow(10.0,exponent+300.0)
+	# Avoid expanding tiny fractions or an enormous exponent into hundreds of digits.
+	if exponent< -3 or absf(exponent)>=1000000:
+		var exponent_text := NUMBER_FORMAT.compact(absf(exponent)) if absf(exponent)>=1000000 else "%.0f" % absf(exponent)
+		if absf(exponent)>=1000000:exponent_text="("+exponent_text+")"
+		return NUMBER_FORMAT.trimmed_decimal(mantissa,2)+("e-" if exponent<0 else "e+")+exponent_text
+	return NUMBER_FORMAT.damage(amount)
+
+func incoming_damage_display_text(amount, absorbed, damage_type:int, size_value:int, maximum_width:float=556.0) -> String:
+	var kind := UIText.t("equipment.energy" if damage_type==1 else "equipment.physical")
+	var major := incoming_damage_display_number(amount)
+	var primary := UIText.t("battle.incoming_damage",{"type":kind,"damage":major})
+	if GrowthNumber.compare(absorbed,0)<=0:return primary
+	var absorption := incoming_damage_display_number(absorbed)
+	var value := UIText.t("battle.damage_absorbed",{"absorbed":absorption}) if GrowthNumber.compare(amount,0)<=0 else UIText.t("battle.damage_with_absorption",{"damage":major,"absorbed":absorption})
+	var full := UIText.t("battle.incoming_damage",{"type":kind,"damage":value})
+	if font.get_string_size(full,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x<=maximum_width:return full
+	# Main damage and type keep their font and full compact value; details yield first.
+	value=UIText.t("battle.damage_with_absorption",{"damage":major,"absorbed":"…"}) if GrowthNumber.compare(amount,0)>0 else UIText.t("battle.damage_absorbed",{"absorbed":absorption})
+	var short := UIText.t("battle.incoming_damage",{"type":kind,"damage":value})
+	return short if font.get_string_size(short,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x<=maximum_width else primary
+
+func queue_incoming_damage_number(info: Dictionary, absorbed) -> void:
+	var entry:Dictionary={}
+	for current in floats:
+		if current.get("incoming_lane",false) and int(current.type)==int(info.type):entry=current;break
+	var critical := bool(info.get("critical",false))
+	if not entry.is_empty() and fx_time-entry.born<0.2 and float(entry.life)>0:
+		entry.amount=GrowthNumber.add(entry.amount,info.amount)
+		entry.absorbed=GrowthNumber.add(entry.absorbed,absorbed)
+		entry.critical=entry.critical or critical
+	else:
+		if entry.is_empty():
+			entry={"target":"player","type":int(info.type),"damage":true,"incoming_lane":true}
+			floats.append(entry)
+		entry.amount=info.amount;entry.absorbed=absorbed;entry.critical=critical;entry.born=fx_time
+		entry.life=float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
+	entry.size=19 if entry.critical else 17
+	entry.color=CYAN if int(entry.type)==1 else ORANGE
+	entry.text=incoming_damage_display_text(entry.amount,entry.absorbed,int(entry.type),int(entry.size))
+	entry.origin=incoming_damage_origin(int(entry.type))
+	var width := font.get_string_size(entry.text,HORIZONTAL_ALIGNMENT_LEFT,-1,int(entry.size)).x
+	entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
+	move_damage_numbers_from_incoming(entry)
+
+func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
+	var bounds := damage_text_rect(battle_point(incoming.pos),incoming.text,int(incoming.size)).grow(8)
+	for other in floats:
+		if not other.get("damage",false) or other.get("target","")=="player" or float(other.life)<=0:continue
+		if not bounds.intersects(damage_text_rect(battle_point(other.pos),other.text,int(other.size))):continue
+		# Reuse the same placement query, which already excludes actual visible labels.
+		var adjusted := damage_text_position(other.origin,other.text,int(other.size),other)
+		if adjusted!=Vector2.INF:other.pos=adjusted
+		else:other.life=0.0;other.retiring=true
+
 func flush_damage_numbers() -> void:
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry)
 			continue
-		var active := floats.filter(func(f):return f.get("target","")==entry.target)
+		var active := floats.filter(func(f):return f.get("target","")==entry.target and not f.get("incoming_lane",false))
 		if active.size()>=2:
 			active[0].life = minf(active[0].life,0.08)
 			active[0].retiring = true
@@ -2724,7 +2793,7 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 			if bounds.position.y<8:continue
 			var blocked := false
 			for entry in floats:
-				if entry.get("damage",false) and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
+				if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
 			if blocked:continue
 			if bounds.position.y<fleet_bottom:
 				if not bounds_ready:
@@ -2784,11 +2853,15 @@ func draw_vertical_battle_hud() -> void:
 	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
 		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(268,129),14,ORANGE)
 	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
-	text_at(UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))}),Vector2(44,1162),15,INK)
+	text_at(player_defence_hud_text("armour",game.player.armour,game.stat("armour")),Vector2(44,1162),15,INK)
 	bar(Rect2(44,1174,524,7),GrowthNumber.ratio(game.player.armour,GrowthNumber.maximum(1,game.stat("armour"))),ORANGE)
 	if game.profile.unlocked.has("shield"):
-		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(44,1207),15,CYAN)
+		text_at(player_defence_hud_text("shield",game.player.shield,game.max_shield()),Vector2(44,1207),15,CYAN)
 		bar(Rect2(44,1219,524,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),CYAN)
+
+func player_defence_hud_text(key:String,current,capacity) -> String:
+	var values:Dictionary={"current_hp":NUMBER_FORMAT.scalar(current),"max_hp":NUMBER_FORMAT.scalar(capacity)} if key=="armour" else {"current_shield":NUMBER_FORMAT.scalar(current),"max_shield":NUMBER_FORMAT.scalar(capacity)}
+	return UIText.t("battle.hp" if key=="armour" else "battle.shield",values)
 
 func enhancement_defense_hud_state() -> Array:
 	# Small read-only runtime projection. Include ownership and debt so a pool

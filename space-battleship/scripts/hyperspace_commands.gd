@@ -128,12 +128,13 @@ func refresh_materials(quoted: Dictionary={}) -> void:
   var d:Dictionary=game().profile.hyperspace.inventory.drones.get(req.drone_id,{})
   if str(d.get("origin_quality",""))=="white":message=t("material_white_condition")
  panel.put(material_basis,"text",message)
- panel.put(material_route_button,"visible",not missing_material.is_empty() and missing_material!="ultimate_cores")
+ panel.put(material_route_button,"visible",true)
  if panel.section_index==2:forge_actions.refresh()
 func explore_missing_material() -> void:
  for key in h().config.routes:
   if str(h().config.routes[key].material)==missing_material:
    panel.route=str(key);panel.select_section(0);return
+ panel.select_section(0)
 func basic_available(op:String,d:Dictionary) -> bool:
  if d.is_empty() or game().profile.hyperspace.inventory.sealed.has(str(d.id)):return false
  if op=="dismantle":return not panel.Bag.protected(game().profile.hyperspace.inventory,str(d.id))
@@ -316,10 +317,10 @@ func execute_inventory_dismantle() -> void:
  var req=dismantle_request;dismantle_request={}
  var previous_modules:Dictionary=game().profile.hyperspace.hanging_modules.duplicate(true)
  var result:Dictionary=h().forge(game(),req)
- panel.put(panel.inventory_feedback,"visible",true)
- panel.put(panel.inventory_feedback,"text",error_text(str(result.error)) if not str(result.error).is_empty() else received_rewards_text(result.get("rewards",{}),previous_modules))
+ var receipt_text:String=error_text(str(result.error)) if not str(result.error).is_empty() else received_rewards_text(result.get("rewards",{}),previous_modules)
  if str(result.error).is_empty() and bool(result.get("applied",false)):
   if panel.selected_id==str(req.drone_id):panel.selected_id=module_id if game().profile.hyperspace.inventory.drones.has(module_id) else ""
+ panel.show_inventory_receipt(receipt_text)
  panel.refresh_manual_status();panel.inventory_dirty=true;panel.refresh()
 func execute_quote() -> void:
  if quoted_request.is_empty():return
@@ -487,7 +488,7 @@ func apply_modules() -> void:
  if lines.is_empty():lines.append(t("module_saved_inactive") if not game().profile.hyperspace.inventory.equipped.has(module_id) else t("module_saved_unchanged"))
  if not is_equal_approx(float(before.get("extra_storage",0)),float(after.get("extra_storage",0))) and float(after.get("extra_storage",0))>0:lines.append(t("module_energy_allocate"))
  panel.selected_id=module_id
- panel.put(panel.inventory_feedback,"text","\n".join(lines));panel.put(panel.inventory_feedback,"visible",true)
+ panel.show_inventory_receipt("\n".join(lines))
  panel.host.toast("\n".join(lines));panel.refresh_manual_status();panel.inventory_dirty=true;panel.refresh()
 func module_progress_text(key:String) -> String:
  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
@@ -525,23 +526,25 @@ func show_totals() -> void:
  if totals_dialog==null:
   totals_dialog=build_dialog("totals_manage");var body=content(totals_dialog);var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);sc.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;totals_label=dialog_label(sc,"",21,body.custom_minimum_size.x)
  refresh_totals();totals_dialog.popup_centered(Vector2i(740,510))
+func signed_percentage(value:float) -> String:
+ return ("+" if value>=0 else "")+NumberFormat.percentage(value*100.0)
 func refresh_totals() -> void:
  if totals_label==null:return
  var totals:Dictionary=game().hyperspace_totals();var lines:Array[String]=[]
  for key in ["damage","critical_chance","critical_damage","repeat_chance","attack_speed","defence","armour","shield"]:
   var value=float(totals[key]);var additive=value if key in ["critical_chance","repeat_chance"] else value-1.0
   if additive==0.0:continue
-  lines.append(t("total_"+key)+": "+t("percent",{"value":"%+.1f"%(additive*100.0)}))
+  lines.append(t("total_"+key)+": "+t("percent",{"value":signed_percentage(additive)}))
  if int(totals.chain_count)!=0:lines.append(t("total_chain_count")+": "+t("times",{"value":"%+d"%int(totals.chain_count)}))
  for weapon in totals.weapon_damage:
   var bonus=float(totals.weapon_damage[weapon])-1.0
-  if bonus!=0.0:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":"%+.1f"%(bonus*100.0)}))
+  if bonus!=0.0:lines.append(t("total_weapon",{"weapon":t(weapon)})+": "+t("percent",{"value":signed_percentage(bonus)}))
  for key in totals.hangings:
   var bonus=float(totals.hangings[key])
   if bonus==0.0:continue
   var effects:Array[String]=[]
   for effect in h().config.hanging_modules[key].effects:effects.append(t("module_effect."+str(effect)))
-  lines.append(t("total_module_bonus",{"module":panel.hanging_name(str(key)),"effects":"、".join(effects),"bonus":t("percent",{"value":"%+.1f"%(bonus*100.0)})}))
+  lines.append(t("total_module_bonus",{"module":panel.hanging_name(str(key)),"effects":"、".join(effects),"bonus":t("percent",{"value":signed_percentage(bonus)})}))
  for key in totals.legendary:
   # An active legendary effect can work through constants even without nonzero random parameters.
   lines.append(panel.effect_name(key))

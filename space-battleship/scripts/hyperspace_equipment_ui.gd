@@ -58,14 +58,15 @@ func select_slot(index:int) -> void:
 func activate() -> void:
  var g=panel.host.game;var bag:Dictionary=g.profile.hyperspace.inventory
  var id=panel.selected_id
+ var before=g.hyperspace_totals().base_damage
  if not bag.drones.has(id):return
  if bag.equipped.has(id):
   var result:Dictionary=g.hyperspace.unequip_drone(g,id)
-  show_result(bool(result.ok),str(result.reason));return
+  show_result(bool(result.ok),str(result.reason),before);return
  var cap=mini(int(panel.hull_capacity_provider.call()),int(g.hyperspace.config.maximum_equipped))
  if bag.equipped.size()<cap:
   var result:Dictionary=g.hyperspace.equip_drone(g,id)
-  show_result(bool(result.ok),str(result.reason));return
+  show_result(bool(result.ok),str(result.reason),before);return
  if bag.equipped.size()==1:replace(id,str(bag.equipped[0]));return
  if bag.equipped.is_empty():show_result(false);return
  incoming=id
@@ -81,11 +82,17 @@ func activate() -> void:
  replacement_dialog.popup_centered(Vector2i(660,370))
 func replace(new_id:String,old_id:String) -> void:
  var h=panel.host.game.hyperspace
+ var before=panel.host.game.hyperspace_totals().base_damage
  var result:Dictionary=h.equip_drone(panel.host.game,new_id,old_id)
- show_result(bool(result.get("ok",false)),str(result.get("reason","")))
-func show_result(applied:bool,error:String="") -> void:
+ show_result(bool(result.get("ok",false)),str(result.get("reason","")),before)
+func show_result(applied:bool,error:String="",before=null) -> void:
  var key="hyperspace.equipment_error_"+error
  var message=panel.t("slot_changed") if applied else UIText.t(key) if not error.is_empty() and UIText.entries.has(key) else panel.t("slot_rejected")
+ if applied and before!=null:
+  var after=panel.host.game.hyperspace_totals().base_damage
+  # GrowthNumber subtraction is unsigned; compute the magnitude and sign explicitly.
+  var magnitude=GrowthNumber.multiply(GrowthNumber.divide(GrowthNumber.subtract(GrowthNumber.maximum(after,before),GrowthNumber.minimum(after,before)),before),100)
+  message+="\n"+panel.t("drone_base_change",{"percent":("+" if GrowthNumber.compare(after,before)>=0 else "−")+NumberFormat.percentage(magnitude)})
  panel.put(feedback,"text",message)
  var color=Color("243d50") if applied else Color("b32929")
  if feedback.get_theme_color("font_color")!=color:feedback.add_theme_color_override("font_color",color)

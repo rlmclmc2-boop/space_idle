@@ -700,5 +700,6 @@
   "auto_duration_crew_base": 100.0,
   "auto_ticket_crew_base": 20.0,
   "material_unit_scale": 10,
-  "ultimate_core_probability": 0.002
+  "ultimate_core_probability": 0.002,
+  "drone_base_growth": 1.05
 }

@@ -13,6 +13,7 @@ static func parameter_precision(c: Dictionary,effect_id: String,key: String) -> 
 
 static func valid(c: Dictionary) -> bool:
 	if not Entity.output_valid("hyperspace_config.json",c) or c.get("version")!=2:return false
+	if not number(c.get("drone_base_growth")) or c.drone_base_growth<1:return false
 	for key in ["energy_rate","energy_cap","ticket","minimum_duration","modernization_base_coefficient","auto_duration_crew_base","auto_ticket_crew_base","modernization_legendary_multiplier"]:
 		if not number(c.get(key)) or float(c[key])<=0:return false
 	for key in ["unlock_stage","minimum_level","warehouse_capacity","overflow_capacity","reforge_capacity_gain","retention_capacity_gain","maximum_equipped","maximum_legendary","maximum_ultimate","completion_budget","amplification_start_level"]:

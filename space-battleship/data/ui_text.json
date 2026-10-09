@@ -4049,7 +4049,7 @@
   },
   {
     "key": "crew.effect.reactor_auto",
-    "text": "每{interval}秒 · 尝试升级1级并平均分配",
+    "text": "每{interval}秒 · 按反应炉开关升级/分配",
     "params": "interval",
     "category": "crew",
     "note": "船员反应炉岗位"
@@ -15397,7 +15397,7 @@
   },
   {
     "key": "battle.enemy_defence.hint",
-    "text": "指向敌舰看防御",
+    "text": "指向敌舰看攻击与防御",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
@@ -15405,7 +15405,7 @@
   },
   {
     "key": "battle.enemy_defence.title",
-    "text": "敌舰防御",
+    "text": "敌舰攻防",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
@@ -18074,6 +18074,108 @@
     "key": "hyperspace.module_integer_progress",
     "text": "升至{level}级：经验 {current}/{required}",
     "params": "level,current,required",
+    "category": "hyperspace"
+  },
+  {
+    "key": "battle.enemy_defence.attack",
+    "text": "攻击：{types}伤害",
+    "params": "types",
+    "category": "battle"
+  },
+  {
+    "key": "battle.enemy_defence.attack_unknown",
+    "text": "攻击类型未知",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "hyperspace.module_receipt_close",
+    "text": "关闭回执",
+    "params": "",
+    "category": "hyperspace"
+  },
+  {
+    "key": "reactor.automation.upgrade",
+    "text": "自动升级",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.allocate",
+    "text": "自动分配",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.settings",
+    "text": "设置",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.requires_crew",
+    "text": "需派遣反应炉船员；撤下后停止执行",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.slot",
+    "text": "预设{slot}",
+    "params": "slot",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.empty_slot",
+    "text": "{slot} · 空",
+    "params": "slot",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.settings_title",
+    "text": "分配比例与预设",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.apply_ratio",
+    "text": "应用比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.current",
+    "text": "当前比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.equal",
+    "text": "均分",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.save_ratio",
+    "text": "保存比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.idle",
+    "text": "闲置 {percent}%",
+    "params": "percent",
+    "category": "reactor"
+  },
+  {
+    "key": "hyperspace.drone_base_support",
+    "text": "装备基础：武器伤害 +{percent}% · 装甲/护盾上限 +{percent}%",
+    "params": "percent,percent",
+    "category": "hyperspace"
+  },
+  {
+    "key": "hyperspace.drone_base_change",
+    "text": "基础层变化：武器伤害、装甲/护盾上限 {percent}%",
+    "params": "percent",
     "category": "hyperspace"
   }
 ]
