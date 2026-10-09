@@ -1,7 +1,8 @@
 Candidate gameplay 46829d6cdeff62d08474546f875d6d2b8e848367 unchanged.
-Normal-resource independent new save, no old reports/saves/strategy/gameplay source consulted.
-Cloud Linux Xorg :99 software OpenGL Godot4.6.3; audio unverified; speedx1 confirmed GUI.
-Checkpoint4: stage6 wave4/9 paused and GUI manually saved; last defeat stage6wave6 physical loss.
-Completed stage1-5. AI3 evenly furnace/weapon/armor; reactorLv8 def66% weapon34% smelt0%; beamW01Lv8 laserW02Lv6 beamW03Lv5; armorD01Lv6 D02Lv7 restored fromshield.
-Next: continue6 and adapt to actual enemy/failure UI. No concrete blocker yet, ordinary retries.
-Stop upon reaching20, save and close. No farming20 or entering21.
+Independent normal-resource new save. No previous reports/saves/strategy/gameplay-source knowledge.
+Cloud Xorg :99 software OpenGL Godot4.6.3; speedx1; audio unverified.
+Checkpoint5 13:52 UTC approx: stage6 wave6/9 paused and GUI saved.
+Completed stage1-5. Stage6 repeatedly fails wave6 physical loss; two heavy enemies each38.1K armor+38.1K shield resistphysical by GUIhover. No concrete environment blocker.
+Recent: all3 energybeams (Lv8/7/7); twoarmorLv7; reactor9; AI4 furnace2 weapon1 armor1. Ordinary resources kept growing during retries. Continue original save.
+Next: continue6, normal equipment/reactor/AI investment and actual interface choices.
+Boundary: reaching20 ends round; save/close, do not farm20 or enter21.
