@@ -9289,6 +9289,102 @@
     },
     "equipment.baseline_scope": {
       "params": []
+    },
+    "hyperspace.forge_exchange_shortage": {
+      "params": [
+        "cost",
+        "amount"
+      ]
+    },
+    "hyperspace.forge_expand_unavailable": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.forge_collapse_unavailable": {
+      "params": []
+    },
+    "hyperspace.add_affix_random_short": {
+      "params": []
+    },
+    "hyperspace.add_affix_grade_weights": {
+      "params": [
+        "grades"
+      ]
+    },
+    "hyperspace.add_affix_range": {
+      "params": [
+        "name",
+        "common",
+        "minimum",
+        "maximum"
+      ]
+    },
+    "hyperspace.crew_unlock_reached": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.crew_unlock_cleared": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.module_no_capacity": {
+      "params": []
+    },
+    "battle.defeat.compare_energy": {
+      "params": []
+    },
+    "battle.defeat.compare_physical": {
+      "params": []
+    },
+    "battle.defeat.compare_mixed": {
+      "params": []
+    },
+    "battle.defeat.compare_unknown": {
+      "params": []
+    },
+    "equipment.max_quote": {
+      "params": [
+        "count",
+        "cost",
+        "from",
+        "to"
+      ]
+    },
+    "hyperspace.module_energy_allocate": {
+      "params": []
+    },
+    "hyperspace.promotion_current_chance": {
+      "params": [
+        "chance"
+      ]
+    },
+    "hyperspace.promotion_scope": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.promotion_affix_range": {
+      "params": [
+        "index",
+        "name",
+        "tier",
+        "next",
+        "chance",
+        "minimum",
+        "maximum"
+      ]
+    },
+    "hyperspace.promotion_probability_note": {
+      "params": []
+    },
+    "hyperspace.promotion_details_action": {
+      "params": []
+    },
+    "reactor.allocation_pointer_hint": {
+      "params": []
     }
   },
   "bindings": {

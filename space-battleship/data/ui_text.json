@@ -1048,7 +1048,7 @@
   },
   {
     "key": "equipment.refit_hint",
-    "text": "免费换装，槽位等级保留 · 点名称直接换；选模块卡 → 比较换装，先看差异",
+    "text": "卡片显示基础值 · 免费换装，槽位等级保留 · 选模块卡 → 比较换装，先看差异",
     "params": "",
     "category": "equipment"
   },
@@ -14048,7 +14048,7 @@
   },
   {
     "key": "hyperspace.command_error_legendary_repeat_policy_required",
-    "text": "重复传说化规则尚未确定。",
+    "text": "当前不支持再次传说化；要调整现有数值，可用「重掷数值」。",
     "params": "",
     "category": "hyperspace"
   },
@@ -15768,7 +15768,7 @@
   },
   {
     "key": "hyperspace.layer_idle_none",
-    "text": "本路线后台探索尚未开始",
+    "text": "本路线当前没有后台探索",
     "params": "",
     "category": "hyperspace",
     "note": "路线当前层与下一层界面；仅展示核心快照"
@@ -16944,10 +16944,10 @@
   },
   {
     "key": "battle.defeat.recall",
-    "text": "败因",
+    "text": "败因→比较",
     "params": "",
     "category": "battle",
-    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+    "note": "最近一次战败的保存原因；点击打开只读装备比较，不使用当前敌人推断旧败因"
   },
   {
     "key": "battle.defeat.recent",
@@ -17219,14 +17219,14 @@
   },
   {
     "key": "equipment.base_armour",
-    "text": "基础装甲",
+    "text": "装甲",
     "params": "",
     "category": "equipment",
     "note": "稳定装备投影，与实时战场防御区分"
   },
   {
     "key": "equipment.base_shield",
-    "text": "基础护盾",
+    "text": "护盾",
     "params": "",
     "category": "equipment",
     "note": "稳定装备投影，与实时战场防御区分"
@@ -17237,5 +17237,152 @@
     "params": "",
     "category": "equipment",
     "note": "稳定装备投影，与实时战场防御区分"
+  },
+  {
+    "key": "hyperspace.forge_exchange_shortage",
+    "text": "先兑换：{cost}零点 → {amount}简并",
+    "params": "cost,amount",
+    "category": "hyperspace",
+    "note": "费用来自现行报价；仅打开玩家确认兑换，展开状态由玩家保持"
+  },
+  {
+    "key": "hyperspace.forge_expand_unavailable",
+    "text": "暂不可做的改造（{count}项）",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "费用来自现行报价；仅打开玩家确认兑换，展开状态由玩家保持"
+  },
+  {
+    "key": "hyperspace.forge_collapse_unavailable",
+    "text": "收起暂不可做的改造",
+    "params": "",
+    "category": "hyperspace",
+    "note": "费用来自现行报价；仅打开玩家确认兑换，展开状态由玩家保持"
+  },
+  {
+    "key": "hyperspace.add_affix_random_short",
+    "text": "随机新增1条，可能是低阶小加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.add_affix_grade_weights",
+    "text": "阶级概率：{grades}。下方范围已按这架当前等级计算；只会随机获得其中一条，T1最好，T5最低。",
+    "params": "grades",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.add_affix_range",
+    "text": "{name}：T5 {common}；全部阶级 {minimum}–{maximum}",
+    "params": "name,common,minimum,maximum",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.crew_unlock_reached",
+    "text": "主线到达第{level}关后解锁首名船员；之后还需船员空闲。",
+    "params": "level",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.crew_unlock_cleared",
+    "text": "主线通关第{level}关后解锁首名船员；之后还需船员空闲。",
+    "params": "level",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "hyperspace.module_no_capacity",
+    "text": "这架没有可新增的挂载槽位。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "battle.defeat.compare_energy",
+    "text": "最近一次能量损失为主，可先比较抗能量防御。点击「败因→比较」查看，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_physical",
+    "text": "最近一次物理损失为主，可先比较抗物理防御。点击「败因→比较」查看，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_mixed",
+    "text": "最近一次物理与能量损失相当。点击「败因→比较」检查当前装备，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_unknown",
+    "text": "最近一次损失类型不足以判断。点击「败因→比较」检查当前装备，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "equipment.max_quote",
+    "text": "MAX：可升{count}级 · Lv{from} → {to}\n总费用：{cost}",
+    "params": "count,cost,from,to",
+    "category": "equipment",
+    "note": "预购只读报价；悬停时取当前可购数量，不扣资源"
+  },
+  {
+    "key": "hyperspace.module_energy_allocate",
+    "text": "储能模块随无人机上阵生效；扩充的能源要到反应炉分配后才会产生加成。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "确认挂载储能类模块后的轻提示；不自动分配能源"
+  },
+  {
+    "key": "hyperspace.promotion_current_chance",
+    "text": "首试升阶率 {chance}% · 每次随机1条",
+    "params": "chance",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_scope",
+    "text": "当前{count}条可升阶，等概率选择其中一条；锁定词条和T1不参与。成功只升一阶，并重抽该阶数值。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_affix_range",
+    "text": "第{index}条 {name}：T{tier} → T{next}；选中后的成功率 {chance}%；成功后 {minimum}–{maximum}",
+    "params": "index,name,tier,next,chance,minimum,maximum",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_probability_note",
+    "text": "范围按这架当前等级计算；升阶可能抽到该范围的低值。连续尝试的概率随成功升阶而变化，上方是当前首试概率，不是整批保证。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_details_action",
+    "text": "查看概率与范围",
+    "params": "",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "reactor.allocation_pointer_hint",
+    "text": "点击轨道或拖动把手调整。增加只用闲置能源；没有闲置时，先减少其他模块的分配。",
+    "params": "",
+    "category": "reactor",
+    "note": "现有全轨道输入及available_max限制的提示；不自动挪用其他模块能源"
   }
 ]

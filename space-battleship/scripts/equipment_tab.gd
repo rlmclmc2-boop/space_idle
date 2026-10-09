@@ -244,6 +244,9 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
+	detail.max.set_script(preload("res://scripts/equipment_quote_tooltip.gd"))
+	detail.max.quote_text = max_upgrade_quote
+	detail.max.tooltip_text = UIText.t("equipment.action.max")
 	detail.more = action_button(detail_body,"equipment.attributes.show","toggle_stats",toggle_details)
 	detail.more.position = Vector2(18,542)
 	detail.more.size = Vector2(535,48)
@@ -296,6 +299,7 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if item.locked:
 		item.cost = "—"
 		item.direct_upgradeable = false
+		item.upgrade_count = 0
 		return
 	# Module prices depend on category and level, not installed weapon type.
 	# Share only within this synchronous refresh; no quote survives a purchase,
@@ -305,12 +309,22 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if quotes.has(quote_key):
 		item.cost = quotes[quote_key].cost
 		item.direct_upgradeable = quotes[quote_key].available
+		item.upgrade_count = quotes[quote_key].count
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
+	item.upgrade_count = count
 	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
-	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable}
+	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable,"count":count}
+
+func max_upgrade_quote() -> String:
+	if selected_slot<0 or not items.has(selected):return UIText.t("equipment.action.max")
+	var item:Dictionary=items[selected]
+	var count:int=host.game.max_upgrade_amount_slot(item.category,selected_slot) if not item.locked else 0
+	var entry:Dictionary=host.game.slot_entry(item.category,selected_slot)
+	var costs:Dictionary=host.game.slot_upgrade_cost(item.category,selected_slot,count) if count>0 else {}
+	return UIText.t("equipment.max_quote",{"count":str(count),"cost":host.cost_text(costs) if count>0 else "—","from":str(entry.get("level",0)),"to":str(int(entry.get("level",0))+count)})
 
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return
@@ -581,6 +595,16 @@ func refresh_stats() -> void:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
+		# A stat invalidation can follow a refit before its structural refresh.
+		# Do not combine the new module projection with the previous identity.
+		if str(entry.get("key",""))!=str(item.key) or int(entry.get("level",0))!=int(item.level):
+			item=equipment_item(item.category,item.index)
+			items[id]=item
+			update_card_cost(item)
+			cards[id].refresh(item,selected==id)
+			sort_dirty=true
+			selected_changed=selected_changed or selected==id
+			continue
 		var projection: Dictionary=host.equipment_display_snapshot(entry)
 		var value = host.EQUIPMENT_DISPLAY.displayed_value(projection)
 		var projection_changed: bool=item.projection!=projection
@@ -687,6 +711,7 @@ func refresh_affordability_detail() -> void:
 		detail_dirty=true
 		return
 	var item: Dictionary = items[selected]
+	detail.max.refresh_open_quote()
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
 
@@ -726,6 +751,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		detail_dirty=true
 		return
 	detail_dirty=false
+	detail.max.refresh_open_quote()
 	var entry: Dictionary = host.game.module_entry(category,selected_slot)
 	var key := str(entry.key)
 	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}

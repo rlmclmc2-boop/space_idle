@@ -83,6 +83,8 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	fields.type.hide()
 	fields.upgrade.hide()
 	upgrade_button = panel.action_button(self,"equipment.action.upgrade","upgrade_action",func():upgrade_requested.emit(),true)
+	upgrade_button.set_script(preload("res://scripts/equipment_quote_tooltip.gd"))
+	upgrade_button.quote_text=func()->String:return upgrade_button.tooltip_text
 	upgrade_button.custom_minimum_size = ACTION_SIZE
 	upgrade_button.size = ACTION_SIZE
 	upgrade_button.clip_text = true
@@ -134,7 +136,7 @@ func layout_contents() -> void:
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
+	var state := [item.key,item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false),item.get("upgrade_count",0),panel.upgrade_amount]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state
@@ -170,7 +172,8 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(equip_button,"visible",not item.equipped and not item.locked)
 	host.set_ui_value(upgrade_button,"disabled",not item.get("direct_upgradeable",false))
 	host.set_ui_value(upgrade_button,"text",UIText.t("equipment.upgrade_cost",{"cost":item.get("cost","—")}))
-	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
+	host.set_ui_value(upgrade_button,"tooltip_text",UIText.t("equipment.max_quote",{"count":str(item.get("upgrade_count",0)),"cost":item.get("cost","—"),"from":str(item.level),"to":str(int(item.level)+int(item.get("upgrade_count",0)))}) if panel.upgrade_amount==0 else upgrade_button.text)
+	upgrade_button.refresh_open_quote()
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
 	add_theme_stylebox_override("normal",panel.textured_panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 

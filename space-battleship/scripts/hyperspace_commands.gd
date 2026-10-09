@@ -205,12 +205,40 @@ func modernization_text(request_data: Dictionary) -> String:
  var projected: Dictionary=d.duplicate(true);projected.level=target
  var effects: Array[String]=[]
  for a in d.affixes+([d.ultimate_affix] if d.ultimate and not d.ultimate_affix.is_empty() else []):
-  var before: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,h().config)
-  var after: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,projected,h().config)
-  var before_text: String=t("times",{"value":str(int(before))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(before*100.0)})
-  var after_text: String=t("times",{"value":str(int(after))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(after*100.0)})
-  effects.append(t("modernize_effect",{"name":panel.affix_name(str(a.key)),"before":before_text,"after":after_text}))
+  var before:Dictionary=panel.affix_display(a,d)
+  var after:Dictionary=panel.affix_display(a,projected)
+  effects.append(t("modernize_effect",{"name":before.name,"before":before.value_text,"after":after.value_text}))
  return t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
+func promotion_forecast(d:Dictionary) -> Dictionary:
+ var c:Dictionary=h().config
+ if d.is_empty() or str(c.policies.promotion_success)!="weighted_draw_stronger":return {}
+ var indices:Array=preload("res://scripts/drone_forge.gd").eligible_indices(d,c).filter(func(i):return int(d.affixes[i].tier)>1)
+ var total:=0.0
+ for weight in c.tier_weights.values():total+=float(weight)
+ if indices.is_empty() or total<=0:return {}
+ var rows:Array=[];var probability:=0.0
+ for index in indices:
+  var a:Dictionary=d.affixes[index];var tier:int=int(a.tier);var stronger:=0.0
+  for proposed in c.tier_weights:
+   if int(proposed)<tier:stronger+=float(c.tier_weights[proposed])
+  var chance:float=stronger/total;probability+=chance/float(indices.size())
+  var bounds:Array=c.affixes[a.key].ranges[str(tier-1)]
+  var precision:float=float(c.value_precision)
+  var minimum:Dictionary=a.duplicate(true);minimum.tier=tier-1;minimum.value=float(ceili(float(bounds[0])/precision-0.0000001))*precision
+  var maximum:Dictionary=a.duplicate(true);maximum.tier=tier-1;maximum.value=float(floori(float(bounds[1])/precision+0.0000001))*precision
+  rows.append({"index":index,"tier":tier,"next_tier":tier-1,"chance":chance,"name":panel.affix_name(str(a.key)),"minimum":panel.affix_display(minimum,d).value_text,"maximum":panel.affix_display(maximum,d).value_text})
+ return {"count":indices.size(),"chance":probability,"rows":rows}
+func promotion_summary(d:Dictionary) -> String:
+ var forecast:Dictionary=promotion_forecast(d)
+ return t("promotion_current_chance",{"chance":"%.1f"%(100.0*float(forecast.chance))}) if not forecast.is_empty() else ""
+func promotion_details(d:Dictionary) -> String:
+ var forecast:Dictionary=promotion_forecast(d)
+ if forecast.is_empty():return ""
+ var lines:Array[String]=[promotion_summary(d),t("promotion_scope",{"count":str(int(forecast.count))})]
+ for row in forecast.rows:
+  lines.append(t("promotion_affix_range",{"index":str(int(row.index)+1),"name":str(row.name),"tier":str(int(row.tier)),"next":str(int(row.next_tier)),"chance":"%.1f"%(100.0*float(row.chance)),"minimum":str(row.minimum),"maximum":str(row.maximum)}))
+ lines.append(t("promotion_probability_note"))
+ return "\n".join(lines)
 func received_materials_text(materials: Dictionary) -> String:
  var values: Array[String]=[]
  for key in materials:values.append(t("reward_material_item",{"material":t(str(key)),"count":str(int(materials[key]))}))
@@ -359,7 +387,7 @@ func show_modules() -> void:
   if child is VBoxContainer:child.free()
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
- if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots"),21)
+ if int(d.hanging_slots)==0:dialog_label(body,t("module_no_slots" if panel.Bag.hanging_limit(d,h().config)>0 else "module_no_capacity"),21)
  var module_scroll=ScrollContainer.new();module_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;module_scroll.custom_minimum_size.y=120;module_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(module_scroll)
  var choices=panel.box(module_scroll);choices.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var unlocked=0;var available=0;var has_zero_level=false
@@ -386,7 +414,9 @@ func show_modules() -> void:
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
-  if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
+  if h().attach_hangings(game(),module_id,keys):
+   module_dialog.hide()
+   if keys.any(func(key):return h().config.hanging_modules[key].effects.has("reactor_energy_cap")):panel.host.toast(t("module_energy_allocate"))
   else:module_dialog.title=t("module_rejected"))
  if available>0:dialog_label(body,t("module_source_hint"),18)
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
@@ -470,8 +500,35 @@ func show_guide(topic:String="overview") -> void:
   guide_choice.add_item(t("operation_"+op));guide_choice.set_item_metadata(guide_choice.item_count-1,op)
   if op==topic:guide_choice.select(guide_choice.item_count-1)
  render_guide(topic);guide_dialog.popup_centered()
+func add_affix_forecast(d:Dictionary) -> String:
+ if d.is_empty():return ""
+ var c:Dictionary=h().config
+ var keys:Array=c.affixes.keys().filter(func(key):return c.affixes[key].weapon.is_empty() or str(c.affixes[key].weapon)==str(d.weapon))
+ var weights:Dictionary={};var total:=0.0
+ for tier in c.tier_weights:
+  if keys.any(func(key):return c.affixes[key].ranges.has(tier)):
+   weights[tier]=float(c.tier_weights[tier]);total+=float(weights[tier])
+ if total<=0:return ""
+ var grades:Array[String]=[];var lines:Array[String]=[]
+ for tier in weights:grades.append("T"+str(tier)+" "+t("percent",{"value":"%.1f"%(100.0*float(weights[tier])/total)}))
+ lines.append(t("add_affix_grade_weights",{"grades":" · ".join(grades)}))
+ for key in keys:
+  var low:=INF;var high:=-INF;var common:Array[String]=[]
+  for tier in weights:
+   if not c.affixes[key].ranges.has(tier):continue
+   var bounds:Array=c.affixes[key].ranges[tier]
+   low=minf(low,float(bounds[0]));high=maxf(high,float(bounds[1]))
+   if str(tier)=="5":
+    for value in bounds:common.append(panel.affix_display({"key":key,"value":value,"tier":int(tier),"locked":false},d).value_text)
+  if not is_finite(low):continue
+  var minimum:Dictionary=panel.affix_display({"key":key,"value":low,"tier":5,"locked":false},d)
+  var maximum:Dictionary=panel.affix_display({"key":key,"value":high,"tier":1,"locked":false},d)
+  lines.append(t("add_affix_range",{"name":minimum.name,"common":"–".join(common) if not common.is_empty() else "—","minimum":minimum.value_text,"maximum":maximum.value_text}))
+ return "\n".join(lines)
 func render_guide(topic:String) -> void:
  guide_dialog.title=t("forge_guide") if topic=="overview" else t("operation_"+topic)
  panel.put(guide_label,"text",t("forge_guide_body") if topic=="overview" else t("forge_guide_"+topic))
+ if topic=="promote_affix":guide_label.text+="\n\n"+promotion_details(game().profile.hyperspace.inventory.drones.get(panel.selected_id,{}))
+ if topic=="add_affix":guide_label.text+="\n\n"+add_affix_forecast(game().profile.hyperspace.inventory.drones.get(panel.selected_id,{}))
  if topic=="ultimate":guide_label.text=t("ultimate_effect_summary",{"levels":str(int(h().config.ultimate_weapon_bonus))})+"\n\n"+guide_label.text
  guide_scroll.scroll_vertical=0

@@ -145,6 +145,8 @@ func refresh() -> void:
  panel.put(challenge_status,"text",t("layer_task_pending") if challenge_pending else t("layer_challenging",{"layer":str(int(challenge.get("level",next_layer)))}))
  panel.put(hint,"visible",layer>0 or v.is_empty())
  panel.put(hint,"text",t("layer_reason_unavailable") if v.is_empty() else t("layer_hint"))
+ panel.put(crew_button,"tooltip_text",crew_requirement())
+ if layer>0 and not game().profile.crew.any(func(member):return game().crew.unlocked(game(),str(member.crewId))):panel.put(hint,"text",hint.text+"\n"+crew_requirement())
  # Preview updates only while its own native dialog is visible. Preserve selection and focus.
  if crew_dialog!=null and crew_dialog.visible:refresh_crew()
 func queue_message(queue:Dictionary) -> String:
@@ -205,6 +207,14 @@ func show_crew() -> void:
  refresh_crew();crew_dialog.popup_centered(Vector2i(720,390))
 func selected_crew() -> String:
  return str(crew_choice.get_item_metadata(crew_choice.selected)) if crew_choice.selected>=0 else ""
+func crew_requirement() -> String:
+ var first:Dictionary={}
+ for id in game().crew.definitions(game()):
+  if game().crew.unlocked(game(),str(id)):return t("layer_reason_crew")
+  var gate:Dictionary=game().db.unlock_row("crew",str(id))
+  if not gate.is_empty() and (first.is_empty() or int(gate.level)<int(first.level)):first=gate
+ if first.is_empty():return t("no_crew")
+ return t("crew_unlock_reached" if str(first.get("mode","cleared"))=="reached" else "crew_unlock_cleared",{"level":str(int(first.level))})
 func refresh_crew() -> void:
  var id=selected_crew();var v=view(id)
  var time="%.2f"%float(v.get("crew_duration",0.0))
@@ -214,7 +224,7 @@ func refresh_crew() -> void:
  var code=str(v.get("reasons",{}).get("crew_idle","unavailable"))
  if id.is_empty():code="crew_missing"
  panel.put(crew_enable,"disabled",not code.is_empty())
- panel.put(crew_reason,"visible",not code.is_empty());panel.put(crew_reason,"text",reason(code))
+ panel.put(crew_reason,"visible",not code.is_empty());panel.put(crew_reason,"text",crew_requirement() if id.is_empty() else reason(code))
 func start_crew() -> void:
  if not game().has_method("set_hyperspace_auto"):return
  if game().set_hyperspace_auto(panel.route,selected_crew(),true):crew_dialog.hide();panel.dirty=true;refresh()
