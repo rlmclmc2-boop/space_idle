@@ -1,5 +1,5 @@
 Pure independent cloud test save only, no local-player data.
 Frozen70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
-2026-10-09 21:30UTC manualsave stage14 paused; first11+crew/hull progression confirmedto14. 飞燕护卫舰4weapons2defenses2ordinarybluebeamdrone slots. Crewequipmentnormalpaid+1working, AI30all10. No manualgearupgradessince11unpause, reactor33 evenlyallocated viaordinaryMAX8 purchase.
+2026-10-09 21:30:55UTC manualsave stage15wave3 paused; first11+crew/hull progression confirmedto15. 飞燕护卫舰4weapons2defenses2ordinarybluebeamdrone slots. Crewequipmentnormalpaid+1working, AI30all10. No manualgearupgradessince11unpause, reactor34 evenlyallocated viaordinaryMAX purchase (liveincomechangedcount).
 Originalprocess2788 window2097155 DISPLAY91 Xvfb755 XDG/workspace/playtest-independent-20261009/{data,config,cache}, cloudenvccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA. Godot4.6.3 LP_NUM_THREADS4 gl_compatibility maxfps60. 1x no particlesused/no resourceorwordinjection. SaveUIopen.
-ContinueoriginalexistingstateafterUIverification. Normal驻守tooltiplocksCURRENTBATTLEPOINTandrepeat; leftoffthrough14. First20stopmustsaveandcloseimmediately; mayuseordinary驻守near19 toavoidovershoot, no20playthrough.
+ContinueoriginalexistingstateafterUIverification. Normal驻守tooltiplocksCURRENTBATTLEPOINTandrepeat; leftoffthrough15. First20stopmustsaveandcloseimmediately; mayuseordinary驻守near19 toavoidovershoot, no20playthrough.
