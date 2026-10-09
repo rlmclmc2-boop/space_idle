@@ -9862,6 +9862,17 @@
         "current",
         "required"
       ]
+    },
+    "battle.enemy_defence.attack": {
+      "params": [
+        "types"
+      ]
+    },
+    "battle.enemy_defence.attack_unknown": {
+      "params": []
+    },
+    "hyperspace.module_receipt_close": {
+      "params": []
     }
   },
   "bindings": {

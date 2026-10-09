@@ -128,7 +128,7 @@ func refresh() -> void:
   if op=="add_affix" and reason.is_empty():status=commands.t("add_affix_random_short")
   if guaranteed:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
   if not shortage.is_empty():
-   status=commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
+   status=commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":commands.material_number(int(shortage.quote.cost.get(shortage.source,0))),"amount":commands.material_number(int(shortage.amount))})
   if op=="add_hanging_slot":status+="\n"+commands.hanging_slot_scope(d)
   if op=="legendary" and not bool(d.get("legendary",false)):status+="\n"+commands.t("legendary_cultivation_short")
   if op=="enable_omen":status=commands.t("omen_scope_short") if reason.is_empty() else status+"\n"+commands.t("omen_scope_short")

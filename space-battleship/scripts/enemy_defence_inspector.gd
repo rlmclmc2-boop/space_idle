@@ -24,14 +24,14 @@ func setup(owner_ui: Node) -> void:
 	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(hint)
 	panel = Panel.new()
-	panel.position = Vector2(14,size.y-245)
-	panel.size = Vector2(510,148)
+	panel.position = Vector2(14,size.y-269)
+	panel.size = Vector2(510,172)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel",host.style(Color("243d50"),Color("83cfcb")))
 	add_child(panel)
 	description = Label.new()
 	description.position = Vector2(14,12)
-	description.size = Vector2(482,124)
+	description.size = Vector2(482,148)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.add_theme_font_override("font",host.font)
 	description.add_theme_font_size_override("font_size",20)
@@ -47,12 +47,23 @@ func resistance_text(value: int) -> String:
 	if value not in [1,2]:return UIText.t("battle.enemy_defence.neutral")
 	return UIText.t("battle.enemy_defence.resistance",{"type":UIText.t("equipment.energy" if value==1 else "equipment.physical")})
 
+func attack_text(enemy:Dictionary) -> String:
+	if not is_instance_valid(host):return UIText.t("battle.enemy_defence.attack_unknown")
+	var types:Array[String]=[]
+	for entry in enemy.get("equipment",[]):
+		var weapon:Dictionary=host.db.enemy_weapon(str(entry.get("name","")))
+		var damage_type:int=int(weapon.get("dmgtype",0))
+		if damage_type not in [1,2]:return UIText.t("battle.enemy_defence.attack_unknown")
+		var caption:String=UIText.t("equipment.energy" if damage_type==1 else "equipment.physical")
+		if not types.has(caption):types.append(caption)
+	return UIText.t("battle.enemy_defence.attack",{"types":"、".join(types)}) if not types.is_empty() else UIText.t("battle.enemy_defence.attack_unknown")
+
 func defence_text(enemy: Dictionary) -> String:
 	var armour := UIText.t("battle.enemy_defence.armour_remaining",{"value":remaining_text(enemy.get("hp",0)),"resistance":resistance_text(int(enemy.get("armourType",0)))})
 	var shield := UIText.t("battle.enemy_defence.no_shield")
 	if N.compare(enemy.get("max_shield",0),0)>0:
 		shield = UIText.t("battle.enemy_defence.shield_remaining" if N.compare(enemy.get("shield",0),0)>0 else "battle.enemy_defence.broken_shield_remaining",{"value":remaining_text(enemy.get("shield",0)),"resistance":resistance_text(int(enemy.get("shieldType",0)))})
-	return UIText.t("battle.enemy_defence.title")+"\n"+armour+"\n"+shield
+	return UIText.t("battle.enemy_defence.title")+"\n"+attack_text(enemy)+"\n"+armour+"\n"+shield
 
 func remaining_text(value: Variant) -> String:
 	# Presentation only: positive fractions still represent a surviving layer.

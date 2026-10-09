@@ -87,6 +87,8 @@ var forge_legendary_button: Button
 var dismantle_button: Button
 var inventory_feedback: Label
 var inventory_module_next: Button
+var inventory_receipt_close: Button
+var inventory_receipt_drone_id: String=""
 var forge_pick_cancel: Button
 var forge_pick_state: Dictionary={}
 var details: Label
@@ -266,13 +268,16 @@ func build_inventory(parent: Node) -> void:
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
  dismantle_button=button(actions,"operation_dismantle",commands.show_inventory_dismantle)
  inventory_feedback=label(detail,"",19);inventory_feedback.visible=false
+ inventory_feedback.max_lines_visible=2;inventory_feedback.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
  equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
  legendary_group=box(detail,4);legendary_group.visible=false
  legendary_button=button(legendary_group,"legendary_info",show_selected_legendary,{"name":""})
  legendary_summary=label(legendary_group,"",20)
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  var detail_body=box(scroll,6);inventory_feedback.reparent(detail_body)
- inventory_module_next=button(detail_body,"module_receipt_install",commands.show_module_entry);inventory_module_next.visible=false
+ var receipt_actions=row(detail_body)
+ inventory_module_next=button(receipt_actions,"module_receipt_install",commands.show_module_entry);inventory_module_next.visible=false
+ inventory_receipt_close=button(receipt_actions,"module_receipt_close",clear_inventory_receipt);inventory_receipt_close.visible=false
  details=label(detail_body,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
@@ -461,6 +466,8 @@ func refresh_details() -> void:
  put(module_manage,"disabled",not bag.get("drones",{}).has(selected_id))
  if bag.is_empty():return
  var valid=bag.drones.has(selected_id)
+ if inventory_feedback.visible and inventory_receipt_drone_id!=selected_id:clear_inventory_receipt()
+ put(inventory_receipt_close,"visible",inventory_feedback.visible)
  put(inventory_module_next,"visible",inventory_feedback.visible and commands.has_effective_modules())
  put(inventory_module_next,"disabled",false)
  put(inventory_module_next,"text",t("module_receipt_install" if valid else "module_choose_carrier"))
@@ -505,7 +512,7 @@ func refresh_details() -> void:
  put(totals_summary,"visible",not active_effects.is_empty())
  put(totals_summary,"text",t("active_effects_summary",{"items":" · ".join(active_effects)}))
  if details_drone_id!=selected_id:
-  details_drone_id=selected_id;details_expanded=false
+  details_drone_id=selected_id;details_expanded=false;scroll.scroll_vertical=0
  put(detail_toggle,"visible",valid)
  put(detail_toggle,"text",t("drone_details_hide" if details_expanded else "drone_details_show"))
  put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id],false,not details_expanded))
@@ -537,6 +544,11 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
   legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
+func show_inventory_receipt(message:String) -> void:
+ inventory_receipt_drone_id=selected_id
+ put(inventory_feedback,"text",message);put(inventory_feedback,"tooltip_text",message);put(inventory_feedback,"visible",true)
+func clear_inventory_receipt() -> void:
+ put(inventory_feedback,"visible",false);put(inventory_module_next,"visible",false);put(inventory_receipt_close,"visible",false)
 func capability_summary(d:Dictionary) -> String:
  var config:Dictionary=host.game.hyperspace.config
  var parts:Array[String]=[t("drone_hanging_capacity",{"opened":str(int(d.hanging_slots)),"capacity":str(Bag.hanging_limit(d,config))})]

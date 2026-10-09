@@ -15397,7 +15397,7 @@
   },
   {
     "key": "battle.enemy_defence.hint",
-    "text": "指向敌舰看防御",
+    "text": "指向敌舰看攻击与防御",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
@@ -15405,7 +15405,7 @@
   },
   {
     "key": "battle.enemy_defence.title",
-    "text": "敌舰防御",
+    "text": "敌舰攻防",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
@@ -18074,6 +18074,24 @@
     "key": "hyperspace.module_integer_progress",
     "text": "升至{level}级：经验 {current}/{required}",
     "params": "level,current,required",
+    "category": "hyperspace"
+  },
+  {
+    "key": "battle.enemy_defence.attack",
+    "text": "攻击：{types}伤害",
+    "params": "types",
+    "category": "battle"
+  },
+  {
+    "key": "battle.enemy_defence.attack_unknown",
+    "text": "攻击类型未知",
+    "params": "",
+    "category": "battle"
+  },
+  {
+    "key": "hyperspace.module_receipt_close",
+    "text": "关闭回执",
+    "params": "",
     "category": "hyperspace"
   }
 ]

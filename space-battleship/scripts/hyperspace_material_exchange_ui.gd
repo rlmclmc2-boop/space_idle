@@ -78,9 +78,9 @@ func build() -> void:
  confirmation.canceled.connect(func():pending_request={})
  panel.tree_exiting.connect(func():
   if is_instance_valid(dialog):dialog.queue_free())
-func summary(result:Dictionary) -> String:
+func summary(result:Dictionary,exact:bool=false) -> String:
  var from=str(result.get("source",""));var to=str(result.get("target",""))
- return t("exchange_summary",{"source":t(from),"target":t(to),"cost":str(int(result.get("cost",{}).get(from,0))),"received":str(int(result.get("received",{}).get(to,0)))})
+ return t("exchange_summary",{"source":t(from),"target":t(to),"cost":panel.commands.material_number(int(result.get("cost",{}).get(from,0)),exact),"received":panel.commands.material_number(int(result.get("received",{}).get(to,0)),exact)})
 func error_text(code:String) -> String:
  match code:
   "same_material":return t("exchange_same")
@@ -103,7 +103,8 @@ func refresh_quote(clear_feedback=false) -> void:
  panel.put(target_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("target_owned",balances.get(to,0))))}))
  var has_amount=not quote.get("cost",{}).is_empty() and not quote.get("received",{}).is_empty()
  panel.put(preview,"visible",has_amount)
- if has_amount:panel.put(preview,"text",summary(quote))
+ if has_amount:
+  panel.put(preview,"text",summary(quote));panel.put(preview,"tooltip_text",summary(quote,true))
  var code=str(quote.get("error","unavailable"))
  var valid=code.is_empty() and not quote.get("request",{}).is_empty() and from!=to and game().has_method("exchange_hyperspace_materials")
  panel.put(reason,"visible",not code.is_empty());panel.put(reason,"text",error_text(code) if not code.is_empty() else "")
