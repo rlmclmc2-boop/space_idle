@@ -9355,6 +9355,33 @@
     },
     "hyperspace.module_energy_allocate": {
       "params": []
+    },
+    "hyperspace.promotion_current_chance": {
+      "params": [
+        "chance"
+      ]
+    },
+    "hyperspace.promotion_scope": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.promotion_affix_range": {
+      "params": [
+        "index",
+        "name",
+        "tier",
+        "next",
+        "chance",
+        "minimum",
+        "maximum"
+      ]
+    },
+    "hyperspace.promotion_probability_note": {
+      "params": []
+    },
+    "hyperspace.promotion_details_action": {
+      "params": []
     }
   },
   "bindings": {

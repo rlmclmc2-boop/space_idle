@@ -17342,5 +17342,40 @@
     "params": "",
     "category": "hyperspace",
     "note": "确认挂载储能类模块后的轻提示；不自动分配能源"
+  },
+  {
+    "key": "hyperspace.promotion_current_chance",
+    "text": "首试升阶率 {chance}% · 每次随机1条",
+    "params": "chance",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_scope",
+    "text": "当前{count}条可升阶，等概率选择其中一条；锁定词条和T1不参与。成功只升一阶，并重抽该阶数值。",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_affix_range",
+    "text": "第{index}条 {name}：T{tier} → T{next}；选中后的成功率 {chance}%；成功后 {minimum}–{maximum}",
+    "params": "index,name,tier,next,chance,minimum,maximum",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_probability_note",
+    "text": "范围按这架当前等级计算；升阶可能抽到该范围的低值。连续尝试的概率随成功升阶而变化，上方是当前首试概率，不是整批保证。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
+  },
+  {
+    "key": "hyperspace.promotion_details_action",
+    "text": "查看概率与范围",
+    "params": "",
+    "category": "hyperspace",
+    "note": "从升阶算法的未锁非T1池和现行权重只读计算；不读取未来抽签结果"
   }
 ]

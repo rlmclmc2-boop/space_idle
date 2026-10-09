@@ -12,6 +12,7 @@ var info_buttons:Dictionary={}
 var selectors:Dictionary={}
 var promotion_count:OptionButton
 var maximum:CheckBox
+var promotion_details_button:Button
 var confirmation:ConfirmationDialog
 var advanced_toggle:Button
 var advanced_expanded:=false
@@ -106,6 +107,7 @@ func refresh() -> void:
    status=commands.t("action_missing",{"materials":" · ".join(missing)})
   elif reason=="affix_limit":status=commands.t("action_no_affix_slots" if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else "action_affix_full")
   elif reason=="no_new_record":status=commands.t("action_no_new_record")
+  if op=="promote_affix" and reason.is_empty():status=commands.promotion_summary(d)
   if op=="add_affix" and reason.is_empty():status=commands.t("add_affix_random_short")
   if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
   if shortage>0:
@@ -132,9 +134,13 @@ func act(op:String) -> void:
   if confirmation==null:
    confirmation=ConfirmationDialog.new();commands.panel.add_child(confirmation);preload("res://scripts/dialog_presentation.gd").dialog(confirmation)
    confirmation.confirmed.connect(commands.execute_quote);confirmation.canceled.connect(func():commands.quoted_request={})
+   promotion_details_button=confirmation.add_button(commands.t("promotion_details_action"),false,"promotion_details")
+   confirmation.custom_action.connect(func(action):
+    if action=="promotion_details":confirmation.hide();commands.quoted_request={};commands.show_guide("promote_affix"))
+  promotion_details_button.visible=effective=="promote_affix"
   confirmation.title=commands.t("operation_"+effective)
   var detail=commands.modernization_text(req)+"\n" if effective=="modernize" else ""
-  if effective=="promote_affix":detail+=commands.t("promotion_risk_hint")+"\n"+commands.t("promotion_batch_hint")+"\n"
+  if effective=="promote_affix":detail+=commands.promotion_summary(d)+"\n"+commands.t("promotion_scope",{"count":str(int(commands.promotion_forecast(d).get("count",0)))})+"\n"+commands.t("promotion_risk_hint")+"\n"+commands.t("promotion_batch_hint")+"\n"
   if effective=="ultimate":detail+=commands.t("ultimate_effect_summary",{"levels":str(int(commands.h().config.ultimate_weapon_bonus))})+"\n\n"+commands.t("ultimate_confirmation_consequence",{"cores":str(int(commands.h().config.forge_costs.restore_ultimate.get("ultimate_cores",0)))})+"\n\n"
   if effective=="restore_ultimate":detail+=commands.t("restore_confirmation_consequence")+"\n\n"
   confirmation.dialog_text=detail+commands.t("quote_result",{"cost":commands.cost_text(result.cost,true),"draws":str(int(result.get("draws",0)))})
