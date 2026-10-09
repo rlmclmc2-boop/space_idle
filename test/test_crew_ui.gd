@@ -220,7 +220,7 @@ func run() -> void:
 	check(panel.target_ids==["reactor"] and not panel.parameter_column.visible,"Reactor uses one fixed system without unnecessary parameter controls")
 	await click(panel.assign_button)
 	check(scene.game.crew.entry(scene.game,"navigator").assignmentType=="reactor_upgrade","UI assigns reactor automation")
-	check(panel.effect_title.text=="反应炉自动升级" and panel.description.text.contains("1.0") and panel.description.text.contains("平均分配"),"Reactor detail has the two-line core effect")
+	check(panel.effect_title.text==UIText.t("crew.core_title.reactor") and panel.description.text.contains("反应炉页面设置") and not panel.description.text.contains("平均分配"),"Reactor detail has the two-line core effect")
 	check(scene.equipment_tabs.get_tab_title(2).ends_with("👤"),"Only reactor receives its crew badge")
 	await RenderingServer.frame_post_draw
 	view.get_texture().get_image().save_png("res://.runtime/crew-reactor.png")

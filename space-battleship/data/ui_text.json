@@ -4042,14 +4042,14 @@
   },
   {
     "key": "crew.core_title.reactor",
-    "text": "反应炉自动升级",
+    "text": "反应炉自动管理",
     "params": "",
     "category": "crew",
     "note": "船员反应炉岗位"
   },
   {
     "key": "crew.effect.reactor_auto",
-    "text": "每{interval}秒 · 按反应炉开关升级/分配",
+    "text": "每{interval}秒 · 按反应炉页面设置自动升级/分配",
     "params": "interval",
     "category": "crew",
     "note": "船员反应炉岗位"
@@ -15635,7 +15635,7 @@
   },
   {
     "key": "crew.preview.reactor",
-    "text": "确认后每{interval}秒均分能源，并按正常费用花铀升1级；铀不足时仍会均分。",
+    "text": "确认后每{interval}秒按反应炉页面设置自动升级/分配；升级按正常费用花铀。",
     "params": "interval",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"

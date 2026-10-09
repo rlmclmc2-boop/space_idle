@@ -317362,7 +317362,7 @@
       "powerScale": 0,
       "interval": 1,
       "maxCrew": 1,
-      "description": "每1秒尝试升级反应炉1级，并平均分配能源。",
+      "description": "按反应炉页面设置自动升级/分配能源。",
       "titleTextId": "crew.job.reactor",
       "descTextId": "crew.effect.reactor_auto",
       "targetCategory": "",
