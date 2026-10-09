@@ -103,6 +103,7 @@ func run() -> void:
 			await process_frame
 		check(scene.game.module_entry("weapons",1).key==expected_key and not popup.visible,"Native popup keyboard selection immediately equips after auto-upgrade")
 	check(panel.footer_buttons.size()==1 and panel.footer_buttons.has("details"),"Main footer contains only details")
+	check(panel.footer_buttons.details.text==UIText.t("equipment.inspect") and panel.footer_buttons.details.text.contains("比较") and panel.summary.text.contains("先看差异"),"Comparison entry states its purpose before a quick refit")
 	name_button.get_popup().hide()
 	panel.change_card_equipment("weapons_1","cannon")
 	panel.select_item("weapons_1")
@@ -111,6 +112,8 @@ func run() -> void:
 	var missile_projection: Dictionary=scene.EQUIPMENT_DISPLAY.refit_snapshot(scene.game,scene.game.module_entry("weapons",1),"missile")
 	check(panel.detail.description.text.contains(panel.rate_title(missile_projection)+" "+panel.rate_value(missile_projection)) and panel.detail.description.text.contains(UIText.t("equipment.refit_rate_scope")),"Weapon draft uses card DPS title/value and explicit baseline scope")
 	check(panel.detail.description.tooltip_text.contains(panel.rate_notes(missile_projection)),"Candidate conditions remain available before confirmation")
+	check(panel.detail.description.text.contains(UIText.t("equipment.description.missile")),"Candidate core role is available without first equipping")
+	check(panel.detail_actions.position.y>=panel.detail.description.position.y+panel.detail.description.get_minimum_size().y,"Comparison content does not overlap the following actions")
 	var cards: Dictionary=panel.cards.duplicate()
 	var tabs: int=scene.equipment_tabs.get_instance_id()
 	# Scrolling and preservation checks require an explicitly expanded inspector.
@@ -213,6 +216,7 @@ func run() -> void:
 	var target_value=scene.equipment_display_snapshot(target_entry).expected
 	check(panel.detail.description.text.contains(scene.NAMES.shield) and panel.detail.description.text.contains(scene.NAMES.armour) and panel.detail.description.text.contains(scene.number(target_value)),"Draft shows current shield and same-level replacement armour value")
 	check(panel.detail.description.text.contains(UIText.t("equipment.energy")) and panel.detail.description.text.contains(UIText.t("equipment.physical")) and panel.detail.description.text.contains("80"),"Draft distinguishes resistance and retained level")
+	check(panel.detail.description.text.contains(UIText.t("equipment.description.armour")),"Defence preview includes candidate core role")
 	check(scene.game.profile==original_profile and scene.game.rng.state==original_rng and scene.game.player.armour==original_armour and scene.game.player.shield==original_shield,"Selecting and calculating preview cannot change profile, RNG or live health")
 	var description_control: Label=panel.detail.description
 	panel.refresh_detail()

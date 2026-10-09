@@ -708,6 +708,7 @@ func refit_comparison(entry: Dictionary) -> Dictionary:
 	var current := refit_summary(entry)
 	var next := refit_summary(candidate,host.EQUIPMENT_DISPLAY.refit_snapshot(host.game,entry,pending_key))
 	var text := UIText.t("equipment.refit_comparison",{"current":current.name,"current_stat":current.stat,"current_type":current.context,"next":next.name,"next_stat":next.stat,"next_type":next.context,"level":host.game.permanent_level_text(int(entry.level),"equipment")})
+	if not pending_key.is_empty():text+="\n"+equipment_text("description."+pending_key.to_lower())
 	var tooltip: String=text
 	if str(entry.key) in BattleGame.WEAPON_KEYS or pending_key in BattleGame.WEAPON_KEYS:
 		text+="\n"+UIText.t("equipment.refit_rate_scope")
@@ -773,6 +774,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.description,"tooltip_text",comparison.tooltip if comparing else item.description)
 	# Keep the comparison beside the confirmation; retain all control instances.
 	var comparison_extra := (140.0 if item.category=="weapons" else 80.0) if comparing else 0.0
+	if comparing:comparison_extra=maxf(comparison_extra,detail.description.get_minimum_size().y-70.0)
 	host.set_ui_value(detail.description,"size",Vector2(535,70+comparison_extra))
 	host.set_ui_value(detail_actions,"position",Vector2(18,414+comparison_extra))
 	host.set_ui_value(detail.more,"position",Vector2(18,542+comparison_extra))

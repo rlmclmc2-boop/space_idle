@@ -1048,7 +1048,7 @@
   },
   {
     "key": "equipment.refit_hint",
-    "text": "免费装配 · 等级随槽位保留 · 点击名称选择即换装",
+    "text": "免费换装，槽位等级保留 · 点名称直接换；选模块卡 → 比较换装，先看差异",
     "params": "",
     "category": "equipment"
   },
@@ -1078,13 +1078,13 @@
   },
   {
     "key": "equipment.swap",
-    "text": "换装",
+    "text": "选择即换装；先比较请点页底「比较换装」",
     "params": "",
     "category": "equipment"
   },
   {
     "key": "equipment.inspect",
-    "text": "详情",
+    "text": "比较换装",
     "params": "",
     "category": "equipment"
   },
@@ -16990,7 +16990,7 @@
   },
   {
     "key": "equipment.refit_rate_scope",
-    "text": "此槽单目标持续命中的基准，未计敌方减伤；条件效果见悬停。",
+    "text": "单目标基准；未计敌方减伤，条件效果见悬停。",
     "params": "",
     "category": "equipment"
   },
