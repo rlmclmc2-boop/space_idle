@@ -1,0 +1,1 @@
+Normal-resource QA save only. Round4 parent low-intervention. Frozen candidate2f766d3fd3dcc7cdeab1ddfed5e4e43610840746. Saved2026-10-09T23:32:57Z atstage6/wave6. Normal1x, noQA resources or particles. XDG isolated; do not replace user's player save. Current gameplay continues; copy into separate QA XDG and preserve baseline if restoring.
