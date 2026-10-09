@@ -1,3 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367, gameplay source unchanged. Independent normal new save, originalcloud Xorg:99 x1 GUI.
-Checkpoint15 2026-10-09 14:59:00.813661+00:00 paused main8 wave6. Completed1-7, A1/A2. First8/6 energy-resistant elite2.2M armor/no shield, physical-major deaths. Ordinary missile/dualarmor then1rail/2missiles attempts still failed. Now testing3rails23/23/22, dualarmor23/23, reactor17 AI10. No injection/old data/source gameplay knowledge.
-Actual mouse/screenshot/manual save successful. Next continue normal8 through20 stop/save/close at20.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 source unchanged; independent normalnew save cloud Xorg:99 x1.
+Checkpoint16 2026-10-09 15:04:40.939765+00:00 paused main9 wave1, completed1-8 andA1/A2. Enhancement firstLv1 bought100naturallydroppedfragments, familiarity38% active3weapons, memory5%/sec active1defense prioritized overadapt42. Actualmain8/8 first reached thennext50secmain9, fullHP1.36M temporarydef136K. Main8Boss mechanism unobserved.
+Reactor17 AI10 rails24/24/23, armor23/24, bluepulse armor16crit1. Correction checkpoint15 W02wasactually22 beforelaterupgrade, now24; compactcheckpoint assertion corrected basedvisiblecards.
+Actualmouse/screenshot/manual save confirmed originalenvironment. Nextcontinue9to20stop/save/close. No injections/old data/gameplaysource decisions.
