@@ -17,12 +17,13 @@
     "96a501b enemy armour/shield remaining values use shared compact ladder after ceiling",
     "b453c9b supplied reactor energy readout and authoritative AI MAX count/hover quote",
     "757b205+4c64b10 approved master actual11 outcomes and base guarantee1650 instead of15150; exact save bounds",
-    "dca0b2a enhancement comparison separates current effect state from position threshold"
+    "dca0b2a enhancement comparison separates current effect state from position threshold",
+    "56aaa66 master authored endpoints must be real grid outcomes"
   ],
   "verification": {
     "main_ui_checks": 97,
     "ui_catalog_rows": 2573,
-    "remote_readback": "dca0b2a7d5020a683f3d8b67493cdb9d3bb5cd2c",
+    "remote_readback": "56aaa666333e5f04aea6340166d9eb170d354f1c",
     "workspace_operations_succeeded": true,
     "gui_acceptance_owner": "parent-coordinator",
     "parent_gui_verified": [
@@ -43,13 +44,13 @@
     "enemy_defence_number_checks": 13,
     "reactor_supply_checks": 9,
     "ai_max_quantity_checks": 11,
-    "master_integer_checks": 24
+    "master_integer_checks": 25
   },
   "next": [
     "Parent accepts actual master generation/reroll/damage/1650 guarantee in original natural play",
     "Parent accepts enhancement comparison current state and explicit position threshold"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "dca0b2a7d5020a683f3d8b67493cdb9d3bb5cd2c",
+  "last_code_commit": "56aaa666333e5f04aea6340166d9eb170d354f1c",
   "save_boundary": "Master fractional percentage points and values outside50..60% are rejected; no old-test-save migration."
 }
