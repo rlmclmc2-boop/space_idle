@@ -215,8 +215,8 @@ func setup(owner_ui: Node) -> void:
 	level_label = make_label(self,"",Vector2(766,72),530,44,CYAN,60)
 	energy_label = make_label(self,"",Vector2(766,153),272,28,CYAN)
 	uranium_label = make_label(self,"",Vector2(1055,153),250,26,INK)
-	next_label = make_label(self,"",Vector2(766,211),270,23,INK)
-	cost_label = make_label(self,"",Vector2(1055,211),260,22,INK)
+	next_label = make_label(self,"",Vector2(766,201),270,23,INK,32)
+	cost_label = make_label(self,"",Vector2(1055,201),260,22,INK,32)
 	var upgrade_group := Control.new()
 	upgrade_group.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(upgrade_group)
@@ -224,15 +224,15 @@ func setup(owner_ui: Node) -> void:
 		var mode: String = ["x1","x10","MAX"][index]
 		var button := Button.new()
 		button.text = "" if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
-		button.position = Vector2(763+index*181,278)
-		button.size = Vector2(170,78)
+		button.position = Vector2(763+index*181,240)
+		button.size = Vector2(170,104)
 		button.add_theme_font_size_override("font_size",23)
 		button_style(button,MODULE_COLORS.weapons if mode == "MAX" else CYAN,mode == "MAX")
-		button.add_theme_font_size_override("font_size",17)
+		button.add_theme_font_size_override("font_size",21)
 		button.pressed.connect(upgrade.bind(mode))
 		upgrade_group.add_child(button)
 		upgrade_buttons[mode] = button
-	benefit_label = make_label(self,"",Vector2(766,362),540,17,INK,48)
+	benefit_label = make_label(self,"",Vector2(766,352),540,21,INK,64)
 	readout_plate(self,Vector2(48,536),Vector2(546,196))
 	make_label(self,"reactor.control_heading",Vector2(59,552),380,29,INK)
 	make_label(self,"reactor.flow.manual_heading",Vector2(60,593),380,13,MUTED,24)
@@ -564,5 +564,5 @@ func refresh_upgrade_preview() -> void:
 			for key in ["weapons","defence"]:
 				if not quote.effects.has(key):continue
 				var effect: Dictionary = quote.effects[key]
-				lines.append(UIText.t("reactor.purchase_effect",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain}))
+				lines.append(UIText.t("reactor.purchase_effect_short",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain}))
 			host.set_ui_value(benefit_label,"text",UIText.t("reactor.single_preview",{"effects":"\n".join(lines)}))

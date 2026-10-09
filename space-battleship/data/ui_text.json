@@ -16875,5 +16875,13 @@
     "category": "reactor",
     "note": "单级武器与防御当前下一步收益",
     "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_effect_short",
+    "text": "{module} +{current}% → +{next}%（收益+{gain}%）",
+    "params": "module,current,next,gain",
+    "category": "reactor",
+    "note": "单级收益紧凑摘要；百分数为模块加成",
+    "source": "reactor_panel.gd"
   }
 ]

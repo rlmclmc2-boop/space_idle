@@ -9074,6 +9074,14 @@
       "params": [
         "effects"
       ]
+    },
+    "reactor.purchase_effect_short": {
+      "params": [
+        "module",
+        "current",
+        "next",
+        "gain"
+      ]
     }
   },
   "bindings": {
