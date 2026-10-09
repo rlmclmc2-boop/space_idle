@@ -1,19 +1,21 @@
 {
   "state": "working; overall performance unaccepted",
   "branch": "perf/whole-game-20261009",
-  "code_ref": "29532e577feaba7955db59b7f4efdd73b63068da",
-  "qa_ref": "050f94f9471a2254d1e99105d37d743974aeca6b",
-  "qa_path": "test/checkpoints/parent/recovery-new-profile-20261009/progress.json",
-  "qa_sha256": "40ae83541cc6bbf8957543bad7eae7e1f7c7be570d11695278eaad16706d3f36",
-  "qa_provenance": "Completed20, brieflyentered21, returned20/1. Natural resources preserved. Stock5/equipped2; inventory schema9 is not drone count.",
-  "last_graphics_success_utc": "2026-10-09T14:10:47.770248Z",
+  "code_ref": "46829d6cdeff62d08474546f875d6d2b8e848367",
+  "qa_ref": "602024d881518770e7b265b5743206412bd37712",
+  "qa_path": "test/checkpoints/parent/round2-20261009/progress.json",
+  "qa_sha256": "bdc03716a07667d6067e22ddbbba6b4afadfbc0f4e4cc6abd534aab3dd6f770e",
+  "qa_provenance": "Parent natural round2 checkpoint,stage7/group4 Frigate;resources unchanged except one real legal upgrade on isolated in-memory copy. Earlier20/1 evidence remains completed20->brief21->20,not pure<=20.",
+  "last_graphics_success_utc": "2026-10-09T14:29:39.077440Z",
   "environment": "Godot4.6.3 GL Compatibility / llvmpipe; no hardware GPU; not user49FPS acceptance.",
   "completed": [
     "Natural checkpoint shortwindow exit0: guardintermission20/1, host5.31ms anddrawcommands0.082ms versusframe68.23ms; originalQAfileunchanged.",
     "Built-in --gpu-profile exit0 without crashed viewportgetters: CanvasItems22.6-35.9ms exceeds 3Dtransparent8.4-13.1ms.",
     "NativeShipOutput bounded12percent average,noP95gain; foggrid no reliablegain. Neither production implementation.",
     "Workspace retained raster diagnostic keeps sameGUI nodes/profile:210->126calls,43.2/47.6ms controls versus35.4ms candidate. Rootimage byteerror<=10; input,invalidation andcapture183ms stillunaccepted.",
-    "Workspace diagnostic uses built-in premultiplied material and four native strips; originals remain live until one unchanged generation completes. Actual GUI selection/popup/focus/wheel, layout, new/moved controls and teardown pass. Overflow clipping differs by one pixel, so overflowing ScrollContainers remain fully live. First preparation-frame max84ms, all update-capture-frame max120ms; old183ms spike reduced, not eliminated."
+    "Workspace diagnostic uses built-in premultiplied material and four native strips; originals remain live until one unchanged generation completes. Actual GUI selection/popup/focus/wheel, layout, new/moved controls and teardown pass. Overflow clipping differs by one pixel, so overflowing ScrollContainers remain fully live. First preparation-frame max84ms, all update-capture-frame max120ms; old183ms spike reduced, not eliminated.",
+    "Stage7 source46829/QA6020:actualGUIupgrade spendsnormalresources,level/cardfeedback immediate live fallback; number redraw captures1strip andupgrade2strips. Workspace number/upgrade cached-versus-live images pixelidentical. Ownerexit restores actual original32bitmask. Initial8 allocation/captureframes max53.25ms;all recaptureframes max106.96ms.",
+    "Frequent changing presentation scope:1second quiet eligibility produces0capture/0retainedframes;no optimizationbenefit. Quiet351->277draws but interleaved means45.5/38.7,44.8/74.9,67.8/38.7ms are inconsistent. Reject cache as production/overall repair;keep diagnostic only anddo not repeat this candidate as proven gain."
   ],
-  "next": "Continue same performance task: reduce remaining preparation/recapture peaks; coordinate main.gd owner before optional production hook. Candidate is diagnostic-only, production defaults unchanged; fixed46829d6c playtest unchanged. Real legal upgrade feedback unverified because natural checkpoint has no affordable visible upgrade; no resources injected. Parent owns quality/hardware/whole-game acceptance."
+  "next": "Continue remaining rendering attribution onsame source46829/naturalQA7 using existing builtin --gpu-profile shortwindow,without repeating workspace measurements. No main.gd integration orproduction enable;fixedparent46829 unchanged;parentowns overall/hardware acceptance."
 }
