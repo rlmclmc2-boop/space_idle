@@ -1,4 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Gameplay code unchanged. Independent normal new save, original cloud Xorg:99 GUI, x1.
-Checkpoint12 2026-10-09 14:41:40.692734+00:00 paused in A2 side challenge wave4/10. Main completed1-6, current7; reached7 wave7 then failed, ordinary beam/shield/armor upgrades, reactor15 AI10.
-Correction: A1 background exploration was one completed run, not continuously active; current UI explicitly no background exploration. Blue pulse drone weapon21 retained, no new injected drops.
-Next finish actual A2 challenge then continue main7 through20, stop20/save/close. Original environment actual mouse/screenshot/save operations successful.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Gameplay code unchanged. Independent normal new save, original cloud Xorg:99 GUI x1.
+Checkpoint13 2026-10-09 14:48:13.912609+00:00 paused at first main7 Boss9/9. Completed main1-6, A1/A2 side passed normally, rewards claimed. Original blue pulse armor16crit1 retained over blue2 attack2. No background run currently active.
+Reactor16 AI10, beams allLv20, armor22 shield21, Fe653 U89. Actual Boss hover armor5.06M physical-resistant no shield; label armor-sensing unexplained.
+Normal operation/screenshot/manual save confirmed original environment working. Next continue main7 to20, stop20 save/close.
