@@ -9985,6 +9985,23 @@
     },
     "reactor.automation.no_dispatch": {
       "params": []
+    },
+    "hyperspace.drone_growth_basis": {
+      "params": [
+        "base",
+        "slot",
+        "level",
+        "status"
+      ]
+    },
+    "hyperspace.drone_growth_inactive_slot": {
+      "params": []
+    },
+    "hyperspace.drone_growth_empty_slot": {
+      "params": []
+    },
+    "hyperspace.drone_growth_active_slot": {
+      "params": []
     }
   },
   "bindings": {

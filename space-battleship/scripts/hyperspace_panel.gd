@@ -556,6 +556,13 @@ func capability_summary(d:Dictionary) -> String:
  var affix_cap:int=Bag.affix_limit(d,config)
  if affix_cap>0:parts.append(t("drone_affix_capacity",{"used":str(d.affixes.size()),"capacity":str(affix_cap)}))
  return " · ".join(parts)
+func drone_growth_basis_text() -> String:
+ var g=host.game;var slot:int=g.lowest_unlocked_weapon_slot()
+ if slot<0:return ""
+ var minimum:int=g.lowest_unlocked_weapon_level()
+ var base:int=maxi(int(g.profile.get("droneWeaponFloor",1)),minimum)
+ var status:String=t("drone_growth_inactive_slot") if slot>=g.active_slot_count("weapons") else t("drone_growth_empty_slot") if g.module_entry("weapons",slot).get("key","").is_empty() else t("drone_growth_active_slot")
+ return t("drone_growth_basis",{"base":str(base),"slot":"W%02d"%(slot+1),"level":str(minimum),"status":status})
 func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
@@ -577,7 +584,8 @@ func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> 
  var weapon_bonus:int=preload("res://scripts/drone_effect_aggregator.gd").weapon_bonus(d,g.hyperspace.config)
  if weapon_bonus>0:lines.append(t("drone_quality_weapon_bonus",{"levels":str(weapon_bonus)}))
  lines.insert(0,t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
- if not compact:lines.append(t("drone_dynamic_weapon_hint"))
+ if not compact:
+  lines.append(t("drone_dynamic_weapon_hint"));lines.append(drone_growth_basis_text())
  lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))
  lines.append(t("drone_fire_"+str(d.weapon)+("" if NumberFormat.scalar_is_exact(float(row.cd)) else "_approx"),fire_params))
  if d.legendary and include_legendary:

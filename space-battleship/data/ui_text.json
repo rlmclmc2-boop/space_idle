@@ -18264,5 +18264,33 @@
     "params": "",
     "category": "reactor",
     "note": "自动栏首行简短状态，完整条件保留悬停"
+  },
+  {
+    "key": "hyperspace.drone_growth_basis",
+    "text": "成长基础 {base}级；已解锁最低槽 {slot}：{level}级（{status}）。",
+    "params": "base,slot,level,status",
+    "category": "hyperspace",
+    "note": "装备无人机槽悬停及展开详情解释当前成长依据，不修改成长规则"
+  },
+  {
+    "key": "hyperspace.drone_growth_inactive_slot",
+    "text": "当前舰体未启用",
+    "params": "",
+    "category": "hyperspace",
+    "note": "装备无人机槽悬停及展开详情解释当前成长依据，不修改成长规则"
+  },
+  {
+    "key": "hyperspace.drone_growth_empty_slot",
+    "text": "空槽仍计入成长",
+    "params": "",
+    "category": "hyperspace",
+    "note": "装备无人机槽悬停及展开详情解释当前成长依据，不修改成长规则"
+  },
+  {
+    "key": "hyperspace.drone_growth_active_slot",
+    "text": "已启用",
+    "params": "",
+    "category": "hyperspace",
+    "note": "装备无人机槽悬停及展开详情解释当前成长依据，不修改成长规则"
   }
 ]

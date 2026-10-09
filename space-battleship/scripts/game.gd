@@ -739,16 +739,23 @@ func combat_weapon_entries() -> Array:
 	combat_sources_dirty=false
 	return combat_sources
 
-func lowest_unlocked_weapon_level() -> int:
+func lowest_unlocked_weapon_slot() -> int:
 	# Empty and dormant slots still count; changing hulls cannot hide a weak slot.
 	var count := active_slot_count("weapons")
 	for ship_key in db.ships:
 		if ship_unlocked(str(ship_key)):count=maxi(count,int(db.ship(str(ship_key)).weaponSlots))
 	var entries := module_entries("weapons")
 	var minimum := 9223372036854775807
+	var lowest := -1
 	for index in count:
-		minimum=mini(minimum,maxi(1,int(entries[index].level)) if index<entries.size() else 1)
-	return 1 if count==0 else minimum
+		var level := maxi(1,int(entries[index].level)) if index<entries.size() else 1
+		if lowest<0 or level<minimum:minimum=level;lowest=index
+	return lowest
+
+func lowest_unlocked_weapon_level() -> int:
+	var index := lowest_unlocked_weapon_slot()
+	var entries := module_entries("weapons")
+	return maxi(1,int(entries[index].level)) if index>=0 and index<entries.size() else 1
 
 func refresh_drone_weapon_floor() -> void:
 	var next := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
