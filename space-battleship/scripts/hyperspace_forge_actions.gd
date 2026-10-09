@@ -123,6 +123,7 @@ func refresh() -> void:
   if not shortage.is_empty():
    status=commands.t("forge_exchange_guaranteed_shortage") if deferred else commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
   if op=="add_hanging_slot":status+="\n"+commands.hanging_slot_scope(d)
+  if op=="enable_omen" and d.affixes.is_empty():status+="\n"+commands.t("omen_empty_short")
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
   commands.panel.put(buttons[op],"tooltip_text",name+"\n"+commands.cost_text(costs,true)+"\n"+status)
   commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage.is_empty())

@@ -25,6 +25,13 @@ func run() -> void:
  g.profile.hyperspace.materials.zero_point_energy=zero_stock;a.refresh()
  var state=JSON.stringify(g.profile);var rng_state=g.rng.state
  a.refresh();check(JSON.stringify(g.profile)==state and g.rng.state==rng_state,"Rendering action costs changes neither player state nor combat RNG")
+ a.advanced_expanded=true;a.refresh()
+ check(not a.buttons.enable_omen.disabled and a.buttons.enable_omen.text.contains(c.t("omen_empty_short")),"Empty-affix omen remains legal and explains its future replacement prerequisite")
+ var future_state:Dictionary=g.profile.hyperspace.duplicate(true)
+ future_state.inventory.drones[d.id].origin_quality="white";future_state.inventory.drones[d.id].blue_source_bonus=false
+ var future_plan:Dictionary=preload("res://scripts/drone_forge.gd").plan(future_state,g.hyperspace.config,a.request("enable_omen"),g)
+ check(str(future_plan.get("error","" )).is_empty() and future_state.inventory.drones[d.id].omen and future_state.inventory.drones[d.id].affixes.is_empty(),"Legal zero-affix white drone can enable future omen without inventing an immediate affix")
+ a.advanced_expanded=false;a.refresh()
  var req=a.request("add_affix");var expected:Dictionary=preload("res://scripts/drone_forge.gd").plan(g.profile.hyperspace.duplicate(true),g.hyperspace.config,req,g)
  var before:int=int(g.profile.hyperspace.materials.degenerate_matter)
  a.buttons.add_affix.pressed.emit()
