@@ -25,6 +25,41 @@ func run() -> void:
  g.profile.hyperspace.materials.zero_point_energy=zero_stock;a.refresh()
  var state=JSON.stringify(g.profile);var rng_state=g.rng.state
  a.refresh();check(JSON.stringify(g.profile)==state and g.rng.state==rng_state,"Rendering action costs changes neither player state nor combat RNG")
+ # Select a collected prism with three actual draws: random cost is not its total.
+ var old_collection=g.profile.hyperspace.legendary_collection.duplicate()
+ var old_forge_rng=d.forge_rng_state
+ var old_weapon=d.weapon;d.weapon="longLaser"
+ g.profile.hyperspace.legendary_collection=["prism_tower"];a.refresh()
+ a.selectors.legendary.select(1)
+ var selected_quote:Dictionary={}
+ for seed_value in range(1,129):
+  var fixture_rng=RandomNumberGenerator.new();fixture_rng.seed=seed_value
+  d.forge_rng_state=str(fixture_rng.state)
+  selected_quote=g.hyperspace.preview_forge(g,a.request("legendary"))
+  if int(selected_quote.get("draws",0))==3:break
+ check(int(selected_quote.get("draws",0))==3,"Controlled prism fixture reaches three draws through the actual domain quote")
+ var total=int(selected_quote.cost.zero_point_energy)
+ var unit=int(g.hyperspace.config.forge_costs.legendary.zero_point_energy)*int(g.hyperspace.config.material_unit_scale)
+ check(total==3*unit,"Selected prism total includes all three draws at unchanged configured prices")
+ g.profile.hyperspace.materials.zero_point_energy=unit
+ var prism_state=JSON.stringify(g.profile);a.advanced_expanded=false;a.refresh()
+ check(a.cells.legendary.visible and not a.buttons.legendary.disabled,"Selected target remains visible and offers its actual shortage exchange")
+ check(a.buttons.legendary.text.contains(c.t("zero_point_energy")+" "+c.material_number(total)) and a.buttons.legendary.tooltip_text.contains(c.cost_text(selected_quote.cost,true)),"Selected button and owned-material tooltip show the actual cumulative price")
+ a.buttons.legendary.pressed.emit()
+ var prism_exchange=c.exchange_ui
+ check(prism_exchange.dialog.visible and prism_exchange.material(prism_exchange.target)=="zero_point_energy" and int(prism_exchange.amount.value)==total-unit,"Selected button prefills only the actual two-draw missing amount")
+ check(JSON.stringify(g.profile)==prism_state,"Selected quote and exchange entry do not consume resources or forge RNG")
+ prism_exchange.dialog.hide()
+ g.profile.hyperspace.materials.zero_point_energy=1000000;a.refresh()
+ a.buttons.legendary.pressed.emit()
+ check(a.confirmation.visible and a.confirmation.dialog_text.contains(c.cost_text(selected_quote.cost,true)) and c.quoted_request.args.guaranteed_effect=="prism_tower","Selected confirmation retains the same cumulative price and exact prism target")
+ a.confirmation.canceled.emit();a.confirmation.hide()
+ a.selectors.legendary.select(0);a.refresh();a.buttons.legendary.pressed.emit()
+ var random_quote:Dictionary=g.hyperspace.preview_forge(g,a.request("legendary"))
+ check(int(random_quote.cost.zero_point_energy)==unit and a.buttons.legendary.text.contains(c.t("zero_point_energy")+" "+c.material_number(unit)) and a.confirmation.dialog_text.contains(c.cost_text(random_quote.cost,true)),"Switching back to random restores the one-draw button and confirmation price")
+ a.confirmation.canceled.emit();a.confirmation.hide()
+ g.profile.hyperspace.legendary_collection=old_collection;d.forge_rng_state=old_forge_rng;d.weapon=old_weapon
+ g.profile.hyperspace.materials.zero_point_energy=zero_stock;a.refresh()
  a.advanced_expanded=true;a.refresh()
  check(not a.buttons.enable_omen.disabled and a.buttons.enable_omen.text.contains(c.t("omen_empty_short")),"Empty-affix omen remains legal and explains its future replacement prerequisite")
  var future_state:Dictionary=g.profile.hyperspace.duplicate(true)

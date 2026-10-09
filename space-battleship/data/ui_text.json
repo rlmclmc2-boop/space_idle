@@ -16436,7 +16436,7 @@
   },
   {
     "key": "hyperspace.action_guaranteed_cost",
-    "text": "保底：点击核算累计消耗",
+    "text": "保底：上方为累计消耗",
     "params": "",
     "category": "hyperspace",
     "note": "独立改造按钮状态"

@@ -95,12 +95,10 @@ func refresh() -> void:
   if not offered:commands.panel.put(cells[op],"visible",false);continue
   if selectors.has(op):sync_selector(op,d)
   var effective="disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op
-  var req=request(effective);var deferred=not selected_target(op).is_empty()
-  var forecast=req.duplicate(true)
-  if deferred:forecast.args={}
-  var result:Dictionary=commands.h().preview_forge(commands.game(),forecast) if not req.is_empty() else {"error":"unavailable_drone"}
+  var req=request(effective);var guaranteed=not selected_target(op).is_empty()
+  var result:Dictionary=commands.h().preview_forge(commands.game(),req) if not req.is_empty() else {"error":"unavailable_drone"}
   var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
-  var current=reason.is_empty() or (op in BASIC and reason=="insufficient_materials")
+  var current=reason.is_empty() or ((op in BASIC or guaranteed) and reason=="insufficient_materials")
   if not current:later+=1
   commands.panel.put(cells[op],"visible",current or advanced_expanded)
   var shortage=exchange_shortage(op,result)
@@ -119,9 +117,9 @@ func refresh() -> void:
   if op=="modernize" and reason.is_empty():status=commands.modernization_scope(d)
   if op=="promote_affix" and reason.is_empty():status=commands.promotion_summary(d)
   if op=="add_affix" and reason.is_empty():status=commands.t("add_affix_random_short")
-  if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
+  if guaranteed:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
   if not shortage.is_empty():
-   status=commands.t("forge_exchange_guaranteed_shortage") if deferred else commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
+   status=commands.t("forge_exchange_material_shortage",{"source":commands.t(shortage.source),"target":commands.t(shortage.target),"cost":str(int(shortage.quote.cost.get(shortage.source,0))),"amount":str(int(shortage.amount))})
   if op=="add_hanging_slot":status+="\n"+commands.hanging_slot_scope(d)
   if op=="enable_omen":status=commands.t("omen_scope_short") if reason.is_empty() else status+"\n"+commands.t("omen_scope_short")
   if op=="enable_omen" and d.affixes.is_empty():status+="\n"+commands.t("omen_empty_short")
