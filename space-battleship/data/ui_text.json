@@ -17209,5 +17209,12 @@
     "category": "research",
     "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
     "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_exact",
+    "text": "精确投入：{cost}",
+    "params": "cost",
+    "category": "research",
+    "note": "AI购买总额短数摘要后的精确补充，不驱动购买逻辑"
   }
 ]

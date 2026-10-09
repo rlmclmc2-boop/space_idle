@@ -9275,6 +9275,11 @@
     },
     "research.ai_purchase_insufficient": {
       "params": []
+    },
+    "research.ai_purchase_exact": {
+      "params": [
+        "cost"
+      ]
     }
   },
   "bindings": {

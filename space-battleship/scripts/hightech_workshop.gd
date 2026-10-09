@@ -313,8 +313,13 @@ func generation_quote(amount: int) -> Dictionary:
 func generation_quote_text(amount: int) -> String:
 	var quote := generation_quote(amount)
 	var costs := PackedStringArray()
-	for id in quote.costs:costs.append(NUMBER.precise(quote.costs[id])+" "+UIText.data_text("resources",str(id)))
+	var exact := PackedStringArray()
+	for id in quote.costs:
+		var resource := UIText.data_text("resources",str(id))
+		costs.append(NUMBER.compact(quote.costs[id])+" "+resource)
+		exact.append(NUMBER.precise(quote.costs[id])+" "+resource)
 	var text := UIText.t("research.ai_purchase_quote",{"count":str(quote.count),"cost":" / ".join(costs) if not costs.is_empty() else "0"})
+	if costs!=exact:text+="\n"+UIText.t("research.ai_purchase_exact",{"cost":" / ".join(exact)})
 	if amount>=0 and not game.can_generate_scientist(amount):text+="\n"+UIText.t("research.ai_purchase_insufficient")
 	return text
 
