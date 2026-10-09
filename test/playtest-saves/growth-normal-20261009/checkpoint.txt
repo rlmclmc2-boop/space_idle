@@ -1,6 +1,2 @@
-Frozen candidate46829d6cdeff62d08474546f875d6d2b8e848367, gameplaydiff0confirmed14:26:14UTC. Independentnormalnewsave, nooldreportssavesstrategy/gameplaysource.
-CloudXorg:99softwareOpenGLGodot4.6.3, GUIx1 audio unverified. Actualmouse/screenshot/saveconfirmedoriginalenvironmentworking14:26:13-14.
-Checkpoint10 14:26:14UTC stage7wave6/9paused GUIsaved. Completed1-6, A1sidechallengepassedandbackground92secactive.
-Originalbluedronearmor16crit1retained; normalbackgroundgoldpulsehasweaponquality+1anddamage14%, weakerthanbluequality+3/base10.9KbyactualUI. Noidealdroporresourceinjection.
-AI8furnace3weapon2armor3; reactor14, missilesW01Lv14 beamsW02/W03Lv15; armorD01Lv18 shieldD02Lv17. Current124/134KHP,35.2/48.3Kshield, Fe38U10.
-Nextcontinue7wave6 andbackgroundresults; ordinarygrowth. Stopreaching20saveclose, nofarm20or21.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Independent normal new save, original cloud Xorg:99 GUI, x1.
+Checkpoint11 2026-10-09 14:34 UTC: stage7 wave5/9 paused after natural wave6 failure. Completed main1-6, side A1 and background active. All three weapon slots now beams; ordinary upgrades made, no injections. Actual window screenshot and save successful. Next continue normal growth through20; stop at20 and close.
