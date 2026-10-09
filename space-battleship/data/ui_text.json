@@ -5205,10 +5205,10 @@
   },
   {
     "key": "weapon.equipment_detail_text.text_02",
-    "text": "CD {cd} → {cd_2} 秒",
+    "text": "基础间隔 {cd} → {cd_2} 秒",
     "params": "{cd},{cd_2}",
     "category": "weapon",
-    "note": "动态显示；蓝色参数由程序填入",
+    "note": "升级前后基础间隔；动态攻速后的间隔另列并标约值",
     "source": "main.gd:equipment_detail_text · cd = number(float(row.cd))；cd_2 = number(float(db.equip(key,mini(lv+1,db.max_equipment_level(key))).cd))"
   },
   {
