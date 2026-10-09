@@ -1,0 +1,7 @@
+Candidate: 46829d6cdeff62d08474546f875d6d2b8e848367
+Independent normal-resource new save. No previous reports, saves, strategy or gameplay source consulted.
+Cloud Linux Xorg :99, software OpenGL, Godot 4.6.3. Audio unverified.
+Checkpoint 1: stage 1 wave 5/5; paused and manually saved through GUI.
+Completed: free laser slots W02/W03; free armor D02; normal W01 upgrade Lv2.
+Next: continue stage 1; inspect new player-visible unlocks and normal upgrade decisions.
+No gameplay blocker. Reach stage 20, save and close; no farming boundary or stage21.
