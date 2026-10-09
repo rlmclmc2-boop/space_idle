@@ -4,7 +4,9 @@ extends RefCounted
 const BASE:=10000
 const INT_LIMIT:int=9223372036854774784
 const JSON_EXACT:int=9007199254740991
-const MAX_DIGITS:=4096
+# Work bound, not an int64 cap: ~12.9K levels at the current growth rate.
+# Bounds cold quadratic share arithmetic and hostile imported strings.
+const MAX_DIGITS:=1024
 static var long_operations:=0
 static var growth_cache:Dictionary={}
 static func valid(v) -> bool:
@@ -95,23 +97,29 @@ static func divmod(a,b) -> Array:
  long_operations+=1
  var x:=limbs(a);var y:=limbs(b);var out:Array[int]=[];out.resize(x.size());out.fill(0)
  var remainder:Array[int]=[0]
- if y.size()==1:
+ if b is int and b<=1000000000:
   var carry:=0
   for i in range(x.size()-1,-1,-1):
-   var n:int=carry*BASE+x[i];out[i]=n/y[0];carry=n%y[0]
+   var n:int=carry*BASE+x[i];out[i]=n/b;carry=n%b
   return [value(out),carry]
+ # Normalize the leading divisor limb so the quotient estimate overshoots
+ # by at most two; avoid fourteen full divisor scans per quotient limb.
+ var factor:int=BASE/(y.back()+1)
+ y=mul_small(y,factor);x=mul_small(x,factor);out.resize(x.size());out.fill(0)
  for i in range(x.size()-1,-1,-1):
   remainder.push_front(x[i]);trim(remainder)
-  var low:=0;var high:=BASE-1
-  while low<high:
-   var mid:int=(low+high+1)/2
-   if cmp_arrays(mul_small(y,mid),remainder)<=0:low=mid
-   else:high=mid-1
-  out[i]=low
-  if low:remainder=sub_arrays(remainder,mul_small(y,low))
- return [value(out),value(remainder)]
+  if cmp_arrays(remainder,y)<0:continue
+  var estimate:int=mini(BASE-1,(remainder.back()*BASE+remainder[remainder.size()-2])/y.back()) if remainder.size()>y.size() else mini(BASE-1,remainder.back()/y.back())
+  var product:=mul_small(y,estimate)
+  while cmp_arrays(product,remainder)>0:
+   estimate-=1;product=sub_arrays(product,y)
+  out[i]=estimate
+  remainder=sub_arrays(remainder,product)
+ var residual=value(remainder)
+ return [value(out),divmod(residual,factor)[0] if factor>1 else residual]
 static func share(amount,weight,total) -> Array:
  if compare(weight,0)==0 or compare(amount,0)==0:return [0,0]
+ if compare(weight,total)==0:return [amount,0]
  return divmod(multiply(amount,weight),total)
 static func from_growth(v):
  if not GrowthNumber.valid(v):return null

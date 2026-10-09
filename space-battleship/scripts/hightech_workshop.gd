@@ -376,7 +376,7 @@ func refresh() -> void:
 		put(stage_eta,"text",t("remaining",{"time":"%02d:%02d" % [seconds/60,seconds%60]}) if research_rate>0 else t("waiting"))
 		for i in stage_steps.size():put(stage_steps[i],"color",CYAN if i<c.built else LINE)
 		put(console_title,"text",row.name.text)
-		var income: float=game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
+		var income =game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
 		var next_effect: Array=[key,game.effective_hightech_level(key),income,game.db.data.hightech[key],pending]
 		if next_effect!=effect_snapshot:
 			effect_snapshot=next_effect.duplicate(true)

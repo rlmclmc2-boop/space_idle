@@ -13,7 +13,7 @@ static func effect(game, key: String, preview_level: int = -1) -> Dictionary:
 	var level: int=game.effective_hightech_level(key) if preview_level<0 else preview_level
 	var formulas: Array=UIText.formulas(UIText.data_key("hightech",key,"description"))
 	var values: Array[String]=[]
-	var income: float=game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
+	var income =game.furnace_income_peak(-1,key==BattleGame.JEWEL_FURNACE) if key in [BattleGame.FURNACE,BattleGame.JEWEL_FURNACE] else 0.0
 	for formula in formulas:
 		values.append(game.format_description(game.db.data.hightech[key],str(formula),level,income,income))
 	return {"effect_type":kind,"value":values[1] if kind in ["iron","jewel"] and values.size()>1 else values[0] if not values.is_empty() else "—","time":values[0] if not values.is_empty() else "—"}

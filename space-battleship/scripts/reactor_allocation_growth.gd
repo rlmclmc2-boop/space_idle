@@ -23,47 +23,42 @@ static func product_share(amount: int, weight: int, total: int) -> Array[int]:
 		else:part_remainder *= 2
 	return [quotient,remainder]
 
-static func available(modules: Array, allocation: Dictionary, capacity: int) -> Dictionary:
-	var next:=allocation.duplicate()
-	var total:=0
-	var weights:Array[int]=[]
+const I=preload("res://scripts/reactor_integer.gd")
+static func share(amount,weight,total)->Array:
+	if amount is int and weight is int and total is int:return product_share(amount,weight,total)
+	return I.share(amount,weight,total)
+
+static func distribute(amount,weights:Array,total)->Array:
+	var shares:Array=[];var remainders:Array=[];var order:Array[int]=[]
+	var left=amount
+	for index in weights.size():
+		var part:=share(amount,weights[index],total)
+		shares.append(part[0]);remainders.append(part[1]);order.append(index)
+		left=I.subtract(left,part[0])
+	order.sort_custom(func(a,b):return I.compare(remainders[a],remainders[b])>0 if I.compare(remainders[a],remainders[b])!=0 else a<b)
+	# Largest-remainder deficit is strictly less than the number of shares.
+	for index in int(left):shares[order[index]]=I.add(shares[order[index]],1)
+	return shares
+
+static func available(modules: Array, allocation: Dictionary, capacity) -> Dictionary:
+	var next:=allocation.duplicate();var total=0;var weights:Array=[]
 	for key in modules:
-		var value:=maxi(0,int(allocation.get(key,0)))
-		next[key]=value;weights.append(value);total+=value
-	if total<=maxi(0,capacity):return next
-	var remainders:Array[int]=[]
-	var order:Array[int]=[]
-	var left:=maxi(0,capacity)
-	for index in modules.size():
-		var part:=product_share(maxi(0,capacity),weights[index],total)
-		next[modules[index]]=part[0];left-=part[0]
-		remainders.append(part[1]);order.append(index)
-	order.sort_custom(func(a,b):return remainders[a]>remainders[b] if remainders[a]!=remainders[b] else a<b)
-	for index in left:next[modules[order[index]]]+=1
+		var amount=I.normalize(allocation.get(key,0))
+		next[key]=amount;weights.append(amount);total=I.add(total,amount)
+	if I.compare(total,capacity)<=0:return next
+	var shares:=distribute(capacity,weights,total)
+	for index in modules.size():next[modules[index]]=shares[index]
 	return next
 
-static func expand(modules: Array, allocation: Dictionary, old_capacity: int, new_capacity: int) -> Dictionary:
+static func expand(modules: Array, allocation: Dictionary, old_capacity, new_capacity) -> Dictionary:
 	var next := allocation.duplicate()
-	if old_capacity <= 0 or new_capacity <= old_capacity:return next
-	var weights: Array[int] = []
-	var assigned := 0
+	if old_capacity==null or new_capacity==null or I.compare(old_capacity,0)<=0 or I.compare(new_capacity,old_capacity)<=0:return next
+	var weights:Array=[];var assigned=0
 	for key in modules:
-		var value := int(allocation.get(key,0))
-		if value < 0 or value > old_capacity-assigned:return next
-		weights.append(value)
-		assigned += value
-	weights.append(old_capacity-assigned) # Idle is a real share, never silently spent.
-	var shares: Array[int] = []
-	var remainders: Array[int] = []
-	var order: Array[int] = []
-	var left := new_capacity-old_capacity
-	for index in weights.size():
-		var quote := product_share(new_capacity-old_capacity,weights[index],old_capacity)
-		shares.append(quote[0])
-		remainders.append(quote[1])
-		order.append(index)
-		left -= quote[0]
-	order.sort_custom(func(a,b):return remainders[a]>remainders[b] if remainders[a]!=remainders[b] else a<b)
-	for index in left:shares[order[index]] += 1
-	for index in modules.size():next[modules[index]] = weights[index]+shares[index]
+		var amount=I.normalize(allocation.get(key,0))
+		if I.compare(amount,I.subtract(old_capacity,assigned))>0:return next
+		weights.append(amount);assigned=I.add(assigned,amount)
+	weights.append(I.subtract(old_capacity,assigned)) # Idle is a real share.
+	var shares:=distribute(I.subtract(new_capacity,old_capacity),weights,old_capacity)
+	for index in modules.size():next[modules[index]]=I.add(weights[index],shares[index])
 	return next

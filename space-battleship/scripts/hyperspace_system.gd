@@ -76,18 +76,18 @@ func snapshot(g) -> Dictionary:
 func publish(g,next: Dictionary,kind: String) -> void:
 	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
 	if refit:g.capture_refit_health()
-	var previous_capacity: int=g.reactor_capacity() if refit else 0
+	var previous_capacity =g.reactor_capacity() if refit else 0
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
 	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
 	if refit:
-		var capacity: int=g.reactor_capacity()
+		var capacity =g.reactor_capacity()
 		if g.drone_combat.disabled.is_empty():
-			var remaining: int=capacity
+			var remaining =capacity
 			for key in g.reactor_modules():
-				g.profile.reactorAllocation[key]=mini(int(g.profile.reactorAllocation.get(key,0)),remaining)
-				remaining-=int(g.profile.reactorAllocation[key])
+				g.profile.reactorAllocation[key]=preload("res://scripts/reactor_integer.gd").minimum(g.profile.reactorAllocation.get(key,0),remaining)
+				remaining=preload("res://scripts/reactor_integer.gd").subtract(remaining,g.profile.reactorAllocation[key])
 		g.apply_refit_health()
-		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
+		if preload("res://scripts/reactor_integer.gd").compare(capacity,previous_capacity)!=0:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})
 
 func is_unlocked(g) -> bool:

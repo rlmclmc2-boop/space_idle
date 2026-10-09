@@ -1,7 +1,4 @@
 extends RefCounted
-## Last representable double below int64's upper edge; conversion stays safe.
+# Retained as the legacy representation boundary for import/comparison checks.
 const CAPACITY_LIMIT: int = 9223372036854774784
-
-static func capacity(energy: float) -> int:
-	if energy>=float(CAPACITY_LIMIT):return CAPACITY_LIMIT
-	return maxi(0,int(floor(energy))) if is_finite(energy) else 0
+static func capacity(energy):return preload("res://scripts/reactor_integer.gd").from_growth(energy)

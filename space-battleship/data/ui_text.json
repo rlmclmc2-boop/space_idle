@@ -16886,18 +16886,18 @@
   },
   {
     "key": "reactor.capacity_boundary",
-    "text": "已到能源可用范围边界，无法继续购买；余额保留。",
+    "text": "能源位数超过计算范围，本次购买未执行；余额保留。",
     "params": "",
     "category": "reactor",
-    "note": "整数容量安全边界，不承诺无限成长",
+    "note": "反应炉1024位预算保护，非旧int64上限；拒绝购买不扣费",
     "source": "reactor_panel.gd"
   },
   {
     "key": "reactor.version_note",
-    "text": "本轮容量按等级重新计算；先确认能源分配，再看新的购买收益。",
+    "text": "容量按原成长公式计算，不再截断到旧整数上限。已分配能源保持；释放的容量留作空闲，免费供能随实际容量恢复。",
     "params": "",
     "category": "reactor",
-    "note": "测试版本换版提示；不声称旧进度经济连续可比",
+    "note": "解除旧整数截断的存量行为；不自动放大既有手动分配",
     "source": "reactor_panel.gd"
   },
   {

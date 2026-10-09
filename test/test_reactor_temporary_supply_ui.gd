@@ -7,6 +7,7 @@ class ActiveFixture extends BattleGame:
  var edit_value:=0.0
  func reactor_capacity(_totals:Dictionary={}) -> int:return 75 if limited else 100
  func reactor_energy(level:=-1,_totals:Dictionary={}) -> float:return float(reactor_capacity())*pow(1.2,0 if level<0 else level-1)
+ func reactor_capacity_at(level:int,_totals:Dictionary={}):return preload("res://scripts/reactor_growth.gd").capacity(reactor_energy(level))
  func reactor_active_allocation(_totals:Dictionary={}) -> Dictionary:return {"weapons":38,"defence":22,"smelting":15,"condensation":0} if limited else profile.reactorAllocation.duplicate()
  func reactor_allocated() -> int:
   var total:=0
@@ -45,7 +46,7 @@ func run()->void:
  check(is_equal_approx(quote.effects.weapons.current,g.reactor_multiplier("weapons")) and is_equal_approx(quote.effects.weapons.next,1+pow(46.0+90*g.charge_free_ratio(),float(g.db.config.reactorBoostExponent))/float(g.db.config.reactorPercentScale)),"Current and next multipliers correspond to effective supply")
  check(JSON.stringify(g.profile)==before and g.rng.state==rng_before and g.edit_key.is_empty(),"Refresh and quotation never normalize or write the saved preset")
  p.step_allocation("weapons",-1)
- check(g.edit_key=="weapons" and g.edit_value==38-int(scene.db.config.reactorAllocationStep),"Explicit step starts at the visible effective38 instead of saved50")
+ check(g.edit_key=="weapons" and g.edit_value==maxi(0,38-int(scene.db.config.reactorAllocationStep)),"Explicit step starts at the visible effective38 instead of saved50")
  g.limited=false;p.on_game_event("hyperspace_drone_restored",{});check(p.dirty,"Actual restoration event invalidates the panel")
  p.refresh_pending(0)
  check(weapon.slider.value==50 and weapon.energy.text==UIText.t("reactor.flow.manual",{"amount":"50","capacity":"100"}) and p.allocation_hint.text!=UIText.t("reactor.temporary_supply"),"Restoration displays the original preset and clears the temporary explanation")

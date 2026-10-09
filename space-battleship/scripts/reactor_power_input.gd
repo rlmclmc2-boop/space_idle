@@ -2,8 +2,10 @@ extends Control
 
 var slider: HSlider
 var track: Control
-var capacity := 1
-var available_max := 0
+signal allocation_requested(value)
+const I=preload("res://scripts/reactor_integer.gd")
+var capacity = 1
+var available_max = 0
 var dragging := false
 
 func _ready() -> void:
@@ -43,10 +45,17 @@ func _input(event: InputEvent) -> void:
 
 func apply_pointer(local_x: float) -> void:
 	var fraction := clampf(local_x/maxf(size.x,1.0),0.0,1.0)
-	var continuous := minf(fraction*float(capacity),float(available_max))
-	var value := mini(roundi(fraction*float(capacity)),available_max)
-	track.set_preview_ratio(continuous/maxf(float(capacity),1.0))
-	slider.value = value
+	if slider.get_meta("reactor_normalized",false):
+		var value=I.minimum(I.share(capacity,roundi(fraction*1000000000),1000000000)[0],available_max)
+		var ratio:=I.ratio(value,capacity)
+		track.set_preview_ratio(minf(fraction,I.ratio(available_max,capacity)))
+		slider.set_value_no_signal(ratio)
+		allocation_requested.emit(value)
+	else:
+		var continuous := minf(fraction*float(capacity),float(available_max))
+		var value := mini(roundi(fraction*float(capacity)),int(available_max))
+		track.set_preview_ratio(continuous/maxf(float(capacity),1.0))
+		slider.value = value
 
 func finish_drag(local_x: float) -> void:
 	apply_pointer(local_x)

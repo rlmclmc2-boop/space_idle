@@ -20,11 +20,12 @@ static func schema() -> Dictionary:
  for key in ["hightechLevels","scientistAssignments"]:result[key]={"*":"i"}
  result.reactorAllocation={"*":"reactor_integer"}
  result.reactorIntegerVersion="i"
+ for key in ["furnaceIncomePeak","jewelFurnaceIncomePeak"]:result[key]="g"
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
- result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
+ result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"g","hightech":"b","jewel":"b","jewelRatio":"n"}]
  result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
  result.hyperspaceReceipt={"round":"i","run":"i","drone_id":"s","unread":"b"}
  return result
@@ -125,6 +126,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,4,BattleGame.SAVE_VERSION]:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
+ if raw.has("reactorIntegerVersion") and int(raw.reactorIntegerVersion)!=1:return {"error":"version"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
  for key in raw.get("galaxies",{}):
@@ -139,6 +141,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
  var candidate:=BattleGame.new(db,false)
  candidate.load_progress_data(clean(raw,schema()))
+ if raw.has("reactorLevel") and int(raw.reactorLevel)>=int(db.config.reactorInitialLevel) and int(raw.reactorLevel)!=int(candidate.profile.reactorLevel):return {"error":"format"}
  candidate.reset_player()
  return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip}
 

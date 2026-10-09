@@ -25,6 +25,16 @@ func run()->void:
  check(I.add(I.multiply(q[0],7),q[1])==I.multiply(huge,3),"1000-digit exact arithmetic identity")
  print("1000-digit arithmetic usec: ",Time.get_ticks_usec()-begin)
  check(I.as_growth(huge).e==999 and I.ratio(huge,I.multiply(huge,2))==0.5,"Compact conversion and ratios do not expand UI text")
+ var arithmetic_rng:=RandomNumberGenerator.new();arithmetic_rng.seed=5215
+ var identities:=true
+ for index in 80:
+  var divisor:=str(arithmetic_rng.randi_range(1,9999))+"0123456789".repeat(arithmetic_rng.randi_range(2,25))
+  var quotient=I.normalize(str(arithmetic_rng.randi_range(1,9999))+"8765432109".repeat(arithmetic_rng.randi_range(0,20)))
+  var remainder:int=arithmetic_rng.randi_range(0,9999)
+  var numerator=I.add(I.multiply(divisor,quotient),remainder)
+  var actual:=I.divmod(numerator,divisor)
+  identities=identities and actual[0]==quotient and actual[1]==remainder
+ check(identities,"Seeded multi-limb quotient estimates preserve known quotient and remainder")
  var db=ShipDatabase.new();var game=BattleGame.new(db,false)
  game.profile.highestLevel=20;game.profile.cleared=range(1,20);game.rebuild_unlocks();game.profile.reactorLevel=215;game.profile.reactorAllocation.weapons=9007199254740993
  var exported:Dictionary=game.portable_save_data();var parsed:Dictionary=JSON.parse_string(JSON.stringify(exported))

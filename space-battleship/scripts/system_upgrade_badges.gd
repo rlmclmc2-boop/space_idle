@@ -122,8 +122,8 @@ func build_quotes(index: int) -> Array:
 				result.append(game.scientist_cost(0))
 		2:
 			if game.reactor_unlocked():
-				var cost: float = game.reactor_upgrade_cost()
-				if is_finite(cost) and cost > 0:result.append({str(int(game.db.config.reactorUraniumId)):cost})
+				var cost = game.reactor_upgrade_cost()
+				if GrowthNumber.valid(cost) and GrowthNumber.compare(cost,0)>0:result.append({str(int(game.db.config.reactorUraniumId)):cost})
 		4:
 			if game.enhancement_unlocked() and not game.enhancement_at_limit():result.append({"fragments":game.enhancement_cost()})
 		9:result = drone_quotes()
