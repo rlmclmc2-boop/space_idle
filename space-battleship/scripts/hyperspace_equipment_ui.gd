@@ -52,6 +52,7 @@ static func next_hull(g,capacity:int) -> Dictionary:
 func select_slot(index:int) -> void:
  var ids:Array=panel.host.game.profile.hyperspace.inventory.equipped
  if index>=ids.size():return
+ if not panel.forge_pick_state.is_empty():panel.finish_forge_pick(str(ids[index]));return
  panel.selected_id=str(ids[index]);panel.refresh_details()
 func activate() -> void:
  var g=panel.host.game;var bag:Dictionary=g.profile.hyperspace.inventory
