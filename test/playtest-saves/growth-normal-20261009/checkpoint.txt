@@ -1,4 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367. Gameplay code unchanged. Independent normal new save, original cloud Xorg:99 GUI x1.
-Checkpoint13 2026-10-09 14:48:13.912609+00:00 paused at first main7 Boss9/9. Completed main1-6, A1/A2 side passed normally, rewards claimed. Original blue pulse armor16crit1 retained over blue2 attack2. No background run currently active.
-Reactor16 AI10, beams allLv20, armor22 shield21, Fe653 U89. Actual Boss hover armor5.06M physical-resistant no shield; label armor-sensing unexplained.
-Normal operation/screenshot/manual save confirmed original environment working. Next continue main7 to20, stop20 save/close.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367, gameplay source diff0. Independent normal new save original cloud Xorg:99 x1 GUI.
+Checkpoint14 2026-10-09 14:53:25.626438+00:00 main8 wave4 paused after first8/6 failure, physically dominated per failure comparison. Completed1-7, sideA1/A2 normal rewards. Main7 first observedBoss cleared within next50sec, did not itself wall.
+Actual8 enemy hover energy-resistant armor213K/no shield, changed all3 weapons to missiles22/21/21 and dualarmor22/23, HP967K. Previousallbeam persistence was player mismatch, not exclusively balance failure. Reactor16 AI10, enhancement unlocked8 but only9/100fragments so no enhancement yet.
+Manual save/mouse/screenshot actual success confirms original environment. Next continue8 through20, stop20 save/close. No injections, no game source decisions, no old saves/reports.
