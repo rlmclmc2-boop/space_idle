@@ -9973,6 +9973,15 @@
     },
     "battle.damage_stats.advanced": {
       "params": []
+    },
+    "hyperspace.module_requirement_stage": {
+      "params": [
+        "stage",
+        "current"
+      ]
+    },
+    "hyperspace.module_requirement_obtain": {
+      "params": []
     }
   },
   "bindings": {

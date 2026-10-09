@@ -453,7 +453,8 @@ func show_modules() -> void:
   choice.visible=known;choice.disabled=not usable or int(d.hanging_slots)==0 or d.ultimate or panel.bag.sealed.has(module_id)
   choices.add_child(choice);panel.checkbox_skin(choice);module_choices.append(choice)
   if choice.visible:
-   var description=dialog_label(choices,module_effect_text(str(key),int(progress.level))+"\n"+module_progress_text(str(key)),18)
+   var requirement:String=module_requirement_text(str(key))
+   var description=dialog_label(choices,(requirement+"\n" if not requirement.is_empty() else "")+module_effect_text(str(key),int(progress.level))+"\n"+module_progress_text(str(key)),18)
    description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;description.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   choice.toggled.connect(func(_pressed):refresh_module_apply())
  if unlocked==0:dialog_label(body,t("module_none_unlocked"),21)
@@ -465,6 +466,14 @@ func show_modules() -> void:
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
  refresh_module_apply()
  module_dialog.popup_centered(Vector2i(740,510))
+func module_requirement_text(key:String) -> String:
+ var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
+ var stage:int=int(h().config.hanging_modules[key].unlock_stage)
+ var current:int=int(game().profile.highestLevel)
+ var conditions:PackedStringArray=[]
+ if not bool(progress.unlocked):conditions.append(t("module_requirement_obtain"))
+ if current<stage:conditions.append(t("module_requirement_stage",{"stage":str(stage),"current":str(current)}))
+ return "\n".join(conditions)
 func has_effective_modules() -> bool:
  for key in h().config.hanging_modules:
   var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]

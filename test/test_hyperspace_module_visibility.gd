@@ -21,7 +21,7 @@ func capture(commands,label:String)->void:
  commands.module_dialog.get_texture().get_image().save_png(dir.path_join(label+".png"))
 func _initialize()->void:call_deferred("run")
 func run()->void:
- root.size=Vector2i(1280,800);root.gui_embed_subwindows=true
+ root.size=Vector2i(1178,814);root.gui_embed_subwindows=true
  var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"];root.add_child(scene);scene.set_process(false)
  var g=scene.game;g.paused=true;g.save_enabled=false;g.profile.highestLevel=40;g.profile.cleared=range(1,40);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.onboarding.completed=true;g.profile.hyperspace.unlocked_drones=true
  var rng=RandomNumberGenerator.new();rng.seed=12345
@@ -48,5 +48,25 @@ func run()->void:
  p.refresh_manual_status();p.dirty=true;p.refresh();p.selected_id=d.id;commands.show_modules();await capture(commands,"03-existing-assets-below-gate")
  check(keys(commands)==["resource_collector","distributed_algorithm","extra_storage","gem_refiner"],"Installed module, accumulated levels/experience and owned module below gate stay visible")
  check(commands.module_choices[0].button_pressed and commands.module_choices.all(func(choice):return choice.disabled),"Existing installed information survives while unavailable choices remain disabled")
+ commands.module_dialog.hide()
+ # Owned Lv1 module and one free slot: the unmet progress gate must be explicit.
+ g.profile.hyperspace.hanging_modules=Rewards.module_progress(g.hyperspace.config)
+ g.profile.hyperspace.hanging_modules.gem_refiner={"unlocked":true,"level":1,"exp":0}
+ var owned_carrier:Dictionary=g.profile.hyperspace.inventory.drones[d.id]
+ owned_carrier.hangings=[];owned_carrier.hanging_slots=1;g.profile.hyperspace.inventory.generation+=1;g.profile.highestLevel=7
+ p.refresh_manual_status();p.selected_id=d.id
+ var owned_before=g.profile.duplicate(true);var rng_before=g.rng.state
+ commands.show_modules();await capture(commands,"04-owned-refiner-one-free-slot")
+ var gate:int=int(g.hyperspace.config.hanging_modules.gem_refiner.unlock_stage)
+ check(labels(commands.module_dialog).contains(p.t("module_slots",{"used":"0","cap":"1"})),"Fixture shows one genuinely free hanging slot")
+ check(keys(commands)==["gem_refiner"] and commands.module_choices[0].disabled,"Owned refiner is blocked by progress despite a free slot")
+ check(labels(commands.module_dialog).contains(p.t("module_requirement_stage",{"stage":str(gate),"current":"7"})) and not labels(commands.module_dialog).contains(p.t("module_no_slots")),"Owned module states the actual missing stage without claiming a capacity shortage")
+ check(g.profile==owned_before and g.rng.state==rng_before,"Opening condition details changes no progress or RNG")
+ commands.module_dialog.hide()
+ g.profile.highestLevel=gate;commands.show_modules()
+ check(not commands.module_choices[0].disabled and commands.module_requirement_text("gem_refiner").is_empty(),"Meeting the exact gate removes the warning and allows selection")
+ commands.module_dialog.hide()
+ g.hyperspace.config.hanging_modules.gem_refiner.unlock_stage=gate+4;commands.show_modules()
+ check(commands.module_choices[0].disabled and labels(commands.module_dialog).contains(p.t("module_requirement_stage",{"stage":str(gate+4),"current":str(gate)})),"Condition follows a distinct configured threshold rather than hard-coded stage 15")
  commands.module_dialog.hide();scene.queue_free();await process_frame
  print("MODULE VISIBILITY: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

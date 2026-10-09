@@ -15525,7 +15525,7 @@
   },
   {
     "key": "hyperspace.module_none_available",
-    "text": "当前没有可安装的模块；继续推进主线后再回来查看。",
+    "text": "已持有的模块暂不可安装；开放条件见上方模块说明。",
     "params": "",
     "category": "hyperspace",
     "note": "仅按当前无人机／模块状态提示"
@@ -18243,5 +18243,19 @@
     "text": "高阶",
     "params": "",
     "category": "battle"
+  },
+  {
+    "key": "hyperspace.module_requirement_stage",
+    "text": "主线最高进度需达到第{stage}关后可安装（当前第{current}关）。",
+    "params": "stage,current",
+    "category": "hyperspace",
+    "note": "仅管理挂载模块窗口显示已知模块的实际未满足条件"
+  },
+  {
+    "key": "hyperspace.module_requirement_obtain",
+    "text": "需先拆解无人机获得此模块。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "仅管理挂载模块窗口显示已知模块的实际未满足条件"
   }
 ]
