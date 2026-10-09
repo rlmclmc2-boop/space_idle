@@ -12,7 +12,7 @@ func key(code:int,down:bool,echo:=false)->void:
  await process_frame
 func _initialize()->void:call_deferred("run")
 func run()->void:
- if DisplayServer.get_name()=="headless":quit(2);return
+ var headless=DisplayServer.get_name()=="headless"
  root.size=Vector2i(1180,812)
  var scene=load("res://main.tscn").instantiate();scene.set_script(IsolatedUI);scene.automation_args=["--capture"];root.add_child(scene);scene.automation_args=[];scene.set_process(false)
  await process_frame;await process_frame
@@ -21,9 +21,12 @@ func run()->void:
  var button:Button=scene.equipment_panel.cards.weapons_0.upgrade_button
  var initial:int=g.module_entry("weapons",0).level
  var point:Vector2=root.get_final_transform()*button.get_global_transform_with_canvas()*(button.size/2)
- for down in [true,false]:
-  var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;event.position=point;Input.parse_input_event(event);await process_frame
- check(g.module_entry("weapons",0).level==initial+1,"Actual mouse purchase succeeds")
+ if headless:
+  button.pressed.emit();button.grab_focus()
+ else:
+  for down in [true,false]:
+   var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;event.position=point;Input.parse_input_event(event);await process_frame
+ check(g.module_entry("weapons",0).level==initial+1,"Initial purchase succeeds (signal fixture when headless, actual mouse otherwise)")
  check(root.gui_get_focus_owner()==button,"Upgrade retains keyboard focus")
  var level:int=g.module_entry("weapons",0).level
  var cash:float=g.profile.resources["1"]
@@ -56,7 +59,28 @@ func run()->void:
  await key(KEY_SPACE,false)
  check(g.paused,"Text input does not toggle pause")
  check(edit.text==" ","Space remains available to text input")
- edit.queue_free();button.grab_focus();await process_frame
+ edit.queue_free()
+ g.profile.highestLevel=3;g.profile.cleared=[1,2];g.rebuild_unlocks();g.pending_unlocks.clear()
+ scene.equipment_panel.refresh();await process_frame
+ var card=scene.equipment_panel.cards.weapons_0
+ var picker:OptionButton=card.name_button
+ var missile_index:int=card.equipment_options.find("missile")
+ check(missile_index>=0,"Stage-three quick weapon picker offers missile")
+ if missile_index>=0:
+  picker.select(missile_index);picker.item_selected.emit(missile_index)
+  picker.grab_focus();await process_frame
+  check(g.module_entry("weapons",0).key=="missile" and root.gui_get_focus_owner()==picker,"Quick missile selection leaves native dropdown focused")
+  var selected_state=JSON.stringify(g.profile)
+  await key(KEY_SPACE,true)
+  check(not g.paused and not picker.get_popup().visible,"Space resumes without reopening the focused dropdown")
+  await key(KEY_SPACE,true,true);await key(KEY_SPACE,false)
+  check(not g.paused and not picker.get_popup().visible and JSON.stringify(g.profile)==selected_state,"Space echo and release neither reopen nor reselect equipment")
+  await key(KEY_SPACE,true);await key(KEY_SPACE,false)
+  check(g.paused and not picker.get_popup().visible,"Next Space pauses without opening the dropdown")
+  await key(KEY_ENTER,true);await key(KEY_ENTER,false)
+  check(g.paused and picker.get_popup().visible,"Enter still deliberately opens the focused dropdown")
+  picker.get_popup().hide()
+ button.grab_focus();await process_frame
  await key(KEY_SPACE,true)
  check(not g.paused,"Space resumes before focus interruption")
  scene.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
@@ -64,7 +88,8 @@ func run()->void:
  await key(KEY_SPACE,true);await key(KEY_SPACE,false)
  check(g.paused,"Focus interruption cannot leave Space latched")
  check(g.module_entry("weapons",0).level==level and g.profile.resources["1"]==cash,"Focus interruption does not purchase")
- await RenderingServer.frame_post_draw
- root.get_texture().get_image().save_png("res://../pause-key-focus.png")
+ if not headless:
+  await RenderingServer.frame_post_draw
+  root.get_texture().get_image().save_png("res://../pause-key-focus.png")
  print("RESULT checks=",checks," failures=",failures)
  quit(1 if failures else 0)

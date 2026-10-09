@@ -563,7 +563,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		var focus := get_viewport().gui_get_focus_owner()
-		if event.pressed and not event.echo and focus is Button and not focus is OptionButton and focus.get_window() == get_window():
+		if event.pressed and not event.echo and focus is Button and focus.get_window() == get_window():
 			if not (is_instance_valid(balance_lab) and balance_lab.visible):
 				space_pause_held = true
 				_unhandled_input(event)
