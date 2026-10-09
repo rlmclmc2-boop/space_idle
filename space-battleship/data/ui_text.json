@@ -17384,5 +17384,33 @@
     "params": "",
     "category": "reactor",
     "note": "现有全轨道输入及available_max限制的提示；不自动挪用其他模块能源"
+  },
+  {
+    "key": "hyperspace.master_current_reduction",
+    "text": "当前全舰减伤：{value}%",
+    "params": "value",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_owned_cap",
+    "text": "本架效果上限",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_not_active",
+    "text": "当前没有生效的无人机大师效果。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
+  },
+  {
+    "key": "hyperspace.master_other_source",
+    "text": "当前采用另一架的同类效果；同类只取最强。",
+    "params": "",
+    "category": "hyperspace",
+    "note": "只读现行受伤路径的无人机大师减伤，区分当前全舰与本架存储上限"
   }
 ]

@@ -9385,6 +9385,20 @@
     },
     "reactor.allocation_pointer_hint": {
       "params": []
+    },
+    "hyperspace.master_current_reduction": {
+      "params": [
+        "value"
+      ]
+    },
+    "hyperspace.master_owned_cap": {
+      "params": []
+    },
+    "hyperspace.master_not_active": {
+      "params": []
+    },
+    "hyperspace.master_other_source": {
+      "params": []
     }
   },
   "bindings": {

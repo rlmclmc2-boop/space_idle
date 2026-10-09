@@ -345,6 +345,7 @@ func on_event(kind: String,_payload: Dictionary) -> void:
  commands.exchange_ui.on_event(kind,_payload)
  if kind in ["hyperspace_changed","hyperspace_queue","unlocks_changed","ship_changed","hyperspace_rebuild","hyperspace_drone_restored","state","upgrade","upgrades_completed","equipment_stats","equipment_changed"]:
   dirty=true
+  legendary_help.refresh_open()
   if kind=="hyperspace_changed" and (str(_payload.get("reason",""))=="claimed" or str(_payload.get("reason","")).begins_with("forge_")):
    if commands.materials_box!=null and commands.materials_box.is_visible_in_tree():
     commands.refresh_materials.call_deferred()
@@ -442,7 +443,7 @@ func refresh_details() -> void:
  if has_effect:
   var caption=t("legendary_info",{"name":effect_name(effect_id)})
   put(legendary_button,"text",caption);put(forge_legendary_button,"text",caption)
-  put(legendary_summary,"text",legendary_help.summary(effect_id))
+  put(legendary_summary,"text",legendary_help.summary(effect_id)+("\n"+legendary_help.master_status(selected_id) if effect_id=="drone_master" else ""))
  if section_index==2:
   put(forge_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":flags(selected_id,bag.drones[selected_id])}))
   put(forge_details,"text",t("choose") if not valid else t("forge_capacity_summary",{"affixes":str(bag.drones[selected_id].affixes.size()),"affix_cap":str(Bag.affix_limit(bag.drones[selected_id],host.game.hyperspace.config)),"slots":str(int(bag.drones[selected_id].hanging_slots)),"slot_cap":str(Bag.hanging_limit(bag.drones[selected_id],host.game.hyperspace.config))}))
@@ -501,7 +502,7 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
  commands.maximum.button_pressed=bool(state.maximum)
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
-  legendary_help.show(bag.drones[selected_id].legendary_effect)
+  legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
 func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
