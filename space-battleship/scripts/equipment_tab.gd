@@ -232,6 +232,7 @@ func build_detail() -> void:
 	detail.equip.position = Vector2(18,254)
 	detail.equip.size = Vector2(535,52)
 	detail.description = label(detail_body,"",Rect2(18,326,535,70),20,NAVY)
+	detail.description.set_script(preload("res://scripts/enhancement_tooltip.gd").HoverLabel)
 	detail.description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	detail.description.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	detail_actions = GridContainer.new()
@@ -395,7 +396,7 @@ func change_card_equipment(id: String, key: String) -> void:
 func choose_equipment(index: int) -> void:
 	if index<0 or index>=slot_options.size():return
 	pending_key = str(slot_options[index])
-	refresh_confirm()
+	refresh_detail({},true)
 	if picker_open and not detail.equip.disabled:
 		change_equipment(pending_key)
 
@@ -689,6 +690,30 @@ func refresh_affordability_detail() -> void:
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
 
+func refit_summary(entry: Dictionary, projection: Dictionary = {}) -> Dictionary:
+	var key := str(entry.get("key",""))
+	if key.is_empty():return {"name":UIText.t("equipment.vacant"),"stat":UIText.t("equipment.refit_empty"),"context":"—","notes":""}
+	# A copied slot keeps its level/gems; this snapshot never equips or rolls.
+	if projection.is_empty():projection = host.equipment_display_snapshot(entry)
+	var row: Dictionary = host.db.equip(key,int(entry.level))
+	var type := UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical")
+	var defensive: bool = key in BattleGame.DEFENSE_KEYS
+	var context: String = UIText.t("equipment.refit_resistance",{"type":type,"percent":host.number(host.game.enhancement_branches.resistance(host.game,entry,float(host.db.config.dmgReduce))*100)}) if defensive else UIText.t("equipment.attribute",{"label":UIText.t("equipment.damage_type"),"value":type})
+	var stat_label := UIText.t("defense.shield" if key=="shield" else ("defense.armour" if key=="armour" else "weapon.expected_damage"))
+	return {"name":host.NAMES.get(key,key),"stat":stat_label+" "+host.number(projection.expected) if defensive else rate_title(projection)+" "+rate_value(projection),"context":context,"notes":"" if defensive else rate_notes(projection)}
+
+func refit_comparison(entry: Dictionary) -> Dictionary:
+	var candidate := entry.duplicate(true)
+	candidate.key = pending_key
+	var current := refit_summary(entry)
+	var next := refit_summary(candidate,host.EQUIPMENT_DISPLAY.refit_snapshot(host.game,entry,pending_key))
+	var text := UIText.t("equipment.refit_comparison",{"current":current.name,"current_stat":current.stat,"current_type":current.context,"next":next.name,"next_stat":next.stat,"next_type":next.context,"level":host.game.permanent_level_text(int(entry.level),"equipment")})
+	var tooltip: String=text
+	if str(entry.key) in BattleGame.WEAPON_KEYS or pending_key in BattleGame.WEAPON_KEYS:
+		text+="\n"+UIText.t("equipment.refit_rate_scope")
+		tooltip+="\n\n"+current.name+"\n"+current.notes+"\n\n"+next.name+"\n"+next.notes
+	return {"text":text,"tooltip":tooltip}
+
 func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	if not items.has(selected):return
 	var item: Dictionary = items[selected]
@@ -742,7 +767,16 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		description+=host.equipment_detail_text(entry)+"\n"+equipment_attributes(entry)+"\n"
 		if key=="longLaser":description=UIText.t("equipment.continuous_beam_snapshot_hint")+"\n"+description
 	description += UIText.t("upgrade.cost_one",{"cost":cost})
-	host.set_ui_value(detail.description,"text",item.description)
+	var comparing: bool = pending_key!=key
+	var comparison: Dictionary=refit_comparison(entry) if comparing else {}
+	host.set_ui_value(detail.description,"text",comparison.text if comparing else item.description)
+	host.set_ui_value(detail.description,"tooltip_text",comparison.tooltip if comparing else item.description)
+	# Keep the comparison beside the confirmation; retain all control instances.
+	var comparison_extra := (140.0 if item.category=="weapons" else 80.0) if comparing else 0.0
+	host.set_ui_value(detail.description,"size",Vector2(535,70+comparison_extra))
+	host.set_ui_value(detail_actions,"position",Vector2(18,414+comparison_extra))
+	host.set_ui_value(detail.more,"position",Vector2(18,542+comparison_extra))
+	for attributes in [detail.stats,detail.basics]:host.set_ui_value(attributes,"position",Vector2(18,608+comparison_extra))
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
 	var row: Dictionary = (host.game.player_weapon_row(entry) if category=="weapons" else host.db.equip(key,int(entry.level))) if not key.is_empty() else {}

@@ -735,7 +735,10 @@ func _refresh_facility_dialog() -> void:
 	var numeric := kind in ["refinery", "equipment"]
 	host.set_ui_value(facility_dialog, "title", str(row.name))
 	host.set_ui_value(facility_title, "text", str(row.name))
-	host.set_ui_value(facility_description, "text", str(row.des))
+	var description=UIText.t("planet.shipyard_ready_hint") if kind=="shipyard" and status=="ready" else UIText.t("planet.shipyard_built_hint") if kind=="shipyard" and built else str(row.des)
+	if kind=="shipyard" and built and bool(g.planet_progress(id).get("conquered",false)):
+		description=preload("res://scripts/hyperspace_reforge_dialog.gd").retention_receipt_text(g)
+	host.set_ui_value(facility_description,"text",description)
 	host.set_ui_value(facility_icon, "texture", Art.facility(kind))
 	host.set_ui_value(facility_effect_heading, "text", UIText.t("planet.effect.current" if built else "planet.effect.after_build"))
 	if numeric:
@@ -748,7 +751,7 @@ func _refresh_facility_dialog() -> void:
 		status_text += " · " + UIText.t("planet.facility_remaining", {"count":exploration_count_text(GrowthNumber.ceiling(GrowthNumber.subtract(row.unlock_explore, g.planet_progress(id).degree)))})
 	elif status == "building":
 		status_text += " · " + UIText.t("planet.facility_progress", {"progress":exploration_count_text(state.get("build_progress", 0)), "total":exploration_count_text(row.build_explore)})
-		if int(row.extra_crew) > 0:status_text += "\n" + UIText.t("planet.extra", {"count":state.get("crew", []).size(), "required":exploration_count_text(row.extra_crew)})
+		if int(row.extra_crew) > 0:status_text += "\n" + UIText.t("planet.extra", {"count":state.get("crew", []).size(), "required":exploration_count_text(row.extra_crew)}) + "\n" + UIText.t("planet.builder_choice_hint")
 	host.set_ui_value(facility_status, "text", status_text)
 	var can_build := status == "building" and int(row.extra_crew) > 0
 	var can_auto := built and kind == "auto_explore"
@@ -799,6 +802,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 		if g.idle_planet_crew(str(member.crewId)):
 			ids.append(str(member.crewId))
 			popup.add_item(str(g.crew.definitions(g)[member.crewId].name))
+			popup.set_item_tooltip(popup.item_count-1,UIText.t("planet.builder_choice_hint"))
 			if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
 	for member_id in builders:
 		ids.append(str(member_id))
@@ -833,7 +837,9 @@ func _confirm_reforge(id: String) -> void:
 	var rewards: Array=host.game.db.data.get("planet_buff",{}).values().filter(func(row):return str(int(row.planet_id))==id and str(row.source)=="conquer")
 	rewards.sort_custom(func(a,b):return float(a.order)<float(b.order) if a.order!=b.order else int(a.id)<int(b.id))
 	var descriptions: PackedStringArray=[]
-	for row in rewards:descriptions.append(host.game.planet_buffs.description(row))
+	for row in rewards:
+		if str(row.buff_type)=="planet_unlock" and not host.game.planet_unlocked(str(int(row.value))):descriptions.append(UIText.t("planet.reforge_next_planet"))
+		else:descriptions.append(host.game.planet_buffs.description(row))
 	dialog.setup(host.game,id,"\n".join(descriptions))
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)

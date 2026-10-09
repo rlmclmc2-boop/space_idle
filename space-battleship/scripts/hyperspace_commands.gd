@@ -30,8 +30,9 @@ var guide_dialog: AcceptDialog
 var guide_label: Label
 var guide_choice: OptionButton
 var guide_scroll: ScrollContainer
-var result_scroll: ScrollContainer
+var result_scroll: VBoxContainer # Kept as the panel-owned reparenting slot.
 var result_details: Label
+var result_extra: Label
 var materials_box: VBoxContainer
 var material_rows: Dictionary={}
 var material_stock: Label
@@ -74,12 +75,14 @@ func build_forge(parent: Node) -> void:
  dismantle_hint=panel.label(parent,t("dismantle_source_hint"),21)
  restore_hint=panel.label(parent,t("restore_modernize_hint"),21)
  feedback=panel.label(parent,"",21);quote_label=panel.label(parent,t("quote_first"),21)
- result_scroll=ScrollContainer.new();result_scroll.custom_minimum_size.y=96;result_scroll.size_flags_vertical=Control.SIZE_FILL;result_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;parent.add_child(result_scroll)
+ result_scroll=panel.box(parent,4);result_scroll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  result_details=panel.label(result_scroll,"",18);result_details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_scroll.visible=false
+ result_extra=panel.label(result_scroll,"",18);result_extra.size_flags_horizontal=Control.SIZE_EXPAND_FILL;result_extra.visible=false
  promotion_hint.visible=false;dismantle_hint.visible=false;restore_hint.visible=false;quote_label.visible=false
  configure_operation()
 func invalidate() -> void:
  quoted_request={};commit_button.disabled=true;quote_label.text=t("quote_first");feedback.text=""
+ quote_label.tooltip_text="";feedback.tooltip_text=""
  refresh_result(game().profile.hyperspace.inventory.drones.get(panel.selected_id,{}))
  refresh_materials.call_deferred()
 func refresh_materials(quoted: Dictionary={}) -> void:
@@ -96,19 +99,23 @@ func refresh_materials(quoted: Dictionary={}) -> void:
  var costs:Dictionary=result.get("cost",{})
  var op=str(operation.get_item_metadata(operation.selected))
  var keys:Dictionary=costs if not costs.is_empty() else h().config.forge_costs.get(op,{})
- var stocks:Array[String]=[];missing_material=""
+ var stocks:Array[String]=[];var exact_stocks:Array[String]=[];missing_material=""
  for key in material_rows:
   var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
-  if key!="ultimate_cores" or available>0 or keys.has(key):stocks.append(t("material_owned",{"material":t(key),"owned":str(available)}))
+  if key!="ultimate_cores" or available>0 or keys.has(key):
+   stocks.append(t("material_owned",{"material":t(key),"owned":material_number(available)}))
+   exact_stocks.append(t("material_owned",{"material":t(key),"owned":str(available)}))
   panel.put(material_rows[key],"visible",keys.has(key))
   if not keys.has(key):continue
   var exact=costs.has(key)
   var need=int(costs.get(key,0));var shortage=maxi(0,need-available)
-  panel.put(material_rows[key],"text",t("material_requirement",{"material":t(key),"need":str(need) if exact else "—","owned":str(available),"missing":str(shortage) if exact else "—"}))
+  panel.put(material_rows[key],"text",t("material_requirement",{"material":t(key),"need":material_number(need) if exact else "—","owned":material_number(available),"missing":material_number(shortage) if exact else "—"}))
+  panel.put(material_rows[key],"tooltip_text",t("material_requirement",{"material":t(key),"need":str(need) if exact else "—","owned":str(available),"missing":str(shortage) if exact else "—"}))
   var color=Color("b32929") if shortage>0 else Color("243d50")
   if material_rows[key].get_theme_color("font_color")!=color:material_rows[key].add_theme_color_override("font_color",color)
   if shortage>0 and missing_material.is_empty():missing_material=key
  panel.put(material_stock,"text"," · ".join(stocks))
+ panel.put(material_stock,"tooltip_text","\n".join(exact_stocks))
  var message=t("material_heading")
  if req.is_empty():message=t("choose")
  elif deferred_forecast:message=t("material_forecast_needed")
@@ -181,11 +188,13 @@ func request(requested_operation:String="") -> Dictionary:
    if int(key)<=int(game().profile.highestLevel):target=maxi(target,int(key))
   args.target_level=target
  return {"round_id":s.round_id,"command_seq":s.command_seq,"drone_id":panel.selected_id,"operation":op,"args":args,"expected_revision":d.forge_revision}
-func cost_text(cost: Dictionary) -> String:
+func material_number(value: int,exact: bool=false) -> String:
+ return str(value) if exact else panel.host.number(value)
+func cost_text(cost: Dictionary,exact: bool=false) -> String:
  var values: Array[String]=[]
  for key in cost:
   var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
-  values.append(t("cost_item",{"material":t(str(key)),"cost":str(int(cost[key])),"available":str(available)}))
+  values.append(t("cost_item",{"material":t(str(key)),"cost":material_number(int(cost[key]),exact),"available":material_number(available,exact)}))
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:
  return t("command_error_"+error) if UIText.entries.has("hyperspace.command_error_"+error) else t("command_failed")
@@ -228,6 +237,7 @@ func preview() -> void:
  refresh_materials(result)
  var has_quote= str(result.error).is_empty() or not result.get("cost",{}).is_empty()
  quote_label.text=(t("quote_execution_result",{"cost":cost_text(result.get("cost",{})),"count":str(int(result.get("draws",0)))}) if quoted_request.operation=="modernize" else t("quote_result",{"cost":cost_text(result.get("cost",{})),"draws":str(int(result.get("draws",0)))})) if has_quote else ""
+ panel.put(quote_label,"tooltip_text",cost_text(result.get("cost",{}),true) if has_quote else "")
  if quoted_request.operation=="modernize" and has_quote:quote_label.text=modernization_text(quoted_request)+"\n"+quote_label.text
  if quoted_request.operation=="dismantle" and str(result.error).is_empty():quote_label.text=dismantle_preview_text(quoted_request)+"\n"+quote_label.text
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("quote_ready")
@@ -287,18 +297,23 @@ func execute_quote() -> void:
   for i in mini(previous.affixes.size(),current.affixes.size()):
    if int(previous.affixes[i].tier)!=int(current.affixes[i].tier):changes.append(panel.affix_name(str(current.affixes[i].key))+" T"+str(int(previous.affixes[i].tier))+"→T"+str(int(current.affixes[i].tier)))
   feedback.text=t("promotion_batch_result",{"count":str(int(result.draws)),"changes":"、".join(changes) if not changes.is_empty() else t("promotion_no_change"),"cost":cost_text(result.get("cost",{}))})
+ panel.put(feedback,"tooltip_text",cost_text(result.get("cost",{}),true) if not result.get("cost",{}).is_empty() else "")
+ panel.put(quote_label,"tooltip_text",feedback.tooltip_text)
  result_scroll.visible=str(result.error).is_empty() and result.get("applied",false) and not current.is_empty()
  if result_scroll.visible:
   refresh_result(current)
-  result_scroll.scroll_vertical=0
  panel.dirty=true;panel.refresh()
  refresh_materials()
 func refresh_result(d:Dictionary) -> void:
  var lines:Array[String]=[]
  if not d.is_empty():
-  for a in d.affixes+([d.ultimate_affix] if bool(d.get("ultimate",false)) and not d.ultimate_affix.is_empty() else []):lines.append(panel.affix_summary(a,d))
- panel.put(result_scroll,"visible",not lines.is_empty())
+  for a in d.affixes:lines.append(panel.affix_summary(a,d))
+ var extra:Dictionary=d.get("ultimate_affix",{}) if bool(d.get("ultimate",false)) else {}
+ panel.put(result_scroll,"visible",not lines.is_empty() or not extra.is_empty())
+ panel.put(result_details,"visible",not lines.is_empty())
  panel.put(result_details,"text","\n".join(lines))
+ panel.put(result_extra,"visible",not extra.is_empty())
+ panel.put(result_extra,"text",t("forge_ultimate_extra",{"affix":panel.affix_summary(extra,d)}) if not extra.is_empty() else "")
 func build_dialog(title: String) -> AcceptDialog:
  var dialog=AcceptDialog.new();dialog.title=t(title);dialog.min_size=Vector2i(660,370);dialog.size=Vector2i(740,470);panel.add_child(dialog);preload("res://scripts/dialog_presentation.gd").dialog(dialog)
  return dialog

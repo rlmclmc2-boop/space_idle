@@ -124,13 +124,13 @@
   },
   {
     "key": "enhance.overview.proficiency",
-    "text": "攻击越多，伤害越高 · 历史增伤 +{value}%",
+    "text": "攻击越多，伤害越高 · 当前加成 +{value}%",
     "params": "{value}",
     "category": "enhance"
   },
   {
     "key": "enhance.overview.adaptation",
-    "text": "受击越多，防御越强 · 历史增幅 +{value}%",
+    "text": "受击越多，防御越强 · 当前加成 +{value}%",
     "params": "{value}",
     "category": "enhance"
   },
@@ -172,13 +172,13 @@
   },
   {
     "key": "enhance.description.proficiency.runtime",
-    "text": "适用武器的历史增伤为 {bonus}%，以本件武器强化前伤害为基准；已启用 A 分支固定增伤 {branch}% 另乘。全局累计主攻击 {count} 次。持续锁定的短时增长见分支。",
+    "text": "适用武器的当前伤害加成为 {bonus}%，以本件武器强化前伤害为基准；已启用 A 分支固定增伤 {branch}% 另乘。全局累计主攻击 {count} 次。持续锁定的短时增长见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
   {
     "key": "enhance.description.adaptation.runtime",
-    "text": "适用防御模块的历史增幅为 {bonus}%，以本模块强化前最大防御为基准；已启用 A 分支固定增幅 {branch}% 另乘。全局累计受击 {count} 次。其他减伤与护罩见分支。",
+    "text": "适用防御模块的当前防御加成为 {bonus}%，以本模块强化前最大防御为基准；已启用 A 分支固定增幅 {branch}% 另乘。全局累计受击 {count} 次。其他减伤与护罩见分支。",
     "params": "{count},{bonus},{branch}",
     "category": "enhance"
   },
@@ -14894,14 +14894,14 @@
   },
   {
     "key": "hyperspace.forge_guide_ultimate",
-    "text": "想把它变成究极？\n请先完成还想做的普通改造和挂载模块调整，再点击「究极化」。确认窗会说明效果、限制与消耗。\n究极状态下，不能继续常规改造或更换挂载模块。可以另花核心还原后再改造；还原不退回已花核心，额外词条暂时失效，重新究极化会恢复原词条。",
+    "text": "想把它变成究极？\n请先完成还想做的普通改造和挂载模块调整，再点击「究极化」。确认窗会说明效果、限制与消耗。\n究极状态下，不能继续常规改造或更换挂载模块。可以另花核心还原后再改造；还原不退回已花核心，额外词条暂时失效，重新究极化会恢复原词条。额外词条不能用常规改造调整；还原后也不能升阶或重随机数值。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
   },
   {
     "key": "hyperspace.forge_guide_restore_ultimate",
-    "text": "想继续改造究极无人机？\n点「还原究极」，核对确认窗后执行。还原会解除究极状态，额外词条暂时失效；之后重新究极化，会恢复这条原词条。\n还原也要花核心，不退回以前花的核心，不会提高等级。需要提升等级时，再做现代化。",
+    "text": "想继续改造究极无人机？\n点「还原究极」，核对确认窗后执行。还原会解除究极状态，额外词条暂时失效；之后重新究极化，会恢复这条原词条；还原期间也不能给它升阶或重随机数值。\n还原也要花核心，不退回以前花的核心，不会提高等级。需要提升等级时，再做现代化。",
     "params": "",
     "category": "hyperspace",
     "note": "改造指南按当前操作主动查阅；不展示其他操作章节"
@@ -14967,7 +14967,7 @@
   },
   {
     "key": "planet.reforge_drones",
-    "text": "改造命令与挂载模块成长重置。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。请在本窗口选择保留名单；未选择的无人机将删除。",
+    "text": "改造命令、挂载模块的解锁和等级重置。安装记录保留，但要重新获得、升级模块才有加成。未选保留的无人机删除；选保留的无人机封存并卸装，达到各自领取关卡后才能领取。请在本窗口选择保留名单；未选择的无人机将删除。",
     "params": "",
     "category": "planet"
   },
@@ -16160,14 +16160,14 @@
   },
   {
     "key": "reactor.upgrade_idle",
-    "text": "尚未分配：升级后仍预留能源，可点均分供能",
+    "text": "先点均分供能，让新增能源发挥作用",
     "params": "",
     "category": "reactor",
     "note": "升级按原比例分配新增整数能源，包含闲置能源"
   },
   {
     "key": "reactor.upgrade_shares",
-    "text": "升级保留分配与预留比例；零分配模块仍为零",
+    "text": "升级延续当前分配；预留能源仍预留",
     "params": "",
     "category": "reactor",
     "note": "升级按原比例分配新增整数能源，包含闲置能源"
@@ -16604,14 +16604,14 @@
   },
   {
     "key": "hyperspace.ultimate_confirmation_consequence",
-    "text": "究极化后不能继续常规改造，也不能更换挂载模块。请先完成还想做的调整。\n以后可以还原继续改造；当前还原需另花 {cores} 个究极核心，不退回已花核心。额外词条会暂时失效，重新究极化时恢复原词条。",
+    "text": "究极化后不能继续常规改造，也不能更换挂载模块。请先完成还想做的调整。\n以后可以还原继续改造；当前还原需另花 {cores} 个究极核心，不退回已花核心。额外词条还原时只暂时失效，不能升阶或重随机数值；再次究极化仍恢复同一条。",
     "params": "cores",
     "category": "hyperspace",
     "note": "主动查阅当前改造功能与确认限制"
   },
   {
     "key": "hyperspace.restore_confirmation_consequence",
-    "text": "还原将解除究极状态，让你继续常规改造。额外词条暂时失效，重新究极化会恢复它。\n本次不会退回以前花的核心，也不会提升无人机等级。",
+    "text": "还原将解除究极状态，让你继续常规改造。额外词条只暂时失效，还原后也不能升阶或重随机数值；再次究极化仍恢复同一条。\n本次不会退回以前花的核心，也不会提升无人机等级。",
     "params": "",
     "category": "hyperspace",
     "note": "主动查阅当前改造功能与确认限制"
@@ -16660,7 +16660,7 @@
   },
   {
     "key": "weapon.rate_base",
-    "text": "基础每秒",
+    "text": "基础秒伤",
     "params": "",
     "category": "weapon",
     "note": "只读单目标每秒伤害展示，条件另计"
@@ -16835,5 +16835,323 @@
     "params": "",
     "category": "hyperspace",
     "note": "连续升阶操作与真实结算反馈"
+  },
+  {
+    "key": "reactor.purchase_button",
+    "text": "{title}\n{cost}铀\n能源+{energy}",
+    "params": "title,cost,energy",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_details",
+    "text": "购买 {count} 级：{cost} 铀\n能源 {current} → {next}",
+    "params": "count,cost,current,next",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_effect",
+    "text": "{module}加成 {current}% → {next}%（收益 +{gain}%）",
+    "params": "module,current,next,gain",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_scope",
+    "text": "按当前分配预览；收益按购买前后倍率计算。预留能源仍预留，免费供能计入各模块。熔炼只增加敌舰铁掉落，碎片凝聚只增加直接掉落的强化碎片。",
+    "params": "",
+    "category": "reactor",
+    "note": "购买报价与当前分配的只读投影",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.single_preview",
+    "text": "升一级：{effects}",
+    "params": "effects",
+    "category": "reactor",
+    "note": "单级武器与防御当前下一步收益",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.purchase_effect_short",
+    "text": "{module} +{current}% → +{next}%（收益+{gain}%）",
+    "params": "module,current,next,gain",
+    "category": "reactor",
+    "note": "单级收益紧凑摘要；百分数为模块加成",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "battle.defeat.main",
+    "text": "主线战败 · {cause} · 尚余{remaining}艘",
+    "params": "{cause},{remaining}",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.manual",
+    "text": "异空间战败 · {cause} · 尚余{remaining}艘",
+    "params": "{cause},{remaining}",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.physical",
+    "text": "已记录物理损失为主",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.energy",
+    "text": "已记录能量损失为主",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.mixed",
+    "text": "已记录物理、能量损失相当",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.cause.unknown",
+    "text": "损失类型不足以判断",
+    "params": "",
+    "category": "battle",
+    "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.recall",
+    "text": "败因",
+    "params": "",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.recent",
+    "text": "最近一次战败 · {place}\n{result}",
+    "params": "{place},{result}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.main_place",
+    "text": "第{stage}关 · 遭遇{wave}",
+    "params": "{stage},{wave}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.manual_place",
+    "text": "挑战第{stage}层 · 遭遇{wave}",
+    "params": "{stage},{wave}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "equipment.refit_comparison",
+    "text": "当前：{current}\n{current_stat} · {current_type}\n换装后（Lv.{level}）：{next}\n{next_stat} · {next_type}",
+    "params": "{current},{current_stat},{current_type},{level},{next},{next_stat},{next_type}",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_empty",
+    "text": "无装配",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_resistance",
+    "text": "抗{type} {percent}%",
+    "params": "{type},{percent}",
+    "category": "equipment"
+  },
+  {
+    "key": "equipment.refit_rate_scope",
+    "text": "此槽单目标持续命中的基准，未计敌方减伤；条件效果见悬停。",
+    "params": "",
+    "category": "equipment"
+  },
+  {
+    "key": "planet.builder_choice_hint",
+    "text": "施工人数够了，每完成一次星球探索就推进1次建设；派谁施工都一样。",
+    "params": "",
+    "category": "planet",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_button",
+    "text": "下一级变化",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_not_active",
+    "text": "尚未启用",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_heading",
+    "text": "升到 Lv{level} · 消耗 {cost} 强化碎片",
+    "params": "level,cost",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_scope",
+    "text": "按当前配置与累计次数预览，不包含临时战斗状态；查看不会花费碎片。",
+    "params": "",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "enhance.preview_effect",
+    "text": "{name}：{before} → {after}",
+    "params": "name,before,after",
+    "category": "enhance",
+    "note": "已有功能的主动预览与施工选择依据"
+  },
+  {
+    "key": "planet.shipyard_ready_hint",
+    "text": "船坞已建好。点「启用」后可查看重铸内容，再决定是否开始新一轮。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.shipyard_built_hint",
+    "text": "点「重铸新舰」先查看本次永久变化和保留对象，再决定是否开始新一轮。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_next_planet",
+    "text": "开放下一颗可探索星球；到达对应关卡后解锁。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_reward_details",
+    "text": "全部永久变化",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_rule_details",
+    "text": "重置与保留详情",
+    "params": "",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_gain_brief",
+    "text": "带进下一轮：{rewards}",
+    "params": "rewards",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_start_brief",
+    "text": "从第{level}关重新出发；本轮成长与异空间材料重置，铁、铀和时空粒子保留。",
+    "params": "level",
+    "category": "planet",
+    "note": "重铸首次查看：当前阶段行动与主动详情"
+  },
+  {
+    "key": "planet.reforge_completed",
+    "text": "重铸完成",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_sealed_receipt",
+    "text": "{count}架保留无人机已封存，到本轮第{level}关可领取。",
+    "params": "count,level",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_reclaim_path",
+    "text": "异空间入口开放后，在「无人机」页选中封存机，再点「领取封存机」。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_discarded_receipt",
+    "text": "未选的{count}架无人机已移除。",
+    "params": "count",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_no_retained_receipt",
+    "text": "当前没有待领取的封存无人机。",
+    "params": "",
+    "category": "planet",
+    "note": "重铸后的短回执与造船坞主动回查"
+  },
+  {
+    "key": "planet.reforge_module_receipt",
+    "text": "挂载记录保留；模块要重新获得、升级才有加成。",
+    "params": "",
+    "category": "planet",
+    "note": "仅保留无人机带挂载记录时显示"
+  },
+  {
+    "key": "enhance.candidate.proficiency",
+    "text": "越打越熟练，逐渐提高伤害",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.adaptation",
+    "text": "挨过的攻击越多，防御越强",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.repeat",
+    "text": "有机会追加攻击",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.critical",
+    "text": "有机会打出更高伤害",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.memory_material",
+    "text": "持续修复，并积累护盾",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "enhance.candidate.delayed_damage",
+    "text": "把部分伤害延后承受",
+    "params": "",
+    "category": "enhance"
+  },
+  {
+    "key": "hyperspace.forge_ultimate_extra",
+    "text": "究极额外 · {affix}",
+    "params": "affix",
+    "category": "hyperspace",
+    "note": "改造结果的独立究极词缀标记；不参与规则"
   }
 ]

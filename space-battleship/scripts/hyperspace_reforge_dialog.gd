@@ -17,6 +17,9 @@ var stale:=false
 var show_hyperspace:=false
 var show_drones:=false
 var zero_confirmation:ConfirmationDialog
+var rewards_text:=""
+var rules_text:=""
+var reward_brief:Label
 func setup(g,id:String,rewards:String)->void:
  game=g;planet_id=id;round_id=int(g.profile.hyperspace.round_id)
  var bag:Dictionary=g.profile.hyperspace.inventory
@@ -24,17 +27,26 @@ func setup(g,id:String,rewards:String)->void:
  show_hyperspace=g.hyperspace.is_unlocked(g) or show_drones or has_hyperspace_progress(g.profile.hyperspace)
  generation=int(bag.generation)
  capacity=Bag.retention_capacity(bag,g.hyperspace.config)+int(g.hyperspace.config.retention_capacity_gain)
- title=Text.t("planet.reforge");dialog_text="";min_size=Vector2i(650,370);size=Vector2i(740,500);dialog_hide_on_ok=false;wrap_controls=false
- var body=Control.new();body.custom_minimum_size=Vector2(600,290);body.size=body.custom_minimum_size;add_child(body)
+ title=Text.t("planet.reforge");dialog_text="";min_size=Vector2i(760,520);size=Vector2i(860,650);dialog_hide_on_ok=false;wrap_controls=false
+ var body=Control.new();body.custom_minimum_size=Vector2(720,440);body.size=body.custom_minimum_size;add_child(body)
  summary=make_label(body,"")
  feedback=make_label(body,"")
+ var help_row=HBoxContainer.new();body.add_child(help_row)
+ for entry in [["planet.reforge_reward_details",func():show_help("planet.reforge_reward_details",rewards_text)],["planet.reforge_rule_details",func():show_help("planet.reforge_rule_details",rules_text)]]:
+  var help=Button.new();help.text=Text.t(entry[0]);help.pressed.connect(entry[1]);preload("res://scripts/dialog_presentation.gd").button_skin(help);help_row.add_child(help)
  var sc=ScrollContainer.new();sc.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO;body.add_child(sc)
  var layout=func():
   summary.position=Vector2.ZERO;summary.size=Vector2(body.size.x,46)
   feedback.position=Vector2(0,46);feedback.size=Vector2(body.size.x,52)
-  sc.position=Vector2(0,98);sc.size=Vector2(body.size.x,maxf(1,body.size.y-98))
+  help_row.position=Vector2(0,98);help_row.size=Vector2(body.size.x,40)
+  sc.position=Vector2(0,144);sc.size=Vector2(body.size.x,maxf(1,body.size.y-144))
  body.resized.connect(layout);layout.call()
  var content=VBoxContainer.new();content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;sc.add_child(content)
+ rewards_text=Text.t("planet.reforge_rewards",{"rewards":rewards})
+ rules_text=Text.t("planet.reforge_confirm_basic",{"level":g.planet_reforge_start(id)})
+ if show_hyperspace:rules_text+="\n\n"+Text.t("planet.reforge_hyperspace")
+ if show_drones:rules_text+="\n\n"+Text.t("planet.reforge_drones")
+ reward_brief=make_label(content,Text.t("planet.reforge_gain_brief",{"rewards":" · ".join(Array(rewards.split("\n",false)).slice(0,2))}))
  if show_drones:make_label(content,Text.t("planet.reforge_selection_hint"))
  for drone_id in bag.warehouse+bag.overflow:
   if bag.drones.has(drone_id):candidates.append(drone_id)
@@ -60,13 +72,16 @@ func setup(g,id:String,rewards:String)->void:
   if d.legendary:lines.append(Text.data_text("hyperspace_legendary_effects",str(d.legendary_effect.get("effect_id","")),"name",Text.t("hyperspace.unknown_effect")))
   if not lines.is_empty():make_label(content,"\n".join(lines))
  if show_drones and candidates.is_empty():make_label(content,Text.t("planet.reforge_no_drones"))
- make_label(content,Text.t("planet.reforge_confirm_basic",{"level":g.planet_reforge_start(id)}))
- if show_hyperspace:make_label(content,Text.t("planet.reforge_hyperspace"))
- if show_drones:make_label(content,Text.t("planet.reforge_drones"))
- make_label(content,Text.t("planet.reforge_rewards",{"rewards":rewards}))
  confirmed.connect(commit);canceled.connect(queue_free)
  game.event.connect(on_game_event)
  refresh_summary()
+func show_help(key:String,value:String)->void:
+ var dialog=AcceptDialog.new();dialog.title=Text.t(key);add_child(dialog)
+ preload("res://scripts/dialog_presentation.gd").dialog(dialog)
+ var scroll=ScrollContainer.new();scroll.custom_minimum_size=Vector2(700,380);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;dialog.add_child(scroll)
+ var label=make_label(scroll,value);label.custom_minimum_size.x=680;label.add_theme_font_size_override("font_size",20)
+ dialog.confirmed.connect(dialog.queue_free);dialog.close_requested.connect(dialog.queue_free)
+ dialog.popup_centered(Vector2i(800,500))
 func has_hyperspace_progress(s:Dictionary)->bool:
  if not s.history.is_empty() or not s.active.is_empty() or bool(s.auto.enabled) or int(s.ultimate_cores)>0:return true
  if s.materials.values().any(func(value):return int(value)>0):return true
@@ -84,7 +99,7 @@ func on_game_event(kind:String,_info:Dictionary)->void:
 func refresh_summary()->void:
  summary.visible=show_drones
  summary.text=Text.t("planet.reforge_selection",{"selected":str(selected.size()),"capacity":str(capacity),"discarded":str(candidates.size()-selected.size())})
- feedback.text=Text.t("planet.reforge_stale") if stale else Text.t("planet.reforge_over_capacity") if selected.size()>capacity else Text.t("planet.reforge_brief" if show_hyperspace else "planet.reforge_brief_basic")
+ feedback.text=Text.t("planet.reforge_stale") if stale else Text.t("planet.reforge_over_capacity") if selected.size()>capacity else Text.t("planet.reforge_start_brief",{"level":str(game.planet_reforge_start(planet_id))})
  get_ok_button().disabled=stale or selected.size()>capacity
 func commit(allow_zero:=false)->void:
  # Recheck the snapshot and current permission before the authoritative transaction.
@@ -96,7 +111,33 @@ func commit(allow_zero:=false)->void:
   confirm_zero_retention();return
  if not game.reforge_planet(planet_id,selected.duplicate()):
   feedback.text=Text.t("planet.reforge_failed");return
+ var receipt=AcceptDialog.new()
+ receipt.title=Text.t("planet.reforge_completed")
+ receipt.dialog_text=retention_receipt_text(game)
+ var discarded=candidates.size()-selected.size()
+ if discarded>0:receipt.dialog_text+="\n"+Text.t("planet.reforge_discarded_receipt",{"count":str(discarded)})
+ receipt.min_size=Vector2i(520,200);receipt.size=Vector2i(660,270)
+ preload("res://scripts/dialog_presentation.gd").dialog(receipt)
+ receipt.confirmed.connect(receipt.queue_free);receipt.canceled.connect(receipt.queue_free)
+ # The old page is rebuilt after reforge; attach its receipt to the surviving root window.
+ get_tree().root.add_child(receipt)
  queue_free()
+ receipt.call_deferred("popup_centered")
+
+static func retention_receipt_text(g)->String:
+ var sealed:Dictionary=g.profile.hyperspace.inventory.sealed
+ if sealed.is_empty():return Text.t("planet.reforge_no_retained_receipt")
+ var counts:Dictionary={}
+ var has_modules:=false
+ for id in sealed:
+  var gate=int(sealed[id]);counts[gate]=int(counts.get(gate,0))+1
+  if not g.profile.hyperspace.inventory.drones[id].get("hangings",[]).is_empty():has_modules=true
+ var gates=counts.keys();gates.sort()
+ var lines:PackedStringArray=[]
+ for gate in gates:lines.append(Text.t("planet.reforge_sealed_receipt",{"count":str(counts[gate]),"level":str(gate)}))
+ lines.append(Text.t("planet.reforge_reclaim_path"))
+ if has_modules:lines.append(Text.t("planet.reforge_module_receipt"))
+ return "\n".join(lines)
 
 func confirm_zero_retention()->void:
  if is_instance_valid(zero_confirmation):return

@@ -45,6 +45,16 @@ func run() -> void:
 	var panel=scene.reactor_panel
 	panel.refresh()
 	var slider: HSlider=panel.module_controls.weapons.slider
+	check(panel.upgrade_buttons.x1.text.contains("5") and panel.upgrade_buttons.x1.text.contains("+6"),"Single purchase directly displays its configured fee and new energy")
+	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("收益"),"Batch and MAX expose purchase-specific effect previews")
+	check(panel.benefit_label.text.contains("升一级") and panel.benefit_label.text.contains("0.00%"),"Visible single-step preview makes zero-allocation return explicit")
+	check(panel.benefit_label.position.y+panel.benefit_label.size.y<=panel.module_scroll.position.y,"Visible return stays clear of module bays")
+	for line in panel.benefit_label.text.split("\n"):
+		check(panel.benefit_label.get_theme_font("font").get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,panel.benefit_label.get_theme_font_size("font_size")).x<=panel.benefit_label.size.x,"Single-step return fits without truncation")
+	for button in panel.upgrade_buttons.values():
+		check(button.position.y+button.size.y<=panel.benefit_label.position.y,"Purchase button stays clear of visible return")
+		for line in button.text.split("\n"):
+			check(button.get_theme_font("font").get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,button.get_theme_font_size("font_size")).x<=button.size.x-16,"Purchase text fits its button")
 	slider.grab_focus()
 	var queries := g.affordability_queries
 	scene.writes.clear()
@@ -59,6 +69,7 @@ func run() -> void:
 	g.paused=false
 	panel.change_allocation(20,"weapons")
 	panel.refresh()
+	check(not panel.benefit_label.text.contains("武器 +0.00%") and panel.upgrade_buttons.x1.tooltip_text.contains("武器"),"Allocation changes immediately update visible and expanded projected return")
 	scene.equipment_tabs.current_tab=0
 	check(not panel.core.is_processing() and not panel.network.is_processing(),"Leaving the selected tab synchronously stops animations")
 	g.profile.resources["2"]=1000.0

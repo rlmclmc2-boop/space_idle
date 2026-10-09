@@ -1,6 +1,7 @@
 extends Panel
 
 const ROUTES := preload("res://scripts/reactor_routes.gd")
+const PREVIEW := preload("res://scripts/reactor_upgrade_preview.gd")
 const SKIN := preload("res://scripts/dialog_presentation.gd")
 const ACCENT := Color("83cfcb")
 const CYAN := Color("286b73")
@@ -25,6 +26,8 @@ var capacity_label: Label
 var uranium_label: Label
 var next_label: Label
 var cost_label: Label
+var benefit_label: Label
+var affordable_count := 0
 var scroll_hint: Label
 var allocation_label: Label
 var allocation_hint: Label
@@ -81,6 +84,10 @@ func energy_text(value: float) -> String:
 
 func percent_text(value: float) -> String:
 	return NumberFormat.percentage(value)
+
+func purchase_cost_text(value: float, compact := true) -> String:
+	if compact and value>=1000.0:return host.number(value)
+	return ("%.2f" % value).trim_suffix("0").trim_suffix("0").trim_suffix(".")
 
 func supply_segment(parent: Control, color: Color) -> ColorRect:
 	var segment := ColorRect.new()
@@ -204,12 +211,12 @@ func setup(owner_ui: Node) -> void:
 	core_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	network = visual(self,"network",ROUTES.ORIGIN,Vector2(400,910))
 	core.flow_source=network
-	readout_plate(self,Vector2(745,55),Vector2(580,295))
+	readout_plate(self,Vector2(745,55),Vector2(580,360))
 	level_label = make_label(self,"",Vector2(766,72),530,44,CYAN,60)
 	energy_label = make_label(self,"",Vector2(766,153),272,28,CYAN)
 	uranium_label = make_label(self,"",Vector2(1055,153),250,26,INK)
-	next_label = make_label(self,"",Vector2(766,211),270,23,INK)
-	cost_label = make_label(self,"",Vector2(1055,211),260,22,INK)
+	next_label = make_label(self,"",Vector2(766,201),270,23,INK,32)
+	cost_label = make_label(self,"",Vector2(1055,201),260,22,INK,32)
 	var upgrade_group := Control.new()
 	upgrade_group.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(upgrade_group)
@@ -217,13 +224,15 @@ func setup(owner_ui: Node) -> void:
 		var mode: String = ["x1","x10","MAX"][index]
 		var button := Button.new()
 		button.text = "" if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
-		button.position = Vector2(763+index*181,278)
-		button.size = Vector2(170,58)
+		button.position = Vector2(763+index*181,240)
+		button.size = Vector2(170,104)
 		button.add_theme_font_size_override("font_size",23)
 		button_style(button,MODULE_COLORS.weapons if mode == "MAX" else CYAN,mode == "MAX")
+		button.add_theme_font_size_override("font_size",21)
 		button.pressed.connect(upgrade.bind(mode))
 		upgrade_group.add_child(button)
 		upgrade_buttons[mode] = button
+	benefit_label = make_label(self,"",Vector2(766,352),540,21,INK,64)
 	readout_plate(self,Vector2(48,536),Vector2(546,196))
 	make_label(self,"reactor.control_heading",Vector2(59,552),380,29,INK)
 	make_label(self,"reactor.flow.manual_heading",Vector2(60,593),380,13,MUTED,24)
@@ -470,7 +479,7 @@ func refresh() -> void:
 	if host.ui_state_changed(level_label,[game.profile.reactorLevel,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
 		host.set_ui_value(level_label,"text",UIText.t("reactor.level",{"level":str(int(game.profile.reactorLevel))}))
 		host.set_ui_value(next_label,"text",UIText.t("reactor.next_level",{"level":str(int(game.profile.reactorLevel)+1)}))
-		host.set_ui_value(cost_label,"text",UIText.t("reactor.cost",{"cost":host.number(game.reactor_upgrade_cost())}))
+		host.set_ui_value(cost_label,"text",UIText.t("reactor.cost",{"cost":purchase_cost_text(game.reactor_upgrade_cost())}))
 	if host.ui_state_changed(energy_label,[capacity]):
 		host.set_ui_value(energy_label,"text",UIText.t("reactor.energy",{"energy":energy_text(capacity)}))
 		set_readout(capacity_label,energy_label.text)
@@ -478,11 +487,13 @@ func refresh() -> void:
 		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
 	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
 		var max_count: int = game.reactor_max_upgrades()
+		affordable_count = max_count
 		host.set_ui_value(equalize_button,"disabled",not reactor_enabled)
 		for mode in upgrade_buttons:
 			var needed: int = max_count if mode == "MAX" else 10 if mode == "x10" else 1
 			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or max_count < needed or not reactor_enabled)
-			if mode == "MAX":host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.upgrade.max",{"count":str(max_count)}))
+	if host.ui_state_changed(benefit_label,[game.profile.reactorLevel,available,reactor_enabled,capacity,game.reactor_energy(),game.profile.reactorAllocation.duplicate(),free_ratio,Array(game.reactor_available_modules()),host.db.config.reactorEnergyGrowth,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale]):
+		refresh_upgrade_preview()
 	for key in module_controls:
 		var controls: Dictionary = module_controls[key]
 		var slider: HSlider = controls.slider
@@ -534,3 +545,24 @@ func refresh() -> void:
 		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(capacity-allocated)}))
 		total_track.set_ratio(float(allocated)/maxf(1.0,capacity))
 	refreshing = false
+
+func refresh_upgrade_preview() -> void:
+	var game: BattleGame = host.game
+	for mode in upgrade_buttons:
+		var count: int = affordable_count if mode == "MAX" else 10 if mode == "x10" else 1
+		var quote: Dictionary = PREVIEW.quote(game,count)
+		var title: String = UIText.t("reactor.upgrade.max",{"count":str(count)}) if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
+		host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.purchase_button",{"title":title,"cost":purchase_cost_text(quote.cost),"energy":energy_text(quote.next_capacity-quote.capacity)}))
+		var details: String = UIText.t("reactor.purchase_details",{"count":str(count),"cost":purchase_cost_text(quote.cost,false),"current":energy_text(quote.capacity),"next":energy_text(quote.next_capacity)})
+		for key in quote.effects:
+			var effect: Dictionary = quote.effects[key]
+			details += "\n"+UIText.t("reactor.purchase_effect",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain})
+		details += "\n"+UIText.t("reactor.purchase_scope")
+		host.set_ui_value(upgrade_buttons[mode],"tooltip_text",details)
+		if mode == "x1":
+			var lines := PackedStringArray()
+			for key in ["weapons","defence"]:
+				if not quote.effects.has(key):continue
+				var effect: Dictionary = quote.effects[key]
+				lines.append(UIText.t("reactor.purchase_effect_short",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain}))
+			host.set_ui_value(benefit_label,"text",UIText.t("reactor.single_preview",{"effects":"\n".join(lines)}))
