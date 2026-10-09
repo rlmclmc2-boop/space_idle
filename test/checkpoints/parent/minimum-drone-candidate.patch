@@ -1,0 +1,189 @@
+diff --git a/space-battleship/data/ui_text.json b/space-battleship/data/ui_text.json
+index cac1164..da6b9da 100644
+--- a/space-battleship/data/ui_text.json
++++ b/space-battleship/data/ui_text.json
+@@ -16219,7 +16219,7 @@
+   },
+   {
+     "key": "hyperspace.drone_dynamic_weapon_hint",
+-    "text": "武器跟随当前启用主武器中的最高等级，与武器类型无关；保留品质加成。",
++    "text": "武器按本轮已解锁武器槽的最低等级成长，含暂时不用的槽；加上品质等级。已达到的基础等级只升不降，星球重铸后重算。",
+     "params": "",
+     "category": "hyperspace",
+     "note": "当前核心投影决定实际等级，UI不另算等级"
+diff --git a/space-battleship/docs/WORKFLOW.md b/space-battleship/docs/WORKFLOW.md
+index 45326dc..aec7bb6 100644
+--- a/space-battleship/docs/WORKFLOW.md
++++ b/space-battleship/docs/WORKFLOW.md
+@@ -2,11 +2,11 @@
+ 
+ - On start/resume, read the current handoff and unresolved owned findings. Choose the highest-impact authorized action; do not wait for another assignment while one is actionable. Never create another task/thread or expand permissions implicitly.
+ - Separate playtest and implementation roles. Parent and assigned player threads keep playing their own existing checkpoints and forming independent opinions throughout an authorized experience-improvement run. A delivered patch or score does not finish that role: continue the next player-visible decision, investment or progression while a repair owner implements findings. Parent integration/permission waits block only dependent work, not other playable flows. Stop only for the user, a concrete blocker, or demonstrated completion of the authorized experience scope; do not invent work or independent retest tasks. Implementation-only roles deliver bounded fixes and stay outside player scoring when specified.
+-- Each testing participant independently reviews the game systems: observed player goal, strengths, friction, investment value, proposed change and evidence limits. Mark unplayed systems unverified. At each scheduled review, the parent report preserves each participant’s views and disagreements, its accept/defer/reject decision and reason, the implementation owner, and the observed effect after change. Missing participant views or unverified effects remain explicit gaps; aggregate scores/commit lists cannot replace them. Implementation-only participants stay outside testing/scoring.
++- Each testing participant independently reviews the game systems: observed player goal, strengths, friction, investment value, proposed change and evidence limits. Apply strict player standards equally to all work, including the parent’s own changes: state weak motivation, poor pacing, confusing operations and performance failures directly with observed impact and a proposed remedy; never soften findings to protect an implementer’s feelings or inflate criticism without evidence. Mark unplayed systems unverified. At each scheduled review, the parent report preserves each participant’s views and disagreements, its accept/defer/reject decision and reason, the implementation owner, and the observed effect after change. Missing participant views or unverified effects remain explicit gaps; aggregate scores/commit lists cannot replace them. Implementation-only participants stay outside testing/scoring.
+ - Start each scheduled review with the previous low-scoring findings: improved, still blocked, or recurred. Every accepted deduction has owner, next action, acceptance evidence and recurrence tracking. A fix is not closed by implementation alone. Recheck the failed player goal; recurring omissions reopen the finding and affect its original owner/coordinator assessment.
+ - Track only observable availability: actionable waiting, external blockage, required dependency, completed scope, unknown. Do not equate `inProgress` with activity/restoration or fabricate exact idle time. Avoidable idle belongs in collaboration efficiency; coordination-induced idle belongs to the coordinator. No reward for repeated tests, token usage or busywork.
+ - Preserve evidence classes: natural play / authorized fixture or unlimited-resource play / automated check / source inference / unverified. Acceptance covers understanding, operation burden, meaningful investment return and runtime quality, not merely successful execution. Keep numeric system-value scores separate from worker scores.
+ - Performance claims require the intended steady workload, same scene/settings/version basis, isolated processes, correctness/quality checks, and repeated measurements. Startup-only, diagnostic overlays, wrong cache flags and contradictory samples cannot prove an overall gain. Disabled visuals are diagnostic bounds, not quality-preserving fixes.
+-- Reuse the smallest relevant verification; do not rerun another worker's broad suite without an unresolved risk. Parent owns final acceptance, not every preparatory test. Prefer verified Git code handoffs; retain reports/saves/raw evidence privately unless their publication is explicitly approved.
++- Reuse the smallest relevant verification; do not rerun another worker's broad suite without an unresolved risk. Parent owns final acceptance, not every preparatory test. Use Git as the primary recovery/transfer authority: push coherent candidate checkpoints to working branches and read back the commit/tree before relying on them; cloud-only edits are not recoverable checkpoints. Request foreseeable missing publication permissions early and block only the dependent payload. Retain reports/saves/raw evidence privately unless their specific publication is explicitly approved.
+ - A handoff states current commit, evidence/limits, unresolved findings, next action and blocker. At the user's review cadence and before formal delivery, run `python tools/check_workflow.py <private-ledger.json>`; validate the separate independent-opinion review with the same command plus `--review` (required participants, individual sources/scope, disposition/reason, observed effects, prior low-score follow-up). These checks enforce completeness, not truth. Keep one private current ledger, not duplicate public reports.
+ - Promote only demonstrated useful practice into this authority; keep temporary experiments and current deadlines in the task handoff. Remove superseded rules. Review whether the rule actually prevented recurrence, not whether it was merely read.
+diff --git a/space-battleship/scripts/game.gd b/space-battleship/scripts/game.gd
+index e519612..b7f2f1c 100644
+--- a/space-battleship/scripts/game.gd
++++ b/space-battleship/scripts/game.gd
+@@ -153,6 +153,7 @@ func fresh_profile() -> Dictionary:
+ 	profile.loadout = default_loadout(selected, starting)
+ 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false}
+ 	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
++	profile.droneWeaponFloor = 1
+ 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
+ 	profile.enhancementVersion = 1
+ 	profile.enhancementLevel = 0
+@@ -382,6 +383,9 @@ func load_progress_data(raw: Dictionary) -> void:
+ 				# Keep any explicit slot investment when a legacy name-level map is older.
+ 				entry.level = maxi(int(entry.level),migrated)
+ 	profile.moduleVersion = 1
++	var saved_drone_floor = raw.get("droneWeaponFloor",1)
++	profile.droneWeaponFloor = int(saved_drone_floor) if nonnegative_number(saved_drone_floor) and float(saved_drone_floor)==floorf(float(saved_drone_floor)) and float(saved_drone_floor)<9.22e18 else 1
++	refresh_drone_weapon_floor()
+ 	load_jewels(raw)
+ 	load_hightech(raw)
+ 	profile.hightechOrder = hightech_slots()
+@@ -716,11 +720,27 @@ func combat_weapon_entries() -> Array:
+ 	combat_sources_dirty=false
+ 	return combat_sources
+ 
++func lowest_unlocked_weapon_level() -> int:
++	# Empty and dormant slots still count; changing hulls cannot hide a weak slot.
++	var count := active_slot_count("weapons")
++	for ship_key in db.ships:
++		if ship_unlocked(str(ship_key)):count=maxi(count,int(db.ship(str(ship_key)).weaponSlots))
++	var entries := module_entries("weapons")
++	var minimum := 9223372036854775807
++	for index in count:
++		minimum=mini(minimum,maxi(1,int(entries[index].level)) if index<entries.size() else 1)
++	return 1 if count==0 else minimum
++
++func refresh_drone_weapon_floor() -> void:
++	var next := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
++	if next==int(profile.get("droneWeaponFloor",1)):return
++	profile.droneWeaponFloor=next
++	save_dirty=true
++	combat_sources_dirty=true
++
+ func drone_weapon_entry(d: Dictionary) -> Dictionary:
+-	var maximum:=1
+-	for entry in weapon_entries():
+-		maximum=maxi(maximum,int(entry.level))
+-	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
++	var inherited := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
++	return {"key":d.weapon,"level":inherited+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
+ 
+ func combat_entry(index: int) -> Dictionary:
+ 	var entries:=combat_weapon_entries()
+@@ -939,6 +959,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
+ 	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
+ 	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
+ 	capture_refit_health()
++	refresh_drone_weapon_floor()
+ 	var old_weapon_count := active_slot_count("weapons")
+ 	profile.selectedShip = key
+ 	hyperspace.fit_hull(self)
+@@ -2669,6 +2690,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
+ 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
+ 	var before = jewel_equipment_stat(entry)
+ 	profile.loadout[category][index].level = int(entry.level) + levels
++	if category=="weapons":refresh_drone_weapon_floor()
+ 	resources_changed(costs.keys())
+ 	invalidate_stat_cache()
+ 	var after = jewel_equipment_stat(entry)
+diff --git a/space-battleship/scripts/save_transfer.gd b/space-battleship/scripts/save_transfer.gd
+index 534e4e5..77c8800 100644
+--- a/space-battleship/scripts/save_transfer.gd
++++ b/space-battleship/scripts/save_transfer.gd
+@@ -19,7 +19,7 @@ static func schema() -> Dictionary:
+  for key in ["grantedUnlocks","seenUnlocks","readUnlocks","hightechOrder"]:result[key]=["s"]
+  for key in ["hightechLevels","scientistAssignments","reactorAllocation"]:result[key]={"*":"i"}
+  result.techPoints={"*":"n"}
+- for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
++ for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel","droneWeaponFloor"]:result[key]="i"
+  result.loop="b"
+  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
+  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
+diff --git a/test/test_drone_wave_rules.gd b/test/test_drone_wave_rules.gd
+index 79e39e6..251d272 100644
+--- a/test/test_drone_wave_rules.gd
++++ b/test/test_drone_wave_rules.gd
+@@ -11,10 +11,11 @@ func check(ok:bool,label:String)->void:
+ func fixture()->BattleGame:
+  var db:=ShipDatabase.new();db.config.offlineMax=0
+  var g:=BattleGame.new(db,false);games.append(g)
+- g.profile.cleared=range(1,41);g.profile.highestLevel=41;g.rebuild_unlocks();g.stat_cache_enabled=true
++ g.profile.cleared=range(1,101);g.profile.highestLevel=101;g.rebuild_unlocks();g.stat_cache_enabled=true
+  for id in g.profile.resources:g.profile.resources[id]=1e30
+  g.profile.selectedShip="Heavy_Battleship"
+  g.profile.loadout=g.empty_loadout(g.profile.selectedShip)
++ for entry in g.profile.loadout.weapons:entry.level=20
+  g.profile.loadout.defence[0]={"key":"armour","level":8}
+  g.profile.loadout.weapons[0]={"key":"laser","level":6}
+  g.profile.loadout.weapons[1]={"key":"missile","level":20}
+@@ -28,26 +29,46 @@ func projected(g)->Dictionary:return g.combat_entry(g.weapon_entries().size())
+ func _initialize()->void:
+  var g:=fixture();var d:Dictionary=g.profile.hyperspace.inventory.drones.ordinary
+  var bonus:int=Effects.weapon_bonus(d,g.hyperspace.config);var drop_level:int=d.level
+- check(projected(g).level==20+bonus,"different-type highest active module supplies drone level")
++ check(projected(g).level==6+bonus,"lowest unlocked module supplies drone level regardless of type")
+  var old:Dictionary=projected(g)
+  var target:Dictionary=g.enemies[0];target.hp=1e20;target.equipment=[]
+  var index:int=g.weapon_entries().size();var row:Dictionary=g.player_weapon_row(old)
+  g.begin_enhancement_attack(index,target);var attack:Dictionary=g.jewel_attack(index)
+  g.launch_player_attack(index,target,row,attack,Vector2.ZERO,0);g.finish_enhancement_attack(index)
+  var shot:Dictionary=g.projectiles.back();var damage=shot.damage
+- check(g.upgrade_slot("weapons",1,1),"upgrade current main module through public API")
+- check(projected(g).level==21+bonus and not is_same(old,projected(g)),"upgrade invalidates future drone source")
+- check(old.level==20+bonus and shot.damage==damage and g.projectiles.has(shot),"already launched payload and old source remain frozen")
+- check(g.equip_slot("weapons",1,"cannon") and projected(g).level==21+bonus,"changing main type retains module-level contribution")
+- check(g.unequip_slot("weapons",1) and projected(g).level==21+bonus and g.module_entry("weapons",1).key.is_empty(),"high-level effective slot contributes with empty weapon type")
+- check(g.equip_slot("weapons",1,"missile") and projected(g).level==21+bonus,"changing empty type to missile preserves paid module level")
+- check(g.equip_slot("weapons",7,"cannon") and g.upgrade_slot("weapons",7,39),"prepare highest module in a slot removed by real hull shrink")
+- check(projected(g).level==40+bonus,"highest active rear module contributes before shrink")
++ check(g.upgrade_slot("weapons",0,1),"upgrade current main module through public API")
++ check(projected(g).level==7+bonus and not is_same(old,projected(g)),"upgrade invalidates future drone source")
++ check(old.level==6+bonus and shot.damage==damage and g.projectiles.has(shot),"already launched payload and old source remain frozen")
++ check(g.equip_slot("weapons",1,"cannon") and projected(g).level==7+bonus,"changing main type retains module-level contribution")
++ check(g.unequip_slot("weapons",1) and projected(g).level==7+bonus and g.module_entry("weapons",1).key.is_empty(),"removing weapon type does not alter module minimum")
++ check(g.equip_slot("weapons",1,"missile") and projected(g).level==7+bonus,"changing empty type to missile preserves paid module level")
++ check(g.equip_slot("weapons",7,"cannon") and g.upgrade_slot("weapons",7,39),"prepare higher rear module before hull shrink")
++ check(projected(g).level==7+bonus,"raising nonminimum slot does not boost drones")
+  check(g.switch_ship("Frigate"),"switch through public API to real smaller hull")
+- check(projected(g).level==21+bonus and g.module_entry("weapons",7).level==40,"dormant stored module cannot raise drone level")
++ check(projected(g).level==7+bonus and g.module_entry("weapons",7).level==59,"switching smaller hull cannot hide a lower unlocked slot")
+  check(g.hyperspace.unequip_drone(g,"ordinary").ok and g.combat_weapon_entries().size()==g.weapon_entries().size(),"unequip invalidates source list")
+- check(g.hyperspace.equip_drone(g,"ordinary").ok and projected(g).level==21+bonus,"reequip reads current effective modules")
++ check(g.hyperspace.equip_drone(g,"ordinary").ok and projected(g).level==7+bonus,"reequip preserves inherited base")
+  check(d.level==drop_level,"projection never changes earned drone level")
++ # A larger unlock may introduce a level-one slot, but cannot erase earned base.
++ var floor_g:=BattleGame.new(ShipDatabase.new(),false);games.append(floor_g)
++ floor_g.profile.loadout.weapons[0].level=30
++ floor_g.refresh_drone_weapon_floor()
++ var earned:int=floor_g.drone_weapon_entry(d).level
++ floor_g.profile.highestLevel=101;floor_g.profile.cleared=range(1,101);floor_g.rebuild_unlocks()
++ check(floor_g.lowest_unlocked_weapon_level()==1 and floor_g.drone_weapon_entry(d).level==earned,"new unlock preserves historical base while new slots catch up")
++ var prepared:=preload("res://scripts/save_transfer.gd").new().prepare_data(JSON.parse_string(JSON.stringify(floor_g.portable_save_data())),floor_g.db)
++ check(prepared.error=="","history survives full JSON save validation")
++ var reloaded:=BattleGame.new(floor_g.db,false);games.append(reloaded)
++ reloaded.load_progress_data(prepared.data)
++ check(reloaded.drone_weapon_entry(d).level==earned,"history survives full save reload")
++ check(int(reloaded.fresh_profile().droneWeaponFloor)==1,"reforge fresh profile clears inherited history")
++ reloaded.planet_buildings.state(reloaded,"1","shipyard").status="built"
++ check(reloaded.can_reforge_planet("1") and reloaded.reforge_planet("1"),"real planet reforge succeeds")
++ check(int(reloaded.profile.droneWeaponFloor)==1 and reloaded.drone_weapon_entry(d).level==1+bonus,"real reforge clears weapon history while quality bonus remains")
++ var low_slot:int=g.module_entries("weapons").size()-1
++ g.profile.loadout.weapons[low_slot].level=2;g.profile.droneWeaponFloor=1;g.invalidate_stat_cache()
++ check(projected(g).level==2+bonus,"dormant unlocked weak slot still limits inheritance on smaller hull")
++
+  # Real rebuild, followed by an ordinary nonfinal wave ending.
+  g=fixture();var rng:=RandomNumberGenerator.new();rng.seed=8
+  var legend:=Rewards.create_drone(rng,g.hyperspace.config,"legend","legendary","laser",5,"1")
