@@ -514,22 +514,25 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
  var fire_params={"interval":"%.2f"%float(row.cd)}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
- var lines: Array[String]=[t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}),t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}),t("drone_fire_"+str(d.weapon),fire_params)]
- lines.insert(1,t("drone_dynamic_weapon_hint"))
+ var lines:Array[String]=[]
+ for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
+  lines.append(affix_summary(a,d))
+ var hangings:Array[String]=[]
+ for key in d.hangings:hangings.append(hanging_name(str(key)))
+ lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
+ if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  if bag.equipped.has(str(d.id)) and g.drone_combat.disabled.has(str(d.id)):lines.insert(0,t("rebuild_disabled"))
  lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
- for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  lines.append(affix_summary(a,d))
+ lines.append(t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
+ lines.append(t("drone_dynamic_weapon_hint"))
+ lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))
+ lines.append(t("drone_fire_"+str(d.weapon),fire_params))
  if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))
   var trigger:=legendary_trigger(str(effect.get("effect_id","")))
   if not trigger.is_empty():lines.append(trigger)
- var hangings: Array[String]=[]
- for key in d.hangings:hangings.append(hanging_name(str(key)))
- lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
- if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  return "\n".join(lines)
 func affix_display(a:Dictionary,d:Dictionary) -> Dictionary:
  var value:float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,host.game.hyperspace.config)
