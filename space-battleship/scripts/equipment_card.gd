@@ -134,7 +134,7 @@ func layout_contents() -> void:
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false),item.get("upgrade_count",0),panel.upgrade_amount]
+	var state := [item.key,item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false),item.get("upgrade_count",0),panel.upgrade_amount]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state

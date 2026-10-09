@@ -599,6 +599,16 @@ func refresh_stats() -> void:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
+		# A stat invalidation can follow a refit before its structural refresh.
+		# Do not combine the new module projection with the previous identity.
+		if str(entry.get("key",""))!=str(item.key) or int(entry.get("level",0))!=int(item.level):
+			item=equipment_item(item.category,item.index)
+			items[id]=item
+			update_card_cost(item)
+			cards[id].refresh(item,selected==id)
+			sort_dirty=true
+			selected_changed=selected_changed or selected==id
+			continue
 		var projection: Dictionary=host.equipment_display_snapshot(entry)
 		var value = host.EQUIPMENT_DISPLAY.displayed_value(projection)
 		var projection_changed: bool=item.projection!=projection
