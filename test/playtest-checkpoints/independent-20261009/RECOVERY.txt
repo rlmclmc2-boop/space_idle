@@ -1,5 +1,5 @@
-Pure independent cloud test checkpoint, no user/local-player data.
-Frozen candidate70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
-Manualsave2026-10-09 20:42:59UTC stage8wave3 paused. Originalcloudprocess2788 window2097155 DISPLAY=:91 XDG /workspace/playtest-independent-20261009/{data,config,cache}. Environmentccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA.
-RuntimeGodot4.6.3 LP_NUM_THREADS=4 gl_compatibility maxfps60;1x no particlesused.
-W01/02/03pulse23/22/22, armor23/25, reactor15均分, AI10allocatedforge3/weapon4/armor3. Bluebeamdroneequipped; Δfirstlayerbackgroundexplorationactive. Stage8equipmentenhancement12/100shards notactivated. Continueoriginalprocess; currentnextlevelpreviewmodalclosevia确定 thenresume space. Firstarrival20 manualsaveandclose immediately.
+Pure independent cloud test checkpoint, no local-player data.
+Candidate70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88.
+Manualsave2026-10-09 20:57:36UTC stage9wave5 paused.
+Originalcloudprocess2788 window2097155 DISPLAY=:91 XDG /workspace/playtest-independent-20261009/{data,config,cache}. Environmentccarenv_b64_Y2NhcmVudl9kYzBhZGU1NDljMDA4MTkxOTczNzkwZjE3NTNjMjliOA. Godot4.6.3 gl_compatibility LP_NUM_THREADS=4 maxfps60.
+1x, no particlesused. Wcannon28/missile28/cannon28, armor30/deflectionshield30, reactor17均分, AI15 forge5/weapon6/armor4, enhancement1. BluebeamdroneequippedandΔfirstlayerbackgroundexploration. Resumeoriginalspace afterequipmenttab, continuefirstarrival20thenmanualsaveandclose.
