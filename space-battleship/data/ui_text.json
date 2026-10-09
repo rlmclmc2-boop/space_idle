@@ -4049,7 +4049,7 @@
   },
   {
     "key": "crew.effect.reactor_auto",
-    "text": "每{interval}秒 · 尝试升级1级并平均分配",
+    "text": "每{interval}秒 · 按反应炉开关升级/分配",
     "params": "interval",
     "category": "crew",
     "note": "船员反应炉岗位"
@@ -18093,5 +18093,77 @@
     "text": "关闭回执",
     "params": "",
     "category": "hyperspace"
+  },
+  {
+    "key": "reactor.automation.upgrade",
+    "text": "自动升级",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.allocate",
+    "text": "自动分配",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.settings",
+    "text": "设置",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.requires_crew",
+    "text": "需派遣反应炉船员；撤下后停止执行",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.slot",
+    "text": "预设{slot}",
+    "params": "slot",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.empty_slot",
+    "text": "{slot} · 空",
+    "params": "slot",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.settings_title",
+    "text": "分配比例与预设",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.apply_ratio",
+    "text": "应用比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.current",
+    "text": "当前比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.equal",
+    "text": "均分",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.save_ratio",
+    "text": "保存比例",
+    "params": "",
+    "category": "reactor"
+  },
+  {
+    "key": "reactor.automation.idle",
+    "text": "闲置 {percent}%",
+    "params": "percent",
+    "category": "reactor"
   }
 ]

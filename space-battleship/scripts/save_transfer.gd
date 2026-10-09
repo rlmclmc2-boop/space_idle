@@ -20,6 +20,7 @@ static func schema() -> Dictionary:
  for key in ["hightechLevels","scientistAssignments"]:result[key]={"*":"i"}
  result.reactorAllocation={"*":"reactor_integer"}
  result.reactorIntegerVersion="i"
+ result.reactorAutomation=preload("res://scripts/reactor_automation.gd").schema()
  for key in ["furnaceIncomePeak","jewelFurnaceIncomePeak"]:result[key]="g"
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel","droneWeaponFloor"]:result[key]="i"
@@ -140,6 +141,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
   if not blueprint_valid(region,builds):return {"error":"format"}
  # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
  var candidate:=BattleGame.new(db,false)
+ if raw.has("reactorAutomation") and not preload("res://scripts/reactor_automation.gd").valid_state(candidate,raw.reactorAutomation):return {"error":"format"}
  candidate.load_progress_data(clean(raw,schema()))
  if raw.has("reactorLevel") and int(raw.reactorLevel)>=int(db.config.reactorInitialLevel) and int(raw.reactorLevel)!=int(candidate.profile.reactorLevel):return {"error":"format"}
  candidate.reset_player()

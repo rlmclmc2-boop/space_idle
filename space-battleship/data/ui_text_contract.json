@@ -9873,6 +9873,48 @@
     },
     "hyperspace.module_receipt_close": {
       "params": []
+    },
+    "reactor.automation.upgrade": {
+      "params": []
+    },
+    "reactor.automation.allocate": {
+      "params": []
+    },
+    "reactor.automation.settings": {
+      "params": []
+    },
+    "reactor.automation.requires_crew": {
+      "params": []
+    },
+    "reactor.automation.slot": {
+      "params": [
+        "slot"
+      ]
+    },
+    "reactor.automation.empty_slot": {
+      "params": [
+        "slot"
+      ]
+    },
+    "reactor.automation.settings_title": {
+      "params": []
+    },
+    "reactor.automation.apply_ratio": {
+      "params": []
+    },
+    "reactor.automation.current": {
+      "params": []
+    },
+    "reactor.automation.equal": {
+      "params": []
+    },
+    "reactor.automation.save_ratio": {
+      "params": []
+    },
+    "reactor.automation.idle": {
+      "params": [
+        "percent"
+      ]
     }
   },
   "bindings": {

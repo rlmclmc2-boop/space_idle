@@ -50,6 +50,7 @@ var remaining_label: Label
 var total_track: Control
 var upgrade_buttons: Dictionary = {}
 var equalize_button: Button
+var automation_ui
 var module_controls: Dictionary = {}
 var refreshing := false
 var dirty := true
@@ -263,6 +264,7 @@ func setup(owner_ui: Node) -> void:
 	button_style(equalize_button,CYAN)
 	equalize_button.pressed.connect(func():host.game.equalize_reactor_allocation();refresh())
 	add_child(equalize_button)
+	automation_ui=preload("res://scripts/reactor_automation_ui.gd").new();automation_ui.setup(self)
 	allocation_hint = make_label(self,"",Vector2(60,677),520,16,MUTED,25)
 	capacity_label = clipped_readout(self,Vector2(66,606),Vector2(246,65),CYAN)
 	allocation_label = clipped_readout(self,Vector2(74,1058),Vector2(490,38),SKIN.PAPER)
@@ -494,6 +496,7 @@ func refresh() -> void:
 	refreshing = true
 	var animate: bool = not host.game.paused
 	var game = host.game
+	automation_ui.refresh()
 	var capacity = game.reactor_capacity()
 	var allocated = game.reactor_allocated()
 	var active_allocation:Dictionary=PREVIEW.active_allocation(game)

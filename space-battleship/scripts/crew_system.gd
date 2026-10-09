@@ -46,6 +46,7 @@ func invalidate_jobs(g, jobs: Array) -> void:
 
 func invalidate_member(g, item: Dictionary) -> void:
 	if not PURCHASE_JOBS.has(str(item.assignmentType)):return
+	if item.assignmentType=="reactor_upgrade" and not g.profile.reactorAutomation.upgrade:return
 	# First change fixes the deadline. Later changes merge without postponing it.
 	if timers.has(item.crewId):return
 	var row: Dictionary = assignments(g).get(item.assignmentType,{})
@@ -72,10 +73,12 @@ func invalidate_resources(g, ids: Array) -> void:
 
 func reactor_allocation_state(g, id: String) -> Array:
 	# Free charge affects multipliers/UI, never the ordinary energy pool or split.
-	return [id,active(g,entry(g,id)),g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
+	return [id,active(g,entry(g,id)),g.profile.reactorAutomation.allocate,g.profile.reactorAutomation.ratio.duplicate(true),g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
 
 func invalidate_reactor_allocation(g) -> void:
 	var id := ""
+	if not g.profile.reactorAutomation.allocate:
+		allocation_timers.clear();allocation_intervals.clear();allocation_dependencies.clear();return
 	for item in g.profile.get("crew",[]):
 		if item.assignmentType=="reactor_upgrade":id=str(item.crewId);break
 	if id.is_empty():
@@ -101,7 +104,7 @@ func invalidate_reactor_allocation(g) -> void:
 func run_reactor_allocation(g, item: Dictionary) -> void:
 	allocation_timers.erase(item.crewId)
 	allocation_intervals.erase(item.crewId)
-	if active(g,item):g.equalize_reactor_allocation()
+	if not item.is_empty() and active(g,item):preload("res://scripts/reactor_automation.gd").maintain(g)
 	allocation_dependencies=reactor_allocation_state(g,str(item.crewId))
 
 func on_event(kind: String, payload: Dictionary) -> void:
@@ -115,11 +118,15 @@ func on_event(kind: String, payload: Dictionary) -> void:
 			if payload.has("purchased"):invalidate_jobs(g,["hightech_scientists"])
 		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
 		"reactor_changed":
+			if payload.has("auto_upgrade"):
+				for item in g.profile.crew:
+					if item.assignmentType=="reactor_upgrade":
+						timers.erase(item.crewId);intervals.erase(item.crewId);invalidate_member(g,item)
 			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
 			if payload.get("equalized",false):
 				if not allocation_dependencies.is_empty():allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
 			else:invalidate_reactor_allocation(g)
-		"unlocks_changed","planet_reforged":
+		"unlocks_changed","planet_reforged","hyperspace_changed","hyperspace_rebuild","hyperspace_drone_restored":
 			invalidate_jobs(g,PURCHASE_JOBS)
 			invalidate_reactor_allocation(g)
 		"planet_changed":
@@ -373,8 +380,8 @@ func auto_jewels(g, _item: Dictionary) -> bool:
 	return g.upgrade_enhancement(1)>0
 
 func auto_reactor(g, _item: Dictionary) -> bool:
-	if not g.upgrade_reactor(1):return false
-	# A paid upgrade changes capacity: preserve the existing buy-then-split order.
+	if not g.profile.reactorAutomation.upgrade or not active(g,_item) or not g.upgrade_reactor(1):return false
+	# A paid upgrade preserves current shares; optional target maintenance is separate.
 	run_reactor_allocation(g,_item)
 	return true
 
