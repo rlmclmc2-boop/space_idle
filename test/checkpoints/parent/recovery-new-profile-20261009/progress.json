@@ -1,10 +1,19 @@
 {
-	"bossSeen": [],
-	"chronoParticles": 0.0,
-	"chronoSavedAt": 1791533884.6718,
+	"bossSeen": [
+		1,
+		2,
+		3,
+		4,
+		5
+	],
+	"chronoParticles": 3151.0,
+	"chronoSavedAt": 1791540339.27143,
 	"cleared": [
 		1,
-		2
+		2,
+		3,
+		4,
+		5
 	],
 	"crew": [
 		{
@@ -251,8 +260,8 @@
 	"crewEquipment": {
 
 	},
-	"droneWeaponFloor": 5,
-	"enhancementAttacks": 5023,
+	"droneWeaponFloor": 9,
+	"enhancementAttacks": 7759,
 	"enhancementBranches": {
 		"defence": {
 			"adaptation": {
@@ -277,7 +286,7 @@
 			}
 		}
 	},
-	"enhancementHits": 9596,
+	"enhancementHits": 15730,
 	"enhancementLevel": 0,
 	"enhancementOrder": {
 		"defence": [
@@ -292,7 +301,7 @@
 		]
 	},
 	"enhancementVersion": 1,
-	"furnaceElapsed": 0.0,
+	"furnaceElapsed": 14.0333333333126,
 	"furnaceIncomePeak": 360.0,
 	"galaxies": {
 		"galaxy_1": {
@@ -2091,23 +2100,31 @@
 		"laser",
 		"missile",
 		"cannon",
+		"longLaser",
 		"ship/Frigate",
-		"reactor"
+		"reactor",
+		"hightech/超时空炼铁炉",
+		"hightech/正电子聚焦装置",
+		"hightech/简并态装甲"
 	],
-	"highestLevel": 3,
+	"guardDeath": 0,
+	"highestLevel": 6,
 	"hightechDrops": [],
 	"hightechLevels": {
-
+		"宝石熔炼炉": 0,
+		"正电子聚焦装置": 9,
+		"简并态装甲": 9,
+		"超时空炼铁炉": 10
 	},
 	"hightechOrder": [
-		"",
-		"",
-		"",
+		"超时空炼铁炉",
+		"正电子聚焦装置",
+		"简并态装甲",
 		"",
 		"",
 		""
 	],
-	"hightechSavedAt": 1791533884.6718,
+	"hightechSavedAt": 1791540339.27143,
 	"hightechVersion": 2,
 	"hyperspace": {
 		"active": {
@@ -2116,43 +2133,43 @@
 		"auto": {
 			"crew_id": "",
 			"enabled": false,
-			"level": 0,
+			"level": 0.0,
 			"route": ""
 		},
 		"blocked": false,
-		"command_seq": 1,
+		"command_seq": 1.0,
 		"energy": 216000.0,
 		"filter": {
 			"action": "keep_matches",
 			"conditions": [],
 			"enabled": false,
 			"mode": "all",
-			"version": 2
+			"version": 2.0
 		},
 		"hanging_modules": {
 			"distributed_algorithm": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"extra_storage": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"gem_refiner": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"hyperspace_charge": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			},
 			"resource_collector": {
 				"exp": 0.0,
-				"level": 0,
+				"level": 0.0,
 				"unlocked": false
 			}
 		},
@@ -2168,10 +2185,10 @@
 			},
 			"equipped": [],
 			"favorites": [],
-			"generation": 0,
+			"generation": 0.0,
 			"overflow": [],
 			"presets": [],
-			"reforge_count": 0,
+			"reforge_count": 0.0,
 			"sealed": {
 
 			},
@@ -2182,23 +2199,23 @@
 		},
 		"legendary_collection": [],
 		"legendary_seen": [],
-		"material_unit_version": 2,
+		"material_unit_version": 2.0,
 		"materials": {
-			"antiproton": 0,
-			"degenerate_matter": 0,
-			"glueball": 0,
-			"zero_point_energy": 0
+			"antiproton": 0.0,
+			"degenerate_matter": 0.0,
+			"glueball": 0.0,
+			"zero_point_energy": 0.0
 		},
-		"next_run": 1,
+		"next_run": 1.0,
 		"paused": [],
 		"pending_time": 0.0,
-		"queue_policy_version": 1,
+		"queue_policy_version": 1.0,
 		"random_state": "2414430425442934693",
-		"round_id": 1,
-		"settled_run": 0,
-		"ultimate_cores": 0,
+		"round_id": 1.0,
+		"settled_run": 0.0,
+		"ultimate_cores": 0.0,
 		"unlocked_drones": false,
-		"version": 5
+		"version": 5.0
 	},
 	"hyperspaceReceipt": {
 		"drone_id": "",
@@ -2211,50 +2228,51 @@
 	"jewelFurnaceIncomePeak": 0.0,
 	"jewels": [],
 	"journey": {
-		"distance": 3600.0,
-		"groupIndex": 5,
+		"distance": 600.0,
+		"groupIndex": 6,
 		"guardArrived": false,
 		"pendingUnlocks": [],
 		"retreatBossPending": false,
-		"stage": 3,
+		"stage": 6,
 		"state": 3
 	},
 	"levels": {
-		"armour": 4,
+		"armour": 8,
 		"cannon": 1,
-		"laser": 5,
+		"laser": 1,
 		"longLaser": 1,
-		"missile": 1,
-		"shield": 4
+		"missile": 9,
+		"shield": 1
 	},
-	"lifetime_max_stage": 3,
+	"lifetime_max_stage": 6,
 	"loadout": {
 		"defence": [
 			{
 				"key": "armour",
-				"level": 4
+				"level": 8
 			},
 			{
-				"key": "shield",
-				"level": 4
+				"key": "armour",
+				"level": 7
 			}
 		],
 		"weapons": [
 			{
-				"key": "laser",
-				"level": 5
+				"key": "missile",
+				"level": 9
 			},
 			{
-				"key": "laser",
-				"level": 5
+				"key": "missile",
+				"level": 9
 			},
 			{
-				"key": "laser",
-				"level": 5
+				"key": "missile",
+				"level": 9
 			}
 		]
 	},
 	"loop": false,
+	"loopLevel": 0,
 	"moduleVersion": 1,
 	"onboarding": {
 		"completed": true,
@@ -2270,29 +2288,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -2300,29 +2318,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -2330,29 +2348,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -2360,29 +2378,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -2390,29 +2408,29 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		},
@@ -2420,90 +2438,157 @@
 			"auto_explore": false,
 			"buildings": {
 				"refinery": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"shipyard_later": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"station": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				},
 				"workshop": {
-					"build_progress": 0,
+					"build_progress": 0.0,
 					"crew": [],
 					"status": "locked"
 				}
 			},
 			"conquered": false,
 			"crewId": "",
-			"degree": 0,
+			"degree": 0.0,
 			"elapsed": 0.0,
 			"unlocked": false
 		}
 	},
-	"productionElapsed": 1162.19999999927,
+	"productionElapsed": 2960.31666667665,
 	"reactorAllocation": {
 		"condensation": 0,
-		"defence": 81,
-		"smelting": 0,
-		"weapons": 167
+		"defence": 247,
+		"smelting": 246,
+		"weapons": 250
 	},
 	"reactorIntegerVersion": 1,
-	"reactorLevel": 6,
+	"reactorLevel": 12,
 	"readUnlocks": [
 		"laser",
 		"armour",
-		"shield"
+		"shield",
+		"missile"
 	],
 	"resourceSamples": [
 		{
-			"amount": 3.0,
-			"id": "2",
-			"origin": "drop",
-			"production_base": 3.0,
-			"production_time": 1119.39999999931,
-			"time": 1791533820.4632
+			"amount": 162.0,
+			"id": "1",
+			"origin": "furnace",
+			"production_base": 162.0,
+			"production_time": 2926.28666667622,
+			"time": 1791539716.67869
 		},
 		{
-			"amount": 3.0,
+			"amount": 39.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 39.0,
+			"production_time": 2930.08333334294,
+			"time": 1791539720.45231
+		},
+		{
+			"amount": 8.0,
 			"id": "2",
 			"origin": "drop",
-			"production_base": 3.0,
-			"production_time": 1150.59999999928,
-			"time": 1791533851.72653
+			"production_base": 8.0,
+			"production_time": 2934.86666667633,
+			"time": 1791540313.77731
+		},
+		{
+			"amount": 42.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 42.0,
+			"production_time": 2937.23333334303,
+			"time": 1791540316.1488
+		},
+		{
+			"amount": 42.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 42.0,
+			"production_time": 2937.3500000097,
+			"time": 1791540316.28546
+		},
+		{
+			"amount": 43.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 43.0,
+			"production_time": 2949.96666667652,
+			"time": 1791540328.8786
+		},
+		{
+			"amount": 180.0,
+			"id": "1",
+			"origin": "furnace",
+			"production_base": 180.0,
+			"production_time": 2956.30000000994,
+			"time": 1791540335.23309
+		},
+		{
+			"amount": 43.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 43.0,
+			"production_time": 2957.48333334328,
+			"time": 1791540336.40268
+		},
+		{
+			"amount": 43.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 43.0,
+			"production_time": 2957.60000000995,
+			"time": 1791540336.54043
 		}
 	],
 	"resources": {
-		"1": 15.0,
-		"2": 42.22809375
+		"1": 4546.0,
+		"2": 76.5164225337946
 	},
 	"saveIntervalMinutes": "1",
 	"scientistAssignments": {
-
+		"正电子聚焦装置": 2,
+		"简并态装甲": 2,
+		"超时空炼铁炉": 2
 	},
-	"scientists": 0,
+	"scientists": 6,
 	"seenUnlocks": [
 		"missile",
 		"reactor",
 		"shield",
-		"cannon"
+		"cannon",
+		"hightech/超时空炼铁炉",
+		"hightech/正电子聚焦装置",
+		"hightech/简并态装甲",
+		"longLaser"
 	],
 	"selectedShip": "Frigate",
 	"techPoints": {
-
+		"宝石熔炼炉": 0.0,
+		"正电子聚焦装置": 1026.6000000007,
+		"简并态装甲": 1026.6000000007,
+		"超时空炼铁炉": 218.350000000349
 	},
 	"unlocked": [
 		"armour",
 		"laser",
-		"missile",
 		"shield",
-		"cannon"
+		"missile",
+		"cannon",
+		"longLaser"
 	],
 	"version": 5
 }
