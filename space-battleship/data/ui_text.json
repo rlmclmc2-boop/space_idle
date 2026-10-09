@@ -18257,5 +18257,12 @@
     "params": "",
     "category": "hyperspace",
     "note": "仅管理挂载模块窗口显示已知模块的实际未满足条件"
+  },
+  {
+    "key": "reactor.automation.no_dispatch",
+    "text": "未派遣：自动暂停",
+    "params": "",
+    "category": "reactor",
+    "note": "自动栏首行简短状态，完整条件保留悬停"
   }
 ]

@@ -9982,6 +9982,9 @@
     },
     "hyperspace.module_requirement_obtain": {
       "params": []
+    },
+    "reactor.automation.no_dispatch": {
+      "params": []
     }
   },
   "bindings": {

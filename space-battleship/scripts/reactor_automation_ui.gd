@@ -37,7 +37,9 @@ func setup(owner) -> void:
  var choices=HBoxContainer.new();choices.position=Vector2(60,1126);choices.size=Vector2(522,40);choices.add_theme_constant_override("separation",8);panel.add_child(choices)
  button(choices,"settings",show_settings)
  for index in 3:presets.append(button(choices,"slot",func():A.apply_slot(game(),index);panel.refresh(),{"slot":str(index+1)}))
- crew_hint=Label.new();crew_hint.position=Vector2(64,1168);crew_hint.size=Vector2(514,28);crew_hint.text=text("requires_crew");crew_hint.add_theme_font_size_override("font_size",18);crew_hint.add_theme_color_override("font_color",panel.INK);panel.add_child(crew_hint)
+ crew_hint=Label.new();crew_hint.text=text("no_dispatch");crew_hint.tooltip_text=text("requires_crew")
+ crew_hint.size_flags_horizontal=Control.SIZE_EXPAND_FILL;crew_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;crew_hint.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+ crew_hint.mouse_filter=Control.MOUSE_FILTER_PASS;crew_hint.add_theme_font_size_override("font_size",18);crew_hint.add_theme_color_override("font_color",panel.INK);bar.add_child(crew_hint)
  panel.tree_exiting.connect(func():
   if is_instance_valid(dialog):dialog.queue_free())
  refresh()
