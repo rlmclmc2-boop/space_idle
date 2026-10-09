@@ -53,6 +53,7 @@ var pending_defeat_notice := ""
 var defeat_notice := ""
 var defeat_notice_time := 0.0
 var last_defeat_details := ""
+var last_defeat_cause := "unknown"
 var defeat_recall: Label
 var compact_armour: Array[PackedVector2Array] = []
 var compact_bridges: Array[PackedVector2Array] = []
@@ -824,7 +825,8 @@ func on_event(kind: String, info: Dictionary) -> void:
 			defeat_notice=notice
 			defeat_notice_time=3.5
 			var place=UIText.t("battle.defeat.manual_place" if info.manual else "battle.defeat.main_place",{"stage":str(info.get("stage",game.stage)),"wave":str(info.get("wave",game.group_index))})
-			last_defeat_details=UIText.t("battle.defeat.recent",{"place":place,"result":notice})
+			last_defeat_cause=defeat_feedback.cause(game)
+			last_defeat_details=UIText.t("battle.defeat.recent",{"place":place,"result":notice})+"\n"+UIText.t("battle.defeat.compare_"+last_defeat_cause)
 			refresh_defeat_recall()
 		"retreat":
 			if pending_defeat_notice.is_empty():toast(UIText.t("main.on_event.text_05", {"to":"%s" % (number(info.to))}))
@@ -866,6 +868,20 @@ func toggle_resource_display() -> void:
 	resource_rate_mode = not resource_rate_mode
 	resource_mode_button.text = UIText.t("main.build_ui.text_02") if resource_rate_mode else UIText.t("main.build_ui.text_03")
 	resource_layer.queue_redraw()
+
+func open_defeat_comparison()->void:
+	if not is_instance_valid(equipment_panel) or not is_instance_valid(equipment_tabs):return
+	select_system(equipment_tabs.get_tab_idx_from_control(equipment_panel))
+	var target := ""
+	var damage_type := 1 if last_defeat_cause=="energy" else 2 if last_defeat_cause=="physical" else 0
+	if damage_type>0:
+		if game.active_slot_count("defence")>0:target=equipment_panel.module_card_id("defence",0)
+		for index in game.active_slot_count("defence"):
+			var entry:Dictionary=game.module_entry("defence",index)
+			if not str(entry.get("key","")).is_empty() and int(db.equip(str(entry.key),int(entry.level)).get("dmgtype",0))==damage_type:
+				target=equipment_panel.module_card_id("defence",index);break
+	if target.is_empty() and not equipment_panel.items.is_empty():target=str(equipment_panel.items.keys()[0])
+	if not target.is_empty():equipment_panel.select_item(target);equipment_panel.show_inspector()
 
 func refresh_defeat_recall()->void:
 	if not is_instance_valid(defeat_recall):return
@@ -2033,8 +2049,11 @@ func build_ui() -> void:
 	unlock_description.add_theme_font_size_override("font_size",18)
 	unlock_description.add_theme_color_override("font_color",INK)
 	layout_overlay_controls()
-	defeat_recall=equipment_card_label(ui,UIText.t("battle.defeat.recall"),Rect2(Vector2(510,1084)-ui.position,Vector2(52,28)),14,ORANGE)
-	defeat_recall.mouse_default_cursor_shape=Control.CURSOR_HELP
+	defeat_recall=equipment_card_label(ui,UIText.t("battle.defeat.recall"),Rect2(Vector2(510,1084)-ui.position,Vector2(114,28)),14,ORANGE)
+	defeat_recall.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+	defeat_recall.mouse_filter=Control.MOUSE_FILTER_STOP
+	defeat_recall.gui_input.connect(func(event):
+		if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:open_defeat_comparison())
 	refresh_defeat_recall()
 	loop_select = OptionButton.new()
 	loop_select.allow_reselect = true

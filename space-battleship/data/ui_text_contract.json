@@ -9332,6 +9332,18 @@
     },
     "hyperspace.module_no_capacity": {
       "params": []
+    },
+    "battle.defeat.compare_energy": {
+      "params": []
+    },
+    "battle.defeat.compare_physical": {
+      "params": []
+    },
+    "battle.defeat.compare_mixed": {
+      "params": []
+    },
+    "battle.defeat.compare_unknown": {
+      "params": []
     }
   },
   "bindings": {

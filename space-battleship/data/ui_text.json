@@ -16944,10 +16944,10 @@
   },
   {
     "key": "battle.defeat.recall",
-    "text": "败因",
+    "text": "败因→比较",
     "params": "",
     "category": "battle",
-    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+    "note": "最近一次战败的保存原因；点击打开只读装备比较，不使用当前敌人推断旧败因"
   },
   {
     "key": "battle.defeat.recent",
@@ -17300,5 +17300,33 @@
     "params": "",
     "category": "hyperspace",
     "note": "展开真实条件和现行配置范围，不修改概率、成本或核心"
+  },
+  {
+    "key": "battle.defeat.compare_energy",
+    "text": "最近一次能量损失为主，可先比较抗能量防御。点击「败因→比较」查看，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_physical",
+    "text": "最近一次物理损失为主，可先比较抗物理防御。点击「败因→比较」查看，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_mixed",
+    "text": "最近一次物理与能量损失相当。点击「败因→比较」检查当前装备，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
+  },
+  {
+    "key": "battle.defeat.compare_unknown",
+    "text": "最近一次损失类型不足以判断。点击「败因→比较」检查当前装备，不会换装。",
+    "params": "",
+    "category": "battle",
+    "note": "仅依据发生战败时的实际损失记录，不推断旧敌人"
   }
 ]
