@@ -19,7 +19,8 @@
     "Subsequent candidate: successful native slot-dropdown refit updates selected comparison slot; rejected refit and later explicit selection retain their semantics",
     "Subsequent candidate: actual enemy weapon damage-type fact in existing hover; missing weapon stays unknown",
     "Subsequent candidate: two-line dismissible receipt clears on carrier change; immediate installation continues into existing picker",
-    "Subsequent candidate: stable material-route entry, short exchange quote with exact hover, integer signed total-bonus percentages"
+    "Subsequent candidate: stable material-route entry, short exchange quote with exact hover, integer signed total-bonus percentages",
+    "Subsequent candidate: retain only already shown basic forge positions for the selected carrier; full-affix compact completed state, append new useful basics, advanced still folded"
   ],
   "verification": {
     "main_ui_checks": 97,
@@ -64,13 +65,14 @@
     "research_progress_number_checks": 8,
     "refit_comparison_focus_checks": 8,
     "enemy_attack_defence_facts_checks": 8,
-    "receipt_material_routes_totals_checks": 14
+    "receipt_material_routes_totals_checks": 14,
+    "forge_basic_position_checks": 8
   },
   "next": [
-    "父验收后续候选的攻击/防御悬停、回执寿命、材料路线和整数总加成；固定46829d6c不切版。父判断固定锻造按钮布局及源模板压力目标。"
+    "父下一候选GUI验收基础格位固定、满词条两行状态和进阶折叠；5–7关数值校准等待当前三方前20关节奏证据。"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "518b1127814d9f30026a82a3494f92c09684d318",
+  "last_code_commit": "6e8e50204f7e6f7001dffdf88e2e8e2cfa408b2b",
   "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
   "scope": "Subsequent UI candidate only; no frozen-play update, new play thread, numeric growth or enemy-pressure change."
 }

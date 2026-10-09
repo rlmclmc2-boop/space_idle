@@ -18,6 +18,10 @@ var advanced_toggle:Button
 var available_grid:GridContainer
 var unavailable_grid:GridContainer
 var advanced_expanded:=false
+# UI order belongs to the selected carrier; newly useful basic actions append.
+# Balances/capacity change captions and enabled state, never remove an existing slot.
+var basic_context:String=""
+var shown_basics:Array[String]=[]
 func setup(owner) -> void:commands_ref=weakref(owner)
 func build(parent:Node) -> void:
  available_grid=GridContainer.new();available_grid.columns=3;available_grid.add_theme_constant_override("h_separation",8);available_grid.add_theme_constant_override("v_separation",8);parent.add_child(available_grid)
@@ -92,8 +96,10 @@ func exchange_shortage(_op:String,result:Dictionary) -> Dictionary:
 func refresh() -> void:
  if buttons.is_empty():return
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
- var later:=0
- var available_index:=0
+ var context:String=str(commands.panel.selected_id)
+ if context!=basic_context:
+  basic_context=context;shown_basics.clear()
+ var quotes:Dictionary={}
  for op in ACTIONS:
   var offered=visible_action(op,d) or (not d.is_empty() and not bool(d.get("ultimate",false)) and op!="restore_ultimate")
   if not offered:commands.panel.put(cells[op],"visible",false);continue
@@ -101,8 +107,21 @@ func refresh() -> void:
   var effective="disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op
   var req=request(effective);var guaranteed=not selected_target(op).is_empty()
   var result:Dictionary=commands.h().preview_forge(commands.game(),req) if not req.is_empty() else {"error":"unavailable_drone"}
-  var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
+  var reason=str(result.get("error",""))
   var current=reason.is_empty() or ((op in BASIC or guaranteed or (op=="legendary" and not bool(d.get("legendary",false)))) and reason=="insufficient_materials")
+  quotes[op]={"effective":effective,"guaranteed":guaranteed,"result":result,"current":current}
+  if op in BASIC and current and not shown_basics.has(op):shown_basics.append(op)
+ var later:=0
+ var available_index:=0
+ var order:Array=shown_basics.duplicate()
+ for op in ACTIONS:
+  if not order.has(op):order.append(op)
+ for op in order:
+  if not quotes.has(op):continue
+  var data:Dictionary=quotes[op]
+  var effective:String=data.effective;var guaranteed:bool=data.guaranteed
+  var result:Dictionary=data.result;var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
+  var current:bool=data.current or shown_basics.has(op)
   var destination:GridContainer=available_grid if current else unavailable_grid
   if cells[op].get_parent()!=destination:cells[op].reparent(destination,false)
   var position:int=available_index if current else later
@@ -134,6 +153,7 @@ func refresh() -> void:
   if op=="enable_omen":status=commands.t("omen_scope_short") if reason.is_empty() else status+"\n"+commands.t("omen_scope_short")
   if op=="enable_omen" and d.affixes.is_empty():status+="\n"+commands.t("omen_empty_short")
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
+  if op=="add_affix" and reason=="affix_limit" and shown_basics.has(op):caption=name+"\n"+status
   commands.panel.put(buttons[op],"tooltip_text",name+"\n"+commands.cost_text(costs,true)+"\n"+status)
   commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage.is_empty())
  commands.panel.put(advanced_toggle,"visible",later>0)
