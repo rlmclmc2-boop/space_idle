@@ -6,6 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]; SRC=ROOT/'space-battleship'; CFG=SRC/'
 sys.path.insert(0,str(SRC/'tools'))
 from config_workbooks import incremental_import
 from excel_cache import recache_level
+from planet_experience import populate_planet_experience
 p=argparse.ArgumentParser();p.add_argument('--version',default='progression-v4');p.add_argument('--through',type=int,default=20);p.add_argument('--late-income',type=float,default=.1);p.add_argument('--late-income-step',type=float,default=13);p.add_argument('--roster-through',type=int,default=20);p.add_argument('--smooth-income-floor',action='store_true');p.add_argument('--themed-beam-bosses',action='store_true');p.add_argument('--teaching-fifth-income',type=float,default=1);p.add_argument('--first-reforge-steps',default='8,16,32,48,68');p.add_argument('--future-growth-step',type=float,default=8);p.add_argument('--future-income-step',type=float,default=8);p.add_argument('--future-income-coefficient',type=float,default=4);p.add_argument('--later-cycle-steps',default='6,12,18,30,50');p.add_argument("--boss-health-factor",type=float,default=1.0);p.add_argument("--boss-damage-factor",type=float,default=1.0);p.add_argument("--boss-factor-from",type=int,default=11);p.add_argument("--boss-factor-through",type=int,default=20);p.add_argument("--later-boss-health-factor",type=float,default=1.0);p.add_argument("--later-ultimate-health-factor",type=float);p.add_argument("--later-ultimate-damage-factor",type=float,default=1.0);p.add_argument('--elite-damage-stage',type=int,default=0);p.add_argument('--elite-damage-factor',type=float,default=1.0);p.add_argument('--elite-health-factor',type=float,default=1.0);p.add_argument('--stage-boss-damage-stage',type=int,default=0);p.add_argument('--stage-boss-damage-factor',type=float,default=1.0);p.add_argument('--stage-boss-health-factor',type=float,default=1.0);p.add_argument('--wave-health-factors',default='');p.add_argument('--attack-steps-from30',default='');a=p.parse_args()
 wave_health_factors={(int(stage),tier):float(value) for stage,tier,value in [part.split(':') for part in a.wave_health_factors.split(',') if part]}
 attack_steps_from30={int(stage):float(value) for stage,value in [part.split(':') for part in a.attack_steps_from30.split(',') if part]}
@@ -108,10 +109,11 @@ for stage,theme in enumerate(themes[:max(a.through,a.roster_through)],1):
  row.update(length=4000 if stage<=5 else 1000,monGroup='{'+','.join(f'{g}|{pos:.6f}' for g,pos in groups)+'}')
  if stage<=a.through:
   row.update(atkRatio=ratios[stage-1],lifeRatio=ratios[stage-1],resRatio=resources[stage-1])
-  row['planetExpRatio']=0 if stage<30 else 1.2**((stage-30)/5)
   if stage in attack_steps_from30:row['atkRatio']=ratios[29]*1.2**attack_steps_from30[stage]
  # Uncalibrated future numeric cells/formulas retain their identity, not old cached values.
  replace('level',stage,row)
+# Exploration XP is independent of the combat/roster generation range.
+populate_planet_experience(sheets['level'])
 for n,b in books.items():b.save(CFG/(n+'.xlsx'))
 recache_level(CFG/"level.xlsx",sheets["level"],subprocess.check_output(["git","show","04a5a307bcef9325efa9026e1ca94affa577e10d:space-battleship/config_excel/level.xlsx"],cwd=ROOT))
 result=incremental_import(CFG,SRC/'data/game_data.json')

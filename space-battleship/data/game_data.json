@@ -307385,7 +307385,7 @@
       "lifeRatio": 4.473954573938735e+23,
       "resRatio": 1747390073125186.8,
       "jewelRatio": 6.8,
-      "planetExpRatio": 1,
+      "planetExpRatio": 1.0,
       "groups": [
         {
           "id": 30301,
@@ -307433,7 +307433,7 @@
       "lifeRatio": 1.512294048887176e+25,
       "resRatio": 1.048434043875112e+16,
       "jewelRatio": 7,
-      "planetExpRatio": 1.037137289336648,
+      "planetExpRatio": 1.0371372893366482,
       "groups": [
         {
           "id": 30311,
@@ -307481,7 +307481,7 @@
       "lifeRatio": 9.363726143873491e+25,
       "resRatio": 1.048434043875112e+16,
       "jewelRatio": 7.2,
-      "planetExpRatio": 1.07565375693257,
+      "planetExpRatio": 1.0756537569325701,
       "groups": [
         {
           "id": 30321,
@@ -307529,7 +307529,7 @@
       "lifeRatio": 8.348792286873683e+26,
       "resRatio": 2.174032833379432e+16,
       "jewelRatio": 7.4,
-      "planetExpRatio": 1.115600621729828,
+      "planetExpRatio": 1.1156006217298275,
       "groups": [
         {
           "id": 30331,
@@ -307577,7 +307577,7 @@
       "lifeRatio": 5.50501538260562e+29,
       "resRatio": 2.174032833379432e+16,
       "jewelRatio": 7.6,
-      "planetExpRatio": 1.157031004803153,
+      "planetExpRatio": 1.1570310048031527,
       "groups": [
         {
           "id": 30341,
@@ -307673,7 +307673,7 @@
       "lifeRatio": 6.774245182313596e+31,
       "resRatio": 1.34610382779289e+17,
       "jewelRatio": 8,
-      "planetExpRatio": 1.244564747203978,
+      "planetExpRatio": 1.2445647472039776,
       "entryAtkRatio": 3.266900647334875e+31,
       "entryLifeRatio": 3.266900647334875e+31,
       "groups": [
@@ -307915,7 +307915,7 @@
       "lifeRatio": 2.36345933566043e+37,
       "resRatio": 4.601277570718597e+19,
       "jewelRatio": 9,
-      "planetExpRatio": 1.493477696644773,
+      "planetExpRatio": 1.4934776966447731,
       "groups": [
         {
           "id": 30411,
@@ -307963,7 +307963,7 @@
       "lifeRatio": 4.900869278425467e+37,
       "resRatio": 9.54120917064208e+19,
       "jewelRatio": 9.2,
-      "planetExpRatio": 1.548941409982901,
+      "planetExpRatio": 1.5489414099829009,
       "groups": [
         {
           "id": 30421,
@@ -308011,7 +308011,7 @@
       "lifeRatio": 1.016244253574305e+38,
       "resRatio": 1.978465133624342e+20,
       "jewelRatio": 9.4,
-      "planetExpRatio": 1.606464895290951,
+      "planetExpRatio": 1.6064648952909515,
       "groups": [
         {
           "id": 30431,
@@ -308059,7 +308059,7 @@
       "lifeRatio": 2.412323148336667e+40,
       "resRatio": 8.507037936326608e+20,
       "jewelRatio": 9.6,
-      "planetExpRatio": 1.66612464691654,
+      "planetExpRatio": 1.6661246469165396,
       "groups": [
         {
           "id": 30441,
@@ -308107,7 +308107,7 @@
       "lifeRatio": 3.976585948930644e+42,
       "resRatio": 7.584960475741243e+21,
       "jewelRatio": 9.8,
-      "planetExpRatio": 1.728,
+      "planetExpRatio": 1.7279999999999998,
       "groups": [
         {
           "id": 30451,
@@ -308155,7 +308155,7 @@
       "lifeRatio": 8.245848623702583e+42,
       "resRatio": 1.572817404249704e+22,
       "jewelRatio": 10,
-      "planetExpRatio": 1.792173235973728,
+      "planetExpRatio": 1.7921732359737277,
       "groups": [
         {
           "id": 30461,
@@ -308251,7 +308251,7 @@
       "lifeRatio": 3.545563976178901e+43,
       "resRatio": 6.762826949776052e+22,
       "jewelRatio": 10.4,
-      "planetExpRatio": 1.927757874349142,
+      "planetExpRatio": 1.9277578743491417,
       "groups": [
         {
           "id": 30481,
@@ -308299,7 +308299,7 @@
       "lifeRatio": 8.416329070066014e+45,
       "resRatio": 2.907891801619212e+23,
       "jewelRatio": 10.6,
-      "planetExpRatio": 1.999349576299847,
+      "planetExpRatio": 1.9993495762998474,
       "groups": [
         {
           "id": 30491,
@@ -308395,7 +308395,7 @@
       "lifeRatio": 2.876885525344483e+48,
       "resRatio": 5.376234206893201e+24,
       "jewelRatio": 11,
-      "planetExpRatio": 2.150607883168473,
+      "planetExpRatio": 2.1506078831684734,
       "groups": [
         {
           "id": 30511,
@@ -308587,7 +308587,7 @@
       "lifeRatio": 4.840439767316772e+53,
       "resRatio": 8.862435126087053e+26,
       "jewelRatio": 11.8,
-      "planetExpRatio": 2.488319999999999,
+      "planetExpRatio": 2.4883199999999994,
       "groups": [
         {
           "id": 30551,
@@ -308635,7 +308635,7 @@
       "lifeRatio": 1.003713590150806e+54,
       "resRatio": 1.837714547745411e+27,
       "jewelRatio": 12,
-      "planetExpRatio": 2.580729459802168,
+      "planetExpRatio": 2.5807294598021677,
       "groups": [
         {
           "id": 30561,
@@ -308683,7 +308683,7 @@
       "lifeRatio": 2.08130050053671e+54,
       "resRatio": 3.810684886204884e+27,
       "jewelRatio": 12.2,
-      "planetExpRatio": 2.676570756450452,
+      "planetExpRatio": 2.6765707564504524,
       "groups": [
         {
           "id": 30571,
@@ -308827,7 +308827,7 @@
       "lifeRatio": 1.688775981512331e+59,
       "resRatio": 3.029374341389002e+29,
       "jewelRatio": 12.8,
-      "planetExpRatio": 2.985983999999999,
+      "planetExpRatio": 2.9859839999999993,
       "groups": [
         {
           "id": 30601,
@@ -308875,7 +308875,7 @@
       "lifeRatio": 1.6887759815123313e+60,
       "resRatio": 4.241124077944603e+29,
       "jewelRatio": 13,
-      "planetExpRatio": 285.78,
+      "planetExpRatio": 3.096875351762601,
       "groups": [
         {
           "id": 30611,
@@ -308923,7 +308923,7 @@
       "lifeRatio": 1.6887759815123314e+61,
       "resRatio": 5.937573709122444e+29,
       "jewelRatio": 13.2,
-      "planetExpRatio": 342.94,
+      "planetExpRatio": 3.2118849077405427,
       "groups": [
         {
           "id": 30621,
@@ -308971,7 +308971,7 @@
       "lifeRatio": 1.6887759815123314e+62,
       "resRatio": 8.312603192771421e+29,
       "jewelRatio": 13.4,
-      "planetExpRatio": 411.53,
+      "planetExpRatio": 3.331165606875316,
       "groups": [
         {
           "id": 30631,
@@ -309019,7 +309019,7 @@
       "lifeRatio": 1.6887759815123315e+63,
       "resRatio": 1.1637644469879989e+30,
       "jewelRatio": 13.6,
-      "planetExpRatio": 493.84,
+      "planetExpRatio": 3.454876067846136,
       "groups": [
         {
           "id": 30641,
@@ -309067,7 +309067,7 @@
       "lifeRatio": 1.6887759815123314e+64,
       "resRatio": 1.6292702257831982e+30,
       "jewelRatio": 13.8,
-      "planetExpRatio": 592.61,
+      "planetExpRatio": 3.583180799999999,
       "groups": [
         {
           "id": 30651,
@@ -309115,7 +309115,7 @@
       "lifeRatio": 1.6887759815123313e+65,
       "resRatio": 2.2809783160964777e+30,
       "jewelRatio": 14,
-      "planetExpRatio": 711.13,
+      "planetExpRatio": 3.716250422115121,
       "groups": [
         {
           "id": 30661,
@@ -309163,7 +309163,7 @@
       "lifeRatio": 1.688775981512331e+66,
       "resRatio": 3.1933696425350686e+30,
       "jewelRatio": 14.2,
-      "planetExpRatio": 853.36,
+      "planetExpRatio": 3.8542618892886513,
       "groups": [
         {
           "id": 30671,
@@ -309211,7 +309211,7 @@
       "lifeRatio": 1.688775981512331e+67,
       "resRatio": 4.4707174995490955e+30,
       "jewelRatio": 14.4,
-      "planetExpRatio": 1024.03,
+      "planetExpRatio": 3.9973987282503796,
       "groups": [
         {
           "id": 30681,
@@ -309259,7 +309259,7 @@
       "lifeRatio": 1.688775981512331e+68,
       "resRatio": 6.259004499368733e+30,
       "jewelRatio": 14.6,
-      "planetExpRatio": 1228.84,
+      "planetExpRatio": 4.145851281415363,
       "groups": [
         {
           "id": 30691,
@@ -309307,7 +309307,7 @@
       "lifeRatio": 1.688775981512331e+69,
       "resRatio": 8.762606299116227e+30,
       "jewelRatio": 14.8,
-      "planetExpRatio": 1474.61,
+      "planetExpRatio": 4.2998169599999985,
       "groups": [
         {
           "id": 30701,
@@ -309355,7 +309355,7 @@
       "lifeRatio": 1.688775981512331e+70,
       "resRatio": 1.2267648818762717e+31,
       "jewelRatio": 15,
-      "planetExpRatio": 1769.53,
+      "planetExpRatio": 4.459500506538145,
       "groups": [
         {
           "id": 30711,
@@ -309403,7 +309403,7 @@
       "lifeRatio": 1.6887759815123311e+71,
       "resRatio": 1.71747083462678e+31,
       "jewelRatio": 15.2,
-      "planetExpRatio": 2123.44,
+      "planetExpRatio": 4.625114267146381,
       "groups": [
         {
           "id": 30721,
@@ -309451,7 +309451,7 @@
       "lifeRatio": 1.6887759815123311e+72,
       "resRatio": 2.404459168477492e+31,
       "jewelRatio": 15.4,
-      "planetExpRatio": 2548.13,
+      "planetExpRatio": 4.796878473900455,
       "groups": [
         {
           "id": 30731,
@@ -309499,7 +309499,7 @@
       "lifeRatio": 1.688775981512331e+73,
       "resRatio": 3.366242835868489e+31,
       "jewelRatio": 15.6,
-      "planetExpRatio": 3057.76,
+      "planetExpRatio": 4.975021537698436,
       "groups": [
         {
           "id": 30741,
@@ -309547,7 +309547,7 @@
       "lifeRatio": 1.688775981512331e+74,
       "resRatio": 4.712739970215884e+31,
       "jewelRatio": 15.8,
-      "planetExpRatio": 3669.31,
+      "planetExpRatio": 5.1597803519999985,
       "groups": [
         {
           "id": 30751,
@@ -309595,7 +309595,7 @@
       "lifeRatio": 1.688775981512331e+75,
       "resRatio": 6.597835958302237e+31,
       "jewelRatio": 16,
-      "planetExpRatio": 4403.17,
+      "planetExpRatio": 5.351400607845774,
       "groups": [
         {
           "id": 30761,
@@ -309643,7 +309643,7 @@
       "lifeRatio": 1.6887759815123312e+76,
       "resRatio": 9.236970341623131e+31,
       "jewelRatio": 16.2,
-      "planetExpRatio": 5283.8,
+      "planetExpRatio": 5.550137120575657,
       "groups": [
         {
           "id": 30771,
@@ -309691,7 +309691,7 @@
       "lifeRatio": 1.6887759815123313e+77,
       "resRatio": 1.2931758478272382e+32,
       "jewelRatio": 16.4,
-      "planetExpRatio": 6340.56,
+      "planetExpRatio": 5.756254168680546,
       "groups": [
         {
           "id": 30781,
@@ -309739,7 +309739,7 @@
       "lifeRatio": 1.6887759815123314e+78,
       "resRatio": 1.8104461869581333e+32,
       "jewelRatio": 16.6,
-      "planetExpRatio": 7608.67,
+      "planetExpRatio": 5.970025845238124,
       "groups": [
         {
           "id": 30791,
@@ -309787,7 +309787,7 @@
       "lifeRatio": 1.6887759815123314e+79,
       "resRatio": 2.5346246617413865e+32,
       "jewelRatio": 16.8,
-      "planetExpRatio": 9130.4,
+      "planetExpRatio": 6.191736422399997,
       "groups": [
         {
           "id": 30801,
@@ -309835,7 +309835,7 @@
       "lifeRatio": 3.38e+80,
       "resRatio": 3.5484745264379406e+32,
       "jewelRatio": 17,
-      "planetExpRatio": 10956.48,
+      "planetExpRatio": 6.421680729414928,
       "groups": [
         {
           "id": 30811,
@@ -309883,7 +309883,7 @@
       "lifeRatio": 6.76e+81,
       "resRatio": 4.967864337013117e+32,
       "jewelRatio": 17.2,
-      "planetExpRatio": 13147.78,
+      "planetExpRatio": 6.6601645446907884,
       "groups": [
         {
           "id": 30821,
@@ -309931,7 +309931,7 @@
       "lifeRatio": 1.35e+83,
       "resRatio": 6.955010071818362e+32,
       "jewelRatio": 17.4,
-      "planetExpRatio": 15777.34,
+      "planetExpRatio": 6.907505002416655,
       "groups": [
         {
           "id": 30831,
@@ -309979,7 +309979,7 @@
       "lifeRatio": 2.7e+84,
       "resRatio": 9.737014100545707e+32,
       "jewelRatio": 17.6,
-      "planetExpRatio": 18932.81,
+      "planetExpRatio": 7.164031014285747,
       "groups": [
         {
           "id": 30841,
@@ -310027,7 +310027,7 @@
       "lifeRatio": 5.4e+85,
       "resRatio": 1.363181974076399e+33,
       "jewelRatio": 17.8,
-      "planetExpRatio": 22719.37,
+      "planetExpRatio": 7.430083706879997,
       "groups": [
         {
           "id": 30851,
@@ -310075,7 +310075,7 @@
       "lifeRatio": 1.08e+87,
       "resRatio": 1.9084547637069585e+33,
       "jewelRatio": 18,
-      "planetExpRatio": 27263.24,
+      "planetExpRatio": 7.706016875297913,
       "groups": [
         {
           "id": 30861,
@@ -310123,7 +310123,7 @@
       "lifeRatio": 2.1599999999999997e+88,
       "resRatio": 2.6718366691897416e+33,
       "jewelRatio": 18.2,
-      "planetExpRatio": 32715.89,
+      "planetExpRatio": 7.992197453628946,
       "groups": [
         {
           "id": 30871,
@@ -310171,7 +310171,7 @@
       "lifeRatio": 4.3199999999999997e+89,
       "resRatio": 3.740571336865638e+33,
       "jewelRatio": 18.4,
-      "planetExpRatio": 39259.07,
+      "planetExpRatio": 8.289006002899985,
       "groups": [
         {
           "id": 30881,
@@ -310219,7 +310219,7 @@
       "lifeRatio": 8.64e+90,
       "resRatio": 5.236799871611893e+33,
       "jewelRatio": 18.6,
-      "planetExpRatio": 47110.88,
+      "planetExpRatio": 8.596837217142896,
       "groups": [
         {
           "id": 30891,
@@ -310267,7 +310267,7 @@
       "lifeRatio": 1.73e+92,
       "resRatio": 7.33151982025665e+33,
       "jewelRatio": 18.8,
-      "planetExpRatio": 56533.06,
+      "planetExpRatio": 8.916100448255996,
       "groups": [
         {
           "id": 30901,
@@ -310315,7 +310315,7 @@
       "lifeRatio": 3.4599999999999997e+93,
       "resRatio": 1.026412774835931e+34,
       "jewelRatio": 19,
-      "planetExpRatio": 67839.67,
+      "planetExpRatio": 9.247220250357495,
       "groups": [
         {
           "id": 30911,
@@ -310363,7 +310363,7 @@
       "lifeRatio": 6.92e+94,
       "resRatio": 1.4369778847703034e+34,
       "jewelRatio": 19.2,
-      "planetExpRatio": 81407.6,
+      "planetExpRatio": 9.590636944354735,
       "groups": [
         {
           "id": 30921,
@@ -310411,7 +310411,7 @@
       "lifeRatio": 1.38e+96,
       "resRatio": 2.0117690386784246e+34,
       "jewelRatio": 19.4,
-      "planetExpRatio": 97689.12,
+      "planetExpRatio": 9.946807203479983,
       "groups": [
         {
           "id": 30931,
@@ -310459,7 +310459,7 @@
       "lifeRatio": 2.76e+97,
       "resRatio": 2.816476654149794e+34,
       "jewelRatio": 19.6,
-      "planetExpRatio": 117226.94,
+      "planetExpRatio": 10.316204660571476,
       "groups": [
         {
           "id": 30941,
@@ -310507,7 +310507,7 @@
       "lifeRatio": 5.520000000000001e+98,
       "resRatio": 3.943067315809711e+34,
       "jewelRatio": 19.8,
-      "planetExpRatio": 140672.33,
+      "planetExpRatio": 10.699320537907195,
       "groups": [
         {
           "id": 30951,
@@ -310555,7 +310555,7 @@
       "lifeRatio": 1.1e+100,
       "resRatio": 5.520294242133595e+34,
       "jewelRatio": 20,
-      "planetExpRatio": 168806.8,
+      "planetExpRatio": 11.096664300428994,
       "groups": [
         {
           "id": 30961,
@@ -310603,7 +310603,7 @@
       "lifeRatio": 2.2e+101,
       "resRatio": 7.728411938987032e+34,
       "jewelRatio": 20.2,
-      "planetExpRatio": 202568.16,
+      "planetExpRatio": 11.508764333225681,
       "groups": [
         {
           "id": 30971,
@@ -310651,7 +310651,7 @@
       "lifeRatio": 4.4e+102,
       "resRatio": 1.0819776714581845e+35,
       "jewelRatio": 20.4,
-      "planetExpRatio": 243081.79,
+      "planetExpRatio": 11.936168644175979,
       "groups": [
         {
           "id": 30981,
@@ -310699,7 +310699,7 @@
       "lifeRatio": 8.8e+103,
       "resRatio": 1.5147687400414581e+35,
       "jewelRatio": 20.6,
-      "planetExpRatio": 291698.15,
+      "planetExpRatio": 12.379445592685771,
       "groups": [
         {
           "id": 30991,
@@ -310747,7 +310747,7 @@
       "lifeRatio": 1.76e+105,
       "resRatio": 2.1206762360580413e+35,
       "jewelRatio": 20.8,
-      "planetExpRatio": 350037.78,
+      "planetExpRatio": 12.839184645488633,
       "groups": [
         {
           "id": 31001,
@@ -310795,7 +310795,7 @@
       "lifeRatio": 3.52e+106,
       "resRatio": 2.9689467304812575e+35,
       "jewelRatio": 21,
-      "planetExpRatio": 420045.34,
+      "planetExpRatio": 13.315997160514792,
       "groups": [
         {
           "id": 31011,
@@ -310843,7 +310843,7 @@
       "lifeRatio": 7.04e+107,
       "resRatio": 4.1565254226737606e+35,
       "jewelRatio": 21.2,
-      "planetExpRatio": 504054.41,
+      "planetExpRatio": 13.810517199870818,
       "groups": [
         {
           "id": 31021,
@@ -310891,7 +310891,7 @@
       "lifeRatio": 1.41e+109,
       "resRatio": 5.8191355917432645e+35,
       "jewelRatio": 21.4,
-      "planetExpRatio": 604865.29,
+      "planetExpRatio": 14.323402373011174,
       "groups": [
         {
           "id": 31031,
@@ -310939,7 +310939,7 @@
       "lifeRatio": 2.8199999999999998e+110,
       "resRatio": 8.14678982844057e+35,
       "jewelRatio": 21.6,
-      "planetExpRatio": 725838.35,
+      "planetExpRatio": 14.855334711222923,
       "groups": [
         {
           "id": 31041,
@@ -310987,7 +310987,7 @@
       "lifeRatio": 5.64e+111,
       "resRatio": 1.1405505759816794e+36,
       "jewelRatio": 21.8,
-      "planetExpRatio": 871006.02,
+      "planetExpRatio": 15.40702157458636,
       "groups": [
         {
           "id": 31051,
@@ -311035,7 +311035,7 @@
       "lifeRatio": 1.13e+113,
       "resRatio": 1.596770806374351e+36,
       "jewelRatio": 22,
-      "planetExpRatio": 1045207.22,
+      "planetExpRatio": 15.97919659261775,
       "groups": [
         {
           "id": 31061,
@@ -311083,7 +311083,7 @@
       "lifeRatio": 2.26e+114,
       "resRatio": 2.2354791289240912e+36,
       "jewelRatio": 22.2,
-      "planetExpRatio": 1254248.66,
+      "planetExpRatio": 16.57262063984498,
       "groups": [
         {
           "id": 31071,
@@ -311131,7 +311131,7 @@
       "lifeRatio": 4.52e+115,
       "resRatio": 3.1296707804937275e+36,
       "jewelRatio": 22.4,
-      "planetExpRatio": 1505098.39,
+      "planetExpRatio": 17.18808284761341,
       "groups": [
         {
           "id": 31081,
@@ -311179,7 +311179,7 @@
       "lifeRatio": 9.039999999999999e+116,
       "resRatio": 4.3815390926912187e+36,
       "jewelRatio": 22.6,
-      "planetExpRatio": 1806118.07,
+      "planetExpRatio": 17.826401653467506,
       "groups": [
         {
           "id": 31091,
@@ -311227,7 +311227,7 @@
       "lifeRatio": 1.81e+118,
       "resRatio": 6.134154729767706e+36,
       "jewelRatio": 22.8,
-      "planetExpRatio": 2167341.68,
+      "planetExpRatio": 18.48842588950363,
       "groups": [
         {
           "id": 31101,
@@ -311275,7 +311275,7 @@
       "lifeRatio": 3.62e+119,
       "resRatio": 8.587816621674789e+36,
       "jewelRatio": 23,
-      "planetExpRatio": 2600810.02,
+      "planetExpRatio": 19.1750359111413,
       "groups": [
         {
           "id": 31111,
@@ -311323,7 +311323,7 @@
       "lifeRatio": 7.240000000000001e+120,
       "resRatio": 1.2022943270344703e+37,
       "jewelRatio": 23.2,
-      "planetExpRatio": 3120972.02,
+      "planetExpRatio": 19.887144767813968,
       "groups": [
         {
           "id": 31121,
@@ -311371,7 +311371,7 @@
       "lifeRatio": 1.45e+122,
       "resRatio": 1.6832120578482584e+37,
       "jewelRatio": 23.4,
-      "planetExpRatio": 3745166.42,
+      "planetExpRatio": 20.625699417136094,
       "groups": [
         {
           "id": 31131,
@@ -311419,7 +311419,7 @@
       "lifeRatio": 2.9e+123,
       "resRatio": 2.3564968809875614e+37,
       "jewelRatio": 23.6,
-      "planetExpRatio": 4494199.7,
+      "planetExpRatio": 21.39168198416101,
       "groups": [
         {
           "id": 31141,
@@ -311467,7 +311467,7 @@
       "lifeRatio": 5.7999999999999995e+124,
       "resRatio": 3.2990956333825863e+37,
       "jewelRatio": 23.8,
-      "planetExpRatio": 5393039.64,
+      "planetExpRatio": 22.186111067404354,
       "groups": [
         {
           "id": 31151,
@@ -311515,7 +311515,7 @@
       "lifeRatio": 1.1600000000000001e+126,
       "resRatio": 4.61873388673562e+37,
       "jewelRatio": 24,
-      "planetExpRatio": 6471647.57,
+      "planetExpRatio": 23.01004309336956,
       "groups": [
         {
           "id": 31161,
@@ -311563,7 +311563,7 @@
       "lifeRatio": 2.32e+127,
       "resRatio": 6.466227441429868e+37,
       "jewelRatio": 24.2000000000001,
-      "planetExpRatio": 7765977.08,
+      "planetExpRatio": 23.86457372137676,
       "groups": [
         {
           "id": 31171,
@@ -311611,7 +311611,7 @@
       "lifeRatio": 4.64e+128,
       "resRatio": 9.052718418001815e+37,
       "jewelRatio": 24.4000000000001,
-      "planetExpRatio": 9319172.5,
+      "planetExpRatio": 24.750839300563314,
       "groups": [
         {
           "id": 31181,
@@ -311659,7 +311659,7 @@
       "lifeRatio": 9.28e+129,
       "resRatio": 1.2673805785202541e+38,
       "jewelRatio": 24.6000000000001,
-      "planetExpRatio": 11183007,
+      "planetExpRatio": 25.67001838099321,
       "groups": [
         {
           "id": 31191,
@@ -311707,7 +311707,7 @@
       "lifeRatio": 1.86e+131,
       "resRatio": 1.774332809928356e+38,
       "jewelRatio": 24.8000000000001,
-      "planetExpRatio": 13419608.4,
+      "planetExpRatio": 26.623333280885227,
       "groups": [
         {
           "id": 31201,
@@ -311755,7 +311755,7 @@
       "lifeRatio": 3.72e+132,
       "resRatio": 2.484065933899698e+38,
       "jewelRatio": 25.0000000000001,
-      "planetExpRatio": 16103530.08,
+      "planetExpRatio": 27.61205171204347,
       "groups": [
         {
           "id": 31211,
@@ -311803,7 +311803,7 @@
       "lifeRatio": 7.44e+133,
       "resRatio": 3.477692307459577e+38,
       "jewelRatio": 25.2000000000001,
-      "planetExpRatio": 19324236.1,
+      "planetExpRatio": 28.637488465652115,
       "groups": [
         {
           "id": 31221,
@@ -311851,7 +311851,7 @@
       "lifeRatio": 1.49e+135,
       "resRatio": 4.868769230443407e+38,
       "jewelRatio": 25.4000000000001,
-      "planetExpRatio": 23189083.32,
+      "planetExpRatio": 29.701007160675974,
       "groups": [
         {
           "id": 31231,
@@ -311899,7 +311899,7 @@
       "lifeRatio": 2.98e+136,
       "resRatio": 6.81627692262077e+38,
       "jewelRatio": 25.6000000000001,
-      "planetExpRatio": 27826899.98,
+      "planetExpRatio": 30.80402205719185,
       "groups": [
         {
           "id": 31241,
@@ -311947,7 +311947,7 @@
       "lifeRatio": 5.96e+137,
       "resRatio": 9.542787691669077e+38,
       "jewelRatio": 25.8000000000001,
-      "planetExpRatio": 33392279.98,
+      "planetExpRatio": 31.94799993706227,
       "groups": [
         {
           "id": 31251,
@@ -311995,7 +311995,7 @@
       "lifeRatio": 1.19e+139,
       "resRatio": 1.3359902768336709e+39,
       "jewelRatio": 26.0000000000001,
-      "planetExpRatio": 40070735.98,
+      "planetExpRatio": 33.134462054452165,
       "groups": [
         {
           "id": 31261,
@@ -312043,7 +312043,7 @@
       "lifeRatio": 2.38e+140,
       "resRatio": 1.870386387567139e+39,
       "jewelRatio": 26.2000000000001,
-      "planetExpRatio": 48084883.18,
+      "planetExpRatio": 34.364986158782536,
       "groups": [
         {
           "id": 31271,
@@ -312091,7 +312091,7 @@
       "lifeRatio": 4.76e+141,
       "resRatio": 2.618540942593995e+39,
       "jewelRatio": 26.4000000000001,
-      "planetExpRatio": 57701859.82,
+      "planetExpRatio": 35.64120859281117,
       "groups": [
         {
           "id": 31281,
@@ -312139,7 +312139,7 @@
       "lifeRatio": 9.520000000000001e+142,
       "resRatio": 3.665957319631593e+39,
       "jewelRatio": 26.6000000000001,
-      "planetExpRatio": 69242231.78,
+      "planetExpRatio": 36.96482646863022,
       "groups": [
         {
           "id": 31291,
@@ -312187,7 +312187,7 @@
       "lifeRatio": 1.8999999999999998e+144,
       "resRatio": 5.13234024748423e+39,
       "jewelRatio": 26.8000000000001,
-      "planetExpRatio": 83090678.14,
+      "planetExpRatio": 38.33759992447472,
       "groups": [
         {
           "id": 31301,
@@ -312235,7 +312235,7 @@
       "lifeRatio": 3.8e+145,
       "resRatio": 7.185276346477922e+39,
       "jewelRatio": 27.0000000000001,
-      "planetExpRatio": 99708813.77,
+      "planetExpRatio": 39.76135446534259,
       "groups": [
         {
           "id": 31311,
@@ -312283,7 +312283,7 @@
       "lifeRatio": 7.6000000000000005e+146,
       "resRatio": 1.005938688506909e+40,
       "jewelRatio": 27.2000000000001,
-      "planetExpRatio": 119650576.52,
+      "planetExpRatio": 41.23798339053904,
       "groups": [
         {
           "id": 31321,
@@ -312331,7 +312331,7 @@
       "lifeRatio": 1.52e+148,
       "resRatio": 1.4083141639096726e+40,
       "jewelRatio": 27.4000000000001,
-      "planetExpRatio": 143580691.82,
+      "planetExpRatio": 42.7694503113734,
       "groups": [
         {
           "id": 31331,
@@ -312379,7 +312379,7 @@
       "lifeRatio": 3.04e+149,
       "resRatio": 1.9716398294735414e+40,
       "jewelRatio": 27.6000000000001,
-      "planetExpRatio": 172296830.18,
+      "planetExpRatio": 44.357791762356264,
       "groups": [
         {
           "id": 31341,
@@ -312427,7 +312427,7 @@
       "lifeRatio": 6.08e+150,
       "resRatio": 2.7602957612629577e+40,
       "jewelRatio": 27.8000000000001,
-      "planetExpRatio": 206756196.22,
+      "planetExpRatio": 46.00511990936967,
       "groups": [
         {
           "id": 31351,
@@ -312475,7 +312475,7 @@
       "lifeRatio": 1.22e+152,
       "resRatio": 3.86441406576814e+40,
       "jewelRatio": 28.0000000000001,
-      "planetExpRatio": 248107435.46,
+      "planetExpRatio": 47.71362535841111,
       "groups": [
         {
           "id": 31361,
@@ -312523,7 +312523,7 @@
       "lifeRatio": 2.44e+153,
       "resRatio": 5.410179692075396e+40,
       "jewelRatio": 28.2000000000001,
-      "planetExpRatio": 297728922.55,
+      "planetExpRatio": 49.48558006864685,
       "groups": [
         {
           "id": 31371,
@@ -312571,7 +312571,7 @@
       "lifeRatio": 4.88e+154,
       "resRatio": 7.574251568905554e+40,
       "jewelRatio": 28.4000000000001,
-      "planetExpRatio": 357274707.06,
+      "planetExpRatio": 51.32334037364808,
       "groups": [
         {
           "id": 31381,
@@ -312619,7 +312619,7 @@
       "lifeRatio": 9.76e+155,
       "resRatio": 1.0603952196467774e+41,
       "jewelRatio": 28.6000000000001,
-      "planetExpRatio": 428729648.47,
+      "planetExpRatio": 53.22935011482751,
       "groups": [
         {
           "id": 31391,
@@ -312667,7 +312667,7 @@
       "lifeRatio": 1.95e+157,
       "resRatio": 1.4845533075054884e+41,
       "jewelRatio": 28.8000000000001,
-      "planetExpRatio": 514475578.16,
+      "planetExpRatio": 55.2061438912436,
       "groups": [
         {
           "id": 31401,
@@ -312715,7 +312715,7 @@
       "lifeRatio": 3.9e+158,
       "resRatio": 2.0783746305076836e+41,
       "jewelRatio": 29.0000000000001,
-      "planetExpRatio": 617370693.79,
+      "planetExpRatio": 57.25635043009333,
       "groups": [
         {
           "id": 31411,
@@ -312763,7 +312763,7 @@
       "lifeRatio": 7.8e+159,
       "resRatio": 2.9097244827107567e+41,
       "jewelRatio": 29.2000000000001,
-      "planetExpRatio": 740844832.55,
+      "planetExpRatio": 59.382696082376214,
       "groups": [
         {
           "id": 31421,
@@ -312811,7 +312811,7 @@
       "lifeRatio": 1.56e+161,
       "resRatio": 4.073614275795059e+41,
       "jewelRatio": 29.4000000000001,
-      "planetExpRatio": 889013799.06,
+      "planetExpRatio": 61.58800844837769,
       "groups": [
         {
           "id": 31431,
@@ -312859,7 +312859,7 @@
       "lifeRatio": 3.12e+162,
       "resRatio": 5.703059986113083e+41,
       "jewelRatio": 29.6000000000001,
-      "planetExpRatio": 1066816558.87,
+      "planetExpRatio": 63.875220137793015,
       "groups": [
         {
           "id": 31441,
@@ -312907,7 +312907,7 @@
       "lifeRatio": 6.239999999999999e+163,
       "resRatio": 7.984283980558315e+41,
       "jewelRatio": 29.8000000000001,
-      "planetExpRatio": 1280179870.64,
+      "planetExpRatio": 66.24737266949231,
       "groups": [
         {
           "id": 31451,
@@ -312955,7 +312955,7 @@
       "lifeRatio": 1.2500000000000001e+165,
       "resRatio": 1.117799757278164e+42,
       "jewelRatio": 30.0000000000001,
-      "planetExpRatio": 1536215844.77,
+      "planetExpRatio": 68.70762051611199,
       "groups": [
         {
           "id": 31461,
@@ -313003,7 +313003,7 @@
       "lifeRatio": 2.5e+166,
       "resRatio": 1.5649196601894296e+42,
       "jewelRatio": 30.2000000000001,
-      "planetExpRatio": 1843459013.72,
+      "planetExpRatio": 71.25923529885145,
       "groups": [
         {
           "id": 31471,
@@ -313051,7 +313051,7 @@
       "lifeRatio": 5e+167,
       "resRatio": 2.1908875242652015e+42,
       "jewelRatio": 30.4000000000001,
-      "planetExpRatio": 2212150816.46,
+      "planetExpRatio": 73.90561013805322,
       "groups": [
         {
           "id": 31481,
@@ -313099,7 +313099,7 @@
       "lifeRatio": 1e+169,
       "resRatio": 3.067242533971282e+42,
       "jewelRatio": 30.6000000000001,
-      "planetExpRatio": 2654580979.75,
+      "planetExpRatio": 76.65026416535162,
       "groups": [
         {
           "id": 31491,
@@ -313147,7 +313147,7 @@
       "lifeRatio": 1.9999999999999998e+170,
       "resRatio": 4.294139547559795e+42,
       "jewelRatio": 30.8000000000001,
-      "planetExpRatio": 3185497175.7,
+      "planetExpRatio": 79.49684720339077,
       "groups": [
         {
           "id": 31501,
@@ -313195,7 +313195,7 @@
       "lifeRatio": 4e+171,
       "resRatio": 6.011795366583712e+42,
       "jewelRatio": 31.0000000000001,
-      "planetExpRatio": 3822596610.84,
+      "planetExpRatio": 82.44914461933439,
       "groups": [
         {
           "id": 31511,
@@ -313243,7 +313243,7 @@
       "lifeRatio": 8e+172,
       "resRatio": 8.416513513217197e+42,
       "jewelRatio": 31.2000000000001,
-      "planetExpRatio": 4587115933.01,
+      "planetExpRatio": 85.51108235862175,
       "groups": [
         {
           "id": 31521,
@@ -313291,7 +313291,7 @@
       "lifeRatio": 1.6e+174,
       "resRatio": 1.1783118918504076e+43,
       "jewelRatio": 31.4000000000001,
-      "planetExpRatio": 5504539119.61,
+      "planetExpRatio": 88.68673216566387,
       "groups": [
         {
           "id": 31531,
@@ -313339,7 +313339,7 @@
       "lifeRatio": 3.2e+175,
       "resRatio": 1.6496366485905706e+43,
       "jewelRatio": 31.6000000000001,
-      "planetExpRatio": 6605446943.53,
+      "planetExpRatio": 91.98031699842193,
       "groups": [
         {
           "id": 31541,
@@ -313387,7 +313387,7 @@
       "lifeRatio": 6.4e+176,
       "resRatio": 2.3094913080267985e+43,
       "jewelRatio": 31.8000000000001,
-      "planetExpRatio": 7926536332.24,
+      "planetExpRatio": 95.39621664406893,
       "groups": [
         {
           "id": 31551,
@@ -313435,7 +313435,7 @@
       "lifeRatio": 1.28e+178,
       "resRatio": 3.2332878312375176e+43,
       "jewelRatio": 32.0000000000001,
-      "planetExpRatio": 9511843598.69,
+      "planetExpRatio": 98.93897354320126,
       "groups": [
         {
           "id": 31561,
@@ -313483,7 +313483,7 @@
       "lifeRatio": 2.56e+179,
       "resRatio": 4.526602963732524e+43,
       "jewelRatio": 32.2000000000001,
-      "planetExpRatio": 11414212318.43,
+      "planetExpRatio": 102.61329883034608,
       "groups": [
         {
           "id": 31571,
@@ -313531,7 +313531,7 @@
       "lifeRatio": 5.12e+180,
       "resRatio": 6.337244149225533e+43,
       "jewelRatio": 32.4000000000001,
-      "planetExpRatio": 13697054782.12,
+      "planetExpRatio": 106.42407859879664,
       "groups": [
         {
           "id": 31581,
@@ -313579,7 +313579,7 @@
       "lifeRatio": 1.02e+182,
       "resRatio": 8.872141808915746e+43,
       "jewelRatio": 32.6000000000001,
-      "planetExpRatio": 16436465738.54,
+      "planetExpRatio": 110.3763803981063,
       "groups": [
         {
           "id": 31591,
@@ -313627,7 +313627,7 @@
       "lifeRatio": 2.0399999999999998e+183,
       "resRatio": 1.2420998532482043e+44,
       "jewelRatio": 32.8000000000001,
-      "planetExpRatio": 19723758886.25,
+      "planetExpRatio": 114.4754599728827,
       "groups": [
         {
           "id": 31601,
@@ -313675,7 +313675,7 @@
       "lifeRatio": 4.0799999999999996e+184,
       "resRatio": 1.7389397945474857e+44,
       "jewelRatio": 33.0000000000001,
-      "planetExpRatio": 23668510663.5,
+      "planetExpRatio": 118.7267682518415,
       "groups": [
         {
           "id": 31611,
@@ -313723,7 +313723,7 @@
       "lifeRatio": 8.16e+185,
       "resRatio": 2.43451571236648e+44,
       "jewelRatio": 33.2000000000001,
-      "planetExpRatio": 28402212796.2,
+      "planetExpRatio": 123.1359585964153,
       "groups": [
         {
           "id": 31621,
@@ -313771,7 +313771,7 @@
       "lifeRatio": 1.6300000000000001e+187,
       "resRatio": 3.4083219973130723e+44,
       "jewelRatio": 33.4000000000001,
-      "planetExpRatio": 34082655355.44,
+      "planetExpRatio": 127.70889431855596,
       "groups": [
         {
           "id": 31631,
@@ -313819,7 +313819,7 @@
       "lifeRatio": 3.2600000000000005e+188,
       "resRatio": 4.771650796238301e+44,
       "jewelRatio": 33.6000000000001,
-      "planetExpRatio": 40899186426.53,
+      "planetExpRatio": 132.45165647772757,
       "groups": [
         {
           "id": 31641,
@@ -313867,7 +313867,7 @@
       "lifeRatio": 6.52e+189,
       "resRatio": 6.680311114733622e+44,
       "jewelRatio": 33.8000000000001,
-      "planetExpRatio": 49079023711.84,
+      "planetExpRatio": 137.37055196745925,
       "groups": [
         {
           "id": 31651,
@@ -313915,7 +313915,7 @@
       "lifeRatio": 1.2999999999999999e+191,
       "resRatio": 9.35243556062707e+44,
       "jewelRatio": 34.0000000000001,
-      "planetExpRatio": 58894828454.21,
+      "planetExpRatio": 142.4721219022098,
       "groups": [
         {
           "id": 31661,
@@ -313963,7 +313963,7 @@
       "lifeRatio": 2.6e+192,
       "resRatio": 1.3093409784877897e+45,
       "jewelRatio": 34.2000000000001,
-      "planetExpRatio": 70673794145.05,
+      "planetExpRatio": 147.76315031569837,
       "groups": [
         {
           "id": 31671,
@@ -314011,7 +314011,7 @@
       "lifeRatio": 5.2e+193,
       "resRatio": 1.8330773698829054e+45,
       "jewelRatio": 34.4000000000001,
-      "planetExpRatio": 84808552974.06,
+      "planetExpRatio": 153.25067318226715,
       "groups": [
         {
           "id": 31681,
@@ -314059,7 +314059,7 @@
       "lifeRatio": 1.04e+195,
       "resRatio": 2.5663083178360675e+45,
       "jewelRatio": 34.6000000000001,
-      "planetExpRatio": 101770263568.87,
+      "planetExpRatio": 158.94198777327307,
       "groups": [
         {
           "id": 31691,
@@ -314107,7 +314107,7 @@
       "lifeRatio": 2.08e+196,
       "resRatio": 3.592831644970494e+45,
       "jewelRatio": 34.8000000000001,
-      "planetExpRatio": 122124316282.64,
+      "planetExpRatio": 164.84466236095108,
       "groups": [
         {
           "id": 31701,
@@ -314155,7 +314155,7 @@
       "lifeRatio": 4.1599999999999995e+197,
       "resRatio": 5.0299643029586914e+45,
       "jewelRatio": 35.0000000000001,
-      "planetExpRatio": 146549179539.17,
+      "planetExpRatio": 170.96654628265176,
       "groups": [
         {
           "id": 31711,
@@ -314203,7 +314203,7 @@
       "lifeRatio": 8.32e+198,
       "resRatio": 7.041950024142167e+45,
       "jewelRatio": 35.2000000000001,
-      "planetExpRatio": 175859015447,
+      "planetExpRatio": 177.315780378838,
       "groups": [
         {
           "id": 31721,
@@ -314251,7 +314251,7 @@
       "lifeRatio": 1.66e+200,
       "resRatio": 9.858730033799032e+45,
       "jewelRatio": 35.4000000000001,
-      "planetExpRatio": 211030818536.4,
+      "planetExpRatio": 183.90080781872058,
       "groups": [
         {
           "id": 31731,
@@ -314299,7 +314299,7 @@
       "lifeRatio": 3.32e+201,
       "resRatio": 1.3802222047318644e+46,
       "jewelRatio": 35.6000000000001,
-      "planetExpRatio": 253236982243.68,
+      "planetExpRatio": 190.73038532792768,
       "groups": [
         {
           "id": 31741,
@@ -314347,7 +314347,7 @@
       "lifeRatio": 6.64e+202,
       "resRatio": 1.9323110866246103e+46,
       "jewelRatio": 35.8000000000001,
-      "planetExpRatio": 303884378692.42,
+      "planetExpRatio": 197.81359483314128,
       "groups": [
         {
           "id": 31751,
@@ -314395,7 +314395,7 @@
       "lifeRatio": 1.33e+204,
       "resRatio": 2.705235521274454e+46,
       "jewelRatio": 36.0000000000001,
-      "planetExpRatio": 364661254430.9,
+      "planetExpRatio": 205.1598555391821,
       "groups": [
         {
           "id": 31761,
@@ -314443,7 +314443,7 @@
       "lifeRatio": 2.6599999999999998e+205,
       "resRatio": 3.787329729784235e+46,
       "jewelRatio": 36.2000000000001,
-      "planetExpRatio": 437593505317.08,
+      "planetExpRatio": 212.77893645460563,
       "groups": [
         {
           "id": 31771,
@@ -314491,7 +314491,7 @@
       "lifeRatio": 5.32e+206,
       "resRatio": 5.302261621697928e+46,
       "jewelRatio": 36.4000000000001,
-      "planetExpRatio": 525112206380.5,
+      "planetExpRatio": 220.68096938246467,
       "groups": [
         {
           "id": 31781,
@@ -314539,7 +314539,7 @@
       "lifeRatio": 1.06e+208,
       "resRatio": 7.423166270377099e+46,
       "jewelRatio": 36.6000000000001,
-      "planetExpRatio": 630134647656.6,
+      "planetExpRatio": 228.8764623935132,
       "groups": [
         {
           "id": 31791,
@@ -314587,7 +314587,7 @@
       "lifeRatio": 2.12e+209,
       "resRatio": 1.0392432778527938e+47,
       "jewelRatio": 36.8000000000001,
-      "planetExpRatio": 756161577187.92,
+      "planetExpRatio": 237.37631379976955,
       "groups": [
         {
           "id": 31801,
@@ -314635,7 +314635,7 @@
       "lifeRatio": 4.2399999999999994e+210,
       "resRatio": 1.4549405889939113e+47,
       "jewelRatio": 37.0000000000001,
-      "planetExpRatio": 907393892625.5,
+      "planetExpRatio": 246.19182664701853,
       "groups": [
         {
           "id": 31811,
@@ -314683,7 +314683,7 @@
       "lifeRatio": 8.48e+211,
       "resRatio": 2.0369168245914757e+47,
       "jewelRatio": 37.2000000000001,
-      "planetExpRatio": 1088872671150.6,
+      "planetExpRatio": 255.33472374552673,
       "groups": [
         {
           "id": 31821,
@@ -314731,7 +314731,7 @@
       "lifeRatio": 1.7e+213,
       "resRatio": 2.851683554428066e+47,
       "jewelRatio": 37.4000000000001,
-      "planetExpRatio": 1306647205380.72,
+      "planetExpRatio": 264.8171632589576,
       "groups": [
         {
           "id": 31831,
@@ -314779,7 +314779,7 @@
       "lifeRatio": 3.4000000000000003e+214,
       "resRatio": 3.992356976199292e+47,
       "jewelRatio": 37.6000000000001,
-      "planetExpRatio": 1567976646456.86,
+      "planetExpRatio": 274.65175487221586,
       "groups": [
         {
           "id": 31841,
@@ -314827,7 +314827,7 @@
       "lifeRatio": 6.8e+215,
       "resRatio": 5.589299766679009e+47,
       "jewelRatio": 37.8000000000001,
-      "planetExpRatio": 1881571975748.23,
+      "planetExpRatio": 284.85157655972347,
       "groups": [
         {
           "id": 31851,
@@ -314875,7 +314875,7 @@
       "lifeRatio": 1.3599999999999999e+217,
       "resRatio": 7.825019673350611e+47,
       "jewelRatio": 38.0000000000001,
-      "planetExpRatio": 2257886370897.88,
+      "planetExpRatio": 295.43019197642224,
       "groups": [
         {
           "id": 31861,
@@ -314923,7 +314923,7 @@
       "lifeRatio": 2.72e+218,
       "resRatio": 1.0955027542690854e+48,
       "jewelRatio": 38.2000000000001,
-      "planetExpRatio": 2709463645077.46,
+      "planetExpRatio": 306.4016684946321,
       "groups": [
         {
           "id": 31871,
@@ -314971,7 +314971,7 @@
       "lifeRatio": 5.4399999999999995e+219,
       "resRatio": 1.5337038559767195e+48,
       "jewelRatio": 38.4000000000001,
-      "planetExpRatio": 3251356374092.95,
+      "planetExpRatio": 317.7805959107491,
       "groups": [
         {
           "id": 31881,
@@ -315019,7 +315019,7 @@
       "lifeRatio": 1.09e+221,
       "resRatio": 2.147185398367407e+48,
       "jewelRatio": 38.6000000000001,
-      "planetExpRatio": 3901627648911.54,
+      "planetExpRatio": 329.58210584665903,
       "groups": [
         {
           "id": 31891,
@@ -315067,7 +315067,7 @@
       "lifeRatio": 2.18e+222,
       "resRatio": 3.00605955771437e+48,
       "jewelRatio": 38.8000000000001,
-      "planetExpRatio": 4681953178693.85,
+      "planetExpRatio": 341.82189187166813,
       "groups": [
         {
           "id": 31901,
@@ -315115,7 +315115,7 @@
       "lifeRatio": 4.36e+223,
       "resRatio": 4.208483380800117e+48,
       "jewelRatio": 39.0000000000001,
-      "planetExpRatio": 5618343814432.62,
+      "planetExpRatio": 354.51623037170685,
       "groups": [
         {
           "id": 31911,
@@ -315163,7 +315163,7 @@
       "lifeRatio": 8.72e+224,
       "resRatio": 5.891876733120163e+48,
       "jewelRatio": 39.2000000000001,
-      "planetExpRatio": 6742012577319.14,
+      "planetExpRatio": 367.68200219355845,
       "groups": [
         {
           "id": 31921,
@@ -315211,7 +315211,7 @@
       "lifeRatio": 1.74e+226,
       "resRatio": 8.248627426368228e+48,
       "jewelRatio": 39.4000000000001,
-      "planetExpRatio": 8090415092782.97,
+      "planetExpRatio": 381.33671509289894,
       "groups": [
         {
           "id": 31931,
@@ -315259,7 +315259,7 @@
       "lifeRatio": 3.4800000000000003e+227,
       "resRatio": 1.1548078396915519e+49,
       "jewelRatio": 39.6000000000001,
-      "planetExpRatio": 9708498111339.56,
+      "planetExpRatio": 395.49852701599053,
       "groups": [
         {
           "id": 31941,
@@ -315307,7 +315307,7 @@
       "lifeRatio": 6.96e+228,
       "resRatio": 1.6167309755681725e+49,
       "jewelRatio": 39.8000000000001,
-      "planetExpRatio": 11650197733607.5,
+      "planetExpRatio": 410.1862702460017,
       "groups": [
         {
           "id": 31951,
@@ -315355,7 +315355,7 @@
       "lifeRatio": 1.3899999999999999e+230,
       "resRatio": 2.2634233657954413e+49,
       "jewelRatio": 40.0000000000001,
-      "planetExpRatio": 13980237280329,
+      "planetExpRatio": 425.41947644604824,
       "groups": [
         {
           "id": 31961,
@@ -315403,7 +315403,7 @@
       "lifeRatio": 2.7799999999999997e+231,
       "resRatio": 3.1687927121136177e+49,
       "jewelRatio": 40.2000000000001,
-      "planetExpRatio": 16776284736394.8,
+      "planetExpRatio": 441.2184026322701,
       "groups": [
         {
           "id": 31971,
@@ -315451,7 +315451,7 @@
       "lifeRatio": 5.56e+232,
       "resRatio": 4.4363097969590647e+49,
       "jewelRatio": 40.4000000000001,
-      "planetExpRatio": 20131541683673.8,
+      "planetExpRatio": 457.6040581114787,
       "groups": [
         {
           "id": 31981,
@@ -315499,7 +315499,7 @@
       "lifeRatio": 1.11e+234,
       "resRatio": 6.21083371574269e+49,
       "jewelRatio": 40.6000000000001,
-      "planetExpRatio": 24157850020408.6,
+      "planetExpRatio": 474.5982324191886,
       "groups": [
         {
           "id": 31991,
@@ -315547,7 +315547,7 @@
       "lifeRatio": 2.2200000000000002e+235,
       "resRatio": 8.695167202039765e+49,
       "jewelRatio": 40.8000000000001,
-      "planetExpRatio": 28989420024490.3,
+      "planetExpRatio": 492.223524295202,
       "groups": [
         {
           "id": 32001,
@@ -315595,7 +315595,7 @@
       "lifeRatio": 4.44e+236,
       "resRatio": 1.217323408285567e+50,
       "jewelRatio": 41.0000000000001,
-      "planetExpRatio": 34787304029388.4,
+      "planetExpRatio": 510.5033717352579,
       "groups": [
         {
           "id": 32011,
@@ -315643,7 +315643,7 @@
       "lifeRatio": 8.88e+237,
       "resRatio": 1.7042527715997939e+50,
       "jewelRatio": 41.2000000000001,
-      "planetExpRatio": 41744764835266.1,
+      "planetExpRatio": 529.4620831587241,
       "groups": [
         {
           "id": 32021,
@@ -315691,7 +315691,7 @@
       "lifeRatio": 1.78e+239,
       "resRatio": 2.3859538802397113e+50,
       "jewelRatio": 41.4000000000001,
-      "planetExpRatio": 50093717802319.3,
+      "planetExpRatio": 549.1248697337744,
       "groups": [
         {
           "id": 32031,
@@ -315739,7 +315739,7 @@
       "lifeRatio": 3.56e+240,
       "resRatio": 3.3403354323355957e+50,
       "jewelRatio": 41.6000000000001,
-      "planetExpRatio": 60112461362783.2,
+      "planetExpRatio": 569.5178789030264,
       "groups": [
         {
           "id": 32041,
@@ -315787,7 +315787,7 @@
       "lifeRatio": 7.12e+241,
       "resRatio": 4.676469605269834e+50,
       "jewelRatio": 41.8000000000001,
-      "planetExpRatio": 72134953635339.9,
+      "planetExpRatio": 590.6682291542425,
       "groups": [
         {
           "id": 32051,
@@ -315835,7 +315835,7 @@
       "lifeRatio": 1.42e+243,
       "resRatio": 6.547057447377766e+50,
       "jewelRatio": 42.0000000000001,
-      "planetExpRatio": 86561944362407.9,
+      "planetExpRatio": 612.6040460823094,
       "groups": [
         {
           "id": 32061,
@@ -315883,7 +315883,7 @@
       "lifeRatio": 2.84e+244,
       "resRatio": 9.165880426328873e+50,
       "jewelRatio": 42.2000000000001,
-      "planetExpRatio": 103874333234889,
+      "planetExpRatio": 635.3544997904689,
       "groups": [
         {
           "id": 32071,
@@ -315931,7 +315931,7 @@
       "lifeRatio": 5.68e+245,
       "resRatio": 1.2832232596860421e+51,
       "jewelRatio": 42.4000000000001,
-      "planetExpRatio": 124649199881867,
+      "planetExpRatio": 658.9498436805293,
       "groups": [
         {
           "id": 32081,
@@ -315979,7 +315979,7 @@
       "lifeRatio": 1.14e+247,
       "resRatio": 1.796512563560459e+51,
       "jewelRatio": 42.6000000000002,
-      "planetExpRatio": 149579039858240,
+      "planetExpRatio": 683.4214546836316,
       "groups": [
         {
           "id": 32091,
@@ -316027,7 +316027,7 @@
       "lifeRatio": 2.2800000000000003e+248,
       "resRatio": 2.5151175889846427e+51,
       "jewelRatio": 42.8000000000002,
-      "planetExpRatio": 179494847829888,
+      "planetExpRatio": 708.8018749850909,
       "groups": [
         {
           "id": 32101,
@@ -316075,7 +316075,7 @@
       "lifeRatio": 4.56e+249,
       "resRatio": 3.5211646245784995e+51,
       "jewelRatio": 43.0000000000001,
-      "planetExpRatio": 215393817395866,
+      "planetExpRatio": 735.1248552987713,
       "groups": [
         {
           "id": 32111,
@@ -316123,7 +316123,7 @@
       "lifeRatio": 9.12e+250,
       "resRatio": 4.929630474409899e+51,
       "jewelRatio": 43.2000000000002,
-      "planetExpRatio": 258472580875039,
+      "planetExpRatio": 762.4253997485628,
       "groups": [
         {
           "id": 32121,
@@ -316171,7 +316171,7 @@
       "lifeRatio": 1.82e+252,
       "resRatio": 6.901482664173858e+51,
       "jewelRatio": 43.4000000000002,
-      "planetExpRatio": 310167097050047,
+      "planetExpRatio": 790.7398124166351,
       "groups": [
         {
           "id": 32131,
@@ -316219,7 +316219,7 @@
       "lifeRatio": 3.64e+253,
       "resRatio": 9.6620757298434e+51,
       "jewelRatio": 43.6000000000002,
-      "planetExpRatio": 372200516460056,
+      "planetExpRatio": 820.1057456203579,
       "groups": [
         {
           "id": 32141,
@@ -316267,7 +316267,7 @@
       "lifeRatio": 7.28e+254,
       "resRatio": 1.352690602178076e+52,
       "jewelRatio": 43.8000000000002,
-      "planetExpRatio": 446640619752067,
+      "planetExpRatio": 850.562249982109,
       "groups": [
         {
           "id": 32151,
@@ -316315,7 +316315,7 @@
       "lifeRatio": 1.4600000000000002e+256,
       "resRatio": 1.8937668430493063e+52,
       "jewelRatio": 44.0000000000002,
-      "planetExpRatio": 535968743702480,
+      "planetExpRatio": 882.1498263585255,
       "groups": [
         {
           "id": 32161,
@@ -316363,7 +316363,7 @@
       "lifeRatio": 2.92e+257,
       "resRatio": 2.6512735802690286e+52,
       "jewelRatio": 44.2000000000002,
-      "planetExpRatio": 643162492442976,
+      "planetExpRatio": 914.9104796982753,
       "groups": [
         {
           "id": 32171,
@@ -316411,7 +316411,7 @@
       "lifeRatio": 5.84e+258,
       "resRatio": 3.71178301237664e+52,
       "jewelRatio": 44.4000000000002,
-      "planetExpRatio": 771794990931571,
+      "planetExpRatio": 948.8877748999621,
       "groups": [
         {
           "id": 32181,
@@ -316459,7 +316459,7 @@
       "lifeRatio": 1.17e+260,
       "resRatio": 5.196496217327296e+52,
       "jewelRatio": 44.6000000000002,
-      "planetExpRatio": 926153989117885,
+      "planetExpRatio": 984.1268947444294,
       "groups": [
         {
           "id": 32191,
@@ -316507,7 +316507,7 @@
       "lifeRatio": 2.34e+261,
       "resRatio": 7.275094704258214e+52,
       "jewelRatio": 44.8000000000002,
-      "planetExpRatio": 1111384786941460,
+      "planetExpRatio": 1020.6746999785308,
       "groups": [
         {
           "id": 32201,
