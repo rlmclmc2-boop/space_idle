@@ -9709,6 +9709,12 @@
     "settings.guard_hint": {
       "params": []
     },
+    "hyperspace.drone_details_show": {
+      "params": []
+    },
+    "hyperspace.drone_details_hide": {
+      "params": []
+    },
     "hyperspace.layer_task_busy_here": {
       "params": []
     },
@@ -9720,6 +9726,44 @@
     "hyperspace.crew_route_start": {
       "params": [
         "route"
+      ]
+    },
+    "hyperspace.drone_fire_laser_approx": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.drone_fire_missile_approx": {
+      "params": [
+        "interval",
+        "count"
+      ]
+    },
+    "hyperspace.drone_fire_cannon_approx": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.drone_fire_longLaser_approx": {
+      "params": [
+        "interval"
+      ]
+    },
+    "hyperspace.warehouse_capacity": {
+      "params": [
+        "used",
+        "cap"
+      ]
+    },
+    "hyperspace.warehouse_overflow": {
+      "params": [
+        "count",
+        "cap"
+      ]
+    },
+    "hyperspace.warehouse_retention": {
+      "params": [
+        "count"
       ]
     }
   },

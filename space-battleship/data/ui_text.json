@@ -12746,7 +12746,7 @@
   },
   {
     "key": "hyperspace.card",
-    "text": "{weapon} · 等级 {level}\n{quality} · {flags}",
+    "text": "{weapon} · 改造等级 {level}\n{quality} · {flags}",
     "params": "{weapon},{level},{quality},{flags}",
     "category": "hyperspace"
   },
@@ -15076,7 +15076,7 @@
   },
   {
     "key": "hyperspace.slot_drone",
-    "text": "{weapon} · 等级 {level}",
+    "text": "{weapon} · 武器等级 {level}",
     "params": "{weapon},{level}",
     "category": "hyperspace",
     "note": ""
@@ -17866,6 +17866,20 @@
     "note": "驻守按钮短悬停，区别关卡跳转"
   },
   {
+    "key": "hyperspace.drone_details_show",
+    "text": "详细属性",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_details_hide",
+    "text": "收起属性",
+    "params": "",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
     "key": "hyperspace.layer_task_busy_here",
     "text": "当前路线已有任务进行中。",
     "params": "",
@@ -17885,5 +17899,54 @@
     "params": "route",
     "category": "hyperspace",
     "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_laser_approx",
+    "text": "脉冲独立发射，射击间隔 约 {interval} 秒。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_missile_approx",
+    "text": "每轮 {count} 枚导弹，逐个分配目标；间隔 约 {interval} 秒。",
+    "params": "interval,count",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_cannon_approx",
+    "text": "磁轨炮独立发射，射击间隔 约 {interval} 秒。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.drone_fire_longLaser_approx",
+    "text": "持续锁定目标，每 约 {interval} 秒判定一次伤害。",
+    "params": "interval",
+    "category": "hyperspace",
+    "note": "当前实体目标与按需详情，动态时长保留内部精度"
+  },
+  {
+    "key": "hyperspace.warehouse_capacity",
+    "text": "仓库 {used}/{cap}",
+    "params": "used,cap",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.warehouse_overflow",
+    "text": "缓存 {count}/{cap}",
+    "params": "count,cap",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.warehouse_retention",
+    "text": "保留名额 {count}",
+    "params": "count",
+    "category": "hyperspace",
+    "note": "仓库默认仅显示当前有内容的数量"
   }
 ]

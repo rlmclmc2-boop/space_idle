@@ -89,6 +89,9 @@ var inventory_feedback: Label
 var forge_pick_cancel: Button
 var forge_pick_state: Dictionary={}
 var details: Label
+var detail_toggle: Button
+var details_expanded:=false
+var details_drone_id:=""
 var detail_title: Label
 var detail_icon: TextureRect
 var equip: Button
@@ -255,7 +258,9 @@ func build_inventory(parent: Node) -> void:
  empty=label(list,t("no_items"),24)
  var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
  var detail=surface(split);detail.custom_minimum_size.x=360;detail.size_flags_vertical=Control.SIZE_EXPAND_FILL
- label(detail,t("selected_heading"),25)
+ var detail_heading=row(detail)
+ label(detail_heading,t("selected_heading"),25).size_flags_horizontal=Control.SIZE_EXPAND_FILL
+ detail_toggle=button(detail_heading,"drone_details_show",func():details_expanded=not details_expanded;refresh_details())
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
  dismantle_button=button(actions,"operation_dismantle",commands.show_inventory_dismantle)
@@ -419,12 +424,17 @@ func refresh_list() -> void:
   put(card_subtitles[i],"text",quality_caption(d)+(t("visual_tier",{"tier":str(int(appearance.tier))}) if not appearance.category.is_empty() else ""))
   var caption_color:Color=appearance.color.darkened(0.4)
   if card_subtitles[i].get_theme_color("font_color")!=caption_color:card_subtitles[i].add_theme_color_override("font_color",caption_color)
-  put(card_flags[i],"text",flags(id,d) if not flags(id,d).is_empty() else t("no_flags"))
+  put(card_flags[i],"text",flags(id,d))
+  put(card_flags[i],"visible",not flags(id,d).is_empty())
   skin_selection(b,id==selected_id)
  put(empty,"visible",ids.is_empty())
  inventory_dirty=false
  put(previous,"disabled",page==0);put(next,"disabled",page==pages-1);put(page_label,"text",t("page",{"page":str(page+1),"pages":str(pages)}))
- put(capacity,"text",t("capacity",{"used":str(bag.warehouse.size()),"cap":str(Bag.capacity(bag,host.game.hyperspace.config)),"overflow":str(bag.overflow.size()),"retention":str(Bag.retention_capacity(bag,host.game.hyperspace.config))}))
+ var storage_text:=t("warehouse_capacity",{"used":str(bag.warehouse.size()),"cap":str(Bag.capacity(bag,host.game.hyperspace.config))})
+ if not bag.overflow.is_empty():storage_text+=" · "+t("warehouse_overflow",{"count":str(bag.overflow.size()),"cap":str(int(host.game.hyperspace.config.overflow_capacity))})
+ var retained:=Bag.retention_capacity(bag,host.game.hyperspace.config)
+ if retained>0:storage_text+=" · "+t("warehouse_retention",{"count":str(retained)})
+ put(capacity,"text",storage_text)
  refresh_details()
 func flags(id: String,d: Dictionary) -> String:
  var names: Array[String]=[]
@@ -470,8 +480,8 @@ func refresh_details() -> void:
   has_legendary=has_legendary or bool(bag.drones[id].legendary);has_ultimate=has_ultimate or bool(bag.drones[id].ultimate)
  for id in bag.equipped:
   legendary+=int(bag.drones[id].legendary);ultimate+=int(bag.drones[id].ultimate)
- if has_legendary:rare.append(t("rare_legendary_budget",{"used":str(legendary),"capacity":str(int(g.hyperspace.config.maximum_legendary))}))
- if has_ultimate:rare.append(t("rare_ultimate_budget",{"used":str(ultimate),"capacity":str(int(g.hyperspace.config.maximum_ultimate))}))
+ if has_legendary and legendary>0:rare.append(t("rare_legendary_budget",{"used":str(legendary),"capacity":str(int(g.hyperspace.config.maximum_legendary))}))
+ if has_ultimate and ultimate>0:rare.append(t("rare_ultimate_budget",{"used":str(ultimate),"capacity":str(int(g.hyperspace.config.maximum_ultimate))}))
  put(budgets,"visible",not rare.is_empty());put(budgets,"text"," · ".join(rare))
  put(equip,"disabled",not valid or not hull_capacity_provider.is_valid() or bag.sealed.has(selected_id) or bag.overflow.has(selected_id))
  put(favorite,"disabled",not valid)
@@ -487,7 +497,11 @@ func refresh_details() -> void:
  for key in totals.legendary:active_effects.append(effect_name(str(key)))
  put(totals_summary,"visible",not active_effects.is_empty())
  put(totals_summary,"text",t("active_effects_summary",{"items":" · ".join(active_effects)}))
- put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id],false))
+ if details_drone_id!=selected_id:
+  details_drone_id=selected_id;details_expanded=false
+ put(detail_toggle,"visible",valid)
+ put(detail_toggle,"text",t("drone_details_hide" if details_expanded else "drone_details_show"))
+ put(details,"text",t("choose") if not valid else drone_description(bag.drones[selected_id],false,not details_expanded))
  put(detail_title,"text",t("none_selected") if not valid else t("card",{"weapon":t(bag.drones[selected_id].weapon),"level":str(int(bag.drones[selected_id].level)),"quality":quality_caption(bag.drones[selected_id]),"flags":t("ultimate") if bag.drones[selected_id].ultimate else ""}))
  detail_icon.call("apply",bag.drones[selected_id]) if valid else detail_icon.call("clear")
  for b in cards:skin_selection(b,b.get_meta("drone_id","")==selected_id)
@@ -516,25 +530,25 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
   legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
-func drone_description(d: Dictionary,include_legendary:=true) -> String:
+func drone_description(d: Dictionary,include_legendary:=true,compact:=false) -> String:
  var protection=protection_flags(str(d.id))
  var g=host.game;var entry:Dictionary=g.drone_weapon_entry(d);var row:Dictionary=g.player_weapon_row(entry)
  var fire_params={"interval":NumberFormat.scalar(float(row.cd))}
  if str(d.weapon)=="missile":fire_params.count=str(int(row.get("para1",1)))
  var lines:Array[String]=[]
  for a in d.affixes+([d.ultimate_affix] if not d.ultimate_affix.is_empty() else []):
-  lines.append(affix_summary(a,d))
+  if not compact or not is_zero_approx(preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,g.hyperspace.config)):lines.append(affix_summary(a,d))
  var hangings:Array[String]=[]
  for key in d.hangings:hangings.append(hanging_name(str(key)))
- lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
- if int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
+ if not compact or not hangings.is_empty():lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
+ if not compact and int(d.hanging_slots)==0:lines.append(t("module_no_slots" if Bag.hanging_limit(d,host.game.hyperspace.config)>0 else "module_no_capacity"))
  if bag.equipped.has(str(d.id)) and g.drone_combat.disabled.has(str(d.id)):lines.insert(0,t("rebuild_disabled"))
- lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
+ if not compact or not protection.is_empty():lines.append(t("protect",{"flags":protection if not protection.is_empty() else t("unprotected")}))
  if bag.sealed.has(str(d.id)):lines.append(t("sealed_gate",{"level":str(int(bag.sealed[str(d.id)]))}))
- lines.append(t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
- lines.append(t("drone_dynamic_weapon_hint"))
+ lines.insert(0,t("drone_independent_weapon",{"weapon":t(str(d.weapon)),"level":str(int(entry.level))}))
+ if not compact:lines.append(t("drone_dynamic_weapon_hint"))
  lines.append(t("drone_base_damage",{"damage":host.number(g.equipment_stat(str(entry.key),int(entry.level)))}))
- if NumberFormat.scalar_is_exact(float(row.cd)):lines.append(t("drone_fire_"+str(d.weapon),fire_params))
+ lines.append(t("drone_fire_"+str(d.weapon)+("" if NumberFormat.scalar_is_exact(float(row.cd)) else "_approx"),fire_params))
  if d.legendary and include_legendary:
   var effect:Dictionary=d.legendary_effect
   lines.append(effect_name(str(effect.get("effect_id",""))))
