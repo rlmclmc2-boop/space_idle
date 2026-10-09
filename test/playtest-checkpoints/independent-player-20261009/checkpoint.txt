@@ -1,7 +1,6 @@
 Independent normal graphical recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud fresh XDG save only,1x microparticles0,noQA/injections/restart.
-2026-10-09 21:46:12 UTC first observed15wave0/9; saved paused before playing15 after normal investment.
-Escort hull,W93/90/90/90 allbeams,armor89/89,reactor42 directlyUIverified,AI59directlyverified15/15/15/14.
-Enhancement2 activeweaponpractice defensememory10percent/sec,fragmentfurnace9 actualbuilt output14fragments/block every20sec;crew normal equipment automation,whitedrone1.
-Earlier intermediate MAX level estimates in metadata are provisional; actual test-save bytes and latest verified UI state take precedence. Resume original cloud runtime first.
+Own cloud fresh XDG save only;1x microparticles0,noQA/injections/restart.
+2026-10-09 21:51:08 UTC actual original environment continuity check: stage15wave7/9, PID962 started19:20:54 matches window0x200003 _NET_WM_PID962 display91.
+Real graphical enemyclick/reactorMAX operations21:51-52 responded; reactor44 directlyverified,AI59lastverified. Fourcannons98/95/94/92,dualarmor92/92,crew normal equipment auto,memory2 active.
+Paused manuallysaved current15/7; no restart. Earlier MAX level estimates provisional; actual save and direct UI values prevail. Resume same original runtime to first20 then saveclose.
