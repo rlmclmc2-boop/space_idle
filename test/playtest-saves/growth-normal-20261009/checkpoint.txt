@@ -1,4 +1,4 @@
-Frozen46829d6cdeff62d08474546f875d6d2b8e848367 codeunchanged, SAMEround independentnormalnewsave, isolatedoriginalcloud display100/data/tmp/playtest-growth-resume/data/worktree /workspace/space_idle_growth_recovery.
-Checkpoint23 2026-10-09 16:06:42.676879+00:00 actualmain9wave6 paused afternormalgear/reactor/AIupgrades. Completed1-8+A1/A2/B1. Firstmixed1rail2missile trial31 reached6 withresource130K normal20%smelting, thenordinaryallweapon2levels/armor1shield1/reactor1+AI4. ActualAI17 furnace3weapon8armor6, levels20/22/19. CurrentHP5.01/5.69Mshield2.26/3.28M, Fe3.76KU3. StationOFF x1.
-BlueB1missilecritrate1shield15 normalRNG retained, enhancement1burst/memory. Noinjections/idealRNG/olddata/gameplaysource; autoofflinemicro1171neverused.
-Latestactualmouse/screenshot/manualsave confirmsruntime success, notstatuslabel. Continue9through20stop/save/close. Oldsharedbranchafterca75450 notaccepted.
+Frozen46829d6cdeff62d08474546f875d6d2b8e848367 sourceunchanged. SAMEround independentnormalnewsave, isolatedoriginalcloud display100/worktree /workspace/space_idle_growth_recovery/data /tmp/playtest-growth-resume/data.
+Checkpoint24 2026-10-09 16:18:13.180292+00:00 actualmain10wave4paused; completedmain1-9+A1/A2/B1. First10enemymousehover armor5.6Mphys-resistant/no shield. NewenergybuildW01beam36 W02/W03pulse36, armor36shield36; HP12.6Mshield7.37Mfull. Normalresourceupgrades only, Fe18.6KU1.25K. Reactor21 economy40/40/20stationOFF, AI17 enhancement1burst/memory, blueBmissile crit1shield15 normalRNG.
+Actualmouse/screenshot/manualsave toolssuccess16:14UTC. x1, automaticofflinemicro1171neverused. No oldreports/sourcegameplay/injections/idealRNG/newround/retest.
+Nextcontinue10through20stop/save/close, no21/farm20. Oldsharedbranchafterca75450 notaccepted.
