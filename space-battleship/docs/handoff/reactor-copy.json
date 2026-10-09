@@ -2,7 +2,6 @@
   "worker": "copy-reactor-value",
   "branch": "work/reactor-value-copy",
   "baseline": "dfc9f047a8c24de8181a57208156052eaa373d6e",
-  "content_head_before_checkpoint_commit": "00ae119a2673af76921f090ce9e00d5eab2c9958",
   "completed": [
     "28dc8f7 forge grouping and selected-shortage exchange context",
     "d70a08e reactor control layout and integer-percent details",
@@ -16,12 +15,17 @@
     "ui_catalog_rows": 2569,
     "remote_readback": "00ae119a2673af76921f090ce9e00d5eab2c9958",
     "workspace_operations_succeeded": true,
-    "gui_acceptance_owner": "parent-coordinator"
+    "gui_acceptance_owner": "parent-coordinator",
+    "parent_gui_verified": [
+      "basic available-forge grouping and selected-shortage exchange",
+      "reactor left layout and integer percentages at1178x814"
+    ]
   },
   "next": [
     "Parent confirms reactor per-level integer actual fee scope; no transaction change applied",
     "Parent decides beam actual parameter tradeoff and master precision/guarantee-cost scope; AI/reactor curves unchanged",
     "Parent GUI checks fixed timing corrections and smaller window; defer hyperspace first-entry empty-state redesign"
   ],
-  "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private."
+  "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
+  "last_code_commit": "00ae119a2673af76921f090ce9e00d5eab2c9958"
 }
