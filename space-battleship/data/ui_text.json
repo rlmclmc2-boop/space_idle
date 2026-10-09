@@ -17773,5 +17773,19 @@
     "params": "{count}",
     "category": "research",
     "note": "Actual affordable batch count."
+  },
+  {
+    "key": "enhance.effect.inactive",
+    "text": "当前未生效",
+    "params": "",
+    "category": "enhancement",
+    "note": "Current ordered effect state."
+  },
+  {
+    "key": "enhance.effect.position_requirement",
+    "text": "第{position}顺位在强化{level}级生效",
+    "params": "{position},{level}",
+    "category": "enhancement",
+    "note": "Secondary note: threshold belongs to the ordered position, not the effect."
   }
 ]

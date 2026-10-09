@@ -9640,6 +9640,15 @@
       "params": [
         "count"
       ]
+    },
+    "enhance.effect.inactive": {
+      "params": []
+    },
+    "enhance.effect.position_requirement": {
+      "params": [
+        "position",
+        "level"
+      ]
     }
   },
   "bindings": {
