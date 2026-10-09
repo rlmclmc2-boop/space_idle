@@ -1,17 +1,20 @@
-# Independent first-run checkpoint
+# Independent first-run archive — round closed
 
-Active candidate: 0f0bcdce5eb7e7b19fb6b2e3a14c6d5f179f3b3d
-Previous candidate: fc949295de293bdfe5138357608929155f8d7655
-Godot: 4.6.3.stable.official.7d41c59c4
-GUI manual save confirmed: 2026-10-09 12:05:55 UTC
-Main progress: levels 1–19 cleared; level 20 elite 5/9 paused, hold enabled. Level 20 later waves/boss remain unexperienced, level 21 has never been entered. Test continues within the first-20 scope.
+Status: USER STOPPED THIS ROUND. Game window was normally closed and process exited 0 after confirmed GUI save. This is archival evidence, not authorization to resume. User requires any next round to use a fresh thread and a fresh normal-resource save after sufficient overall optimization and targeted acceptance. Do not reuse this thread context or this save for the next independent run.
 
-Ship: 飞燕护卫舰. W01 railgun level 107, W02 lock beam level 111, W03 lock beam level 113, W04 homing missile level 106. Armor level 112, shield level 114. Reactor level 67; weapon allocation about 65%, defense 34%, fragment remainder about 1%. Reinforcement level 11 supports two active effects: weapon proficiency plus additional attacks; defense adaptation plus memory-material repair (55%/second). Exact second-effect unlock threshold was not isolated, observed after normal MAX from 7 to 11. Continuous B-layer-1 crew exploration remains assigned, equipment automation is off. Blue and legendary missile drones remain equipped, with a level-1 collector in the blue drone's purchased mount slot.
+Final GUI save: 2026-10-09 12:16:17 UTC.
+Range actually played: main levels 1–19 cleared; level 20 played through battle point 7/9, paused after its flagship destruction. Level 20 was not fully cleared and level 21 was never entered. Hold was off at final save. No further gameplay after the user's stop instruction.
 
-x1 and normal resources throughout. Legal hold repeated level 20 wave 2 during 11:47:39–11:52:18 UTC, including some pauses for reading; ordinary rewards were used for upgrades. Hold was then released for level-20 coverage and re-enabled at wave 5 for the checkpoint. To continue remaining waves, release hold and use focused native inputs with short observations; prevent entering battle beyond level 20. The hold control repeats the current battle point, not an entire level.
+Active candidate at stop: 0f0bcdce5eb7e7b19fb6b2e3a14c6d5f179f3b3d.
+Previous candidate: fc949295de293bdfe5138357608929155f8d7655.
+Godot: 4.6.3.stable.official.7d41c59c4.
+Version boundary: old-candidate GUI save12:03:18 UTC, read-only authorized check found zero drone_master occurrences; old game closed normally. New candidate launched12:04 UTC against the same isolated save directory, no different-save import or new game. Normal GUI startup offline settlement granted 83 micro-particles; speed stayed x1. New-candidate GUI observations began12:05 UTC at level20/5.
 
-Version boundary: old candidate GUI save 12:03:18 UTC; confirmed zero drone_master occurrences in this playtest's save. Preserved private pre-switch copy and closed old game through its normal native window-close event. Imported new project resources and launched new candidate against the same original isolated data directory, without importing a different save or starting a new game. Normal startup granted 83 offline micro-particles; confirmed through GUI and no speed feature was used. New candidate first GUI observation 12:05 UTC, same level/equipment loaded. New enemy hover compact numbers were observed; other new UI changes have not yet been evaluated.
+Final GUI-observed equipment: 飞燕护卫舰; railgun107, lock beam111, lock beam113, homing missile106; armor113, shield116. Reactor68 with about65% weapon,34% defense,1% fragment allocation. Reinforcement11, two active effects each: weapon proficiency/additional attacks, defense adaptation/memory repair. Continuous B-layer-1 crew exploration remained assigned; blue/legendary missile drones with the blue level-1 collector mount remained equipped. These are compact archive-state facts, not instructions for the next round.
 
-Only this authorized cloud playtest save and compact continuation metadata are included. Raw images/input logs remain private. Higher hyperspace layers and speed options remain unverified. Native focus was briefly lost during old GUI interactions and was restored without restarting that environment. The version switch demonstrated reopening this own save; export/import restoration remains unverified.
+Normal resources and x1 throughout; legal pause, manual upgrades, free equipment swaps, crew automation and hold used. Hold repeated level20/2 during11:47:39–11:52:18 UTC including reading pauses, generating ordinary rewards used in upgrades. It was released for level20 coverage, re-enabled at5 for checkpoint, and released for final coverage to7. No QA progression, resource injection, gameplay implementation reading or code edits.
 
-Save SHA256: b2b7fb81d8879ded35e5d3a4fb1fa6c3184b251dedccc1f539b359555da6f943
+Unverified at stop: level20 battle points8–9 and full completion, later ship/second crew unlock, higher hyperspace layers, speed use, export/import restoration. New enemy-defense compact notation and reactor purchase/effective-energy UI were actually viewed; remaining candidate UI changes were not all rechecked. Cloud software rendering/FPS limits and silent audio driver constrain performance/audio conclusions.
+
+Only the authorized cloud save and compact archive metadata are public. Screenshots, detailed notes and native input logs remain private under the local evidence directory.
+Save SHA256: 5fa14ed0d1c9f903eda12d75b68316f71b8b1f6d40d8b02f6055dac729758914
