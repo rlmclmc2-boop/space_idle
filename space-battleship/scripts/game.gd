@@ -2128,8 +2128,8 @@ func boss_info() -> String:
 		if id == null:
 			continue
 		var row: Dictionary = db.enemies[str(int(id))]
-		if not descriptions.has(UIText.data_text("enemies",str(int(id)),"des")):
-			descriptions.append(UIText.data_text("enemies",str(int(id)),"des"))
+		var display_name:=preload("res://scripts/enemy_name_presentation.gd").name_for(row,str(int(id)),not manual_hyperspace.active)
+		if not descriptions.has(display_name):descriptions.append(display_name)
 	return " / ".join(descriptions) if not descriptions.is_empty() else UIText.t("system.boss_info.text_01")
 
 func targets(damage_type: int = 0) -> Array[Dictionary]:

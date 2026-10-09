@@ -17559,5 +17559,96 @@
     "params": "count",
     "category": "equipment",
     "note": "MAX卡片显示既有报价中的实际可升级数量。"
+  },
+  {
+    "key": "battle.enemy_identity.name",
+    "text": "{protection}{weapon}{hull}",
+    "params": "protection,weapon,hull",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.shield",
+    "text": "护盾",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.armour",
+    "text": "装甲",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.laser",
+    "text": "激光",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.missile",
+    "text": "导弹",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.cannon",
+    "text": "磁轨",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.beam",
+    "text": "光束",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.mixed",
+    "text": "混装",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.weapon.unknown",
+    "text": "",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.hull.1",
+    "text": "侦察艇",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.hull.2",
+    "text": "轻型舰",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.hull.3",
+    "text": "巡洋舰",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
+  },
+  {
+    "key": "battle.enemy_identity.hull.4",
+    "text": "重型舰",
+    "params": "",
+    "category": "battle",
+    "note": "设计标签敌舰的玩家称谓，仅展示；实际抗性另见敌舰防护信息。"
   }
 ]

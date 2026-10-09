@@ -2973,7 +2973,7 @@ func boss_health_cards() -> Array[Dictionary]:
 		if enemy.hp <= 0:
 			continue
 		cards.append({"enemy":enemy, "rect":Rect2(left+(index%columns)*(width+gap),battle_area.position.y+51.0+(index/columns)*64.0,width,54),
-			"label":UIText.t("main.boss_health_cards.text_01", {"slot":"%02d" % (int(enemy.slot)+1), "des":"%s" % (UIText.data_text("enemies",str(enemy.id),"des"))}),
+			"label":UIText.t("main.boss_health_cards.text_01", {"slot":"%02d" % (int(enemy.slot)+1), "des":"%s" % (preload("res://scripts/enemy_name_presentation.gd").name_for(game.db.enemies.get(str(int(enemy.id)),enemy),str(int(enemy.id)),not game.manual_hyperspace.active))}),
 			"health":UIText.t("main.boss_health_cards.text_02", {"hp":"%s" % (enemy_health(float(enemy.hp))), "max_hp":"%s" % (enemy_health(float(enemy.max_hp)))}),
 			"ratio":clampf(float(enemy.hp) / maxf(1.0, float(enemy.max_hp)), 0, 1)})
 	return cards

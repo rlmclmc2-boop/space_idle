@@ -9500,6 +9500,49 @@
       "params": [
         "count"
       ]
+    },
+    "battle.enemy_identity.name": {
+      "params": [
+        "protection",
+        "weapon",
+        "hull"
+      ]
+    },
+    "battle.enemy_identity.shield": {
+      "params": []
+    },
+    "battle.enemy_identity.armour": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.laser": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.missile": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.cannon": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.beam": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.mixed": {
+      "params": []
+    },
+    "battle.enemy_identity.weapon.unknown": {
+      "params": []
+    },
+    "battle.enemy_identity.hull.1": {
+      "params": []
+    },
+    "battle.enemy_identity.hull.2": {
+      "params": []
+    },
+    "battle.enemy_identity.hull.3": {
+      "params": []
+    },
+    "battle.enemy_identity.hull.4": {
+      "params": []
     }
   },
   "bindings": {

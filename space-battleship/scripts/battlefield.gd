@@ -887,7 +887,7 @@ func encounter_leader_name(enemy:Dictionary)->String:
 	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
 	var caption:=str(row.get("des","")).strip_edges()
 	if not game.manual_hyperspace.active and not caption.is_empty():
-		caption=UIText.data_text("enemies",str(int(enemy.id)),"des",caption)
+		caption=preload("res://scripts/enemy_name_presentation.gd").name_for(row,str(int(enemy.id)))
 	if not caption.is_empty():return caption
 	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
 		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
