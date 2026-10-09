@@ -16878,10 +16878,10 @@
   },
   {
     "key": "reactor.purchase_effect_short",
-    "text": "{module} +{current}% → +{next}%（收益+{gain}%）",
+    "text": "{module}收益+{gain}% · 加成≈{current}%→{next}%",
     "params": "module,current,next,gain",
     "category": "reactor",
-    "note": "单级收益紧凑摘要；百分数为模块加成",
+    "note": "相对收益优先显示；加成三位有效数字，精确值在悬停",
     "source": "reactor_panel.gd"
   },
   {

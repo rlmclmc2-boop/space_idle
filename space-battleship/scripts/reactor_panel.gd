@@ -567,5 +567,5 @@ func refresh_upgrade_preview() -> void:
 			for key in ["weapons","defence"]:
 				if not quote.effects.has(key):continue
 				var effect: Dictionary = quote.effects[key]
-				lines.append(UIText.t("reactor.purchase_effect_short",{"module":UIText.data_text("reactor",key),"current":"%.2f" % ((effect.current-1.0)*100.0),"next":"%.2f" % ((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain}))
+				lines.append(UIText.t("reactor.purchase_effect_short",{"module":UIText.data_text("reactor",key),"current":NumberFormat.compact((effect.current-1.0)*100.0),"next":NumberFormat.compact((effect.next-1.0)*100.0),"gain":"%.2f" % effect.gain}))
 			host.set_ui_value(benefit_label,"text",UIText.t("reactor.single_preview",{"effects":"\n".join(lines)}))
