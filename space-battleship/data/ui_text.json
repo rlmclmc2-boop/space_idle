@@ -16562,7 +16562,7 @@
   },
   {
     "key": "hyperspace.action_no_affix_slots",
-    "text": "这架无人机没有词条位。",
+    "text": "当前品质没有词条位。",
     "params": "",
     "category": "hyperspace",
     "note": "实机改造反馈，直接说明缺口与变化"
@@ -17948,5 +17948,12 @@
     "params": "count",
     "category": "hyperspace",
     "note": "仓库默认仅显示当前有内容的数量"
+  },
+  {
+    "key": "hyperspace.action_affix_full_count",
+    "text": "词条位已满（{count}/{capacity}）。",
+    "params": "count,capacity",
+    "category": "hyperspace",
+    "note": "有材料仍受真实词条容量限制；不改变分类权限"
   }
 ]

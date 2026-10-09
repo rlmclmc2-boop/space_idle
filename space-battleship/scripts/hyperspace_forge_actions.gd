@@ -121,7 +121,7 @@ func refresh() -> void:
     var owned=int(commands.game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(commands.game().profile.hyperspace.materials.get(key,0))
     if int(costs[key])>owned:missing.append(commands.t(str(key))+" "+commands.material_number(int(costs[key])-owned))
    status=commands.t("action_missing",{"materials":" · ".join(missing)})
-  elif reason=="affix_limit":status=commands.t("action_no_affix_slots" if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else "action_affix_full")
+  elif reason=="affix_limit":status=commands.t("action_no_affix_slots") if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else commands.t("action_affix_full_count",{"count":str(d.affixes.size()),"capacity":str(commands.panel.Bag.affix_limit(d,commands.h().config))})
   elif reason=="no_new_record":status=commands.t("action_no_new_record")
   if op=="modernize" and reason.is_empty():status=commands.modernization_scope(d)
   if op=="promote_affix" and reason.is_empty():status=commands.promotion_summary(d)

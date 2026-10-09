@@ -9765,6 +9765,12 @@
       "params": [
         "count"
       ]
+    },
+    "hyperspace.action_affix_full_count": {
+      "params": [
+        "count",
+        "capacity"
+      ]
     }
   },
   "bindings": {
