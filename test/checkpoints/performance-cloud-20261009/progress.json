@@ -1,0 +1,18 @@
+{
+  "state": "working; overall performance unaccepted",
+  "branch": "perf/whole-game-20261009",
+  "code_ref": "29532e577feaba7955db59b7f4efdd73b63068da",
+  "qa_ref": "050f94f9471a2254d1e99105d37d743974aeca6b",
+  "qa_path": "test/checkpoints/parent/recovery-new-profile-20261009/progress.json",
+  "qa_sha256": "40ae83541cc6bbf8957543bad7eae7e1f7c7be570d11695278eaad16706d3f36",
+  "qa_provenance": "Completed20, brieflyentered21, returned20/1. Natural resources preserved. Stock5/equipped2; inventory schema9 is not drone count.",
+  "last_graphics_success_utc": "2026-10-09T13:37:25.861953Z",
+  "environment": "Godot4.6.3 GL Compatibility / llvmpipe; no hardware GPU; not user49FPS acceptance.",
+  "completed": [
+    "Natural checkpoint shortwindow exit0: guardintermission20/1, host5.31ms anddrawcommands0.082ms versusframe68.23ms; originalQAfileunchanged.",
+    "Built-in --gpu-profile exit0 without crashed viewportgetters: CanvasItems22.6-35.9ms exceeds 3Dtransparent8.4-13.1ms.",
+    "NativeShipOutput bounded12percent average,noP95gain; foggrid no reliablegain. Neither production implementation.",
+    "Workspace retained raster diagnostic keeps sameGUI nodes/profile:210->126calls,43.2/47.6ms controls versus35.4ms candidate. Rootimage byteerror<=10; input,invalidation andcapture183ms stillunaccepted."
+  ],
+  "next": "Continue same task: expand retained workspace scope to original UI subtree; validate real GUI input and immediate source-draw fallback before any default enable. Current production cache remains off; parentowns main/overall acceptance."
+}
