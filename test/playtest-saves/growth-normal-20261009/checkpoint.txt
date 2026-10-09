@@ -1,8 +1,7 @@
-Candidate gameplay: 46829d6cdeff62d08474546f875d6d2b8e848367 unchanged.
-Independent normal-resource new save; no old reports/saves/strategy or gameplay source used.
-Cloud Linux Xorg :99 software OpenGL Godot4.6.3; audio unverified.
-Checkpoint3: stage6 wave1/9, paused, GUI manual save.
-Completed stage1-5, ordinary retries. AI3: furnace, weapon, armor each1. ReactorLv6 with weapon34%, defense66%, smelt0%; W01 beamLv5 W02 laserLv5 W03railLv4; armorLv5 both.
-Checkpoint1 correction: screenshot stage2 wave1, not stage1wave5.
-Next: stage6 physical-resistant armor+shield; continue normal play and new unlocks.
-Stop at reaching20: save and close, no farming20 or stage21.
+Candidate gameplay 46829d6cdeff62d08474546f875d6d2b8e848367 unchanged.
+Normal-resource independent new save, no old reports/saves/strategy/gameplay source consulted.
+Cloud Linux Xorg :99 software OpenGL Godot4.6.3; audio unverified; speedx1 confirmed GUI.
+Checkpoint4: stage6 wave4/9 paused and GUI manually saved; last defeat stage6wave6 physical loss.
+Completed stage1-5. AI3 evenly furnace/weapon/armor; reactorLv8 def66% weapon34% smelt0%; beamW01Lv8 laserW02Lv6 beamW03Lv5; armorD01Lv6 D02Lv7 restored fromshield.
+Next: continue6 and adapt to actual enemy/failure UI. No concrete blocker yet, ordinary retries.
+Stop upon reaching20, save and close. No farming20 or entering21.
