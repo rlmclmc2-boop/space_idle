@@ -30,6 +30,9 @@ func _initialize() -> void:
  check(Bag.valid_drone(d,c) and Bag.insert(g.profile.hyperspace.inventory,d,c),"Integer master enters the real inventory")
  var invalid:Dictionary=d.duplicate(true);invalid.legendary_effect.parameters.maximum_reduction=0.553
  check(not Bag.valid_drone(invalid,c),"Hidden fractional-percentage saved master values are rejected")
+ for cap in [0.49,0.61,0.89]:
+  invalid.legendary_effect.parameters.maximum_reduction=cap
+  check(not Bag.valid_drone(invalid,c),"Out-of-range and historical cap values cannot create additional master outcomes")
  g.profile.hyperspace.inventory.equipped=[d.id];g.invalidate_stat_cache()
  for cap in [0.5,0.55,0.6]:
   g.profile.hyperspace.inventory.drones[d.id].legendary_effect.parameters.maximum_reduction=cap;g.invalidate_stat_cache()
