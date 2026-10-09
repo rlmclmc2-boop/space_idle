@@ -1,7 +1,7 @@
 Independent normal graphical playtest recovery checkpoint
 Frozen code70cc9300159916bdfae0b4e190f8b9017be42e4a treea418e01825f3b82518dc02722937b43b4bfb2c88
-Own cloud fresh XDG save only; speed1x microparticles0, noQA/injections/restart.
-2026-10-09 21:22:40 UTC first observed11wave0/9; saved paused after normal newhull/crew setup21:25.
-Flyyan escort hull4weapon2defense2drone slots, W45beam/44beam/44cannon/45cannon, armor46/45, reactor24equal, AI26pendingUIverification, firstwhitedrone, enhancement1.
-Crew Gaojianguo assigned normal equipment +1level automation; actual auto growth to be observed next.
-Resume original runtime first; backup only pure test save and compact recovery metadata.
+Own cloud XDG fresh save; speed1x microparticles0, noQA/injections/restart.
+2026-10-09 21:29:45 UTC first observed12wave1/9, manually saved paused after setup21:31.
+Flying Swallow escort4weapons2defense2drone slots, cannons63/62/62/60, armor56/54, reactorMAX27to30requested, AI31equal11/10/10verified, whitedrone1, enhancement1.
+Crew Gaojianguo normal equipment automation actual growth verified; first11Boss cleared naturally.
+Resume same original cloud runtime first; only pure round test save and compact metadata.
