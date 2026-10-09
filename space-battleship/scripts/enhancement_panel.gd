@@ -373,6 +373,7 @@ func refresh() -> void:
 	var at_limit := game.enhancement_at_limit()
 	var cost = game.enhancement_cost()
 	var balance = game.profile.get("jewelFragments",0)
+	var effects_available := game.enhancement_effective_level()>=threshold_level(0)
 	host.set_ui_value(level_label,"text",UIText.t("enhance.level",{"level":level}))
 	host.set_ui_value(bonus_label,"visible",bonus!=0)
 	if bonus!=0:
@@ -397,11 +398,16 @@ func refresh() -> void:
 			var state_key := "enhance.effect.active" if active else "enhance.effect.reorder" if game.enhancement_effective_level()>=threshold_level(0) else "enhance.effect.first_upgrade"
 			var state_values := {"count":eligible_count(category,index)} if active else {}
 			host.set_ui_value(card.state,"text",UIText.t("enhance.pending_state") if kind.is_empty() else UIText.t(state_key,state_values))
+			# Keep the six effect introductions; offer controls when they can help.
+			for control in [card.state,card.up,card.down,card.details]:
+				host.set_ui_value(control,"visible",effects_available)
 			host.set_ui_value(card.up,"disabled",index==0)
 			host.set_ui_value(card.down,"disabled",index==2)
 			host.set_ui_value(card.details,"disabled",kind.is_empty())
 			host.set_ui_value(card.branches,"disabled",kind.is_empty())
-			host.set_ui_value(card.branches,"tooltip_text",branch_summary(category,kind))
+			var branches_available := not kind.is_empty() and game.enhancement_branch_unlocked(category,kind,1)
+			host.set_ui_value(card.branches,"visible",branches_available)
+			if branches_available:host.set_ui_value(card.branches,"tooltip_text",branch_summary(category,kind))
 	var active_count := 0
 	for index in 3:
 		if game.enhancement_effective_level()>=threshold_level(index):active_count+=1

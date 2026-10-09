@@ -15027,14 +15027,14 @@
   },
   {
     "key": "hyperspace.reward_drone_received",
-    "text": "已获得：{quality} · {weapon}无人机 · 等级 {level}",
+    "text": "最近获得：{quality} · {weapon}无人机 · 等级 {level}",
     "params": "{quality},{weapon},{level}",
     "category": "hyperspace",
     "note": ""
   },
   {
     "key": "hyperspace.reward_materials_received",
-    "text": "探索奖励已入库",
+    "text": "最近获得的探索奖励已入库",
     "params": "",
     "category": "hyperspace",
     "note": ""
