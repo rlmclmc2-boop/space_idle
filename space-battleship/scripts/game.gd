@@ -997,10 +997,11 @@ func permanent_level_tooltip(actual: int, target: String) -> String:
 	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
-func equipment_stat(key: String, level: int) -> Variant:
+func equipment_stat(key: String, level: int, drone_totals: Dictionary = {}) -> Variant:
+	# Presentation-only drone overrides bypass live caches; combat omits them.
 	# Base equipment values exclude attack/hit counters. Retain their projection
 	# across volleys; full stat invalidation covers every modifier/level change.
-	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled else {}
+	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled and drone_totals.is_empty() else {}
 	var levels: Dictionary = bases.get(key,{})
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
@@ -1009,10 +1010,10 @@ func equipment_stat(key: String, level: int) -> Variant:
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
 		value = N.ceiling(N.multiply(value,N.power(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech))))
-	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons")
+	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",drone_totals)
 	if reactor_bonus != 1.0:
 		value = N.ceiling(N.multiply(value,reactor_bonus))
-	if stat_cache_enabled:
+	if stat_cache_enabled and drone_totals.is_empty():
 		# Bound previews as well as equipped modules; reads never retain entries.
 		if levels.size()>=32:levels.clear()
 		levels[level]=value
@@ -1034,12 +1035,12 @@ func reactor_available_modules() -> PackedStringArray:
 func reactor_unlocked() -> bool:
 	return content_unlocked("feature", "reactor")
 
-func reactor_energy(level := -1) -> float:
+func reactor_energy(level := -1, drone_totals: Dictionary = {}) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max") * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
+	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max") * (1.0+float((hyperspace_totals() if drone_totals.is_empty() else drone_totals).hangings.get("extra_storage",0)))
 
-func reactor_capacity() -> int:
-	return preload("res://scripts/reactor_growth.gd").capacity(reactor_energy())
+func reactor_capacity(drone_totals: Dictionary = {}) -> int:
+	return preload("res://scripts/reactor_growth.gd").capacity(reactor_energy(-1,drone_totals))
 
 func reactor_can_grow(amount: int) -> bool:
 	if amount<=0:return false
@@ -1059,10 +1060,10 @@ func reactor_effective_ratio(key: String) -> float:
 	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
 	return float(profile.reactorAllocation.get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
 
-func reactor_multiplier(key: String) -> float:
+func reactor_multiplier(key: String, drone_totals: Dictionary = {}) -> float:
 	if not reactor_module_unlocked(key):return 1.0
 	var allocation := float(profile.reactorAllocation.get(key,0))
-	if reactor_unlocked():allocation+=float(reactor_capacity())*charge_free_ratio()
+	if reactor_unlocked():allocation+=float(reactor_capacity(drone_totals))*charge_free_ratio()
 	return 1.0 + pow(float(allocation),float(db.config.reactorBoostExponent)) / float(db.config.reactorPercentScale) if allocation > 0 else 1.0
 
 func reactor_max_upgrades() -> int:
@@ -3315,10 +3316,10 @@ func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 func jewel_effects(entry: Dictionary) -> Array:
 	return enhancement_effects(entry)
 
-func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true) -> Variant:
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
-	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
+	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level,drone_totals)
 	var projected := entry
 	if level>=0:
 		projected=entry.duplicate()
@@ -3335,18 +3336,19 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 	else:
 		crew_bonus=crew.system_effect(self,"equip_bonus")
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
-	var drones:=hyperspace_totals()
+	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
 	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
 
-func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true) -> Vector2:
+func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
 	var row := db.equip(str(entry.key), int(entry.level))
 	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
 	for effect in (jewel_effects(entry) if effects == null else effects):
 		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
-	return Vector2(clampf(rate+float(hyperspace_totals().critical_chance),0,1),maxf(0,damage)*float(hyperspace_totals().critical_damage))
+	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
+	return Vector2(clampf(rate+float(drones.critical_chance),0,1),maxf(0,damage)*float(drones.critical_damage))
 
 func begin_enhancement_attack(index: int, target: Dictionary, derived := false, track_primary := true) -> Dictionary:
 	var context := enhancement_branches.begin_attack(self,index,target,derived,track_primary)
@@ -3365,11 +3367,12 @@ func endless_source() -> Dictionary:
 		if best.is_empty() or int(entry.level)>int(best.level):best=entry
 	stat_cache.hyperspace_endless_source=best;return best
 
-func player_weapon_row(entry: Dictionary) -> Dictionary:
+func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}) -> Dictionary:
 	var weapon := db.equip(str(entry.key),int(entry.level))
-	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(hyperspace_totals().attack_speed)
+	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
+	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
 	if entry.key=="longLaser":
-		var endless: Dictionary=hyperspace_totals().legendary.get("endless_beam",{})
+		var endless: Dictionary=drones.legendary.get("endless_beam",{})
 		if not endless.is_empty() and is_same(entry,endless_source()):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
 	return weapon
 

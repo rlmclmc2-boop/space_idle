@@ -3,6 +3,7 @@ extends Control
 const LAYOUT := preload("res://dev/toon_ship/hybrid_layout.gd")
 const PREVIEW_MANIFEST := "res://assets/ui/ships/manifest.json"
 const CARD_FONT := preload("res://scripts/equipment_card.gd")
+const DRONE_PERMISSION := preload("res://scripts/hyperspace_permissions.gd")
 const NAVY := Color("243d50")
 const PAPER := Color("ecebdc")
 const TEAL := Color("83cfcb")
@@ -49,6 +50,8 @@ var mounts: Dictionary = {}
 var picture: TextureRect
 var heading: Label
 var result: Label
+var combat_drone_slots: Label
+var combat_drone_warning: Label
 var confirm: Button
 var preview: Control
 var silhouette: ShaderMaterial
@@ -149,6 +152,8 @@ func setup(owner_ui: Node) -> void:
 		mount_lists[category] = rows
 	result = label(self,"",Rect2(1080,770,240,90),22)
 	result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	combat_drone_slots = label(self,"",Rect2(1080,868,240,74),22)
+	combat_drone_warning = label(self,"",Rect2(1080,951,240,76),21,MUTED)
 	confirm = Button.new()
 	confirm.position = Vector2(1080,1032)
 	confirm.size = Vector2(240,96)
@@ -213,6 +218,13 @@ func refresh() -> void:
 	host.set_ui_value(preview_state,"text",UIText.t("ship.refit.active_preview" if candidate==current else "ship.refit.candidate_preview"))
 	for control in information:host.set_ui_value(control,"visible",not locked)
 	host.set_ui_value(result,"visible",not locked)
+	host.set_ui_value(combat_drone_slots,"visible",not locked)
+	var current_drone_capacity := combat_drone_capacity(current)
+	var next_drone_capacity := combat_drone_capacity(candidate)
+	host.set_ui_value(combat_drone_slots,"text",UIText.t("ship.refit.combat_drone_slots",{"current":str(current_drone_capacity),"next":str(next_drone_capacity)}))
+	var removed_drones := maxi(0,host.game.profile.hyperspace.inventory.equipped.size()-next_drone_capacity)
+	host.set_ui_value(combat_drone_warning,"visible",not locked and candidate!=current and removed_drones>0)
+	host.set_ui_value(combat_drone_warning,"text",UIText.t("ship.refit.combat_drone_shrink",{"count":str(removed_drones)}))
 	host.set_ui_value(mount_scroll,"visible",not locked)
 	host.set_ui_value(confirm,"visible",not locked)
 	refresh_drone_strip(assignments,locked,current)
@@ -275,6 +287,11 @@ func refresh() -> void:
 	host.set_ui_value(confirm,"text",UIText.t("ship.refit.current" if candidate==current else ("ship.refit.apply" if host.game.ship_unlocked(candidate) else "ship.refit.locked")))
 	host.set_ui_value(confirm,"tooltip_text",confirm.text)
 	host.set_ui_value(confirm,"disabled",not host.game.ship_unlocked(candidate))
+
+func combat_drone_capacity(ship_key: String) -> int:
+	# Project only the selected hull through the same authority used by fit_hull;
+	# the live profile and equipped inventory remain untouched during preview.
+	return DRONE_PERMISSION.hull_capacity({"profile":{"selectedShip":ship_key}},host.game.hyperspace.config)
 
 func unlock_hint(key: String) -> String:
 	return UIText.t("ship.refit.unlock_estimate",{"level":str(int(host.db.unlock_row("ship",key).get("level",-1)))})

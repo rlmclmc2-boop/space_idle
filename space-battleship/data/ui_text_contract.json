@@ -9252,6 +9252,43 @@
     },
     "equipment.refit_rate_scope": {
       "params": []
+    },
+    "ship.refit.combat_drone_slots": {
+      "params": [
+        "current",
+        "next"
+      ]
+    },
+    "ship.refit.combat_drone_shrink": {
+      "params": [
+        "count"
+      ]
+    },
+    "research.ai_purchase_hover": {
+      "params": []
+    },
+    "research.ai_purchase_quote": {
+      "params": [
+        "count",
+        "cost"
+      ]
+    },
+    "research.ai_purchase_insufficient": {
+      "params": []
+    },
+    "research.ai_purchase_exact": {
+      "params": [
+        "cost"
+      ]
+    },
+    "equipment.base_armour": {
+      "params": []
+    },
+    "equipment.base_shield": {
+      "params": []
+    },
+    "equipment.baseline_scope": {
+      "params": []
     }
   },
   "bindings": {

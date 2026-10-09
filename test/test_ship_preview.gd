@@ -48,6 +48,26 @@ func run() -> void:
 	await process_frame
 	var panel: Control=scene.ship_controls.page
 	check(panel.find_children("*","SubViewport",true,false).is_empty(),"No live preview viewport")
+	var inventory_before: Dictionary=scene.game.profile.hyperspace.duplicate(true)
+	var drone_rng := RandomNumberGenerator.new()
+	drone_rng.seed=234
+	var equipped_ids: Array=[]
+	for index in 2:
+		var drone: Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(drone_rng,scene.game.hyperspace.config,"ship-capacity-%d" % index,"white","laser",5,"1")
+		check(preload("res://scripts/drone_inventory.gd").insert(scene.game.profile.hyperspace.inventory,drone,scene.game.hyperspace.config),"Capacity warning fixture owns valid drone")
+		equipped_ids.append(drone.id)
+	check(scene.game.hyperspace.set_equipped(scene.game,equipped_ids),"Capacity warning fixture uses normal equip authority")
+	panel.candidate="Frigate";panel.refresh()
+	var smaller_capacity: int=preload("res://scripts/hyperspace_permissions.gd").hull_capacity({"profile":{"selectedShip":"Frigate"}},scene.game.hyperspace.config)
+	check(panel.combat_drone_warning.visible and panel.combat_drone_warning.text==UIText.t("ship.refit.combat_drone_shrink",{"count":str(maxi(0,equipped_ids.size()-smaller_capacity))}),"Smaller candidate states actual excess and warehouse retention")
+	check(scene.game.profile.hyperspace.inventory.equipped==equipped_ids,"Warning never unequips during preview")
+	var configured_capacity=scene.game.hyperspace.config.hull_capacities.Frigate
+	scene.game.hyperspace.config.hull_capacities.Frigate=2
+	panel.refresh()
+	check(panel.combat_drone_capacity("Frigate")==2 and not panel.combat_drone_warning.visible,"Capacity preview follows config authority independently of weapon slots")
+	scene.game.hyperspace.config.hull_capacities.Frigate=configured_capacity
+	scene.game.profile.hyperspace=inventory_before
+	scene.game.invalidate_stat_cache()
 	panel.candidate="Heavy_Battleship"
 	panel.refresh()
 	var before: String=JSON.stringify(scene.game.profile)
@@ -55,6 +75,9 @@ func run() -> void:
 		before=JSON.stringify(scene.game.profile)
 		panel.choices[key].pressed.emit()
 		check(JSON.stringify(scene.game.profile)==before,"Candidate remains read-only: "+str(key))
+		var current_capacity: int=preload("res://scripts/hyperspace_permissions.gd").hull_capacity(scene.game,scene.game.hyperspace.config)
+		check(panel.combat_drone_slots.text==UIText.t("ship.refit.combat_drone_slots",{"current":str(current_capacity),"next":str(panel.combat_drone_capacity(key))}) and panel.result.text.begins_with("装备模块槽"),"Current/candidate combat drone capacity is separate from equipment modules: "+str(key))
+		check(panel.combat_drone_slots.get_rect().end.y<=panel.combat_drone_warning.position.y and panel.combat_drone_warning.get_rect().end.y<=panel.confirm.position.y,"Capacity and shrink warning stay clear of confirmation")
 		check(panel.choice_capacities[key].text==UIText.t("ship.refit.capacity_summary",{"weapons":str(scene.game.active_slot_count("weapons",key)),"defence":str(scene.game.active_slot_count("defence",key))}) and panel.choice_capacities[key].get_line_count()==2 and panel.choice_capacities[key].get_visible_line_count()==2,"Both capacity counts remain visible: "+str(key))
 		check(panel.picture.texture==PANEL.hull_texture(key),"Actual toon snapshot: "+str(key))
 		check(PANEL.preview_data.hulls[key].model==scene.ship_view.manifest.hulls[key].path,"Live GLB source: "+str(key))

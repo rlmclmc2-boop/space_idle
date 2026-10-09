@@ -1048,7 +1048,7 @@
   },
   {
     "key": "equipment.refit_hint",
-    "text": "免费装配 · 等级随槽位保留 · 点击名称选择即换装",
+    "text": "免费换装，槽位等级保留 · 点名称直接换；选模块卡 → 比较换装，先看差异",
     "params": "",
     "category": "equipment"
   },
@@ -1078,13 +1078,13 @@
   },
   {
     "key": "equipment.swap",
-    "text": "换装",
+    "text": "选择即换装；先比较请点页底「比较换装」",
     "params": "",
     "category": "equipment"
   },
   {
     "key": "equipment.inspect",
-    "text": "详情",
+    "text": "比较换装",
     "params": "",
     "category": "equipment"
   },
@@ -9112,7 +9112,7 @@
   },
   {
     "key": "ship.refit.static_hint",
-    "text": "槽号对应实际武器挂点；右侧仅展示该舰体可用槽位。",
+    "text": "槽号对应武器挂点；右侧的装备模块槽与战斗无人机槽分别显示。",
     "params": "",
     "category": "ship",
     "note": "舰体静态预览与真实槽位显示"
@@ -12181,7 +12181,7 @@
   },
   {
     "key": "ship.refit.active_count",
-    "text": "可用槽位 {active}",
+    "text": "装备模块槽 {active}",
     "params": "{active}",
     "category": "ship",
     "note": "候选舰体实际启用槽位数量"
@@ -16667,7 +16667,7 @@
   },
   {
     "key": "weapon.rate_assumption",
-    "text": "仅一个目标、持续命中；未计敌方减伤。",
+    "text": "仅一个目标、持续命中；未计敌方减伤。\n基础值按当前装备与累计次数计算，不计战斗临时加成或无人机临时停用；实战以战场为准。",
     "params": "",
     "category": "weapon",
     "note": "只读单目标每秒伤害展示，条件另计"
@@ -16990,7 +16990,7 @@
   },
   {
     "key": "equipment.refit_rate_scope",
-    "text": "此槽单目标持续命中的基准，未计敌方减伤；条件效果见悬停。",
+    "text": "单目标基准；未计敌方减伤，条件效果见悬停。",
     "params": "",
     "category": "equipment"
   },
@@ -17169,5 +17169,73 @@
     "params": "affix",
     "category": "hyperspace",
     "note": "改造结果的独立究极词缀标记；不参与规则"
+  },
+  {
+    "key": "ship.refit.combat_drone_slots",
+    "text": "战斗无人机槽\n当前 {current} → 候选 {next}",
+    "params": "current,next",
+    "category": "ship",
+    "note": "换舰预览复用无人机容量权威；不改变库存或换舰规则",
+    "source": "ship_panel.gd"
+  },
+  {
+    "key": "ship.refit.combat_drone_shrink",
+    "text": "将卸下 {count} 架超额无人机\n仍保留在仓库",
+    "params": "count",
+    "category": "ship",
+    "note": "换舰预览复用无人机容量权威；不改变库存或换舰规则",
+    "source": "ship_panel.gd"
+  },
+  {
+    "key": "research.ai_purchase_hover",
+    "text": "查看本次数量与总投入",
+    "params": "",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_quote",
+    "text": "本次生成 {count} AI\n总投入：{cost}",
+    "params": "count,cost",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_insufficient",
+    "text": "当前余额不足，不能生产该数量。",
+    "params": "",
+    "category": "research",
+    "note": "真实逐级累计费用；MAX仅在打开悬停时询价",
+    "source": "hightech_workshop.gd"
+  },
+  {
+    "key": "research.ai_purchase_exact",
+    "text": "精确投入：{cost}",
+    "params": "cost",
+    "category": "research",
+    "note": "AI购买总额短数摘要后的精确补充，不驱动购买逻辑"
+  },
+  {
+    "key": "equipment.base_armour",
+    "text": "基础装甲",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
+  },
+  {
+    "key": "equipment.base_shield",
+    "text": "基础护盾",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
+  },
+  {
+    "key": "equipment.baseline_scope",
+    "text": "基础值按当前装备与累计次数计算，不计战斗临时加成或无人机临时停用；实战以战场为准。",
+    "params": "",
+    "category": "equipment",
+    "note": "稳定装备投影，与实时战场防御区分"
   }
 ]
