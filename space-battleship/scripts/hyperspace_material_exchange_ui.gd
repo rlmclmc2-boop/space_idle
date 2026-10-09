@@ -24,6 +24,14 @@ func material(choice:OptionButton) -> String:
 func show() -> void:
  if dialog==null:build()
  refresh_quote(true);dialog.popup_centered(Vector2i(760,540))
+func show_prefilled(from:String,to:String,count:int) -> void:
+ if dialog==null:build()
+ for i in source.item_count:
+  if str(source.get_item_metadata(i))==from:source.select(i)
+ for i in target.item_count:
+  if str(target.get_item_metadata(i))==to:target.select(i)
+ amount.set_value_no_signal(maxi(1,count))
+ refresh_quote(true);dialog.popup_centered(Vector2i(760,540))
 func build() -> void:
  dialog=panel.commands.build_dialog("exchange_title");dialog.ok_button_text=t("exchange_close")
  # Native dialog labels must not wrap while the newly attached content still has zero width.
@@ -51,13 +59,12 @@ func build() -> void:
  confirmation=ConfirmationDialog.new();confirmation.title=t("exchange_confirm_title")
  confirmation.ok_button_text=t("exchange_confirm");confirmation.cancel_button_text=t("exchange_cancel")
  # Fixed two-line numeric quote fits this width; avoid zero-width autowrap minimum inflation.
- confirmation.dialog_autowrap=false;confirmation.min_size=Vector2i(620,260);confirmation.size=Vector2i(620,260);panel.add_child(confirmation)
+ confirmation.dialog_autowrap=false;confirmation.min_size=Vector2i(620,260);confirmation.size=Vector2i(620,260);dialog.add_child(confirmation)
  preload("res://scripts/dialog_presentation.gd").dialog(confirmation)
  confirmation.confirmed.connect(commit)
  confirmation.canceled.connect(func():pending_request={})
  panel.tree_exiting.connect(func():
-  if is_instance_valid(dialog):dialog.queue_free()
-  if is_instance_valid(confirmation):confirmation.queue_free())
+  if is_instance_valid(dialog):dialog.queue_free())
 func summary(result:Dictionary) -> String:
  var from=str(result.get("source",""));var to=str(result.get("target",""))
  return t("exchange_summary",{"source":t(from),"target":t(to),"cost":str(int(result.get("cost",{}).get(from,0))),"received":str(int(result.get("received",{}).get(to,0)))})

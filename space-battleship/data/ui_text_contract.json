@@ -9289,6 +9289,20 @@
     },
     "equipment.baseline_scope": {
       "params": []
+    },
+    "hyperspace.forge_exchange_shortage": {
+      "params": [
+        "cost",
+        "amount"
+      ]
+    },
+    "hyperspace.forge_expand_unavailable": {
+      "params": [
+        "count"
+      ]
+    },
+    "hyperspace.forge_collapse_unavailable": {
+      "params": []
     }
   },
   "bindings": {

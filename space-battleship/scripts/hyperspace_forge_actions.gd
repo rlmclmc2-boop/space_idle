@@ -1,6 +1,7 @@
 extends RefCounted
 ## Independent actions share existing domain quotes; selectors belong to their action.
 const ACTIONS=["add_affix","replace_affix","add_hanging_slot","reroll_values","lock_affix","promote_affix","enable_omen","legendary","modernize","ultimate","restore_ultimate"]
+const BASIC=["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize"]
 const CONFIRM=["lock_affix","promote_affix","legendary","modernize","ultimate","restore_ultimate"]
 var commands_ref:WeakRef
 var commands:
@@ -12,8 +13,11 @@ var selectors:Dictionary={}
 var promotion_count:OptionButton
 var maximum:CheckBox
 var confirmation:ConfirmationDialog
+var advanced_toggle:Button
+var advanced_expanded:=false
 func setup(owner) -> void:commands_ref=weakref(owner)
 func build(parent:Node) -> void:
+ advanced_toggle=commands.panel.button(parent,"forge_expand_unavailable",func():advanced_expanded=not advanced_expanded;refresh(),{"count":"0"})
  var grid=GridContainer.new();grid.columns=3;grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",8);parent.add_child(grid)
  for op in ACTIONS:
   var cell=commands.panel.box(grid,3);cells[op]=cell
@@ -67,12 +71,18 @@ func visible_action(op:String,d:Dictionary) -> bool:
  if op=="legendary":return bool(d.legendary) or int(commands.game().profile.hyperspace.materials.get("zero_point_energy",0))>0 or not commands.game().profile.hyperspace.legendary_seen.is_empty()
  if op=="ultimate":return int(commands.game().profile.hyperspace.ultimate_cores)>0
  return true
+func exchange_shortage(op:String,result:Dictionary) -> int:
+ if op!="add_affix" or str(result.get("error",""))!="insufficient_materials":return 0
+ var costs:Dictionary=result.get("cost",{})
+ if costs.size()!=1 or not costs.has("degenerate_matter"):return 0
+ return maxi(0,int(costs.degenerate_matter)-int(commands.game().profile.hyperspace.materials.degenerate_matter))
 func refresh() -> void:
  if buttons.is_empty():return
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
+ var later:=0
  for op in ACTIONS:
-  var shown=visible_action(op,d);commands.panel.put(cells[op],"visible",shown)
-  if not shown:continue
+  var offered=visible_action(op,d) or (not d.is_empty() and not bool(d.get("ultimate",false)) and op!="restore_ultimate")
+  if not offered:commands.panel.put(cells[op],"visible",false);continue
   if selectors.has(op):sync_selector(op,d)
   var effective="disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op
   var req=request(effective);var deferred=not selected_target(op).is_empty()
@@ -80,6 +90,10 @@ func refresh() -> void:
   if deferred:forecast.args={}
   var result:Dictionary=commands.h().preview_forge(commands.game(),forecast) if not req.is_empty() else {"error":"unavailable_drone"}
   var reason=str(result.get("error",""));var costs:Dictionary=result.get("cost",{})
+  var current=reason.is_empty() or (op in BASIC and reason=="insufficient_materials")
+  if not current:later+=1
+  commands.panel.put(cells[op],"visible",current or advanced_expanded)
+  var shortage=exchange_shortage(op,result)
   var name=commands.t("omen_on_action") if effective=="disable_omen" else commands.t("operation_"+op)
   var cost_lines:Array[String]=[]
   for key in costs:cost_lines.append(commands.t(str(key))+" "+commands.material_number(int(costs[key])))
@@ -93,9 +107,14 @@ func refresh() -> void:
   elif reason=="affix_limit":status=commands.t("action_no_affix_slots" if commands.panel.Bag.affix_limit(d,commands.h().config)==0 else "action_affix_full")
   elif reason=="no_new_record":status=commands.t("action_no_new_record")
   if deferred:status=commands.t("action_guaranteed_cost") if reason.is_empty() else status
+  if shortage>0:
+   var exchange=commands.h().material_exchange_quote(commands.game(),"zero_point_energy","degenerate_matter",shortage)
+   status=commands.t("forge_exchange_shortage",{"cost":str(int(exchange.cost.get("zero_point_energy",0))),"amount":str(shortage)})
   var caption=name+"\n"+(" · ".join(cost_lines) if not cost_lines.is_empty() else commands.t("no_cost") if reason.is_empty() else "—")+"\n"+status
   commands.panel.put(buttons[op],"tooltip_text",name+"\n"+commands.cost_text(costs,true)+"\n"+status)
-  commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty())
+  commands.panel.put(buttons[op],"text",caption);commands.panel.put(buttons[op],"disabled",not reason.is_empty() and shortage<=0)
+ commands.panel.put(advanced_toggle,"visible",later>0 or advanced_expanded)
+ commands.panel.put(advanced_toggle,"text",commands.t("forge_collapse_unavailable") if advanced_expanded else commands.t("forge_expand_unavailable",{"count":str(later)}))
 func act(op:String) -> void:
  var d:Dictionary=commands.game().profile.hyperspace.inventory.drones.get(commands.panel.selected_id,{})
  var effective="disable_omen" if op=="enable_omen" and bool(d.get("omen",false)) else op
@@ -103,6 +122,9 @@ func act(op:String) -> void:
  var req=request(effective)
  if req.is_empty():return
  var result:Dictionary=commands.h().preview_forge(commands.game(),req)
+ var shortage=exchange_shortage(op,result)
+ if shortage>0:
+  commands.exchange_ui.show_prefilled("zero_point_energy","degenerate_matter",shortage);return
  if not str(result.error).is_empty():commands.feedback.text=commands.error_text(str(result.error));refresh();return
  commands.quoted_request=req
  if op in CONFIRM or not selected_target(op).is_empty():
