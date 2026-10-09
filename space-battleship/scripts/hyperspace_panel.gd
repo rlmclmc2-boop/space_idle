@@ -305,6 +305,10 @@ func build_rules(parent: Node) -> void:
  var actions=row(dialog_content);button(actions,"string_import",import_filter_draft);button(actions,"string_copy",func():
   var parsed=Codec.import_string(filter_text.text,host.game.hyperspace.config)
   if valid_draft(parsed):DisplayServer.clipboard_set(filter_text.text))
+ # Startup and save import both build a fresh panel. Restore controls once;
+ # ordinary refreshes must leave an unsaved draft untouched.
+ apply_filter_controls(host.game.profile.hyperspace.filter)
+ preview_filter()
 func affix_catalog() -> Array:
  return affix_catalog_provider.call() if affix_catalog_provider.is_valid() else []
 func configure_condition(index: int) -> void:
@@ -327,6 +331,10 @@ func valid_draft(rule: Dictionary) -> bool:
 func import_filter_draft() -> void:
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
  if not valid_draft(rule):preview_filter();return
+ apply_filter_controls(rule)
+ preview_filter();string_dialog.hide()
+func apply_filter_controls(rule:Dictionary) -> void:
+ if not valid_draft(rule):return
  filter_mode.select(0 if rule.mode=="all" else 1);filter_enabled.button_pressed=rule.enabled;filter_action.select(0 if rule.action=="keep_matches" else 1)
  for i in 5:
   var condition:Dictionary=rule.conditions[i] if i<rule.conditions.size() else {"field":"none"}
@@ -337,7 +345,6 @@ func import_filter_draft() -> void:
    for n in condition_values[i].item_count:
     if condition_values[i].get_item_metadata(n)==target:condition_values[i].select(n);break
    if condition.field=="affix":condition_tiers[i].select(int(condition.tier)-1)
- preview_filter();string_dialog.hide()
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
