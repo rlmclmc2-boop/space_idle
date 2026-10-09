@@ -458,7 +458,7 @@ func _process(delta: float) -> void:
 			particles = particles.filter(func(p):return p.life > 0)
 		for f in floats:
 			f.life -= dt
-			if f.get("damage",false):f.pos.y -= dt*12
+			if f.get("damage",false) and not f.get("incoming_lane",false):f.pos.y -= dt*12
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
@@ -2634,6 +2634,9 @@ func queue_damage_number(info: Dictionary) -> void:
 	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
 	if damage_history.size()>40:damage_history.pop_front()
 	if not show_damage_numbers:return
+	if info.player and int(info.type) in [1,2]:
+		queue_incoming_damage_number(info,absorbed)
+		return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
 	var category := int(info.type) if damage_mode==1 or info.player else 0
@@ -2663,12 +2666,48 @@ func queue_damage_number(info: Dictionary) -> void:
 	damage_pending.append(entry)
 	flush_damage_numbers()
 
+func incoming_damage_origin(damage_type: int) -> Vector2:
+	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
+	# Fixed rows reuse the current render anchor; hit order never selects a row.
+	var anchor := player_render_position()
+	return battle_logical_point(anchor-Vector2(0,height+16+(40 if damage_type==1 else 0)))
+
+func queue_incoming_damage_number(info: Dictionary, absorbed) -> void:
+	var entry:Dictionary={}
+	for current in floats:
+		if current.get("incoming_lane",false) and int(current.type)==int(info.type):entry=current;break
+	var critical := bool(info.get("critical",false))
+	if not entry.is_empty() and fx_time-entry.born<0.2 and float(entry.life)>0:
+		entry.amount=GrowthNumber.add(entry.amount,info.amount)
+		entry.absorbed=GrowthNumber.add(entry.absorbed,absorbed)
+		entry.critical=entry.critical or critical
+	else:
+		if entry.is_empty():
+			entry={"target":"player","type":int(info.type),"damage":true,"incoming_lane":true}
+			floats.append(entry)
+		entry.amount=info.amount;entry.absorbed=absorbed;entry.critical=critical;entry.born=fx_time
+		entry.life=float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
+	entry.size=19 if entry.critical else 17
+	entry.color=CYAN if int(entry.type)==1 else ORANGE
+	entry.text=incoming_damage_text(entry.amount,entry.absorbed,int(entry.type))
+	entry.origin=incoming_damage_origin(int(entry.type))
+	var width := font.get_string_size(entry.text,HORIZONTAL_ALIGNMENT_LEFT,-1,int(entry.size)).x
+	entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
+
+func incoming_damage_bounds() -> Rect2:
+	# Reserve both short rows even before a hit, using the same text envelope.
+	var energy := battle_point(incoming_damage_origin(1))
+	var physical := battle_point(incoming_damage_origin(2))
+	var bounds := damage_text_rect(energy,"",19).merge(damage_text_rect(physical,"",19))
+	bounds.position.x=8;bounds.size.x=BATTLE_VIEW_SIZE.x-16
+	return bounds.grow(8)
+
 func flush_damage_numbers() -> void:
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry)
 			continue
-		var active := floats.filter(func(f):return f.get("target","")==entry.target)
+		var active := floats.filter(func(f):return f.get("target","")==entry.target and not f.get("incoming_lane",false))
 		if active.size()>=2:
 			active[0].life = minf(active[0].life,0.08)
 			active[0].retiring = true
@@ -2717,11 +2756,12 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 	var bounds_ready := false
 	# Drawing may hold a precomputed position; retain its original full query.
 	var fleet_bottom := INF if battle_draw_active else damage_text_enemy_bottom()
+	var incoming_bounds := incoming_damage_bounds()
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
 			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
 			var bounds := damage_text_rect(battle_point(pos),value,size_value)
-			if bounds.position.y<8:continue
+			if bounds.position.y<8 or bounds.intersects(incoming_bounds):continue
 			var blocked := false
 			for entry in floats:
 				if entry.get("damage",false) and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true

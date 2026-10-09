@@ -20,7 +20,8 @@
     "Subsequent candidate: actual enemy weapon damage-type fact in existing hover; missing weapon stays unknown",
     "Subsequent candidate: two-line dismissible receipt clears on carrier change; immediate installation continues into existing picker",
     "Subsequent candidate: stable material-route entry, short exchange quote with exact hover, integer signed total-bonus percentages",
-    "Subsequent candidate: retain only already shown basic forge positions for the selected carrier; full-affix compact completed state, append new useful basics, advanced still folded"
+    "Subsequent candidate: retain only already shown basic forge positions for the selected carrier; full-affix compact completed state, append new useful basics, advanced still folded",
+    "Subsequent candidate: incoming energy/physical damage uses two exclusive fixed rows at existing player anchor; enemy placement reserves their band, original short numbers/history retained"
   ],
   "verification": {
     "main_ui_checks": 97,
@@ -66,13 +67,16 @@
     "refit_comparison_focus_checks": 8,
     "enemy_attack_defence_facts_checks": 8,
     "receipt_material_routes_totals_checks": 14,
-    "forge_basic_position_checks": 8
+    "forge_basic_position_checks": 8,
+    "incoming_damage_row_checks": 13,
+    "incoming_damage_position_query_checks": 40
   },
   "next": [
-    "父下一候选GUI验收基础格位固定、满词条两行状态和进阶折叠；5–7关数值校准等待当前三方前20关节奏证据。"
+    "父整批GUI验收我方能量上行/物理下行及敌方分离；固定46829d6c不动，不启动新一轮。",
+    "Difficulty calibration remains deferred until all three current runs supply overall pacing evidence"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
-  "last_code_commit": "6e8e50204f7e6f7001dffdf88e2e8e2cfa408b2b",
+  "last_code_commit": "c9b99a108560bb5dedf1fbd016ef217939f0dbde",
   "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
   "scope": "Subsequent UI candidate only; no frozen-play update, new play thread, numeric growth or enemy-pressure change."
 }
