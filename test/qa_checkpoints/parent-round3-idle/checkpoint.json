@@ -1,9 +1,11 @@
 {
   "candidate": "70cc9300159916bdfae0b4e190f8b9017be42e4a",
-  "mode": "parent normal resources idle, 1x",
-  "captured_utc": "2026-10-09T21:14:00Z",
-  "observed_stage": "10/6",
-  "resources_injected": false,
+  "mode": "normal resources idle 1x",
+  "saved_utc": "2026-10-09T21:44:04Z",
+  "observed_stage": "20/5",
+  "highestLevel": 20,
+  "cleared_through": 19,
   "qa_test_only": true,
-  "resume": "Use isolated XDG data directory. Do not use another player save."
+  "finished": true,
+  "resume": "Round finished; retain evidence. No further progression."
 }
