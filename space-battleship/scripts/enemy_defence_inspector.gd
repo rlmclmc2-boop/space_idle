@@ -56,7 +56,7 @@ func defence_text(enemy: Dictionary) -> String:
 
 func remaining_text(value: Variant) -> String:
 	# Presentation only: positive fractions still represent a surviving layer.
-	return NumberFormat.plain(N.ceiling(N.maximum(value,0)))
+	return NumberFormat.compact(N.ceiling(N.maximum(value,0)))
 
 func enemy_at(point: Vector2) -> Dictionary:
 	# Input/poll queries run outside the draw callback. Scope shared entry work

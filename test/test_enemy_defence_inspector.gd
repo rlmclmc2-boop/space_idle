@@ -25,13 +25,13 @@ func run() -> void:
 	var original=g.enemies.duplicate(true);var profile=g.profile.duplicate(true);var rng=g.rng.state;var clock=g.enemy_shield_time
 	var point: Vector2=scene.enemy_render_position(enemy)
 	view.refresh_at(point)
-	check(view.panel.visible and view.description.text.contains("装甲：1235 · 抵抗物理伤害") and view.description.text.contains("护盾：10 · 抵抗能量伤害"),"Hover distinguishes remaining integer armour and shield with their true resistance")
+	check(view.panel.visible and view.description.text.contains("装甲："+NumberFormat.compact(1235)+" · 抵抗物理伤害") and view.description.text.contains("护盾：10 · 抵抗能量伤害"),"Hover distinguishes remaining integer armour and shield with their true resistance")
 	check(g.enemies==original and g.profile==profile and g.rng.state==rng and g.enemy_shield_time==clock,"Inspection does not settle shields or mutate battle, saves or RNG")
 	enemy.shield=0;view.refresh_at(point)
-	check(view.description.text.contains("护盾：0（已破）") and view.description.text.contains("装甲：1235 · 抵抗物理伤害"),"Broken shield shows zero without changing armour or its resistance label")
+	check(view.description.text.contains("护盾：0（已破）") and view.description.text.contains("装甲："+NumberFormat.compact(1235)+" · 抵抗物理伤害"),"Broken shield shows zero without changing armour or its resistance label")
 	enemy.hp=.2;enemy.shield=.2;view.refresh_at(point)
 	check(view.description.text.contains("装甲：1 ·") and view.description.text.contains("护盾：1 ·"),"Positive fractional remaining layers never appear already empty")
-	check(view.remaining_text(-.2)=="0" and view.remaining_text(12000)=="12000","Remaining display is nonnegative and integer without compact decimals")
+	check(view.remaining_text(-.2)=="0" and view.remaining_text(12000)=="12K","Remaining display is nonnegative with whole small values and shared suffixes")
 	var old_active=scene.enemy_entry_batch_active;var old_time=scene.enemy_entry_distance_time;var old_distance=scene.enemy_entry_distance_value
 	var solves=scene.entry_solves
 	check(view.enemy_at(Vector2(-10000,-10000)).is_empty(),"Full fleet hit-test miss stays empty")
