@@ -463,7 +463,10 @@ func refresh_effect_details(force := false) -> void:
 	if not is_instance_valid(effect_detail_dialog) or (not force and not effect_detail_dialog.visible):return
 	var index := game.enhancement_order(detail_category).find(detail_effect)
 	host.set_ui_value(effect_detail_dialog,"title",effect_name(detail_effect))
-	var text := UIText.t("enhance.effect.state",{"level":threshold_level(index),"count":eligible_count(detail_category,index)})+"\n\n"+(candidate_effect_preview(detail_category,detail_effect) if game.enhancement_effective_level()<threshold_level(index) else effect_details_text(detail_effect))
+	var active := game.enhancement_effective_level()>=threshold_level(index)
+	var text := UIText.t("enhance.effect.active",{"count":eligible_count(detail_category,index)}) if active else UIText.t("enhance.effect.inactive")
+	text+="\n\n"+(effect_details_text(detail_effect) if active else candidate_effect_preview(detail_category,detail_effect))
+	if not active:text+="\n\n"+UIText.t("enhance.effect.position_requirement",{"position":index+1,"level":threshold_level(index)})
 	host.set_ui_value(effect_detail_body,"text",text)
 
 func build_branch_drawer() -> void:

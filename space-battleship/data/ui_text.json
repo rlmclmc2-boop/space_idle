@@ -16394,7 +16394,7 @@
   },
   {
     "key": "hyperspace.legendary_details.drone_master",
-    "text": "取已装备且未停用的无人机中最高品质，按品质折算下方减伤上限。它减少战舰受到的伤害；下方数字是此效果的最高值，不是当前一定达到的减伤率。",
+    "text": "按已装备且未停用的无人机最高品质折算减伤上限，实际减伤四舍五入到整数百分点。下方上限与当前减伤分开显示。",
     "params": "",
     "category": "hyperspace",
     "note": "已拥有传说效果的简述或主动查阅说明"
@@ -17773,5 +17773,61 @@
     "params": "{count}",
     "category": "research",
     "note": "Actual affordable batch count."
+  },
+  {
+    "key": "enhance.effect.inactive",
+    "text": "当前未生效",
+    "params": "",
+    "category": "enhancement",
+    "note": "Current ordered effect state."
+  },
+  {
+    "key": "enhance.effect.position_requirement",
+    "text": "第{position}顺位在强化{level}级生效",
+    "params": "{position},{level}",
+    "category": "enhancement",
+    "note": "Secondary note: threshold belongs to the ordered position, not the effect."
+  },
+  {
+    "key": "reactor.purchase_hover",
+    "text": "购买 {count} 级\n合计 {cost} 铀\n{effects}",
+    "params": "{count},{cost},{effects}",
+    "category": "reactor",
+    "note": "Bounded primary purchase quote; full rules remain in upgrade details."
+  },
+  {
+    "key": "reactor.purchase_energy",
+    "text": "能源 {current} → {next}",
+    "params": "{current},{next}",
+    "category": "reactor",
+    "note": "Capacity return in a purchase quote."
+  },
+  {
+    "key": "main.resource_pickup_small",
+    "text": "少于1 {id} · 已拾取",
+    "params": "{id}",
+    "category": "main",
+    "note": "Positive credited amount below one; internal fractions are retained."
+  },
+  {
+    "key": "main.resource_pickup_none",
+    "text": "{id} · 已拾取",
+    "params": "{id}",
+    "category": "main",
+    "note": "Do not invent a positive gain when no currency was credited."
+  },
+  {
+    "key": "crew.current_assignment",
+    "text": "当前岗位：{target}",
+    "params": "target",
+    "category": "crew",
+    "note": "实际已分配岗位，与待确认选择区分"
+  },
+  {
+    "key": "crew.confirm_target",
+    "text": "分配到{target}",
+    "params": "target",
+    "category": "crew",
+    "note": "按钮显示待确认岗位"
   }
 ]

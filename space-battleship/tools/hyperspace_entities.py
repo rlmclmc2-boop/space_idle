@@ -207,10 +207,13 @@ def validate_config(c):
     for table, field in [('affixes','ranges'),('legendary_effects','parameters')]:
         for row in c[table].values():
             if row['weapon'] not in ['','laser','missile','cannon','longLaser']:raise ValueError('Unsupported weapon binding')
-            for low,high in row[field].values():
-                if not finite(low) or not finite(high) or low<0 or high<low or math.ceil(low/c['value_precision']-1e-7) > math.floor(high/c['value_precision']+1e-7):raise ValueError('Invalid/empty quantized parameter range')
+            for key,(low,high) in row[field].items():
+                step = row['constants']['reduction_precision'] if table == 'legendary_effects' and row is c['legendary_effects']['drone_master'] and key == 'maximum_reduction' else c['value_precision']
+                if not finite(step) or step<=0 or not finite(low) or not finite(high) or low<0 or high<low or math.ceil(low/step-1e-7) > math.floor(high/step+1e-7):raise ValueError('Invalid/empty quantized parameter range')
+                if table == 'legendary_effects' and row is c['legendary_effects']['drone_master'] and key == 'maximum_reduction' and any(abs(bound/step-round(bound/step))>1e-7 for bound in (low,high)):raise ValueError('Master endpoints must be actual quantized outcomes')
     for e, row in c['legendary_effects'].items():
         for key,v in row['constants'].items():
+            if key == 'reduction_precision' and (not finite(v) or not 0 < v <= 1):raise ValueError('Invalid actual reduction precision')
             if key in ['period','cooldown','delay','absorption_duration'] and v<=0:raise ValueError('Invalid effect timing')
             if key in ['spawn_probability','blast_fraction'] and not 0<=v<=1:raise ValueError('Invalid effect probability/fraction')
             if key in ['kill_spawns','nearby_targets','maximum_stacks','attack_period','maximum_cannon_sources','stack_limit'] and v<0:raise ValueError('Invalid effect count')

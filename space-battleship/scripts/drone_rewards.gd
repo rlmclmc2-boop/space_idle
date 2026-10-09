@@ -25,7 +25,7 @@ static func legendary(rng: RandomNumberGenerator,c: Dictionary,weapon: String) -
 	var key: String=keys[rng.randi_range(0,keys.size()-1)]
 	var parameters: Dictionary={}
 	for parameter in c.legendary_effects[key].parameters:
-		parameters[parameter]=R.quantized(rng,c.legendary_effects[key].parameters[parameter],float(c.value_precision))
+		parameters[parameter]=R.quantized(rng,c.legendary_effects[key].parameters[parameter],C.parameter_precision(c,key,parameter))
 	return {"effect_id":key,"parameters":parameters}
 
 static func count_slots(rng: RandomNumberGenerator,maximum: int,chance: float,factor: float) -> int:

@@ -9640,6 +9640,48 @@
       "params": [
         "count"
       ]
+    },
+    "enhance.effect.inactive": {
+      "params": []
+    },
+    "enhance.effect.position_requirement": {
+      "params": [
+        "position",
+        "level"
+      ]
+    },
+    "reactor.purchase_hover": {
+      "params": [
+        "count",
+        "cost",
+        "effects"
+      ]
+    },
+    "reactor.purchase_energy": {
+      "params": [
+        "current",
+        "next"
+      ]
+    },
+    "main.resource_pickup_small": {
+      "params": [
+        "id"
+      ]
+    },
+    "main.resource_pickup_none": {
+      "params": [
+        "id"
+      ]
+    },
+    "crew.current_assignment": {
+      "params": [
+        "target"
+      ]
+    },
+    "crew.confirm_target": {
+      "params": [
+        "target"
+      ]
     }
   },
   "bindings": {

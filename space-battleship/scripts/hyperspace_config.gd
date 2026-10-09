@@ -8,6 +8,9 @@ static func load_config() -> Dictionary:
 		return {}
 	return parsed
 
+static func parameter_precision(c: Dictionary,effect_id: String,key: String) -> float:
+	return float(c.legendary_effects.drone_master.constants.reduction_precision) if effect_id=="drone_master" and key=="maximum_reduction" else float(c.value_precision)
+
 static func valid(c: Dictionary) -> bool:
 	if not Entity.output_valid("hyperspace_config.json",c) or c.get("version")!=2:return false
 	for key in ["energy_rate","energy_cap","ticket","minimum_duration","modernization_base_coefficient","auto_duration_crew_base","auto_ticket_crew_base","modernization_legendary_multiplier"]:
@@ -52,10 +55,15 @@ static func valid(c: Dictionary) -> bool:
 		if not row is Dictionary or not row.get("ranges") is Dictionary or row.ranges.is_empty() or not row.get("amplified") is bool or not row.get("weapon") in ["","laser","missile","cannon","longLaser"]:return false
 		for tier in row.ranges:
 			if not str(tier).is_valid_int() or int(tier)<1 or int(tier)>5 or not quantized_range(row.ranges[tier],float(c.value_precision)):return false
-	for row in c.legendary_effects.values():
+	for effect_id in c.legendary_effects:
+		var row=c.legendary_effects[effect_id]
 		if not row is Dictionary or not row.get("weapon") is String or not row.get("parameters") is Dictionary or not row.get("constants") is Dictionary:return false
-		for bounds in row.parameters.values():
-			if not quantized_range(bounds,float(c.value_precision)):return false
+		for key in row.parameters:
+			var precision=row.constants.get("reduction_precision",c.value_precision) if effect_id=="drone_master" and key=="maximum_reduction" else c.value_precision
+			if not number(precision) or float(precision)<=0 or not quantized_range(row.parameters[key],float(precision)):return false
+			if effect_id=="drone_master" and key=="maximum_reduction":
+				for bound in row.parameters[key]:
+					if absf(float(bound)/float(precision)-roundf(float(bound)/float(precision)))>0.0000001:return false
 		if row.has("stored_parameter_ranges"):
 			if not row.stored_parameter_ranges is Dictionary:return false
 			for key in row.stored_parameter_ranges:
@@ -64,6 +72,7 @@ static func valid(c: Dictionary) -> bool:
 		var constants:Dictionary=c.legendary_effects[id].constants
 		for key in constants:
 			var value=constants[key]
+			if key=="reduction_precision" and (not number(value) or value<=0 or value>1):return false
 			if key in ["delay","cooldown","period","absorption_duration"] and (not number(value) or value<=0):return false
 			if key in ["spawn_probability","blast_fraction"] and (not number(value) or value<0 or value>1):return false
 			if key in ["kill_spawns","nearby_targets","maximum_stacks","attack_period","maximum_cannon_sources","stack_limit"] and (not integer(value) or value<0):return false

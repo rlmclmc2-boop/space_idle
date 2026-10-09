@@ -13,6 +13,14 @@ const MODULE_COLORS := {"weapons":Color("dba46c"),"defence":Color("83cfcb"),"sme
 const MODULE_ICONS := {"weapons":preload("res://assets/ui/reactor/weapon.svg"),"defence":preload("res://assets/ui/reactor/defence.svg"),"smelting":preload("res://assets/ui/reactor/smelting.svg"),"condensation":preload("res://assets/ui/reactor/condensation.svg")}
 const BAY_HEIGHT := 220
 
+class PurchaseButton extends Button:
+	func _make_custom_tooltip(for_text: String) -> Object:
+		var content:Control=EnhancementTooltip.content(for_text)
+		var label:Label=content.get_child(0)
+		label.custom_minimum_size.x=460
+		label.add_theme_constant_override("line_spacing",4)
+		return content
+
 var host: Node
 var strong_font: FontVariation
 var room: TextureRect
@@ -34,6 +42,7 @@ var details_button: Button
 var details_dialog: AcceptDialog
 var details_text: RichTextLabel
 var affordable_count := 0
+var purchase_details:Dictionary={}
 var scroll_hint: Label
 var allocation_label: Label
 var allocation_hint: Label
@@ -230,7 +239,7 @@ func setup(owner_ui: Node) -> void:
 	add_child(upgrade_group)
 	for index in 3:
 		var mode: String = ["x1","x10","MAX"][index]
-		var button := Button.new()
+		var button := PurchaseButton.new()
 		button.text = "" if mode == "MAX" else UIText.t("reactor.upgrade.x10" if mode == "x10" else "reactor.upgrade.x1")
 		button.position = Vector2(763+index*181,190)
 		button.size = Vector2(170,86)
@@ -597,8 +606,16 @@ func refresh_upgrade_preview() -> void:
 		for key in quote.effects:
 			var effect: Dictionary = quote.effects[key]
 			details += "\n"+UIText.t("reactor.purchase_effect",{"module":UIText.data_text("reactor",key),"current":percent_text(N.multiply(N.subtract(effect.current,1),100)),"next":percent_text(N.multiply(N.subtract(effect.next,1),100)),"gain":percent_text(effect.gain)})
-		details += "\n"+UIText.t("reactor.purchase_scope")
-		host.set_ui_value(upgrade_buttons[mode],"tooltip_text",details)
+		purchase_details[mode]=details
+		var hover_gains:=PackedStringArray()
+		for key in quote.effects:
+			var gain:float=float(quote.effects[key].gain)
+			if gain<=0.0:continue
+			hover_gains.append(UIText.t("reactor.purchase_small_gain",{"module":UIText.data_text("reactor",key)}) if gain<1.0 else UIText.t("reactor.purchase_gain",{"module":UIText.data_text("reactor",key),"gain":percent_text(gain)}))
+		var returns:=PackedStringArray([UIText.t("reactor.purchase_energy",{"current":NumberFormat.compact(I.as_growth(quote.capacity)),"next":NumberFormat.compact(I.as_growth(quote.next_capacity))})])
+		for index in range(0,hover_gains.size(),2):returns.append(hover_gains[index]+(" · "+hover_gains[index+1] if index+1<hover_gains.size() else ""))
+		var hover:=UIText.t("reactor.purchase_hover",{"count":str(count),"cost":purchase_cost_text(quote.cost,false),"effects":"\n".join(returns)})
+		host.set_ui_value(upgrade_buttons[mode],"tooltip_text",hover)
 		if mode == "x1":
 			var gains := PackedStringArray()
 			for key in ["weapons","defence","smelting","condensation"]:
@@ -623,7 +640,7 @@ func show_upgrade_details() -> void:
 	var blocks := PackedStringArray()
 	var scope:=UIText.t("reactor.purchase_scope")
 	for mode in ["x1","x10","MAX"]:
-		blocks.append(upgrade_buttons[mode].text.get_slice("\n",0)+"\n"+upgrade_buttons[mode].tooltip_text.trim_suffix("\n"+scope))
+		blocks.append(upgrade_buttons[mode].text.get_slice("\n",0)+"\n"+str(purchase_details.get(mode,"")))
 	blocks.append(scope)
 	blocks.append(UIText.t("reactor.upgrade_idle" if I.compare(host.game.reactor_allocated(),0)==0 else "reactor.upgrade_shares"))
 	details_text.text="\n\n".join(blocks)
