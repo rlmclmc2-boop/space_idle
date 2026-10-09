@@ -13,7 +13,8 @@
     "2d8943e add-affix unavailable state names actual quality capacity or used/cap; classification rules retained",
     "Coherent cultivation/module flow: visible owned/max slots; dismantle receipt to existing carrier installation; actual applied system change; visible conversion goal and retained-capacity confirmation; first module level1 and idempotent obtained-zero normalization",
     "Latest rule correction: every obtained copy credits full base experience; first copy reaches1, second reaches2, then original level2+ thresholds resume; shared quote/save threshold authority",
-    "Integer module XP gain/accumulation/ceil requirements share settlement and validation; actionable carrier picker and existing no-slot forge link preserve chosen carrier without automatic equipment/purchase"
+    "Integer module XP gain/accumulation/ceil requirements share settlement and validation; actionable carrier picker and existing no-slot forge link preserve chosen carrier without automatic equipment/purchase",
+    "Subsequent candidate only: player armour/shield HUD scalar formatting closes small20.8 display while retaining suffixes; defense values/bar ratios unchanged"
   ],
   "verification": {
     "main_ui_checks": 97,
@@ -53,11 +54,12 @@
     "full_attribute_checks": 6,
     "add_affix_availability_checks": 7,
     "white_cultivation_module_checks": 46,
-    "cultivation_flow_gui": "Pending parent targeted acceptance; no new natural-play round started"
+    "cultivation_flow_gui": "Pending parent targeted acceptance; no new natural-play round started",
+    "player_defence_hud_number_checks": 8
   },
   "next": [
-    "Parent integrates and verifies actual integer XP progress, post-dismantle carrier picker, zero-slot cause/quoted existing forge link, empty-carrier explanation and corrected first-module preview",
-    "Parent finishes batch GUI acceptance before separately authorized fresh first20 round; worker does not start play"
+    "Parent keeps fixed play candidate46829d6c unchanged while independent fresh players run",
+    "Parent queues this HUD display-only correction for a subsequent candidate; verify observed shield21/1.37K"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
   "last_code_commit": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",

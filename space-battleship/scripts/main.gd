@@ -2784,11 +2784,15 @@ func draw_vertical_battle_hud() -> void:
 	if game.state==BattleGame.State.COMBAT and game.encounter_tier()!="normal":
 		text_at(UIText.t("battle.encounter_tier."+game.encounter_tier()),Vector2(268,129),14,ORANGE)
 	box(Rect2(30,1132,552,114),Color("101f2e"),LINE)
-	text_at(UIText.t("battle.hp",{"current_hp":number(game.player.armour),"max_hp":number(game.stat("armour"))}),Vector2(44,1162),15,INK)
+	text_at(player_defence_hud_text("armour",game.player.armour,game.stat("armour")),Vector2(44,1162),15,INK)
 	bar(Rect2(44,1174,524,7),GrowthNumber.ratio(game.player.armour,GrowthNumber.maximum(1,game.stat("armour"))),ORANGE)
 	if game.profile.unlocked.has("shield"):
-		text_at(UIText.t("battle.shield",{"current_shield":number(game.player.shield),"max_shield":number(game.max_shield())}),Vector2(44,1207),15,CYAN)
+		text_at(player_defence_hud_text("shield",game.player.shield,game.max_shield()),Vector2(44,1207),15,CYAN)
 		bar(Rect2(44,1219,524,7),GrowthNumber.ratio(game.player.shield,GrowthNumber.maximum(1,game.max_shield())),CYAN)
+
+func player_defence_hud_text(key:String,current,capacity) -> String:
+	var values:Dictionary={"current_hp":NUMBER_FORMAT.scalar(current),"max_hp":NUMBER_FORMAT.scalar(capacity)} if key=="armour" else {"current_shield":NUMBER_FORMAT.scalar(current),"max_shield":NUMBER_FORMAT.scalar(capacity)}
+	return UIText.t("battle.hp" if key=="armour" else "battle.shield",values)
 
 func enhancement_defense_hud_state() -> Array:
 	# Small read-only runtime projection. Include ownership and debt so a pool
