@@ -1,12 +1,12 @@
 {
-  "state": "working; overall performance unaccepted",
+  "state": "overall performance unaccepted; examined rendering candidates rejected",
   "branch": "perf/whole-game-20261009",
   "code_ref": "46829d6cdeff62d08474546f875d6d2b8e848367",
   "qa_ref": "602024d881518770e7b265b5743206412bd37712",
   "qa_path": "test/checkpoints/parent/round2-20261009/progress.json",
   "qa_sha256": "bdc03716a07667d6067e22ddbbba6b4afadfbc0f4e4cc6abd534aab3dd6f770e",
   "qa_provenance": "Parent natural round2 checkpoint,stage7/group4 Frigate;resources unchanged except one real legal upgrade on isolated in-memory copy. Earlier20/1 evidence remains completed20->brief21->20,not pure<=20.",
-  "last_graphics_success_utc": "2026-10-09T14:29:39.077440Z",
+  "last_graphics_success_utc": "2026-10-09T14:48:00.933663Z",
   "environment": "Godot4.6.3 GL Compatibility / llvmpipe; no hardware GPU; not user49FPS acceptance.",
   "completed": [
     "Natural checkpoint shortwindow exit0: guardintermission20/1, host5.31ms anddrawcommands0.082ms versusframe68.23ms; originalQAfileunchanged.",
@@ -15,7 +15,9 @@
     "Workspace retained raster diagnostic keeps sameGUI nodes/profile:210->126calls,43.2/47.6ms controls versus35.4ms candidate. Rootimage byteerror<=10; input,invalidation andcapture183ms stillunaccepted.",
     "Workspace diagnostic uses built-in premultiplied material and four native strips; originals remain live until one unchanged generation completes. Actual GUI selection/popup/focus/wheel, layout, new/moved controls and teardown pass. Overflow clipping differs by one pixel, so overflowing ScrollContainers remain fully live. First preparation-frame max84ms, all update-capture-frame max120ms; old183ms spike reduced, not eliminated.",
     "Stage7 source46829/QA6020:actualGUIupgrade spendsnormalresources,level/cardfeedback immediate live fallback; number redraw captures1strip andupgrade2strips. Workspace number/upgrade cached-versus-live images pixelidentical. Ownerexit restores actual original32bitmask. Initial8 allocation/captureframes max53.25ms;all recaptureframes max106.96ms.",
-    "Frequent changing presentation scope:1second quiet eligibility produces0capture/0retainedframes;no optimizationbenefit. Quiet351->277draws but interleaved means45.5/38.7,44.8/74.9,67.8/38.7ms are inconsistent. Reject cache as production/overall repair;keep diagnostic only anddo not repeat this candidate as proven gain."
+    "Frequent changing presentation scope:1second quiet eligibility produces0capture/0retainedframes;no optimizationbenefit. Quiet351->277draws but interleaved means45.5/38.7,44.8/74.9,67.8/38.7ms are inconsistent. Reject cache as production/overall repair;keep diagnostic only anddo not repeat this candidate as proven gain.",
+    "NaturalQA7 45steps/0.75s remain7/group4 with9enemies and1->11shots:Canvas26.2-39.8ms,transparent3D7.1-11.4ms;bodyalreadyopaque,20shipcalls/4112primitives/1bake;other3Dviewsdisabled normally. Plain46829sourcehasno draw-CPUinstrumentation;empty0meter isnotzero work.",
+    "Shield uniformzero-hit-work branch finite0/1impacttest exit0;allrequiredvisuals retained/profileunchanged. Cleanreturn47.997ms versuscandidate48.371ms=no gain;reject andrestore. Firstcontrol661ms max withhostdelay cannotprove speedup."
   ],
-  "next": "Continue remaining rendering attribution onsame source46829/naturalQA7 using existing builtin --gpu-profile shortwindow,without repeating workspace measurements. No main.gd integration orproduction enable;fixedparent46829 unchanged;parentowns overall/hardware acceptance."
+  "next": "No qualified whole-game rendering change identified after cache/transparent-source checks. Need authorizedcloud targetGPU/workload cost evidence to choose another high-impact quality-preserving direction;currentllvmpipe cannotprove Windows49FPS fix. Do notrepeat rejectedroutes oruseusercomputer. Main/defaults/fixed46829 unchanged."
 }
