@@ -396,7 +396,7 @@ func refresh() -> void:
 		put(stage_state,"text",t("complete",{"level":completion_level}) if completion_key==key and c.completed>0 else row.status.text)
 		put(stage_count,"text",t("built",{"count":c.built,"total":c.parts.size()}))
 		put(stage_percent,"text",row.percent.text)
-		put(stage_points,"text",t("next_points" if completion_key==key and c.completed>0 else "points",{"points":NUMBER.compact(points),"required":NUMBER.compact(required)}))
+		put(stage_points,"text",t("next_points" if completion_key==key and c.completed>0 else "points",{"points":NUMBER.scalar(points),"required":NUMBER.scalar(required)}))
 		put(stage_bar,"value",fraction*100)
 		var research_rate:=game.research_rate(key)
 		var seconds:=ceili(maxf(0,required-points)/research_rate) if research_rate>0 else 0
