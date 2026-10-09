@@ -1,7 +1,7 @@
 # Fresh Sol player growth checkpoint
 
 - Played build: `4704bfa4fbc4e136959d4158907fa3079a49d7bc` (tree `732386aa0fd60a658d32f4d931302a31f1350a99`).
-- QA-only game save: `fresh-sol-player-progress.json`, manually saved 2026-10-09 07:08 UTC, SHA-256 `01a055802fbf5c37dfc53299c40f696a850068f6ea09fcf80c0b672fc25b5093`.
+- QA-only game save: `fresh-sol-player-progress.json`, manually saved 2026-10-09 07:05:39 UTC, SHA-256 `01a055802fbf5c37dfc53299c40f696a850068f6ea09fcf80c0b672fc25b5093`.
 - This is the isolated fresh cloud playtest save. It contains game state only. No resource injection, unlock injection, ideal affix generation or imported older QA save was used.
 - Main progression: stages 1–19 cleared; stage 20 in progress, group index 3. Entering stage 20 has not unlocked its ship or second crew member.
 - Current ship UI: 飞燕护卫舰; weapons cannon 95, continuous beam 100, homing missile 97, pulse laser 91; composite armour 122, shield 74.
