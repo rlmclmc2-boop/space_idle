@@ -15,7 +15,8 @@
     "Latest rule correction: every obtained copy credits full base experience; first copy reaches1, second reaches2, then original level2+ thresholds resume; shared quote/save threshold authority",
     "Integer module XP gain/accumulation/ceil requirements share settlement and validation; actionable carrier picker and existing no-slot forge link preserve chosen carrier without automatic equipment/purchase",
     "Subsequent candidate only: player armour/shield HUD scalar formatting closes small20.8 display while retaining suffixes; defense values/bar ratios unchanged",
-    "Subsequent candidate: workshop construction/next-round points use ordinary half-unit formatting, preserving actual research accumulation and ETA"
+    "Subsequent candidate: workshop construction/next-round points use ordinary half-unit formatting, preserving actual research accumulation and ETA",
+    "Subsequent candidate: successful native slot-dropdown refit updates selected comparison slot; rejected refit and later explicit selection retain their semantics"
   ],
   "verification": {
     "main_ui_checks": 97,
@@ -57,11 +58,12 @@
     "white_cultivation_module_checks": 46,
     "cultivation_flow_gui": "Pending parent targeted acceptance; no new natural-play round started",
     "player_defence_hud_number_checks": 8,
-    "research_progress_number_checks": 8
+    "research_progress_number_checks": 8,
+    "refit_comparison_focus_checks": 8
   },
   "next": [
     "Parent keeps fixed play candidate46829d6c unchanged",
-    "Parent queues HUD and research progress display fixes for subsequent candidate; GUI checks shield21/1.37K and research1.5/60"
+    "Parent queues three scoped fixes for subsequent candidate: player HUD half units, workshop research progress half units, native dropdown-to-comparison target"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
   "last_code_commit": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
