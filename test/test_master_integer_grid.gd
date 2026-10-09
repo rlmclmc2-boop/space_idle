@@ -19,6 +19,8 @@ func _initialize() -> void:
  check(C.parameter_precision(c,"higgs_cannon","damage_bonus")==0.001,"Other legendary and ordinary affix precision remains unchanged")
  var bad:Dictionary=c.duplicate(true);bad.legendary_effects.drone_master.constants.reduction_precision=0
  check(not C.valid(bad),"Zero master precision is rejected before division")
+ bad=c.duplicate(true);bad.legendary_effects.drone_master.parameters.maximum_reduction[1]=0.599
+ check(not C.valid(bad),"Config rejects a non-grid maximum rather than advertising an impossible guarantee")
  var rng=RandomNumberGenerator.new();rng.seed=119
  var forced:Dictionary=c.duplicate(true);forced.legendary_effects={"drone_master":c.legendary_effects.drone_master}
  var seen:Dictionary={};var on_grid:=true

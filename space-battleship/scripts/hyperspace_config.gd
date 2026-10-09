@@ -61,6 +61,9 @@ static func valid(c: Dictionary) -> bool:
 		for key in row.parameters:
 			var precision=row.constants.get("reduction_precision",c.value_precision) if effect_id=="drone_master" and key=="maximum_reduction" else c.value_precision
 			if not number(precision) or float(precision)<=0 or not quantized_range(row.parameters[key],float(precision)):return false
+			if effect_id=="drone_master" and key=="maximum_reduction":
+				for bound in row.parameters[key]:
+					if absf(float(bound)/float(precision)-roundf(float(bound)/float(precision)))>0.0000001:return false
 		if row.has("stored_parameter_ranges"):
 			if not row.stored_parameter_ranges is Dictionary:return false
 			for key in row.stored_parameter_ranges:

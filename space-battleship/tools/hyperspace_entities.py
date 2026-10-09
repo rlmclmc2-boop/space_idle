@@ -210,6 +210,7 @@ def validate_config(c):
             for key,(low,high) in row[field].items():
                 step = row['constants']['reduction_precision'] if table == 'legendary_effects' and row is c['legendary_effects']['drone_master'] and key == 'maximum_reduction' else c['value_precision']
                 if not finite(step) or step<=0 or not finite(low) or not finite(high) or low<0 or high<low or math.ceil(low/step-1e-7) > math.floor(high/step+1e-7):raise ValueError('Invalid/empty quantized parameter range')
+                if table == 'legendary_effects' and row is c['legendary_effects']['drone_master'] and key == 'maximum_reduction' and any(abs(bound/step-round(bound/step))>1e-7 for bound in (low,high)):raise ValueError('Master endpoints must be actual quantized outcomes')
     for e, row in c['legendary_effects'].items():
         for key,v in row['constants'].items():
             if key == 'reduction_precision' and (not finite(v) or not 0 < v <= 1):raise ValueError('Invalid actual reduction precision')
