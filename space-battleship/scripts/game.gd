@@ -71,6 +71,7 @@ var enemies: Array[Dictionary] = []
 var projectiles: Array[Dictionary] = []
 var drops: Array[Dictionary] = []
 var player: Dictionary = {}
+var reactor_vitals = preload("res://scripts/reactor_vitals.gd").new()
 var cooldowns: Dictionary = {}
 var since_hit := 100.0
 var paused := false
@@ -1189,6 +1190,13 @@ func upgrade_reactor(amount: int) -> bool:
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
 	return true
 
+func capture_reactor_vitals() -> Dictionary:
+	return {"armour":player.armour,"shield":player.shield,"armour_max":stat("armour"),"shield_max":max_shield()}
+
+func remap_reactor_vitals(previous: Dictionary) -> void:
+	player.armour = reactor_vitals.remap("armour",previous.armour,previous.armour_max,stat("armour"))
+	player.shield = reactor_vitals.remap("shield",previous.shield,previous.shield_max,max_shield())
+
 func set_reactor_allocation(key: String, value) -> bool:
 	if value is float and is_finite(value) and value>=0 and value<=float(RI.INT_LIMIT):value=int(floorf(value))
 	if not reactor_unlocked() or not reactor_module_unlocked(key) or not RI.valid(value):return false
@@ -1196,13 +1204,13 @@ func set_reactor_allocation(key: String, value) -> bool:
 	var allowed = RI.add(RI.subtract(reactor_capacity(),reactor_allocated()),active.get(key,0))
 	var next = RI.minimum(RI.normalize(value),allowed)
 	if RI.compare(next,active.get(key,0))==0 and active==profile.reactorAllocation:return false
+	var previous_vitals := capture_reactor_vitals()
 	profile.reactorAllocation=active
 	profile.reactorAllocation[key] = next
 	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
+	remap_reactor_vitals(previous_vitals)
 	if key == "defence":
-		player.armour = N.minimum(player.armour,stat("armour"))
-		player.shield = N.minimum(player.shield,stat("shield"))
 		event.emit("equipment_stats",{"category":"defence"})
 	elif key == "weapons":event.emit("equipment_stats",{"category":"weapons"})
 	save_dirty = true
@@ -1220,11 +1228,11 @@ func equalize_reactor_allocation() -> bool:
 	for index in modules.size():
 		next[modules[index]] = RI.add(share,1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
+	var previous_vitals := capture_reactor_vitals()
 	profile.reactorAllocation=next
 	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
-	player.armour = N.minimum(player.armour,stat("armour"))
-	player.shield = N.minimum(player.shield,stat("shield"))
+	remap_reactor_vitals(previous_vitals)
 	save_dirty = true
 	event.emit("equipment_stats",{"category":"weapons"})
 	event.emit("equipment_stats",{"category":"defence"})
@@ -1932,6 +1940,7 @@ func max_shield() -> Variant:
 
 func reset_player() -> void:
 	invalidate_stat_cache()
+	reactor_vitals.clear()
 	refit_health_ratios = {"armour":1.0,"shield":1.0}
 	jewel_repeats.clear()
 	jewel_defence_times.clear()

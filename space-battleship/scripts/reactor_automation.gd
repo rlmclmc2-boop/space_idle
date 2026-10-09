@@ -48,8 +48,9 @@ static func apply(g,ratio:Dictionary,remember:bool=true) -> bool:
  if next==g.profile.reactorAllocation:
   if remember:notify(g,{"ratio":true})
   return true
+ var previous_vitals:Dictionary=g.capture_reactor_vitals()
  g.profile.reactorAllocation=next;g.invalidate_stat_cache()
- g.player.armour=GrowthNumber.minimum(g.player.armour,g.stat("armour"));g.player.shield=GrowthNumber.minimum(g.player.shield,g.max_shield())
+ g.remap_reactor_vitals(previous_vitals)
  g.event.emit("equipment_stats",{"category":"weapons"});g.event.emit("equipment_stats",{"category":"defence"})
  notify(g,{"ratio":true});return true
 static func maintain(g) -> void:
