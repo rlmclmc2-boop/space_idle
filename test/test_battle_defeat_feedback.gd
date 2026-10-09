@@ -61,4 +61,27 @@ func _initialize()->void:
  g.hyperspace_totals().legendary.drone_rebuild={"constants":{"maximum_stacks":1},"parameters":{"damage_and_defence_bonus":0.0}}
  g.hit_player(N.multiply(N.add(g.player.armour,g.player.shield),1000),2)
  check(reports.is_empty() and g.state==g.State.COMBAT and N.compare(g.player.armour,0)>0 and g.drone_combat.rebuild_stacks==1,"successful drone rebuild never reports defeat")
+ # The ordinary notification path must remain usable without replacing the result.
+ var ui=preload("res://scripts/main.gd").new();ui.game=g;ui.help_open=false;g.pending_unlocks.clear()
+ ui.defeat_recall=Label.new();ui.add_child(ui.defeat_recall)
+ ui.on_event("battle_defeated",{"manual":false,"remaining":5});var result=ui.defeat_notice
+ ui.on_event("retreat",{"to":100})
+ ui.on_event("save_success",{})
+ ui.on_event("collect",{"id":"1","amount":10})
+ var notices=ui.battle_notices()
+ check(notices.size()==3 and notices[0].text==result and notices[1].text==UIText.t("save.success") and notices[2].resources==["1"],"defeat, save and ordinary resource notices coexist")
+ ui.toast("ordinary later notice");ui.advance_defeat_notice(3.0)
+ check(ui.battle_notices()[0].text==result and ui.defeat_notice_time==0.5,"ordinary toast cannot replace important result during readable interval")
+ ui.help_open=true;ui.advance_defeat_notice(10);ui.help_open=false
+ check(ui.defeat_notice_time==0.5,"help does not consume hidden result readable time")
+ g.pending_unlocks.append("fixture");ui.advance_defeat_notice(10);g.pending_unlocks.clear()
+ check(ui.defeat_notice_time==0.5,"unlock overlay does not consume hidden result readable time")
+ ui.advance_defeat_notice(0.5)
+ check(ui.defeat_notice_time==0 and ui.battle_notices()[0].text=="ordinary later notice","result expires independently after3.5seconds")
+ check(ui.defeat_recall.tooltip_text.contains(result),"last defeat remains available by hover after toast expiry")
+ var recall=ui.defeat_recall
+ ui.on_event("battle_defeated",{"manual":true,"remaining":3});ui.toast("ordinary return notice")
+ check(ui.battle_notices()[0].text.begins_with("异空间战败"),"manual result also survives ordinary return toast")
+ check(ui.defeat_recall==recall and ui.defeat_recall.tooltip_text.contains("异空间战败") and not ui.defeat_recall.tooltip_text.contains("主线战败"),"latest defeat replaces single recall entry without rebuilding control")
+ ui.free()
  print("Battle defeat feedback: %d checks, %d failures"%[checks,failures]);call_deferred("quit",1 if failures else 0)

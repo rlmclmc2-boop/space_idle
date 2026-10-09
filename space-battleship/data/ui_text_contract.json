@@ -8767,6 +8767,27 @@
     },
     "battle.defeat.cause.unknown": {
       "params": []
+    },
+    "battle.defeat.recall": {
+      "params": []
+    },
+    "battle.defeat.recent": {
+      "params": [
+        "place",
+        "result"
+      ]
+    },
+    "battle.defeat.main_place": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "battle.defeat.manual_place": {
+      "params": [
+        "stage",
+        "wave"
+      ]
     }
   },
   "bindings": {

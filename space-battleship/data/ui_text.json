@@ -16339,5 +16339,33 @@
     "params": "",
     "category": "battle",
     "note": "当前波已记录的护盾/生命损失，不含完全吸收，不推算DPS；延迟来源不猜类型"
+  },
+  {
+    "key": "battle.defeat.recall",
+    "text": "败因",
+    "params": "",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.recent",
+    "text": "最近一次战败 · {place}\n{result}",
+    "params": "{place},{result}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.main_place",
+    "text": "第{stage}关 · 遭遇{wave}",
+    "params": "{stage},{wave}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
+  },
+  {
+    "key": "battle.defeat.manual_place",
+    "text": "挑战第{stage}层 · 遭遇{wave}",
+    "params": "{stage},{wave}",
+    "category": "battle",
+    "note": "仅本次运行最近一次战败，现有战场状态栏悬停回看，无永久历史"
   }
 ]
