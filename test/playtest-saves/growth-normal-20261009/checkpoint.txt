@@ -1,4 +1,4 @@
-Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 gameplaysource unchanged; independentnormalnewsave originalcloud Xorg:99 x1.
-Checkpoint24 2026-10-09 16:04:32.643445+00:00 pausedMAIN10wave7, FIRSTpassed10/6 afterdualarmor/energybeams; last2blueenemy actual24.3Marmorenergyresist ->firsthybrid2beams1rail, normalgear. First10/7 HP38.6/44M andiron104K. Reactor24 ordinaryupgrade, continuednormalgear.
-FactoryactualbeforeAIbuy furnace21weapon24armor21, AI13 allocation3/6/4. VisibleMAX+6 normalresourcepurchase selected, extra4weapon2armorallocated (AI19 expected; actualimage retainedprivate). Enhancement1burst/memory, stationOFF.
-Actualmouse/manualsave/screenshot successfuloriginalenv. Nextcontinue10through20stop/save/close. Noreset/injections/olddata/gameplaysourceknowledge. Completed1-9+A1/A2.
+Frozen candidate 46829d6cdeff62d08474546f875d6d2b8e848367 sourceunchanged, independentnormalnewsave originalcloud Xorg:99 x1.
+Checkpoint25 2026-10-09 16:13:11.222550+00:00 pausedMAIN10Boss9/9 firstencounter, completed1-9+A1/A2. ActualBosshover2.4Barmorphysresist/noshield; namehover1.2secnoexplanation, basic/unlockguideviewedwithoutfindingBossentryinviewedcategories. Enhancement1 only114/200fragments ->Lv2unaffordable.
+Normal2energyweapon/armorupgrades, remainingrail->energybeamforBossphysresist. AI19actualverified3furnace10weapon6armor, reactor24 allocation25weapon75def. Enhancement1burst/memory, stationOFF. First10Bossnotyetfailed.
+Mouse/manualsave/screenshotactualsuccessoriginalenv. Nextcontinue10through20stop/save/close. Noreset/injections/olddata/gameplaysourceknowledge.
