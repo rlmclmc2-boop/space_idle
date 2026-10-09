@@ -17801,5 +17801,19 @@
     "params": "{current},{next}",
     "category": "reactor",
     "note": "Capacity return in a purchase quote."
+  },
+  {
+    "key": "main.resource_pickup_small",
+    "text": "少于1 {id} · 已拾取",
+    "params": "{id}",
+    "category": "main",
+    "note": "Positive credited amount below one; internal fractions are retained."
+  },
+  {
+    "key": "main.resource_pickup_none",
+    "text": "{id} · 已拾取",
+    "params": "{id}",
+    "category": "main",
+    "note": "Do not invent a positive gain when no currency was credited."
   }
 ]

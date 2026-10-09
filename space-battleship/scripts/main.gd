@@ -2931,7 +2931,15 @@ func resource_pickup_feedback(info: Dictionary) -> void:
 		floats.append(active)
 	active.amount = GrowthNumber.add(active.amount,info.amount)
 	var caption := UIText.t("main._ready.text_02") if id=="jewel" else UIText.data_text("resources",id)
-	active.text = UIText.t("main.on_event.text_01",{"amount":number(active.amount),"id":caption})
+	# Fragment credits already settle to hundredths. Normalize only this
+	# display sum so 0.3+0.6+0.1 cannot appear just below one whole unit.
+	var display_amount=snappedf(float(active.amount),0.01) if id=="jewel" and not active.amount is Dictionary and float(active.amount)<1e15 else active.amount
+	if GrowthNumber.compare(display_amount,0)<=0:
+		active.text=UIText.t("main.resource_pickup_none",{"id":caption})
+	elif GrowthNumber.compare(display_amount,1)<0:
+		active.text=UIText.t("main.resource_pickup_small",{"id":caption})
+	else:
+		active.text=UIText.t("main.on_event.text_01",{"amount":NUMBER_FORMAT.resource(display_amount),"id":caption})
 	queue_pickup_effect(info,active.color)
 
 func battle_notice_rect(index: int) -> Rect2:

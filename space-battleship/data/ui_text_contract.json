@@ -9662,6 +9662,16 @@
         "current",
         "next"
       ]
+    },
+    "main.resource_pickup_small": {
+      "params": [
+        "id"
+      ]
+    },
+    "main.resource_pickup_none": {
+      "params": [
+        "id"
+      ]
     }
   },
   "bindings": {
