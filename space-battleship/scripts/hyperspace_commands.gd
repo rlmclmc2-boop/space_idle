@@ -205,11 +205,9 @@ func modernization_text(request_data: Dictionary) -> String:
  var projected: Dictionary=d.duplicate(true);projected.level=target
  var effects: Array[String]=[]
  for a in d.affixes+([d.ultimate_affix] if d.ultimate and not d.ultimate_affix.is_empty() else []):
-  var before: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,h().config)
-  var after: float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,projected,h().config)
-  var before_text: String=t("times",{"value":str(int(before))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(before*100.0)})
-  var after_text: String=t("times",{"value":str(int(after))}) if str(a.key) in panel.COUNT_AFFIXES else t("percent",{"value":"%.1f"%(after*100.0)})
-  effects.append(t("modernize_effect",{"name":panel.affix_name(str(a.key)),"before":before_text,"after":after_text}))
+  var before:Dictionary=panel.affix_display(a,d)
+  var after:Dictionary=panel.affix_display(a,projected)
+  effects.append(t("modernize_effect",{"name":before.name,"before":before.value_text,"after":after.value_text}))
  return t("modernize_preview",{"before":str(int(d.level)),"after":str(target),"effects":"\n".join(effects) if not effects.is_empty() else t("modernize_no_affixes")})
 func received_materials_text(materials: Dictionary) -> String:
  var values: Array[String]=[]

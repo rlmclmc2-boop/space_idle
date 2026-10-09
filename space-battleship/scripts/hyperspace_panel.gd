@@ -523,13 +523,18 @@ func drone_description(d: Dictionary,include_legendary:=true) -> String:
  for key in d.hangings:hangings.append(hanging_name(str(key)))
  lines.append(t("hanging",{"items":" · ".join(hangings) if not hangings.is_empty() else t("no_hangings")}))
  return "\n".join(lines)
-func affix_summary(a:Dictionary,d:Dictionary) -> String:
- var key=str(a.key);var name_text=affix_name(key);var value_text=t("times",{"value":str(int(a.value))}) if key in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(float(a.value)*100.0)})
+func affix_display(a:Dictionary,d:Dictionary) -> Dictionary:
+ var value:float=preload("res://scripts/drone_effect_aggregator.gd").affix_value(a,d,host.game.hyperspace.config)
+ var result:Dictionary={"name":affix_name(str(a.key)),"value_text":t("times",{"value":str(int(value))}) if str(a.key) in COUNT_AFFIXES else t("percent",{"value":"%.1f"%(value*100.0)})}
  if affix_display_provider.is_valid():
   var projection=affix_display_provider.call(a.duplicate(true),d.duplicate(true))
   if projection is Dictionary:
-   value_text=str(projection.get("value_text",value_text));name_text=str(projection.get("name",name_text))
- return t("affix",{"key":name_text,"tier":str(int(a.tier)),"value":value_text,"locked":t("locked") if a.locked else ""})
+   for key in ["name","value_text"]:
+    if projection.has(key):result[key]=str(projection[key])
+ return result
+func affix_summary(a:Dictionary,d:Dictionary) -> String:
+ var projection:=affix_display(a,d)
+ return t("affix",{"key":projection.name,"tier":str(int(a.tier)),"value":projection.value_text,"locked":t("locked") if a.locked else ""})
 func legendary_trigger(id:String) -> String:
  return legendary_help.summary(id)
 func catalog_name(group: String,key: String,fallback: String) -> String:
