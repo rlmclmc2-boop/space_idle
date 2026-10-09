@@ -1,7 +1,8 @@
-Candidate: 46829d6cdeff62d08474546f875d6d2b8e848367
+Candidate gameplay: 46829d6cdeff62d08474546f875d6d2b8e848367, unchanged.
 Independent normal-resource new save. No previous reports, saves, strategy or gameplay source consulted.
 Cloud Linux Xorg :99, software OpenGL, Godot 4.6.3. Audio unverified.
-Checkpoint 1: stage 1 wave 5/5; paused and manually saved through GUI.
-Completed: free laser slots W02/W03; free armor D02; normal W01 upgrade Lv2.
-Next: continue stage 1; inspect new player-visible unlocks and normal upgrade decisions.
-No gameplay blocker. Reach stage 20, save and close; no farming boundary or stage21.
+Checkpoint2 13:34 UTC approx: stage3 wave5/5 paused, manually saved via GUI.
+Completed: stage1; stage2 with first death and ordinary upgrades. ReactorLv3 uniform; W01/W03 railgunLv4, W02 missileLv3, armor/shieldLv3.
+Correction: checkpoint1 screenshot was stage2 wave1, not stage1 wave5 as initial text.
+Next: continue stage3 elite; inspect player-visible unlocks and ordinary progression.
+No gameplay blocker. Reach stage20, save and close; do not farm20 or enter21.
