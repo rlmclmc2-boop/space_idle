@@ -1,8 +1,8 @@
-Candidate gameplay: 46829d6cdeff62d08474546f875d6d2b8e848367, unchanged.
-Independent normal-resource new save. No previous reports, saves, strategy or gameplay source consulted.
-Cloud Linux Xorg :99, software OpenGL, Godot 4.6.3. Audio unverified.
-Checkpoint2 13:34 UTC approx: stage3 wave5/5 paused, manually saved via GUI.
-Completed: stage1; stage2 with first death and ordinary upgrades. ReactorLv3 uniform; W01/W03 railgunLv4, W02 missileLv3, armor/shieldLv3.
-Correction: checkpoint1 screenshot was stage2 wave1, not stage1 wave5 as initial text.
-Next: continue stage3 elite; inspect player-visible unlocks and ordinary progression.
-No gameplay blocker. Reach stage20, save and close; do not farm20 or enter21.
+Candidate gameplay: 46829d6cdeff62d08474546f875d6d2b8e848367 unchanged.
+Independent normal-resource new save; no old reports/saves/strategy or gameplay source used.
+Cloud Linux Xorg :99 software OpenGL Godot4.6.3; audio unverified.
+Checkpoint3: stage6 wave1/9, paused, GUI manual save.
+Completed stage1-5, ordinary retries. AI3: furnace, weapon, armor each1. ReactorLv6 with weapon34%, defense66%, smelt0%; W01 beamLv5 W02 laserLv5 W03railLv4; armorLv5 both.
+Checkpoint1 correction: screenshot stage2 wave1, not stage1wave5.
+Next: stage6 physical-resistant armor+shield; continue normal play and new unlocks.
+Stop at reaching20: save and close, no farming20 or stage21.
