@@ -9083,6 +9083,12 @@
         "gain"
       ]
     },
+    "reactor.capacity_boundary": {
+      "params": []
+    },
+    "reactor.version_note": {
+      "params": []
+    },
     "battle.defeat.main": {
       "params": [
         "cause",

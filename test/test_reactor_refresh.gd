@@ -45,7 +45,8 @@ func run() -> void:
 	var panel=scene.reactor_panel
 	panel.refresh()
 	var slider: HSlider=panel.module_controls.weapons.slider
-	check(panel.upgrade_buttons.x1.text.contains("5") and panel.upgrade_buttons.x1.text.contains("+6"),"Single purchase directly displays its configured fee and new energy")
+	var expected_new_energy := floori(g.reactor_energy(int(g.profile.reactorLevel)+1))-g.reactor_capacity()
+	check(panel.upgrade_buttons.x1.text.contains(panel.purchase_cost_text(g.reactor_upgrade_cost())) and panel.upgrade_buttons.x1.text.contains("+"+str(expected_new_energy)),"Single purchase directly displays its configured fee and new energy")
 	check(panel.upgrade_buttons.x10.tooltip_text.contains("10") and panel.upgrade_buttons.MAX.tooltip_text.contains("收益"),"Batch and MAX expose purchase-specific effect previews")
 	check(panel.benefit_label.text.contains("升一级") and panel.benefit_label.text.contains("0.00%"),"Visible single-step preview makes zero-allocation return explicit")
 	check(panel.benefit_label.position.y+panel.benefit_label.size.y<=panel.module_scroll.position.y,"Visible return stays clear of module bays")

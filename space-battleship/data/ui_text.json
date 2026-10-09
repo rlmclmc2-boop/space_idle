@@ -16878,10 +16878,26 @@
   },
   {
     "key": "reactor.purchase_effect_short",
-    "text": "{module} +{current}% → +{next}%（收益+{gain}%）",
+    "text": "{module}收益+{gain}% · 加成≈{current}%→{next}%",
     "params": "module,current,next,gain",
     "category": "reactor",
-    "note": "单级收益紧凑摘要；百分数为模块加成",
+    "note": "相对收益优先显示；加成三位有效数字，精确值在悬停",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.capacity_boundary",
+    "text": "已到能源可用范围边界，无法继续购买；余额保留。",
+    "params": "",
+    "category": "reactor",
+    "note": "整数容量安全边界，不承诺无限成长",
+    "source": "reactor_panel.gd"
+  },
+  {
+    "key": "reactor.version_note",
+    "text": "本轮容量按等级重新计算；先确认能源分配，再看新的购买收益。",
+    "params": "",
+    "category": "reactor",
+    "note": "测试版本换版提示；不声称旧进度经济连续可比",
     "source": "reactor_panel.gd"
   },
   {

@@ -1039,7 +1039,12 @@ func reactor_energy(level := -1) -> float:
 	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max") * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
 
 func reactor_capacity() -> int:
-	return maxi(0, int(floor(reactor_energy())))
+	return preload("res://scripts/reactor_growth.gd").capacity(reactor_energy())
+
+func reactor_can_grow(amount: int) -> bool:
+	if amount<=0:return false
+	var next := reactor_energy(int(profile.reactorLevel)+amount)
+	return is_finite(next) and next<=float(preload("res://scripts/reactor_growth.gd").CAPACITY_LIMIT) and preload("res://scripts/reactor_growth.gd").capacity(next)>reactor_capacity()
 
 func reactor_upgrade_cost(level := -1) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
@@ -1065,6 +1070,7 @@ func reactor_max_upgrades() -> int:
 	var level := int(profile.reactorLevel)
 	var count := 0
 	while true:
+		if not reactor_can_grow(count+1):break
 		var cost := reactor_upgrade_cost(level)
 		if not is_finite(cost) or cost <= 0 or N.compare(cost,budget)>0:break
 		budget = N.subtract(budget,cost)
@@ -1073,7 +1079,7 @@ func reactor_max_upgrades() -> int:
 	return count
 
 func upgrade_reactor(amount: int) -> bool:
-	if not reactor_unlocked() or amount <= 0:return false
+	if not reactor_unlocked() or not reactor_can_grow(amount):return false
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
 	var total := 0.0
 	for offset in amount:
