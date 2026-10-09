@@ -18,9 +18,22 @@ func run()->void:
  check(count>1 and quote.contains("可升%d级"%count) and quote.contains(scene.cost_text(costs)),"Inspector MAX shows authoritative affordable quantity and complete batch costs")
  var tooltip=p.detail.max._make_custom_tooltip(p.detail.max.tooltip_text)
  check(tooltip.get_child(0).text==quote,"Actual MAX hover obtains the live quote")
- tooltip.free()
+ # Keep both native custom tooltip contents alive while resources change.
+ root.add_child(tooltip)
  p.set_upgrade_amount(0)
  check(p.items.weapons_0.upgrade_count==count and p.cards.weapons_0.upgrade_button.tooltip_text==quote,"Card global MAX reuses same refresh quantity and displays same quote")
+ var card_button=p.cards.weapons_0.upgrade_button
+ var card_tooltip=card_button._make_custom_tooltip(card_button.tooltip_text);root.add_child(card_tooltip)
+ for id in g.profile.resources:g.profile.resources[id]=1e9
+ p.refresh_pending()
+ var increased:String=p.max_upgrade_quote()
+ check(increased!=quote and tooltip.get_child(0).text==increased,"Existing resource refresh updates already-open inspector MAX quote")
+ check(card_tooltip.get_child(0).text==card_button.tooltip_text and card_tooltip.get_child(0).text==increased,"Already-open card MAX quote stays synchronized with live button costs")
+ for id in g.profile.resources:g.profile.resources[id]=1e6
+ p.refresh_pending()
+ check(tooltip.get_child(0).text==quote and card_tooltip.get_child(0).text==quote,"Open quotes follow decreases as well as production increases")
+ tooltip.free();card_tooltip.free()
+ p.refresh_pending()
  check(JSON.stringify(g.profile)==before and g.rng.state==rng_before,"Preview changes neither profile nor RNG")
  var old_level:int=g.module_entry("weapons",0).level
  p.act("max")

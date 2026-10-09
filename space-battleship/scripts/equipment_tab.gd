@@ -1,9 +1,5 @@
 extends Control
 ## Module projection; growth and equipment remain authoritative in BattleGame.
-class MaxButton extends Button:
-	var quote_text: Callable
-	func _make_custom_tooltip(_for_text: String) -> Object:
-		return EnhancementTooltip.content(quote_text.call())
 const Card = preload("res://scripts/equipment_card.gd")
 var style_tiles := preload("res://scripts/equipment_style_tiles.gd").new()
 var host: Node
@@ -248,7 +244,7 @@ func build_detail() -> void:
 	for action in ["upgrade","ten","max","remove"]:
 		detail[action] = action_button(detail_actions,"equipment.action."+action,action,func():act(action),action=="upgrade")
 		detail[action].custom_minimum_size.x = 171
-	detail.max.set_script(MaxButton)
+	detail.max.set_script(preload("res://scripts/equipment_quote_tooltip.gd"))
 	detail.max.quote_text = max_upgrade_quote
 	detail.max.tooltip_text = UIText.t("equipment.action.max")
 	detail.more = action_button(detail_body,"equipment.attributes.show","toggle_stats",toggle_details)
@@ -715,6 +711,7 @@ func refresh_affordability_detail() -> void:
 		detail_dirty=true
 		return
 	var item: Dictionary = items[selected]
+	detail.max.refresh_open_quote()
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
 
@@ -754,6 +751,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 		detail_dirty=true
 		return
 	detail_dirty=false
+	detail.max.refresh_open_quote()
 	var entry: Dictionary = host.game.module_entry(category,selected_slot)
 	var key := str(entry.key)
 	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
